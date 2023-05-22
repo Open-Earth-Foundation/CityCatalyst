@@ -4,7 +4,7 @@ Evan Prodromou
 
 19 May 2023
 
-This document describes the components of the [CityCatalyst UML diagram](./CityCatalyst Components.svg).
+This document describes the components of the (CityCatalyst UML diagram)[./CityCatalyst Components.svg].
 
 
 # CityCatalyst Server

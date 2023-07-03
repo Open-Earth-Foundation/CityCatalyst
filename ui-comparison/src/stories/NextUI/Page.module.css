@@ -1,0 +1,212 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+.root{
+    width: 1440vw;
+    height: 100vh;
+    font-family: 'Poppins', sans-serif;
+} 
+
+.lncontent{
+    display: flex !important;
+    background: #fff !important;
+}
+
+.heroSection{
+    height: 407px !important;
+    width: 1440px !important;
+    background-color: #001EA7 !important;
+    position: relative;
+    top: -1px;
+}
+
+.heroItems{
+    color: #fff !important;
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+}
+
+.heroTextBox{
+    display: flex;
+    flex-direction: column;
+}
+
+.heroText{
+    display: flex;
+    align-items: center;
+    height: 32px;
+}
+
+.superText{
+    color: #fff;
+    font-weight: 600;
+    font-size: 24px;
+}
+
+.smallText{
+    color: #fff;
+    font-size: 16px;
+    position: relative;
+    top: 5px;
+}
+
+.subText{
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: 0.5px;
+    color: #E8EAFB;
+    margin-top: 4px;
+}
+
+.heroStats{
+    display: flex;
+    gap: 16px;
+}
+
+.heroCards{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 64px;
+}
+
+.heroCardHeaderContent{
+    display: flex;
+    align-items: center;
+    color: #008600;
+    gap: 8px;
+}
+
+.dashSection{
+    width: 1440px;
+    padding-top: 100px;
+    padding-bottom: 100px;
+}
+
+
+.gpcBox{
+    display: flex;
+    align-items: center;
+    padding: 32px;
+    width: auto;
+    height: 82px;
+    justify-content: space-between;
+    border-radius: 8px;
+    border: 1px solid var(--background-neutral, #E8EAFB);
+    background: var(--background-default, #FFF);
+}
+
+.gpcBoxText{
+    height: 56px;
+}
+
+
+.gpcBoxTextContent{
+    display: flex;
+    align-items: center;
+    font-size: 22px;
+    font-weight: 600;
+    gap: 8px;
+}
+
+.btns{
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    height: 56px;
+}
+
+.graphArea{
+    width: auto;
+    height: 878px;
+    padding: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--background-neutral, #E8EAFB);
+    background: var(--background-default, #FFF);
+    margin-top: 48px;
+}
+
+.frame1a{
+    width: 100%;
+    height: 160px;
+}
+
+.progressBar{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.legend{
+    display: flex;
+    gap: 16px;
+}
+
+.legendItem{
+    width: 285px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    border-radius: 50px;
+    border: 1px solid var(--background-neutral, #E8EAFB);
+    background: var(--background-default, #FFF);
+}
+
+.frame1b{
+    width: 100%;
+    height: 210px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    justify-content: space-between;
+}
+
+.headingText{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cards{
+    display: flex;
+    justify-content: space-between;
+}
+
+.footer{
+    width: 1440px;
+    height: 320px;
+    background: var(--base-dark, #00001F);
+}
+
+.footerContentA{
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
+.links{
+    display: grid;
+    grid-template-columns: 240px 240px 240px;
+}
+
+.footerBootomText{
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.footerBottomContent{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footerOEFLogo{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+

@@ -1,10 +1,15 @@
 import React from 'react';
+import Image from 'next/image';
+import logoIcon from './logo.svg';
+
 
 export const Header = () => (
   <div className="TopBar w-[1440px] h-[84px] left-0 top-0 absolute justify-center items-center inline-flex">
     <div className="TopBar w-[1440px] h-[84px] px-16 py-6 bg-blue-800 justify-between items-center gap-[610px] inline-flex">
       <div className="Left justify-start items-center gap-14 flex">
-        <div className="LogoOe justify-start items-center gap-1.5 flex" />
+        <div className="LogoOe justify-start items-center gap-1.5 flex">
+          <Image src={logoIcon} height={32} width={32} alt="CityCatalyst logo" priority />
+        </div>
         <div className="LogoOc w-36 justify-start items-center gap-1.5 flex">
           <div className="Frame27146 w-36 h-8 justify-center items-center gap-2.5 flex">
             <div className="Citycatalyst text-center text-white text-[18px] font-semibold leading-normal tracking-wide">CityCatalyst</div>

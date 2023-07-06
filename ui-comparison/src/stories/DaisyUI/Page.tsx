@@ -3,53 +3,10 @@ import { Header } from "./Header";
 import { Footer } from "./Footer";
 
 export function Page() {
-  return <>
-    <Header />
+  return (
     <div className="CityDashboard w-[1440px] h-[2755px] relative bg-white">
+      <Header />
       <div className="Rectangle1 w-[1440px] h-[407px] left-0 top-[84px] absolute bg-blue-800" />
-      <div className="TopBar w-[1440px] h-[84px] left-0 top-0 absolute justify-center items-center inline-flex">
-        <div className="TopBar w-[1440px] h-[84px] px-16 py-6 bg-blue-800 justify-between items-center gap-[610px] inline-flex">
-          <div className="Left justify-start items-center gap-14 flex">
-            <div className="LogoOe justify-start items-center gap-1.5 flex" />
-            <div className="LogoOc w-36 justify-start items-center gap-1.5 flex">
-              <div className="Frame27146 w-36 h-8 justify-center items-center gap-2.5 flex">
-                <div className="Citycatalyst text-center text-white text-[18px] font-semibold leading-normal tracking-wide">CityCatalyst</div>
-              </div>
-            </div>
-          </div>
-          <div className="Right justify-end items-center gap-12 flex">
-            <div className="Explore justify-start items-start gap-2.5 flex">
-              <div className="Dashboard text-white text-[16px] font-semibold leading-normal">Dashboard</div>
-            </div>
-            <div className="Explore opacity-60 justify-start items-start gap-2.5 flex">
-              <div className="CityStatus text-white text-[16px] font-semibold leading-normal">City Status</div>
-            </div>
-            <div className="Explore opacity-60 justify-start items-start gap-2.5 flex">
-              <div className="Learning text-white text-[16px] font-semibold leading-normal">Learning</div>
-            </div>
-            <div className="Explore opacity-60 justify-start items-start gap-2.5 flex">
-              <div className="AboutUs text-white text-[16px] font-semibold leading-normal">About Us</div>
-            </div>
-            <div className="Avatar justify-start items-center gap-2 flex">
-              <div className="Flag w-6 h-6 relative rounded-[100px]">
-                <div className="Group w-[23.59px] h-[21.39px] left-[0.41px] top-[2.61px] absolute">
-                </div>
-              </div>
-              <div className="En text-white text-[14px] font-medium leading-tight tracking-wide">EN</div>
-              <div className="Icons w-6 h-6 justify-center items-center flex">
-                <div className="IconsArrowDropDown24px w-6 h-6 relative flex-col justify-start items-start flex" />
-              </div>
-            </div>
-            <div className="Avatar justify-start items-center gap-4 flex">
-              <div className="Group26975 w-8 h-8 relative">
-                <div className="Ellipse w-8 h-8 left-0 top-0 absolute bg-amber-500 rounded-full" />
-                <div className="J w-[14.22px] h-[14.22px] left-[8.89px] top-[8.89px] absolute text-center text-white text-[14px] font-medium leading-tight tracking-wide">J</div>
-              </div>
-              <div className="JaneDoe text-white text-[14px] font-medium leading-tight tracking-wide">Jane Doe</div>
-            </div>
-          </div>
-        </div>
-      </div>
       <div className="Cards h-[188px] left-[175px] top-[392px] absolute flex-col justify-start items-start gap-6 inline-flex">
         <div className="Frame27052 w-[1090px] justify-start items-start gap-6 inline-flex">
           <div className="Datasourcecard grow shrink basis-0 p-6 bg-white rounded-lg shadow border-lime-500 flex-col justify-start items-center gap-4 inline-flex">
@@ -352,49 +309,6 @@ export function Page() {
           </div>
         </div>
       </div>
-      <div className="Footer h-80 px-16 pt-12 pb-20 left-0 top-[2435px] absolute bg-slate-950 flex-col justify-start items-start gap-12 inline-flex">
-        <div className="Links self-stretch justify-start items-start gap-[100px] inline-flex">
-          <div className="LogoOc w-36 justify-start items-center gap-1.5 flex">
-            <div className="LogoOc w-36 justify-start items-center gap-1.5 flex">
-              <div className="Frame27146 w-36 h-8 justify-center items-center gap-2.5 flex">
-                <div className="Citycatalyst text-center text-white text-[18px] font-semibold leading-normal tracking-wide">CityCatalyst</div>
-              </div>
-            </div>
-          </div>
-          <div className="Links grow shrink basis-0 h-16 justify-start items-start gap-12 flex">
-            <div className="List grow shrink basis-0 flex-col justify-start items-start gap-6 inline-flex">
-              <div className="AboutOpenClimate text-white text-[14px] font-medium leading-tight tracking-wide">About Open Climate</div>
-              <div className="Cad20Community text-white text-[14px] font-medium leading-tight tracking-wide">CAD2.0 Community</div>
-            </div>
-            <div className="List grow shrink basis-0 flex-col justify-start items-start gap-6 inline-flex">
-              <div className="ContributionGuide text-white text-[14px] font-medium leading-tight tracking-wide">Contribution Guide</div>
-              <div className="ReadTheDocs text-white text-[14px] font-medium leading-tight tracking-wide">Read the Docs</div>
-            </div>
-            <div className="List grow shrink basis-0 flex-col justify-start items-start gap-6 inline-flex">
-              <div className="GoToGithub text-white text-[14px] font-medium leading-tight tracking-wide">Go to GitHub</div>
-              <div className="PythonClientDocs text-white text-[14px] font-medium leading-tight tracking-wide">Python Client Docs</div>
-            </div>
-          </div>
-          <div className="Cta justify-start items-start gap-6 flex">
-            <div className="Button w-[150px] px-6 py-4 bg-blue-700 rounded-[50px] justify-center items-center gap-2 flex">
-              <div className="Primary text-center text-white text-[14px] font-semibold uppercase leading-none tracking-widest">cONTACT US</div>
-            </div>
-          </div>
-        </div>
-        <div className="Info self-stretch justify-start items-center gap-4 inline-flex">
-          <div className="Feedback grow shrink basis-0 h-5 justify-start items-start gap-4 flex">
-            <div className="BetaTag px-4 py-0.5 bg-violet-200 rounded-xl justify-start items-start gap-2.5 flex">
-              <div className="Beta text-slate-950 text-[11px] font-medium leading-none tracking-wide">BETA</div>
-            </div>
-            <div className="ThisSiteIsABetaVersionWeAppreciateAllFeedbackToImproveThePlatform text-white text-[14px] font-normal leading-tight tracking-wide">This site is a beta version, we appreciate all feedback to improve the platform</div>
-            <div className="SendFeedback text-right text-white text-[14px] font-medium underline leading-tight tracking-wide">Send Feedback</div>
-          </div>
-          <div className="PoweredBy justify-start items-center gap-2 flex">
-            <div className="Group w-[142.74px] h-8 relative">
-            </div>
-          </div>
-        </div>
-      </div>
       <div className="Frame27147 left-[175px] top-[1995px] absolute flex-col justify-start items-start gap-12 inline-flex">
         <div className="Frame26976 h-9 flex-col justify-start items-start gap-4 flex">
           <div className="Frame26973 self-stretch justify-start items-center gap-6 inline-flex">
@@ -457,8 +371,8 @@ export function Page() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
-    <Footer />
-  </>;
+  );
 }
 

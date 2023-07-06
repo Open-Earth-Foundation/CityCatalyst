@@ -26,17 +26,21 @@ export const Footer = () => (
       </div>
       <div className="Cta justify-start items-start gap-6 flex">
         <div className="Button w-[150px] px-6 py-4 bg-blue-700 rounded-[50px] justify-center items-center gap-2 flex">
-          <div className="Primary text-center text-white text-[14px] font-semibold uppercase leading-none tracking-widest">cONTACT US</div>
+          <div className="Primary text-center text-white text-[13px] font-semibold uppercase leading-none tracking-widest">
+            <a href="mailto://info@openearth.org">Contact us</a>
+          </div>
         </div>
       </div>
     </div>
-    <div className="Info self-stretch justify-start items-center gap-4 inline-flex">
-      <div className="Feedback grow shrink basis-0 h-5 justify-start items-start gap-4 flex">
+    <div className="Info self-stretch justify-start items-center gap-4 inline-flex border-t-2 border-[#232640] pt-12">
+      <div className="Feedback grow shrink basis-0 h-5 justify-start items-center gap-4 flex">
         <div className="BetaTag px-4 py-0.5 bg-violet-200 rounded-xl justify-start items-start gap-2.5 flex">
-          <div className="Beta text-slate-950 text-[11px] font-medium leading-none tracking-wide">BETA</div>
+          <div className="Beta text-slate-950 text-[11px] font-medium leading-none tracking-wide m-0.5">BETA</div>
         </div>
         <div className="ThisSiteIsABetaVersionWeAppreciateAllFeedbackToImproveThePlatform text-white text-[14px] font-normal leading-tight tracking-wide">This site is a beta version, we appreciate all feedback to improve the platform</div>
-        <div className="SendFeedback text-right text-white text-[14px] font-medium underline leading-tight tracking-wide">Send Feedback</div>
+        <div className="SendFeedback text-right text-white text-[14px] font-medium underline leading-tight tracking-wide">
+          <a href="mailto://info@openearth.org">Send Feedback</a>
+        </div>
       </div>
       <div className="PoweredBy justify-start items-center gap-2 flex">
         <div className="Group w-[142.74px] h-8 relative">

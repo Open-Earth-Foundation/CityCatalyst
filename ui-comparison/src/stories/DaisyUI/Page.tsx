@@ -23,7 +23,7 @@ export function Page() {
       <div className="Rectangle1 w-[1440px] h-[407px] left-0 top-[84px] absolute bg-blue-800" />
       <div className="Cards h-[188px] left-[175px] top-[392px] absolute flex-col justify-start items-start gap-6 inline-flex">
         <div className="Frame27052 w-[1090px] justify-start items-start gap-6 inline-flex">
-          <div className="Datasourcecard grow shrink basis-0 p-6 bg-white rounded-lg shadow border-lime-500 flex-col justify-start items-center gap-4 inline-flex">
+          <div className="Datasourcecard grow shrink basis-0 p-6 bg-white rounded-lg shadow-[#5FE500] shadow border-lime-500 border-2 flex-col justify-start items-center gap-4 inline-flex">
             <div className="Frame27049 flex-col justify-start items-start gap-2 flex">
               <div className="Frame9 w-48 justify-start items-center gap-2 inline-flex">
                 <div className="AddChart w-8 h-8 relative">

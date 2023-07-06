@@ -1,15 +1,20 @@
 import React from "react";
 import { Poppins } from 'next/font/google';
+import { MdAddchart, MdArrowForward, MdBarChart, MdOutlineAnalytics, MdArrowOutward, MdOutlinePeopleAlt, MdAspectRatio, MdOutlineHomeWork } from 'react-icons/md';
+import { FaFileExport } from 'react-icons/fa';
+import { PiNotePencil, PiTrashLight } from 'react-icons/pi';
+import { BsTruck } from 'react-icons/bs';
+import { FiDownload } from 'react-icons/fi';
 
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 
-  const poppins = Poppins({
-    weight: '400',
-    subsets: ['latin'],
-    display: 'swap',
-    variable: '--font-poppins',
-  });
+const poppins = Poppins({
+  weight: '400',
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-poppins',
+});
 
 export function Page() {
   return (
@@ -22,16 +27,18 @@ export function Page() {
             <div className="Frame27049 flex-col justify-start items-start gap-2 flex">
               <div className="Frame9 w-48 justify-start items-center gap-2 inline-flex">
                 <div className="AddChart w-8 h-8 relative">
-                  <div className="BoundingBox w-8 h-8 left-0 top-0 absolute bg-zinc-300" />
+                  <MdAddchart className="text-green-700" size={32} />
                 </div>
                 <div className="AddData grow shrink basis-0 text-green-700 text-[22px] font-semibold leading-7">Add Data</div>
               </div>
               <div className="AddYourOwnDataOrConnectToThirdPartyDataToTheInventory w-48 text-black text-[14px] font-normal leading-tight tracking-wide">Add your own data or connect to third-party data to the inventory</div>
             </div>
             <div className="Frame27046 justify-center items-center gap-2 inline-flex">
-              <div className="AddData w-48 text-right text-green-700 text-[14px] font-semibold uppercase leading-none tracking-widest">Add Data</div>
+              <div className="AddData w-48 text-right text-green-700 text-[14px] font-semibold uppercase leading-none tracking-widest">
+                Add Data
+              </div>
               <div className="ArrowForward w-6 h-6 relative">
-                <div className="BoundingBox w-6 h-6 left-0 top-0 absolute bg-zinc-300" />
+                <MdArrowForward className="text-green-700" size={24} />
               </div>
             </div>
           </div>
@@ -39,6 +46,7 @@ export function Page() {
             <div className="Frame27050 w-48 grow shrink basis-0 flex-col justify-start items-start gap-2 flex">
               <div className="Frame9 w-48 justify-start items-center gap-2 inline-flex">
                 <div className="SolarExportLinear w-8 h-8 relative">
+                  <FaFileExport className="text-blue-700" size={32} />
                   <div className="Group w-[21.33px] h-[21.33px] left-[5.33px] top-[5.33px] absolute">
                   </div>
                 </div>
@@ -49,7 +57,7 @@ export function Page() {
             <div className="Frame27045 justify-center items-center gap-2 inline-flex">
               <div className="GoToCityStatus w-48 text-right text-blue-700 text-[14px] font-semibold uppercase leading-none tracking-widest">Download Report</div>
               <div className="ArrowForward w-6 h-6 relative">
-                <div className="BoundingBox w-6 h-6 left-0 top-0 absolute bg-zinc-300" />
+                <MdArrowForward className="text-blue-700" size={24} />
               </div>
             </div>
           </div>
@@ -57,7 +65,7 @@ export function Page() {
             <div className="Frame27050 flex-col justify-start items-start gap-2 flex">
               <div className="Frame9 w-48 justify-start items-center gap-2 inline-flex">
                 <div className="BarChart w-8 h-8 relative">
-                  <div className="BoundingBox w-8 h-8 left-0 top-0 absolute bg-zinc-300" />
+                  <MdBarChart className="text-blue-700" size={32} />
                 </div>
                 <div className="CityStatus grow shrink basis-0 text-black text-[22px] font-semibold leading-7">City Status</div>
               </div>
@@ -66,7 +74,7 @@ export function Page() {
             <div className="Frame27045 justify-center items-center gap-2 inline-flex">
               <div className="GoToCityStatus w-48 text-right text-blue-700 text-[14px] font-semibold uppercase leading-none tracking-widest">Go to City Status</div>
               <div className="ArrowForward w-6 h-6 relative">
-                <div className="BoundingBox w-6 h-6 left-0 top-0 absolute bg-zinc-300" />
+                <MdArrowForward className="text-blue-700" size={24} />
               </div>
             </div>
           </div>
@@ -74,7 +82,7 @@ export function Page() {
             <div className="Frame27050 flex-col justify-start items-start gap-2 flex">
               <div className="Frame9 w-48 justify-start items-center gap-2 inline-flex">
                 <div className="Analytics w-8 h-8 relative">
-                  <div className="BoundingBox w-8 h-8 left-0 top-0 absolute bg-zinc-300" />
+                  <MdOutlineAnalytics className="text-blue-700" size={32} />
                 </div>
                 <div className="CityStatus grow shrink basis-0 text-black text-[22px] font-semibold leading-7">Integrations</div>
               </div>
@@ -83,7 +91,7 @@ export function Page() {
             <div className="Frame27045 justify-center items-center gap-2 inline-flex">
               <div className="GoToCityStatus w-48 text-right text-blue-700 text-[14px] font-semibold uppercase leading-none tracking-widest">See Integrations</div>
               <div className="ArrowForward w-6 h-6 relative">
-                <div className="BoundingBox w-6 h-6 left-0 top-0 absolute bg-zinc-300" />
+                <MdArrowForward className="text-blue-700" size={24} />
               </div>
             </div>
           </div>
@@ -100,11 +108,11 @@ export function Page() {
             <div className="CiudadAutNomaDeBuenosAires text-white text-[45px] font-semibold leading-10">Ciudad Autónoma de Buenos Aires</div>
           </div>
         </div>
-        <div className="Info self-stretch justify-start items-center gap-4 inline-flex">
+        <div className="Info self-stretch justify-start items-center gap-4 space-x-3 inline-flex">
           <div className="TotalPopulation h-14 justify-start items-start gap-3 flex">
             <div className="Frame6905 w-6 justify-start items-center gap-2.5 flex">
-              <div className="ArrowOutward w-6 h-6 relative">
-                <div className="BoundingBox w-6 h-6 left-0 top-0 absolute bg-indigo-100" />
+              <div className="ArrowOutward w-6 h-6 relative mt-3">
+                <MdArrowOutward className="text-white" size={24} />
               </div>
             </div>
             <div className="Frame3003 grow shrink basis-0 flex-col justify-center items-start gap-1 inline-flex">
@@ -116,8 +124,8 @@ export function Page() {
           </div>
           <div className="TotalPopulation h-14 justify-start items-start gap-3 flex">
             <div className="Frame6905 w-6 justify-start items-center gap-2.5 flex">
-              <div className="Icons w-6 h-6 relative">
-                <div className="BoundingBox w-6 h-6 left-0 top-0 absolute bg-white" />
+              <div className="Icons w-6 h-6 relative mt-3">
+                <MdOutlinePeopleAlt className="text-white" size={24} />
               </div>
             </div>
             <div className="Frame3003 grow shrink basis-0 flex-col justify-center items-start gap-1 inline-flex">
@@ -129,8 +137,8 @@ export function Page() {
           </div>
           <div className="TotalPopulation h-14 justify-start items-start gap-3 flex">
             <div className="Frame6905 w-6 justify-start items-center gap-2.5 flex">
-              <div className="AspectRatio w-6 h-6 relative">
-                <div className="BoundingBox w-6 h-6 left-0 top-0 absolute bg-indigo-100" />
+              <div className="AspectRatio w-6 h-6 relative mt-3">
+                <MdAspectRatio className="text-white" size={24} />
               </div>
             </div>
             <div className="Frame3003 grow shrink basis-0 flex-col justify-center items-start gap-1 inline-flex">
@@ -159,14 +167,12 @@ export function Page() {
               <div className="CitySInventoryGoal text-slate-950 text-[14px] font-normal leading-tight tracking-wide">City´s Inventory Goal</div>
             </div>
             <div className="Button w-64 px-6 py-4 rounded-[50px] border border-blue-700 justify-center items-center gap-2 flex">
-              <div className="Edit w-6 h-6 relative" />
-              <div className="Secondary text-center text-blue-700 text-[14px] font-semibold uppercase leading-none tracking-widest">edit inventory goal</div>
+              <PiNotePencil size={24} className="text-blue-700" />
+              <div className="Secondary text-center text-blue-700 text-[13px] font-semibold uppercase leading-none tracking-widest">edit inventory goal</div>
             </div>
             <div className="Button w-[282px] px-6 py-4 bg-blue-700 rounded-[50px] justify-center items-center gap-2 flex">
-              <div className="Primary text-center text-white text-[14px] font-semibold uppercase leading-none tracking-widest">Add data to inventory</div>
-              <div className="Icons w-6 h-6 justify-center items-center flex">
-                <div className="IconsArrowForward24px w-6 h-6 relative flex-col justify-start items-start flex" />
-              </div>
+              <div className="Primary text-center text-white text-[13px] font-semibold uppercase leading-none tracking-widest">Add data to inventory</div>
+              <MdArrowForward size={24} className="text-white" />
             </div>
           </div>
         </div>
@@ -218,7 +224,7 @@ export function Page() {
               <div className="Frame27093 grow shrink basis-0 flex-col justify-start items-start gap-4 inline-flex">
                 <div className="Frame26973 self-stretch justify-start items-start gap-4 inline-flex">
                   <div className="HomeWork w-8 h-8 relative">
-                    <div className="BoundingBox w-8 h-8 left-0 top-0 absolute bg-zinc-300" />
+                    <MdOutlineHomeWork size={32} className="text-blue-700" />
                   </div>
                   <div className="Frame26973 grow shrink basis-0 flex-col justify-start items-start gap-4 inline-flex">
                     <div className="Frame26973 justify-start items-center gap-2 inline-flex">
@@ -241,10 +247,8 @@ export function Page() {
                 </div>
               </div>
               <div className="Button w-[221px] px-6 py-4 rounded-[50px] border border-blue-700 justify-center items-center gap-2 flex">
-                <div className="Primary text-center text-blue-700 text-[14px] font-semibold uppercase leading-none tracking-widest">enhance sector</div>
-                <div className="Icons w-6 h-6 justify-center items-center flex">
-                  <div className="IconsArrowForward24px w-6 h-6 relative flex-col justify-start items-start flex" />
-                </div>
+                <div className="Primary text-center text-blue-700 text-[13px] font-semibold uppercase leading-none tracking-widest">enhance sector</div>
+                <MdArrowForward size={24} className="text-blue-700" />
               </div>
             </div>
           </div>
@@ -253,7 +257,9 @@ export function Page() {
             <div className="Frame26966 grow shrink basis-0 h-[162px] justify-start items-center gap-12 flex">
               <div className="Frame27093 grow shrink basis-0 flex-col justify-start items-start gap-4 inline-flex">
                 <div className="Frame26973 self-stretch justify-start items-start gap-4 inline-flex">
-                  <div className="Truck w-8 h-8 relative" />
+                  <div className="Truck w-8 h-8 relative">
+                    <BsTruck size={32} className="text-blue-700" />
+                  </div>
                   <div className="Frame26973 grow shrink basis-0 flex-col justify-start items-start gap-4 inline-flex">
                     <div className="Frame26973 justify-start items-center gap-2 inline-flex">
                       <div className="InBoundaryTransportation text-slate-800 text-[22px] font-semibold leading-7">In-boundary transportation</div>
@@ -274,10 +280,8 @@ export function Page() {
                 </div>
               </div>
               <div className="Button w-[221px] px-6 py-4 rounded-[50px] border border-blue-700 justify-center items-center gap-2 flex">
-                <div className="Primary text-center text-blue-700 text-[14px] font-semibold uppercase leading-none tracking-widest">enhance sector</div>
-                <div className="Icons w-6 h-6 justify-center items-center flex">
-                  <div className="IconsArrowForward24px w-6 h-6 relative flex-col justify-start items-start flex" />
-                </div>
+                <div className="Primary text-center text-blue-700 text-[13px] font-semibold uppercase leading-none tracking-widest">enhance sector</div>
+                <MdArrowForward size={24} className="text-blue-700" />
               </div>
             </div>
           </div>
@@ -286,7 +290,9 @@ export function Page() {
             <div className="Frame26966 grow shrink basis-0 h-[142px] justify-start items-center gap-12 flex">
               <div className="Frame27093 grow shrink basis-0 flex-col justify-start items-start gap-4 inline-flex">
                 <div className="Frame26973 self-stretch justify-start items-start gap-4 inline-flex">
-                  <div className="Trash2 w-8 h-8 relative" />
+                  <div className="Trash2 w-8 h-8 relative">
+                    <PiTrashLight size={32} className="text-blue-700" />
+                  </div>
                   <div className="Frame26973 grow shrink basis-0 flex-col justify-start items-start gap-4 inline-flex">
                     <div className="Frame26973 justify-start items-center gap-2 inline-flex">
                       <div className="WasteAndWastewaterGenerated text-slate-800 text-[22px] font-semibold leading-7">Waste and wastewater generated</div>
@@ -309,11 +315,9 @@ export function Page() {
                 </div>
               </div>
               <div className="Button w-[221px] px-6 py-4 rounded-[50px] border border-blue-700 justify-center items-center gap-2 flex">
-                <div className="Primary text-center text-blue-700 text-[14px] font-semibold uppercase leading-none tracking-widest">enhance sector</div>
-                <div className="Icons w-6 h-6 justify-center items-center flex">
-                  <div className="IconsArrowForward24px w-6 h-6 relative flex-col justify-start items-start flex" />
-                </div>
-              </div>
+                <div className="Primary text-center text-blue-700 text-[13px] font-semibold uppercase leading-none tracking-widest">enhance sector</div>
+                <MdArrowForward size={24} className="text-blue-700" />
+              </div>mdtrash
             </div>
           </div>
         </div>
@@ -330,14 +334,16 @@ export function Page() {
               <div className="Frame27050 self-stretch h-[188px] flex-col justify-start items-start gap-6 flex">
                 <div className="Frame9 self-stretch justify-start items-center gap-2 inline-flex">
                   <div className="Icons w-8 h-8 justify-center items-center flex">
-                    <div className="IconsFileDownload w-8 h-8 relative flex-col justify-start items-start flex" />
+                    <FiDownload size={32} className="text-blue-700" />
                   </div>
                   <div className="CityStatus grow shrink basis-0 text-black text-[22px] font-semibold leading-7">GPC Format</div>
                 </div>
                 <div className="DownloadYourEmissionInventoryInGpcCompliantFormatToShareWithRelevantStakeholders self-stretch text-black text-[14px] font-normal leading-tight tracking-wide">Download your emission inventory in GPC compliant format to share with relevant stakeholders</div>
                 <div className="Button self-stretch h-12 px-6 py-4 bg-blue-700 rounded-[50px] justify-center items-center gap-2 inline-flex">
                   <div className="Icons w-6 h-6 justify-center items-center flex">
-                    <div className="IconsFileDownload w-6 h-6 relative flex-col justify-start items-start flex" />
+                    <div className="IconsFileDownload w-6 h-6 relative flex-col justify-start items-start flex">
+                      <FiDownload size={24} className="text-white" />
+                    </div>
                   </div>
                   <div className="Primary text-center text-white text-[14px] font-semibold uppercase leading-none tracking-widest">Download</div>
                 </div>
@@ -347,14 +353,14 @@ export function Page() {
               <div className="Frame27050 self-stretch h-[188px] flex-col justify-start items-start gap-6 flex">
                 <div className="Frame9 self-stretch justify-start items-center gap-2 inline-flex">
                   <div className="Icons w-8 h-8 justify-center items-center flex">
-                    <div className="IconsFileDownload w-8 h-8 relative flex-col justify-start items-start flex" />
+                    <FiDownload size={32} className="text-blue-700" />
                   </div>
                   <div className="CityStatus grow shrink basis-0 text-black text-[22px] font-semibold leading-7">Raw CSV</div>
                 </div>
                 <div className="DownloadData self-stretch text-black text-[14px] font-normal leading-tight tracking-wide">Download your climate data in raw CSV format to use in your own calculations, processing and presentations</div>
                 <div className="Button self-stretch h-12 px-6 py-4 bg-blue-700 rounded-[50px] justify-center items-center gap-2 inline-flex">
                   <div className="Icons w-6 h-6 justify-center items-center flex">
-                    <div className="IconsFileDownload w-6 h-6 relative flex-col justify-start items-start flex" />
+                    <FiDownload size={24} className="text-white" />
                   </div>
                   <div className="Primary text-center text-white text-[14px] font-semibold uppercase leading-none tracking-widest">Download</div>
                 </div>
@@ -364,14 +370,14 @@ export function Page() {
               <div className="Frame27050 self-stretch h-[188px] flex-col justify-start items-start gap-6 flex">
                 <div className="Frame9 self-stretch justify-start items-center gap-2 inline-flex">
                   <div className="Icons w-8 h-8 justify-center items-center flex">
-                    <div className="IconsFileDownload w-8 h-8 relative flex-col justify-start items-start flex" />
+                    <FiDownload size={32} className="text-blue-700" />
                   </div>
                   <div className="CityStatus grow shrink basis-0 text-black text-[22px] font-semibold leading-7">CDP Format</div>
                 </div>
                 <div className="DownloadYourEmissionInventoryAndClimatePlansInCdpCompliantFormatToShareWithRelevantStakeholders self-stretch text-black text-[14px] font-normal leading-tight tracking-wide">Download your emission inventory and climate plans in CDP compliant format to share with relevant stakeholders</div>
                 <div className="Button self-stretch h-12 px-6 py-4 bg-blue-700 rounded-[50px] justify-center items-center gap-2 inline-flex">
                   <div className="Icons w-6 h-6 justify-center items-center flex">
-                    <div className="IconsFileDownload w-6 h-6 relative flex-col justify-start items-start flex" />
+                    <FiDownload size={24} className="text-white" />
                   </div>
                   <div className="Primary text-center text-white text-[14px] font-semibold uppercase leading-none tracking-widest">Download</div>
                 </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+
 import logoIcon from './logo.svg';
 
 
@@ -28,7 +29,7 @@ export const Header = () => (
         </div>
         <div className="Explore opacity-60 justify-start items-start gap-2.5 flex">
           <div className="AboutUs text-white text-[16px] font-semibold leading-normal">About Us</div>
-        </div>
+        </div>Mtco2e
         <div className="Avatar justify-start items-center gap-2 flex">
           <div className="Flag w-6 h-6 relative rounded-[100px]">
             <div className="Group w-[23.59px] h-[21.39px] left-[0.41px] top-[2.61px] absolute">

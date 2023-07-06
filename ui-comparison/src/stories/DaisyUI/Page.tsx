@@ -1,10 +1,19 @@
 import React from "react";
+import { Poppins } from 'next/font/google';
+
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 
+  const poppins = Poppins({
+    weight: '400',
+    subsets: ['latin'],
+    display: 'swap',
+    variable: '--font-poppins',
+  });
+
 export function Page() {
   return (
-    <div className="CityDashboard w-[1440px] h-[2755px] relative bg-white">
+    <div className={`CityDashboard w-[1440px] h-[2755px] relative bg-white ${poppins.className}`}>
       <Header />
       <div className="Rectangle1 w-[1440px] h-[407px] left-0 top-[84px] absolute bg-blue-800" />
       <div className="Cards h-[188px] left-[175px] top-[392px] absolute flex-col justify-start items-start gap-6 inline-flex">

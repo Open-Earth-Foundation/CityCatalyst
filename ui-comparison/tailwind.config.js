@@ -18,7 +18,13 @@ module.exports = {
       },
     },
   },*/
-  theme: ['light'],
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['var(--font-poppins)'],
+      },
+    },
+  },
   daisyui: {
     theme: [],
   }

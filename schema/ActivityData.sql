@@ -1,6 +1,7 @@
 CREATE TABLE "ActivityData"(
     "activitydata_id" varchar(36),
     "activitydata" varchar(255),
+    "unit" varchar(255),
     "created" timestamp,
     "last_updated" timestamp,
     PRIMARY KEY("activitydata_id"),

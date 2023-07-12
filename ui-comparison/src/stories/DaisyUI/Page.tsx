@@ -167,10 +167,10 @@ export function Page() {
                 </div>
                 <div className="CitySInventoryGoal text-slate-950 text-[14px] font-normal leading-tight tracking-wide">City´s Inventory Goal</div>
               </div>
-              <div className="Button w-64 px-6 py-4 rounded-[50px] border border-blue-700 justify-center items-center gap-2 flex">
+              <button className="btn gap-2 flex border border-blue-700 rounded-[50px] w-64 bg-white justify-center items-center">
                 <PiNotePencil size={24} className="text-blue-700" />
                 <div className="Secondary text-center text-blue-700 text-[13px] font-semibold uppercase leading-none tracking-widest">edit inventory goal</div>
-              </div>
+              </button>
               <div className="Button w-[282px] px-6 py-4 bg-blue-700 rounded-[50px] justify-center items-center gap-2 flex">
                 <div className="Primary text-center text-white text-[13px] font-semibold uppercase leading-none tracking-widest">Add data to inventory</div>
                 <MdArrowForward size={24} className="text-white" />

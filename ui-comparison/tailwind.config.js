@@ -26,6 +26,16 @@ module.exports = {
     },
   },
   daisyui: {
-    theme: [],
+    themes: [
+      {
+        openearth: {
+          "primary": "#2351DC",
+          "secondary": "#008600",
+          "accent": "#F17105",
+          "neutral": "#5785F4",
+          "base-100": "#FFFFFF",
+        },
+      },
+    ]
   }
 }

@@ -2,8 +2,8 @@ import React from 'react';
 import Logo from './Logo';
 
 export const Header = () => (
-  <div className="TopBar w-[1440px] h-[84px] left-0 top-0 absolute justify-center items-center inline-flex">
-    <div className="TopBar w-[1440px] h-[84px] px-16 py-6 bg-blue-800 justify-between items-center inline-flex">
+  <div className="TopBar w-[1488px] h-[84px] left-0 top-0 absolute justify-center items-center inline-flex">
+    <div className="TopBar w-[1488px] h-[84px] px-16 py-6 bg-blue-800 justify-between items-center inline-flex">
       <div className="Left justify-start items-center gap-14 flex">
         <div className="LogoOe justify-start items-center gap-1.5">
           <Logo />

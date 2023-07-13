@@ -20,7 +20,7 @@ export function Page() {
   return (
     <div className={`CityDashboard w-[1440px] h-[2755px] relative bg-white ${poppins.className}`}>
       <Header />
-      <div className="Rectangle1 w-[1440px] h-[407px] left-0 top-[84px] absolute bg-blue-800" />
+      <div className="Rectangle1 w-[1488px] h-[407px] left-0 top-[84px] absolute bg-blue-800" />
       <div className="px-[175px] block w-full">
         <div className="Cards h-[188px] left-[175px] top-[392px] absolute flex-col justify-start items-start gap-6 inline-flex">
           <div className="Frame27052 w-[1090px] justify-start items-start gap-6 inline-flex">

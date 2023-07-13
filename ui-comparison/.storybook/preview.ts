@@ -3,6 +3,7 @@ import type { Preview } from '@storybook/react';
 import { withThemeByClassName } from '@storybook/addon-styling';
 
 /* TODO: update import to your tailwind styles file */
+import 'antd/dist/reset.css';
 import '../src/app/globals.css';
 
 const preview: Preview = {

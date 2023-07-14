@@ -1,5 +1,5 @@
 CREATE TABLE "City" (
-  "city_id" varchar(36), /* city ID */
+  "city_id" uuid, /* city ID */
   "name" varchar(255),
   "shape" json,
   "country" varchar(255),

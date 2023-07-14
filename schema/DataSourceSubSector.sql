@@ -1,6 +1,6 @@
 CREATE TABLE "DataSourceSubSector"(
-    "datasource_id" varchar(36),
-    "subsector_id" varchar(36),
+    "datasource_id" uuid,
+    "subsector_id" uuid,
     "created" timestamp,
     "last_updated" timestamp,
     PRIMARY KEY("datasource_id","subsector_id")

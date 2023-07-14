@@ -1,5 +1,5 @@
 CREATE TABLE "ActivityData"(
-    "activitydata_id" varchar(36),
+    "activitydata_id" uuid,
     "activitydata" varchar(255),
     "created" timestamp,
     "last_updated" timestamp,

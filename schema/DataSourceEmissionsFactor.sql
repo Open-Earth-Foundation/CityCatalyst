@@ -1,6 +1,6 @@
 CREATE TABLE "DataSourceEmissionsFactor"(
-    "datasource_id" varchar(36),
-    "emissions_factor_id" varchar(36),
+    "datasource_id" uuid,
+    "emissions_factor_id" uuid,
     "created" timestamp,
     "last_updated" timestamp,
     PRIMARY KEY("datasource_id", "emissions_factor_id"),

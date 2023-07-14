@@ -1,5 +1,5 @@
 CREATE TABLE "DataSource"(
-    "datasource_id" varchar(36), /*Unique identifier for the datasource */
+    "datasource_id" uuid, /*Unique identifier for the datasource */
     "name" varchar(255), /* Name of the datasource */
     "URL" varchar(255), /* Link to the datasource */
     "description" TEXT, /* A brief human-readerble description of the datasource */

@@ -1,6 +1,6 @@
 CREATE TABLE "DataSourceSubCategory"(
-    "datasource_id" varchar(36),
-    "subcategory_id" varchar(36),
+    "datasource_id" uuid,
+    "subcategory_id" uuid,
     "created" timestamp,
     "last_updated" timestamp,
     PRIMARY KEY("datasource_id","subcategory_id")

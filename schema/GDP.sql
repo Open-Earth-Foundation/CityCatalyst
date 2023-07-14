@@ -1,10 +1,10 @@
 CREATE TABLE "GDP" (
-  "city_id" varchar(36), /* city ID */
+  "city_id" uuid, /* city ID */
   "gdp" bigint, /* GDP in US dollars */
   "year" int, /* Year of measurement, YYYY */
   "created" timestamp,
   "last_updated" timestamp,
-  "datasource_id" varchar(36),
+  "datasource_id" uuid,
   PRIMARY KEY ("city_id", "year")  /* One record per actor per year */
   CONSTRAINT "FK_GDP.datasource_id"
     FOREIGN KEY ("datasource_id")

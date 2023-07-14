@@ -4,9 +4,9 @@
 */
 
 CREATE TABLE "CityUser" (
-  "city_user_id" varchar(36),
-  "user_id" varchar(36),
-  "city_id" varchar(36),
+  "city_user_id" uuid,
+  "user_id" uuid,
+  "city_id" uuid,
   "created" timestamp,
   "last_updated" timestamp,
   PRIMARY KEY ("city_user_id")

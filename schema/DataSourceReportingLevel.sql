@@ -1,6 +1,6 @@
 CREATE TABLE "DataSourceReportingLevel"(
-    "datasource_id" varchar(36),
-    "reportinglevel_id" varchar(36),
+    "datasource_id" uuid,
+    "reportinglevel_id" uuid,
     "created" timestamp,
     "last_updated" timestamp,
     PRIMARY KEY("datasource_id","reportinglevel_id")

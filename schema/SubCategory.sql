@@ -1,5 +1,5 @@
 CREATE TABLE "SubCategory"(
-    "subcategory_id" varchar(36),
+    "subcategory_id" uuid,
     "subcategory_name" varchar(255),
     "created" timestamp,
     "last_updated" timestamp,

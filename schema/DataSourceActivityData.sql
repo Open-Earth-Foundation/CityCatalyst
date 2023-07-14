@@ -1,6 +1,6 @@
 CREATE TABLE "DataSourceActivityData"(
-    "datasource_id" varchar(36),
-    "activitydata_id" varchar(36),
+    "datasource_id" uuid,
+    "activitydata_id" uuid,
     "created" timestamp,
     "last_updated" timestamp,
     PRIMARY KEY("datasource_id","activitydata_id")

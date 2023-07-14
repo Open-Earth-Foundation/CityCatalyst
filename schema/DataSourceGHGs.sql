@@ -1,6 +1,6 @@
 CREATE TABLE "DataSourceGHGs"(
-    "datasource_id" varchar(36),
-    "ghg_id" varchar(36),
+    "datasource_id" uuid,
+    "ghg_id" uuid,
     "created" timestamp,
     "last_updated" timestamp,
     PRIMARY KEY("datasource_id", "ghg_id"),

@@ -12,7 +12,15 @@ CREATE TABLE "DataSource"(
     "accessibility" varchar(255), /* Is the datasource free or paid? */
     "data_quality" varchar(255), /* Is the datasource third party verified or not? */
     "notes" TEXT, /* Any other information about the datasource */
+    "units" varchar(255),
+    "methodology_url" varchar(255),
+    "publisher_id" uuid,
+    "retrieval_method" varchar(255),
+    "api_endpoint" varchar(255),
     "created" timestamp,
     "last_updated" timestamp,
-    PRIMARY KEY("datasource_id")
+    PRIMARY KEY("datasource_id"),
+    CONSTRAINT "FK_DataSource.publisher_id"
+      FOREIGN KEY ("publisher_id")
+        REFERENCES "Publisher"("publisher_id")
 );

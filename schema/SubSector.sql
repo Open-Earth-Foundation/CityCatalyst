@@ -1,6 +1,7 @@
 CREATE TABLE "SubSector"(
     "subsector_id" uuid,
     "subsector_name" varchar(255),
+    "sector_id" uuid,
     "created" timestamp,
     "last_updated" timestamp,
     PRIMARY KEY("subsector_id"),

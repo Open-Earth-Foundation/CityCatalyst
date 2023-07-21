@@ -3,5 +3,5 @@ CREATE TABLE "Sector"(
     "sector_name" varchar(255),
     "created" timestamp,
     "last_updated" timestamp,
-    PRIMARY KEY("sector_id");
+    PRIMARY KEY("sector_id")
 );

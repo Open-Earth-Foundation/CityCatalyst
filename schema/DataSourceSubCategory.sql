@@ -9,5 +9,5 @@ CREATE TABLE "DataSourceSubCategory"(
         REFERENCES "DataSource" ("datasource_id"),
     CONSTRAINT "FK_DataSourceSubCategory.subcategory_id"
         FOREIGN KEY("subcategory_id")
-        REFERENCES "SubCategory" ("subcategory_id"),
+        REFERENCES "SubCategory" ("subcategory_id")
 );

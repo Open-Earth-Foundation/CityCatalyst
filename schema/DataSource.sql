@@ -8,7 +8,7 @@ CREATE TABLE "DataSource"(
     "latest_accounting_year" int, /* What's the latest year of the datasource */
     "frequency_of_update" varchar(255), /* How often does the datasource get updated? */
     "spacial_resolution" varchar(255), /* City boundary? Outside city boundary? */
-    "language" varchar(255) varchar(255),
+    "language" varchar(255),
     "accessibility" varchar(255), /* Is the datasource free or paid? */
     "data_quality" varchar(255), /* Is the datasource third party verified or not? */
     "notes" TEXT, /* Any other information about the datasource */

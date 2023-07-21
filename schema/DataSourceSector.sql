@@ -9,5 +9,5 @@ CREATE TABLE "DataSourceSector"(
         REFERENCES "DataSource" ("datasource_id"),
     CONSTRAINT "FK_DataSourceSector_sector_id"
         FOREIGN KEY("sector_id")
-        REFERENCES "Sector" ("sector_id"),
+        REFERENCES "Sector" ("sector_id")
 );

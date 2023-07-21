@@ -5,7 +5,7 @@ CREATE TABLE "Population" (
   "created" timestamp,
   "last_updated" timestamp,
   "datasource_id" uuid,
-  PRIMARY KEY ("city_id", "year")  /* One record per actor per year */
+  PRIMARY KEY ("city_id", "year"),  /* One record per actor per year */
   CONSTRAINT "FK_Population.datasource_id"
     FOREIGN KEY ("datasource_id")
       REFERENCES "DataSource"("datasource_id"),

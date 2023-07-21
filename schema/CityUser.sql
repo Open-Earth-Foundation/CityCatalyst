@@ -9,7 +9,7 @@ CREATE TABLE "CityUser" (
   "city_id" uuid,
   "created" timestamp,
   "last_updated" timestamp,
-  PRIMARY KEY ("city_user_id")
+  PRIMARY KEY ("city_user_id"),
   CONSTRAINT "FK_CityUser.user_id"
     FOREIGN KEY ("user_id")
       REFERENCES "User.user_id",

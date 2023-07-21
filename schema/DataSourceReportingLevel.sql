@@ -9,5 +9,5 @@ CREATE TABLE "DataSourceReportingLevel"(
         REFERENCES "DataSource" ("datasource_id"),
     CONSTRAINT "FK_DataSourceReportingLevel.reportinglevel_id"
         FOREIGN KEY("reportinglevel_id")
-        REFERENCES "ReportingLevel" ("reportinglevel_id"),
+        REFERENCES "ReportingLevel" ("reportinglevel_id")
 );

@@ -7,5 +7,5 @@ CREATE TABLE "City" (
   "area" bigint,
   "created" timestamp,
   "last_updated" timestamp,
-  PRIMARY KEY "city_id"
+  PRIMARY KEY ("city_id")
 );

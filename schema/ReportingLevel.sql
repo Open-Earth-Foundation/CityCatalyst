@@ -3,5 +3,5 @@ CREATE TABLE "ReportingLevel"(
     "reportinglevel_name" varchar(255),
     "created" timestamp,
     "last_updated" timestamp,
-    PRIMARY KEY("reportinglevel_id");
+    PRIMARY KEY ("reportinglevel_id")
 );

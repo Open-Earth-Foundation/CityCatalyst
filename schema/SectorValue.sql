@@ -5,7 +5,7 @@ CREATE TABLE "SectorValue" (
   "inventory_id"  uuid,
   "created" timestamp,
   "last_updated" timestamp,
-  PRIMARY KEY ("sector_value_id")
+  PRIMARY KEY ("sector_value_id"),
   CONSTRAINT "FK_SectorValue.sector_id"
     FOREIGN KEY ("sector_id")
       REFERENCES "Sector"("sector_id"),

@@ -3,7 +3,7 @@ CREATE TABLE "DataSourceSubCategory"(
     "subcategory_id" uuid,
     "created" timestamp,
     "last_updated" timestamp,
-    PRIMARY KEY("datasource_id","subcategory_id")
+    PRIMARY KEY("datasource_id","subcategory_id"),
     CONSTRAINT "FK_DataSourceSubCategory.datasource_id"
         FOREIGN KEY("datasource_id")
         REFERENCES "DataSource" ("datasource_id"),

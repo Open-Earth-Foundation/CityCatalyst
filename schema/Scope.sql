@@ -3,5 +3,5 @@ CREATE TABLE "Scope"(
     "scope_name" varchar(255),
     "created" timestamp,
     "last_updated" timestamp,
-    PRIMARY KEY("scope_id");
+    PRIMARY KEY("scope_id")
 );

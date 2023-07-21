@@ -3,7 +3,7 @@ CREATE TABLE "SubSectorScope"(
     "scope_id" uuid,
     "created" timestamp,
     "last_updated" timestamp,
-    PRIMARY KEY ("subsector_id", "scope_id");
+    PRIMARY KEY ("subsector_id", "scope_id"),
     CONSTRAINT "FK_SubSectorScope.subsector_id"
         FOREIGN KEY("subsector_id")
         REFERENCES "SubSector" ("subsector_id"),

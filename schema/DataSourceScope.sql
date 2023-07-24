@@ -1,6 +1,6 @@
 CREATE TABLE "DataSourceScope"(
-    "datasource_id" varchar(36),
-    "scope_id" varchar(36),
+    "datasource_id" uuid,
+    "scope_id" uuid,
     "created" timestamp,
     "last_updated" timestamp,
     PRIMARY KEY("datasource_id","scope_id")

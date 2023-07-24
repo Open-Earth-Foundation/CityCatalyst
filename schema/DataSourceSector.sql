@@ -1,6 +1,6 @@
 CREATE TABLE "DataSourceSector"(
-    "datasource_id" varchar(36),
-    "sector_id" varchar(36)
+    "datasource_id" uuid,
+    "sector_id" uuid,
     "created" timestamp,
     "last_updated" timestamp,
     PRIMARY KEY("datasource_id", "sector_id"),
@@ -9,5 +9,5 @@ CREATE TABLE "DataSourceSector"(
         REFERENCES "DataSource" ("datasource_id"),
     CONSTRAINT "FK_DataSourceSector_sector_id"
         FOREIGN KEY("sector_id")
-        REFERENCES "Sector" ("sector_id"),
+        REFERENCES "Sector" ("sector_id")
 );

@@ -1,6 +1,6 @@
 CREATE TABLE "DataSourceReportingLevel"(
-    "datasource_id" varchar(36),
-    "reportinglevel_id" varchar(36),
+    "datasource_id" uuid,
+    "reportinglevel_id" uuid,
     "created" timestamp,
     "last_updated" timestamp,
     PRIMARY KEY("datasource_id","reportinglevel_id")
@@ -9,5 +9,5 @@ CREATE TABLE "DataSourceReportingLevel"(
         REFERENCES "DataSource" ("datasource_id"),
     CONSTRAINT "FK_DataSourceReportingLevel.reportinglevel_id"
         FOREIGN KEY("reportinglevel_id")
-        REFERENCES "ReportingLevel" ("reportinglevel_id"),
+        REFERENCES "ReportingLevel" ("reportinglevel_id")
 );

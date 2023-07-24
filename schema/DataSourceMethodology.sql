@@ -1,6 +1,6 @@
 CREATE TABLE "DataSourceMethodology"(
-    "datasource_id" varchar(36),
-    "methodology_id" varchar(36),
+    "datasource_id" uuid,
+    "methodology_id" uuid,
     "created" timestamp,
     "last_updated" timestamp,
     PRIMARY KEY("datasource_id", "methodology_id"),

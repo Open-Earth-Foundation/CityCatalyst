@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "db:migrate": "sequelize-cli db:migrate",
+    "db:seed": "sequelize-cli db:seed:all",
+    "db:gen-migration": "sequelize-cli migration:generate --name"
   },
   "dependencies": {
     "@types/http-errors": "^2.0.1",

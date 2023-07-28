@@ -1,16 +1,20 @@
 import getConfig from 'next/config';
-import { Sequelize } from 'sequelize';
+import { Model, Sequelize } from 'sequelize';
+import { User } from './User';
+import { DataSource } from './DataSource';
 
 const { serverRuntimeConfig } = getConfig();
 
 export const db: {
   initialized: boolean,
   initialize: () => Promise<void>,
-  sequelize?: Sequelize | null
+  sequelize?: Sequelize | null,
+  models: Record<string, any>,
 } = {
   initialized: false,
   sequelize: null,
   initialize,
+  models: {},
 };
 
 async function initialize() {
@@ -23,6 +27,9 @@ async function initialize() {
     username: config.username,
     password: config.password,
   });
+
+  db.models.user = User.initModel(sequelize);
+  db.models.datasource = DataSource.initModel(sequelize);
 
   db.sequelize = sequelize;
   db.initialized = true;

@@ -42,6 +42,7 @@
     "@storybook/react": "^7.0.27",
     "@storybook/testing-library": "^0.0.14-next.2",
     "eslint-plugin-storybook": "^0.6.12",
+    "sequelize-auto": "^0.8.8",
     "sequelize-cli": "^6.6.1",
     "storybook": "^7.0.27"
   }

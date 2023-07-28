@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "db:migrate": "sequelize-cli db:migrate",
+    "db:seed": "sequelize-cli db:seed:all",
+    "db:gen-migration": "sequelize-cli migration:generate --name"
   },
   "dependencies": {
     "@types/http-errors": "^2.0.1",
@@ -39,6 +42,7 @@
     "@storybook/react": "^7.0.27",
     "@storybook/testing-library": "^0.0.14-next.2",
     "eslint-plugin-storybook": "^0.6.12",
+    "sequelize-cli": "^6.6.1",
     "storybook": "^7.0.27"
   }
 }

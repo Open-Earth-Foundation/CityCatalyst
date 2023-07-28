@@ -1,7 +1,4 @@
-import getConfig from 'next/config';
 import { Sequelize } from 'sequelize';
-
-const { serverRuntimeConfig } = getConfig();
 
 export const db: {
   initialized: boolean,
@@ -13,8 +10,14 @@ export const db: {
   initialize,
 };
 
+const config = {
+  host: process.env.DATABASE_HOST,
+  name: process.env.DATABASE_NAME,
+  username: process.env.DATABASE_USER,
+  password: process.env.DATABASE_PASSWORD,
+}
+
 async function initialize() {
-  const config = serverRuntimeConfig.dbConfig;
 
   const sequelize = new Sequelize({
     host: config.host,
@@ -27,4 +30,3 @@ async function initialize() {
   db.sequelize = sequelize;
   db.initialized = true;
 }
-

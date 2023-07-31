@@ -11,7 +11,7 @@ on:
     branches: [ "develop" ]
 
 jobs:
-  pushToECR:
+  pushToGHCR:
     runs-on: ubuntu-latest
     steps:
 
@@ -29,7 +29,7 @@ jobs:
         docker push $IMAGE:latest
 
   deployToEKS:
-    needs: pushToECR
+    needs: pushToGHCR
     runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}

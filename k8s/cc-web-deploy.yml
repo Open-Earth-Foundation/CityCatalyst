@@ -23,7 +23,7 @@ spec:
         - containerPort: 3000
         env:
         - name: NODE_ENV
-          value: "development"
+          value: "production"
         - name: PORT
           value: "3000"
         - name: DATABASE_HOST

@@ -3,7 +3,6 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createDatabase('citycatalyst');
     await queryInterface.sequelize.query(```
     CREATE TABLE "Sector" (
       "sector_id" uuid,
@@ -264,6 +263,7 @@ module.exports = {
 
   async down (queryInterface, Sequelize) {
     await queryInterface.dropDatabase('citycatalyst');
+    await queryInterface.createDatabase('citycatalyst');
   }
 };
 

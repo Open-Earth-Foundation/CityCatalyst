@@ -1,6 +1,6 @@
 CREATE TABLE "Inventory"(
   "inventory_id" uuid,
-  "inentory_name" varchar(255),
+  "inventory_name" varchar(255),
   "year" int,
   "total_emissions" bigint,
   "city_id" uuid,

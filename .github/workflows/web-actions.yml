@@ -1,0 +1,51 @@
+name: Push API develop to ECR latest
+
+on:
+  workflow_dispatch:
+
+  push:
+    paths:
+      - app/**
+      - k8s/cc-web-deploy.yml
+      - k8s/cc-web.yml
+    branches: [ "develop" ]
+
+jobs:
+  pushToECR:
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: actions/checkout@v3
+
+    - name: Pushing CC Web to ECR
+      env:
+        VERSION: ${{ github.sha }}
+        IMAGE: ghcr.io/open-earth-foundation/citycatalyst
+
+      run: |
+        docker build -t $IMAGE:$VERSION api
+        docker tag $IMAGE:$VERSION $IMAGE:latest
+        docker push $IMAGE:$VERSION
+        docker push $IMAGE:latest
+
+  deployToEKS:
+    needs: pushToECR
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
+      EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
+    steps:
+
+    - uses: actions/checkout@v3
+
+    - name: Creating kubeconfig file
+      run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region us-east-1
+
+    - name: Testing connection to EKS
+      run: kubectl get pods -n default
+
+    - name: Deploying service
+      run: |
+        kubectl apply -f k8s/cc-web-deploy.yml -n default
+        kubectl rollout restart deployment cc-web-deploy -n default

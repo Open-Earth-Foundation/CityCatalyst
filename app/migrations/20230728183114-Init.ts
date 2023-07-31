@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.sequelize.query(```
+    await queryInterface.sequelize.query(`
     CREATE TABLE "Sector" (
       "sector_id" uuid,
       "sector_name" varchar(255),
@@ -258,12 +258,14 @@ module.exports = {
         FOREIGN KEY("organization_id")
         REFERENCES "User" ("user_id")
     );
-  ```);
+  `);
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.dropDatabase('citycatalyst');
-    await queryInterface.createDatabase('citycatalyst');
+    const tables = ['ActivityData', 'DataSource', 'DataSourceActivityData', 'DataSourceEmissionsFactor', 'DataSourceGHGs', 'DataSourceMethodology', 'DataSourceReportingLevel', 'DataSourceScope', 'DataSourceSector', 'DataSourceSubCategory', 'DataSourceSubSector', 'EmissionsFactor', 'GHGs', 'Methodology', 'ReportingLevel', 'Scope', 'Sector', 'SubCategory', 'SubSector', 'User'];
+    for (const table of tables) {
+      await queryInterface.dropTable(table, { cascade: true });
+    }
   }
 };
 

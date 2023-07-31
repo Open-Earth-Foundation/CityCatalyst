@@ -1,8 +1,8 @@
-'use strict';
+import { QueryInterface, DataTypes, QueryTypes } from 'sequelize';
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface: QueryInterface) {
     await queryInterface.sequelize.query(`
     CREATE TABLE "Sector" (
       "sector_id" uuid,
@@ -35,6 +35,7 @@ module.exports = {
         FOREIGN KEY("subsector_id")
         REFERENCES "SubSector" ("subsector_id")
     );
+'use strict';
 
     CREATE TABLE "ReportingLevel" (
       "reportinglevel_id" uuid,
@@ -261,11 +262,14 @@ module.exports = {
   `);
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface: QueryInterface) {
     const tables = ['ActivityData', 'DataSource', 'DataSourceActivityData', 'DataSourceEmissionsFactor', 'DataSourceGHGs', 'DataSourceMethodology', 'DataSourceReportingLevel', 'DataSourceScope', 'DataSourceSector', 'DataSourceSubCategory', 'DataSourceSubSector', 'EmissionsFactor', 'GHGs', 'Methodology', 'ReportingLevel', 'Scope', 'Sector', 'SubCategory', 'SubSector', 'User'];
-    for (const table of tables) {
-      await queryInterface.dropTable(table, { cascade: true });
-    }
+
+    return queryInterface.sequelize.transaction(async (transaction) => {
+      for (const table of tables) {
+        await queryInterface.dropTable(table, { cascade: true });
+      }
+    });
   }
 };
 

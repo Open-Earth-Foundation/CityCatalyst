@@ -10,6 +10,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "db:migrate": "sequelize-cli db:migrate",
+    "db:migrate:undo" : "sequelize-cli db:migrate:undo",
     "db:seed": "sequelize-cli db:seed:all",
     "db:gen-migration": "sequelize-cli migration:generate --name"
   },

@@ -1,8 +1,6 @@
-import getConfig from 'next/config';
 import { Sequelize } from 'sequelize';
+import pg from 'pg';
 import { initModels } from './init-models';
-
-const { serverRuntimeConfig } = getConfig();
 
 export const db: {
   initialized: boolean,
@@ -17,14 +15,13 @@ export const db: {
 };
 
 async function initialize() {
-  const config = serverRuntimeConfig.dbConfig;
-
   const sequelize = new Sequelize({
-    host: config.host,
-    database: config.name,
+    host: process.env.DATABASE_HOST,
+    username: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_NAME,
     dialect: 'postgres',
-    username: config.username,
-    password: config.password,
+    dialectModule: pg,
   });
 
   db.models = initModels(sequelize);

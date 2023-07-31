@@ -1,4 +1,4 @@
-name: Push API develop to ECR latest
+name: Push Web app to GHCR and deploy to EKS
 
 on:
   workflow_dispatch:
@@ -23,7 +23,7 @@ jobs:
         IMAGE: ghcr.io/open-earth-foundation/citycatalyst
 
       run: |
-        docker build -t $IMAGE:$VERSION api
+        docker build -t $IMAGE:$VERSION app
         docker tag $IMAGE:$VERSION $IMAGE:latest
         docker push $IMAGE:$VERSION
         docker push $IMAGE:latest

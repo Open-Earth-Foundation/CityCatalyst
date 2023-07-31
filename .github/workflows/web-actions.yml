@@ -17,11 +17,17 @@ jobs:
 
     - uses: actions/checkout@v3
 
-    - name: Pushing CC Web to ECR
+    - name: Log in to the Container registry
+      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Pushing CC Web to GHCR
       env:
         VERSION: ${{ github.sha }}
         IMAGE: ghcr.io/open-earth-foundation/citycatalyst
-
       run: |
         docker build -t $IMAGE:$VERSION app
         docker tag $IMAGE:$VERSION $IMAGE:latest

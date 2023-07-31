@@ -14,6 +14,13 @@ export const db: {
   models: {},
 };
 
+const config = {
+  host: process.env.DATABASE_HOST,
+  name: process.env.DATABASE_NAME,
+  username: process.env.DATABASE_USER,
+  password: process.env.DATABASE_PASSWORD,
+}
+
 async function initialize() {
   const sequelize = new Sequelize({
     host: process.env.DATABASE_HOST,
@@ -29,4 +36,3 @@ async function initialize() {
   db.sequelize = sequelize;
   db.initialized = true;
 }
-

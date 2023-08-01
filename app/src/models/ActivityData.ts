@@ -9,26 +9,26 @@ import type { SubCategory, SubCategoryId } from './SubCategory';
 export interface ActivityDataAttributes {
   activitydata_id: string;
   activitydata?: string;
-  created?: Date;
-  last_updated?: Date;
   subcategory_id?: string;
   scope_id?: string;
   reportinglevel_id?: string;
+  created?: Date;
+  last_updated?: Date;
 }
 
 export type ActivityDataPk = "activitydata_id";
 export type ActivityDataId = ActivityData[ActivityDataPk];
-export type ActivityDataOptionalAttributes = "activitydata" | "created" | "last_updated" | "subcategory_id" | "scope_id" | "reportinglevel_id";
+export type ActivityDataOptionalAttributes = "activitydata" | "subcategory_id" | "scope_id" | "reportinglevel_id" | "created" | "last_updated";
 export type ActivityDataCreationAttributes = Optional<ActivityDataAttributes, ActivityDataOptionalAttributes>;
 
 export class ActivityData extends Model<ActivityDataAttributes, ActivityDataCreationAttributes> implements ActivityDataAttributes {
   activitydata_id!: string;
   activitydata?: string;
-  created?: Date;
-  last_updated?: Date;
   subcategory_id?: string;
   scope_id?: string;
   reportinglevel_id?: string;
+  created?: Date;
+  last_updated?: Date;
 
   // ActivityData belongsToMany DataSource via activitydata_id and datasource_id
   datasource_id_DataSources!: DataSource[];
@@ -81,14 +81,6 @@ export class ActivityData extends Model<ActivityDataAttributes, ActivityDataCrea
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    last_updated: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
     subcategory_id: {
       type: DataTypes.UUID,
       allowNull: true,
@@ -112,6 +104,14 @@ export class ActivityData extends Model<ActivityDataAttributes, ActivityDataCrea
         model: 'ReportingLevel',
         key: 'reportinglevel_id'
       }
+    },
+    created: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    last_updated: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     sequelize,

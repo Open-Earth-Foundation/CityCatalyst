@@ -2,6 +2,7 @@ import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
 import type { DataSource, DataSourceId } from './DataSource';
 import type { DataSourceSector, DataSourceSectorId } from './DataSourceSector';
+import type { SectorValue, SectorValueId } from './SectorValue';
 import type { SubSector, SubSectorId } from './SubSector';
 
 export interface SectorAttributes {
@@ -46,6 +47,18 @@ export class Sector extends Model<SectorAttributes, SectorCreationAttributes> im
   hasDataSourceSector!: Sequelize.HasManyHasAssociationMixin<DataSourceSector, DataSourceSectorId>;
   hasDataSourceSectors!: Sequelize.HasManyHasAssociationsMixin<DataSourceSector, DataSourceSectorId>;
   countDataSourceSectors!: Sequelize.HasManyCountAssociationsMixin;
+  // Sector hasMany SectorValue via sector_id
+  SectorValues!: SectorValue[];
+  getSectorValues!: Sequelize.HasManyGetAssociationsMixin<SectorValue>;
+  setSectorValues!: Sequelize.HasManySetAssociationsMixin<SectorValue, SectorValueId>;
+  addSectorValue!: Sequelize.HasManyAddAssociationMixin<SectorValue, SectorValueId>;
+  addSectorValues!: Sequelize.HasManyAddAssociationsMixin<SectorValue, SectorValueId>;
+  createSectorValue!: Sequelize.HasManyCreateAssociationMixin<SectorValue>;
+  removeSectorValue!: Sequelize.HasManyRemoveAssociationMixin<SectorValue, SectorValueId>;
+  removeSectorValues!: Sequelize.HasManyRemoveAssociationsMixin<SectorValue, SectorValueId>;
+  hasSectorValue!: Sequelize.HasManyHasAssociationMixin<SectorValue, SectorValueId>;
+  hasSectorValues!: Sequelize.HasManyHasAssociationsMixin<SectorValue, SectorValueId>;
+  countSectorValues!: Sequelize.HasManyCountAssociationsMixin;
   // Sector hasMany SubSector via sector_id
   SubSectors!: SubSector[];
   getSubSectors!: Sequelize.HasManyGetAssociationsMixin<SubSector>;

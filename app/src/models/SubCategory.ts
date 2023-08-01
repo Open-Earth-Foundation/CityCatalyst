@@ -3,28 +3,47 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import type { ActivityData, ActivityDataId } from './ActivityData';
 import type { DataSource, DataSourceId } from './DataSource';
 import type { DataSourceSubCategory, DataSourceSubCategoryId } from './DataSourceSubCategory';
+import type { ReportingLevel, ReportingLevelId } from './ReportingLevel';
+import type { Scope, ScopeId } from './Scope';
+import type { SubCategoryValue, SubCategoryValueId } from './SubCategoryValue';
 import type { SubSector, SubSectorId } from './SubSector';
 
 export interface SubCategoryAttributes {
   subcategory_id: string;
   subcategory_name?: string;
+  activity_name?: string;
+  subsector_id?: string;
+  scope_id?: string;
+  reportinglevel_id?: string;
   created?: Date;
   last_updated?: Date;
-  subsector_id?: string;
 }
 
 export type SubCategoryPk = "subcategory_id";
 export type SubCategoryId = SubCategory[SubCategoryPk];
-export type SubCategoryOptionalAttributes = "subcategory_name" | "created" | "last_updated" | "subsector_id";
+export type SubCategoryOptionalAttributes = "subcategory_name" | "activity_name" | "subsector_id" | "scope_id" | "reportinglevel_id" | "created" | "last_updated";
 export type SubCategoryCreationAttributes = Optional<SubCategoryAttributes, SubCategoryOptionalAttributes>;
 
 export class SubCategory extends Model<SubCategoryAttributes, SubCategoryCreationAttributes> implements SubCategoryAttributes {
   subcategory_id!: string;
   subcategory_name?: string;
+  activity_name?: string;
+  subsector_id?: string;
+  scope_id?: string;
+  reportinglevel_id?: string;
   created?: Date;
   last_updated?: Date;
-  subsector_id?: string;
 
+  // SubCategory belongsTo ReportingLevel via reportinglevel_id
+  reportinglevel!: ReportingLevel;
+  getReportinglevel!: Sequelize.BelongsToGetAssociationMixin<ReportingLevel>;
+  setReportinglevel!: Sequelize.BelongsToSetAssociationMixin<ReportingLevel, ReportingLevelId>;
+  createReportinglevel!: Sequelize.BelongsToCreateAssociationMixin<ReportingLevel>;
+  // SubCategory belongsTo Scope via scope_id
+  scope!: Scope;
+  getScope!: Sequelize.BelongsToGetAssociationMixin<Scope>;
+  setScope!: Sequelize.BelongsToSetAssociationMixin<Scope, ScopeId>;
+  createScope!: Sequelize.BelongsToCreateAssociationMixin<Scope>;
   // SubCategory hasMany ActivityData via subcategory_id
   ActivityData!: ActivityData[];
   getActivityData!: Sequelize.HasManyGetAssociationsMixin<ActivityData>;
@@ -61,6 +80,18 @@ export class SubCategory extends Model<SubCategoryAttributes, SubCategoryCreatio
   hasDataSourceSubCategory!: Sequelize.HasManyHasAssociationMixin<DataSourceSubCategory, DataSourceSubCategoryId>;
   hasDataSourceSubCategories!: Sequelize.HasManyHasAssociationsMixin<DataSourceSubCategory, DataSourceSubCategoryId>;
   countDataSourceSubCategories!: Sequelize.HasManyCountAssociationsMixin;
+  // SubCategory hasMany SubCategoryValue via subcategory_id
+  SubCategoryValues!: SubCategoryValue[];
+  getSubCategoryValues!: Sequelize.HasManyGetAssociationsMixin<SubCategoryValue>;
+  setSubCategoryValues!: Sequelize.HasManySetAssociationsMixin<SubCategoryValue, SubCategoryValueId>;
+  addSubCategoryValue!: Sequelize.HasManyAddAssociationMixin<SubCategoryValue, SubCategoryValueId>;
+  addSubCategoryValues!: Sequelize.HasManyAddAssociationsMixin<SubCategoryValue, SubCategoryValueId>;
+  createSubCategoryValue!: Sequelize.HasManyCreateAssociationMixin<SubCategoryValue>;
+  removeSubCategoryValue!: Sequelize.HasManyRemoveAssociationMixin<SubCategoryValue, SubCategoryValueId>;
+  removeSubCategoryValues!: Sequelize.HasManyRemoveAssociationsMixin<SubCategoryValue, SubCategoryValueId>;
+  hasSubCategoryValue!: Sequelize.HasManyHasAssociationMixin<SubCategoryValue, SubCategoryValueId>;
+  hasSubCategoryValues!: Sequelize.HasManyHasAssociationsMixin<SubCategoryValue, SubCategoryValueId>;
+  countSubCategoryValues!: Sequelize.HasManyCountAssociationsMixin;
   // SubCategory belongsTo SubSector via subsector_id
   subsector!: SubSector;
   getSubsector!: Sequelize.BelongsToGetAssociationMixin<SubSector>;
@@ -78,12 +109,8 @@ export class SubCategory extends Model<SubCategoryAttributes, SubCategoryCreatio
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    last_updated: {
-      type: DataTypes.DATE,
+    activity_name: {
+      type: DataTypes.STRING(255),
       allowNull: true
     },
     subsector_id: {
@@ -93,6 +120,30 @@ export class SubCategory extends Model<SubCategoryAttributes, SubCategoryCreatio
         model: 'SubSector',
         key: 'subsector_id'
       }
+    },
+    scope_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: 'Scope',
+        key: 'scope_id'
+      }
+    },
+    reportinglevel_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: 'ReportingLevel',
+        key: 'reportinglevel_id'
+      }
+    },
+    created: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    last_updated: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     sequelize,

@@ -6,23 +6,30 @@ import type { DataSourceMethodology, DataSourceMethodologyId } from './DataSourc
 export interface MethodologyAttributes {
   methodology_id: string;
   methodology?: string;
-  methodology_link?: string;
+  methodology_url?: string;
+  datasource_id?: string;
   created?: Date;
   last_updated?: Date;
 }
 
 export type MethodologyPk = "methodology_id";
 export type MethodologyId = Methodology[MethodologyPk];
-export type MethodologyOptionalAttributes = "methodology" | "methodology_link" | "created" | "last_updated";
+export type MethodologyOptionalAttributes = "methodology" | "methodology_url" | "datasource_id" | "created" | "last_updated";
 export type MethodologyCreationAttributes = Optional<MethodologyAttributes, MethodologyOptionalAttributes>;
 
 export class Methodology extends Model<MethodologyAttributes, MethodologyCreationAttributes> implements MethodologyAttributes {
   methodology_id!: string;
   methodology?: string;
-  methodology_link?: string;
+  methodology_url?: string;
+  datasource_id?: string;
   created?: Date;
   last_updated?: Date;
 
+  // Methodology belongsTo DataSource via datasource_id
+  datasource!: DataSource;
+  getDatasource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
+  setDatasource!: Sequelize.BelongsToSetAssociationMixin<DataSource, DataSourceId>;
+  createDatasource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
   // Methodology belongsToMany DataSource via methodology_id and datasource_id
   datasource_id_DataSource_DataSourceMethodologies!: DataSource[];
   getDatasource_id_DataSource_DataSourceMethodologies!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
@@ -59,9 +66,17 @@ export class Methodology extends Model<MethodologyAttributes, MethodologyCreatio
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    methodology_link: {
+    methodology_url: {
       type: DataTypes.STRING(255),
       allowNull: true
+    },
+    datasource_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: 'DataSource',
+        key: 'datasource_id'
+      }
     },
     created: {
       type: DataTypes.DATE,

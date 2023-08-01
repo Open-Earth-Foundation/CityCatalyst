@@ -11,8 +11,11 @@ import type { DataSourceSector, DataSourceSectorId } from './DataSourceSector';
 import type { DataSourceSubCategory, DataSourceSubCategoryId } from './DataSourceSubCategory';
 import type { DataSourceSubSector, DataSourceSubSectorId } from './DataSourceSubSector';
 import type { EmissionsFactor, EmissionsFactorId } from './EmissionsFactor';
+import type { GDP, GDPId } from './GDP';
 import type { GHGs, GHGsId } from './GHGs';
 import type { Methodology, MethodologyId } from './Methodology';
+import type { Population, PopulationId } from './Population';
+import type { Publisher, PublisherId } from './Publisher';
 import type { ReportingLevel, ReportingLevelId } from './ReportingLevel';
 import type { Scope, ScopeId } from './Scope';
 import type { Sector, SectorId } from './Sector';
@@ -22,7 +25,7 @@ import type { SubSector, SubSectorId } from './SubSector';
 export interface DataSourceAttributes {
   datasource_id: string;
   name?: string;
-  url?: string;
+  URL?: string;
   description?: string;
   access_type?: string;
   geographical_location?: string;
@@ -33,19 +36,24 @@ export interface DataSourceAttributes {
   accessibility?: string;
   data_quality?: string;
   notes?: string;
+  units?: string;
+  methodology_url?: string;
+  publisher_id?: string;
+  retrieval_method?: string;
+  api_endpoint?: string;
   created?: Date;
   last_updated?: Date;
 }
 
 export type DataSourcePk = "datasource_id";
 export type DataSourceId = DataSource[DataSourcePk];
-export type DataSourceOptionalAttributes = "name" | "url" | "description" | "access_type" | "geographical_location" | "latest_accounting_year" | "frequency_of_update" | "spacial_resolution" | "language" | "accessibility" | "data_quality" | "notes" | "created" | "last_updated";
+export type DataSourceOptionalAttributes = "name" | "URL" | "description" | "access_type" | "geographical_location" | "latest_accounting_year" | "frequency_of_update" | "spacial_resolution" | "language" | "accessibility" | "data_quality" | "notes" | "units" | "methodology_url" | "publisher_id" | "retrieval_method" | "api_endpoint" | "created" | "last_updated";
 export type DataSourceCreationAttributes = Optional<DataSourceAttributes, DataSourceOptionalAttributes>;
 
 export class DataSource extends Model<DataSourceAttributes, DataSourceCreationAttributes> implements DataSourceAttributes {
   datasource_id!: string;
   name?: string;
-  url?: string;
+  URL?: string;
   description?: string;
   access_type?: string;
   geographical_location?: string;
@@ -56,6 +64,11 @@ export class DataSource extends Model<DataSourceAttributes, DataSourceCreationAt
   accessibility?: string;
   data_quality?: string;
   notes?: string;
+  units?: string;
+  methodology_url?: string;
+  publisher_id?: string;
+  retrieval_method?: string;
+  api_endpoint?: string;
   created?: Date;
   last_updated?: Date;
 
@@ -191,6 +204,18 @@ export class DataSource extends Model<DataSourceAttributes, DataSourceCreationAt
   hasEmissions_factor_id_EmissionsFactor!: Sequelize.BelongsToManyHasAssociationMixin<EmissionsFactor, EmissionsFactorId>;
   hasEmissions_factor_id_EmissionsFactors!: Sequelize.BelongsToManyHasAssociationsMixin<EmissionsFactor, EmissionsFactorId>;
   countEmissions_factor_id_EmissionsFactors!: Sequelize.BelongsToManyCountAssociationsMixin;
+  // DataSource hasMany GDP via datasource_id
+  GDPs!: GDP[];
+  getGDPs!: Sequelize.HasManyGetAssociationsMixin<GDP>;
+  setGDPs!: Sequelize.HasManySetAssociationsMixin<GDP, GDPId>;
+  addGDP!: Sequelize.HasManyAddAssociationMixin<GDP, GDPId>;
+  addGDPs!: Sequelize.HasManyAddAssociationsMixin<GDP, GDPId>;
+  createGDP!: Sequelize.HasManyCreateAssociationMixin<GDP>;
+  removeGDP!: Sequelize.HasManyRemoveAssociationMixin<GDP, GDPId>;
+  removeGDPs!: Sequelize.HasManyRemoveAssociationsMixin<GDP, GDPId>;
+  hasGDP!: Sequelize.HasManyHasAssociationMixin<GDP, GDPId>;
+  hasGDPs!: Sequelize.HasManyHasAssociationsMixin<GDP, GDPId>;
+  countGDPs!: Sequelize.HasManyCountAssociationsMixin;
   // DataSource belongsToMany GHGs via datasource_id and ghg_id
   ghg_id_GHGs!: GHGs[];
   getGhg_id_GHGs!: Sequelize.BelongsToManyGetAssociationsMixin<GHGs>;
@@ -215,6 +240,30 @@ export class DataSource extends Model<DataSourceAttributes, DataSourceCreationAt
   hasMethodology_id_Methodology!: Sequelize.BelongsToManyHasAssociationMixin<Methodology, MethodologyId>;
   hasMethodology_id_Methodologies!: Sequelize.BelongsToManyHasAssociationsMixin<Methodology, MethodologyId>;
   countMethodology_id_Methodologies!: Sequelize.BelongsToManyCountAssociationsMixin;
+  // DataSource hasMany Methodology via datasource_id
+  Methodologies!: Methodology[];
+  getMethodologies!: Sequelize.HasManyGetAssociationsMixin<Methodology>;
+  setMethodologies!: Sequelize.HasManySetAssociationsMixin<Methodology, MethodologyId>;
+  addMethodology!: Sequelize.HasManyAddAssociationMixin<Methodology, MethodologyId>;
+  addMethodologies!: Sequelize.HasManyAddAssociationsMixin<Methodology, MethodologyId>;
+  createMethodology!: Sequelize.HasManyCreateAssociationMixin<Methodology>;
+  removeMethodology!: Sequelize.HasManyRemoveAssociationMixin<Methodology, MethodologyId>;
+  removeMethodologies!: Sequelize.HasManyRemoveAssociationsMixin<Methodology, MethodologyId>;
+  hasMethodology!: Sequelize.HasManyHasAssociationMixin<Methodology, MethodologyId>;
+  hasMethodologies!: Sequelize.HasManyHasAssociationsMixin<Methodology, MethodologyId>;
+  countMethodologies!: Sequelize.HasManyCountAssociationsMixin;
+  // DataSource hasMany Population via datasource_id
+  Populations!: Population[];
+  getPopulations!: Sequelize.HasManyGetAssociationsMixin<Population>;
+  setPopulations!: Sequelize.HasManySetAssociationsMixin<Population, PopulationId>;
+  addPopulation!: Sequelize.HasManyAddAssociationMixin<Population, PopulationId>;
+  addPopulations!: Sequelize.HasManyAddAssociationsMixin<Population, PopulationId>;
+  createPopulation!: Sequelize.HasManyCreateAssociationMixin<Population>;
+  removePopulation!: Sequelize.HasManyRemoveAssociationMixin<Population, PopulationId>;
+  removePopulations!: Sequelize.HasManyRemoveAssociationsMixin<Population, PopulationId>;
+  hasPopulation!: Sequelize.HasManyHasAssociationMixin<Population, PopulationId>;
+  hasPopulations!: Sequelize.HasManyHasAssociationsMixin<Population, PopulationId>;
+  countPopulations!: Sequelize.HasManyCountAssociationsMixin;
   // DataSource belongsToMany ReportingLevel via datasource_id and reportinglevel_id
   reportinglevel_id_ReportingLevels!: ReportingLevel[];
   getReportinglevel_id_ReportingLevels!: Sequelize.BelongsToManyGetAssociationsMixin<ReportingLevel>;
@@ -275,6 +324,11 @@ export class DataSource extends Model<DataSourceAttributes, DataSourceCreationAt
   hasSubsector_id_SubSector!: Sequelize.BelongsToManyHasAssociationMixin<SubSector, SubSectorId>;
   hasSubsector_id_SubSectors!: Sequelize.BelongsToManyHasAssociationsMixin<SubSector, SubSectorId>;
   countSubsector_id_SubSectors!: Sequelize.BelongsToManyCountAssociationsMixin;
+  // DataSource belongsTo Publisher via publisher_id
+  publisher!: Publisher;
+  getPublisher!: Sequelize.BelongsToGetAssociationMixin<Publisher>;
+  setPublisher!: Sequelize.BelongsToSetAssociationMixin<Publisher, PublisherId>;
+  createPublisher!: Sequelize.BelongsToCreateAssociationMixin<Publisher>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof DataSource {
     return DataSource.init({
@@ -287,7 +341,7 @@ export class DataSource extends Model<DataSourceAttributes, DataSourceCreationAt
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    url: {
+    URL: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
@@ -329,6 +383,30 @@ export class DataSource extends Model<DataSourceAttributes, DataSourceCreationAt
     },
     notes: {
       type: DataTypes.TEXT,
+      allowNull: true
+    },
+    units: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    methodology_url: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    publisher_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: 'Publisher',
+        key: 'publisher_id'
+      }
+    },
+    retrieval_method: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    api_endpoint: {
+      type: DataTypes.STRING(255),
       allowNull: true
     },
     created: {

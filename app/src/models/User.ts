@@ -1,5 +1,6 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
+import type { CityUser, CityUserId } from './CityUser';
 
 export interface UserAttributes {
   user_id: string;
@@ -31,6 +32,18 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
   last_updated?: Date;
   organization_id?: string;
 
+  // User hasMany CityUser via user_id
+  CityUsers!: CityUser[];
+  getCityUsers!: Sequelize.HasManyGetAssociationsMixin<CityUser>;
+  setCityUsers!: Sequelize.HasManySetAssociationsMixin<CityUser, CityUserId>;
+  addCityUser!: Sequelize.HasManyAddAssociationMixin<CityUser, CityUserId>;
+  addCityUsers!: Sequelize.HasManyAddAssociationsMixin<CityUser, CityUserId>;
+  createCityUser!: Sequelize.HasManyCreateAssociationMixin<CityUser>;
+  removeCityUser!: Sequelize.HasManyRemoveAssociationMixin<CityUser, CityUserId>;
+  removeCityUsers!: Sequelize.HasManyRemoveAssociationsMixin<CityUser, CityUserId>;
+  hasCityUser!: Sequelize.HasManyHasAssociationMixin<CityUser, CityUserId>;
+  hasCityUsers!: Sequelize.HasManyHasAssociationsMixin<CityUser, CityUserId>;
+  countCityUsers!: Sequelize.HasManyCountAssociationsMixin;
   // User belongsTo User via organization_id
   organization!: User;
   getOrganization!: Sequelize.BelongsToGetAssociationMixin<User>;
@@ -45,7 +58,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
       primaryKey: true
     },
     name: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING(255),
       allowNull: true
     },
     picture_url: {
@@ -58,11 +71,11 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
       defaultValue: false
     },
     email: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING(255),
       allowNull: true
     },
     password_hash: {
-      type: DataTypes.TEXT,
+      type: DataTypes.CHAR(60),
       allowNull: true
     },
     role: {

@@ -3,6 +3,9 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import type { ActivityData, ActivityDataId } from './ActivityData';
 import type { DataSource, DataSourceId } from './DataSource';
 import type { DataSourceScope, DataSourceScopeId } from './DataSourceScope';
+import type { SubCategory, SubCategoryId } from './SubCategory';
+import type { SubSector, SubSectorId } from './SubSector';
+import type { SubSectorScope, SubSectorScopeId } from './SubSectorScope';
 
 export interface ScopeAttributes {
   scope_id: string;
@@ -58,6 +61,42 @@ export class Scope extends Model<ScopeAttributes, ScopeCreationAttributes> imple
   hasDataSourceScope!: Sequelize.HasManyHasAssociationMixin<DataSourceScope, DataSourceScopeId>;
   hasDataSourceScopes!: Sequelize.HasManyHasAssociationsMixin<DataSourceScope, DataSourceScopeId>;
   countDataSourceScopes!: Sequelize.HasManyCountAssociationsMixin;
+  // Scope hasMany SubCategory via scope_id
+  SubCategories!: SubCategory[];
+  getSubCategories!: Sequelize.HasManyGetAssociationsMixin<SubCategory>;
+  setSubCategories!: Sequelize.HasManySetAssociationsMixin<SubCategory, SubCategoryId>;
+  addSubCategory!: Sequelize.HasManyAddAssociationMixin<SubCategory, SubCategoryId>;
+  addSubCategories!: Sequelize.HasManyAddAssociationsMixin<SubCategory, SubCategoryId>;
+  createSubCategory!: Sequelize.HasManyCreateAssociationMixin<SubCategory>;
+  removeSubCategory!: Sequelize.HasManyRemoveAssociationMixin<SubCategory, SubCategoryId>;
+  removeSubCategories!: Sequelize.HasManyRemoveAssociationsMixin<SubCategory, SubCategoryId>;
+  hasSubCategory!: Sequelize.HasManyHasAssociationMixin<SubCategory, SubCategoryId>;
+  hasSubCategories!: Sequelize.HasManyHasAssociationsMixin<SubCategory, SubCategoryId>;
+  countSubCategories!: Sequelize.HasManyCountAssociationsMixin;
+  // Scope belongsToMany SubSector via scope_id and subsector_id
+  subsector_id_SubSector_SubSectorScopes!: SubSector[];
+  getSubsector_id_SubSector_SubSectorScopes!: Sequelize.BelongsToManyGetAssociationsMixin<SubSector>;
+  setSubsector_id_SubSector_SubSectorScopes!: Sequelize.BelongsToManySetAssociationsMixin<SubSector, SubSectorId>;
+  addSubsector_id_SubSector_SubSectorScope!: Sequelize.BelongsToManyAddAssociationMixin<SubSector, SubSectorId>;
+  addSubsector_id_SubSector_SubSectorScopes!: Sequelize.BelongsToManyAddAssociationsMixin<SubSector, SubSectorId>;
+  createSubsector_id_SubSector_SubSectorScope!: Sequelize.BelongsToManyCreateAssociationMixin<SubSector>;
+  removeSubsector_id_SubSector_SubSectorScope!: Sequelize.BelongsToManyRemoveAssociationMixin<SubSector, SubSectorId>;
+  removeSubsector_id_SubSector_SubSectorScopes!: Sequelize.BelongsToManyRemoveAssociationsMixin<SubSector, SubSectorId>;
+  hasSubsector_id_SubSector_SubSectorScope!: Sequelize.BelongsToManyHasAssociationMixin<SubSector, SubSectorId>;
+  hasSubsector_id_SubSector_SubSectorScopes!: Sequelize.BelongsToManyHasAssociationsMixin<SubSector, SubSectorId>;
+  countSubsector_id_SubSector_SubSectorScopes!: Sequelize.BelongsToManyCountAssociationsMixin;
+  // Scope hasMany SubSectorScope via scope_id
+  SubSectorScopes!: SubSectorScope[];
+  getSubSectorScopes!: Sequelize.HasManyGetAssociationsMixin<SubSectorScope>;
+  setSubSectorScopes!: Sequelize.HasManySetAssociationsMixin<SubSectorScope, SubSectorScopeId>;
+  addSubSectorScope!: Sequelize.HasManyAddAssociationMixin<SubSectorScope, SubSectorScopeId>;
+  addSubSectorScopes!: Sequelize.HasManyAddAssociationsMixin<SubSectorScope, SubSectorScopeId>;
+  createSubSectorScope!: Sequelize.HasManyCreateAssociationMixin<SubSectorScope>;
+  removeSubSectorScope!: Sequelize.HasManyRemoveAssociationMixin<SubSectorScope, SubSectorScopeId>;
+  removeSubSectorScopes!: Sequelize.HasManyRemoveAssociationsMixin<SubSectorScope, SubSectorScopeId>;
+  hasSubSectorScope!: Sequelize.HasManyHasAssociationMixin<SubSectorScope, SubSectorScopeId>;
+  hasSubSectorScopes!: Sequelize.HasManyHasAssociationsMixin<SubSectorScope, SubSectorScopeId>;
+  countSubSectorScopes!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Scope {
     return Scope.init({

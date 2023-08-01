@@ -7,6 +7,7 @@ import type { Population, PopulationId } from './Population';
 
 export interface CityAttributes {
   city_id: string;
+  locode?: string;
   name?: string;
   shape?: object;
   country?: string;
@@ -18,11 +19,12 @@ export interface CityAttributes {
 
 export type CityPk = "city_id";
 export type CityId = City[CityPk];
-export type CityOptionalAttributes = "name" | "shape" | "country" | "region" | "area" | "created" | "last_updated";
+export type CityOptionalAttributes = "locode" | "name" | "shape" | "country" | "region" | "area" | "created" | "last_updated";
 export type CityCreationAttributes = Optional<CityAttributes, CityOptionalAttributes>;
 
 export class City extends Model<CityAttributes, CityCreationAttributes> implements CityAttributes {
   city_id!: string;
+  locode?: string;
   name?: string;
   shape?: object;
   country?: string;
@@ -87,6 +89,11 @@ export class City extends Model<CityAttributes, CityCreationAttributes> implemen
       allowNull: false,
       primaryKey: true
     },
+    locode: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      unique: "City_locode_key"
+    },
     name: {
       type: DataTypes.STRING(255),
       allowNull: true
@@ -121,6 +128,13 @@ export class City extends Model<CityAttributes, CityCreationAttributes> implemen
     schema: 'public',
     timestamps: false,
     indexes: [
+      {
+        name: "City_locode_key",
+        unique: true,
+        fields: [
+          { name: "locode" },
+        ]
+      },
       {
         name: "City_pkey",
         unique: true,

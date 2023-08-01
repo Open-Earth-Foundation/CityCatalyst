@@ -16,6 +16,7 @@ CREATE TABLE "User" (
 
 CREATE TABLE "City" (
   "city_id" uuid,
+  "locode" varchar(255) UNIQUE,
   "name" varchar(255),
   "shape" jsonb,
   "country" varchar(255),

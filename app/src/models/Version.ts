@@ -3,24 +3,24 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import type { Inventory, InventoryId } from './Inventory';
 
 export interface VersionAttributes {
-  version_id: string;
+  versionId: string;
   year?: number;
   version?: string;
-  inventory_id?: string;
+  inventoryId?: string;
 }
 
-export type VersionPk = "version_id";
+export type VersionPk = "versionId";
 export type VersionId = Version[VersionPk];
-export type VersionOptionalAttributes = "year" | "version" | "inventory_id";
+export type VersionOptionalAttributes = "year" | "version" | "inventoryId";
 export type VersionCreationAttributes = Optional<VersionAttributes, VersionOptionalAttributes>;
 
 export class Version extends Model<VersionAttributes, VersionCreationAttributes> implements VersionAttributes {
-  version_id!: string;
+  versionId!: string;
   year?: number;
   version?: string;
-  inventory_id?: string;
+  inventoryId?: string;
 
-  // Version belongsTo Inventory via inventory_id
+  // Version belongsTo Inventory via inventoryId
   inventory!: Inventory;
   getInventory!: Sequelize.BelongsToGetAssociationMixin<Inventory>;
   setInventory!: Sequelize.BelongsToSetAssociationMixin<Inventory, InventoryId>;
@@ -28,10 +28,11 @@ export class Version extends Model<VersionAttributes, VersionCreationAttributes>
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Version {
     return Version.init({
-    version_id: {
+    versionId: {
       type: DataTypes.UUID,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      field: 'version_id'
     },
     year: {
       type: DataTypes.INTEGER,
@@ -41,13 +42,14 @@ export class Version extends Model<VersionAttributes, VersionCreationAttributes>
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    inventory_id: {
+    inventoryId: {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
         model: 'Inventory',
         key: 'inventory_id'
-      }
+      },
+      field: 'inventory_id'
     }
   }, {
     sequelize,

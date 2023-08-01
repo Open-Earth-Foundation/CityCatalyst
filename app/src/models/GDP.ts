@@ -4,33 +4,33 @@ import type { City, CityId } from './City';
 import type { DataSource, DataSourceId } from './DataSource';
 
 export interface GDPAttributes {
-  city_id: string;
+  cityId: string;
   gdp?: number;
   year: number;
   created?: Date;
-  last_updated?: Date;
-  datasource_id?: string;
+  lastUpdated?: Date;
+  datasourceId?: string;
 }
 
-export type GDPPk = "city_id" | "year";
+export type GDPPk = "cityId" | "year";
 export type GDPId = GDP[GDPPk];
-export type GDPOptionalAttributes = "gdp" | "created" | "last_updated" | "datasource_id";
+export type GDPOptionalAttributes = "gdp" | "created" | "lastUpdated" | "datasourceId";
 export type GDPCreationAttributes = Optional<GDPAttributes, GDPOptionalAttributes>;
 
 export class GDP extends Model<GDPAttributes, GDPCreationAttributes> implements GDPAttributes {
-  city_id!: string;
+  cityId!: string;
   gdp?: number;
   year!: number;
   created?: Date;
-  last_updated?: Date;
-  datasource_id?: string;
+  lastUpdated?: Date;
+  datasourceId?: string;
 
-  // GDP belongsTo City via city_id
+  // GDP belongsTo City via cityId
   city!: City;
   getCity!: Sequelize.BelongsToGetAssociationMixin<City>;
   setCity!: Sequelize.BelongsToSetAssociationMixin<City, CityId>;
   createCity!: Sequelize.BelongsToCreateAssociationMixin<City>;
-  // GDP belongsTo DataSource via datasource_id
+  // GDP belongsTo DataSource via datasourceId
   datasource!: DataSource;
   getDatasource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
   setDatasource!: Sequelize.BelongsToSetAssociationMixin<DataSource, DataSourceId>;
@@ -38,14 +38,15 @@ export class GDP extends Model<GDPAttributes, GDPCreationAttributes> implements 
 
   static initModel(sequelize: Sequelize.Sequelize): typeof GDP {
     return GDP.init({
-    city_id: {
+    cityId: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'City',
         key: 'city_id'
-      }
+      },
+      field: 'city_id'
     },
     gdp: {
       type: DataTypes.BIGINT,
@@ -60,17 +61,19 @@ export class GDP extends Model<GDPAttributes, GDPCreationAttributes> implements 
       type: DataTypes.DATE,
       allowNull: true
     },
-    last_updated: {
+    lastUpdated: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'last_updated'
     },
-    datasource_id: {
+    datasourceId: {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
         model: 'DataSource',
         key: 'datasource_id'
-      }
+      },
+      field: 'datasource_id'
     }
   }, {
     sequelize,

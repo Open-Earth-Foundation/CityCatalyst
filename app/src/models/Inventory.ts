@@ -7,32 +7,32 @@ import type { SubSectorValue, SubSectorValueId } from './SubSectorValue';
 import type { Version, VersionId } from './Version';
 
 export interface InventoryAttributes {
-  inventory_id: string;
-  inventory_name?: string;
+  inventoryId: string;
+  inventoryName?: string;
   year?: number;
-  total_emissions?: number;
-  city_id?: string;
+  totalEmissions?: number;
+  cityId?: string;
 }
 
-export type InventoryPk = "inventory_id";
+export type InventoryPk = "inventoryId";
 export type InventoryId = Inventory[InventoryPk];
-export type InventoryOptionalAttributes = "inventory_name" | "year" | "total_emissions" | "city_id";
+export type InventoryOptionalAttributes = "inventoryName" | "year" | "totalEmissions" | "cityId";
 export type InventoryCreationAttributes = Optional<InventoryAttributes, InventoryOptionalAttributes>;
 
 export class Inventory extends Model<InventoryAttributes, InventoryCreationAttributes> implements InventoryAttributes {
-  inventory_id!: string;
-  inventory_name?: string;
+  inventoryId!: string;
+  inventoryName?: string;
   year?: number;
-  total_emissions?: number;
-  city_id?: string;
+  totalEmissions?: number;
+  cityId?: string;
 
-  // Inventory belongsTo City via city_id
+  // Inventory belongsTo City via cityId
   city!: City;
   getCity!: Sequelize.BelongsToGetAssociationMixin<City>;
   setCity!: Sequelize.BelongsToSetAssociationMixin<City, CityId>;
   createCity!: Sequelize.BelongsToCreateAssociationMixin<City>;
-  // Inventory hasMany SectorValue via inventory_id
-  SectorValues!: SectorValue[];
+  // Inventory hasMany SectorValue via inventoryId
+  sectorValues!: SectorValue[];
   getSectorValues!: Sequelize.HasManyGetAssociationsMixin<SectorValue>;
   setSectorValues!: Sequelize.HasManySetAssociationsMixin<SectorValue, SectorValueId>;
   addSectorValue!: Sequelize.HasManyAddAssociationMixin<SectorValue, SectorValueId>;
@@ -43,8 +43,8 @@ export class Inventory extends Model<InventoryAttributes, InventoryCreationAttri
   hasSectorValue!: Sequelize.HasManyHasAssociationMixin<SectorValue, SectorValueId>;
   hasSectorValues!: Sequelize.HasManyHasAssociationsMixin<SectorValue, SectorValueId>;
   countSectorValues!: Sequelize.HasManyCountAssociationsMixin;
-  // Inventory hasMany SubCategoryValue via inventory_id
-  SubCategoryValues!: SubCategoryValue[];
+  // Inventory hasMany SubCategoryValue via inventoryId
+  subCategoryValues!: SubCategoryValue[];
   getSubCategoryValues!: Sequelize.HasManyGetAssociationsMixin<SubCategoryValue>;
   setSubCategoryValues!: Sequelize.HasManySetAssociationsMixin<SubCategoryValue, SubCategoryValueId>;
   addSubCategoryValue!: Sequelize.HasManyAddAssociationMixin<SubCategoryValue, SubCategoryValueId>;
@@ -55,8 +55,8 @@ export class Inventory extends Model<InventoryAttributes, InventoryCreationAttri
   hasSubCategoryValue!: Sequelize.HasManyHasAssociationMixin<SubCategoryValue, SubCategoryValueId>;
   hasSubCategoryValues!: Sequelize.HasManyHasAssociationsMixin<SubCategoryValue, SubCategoryValueId>;
   countSubCategoryValues!: Sequelize.HasManyCountAssociationsMixin;
-  // Inventory hasMany SubSectorValue via inventory_id
-  SubSectorValues!: SubSectorValue[];
+  // Inventory hasMany SubSectorValue via inventoryId
+  subSectorValues!: SubSectorValue[];
   getSubSectorValues!: Sequelize.HasManyGetAssociationsMixin<SubSectorValue>;
   setSubSectorValues!: Sequelize.HasManySetAssociationsMixin<SubSectorValue, SubSectorValueId>;
   addSubSectorValue!: Sequelize.HasManyAddAssociationMixin<SubSectorValue, SubSectorValueId>;
@@ -67,8 +67,8 @@ export class Inventory extends Model<InventoryAttributes, InventoryCreationAttri
   hasSubSectorValue!: Sequelize.HasManyHasAssociationMixin<SubSectorValue, SubSectorValueId>;
   hasSubSectorValues!: Sequelize.HasManyHasAssociationsMixin<SubSectorValue, SubSectorValueId>;
   countSubSectorValues!: Sequelize.HasManyCountAssociationsMixin;
-  // Inventory hasMany Version via inventory_id
-  Versions!: Version[];
+  // Inventory hasMany Version via inventoryId
+  versions!: Version[];
   getVersions!: Sequelize.HasManyGetAssociationsMixin<Version>;
   setVersions!: Sequelize.HasManySetAssociationsMixin<Version, VersionId>;
   addVersion!: Sequelize.HasManyAddAssociationMixin<Version, VersionId>;
@@ -82,30 +82,34 @@ export class Inventory extends Model<InventoryAttributes, InventoryCreationAttri
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Inventory {
     return Inventory.init({
-    inventory_id: {
+    inventoryId: {
       type: DataTypes.UUID,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      field: 'inventory_id'
     },
-    inventory_name: {
+    inventoryName: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: true,
+      field: 'inventory_name'
     },
     year: {
       type: DataTypes.INTEGER,
       allowNull: true
     },
-    total_emissions: {
+    totalEmissions: {
       type: DataTypes.BIGINT,
-      allowNull: true
+      allowNull: true,
+      field: 'total_emissions'
     },
-    city_id: {
+    cityId: {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
         model: 'City',
         key: 'city_id'
-      }
+      },
+      field: 'city_id'
     }
   }, {
     sequelize,

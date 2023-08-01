@@ -4,31 +4,31 @@ import type { City, CityId } from './City';
 import type { User, UserId } from './User';
 
 export interface CityUserAttributes {
-  city_user_id: string;
-  user_id?: string;
-  city_id?: string;
+  cityUserId: string;
+  userId?: string;
+  cityId?: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 }
 
-export type CityUserPk = "city_user_id";
+export type CityUserPk = "cityUserId";
 export type CityUserId = CityUser[CityUserPk];
-export type CityUserOptionalAttributes = "user_id" | "city_id" | "created" | "last_updated";
+export type CityUserOptionalAttributes = "userId" | "cityId" | "created" | "lastUpdated";
 export type CityUserCreationAttributes = Optional<CityUserAttributes, CityUserOptionalAttributes>;
 
 export class CityUser extends Model<CityUserAttributes, CityUserCreationAttributes> implements CityUserAttributes {
-  city_user_id!: string;
-  user_id?: string;
-  city_id?: string;
+  cityUserId!: string;
+  userId?: string;
+  cityId?: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 
-  // CityUser belongsTo City via city_id
+  // CityUser belongsTo City via cityId
   city!: City;
   getCity!: Sequelize.BelongsToGetAssociationMixin<City>;
   setCity!: Sequelize.BelongsToSetAssociationMixin<City, CityId>;
   createCity!: Sequelize.BelongsToCreateAssociationMixin<City>;
-  // CityUser belongsTo User via user_id
+  // CityUser belongsTo User via userId
   user!: User;
   getUser!: Sequelize.BelongsToGetAssociationMixin<User>;
   setUser!: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
@@ -36,34 +36,38 @@ export class CityUser extends Model<CityUserAttributes, CityUserCreationAttribut
 
   static initModel(sequelize: Sequelize.Sequelize): typeof CityUser {
     return CityUser.init({
-    city_user_id: {
+    cityUserId: {
       type: DataTypes.UUID,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      field: 'city_user_id'
     },
-    user_id: {
+    userId: {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
         model: 'User',
         key: 'user_id'
-      }
+      },
+      field: 'user_id'
     },
-    city_id: {
+    cityId: {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
         model: 'City',
         key: 'city_id'
-      }
+      },
+      field: 'city_id'
     },
     created: {
       type: DataTypes.DATE,
       allowNull: true
     },
-    last_updated: {
+    lastUpdated: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'last_updated'
     }
   }, {
     sequelize,

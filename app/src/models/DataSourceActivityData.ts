@@ -4,29 +4,29 @@ import type { ActivityData, ActivityDataId } from './ActivityData';
 import type { DataSource, DataSourceId } from './DataSource';
 
 export interface DataSourceActivityDataAttributes {
-  datasource_id: string;
-  activitydata_id: string;
+  datasourceId: string;
+  activitydataId: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 }
 
-export type DataSourceActivityDataPk = "datasource_id" | "activitydata_id";
+export type DataSourceActivityDataPk = "datasourceId" | "activitydataId";
 export type DataSourceActivityDataId = DataSourceActivityData[DataSourceActivityDataPk];
-export type DataSourceActivityDataOptionalAttributes = "created" | "last_updated";
+export type DataSourceActivityDataOptionalAttributes = "created" | "lastUpdated";
 export type DataSourceActivityDataCreationAttributes = Optional<DataSourceActivityDataAttributes, DataSourceActivityDataOptionalAttributes>;
 
 export class DataSourceActivityData extends Model<DataSourceActivityDataAttributes, DataSourceActivityDataCreationAttributes> implements DataSourceActivityDataAttributes {
-  datasource_id!: string;
-  activitydata_id!: string;
+  datasourceId!: string;
+  activitydataId!: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 
-  // DataSourceActivityData belongsTo ActivityData via activitydata_id
+  // DataSourceActivityData belongsTo ActivityData via activitydataId
   activitydatum!: ActivityData;
   getActivitydatum!: Sequelize.BelongsToGetAssociationMixin<ActivityData>;
   setActivitydatum!: Sequelize.BelongsToSetAssociationMixin<ActivityData, ActivityDataId>;
   createActivitydatum!: Sequelize.BelongsToCreateAssociationMixin<ActivityData>;
-  // DataSourceActivityData belongsTo DataSource via datasource_id
+  // DataSourceActivityData belongsTo DataSource via datasourceId
   datasource!: DataSource;
   getDatasource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
   setDatasource!: Sequelize.BelongsToSetAssociationMixin<DataSource, DataSourceId>;
@@ -34,31 +34,34 @@ export class DataSourceActivityData extends Model<DataSourceActivityDataAttribut
 
   static initModel(sequelize: Sequelize.Sequelize): typeof DataSourceActivityData {
     return DataSourceActivityData.init({
-    datasource_id: {
+    datasourceId: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'DataSource',
         key: 'datasource_id'
-      }
+      },
+      field: 'datasource_id'
     },
-    activitydata_id: {
+    activitydataId: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'ActivityData',
         key: 'activitydata_id'
-      }
+      },
+      field: 'activitydata_id'
     },
     created: {
       type: DataTypes.DATE,
       allowNull: true
     },
-    last_updated: {
+    lastUpdated: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'last_updated'
     }
   }, {
     sequelize,

@@ -4,29 +4,29 @@ import type { ReportingLevel, ReportingLevelId } from './ReportingLevel';
 import type { SubSector, SubSectorId } from './SubSector';
 
 export interface SubSectorReportingLevelAttributes {
-  subsector_id: string;
-  reportinglevel_id: string;
+  subsectorId: string;
+  reportinglevelId: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 }
 
-export type SubSectorReportingLevelPk = "subsector_id" | "reportinglevel_id";
+export type SubSectorReportingLevelPk = "subsectorId" | "reportinglevelId";
 export type SubSectorReportingLevelId = SubSectorReportingLevel[SubSectorReportingLevelPk];
-export type SubSectorReportingLevelOptionalAttributes = "created" | "last_updated";
+export type SubSectorReportingLevelOptionalAttributes = "created" | "lastUpdated";
 export type SubSectorReportingLevelCreationAttributes = Optional<SubSectorReportingLevelAttributes, SubSectorReportingLevelOptionalAttributes>;
 
 export class SubSectorReportingLevel extends Model<SubSectorReportingLevelAttributes, SubSectorReportingLevelCreationAttributes> implements SubSectorReportingLevelAttributes {
-  subsector_id!: string;
-  reportinglevel_id!: string;
+  subsectorId!: string;
+  reportinglevelId!: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 
-  // SubSectorReportingLevel belongsTo ReportingLevel via reportinglevel_id
+  // SubSectorReportingLevel belongsTo ReportingLevel via reportinglevelId
   reportinglevel!: ReportingLevel;
   getReportinglevel!: Sequelize.BelongsToGetAssociationMixin<ReportingLevel>;
   setReportinglevel!: Sequelize.BelongsToSetAssociationMixin<ReportingLevel, ReportingLevelId>;
   createReportinglevel!: Sequelize.BelongsToCreateAssociationMixin<ReportingLevel>;
-  // SubSectorReportingLevel belongsTo SubSector via subsector_id
+  // SubSectorReportingLevel belongsTo SubSector via subsectorId
   subsector!: SubSector;
   getSubsector!: Sequelize.BelongsToGetAssociationMixin<SubSector>;
   setSubsector!: Sequelize.BelongsToSetAssociationMixin<SubSector, SubSectorId>;
@@ -34,31 +34,34 @@ export class SubSectorReportingLevel extends Model<SubSectorReportingLevelAttrib
 
   static initModel(sequelize: Sequelize.Sequelize): typeof SubSectorReportingLevel {
     return SubSectorReportingLevel.init({
-    subsector_id: {
+    subsectorId: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'SubSector',
         key: 'subsector_id'
-      }
+      },
+      field: 'subsector_id'
     },
-    reportinglevel_id: {
+    reportinglevelId: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'ReportingLevel',
         key: 'reportinglevel_id'
-      }
+      },
+      field: 'reportinglevel_id'
     },
     created: {
       type: DataTypes.DATE,
       allowNull: true
     },
-    last_updated: {
+    lastUpdated: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'last_updated'
     }
   }, {
     sequelize,

@@ -4,29 +4,29 @@ import type { Scope, ScopeId } from './Scope';
 import type { SubSector, SubSectorId } from './SubSector';
 
 export interface SubSectorScopeAttributes {
-  subsector_id: string;
-  scope_id: string;
+  subsectorId: string;
+  scopeId: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 }
 
-export type SubSectorScopePk = "subsector_id" | "scope_id";
+export type SubSectorScopePk = "subsectorId" | "scopeId";
 export type SubSectorScopeId = SubSectorScope[SubSectorScopePk];
-export type SubSectorScopeOptionalAttributes = "created" | "last_updated";
+export type SubSectorScopeOptionalAttributes = "created" | "lastUpdated";
 export type SubSectorScopeCreationAttributes = Optional<SubSectorScopeAttributes, SubSectorScopeOptionalAttributes>;
 
 export class SubSectorScope extends Model<SubSectorScopeAttributes, SubSectorScopeCreationAttributes> implements SubSectorScopeAttributes {
-  subsector_id!: string;
-  scope_id!: string;
+  subsectorId!: string;
+  scopeId!: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 
-  // SubSectorScope belongsTo Scope via scope_id
+  // SubSectorScope belongsTo Scope via scopeId
   scope!: Scope;
   getScope!: Sequelize.BelongsToGetAssociationMixin<Scope>;
   setScope!: Sequelize.BelongsToSetAssociationMixin<Scope, ScopeId>;
   createScope!: Sequelize.BelongsToCreateAssociationMixin<Scope>;
-  // SubSectorScope belongsTo SubSector via subsector_id
+  // SubSectorScope belongsTo SubSector via subsectorId
   subsector!: SubSector;
   getSubsector!: Sequelize.BelongsToGetAssociationMixin<SubSector>;
   setSubsector!: Sequelize.BelongsToSetAssociationMixin<SubSector, SubSectorId>;
@@ -34,31 +34,34 @@ export class SubSectorScope extends Model<SubSectorScopeAttributes, SubSectorSco
 
   static initModel(sequelize: Sequelize.Sequelize): typeof SubSectorScope {
     return SubSectorScope.init({
-    subsector_id: {
+    subsectorId: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'SubSector',
         key: 'subsector_id'
-      }
+      },
+      field: 'subsector_id'
     },
-    scope_id: {
+    scopeId: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'Scope',
         key: 'scope_id'
-      }
+      },
+      field: 'scope_id'
     },
     created: {
       type: DataTypes.DATE,
       allowNull: true
     },
-    last_updated: {
+    lastUpdated: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'last_updated'
     }
   }, {
     sequelize,

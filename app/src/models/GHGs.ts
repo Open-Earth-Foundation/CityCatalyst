@@ -4,66 +4,69 @@ import type { DataSource, DataSourceId } from './DataSource';
 import type { DataSourceGHGs, DataSourceGHGsId } from './DataSourceGHGs';
 
 export interface GHGsAttributes {
-  ghg_id: string;
-  ghg_name?: string;
+  ghgId: string;
+  ghgName?: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 }
 
-export type GHGsPk = "ghg_id";
+export type GHGsPk = "ghgId";
 export type GHGsId = GHGs[GHGsPk];
-export type GHGsOptionalAttributes = "ghg_name" | "created" | "last_updated";
+export type GHGsOptionalAttributes = "ghgName" | "created" | "lastUpdated";
 export type GHGsCreationAttributes = Optional<GHGsAttributes, GHGsOptionalAttributes>;
 
 export class GHGs extends Model<GHGsAttributes, GHGsCreationAttributes> implements GHGsAttributes {
-  ghg_id!: string;
-  ghg_name?: string;
+  ghgId!: string;
+  ghgName?: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 
-  // GHGs belongsToMany DataSource via ghg_id and datasource_id
-  datasource_id_DataSource_DataSourceGHGs!: DataSource[];
-  getDatasource_id_DataSource_DataSourceGHGs!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
-  setDatasource_id_DataSource_DataSourceGHGs!: Sequelize.BelongsToManySetAssociationsMixin<DataSource, DataSourceId>;
-  addDatasource_id_DataSource_DataSourceGHG!: Sequelize.BelongsToManyAddAssociationMixin<DataSource, DataSourceId>;
-  addDatasource_id_DataSource_DataSourceGHGs!: Sequelize.BelongsToManyAddAssociationsMixin<DataSource, DataSourceId>;
-  createDatasource_id_DataSource_DataSourceGHG!: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
-  removeDatasource_id_DataSource_DataSourceGHG!: Sequelize.BelongsToManyRemoveAssociationMixin<DataSource, DataSourceId>;
-  removeDatasource_id_DataSource_DataSourceGHGs!: Sequelize.BelongsToManyRemoveAssociationsMixin<DataSource, DataSourceId>;
-  hasDatasource_id_DataSource_DataSourceGHG!: Sequelize.BelongsToManyHasAssociationMixin<DataSource, DataSourceId>;
-  hasDatasource_id_DataSource_DataSourceGHGs!: Sequelize.BelongsToManyHasAssociationsMixin<DataSource, DataSourceId>;
-  countDatasource_id_DataSource_DataSourceGHGs!: Sequelize.BelongsToManyCountAssociationsMixin;
-  // GHGs hasMany DataSourceGHGs via ghg_id
-  DataSourceGHGs!: DataSourceGHGs[];
-  getDataSourceGHGs!: Sequelize.HasManyGetAssociationsMixin<DataSourceGHGs>;
-  setDataSourceGHGs!: Sequelize.HasManySetAssociationsMixin<DataSourceGHGs, DataSourceGHGsId>;
-  addDataSourceGHG!: Sequelize.HasManyAddAssociationMixin<DataSourceGHGs, DataSourceGHGsId>;
-  addDataSourceGHGs!: Sequelize.HasManyAddAssociationsMixin<DataSourceGHGs, DataSourceGHGsId>;
-  createDataSourceGHG!: Sequelize.HasManyCreateAssociationMixin<DataSourceGHGs>;
-  removeDataSourceGHG!: Sequelize.HasManyRemoveAssociationMixin<DataSourceGHGs, DataSourceGHGsId>;
-  removeDataSourceGHGs!: Sequelize.HasManyRemoveAssociationsMixin<DataSourceGHGs, DataSourceGHGsId>;
-  hasDataSourceGHG!: Sequelize.HasManyHasAssociationMixin<DataSourceGHGs, DataSourceGHGsId>;
-  hasDataSourceGHGs!: Sequelize.HasManyHasAssociationsMixin<DataSourceGHGs, DataSourceGHGsId>;
-  countDataSourceGHGs!: Sequelize.HasManyCountAssociationsMixin;
+  // GHGs belongsToMany DataSource via ghgId and datasourceId
+  datasourceIdDataSourceDataSourceGhgs!: DataSource[];
+  getDatasourceIdDataSourceDataSourceGhgs!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
+  setDatasourceIdDataSourceDataSourceGhgs!: Sequelize.BelongsToManySetAssociationsMixin<DataSource, DataSourceId>;
+  addDatasourceIdDataSourceDataSourceGhg!: Sequelize.BelongsToManyAddAssociationMixin<DataSource, DataSourceId>;
+  addDatasourceIdDataSourceDataSourceGhgs!: Sequelize.BelongsToManyAddAssociationsMixin<DataSource, DataSourceId>;
+  createDatasourceIdDataSourceDataSourceGhg!: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
+  removeDatasourceIdDataSourceDataSourceGhg!: Sequelize.BelongsToManyRemoveAssociationMixin<DataSource, DataSourceId>;
+  removeDatasourceIdDataSourceDataSourceGhgs!: Sequelize.BelongsToManyRemoveAssociationsMixin<DataSource, DataSourceId>;
+  hasDatasourceIdDataSourceDataSourceGhg!: Sequelize.BelongsToManyHasAssociationMixin<DataSource, DataSourceId>;
+  hasDatasourceIdDataSourceDataSourceGhgs!: Sequelize.BelongsToManyHasAssociationsMixin<DataSource, DataSourceId>;
+  countDatasourceIdDataSourceDataSourceGhgs!: Sequelize.BelongsToManyCountAssociationsMixin;
+  // GHGs hasMany DataSourceGHGs via ghgId
+  dataSourceGhgs!: DataSourceGHGs[];
+  getDataSourceGhgs!: Sequelize.HasManyGetAssociationsMixin<DataSourceGHGs>;
+  setDataSourceGhgs!: Sequelize.HasManySetAssociationsMixin<DataSourceGHGs, DataSourceGHGsId>;
+  addDataSourceGhg!: Sequelize.HasManyAddAssociationMixin<DataSourceGHGs, DataSourceGHGsId>;
+  addDataSourceGhgs!: Sequelize.HasManyAddAssociationsMixin<DataSourceGHGs, DataSourceGHGsId>;
+  createDataSourceGhg!: Sequelize.HasManyCreateAssociationMixin<DataSourceGHGs>;
+  removeDataSourceGhg!: Sequelize.HasManyRemoveAssociationMixin<DataSourceGHGs, DataSourceGHGsId>;
+  removeDataSourceGhgs!: Sequelize.HasManyRemoveAssociationsMixin<DataSourceGHGs, DataSourceGHGsId>;
+  hasDataSourceGhg!: Sequelize.HasManyHasAssociationMixin<DataSourceGHGs, DataSourceGHGsId>;
+  hasDataSourceGhgs!: Sequelize.HasManyHasAssociationsMixin<DataSourceGHGs, DataSourceGHGsId>;
+  countDataSourceGhgs!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof GHGs {
     return GHGs.init({
-    ghg_id: {
+    ghgId: {
       type: DataTypes.UUID,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      field: 'ghg_id'
     },
-    ghg_name: {
+    ghgName: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: true,
+      field: 'ghg_name'
     },
     created: {
       type: DataTypes.DATE,
       allowNull: true
     },
-    last_updated: {
+    lastUpdated: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'last_updated'
     }
   }, {
     sequelize,

@@ -6,37 +6,37 @@ import type { SectorValue, SectorValueId } from './SectorValue';
 import type { SubSector, SubSectorId } from './SubSector';
 
 export interface SectorAttributes {
-  sector_id: string;
-  sector_name?: string;
+  sectorId: string;
+  sectorName?: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 }
 
-export type SectorPk = "sector_id";
+export type SectorPk = "sectorId";
 export type SectorId = Sector[SectorPk];
-export type SectorOptionalAttributes = "sector_name" | "created" | "last_updated";
+export type SectorOptionalAttributes = "sectorName" | "created" | "lastUpdated";
 export type SectorCreationAttributes = Optional<SectorAttributes, SectorOptionalAttributes>;
 
 export class Sector extends Model<SectorAttributes, SectorCreationAttributes> implements SectorAttributes {
-  sector_id!: string;
-  sector_name?: string;
+  sectorId!: string;
+  sectorName?: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 
-  // Sector belongsToMany DataSource via sector_id and datasource_id
-  datasource_id_DataSource_DataSourceSectors!: DataSource[];
-  getDatasource_id_DataSource_DataSourceSectors!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
-  setDatasource_id_DataSource_DataSourceSectors!: Sequelize.BelongsToManySetAssociationsMixin<DataSource, DataSourceId>;
-  addDatasource_id_DataSource_DataSourceSector!: Sequelize.BelongsToManyAddAssociationMixin<DataSource, DataSourceId>;
-  addDatasource_id_DataSource_DataSourceSectors!: Sequelize.BelongsToManyAddAssociationsMixin<DataSource, DataSourceId>;
-  createDatasource_id_DataSource_DataSourceSector!: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
-  removeDatasource_id_DataSource_DataSourceSector!: Sequelize.BelongsToManyRemoveAssociationMixin<DataSource, DataSourceId>;
-  removeDatasource_id_DataSource_DataSourceSectors!: Sequelize.BelongsToManyRemoveAssociationsMixin<DataSource, DataSourceId>;
-  hasDatasource_id_DataSource_DataSourceSector!: Sequelize.BelongsToManyHasAssociationMixin<DataSource, DataSourceId>;
-  hasDatasource_id_DataSource_DataSourceSectors!: Sequelize.BelongsToManyHasAssociationsMixin<DataSource, DataSourceId>;
-  countDatasource_id_DataSource_DataSourceSectors!: Sequelize.BelongsToManyCountAssociationsMixin;
-  // Sector hasMany DataSourceSector via sector_id
-  DataSourceSectors!: DataSourceSector[];
+  // Sector belongsToMany DataSource via sectorId and datasourceId
+  datasourceIdDataSourceDataSourceSectors!: DataSource[];
+  getDatasourceIdDataSourceDataSourceSectors!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
+  setDatasourceIdDataSourceDataSourceSectors!: Sequelize.BelongsToManySetAssociationsMixin<DataSource, DataSourceId>;
+  addDatasourceIdDataSourceDataSourceSector!: Sequelize.BelongsToManyAddAssociationMixin<DataSource, DataSourceId>;
+  addDatasourceIdDataSourceDataSourceSectors!: Sequelize.BelongsToManyAddAssociationsMixin<DataSource, DataSourceId>;
+  createDatasourceIdDataSourceDataSourceSector!: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
+  removeDatasourceIdDataSourceDataSourceSector!: Sequelize.BelongsToManyRemoveAssociationMixin<DataSource, DataSourceId>;
+  removeDatasourceIdDataSourceDataSourceSectors!: Sequelize.BelongsToManyRemoveAssociationsMixin<DataSource, DataSourceId>;
+  hasDatasourceIdDataSourceDataSourceSector!: Sequelize.BelongsToManyHasAssociationMixin<DataSource, DataSourceId>;
+  hasDatasourceIdDataSourceDataSourceSectors!: Sequelize.BelongsToManyHasAssociationsMixin<DataSource, DataSourceId>;
+  countDatasourceIdDataSourceDataSourceSectors!: Sequelize.BelongsToManyCountAssociationsMixin;
+  // Sector hasMany DataSourceSector via sectorId
+  dataSourceSectors!: DataSourceSector[];
   getDataSourceSectors!: Sequelize.HasManyGetAssociationsMixin<DataSourceSector>;
   setDataSourceSectors!: Sequelize.HasManySetAssociationsMixin<DataSourceSector, DataSourceSectorId>;
   addDataSourceSector!: Sequelize.HasManyAddAssociationMixin<DataSourceSector, DataSourceSectorId>;
@@ -47,8 +47,8 @@ export class Sector extends Model<SectorAttributes, SectorCreationAttributes> im
   hasDataSourceSector!: Sequelize.HasManyHasAssociationMixin<DataSourceSector, DataSourceSectorId>;
   hasDataSourceSectors!: Sequelize.HasManyHasAssociationsMixin<DataSourceSector, DataSourceSectorId>;
   countDataSourceSectors!: Sequelize.HasManyCountAssociationsMixin;
-  // Sector hasMany SectorValue via sector_id
-  SectorValues!: SectorValue[];
+  // Sector hasMany SectorValue via sectorId
+  sectorValues!: SectorValue[];
   getSectorValues!: Sequelize.HasManyGetAssociationsMixin<SectorValue>;
   setSectorValues!: Sequelize.HasManySetAssociationsMixin<SectorValue, SectorValueId>;
   addSectorValue!: Sequelize.HasManyAddAssociationMixin<SectorValue, SectorValueId>;
@@ -59,8 +59,8 @@ export class Sector extends Model<SectorAttributes, SectorCreationAttributes> im
   hasSectorValue!: Sequelize.HasManyHasAssociationMixin<SectorValue, SectorValueId>;
   hasSectorValues!: Sequelize.HasManyHasAssociationsMixin<SectorValue, SectorValueId>;
   countSectorValues!: Sequelize.HasManyCountAssociationsMixin;
-  // Sector hasMany SubSector via sector_id
-  SubSectors!: SubSector[];
+  // Sector hasMany SubSector via sectorId
+  subSectors!: SubSector[];
   getSubSectors!: Sequelize.HasManyGetAssociationsMixin<SubSector>;
   setSubSectors!: Sequelize.HasManySetAssociationsMixin<SubSector, SubSectorId>;
   addSubSector!: Sequelize.HasManyAddAssociationMixin<SubSector, SubSectorId>;
@@ -74,22 +74,25 @@ export class Sector extends Model<SectorAttributes, SectorCreationAttributes> im
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Sector {
     return Sector.init({
-    sector_id: {
+    sectorId: {
       type: DataTypes.UUID,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      field: 'sector_id'
     },
-    sector_name: {
+    sectorName: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: true,
+      field: 'sector_name'
     },
     created: {
       type: DataTypes.DATE,
       allowNull: true
     },
-    last_updated: {
+    lastUpdated: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'last_updated'
     }
   }, {
     sequelize,

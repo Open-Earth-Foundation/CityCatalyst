@@ -4,46 +4,46 @@ import type { DataSource, DataSourceId } from './DataSource';
 import type { DataSourceMethodology, DataSourceMethodologyId } from './DataSourceMethodology';
 
 export interface MethodologyAttributes {
-  methodology_id: string;
+  methodologyId: string;
   methodology?: string;
-  methodology_url?: string;
-  datasource_id?: string;
+  methodologyUrl?: string;
+  datasourceId?: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 }
 
-export type MethodologyPk = "methodology_id";
+export type MethodologyPk = "methodologyId";
 export type MethodologyId = Methodology[MethodologyPk];
-export type MethodologyOptionalAttributes = "methodology" | "methodology_url" | "datasource_id" | "created" | "last_updated";
+export type MethodologyOptionalAttributes = "methodology" | "methodologyUrl" | "datasourceId" | "created" | "lastUpdated";
 export type MethodologyCreationAttributes = Optional<MethodologyAttributes, MethodologyOptionalAttributes>;
 
 export class Methodology extends Model<MethodologyAttributes, MethodologyCreationAttributes> implements MethodologyAttributes {
-  methodology_id!: string;
+  methodologyId!: string;
   methodology?: string;
-  methodology_url?: string;
-  datasource_id?: string;
+  methodologyUrl?: string;
+  datasourceId?: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 
-  // Methodology belongsTo DataSource via datasource_id
+  // Methodology belongsTo DataSource via datasourceId
   datasource!: DataSource;
   getDatasource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
   setDatasource!: Sequelize.BelongsToSetAssociationMixin<DataSource, DataSourceId>;
   createDatasource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
-  // Methodology belongsToMany DataSource via methodology_id and datasource_id
-  datasource_id_DataSource_DataSourceMethodologies!: DataSource[];
-  getDatasource_id_DataSource_DataSourceMethodologies!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
-  setDatasource_id_DataSource_DataSourceMethodologies!: Sequelize.BelongsToManySetAssociationsMixin<DataSource, DataSourceId>;
-  addDatasource_id_DataSource_DataSourceMethodology!: Sequelize.BelongsToManyAddAssociationMixin<DataSource, DataSourceId>;
-  addDatasource_id_DataSource_DataSourceMethodologies!: Sequelize.BelongsToManyAddAssociationsMixin<DataSource, DataSourceId>;
-  createDatasource_id_DataSource_DataSourceMethodology!: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
-  removeDatasource_id_DataSource_DataSourceMethodology!: Sequelize.BelongsToManyRemoveAssociationMixin<DataSource, DataSourceId>;
-  removeDatasource_id_DataSource_DataSourceMethodologies!: Sequelize.BelongsToManyRemoveAssociationsMixin<DataSource, DataSourceId>;
-  hasDatasource_id_DataSource_DataSourceMethodology!: Sequelize.BelongsToManyHasAssociationMixin<DataSource, DataSourceId>;
-  hasDatasource_id_DataSource_DataSourceMethodologies!: Sequelize.BelongsToManyHasAssociationsMixin<DataSource, DataSourceId>;
-  countDatasource_id_DataSource_DataSourceMethodologies!: Sequelize.BelongsToManyCountAssociationsMixin;
-  // Methodology hasMany DataSourceMethodology via methodology_id
-  DataSourceMethodologies!: DataSourceMethodology[];
+  // Methodology belongsToMany DataSource via methodologyId and datasourceId
+  datasourceIdDataSourceDataSourceMethodologies!: DataSource[];
+  getDatasourceIdDataSourceDataSourceMethodologies!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
+  setDatasourceIdDataSourceDataSourceMethodologies!: Sequelize.BelongsToManySetAssociationsMixin<DataSource, DataSourceId>;
+  addDatasourceIdDataSourceDataSourceMethodology!: Sequelize.BelongsToManyAddAssociationMixin<DataSource, DataSourceId>;
+  addDatasourceIdDataSourceDataSourceMethodologies!: Sequelize.BelongsToManyAddAssociationsMixin<DataSource, DataSourceId>;
+  createDatasourceIdDataSourceDataSourceMethodology!: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
+  removeDatasourceIdDataSourceDataSourceMethodology!: Sequelize.BelongsToManyRemoveAssociationMixin<DataSource, DataSourceId>;
+  removeDatasourceIdDataSourceDataSourceMethodologies!: Sequelize.BelongsToManyRemoveAssociationsMixin<DataSource, DataSourceId>;
+  hasDatasourceIdDataSourceDataSourceMethodology!: Sequelize.BelongsToManyHasAssociationMixin<DataSource, DataSourceId>;
+  hasDatasourceIdDataSourceDataSourceMethodologies!: Sequelize.BelongsToManyHasAssociationsMixin<DataSource, DataSourceId>;
+  countDatasourceIdDataSourceDataSourceMethodologies!: Sequelize.BelongsToManyCountAssociationsMixin;
+  // Methodology hasMany DataSourceMethodology via methodologyId
+  dataSourceMethodologies!: DataSourceMethodology[];
   getDataSourceMethodologies!: Sequelize.HasManyGetAssociationsMixin<DataSourceMethodology>;
   setDataSourceMethodologies!: Sequelize.HasManySetAssociationsMixin<DataSourceMethodology, DataSourceMethodologyId>;
   addDataSourceMethodology!: Sequelize.HasManyAddAssociationMixin<DataSourceMethodology, DataSourceMethodologyId>;
@@ -57,34 +57,38 @@ export class Methodology extends Model<MethodologyAttributes, MethodologyCreatio
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Methodology {
     return Methodology.init({
-    methodology_id: {
+    methodologyId: {
       type: DataTypes.UUID,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      field: 'methodology_id'
     },
     methodology: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    methodology_url: {
+    methodologyUrl: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: true,
+      field: 'methodology_url'
     },
-    datasource_id: {
+    datasourceId: {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
         model: 'DataSource',
         key: 'datasource_id'
-      }
+      },
+      field: 'datasource_id'
     },
     created: {
       type: DataTypes.DATE,
       allowNull: true
     },
-    last_updated: {
+    lastUpdated: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'last_updated'
     }
   }, {
     sequelize,

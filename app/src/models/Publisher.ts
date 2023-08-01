@@ -3,27 +3,27 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import type { DataSource, DataSourceId } from './DataSource';
 
 export interface PublisherAttributes {
-  publisher_id: string;
+  publisherId: string;
   name?: string;
-  URL?: string;
+  url?: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 }
 
-export type PublisherPk = "publisher_id";
+export type PublisherPk = "publisherId";
 export type PublisherId = Publisher[PublisherPk];
-export type PublisherOptionalAttributes = "name" | "URL" | "created" | "last_updated";
+export type PublisherOptionalAttributes = "name" | "url" | "created" | "lastUpdated";
 export type PublisherCreationAttributes = Optional<PublisherAttributes, PublisherOptionalAttributes>;
 
 export class Publisher extends Model<PublisherAttributes, PublisherCreationAttributes> implements PublisherAttributes {
-  publisher_id!: string;
+  publisherId!: string;
   name?: string;
-  URL?: string;
+  url?: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 
-  // Publisher hasMany DataSource via publisher_id
-  DataSources!: DataSource[];
+  // Publisher hasMany DataSource via publisherId
+  dataSources!: DataSource[];
   getDataSources!: Sequelize.HasManyGetAssociationsMixin<DataSource>;
   setDataSources!: Sequelize.HasManySetAssociationsMixin<DataSource, DataSourceId>;
   addDataSource!: Sequelize.HasManyAddAssociationMixin<DataSource, DataSourceId>;
@@ -37,26 +37,29 @@ export class Publisher extends Model<PublisherAttributes, PublisherCreationAttri
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Publisher {
     return Publisher.init({
-    publisher_id: {
+    publisherId: {
       type: DataTypes.UUID,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      field: 'publisher_id'
     },
     name: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    URL: {
+    url: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: true,
+      field: 'URL'
     },
     created: {
       type: DataTypes.DATE,
       allowNull: true
     },
-    last_updated: {
+    lastUpdated: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'last_updated'
     }
   }, {
     sequelize,

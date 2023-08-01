@@ -4,29 +4,29 @@ import type { DataSource, DataSourceId } from './DataSource';
 import type { Sector, SectorId } from './Sector';
 
 export interface DataSourceSectorAttributes {
-  datasource_id: string;
-  sector_id: string;
+  datasourceId: string;
+  sectorId: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 }
 
-export type DataSourceSectorPk = "datasource_id" | "sector_id";
+export type DataSourceSectorPk = "datasourceId" | "sectorId";
 export type DataSourceSectorId = DataSourceSector[DataSourceSectorPk];
-export type DataSourceSectorOptionalAttributes = "created" | "last_updated";
+export type DataSourceSectorOptionalAttributes = "created" | "lastUpdated";
 export type DataSourceSectorCreationAttributes = Optional<DataSourceSectorAttributes, DataSourceSectorOptionalAttributes>;
 
 export class DataSourceSector extends Model<DataSourceSectorAttributes, DataSourceSectorCreationAttributes> implements DataSourceSectorAttributes {
-  datasource_id!: string;
-  sector_id!: string;
+  datasourceId!: string;
+  sectorId!: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 
-  // DataSourceSector belongsTo DataSource via datasource_id
+  // DataSourceSector belongsTo DataSource via datasourceId
   datasource!: DataSource;
   getDatasource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
   setDatasource!: Sequelize.BelongsToSetAssociationMixin<DataSource, DataSourceId>;
   createDatasource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
-  // DataSourceSector belongsTo Sector via sector_id
+  // DataSourceSector belongsTo Sector via sectorId
   sector!: Sector;
   getSector!: Sequelize.BelongsToGetAssociationMixin<Sector>;
   setSector!: Sequelize.BelongsToSetAssociationMixin<Sector, SectorId>;
@@ -34,31 +34,34 @@ export class DataSourceSector extends Model<DataSourceSectorAttributes, DataSour
 
   static initModel(sequelize: Sequelize.Sequelize): typeof DataSourceSector {
     return DataSourceSector.init({
-    datasource_id: {
+    datasourceId: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'DataSource',
         key: 'datasource_id'
-      }
+      },
+      field: 'datasource_id'
     },
-    sector_id: {
+    sectorId: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'Sector',
         key: 'sector_id'
-      }
+      },
+      field: 'sector_id'
     },
     created: {
       type: DataTypes.DATE,
       allowNull: true
     },
-    last_updated: {
+    lastUpdated: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'last_updated'
     }
   }, {
     sequelize,

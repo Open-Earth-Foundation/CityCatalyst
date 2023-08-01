@@ -4,29 +4,29 @@ import type { DataSource, DataSourceId } from './DataSource';
 import type { Methodology, MethodologyId } from './Methodology';
 
 export interface DataSourceMethodologyAttributes {
-  datasource_id: string;
-  methodology_id: string;
+  datasourceId: string;
+  methodologyId: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 }
 
-export type DataSourceMethodologyPk = "datasource_id" | "methodology_id";
+export type DataSourceMethodologyPk = "datasourceId" | "methodologyId";
 export type DataSourceMethodologyId = DataSourceMethodology[DataSourceMethodologyPk];
-export type DataSourceMethodologyOptionalAttributes = "created" | "last_updated";
+export type DataSourceMethodologyOptionalAttributes = "created" | "lastUpdated";
 export type DataSourceMethodologyCreationAttributes = Optional<DataSourceMethodologyAttributes, DataSourceMethodologyOptionalAttributes>;
 
 export class DataSourceMethodology extends Model<DataSourceMethodologyAttributes, DataSourceMethodologyCreationAttributes> implements DataSourceMethodologyAttributes {
-  datasource_id!: string;
-  methodology_id!: string;
+  datasourceId!: string;
+  methodologyId!: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 
-  // DataSourceMethodology belongsTo DataSource via datasource_id
+  // DataSourceMethodology belongsTo DataSource via datasourceId
   datasource!: DataSource;
   getDatasource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
   setDatasource!: Sequelize.BelongsToSetAssociationMixin<DataSource, DataSourceId>;
   createDatasource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
-  // DataSourceMethodology belongsTo Methodology via methodology_id
+  // DataSourceMethodology belongsTo Methodology via methodologyId
   methodology!: Methodology;
   getMethodology!: Sequelize.BelongsToGetAssociationMixin<Methodology>;
   setMethodology!: Sequelize.BelongsToSetAssociationMixin<Methodology, MethodologyId>;
@@ -34,31 +34,34 @@ export class DataSourceMethodology extends Model<DataSourceMethodologyAttributes
 
   static initModel(sequelize: Sequelize.Sequelize): typeof DataSourceMethodology {
     return DataSourceMethodology.init({
-    datasource_id: {
+    datasourceId: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'DataSource',
         key: 'datasource_id'
-      }
+      },
+      field: 'datasource_id'
     },
-    methodology_id: {
+    methodologyId: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'Methodology',
         key: 'methodology_id'
-      }
+      },
+      field: 'methodology_id'
     },
     created: {
       type: DataTypes.DATE,
       allowNull: true
     },
-    last_updated: {
+    lastUpdated: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'last_updated'
     }
   }, {
     sequelize,

@@ -4,29 +4,29 @@ import type { DataSource, DataSourceId } from './DataSource';
 import type { Scope, ScopeId } from './Scope';
 
 export interface DataSourceScopeAttributes {
-  datasource_id: string;
-  scope_id: string;
+  datasourceId: string;
+  scopeId: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 }
 
-export type DataSourceScopePk = "datasource_id" | "scope_id";
+export type DataSourceScopePk = "datasourceId" | "scopeId";
 export type DataSourceScopeId = DataSourceScope[DataSourceScopePk];
-export type DataSourceScopeOptionalAttributes = "created" | "last_updated";
+export type DataSourceScopeOptionalAttributes = "created" | "lastUpdated";
 export type DataSourceScopeCreationAttributes = Optional<DataSourceScopeAttributes, DataSourceScopeOptionalAttributes>;
 
 export class DataSourceScope extends Model<DataSourceScopeAttributes, DataSourceScopeCreationAttributes> implements DataSourceScopeAttributes {
-  datasource_id!: string;
-  scope_id!: string;
+  datasourceId!: string;
+  scopeId!: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 
-  // DataSourceScope belongsTo DataSource via datasource_id
+  // DataSourceScope belongsTo DataSource via datasourceId
   datasource!: DataSource;
   getDatasource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
   setDatasource!: Sequelize.BelongsToSetAssociationMixin<DataSource, DataSourceId>;
   createDatasource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
-  // DataSourceScope belongsTo Scope via scope_id
+  // DataSourceScope belongsTo Scope via scopeId
   scope!: Scope;
   getScope!: Sequelize.BelongsToGetAssociationMixin<Scope>;
   setScope!: Sequelize.BelongsToSetAssociationMixin<Scope, ScopeId>;
@@ -34,31 +34,34 @@ export class DataSourceScope extends Model<DataSourceScopeAttributes, DataSource
 
   static initModel(sequelize: Sequelize.Sequelize): typeof DataSourceScope {
     return DataSourceScope.init({
-    datasource_id: {
+    datasourceId: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'DataSource',
         key: 'datasource_id'
-      }
+      },
+      field: 'datasource_id'
     },
-    scope_id: {
+    scopeId: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'Scope',
         key: 'scope_id'
-      }
+      },
+      field: 'scope_id'
     },
     created: {
       type: DataTypes.DATE,
       allowNull: true
     },
-    last_updated: {
+    lastUpdated: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'last_updated'
     }
   }, {
     sequelize,

@@ -47,6 +47,8 @@ import { Sector as _Sector } from "./Sector";
 import type { SectorAttributes, SectorCreationAttributes } from "./Sector";
 import { SectorValue as _SectorValue } from "./SectorValue";
 import type { SectorValueAttributes, SectorValueCreationAttributes } from "./SectorValue";
+import { SequelizeMeta as _SequelizeMeta } from "./SequelizeMeta";
+import type { SequelizeMetaAttributes, SequelizeMetaCreationAttributes } from "./SequelizeMeta";
 import { SubCategory as _SubCategory } from "./SubCategory";
 import type { SubCategoryAttributes, SubCategoryCreationAttributes } from "./SubCategory";
 import { SubCategoryValue as _SubCategoryValue } from "./SubCategoryValue";
@@ -89,6 +91,7 @@ export {
   _Scope as Scope,
   _Sector as Sector,
   _SectorValue as SectorValue,
+  _SequelizeMeta as SequelizeMeta,
   _SubCategory as SubCategory,
   _SubCategoryValue as SubCategoryValue,
   _SubSector as SubSector,
@@ -148,6 +151,8 @@ export type {
   SectorCreationAttributes,
   SectorValueAttributes,
   SectorValueCreationAttributes,
+  SequelizeMetaAttributes,
+  SequelizeMetaCreationAttributes,
   SubCategoryAttributes,
   SubCategoryCreationAttributes,
   SubCategoryValueAttributes,
@@ -191,6 +196,7 @@ export function initModels(sequelize: Sequelize) {
   const Scope = _Scope.initModel(sequelize);
   const Sector = _Sector.initModel(sequelize);
   const SectorValue = _SectorValue.initModel(sequelize);
+  const SequelizeMeta = _SequelizeMeta.initModel(sequelize);
   const SubCategory = _SubCategory.initModel(sequelize);
   const SubCategoryValue = _SubCategoryValue.initModel(sequelize);
   const SubSector = _SubSector.initModel(sequelize);
@@ -200,128 +206,128 @@ export function initModels(sequelize: Sequelize) {
   const User = _User.initModel(sequelize);
   const Version = _Version.initModel(sequelize);
 
-  ActivityData.belongsToMany(DataSource, { as: 'datasource_id_DataSources', through: DataSourceActivityData, foreignKey: "activitydata_id", otherKey: "datasource_id" });
-  DataSource.belongsToMany(ActivityData, { as: 'activitydata_id_ActivityData', through: DataSourceActivityData, foreignKey: "datasource_id", otherKey: "activitydata_id" });
-  DataSource.belongsToMany(EmissionsFactor, { as: 'emissions_factor_id_EmissionsFactors', through: DataSourceEmissionsFactor, foreignKey: "datasource_id", otherKey: "emissions_factor_id" });
-  DataSource.belongsToMany(GHGs, { as: 'ghg_id_GHGs', through: DataSourceGHGs, foreignKey: "datasource_id", otherKey: "ghg_id" });
-  DataSource.belongsToMany(Methodology, { as: 'methodology_id_Methodologies', through: DataSourceMethodology, foreignKey: "datasource_id", otherKey: "methodology_id" });
-  DataSource.belongsToMany(ReportingLevel, { as: 'reportinglevel_id_ReportingLevels', through: DataSourceReportingLevel, foreignKey: "datasource_id", otherKey: "reportinglevel_id" });
-  DataSource.belongsToMany(Scope, { as: 'scope_id_Scopes', through: DataSourceScope, foreignKey: "datasource_id", otherKey: "scope_id" });
-  DataSource.belongsToMany(Sector, { as: 'sector_id_Sectors', through: DataSourceSector, foreignKey: "datasource_id", otherKey: "sector_id" });
-  DataSource.belongsToMany(SubCategory, { as: 'subcategory_id_SubCategories', through: DataSourceSubCategory, foreignKey: "datasource_id", otherKey: "subcategory_id" });
-  DataSource.belongsToMany(SubSector, { as: 'subsector_id_SubSectors', through: DataSourceSubSector, foreignKey: "datasource_id", otherKey: "subsector_id" });
-  EmissionsFactor.belongsToMany(DataSource, { as: 'datasource_id_DataSource_DataSourceEmissionsFactors', through: DataSourceEmissionsFactor, foreignKey: "emissions_factor_id", otherKey: "datasource_id" });
-  GHGs.belongsToMany(DataSource, { as: 'datasource_id_DataSource_DataSourceGHGs', through: DataSourceGHGs, foreignKey: "ghg_id", otherKey: "datasource_id" });
-  Methodology.belongsToMany(DataSource, { as: 'datasource_id_DataSource_DataSourceMethodologies', through: DataSourceMethodology, foreignKey: "methodology_id", otherKey: "datasource_id" });
-  ReportingLevel.belongsToMany(DataSource, { as: 'datasource_id_DataSource_DataSourceReportingLevels', through: DataSourceReportingLevel, foreignKey: "reportinglevel_id", otherKey: "datasource_id" });
-  ReportingLevel.belongsToMany(SubSector, { as: 'subsector_id_SubSector_SubSectorReportingLevels', through: SubSectorReportingLevel, foreignKey: "reportinglevel_id", otherKey: "subsector_id" });
-  Scope.belongsToMany(DataSource, { as: 'datasource_id_DataSource_DataSourceScopes', through: DataSourceScope, foreignKey: "scope_id", otherKey: "datasource_id" });
-  Scope.belongsToMany(SubSector, { as: 'subsector_id_SubSector_SubSectorScopes', through: SubSectorScope, foreignKey: "scope_id", otherKey: "subsector_id" });
-  Sector.belongsToMany(DataSource, { as: 'datasource_id_DataSource_DataSourceSectors', through: DataSourceSector, foreignKey: "sector_id", otherKey: "datasource_id" });
-  SubCategory.belongsToMany(DataSource, { as: 'datasource_id_DataSource_DataSourceSubCategories', through: DataSourceSubCategory, foreignKey: "subcategory_id", otherKey: "datasource_id" });
-  SubSector.belongsToMany(DataSource, { as: 'datasource_id_DataSource_DataSourceSubSectors', through: DataSourceSubSector, foreignKey: "subsector_id", otherKey: "datasource_id" });
-  SubSector.belongsToMany(ReportingLevel, { as: 'reportinglevel_id_ReportingLevel_SubSectorReportingLevels', through: SubSectorReportingLevel, foreignKey: "subsector_id", otherKey: "reportinglevel_id" });
-  SubSector.belongsToMany(Scope, { as: 'scope_id_Scope_SubSectorScopes', through: SubSectorScope, foreignKey: "subsector_id", otherKey: "scope_id" });
-  DataSourceActivityData.belongsTo(ActivityData, { as: "activitydatum", foreignKey: "activitydata_id"});
-  ActivityData.hasMany(DataSourceActivityData, { as: "DataSourceActivityData", foreignKey: "activitydata_id"});
-  CityUser.belongsTo(City, { as: "city", foreignKey: "city_id"});
-  City.hasMany(CityUser, { as: "CityUsers", foreignKey: "city_id"});
-  GDP.belongsTo(City, { as: "city", foreignKey: "city_id"});
-  City.hasMany(GDP, { as: "GDPs", foreignKey: "city_id"});
-  Inventory.belongsTo(City, { as: "city", foreignKey: "city_id"});
-  City.hasMany(Inventory, { as: "Inventories", foreignKey: "city_id"});
-  Population.belongsTo(City, { as: "city", foreignKey: "city_id"});
-  City.hasMany(Population, { as: "Populations", foreignKey: "city_id"});
-  DataSourceActivityData.belongsTo(DataSource, { as: "datasource", foreignKey: "datasource_id"});
-  DataSource.hasMany(DataSourceActivityData, { as: "DataSourceActivityData", foreignKey: "datasource_id"});
-  DataSourceEmissionsFactor.belongsTo(DataSource, { as: "datasource", foreignKey: "datasource_id"});
-  DataSource.hasMany(DataSourceEmissionsFactor, { as: "DataSourceEmissionsFactors", foreignKey: "datasource_id"});
-  DataSourceGHGs.belongsTo(DataSource, { as: "datasource", foreignKey: "datasource_id"});
-  DataSource.hasMany(DataSourceGHGs, { as: "DataSourceGHGs", foreignKey: "datasource_id"});
-  DataSourceMethodology.belongsTo(DataSource, { as: "datasource", foreignKey: "datasource_id"});
-  DataSource.hasMany(DataSourceMethodology, { as: "DataSourceMethodologies", foreignKey: "datasource_id"});
-  DataSourceReportingLevel.belongsTo(DataSource, { as: "datasource", foreignKey: "datasource_id"});
-  DataSource.hasMany(DataSourceReportingLevel, { as: "DataSourceReportingLevels", foreignKey: "datasource_id"});
-  DataSourceScope.belongsTo(DataSource, { as: "datasource", foreignKey: "datasource_id"});
-  DataSource.hasMany(DataSourceScope, { as: "DataSourceScopes", foreignKey: "datasource_id"});
-  DataSourceSector.belongsTo(DataSource, { as: "datasource", foreignKey: "datasource_id"});
-  DataSource.hasMany(DataSourceSector, { as: "DataSourceSectors", foreignKey: "datasource_id"});
-  DataSourceSubCategory.belongsTo(DataSource, { as: "datasource", foreignKey: "datasource_id"});
-  DataSource.hasMany(DataSourceSubCategory, { as: "DataSourceSubCategories", foreignKey: "datasource_id"});
-  DataSourceSubSector.belongsTo(DataSource, { as: "datasource", foreignKey: "datasource_id"});
-  DataSource.hasMany(DataSourceSubSector, { as: "DataSourceSubSectors", foreignKey: "datasource_id"});
-  GDP.belongsTo(DataSource, { as: "datasource", foreignKey: "datasource_id"});
-  DataSource.hasMany(GDP, { as: "GDPs", foreignKey: "datasource_id"});
-  Methodology.belongsTo(DataSource, { as: "datasource", foreignKey: "datasource_id"});
-  DataSource.hasMany(Methodology, { as: "Methodologies", foreignKey: "datasource_id"});
-  Population.belongsTo(DataSource, { as: "datasource", foreignKey: "datasource_id"});
-  DataSource.hasMany(Population, { as: "Populations", foreignKey: "datasource_id"});
-  DataSourceEmissionsFactor.belongsTo(EmissionsFactor, { as: "emissions_factor", foreignKey: "emissions_factor_id"});
-  EmissionsFactor.hasMany(DataSourceEmissionsFactor, { as: "DataSourceEmissionsFactors", foreignKey: "emissions_factor_id"});
-  SubCategoryValue.belongsTo(EmissionsFactor, { as: "emissions_factor", foreignKey: "emissions_factor_id"});
-  EmissionsFactor.hasMany(SubCategoryValue, { as: "SubCategoryValues", foreignKey: "emissions_factor_id"});
-  SubSectorValue.belongsTo(EmissionsFactor, { as: "emissions_factor", foreignKey: "emissions_factor_id"});
-  EmissionsFactor.hasMany(SubSectorValue, { as: "SubSectorValues", foreignKey: "emissions_factor_id"});
-  DataSourceGHGs.belongsTo(GHGs, { as: "ghg", foreignKey: "ghg_id"});
-  GHGs.hasMany(DataSourceGHGs, { as: "DataSourceGHGs", foreignKey: "ghg_id"});
-  SectorValue.belongsTo(Inventory, { as: "inventory", foreignKey: "inventory_id"});
-  Inventory.hasMany(SectorValue, { as: "SectorValues", foreignKey: "inventory_id"});
-  SubCategoryValue.belongsTo(Inventory, { as: "inventory", foreignKey: "inventory_id"});
-  Inventory.hasMany(SubCategoryValue, { as: "SubCategoryValues", foreignKey: "inventory_id"});
-  SubSectorValue.belongsTo(Inventory, { as: "inventory", foreignKey: "inventory_id"});
-  Inventory.hasMany(SubSectorValue, { as: "SubSectorValues", foreignKey: "inventory_id"});
-  Version.belongsTo(Inventory, { as: "inventory", foreignKey: "inventory_id"});
-  Inventory.hasMany(Version, { as: "Versions", foreignKey: "inventory_id"});
-  DataSourceMethodology.belongsTo(Methodology, { as: "methodology", foreignKey: "methodology_id"});
-  Methodology.hasMany(DataSourceMethodology, { as: "DataSourceMethodologies", foreignKey: "methodology_id"});
-  DataSource.belongsTo(Publisher, { as: "publisher", foreignKey: "publisher_id"});
-  Publisher.hasMany(DataSource, { as: "DataSources", foreignKey: "publisher_id"});
-  ActivityData.belongsTo(ReportingLevel, { as: "reportinglevel", foreignKey: "reportinglevel_id"});
-  ReportingLevel.hasMany(ActivityData, { as: "ActivityData", foreignKey: "reportinglevel_id"});
-  DataSourceReportingLevel.belongsTo(ReportingLevel, { as: "reportinglevel", foreignKey: "reportinglevel_id"});
-  ReportingLevel.hasMany(DataSourceReportingLevel, { as: "DataSourceReportingLevels", foreignKey: "reportinglevel_id"});
-  SubCategory.belongsTo(ReportingLevel, { as: "reportinglevel", foreignKey: "reportinglevel_id"});
-  ReportingLevel.hasMany(SubCategory, { as: "SubCategories", foreignKey: "reportinglevel_id"});
-  SubSectorReportingLevel.belongsTo(ReportingLevel, { as: "reportinglevel", foreignKey: "reportinglevel_id"});
-  ReportingLevel.hasMany(SubSectorReportingLevel, { as: "SubSectorReportingLevels", foreignKey: "reportinglevel_id"});
-  ActivityData.belongsTo(Scope, { as: "scope", foreignKey: "scope_id"});
-  Scope.hasMany(ActivityData, { as: "ActivityData", foreignKey: "scope_id"});
-  DataSourceScope.belongsTo(Scope, { as: "scope", foreignKey: "scope_id"});
-  Scope.hasMany(DataSourceScope, { as: "DataSourceScopes", foreignKey: "scope_id"});
-  SubCategory.belongsTo(Scope, { as: "scope", foreignKey: "scope_id"});
-  Scope.hasMany(SubCategory, { as: "SubCategories", foreignKey: "scope_id"});
-  SubSectorScope.belongsTo(Scope, { as: "scope", foreignKey: "scope_id"});
-  Scope.hasMany(SubSectorScope, { as: "SubSectorScopes", foreignKey: "scope_id"});
-  DataSourceSector.belongsTo(Sector, { as: "sector", foreignKey: "sector_id"});
-  Sector.hasMany(DataSourceSector, { as: "DataSourceSectors", foreignKey: "sector_id"});
-  SectorValue.belongsTo(Sector, { as: "sector", foreignKey: "sector_id"});
-  Sector.hasMany(SectorValue, { as: "SectorValues", foreignKey: "sector_id"});
-  SubSector.belongsTo(Sector, { as: "sector", foreignKey: "sector_id"});
-  Sector.hasMany(SubSector, { as: "SubSectors", foreignKey: "sector_id"});
-  SubCategoryValue.belongsTo(SectorValue, { as: "sector_value", foreignKey: "sector_value_id"});
-  SectorValue.hasMany(SubCategoryValue, { as: "SubCategoryValues", foreignKey: "sector_value_id"});
-  SubSectorValue.belongsTo(SectorValue, { as: "sector_value", foreignKey: "sector_value_id"});
-  SectorValue.hasMany(SubSectorValue, { as: "SubSectorValues", foreignKey: "sector_value_id"});
-  ActivityData.belongsTo(SubCategory, { as: "subcategory", foreignKey: "subcategory_id"});
-  SubCategory.hasMany(ActivityData, { as: "ActivityData", foreignKey: "subcategory_id"});
-  DataSourceSubCategory.belongsTo(SubCategory, { as: "subcategory", foreignKey: "subcategory_id"});
-  SubCategory.hasMany(DataSourceSubCategory, { as: "DataSourceSubCategories", foreignKey: "subcategory_id"});
-  SubCategoryValue.belongsTo(SubCategory, { as: "subcategory", foreignKey: "subcategory_id"});
-  SubCategory.hasMany(SubCategoryValue, { as: "SubCategoryValues", foreignKey: "subcategory_id"});
-  DataSourceSubSector.belongsTo(SubSector, { as: "subsector", foreignKey: "subsector_id"});
-  SubSector.hasMany(DataSourceSubSector, { as: "DataSourceSubSectors", foreignKey: "subsector_id"});
-  SubCategory.belongsTo(SubSector, { as: "subsector", foreignKey: "subsector_id"});
-  SubSector.hasMany(SubCategory, { as: "SubCategories", foreignKey: "subsector_id"});
-  SubSectorReportingLevel.belongsTo(SubSector, { as: "subsector", foreignKey: "subsector_id"});
-  SubSector.hasMany(SubSectorReportingLevel, { as: "SubSectorReportingLevels", foreignKey: "subsector_id"});
-  SubSectorScope.belongsTo(SubSector, { as: "subsector", foreignKey: "subsector_id"});
-  SubSector.hasMany(SubSectorScope, { as: "SubSectorScopes", foreignKey: "subsector_id"});
-  SubSectorValue.belongsTo(SubSector, { as: "subsector", foreignKey: "subsector_id"});
-  SubSector.hasMany(SubSectorValue, { as: "SubSectorValues", foreignKey: "subsector_id"});
-  CityUser.belongsTo(User, { as: "user", foreignKey: "user_id"});
-  User.hasMany(CityUser, { as: "CityUsers", foreignKey: "user_id"});
-  User.belongsTo(User, { as: "organization", foreignKey: "organization_id"});
-  User.hasMany(User, { as: "Users", foreignKey: "organization_id"});
+  ActivityData.belongsToMany(DataSource, { as: 'datasourceIdDataSources', through: DataSourceActivityData, foreignKey: "activitydataId", otherKey: "datasourceId" });
+  DataSource.belongsToMany(ActivityData, { as: 'activitydataIdActivityData', through: DataSourceActivityData, foreignKey: "datasourceId", otherKey: "activitydataId" });
+  DataSource.belongsToMany(EmissionsFactor, { as: 'emissionsFactorIdEmissionsFactors', through: DataSourceEmissionsFactor, foreignKey: "datasourceId", otherKey: "emissionsFactorId" });
+  DataSource.belongsToMany(GHGs, { as: 'ghgIdGhgs', through: DataSourceGHGs, foreignKey: "datasourceId", otherKey: "ghgId" });
+  DataSource.belongsToMany(Methodology, { as: 'methodologyIdMethodologies', through: DataSourceMethodology, foreignKey: "datasourceId", otherKey: "methodologyId" });
+  DataSource.belongsToMany(ReportingLevel, { as: 'reportinglevelIdReportingLevels', through: DataSourceReportingLevel, foreignKey: "datasourceId", otherKey: "reportinglevelId" });
+  DataSource.belongsToMany(Scope, { as: 'scopeIdScopes', through: DataSourceScope, foreignKey: "datasourceId", otherKey: "scopeId" });
+  DataSource.belongsToMany(Sector, { as: 'sectorIdSectors', through: DataSourceSector, foreignKey: "datasourceId", otherKey: "sectorId" });
+  DataSource.belongsToMany(SubCategory, { as: 'subcategoryIdSubCategories', through: DataSourceSubCategory, foreignKey: "datasourceId", otherKey: "subcategoryId" });
+  DataSource.belongsToMany(SubSector, { as: 'subsectorIdSubSectors', through: DataSourceSubSector, foreignKey: "datasourceId", otherKey: "subsectorId" });
+  EmissionsFactor.belongsToMany(DataSource, { as: 'datasourceIdDataSourceDataSourceEmissionsFactors', through: DataSourceEmissionsFactor, foreignKey: "emissionsFactorId", otherKey: "datasourceId" });
+  GHGs.belongsToMany(DataSource, { as: 'datasourceIdDataSourceDataSourceGhgs', through: DataSourceGHGs, foreignKey: "ghgId", otherKey: "datasourceId" });
+  Methodology.belongsToMany(DataSource, { as: 'datasourceIdDataSourceDataSourceMethodologies', through: DataSourceMethodology, foreignKey: "methodologyId", otherKey: "datasourceId" });
+  ReportingLevel.belongsToMany(DataSource, { as: 'datasourceIdDataSourceDataSourceReportingLevels', through: DataSourceReportingLevel, foreignKey: "reportinglevelId", otherKey: "datasourceId" });
+  ReportingLevel.belongsToMany(SubSector, { as: 'subsectorIdSubSectorSubSectorReportingLevels', through: SubSectorReportingLevel, foreignKey: "reportinglevelId", otherKey: "subsectorId" });
+  Scope.belongsToMany(DataSource, { as: 'datasourceIdDataSourceDataSourceScopes', through: DataSourceScope, foreignKey: "scopeId", otherKey: "datasourceId" });
+  Scope.belongsToMany(SubSector, { as: 'subsectorIdSubSectorSubSectorScopes', through: SubSectorScope, foreignKey: "scopeId", otherKey: "subsectorId" });
+  Sector.belongsToMany(DataSource, { as: 'datasourceIdDataSourceDataSourceSectors', through: DataSourceSector, foreignKey: "sectorId", otherKey: "datasourceId" });
+  SubCategory.belongsToMany(DataSource, { as: 'datasourceIdDataSourceDataSourceSubCategories', through: DataSourceSubCategory, foreignKey: "subcategoryId", otherKey: "datasourceId" });
+  SubSector.belongsToMany(DataSource, { as: 'datasourceIdDataSourceDataSourceSubSectors', through: DataSourceSubSector, foreignKey: "subsectorId", otherKey: "datasourceId" });
+  SubSector.belongsToMany(ReportingLevel, { as: 'reportinglevelIdReportingLevelSubSectorReportingLevels', through: SubSectorReportingLevel, foreignKey: "subsectorId", otherKey: "reportinglevelId" });
+  SubSector.belongsToMany(Scope, { as: 'scopeIdScopeSubSectorScopes', through: SubSectorScope, foreignKey: "subsectorId", otherKey: "scopeId" });
+  DataSourceActivityData.belongsTo(ActivityData, { as: "activitydatum", foreignKey: "activitydataId"});
+  ActivityData.hasMany(DataSourceActivityData, { as: "dataSourceActivityData", foreignKey: "activitydataId"});
+  CityUser.belongsTo(City, { as: "city", foreignKey: "cityId"});
+  City.hasMany(CityUser, { as: "cityUsers", foreignKey: "cityId"});
+  GDP.belongsTo(City, { as: "city", foreignKey: "cityId"});
+  City.hasMany(GDP, { as: "gdps", foreignKey: "cityId"});
+  Inventory.belongsTo(City, { as: "city", foreignKey: "cityId"});
+  City.hasMany(Inventory, { as: "inventories", foreignKey: "cityId"});
+  Population.belongsTo(City, { as: "city", foreignKey: "cityId"});
+  City.hasMany(Population, { as: "populations", foreignKey: "cityId"});
+  DataSourceActivityData.belongsTo(DataSource, { as: "datasource", foreignKey: "datasourceId"});
+  DataSource.hasMany(DataSourceActivityData, { as: "dataSourceActivityData", foreignKey: "datasourceId"});
+  DataSourceEmissionsFactor.belongsTo(DataSource, { as: "datasource", foreignKey: "datasourceId"});
+  DataSource.hasMany(DataSourceEmissionsFactor, { as: "dataSourceEmissionsFactors", foreignKey: "datasourceId"});
+  DataSourceGHGs.belongsTo(DataSource, { as: "datasource", foreignKey: "datasourceId"});
+  DataSource.hasMany(DataSourceGHGs, { as: "dataSourceGhgs", foreignKey: "datasourceId"});
+  DataSourceMethodology.belongsTo(DataSource, { as: "datasource", foreignKey: "datasourceId"});
+  DataSource.hasMany(DataSourceMethodology, { as: "dataSourceMethodologies", foreignKey: "datasourceId"});
+  DataSourceReportingLevel.belongsTo(DataSource, { as: "datasource", foreignKey: "datasourceId"});
+  DataSource.hasMany(DataSourceReportingLevel, { as: "dataSourceReportingLevels", foreignKey: "datasourceId"});
+  DataSourceScope.belongsTo(DataSource, { as: "datasource", foreignKey: "datasourceId"});
+  DataSource.hasMany(DataSourceScope, { as: "dataSourceScopes", foreignKey: "datasourceId"});
+  DataSourceSector.belongsTo(DataSource, { as: "datasource", foreignKey: "datasourceId"});
+  DataSource.hasMany(DataSourceSector, { as: "dataSourceSectors", foreignKey: "datasourceId"});
+  DataSourceSubCategory.belongsTo(DataSource, { as: "datasource", foreignKey: "datasourceId"});
+  DataSource.hasMany(DataSourceSubCategory, { as: "dataSourceSubCategories", foreignKey: "datasourceId"});
+  DataSourceSubSector.belongsTo(DataSource, { as: "datasource", foreignKey: "datasourceId"});
+  DataSource.hasMany(DataSourceSubSector, { as: "dataSourceSubSectors", foreignKey: "datasourceId"});
+  GDP.belongsTo(DataSource, { as: "datasource", foreignKey: "datasourceId"});
+  DataSource.hasMany(GDP, { as: "gdps", foreignKey: "datasourceId"});
+  Methodology.belongsTo(DataSource, { as: "datasource", foreignKey: "datasourceId"});
+  DataSource.hasMany(Methodology, { as: "methodologies", foreignKey: "datasourceId"});
+  Population.belongsTo(DataSource, { as: "datasource", foreignKey: "datasourceId"});
+  DataSource.hasMany(Population, { as: "populations", foreignKey: "datasourceId"});
+  DataSourceEmissionsFactor.belongsTo(EmissionsFactor, { as: "emissionsFactor", foreignKey: "emissionsFactorId"});
+  EmissionsFactor.hasMany(DataSourceEmissionsFactor, { as: "dataSourceEmissionsFactors", foreignKey: "emissionsFactorId"});
+  SubCategoryValue.belongsTo(EmissionsFactor, { as: "emissionsFactor", foreignKey: "emissionsFactorId"});
+  EmissionsFactor.hasMany(SubCategoryValue, { as: "subCategoryValues", foreignKey: "emissionsFactorId"});
+  SubSectorValue.belongsTo(EmissionsFactor, { as: "emissionsFactor", foreignKey: "emissionsFactorId"});
+  EmissionsFactor.hasMany(SubSectorValue, { as: "subSectorValues", foreignKey: "emissionsFactorId"});
+  DataSourceGHGs.belongsTo(GHGs, { as: "ghg", foreignKey: "ghgId"});
+  GHGs.hasMany(DataSourceGHGs, { as: "dataSourceGhgs", foreignKey: "ghgId"});
+  SectorValue.belongsTo(Inventory, { as: "inventory", foreignKey: "inventoryId"});
+  Inventory.hasMany(SectorValue, { as: "sectorValues", foreignKey: "inventoryId"});
+  SubCategoryValue.belongsTo(Inventory, { as: "inventory", foreignKey: "inventoryId"});
+  Inventory.hasMany(SubCategoryValue, { as: "subCategoryValues", foreignKey: "inventoryId"});
+  SubSectorValue.belongsTo(Inventory, { as: "inventory", foreignKey: "inventoryId"});
+  Inventory.hasMany(SubSectorValue, { as: "subSectorValues", foreignKey: "inventoryId"});
+  Version.belongsTo(Inventory, { as: "inventory", foreignKey: "inventoryId"});
+  Inventory.hasMany(Version, { as: "versions", foreignKey: "inventoryId"});
+  DataSourceMethodology.belongsTo(Methodology, { as: "methodology", foreignKey: "methodologyId"});
+  Methodology.hasMany(DataSourceMethodology, { as: "dataSourceMethodologies", foreignKey: "methodologyId"});
+  DataSource.belongsTo(Publisher, { as: "publisher", foreignKey: "publisherId"});
+  Publisher.hasMany(DataSource, { as: "dataSources", foreignKey: "publisherId"});
+  ActivityData.belongsTo(ReportingLevel, { as: "reportinglevel", foreignKey: "reportinglevelId"});
+  ReportingLevel.hasMany(ActivityData, { as: "activityData", foreignKey: "reportinglevelId"});
+  DataSourceReportingLevel.belongsTo(ReportingLevel, { as: "reportinglevel", foreignKey: "reportinglevelId"});
+  ReportingLevel.hasMany(DataSourceReportingLevel, { as: "dataSourceReportingLevels", foreignKey: "reportinglevelId"});
+  SubCategory.belongsTo(ReportingLevel, { as: "reportinglevel", foreignKey: "reportinglevelId"});
+  ReportingLevel.hasMany(SubCategory, { as: "subCategories", foreignKey: "reportinglevelId"});
+  SubSectorReportingLevel.belongsTo(ReportingLevel, { as: "reportinglevel", foreignKey: "reportinglevelId"});
+  ReportingLevel.hasMany(SubSectorReportingLevel, { as: "subSectorReportingLevels", foreignKey: "reportinglevelId"});
+  ActivityData.belongsTo(Scope, { as: "scope", foreignKey: "scopeId"});
+  Scope.hasMany(ActivityData, { as: "activityData", foreignKey: "scopeId"});
+  DataSourceScope.belongsTo(Scope, { as: "scope", foreignKey: "scopeId"});
+  Scope.hasMany(DataSourceScope, { as: "dataSourceScopes", foreignKey: "scopeId"});
+  SubCategory.belongsTo(Scope, { as: "scope", foreignKey: "scopeId"});
+  Scope.hasMany(SubCategory, { as: "subCategories", foreignKey: "scopeId"});
+  SubSectorScope.belongsTo(Scope, { as: "scope", foreignKey: "scopeId"});
+  Scope.hasMany(SubSectorScope, { as: "subSectorScopes", foreignKey: "scopeId"});
+  DataSourceSector.belongsTo(Sector, { as: "sector", foreignKey: "sectorId"});
+  Sector.hasMany(DataSourceSector, { as: "dataSourceSectors", foreignKey: "sectorId"});
+  SectorValue.belongsTo(Sector, { as: "sector", foreignKey: "sectorId"});
+  Sector.hasMany(SectorValue, { as: "sectorValues", foreignKey: "sectorId"});
+  SubSector.belongsTo(Sector, { as: "sector", foreignKey: "sectorId"});
+  Sector.hasMany(SubSector, { as: "subSectors", foreignKey: "sectorId"});
+  SubCategoryValue.belongsTo(SectorValue, { as: "sectorValue", foreignKey: "sectorValueId"});
+  SectorValue.hasMany(SubCategoryValue, { as: "subCategoryValues", foreignKey: "sectorValueId"});
+  SubSectorValue.belongsTo(SectorValue, { as: "sectorValue", foreignKey: "sectorValueId"});
+  SectorValue.hasMany(SubSectorValue, { as: "subSectorValues", foreignKey: "sectorValueId"});
+  ActivityData.belongsTo(SubCategory, { as: "subcategory", foreignKey: "subcategoryId"});
+  SubCategory.hasMany(ActivityData, { as: "activityData", foreignKey: "subcategoryId"});
+  DataSourceSubCategory.belongsTo(SubCategory, { as: "subcategory", foreignKey: "subcategoryId"});
+  SubCategory.hasMany(DataSourceSubCategory, { as: "dataSourceSubCategories", foreignKey: "subcategoryId"});
+  SubCategoryValue.belongsTo(SubCategory, { as: "subcategory", foreignKey: "subcategoryId"});
+  SubCategory.hasMany(SubCategoryValue, { as: "subCategoryValues", foreignKey: "subcategoryId"});
+  DataSourceSubSector.belongsTo(SubSector, { as: "subsector", foreignKey: "subsectorId"});
+  SubSector.hasMany(DataSourceSubSector, { as: "dataSourceSubSectors", foreignKey: "subsectorId"});
+  SubCategory.belongsTo(SubSector, { as: "subsector", foreignKey: "subsectorId"});
+  SubSector.hasMany(SubCategory, { as: "subCategories", foreignKey: "subsectorId"});
+  SubSectorReportingLevel.belongsTo(SubSector, { as: "subsector", foreignKey: "subsectorId"});
+  SubSector.hasMany(SubSectorReportingLevel, { as: "subSectorReportingLevels", foreignKey: "subsectorId"});
+  SubSectorScope.belongsTo(SubSector, { as: "subsector", foreignKey: "subsectorId"});
+  SubSector.hasMany(SubSectorScope, { as: "subSectorScopes", foreignKey: "subsectorId"});
+  SubSectorValue.belongsTo(SubSector, { as: "subsector", foreignKey: "subsectorId"});
+  SubSector.hasMany(SubSectorValue, { as: "subSectorValues", foreignKey: "subsectorId"});
+  CityUser.belongsTo(User, { as: "user", foreignKey: "userId"});
+  User.hasMany(CityUser, { as: "cityUsers", foreignKey: "userId"});
+  User.belongsTo(User, { as: "organization", foreignKey: "organizationId"});
+  User.hasMany(User, { as: "users", foreignKey: "organizationId"});
 
   return {
     ActivityData: ActivityData,
@@ -348,6 +354,7 @@ export function initModels(sequelize: Sequelize) {
     Scope: Scope,
     Sector: Sector,
     SectorValue: SectorValue,
+    SequelizeMeta: SequelizeMeta,
     SubCategory: SubCategory,
     SubCategoryValue: SubCategoryValue,
     SubSector: SubSector,

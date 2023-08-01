@@ -6,53 +6,53 @@ import type { SectorValue, SectorValueId } from './SectorValue';
 import type { SubSector, SubSectorId } from './SubSector';
 
 export interface SubSectorValueAttributes {
-  subsector_value_id: string;
-  activity_units?: string;
-  activity_value?: number;
-  emission_factor_value?: number;
-  total_emissions?: number;
-  emissions_factor_id?: string;
-  subsector_id?: string;
-  sector_value_id?: string;
-  inventory_id?: string;
+  subsectorValueId: string;
+  activityUnits?: string;
+  activityValue?: number;
+  emissionFactorValue?: number;
+  totalEmissions?: number;
+  emissionsFactorId?: string;
+  subsectorId?: string;
+  sectorValueId?: string;
+  inventoryId?: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 }
 
-export type SubSectorValuePk = "subsector_value_id";
+export type SubSectorValuePk = "subsectorValueId";
 export type SubSectorValueId = SubSectorValue[SubSectorValuePk];
-export type SubSectorValueOptionalAttributes = "activity_units" | "activity_value" | "emission_factor_value" | "total_emissions" | "emissions_factor_id" | "subsector_id" | "sector_value_id" | "inventory_id" | "created" | "last_updated";
+export type SubSectorValueOptionalAttributes = "activityUnits" | "activityValue" | "emissionFactorValue" | "totalEmissions" | "emissionsFactorId" | "subsectorId" | "sectorValueId" | "inventoryId" | "created" | "lastUpdated";
 export type SubSectorValueCreationAttributes = Optional<SubSectorValueAttributes, SubSectorValueOptionalAttributes>;
 
 export class SubSectorValue extends Model<SubSectorValueAttributes, SubSectorValueCreationAttributes> implements SubSectorValueAttributes {
-  subsector_value_id!: string;
-  activity_units?: string;
-  activity_value?: number;
-  emission_factor_value?: number;
-  total_emissions?: number;
-  emissions_factor_id?: string;
-  subsector_id?: string;
-  sector_value_id?: string;
-  inventory_id?: string;
+  subsectorValueId!: string;
+  activityUnits?: string;
+  activityValue?: number;
+  emissionFactorValue?: number;
+  totalEmissions?: number;
+  emissionsFactorId?: string;
+  subsectorId?: string;
+  sectorValueId?: string;
+  inventoryId?: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 
-  // SubSectorValue belongsTo EmissionsFactor via emissions_factor_id
-  emissions_factor!: EmissionsFactor;
-  getEmissions_factor!: Sequelize.BelongsToGetAssociationMixin<EmissionsFactor>;
-  setEmissions_factor!: Sequelize.BelongsToSetAssociationMixin<EmissionsFactor, EmissionsFactorId>;
-  createEmissions_factor!: Sequelize.BelongsToCreateAssociationMixin<EmissionsFactor>;
-  // SubSectorValue belongsTo Inventory via inventory_id
+  // SubSectorValue belongsTo EmissionsFactor via emissionsFactorId
+  emissionsFactor!: EmissionsFactor;
+  getEmissionsFactor!: Sequelize.BelongsToGetAssociationMixin<EmissionsFactor>;
+  setEmissionsFactor!: Sequelize.BelongsToSetAssociationMixin<EmissionsFactor, EmissionsFactorId>;
+  createEmissionsFactor!: Sequelize.BelongsToCreateAssociationMixin<EmissionsFactor>;
+  // SubSectorValue belongsTo Inventory via inventoryId
   inventory!: Inventory;
   getInventory!: Sequelize.BelongsToGetAssociationMixin<Inventory>;
   setInventory!: Sequelize.BelongsToSetAssociationMixin<Inventory, InventoryId>;
   createInventory!: Sequelize.BelongsToCreateAssociationMixin<Inventory>;
-  // SubSectorValue belongsTo SectorValue via sector_value_id
-  sector_value!: SectorValue;
-  getSector_value!: Sequelize.BelongsToGetAssociationMixin<SectorValue>;
-  setSector_value!: Sequelize.BelongsToSetAssociationMixin<SectorValue, SectorValueId>;
-  createSector_value!: Sequelize.BelongsToCreateAssociationMixin<SectorValue>;
-  // SubSectorValue belongsTo SubSector via subsector_id
+  // SubSectorValue belongsTo SectorValue via sectorValueId
+  sectorValue!: SectorValue;
+  getSectorValue!: Sequelize.BelongsToGetAssociationMixin<SectorValue>;
+  setSectorValue!: Sequelize.BelongsToSetAssociationMixin<SectorValue, SectorValueId>;
+  createSectorValue!: Sequelize.BelongsToCreateAssociationMixin<SectorValue>;
+  // SubSectorValue belongsTo SubSector via subsectorId
   subsector!: SubSector;
   getSubsector!: Sequelize.BelongsToGetAssociationMixin<SubSector>;
   setSubsector!: Sequelize.BelongsToSetAssociationMixin<SubSector, SubSectorId>;
@@ -60,66 +60,76 @@ export class SubSectorValue extends Model<SubSectorValueAttributes, SubSectorVal
 
   static initModel(sequelize: Sequelize.Sequelize): typeof SubSectorValue {
     return SubSectorValue.init({
-    subsector_value_id: {
+    subsectorValueId: {
       type: DataTypes.UUID,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      field: 'subsector_value_id'
     },
-    activity_units: {
+    activityUnits: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: true,
+      field: 'activity_units'
     },
-    activity_value: {
+    activityValue: {
       type: DataTypes.DECIMAL,
-      allowNull: true
+      allowNull: true,
+      field: 'activity_value'
     },
-    emission_factor_value: {
+    emissionFactorValue: {
       type: DataTypes.DECIMAL,
-      allowNull: true
+      allowNull: true,
+      field: 'emission_factor_value'
     },
-    total_emissions: {
+    totalEmissions: {
       type: DataTypes.DECIMAL,
-      allowNull: true
+      allowNull: true,
+      field: 'total_emissions'
     },
-    emissions_factor_id: {
+    emissionsFactorId: {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
         model: 'EmissionsFactor',
         key: 'emissions_factor_id'
-      }
+      },
+      field: 'emissions_factor_id'
     },
-    subsector_id: {
+    subsectorId: {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
         model: 'SubSector',
         key: 'subsector_id'
-      }
+      },
+      field: 'subsector_id'
     },
-    sector_value_id: {
+    sectorValueId: {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
         model: 'SectorValue',
         key: 'sector_value_id'
-      }
+      },
+      field: 'sector_value_id'
     },
-    inventory_id: {
+    inventoryId: {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
         model: 'Inventory',
         key: 'inventory_id'
-      }
+      },
+      field: 'inventory_id'
     },
     created: {
       type: DataTypes.DATE,
       allowNull: true
     },
-    last_updated: {
+    lastUpdated: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'last_updated'
     }
   }, {
     sequelize,

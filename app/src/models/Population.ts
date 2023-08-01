@@ -4,33 +4,33 @@ import type { City, CityId } from './City';
 import type { DataSource, DataSourceId } from './DataSource';
 
 export interface PopulationAttributes {
-  city_id: string;
+  cityId: string;
   population?: number;
   year: number;
   created?: Date;
-  last_updated?: Date;
-  datasource_id?: string;
+  lastUpdated?: Date;
+  datasourceId?: string;
 }
 
-export type PopulationPk = "city_id" | "year";
+export type PopulationPk = "cityId" | "year";
 export type PopulationId = Population[PopulationPk];
-export type PopulationOptionalAttributes = "population" | "created" | "last_updated" | "datasource_id";
+export type PopulationOptionalAttributes = "population" | "created" | "lastUpdated" | "datasourceId";
 export type PopulationCreationAttributes = Optional<PopulationAttributes, PopulationOptionalAttributes>;
 
 export class Population extends Model<PopulationAttributes, PopulationCreationAttributes> implements PopulationAttributes {
-  city_id!: string;
+  cityId!: string;
   population?: number;
   year!: number;
   created?: Date;
-  last_updated?: Date;
-  datasource_id?: string;
+  lastUpdated?: Date;
+  datasourceId?: string;
 
-  // Population belongsTo City via city_id
+  // Population belongsTo City via cityId
   city!: City;
   getCity!: Sequelize.BelongsToGetAssociationMixin<City>;
   setCity!: Sequelize.BelongsToSetAssociationMixin<City, CityId>;
   createCity!: Sequelize.BelongsToCreateAssociationMixin<City>;
-  // Population belongsTo DataSource via datasource_id
+  // Population belongsTo DataSource via datasourceId
   datasource!: DataSource;
   getDatasource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
   setDatasource!: Sequelize.BelongsToSetAssociationMixin<DataSource, DataSourceId>;
@@ -38,14 +38,15 @@ export class Population extends Model<PopulationAttributes, PopulationCreationAt
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Population {
     return Population.init({
-    city_id: {
+    cityId: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'City',
         key: 'city_id'
-      }
+      },
+      field: 'city_id'
     },
     population: {
       type: DataTypes.BIGINT,
@@ -60,17 +61,19 @@ export class Population extends Model<PopulationAttributes, PopulationCreationAt
       type: DataTypes.DATE,
       allowNull: true
     },
-    last_updated: {
+    lastUpdated: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'last_updated'
     },
-    datasource_id: {
+    datasourceId: {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
         model: 'DataSource',
         key: 'datasource_id'
-      }
+      },
+      field: 'datasource_id'
     }
   }, {
     sequelize,

@@ -6,39 +6,39 @@ import type { SubCategoryValue, SubCategoryValueId } from './SubCategoryValue';
 import type { SubSectorValue, SubSectorValueId } from './SubSectorValue';
 
 export interface SectorValueAttributes {
-  sector_value_id: string;
-  total_emissions?: number;
-  sector_id?: string;
-  inventory_id?: string;
+  sectorValueId: string;
+  totalEmissions?: number;
+  sectorId?: string;
+  inventoryId?: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 }
 
-export type SectorValuePk = "sector_value_id";
+export type SectorValuePk = "sectorValueId";
 export type SectorValueId = SectorValue[SectorValuePk];
-export type SectorValueOptionalAttributes = "total_emissions" | "sector_id" | "inventory_id" | "created" | "last_updated";
+export type SectorValueOptionalAttributes = "totalEmissions" | "sectorId" | "inventoryId" | "created" | "lastUpdated";
 export type SectorValueCreationAttributes = Optional<SectorValueAttributes, SectorValueOptionalAttributes>;
 
 export class SectorValue extends Model<SectorValueAttributes, SectorValueCreationAttributes> implements SectorValueAttributes {
-  sector_value_id!: string;
-  total_emissions?: number;
-  sector_id?: string;
-  inventory_id?: string;
+  sectorValueId!: string;
+  totalEmissions?: number;
+  sectorId?: string;
+  inventoryId?: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 
-  // SectorValue belongsTo Inventory via inventory_id
+  // SectorValue belongsTo Inventory via inventoryId
   inventory!: Inventory;
   getInventory!: Sequelize.BelongsToGetAssociationMixin<Inventory>;
   setInventory!: Sequelize.BelongsToSetAssociationMixin<Inventory, InventoryId>;
   createInventory!: Sequelize.BelongsToCreateAssociationMixin<Inventory>;
-  // SectorValue belongsTo Sector via sector_id
+  // SectorValue belongsTo Sector via sectorId
   sector!: Sector;
   getSector!: Sequelize.BelongsToGetAssociationMixin<Sector>;
   setSector!: Sequelize.BelongsToSetAssociationMixin<Sector, SectorId>;
   createSector!: Sequelize.BelongsToCreateAssociationMixin<Sector>;
-  // SectorValue hasMany SubCategoryValue via sector_value_id
-  SubCategoryValues!: SubCategoryValue[];
+  // SectorValue hasMany SubCategoryValue via sectorValueId
+  subCategoryValues!: SubCategoryValue[];
   getSubCategoryValues!: Sequelize.HasManyGetAssociationsMixin<SubCategoryValue>;
   setSubCategoryValues!: Sequelize.HasManySetAssociationsMixin<SubCategoryValue, SubCategoryValueId>;
   addSubCategoryValue!: Sequelize.HasManyAddAssociationMixin<SubCategoryValue, SubCategoryValueId>;
@@ -49,8 +49,8 @@ export class SectorValue extends Model<SectorValueAttributes, SectorValueCreatio
   hasSubCategoryValue!: Sequelize.HasManyHasAssociationMixin<SubCategoryValue, SubCategoryValueId>;
   hasSubCategoryValues!: Sequelize.HasManyHasAssociationsMixin<SubCategoryValue, SubCategoryValueId>;
   countSubCategoryValues!: Sequelize.HasManyCountAssociationsMixin;
-  // SectorValue hasMany SubSectorValue via sector_value_id
-  SubSectorValues!: SubSectorValue[];
+  // SectorValue hasMany SubSectorValue via sectorValueId
+  subSectorValues!: SubSectorValue[];
   getSubSectorValues!: Sequelize.HasManyGetAssociationsMixin<SubSectorValue>;
   setSubSectorValues!: Sequelize.HasManySetAssociationsMixin<SubSectorValue, SubSectorValueId>;
   addSubSectorValue!: Sequelize.HasManyAddAssociationMixin<SubSectorValue, SubSectorValueId>;
@@ -64,38 +64,43 @@ export class SectorValue extends Model<SectorValueAttributes, SectorValueCreatio
 
   static initModel(sequelize: Sequelize.Sequelize): typeof SectorValue {
     return SectorValue.init({
-    sector_value_id: {
+    sectorValueId: {
       type: DataTypes.UUID,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      field: 'sector_value_id'
     },
-    total_emissions: {
+    totalEmissions: {
       type: DataTypes.DECIMAL,
-      allowNull: true
+      allowNull: true,
+      field: 'total_emissions'
     },
-    sector_id: {
+    sectorId: {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
         model: 'Sector',
         key: 'sector_id'
-      }
+      },
+      field: 'sector_id'
     },
-    inventory_id: {
+    inventoryId: {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
         model: 'Inventory',
         key: 'inventory_id'
-      }
+      },
+      field: 'inventory_id'
     },
     created: {
       type: DataTypes.DATE,
       allowNull: true
     },
-    last_updated: {
+    lastUpdated: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'last_updated'
     }
   }, {
     sequelize,

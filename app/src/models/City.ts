@@ -6,7 +6,7 @@ import type { Inventory, InventoryId } from './Inventory';
 import type { Population, PopulationId } from './Population';
 
 export interface CityAttributes {
-  city_id: string;
+  cityId: string;
   locode?: string;
   name?: string;
   shape?: object;
@@ -14,16 +14,16 @@ export interface CityAttributes {
   region?: string;
   area?: number;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 }
 
-export type CityPk = "city_id";
+export type CityPk = "cityId";
 export type CityId = City[CityPk];
-export type CityOptionalAttributes = "locode" | "name" | "shape" | "country" | "region" | "area" | "created" | "last_updated";
+export type CityOptionalAttributes = "locode" | "name" | "shape" | "country" | "region" | "area" | "created" | "lastUpdated";
 export type CityCreationAttributes = Optional<CityAttributes, CityOptionalAttributes>;
 
 export class City extends Model<CityAttributes, CityCreationAttributes> implements CityAttributes {
-  city_id!: string;
+  cityId!: string;
   locode?: string;
   name?: string;
   shape?: object;
@@ -31,10 +31,10 @@ export class City extends Model<CityAttributes, CityCreationAttributes> implemen
   region?: string;
   area?: number;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 
-  // City hasMany CityUser via city_id
-  CityUsers!: CityUser[];
+  // City hasMany CityUser via cityId
+  cityUsers!: CityUser[];
   getCityUsers!: Sequelize.HasManyGetAssociationsMixin<CityUser>;
   setCityUsers!: Sequelize.HasManySetAssociationsMixin<CityUser, CityUserId>;
   addCityUser!: Sequelize.HasManyAddAssociationMixin<CityUser, CityUserId>;
@@ -45,20 +45,20 @@ export class City extends Model<CityAttributes, CityCreationAttributes> implemen
   hasCityUser!: Sequelize.HasManyHasAssociationMixin<CityUser, CityUserId>;
   hasCityUsers!: Sequelize.HasManyHasAssociationsMixin<CityUser, CityUserId>;
   countCityUsers!: Sequelize.HasManyCountAssociationsMixin;
-  // City hasMany GDP via city_id
-  GDPs!: GDP[];
-  getGDPs!: Sequelize.HasManyGetAssociationsMixin<GDP>;
-  setGDPs!: Sequelize.HasManySetAssociationsMixin<GDP, GDPId>;
-  addGDP!: Sequelize.HasManyAddAssociationMixin<GDP, GDPId>;
-  addGDPs!: Sequelize.HasManyAddAssociationsMixin<GDP, GDPId>;
-  createGDP!: Sequelize.HasManyCreateAssociationMixin<GDP>;
-  removeGDP!: Sequelize.HasManyRemoveAssociationMixin<GDP, GDPId>;
-  removeGDPs!: Sequelize.HasManyRemoveAssociationsMixin<GDP, GDPId>;
-  hasGDP!: Sequelize.HasManyHasAssociationMixin<GDP, GDPId>;
-  hasGDPs!: Sequelize.HasManyHasAssociationsMixin<GDP, GDPId>;
-  countGDPs!: Sequelize.HasManyCountAssociationsMixin;
-  // City hasMany Inventory via city_id
-  Inventories!: Inventory[];
+  // City hasMany GDP via cityId
+  gdps!: GDP[];
+  getGdps!: Sequelize.HasManyGetAssociationsMixin<GDP>;
+  setGdps!: Sequelize.HasManySetAssociationsMixin<GDP, GDPId>;
+  addGdp!: Sequelize.HasManyAddAssociationMixin<GDP, GDPId>;
+  addGdps!: Sequelize.HasManyAddAssociationsMixin<GDP, GDPId>;
+  createGdp!: Sequelize.HasManyCreateAssociationMixin<GDP>;
+  removeGdp!: Sequelize.HasManyRemoveAssociationMixin<GDP, GDPId>;
+  removeGdps!: Sequelize.HasManyRemoveAssociationsMixin<GDP, GDPId>;
+  hasGdp!: Sequelize.HasManyHasAssociationMixin<GDP, GDPId>;
+  hasGdps!: Sequelize.HasManyHasAssociationsMixin<GDP, GDPId>;
+  countGdps!: Sequelize.HasManyCountAssociationsMixin;
+  // City hasMany Inventory via cityId
+  inventories!: Inventory[];
   getInventories!: Sequelize.HasManyGetAssociationsMixin<Inventory>;
   setInventories!: Sequelize.HasManySetAssociationsMixin<Inventory, InventoryId>;
   addInventory!: Sequelize.HasManyAddAssociationMixin<Inventory, InventoryId>;
@@ -69,8 +69,8 @@ export class City extends Model<CityAttributes, CityCreationAttributes> implemen
   hasInventory!: Sequelize.HasManyHasAssociationMixin<Inventory, InventoryId>;
   hasInventories!: Sequelize.HasManyHasAssociationsMixin<Inventory, InventoryId>;
   countInventories!: Sequelize.HasManyCountAssociationsMixin;
-  // City hasMany Population via city_id
-  Populations!: Population[];
+  // City hasMany Population via cityId
+  populations!: Population[];
   getPopulations!: Sequelize.HasManyGetAssociationsMixin<Population>;
   setPopulations!: Sequelize.HasManySetAssociationsMixin<Population, PopulationId>;
   addPopulation!: Sequelize.HasManyAddAssociationMixin<Population, PopulationId>;
@@ -84,10 +84,11 @@ export class City extends Model<CityAttributes, CityCreationAttributes> implemen
 
   static initModel(sequelize: Sequelize.Sequelize): typeof City {
     return City.init({
-    city_id: {
+    cityId: {
       type: DataTypes.UUID,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      field: 'city_id'
     },
     locode: {
       type: DataTypes.STRING(255),
@@ -118,9 +119,10 @@ export class City extends Model<CityAttributes, CityCreationAttributes> implemen
       type: DataTypes.DATE,
       allowNull: true
     },
-    last_updated: {
+    lastUpdated: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'last_updated'
     }
   }, {
     sequelize,

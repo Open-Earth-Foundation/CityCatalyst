@@ -4,29 +4,29 @@ import type { DataSource, DataSourceId } from './DataSource';
 import type { SubSector, SubSectorId } from './SubSector';
 
 export interface DataSourceSubSectorAttributes {
-  datasource_id: string;
-  subsector_id: string;
+  datasourceId: string;
+  subsectorId: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 }
 
-export type DataSourceSubSectorPk = "datasource_id" | "subsector_id";
+export type DataSourceSubSectorPk = "datasourceId" | "subsectorId";
 export type DataSourceSubSectorId = DataSourceSubSector[DataSourceSubSectorPk];
-export type DataSourceSubSectorOptionalAttributes = "created" | "last_updated";
+export type DataSourceSubSectorOptionalAttributes = "created" | "lastUpdated";
 export type DataSourceSubSectorCreationAttributes = Optional<DataSourceSubSectorAttributes, DataSourceSubSectorOptionalAttributes>;
 
 export class DataSourceSubSector extends Model<DataSourceSubSectorAttributes, DataSourceSubSectorCreationAttributes> implements DataSourceSubSectorAttributes {
-  datasource_id!: string;
-  subsector_id!: string;
+  datasourceId!: string;
+  subsectorId!: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 
-  // DataSourceSubSector belongsTo DataSource via datasource_id
+  // DataSourceSubSector belongsTo DataSource via datasourceId
   datasource!: DataSource;
   getDatasource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
   setDatasource!: Sequelize.BelongsToSetAssociationMixin<DataSource, DataSourceId>;
   createDatasource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
-  // DataSourceSubSector belongsTo SubSector via subsector_id
+  // DataSourceSubSector belongsTo SubSector via subsectorId
   subsector!: SubSector;
   getSubsector!: Sequelize.BelongsToGetAssociationMixin<SubSector>;
   setSubsector!: Sequelize.BelongsToSetAssociationMixin<SubSector, SubSectorId>;
@@ -34,31 +34,34 @@ export class DataSourceSubSector extends Model<DataSourceSubSectorAttributes, Da
 
   static initModel(sequelize: Sequelize.Sequelize): typeof DataSourceSubSector {
     return DataSourceSubSector.init({
-    datasource_id: {
+    datasourceId: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'DataSource',
         key: 'datasource_id'
-      }
+      },
+      field: 'datasource_id'
     },
-    subsector_id: {
+    subsectorId: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'SubSector',
         key: 'subsector_id'
-      }
+      },
+      field: 'subsector_id'
     },
     created: {
       type: DataTypes.DATE,
       allowNull: true
     },
-    last_updated: {
+    lastUpdated: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'last_updated'
     }
   }, {
     sequelize,

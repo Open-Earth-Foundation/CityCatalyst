@@ -11,44 +11,44 @@ import type { SubSectorScope, SubSectorScopeId } from './SubSectorScope';
 import type { SubSectorValue, SubSectorValueId } from './SubSectorValue';
 
 export interface SubSectorAttributes {
-  subsector_id: string;
-  subsector_name?: string;
-  sector_id?: string;
+  subsectorId: string;
+  subsectorName?: string;
+  sectorId?: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 }
 
-export type SubSectorPk = "subsector_id";
+export type SubSectorPk = "subsectorId";
 export type SubSectorId = SubSector[SubSectorPk];
-export type SubSectorOptionalAttributes = "subsector_name" | "sector_id" | "created" | "last_updated";
+export type SubSectorOptionalAttributes = "subsectorName" | "sectorId" | "created" | "lastUpdated";
 export type SubSectorCreationAttributes = Optional<SubSectorAttributes, SubSectorOptionalAttributes>;
 
 export class SubSector extends Model<SubSectorAttributes, SubSectorCreationAttributes> implements SubSectorAttributes {
-  subsector_id!: string;
-  subsector_name?: string;
-  sector_id?: string;
+  subsectorId!: string;
+  subsectorName?: string;
+  sectorId?: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 
-  // SubSector belongsTo Sector via sector_id
+  // SubSector belongsTo Sector via sectorId
   sector!: Sector;
   getSector!: Sequelize.BelongsToGetAssociationMixin<Sector>;
   setSector!: Sequelize.BelongsToSetAssociationMixin<Sector, SectorId>;
   createSector!: Sequelize.BelongsToCreateAssociationMixin<Sector>;
-  // SubSector belongsToMany DataSource via subsector_id and datasource_id
-  datasource_id_DataSource_DataSourceSubSectors!: DataSource[];
-  getDatasource_id_DataSource_DataSourceSubSectors!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
-  setDatasource_id_DataSource_DataSourceSubSectors!: Sequelize.BelongsToManySetAssociationsMixin<DataSource, DataSourceId>;
-  addDatasource_id_DataSource_DataSourceSubSector!: Sequelize.BelongsToManyAddAssociationMixin<DataSource, DataSourceId>;
-  addDatasource_id_DataSource_DataSourceSubSectors!: Sequelize.BelongsToManyAddAssociationsMixin<DataSource, DataSourceId>;
-  createDatasource_id_DataSource_DataSourceSubSector!: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
-  removeDatasource_id_DataSource_DataSourceSubSector!: Sequelize.BelongsToManyRemoveAssociationMixin<DataSource, DataSourceId>;
-  removeDatasource_id_DataSource_DataSourceSubSectors!: Sequelize.BelongsToManyRemoveAssociationsMixin<DataSource, DataSourceId>;
-  hasDatasource_id_DataSource_DataSourceSubSector!: Sequelize.BelongsToManyHasAssociationMixin<DataSource, DataSourceId>;
-  hasDatasource_id_DataSource_DataSourceSubSectors!: Sequelize.BelongsToManyHasAssociationsMixin<DataSource, DataSourceId>;
-  countDatasource_id_DataSource_DataSourceSubSectors!: Sequelize.BelongsToManyCountAssociationsMixin;
-  // SubSector hasMany DataSourceSubSector via subsector_id
-  DataSourceSubSectors!: DataSourceSubSector[];
+  // SubSector belongsToMany DataSource via subsectorId and datasourceId
+  datasourceIdDataSourceDataSourceSubSectors!: DataSource[];
+  getDatasourceIdDataSourceDataSourceSubSectors!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
+  setDatasourceIdDataSourceDataSourceSubSectors!: Sequelize.BelongsToManySetAssociationsMixin<DataSource, DataSourceId>;
+  addDatasourceIdDataSourceDataSourceSubSector!: Sequelize.BelongsToManyAddAssociationMixin<DataSource, DataSourceId>;
+  addDatasourceIdDataSourceDataSourceSubSectors!: Sequelize.BelongsToManyAddAssociationsMixin<DataSource, DataSourceId>;
+  createDatasourceIdDataSourceDataSourceSubSector!: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
+  removeDatasourceIdDataSourceDataSourceSubSector!: Sequelize.BelongsToManyRemoveAssociationMixin<DataSource, DataSourceId>;
+  removeDatasourceIdDataSourceDataSourceSubSectors!: Sequelize.BelongsToManyRemoveAssociationsMixin<DataSource, DataSourceId>;
+  hasDatasourceIdDataSourceDataSourceSubSector!: Sequelize.BelongsToManyHasAssociationMixin<DataSource, DataSourceId>;
+  hasDatasourceIdDataSourceDataSourceSubSectors!: Sequelize.BelongsToManyHasAssociationsMixin<DataSource, DataSourceId>;
+  countDatasourceIdDataSourceDataSourceSubSectors!: Sequelize.BelongsToManyCountAssociationsMixin;
+  // SubSector hasMany DataSourceSubSector via subsectorId
+  dataSourceSubSectors!: DataSourceSubSector[];
   getDataSourceSubSectors!: Sequelize.HasManyGetAssociationsMixin<DataSourceSubSector>;
   setDataSourceSubSectors!: Sequelize.HasManySetAssociationsMixin<DataSourceSubSector, DataSourceSubSectorId>;
   addDataSourceSubSector!: Sequelize.HasManyAddAssociationMixin<DataSourceSubSector, DataSourceSubSectorId>;
@@ -59,32 +59,32 @@ export class SubSector extends Model<SubSectorAttributes, SubSectorCreationAttri
   hasDataSourceSubSector!: Sequelize.HasManyHasAssociationMixin<DataSourceSubSector, DataSourceSubSectorId>;
   hasDataSourceSubSectors!: Sequelize.HasManyHasAssociationsMixin<DataSourceSubSector, DataSourceSubSectorId>;
   countDataSourceSubSectors!: Sequelize.HasManyCountAssociationsMixin;
-  // SubSector belongsToMany ReportingLevel via subsector_id and reportinglevel_id
-  reportinglevel_id_ReportingLevel_SubSectorReportingLevels!: ReportingLevel[];
-  getReportinglevel_id_ReportingLevel_SubSectorReportingLevels!: Sequelize.BelongsToManyGetAssociationsMixin<ReportingLevel>;
-  setReportinglevel_id_ReportingLevel_SubSectorReportingLevels!: Sequelize.BelongsToManySetAssociationsMixin<ReportingLevel, ReportingLevelId>;
-  addReportinglevel_id_ReportingLevel_SubSectorReportingLevel!: Sequelize.BelongsToManyAddAssociationMixin<ReportingLevel, ReportingLevelId>;
-  addReportinglevel_id_ReportingLevel_SubSectorReportingLevels!: Sequelize.BelongsToManyAddAssociationsMixin<ReportingLevel, ReportingLevelId>;
-  createReportinglevel_id_ReportingLevel_SubSectorReportingLevel!: Sequelize.BelongsToManyCreateAssociationMixin<ReportingLevel>;
-  removeReportinglevel_id_ReportingLevel_SubSectorReportingLevel!: Sequelize.BelongsToManyRemoveAssociationMixin<ReportingLevel, ReportingLevelId>;
-  removeReportinglevel_id_ReportingLevel_SubSectorReportingLevels!: Sequelize.BelongsToManyRemoveAssociationsMixin<ReportingLevel, ReportingLevelId>;
-  hasReportinglevel_id_ReportingLevel_SubSectorReportingLevel!: Sequelize.BelongsToManyHasAssociationMixin<ReportingLevel, ReportingLevelId>;
-  hasReportinglevel_id_ReportingLevel_SubSectorReportingLevels!: Sequelize.BelongsToManyHasAssociationsMixin<ReportingLevel, ReportingLevelId>;
-  countReportinglevel_id_ReportingLevel_SubSectorReportingLevels!: Sequelize.BelongsToManyCountAssociationsMixin;
-  // SubSector belongsToMany Scope via subsector_id and scope_id
-  scope_id_Scope_SubSectorScopes!: Scope[];
-  getScope_id_Scope_SubSectorScopes!: Sequelize.BelongsToManyGetAssociationsMixin<Scope>;
-  setScope_id_Scope_SubSectorScopes!: Sequelize.BelongsToManySetAssociationsMixin<Scope, ScopeId>;
-  addScope_id_Scope_SubSectorScope!: Sequelize.BelongsToManyAddAssociationMixin<Scope, ScopeId>;
-  addScope_id_Scope_SubSectorScopes!: Sequelize.BelongsToManyAddAssociationsMixin<Scope, ScopeId>;
-  createScope_id_Scope_SubSectorScope!: Sequelize.BelongsToManyCreateAssociationMixin<Scope>;
-  removeScope_id_Scope_SubSectorScope!: Sequelize.BelongsToManyRemoveAssociationMixin<Scope, ScopeId>;
-  removeScope_id_Scope_SubSectorScopes!: Sequelize.BelongsToManyRemoveAssociationsMixin<Scope, ScopeId>;
-  hasScope_id_Scope_SubSectorScope!: Sequelize.BelongsToManyHasAssociationMixin<Scope, ScopeId>;
-  hasScope_id_Scope_SubSectorScopes!: Sequelize.BelongsToManyHasAssociationsMixin<Scope, ScopeId>;
-  countScope_id_Scope_SubSectorScopes!: Sequelize.BelongsToManyCountAssociationsMixin;
-  // SubSector hasMany SubCategory via subsector_id
-  SubCategories!: SubCategory[];
+  // SubSector belongsToMany ReportingLevel via subsectorId and reportinglevelId
+  reportinglevelIdReportingLevelSubSectorReportingLevels!: ReportingLevel[];
+  getReportinglevelIdReportingLevelSubSectorReportingLevels!: Sequelize.BelongsToManyGetAssociationsMixin<ReportingLevel>;
+  setReportinglevelIdReportingLevelSubSectorReportingLevels!: Sequelize.BelongsToManySetAssociationsMixin<ReportingLevel, ReportingLevelId>;
+  addReportinglevelIdReportingLevelSubSectorReportingLevel!: Sequelize.BelongsToManyAddAssociationMixin<ReportingLevel, ReportingLevelId>;
+  addReportinglevelIdReportingLevelSubSectorReportingLevels!: Sequelize.BelongsToManyAddAssociationsMixin<ReportingLevel, ReportingLevelId>;
+  createReportinglevelIdReportingLevelSubSectorReportingLevel!: Sequelize.BelongsToManyCreateAssociationMixin<ReportingLevel>;
+  removeReportinglevelIdReportingLevelSubSectorReportingLevel!: Sequelize.BelongsToManyRemoveAssociationMixin<ReportingLevel, ReportingLevelId>;
+  removeReportinglevelIdReportingLevelSubSectorReportingLevels!: Sequelize.BelongsToManyRemoveAssociationsMixin<ReportingLevel, ReportingLevelId>;
+  hasReportinglevelIdReportingLevelSubSectorReportingLevel!: Sequelize.BelongsToManyHasAssociationMixin<ReportingLevel, ReportingLevelId>;
+  hasReportinglevelIdReportingLevelSubSectorReportingLevels!: Sequelize.BelongsToManyHasAssociationsMixin<ReportingLevel, ReportingLevelId>;
+  countReportinglevelIdReportingLevelSubSectorReportingLevels!: Sequelize.BelongsToManyCountAssociationsMixin;
+  // SubSector belongsToMany Scope via subsectorId and scopeId
+  scopeIdScopeSubSectorScopes!: Scope[];
+  getScopeIdScopeSubSectorScopes!: Sequelize.BelongsToManyGetAssociationsMixin<Scope>;
+  setScopeIdScopeSubSectorScopes!: Sequelize.BelongsToManySetAssociationsMixin<Scope, ScopeId>;
+  addScopeIdScopeSubSectorScope!: Sequelize.BelongsToManyAddAssociationMixin<Scope, ScopeId>;
+  addScopeIdScopeSubSectorScopes!: Sequelize.BelongsToManyAddAssociationsMixin<Scope, ScopeId>;
+  createScopeIdScopeSubSectorScope!: Sequelize.BelongsToManyCreateAssociationMixin<Scope>;
+  removeScopeIdScopeSubSectorScope!: Sequelize.BelongsToManyRemoveAssociationMixin<Scope, ScopeId>;
+  removeScopeIdScopeSubSectorScopes!: Sequelize.BelongsToManyRemoveAssociationsMixin<Scope, ScopeId>;
+  hasScopeIdScopeSubSectorScope!: Sequelize.BelongsToManyHasAssociationMixin<Scope, ScopeId>;
+  hasScopeIdScopeSubSectorScopes!: Sequelize.BelongsToManyHasAssociationsMixin<Scope, ScopeId>;
+  countScopeIdScopeSubSectorScopes!: Sequelize.BelongsToManyCountAssociationsMixin;
+  // SubSector hasMany SubCategory via subsectorId
+  subCategories!: SubCategory[];
   getSubCategories!: Sequelize.HasManyGetAssociationsMixin<SubCategory>;
   setSubCategories!: Sequelize.HasManySetAssociationsMixin<SubCategory, SubCategoryId>;
   addSubCategory!: Sequelize.HasManyAddAssociationMixin<SubCategory, SubCategoryId>;
@@ -95,8 +95,8 @@ export class SubSector extends Model<SubSectorAttributes, SubSectorCreationAttri
   hasSubCategory!: Sequelize.HasManyHasAssociationMixin<SubCategory, SubCategoryId>;
   hasSubCategories!: Sequelize.HasManyHasAssociationsMixin<SubCategory, SubCategoryId>;
   countSubCategories!: Sequelize.HasManyCountAssociationsMixin;
-  // SubSector hasMany SubSectorReportingLevel via subsector_id
-  SubSectorReportingLevels!: SubSectorReportingLevel[];
+  // SubSector hasMany SubSectorReportingLevel via subsectorId
+  subSectorReportingLevels!: SubSectorReportingLevel[];
   getSubSectorReportingLevels!: Sequelize.HasManyGetAssociationsMixin<SubSectorReportingLevel>;
   setSubSectorReportingLevels!: Sequelize.HasManySetAssociationsMixin<SubSectorReportingLevel, SubSectorReportingLevelId>;
   addSubSectorReportingLevel!: Sequelize.HasManyAddAssociationMixin<SubSectorReportingLevel, SubSectorReportingLevelId>;
@@ -107,8 +107,8 @@ export class SubSector extends Model<SubSectorAttributes, SubSectorCreationAttri
   hasSubSectorReportingLevel!: Sequelize.HasManyHasAssociationMixin<SubSectorReportingLevel, SubSectorReportingLevelId>;
   hasSubSectorReportingLevels!: Sequelize.HasManyHasAssociationsMixin<SubSectorReportingLevel, SubSectorReportingLevelId>;
   countSubSectorReportingLevels!: Sequelize.HasManyCountAssociationsMixin;
-  // SubSector hasMany SubSectorScope via subsector_id
-  SubSectorScopes!: SubSectorScope[];
+  // SubSector hasMany SubSectorScope via subsectorId
+  subSectorScopes!: SubSectorScope[];
   getSubSectorScopes!: Sequelize.HasManyGetAssociationsMixin<SubSectorScope>;
   setSubSectorScopes!: Sequelize.HasManySetAssociationsMixin<SubSectorScope, SubSectorScopeId>;
   addSubSectorScope!: Sequelize.HasManyAddAssociationMixin<SubSectorScope, SubSectorScopeId>;
@@ -119,8 +119,8 @@ export class SubSector extends Model<SubSectorAttributes, SubSectorCreationAttri
   hasSubSectorScope!: Sequelize.HasManyHasAssociationMixin<SubSectorScope, SubSectorScopeId>;
   hasSubSectorScopes!: Sequelize.HasManyHasAssociationsMixin<SubSectorScope, SubSectorScopeId>;
   countSubSectorScopes!: Sequelize.HasManyCountAssociationsMixin;
-  // SubSector hasMany SubSectorValue via subsector_id
-  SubSectorValues!: SubSectorValue[];
+  // SubSector hasMany SubSectorValue via subsectorId
+  subSectorValues!: SubSectorValue[];
   getSubSectorValues!: Sequelize.HasManyGetAssociationsMixin<SubSectorValue>;
   setSubSectorValues!: Sequelize.HasManySetAssociationsMixin<SubSectorValue, SubSectorValueId>;
   addSubSectorValue!: Sequelize.HasManyAddAssociationMixin<SubSectorValue, SubSectorValueId>;
@@ -134,30 +134,34 @@ export class SubSector extends Model<SubSectorAttributes, SubSectorCreationAttri
 
   static initModel(sequelize: Sequelize.Sequelize): typeof SubSector {
     return SubSector.init({
-    subsector_id: {
+    subsectorId: {
       type: DataTypes.UUID,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      field: 'subsector_id'
     },
-    subsector_name: {
+    subsectorName: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: true,
+      field: 'subsector_name'
     },
-    sector_id: {
+    sectorId: {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
         model: 'Sector',
         key: 'sector_id'
-      }
+      },
+      field: 'sector_id'
     },
     created: {
       type: DataTypes.DATE,
       allowNull: true
     },
-    last_updated: {
+    lastUpdated: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'last_updated'
     }
   }, {
     sequelize,

@@ -8,25 +8,25 @@ import type { SubSector, SubSectorId } from './SubSector';
 import type { SubSectorReportingLevel, SubSectorReportingLevelId } from './SubSectorReportingLevel';
 
 export interface ReportingLevelAttributes {
-  reportinglevel_id: string;
-  reportinglevel_name?: string;
+  reportinglevelId: string;
+  reportinglevelName?: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 }
 
-export type ReportingLevelPk = "reportinglevel_id";
+export type ReportingLevelPk = "reportinglevelId";
 export type ReportingLevelId = ReportingLevel[ReportingLevelPk];
-export type ReportingLevelOptionalAttributes = "reportinglevel_name" | "created" | "last_updated";
+export type ReportingLevelOptionalAttributes = "reportinglevelName" | "created" | "lastUpdated";
 export type ReportingLevelCreationAttributes = Optional<ReportingLevelAttributes, ReportingLevelOptionalAttributes>;
 
 export class ReportingLevel extends Model<ReportingLevelAttributes, ReportingLevelCreationAttributes> implements ReportingLevelAttributes {
-  reportinglevel_id!: string;
-  reportinglevel_name?: string;
+  reportinglevelId!: string;
+  reportinglevelName?: string;
   created?: Date;
-  last_updated?: Date;
+  lastUpdated?: Date;
 
-  // ReportingLevel hasMany ActivityData via reportinglevel_id
-  ActivityData!: ActivityData[];
+  // ReportingLevel hasMany ActivityData via reportinglevelId
+  activityData!: ActivityData[];
   getActivityData!: Sequelize.HasManyGetAssociationsMixin<ActivityData>;
   setActivityData!: Sequelize.HasManySetAssociationsMixin<ActivityData, ActivityDataId>;
   addActivityDatum!: Sequelize.HasManyAddAssociationMixin<ActivityData, ActivityDataId>;
@@ -37,20 +37,20 @@ export class ReportingLevel extends Model<ReportingLevelAttributes, ReportingLev
   hasActivityDatum!: Sequelize.HasManyHasAssociationMixin<ActivityData, ActivityDataId>;
   hasActivityData!: Sequelize.HasManyHasAssociationsMixin<ActivityData, ActivityDataId>;
   countActivityData!: Sequelize.HasManyCountAssociationsMixin;
-  // ReportingLevel belongsToMany DataSource via reportinglevel_id and datasource_id
-  datasource_id_DataSource_DataSourceReportingLevels!: DataSource[];
-  getDatasource_id_DataSource_DataSourceReportingLevels!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
-  setDatasource_id_DataSource_DataSourceReportingLevels!: Sequelize.BelongsToManySetAssociationsMixin<DataSource, DataSourceId>;
-  addDatasource_id_DataSource_DataSourceReportingLevel!: Sequelize.BelongsToManyAddAssociationMixin<DataSource, DataSourceId>;
-  addDatasource_id_DataSource_DataSourceReportingLevels!: Sequelize.BelongsToManyAddAssociationsMixin<DataSource, DataSourceId>;
-  createDatasource_id_DataSource_DataSourceReportingLevel!: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
-  removeDatasource_id_DataSource_DataSourceReportingLevel!: Sequelize.BelongsToManyRemoveAssociationMixin<DataSource, DataSourceId>;
-  removeDatasource_id_DataSource_DataSourceReportingLevels!: Sequelize.BelongsToManyRemoveAssociationsMixin<DataSource, DataSourceId>;
-  hasDatasource_id_DataSource_DataSourceReportingLevel!: Sequelize.BelongsToManyHasAssociationMixin<DataSource, DataSourceId>;
-  hasDatasource_id_DataSource_DataSourceReportingLevels!: Sequelize.BelongsToManyHasAssociationsMixin<DataSource, DataSourceId>;
-  countDatasource_id_DataSource_DataSourceReportingLevels!: Sequelize.BelongsToManyCountAssociationsMixin;
-  // ReportingLevel hasMany DataSourceReportingLevel via reportinglevel_id
-  DataSourceReportingLevels!: DataSourceReportingLevel[];
+  // ReportingLevel belongsToMany DataSource via reportinglevelId and datasourceId
+  datasourceIdDataSourceDataSourceReportingLevels!: DataSource[];
+  getDatasourceIdDataSourceDataSourceReportingLevels!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
+  setDatasourceIdDataSourceDataSourceReportingLevels!: Sequelize.BelongsToManySetAssociationsMixin<DataSource, DataSourceId>;
+  addDatasourceIdDataSourceDataSourceReportingLevel!: Sequelize.BelongsToManyAddAssociationMixin<DataSource, DataSourceId>;
+  addDatasourceIdDataSourceDataSourceReportingLevels!: Sequelize.BelongsToManyAddAssociationsMixin<DataSource, DataSourceId>;
+  createDatasourceIdDataSourceDataSourceReportingLevel!: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
+  removeDatasourceIdDataSourceDataSourceReportingLevel!: Sequelize.BelongsToManyRemoveAssociationMixin<DataSource, DataSourceId>;
+  removeDatasourceIdDataSourceDataSourceReportingLevels!: Sequelize.BelongsToManyRemoveAssociationsMixin<DataSource, DataSourceId>;
+  hasDatasourceIdDataSourceDataSourceReportingLevel!: Sequelize.BelongsToManyHasAssociationMixin<DataSource, DataSourceId>;
+  hasDatasourceIdDataSourceDataSourceReportingLevels!: Sequelize.BelongsToManyHasAssociationsMixin<DataSource, DataSourceId>;
+  countDatasourceIdDataSourceDataSourceReportingLevels!: Sequelize.BelongsToManyCountAssociationsMixin;
+  // ReportingLevel hasMany DataSourceReportingLevel via reportinglevelId
+  dataSourceReportingLevels!: DataSourceReportingLevel[];
   getDataSourceReportingLevels!: Sequelize.HasManyGetAssociationsMixin<DataSourceReportingLevel>;
   setDataSourceReportingLevels!: Sequelize.HasManySetAssociationsMixin<DataSourceReportingLevel, DataSourceReportingLevelId>;
   addDataSourceReportingLevel!: Sequelize.HasManyAddAssociationMixin<DataSourceReportingLevel, DataSourceReportingLevelId>;
@@ -61,8 +61,8 @@ export class ReportingLevel extends Model<ReportingLevelAttributes, ReportingLev
   hasDataSourceReportingLevel!: Sequelize.HasManyHasAssociationMixin<DataSourceReportingLevel, DataSourceReportingLevelId>;
   hasDataSourceReportingLevels!: Sequelize.HasManyHasAssociationsMixin<DataSourceReportingLevel, DataSourceReportingLevelId>;
   countDataSourceReportingLevels!: Sequelize.HasManyCountAssociationsMixin;
-  // ReportingLevel hasMany SubCategory via reportinglevel_id
-  SubCategories!: SubCategory[];
+  // ReportingLevel hasMany SubCategory via reportinglevelId
+  subCategories!: SubCategory[];
   getSubCategories!: Sequelize.HasManyGetAssociationsMixin<SubCategory>;
   setSubCategories!: Sequelize.HasManySetAssociationsMixin<SubCategory, SubCategoryId>;
   addSubCategory!: Sequelize.HasManyAddAssociationMixin<SubCategory, SubCategoryId>;
@@ -73,20 +73,20 @@ export class ReportingLevel extends Model<ReportingLevelAttributes, ReportingLev
   hasSubCategory!: Sequelize.HasManyHasAssociationMixin<SubCategory, SubCategoryId>;
   hasSubCategories!: Sequelize.HasManyHasAssociationsMixin<SubCategory, SubCategoryId>;
   countSubCategories!: Sequelize.HasManyCountAssociationsMixin;
-  // ReportingLevel belongsToMany SubSector via reportinglevel_id and subsector_id
-  subsector_id_SubSector_SubSectorReportingLevels!: SubSector[];
-  getSubsector_id_SubSector_SubSectorReportingLevels!: Sequelize.BelongsToManyGetAssociationsMixin<SubSector>;
-  setSubsector_id_SubSector_SubSectorReportingLevels!: Sequelize.BelongsToManySetAssociationsMixin<SubSector, SubSectorId>;
-  addSubsector_id_SubSector_SubSectorReportingLevel!: Sequelize.BelongsToManyAddAssociationMixin<SubSector, SubSectorId>;
-  addSubsector_id_SubSector_SubSectorReportingLevels!: Sequelize.BelongsToManyAddAssociationsMixin<SubSector, SubSectorId>;
-  createSubsector_id_SubSector_SubSectorReportingLevel!: Sequelize.BelongsToManyCreateAssociationMixin<SubSector>;
-  removeSubsector_id_SubSector_SubSectorReportingLevel!: Sequelize.BelongsToManyRemoveAssociationMixin<SubSector, SubSectorId>;
-  removeSubsector_id_SubSector_SubSectorReportingLevels!: Sequelize.BelongsToManyRemoveAssociationsMixin<SubSector, SubSectorId>;
-  hasSubsector_id_SubSector_SubSectorReportingLevel!: Sequelize.BelongsToManyHasAssociationMixin<SubSector, SubSectorId>;
-  hasSubsector_id_SubSector_SubSectorReportingLevels!: Sequelize.BelongsToManyHasAssociationsMixin<SubSector, SubSectorId>;
-  countSubsector_id_SubSector_SubSectorReportingLevels!: Sequelize.BelongsToManyCountAssociationsMixin;
-  // ReportingLevel hasMany SubSectorReportingLevel via reportinglevel_id
-  SubSectorReportingLevels!: SubSectorReportingLevel[];
+  // ReportingLevel belongsToMany SubSector via reportinglevelId and subsectorId
+  subsectorIdSubSectorSubSectorReportingLevels!: SubSector[];
+  getSubsectorIdSubSectorSubSectorReportingLevels!: Sequelize.BelongsToManyGetAssociationsMixin<SubSector>;
+  setSubsectorIdSubSectorSubSectorReportingLevels!: Sequelize.BelongsToManySetAssociationsMixin<SubSector, SubSectorId>;
+  addSubsectorIdSubSectorSubSectorReportingLevel!: Sequelize.BelongsToManyAddAssociationMixin<SubSector, SubSectorId>;
+  addSubsectorIdSubSectorSubSectorReportingLevels!: Sequelize.BelongsToManyAddAssociationsMixin<SubSector, SubSectorId>;
+  createSubsectorIdSubSectorSubSectorReportingLevel!: Sequelize.BelongsToManyCreateAssociationMixin<SubSector>;
+  removeSubsectorIdSubSectorSubSectorReportingLevel!: Sequelize.BelongsToManyRemoveAssociationMixin<SubSector, SubSectorId>;
+  removeSubsectorIdSubSectorSubSectorReportingLevels!: Sequelize.BelongsToManyRemoveAssociationsMixin<SubSector, SubSectorId>;
+  hasSubsectorIdSubSectorSubSectorReportingLevel!: Sequelize.BelongsToManyHasAssociationMixin<SubSector, SubSectorId>;
+  hasSubsectorIdSubSectorSubSectorReportingLevels!: Sequelize.BelongsToManyHasAssociationsMixin<SubSector, SubSectorId>;
+  countSubsectorIdSubSectorSubSectorReportingLevels!: Sequelize.BelongsToManyCountAssociationsMixin;
+  // ReportingLevel hasMany SubSectorReportingLevel via reportinglevelId
+  subSectorReportingLevels!: SubSectorReportingLevel[];
   getSubSectorReportingLevels!: Sequelize.HasManyGetAssociationsMixin<SubSectorReportingLevel>;
   setSubSectorReportingLevels!: Sequelize.HasManySetAssociationsMixin<SubSectorReportingLevel, SubSectorReportingLevelId>;
   addSubSectorReportingLevel!: Sequelize.HasManyAddAssociationMixin<SubSectorReportingLevel, SubSectorReportingLevelId>;
@@ -100,22 +100,25 @@ export class ReportingLevel extends Model<ReportingLevelAttributes, ReportingLev
 
   static initModel(sequelize: Sequelize.Sequelize): typeof ReportingLevel {
     return ReportingLevel.init({
-    reportinglevel_id: {
+    reportinglevelId: {
       type: DataTypes.UUID,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      field: 'reportinglevel_id'
     },
-    reportinglevel_name: {
+    reportinglevelName: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: true,
+      field: 'reportinglevel_name'
     },
     created: {
       type: DataTypes.DATE,
       allowNull: true
     },
-    last_updated: {
+    lastUpdated: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'last_updated'
     }
   }, {
     sequelize,

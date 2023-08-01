@@ -3,37 +3,37 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import type { CityUser, CityUserId } from './CityUser';
 
 export interface UserAttributes {
-  user_id: string;
+  userId: string;
   name?: string;
-  picture_url?: string;
-  is_organization?: boolean;
+  pictureUrl?: string;
+  isOrganization?: boolean;
   email?: string;
-  password_hash?: string;
+  passwordHash?: string;
   role?: string;
   created?: Date;
-  last_updated?: Date;
-  organization_id?: string;
+  lastUpdated?: Date;
+  organizationId?: string;
 }
 
-export type UserPk = "user_id";
+export type UserPk = "userId";
 export type UserId = User[UserPk];
-export type UserOptionalAttributes = "name" | "picture_url" | "is_organization" | "email" | "password_hash" | "role" | "created" | "last_updated" | "organization_id";
+export type UserOptionalAttributes = "name" | "pictureUrl" | "isOrganization" | "email" | "passwordHash" | "role" | "created" | "lastUpdated" | "organizationId";
 export type UserCreationAttributes = Optional<UserAttributes, UserOptionalAttributes>;
 
 export class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
-  user_id!: string;
+  userId!: string;
   name?: string;
-  picture_url?: string;
-  is_organization?: boolean;
+  pictureUrl?: string;
+  isOrganization?: boolean;
   email?: string;
-  password_hash?: string;
+  passwordHash?: string;
   role?: string;
   created?: Date;
-  last_updated?: Date;
-  organization_id?: string;
+  lastUpdated?: Date;
+  organizationId?: string;
 
-  // User hasMany CityUser via user_id
-  CityUsers!: CityUser[];
+  // User hasMany CityUser via userId
+  cityUsers!: CityUser[];
   getCityUsers!: Sequelize.HasManyGetAssociationsMixin<CityUser>;
   setCityUsers!: Sequelize.HasManySetAssociationsMixin<CityUser, CityUserId>;
   addCityUser!: Sequelize.HasManyAddAssociationMixin<CityUser, CityUserId>;
@@ -44,7 +44,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
   hasCityUser!: Sequelize.HasManyHasAssociationMixin<CityUser, CityUserId>;
   hasCityUsers!: Sequelize.HasManyHasAssociationsMixin<CityUser, CityUserId>;
   countCityUsers!: Sequelize.HasManyCountAssociationsMixin;
-  // User belongsTo User via organization_id
+  // User belongsTo User via organizationId
   organization!: User;
   getOrganization!: Sequelize.BelongsToGetAssociationMixin<User>;
   setOrganization!: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
@@ -52,31 +52,35 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
 
   static initModel(sequelize: Sequelize.Sequelize): typeof User {
     return User.init({
-    user_id: {
+    userId: {
       type: DataTypes.UUID,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      field: 'user_id'
     },
     name: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    picture_url: {
+    pictureUrl: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: true,
+      field: 'picture_url'
     },
-    is_organization: {
+    isOrganization: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
-      defaultValue: false
+      defaultValue: false,
+      field: 'is_organization'
     },
     email: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    password_hash: {
+    passwordHash: {
       type: DataTypes.CHAR(60),
-      allowNull: true
+      allowNull: true,
+      field: 'password_hash'
     },
     role: {
       type: DataTypes.TEXT,
@@ -86,17 +90,19 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
       type: DataTypes.DATE,
       allowNull: true
     },
-    last_updated: {
+    lastUpdated: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'last_updated'
     },
-    organization_id: {
+    organizationId: {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
         model: 'User',
         key: 'user_id'
-      }
+      },
+      field: 'organization_id'
     }
   }, {
     sequelize,

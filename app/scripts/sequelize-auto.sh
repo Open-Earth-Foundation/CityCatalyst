@@ -1,3 +1,3 @@
 #!/bin/bash
-npx sequelize-auto -h localhost -d citycatalyst -u citycatalyst --dialect postgres -o src/models -l ts
+npx sequelize-auto -h localhost -d citycatalyst -u citycatalyst --dialect postgres -o src/models -l ts --caseProp c
 

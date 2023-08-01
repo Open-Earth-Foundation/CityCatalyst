@@ -57,15 +57,6 @@ export class GDP extends Model<GDPAttributes, GDPCreationAttributes> implements 
       allowNull: false,
       primaryKey: true
     },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastUpdated: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: 'last_updated'
-    },
     datasourceId: {
       type: DataTypes.UUID,
       allowNull: true,
@@ -79,7 +70,9 @@ export class GDP extends Model<GDPAttributes, GDPCreationAttributes> implements 
     sequelize,
     tableName: 'GDP',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "GDP_pkey",

@@ -121,21 +121,14 @@ export class SubSectorValue extends Model<SubSectorValueAttributes, SubSectorVal
         key: 'inventory_id'
       },
       field: 'inventory_id'
-    },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastUpdated: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: 'last_updated'
     }
   }, {
     sequelize,
     tableName: 'SubSectorValue',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "SubSectorValue_pkey",

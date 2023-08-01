@@ -420,21 +420,14 @@ export class DataSource extends Model<DataSourceAttributes, DataSourceCreationAt
       type: DataTypes.STRING(255),
       allowNull: true,
       field: 'api_endpoint'
-    },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastUpdated: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: 'last_updated'
     }
   }, {
     sequelize,
     tableName: 'DataSource',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "DataSource_pkey",

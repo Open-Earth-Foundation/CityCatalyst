@@ -86,15 +86,6 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
       type: DataTypes.TEXT,
       allowNull: true
     },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastUpdated: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: 'last_updated'
-    },
     organizationId: {
       type: DataTypes.UUID,
       allowNull: true,
@@ -108,7 +99,9 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
     sequelize,
     tableName: 'User',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "User_pkey",

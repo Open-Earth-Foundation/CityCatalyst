@@ -110,21 +110,14 @@ export class ReportingLevel extends Model<ReportingLevelAttributes, ReportingLev
       type: DataTypes.STRING(255),
       allowNull: true,
       field: 'reportinglevel_name'
-    },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastUpdated: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: 'last_updated'
     }
   }, {
     sequelize,
     tableName: 'ReportingLevel',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "ReportingLevel_pkey",

@@ -116,6 +116,8 @@ export class Inventory extends Model<InventoryAttributes, InventoryCreationAttri
     tableName: 'Inventory',
     schema: 'public',
     timestamps: false,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "Inventory_pkey",

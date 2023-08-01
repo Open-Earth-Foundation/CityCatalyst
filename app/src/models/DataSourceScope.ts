@@ -53,21 +53,14 @@ export class DataSourceScope extends Model<DataSourceScopeAttributes, DataSource
         key: 'scope_id'
       },
       field: 'scope_id'
-    },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastUpdated: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: 'last_updated'
     }
   }, {
     sequelize,
     tableName: 'DataSourceScope',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "DataSourceScope_pkey",

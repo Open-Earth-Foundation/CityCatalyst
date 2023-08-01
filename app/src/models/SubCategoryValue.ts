@@ -121,21 +121,14 @@ export class SubCategoryValue extends Model<SubCategoryValueAttributes, SubCateg
         key: 'inventory_id'
       },
       field: 'inventory_id'
-    },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastUpdated: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: 'last_updated'
     }
   }, {
     sequelize,
     tableName: 'SubCategoryValue',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "SubCategoryValue_pkey",

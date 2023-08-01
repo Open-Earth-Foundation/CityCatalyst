@@ -84,21 +84,14 @@ export class Sector extends Model<SectorAttributes, SectorCreationAttributes> im
       type: DataTypes.STRING(255),
       allowNull: true,
       field: 'sector_name'
-    },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastUpdated: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: 'last_updated'
     }
   }, {
     sequelize,
     tableName: 'Sector',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "Sector_pkey",

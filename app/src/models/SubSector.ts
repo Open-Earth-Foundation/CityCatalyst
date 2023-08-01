@@ -153,21 +153,14 @@ export class SubSector extends Model<SubSectorAttributes, SubSectorCreationAttri
         key: 'sector_id'
       },
       field: 'sector_id'
-    },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastUpdated: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: 'last_updated'
     }
   }, {
     sequelize,
     tableName: 'SubSector',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "SubSector_pkey",

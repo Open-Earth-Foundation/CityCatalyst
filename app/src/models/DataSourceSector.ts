@@ -53,21 +53,14 @@ export class DataSourceSector extends Model<DataSourceSectorAttributes, DataSour
         key: 'sector_id'
       },
       field: 'sector_id'
-    },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastUpdated: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: 'last_updated'
     }
   }, {
     sequelize,
     tableName: 'DataSourceSector',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "DataSourceSector_pkey",

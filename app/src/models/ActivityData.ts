@@ -108,21 +108,14 @@ export class ActivityData extends Model<ActivityDataAttributes, ActivityDataCrea
         key: 'reportinglevel_id'
       },
       field: 'reportinglevel_id'
-    },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastUpdated: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: 'last_updated'
     }
   }, {
     sequelize,
     tableName: 'ActivityData',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "ActivityData_pkey",

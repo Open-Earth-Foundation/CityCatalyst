@@ -58,21 +58,14 @@ export class GHGs extends Model<GHGsAttributes, GHGsCreationAttributes> implemen
       type: DataTypes.STRING(255),
       allowNull: true,
       field: 'ghg_name'
-    },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastUpdated: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: 'last_updated'
     }
   }, {
     sequelize,
     tableName: 'GHGs',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "GHGs_pkey",

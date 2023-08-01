@@ -7,11 +7,13 @@ export interface VersionAttributes {
   year?: number;
   version?: string;
   inventoryId?: string;
+  created?: Date;
+  lastUpdated?: Date;
 }
 
 export type VersionPk = "versionId";
 export type VersionId = Version[VersionPk];
-export type VersionOptionalAttributes = "year" | "version" | "inventoryId";
+export type VersionOptionalAttributes = "year" | "version" | "inventoryId" | "created" | "lastUpdated";
 export type VersionCreationAttributes = Optional<VersionAttributes, VersionOptionalAttributes>;
 
 export class Version extends Model<VersionAttributes, VersionCreationAttributes> implements VersionAttributes {
@@ -19,6 +21,8 @@ export class Version extends Model<VersionAttributes, VersionCreationAttributes>
   year?: number;
   version?: string;
   inventoryId?: string;
+  created?: Date;
+  lastUpdated?: Date;
 
   // Version belongsTo Inventory via inventoryId
   inventory!: Inventory;
@@ -55,7 +59,9 @@ export class Version extends Model<VersionAttributes, VersionCreationAttributes>
     sequelize,
     tableName: 'Version',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "Version_pkey",

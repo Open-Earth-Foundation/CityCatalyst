@@ -92,21 +92,14 @@ export class SectorValue extends Model<SectorValueAttributes, SectorValueCreatio
         key: 'inventory_id'
       },
       field: 'inventory_id'
-    },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastUpdated: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: 'last_updated'
     }
   }, {
     sequelize,
     tableName: 'SectorValue',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "SectorValue_pkey",

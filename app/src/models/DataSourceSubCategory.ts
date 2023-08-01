@@ -53,21 +53,14 @@ export class DataSourceSubCategory extends Model<DataSourceSubCategoryAttributes
         key: 'subcategory_id'
       },
       field: 'subcategory_id'
-    },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastUpdated: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: 'last_updated'
     }
   }, {
     sequelize,
     tableName: 'DataSourceSubCategory',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "DataSourceSubCategory_pkey",

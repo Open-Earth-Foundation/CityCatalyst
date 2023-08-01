@@ -53,21 +53,14 @@ export class DataSourceGHGs extends Model<DataSourceGHGsAttributes, DataSourceGH
         key: 'ghg_id'
       },
       field: 'ghg_id'
-    },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastUpdated: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: 'last_updated'
     }
   }, {
     sequelize,
     tableName: 'DataSourceGHGs',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "DataSourceGHGs_pkey",

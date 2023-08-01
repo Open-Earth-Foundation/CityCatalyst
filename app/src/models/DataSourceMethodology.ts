@@ -53,21 +53,14 @@ export class DataSourceMethodology extends Model<DataSourceMethodologyAttributes
         key: 'methodology_id'
       },
       field: 'methodology_id'
-    },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastUpdated: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: 'last_updated'
     }
   }, {
     sequelize,
     tableName: 'DataSourceMethodology',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "DataSourceMethodology_pkey",

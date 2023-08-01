@@ -80,21 +80,14 @@ export class Methodology extends Model<MethodologyAttributes, MethodologyCreatio
         key: 'datasource_id'
       },
       field: 'datasource_id'
-    },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastUpdated: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: 'last_updated'
     }
   }, {
     sequelize,
     tableName: 'Methodology',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "Methodology_pkey",

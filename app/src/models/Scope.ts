@@ -110,21 +110,14 @@ export class Scope extends Model<ScopeAttributes, ScopeCreationAttributes> imple
       type: DataTypes.STRING(255),
       allowNull: true,
       field: 'scope_name'
-    },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastUpdated: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: 'last_updated'
     }
   }, {
     sequelize,
     tableName: 'Scope',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "Scope_pkey",

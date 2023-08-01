@@ -114,21 +114,14 @@ export class City extends Model<CityAttributes, CityCreationAttributes> implemen
     area: {
       type: DataTypes.BIGINT,
       allowNull: true
-    },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastUpdated: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: 'last_updated'
     }
   }, {
     sequelize,
     tableName: 'City',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "City_locode_key",

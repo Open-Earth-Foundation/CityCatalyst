@@ -53,21 +53,14 @@ export class DataSourceSubSector extends Model<DataSourceSubSectorAttributes, Da
         key: 'subsector_id'
       },
       field: 'subsector_id'
-    },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastUpdated: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: 'last_updated'
     }
   }, {
     sequelize,
     tableName: 'DataSourceSubSector',
     schema: 'public',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
     indexes: [
       {
         name: "DataSourceSubSector_pkey",

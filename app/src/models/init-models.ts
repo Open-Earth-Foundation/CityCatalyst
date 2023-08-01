@@ -47,8 +47,6 @@ import { Sector as _Sector } from "./Sector";
 import type { SectorAttributes, SectorCreationAttributes } from "./Sector";
 import { SectorValue as _SectorValue } from "./SectorValue";
 import type { SectorValueAttributes, SectorValueCreationAttributes } from "./SectorValue";
-import { SequelizeMeta as _SequelizeMeta } from "./SequelizeMeta";
-import type { SequelizeMetaAttributes, SequelizeMetaCreationAttributes } from "./SequelizeMeta";
 import { SubCategory as _SubCategory } from "./SubCategory";
 import type { SubCategoryAttributes, SubCategoryCreationAttributes } from "./SubCategory";
 import { SubCategoryValue as _SubCategoryValue } from "./SubCategoryValue";
@@ -91,7 +89,6 @@ export {
   _Scope as Scope,
   _Sector as Sector,
   _SectorValue as SectorValue,
-  _SequelizeMeta as SequelizeMeta,
   _SubCategory as SubCategory,
   _SubCategoryValue as SubCategoryValue,
   _SubSector as SubSector,
@@ -151,8 +148,6 @@ export type {
   SectorCreationAttributes,
   SectorValueAttributes,
   SectorValueCreationAttributes,
-  SequelizeMetaAttributes,
-  SequelizeMetaCreationAttributes,
   SubCategoryAttributes,
   SubCategoryCreationAttributes,
   SubCategoryValueAttributes,
@@ -196,7 +191,6 @@ export function initModels(sequelize: Sequelize) {
   const Scope = _Scope.initModel(sequelize);
   const Sector = _Sector.initModel(sequelize);
   const SectorValue = _SectorValue.initModel(sequelize);
-  const SequelizeMeta = _SequelizeMeta.initModel(sequelize);
   const SubCategory = _SubCategory.initModel(sequelize);
   const SubCategoryValue = _SubCategoryValue.initModel(sequelize);
   const SubSector = _SubSector.initModel(sequelize);
@@ -354,7 +348,6 @@ export function initModels(sequelize: Sequelize) {
     Scope: Scope,
     Sector: Sector,
     SectorValue: SectorValue,
-    SequelizeMeta: SequelizeMeta,
     SubCategory: SubCategory,
     SubCategoryValue: SubCategoryValue,
     SubSector: SubSector,

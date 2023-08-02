@@ -19,8 +19,8 @@ describe('Models', () => {
     it('should have unique emails', async () => {
       const user = await db.models.User.create({ userId: randomUUID(), email });
       assert.equal(user.email, email);
-      await assert.rejects(async () => {
-        await db.models.User.create({ userId: randomUUID(), email });
+      await assert.rejects(() => {
+        return db.models.User.create({ userId: randomUUID(), email });
       });
     });
   });
@@ -29,10 +29,10 @@ describe('Models', () => {
     it('should have unique UN locodes', async () => {
       const city = await db.models.City.create({ cityId: randomUUID(), locode });
       assert.equal(city.locode, locode);
-      await assert.rejects(async () => {
-        await db.models.City.create({ cityId: randomUUID(), locode });
+      await assert.rejects(() => {
+        return db.models.City.create({ cityId: randomUUID(), locode });
       });
     });
   });
-})
+});
 

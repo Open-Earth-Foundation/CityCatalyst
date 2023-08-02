@@ -1,6 +1,6 @@
 'use client'
 
-import { NavigationBar } from '@/components/NavigationBar'
+import { NavigationBar } from '@/components/navigation-bar'
 import { Link } from '@chakra-ui/next-js'
 
 export default function Home() {

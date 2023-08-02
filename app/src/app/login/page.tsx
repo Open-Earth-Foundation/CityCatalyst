@@ -1,9 +1,11 @@
 'use client'
 
 import { NavigationBar } from "@/components/navigation-bar";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { Link } from "@chakra-ui/next-js";
-import { Button, FormControl, FormErrorMessage, FormLabel, Heading, Input, Text } from "@chakra-ui/react";
+import { Button, FormControl, FormErrorMessage, FormLabel, Heading, Icon, Input, InputGroup, InputRightElement, Text } from "@chakra-ui/react";
 import Image from 'next/image'
+import { useState } from "react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 
 type Inputs = {
@@ -14,6 +16,9 @@ type Inputs = {
 export default function Login() {
   const { register, handleSubmit, formState: { errors }, control } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+
+  const [showPassword, setShowPassword] = useState(false);
+  const handlePasswordVisibility = () => setShowPassword(!showPassword);
 
   return (
     <main>
@@ -34,7 +39,7 @@ export default function Login() {
                     required: true,
                   }}
                   render={({ field }) => (
-                    <Input type="email" placeholder="e.g. youremail@domain.com" {...field} aria-required={true} />
+                    <Input type="email" placeholder="e.g. youremail@domain.com" size="md" {...field} aria-required={true} />
                   )}
                 />
                 {errors.email && <FormErrorMessage>Email is required.</FormErrorMessage>}
@@ -48,12 +53,19 @@ export default function Login() {
                     required: true,
                   }}
                   render={({ field }) => (
-                    <Input type="password" placeholder="········" {...field} aria-required={true} />
+                    <InputGroup>
+                      <Input type={showPassword ? 'text' : 'password'} size="md" placeholder="········" {...field} aria-required={true} />
+                      <InputRightElement width="3rem">
+                        <Button h="2rem" size="sm" onClick={handlePasswordVisibility}>
+                          {showPassword ? <ViewOffIcon /> : <ViewIcon />}
+                        </Button>
+                      </InputRightElement>
+                    </InputGroup>
                   )}
                 />
                 {errors.email && <FormErrorMessage>Email is required.</FormErrorMessage>}
               </FormControl>
-              <div className="w-full text-rigat">
+              <div className="w-full text-right">
                 <Link href="/forgot-password" color="#2351DC">Forgot password</Link>
               </div>
               <Button type="submit" color="white" className="w-full bg-[#2351DC] uppercase rounded-[50px] h-16">Log in</Button>

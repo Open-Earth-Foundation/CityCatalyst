@@ -1,14 +1,21 @@
 'use client'
 
 import { NavigationBar } from '@/components/navigation-bar'
-import { Link } from '@chakra-ui/next-js'
+import { Button, Heading, Text } from '@chakra-ui/react'
+import Link from 'next/link'
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main>
       <NavigationBar />
-      <h1>Home</h1>
-      <Link href="/login">Login</Link>
+      <div className="p-24">
+        <Heading>Home</Heading>
+        <Link href="/login" passHref>
+          <Button color="white" background="blue" as="a">
+            Login
+          </Button>
+        </Link>
+      </div>
     </main>
   )
 }

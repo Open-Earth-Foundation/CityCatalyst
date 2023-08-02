@@ -75,7 +75,8 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
     },
     email: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: true,
+      unique: "User_email_key"
     },
     passwordHash: {
       type: DataTypes.CHAR(60),
@@ -103,6 +104,13 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
     createdAt: 'created',
     updatedAt: 'last_updated',
     indexes: [
+      {
+        name: "User_email_key",
+        unique: true,
+        fields: [
+          { name: "email" },
+        ]
+      },
       {
         name: "User_pkey",
         unique: true,

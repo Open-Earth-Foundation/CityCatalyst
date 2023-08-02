@@ -9,7 +9,7 @@ module.exports = {
       "name" varchar(255),
       "picture_url" text,
       "is_organization" boolean DEFAULT false,
-      "email" varchar(255),
+      "email" varchar(255) UNIQUE,
       "password_hash" char(60),
       "role" text,
       "created" timestamp,

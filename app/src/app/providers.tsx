@@ -52,6 +52,9 @@ export const theme = extendTheme({
           },
           _loading: {
             opacity: 0.8,
+            _hover: {
+              bg: '#5a7be0',
+            },
           },
         },
       },

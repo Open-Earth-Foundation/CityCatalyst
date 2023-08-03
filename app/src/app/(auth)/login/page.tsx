@@ -4,7 +4,7 @@ import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { Link } from "@chakra-ui/next-js";
 import { Button, FormControl, FormErrorMessage, FormLabel, Heading, Input, InputGroup, InputRightElement, Text } from "@chakra-ui/react";
 import { useState } from "react";
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 
 type Inputs = {
   email: string;
@@ -20,7 +20,7 @@ export default function Login() {
 
   return (
     <>
-      <Heading>Log In to City Catalyst</Heading>
+      <Heading size="xl">Log In to City Catalyst</Heading>
       <Text className="my-4" color="#7A7B9A">Please enter your details to log in to your account</Text>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <FormControl isInvalid={!!errors.email}>
@@ -41,7 +41,7 @@ export default function Login() {
             <Input
               type={showPassword ? 'text' : 'password'}
               size="lg"
-              placeholder="········"
+              placeholder={showPassword ? 'Password' : '········'}
               {...register('password', {
                 required: 'Password is required',
                 minLength: { value: 4, message: 'Minimum length should be 4' },

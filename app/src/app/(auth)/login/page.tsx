@@ -70,13 +70,13 @@ export default function Login() {
           </FormErrorMessage>
         </FormControl>
         <div className="w-full text-right">
-          <Link href="/forgot-password">Forgot password</Link>
+          <Link href="/forgot-password" className="underline">Forgot password</Link>
         </div>
         <Button type="submit" isLoading={isSubmitting} h={16} width="full" className="bg-[#2351DC]">Log in</Button>
       </form>
       <Text className="w-full text-center mt-4 text-sm" color="#7A7B9A">
         Don't have an account?{' '}
-        <Link href="/signup">Sign up</Link>
+        <Link href="/signup" className="underline">Sign up</Link>
       </Text>
     </>
   );

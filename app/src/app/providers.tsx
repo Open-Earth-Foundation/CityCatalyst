@@ -57,6 +57,9 @@ export const theme = extendTheme({
             },
           },
         },
+        ghost: {
+          color: '#5a7be0',
+        },
       },
     },
     Link: {

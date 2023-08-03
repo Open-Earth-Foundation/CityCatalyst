@@ -1,5 +1,6 @@
 'use client'
 
+import { emailPattern } from "@/util/validation";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { Link } from "@chakra-ui/next-js";
 import { Button, FormControl, FormErrorMessage, FormLabel, Heading, Input, InputGroup, InputRightElement, Text } from "@chakra-ui/react";
@@ -30,10 +31,15 @@ export default function Login() {
           <FormLabel>Email address</FormLabel>
           <Input
             type="email"
+            formNoValidate
             placeholder="e.g. youremail@domain.com"
             size="lg"
             {...register('email', {
               required: 'Email is required',
+              pattern: {
+                value: emailPattern,
+                message: 'Please enter a valid email address',
+              },
             })}
           />
           <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>

@@ -15,7 +15,10 @@ type Inputs = {
 
 export default function Signup() {
   const { handleSubmit, register, formState: { errors, isSubmitting } } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    console.log(data);
+    return new Promise(resolve => setTimeout(resolve, 2000));
+  };
 
   const [showPassword, setShowPassword] = useState(false);
   const handlePasswordVisibility = () => setShowPassword(!showPassword);

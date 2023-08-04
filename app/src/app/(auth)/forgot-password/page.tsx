@@ -21,7 +21,7 @@ export default function ForgotPassword() {
   return (
     <>
       <Heading size="xl">Forgot Password?</Heading>
-      <Text className="my-4" color="#7A7B9A">Enter the email address you used when you joined and we'll send you instructions to reset your password.</Text>
+      <Text my={4} color="#7A7B9A">Enter the email address you used when you joined and we'll send you instructions to reset your password.</Text>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <EmailInput register={register} error={errors.email} />
         <Button type="submit" isLoading={isSubmitting} h={16} width="full" mt={4}>

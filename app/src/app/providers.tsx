@@ -3,17 +3,18 @@
 import { CacheProvider } from '@chakra-ui/next-js';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 
-import { Poppins } from 'next/font/google'
+import { Open_Sans, Poppins } from 'next/font/google'
 const poppins = Poppins({ weight: '500', subsets: ['latin'] });
+const openSans = Open_Sans({ subsets: ['latin'] });
 
 export const theme = extendTheme({
   colors: {
     brand: '#2351DC',
-    descriptionText: '#7A7B9A',
+    description: '#7A7B9A',
   },
   fonts: {
     heading: 'var(--font-poppins)',
-    body: 'var(--font-rubik)',
+    body: 'var(--font-opensans)',
   },
   components: {
     Button: {
@@ -80,6 +81,7 @@ export function Providers({
         {`
           :root {
             --font-poppins: ${poppins.style.fontFamily};
+            --font-opensans: ${openSans.style.fontFamily};
           }
         `}
       </style>

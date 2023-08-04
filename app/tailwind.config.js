@@ -15,6 +15,8 @@ module.exports = {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'city': 'url("/city_vector_onboarding.svg")',
+        'roads': 'url("/path_vector_login.svg")',
       },
     },
   },

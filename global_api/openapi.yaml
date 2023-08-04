@@ -1,0 +1,287 @@
+openapi: 3.1.0
+info:
+  version: 0.1.0
+  title: City Emission Data
+  description: >
+    This API is for retrieiving raw city emissions data from datasources without
+    an existing API.
+
+    This API was created by the [Open Earth
+    Foundation](https://www.openearth.org/)
+
+    for their
+    [CityCatalyst](https://github.com/Open-Earth-Foundation/CityCatalyst)
+    project.
+  contact:
+    name: Luke Gloege
+    email: luke@openearth.org
+  license:
+    name: GNU Affero General Public License v3.0
+    url: https://www.gnu.org/licenses/agpl-3.0.en.html
+
+paths:
+  /api/v0/climatetrace/city/{locode}/{year}/subsector/{subsector}:
+    get:
+      description: Obtain emission information for a specific city by year and subsector
+      tags:
+        - Point
+      parameters:
+        - name: locode
+          in: path
+          description: UNLOCODE for a specific city.
+          required: true
+          schema:
+            type: string
+            example: US-NYC
+        - name: year
+          in: path
+          description: The inventory year in YYYY.
+          required: true
+          schema:
+            type: integer
+            example: 2022
+        - name: subsector
+          in: path
+          description: >-
+            The GPC subsector UUIDv4 code. This code is in the CityCatalyst
+            schema.
+          required: true
+          schema:
+            type: string
+            example: 867a03ad-1834-4b52-9c4a-00a031e26094
+      responses:
+        '200':
+          description: Successfully returns emission data for city
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/ResponseModel'
+
+  /api/v0/climatetrace/city/{locode}/{year}/subcategory/{subcategory}:
+    get:
+      description: Obtain emission information for a specific city by year and subcategory
+      tags:
+        - Point
+      parameters:
+        - name: locode
+          in: path
+          description: UNLOCODE for a specific city.
+          required: true
+          schema:
+            type: string
+            example: US-NYC
+        - name: year
+          in: path
+          description: The inventory year in YYYY.
+          required: true
+          schema:
+            type: integer
+            example: 2022
+        - name: subcategory
+          in: path
+          description: >-
+            The GPC subcategory UUIDv4 code. This code is in the CityCatalyst
+            schema.
+          required: true
+          schema:
+            type: string
+            example: 867a03ad-1834-4b52-9c4a-00a031e26094
+      responses:
+        '200':
+          description: Successfully returns emission data for city
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/ResponseModel'
+
+  /api/v0/climatetrace/polygon/{year}/subcategory/{subsector}:
+    post:
+      description: Obtain emission information for a specific city by year and subsector
+      tags:
+        - Polygon
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: '#/components/schemas/Polygon'
+
+            example:
+              type: Feature
+              geometry:
+                type: Polygon
+                coordinates:
+                  - [
+                    [ -73.983304, 40.764365],
+                    [ -73.983304, 40.800740],
+                    [ -73.958954, 40.800740],
+                    [ -73.958954, 40.764365],
+                    [ -73.983304, 40.764365]
+                    ]
+      parameters:
+        - name: year
+          in: path
+          description: The inventory year in YYYY.
+          required: true
+          schema:
+            type: integer
+            example: 2022
+        - name: subsector
+          in: path
+          description: >-
+            The GPC subsector UUIDv4 code. This code is in the CityCatalyst
+            schema.
+          required: true
+          schema:
+            type: string
+            example: 867a03ad-1834-4b52-9c4a-00a031e26094
+      responses:
+        '200':
+          description: Successfully returns emission data for city
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/ResponseModel'
+
+  /api/v0/climatetrace/polygon/{year}/subcategory/{subcategory}:
+    post:
+      description: Obtain emission information for a specific city by year and subcategory
+      tags:
+        - Polygon
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: '#/components/schemas/Polygon'
+
+            example:
+              type: Feature
+              geometry:
+                type: Polygon
+                coordinates:
+                  - [
+                    [ -73.983304, 40.764365],
+                    [ -73.983304, 40.800740],
+                    [ -73.958954, 40.800740],
+                    [ -73.958954, 40.764365],
+                    [ -73.983304, 40.764365]
+                    ]
+      parameters:
+        - name: year
+          in: path
+          description: The inventory year in YYYY.
+          required: true
+          schema:
+            type: integer
+            example: 2022
+        - name: subcategory
+          in: path
+          description: >-
+            The GPC subsector UUIDv4 code. This code is in the CityCatalyst
+            schema.
+          required: true
+          schema:
+            type: string
+            example: 867a03ad-1834-4b52-9c4a-00a031e26094
+      responses:
+        '200':
+          description: Successfully returns emission data for city
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/ResponseModel'
+
+components:
+  schemas:
+    Polygon:
+      description: model containing geoJSON polygon
+      properties:
+        type:
+          type: string
+          enum:
+            - Feature
+        geometry:
+          type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - Polygon
+            coordinates:
+              type: array
+              items:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: number
+
+    ResponseModel:
+      description: model containing response object
+      properties:
+        emissions:
+          type: object
+          properties:
+            co2_mass:
+              type: integer
+            co2_co2eq:
+              type: integer
+            ch4_mass:
+              type: integer
+            ch4_co2eq:
+              type: integer
+            no2_mass:
+              type: integer
+            no2_co2eq:
+              type: integer
+            co2eq_100y:
+              type: integer
+            co2eq_20y:
+              type: integer
+            gpc_quality:
+              type: string
+        ownership:
+          type: object
+          properties:
+            asset_name:
+              type: string
+            name:
+              type: string
+            data_source:
+              type: string
+            url:
+              type: string
+            location:
+              type: string
+        capacity:
+          type: object
+          properties:
+            value:
+              type: number
+            units:
+              type: string
+            factor:
+              type: number
+        activity:
+          type: object
+          properties:
+            value:
+              type: number
+            units:
+              type: string
+            gpc_quality:
+              type: string
+        emissions_factor:
+          type: object
+          properties:
+            value:
+              type: number
+            units:
+              type: string
+            gpc_quality:
+              type: string

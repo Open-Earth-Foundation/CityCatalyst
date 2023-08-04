@@ -28,6 +28,7 @@ export default function OnboardingSetup() {
         <div>
           <Heading size="xl">Select City and Year</Heading>
           <Text className="my-4" color="description">
+          <Text className="my-4" color="tertiary">
             Please select the city and year for which you want to create your emissions inventory
           </Text>
         </div>

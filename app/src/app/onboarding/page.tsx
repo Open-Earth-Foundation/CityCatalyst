@@ -7,7 +7,7 @@ export default function Onboarding() {
   return (
     <>
       <Heading size="xl" color="brand" mb={6}>Let's Start Your Emissions Inventory!</Heading>
-      <Text color="descriptionText">
+      <Text color="tertiary">
         We need to set and confirm the city where you want to do the inventory.
         <br />
 You are one step closer to getting your GPC emissions inventory!

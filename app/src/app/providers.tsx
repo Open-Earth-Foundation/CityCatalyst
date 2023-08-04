@@ -10,7 +10,7 @@ const openSans = Open_Sans({ subsets: ['latin'] });
 export const theme = extendTheme({
   colors: {
     brand: '#2351DC',
-    description: '#7A7B9A',
+    tertiary: '#7A7B9A',
   },
   fonts: {
     heading: 'var(--font-poppins)',

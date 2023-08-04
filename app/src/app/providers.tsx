@@ -7,10 +7,9 @@ import { Poppins } from 'next/font/google'
 const poppins = Poppins({ weight: '500', subsets: ['latin'] });
 
 export const theme = extendTheme({
-  brand: {
-    900: '#1a365d',
-    800: '#153e75',
-    700: '#2a69ac',
+  colors: {
+    brand: '#2351DC',
+    descriptionText: '#7A7B9A',
   },
   fonts: {
     heading: 'var(--font-poppins)',

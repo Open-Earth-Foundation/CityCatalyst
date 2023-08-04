@@ -32,7 +32,7 @@ export default function OnboardingSetup() {
       >
         Go Back
       </Button>
-      <div className="flex flex-col md:flex-row">
+      <div className="flex flex-col md:flex-row md:space-x-12 md:space-y-0 space-y-12 align-top">
         <div>
           <Heading size="xl">Select City and Year</Heading>
           <Text className="my-4" color="tertiary">

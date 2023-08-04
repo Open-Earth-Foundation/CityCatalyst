@@ -235,9 +235,9 @@ components:
               type: integer
             ch4_co2eq:
               type: integer
-            no2_mass:
+            n2o_mass:
               type: integer
-            no2_co2eq:
+            n2o_co2eq:
               type: integer
             co2eq_100y:
               type: integer

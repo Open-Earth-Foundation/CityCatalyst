@@ -1,9 +1,9 @@
 'use client'
 
-import { emailPattern } from "@/util/validation";
-import { Button, FormControl, FormErrorMessage, FormLabel, Heading, Input, Text } from "@chakra-ui/react";
+import EmailInput from "@/components/email-input";
+import { Button, Heading, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 
 type Inputs = {
   email: string;
@@ -23,23 +23,7 @@ export default function ForgotPassword() {
       <Heading size="xl">Forgot Password?</Heading>
       <Text className="my-4" color="#7A7B9A">Enter the email address you used when you joined and we'll send you instructions to reset your password.</Text>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <FormControl isInvalid={!!errors.email}>
-          <FormLabel>Email address</FormLabel>
-          <Input
-            type="email"
-            formNoValidate
-            placeholder="e.g. youremail@domain.com"
-            size="lg"
-            {...register('email', {
-              required: 'Email is required',
-              pattern: {
-                value: emailPattern,
-                message: 'Please enter a valid email address',
-              },
-            })}
-          />
-          <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
-        </FormControl>
+        <EmailInput register={register} error={errors.email} />
         <Button type="submit" isLoading={isSubmitting} h={16} width="full" mt={4}>
           Reset Password
         </Button>

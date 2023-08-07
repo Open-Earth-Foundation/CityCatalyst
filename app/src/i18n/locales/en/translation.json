@@ -7,6 +7,7 @@
   "email-address": "Email address",
   "email-placeholder": "e.g. youremail@domain.com",
   "email-required": "Email is required",
+  "email-invalid": "Please enter a valid email address",
   "password": "Password",
   "password-required": "Password is required",
   "min-length": "Minimum length should be {{length}}",

@@ -2,11 +2,13 @@
 
 import EmailInput from "@/components/email-input";
 import PasswordInput from "@/components/password-input";
+import { useTranslation } from "@/i18n/client";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { Link } from "@chakra-ui/next-js";
 import { Button, Checkbox, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, Input, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { Trans } from "react-i18next/TransWithoutContext";
 
 type Inputs = {
   name: string;
@@ -15,7 +17,8 @@ type Inputs = {
   acceptTerms: boolean;
 };
 
-export default function Signup() {
+export default function Signup({ params: { lng } }: { params: { lng: string } }) {
+  const { t } = useTranslation(lng, 'register');
   const router = useRouter();
   const { handleSubmit, register, formState: { errors, isSubmitting } } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
@@ -26,45 +29,47 @@ export default function Signup() {
 
   return (
     <>
-      <Heading size="xl">Sign Up to City Catalyst</Heading>
-      <Text className="my-4" color="#7A7B9A">Please enter your details to create your account</Text>
+      <Heading size="xl">{t('signup-heading')}</Heading>
+      <Text className="my-4" color="#7A7B9A">{t('signup-details')}</Text>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <FormControl isInvalid={!!errors.name}>
-          <FormLabel>Full name</FormLabel>
+          <FormLabel>{t('full-name')}</FormLabel>
           <Input
             type="text"
-            placeholder="Your full name"
+            placeholder={t('full-name-placeholder')}
             size="lg"
             {...register('name', {
-              required: 'Name is required',
-              minLength: { value: 4, message: 'Minimum length should be 4' },
+              required: t('full-name-required'),
+              minLength: { value: 4, message: t('min-length', { length: 4 }) },
             })}
           />
           <FormErrorMessage>{errors.name && errors.name.message}</FormErrorMessage>
         </FormControl>
-        <EmailInput register={register} error={errors.email} />
-        <PasswordInput register={register} error={errors.password}>
-          <FormHelperText><InfoOutlineIcon color="#2351DC" />{' '}Must contain uppercase, lowercase letters and number</FormHelperText>
+        <EmailInput register={register} error={errors.email} t={t} />
+        <PasswordInput register={register} error={errors.password} t={t}>
+          <FormHelperText><InfoOutlineIcon color="#2351DC" />{' '}{t('password-hint')}</FormHelperText>
         </PasswordInput>
         <FormControl isInvalid={!!errors.acceptTerms}>
           <Checkbox
             color="#7A7B9A"
             size="md"
             {...register('acceptTerms', {
-              required: 'Please accept the terms and conditions in order to sign up',
+              required: t('accept-terms-required'),
             })}
           >
-            Accept <Link href="/terms" className="underline">Terms and conditions</Link>
+            <Trans i18nKey="accept-terms">
+              Accept <Link href="/terms" className="underline">Terms and conditions</Link>
+            </Trans>
           </Checkbox>
           <FormErrorMessage>
             {errors.acceptTerms && errors.acceptTerms.message}
           </FormErrorMessage>
         </FormControl>
-        <Button type="submit" isLoading={isSubmitting} h={16} width="full" className="bg-[#2351DC]">Create Account</Button>
+        <Button type="submit" formNoValidate isLoading={isSubmitting} h={16} width="full" className="bg-[#2351DC]">{t('create-account')}</Button>
       </form>
       <Text className="w-full text-center mt-4 text-sm" color="#7A7B9A">
-        Already have an account?{' '}
-        <Link href="/login" className="underline">Log In</Link>
+        {t('have-account')}{' '}
+        <Link href="/login" className="underline">{t('log-in')}</Link>
       </Text>
     </>
   );

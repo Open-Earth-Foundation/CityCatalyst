@@ -27,18 +27,18 @@ export default function Login({ params: { lng } }: { params: { lng: string } }) 
   return (
     <>
       <Heading size="xl">{t('login-heading')}</Heading>
-      <Text my={4} color="#7A7B9A">Please enter your details to log in to your account</Text>
+      <Text my={4} color="#7A7B9A">{t('login-details')}</Text>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <EmailInput register={register} error={errors.email} />
-        <PasswordInput register={register} error={errors.password} />
+        <EmailInput register={register} error={errors.email} t={t} />
+        <PasswordInput register={register} error={errors.password} t={t} />
         <div className="w-full text-right">
-          <Link href="/forgot-password" className="underline">Forgot password</Link>
+          <Link href="/forgot-password" className="underline">{t('forgot-password')}</Link>
         </div>
-        <Button type="submit" isLoading={isSubmitting} h={16} width="full" className="bg-[#2351DC]">Log in</Button>
+        <Button type="submit" formNoValidate isLoading={isSubmitting} h={16} width="full" className="bg-[#2351DC]">{t('log-in')}</Button>
       </form>
       <Text className="w-full text-center mt-4 text-sm" color="#7A7B9A">
-        Don't have an account?{' '}
-        <Link href="/signup" className="underline">Sign up</Link>
+        {t('no-account')}{' '}
+        <Link href="/signup" className="underline">{t('sign-up')}</Link>
       </Text>
     </>
   );

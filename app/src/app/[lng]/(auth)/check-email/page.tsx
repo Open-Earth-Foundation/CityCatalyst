@@ -4,34 +4,37 @@ import { Button, Heading, Text } from "@chakra-ui/react";
 import { useSearchParams } from 'next/navigation';
 import { Link } from '@chakra-ui/next-js';
 import NextLink from 'next/link';
+import { useTranslation } from "@/i18n/client";
 
-export default function CheckEmail() {
+export default function CheckEmail({ params: { lng } }: { params: { lng: string } }) {
+  const { t } = useTranslation(lng, 'forgot-password');
   const searchParams = useSearchParams();
   const email = searchParams.get('email');
   const isReset = !!searchParams.get('reset');
 
   return (
     <>
-      <Heading size="xl">Check Your Email</Heading>
+      <Heading size="xl">{t('check-email-heading')}</Heading>
       {isReset ? (
         <Text my={4} color="#7A7B9A">
-          If an account exists for{' '}
-          {email ? <Link href={`mailto:${email}`}>{email}</Link> : 'your email'}
-          , you will get an email with instructions on resetting your password. If it doesn't arrive, be sure to check your spam folder.
+          {t('check-email-reset-prefix')}{' '}
+          {email ? <Link href={`mailto:${email}`}>{email}</Link> : t('your email')}
+          {t('check-email-reset-details')}
         </Text>
       ) : (
         <>
-          <Text className="my-4" color="#7A7B9A">Thank you for creating your City Catalyst account!</Text>
+          <Text className="my-4" color="#7A7B9A">{t('check-email-details1')}</Text>
           <Text className="my-4" color="#7A7B9A">
             {email ? (
-              <>At <Link href={`mailto:${email}`}>{email}</Link></>
-            ) : 'In your inbox'}
-            , you will receive an email with instructions and credentials for your new account. If you do not receive it, please check your spam folder.</Text>
+              <>{t('check-email-details2-prefix')} <Link href={`mailto:${email}`}>{email}</Link></>
+            ) : t('in-inbox')}
+            {t('check-email-details2')}
+          </Text>
         </>
       )}
       <NextLink href="/login" passHref legacyBehavior>
         <Button as="a" h={16} width="full" mt={4}>
-          Back to Log In
+          {t('back-to-login')}
         </Button>
       </NextLink>
     </>

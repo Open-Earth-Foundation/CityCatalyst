@@ -1,6 +1,7 @@
 'use client'
 
 import EmailInput from "@/components/email-input";
+import { useTranslation } from "@/i18n/client";
 import { Button, Heading, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -9,7 +10,8 @@ type Inputs = {
   email: string;
 };
 
-export default function ForgotPassword() {
+export default function ForgotPassword({ params: { lng } }: { params: { lng: string } }) {
+  const { t } = useTranslation(lng, 'forgot-password');
   const router = useRouter();
   const { handleSubmit, register, formState: { errors, isSubmitting } } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
@@ -20,15 +22,15 @@ export default function ForgotPassword() {
 
   return (
     <>
-      <Heading size="xl">Forgot Password?</Heading>
-      <Text my={4} color="#7A7B9A">Enter the email address you used when you joined and we'll send you instructions to reset your password.</Text>
+      <Heading size="xl">{t('forgot-password-heading')}</Heading>
+      <Text my={4} color="#7A7B9A">{t('forgot-password-details')}</Text>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <EmailInput register={register} error={errors.email} />
-        <Button type="submit" isLoading={isSubmitting} h={16} width="full" mt={4}>
-          Reset Password
+        <EmailInput register={register} error={errors.email} t={t} />
+        <Button type="submit" formNoValidate isLoading={isSubmitting} h={16} width="full" mt={4}>
+          {t('reset-password')}
         </Button>
         <Button type="reset" disabled={isSubmitting} variant="ghost" h={16} width="full" mt={4} onClick={() => router.back()}>
-          Cancel
+          {t('cancel')}
         </Button>
       </form>
     </>

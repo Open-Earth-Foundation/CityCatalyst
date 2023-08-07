@@ -2,6 +2,7 @@
 
 import EmailInput from "@/components/email-input";
 import PasswordInput from "@/components/password-input";
+import { useTranslation } from "@/i18n/client";
 import { Link } from "@chakra-ui/next-js";
 import { Button, Heading, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
@@ -12,18 +13,20 @@ type Inputs = {
   password: string;
 };
 
-export default function Login() {
+export default function Login({ params: { lng } }: { params: { lng: string } }) {
+  const { t } = useTranslation(lng, 'login');
   const router = useRouter();
   const { handleSubmit, register, formState: { errors, isSubmitting } } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
     console.log(data);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    router.push(`/`);
+    setTimeout(() => {
+      router.push(`/`);
+    }, 2000);
   };
 
   return (
     <>
-      <Heading size="xl">Log In to City Catalyst</Heading>
+      <Heading size="xl">{t('login-heading')}</Heading>
       <Text my={4} color="#7A7B9A">Please enter your details to log in to your account</Text>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <EmailInput register={register} error={errors.email} />

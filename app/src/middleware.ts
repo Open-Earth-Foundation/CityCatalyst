@@ -23,7 +23,7 @@ export function middleware(req: NextRequest) {
     lng = fallbackLng;
   }
 
-  // redirect for paths that don't support lng
+  // redirect for paths that don't have lng at the start
   if(
     !languages.some(loc => req.nextUrl.pathname.startsWith(`/${loc}`)) &&
     !req.nextUrl.pathname.startsWith('/_next')

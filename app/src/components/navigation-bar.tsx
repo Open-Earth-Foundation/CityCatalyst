@@ -6,6 +6,7 @@ import { Select, Text } from '@chakra-ui/react';
 import i18next from 'i18next';
 import Image from 'next/image';
 import { ChangeEventHandler } from 'react';
+import NextLink from 'next/link';
 
 export function NavigationBar({ lng }: { lng: string }) {
   const { t } = useTranslation(lng, 'navigation');
@@ -15,8 +16,12 @@ export function NavigationBar({ lng }: { lng: string }) {
 
   return (
     <div className="flex flex-row space-between px-8 py-4 align-middle bg-[#001EA7]">
-      <Image src="/assets/logo.svg" width={36} height={36} alt="CityCatalyst logo" className="mr-[56px]" />
-      <Text size="18" color="white" className="font-bold mt-1">{t('title')}</Text>
+      <NextLink href="/">
+        <Image src="/assets/logo.svg" width={36} height={36} alt="CityCatalyst logo" className="mr-[56px]" />
+      </NextLink>
+      <NextLink href="/">
+        <Text size="18" color="white" className="font-bold mt-1">{t('title')}</Text>
+      </NextLink>
       <div className="w-full" />
       <Select
         variant="unstyled"

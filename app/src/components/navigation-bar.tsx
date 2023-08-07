@@ -11,7 +11,12 @@ import NextLink from 'next/link';
 export function NavigationBar({ lng }: { lng: string }) {
   const { t } = useTranslation(lng, 'navigation');
   const onChangeLanguage: ChangeEventHandler<HTMLSelectElement> = (event) => {
-    i18next.changeLanguage(event.target.value);
+    const newLng = event.target.value;
+    i18next.changeLanguage(newLng);
+
+    // change language in URL without reloading page
+    const newPath = location.pathname.replace(/^\/[A-Za-z]+/, `/${newLng}`);
+    history.replaceState('', '', newPath);
   };
 
   return (

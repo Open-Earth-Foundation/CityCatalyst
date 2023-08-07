@@ -6,12 +6,14 @@ export default function EmailInput({
   children,
   error,
   register,
-  name = 'Email address',
+  t,
+  name = t('email-address'),
   id = 'email',
 }: {
   children?: React.ReactNode,
   error: FieldError | undefined,
   register: Function,
+  t: Function,
   name?: String,
   id?: String,
 }) {
@@ -20,14 +22,13 @@ export default function EmailInput({
       <FormLabel>{name}</FormLabel>
       <Input
         type="email"
-        formNoValidate
-        placeholder="e.g. youremail@domain.com"
+        placeholder={t('email-placeholder')}
         size="lg"
         {...register(id, {
-          required: 'Email is required',
+          required: t('email-required'),
           pattern: {
             value: emailPattern,
-            message: 'Please enter a valid email address',
+            message: t('email-invalid'),
           },
         })}
       />

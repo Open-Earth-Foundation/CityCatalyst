@@ -7,12 +7,14 @@ export default function PasswordInput({
   children,
   error,
   register,
-  name = 'Password',
+  t,
+  name = t('password'),
   id = 'password',
 }: {
   children?: React.ReactNode,
   error: FieldError | undefined,
   register: Function,
+  t: Function,
   name?: String,
   id?: String,
 }) {
@@ -26,10 +28,10 @@ export default function PasswordInput({
         <Input
           type={showPassword ? 'text' : 'password'}
           size="lg"
-          placeholder={showPassword ? 'Password' : '········'}
+          placeholder={showPassword ? t('password') : '········'}
           {...register(id, {
-            required: `${name} is required`,
-            minLength: { value: 4, message: 'Minimum length should be 4' },
+            required: t('password-required'),
+            minLength: { value: 4, message: t('min-length', { length: 4 }) },
           })}
         />
         <InputRightElement width="3rem" mr={2}>

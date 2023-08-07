@@ -1,12 +1,14 @@
 'use client'
 
-import Image from 'next/image';
 import { NavigationBar } from "@/components/navigation-bar";
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default function AuthLayout(
+  { children, params: { lng } }:
+  { children: React.ReactNode, params: { lng: string } }
+) {
   return (
     <main className="h-screen flex flex-col">
-      <NavigationBar />
+      <NavigationBar lng={lng} />
       <div className="flex flex-row items-stretch h-full">
         <div className="bg-[#02061c] w-[485px] h-full hidden md:block bg-roads bg-no-repeat" />
         <div className="w-full">

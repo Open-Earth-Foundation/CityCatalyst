@@ -1,3 +1,5 @@
+'use client'
+
 import { useTranslation } from '@/i18n/client';
 import { Link } from '@chakra-ui/next-js';
 import { Text } from '@chakra-ui/react';

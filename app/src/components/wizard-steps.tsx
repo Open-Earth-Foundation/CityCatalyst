@@ -7,21 +7,16 @@ interface WizardStep {
 export default function WizardSteps({
   steps,
   currentStep,
-  onSelect,
+  onSelect = () => {},
 }: {
   steps: WizardStep[],
   currentStep: number,
   onSelect?: (selectedStep: number) => void,
 }) {
-  const { activeStep } = useSteps({
-    index: currentStep,
-    count: steps.length,
-  })
-
   return (
-    <Stepper index={currentStep} my={8} colorScheme="brandScheme">
+    <Stepper index={currentStep} my={8} colorScheme="brandScheme" size="lg">
       {steps.map((step, index) => (
-        <Step key={index}>
+        <Step key={index} onClick={() => onSelect(index)}>
           <StepIndicator>
             <StepStatus
               complete={<StepIcon />}

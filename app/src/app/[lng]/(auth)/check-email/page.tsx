@@ -15,7 +15,7 @@ function DynamicContent({ t }: { t: Function }) {
   return isReset ? (
     <Text my={4} color="#7A7B9A">
       {t('check-email-reset-prefix')}{' '}
-      {email ? <Link href={`mailto:${email}`}>{email}</Link> : t('your email')}
+      {email ? <Link href={`mailto:${email}`}>{email}</Link> : t('your-email')}
       {t('check-email-reset-details')}
     </Text>
   ) : (

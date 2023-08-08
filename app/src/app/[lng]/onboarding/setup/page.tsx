@@ -1,5 +1,6 @@
 'use client'
 
+import WizardSteps from "@/components/wizard-steps";
 import { ArrowBackIcon, SearchIcon } from "@chakra-ui/icons";
 import { Button, Card, FormControl, FormErrorMessage, FormLabel, Heading, Input, InputGroup, InputLeftElement, Select, Text } from "@chakra-ui/react";
 import NextLink from 'next/link';
@@ -21,7 +22,7 @@ export default function OnboardingSetup() {
     await new Promise(resolve => setTimeout(resolve, 2000));
     router.push(`/onboarding/confirm`);
   };
-  const years = Array.from({length: 10}, (_x, i) => 2020 + i);
+  const years = Array.from({ length: 10 }, (_x, i) => 2020 + i);
 
   return (
     <>
@@ -32,6 +33,10 @@ export default function OnboardingSetup() {
       >
         Go Back
       </Button>
+      <WizardSteps
+        steps={[{ title: 'Setting up your inventory' }, { title: 'Confirm City\'s information' }]}
+        currentStep={0}
+      />
       <div className="flex flex-col md:flex-row md:space-x-12 md:space-y-0 space-y-12 align-top">
         <div>
           <Heading size="xl">Select City and Year</Heading>
@@ -42,7 +47,7 @@ export default function OnboardingSetup() {
         <div>
           <Card p={6}>
             <form>
-              <FormControl isInvalid={!!errors.city} mb={12}> 
+              <FormControl isInvalid={!!errors.city} mb={12}>
                 <FormLabel>Select city</FormLabel>
                 <InputGroup>
                   <InputLeftElement pointerEvents='none'>
@@ -64,8 +69,8 @@ export default function OnboardingSetup() {
                 <Select placeholder="Select year" {...register('year', {
                   required: 'Year is required',
                 })}>
-                  {years.map((year: number) => (
-                    <option value={year}>{year}</option>
+                  {years.map((year: number, i: number) => (
+                    <option value={year} key={i}>{year}</option>
                   ))}
                 </Select>
                 <FormErrorMessage>{errors.year && errors.year.message}</FormErrorMessage>

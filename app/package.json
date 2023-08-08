@@ -19,8 +19,8 @@
     "@chakra-ui/react": "^2.8.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@storybook/react": "^7.0.27",
-    "@storybook/testing-library": "^0.0.14-next.2",
+    "@storybook/react": "^7.2.1",
+    "@storybook/testing-library": "^0.2.0",
     "@types/http-errors": "^2.0.1",
     "@types/node": "20.4.2",
     "@types/react": "18.2.15",
@@ -29,7 +29,7 @@
     "autoprefixer": "10.4.14",
     "eslint": "8.44.0",
     "eslint-config-next": "13.4.10",
-    "eslint-plugin-storybook": "^0.6.12",
+    "eslint-plugin-storybook": "^0.6.13",
     "framer-motion": "^10.15.0",
     "http-errors": "^2.0.0",
     "i18next": "^23.4.2",
@@ -49,13 +49,13 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
-    "@storybook/addon-essentials": "^7.0.27",
-    "@storybook/addon-interactions": "^7.0.27",
-    "@storybook/addon-links": "^7.0.27",
-    "@storybook/blocks": "^7.0.27",
-    "@storybook/nextjs": "^7.0.27",
+    "@storybook/addon-essentials": "^7.2.1",
+    "@storybook/addon-interactions": "^7.2.1",
+    "@storybook/addon-links": "^7.2.1",
+    "@storybook/blocks": "^7.2.1",
+    "@storybook/nextjs": "^7.2.1",
     "sequelize-cli": "^6.6.1",
-    "storybook": "^7.0.27"
+    "storybook": "^7.2.1"
   },
   "engines": {
     "node": ">=20.5.0"

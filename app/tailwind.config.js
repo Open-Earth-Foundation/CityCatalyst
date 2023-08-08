@@ -11,6 +11,10 @@ module.exports = {
   },
   theme: {
     extend: {
+      colors: {
+        brand: '#2351DC',
+        tertiary: '#7A7B9A',
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':

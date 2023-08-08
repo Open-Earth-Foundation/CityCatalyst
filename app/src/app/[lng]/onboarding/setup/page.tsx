@@ -21,7 +21,7 @@ export default function OnboardingSetup() {
     await new Promise(resolve => setTimeout(resolve, 2000));
     router.push(`/onboarding/confirm`);
   };
-  const years = Array.from({length: 10}, (x, i) => 2020 + i);
+  const years = Array.from({length: 10}, (_x, i) => 2020 + i);
 
   return (
     <>

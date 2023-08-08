@@ -1,10 +1,10 @@
 'use client'
 
-import { Button, Heading, Text } from "@chakra-ui/react";
-import { useSearchParams } from 'next/navigation';
-import { Link } from '@chakra-ui/next-js';
-import NextLink from 'next/link';
 import { useTranslation } from "@/i18n/client";
+import { Link } from '@chakra-ui/next-js';
+import { Button, Heading, Text } from "@chakra-ui/react";
+import NextLink from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { Suspense } from "react";
 
 function DynamicContent({ t }: { t: Function }) {

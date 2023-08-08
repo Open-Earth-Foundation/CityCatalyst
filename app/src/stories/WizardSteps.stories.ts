@@ -12,7 +12,7 @@ type Story = StoryObj<typeof WizardSteps>;
 
 export const Default: Story = {
   args: {
-    steps: [{ name: 'Setting up your inventory' }, { name: 'Confirm City\'s Information' }],
+    steps: [{ title: 'Setting up your inventory' }, { title: 'Confirm City\'s Information' }],
     currentStep: 0,
   },
 };

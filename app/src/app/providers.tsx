@@ -11,6 +11,9 @@ export const theme = extendTheme({
   colors: {
     brand: '#2351DC',
     tertiary: '#7A7B9A',
+    brandScheme: {
+      500: '#2351DC',
+    }
   },
   fonts: {
     heading: 'var(--font-poppins)',

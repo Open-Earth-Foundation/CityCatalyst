@@ -127,6 +127,7 @@ export default function OnboardingSetup() {
   });
 
   const [data, setData] = useState({});
+  const cityId = 'AR_BUE'; // TODO get from OpenClimate API
   const [isConfirming, setConfirming] = useState(false);
 
   const onSubmit: SubmitHandler<Inputs> = async (newData) => {
@@ -142,7 +143,7 @@ export default function OnboardingSetup() {
     setConfirming(true);
     await new Promise(resolve => setTimeout(resolve, 1000));
     setConfirming(false);
-    router.push('/onboarding/done');
+    router.push('/onboarding/done/' + cityId);
   }
 
   return (

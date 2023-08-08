@@ -12,6 +12,7 @@ export const theme = extendTheme({
     brand: '#2351DC',
     tertiary: '#7A7B9A',
     brandScheme: {
+      100: '#C5CBF5',
       500: '#2351DC',
     }
   },

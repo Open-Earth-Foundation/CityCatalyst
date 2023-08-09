@@ -4,14 +4,37 @@ import EmailInput from "@/components/email-input";
 import PasswordInput from "@/components/password-input";
 import { useTranslation } from "@/i18n/client";
 import { Link } from "@chakra-ui/next-js";
-import { Button, Heading, Text } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
+import { Button, Heading, Text, useToast } from "@chakra-ui/react";
+import { TFunction } from "i18next";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 
 type Inputs = {
   email: string;
   password: string;
 };
+
+function VerifiedNotification({ t }: { t: TFunction }) {
+  const searchParams = useSearchParams();
+  const isVerified = !!searchParams.get('verification-code');
+
+  if (isVerified) {
+    const toast = useToast();
+    useEffect(() => {
+      toast({
+        title: t('verified-toast-title'),
+        description: t('verified-toast-description'),
+        status: 'success',
+        duration: null,
+        isClosable: true,
+        position: 'bottom-right',
+      });
+    }, [])
+  }
+
+  return null;
+}
 
 export default function Login({ params: { lng } }: { params: { lng: string } }) {
   const { t } = useTranslation(lng, 'auth');
@@ -40,6 +63,9 @@ export default function Login({ params: { lng } }: { params: { lng: string } }) 
         {t('no-account')}{' '}
         <Link href="/signup" className="underline">{t('sign-up')}</Link>
       </Text>
+      <Suspense>
+        <VerifiedNotification t={t} />
+      </Suspense>
     </>
   );
 }

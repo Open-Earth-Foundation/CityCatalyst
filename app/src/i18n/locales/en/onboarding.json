@@ -23,5 +23,10 @@
   "confirm-details": "Review and confirm this information about your city. If there is an error please send us an email to edit it.<br /><br />We use <1>open data sources</1> to pre-fill the city profile.",
   "total-population": "Total population",
   "total-land-area": "Total land area",
-  "geographical-boundaries": "Geographical boundaries"
+  "geographical-boundaries": "Geographical boundaries",
+
+  "done-heading": "Your City Inventory Profile<br />Was Successfully Created",
+  "inventory-title": "GPC Basic Emission Inventory - Year {{year}}",
+  "done-details": "You created your city profile to start your GPC Basic GHG inventory.<br/>Also, we found for your city 10+ external datasets that you can connect to complete your inventory.",
+  "check-dashboard": "Check Dashboard"
 }

@@ -71,7 +71,7 @@ export default function Signup({ params: { lng } }: { params: { lng: string } })
           />
           <FormErrorMessage>{errors.inviteCode && errors.inviteCode.message}</FormErrorMessage>
           <FormHelperText>
-            <Trans t={t} i18nKey="no-invitation-code">
+            <Trans t={t} i18nKey="no-invite-code">
               Don't have an invitation code? <Link href="https://openclimate.network/waiting-list" target="_blank" rel="noreferrer">Subscribe to the Waiting List</Link>
             </Trans>
           </FormHelperText>
@@ -84,7 +84,7 @@ export default function Signup({ params: { lng } }: { params: { lng: string } })
               required: t('accept-terms-required'),
             })}
           >
-            <Trans i18nKey="accept-terms">
+            <Trans i18nKey="accept-terms" t={t}>
               Accept <Link href="/terms" className="underline">Terms and conditions</Link>
             </Trans>
           </Checkbox>

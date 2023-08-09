@@ -14,11 +14,13 @@ type Inputs = {
   name: string;
   email: string;
   password: string;
+  confirmPassword: string;
+  inviteCode: string;
   acceptTerms: boolean;
 };
 
 export default function Signup({ params: { lng } }: { params: { lng: string } }) {
-  const { t } = useTranslation(lng, 'register');
+  const { t } = useTranslation(lng, 'signup');
   const router = useRouter();
   const { handleSubmit, register, formState: { errors, isSubmitting } } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
@@ -31,7 +33,7 @@ export default function Signup({ params: { lng } }: { params: { lng: string } })
     <>
       <Heading size="xl">{t('signup-heading')}</Heading>
       <Text className="my-4" color="#7A7B9A">{t('signup-details')}</Text>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <FormControl isInvalid={!!errors.name}>
           <FormLabel>{t('full-name')}</FormLabel>
           <Input
@@ -47,8 +49,28 @@ export default function Signup({ params: { lng } }: { params: { lng: string } })
         </FormControl>
         <EmailInput register={register} error={errors.email} t={t} />
         <PasswordInput register={register} error={errors.password} t={t}>
-          <FormHelperText><InfoOutlineIcon color="#2351DC" />{' '}{t('password-hint')}</FormHelperText>
+          <FormHelperText><InfoOutlineIcon color="#2351DC" boxSize={4} mt={-0.5} mr={1.5} />{' '}{t('password-hint')}</FormHelperText>
         </PasswordInput>
+        <PasswordInput register={register} error={errors.confirmPassword} t={t} name={t('confirm-password')} id="confirmPassword" />
+        <FormControl isInvalid={!!errors.inviteCode}>
+          <FormLabel>{t('invite-code')}</FormLabel>
+          <Input
+            type="text"
+            placeholder={t('invite-code-placeholder')}
+            size="lg"
+            {...register('inviteCode', {
+              required: t('invite-code-required'),
+              minLength: { value: 6, message: t('invite-code-invalid') },
+              maxLength: { value: 6, message: t('invite-code-invalid') },
+            })}
+          />
+          <FormErrorMessage>{errors.inviteCode && errors.inviteCode.message}</FormErrorMessage>
+          <FormHelperText>
+            <Trans t={t} i18nKey="no-invitation-code">
+              Don't have an invitation code? <Link href="https://openclimate.network/waiting-list" target="_blank" rel="noreferrer">Subscribe to the Waiting List</Link>
+            </Trans>
+          </FormHelperText>
+        </FormControl>
         <FormControl isInvalid={!!errors.acceptTerms}>
           <Checkbox
             color="#7A7B9A"

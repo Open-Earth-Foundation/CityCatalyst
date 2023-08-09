@@ -11,7 +11,7 @@ type Inputs = {
 };
 
 export default function ForgotPassword({ params: { lng } }: { params: { lng: string } }) {
-  const { t } = useTranslation(lng, 'forgot-password');
+  const { t } = useTranslation(lng, 'auth');
   const router = useRouter();
   const { handleSubmit, register, formState: { errors, isSubmitting } } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {

@@ -14,7 +14,7 @@ type Inputs = {
 };
 
 export default function Login({ params: { lng } }: { params: { lng: string } }) {
-  const { t } = useTranslation(lng, 'login');
+  const { t } = useTranslation(lng, 'auth');
   const router = useRouter();
   const { handleSubmit, register, formState: { errors, isSubmitting } } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = (data) => {

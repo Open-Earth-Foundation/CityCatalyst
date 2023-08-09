@@ -20,19 +20,24 @@ type Inputs = {
 };
 
 export default function Signup({ params: { lng } }: { params: { lng: string } }) {
-  const { t } = useTranslation(lng, 'signup');
+  const { t } = useTranslation(lng, 'auth');
   const router = useRouter();
-  const { handleSubmit, register, formState: { errors, isSubmitting } } = useForm<Inputs>();
+  const { handleSubmit, register, setError, formState: { errors, isSubmitting } } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log(data);
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    if (data.password !== data.confirmPassword) {
+      setError('confirmPassword', { type: 'custom', message: 'Passwords don\'t match!' });
+      return;
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
     router.push(`/check-email?email=${data.email}`);
   };
 
   return (
     <>
       <Heading size="xl">{t('signup-heading')}</Heading>
-      <Text className="my-4" color="#7A7B9A">{t('signup-details')}</Text>
+      <Text mt={4} mb={8} color="#7A7B9A">{t('signup-details')}</Text>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <FormControl isInvalid={!!errors.name}>
           <FormLabel>{t('full-name')}</FormLabel>
@@ -96,3 +101,4 @@ export default function Signup({ params: { lng } }: { params: { lng: string } })
     </>
   );
 }
+

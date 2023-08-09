@@ -32,7 +32,7 @@ function DynamicContent({ t }: { t: Function }) {
 }
 
 export default function CheckEmail({ params: { lng } }: { params: { lng: string } }) {
-  const { t } = useTranslation(lng, 'forgot-password');
+  const { t } = useTranslation(lng, 'auth');
 
   return (
     <>

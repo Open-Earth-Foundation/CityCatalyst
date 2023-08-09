@@ -4,14 +4,15 @@ import { useTranslation } from "@/i18n/client";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { Button, Heading, Text } from "@chakra-ui/react";
 import NextLink from 'next/link';
+import { Trans } from "react-i18next/TransWithoutContext";
 
 export default function ResetSuccessful({ params: { lng } }: { params: { lng: string } }) {
-  const { t } = useTranslation(lng, 'reset-successful');
+  const { t } = useTranslation(lng, 'auth');
   return (
     <>
       <Heading size="xl">{t('reset-successful-heading')}</Heading>
       <Text className="my-4" color="#7A7B9A">
-        {t('reset-successful-details')}
+        <Trans t={t}>reset-successful-details</Trans>
       </Text>
       <NextLink href="/" passHref legacyBehavior>
         <Button as="a" h={16} width="full" mt={4}>

@@ -1,6 +1,7 @@
 'use client'
 
 import PasswordInput from "@/components/password-input";
+import { useTranslation } from "@/i18n/client";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { Button, FormHelperText, Heading, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
@@ -11,7 +12,8 @@ type Inputs = {
   confirmPassword: string;
 };
 
-export default function UpdatePassword() {
+export default function UpdatePassword({ params: { lng } }: { params: { lng: string } }) {
+  const { t } = useTranslation(lng, 'auth');
   const router = useRouter();
   const { handleSubmit, register, formState: { errors, isSubmitting }, setError } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
@@ -26,18 +28,18 @@ export default function UpdatePassword() {
 
   return (
     <>
-      <Heading size="xl">Update your Password</Heading>
-      <Text className="my-4" color="#7A7B9A">Update your password. This is the one that you will use from now on.</Text>
+      <Heading size="xl">{t('update-password-heading')}</Heading>
+      <Text className="my-4" color="#7A7B9A">{t('update-password-details')}</Text>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <PasswordInput register={register} error={errors.password} name="New Password">
-          <FormHelperText><InfoOutlineIcon color="#2351DC" />{' '}Must contain uppercase, lowercase letters and number</FormHelperText>
+        <PasswordInput register={register} error={errors.password} name="New Password" t={t}>
+          <FormHelperText><InfoOutlineIcon color="#2351DC" mr={1.5} mt={-0.5} boxSize={4} />{t('password-hint')}</FormHelperText>
         </PasswordInput>
-        <PasswordInput register={register} error={errors.confirmPassword} name="Confirm Password" id="confirmPassword" />
+        <PasswordInput register={register} error={errors.confirmPassword} name={t('confirm-password')} id="confirmPassword" t={t} />
         <Button type="submit" isLoading={isSubmitting} h={16} width="full">
-          Reset Password
+          {t('reset-button')}
         </Button>
         <Button type="reset" disabled={isSubmitting} variant="ghost" h={16} width="full" mt={4} onClick={() => router.back()}>
-          Cancel
+          {t('cancel')}
         </Button>
       </form>
     </>

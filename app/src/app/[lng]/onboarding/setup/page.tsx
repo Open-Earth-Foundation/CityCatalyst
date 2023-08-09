@@ -1,58 +1,61 @@
 'use client'
 
 import WizardSteps from "@/components/wizard-steps";
+import { useTranslation } from "@/i18n/client";
 import { ArrowBackIcon, InfoOutlineIcon, SearchIcon } from "@chakra-ui/icons";
 import { Box, Button, Card, Flex, FormControl, FormErrorMessage, FormLabel, Heading, Icon, Input, InputGroup, InputLeftElement, Select, Text, useSteps } from "@chakra-ui/react";
 import Image from 'next/image';
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FieldErrors, SubmitHandler, UseFormRegister, useForm } from "react-hook-form";
 import { MdOutlineAspectRatio, MdOutlinePeopleAlt } from 'react-icons/md';
+import { Link } from '@chakra-ui/next-js';
+import { Trans } from "react-i18next/TransWithoutContext";
+import { TFunction } from "i18next";
 
 type Inputs = {
   city: String;
   year: number;
 }
 
-function SetupStep({ errors, register }: { errors: FieldErrors<Inputs>, register: UseFormRegister<Inputs> }) {
+function SetupStep({ errors, register, t }: { errors: FieldErrors<Inputs>, register: UseFormRegister<Inputs>, t: TFunction }) {
   const years = Array.from({ length: 10 }, (_x, i) => 2020 + i);
   return (
     <>
       <div>
-        <Heading size="xl">Select City and Year</Heading>
+        <Heading size="xl">{t('setup-heading')}</Heading>
         <Text className="my-4" color="tertiary">
-          Please select the city and year for which you want to create your emissions inventory
+          {t('setup-details')}
         </Text>
       </div>
       <div>
         <Card p={6}>
           <form>
             <FormControl isInvalid={!!errors.city} mb={12}>
-              <FormLabel>Select city</FormLabel>
+              <FormLabel>{t('select-city')}</FormLabel>
               <InputGroup>
                 <InputLeftElement pointerEvents='none'>
                   <SearchIcon color="tertiary" boxSize={4} mt={2} ml={4} />
                 </InputLeftElement>
                 <Input
                   type="text"
-                  placeholder="Search by city"
+                  placeholder={t('select-city-placeholder')}
                   w={441}
                   size="lg"
                   {...register('city', {
-                    required: 'City is required',
+                    required: t('select-city-required'),
                   })}
                 />
               </InputGroup>
               <FormErrorMessage>{errors.city && errors.city.message}</FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={!!errors.year}>
-              <FormLabel>Inventory year</FormLabel>
+              <FormLabel>{t('inventory-year')}</FormLabel>
               <Select
-                placeholder="Select year"
+                placeholder={t('inventory-year-placeholder')}
                 size="lg"
                 {...register('year', {
-                  required: 'Year is required',
+                  required: t('inventory-year-required'),
                 })}
               >
                 {years.map((year: number, i: number) => (
@@ -63,22 +66,22 @@ function SetupStep({ errors, register }: { errors: FieldErrors<Inputs>, register
             </FormControl>
           </form>
         </Card>
-        <Text color="tertiary" mt={6} fontSize="sm">Only GPC Basic Inventories are supported momentarily</Text>
+        <Text color="tertiary" mt={6} fontSize="sm">{t('gpc-basic-message')}</Text>
       </div>
     </>
   );
 }
 
-function ConfirmStep({ cityName }: { cityName: String }) {
+function ConfirmStep({ cityName, t }: { cityName: String, t: TFunction }) {
   return (
     <>
       <div>
-        <Heading size="lg">Confirm City's Information</Heading>
+        <Heading size="lg">{t('confirm-heading')}</Heading>
         <Text className="my-4" color="tertiary">
-          Review and confirm this information about your city. If there is an error please send us an email to edit it.
-        </Text>
-        <Text className="my-4" color="tertiary">
-          We use <Link href="https://openclimate.org">open data sources</Link> to pre-fill the city profile.
+          <Trans t={t} i18nKey="confirm-details">
+            Review and confirm this information about your city. If there is an error please send us an email to edit it.
+            We use <Link href="https://openclimate.network" target="_blank" rel="noreferrer">open data sources</Link> to pre-fill the city profile.
+          </Trans>
         </Text>
       </div>
       <div>
@@ -94,7 +97,7 @@ function ConfirmStep({ cityName }: { cityName: String }) {
                   3,978.9M
                   <InfoOutlineIcon boxSize={4} mt={-0.5} ml={1} color="brand" />
                 </Text>
-                <Text fontSize="xs">Total population</Text>
+                <Text fontSize="xs">{t('total-population')}</Text>
               </Box>
             </div>
             <div>
@@ -104,11 +107,11 @@ function ConfirmStep({ cityName }: { cityName: String }) {
                   782Km<sup>2</sup>
                   <InfoOutlineIcon boxSize={4} mt={-0.5} ml={1} color="brand" />
                 </Text>
-                <Text fontSize="xs">Total land area</Text>
+                <Text fontSize="xs">{t('total-land-area')}</Text>
               </Box>
             </div>
           </Flex>
-          <Text mb={4} mt={7}>Geographical boundaries</Text>
+          <Text mb={4} mt={7}>{t('geographical-boundaries')}</Text>
           <Image src="/assets/map_placeholder.png" width={441} height={200} alt="City placeholder image" className="object-cover" />
         </Card>
       </div>
@@ -116,11 +119,12 @@ function ConfirmStep({ cityName }: { cityName: String }) {
   );
 }
 
-export default function OnboardingSetup() {
+export default function OnboardingSetup({ params: { lng } }: { params: { lng: string } }) {
+  const { t } = useTranslation(lng, 'onboarding');
   const router = useRouter();
   const { handleSubmit, register, getValues, formState: { errors, isSubmitting } } = useForm<Inputs>();
 
-  const steps = [{ title: 'Setting up your Inventory' }, { title: 'Confirm City\'s information' }];
+  const steps = [{ title: t('setup-step') }, { title: t('confirm-step') }];
   const { activeStep, goToNext, goToPrevious } = useSteps({
     index: 0,
     count: steps.length,
@@ -165,8 +169,8 @@ export default function OnboardingSetup() {
           </div>
         </div>
         <div className="flex flex-col md:flex-row md:space-x-12 md:space-y-0 space-y-12 align-top mb-24 mt-[112px]">
-          {activeStep == 0 && <SetupStep errors={errors} register={register} />}
-          {activeStep == 1 && <ConfirmStep cityName={getValues('city')} />}
+          {activeStep === 0 && <SetupStep errors={errors} register={register} t={t} />}
+          {activeStep === 1 && <ConfirmStep cityName={getValues('city')} t={t} />}
         </div>
         <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand flex flex-row py-8 px-8 drop-shadow-2xl hover:drop-shadow-4xl transition-all">
           <Box className="w-full">
@@ -175,15 +179,15 @@ export default function OnboardingSetup() {
           </Box>
           {activeStep == 0 ? (
             <Button h={16} isLoading={isSubmitting} onClick={() => handleSubmit(onSubmit)()} px={12} size="sm">
-              Save and Continue
+              {t('save-button')}
             </Button>
           ) : (
             <>
               <Button h={16} onClick={() => goToPrevious()} w={400} variant="ghost" leftIcon={<SearchIcon />} size="sm" px={12} mr={6}>
-                Search for another City
+                {t('search-city-button')}
               </Button>
-              <Button h={16} isLoading={isConfirming} px={12} onClick={onConfirm} size="sm">
-                Confirm and Continue
+              <Button h={16} isLoading={isConfirming} px={16} onClick={onConfirm} size="sm">
+                {t('confirm-button')}
               </Button>
             </>
           )}

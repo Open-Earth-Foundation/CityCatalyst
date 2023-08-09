@@ -1,0 +1,17 @@
+{
+  "onboarding-heading": "Let's Start Your Emissions Inventory!",
+  "onboarding-details": "We need to set and confirm the city where you want to do the inventory.<br/>You are one step closer to getting your GPC emissions inventory!",
+  "start-button": "Start City Inventory Profile",
+
+  "setup-heading": "Select City and Year",
+  "go-back": "Go Back",
+  "setup-details": "Please select the city and year for which you want to create your emissions inventory",
+  "select-city": "Select city",
+  "select-city-placeholder": "Search by city",
+  "select-city-required": "City is required",
+  "inventory-year": "Inventory year",
+  "inventory-year-placeholder": "Select year",
+  "inventory-year-required": "Year is required",
+  "gpc-basic-message": "Only GPC Basic Inventories are supported momentarily",
+  "save-button": "Save and Continue"
+}

@@ -1,0 +1,12 @@
+{
+  "signup-heading": "Sign Up to City Catalyst",
+  "signup-details": "Please enter your details to create your account",
+  "full-name": "Full name",
+  "full-name-placeholder": "Your full name",
+  "full-name-required": "Full name is required",
+  "password-hint": "Must contain uppercase, lowercase letters and number",
+  "accept-terms": "Accept <1>Terms and Conditions</1>",
+  "accept-terms-required": "Please accept the terms and conditions in order to sign up",
+  "create-account": "Create Account",
+  "have-account": "Already have an account?"
+}

@@ -1,0 +1,11 @@
+{
+  "check-email-heading": "Check Your Email",
+  "check-email-details1": "Thank you for creating your City Catalyst account!",
+  "in-inbox": "In your inbox",
+  "check-email-details2-prefix": "At ",
+  "check-email-details2": ", you will receive an email with instructions and credentials for your new account. If you do not receive it, please check your spam folder.",
+  "check-email-reset-prefix": "If an account exists for",
+  "your-email": "your email",
+  "check-email-reset-details": ", you will get an email with instructions on resetting your password. If it doesn't arrive, be sure to check your spam folder.",
+  "back-to-login": "Back to Log In"
+}

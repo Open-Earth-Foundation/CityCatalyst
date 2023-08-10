@@ -15,7 +15,6 @@ export const POST = apiHandler(async (req: NextRequest) => {
     });
     return NextResponse.json({ data: city });
   } catch(error) {
-    console.log('Error type', typeof error);
     if (error instanceof ValidationError && error.name === 'SequelizeUniqueConstraintError') {
       throw new createHttpError.BadRequest('Locode exists already');
     } else {

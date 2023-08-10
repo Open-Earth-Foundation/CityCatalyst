@@ -21,16 +21,6 @@ Base = declarative_base()
 @app.get("/health")
 def health_check():
     try:
-        engine.connect()
-        engine.close()
-        return {'status': 'ok'}
-    except Exception as e:
-        # If an exception occurs, return a 503 status code
-        raise HTTPException(status_code=503, detail="Service unavailable")
-
-@app.get("/health")
-def health_check():
-    try:
         # Attempt to connect to the database
         with engine.connect():
             return {'status': 'ok'}

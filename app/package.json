@@ -2,7 +2,6 @@
   "name": "city-catalyst",
   "version": "0.0.1",
   "private": true,
-  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -18,7 +17,7 @@
   },
   "dependencies": {
     "@storybook/react": "^7.0.27",
-    "@storybook/testing-library": "^0.0.14-n-ext.2",
+    "@storybook/testing-library": "^0.0.14-next.2",
     "@types/http-errors": "^2.0.1",
     "@types/node": "20.4.2",
     "@types/react": "18.2.15",

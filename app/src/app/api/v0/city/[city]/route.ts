@@ -22,22 +22,19 @@ export const DELETE = apiHandler(async (_req: NextRequest, { params }) => {
   }
 
   await city.destroy();
-
   return NextResponse.json({ data: city, deleted: true });
 });
 
 
 export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
+  const body = createCityRequest.parse(await req.json());
+
   let city: City = await db.models.City.findOne({ where: { locode: params.city } });
   if (!city) {
     throw new createHttpError.NotFound('City not found');
   }
 
-  const body = createCityRequest.parse(await req.json());
-  city = await city.update({
-    cityId: randomUUID(),
-    ...body,
-  });
+  city = await city.update(body);
   return NextResponse.json({ data: city });
 });
 

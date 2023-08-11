@@ -22,3 +22,9 @@ export const createCityRequest = z.object({
   area: z.number().int().optional(),
 });
 
+export const createInventoryRequest = z.object({
+  inventoryName: z.string().min(1),
+  year: z.number().int().min(2000),
+  totalEmissions: z.number().int().optional(),
+});
+

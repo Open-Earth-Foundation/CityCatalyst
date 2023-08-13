@@ -11,7 +11,31 @@ on:
     branches: [ "develop" ]
 
 jobs:
+
+  runTests:
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Set up database
+      run: |
+        docker run --name github_action_postgresql -d -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres
+        createuser -h localhost -p 5432 -U postgres citycatalyst
+        createdb -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst
+        DATABASE_HOST=localhost DATABASE_NAME=citycatalyst DATABASE_USERNAME=citycatalyst DATABASE_PASSWORD= npm run db:migrate
+
+    - name: Run tests
+      run: DATABASE_HOST=localhost DATABASE_NAME=citycatalyst DATABASE_USERNAME=citycatalyst DATABASE_PASSWORD= npm run test
+
+    - name: Shut down database
+      run: docker stop github_action_postgresql
+
   pushToGHCR:
+    needs: runTests
     runs-on: ubuntu-latest
     steps:
 

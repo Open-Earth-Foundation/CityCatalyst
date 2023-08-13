@@ -1,4 +1,4 @@
-import { before, describe, it } from 'node:test';
+import { before, after, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import 'dotenv/config';
@@ -13,6 +13,11 @@ describe('Models', () => {
     await db.initialize();
     await db.models.User.destroy({ where: { email } });
     await db.models.City.destroy({ where: { locode } });
+  });
+
+  after(async () => {
+    if (db.sequelize)
+      await db.sequelize.close();
   });
 
   describe('User model', () => {
@@ -35,4 +40,3 @@ describe('Models', () => {
     });
   });
 });
-

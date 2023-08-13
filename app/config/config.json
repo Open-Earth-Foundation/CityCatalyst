@@ -1,23 +1,24 @@
 {
   "development": {
-    "username": "root",
+    "username": "citycatalyst",
     "password": null,
-    "database": "database_development",
+    "database": "citycatalyst",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "postgres",
+    "logging": true
   },
   "test": {
     "username": "root",
     "password": null,
-    "database": "database_test",
+    "database": "citycatalyst_test",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "postgres"
   },
   "production": {
     "username": "root",
     "password": null,
-    "database": "database_production",
+    "database": "citycatalyst_prod",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "postgres"
   }
 }

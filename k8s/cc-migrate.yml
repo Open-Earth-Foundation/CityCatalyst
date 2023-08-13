@@ -19,7 +19,7 @@ spec:
         - name: DATABASE_USER
           value: "citycatalyst"
         - name: DATABASE_PASSWORD
-          value: "changeme"
+          value: "development"
         command: ["npm",  "run", "db:migrate"]
         resources:
           limits:

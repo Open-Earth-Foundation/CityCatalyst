@@ -6,6 +6,7 @@ on:
   push:
     paths:
       - app/**
+      - k8s/cc-migrate.yml
       - k8s/cc-web-deploy.yml
       - k8s/cc-web.yml
     branches: [ "develop" ]
@@ -86,5 +87,6 @@ jobs:
 
     - name: Deploying service
       run: |
+        kubectl create -f k8s/cc-migrate.yml -n default
         kubectl apply -f k8s/cc-web-deploy.yml -n default
         kubectl rollout restart deployment cc-web-deploy -n default

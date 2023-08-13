@@ -27,7 +27,7 @@ jobs:
 
     - name: Set up database
       run: |
-        docker run --name github_action_postgresql -d -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres
+        docker run --name github_action_postgresql -d -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_PASSWORD="" postgres
         sleep 10
         createuser -h localhost -p 5432 -U postgres citycatalyst
         createdb -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst

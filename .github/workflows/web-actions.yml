@@ -31,10 +31,13 @@ jobs:
         sleep 10
         createuser -w -h localhost -p 5432 -U postgres citycatalyst
         createdb -w -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst
-        DATABASE_HOST=localhost DATABASE_NAME=citycatalyst DATABASE_USERNAME=citycatalyst DATABASE_PASSWORD= cd app && npm run db:migrate
+        cd app
+        DATABASE_HOST=localhost DATABASE_NAME=citycatalyst DATABASE_USERNAME=citycatalyst DATABASE_PASSWORD= npm run db:migrate
 
     - name: Run tests
-      run: DATABASE_HOST=localhost DATABASE_NAME=citycatalyst DATABASE_USERNAME=citycatalyst DATABASE_PASSWORD= cd app && npm run test
+      run: |
+        cd app
+        DATABASE_HOST=localhost DATABASE_NAME=citycatalyst DATABASE_USERNAME=citycatalyst DATABASE_PASSWORD= npm run test
 
     - name: Shut down database
       run: docker stop github_action_postgresql

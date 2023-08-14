@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "api:test && cy:test",
+    "test": "npm run api:test & npm run cy:test",
     "api:test": "glob -c \"node --loader tsx --no-warnings --test\" \"./tests/**/*.test.ts\"",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",

@@ -30,6 +30,7 @@
     "eslint-plugin-storybook": "^0.6.13",
     "http-errors": "^2.0.0",
     "next": "13.4.10",
+    "next-auth": "^4.23.0",
     "pg": "^8.11.1",
     "pg-hstore": "^2.3.4",
     "postcss": "8.4.26",

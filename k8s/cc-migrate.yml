@@ -1,37 +1,26 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
-  name: cc-web-deploy
-  labels:
-    app: cc-web
+  generateName: cc-migrate-
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: cc-web
+  ttlSecondsAfterFinished: 86400
   template:
-    metadata:
-      labels:
-        app: cc-web
     spec:
+      restartPolicy: OnFailure
       containers:
-      - name: cc-web
+      - name: cc-migrate
         image: ghcr.io/open-earth-foundation/citycatalyst:latest
-        # Set to Never for local
         imagePullPolicy: Always
-        ports:
-        - containerPort: 3000
         env:
         - name: NODE_ENV
-          value: "production"
-        - name: PORT
-          value: "3000"
+          value: development
         - name: DATABASE_HOST
           value: "cc-db"
         - name: DATABASE_USER
           value: "citycatalyst"
         - name: DATABASE_PASSWORD
           value: "development"
+        command: ["npm",  "run", "db:migrate"]
         resources:
           limits:
             memory: "1024Mi"

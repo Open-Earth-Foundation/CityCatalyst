@@ -6,12 +6,46 @@ on:
   push:
     paths:
       - app/**
+      - k8s/cc-migrate.yml
       - k8s/cc-web-deploy.yml
       - k8s/cc-web.yml
     branches: [ "develop" ]
 
 jobs:
+
+  runTests:
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: actions/checkout@v3
+
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 20
+
+    - name: Install dependencies
+      run: cd app && npm install
+
+    - name: Set up database
+      run: |
+        docker run --name github_action_postgresql -d -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_PASSWORD="" postgres
+        sleep 10
+        createuser -w -h localhost -p 5432 -U postgres citycatalyst
+        createdb -w -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst
+        cd app
+        cp env.example .env
+        npm run db:migrate
+
+    - name: Run tests
+      run: |
+        cd app
+        npm run test
+
+    - name: Shut down database
+      run: docker stop github_action_postgresql
+
   pushToGHCR:
+    needs: runTests
     runs-on: ubuntu-latest
     steps:
 
@@ -53,5 +87,6 @@ jobs:
 
     - name: Deploying service
       run: |
+        kubectl create -f k8s/cc-migrate.yml -n default
         kubectl apply -f k8s/cc-web-deploy.yml -n default
         kubectl rollout restart deployment cc-web-deploy -n default

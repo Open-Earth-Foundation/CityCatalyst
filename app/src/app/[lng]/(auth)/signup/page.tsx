@@ -72,7 +72,7 @@ export default function Signup({ params: { lng } }: { params: { lng: string } })
           <FormErrorMessage>{errors.inviteCode && errors.inviteCode.message}</FormErrorMessage>
           <FormHelperText>
             <Trans t={t} i18nKey="no-invite-code">
-              Don't have an invitation code? <Link href="https://openclimate.network/waiting-list" target="_blank" rel="noreferrer">Subscribe to the Waiting List</Link>
+              Don&apos;t have an invitation code? <Link href="https://openclimate.network/waiting-list" target="_blank" rel="noreferrer">Subscribe to the Waiting List</Link>
             </Trans>
           </FormHelperText>
         </FormControl>
@@ -101,4 +101,3 @@ export default function Signup({ params: { lng } }: { params: { lng: string } })
     </>
   );
 }
-

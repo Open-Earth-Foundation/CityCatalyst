@@ -30,7 +30,9 @@ function VerifiedNotification({ t }: { t: TFunction }) {
         position: 'bottom-right',
       });
     }
-  }, [t, toast, isVerified]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isVerified]);
+
   return null;
 }
 
@@ -38,11 +40,10 @@ export default function Login({ params: { lng } }: { params: { lng: string } }) 
   const { t } = useTranslation(lng, 'auth');
   const router = useRouter();
   const { handleSubmit, register, formState: { errors, isSubmitting } } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log(data);
-    setTimeout(() => {
-      router.push(`/`);
-    }, 2000);
+    await new Promise(resolve => setTimeout(resolve, 500));
+    router.push(`/`);
   };
 
   return (

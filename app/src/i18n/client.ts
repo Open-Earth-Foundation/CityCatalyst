@@ -26,22 +26,22 @@ i18next
 export function useTranslation(lng: string, ns: string, options: UseTranslationOptions<undefined> = {}) {
   const ret = useTranslationOrg(ns, options);
   const { i18n } = ret;
+  const isChangedOnServer = runsOnServerSide && lng && i18n.resolvedLanguage !== lng;
+  const [activeLng, setActiveLng] = useState(i18n.resolvedLanguage);
 
-  if (runsOnServerSide && lng && i18n.resolvedLanguage !== lng) {
+  if (isChangedOnServer) {
     i18n.changeLanguage(lng);
-  } else {
-    const [activeLng, setActiveLng] = useState(i18n.resolvedLanguage);
-
-    useEffect(() => {
-      if (activeLng === i18n.resolvedLanguage) return;
-      setActiveLng(i18n.resolvedLanguage);
-    }, [activeLng, i18n.resolvedLanguage]);
-
-    useEffect(() => {
-      if (!lng || i18n.resolvedLanguage === lng) return;
-      i18n.changeLanguage(lng);
-    }, [lng, i18n]);
   }
+
+  useEffect(() => {
+    if (isChangedOnServer || activeLng === i18n.resolvedLanguage) return;
+    setActiveLng(i18n.resolvedLanguage);
+  }, [activeLng, i18n.resolvedLanguage]);
+
+  useEffect(() => {
+    if (isChangedOnServer || !lng || i18n.resolvedLanguage === lng) return;
+    i18n.changeLanguage(lng);
+  }, [lng, i18n]);
 
   return ret;
 }

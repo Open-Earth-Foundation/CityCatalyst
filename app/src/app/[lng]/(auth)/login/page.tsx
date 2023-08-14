@@ -18,7 +18,6 @@ type Inputs = {
 function VerifiedNotification({ t }: { t: TFunction }) {
   const searchParams = useSearchParams();
   const isVerified = !!searchParams.get('verification-code');
-
   const toast = useToast();
   useEffect(() => {
     if (isVerified) {
@@ -32,7 +31,7 @@ function VerifiedNotification({ t }: { t: TFunction }) {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isVerified]);
 
   return null;
 }
@@ -69,4 +68,3 @@ export default function Login({ params: { lng } }: { params: { lng: string } }) 
     </>
   );
 }
-

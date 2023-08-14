@@ -101,4 +101,3 @@ export default function Signup({ params: { lng } }: { params: { lng: string } })
     </>
   );
 }
-

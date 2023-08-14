@@ -1,5 +1,6 @@
 ### Skeleton directory for Global API server
-`.
+
+.
 
 ├── .env
 
@@ -18,7 +19,6 @@
 ├── tests/
 
 └── utils/
-`
 
 `routes` will have the API routes
 

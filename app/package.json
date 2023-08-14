@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "glob -c \"node --loader tsx --no-warnings --test\" \"./tests/**/*.test.ts\"",
+    "test": "api:test && cy:test",
+    "api:test": "glob -c \"node --loader tsx --no-warnings --test\" \"./tests/**/*.test.ts\"",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "db:migrate": "sequelize-cli db:migrate",
@@ -16,7 +17,8 @@
     "db:seed": "sequelize-cli db:seed:all",
     "db:gen-migration": "sequelize-cli migration:generate --name",
     "cy:open": "cypress open",
-    "cy:run": "cypress run"
+    "cy:run": "cypress run",
+    "cy:test": "start-server-and-test start http://localhost:3000 cy:run"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.0",
@@ -62,13 +64,12 @@
     "@storybook/addon-links": "^7.2.1",
     "@storybook/blocks": "^7.2.1",
     "@storybook/nextjs": "^7.2.1",
-    "cypress": "^12.17.3",
-    "sequelize-cli": "^6.6.1",
-    "storybook": "^7.2.1",
-    "wait-on": "^7.0.1",
     "@types/glob": "^8.1.0",
+    "cypress": "^12.17.3",
     "glob": "^10.3.3",
     "sequelize-auto": "^0.8.8",
+    "sequelize-cli": "^6.6.1",
+    "start-server-and-test": "^2.0.0",
     "storybook": "^7.0.27",
     "tsx": "^3.12.7"
   },

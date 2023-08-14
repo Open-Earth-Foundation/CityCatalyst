@@ -19,9 +19,9 @@ function VerifiedNotification({ t }: { t: TFunction }) {
   const searchParams = useSearchParams();
   const isVerified = !!searchParams.get('verification-code');
 
-  if (isVerified) {
-    const toast = useToast();
-    useEffect(() => {
+  const toast = useToast();
+  useEffect(() => {
+    if (isVerified) {
       toast({
         title: t('verified-toast-title'),
         description: t('verified-toast-description'),
@@ -30,8 +30,9 @@ function VerifiedNotification({ t }: { t: TFunction }) {
         isClosable: true,
         position: 'bottom-right',
       });
-    }, [])
-  }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return null;
 }
@@ -40,11 +41,10 @@ export default function Login({ params: { lng } }: { params: { lng: string } }) 
   const { t } = useTranslation(lng, 'auth');
   const router = useRouter();
   const { handleSubmit, register, formState: { errors, isSubmitting } } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log(data);
-    setTimeout(() => {
-      router.push(`/`);
-    }, 2000);
+    await new Promise(resolve => setTimeout(resolve, 500));
+    router.push(`/`);
   };
 
   return (

@@ -18,10 +18,9 @@ type Inputs = {
 function VerifiedNotification({ t }: { t: TFunction }) {
   const searchParams = useSearchParams();
   const isVerified = !!searchParams.get('verification-code');
-
-  if (isVerified) {
-    const toast = useToast();
-    useEffect(() => {
+  const toast = useToast();
+  useEffect(() => {
+    if (isVerified) {
       toast({
         title: t('verified-toast-title'),
         description: t('verified-toast-description'),
@@ -30,9 +29,8 @@ function VerifiedNotification({ t }: { t: TFunction }) {
         isClosable: true,
         position: 'bottom-right',
       });
-    }, [])
-  }
-
+    }
+  }, [t, toast, isVerified]);
   return null;
 }
 
@@ -69,4 +67,3 @@ export default function Login({ params: { lng } }: { params: { lng: string } }) 
     </>
   );
 }
-

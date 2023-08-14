@@ -36,6 +36,11 @@ jobs:
         cp env.example .env
         npm run db:migrate
 
+    - name: Run NextJS build
+      run: |
+        cd app
+        npm run build
+
     - name: Run tests
       run: |
         cd app

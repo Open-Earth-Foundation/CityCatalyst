@@ -36,12 +36,12 @@ export function useTranslation(lng: string, ns: string, options: UseTranslationO
   useEffect(() => {
     if (isChangedOnServer || activeLng === i18n.resolvedLanguage) return;
     setActiveLng(i18n.resolvedLanguage);
-  }, [activeLng, i18n.resolvedLanguage]);
+  }, [activeLng, i18n.resolvedLanguage, isChangedOnServer]);
 
   useEffect(() => {
     if (isChangedOnServer || !lng || i18n.resolvedLanguage === lng) return;
     i18n.changeLanguage(lng);
-  }, [lng, i18n]);
+  }, [lng, i18n, isChangedOnServer]);
 
   return ret;
 }

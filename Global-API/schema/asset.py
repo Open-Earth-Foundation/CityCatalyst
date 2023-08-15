@@ -1,7 +1,7 @@
 """
-asset table 
-
-- asset_id = The internal Climate TRACE identifier 
+ClimateTRACE asset table
+(see `READ ME`at https://climatetrace.org/downloads for detailed descriptions)
+- asset_id = The internal Climate TRACE identifier
 - filename  = name of file without extension
 - reference_number = GPC reference number data is useful for
 - iso3_country = ISO 3166-1 alpha-3 speficication of the country
@@ -12,7 +12,7 @@ asset table
 - gas = CO2, CH4, N2O, or CO2-eq. latter uses AR6 GWP 100 year or 20 year  time frame
 - emissions_quantity = Quantity metric tonnes. 0 = gas not emitted. empty/null/N-A = not yet available
 - emissions_factor = Emissions factor of reported activity. vary by sector, subsector, and asset type
-- emissions_factor_units = Units of reported "emissions factor" field. 
+- emissions_factor_units = Units of reported "emissions factor" field.
 - capacity = Capacity of the entity producing emissions
 - capacity_units = Units of reported "capacity" field
 - asset_name = Name of the entity or asset that produced the emissions

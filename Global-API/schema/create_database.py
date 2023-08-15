@@ -1,15 +1,19 @@
+import argparse
+from asset import Asset
 from base import Base
 from sqlalchemy import create_engine
 import os
 
-# database params are GitHub Secrets
-user = os.environ.get("DB_USER")
-pwd = os.environ.get("DB_PASSWORD")
-host = os.environ.get("DB_HOST")
-port = os.environ.get("DB_PORT")
-dbname = os.environ.get("DB_NAME")
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--user', help='database user', default=os.environ.get("DB_USER"))
+    parser.add_argument('--password', help='database password', default=os.environ.get("DB_PASSWORD"))
+    parser.add_argument('--host', help='database host', default=os.environ.get("DB_HOST"))
+    parser.add_argument('--port', help='database host', default=os.environ.get("DB_PORT"))
+    parser.add_argument('--dbname', help='database name', default=os.environ.get("DB_NAME"))
+    args = parser.parse_args()
 
-database_uri = f"postgresql://{user}:{pwd}@{host}:{port}/{dbname}"
+    database_uri = f"postgresql://{args.user}:{args.password}@{args.host}:{args.port}/{args.dbname}"
 
-engine = create_engine(database_uri)
-Base.metadata.create_all(engine)
+    engine = create_engine(database_uri)
+    Base.metadata.create_all(engine)

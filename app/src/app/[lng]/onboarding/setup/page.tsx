@@ -19,7 +19,8 @@ type Inputs = {
 }
 
 function SetupStep({ errors, register, t }: { errors: FieldErrors<Inputs>, register: UseFormRegister<Inputs>, t: TFunction }) {
-  const years = Array.from({ length: 10 }, (_x, i) => 2020 + i);
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 7 }, (_x, i) => currentYear - i);
   return (
     <>
       <div>

@@ -18,7 +18,8 @@ ClimateTRACE asset table
 - asset_name = Name of the entity or asset that produced the emissions
 - asset_type = Description of the asset's classification
 - st_astext = WKT representation of the geometry/geography
-- locode = city LOCODE that st_astext point is in
+- lat = latitude extracted from st_astext
+- lon = longitude extracted from st_astext
 - created_date = Date asset was added to the Climate TRACE database
 - modified_date = Last date on which any updates were made to the dataset for the specific asset.
 """
@@ -49,7 +50,8 @@ class Asset(Base):
     asset_name = Column(String, nullable=True)
     asset_type = Column(String, nullable=True)
     st_astext = Column(String, nullable=True)
-    locode = Column(String, nullable=True)
+    lat = Column(float, nullable=True)
+    lon = Column(float, nullable=True)
     created_date = Column(DateTime, nullable=True)
     modified_date = Column(DateTime, nullable=True)
     database_updated = Column(DateTime, default=datetime.datetime.utcnow(), onupdate=datetime.datetime.utcnow())

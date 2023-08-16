@@ -65,7 +65,7 @@
     "@storybook/addon-essentials": "^7.2.1",
     "@storybook/addon-interactions": "^7.2.1",
     "@storybook/addon-links": "^7.2.1",
-    "@storybook/blocks": "^7.3.0",
+    "@storybook/blocks": "^7.3.1",
     "@storybook/nextjs": "^7.2.1",
     "@types/glob": "^8.1.0",
     "cypress": "^12.17.3",

@@ -5,4 +5,4 @@ flake8==6.1.0
 mypy==1.4.1
 pandas==2.0.3
 pytest==7.4.0
-SQLAlchemy==2.0.19
+SQLAlchemy==2.0.20

@@ -27,6 +27,12 @@ const inventory2: CreateInventoryRequest = {
   totalEmissions: 1338,
 };
 
+const invalidInventory = {
+  inventoryName: "",
+  year: 0,
+  totalEmissions: "246kg co2eq",
+};
+
 describe("Inventory API", () => {
   before(async () => {
     const projectDir = process.cwd();
@@ -56,6 +62,19 @@ describe("Inventory API", () => {
     assert.equal(data.totalEmissions, inventory.totalEmissions);
   });
 
+  it("should not create an inventory with invalid data", async () => {
+    const url = "http://localhost:3000/api/v0/city/" + locode;
+    const req = makeRequest(url, invalidInventory);
+    const res = await createInventory(req, {
+      params: { city: locode },
+    });
+    assert.equal(res.status, 400);
+    const {
+      error: { issues },
+    } = await res.json();
+    assert.equal(issues.length, 3);
+  });
+
   it("should find an inventory", async () => {
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
     const req = makeRequest(url);
@@ -67,6 +86,15 @@ describe("Inventory API", () => {
     assert.equal(data.inventoryName, inventory.inventoryName);
     assert.equal(data.year, inventory.year);
     assert.equal(data.totalEmissions, inventory.totalEmissions);
+  });
+
+  it("should not find non-existing inventories", async () => {
+    const url = "http://localhost:3000/api/v0/city/XX_INVALID/inventory/0";
+    const req = makeRequest(url, invalidInventory);
+    const res = await findInventory(req, {
+      params: { city: "XX_INVALID", year: "0" },
+    });
+    assert.equal(res.status, 404);
   });
 
   it("should update an inventory", async () => {
@@ -82,6 +110,19 @@ describe("Inventory API", () => {
     assert.equal(data.totalEmissions, inventory2.totalEmissions);
   });
 
+  it("should not update an inventory with invalid data", async () => {
+    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
+    const req = makeRequest(url, invalidInventory);
+    const res = await updateInventory(req, {
+      params: { city: locode, year: inventory.year.toString() },
+    });
+    assert.equal(res.status, 400);
+    const {
+      error: { issues },
+    } = await res.json();
+    assert.equal(issues.length, 3);
+  });
+
   it("should delete an inventory", async () => {
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
     const req = makeRequest(url);
@@ -94,5 +135,14 @@ describe("Inventory API", () => {
     assert.equal(data.inventoryName, inventory2.inventoryName);
     assert.equal(data.year, inventory2.year);
     assert.equal(data.totalEmissions, inventory2.totalEmissions);
+  });
+
+  it("should not delete a non-existing inventory", async () => {
+    const url = `http://localhost:3000/api/v0/city/XX_INVALID/inventory/0`;
+    const req = makeRequest(url);
+    const res = await deleteInventory(req, {
+      params: { city: "XX_INVALID", year: "0" },
+    });
+    assert.equal(res.status, 404);
   });
 });

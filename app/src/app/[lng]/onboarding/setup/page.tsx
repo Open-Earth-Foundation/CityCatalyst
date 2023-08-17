@@ -169,7 +169,7 @@ export default function OnboardingSetup({ params: { lng } }: { params: { lng: st
             />
           </div>
         </div>
-        <div className="flex flex-col md:flex-row md:space-x-12 md:space-y-0 space-y-12 align-top mb-24 mt-[112px] pb-24">
+        <div className="flex flex-col md:flex-row md:space-x-12 md:space-y-0 space-y-12 align-top mt-8 md:mt-16 mb-48">
           {activeStep === 0 && <SetupStep errors={errors} register={register} t={t} />}
           {activeStep === 1 && <ConfirmStep cityName={getValues('city')} t={t} />}
         </div>

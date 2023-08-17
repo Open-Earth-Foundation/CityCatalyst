@@ -7,11 +7,11 @@ import { POST as createInventory } from "@/app/api/v0/city/[city]/inventory/rout
 import { db } from "@/models";
 import { CreateInventoryRequest } from "@/util/validation";
 import env from "@next/env";
-import { NextRequest } from "next/server";
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";
-import { after, before, describe, it, mock } from "node:test";
+import { after, before, describe, it } from "node:test";
 import { Op } from "sequelize";
+import { makeRequest } from "../helpers";
 
 const locode = "XX_INVENTORY_CITY";
 
@@ -26,12 +26,6 @@ const inventory2: CreateInventoryRequest = {
   year: 3001,
   totalEmissions: 1338,
 };
-
-export function makeRequest(url: string, body?: any) {
-  const request = new NextRequest(new URL(url));
-  request.json = mock.fn(() => Promise.resolve(body));
-  return request;
-}
 
 describe("Inventory API", () => {
   before(async () => {

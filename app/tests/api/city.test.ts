@@ -1,15 +1,15 @@
 import {
-    DELETE as deleteCity,
-    GET as findCity,
-    PATCH as updateCity,
+  DELETE as deleteCity,
+  GET as findCity,
+  PATCH as updateCity,
 } from "@/app/api/v0/city/[city]/route";
 import { POST as createCity } from "@/app/api/v0/city/route";
 import { db } from "@/models";
 import { CreateCityRequest } from "@/util/validation";
 import env from "@next/env";
-import { NextRequest } from "next/server";
 import assert from "node:assert";
-import { after, before, describe, it, mock } from "node:test";
+import { after, before, describe, it } from "node:test";
+import { makeRequest } from "../helpers";
 
 const city: CreateCityRequest = {
   locode: "XX_CITY",
@@ -26,12 +26,6 @@ const city2: CreateCityRequest = {
   region: "Test Region 2",
   area: 1338,
 };
-
-export function makeRequest(url: string, body?: any) {
-  const request = new NextRequest(new URL(url));
-  request.json = mock.fn(() => Promise.resolve(body));
-  return request;
-}
 
 describe("City API", () => {
   before(async () => {

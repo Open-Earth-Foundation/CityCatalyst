@@ -11,7 +11,7 @@ import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, describe, it } from "node:test";
 import { Op } from "sequelize";
-import { makeRequest } from "../helpers";
+import { createRequest } from "../helpers";
 
 const locode = "XX_INVENTORY_CITY";
 
@@ -51,7 +51,7 @@ describe("Inventory API", () => {
 
   it("should create an inventory", async () => {
     const url = "http://localhost:3000/api/v0/city" + locode;
-    const req = makeRequest(url, inventory);
+    const req = createRequest(url, inventory);
     const res = await createInventory(req, {
       params: { city: locode },
     });
@@ -64,7 +64,7 @@ describe("Inventory API", () => {
 
   it("should not create an inventory with invalid data", async () => {
     const url = "http://localhost:3000/api/v0/city/" + locode;
-    const req = makeRequest(url, invalidInventory);
+    const req = createRequest(url, invalidInventory);
     const res = await createInventory(req, {
       params: { city: locode },
     });
@@ -77,7 +77,7 @@ describe("Inventory API", () => {
 
   it("should find an inventory", async () => {
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
-    const req = makeRequest(url);
+    const req = createRequest(url);
     const res = await findInventory(req, {
       params: { city: locode, year: inventory.year.toString() },
     });
@@ -90,7 +90,7 @@ describe("Inventory API", () => {
 
   it("should not find non-existing inventories", async () => {
     const url = "http://localhost:3000/api/v0/city/XX_INVALID/inventory/0";
-    const req = makeRequest(url, invalidInventory);
+    const req = createRequest(url, invalidInventory);
     const res = await findInventory(req, {
       params: { city: "XX_INVALID", year: "0" },
     });
@@ -99,7 +99,7 @@ describe("Inventory API", () => {
 
   it("should update an inventory", async () => {
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
-    const req = makeRequest(url, inventory2);
+    const req = createRequest(url, inventory2);
     const res = await updateInventory(req, {
       params: { city: locode, year: inventory.year.toString() },
     });
@@ -112,7 +112,7 @@ describe("Inventory API", () => {
 
   it("should not update an inventory with invalid data", async () => {
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
-    const req = makeRequest(url, invalidInventory);
+    const req = createRequest(url, invalidInventory);
     const res = await updateInventory(req, {
       params: { city: locode, year: inventory.year.toString() },
     });
@@ -125,7 +125,7 @@ describe("Inventory API", () => {
 
   it("should delete an inventory", async () => {
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
-    const req = makeRequest(url);
+    const req = createRequest(url);
     const res = await deleteInventory(req, {
       params: { city: locode, year: inventory2.year.toString() },
     });
@@ -139,7 +139,7 @@ describe("Inventory API", () => {
 
   it("should not delete a non-existing inventory", async () => {
     const url = `http://localhost:3000/api/v0/city/XX_INVALID/inventory/0`;
-    const req = makeRequest(url);
+    const req = createRequest(url);
     const res = await deleteInventory(req, {
       params: { city: "XX_INVALID", year: "0" },
     });

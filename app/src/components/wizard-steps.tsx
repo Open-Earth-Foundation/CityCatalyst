@@ -28,13 +28,20 @@ export default function WizardSteps({
     { base: "vertical", md: "horizontal" },
     { fallback: "md" }
   );
+  const gap: "0" | undefined = useBreakpointValue(
+    { base: "0", md: undefined },
+    { fallback: "md" }
+  );
+
   return (
     <Stepper
       index={currentStep}
       my={8}
       colorScheme="brandScheme"
       size="lg"
+      height="120px"
       orientation={orientation}
+      gap={gap}
     >
       {steps.map((step, index) => (
         <Step key={index} onClick={() => onSelect(index)}>

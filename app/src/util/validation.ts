@@ -23,6 +23,7 @@ export const createCityRequest = z.object({
   region: z.string().optional(),
   area: z.number().int().optional(),
 });
+export type CreateCityRequest = z.infer<typeof createCityRequest>;
 
 export const createInventoryRequest = z.object({
   inventoryName: z.string().min(1),

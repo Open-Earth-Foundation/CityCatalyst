@@ -30,4 +30,5 @@ export const createInventoryRequest = z.object({
   year: z.number().int().min(2000),
   totalEmissions: z.number().int().optional(),
 });
+export type CreateInventoryRequest = z.infer<typeof createInventoryRequest>;
 

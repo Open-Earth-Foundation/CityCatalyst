@@ -1,16 +1,15 @@
-import { POST as createCity } from "@/app/api/v0/city/route";
 import {
-  GET as findCity,
-  PATCH as updateCity,
-  DELETE as deleteCity,
+    DELETE as deleteCity,
+    GET as findCity,
+    PATCH as updateCity,
 } from "@/app/api/v0/city/[city]/route";
+import { POST as createCity } from "@/app/api/v0/city/route";
 import { db } from "@/models";
 import { CreateCityRequest } from "@/util/validation";
+import env from "@next/env";
 import { NextRequest } from "next/server";
 import assert from "node:assert";
 import { after, before, describe, it, mock } from "node:test";
-
-import env from "@next/env";
 
 const city: CreateCityRequest = {
   locode: "XX_CITY",

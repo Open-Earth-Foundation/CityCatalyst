@@ -2,7 +2,6 @@ import { POST as createCity } from "@/app/api/v0/city/route";
 import { db } from "@/models";
 import { CreateCityRequest } from "@/util/validation";
 import { NextRequest } from "next/server";
-import { createMocks } from "node-mocks-http";
 import assert from "node:assert";
 import { after, before, describe, it, mock } from "node:test";
 
@@ -16,23 +15,6 @@ const cityRequest: CreateCityRequest = {
   area: 1337,
 };
 const emptyProps = { params: {} };
-
-class MutableNextRequest extends NextRequest {
-  constructor(baseRequest: RequestInfo, body: ReadableStream<Uint8Array>) {
-    super(baseRequest);
-    this._body = body;
-  }
-
-  private _body: ReadableStream<Uint8Array>;
-  get body() { return this._body }
-  set body(newBody: ReadableStream<Uint8Array>) { this._body = newBody }
-}
-
-export type TMutableNextRequest = {
-  -readonly [K in keyof NextRequest]: NextRequest[K];
-} & {
-  set body(newBody: ReadableStream<Uint8Array> | null);
-};
 
 export function makeRequest(url: string, body: any) {
   const request = new NextRequest(new URL(url));

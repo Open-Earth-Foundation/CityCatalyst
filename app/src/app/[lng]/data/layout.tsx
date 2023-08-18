@@ -11,7 +11,7 @@ export default function DataLayout({
 }) {
   return (
     <main className="h-screen flex flex-col">
-      <NavigationBar lng={lng} showNav={false} />
+      <NavigationBar lng={lng} />
       <div className="w-full h-full">{children}</div>
     </main>
   );

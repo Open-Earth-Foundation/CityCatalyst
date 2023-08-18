@@ -26,7 +26,7 @@ export function NavigationBar({
   };
 
   return (
-    <div className="flex flex-row space-between px-8 py-4 align-middle bg-[#001EA7]">
+    <div className="flex flex-row space-between px-8 py-4 align-middle bg-[#001EA7] space-x-12">
       <NextLink href="/">
         <Image
           src="/assets/logo.svg"
@@ -67,6 +67,7 @@ export function NavigationBar({
         variant="unstyled"
         onChange={onChangeLanguage}
         defaultValue={lng}
+        minW={20}
         w={20}
         size="md"
         color="white"

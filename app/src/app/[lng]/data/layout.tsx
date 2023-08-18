@@ -1,21 +1,18 @@
-'use client'
+"use client";
 
 import { NavigationBar } from "@/components/navigation-bar";
 
-export default function AuthLayout({
+export default function DataLayout({
   children,
   params: { lng },
 }: {
-  children: React.ReactNode,
-  params: { lng: string },
+  children: React.ReactNode;
+  params: { lng: string };
 }) {
   return (
     <main className="h-screen flex flex-col">
       <NavigationBar lng={lng} showNav={false} />
-      <div className="w-full h-full bg-city bg-left-bottom bg-no-repeat">
-        {children}
-      </div>
+      <div className="w-full h-full">{children}</div>
     </main>
   );
 }
-

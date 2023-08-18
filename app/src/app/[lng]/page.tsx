@@ -25,6 +25,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
             Onboarding
           </Button>
         </Link>
+        <Link href={`/${lng}/data`} passHref legacyBehavior>
+          <Button as="a" w={40}>
+            Add Data
+          </Button>
+        </Link>
       </div>
     </main>
   )

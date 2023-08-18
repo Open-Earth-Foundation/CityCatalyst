@@ -1,0 +1,16 @@
+{
+  "data-heading": "Add Data to Complete Your GHG Inventory",
+  "data-details": "Connect third-party data or upload your own data in order to compile your GHG inventory with GPC Basic methodology",
+  "data-view-heading": "View the data required to complete your city's inventory",
+  "data-view-details": "GPC Basic encompasses three primary sectors: Stationary Energy, Transportation and Waste. Fill out the necessary data for each sector to build a comprehensive GHG inventory. <2>Learn more</2>",
+  "stationary-energy": "Stationary Energy",
+  "stationary-energy-details": "This sector deals with emissions that result from the generation and consumption of electricity, heat, and steam.",
+  "stationary-energy-scope": "Scope Required for Basic GHGI: 1, 2",
+  "transportation": "Transportation",
+  "transportation-details": "This sector deals with emissions from the transportation of goods and people within the city boundary.",
+  "transportation-scope": "Scope Required for Basic GHGI: 1, 2",
+  "waste": "Waste and wastewater",
+  "waste-details": "This sector covers emissions generated from waste management processes.",
+  "waste-scope": "Scope Required for Basic GHGI: 1, 3",
+  "add-data-to-inventory": "Add data to inventory"
+}

@@ -200,7 +200,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               <InfoOutlineIcon color={"#7A7B9A"} />
             </Box>
             <Text
-              className={`font-[400] ${opensans.className} text-[16px] text-[#7A7B9A] leadin-[0.5px] `}>
+              className={`font-[400] text-[16px] text-[#7A7B9A] leadin-[0.5px] `}>
               The data you have submitted is now officially incorporated into
               your city&apos;s 2023 GHG Emissions Inventory, compiled according
               to the GPC Basic methodology.{" "}

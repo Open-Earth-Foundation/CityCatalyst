@@ -12,6 +12,10 @@ export const theme = extendTheme({
     brand: "#2351DC",
     tertiary: "#7A7B9A",
     borderOverlay: "#E6E7FF",
+    contentSecondary: "#232640",
+    interactiveSecondary: "#F17105",
+    interactiveTertiary: "#24BE00",
+    backgroundNeutral: "#E8EAFB",
     brandScheme: {
       100: "#C5CBF5",
       500: "#2351DC",
@@ -77,6 +81,29 @@ export const theme = extendTheme({
         container: {
           borderRadius: 8,
         },
+      },
+    },
+    Tag: {
+      variants: {
+        brand: {
+          container: {
+            px: 3,
+            py: 1,
+            borderRadius: "full",
+            borderColor: "backgroundNeutral",
+            borderWidth: 1,
+            color: "backgroundNeutral",
+          },
+          label: {
+            color: "contentSecondary",
+            fontSize: "14",
+            borderWidth: 0,
+            mt: -0.5,
+          },
+        },
+      },
+      defaultProps: {
+        variant: "brand",
       },
     },
   },

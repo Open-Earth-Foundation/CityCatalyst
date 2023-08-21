@@ -78,9 +78,9 @@ type SubSector = {
 };
 
 export default function Onboarding({
-  params: { lng },
+  params: { lng, step },
 }: {
-  params: { lng: string };
+  params: { lng: string; step: string };
 }) {
   const { t } = useTranslation(lng, "data");
   const router = useRouter();
@@ -108,14 +108,15 @@ export default function Onboarding({
     },
   ];
   const { activeStep, goToNext, goToPrevious, setActiveStep } = useSteps({
-    index: 0,
+    index: Number(step) - 1,
     count: steps.length,
   });
   const onStepSelected = (selectedStep: number) => {
     setActiveStep(selectedStep);
   };
-  const step = steps[activeStep];
-  const totalStepCompletion = step.connectedProgress + step.addedProgress;
+  const currentStep = steps[activeStep];
+  const totalStepCompletion =
+    currentStep.connectedProgress + currentStep.addedProgress;
   const formatPercentage = (percentage: number) =>
     Math.round(percentage * 1000) / 10;
 
@@ -189,12 +190,12 @@ export default function Onboarding({
       {/*** Sector summary section ***/}
       <Card mb={12}>
         <Flex direction="row">
-          <Icon as={step.icon} boxSize={8} color="brand" mr={4} />
+          <Icon as={currentStep.icon} boxSize={8} color="brand" mr={4} />
           <div className="space-y-4 w-full">
             <Heading size="lg" mb={2}>
-              {step.title}
+              {currentStep.title}
             </Heading>
-            <Text color="tertiary">{step.details}</Text>
+            <Text color="tertiary">{currentStep.details}</Text>
             <Flex direction="row">
               <Progress
                 value={totalStepCompletion * 100}
@@ -217,7 +218,7 @@ export default function Onboarding({
               />
               <TagLabel>
                 {t("data-connected-percent", {
-                  progress: formatPercentage(step.connectedProgress),
+                  progress: formatPercentage(currentStep.connectedProgress),
                 })}
               </TagLabel>
             </Tag>
@@ -229,7 +230,7 @@ export default function Onboarding({
               />
               <TagLabel>
                 {t("data-added-percent", {
-                  progress: formatPercentage(step.addedProgress),
+                  progress: formatPercentage(currentStep.addedProgress),
                 })}
               </TagLabel>
             </Tag>
@@ -312,7 +313,9 @@ export default function Onboarding({
         <Text color="tertiary" mb={12}>
           {t("add-data-details")}
         </Text>
-        <Heading size="sm" mb={4}>{t("select-subsector")}</Heading>
+        <Heading size="sm" mb={4}>
+          {t("select-subsector")}
+        </Heading>
         <Wrap direction="row" spacing={4}>
           {subSectors.map((subSector) => (
             <WrapItem key={subSector.id} width="32%" maxWidth="32%">

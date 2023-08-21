@@ -12,5 +12,8 @@
   "waste": "Waste and wastewater",
   "waste-details": "This sector covers emissions generated from waste management processes.",
   "waste-scope": "Scope Required for Basic GHGI: 1, 3",
-  "add-data-to-inventory": "Add data to inventory"
+  "add-data-to-inventory": "Add data to inventory",
+  "completion-percent": "{{progress}}% completed",
+  "data-connected-percent": "{{progress}}% Connected third-party data",
+  "data-added-percent": "{{progress}}% Added data"
 }

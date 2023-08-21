@@ -9,7 +9,7 @@ const Footer = () => {
         <div className="w-full px-[64px]">
             <div className='flex justify-between w-full pb-10'>
                 <div>
-                    <Image src="/assets/CityCatalystLogo.svg" alt='city-catalyst-logo' width={121} height={24}/>
+                    <Image src="/assets/city_catalyst_logo.svg" alt='city-catalyst-logo' width={121} height={24}/>
                 </div>
                 <div className='text-white text-[14px] grid grid-cols-3 gap-6 font-poppins'>
                     <Link href="/">About Open Climate</Link>

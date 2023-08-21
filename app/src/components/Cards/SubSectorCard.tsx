@@ -1,5 +1,5 @@
 import { CheckIcon } from '@chakra-ui/icons'
-import { Card, Text } from '@chakra-ui/react'
+import { Card, Heading, Text } from '@chakra-ui/react'
 import React, { FC } from 'react';
 
 interface SubSectorCardProps {
@@ -16,9 +16,9 @@ const SubSectorCard:FC<SubSectorCardProps> = ({title, scopes}) => {
             </div>
         </div>
         <div>
-            <Text className='font-[500]'>
+            <Heading className='font-[500] text-[14px]'>
                 {title}
-            </Text>
+            </Heading>
             <Text className='font-[400] text-[#7A7B9A]'>
                 Scope: {scopes}
             </Text>

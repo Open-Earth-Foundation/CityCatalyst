@@ -23,6 +23,7 @@ import {
   useSteps,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { FiTarget, FiTrash2, FiTruck } from "react-icons/fi";
 import {
   MdCheckCircle,
@@ -114,6 +115,14 @@ export default function Onboarding({
   const onStepSelected = (selectedStep: number) => {
     setActiveStep(selectedStep);
   };
+  useEffect(() => {
+    // change step param in URL without reloading
+    const newPath = location.pathname.replace(
+      /\/[0-9]+$/,
+      `/${activeStep + 1}`
+    );
+    history.replaceState("", "", newPath);
+  }, [activeStep]);
   const currentStep = steps[activeStep];
   const totalStepCompletion =
     currentStep.connectedProgress + currentStep.addedProgress;

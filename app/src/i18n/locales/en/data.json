@@ -25,5 +25,17 @@
   "scope": "Scope",
   "see-more-details": "See more details",
   "connect-data": "Connect data",
-  "data-connected": "Data connected"
+  "data-connected": "Data connected",
+  "edit-subsector": "Edit subsector",
+
+  "add-data-heading": "Add your own local values manually",
+  "add-data-details": "Add manually your calculated values for sub-sectors requires to the inventory.",
+  "select-subsector": "Select sub-sector",
+  "residential-buildings": "Residential buildings",
+  "commercial-buildings": "Commercial and institutional buildings and facilities",
+  "manufacturing-construction": "Manufacturing industries and construction",
+  "energy-industries": "Energy Industries",
+  "emissions-oil-natural-gas": "Fugitive emissions from oil and natural gas systems",
+  "emissions-coal": "Fugitive emissions from mining, processing, storage and transportation of coal",
+  "agriculture": "Agriculture, forestry, and fishing activities"
 }

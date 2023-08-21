@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleIcon } from "@/components/icons";
+import { CircleIcon, DataAlertIcon } from "@/components/icons";
 import WizardSteps from "@/components/wizard-steps";
 import { useTranslation } from "@/i18n/client";
 import { ArrowBackIcon } from "@chakra-ui/icons";
@@ -11,11 +11,15 @@ import {
   Flex,
   Heading,
   Icon,
+  IconButton,
   Progress,
+  Stack,
   Tag,
   TagLabel,
   TagLeftIcon,
   Text,
+  Wrap,
+  WrapItem,
   useSteps,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
@@ -23,6 +27,8 @@ import { FiTarget, FiTrash2, FiTruck } from "react-icons/fi";
 import {
   MdCheckCircle,
   MdDataset,
+  MdOutlineCheckCircle,
+  MdOutlineEdit,
   MdOutlineFactory,
   MdOutlineHomeWork,
   MdPlaylistAddCheck,
@@ -63,6 +69,13 @@ const dataSources = [
     isConnected: true,
   },
 ];
+
+type SubSector = {
+  id: number | string;
+  title: string;
+  scopes: number[];
+  isAdded: boolean;
+};
 
 export default function Onboarding({
   params: { lng },
@@ -106,6 +119,55 @@ export default function Onboarding({
   const formatPercentage = (percentage: number) =>
     Math.round(percentage * 1000) / 10;
 
+  const subSectors: SubSector[] = [
+    {
+      id: 0,
+      title: t("residential-buildings"),
+      scopes: [1, 2],
+      isAdded: true,
+    },
+    {
+      id: 1,
+      title: t("commercial-buildings"),
+      scopes: [1, 2],
+      isAdded: true,
+    },
+    {
+      id: 2,
+      title: t("manufacturing-construction"),
+      scopes: [1, 2],
+      isAdded: false,
+    },
+    {
+      id: 3,
+      title: t("energy-industries"),
+      scopes: [1, 2],
+      isAdded: true,
+    },
+    {
+      id: 4,
+      title: t("emissions-oil-natural-gas"),
+      scopes: [1],
+      isAdded: true,
+    },
+    {
+      id: 5,
+      title: t("emissions-coal"),
+      scopes: [1],
+      isAdded: true,
+    },
+    {
+      id: 6,
+      title: t("agriculture"),
+      scopes: [1, 2],
+      isAdded: true,
+    },
+  ];
+
+  const onSubSectorClick = (subSector: SubSector) => {
+    console.log(subSector);
+  };
+
   return (
     <div className="pt-16 w-[1090px] max-w-full mx-auto px-4">
       <Button
@@ -124,6 +186,7 @@ export default function Onboarding({
           />
         </div>
       </div>
+      {/*** Sector summary section ***/}
       <Card mb={12}>
         <Flex direction="row">
           <Icon as={step.icon} boxSize={8} color="brand" mr={4} />
@@ -135,7 +198,7 @@ export default function Onboarding({
             <Flex direction="row">
               <Progress
                 value={totalStepCompletion * 100}
-                color="interactiveSecondary"
+                color="interactiveQuaternary"
                 w="full"
                 borderRadius={16}
                 mr={6}
@@ -150,7 +213,7 @@ export default function Onboarding({
               <TagLeftIcon
                 as={CircleIcon}
                 boxSize={6}
-                color="interactiveSecondary"
+                color="interactiveQuaternary"
               />
               <TagLabel>
                 {t("data-connected-percent", {
@@ -173,7 +236,8 @@ export default function Onboarding({
           </div>
         </Flex>
       </Card>
-      <Card>
+      {/*** Third party data source section ***/}
+      <Card mb={12}>
         <Heading size="lg" mb={2}>
           {t("check-data-heading")}
         </Heading>
@@ -184,7 +248,9 @@ export default function Onboarding({
           {dataSources.map((source) => (
             <Card key={source.id}>
               <Icon as={source.icon} boxSize={9} mb={6} />
-              <Heading size="sm" noOfLines={2}>{source.title}</Heading>
+              <Heading size="sm" noOfLines={2}>
+                {source.title}
+              </Heading>
               <Flex direction="row" my={4}>
                 <Tag mr={1}>
                   <TagLeftIcon
@@ -207,7 +273,9 @@ export default function Onboarding({
                   </TagLabel>
                 </Tag>
               </Flex>
-              <Text color="contentTertiary" noOfLines={5}>{source.description}</Text>
+              <Text color="contentTertiary" noOfLines={5}>
+                {source.description}
+              </Text>
               <Link
                 href={source.url}
                 className="underline"
@@ -228,11 +296,65 @@ export default function Onboarding({
                   {t("data-connected")}
                 </Button>
               ) : (
-                <Button variant="outline" bgColor="backgroundNeutral">{t("connect-data")}</Button>
+                <Button variant="outline" bgColor="backgroundNeutral">
+                  {t("connect-data")}
+                </Button>
               )}
             </Card>
           ))}
         </Flex>
+      </Card>
+      {/*** Manual data entry section for subsectors ***/}
+      <Card mb={12}>
+        <Heading size="lg" mb={2}>
+          {t("add-data-heading")}
+        </Heading>
+        <Text color="tertiary" mb={12}>
+          {t("add-data-details")}
+        </Text>
+        <Heading size="sm" mb={4}>{t("select-subsector")}</Heading>
+        <Wrap direction="row" spacing={4}>
+          {subSectors.map((subSector) => (
+            <WrapItem key={subSector.id} width="32%" maxWidth="32%">
+              <Card
+                maxHeight="120px"
+                height="120px"
+                w="full"
+                className="hover:drop-shadow-xl transition-shadow"
+                onClick={() => onSubSectorClick(subSector)}
+              >
+                <Flex direction="row" className="space-x-4 items-center h-full">
+                  <Icon
+                    as={
+                      subSector.isAdded ? MdOutlineCheckCircle : DataAlertIcon
+                    }
+                    boxSize={8}
+                    color={
+                      subSector.isAdded
+                        ? "interactiveTertiary"
+                        : "sentimentWarningDefault"
+                    }
+                  />
+                  <Stack w="full">
+                    <Heading size="xs" noOfLines={3} maxWidth="200px">
+                      {subSector.title}
+                    </Heading>
+                    <Text color="contentTertiary">
+                      {t("scope")}: {subSector.scopes.join(", ")}
+                    </Text>
+                  </Stack>
+                  <IconButton
+                    aria-label={t("edit-subsector")}
+                    variant="solid"
+                    bgColor="backgroundNeutral"
+                    color="interactiveSecondary"
+                    icon={<Icon as={MdOutlineEdit} boxSize={6} />}
+                  />
+                </Flex>
+              </Card>
+            </WrapItem>
+          ))}
+        </Wrap>
       </Card>
     </div>
   );

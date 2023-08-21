@@ -27,11 +27,11 @@ import { useEffect } from "react";
 import { FiTarget, FiTrash2, FiTruck } from "react-icons/fi";
 import {
   MdCheckCircle,
-  MdDataset,
   MdOutlineCheckCircle,
   MdOutlineEdit,
   MdOutlineFactory,
   MdOutlineHomeWork,
+  MdOutlineHouse,
   MdPlaylistAddCheck,
 } from "react-icons/md";
 
@@ -40,7 +40,7 @@ const dataSourceDescription =
 const dataSources = [
   {
     id: 0,
-    icon: MdDataset,
+    icon: MdOutlineHouse,
     title: "Residential buildings - Google Environmental Insights",
     dataQuality: "high",
     scopes: [1, 2],

@@ -4,6 +4,7 @@ import { CircleIcon } from "@/components/icons";
 import WizardSteps from "@/components/wizard-steps";
 import { useTranslation } from "@/i18n/client";
 import { ArrowBackIcon } from "@chakra-ui/icons";
+import { Link } from "@chakra-ui/next-js";
 import {
   Button,
   Card,
@@ -18,8 +19,50 @@ import {
   useSteps,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { FiTrash2, FiTruck } from "react-icons/fi";
-import { MdOutlineHomeWork } from "react-icons/md";
+import { FiTarget, FiTrash2, FiTruck } from "react-icons/fi";
+import {
+  MdCheckCircle,
+  MdDataset,
+  MdOutlineFactory,
+  MdOutlineHomeWork,
+  MdPlaylistAddCheck,
+} from "react-icons/md";
+
+const dataSourceDescription =
+  "Leveraging satellite imagery, this dataset provides key information about residential structures, aiding in the assessment of their energy usage and corresponding carbon footprints";
+const dataSources = [
+  {
+    id: 0,
+    icon: MdDataset,
+    title: "Residential buildings - Google Environmental Insights",
+    dataQuality: "high",
+    scopes: [1, 2],
+    description: dataSourceDescription,
+    url: "https://openclimate.network",
+    isConnected: false,
+  },
+  {
+    id: 1,
+    icon: MdOutlineHomeWork,
+    title:
+      "Commercial and institutional buildings and facilities - Google Environmental Insights",
+    dataQuality: "low",
+    scopes: [1, 3],
+    description: dataSourceDescription,
+    url: "https://openclimate.network",
+    isConnected: false,
+  },
+  {
+    id: 2,
+    icon: MdOutlineFactory,
+    title: "Energy industries - Google Environmental Insights",
+    dataQuality: "medium",
+    scopes: [3],
+    description: dataSourceDescription,
+    url: "https://openclimate.network",
+    isConnected: true,
+  },
+];
 
 export default function Onboarding({
   params: { lng },
@@ -81,7 +124,7 @@ export default function Onboarding({
           />
         </div>
       </div>
-      <Card px={6} py={8}>
+      <Card mb={12}>
         <Flex direction="row">
           <Icon as={step.icon} boxSize={8} color="brand" mr={4} />
           <div className="space-y-4 w-full">
@@ -128,6 +171,67 @@ export default function Onboarding({
               </TagLabel>
             </Tag>
           </div>
+        </Flex>
+      </Card>
+      <Card>
+        <Heading size="lg" mb={2}>
+          {t("check-data-heading")}
+        </Heading>
+        <Text color="tertiary" mb={12}>
+          {t("check-data-details")}
+        </Text>
+        <Flex direction="row" className="space-x-4">
+          {dataSources.map((source) => (
+            <Card key={source.id}>
+              <Icon as={source.icon} boxSize={9} mb={6} />
+              <Heading size="sm" noOfLines={2}>{source.title}</Heading>
+              <Flex direction="row" my={4}>
+                <Tag mr={1}>
+                  <TagLeftIcon
+                    as={MdPlaylistAddCheck}
+                    boxSize={4}
+                    color="contentTertiary"
+                  />
+                  <TagLabel fontSize={12}>
+                    {t("data-quality")}: {t("quality-" + source.dataQuality)}
+                  </TagLabel>
+                </Tag>
+                <Tag>
+                  <TagLeftIcon
+                    as={FiTarget}
+                    boxSize={4}
+                    color="contentTertiary"
+                  />
+                  <TagLabel fontSize={12}>
+                    {t("scope")}: {source.scopes.join(", ")}
+                  </TagLabel>
+                </Tag>
+              </Flex>
+              <Text color="contentTertiary" noOfLines={5}>{source.description}</Text>
+              <Link
+                href={source.url}
+                className="underline"
+                mt={4}
+                mb={6}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t("see-more-details")}
+              </Link>
+              {source.isConnected ? (
+                <Button
+                  variant="solidPrimary"
+                  px={6}
+                  py={4}
+                  leftIcon={<Icon as={MdCheckCircle} />}
+                >
+                  {t("data-connected")}
+                </Button>
+              ) : (
+                <Button variant="outline" bgColor="backgroundNeutral">{t("connect-data")}</Button>
+              )}
+            </Card>
+          ))}
         </Flex>
       </Card>
     </div>

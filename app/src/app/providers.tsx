@@ -1,21 +1,27 @@
 "use client";
 
 import { CacheProvider } from "@chakra-ui/next-js";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import { ChakraProvider, extendTheme, theme } from "@chakra-ui/react";
 
 import { Open_Sans, Poppins } from "next/font/google";
 const poppins = Poppins({ weight: "500", subsets: ["latin"] });
 const openSans = Open_Sans({ subsets: ["latin"] });
 
-export const theme = extendTheme({
+export const appTheme = extendTheme({
   colors: {
     brand: "#2351DC",
-    tertiary: "#7A7B9A",
+    tertiary: "#7A7B9A", // TODO replaced by contentTertiary
     borderOverlay: "#E6E7FF",
     contentSecondary: "#232640",
+    contentTertiary: "#7A7B9A",
+    interactivePrimary: "#008600",
+    interactivePrimaryLight: "#61c261",
     interactiveSecondary: "#F17105",
     interactiveTertiary: "#24BE00",
     backgroundNeutral: "#E8EAFB",
+    sentimentPositiveOverlay: "#EFFDE5",
+    sentimentPositiveLight: "#f0f7eb",
+    sentimentPositiveDark: "#b9cfa9",
     brandScheme: {
       100: "#C5CBF5",
       500: "#2351DC",
@@ -66,6 +72,24 @@ export const theme = extendTheme({
             },
           },
         },
+        solidPrimary: {
+          ...theme.components.Button.variants?.solid,
+          bg: "sentimentPositiveOverlay",
+          color: "interactivePrimary",
+          _hover: {
+            transform: "scale(0.98)",
+            bg: "sentimentPositiveLight",
+            color: "interactivePrimaryLight",
+          },
+          _active: {
+            bg: "sentimentPositiveDark",
+            color: "sentimentPositiveOverlay",
+          },
+          _loading: {
+            opacity: 0.8,
+            bg: "sentimentPositiveLight",
+          },
+        },
         ghost: {
           color: "#5a7be0",
         },
@@ -80,6 +104,8 @@ export const theme = extendTheme({
       baseStyle: {
         container: {
           borderRadius: 8,
+          px: 6,
+          py: 8,
         },
       },
     },
@@ -121,7 +147,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         `}
       </style>
       <CacheProvider>
-        <ChakraProvider theme={theme}>{children}</ChakraProvider>
+        <ChakraProvider theme={appTheme}>{children}</ChakraProvider>
       </CacheProvider>
     </>
   );

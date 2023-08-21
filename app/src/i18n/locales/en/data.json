@@ -15,5 +15,15 @@
   "add-data-to-inventory": "Add data to inventory",
   "completion-percent": "{{progress}}% completed",
   "data-connected-percent": "{{progress}}% Connected third-party data",
-  "data-added-percent": "{{progress}}% Added data"
+  "data-added-percent": "{{progress}}% Added data",
+  "check-data-heading": "Check and connect third-party data we found for you",
+  "check-data-details": "Review and integrate automatically sourced data relevant to your city's GHG inventory.",
+  "data-quality": "Data Quality",
+  "quality-high": "High",
+  "quality-medium": "Medium",
+  "quality-low": "Low",
+  "scope": "Scope",
+  "see-more-details": "See more details",
+  "connect-data": "Connect data",
+  "data-connected": "Data connected"
 }

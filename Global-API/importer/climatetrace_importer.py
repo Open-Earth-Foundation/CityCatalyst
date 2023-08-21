@@ -1,6 +1,6 @@
 import sys
 import os
-
+from datetime import datetime
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_dir = os.path.dirname(current_dir)
 sys.path.append(project_dir)
@@ -30,15 +30,17 @@ def number_records_in_file(fl):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--user', help='database user', default=os.environ.get("DB_USER"))
-    parser.add_argument('--password', help='database password', default=os.environ.get("DB_PASSWORD"))
-    parser.add_argument('--host', help='database host', default=os.environ.get("DB_HOST"))
-    parser.add_argument('--port', help='database host', default=os.environ.get("DB_PORT"))
-    parser.add_argument('--dbname', help='database name', default=os.environ.get("DB_NAME"))
-    parser.add_argument('--file', help='path to file to import')
+    parser = argparse.ArgumentParser(description="Processing and seeding climate TRACE emissions data to database")
+    parser.add_argument('--user', help='database user', type=str, default=os.environ.get("DB_USER"))
+    parser.add_argument('--password', help='database password', type=str, default=os.environ.get("DB_PASSWORD"))
+    parser.add_argument('--host', help='database host', type=str, default=os.environ.get("DB_HOST"))
+    parser.add_argument('--port', help='database port', type=int, default=os.environ.get("DB_PORT"))
+    parser.add_argument('--dbname', help='database name', type=str, default=os.environ.get("DB_NAME"))
+    parser.add_argument('--file', help='path to file to import', required=True)
     parser.add_argument('--refno', help='GPC reference number')
     args = parser.parse_args()
+
+    start = datetime.now()
 
     database_uri = f"postgresql://{args.user}:{args.password}@{args.host}:{args.port}/{args.dbname}"
 
@@ -79,4 +81,11 @@ if __name__ == '__main__':
             session.commit()
 
     session.close
+    
+    end = datetime.now()
+    logging.info(f"\nExecution Start Timestamp: {start.isoformat()}")
+    logging.info(f"Execution End Timestamp: {end.isoformat()}")
+    logging.info(f"Execution Duration: {(end-start).seconds} seconds")
+    logging.info(f"Total Records Processed: {n_records}")
+    logging.info(f"Records Processed Successfully: {record_counter}")
     logging.info("Processing completed.")

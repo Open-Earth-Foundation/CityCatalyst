@@ -29,7 +29,7 @@
   "edit-subsector": "Edit subsector",
 
   "add-data-heading": "Add your own local values manually",
-  "add-data-details": "Add manually your calculated values for sub-sectors requires to the inventory.",
+  "add-data-details": "Manually add your calculated values for required sub-sectors to the inventory.",
   "select-subsector": "Select sub-sector",
   "residential-buildings": "Residential buildings",
   "commercial-buildings": "Commercial and institutional buildings and facilities",

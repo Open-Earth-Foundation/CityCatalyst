@@ -6,6 +6,7 @@ import { useTranslation } from "@/i18n/client";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { Link } from "@chakra-ui/next-js";
 import {
+  Box,
   Button,
   Card,
   Flex,
@@ -23,7 +24,7 @@ import {
   useSteps,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FiTarget, FiTrash2, FiTruck } from "react-icons/fi";
 import {
   MdCheckCircle,
@@ -32,6 +33,7 @@ import {
   MdOutlineFactory,
   MdOutlineHomeWork,
   MdOutlineHouse,
+  MdOutlineSkipNext,
   MdPlaylistAddCheck,
 } from "react-icons/md";
 
@@ -78,7 +80,7 @@ type SubSector = {
   isAdded: boolean;
 };
 
-export default function Onboarding({
+export default function OnboardingSteps({
   params: { lng, step },
 }: {
   params: { lng: string; step: string };
@@ -176,6 +178,14 @@ export default function Onboarding({
 
   const onSubSectorClick = (subSector: SubSector) => {
     console.log(subSector);
+  };
+
+  const [isConfirming, setConfirming] = useState(false);
+  const onConfirm = async () => {
+    setConfirming(true);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setConfirming(false);
+    goToNext();
   };
 
   return (
@@ -315,7 +325,7 @@ export default function Onboarding({
         </Flex>
       </Card>
       {/*** Manual data entry section for subsectors ***/}
-      <Card mb={12}>
+      <Card mb={48}>
         <Heading size="lg" mb={2}>
           {t("add-data-heading")}
         </Heading>
@@ -368,6 +378,35 @@ export default function Onboarding({
           ))}
         </Wrap>
       </Card>
+      {/*** Bottom bar ***/}
+      <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand flex flex-row py-8 px-8 drop-shadow-2xl hover:drop-shadow-4xl transition-all">
+        <Box className="w-full">
+          <Text fontSize="sm">Step {activeStep + 1}</Text>
+          <Text fontSize="2xl" as="b">
+            {steps[activeStep]?.title}
+          </Text>
+        </Box>
+        <Button
+          h={16}
+          onClick={goToNext}
+          variant="ghost"
+          leftIcon={<Icon as={MdOutlineSkipNext} boxSize={6} />}
+          size="sm"
+          px={12}
+          mr={6}
+        >
+          {t("skip-step-button")}
+        </Button>
+        <Button
+          h={16}
+          isLoading={isConfirming}
+          px={12}
+          onClick={onConfirm}
+          size="sm"
+        >
+          {t("save-continue-button")}
+        </Button>
+      </div>
     </div>
   );
 }

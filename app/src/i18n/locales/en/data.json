@@ -37,5 +37,7 @@
   "energy-industries": "Energy Industries",
   "emissions-oil-natural-gas": "Fugitive emissions from oil and natural gas systems",
   "emissions-coal": "Fugitive emissions from mining, processing, storage and transportation of coal",
-  "agriculture": "Agriculture, forestry, and fishing activities"
+  "agriculture": "Agriculture, forestry, and fishing activities",
+  "skip-step-button": "Skip this step",
+  "save-continue-button": "Save and Continue"
 }

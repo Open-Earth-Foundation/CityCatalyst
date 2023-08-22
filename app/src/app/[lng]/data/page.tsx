@@ -48,7 +48,7 @@ export default function Onboarding({
             GPC Basic encompasses three primary sectors: Stationary Energy,
             Transportation and Waste . Fill out the necessary data for each
             sector to build a comprehensive GHG inventory.{" "}
-            <Link className="underline" href="/data/details">
+            <Link className="underline" href="https://ghgprotocol.org/ghg-protocol-cities" target="_blank" rel="noopener noreferrer">
               Learn more
             </Link>
           </Trans>

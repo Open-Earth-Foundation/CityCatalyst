@@ -36,6 +36,7 @@ import {
   MdOutlineSkipNext,
   MdPlaylistAddCheck,
 } from "react-icons/md";
+import subSectorData from "./subsectors.json";
 
 const dataSourceDescription =
   "Leveraging satellite imagery, this dataset provides key information about residential structures, aiding in the assessment of their energy usage and corresponding carbon footprints";
@@ -121,7 +122,7 @@ export default function OnboardingSteps({
       addedProgress: 0.5,
     },
   ];
-  const { activeStep, goToNext, goToPrevious, setActiveStep } = useSteps({
+  const { activeStep, goToNext, setActiveStep } = useSteps({
     index: Number(step) - 1,
     count: steps.length,
   });
@@ -142,51 +143,7 @@ export default function OnboardingSteps({
   const formatPercentage = (percentage: number) =>
     Math.round(percentage * 1000) / 10;
 
-  const subSectors: SubSector[] = [
-    {
-      id: 0,
-      title: t("residential-buildings"),
-      scopes: [1, 2],
-      isAdded: true,
-    },
-    {
-      id: 1,
-      title: t("commercial-buildings"),
-      scopes: [1, 2],
-      isAdded: true,
-    },
-    {
-      id: 2,
-      title: t("manufacturing-construction"),
-      scopes: [1, 2],
-      isAdded: false,
-    },
-    {
-      id: 3,
-      title: t("energy-industries"),
-      scopes: [1, 2],
-      isAdded: true,
-    },
-    {
-      id: 4,
-      title: t("emissions-oil-natural-gas"),
-      scopes: [1],
-      isAdded: true,
-    },
-    {
-      id: 5,
-      title: t("emissions-coal"),
-      scopes: [1],
-      isAdded: true,
-    },
-    {
-      id: 6,
-      title: t("agriculture"),
-      scopes: [1, 2],
-      isAdded: true,
-    },
-  ];
-
+  const subSectors: SubSector[] = subSectorData[activeStep];
   const onSubSectorClick = (subSector: SubSector) => {
     console.log(subSector);
   };
@@ -382,7 +339,7 @@ export default function OnboardingSteps({
                   />
                   <Stack w="full">
                     <Heading size="xs" noOfLines={3} maxWidth="200px">
-                      {subSector.title}
+                      {t(subSector.title)}
                     </Heading>
                     <Text color="contentTertiary">
                       {t("scope")}: {subSector.scopes.join(", ")}

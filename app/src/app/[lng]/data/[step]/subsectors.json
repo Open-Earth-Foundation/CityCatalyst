@@ -1,0 +1,150 @@
+[
+  [
+    {
+      "id": 0,
+      "title": "residential-buildings",
+      "scopes": [
+        1,
+        2
+      ],
+      "isAdded": true
+    },
+    {
+      "id": 1,
+      "title": "commercial-buildings",
+      "scopes": [
+        1,
+        2
+      ],
+      "isAdded": true
+    },
+    {
+      "id": 2,
+      "title": "manufacturing-construction",
+      "scopes": [
+        1,
+        2
+      ],
+      "isAdded": false
+    },
+    {
+      "id": 3,
+      "title": "energy-industries",
+      "scopes": [
+        1,
+        2
+      ],
+      "isAdded": true
+    },
+    {
+      "id": 4,
+      "title": "emissions-oil-natural-gas",
+      "scopes": [
+        1
+      ],
+      "isAdded": true
+    },
+    {
+      "id": 5,
+      "title": "emissions-coal",
+      "scopes": [
+        1
+      ],
+      "isAdded": true
+    },
+    {
+      "id": 6,
+      "title": "agriculture",
+      "scopes": [
+        1,
+        2
+      ],
+      "isAdded": true
+    }
+  ],
+  [
+    {
+      "id": 0,
+      "title": "on-road",
+      "scopes": [
+        1,
+        2
+      ],
+      "isAdded": true
+    },
+    {
+      "id": 1,
+      "title": "railways",
+      "scopes": [
+        1,
+        2
+      ],
+      "isAdded": true
+    },
+    {
+      "id": 2,
+      "title": "aviation",
+      "scopes": [
+        1,
+        2
+      ],
+      "isAdded": false
+    },
+    {
+      "id": 3,
+      "title": "off-road",
+      "scopes": [
+        1,
+        2
+      ],
+      "isAdded": true
+    },
+    {
+      "id": 4,
+      "title": "waterborne-navigation",
+      "scopes": [
+        1,
+        2
+      ],
+      "isAdded": true
+    }
+  ],
+  [
+    {
+      "id": 0,
+      "title": "disposal-solid-waste",
+      "scopes": [
+        1,
+        3
+      ],
+      "isAdded": false
+    },
+    {
+      "id": 1,
+      "title": "biological-treatment-waste",
+      "scopes": [
+        1,
+        3
+      ],
+      "isAdded": false
+    },
+    {
+      "id": 2,
+      "title": "incineration-waste",
+      "scopes": [
+        1,
+        3
+      ],
+      "isAdded": false
+    },
+    {
+      "id": 3,
+      "title": "waste-water",
+      "scopes": [
+        1,
+        3
+      ],
+      "isAdded": false
+    }
+  ]
+]

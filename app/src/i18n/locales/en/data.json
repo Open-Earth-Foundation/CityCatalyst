@@ -38,6 +38,16 @@
   "emissions-oil-natural-gas": "Fugitive emissions from oil and natural gas systems",
   "emissions-coal": "Fugitive emissions from mining, processing, storage and transportation of coal",
   "agriculture": "Agriculture, forestry, and fishing activities",
+  "on-road": "On-road",
+  "railways": "Railways",
+  "aviation": "Aviation",
+  "off-road": "Off-road",
+  "waterborne-navigation": "Waterborne navigation",
+  "disposal-solid-waste": "Disposal of solid waste generated in the city",
+  "biological-treatment-waste": "Biological treatment of waste generated in the city",
+  "incineration-waste": "Incineration and open burning of waste generated in the city",
+  "waste-water": "Wastewater generated in the city",
+
   "skip-step-button": "Skip this step",
   "save-continue-button": "Save and Continue"
 }

@@ -21,6 +21,7 @@ import {
   Text,
   Wrap,
   WrapItem,
+  useDisclosure,
   useSteps,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
@@ -37,6 +38,7 @@ import {
   MdPlaylistAddCheck,
 } from "react-icons/md";
 import subSectorData from "./subsectors.json";
+import { SourceDrawer } from "./source-drawer";
 
 const dataSourceDescription =
   "Leveraging satellite imagery, this dataset provides key information about residential structures, aiding in the assessment of their energy usage and corresponding carbon footprints";
@@ -73,24 +75,6 @@ const dataSources: DataSource[] = [
     isConnected: true,
   },
 ];
-
-type SubSector = {
-  id: number | string;
-  title: string;
-  scopes: number[];
-  isAdded: boolean;
-};
-
-type DataSource = {
-  id: number | string;
-  icon: any;
-  title: string;
-  dataQuality: "low" | "medium" | "high";
-  scopes: number[];
-  description: string;
-  url: string;
-  isConnected: boolean;
-}
 
 export default function OnboardingSteps({
   params: { lng, step },
@@ -148,9 +132,17 @@ export default function OnboardingSteps({
     console.log(subSector);
   };
 
+  const [selectedSource, setSelectedSource] = useState<DataSource>();
+  const {isOpen: isSourceDrawerOpen, onClose: onSourceDrawerClose, onOpen: onSourceDrawerOpen } = useDisclosure();
   const onSourceClick = (source: DataSource) => {
     console.log(source);
-  }
+    setSelectedSource(source);
+    onSourceDrawerOpen();
+  };
+
+ const onConnectClick = (source: DataSource) => {
+    console.log("Connect source", source);
+  } 
 
   const [isConfirming, setConfirming] = useState(false);
   const onConfirm = async () => {
@@ -296,7 +288,7 @@ export default function OnboardingSteps({
                   {t("data-connected")}
                 </Button>
               ) : (
-                <Button variant="outline" bgColor="backgroundNeutral">
+                <Button variant="outline" bgColor="backgroundNeutral" onClick={() => onConnectClick(source)}>
                   {t("connect-data")}
                 </Button>
               )}
@@ -387,6 +379,13 @@ export default function OnboardingSteps({
           {t("save-continue-button")}
         </Button>
       </div>
+      {/*** Drawers ***/}
+      <SourceDrawer
+        source={selectedSource}
+        isOpen={isSourceDrawerOpen}
+        onClose={onSourceDrawerClose}
+        onConnectClick={() => onConnectClick(selectedSource!)}
+      />
     </div>
   );
 }

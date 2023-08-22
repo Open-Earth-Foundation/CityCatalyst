@@ -39,7 +39,7 @@ import {
 
 const dataSourceDescription =
   "Leveraging satellite imagery, this dataset provides key information about residential structures, aiding in the assessment of their energy usage and corresponding carbon footprints";
-const dataSources = [
+const dataSources: DataSource[] = [
   {
     id: 0,
     icon: MdOutlineHouse,
@@ -79,6 +79,17 @@ type SubSector = {
   scopes: number[];
   isAdded: boolean;
 };
+
+type DataSource = {
+  id: number | string;
+  icon: any;
+  title: string;
+  dataQuality: "low" | "medium" | "high";
+  scopes: number[];
+  description: string;
+  url: string;
+  isConnected: boolean;
+}
 
 export default function OnboardingSteps({
   params: { lng, step },
@@ -180,6 +191,10 @@ export default function OnboardingSteps({
     console.log(subSector);
   };
 
+  const onSourceClick = (source: DataSource) => {
+    console.log(source);
+  }
+
   const [isConfirming, setConfirming] = useState(false);
   const onConfirm = async () => {
     setConfirming(true);
@@ -266,7 +281,15 @@ export default function OnboardingSteps({
         </Text>
         <Flex direction="row" className="space-x-4">
           {dataSources.map((source) => (
-            <Card key={source.id}>
+            <Card
+              key={source.id}
+              onClick={() => onSourceClick(source)}
+              variant="outline"
+              borderColor={
+                (source.isConnected && "interactiveTertiary") || undefined
+              }
+              className="hover:drop-shadow-xl transition-shadow"
+            >
               <Icon as={source.icon} boxSize={9} mb={6} />
               <Heading size="sm" noOfLines={2}>
                 {source.title}

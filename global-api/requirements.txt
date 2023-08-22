@@ -6,3 +6,4 @@ mypy==1.5.1
 pandas==2.0.3
 pytest==7.4.0
 SQLAlchemy==2.0.20
+alembic==1.11.3

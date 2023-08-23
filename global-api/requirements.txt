@@ -8,3 +8,4 @@ pytest==7.4.0
 SQLAlchemy==2.0.20
 geopandas==0.13.2
 shapely==2.0.1
+osmnx=1.6.0

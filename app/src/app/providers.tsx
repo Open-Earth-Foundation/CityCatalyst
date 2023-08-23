@@ -158,6 +158,19 @@ export const appTheme = extendTheme({
         placement: "bottom-start",
       }
     },
+    Tabs: {
+      variants: {
+        line: {
+          tab: {
+            _selected: {
+              color: "interactiveSecondary",
+              borderColor: "interactiveSecondary",
+              fontWeight: "bold",
+            },
+          },
+        },
+      },
+    },
   },
 });
 

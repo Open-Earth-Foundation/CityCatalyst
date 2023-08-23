@@ -28,6 +28,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FiTarget, FiTrash2, FiTruck } from "react-icons/fi";
 import {
+    MdAdd,
   MdCheckCircle,
   MdOutlineCheckCircle,
   MdOutlineEdit,
@@ -152,6 +153,7 @@ export default function OnboardingSteps({
 
  const onConnectClick = (source: DataSource) => {
     console.log("Connect source", source);
+    onSourceDrawerClose();
   } 
 
   const [isConfirming, setConfirming] = useState(false);
@@ -349,10 +351,8 @@ export default function OnboardingSteps({
                   </Stack>
                   <IconButton
                     aria-label={t("edit-subsector")}
-                    variant="solid"
-                    bgColor="backgroundNeutral"
-                    color="interactiveSecondary"
-                    icon={<Icon as={MdOutlineEdit} boxSize={6} />}
+                    variant="solidIcon"
+                    icon={<Icon as={subSector.isAdded ? MdOutlineEdit : MdAdd} boxSize={6} />}
                   />
                 </Flex>
               </Card>

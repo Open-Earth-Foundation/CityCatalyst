@@ -95,6 +95,17 @@ export const appTheme = extendTheme({
         ghost: {
           color: "#5a7be0",
         },
+        solidIcon: {
+          bgColor: "backgroundNeutral",
+          color: "interactiveSecondary",
+          _hover: {
+            color: "white",
+            bg: "#5a7be0",
+          },
+          _active: {
+            bg: "#899ee0",
+          }
+        }
       },
     },
     Link: {

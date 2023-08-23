@@ -40,6 +40,7 @@ import {
 } from "react-icons/md";
 import subSectorData from "./subsectors.json";
 import { SourceDrawer } from "./source-drawer";
+import { SubsectorDrawer } from "./subsector-drawer";
 
 const dataSourceDescription =
   "Leveraging satellite imagery, this dataset provides key information about residential structures, aiding in the assessment of their energy usage and corresponding carbon footprints";
@@ -138,13 +139,8 @@ export default function OnboardingSteps({
   const formatPercentage = (percentage: number) =>
     Math.round(percentage * 1000) / 10;
 
-  const subSectors: SubSector[] = subSectorData[activeStep];
-  const onSubSectorClick = (subSector: SubSector) => {
-    console.log(subSector);
-  };
-
   const [selectedSource, setSelectedSource] = useState<DataSource>();
-  const {isOpen: isSourceDrawerOpen, onClose: onSourceDrawerClose, onOpen: onSourceDrawerOpen } = useDisclosure();
+  const { isOpen: isSourceDrawerOpen, onClose: onSourceDrawerClose, onOpen: onSourceDrawerOpen } = useDisclosure();
   const onSourceClick = (source: DataSource) => {
     console.log(source);
     setSelectedSource(source);
@@ -155,6 +151,19 @@ export default function OnboardingSteps({
     console.log("Connect source", source);
     onSourceDrawerClose();
   } 
+
+  const [selectedSubsector, setSelectedSubsector] = useState<SubSector>();
+  const { isOpen: isSubsectorDrawerOpen, onClose: onSubsectorDrawerClose, onOpen: onSubsectorDrawerOpen } = useDisclosure();
+  const subSectors: SubSector[] = subSectorData[activeStep];
+  const onSubsectorClick = (subsector: SubSector) => {
+    console.log(subsector);
+    setSelectedSubsector(subsector);
+    onSubsectorDrawerOpen();
+  }
+  const onSubsectorSave = (subsector: SubSector) => {
+    console.log('Save subsector', subsector);
+    onSubsectorDrawerClose();
+  }
 
   const [isConfirming, setConfirming] = useState(false);
   const onConfirm = async () => {
@@ -327,7 +336,7 @@ export default function OnboardingSteps({
                 height="120px"
                 w="full"
                 className="hover:drop-shadow-xl transition-shadow"
-                onClick={() => onSubSectorClick(subSector)}
+                onClick={() => onSubsectorClick(subSector)}
               >
                 <Flex direction="row" className="space-x-4 items-center h-full">
                   <Icon
@@ -395,6 +404,13 @@ export default function OnboardingSteps({
         isOpen={isSourceDrawerOpen}
         onClose={onSourceDrawerClose}
         onConnectClick={() => onConnectClick(selectedSource!)}
+        t={t}
+      />
+      <SubsectorDrawer
+        subsector={selectedSubsector}
+        isOpen={isSubsectorDrawerOpen}
+        onClose={onSubsectorDrawerClose}
+        onSave={onSubsectorSave}
         t={t}
       />
     </div>

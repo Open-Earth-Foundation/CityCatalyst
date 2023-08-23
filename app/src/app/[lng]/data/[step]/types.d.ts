@@ -3,6 +3,7 @@ type SubSector = {
   title: string;
   scopes: number[];
   isAdded: boolean;
+  sectorName: string;
 };
 
 type DataSource = {

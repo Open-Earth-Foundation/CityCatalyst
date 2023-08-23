@@ -55,5 +55,16 @@
   "year": "year",
   "day": "day",
   "sources": "Sources",
-  "methodology": "Methodology"
+  "methodology": "Methodology",
+
+  "sector": "Sector",
+  "enter-subsector-data": "Enter the sub-sector data",
+  "value-types": "What types of values do you have?",
+  "one-value": "One value for the sub-sector",
+  "subcategory-values": "Values for each subcategory",
+  "select-methodology": "Select methodology",
+  "activity-data": "Activity data",
+  "direct-measure": "Direct measure",
+  "fuel-combustion": "Fuel Combustion",
+  "grid-supplied-energy": "Grid-supplied energy"
 }

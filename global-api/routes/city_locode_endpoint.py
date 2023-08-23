@@ -1,3 +1,4 @@
+import pandas as pd
 from fastapi import FastAPI
 from sqlalchemy import create_engine, text 
 from sqlalchemy.orm import sessionmaker
@@ -13,123 +14,133 @@ engine = create_engine(DATABASE_URL)
 # Create a session maker for SQLAlchemy
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Dictionary to map gpc_sector to reference_number
-gpc_sector_to_reference_number = {
-    "stationary_energy":["I.4.1"],
-    "transportation":["II.1.1","II.4.1", "II.4.3"],
-    "waste":["III.1.2"],
-    "IPPU": ["IV.1.1"],
-    "AFOLU": ["V.3.1", "V.1.1","V.2.1"],
-}
-
-def sector_to_filename(inventoryPart):
-    gpc_reference_numbers = gpc_sector_to_reference_number.get(inventoryPart, [])
-    filenames = []
-
+def db_query(locode, year, reference_number):
+    
     with SessionLocal() as session:
-        for reference_number in gpc_reference_numbers:
-            query_filenames = text("SELECT DISTINCT(filename) FROM ? WHERE reference_number = :reference_number")
-            filenames_result = session.execute(query_filenames, {"reference_number": reference_number}).fetchall()
-            filenames.extend(row[0] for row in filenames_result)
+        query = text("SELECT * FROM Asset " +
+                    "WHERE reference_number = :reference_number " +
+                    "AND locode = :locode " +
+                    "AND year = :year ")
 
-    return filenames
+        result = session.execute(
+            query,
+            {
+                "locode": locode,
+                "year": year,
+                "reference_number": reference_number
+            }
+        ).fetchall()
 
-def db_query(filenames, locode, year):
-    results = []
+    return result
 
-    with SessionLocal() as session:
-        for filename in filenames:
-            query = text(f"SELECT * FROM {filename} "
-                        f"WHERE locode = :locode "
-                        f"AND year = :year")
+def structured_data(df):
 
-            result = session.execute(
-                query,
-                {
-                    "locode": locode,
-                    "year": year,
-                }
-            ).fetchall()
+    processed_data = []
 
-            results.append(result)
+    for _, row in df.iterrows():
+        row_dict = {}
+        for col_name, value in row.items():
+            row_dict[col_name] = value
+        processed_data.append(row_dict)
 
-    return results
+    return processed_data
 
+#AR6 GWP
+ch4_GWP_100yr = 29.8
+ch4_GWP_20yr = 82.5
+n2o_GWP_100yr = 273
+n2o_GWP_20yr = 273
 
-@app.get("/api/v0/climatetrace/city/{locode}/{year}/{inventoryPart}/{gpcReferenceNumber}")
+#GPC quality classification
+gpc_quality_data = 'TBD'
+gpc_quality_EF = 'TBD'
+
+@app.get("/api/v0/climatetrace/city/{locode}/{year}/{gpcReferenceNumber}")
 def get_emissions_by_city_and_year(locode: str, year: int, inventoryPart: str, gpcReferenceNumber: float):
 
-    file_names = sector_to_filename(inventoryPart)
-    sources = db_query(file_names, locode, year)
+    sources = db_query(locode, year, gpcReferenceNumber)
 
-#(.....)
+    sources = pd.DataFrame(sources)
 
-    totals = {
+    # Group each gas and add them to have "total emissions by gas"
+    results = sources.groupby('gas').emissions_quantity.sum()
+
+    # Build Totals dictionary
+    Totals = {
         "totals": {
             "emissions": {
-                "co2_mass": co2_mass,
-                "co2_co2eq": co2_co2eq,
-                "ch4_mass": ch4_mass,
-                "ch4_co2eq": ch4_co2eq,
-                "n2o_mass": n2o_mass,
-                "n2o_co2eq": n2o_co2eq,
-                "co2eq_100y": co2eq_100y,
-                "co2eq_20y": co2eq_20y,
-                "gpc_quality": gpc_quality
+                "co2_mass": results.get('co2', 0),
+                "co2_co2eq": results.get('co2', 0),
+                "ch4_mass": results.get('ch4', 0),
+                "ch4_co2eq_100yr": results.get('ch4', 0) * ch4_GWP_100yr,
+                "ch4_co2eq_20yr": results.get('ch4', 0) * ch4_GWP_20yr,
+                "n2o_mass": results.get('n2o', 0),
+                "n2o_co2eq_100yr": results.get('n2o', 0) * n2o_GWP_100yr,
+                "n2o_co2eq_20yr": results.get('n2o', 0) * n2o_GWP_20yr,
+                "co2eq_100yr": results.get('co2e_100yr', 0),
+                "co2eq_20yr": results.get('co2e_20yr', 0),
+                "gpc_quality": gpc_quality_data
             }
         }
     }
 
-    activity = {
-        "activity": {
-            "value": value,
-            "units": units,
-            "gpc_quality": gpc_quality
+    # Build Details dictionary
+    Details = {
+        "Activity":{
+            "value": sources['activity'],
+            "units": sources['activity_units'],
+            "gpc_quality": gpc_quality_data
+        },
+        "Emissions_factor":{
+            "value": sources['emissions_factor'],
+            "units": sources['emissions_factor_units'],
+            "gpc_quality": gpc_quality_EF
         }
     }
 
-    emissions_factor = {
-        "emissions_factor": {
-            "value": value,
-            "units": units,
-            "gpc_quality": gpc_quality
-        }
-    }
-
-    points = {
+    # Build Points dictionary
+    Points = {
         "points": {
-            "emissions": {
-                "co2_mass": co2_mass,
-                "co2_co2eq": co2_co2eq,
-                "ch4_mass": ch4_mass,
-                "ch4_co2eq": ch4_co2eq,
-                "n2o_mass": n2o_mass,
-                "n2o_co2eq": n2o_co2eq,
-                "co2eq_100y": co2eq_100y,
-                "co2eq_20y": co2eq_20y,
-                "gpc_quality": gpc_quality
+            "Ownership": {
+                "asset_name": sources['asset_name'],
+                "asset_id": sources['asset_id'],
+#                "data_source": data_source,
+#                "URL": URL,
+                "lat": sources['lat'],
+                "lon": sources['lon']
             },
-            "ownership": {
-                "asset_name": asset_name,
-                "name": name,
-                "data_source": data_source,
-                "URL": URL,
-                "location": location,
+            "Capacity": {
+                "value": sources['capacity'],
+                "units": sources['capacity_units'],
+                "factor": sources['capacity_factor']
             },
-            "capacity": {
-                "value": value,
-                "units": units,
-                "factor": factor
+            "Activity": {
+                "value": sources['activity'],
+                "units": sources['activity_units'],
+                "gpc_quality": gpc_quality_data
             },
-            "activity": {
-                "value": value,
-                "units": units,
-                "gpc_quality": gpc_quality
+            "Emissions_factor": {
+                "value": sources['emissions_factor'],
+                "units": sources['emissions_factor_units'],
+                "gpc_quality": gpc_quality_EF
+            },
+            "Emissions": {
+                "co2_mass": sources[sources['gas']=='co2'],
+                "co2_co2eq": sources[sources['gas']=='co2'],
+                "ch4_mass": sources[sources['gas']=='ch4'],
+                "ch4_co2eq_100yr": sources[sources['gas']=='ch4']*ch4_GWP_100yr,
+                "ch4_co2eq_20yr": sources[sources['gas']=='ch4']*ch4_GWP_20yr,
+                "n2o_mass": sources[sources['gas']=='co2'],
+                "n2o_co2eq_100yr": sources[sources['gas']=='n2o']*n2o_GWP_100yr,
+                "n2o_co2eq_20yr": sources[sources['gas']=='n2o']*n2o_GWP_100yr,
+                "co2eq_100yr": sources[sources['gas']=='co2e_100yr'],
+                "co2eq_20yr": sources[sources['gas']=='co2e_20yr'],
+                "gpc_quality": gpc_quality_data
             }
         }
     }
 
-    return {"totals": totals, "activity": activity, "emissions_factor": emissions_factor, "points": points}
+    return {"totals": Totals, "details": Details, "points": Points}
     
 
 

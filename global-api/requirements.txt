@@ -6,6 +6,8 @@ mypy==1.5.1
 pandas==2.0.3
 pytest==7.4.0
 SQLAlchemy==2.0.20
+alembic==1.11.3
 geopandas==0.13.2
 shapely==2.0.1
 osmnx=1.6.0
+

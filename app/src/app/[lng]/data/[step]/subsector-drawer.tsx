@@ -14,6 +14,7 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  Tooltip,
   chakra,
   useRadioGroup,
 } from "@chakra-ui/react";
@@ -91,7 +92,13 @@ export function SubsectorDrawer({
               {/* <Text color="contentTertiary">{subsector.description}</Text> */}
               <Heading size="md">{t("enter-subsector-data")}</Heading>
               <Heading size="sm">
-                {t("value-types")} <InfoOutlineIcon mt={-1} color="contentTertiary" />
+                {t("value-types")}{" "}
+                <Tooltip
+                  hasArrow
+                  label={t("value-types-tooltip")}
+                >
+                  <InfoOutlineIcon mt={-1} color="contentTertiary" />
+                </Tooltip>
               </Heading>
               <HStack spacing={4} {...valueTypeGroup}>
                 <RadioButton
@@ -106,7 +113,15 @@ export function SubsectorDrawer({
                 </RadioButton>
               </HStack>
               <Heading size="sm">
-                {t("select-methodology")} <InfoOutlineIcon mt={-1} color="contentTertiary" />
+                {t("select-methodology")}{" "}
+                <Tooltip
+                  hasArrow
+                  label={t("methodology-tooltip")}
+                  bg="contentSecondary"
+                  color="baseLight"
+                >
+                  <InfoOutlineIcon mt={-1} color="contentTertiary" />
+                </Tooltip>
               </Heading>
               <HStack spacing={4} {...methodologyGroup}>
                 <RadioButton

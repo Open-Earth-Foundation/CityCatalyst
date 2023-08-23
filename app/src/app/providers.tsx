@@ -11,6 +11,7 @@ export const appTheme = extendTheme({
   colors: {
     brand: "#2351DC",
     tertiary: "#7A7B9A", // TODO replaced by contentTertiary
+    baseLight: "#FFFFFF",
     borderOverlay: "#E6E7FF",
     contentSecondary: "#232640",
     contentTertiary: "#7A7B9A",
@@ -104,8 +105,8 @@ export const appTheme = extendTheme({
           },
           _active: {
             bg: "#899ee0",
-          }
-        }
+          },
+        },
       },
     },
     Link: {
@@ -144,6 +145,18 @@ export const appTheme = extendTheme({
       defaultProps: {
         variant: "brand",
       },
+    },
+    Tooltip: {
+      baseStyle: {
+        bg: "contentSecondary",
+        color: "baseLight",
+        px: 4,
+        py: 2,
+        borderRadius: "lg",
+      },
+      defaultProps: {
+        placement: "bottom-start",
+      }
     },
   },
 });

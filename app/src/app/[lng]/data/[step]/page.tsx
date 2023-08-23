@@ -42,6 +42,7 @@ import { SourceDrawer } from "./source-drawer";
 
 const dataSourceDescription =
   "Leveraging satellite imagery, this dataset provides key information about residential structures, aiding in the assessment of their energy usage and corresponding carbon footprints";
+const dataSourceMethodoloygy = "Power sector emissions are estimated by first assembling a global geolocated inventory of power plants, generation, and metered emissions data. Machine learning models then predict power plant generation from satellite images. These predictions are aggregated and combined with available generation data and carbon intensity factors to derive emissions estimates.";
 const dataSources: DataSource[] = [
   {
     id: 0,
@@ -52,6 +53,9 @@ const dataSources: DataSource[] = [
     description: dataSourceDescription,
     url: "https://openclimate.network",
     isConnected: false,
+    updateFrequency: "year",
+    sources: ["Satellite imagery", "Ground truth", "Alternative"],
+    methodology: dataSourceMethodoloygy,
   },
   {
     id: 1,
@@ -63,6 +67,9 @@ const dataSources: DataSource[] = [
     description: dataSourceDescription,
     url: "https://openclimate.network",
     isConnected: false,
+    updateFrequency: "month",
+    sources: ["Satellite imagery", "Ground truth", "Alternative"],
+    methodology: dataSourceMethodoloygy,
   },
   {
     id: 2,
@@ -73,6 +80,9 @@ const dataSources: DataSource[] = [
     description: dataSourceDescription,
     url: "https://openclimate.network",
     isConnected: true,
+    updateFrequency: "day",
+    sources: ["Satellite imagery", "Ground truth", "Alternative"],
+    methodology: dataSourceMethodoloygy,
   },
 ];
 
@@ -159,7 +169,7 @@ export default function OnboardingSteps({
         leftIcon={<ArrowBackIcon boxSize={6} />}
         onClick={() => router.back()}
       >
-        Go Back
+        {t("go-back")}
       </Button>
       <div className="w-full flex justify-center mb-8">
         <div className="w-[800px]">
@@ -385,6 +395,7 @@ export default function OnboardingSteps({
         isOpen={isSourceDrawerOpen}
         onClose={onSourceDrawerClose}
         onConnectClick={() => onConnectClick(selectedSource!)}
+        t={t}
       />
     </div>
   );

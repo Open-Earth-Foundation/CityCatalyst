@@ -49,5 +49,11 @@
   "waste-water": "Wastewater generated in the city",
 
   "skip-step-button": "Skip this step",
-  "save-continue-button": "Save and Continue"
+  "save-continue-button": "Save and Continue",
+  "updated-every": "Updated every",
+  "month": "month",
+  "year": "year",
+  "day": "day",
+  "sources": "Sources",
+  "methodology": "Methodology"
 }

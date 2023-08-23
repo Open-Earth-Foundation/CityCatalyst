@@ -14,4 +14,7 @@ type DataSource = {
   description: string;
   url: string;
   isConnected: boolean;
+  updateFrequency: string;
+  sources: string[];
+  methodology: string;
 };

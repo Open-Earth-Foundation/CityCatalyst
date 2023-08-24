@@ -7,12 +7,13 @@ from decouple import config
 engine = create_engine(config("DATABASE_URL"))
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
 @app.get("/health")
 def health_check():
     try:
         # Attempt to connect to the database
         with engine.connect():
-            return {'status': 'ok'}
+            return {"status": "ok"}
     except Exception as e:
         raise HTTPException(status_code=503, detail="Service unavailable")
     finally:

@@ -28,7 +28,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FiTarget, FiTrash2, FiTruck } from "react-icons/fi";
 import {
-    MdAdd,
+  MdAdd,
   MdCheckCircle,
   MdOutlineCheckCircle,
   MdOutlineEdit,
@@ -44,7 +44,8 @@ import { SubsectorDrawer } from "./subsector-drawer";
 
 const dataSourceDescription =
   "Leveraging satellite imagery, this dataset provides key information about residential structures, aiding in the assessment of their energy usage and corresponding carbon footprints";
-const dataSourceMethodoloygy = "Power sector emissions are estimated by first assembling a global geolocated inventory of power plants, generation, and metered emissions data. Machine learning models then predict power plant generation from satellite images. These predictions are aggregated and combined with available generation data and carbon intensity factors to derive emissions estimates.";
+const dataSourceMethodoloygy =
+  "Power sector emissions are estimated by first assembling a global geolocated inventory of power plants, generation, and metered emissions data. Machine learning models then predict power plant generation from satellite images. These predictions are aggregated and combined with available generation data and carbon intensity factors to derive emissions estimates.";
 const dataSources: DataSource[] = [
   {
     id: 0,
@@ -140,37 +141,49 @@ export default function OnboardingSteps({
     Math.round(percentage * 1000) / 10;
 
   const [selectedSource, setSelectedSource] = useState<DataSource>();
-  const { isOpen: isSourceDrawerOpen, onClose: onSourceDrawerClose, onOpen: onSourceDrawerOpen } = useDisclosure();
+  const {
+    isOpen: isSourceDrawerOpen,
+    onClose: onSourceDrawerClose,
+    onOpen: onSourceDrawerOpen,
+  } = useDisclosure();
   const onSourceClick = (source: DataSource) => {
     console.log(source);
     setSelectedSource(source);
     onSourceDrawerOpen();
   };
 
- const onConnectClick = (source: DataSource) => {
+  const onConnectClick = (source: DataSource) => {
     console.log("Connect source", source);
     onSourceDrawerClose();
-  } 
+  };
 
   const [selectedSubsector, setSelectedSubsector] = useState<SubSector>();
-  const { isOpen: isSubsectorDrawerOpen, onClose: onSubsectorDrawerClose, onOpen: onSubsectorDrawerOpen } = useDisclosure();
+  const {
+    isOpen: isSubsectorDrawerOpen,
+    onClose: onSubsectorDrawerClose,
+    onOpen: onSubsectorDrawerOpen,
+  } = useDisclosure();
   const subSectors: SubSector[] = subSectorData[activeStep];
   const onSubsectorClick = (subsector: SubSector) => {
     console.log(subsector);
     setSelectedSubsector(subsector);
     onSubsectorDrawerOpen();
-  }
+  };
   const onSubsectorSave = (subsector: SubSector) => {
-    console.log('Save subsector', subsector);
+    console.log("Save subsector", subsector);
     onSubsectorDrawerClose();
-  }
+  };
 
   const [isConfirming, setConfirming] = useState(false);
   const onConfirm = async () => {
     setConfirming(true);
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setConfirming(false);
-    goToNext();
+    if (activeStep >= steps.length - 1) {
+      router.push("/"); // go back to dashboard until there is a confirmation page
+    } else {
+      goToNext();
+    }
   };
 
   return (
@@ -309,7 +322,11 @@ export default function OnboardingSteps({
                   {t("data-connected")}
                 </Button>
               ) : (
-                <Button variant="outline" bgColor="backgroundNeutral" onClick={() => onConnectClick(source)}>
+                <Button
+                  variant="outline"
+                  bgColor="backgroundNeutral"
+                  onClick={() => onConnectClick(source)}
+                >
                   {t("connect-data")}
                 </Button>
               )}
@@ -361,7 +378,12 @@ export default function OnboardingSteps({
                   <IconButton
                     aria-label={t("edit-subsector")}
                     variant="solidIcon"
-                    icon={<Icon as={subSector.isAdded ? MdOutlineEdit : MdAdd} boxSize={6} />}
+                    icon={
+                      <Icon
+                        as={subSector.isAdded ? MdOutlineEdit : MdAdd}
+                        boxSize={6}
+                      />
+                    }
                   />
                 </Flex>
               </Card>

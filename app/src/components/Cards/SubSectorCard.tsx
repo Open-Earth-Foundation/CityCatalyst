@@ -1,5 +1,5 @@
 import { CheckIcon } from '@chakra-ui/icons'
-import { Card, Heading, Text } from '@chakra-ui/react'
+import { Box, Card, Heading, Text } from '@chakra-ui/react'
 import React, { FC } from 'react';
 
 interface SubSectorCardProps {
@@ -10,21 +10,21 @@ interface SubSectorCardProps {
 const SubSectorCard:FC<SubSectorCardProps> = ({title, scopes}) => {
   return (
     <Card className='flex flex-row w-[333.1px] h-[100px] items-center px-4 gap-4 border border-[#E6E7FF] shadow-none'>
-        <div>
-            <div className='flex h-[32px] w-[32px] rounded-full text-[#24BE00] items-center justify-center border-2 border-[#24BE00]'>
+        <Box>
+            <Box className='flex h-[32px] w-[32px] rounded-full text-[#24BE00] items-center justify-center border-2 border-[#24BE00]'>
                 <CheckIcon />
-            </div>
-        </div>
-        <div>
-            <Heading className='font-[500] text-[14px]'>
+            </Box>
+        </Box>
+        <Box className='flex flex-col gap-[8px]'>
+            <Heading fontSize="title.sm" fontWeight="medium" lineHeight="20" letterSpacing="wide" color="content.primary">
                 {title}
             </Heading>
-            <Text className='font-[400] text-[#7A7B9A]'>
+            <Text fontWeight="regular" color="interactive.control" lineHeight="20" letterSpacing="wide">
                 Scope: {scopes}
             </Text>
-        </div>
+        </Box>
     </Card>
   )
 }
 
-export default SubSectorCard
+export default SubSectorCard;

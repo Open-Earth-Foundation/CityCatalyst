@@ -19,7 +19,8 @@ type Inputs = {
 }
 
 function SetupStep({ errors, register, t }: { errors: FieldErrors<Inputs>, register: UseFormRegister<Inputs>, t: TFunction }) {
-  const years = Array.from({ length: 10 }, (_x, i) => 2020 + i);
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 7 }, (_x, i) => currentYear - i);
   return (
     <>
       <div>
@@ -152,7 +153,7 @@ export default function OnboardingSetup({ params: { lng } }: { params: { lng: st
 
   return (
     <>
-      <div className="pt-[64px] w-[1090px] max-w-full mx-auto px-8">
+      <div className="pt-16 w-[1090px] max-w-full mx-auto">
         <Button
           variant="ghost"
           leftIcon={<ArrowBackIcon boxSize={6} />}
@@ -168,7 +169,7 @@ export default function OnboardingSetup({ params: { lng } }: { params: { lng: st
             />
           </div>
         </div>
-        <div className="flex flex-col md:flex-row md:space-x-12 md:space-y-0 space-y-12 align-top mb-24 mt-[112px]">
+        <div className="flex flex-col md:flex-row md:space-x-12 md:space-y-0 space-y-12 align-top mt-8 md:mt-16 mb-48">
           {activeStep === 0 && <SetupStep errors={errors} register={register} t={t} />}
           {activeStep === 1 && <ConfirmStep cityName={getValues('city')} t={t} />}
         </div>

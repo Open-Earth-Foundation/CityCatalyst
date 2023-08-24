@@ -17,14 +17,14 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 import health
 import city_locode_endpoint
 
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome"}
 
+
 # The entry point to the FastAPI app
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
-
-

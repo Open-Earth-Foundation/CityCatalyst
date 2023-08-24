@@ -97,16 +97,25 @@ if __name__ == "__main__":
 
     row_number = 0
     for dic in dic_generator:
-        time.sleep(1)
+
         row_number = row_number + 1
         osmid = dic["osmid"]
         locode = dic["locode"]
 
         if osmid.startswith("R") or osmid.startswith("W"):
+
             logging.info(
                 f"Processing: row number = {row_number}, locode={locode}, osmid={osmid}"
             )
-            df = osmid_to_geometry(osmid=osmid)
+
+            time.sleep(1)
+
+            try:
+                df = osmid_to_geometry(osmid=osmid)
+            except Exception as e:
+                logging.error(f"Error in osmid_to_geometry: {e}")
+                continue
+
             df["locode"] = locode
 
             output_file = Path(args.output_dir) / f"{osmid}_geometry.csv"

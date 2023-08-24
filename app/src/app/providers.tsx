@@ -154,9 +154,6 @@ export const appTheme = extendTheme({
         py: 2,
         borderRadius: "lg",
       },
-      defaultProps: {
-        placement: "bottom-start",
-      }
     },
     Tabs: {
       variants: {

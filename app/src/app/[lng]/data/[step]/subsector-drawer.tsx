@@ -14,6 +14,7 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  Text,
   Tooltip,
   chakra,
   useRadioGroup,
@@ -89,13 +90,14 @@ export function SubsectorDrawer({
                 {t("sector")} - {t(subsector.sectorName)}
               </Heading>
               <Heading size="lg">{t(subsector.title)}</Heading>
-              {/* <Text color="contentTertiary">{subsector.description}</Text> */}
+              <Text color="contentTertiary">{t(subsector.title + "-description")}</Text>
               <Heading size="md">{t("enter-subsector-data")}</Heading>
               <Heading size="sm">
                 {t("value-types")}{" "}
                 <Tooltip
                   hasArrow
                   label={t("value-types-tooltip")}
+                  placement="bottom-start"
                 >
                   <InfoOutlineIcon mt={-1} color="contentTertiary" />
                 </Tooltip>
@@ -119,6 +121,7 @@ export function SubsectorDrawer({
                   label={t("methodology-tooltip")}
                   bg="contentSecondary"
                   color="baseLight"
+                  placement="bottom-start"
                 >
                   <InfoOutlineIcon mt={-1} color="contentTertiary" />
                 </Tooltip>

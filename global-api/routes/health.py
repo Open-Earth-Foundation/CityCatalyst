@@ -1,22 +1,11 @@
+from main import app
 from fastapi import FastAPI, HTTPException
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
 from decouple import config
 
-app = FastAPI()
-
-# Read the DATABASE_URL from the .env file
-DATABASE_URL = config("DATABASE_URL")
-
-# Create a SQLAlchemy engine for database connection
-engine = create_engine(DATABASE_URL)
-
-# Create a session maker for SQLAlchemy
+engine = create_engine(config("DATABASE_URL"))
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Define a base class for SQLAlchemy models
-Base = declarative_base()
 
 @app.get("/health")
 def health_check():

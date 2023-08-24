@@ -1,0 +1,93 @@
+from fastapi import FastAPI, HTTPException
+
+app = FastAPI()
+
+
+totals = {
+    "totals": {
+        "emissions": {
+            "co2_mass": co2_mass,
+            "co2_co2eq": co2_co2eq,
+            "ch4_mass": ch4_mass,
+            "ch4_co2eq": ch4_co2eq,
+            "n2o_mass": n2o_mass,
+            "n2o_co2eq": n2o_co2eq,
+            "co2eq_100y": co2eq_100y,
+            "co2eq_20y": co2eq_20y,
+            "gpc_quality": gpc_quality
+        }
+    }
+}
+
+
+@app.get("/api/v0/climatetrace/city/{locode}/{year}/{inventoryPart}/{gpcReferenceNumber}")
+def get_emissions_by_city_and_year(locode: str, year: int, inventoryPart: str, gpcReferenceNumber: float):
+
+    totals = {
+        "totals": {
+            "emissions": {
+                "co2_mass": co2_mass,
+                "co2_co2eq": co2_co2eq,
+                "ch4_mass": ch4_mass,
+                "ch4_co2eq": ch4_co2eq,
+                "n2o_mass": n2o_mass,
+                "n2o_co2eq": n2o_co2eq,
+                "co2eq_100y": co2eq_100y,
+                "co2eq_20y": co2eq_20y,
+                "gpc_quality": gpc_quality
+            }
+        }
+    }
+
+    activity = {
+        "activity": {
+            "value": value,
+            "units": units,
+            "gpc_quality": gpc_quality
+        }
+    }
+
+    emissions_factor = {
+        "emissions_factor": {
+            "value": value,
+            "units": units,
+            "gpc_quality": gpc_quality
+        }
+    }
+
+    points = {
+        "points": {
+            "emissions": {
+                "co2_mass": co2_mass,
+                "co2_co2eq": co2_co2eq,
+                "ch4_mass": ch4_mass,
+                "ch4_co2eq": ch4_co2eq,
+                "n2o_mass": n2o_mass,
+                "n2o_co2eq": n2o_co2eq,
+                "co2eq_100y": co2eq_100y,
+                "co2eq_20y": co2eq_20y,
+                "gpc_quality": gpc_quality
+            },
+            "ownership": {
+                "asset_name": asset_name,
+                "name": name,
+                "data_source": data_source,
+                "URL": URL,
+                "location": location,
+            },
+            "capacity": {
+                "value": value,
+                "units": units,
+                "factor": factor
+            },
+            "activity": {
+                "value": value,
+                "units": units,
+                "gpc_quality": gpc_quality
+            }
+        }
+    }
+
+    return totals[locode][year][inventoryPart][gpcReferenceNumber]
+
+    

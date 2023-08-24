@@ -1,19 +1,17 @@
+from main import app
+from fastapi import HTTPException
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import SessionLocal, sessionmaker
+from decouple import config
 import pandas as pd
-from fastapi import FastAPI
-from sqlalchemy import create_engine, text 
-from sqlalchemy.orm import sessionmaker
 
-app = FastAPI()
+# Define the database engine
+engine = create_engine(config("DATABASE_URL"))
 
-# Read the DATABASE_URL from the .env file
-DATABASE_URL = config("DATABASE_URL")
-
-# Create a SQLAlchemy engine for database connection
-engine = create_engine(DATABASE_URL)
-
-# Create a session maker for SQLAlchemy
+# Define SessionLocal for database interactions
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+# Extract the data by locode, year and sector/subsector
 def db_query(locode, year, reference_number):
     
     with SessionLocal() as session:
@@ -32,18 +30,6 @@ def db_query(locode, year, reference_number):
         ).fetchall()
 
     return result
-
-def structured_data(df):
-
-    processed_data = []
-
-    for _, row in df.iterrows():
-        row_dict = {}
-        for col_name, value in row.items():
-            row_dict[col_name] = value
-        processed_data.append(row_dict)
-
-    return processed_data
 
 #AR6 GWP
 ch4_GWP_100yr = 29.8
@@ -104,8 +90,6 @@ def get_emissions_by_city_and_year(locode: str, year: int, inventoryPart: str, g
             "Ownership": {
                 "asset_name": sources['asset_name'],
                 "asset_id": sources['asset_id'],
-#                "data_source": data_source,
-#                "URL": URL,
                 "lat": sources['lat'],
                 "lon": sources['lon']
             },

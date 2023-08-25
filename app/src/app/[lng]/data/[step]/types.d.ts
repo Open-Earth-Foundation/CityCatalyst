@@ -19,3 +19,14 @@ type DataSource = {
   sources: string[];
   methodology: string;
 };
+
+type SubCategory = {
+  subcategoryId: string;
+  subcategoryName?: string;
+  activityName?: string;
+  subsectorId?: string;
+  scopeId?: string;
+  reportinglevelId?: string;
+  created?: Date;
+  lastUpdated?: Date;
+};

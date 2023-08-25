@@ -25,6 +25,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { MdError } from "react-icons/md";
 import { ActivityDataTab } from "./ActivityDataTab";
 import { DirectMeasureForm } from "./DirectMeasureForm";
+import { Select as ReactSelect } from "chakra-react-select";
 
 type Inputs = {
   valueType: string;
@@ -63,6 +64,12 @@ const defaultValues: Inputs = {
   gridCh4EmissionFactor: 10,
   gridSourceReference: "",
 };
+
+const subcategories: SubCategory[] = [
+  { subcategoryId: "1337", subcategoryName: "Manufacturing" },
+  { subcategoryId: "1338", subcategoryName: "Industrial facilities" },
+  { subcategoryId: "1339", subcategoryName: "Construction activities" },
+];
 
 export function SubsectorDrawer({
   subsector,
@@ -153,7 +160,7 @@ export function SubsectorDrawer({
     >
       <DrawerOverlay />
       <DrawerContent px={0} py={0} className="overflow-auto">
-        <Box h="full" px={16} py={12}>
+        <Box px={16} py={12} h="full" className="space-y-6">
           <Button
             variant="ghost"
             leftIcon={<ArrowBackIcon boxSize={6} />}
@@ -165,7 +172,7 @@ export function SubsectorDrawer({
             {t("go-back")}
           </Button>
           {subsector && (
-            <DrawerBody className="space-y-6" p={0}>
+            <>
               <Heading size="sm">
                 {t("sector")} - {t(subsector.sectorName)}
               </Heading>
@@ -201,8 +208,11 @@ export function SubsectorDrawer({
                     {t("subcategory-values")}
                   </RadioButton>
                 </HStack>
+                {/*** One value for the sub-sector ***/}
                 <Box
-                  className={`${valueType ? undefined : "hidden"} space-y-6`}
+                  className={`${
+                    valueType === "one-value" ? undefined : "hidden"
+                  } space-y-6`}
                 >
                   <Heading size="sm" className="font-normal">
                     {t("select-methodology")}{" "}
@@ -232,6 +242,7 @@ export function SubsectorDrawer({
                       {t("direct-measure")}
                     </RadioButton>
                   </HStack>
+                  {/*** Activity data ***/}
                   <Tabs
                     className={
                       methodology == "activity-data" ? undefined : "hidden"
@@ -276,6 +287,7 @@ export function SubsectorDrawer({
                       />
                     </TabPanels>
                   </Tabs>
+                  {/*** Direct measure ***/}
                   <DirectMeasureForm
                     className={
                       methodology == "direct-measure" ? undefined : "hidden"
@@ -285,23 +297,43 @@ export function SubsectorDrawer({
                     errors={errors}
                   />
                 </Box>
+                {/*** Values for each subcategory ***/}
+                <Box
+                  className={`${
+                    valueType === "subcategory-values" ? undefined : "hidden"
+                  } space-y-6`}
+                >
+                  <ReactSelect
+                    isMulti
+                    options={subcategories.map((subcategory: SubCategory) => ({
+                      label: subcategory.subcategoryName,
+                      value: subcategory.subcategoryId,
+                    }))}
+                  />
+                </Box>
               </form>
-            </DrawerBody>
+            </>
           )}
-          <Stack w="full" py={6} className="drop-shadow-top border-t-2" mt={6}>
-            <Button
-              onClick={handleSubmit(onSubmit)}
-              isDisabled={!isSubmitEnabled}
-              isLoading={isSaving}
-              type="submit"
-              formNoValidate
-              w="full"
-              h={16}
-            >
-              {t("add-data")}
-            </Button>
-          </Stack>
         </Box>
+        <Stack
+          w="full"
+          py={6}
+          px={12}
+          className="drop-shadow-top border-t-2"
+          mt={6}
+        >
+          <Button
+            onClick={handleSubmit(onSubmit)}
+            isDisabled={!isSubmitEnabled}
+            isLoading={isSaving}
+            type="submit"
+            formNoValidate
+            w="full"
+            h={16}
+          >
+            {t("add-data")}
+          </Button>
+        </Stack>
       </DrawerContent>
     </Drawer>
   );

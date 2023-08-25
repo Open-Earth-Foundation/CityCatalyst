@@ -59,7 +59,7 @@ export function ActivityDataTab({
                 placeholder={t("activity-data-amount-placeholder")}
                 borderRightRadius={0}
                 {...register(prefix + "ActivityDataAmount", {
-                  required: t("activity-data-amount-required"),
+                  required: t("value-required"),
                 })}
               />
             </NumberInput>

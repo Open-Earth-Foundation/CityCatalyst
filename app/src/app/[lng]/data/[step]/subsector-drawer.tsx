@@ -24,6 +24,7 @@ import { RefObject, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { MdError } from "react-icons/md";
 import { ActivityDataTab } from "./ActivityDataTab";
+import { DirectMeasureForm } from "./DirectMeasureForm";
 
 type Inputs = {
   valueType: string;
@@ -174,7 +175,7 @@ export function SubsectorDrawer({
               </Text>
               <Heading size="md">{t("enter-subsector-data")}</Heading>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                <Heading size="sm">
+                <Heading size="sm" className="font-normal">
                   {t("value-types")}{" "}
                   <Tooltip
                     hasArrow
@@ -203,7 +204,7 @@ export function SubsectorDrawer({
                 <Box
                   className={`${valueType ? undefined : "hidden"} space-y-6`}
                 >
-                  <Heading size="sm">
+                  <Heading size="sm" className="font-normal">
                     {t("select-methodology")}{" "}
                     <Tooltip
                       hasArrow
@@ -212,7 +213,7 @@ export function SubsectorDrawer({
                       color="baseLight"
                       placement="bottom-start"
                     >
-                      <InfoOutlineIcon mt={-1} color="contentTertiary" />
+                      <InfoOutlineIcon mt={-0.5} color="contentTertiary" />
                     </Tooltip>
                   </Heading>
                   <HStack

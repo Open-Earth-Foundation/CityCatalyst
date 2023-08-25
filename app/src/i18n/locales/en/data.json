@@ -69,5 +69,19 @@
   "direct-measure": "Direct measure",
   "fuel-combustion": "Fuel Combustion",
   "grid-supplied-energy": "Grid-supplied energy",
-  "add-data": "Add Data"
+  "add-data": "Add Data",
+  "activity-data-amount": "Activity data amount",
+  "activity-data-amount-required": "Activity data amount is required",
+  "activity-data-amount-placeholder": "Insert activity data amount",
+  "emission-factor-type": "Select emission factor type",
+  "emission-factors-values": "Emission factors values",
+  "co2-emission-factor": "CO2 emission factor",
+  "n2o-emission-factor": "N2O emission factor",
+  "ch4-emission-factor": "CH4 emission factor",
+  "optional": "Optional",
+  "emissions-factor-details": "At least one emission factor is required. Empty values will be computed as 0 and require to be justified.",
+  "source-reference": "Source reference",
+  "source-reference-required": "Source reference is required",
+  "source-reference-placeholder": "Write in detail from which source the entered value comes from",
+  "calculations-details": "All calculations consider a <1>GWP value of {{gwpValue}}</1>."
 }

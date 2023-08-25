@@ -15,6 +15,7 @@ export const appTheme = extendTheme({
     borderOverlay: "#E6E7FF",
     contentSecondary: "#232640",
     contentTertiary: "#7A7B9A",
+    contentLink: "#2351DC",
     interactivePrimary: "#008600",
     interactivePrimaryLight: "#61c261",
     interactiveSecondary: "#2351DC",

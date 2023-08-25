@@ -5,6 +5,7 @@ import pandas as pd
 from pathlib import Path
 from sqlalchemy import create_engine, insert, MetaData, Table
 
+
 def record_generator(fl):
     """returns a generator for the csv file
     Note: I was getting the following error using csv.DictReader
@@ -14,12 +15,19 @@ def record_generator(fl):
     for _, row in df.iterrows():
         yield row.to_dict()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--database_uri', help='database URI (e.g. postgresql://ccglobal:@localhost/ccglobal)', default=os.environ.get("DB_URI"))
-    parser.add_argument('--dir', help='path to directory with CSV files to import')
-    parser.add_argument('--file', help='path to file you want to import')
-    parser.add_argument('--log_file', help='path to log file', default='./osm_importer.log')
+    parser.add_argument(
+        "--database_uri",
+        help="database URI (e.g. postgresql://ccglobal:@localhost/ccglobal)",
+        default=os.environ.get("DB_URI"),
+    )
+    parser.add_argument("--dir", help="path to directory with CSV files to import")
+    parser.add_argument("--file", help="path to file you want to import")
+    parser.add_argument(
+        "--log_file", help="path to log file", default="./osm_importer.log"
+    )
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -29,13 +37,13 @@ if __name__ == '__main__':
     )
 
     engine = create_engine(args.database_uri)
-    metadata = MetaData(bind=engine)
+    metadata_obj = MetaData()
 
-    osm = Table('osm', metadata, autoload=True)
+    osm = Table("osm", metadata_obj, autoload_with=engine)
     fields = [col.name for col in osm.columns]
 
     if args.file and args.dir:
-        print('Error: --file and --dir can not be set at same time')
+        print("Error: --file and --dir can not be set at same time")
     elif args.file:
         file = Path(args.file).absolute()
 
@@ -46,14 +54,25 @@ if __name__ == '__main__':
             record_counter += 1
             logging.info(f"Processing row num: {record_counter} in file: {file} ")
 
-            record = {key: value for key, value in record.items() if value != ''}
-            table_data = {key: record.get(key) for key in record.keys() if key in fields}
-            ins = osm.insert().values(**table_data)
+            record = {key: value for key, value in record.items() if value != ""}
 
-            with engine.begin() as conn:  # Use a transaction
-                conn.execute(ins)
+            table_data = {
+                key: record.get(key) for key in record.keys() if key in fields
+            }
+
+            primary_key_value = table_data.get("locode")
+
+            with engine.begin() as conn:
+                primary_key_exists = conn.execute(
+                    osm.select().where(osm.c.locode == primary_key_value)
+                ).fetchone()
+
+                if not primary_key_exists:
+                    ins = osm.insert().values(**table_data)
+                    conn.execute(ins)
+
     elif args.dir:
-        files = Path(args.dir).glob('*.csv')
+        files = Path(args.dir).glob("*.csv")
 
         for file in files:
             generator = record_generator(file)
@@ -63,14 +82,24 @@ if __name__ == '__main__':
                 record_counter += 1
                 logging.info(f"Processing row num: {record_counter} in file: {file} ")
 
-                record = {key: value for key, value in record.items() if value != ''}
-                table_data = {key: record.get(key) for key in record.keys() if key in fields}
-                ins = osm.insert().values(**table_data)
+                record = {key: value for key, value in record.items() if value != ""}
 
-                with engine.begin() as conn:
+                table_data = {
+                    key: record.get(key) for key in record.keys() if key in fields
+                }
+
+            primary_key_value = table_data.get("locode")
+
+            with engine.begin() as conn:
+                primary_key_exists = conn.execute(
+                    osm.select().where(osm.c.locode == primary_key_value)
+                ).fetchone()
+
+                if not primary_key_exists:
+                    ins = osm.insert().values(**table_data)
                     conn.execute(ins)
     else:
-        print('Please set either --file or --dir')
+        print("Please set either --file or --dir")
 
     logging.info(f"Done!")
 

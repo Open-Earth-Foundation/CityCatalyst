@@ -71,7 +71,7 @@
   "grid-supplied-energy": "Grid-supplied energy",
   "add-data": "Add Data",
   "activity-data-amount": "Activity data amount",
-  "activity-data-amount-required": "Activity data amount is required",
+  "activity-data-amount-required": "Please add a value",
   "activity-data-amount-placeholder": "Insert activity data amount",
   "emission-factor-type": "Select emission factor type",
   "emission-factors-values": "Emission factors values",
@@ -81,7 +81,7 @@
   "optional": "Optional",
   "emissions-factor-details": "At least one emission factor is required. Empty values will be computed as 0 and require to be justified.",
   "source-reference": "Source reference",
-  "source-reference-required": "Source reference is required",
+  "source-reference-required": "Add a description of the reference source and justified emission factors, if applicable",
   "source-reference-placeholder": "Write in detail from which source the entered value comes from",
   "calculations-details": "All calculations consider a <1>GWP value of {{gwpValue}}</1>."
 }

@@ -13,10 +13,9 @@ import {
   FormLabel,
   HStack,
   Heading,
-  Input,
+  Icon,
   InputGroup,
   InputRightAddon,
-  InputRightElement,
   NumberInput,
   NumberInputField,
   Select,
@@ -31,33 +30,48 @@ import {
   Tooltip,
   useRadioGroup,
 } from "@chakra-ui/react";
+import { TFunction } from "i18next";
 import { RefObject, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { TFunction } from "i18next";
+import { MdError } from "react-icons/md";
 
 type Inputs = {
   valueType: string;
   methodology: string;
-  activityDataAmount?: number;
-  activityDataUnit: string;
-  emissionFactorType: string;
-  co2EmissionFactor: number;
-  n2oEmissionFactor: number;
-  ch4EmissionFactor: number;
-  sourceReference: string;
+  fuelActivityDataAmount?: number;
+  fuelActivityDataUnit: string;
+  fuelEmissionFactorType: string;
+  fuelCo2EmissionFactor: number;
+  fuelN2oEmissionFactor: number;
+  fuelCh4EmissionFactor: number;
+  fuelSourceReference: string;
+  gridActivityDataAmount?: number;
+  gridActivityDataUnit: string;
+  gridEmissionFactorType: string;
+  gridCo2EmissionFactor: number;
+  gridN2oEmissionFactor: number;
+  gridCh4EmissionFactor: number;
+  gridSourceReference: string;
 };
 
 const defaultValues: Inputs = {
   valueType: "",
   methodology: "",
-  activityDataAmount: undefined,
-  activityDataUnit: "kWh",
-  emissionFactorType: "Local",
-  co2EmissionFactor: 10,
-  n2oEmissionFactor: 10,
-  ch4EmissionFactor: 10,
-  sourceReference: "",
+  fuelActivityDataAmount: undefined,
+  fuelActivityDataUnit: "kWh",
+  fuelEmissionFactorType: "Local",
+  fuelCo2EmissionFactor: 10,
+  fuelN2oEmissionFactor: 10,
+  fuelCh4EmissionFactor: 10,
+  fuelSourceReference: "",
+  gridActivityDataAmount: undefined,
+  gridActivityDataUnit: "kWh",
+  gridEmissionFactorType: "Local",
+  gridCo2EmissionFactor: 10,
+  gridN2oEmissionFactor: 10,
+  gridCh4EmissionFactor: 10,
+  gridSourceReference: "",
 };
 
 const activityDataUnits = ["kWh", "Unit1", "Unit2", "Unit3"];
@@ -69,19 +83,21 @@ const emissionFactorTypes = [
   "Add custom",
 ];
 
-function FuelCombustionTab({
+function ActivityDataTab({
   t,
   register,
   errors,
+  prefix,
 }: {
   t: TFunction;
   register: Function;
   errors: Record<string, any>;
+  prefix: string;
 }) {
   return (
     <TabPanel px={0.5}>
       <HStack spacing={4} mb={12} className="items-start">
-        <FormControl isInvalid={!!errors.activityDataAmount}>
+        <FormControl isInvalid={!!errors[prefix + "ActivityDataAmount"]}>
           <FormLabel>
             {t("activity-data-amount")}{" "}
             <Tooltip
@@ -93,17 +109,25 @@ function FuelCombustionTab({
             </Tooltip>
           </FormLabel>
           <InputGroup>
-            <NumberInput defaultValue={0} min={0} w="full">
+            <NumberInput defaultValue={0} w="full">
               <NumberInputField
                 placeholder={t("activity-data-amount-placeholder")}
                 borderRightRadius={0}
-                {...register("activityDataAmount", {
+                {...register(prefix + "ActivityDataAmount", {
                   required: t("activity-data-amount-required"),
                 })}
               />
             </NumberInput>
-            <InputRightAddon className="border-l-2" pl={4} pr={0} bgColor="white">
-              <Select variant="unstyled" {...register("activityDataUnit")}>
+            <InputRightAddon
+              className="border-l-2"
+              pl={4}
+              pr={0}
+              bgColor="white"
+            >
+              <Select
+                variant="unstyled"
+                {...register(prefix + "ActivityDataUnit")}
+              >
                 {activityDataUnits.map((unit) => (
                   <option key={unit} value={unit}>
                     {unit}
@@ -113,12 +137,12 @@ function FuelCombustionTab({
             </InputRightAddon>
           </InputGroup>
           <FormErrorMessage>
-            {errors.activityDataAmount?.message}
+            {errors[prefix + "ActivityDataAmount"]?.message}
           </FormErrorMessage>
         </FormControl>
         <FormControl>
           <FormLabel>{t("emission-factor-type")}</FormLabel>
-          <Select {...register("emissionFactorType")}>
+          <Select {...register(prefix + "EmissionFactorType")}>
             {emissionFactorTypes.map((type) => (
               <option key={type} value={type}>
                 {type}
@@ -146,7 +170,7 @@ function FuelCombustionTab({
             <NumberInput defaultValue={0} min={0}>
               <NumberInputField
                 borderRightRadius={0}
-                {...register("co2EmissionFactor")}
+                {...register(prefix + "Co2EmissionFactor")}
                 bgColor="backgroundNeutral"
               />
             </NumberInput>
@@ -167,7 +191,7 @@ function FuelCombustionTab({
             <NumberInput defaultValue={0} min={0}>
               <NumberInputField
                 borderRightRadius={0}
-                {...register("n2oEmissionFactor")}
+                {...register(prefix + "N2oEmissionFactor")}
                 bgColor="backgroundNeutral"
               />
             </NumberInput>
@@ -190,7 +214,7 @@ function FuelCombustionTab({
             <NumberInput defaultValue={0} min={0}>
               <NumberInputField
                 borderRightRadius={0}
-                {...register("ch4EmissionFactor")}
+                {...register(prefix + "Ch4EmissionFactor")}
                 bgColor="backgroundNeutral"
               />
             </NumberInput>
@@ -210,15 +234,17 @@ function FuelCombustionTab({
         <InfoOutlineIcon mt={1} color="contentLink" />
         <Text color="contentTertiary">{t("emissions-factor-details")}</Text>
       </HStack>
-      <FormControl isInvalid={!!errors.sourceReference} mb={12}>
+      <FormControl isInvalid={!!errors[prefix + "SourceReference"]} mb={12}>
         <FormLabel>{t("source-reference")}</FormLabel>
         <Textarea
           placeholder={t("source-reference-placeholder")}
-          {...register("sourceReference", {
+          {...register(prefix + "SourceReference", {
             required: t("source-reference-required"),
           })}
         />
-        <FormErrorMessage>{errors.sourceReference?.message}</FormErrorMessage>
+        <FormErrorMessage>
+          {errors[prefix + "SourceReference"]?.message}
+        </FormErrorMessage>
       </FormControl>
       <HStack className="items-start" mb={13}>
         <InfoOutlineIcon mt={1} color="contentLink" />
@@ -234,18 +260,6 @@ function FuelCombustionTab({
       </HStack>
     </TabPanel>
   );
-}
-
-function GridEnergyTab({
-  t,
-  register,
-  errors,
-}: {
-  t: TFunction;
-  register: Function;
-  errors: Record<string, any>;
-}) {
-  return <TabPanel px={0.5}>Two</TabPanel>;
 }
 
 export function SubsectorDrawer({
@@ -310,6 +324,22 @@ export function SubsectorDrawer({
   }, [subsector]);
 
   const isSubmitEnabled = !!valueType && !!methodology;
+  const hasFuelError =
+    errors.fuelActivityDataAmount ||
+    errors.fuelActivityDataUnit ||
+    errors.fuelEmissionFactorType ||
+    errors.fuelCo2EmissionFactor ||
+    errors.fuelN2oEmissionFactor ||
+    errors.fuelCh4EmissionFactor ||
+    errors.fuelSourceReference;
+  const hasGridError =
+    errors.gridActivityDataAmount ||
+    errors.gridActivityDataUnit ||
+    errors.gridEmissionFactorType ||
+    errors.gridCo2EmissionFactor ||
+    errors.gridN2oEmissionFactor ||
+    errors.gridCh4EmissionFactor ||
+    errors.gridSourceReference;
 
   return (
     <Drawer
@@ -402,19 +432,41 @@ export function SubsectorDrawer({
                   </HStack>
                   <Tabs className={methodology ? undefined : "invisible"}>
                     <TabList>
-                      <Tab>{t("fuel-combustion")}</Tab>
-                      <Tab>{t("grid-supplied-energy")}</Tab>
+                      <Tab>
+                        {t("fuel-combustion")}{" "}
+                        {hasFuelError && (
+                          <Icon
+                            as={MdError}
+                            boxSize={4}
+                            ml={2}
+                            color="sentimentNegativeDefault"
+                          />
+                        )}
+                      </Tab>
+                      <Tab>
+                        {t("grid-supplied-energy")}{" "}
+                        {hasGridError && (
+                          <Icon
+                            as={MdError}
+                            boxSize={4}
+                            ml={2}
+                            color="sentimentNegativeDefault"
+                          />
+                        )}
+                      </Tab>
                     </TabList>
                     <TabPanels>
-                      <FuelCombustionTab
+                      <ActivityDataTab
                         t={t}
                         register={register}
                         errors={errors}
+                        prefix="fuel"
                       />
-                      <GridEnergyTab
+                      <ActivityDataTab
                         t={t}
                         register={register}
                         errors={errors}
+                        prefix="grid"
                       />
                     </TabPanels>
                   </Tabs>

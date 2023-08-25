@@ -26,6 +26,7 @@ export const appTheme = extendTheme({
     sentimentPositiveLight: "#f0f7eb",
     sentimentPositiveDark: "#b9cfa9",
     sentimentWarningDefault: "#C98300",
+    sentimentNegativeDefault: "#F23D33",
     brandScheme: {
       100: "#C5CBF5",
       500: "#2351DC",

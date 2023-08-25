@@ -1,0 +1,92 @@
+name: Push Web app to GHCR and deploy to EKS
+
+on:
+  workflow_dispatch:
+
+  push:
+    paths:
+      - global-api/**
+      - k8s/cc-global-api-deploy.yml
+      - k8s/cc-global-api.yml
+    branches: ["develop"]
+
+jobs:
+  runTests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: cd app && npm install
+
+      - name: Set up database
+        run: |
+          docker run --name github_action_postgresql -d -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_PASSWORD="" postgres
+          sleep 10
+          createuser -w -h localhost -p 5432 -U postgres citycatalyst
+          createdb -w -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst
+          cd app
+          cp env.example .env
+          npm run db:migrate
+
+      - name: Run NextJS build
+        run: |
+          cd app
+          npm run build
+
+      - name: Run tests
+        run: |
+          cd app
+          npm run test
+
+      - name: Shut down database
+        run: docker stop github_action_postgresql
+
+  pushToGHCR:
+    needs: runTests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pushing CC Web to GHCR
+        env:
+          VERSION: ${{ github.sha }}
+          IMAGE: ghcr.io/open-earth-foundation/citycatalyst
+        run: |
+          docker build -t $IMAGE:$VERSION app
+          docker tag $IMAGE:$VERSION $IMAGE:latest
+          docker push $IMAGE:$VERSION
+          docker push $IMAGE:latest
+
+  deployToEKS:
+    needs: pushToGHCR
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
+      EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Creating kubeconfig file
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region us-east-1
+
+      - name: Testing connection to EKS
+        run: kubectl get pods -n default
+
+      - name: Deploying service
+        run: |
+          kubectl create -f k8s/cc-migrate.yml -n default
+          kubectl apply -f k8s/cc-web-deploy.yml -n default
+          kubectl rollout restart deployment cc-web-deploy -n default

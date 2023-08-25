@@ -235,28 +235,28 @@ export const appTheme = extendTheme({
         },
         solidPrimary: {
           ...theme.components.Button.variants?.solid,
-          bg: "sentimentPositiveOverlay",
-          color: "interactivePrimary",
+          bg: "sentiment.positiveOverlay",
+          color: "interactive.primary",
           _hover: {
             transform: "scale(0.98)",
-            bg: "sentimentPositiveLight",
-            color: "interactivePrimaryLight",
+            bg: "sentiment.positiveLight",
+            color: "interactive.primaryLight",
           },
           _active: {
-            bg: "sentimentPositiveDark",
-            color: "sentimentPositiveOverlay",
+            bg: "sentiment.positiveDark",
+            color: "sentiment.positiveOverlay",
           },
           _loading: {
             opacity: 0.8,
-            bg: "sentimentPositiveLight",
+            bg: "sentiment.positiveLight",
           },
         },
         ghost: {
           color: "#5a7be0",
         },
         solidIcon: {
-          bgColor: "backgroundNeutral",
-          color: "interactiveSecondary",
+          bgColor: "background.neutral",
+          color: "interactive.secondary",
           _hover: {
             color: "white",
             bg: "#5a7be0",
@@ -269,7 +269,7 @@ export const appTheme = extendTheme({
     },
     Link: {
       baseStyle: {
-        color: "#2351DC",
+        color: "brand.secondary",
       },
     },
     Card: {
@@ -290,10 +290,10 @@ export const appTheme = extendTheme({
             borderRadius: "full",
             borderColor: "backgroundNeutral",
             borderWidth: 1,
-            color: "backgroundNeutral",
+            color: "background.neutral",
           },
           label: {
-            color: "contentSecondary",
+            color: "content.secondary",
             fontSize: "14",
             borderWidth: 0,
             mt: -0.5,
@@ -306,8 +306,8 @@ export const appTheme = extendTheme({
     },
     Tooltip: {
       baseStyle: {
-        bg: "contentSecondary",
-        color: "baseLight",
+        bg: "content.secondary",
+        color: "base.light",
         px: 4,
         py: 2,
         borderRadius: "lg",
@@ -318,8 +318,8 @@ export const appTheme = extendTheme({
         line: {
           tab: {
             _selected: {
-              color: "interactiveSecondary",
-              borderColor: "interactiveSecondary",
+              color: "interactive.secondary",
+              borderColor: "interactive.secondary",
               fontWeight: "bold",
             },
           },

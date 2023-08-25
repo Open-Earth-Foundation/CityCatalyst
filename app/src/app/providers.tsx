@@ -39,7 +39,7 @@ export const theme = extendTheme({
       overlay: '#E6E7FF'
     },
 
-    backround: {
+    background: {
       default: "#FFFFFF",
       neutral: "#E8EAFB",
       alternative: "#EFFDE5",

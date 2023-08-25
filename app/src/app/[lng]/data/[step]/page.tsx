@@ -39,8 +39,8 @@ import {
   MdPlaylistAddCheck,
 } from "react-icons/md";
 import subSectorData from "./subsectors.json";
-import { SourceDrawer } from "./source-drawer";
-import { SubsectorDrawer } from "./subsector-drawer";
+import { SourceDrawer } from "./SourceDrawer";
+import { SubsectorDrawer } from "./SubsectorDrawer";
 
 const dataSourceDescription =
   "Leveraging satellite imagery, this dataset provides key information about residential structures, aiding in the assessment of their energy usage and corresponding carbon footprints";

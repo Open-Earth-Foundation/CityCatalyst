@@ -19,19 +19,19 @@ import {
   Tooltip,
   useRadioGroup,
 } from "@chakra-ui/react";
-import { RefObject, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 type Inputs = {
-  valueType: string | null;
-  methodology: string | null;
+  valueType: string;
+  methodology: string;
   activityDataAmount: number;
   activityDataUnit: string;
 };
 
 const defaultValues: Inputs = {
-  valueType: null,
-  methodology: null,
+  valueType: "",
+  methodology: "",
   activityDataAmount: 0,
   activityDataUnit: "kWh",
 };
@@ -75,13 +75,11 @@ export function SubsectorDrawer({
     onClose();
   };
 
-  // reset form values when choosing another subsector
-  // useEffect(() => reset({ defaultValues }), [subsector, reset]);
-
   const {
     getRootProps: getValueTypeRootProps,
     getRadioProps: getValueTypeRadioProps,
-    value: valueTypeValue,
+    value: valueType,
+    setValue: setValueType,
   } = useRadioGroup({
     name: "valueType",
     onChange: console.log, // TODO change section after radio using this
@@ -91,14 +89,23 @@ export function SubsectorDrawer({
   const {
     getRootProps: getMethodologyRootProps,
     getRadioProps: getMethodologyRadioProps,
-    value: methodologyValue,
+    value: methodology,
+    setValue: setMethodology,
   } = useRadioGroup({
     name: "methodology",
     onChange: console.log,
   });
   const methodologyGroup = getMethodologyRootProps();
 
-  const isSubmitEnabled = !!valueTypeValue && !!methodologyValue;
+  // reset form values when choosing another subsector
+  useEffect(() => {
+    reset(defaultValues);
+    setMethodology("");
+    setValueType("");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subsector]);
+
+  const isSubmitEnabled = !!valueType && !!methodology;
 
   return (
     <Drawer
@@ -160,7 +167,7 @@ export function SubsectorDrawer({
                 </HStack>
                 <Box
                   className={`${
-                    valueTypeValue ? undefined : "invisible"
+                    valueType ? undefined : "invisible"
                   } space-y-6`}
                 >
                   <Heading size="sm">
@@ -191,7 +198,7 @@ export function SubsectorDrawer({
                       {t("direct-measure")}
                     </RadioButton>
                   </HStack>
-                  <Tabs className={methodologyValue ? undefined : "invisible"}>
+                  <Tabs className={methodology ? undefined : "invisible"}>
                     <TabList>
                       <Tab>{t("fuel-combustion")}</Tab>
                       <Tab>{t("grid-supplied-energy")}</Tab>

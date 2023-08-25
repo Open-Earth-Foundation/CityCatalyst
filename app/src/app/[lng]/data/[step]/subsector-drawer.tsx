@@ -1,6 +1,7 @@
 import { RadioButton } from "@/components/radio-button";
 import { ArrowBackIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import {
+  Box,
   Button,
   Drawer,
   DrawerBody,
@@ -16,10 +17,32 @@ import {
   Tabs,
   Text,
   Tooltip,
-  chakra,
   useRadioGroup,
 } from "@chakra-ui/react";
 import { RefObject, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+
+type Inputs = {
+  valueType: string | null;
+  methodology: string | null;
+  activityDataAmount: number;
+  activityDataUnit: string;
+};
+
+const defaultValues: Inputs = {
+  valueType: null,
+  methodology: null,
+  activityDataAmount: 0,
+  activityDataUnit: "kWh",
+};
+
+function FuelCombustionTab() {
+  return <TabPanel>One</TabPanel>;
+}
+
+function GridEnergyTab() {
+  return <TabPanel>Two</TabPanel>;
+}
 
 export function SubsectorDrawer({
   subsector,
@@ -37,7 +60,14 @@ export function SubsectorDrawer({
   t: Function;
 }) {
   const [isSaving, setSaving] = useState(false);
-  const onSubmit = async () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<Inputs>();
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    console.log("Sector data", data);
     setSaving(true);
     onSave(subsector!);
     await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -45,11 +75,15 @@ export function SubsectorDrawer({
     onClose();
   };
 
+  // reset form values when choosing another subsector
+  // useEffect(() => reset({ defaultValues }), [subsector, reset]);
+
   const {
     getRootProps: getValueTypeRootProps,
     getRadioProps: getValueTypeRadioProps,
+    value: valueTypeValue,
   } = useRadioGroup({
-    name: "value-type",
+    name: "valueType",
     onChange: console.log, // TODO change section after radio using this
   });
   const valueTypeGroup = getValueTypeRootProps();
@@ -57,11 +91,14 @@ export function SubsectorDrawer({
   const {
     getRootProps: getMethodologyRootProps,
     getRadioProps: getMethodologyRadioProps,
+    value: methodologyValue,
   } = useRadioGroup({
     name: "methodology",
     onChange: console.log,
   });
   const methodologyGroup = getMethodologyRootProps();
+
+  const isSubmitEnabled = !!valueTypeValue && !!methodologyValue;
 
   return (
     <Drawer
@@ -73,7 +110,7 @@ export function SubsectorDrawer({
     >
       <DrawerOverlay />
       <DrawerContent px={0} py={0}>
-        <chakra.div h="full" px={16} py={12}>
+        <Box h="full" px={16} py={12}>
           <Button
             variant="ghost"
             leftIcon={<ArrowBackIcon boxSize={6} />}
@@ -90,69 +127,93 @@ export function SubsectorDrawer({
                 {t("sector")} - {t(subsector.sectorName)}
               </Heading>
               <Heading size="lg">{t(subsector.title)}</Heading>
-              <Text color="contentTertiary">{t(subsector.title + "-description")}</Text>
+              <Text color="contentTertiary">
+                {t(subsector.title + "-description")}
+              </Text>
               <Heading size="md">{t("enter-subsector-data")}</Heading>
-              <Heading size="sm">
-                {t("value-types")}{" "}
-                <Tooltip
-                  hasArrow
-                  label={t("value-types-tooltip")}
-                  placement="bottom-start"
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <Heading size="sm">
+                  {t("value-types")}{" "}
+                  <Tooltip
+                    hasArrow
+                    label={t("value-types-tooltip")}
+                    placement="bottom-start"
+                  >
+                    <InfoOutlineIcon mt={-1} color="contentTertiary" />
+                  </Tooltip>
+                </Heading>
+                <HStack
+                  spacing={4}
+                  {...valueTypeGroup}
+                  {...register("valueType")}
                 >
-                  <InfoOutlineIcon mt={-1} color="contentTertiary" />
-                </Tooltip>
-              </Heading>
-              <HStack spacing={4} {...valueTypeGroup}>
-                <RadioButton
-                  {...getValueTypeRadioProps({ value: "one-value" })}
+                  <RadioButton
+                    {...getValueTypeRadioProps({ value: "one-value" })}
+                  >
+                    {t("one-value")}
+                  </RadioButton>
+                  <RadioButton
+                    {...getValueTypeRadioProps({ value: "subcategory-values" })}
+                  >
+                    {t("subcategory-values")}
+                  </RadioButton>
+                </HStack>
+                <Box
+                  className={`${
+                    valueTypeValue ? undefined : "invisible"
+                  } space-y-6`}
                 >
-                  {t("one-value")}
-                </RadioButton>
-                <RadioButton
-                  {...getValueTypeRadioProps({ value: "subcategory-values" })}
-                >
-                  {t("subcategory-values")}
-                </RadioButton>
-              </HStack>
-              <Heading size="sm">
-                {t("select-methodology")}{" "}
-                <Tooltip
-                  hasArrow
-                  label={t("methodology-tooltip")}
-                  bg="contentSecondary"
-                  color="baseLight"
-                  placement="bottom-start"
-                >
-                  <InfoOutlineIcon mt={-1} color="contentTertiary" />
-                </Tooltip>
-              </Heading>
-              <HStack spacing={4} {...methodologyGroup}>
-                <RadioButton
-                  {...getMethodologyRadioProps({ value: "activity-data" })}
-                >
-                  {t("activity-data")}
-                </RadioButton>
-                <RadioButton
-                  {...getMethodologyRadioProps({ value: "direct-measure" })}
-                >
-                  {t("direct-measure")}
-                </RadioButton>
-              </HStack>
-              <Tabs>
-                <TabList>
-                  <Tab>{t("fuel-combustion")}</Tab>
-                  <Tab>{t("grid-supplied-energy")}</Tab>
-                </TabList>
-                <TabPanels>
-                  <TabPanel>One</TabPanel>
-                  <TabPanel>Two</TabPanel>
-                </TabPanels>
-              </Tabs>
+                  <Heading size="sm">
+                    {t("select-methodology")}{" "}
+                    <Tooltip
+                      hasArrow
+                      label={t("methodology-tooltip")}
+                      bg="contentSecondary"
+                      color="baseLight"
+                      placement="bottom-start"
+                    >
+                      <InfoOutlineIcon mt={-1} color="contentTertiary" />
+                    </Tooltip>
+                  </Heading>
+                  <HStack
+                    spacing={4}
+                    {...methodologyGroup}
+                    {...register("methodology")}
+                  >
+                    <RadioButton
+                      {...getMethodologyRadioProps({ value: "activity-data" })}
+                    >
+                      {t("activity-data")}
+                    </RadioButton>
+                    <RadioButton
+                      {...getMethodologyRadioProps({ value: "direct-measure" })}
+                    >
+                      {t("direct-measure")}
+                    </RadioButton>
+                  </HStack>
+                  <Tabs className={methodologyValue ? undefined : "invisible"}>
+                    <TabList>
+                      <Tab>{t("fuel-combustion")}</Tab>
+                      <Tab>{t("grid-supplied-energy")}</Tab>
+                    </TabList>
+                    <TabPanels>
+                      <FuelCombustionTab />
+                      <GridEnergyTab />
+                    </TabPanels>
+                  </Tabs>
+                </Box>
+              </form>
             </DrawerBody>
           )}
-        </chakra.div>
+        </Box>
         <Stack w="full" px={16} py={6} className="drop-shadow-top border-t-2">
-          <Button onClick={onSubmit} isLoading={isSaving} w="full" h={16}>
+          <Button
+            onClick={handleSubmit(onSubmit)}
+            isDisabled={!isSubmitEnabled}
+            isLoading={isSaving}
+            w="full"
+            h={16}
+          >
             {t("add-data")}
           </Button>
         </Stack>

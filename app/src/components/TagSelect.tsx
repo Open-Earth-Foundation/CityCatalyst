@@ -1,7 +1,11 @@
-import { Select, Props } from "chakra-react-select";
-import { UseControllerProps, useController } from "react-hook-form"
+import { Select, Props, ChakraStylesConfig } from "chakra-react-select";
+import {
+  FieldValues,
+  UseControllerProps,
+  useController,
+} from "react-hook-form";
 
-export function TagSelect<T>({
+export function TagSelect<T extends FieldValues>({
   control,
   name,
   id,
@@ -16,15 +20,40 @@ export function TagSelect<T>({
     rules,
   });
 
+  const chakraStyles: ChakraStylesConfig = {
+    multiValueRemove: (provided, state) => ({
+      ...provided,
+      color: "content.alternative",
+      _focus: {
+        color: "content.secondary",
+      },
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      bgColor: state.isFocused ? "background.neutral" : "base.light",
+    }),
+    input: (provided, state) => ({
+      ...provided,
+      px: 4,
+      py: 3,
+      borderRadius: "4px",
+      borderColor: "border.neutral",
+      _focus: {
+        borderColor: "interactive.secondary",
+      },
+    }),
+  };
+
   return (
     <Select
       isMulti
-      tagVariant="brand"
+      tagVariant="filled"
       name={name}
       ref={ref}
       onChange={onChange}
       onBlur={onBlur}
       value={value}
+      chakraStyles={chakraStyles}
       {...props}
     />
   );

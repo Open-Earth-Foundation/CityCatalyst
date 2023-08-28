@@ -19,6 +19,7 @@ export const appTheme = extendTheme({
       secondary: '#00001F',
       tertiary: '#7A7B9A',
       link: "#2351DC",
+      alternative: "#001EA7",
     },
 
     semantic: {
@@ -299,6 +300,17 @@ export const appTheme = extendTheme({
             mt: -0.5,
           },
         },
+        filled: {
+          container: {
+          px: 4,
+          py: 1,
+          borderRadius: "full",
+          bgColor: "background.neutral",
+          },
+          label: {
+          color: "content.alternative",
+          }
+        }
       },
       defaultProps: {
         variant: "brand",

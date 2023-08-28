@@ -38,12 +38,12 @@ export default function Onboarding({
       <Heading size="xl" mb={6} mt={12} className="w-full text-center">
         {t("data-heading")}
       </Heading>
-      <Text color="tertiary" className="w-full text-center">
+      <Text color="content.tertiary" className="w-full text-center">
         <Trans i18nKey="data-details" t={t} />
       </Text>
-      <Card mt={16} p={6} borderColor="borderOverlay" borderWidth={1}>
+      <Card mt={16} p={6} borderColor="border.overlay" borderWidth={1}>
         <Heading size="lg" mb={1}>{t("data-view-heading")}</Heading>
-        <Text color="tertiary">
+        <Text color="content.tertiary">
           <Trans i18nKey="data-view-details" t={t}>
             GPC Basic encompasses three primary sectors: Stationary Energy,
             Transportation and Waste . Fill out the necessary data for each
@@ -57,45 +57,45 @@ export default function Onboarding({
           <Card
             className="space-y-6 grow w-1/3"
             p={6}
-            borderColor="borderOverlay"
+            borderColor="border.overlay"
             borderWidth={1}
           >
-            <Icon as={MdHomeWork} boxSize={8} color="brand" />
+            <Icon as={MdHomeWork} boxSize={8} color="brand.secondary" />
             <Heading size="md">{t("stationary-energy")}</Heading>
-            <Divider borderColor="borderOverlay" />
-            <Text color="tertiary">{t("stationary-energy-details")}</Text>
+            <Divider borderColor="border.overlay" />
+            <Text color="content.tertiary">{t("stationary-energy-details")}</Text>
             <div className="grow" />
-            <Heading size="sm" color="brand" className="font-normal">
+            <Heading size="sm" color="brand.secondary" className="font-normal">
               {t("stationary-energy-scope")}
             </Heading>
           </Card>
           <Card
             className="space-y-6 grow w-1/3"
             p={6}
-            borderColor="borderOverlay"
+            borderColor="border.overlay"
             borderWidth={1}
           >
-            <Icon as={FiTruck} boxSize={8} color="brand" />
+            <Icon as={FiTruck} boxSize={8} color="brand.secondary" />
             <Heading size="md">{t("transportation")}</Heading>
-            <Divider borderColor="borderOverlay" />
-            <Text color="tertiary">{t("transportation-details")}</Text>
+            <Divider borderColor="border.overlay" />
+            <Text color="content.tertiary">{t("transportation-details")}</Text>
             <div className="grow" />
-            <Heading size="sm" color="brand" className="font-normal">
+            <Heading size="sm" color="brand.secondary" className="font-normal">
               {t("transportation-scope")}
             </Heading>
           </Card>
           <Card
             className="space-y-6 grow w-1/3"
             p={6}
-            borderColor="borderOverlay"
+            borderColor="border.overlay"
             borderWidth={1}
           >
-            <Icon as={FiTrash2} boxSize={8} color="brand" />
+            <Icon as={FiTrash2} boxSize={8} color="brand.secondary" />
             <Heading size="md">{t("waste")}</Heading>
-            <Divider borderColor="borderOverlay" />
-            <Text color="tertiary">{t("waste-details")}</Text>
+            <Divider borderColor="border.overlay" />
+            <Text color="content.tertiary">{t("waste-details")}</Text>
             <div className="grow" />
-            <Heading size="sm" color="brand" className="font-normal">
+            <Heading size="sm" color="brand.secondary" className="font-normal">
               {t("waste-scope")}
             </Heading>
           </Card>

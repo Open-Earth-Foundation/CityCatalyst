@@ -7,7 +7,7 @@ describe('Login page', () => {
     cy.get('button[type="submit"]').click()
 
     cy.url().should('equal', Cypress.config().baseUrl + '/en')
-    cy.contains('Dashboard')
+    cy.contains('Welcome Back,')
   })
 
   it('shows errors when entering invalid data', () => {

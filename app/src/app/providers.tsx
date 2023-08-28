@@ -46,6 +46,7 @@ export const appTheme = extendTheme({
       neutral: "#E8EAFB",
       alternative: "#EFFDE5",
       overlay: "#C5CBF5",
+      transparentGrey: "rgba(232, 234, 251, 0.20)",
     },
 
     interactive: {
@@ -366,6 +367,26 @@ export const appTheme = extendTheme({
             },
           },
         },
+      },
+    },
+    Accordion: {
+      variants: {
+        brand: {
+          container: {
+            borderRadius: "8px",
+            bgColor: "background.transparentGrey",
+            borderWidth: 0,
+            px: 4,
+            py: 4,
+            mb: 6,
+          },
+          button: {
+            borderRadius: "8px",
+          }
+        },
+      },
+      defaultProps: {
+        variant: "brand",
       },
     },
   },

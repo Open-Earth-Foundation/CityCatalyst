@@ -19,17 +19,38 @@ import { TFunction } from "i18next";
 import { RefObject, useEffect, useState } from "react";
 import { SubmitHandler, useController, useForm } from "react-hook-form";
 import { EmissionsForm } from "./EmissionsForm";
+import { TagSelect } from "@/components/TagSelect";
+
+type SubcategoryOption = {
+  label: string;
+  value: string;
+}
+
+type ActivityData = {
+  activityDataAmount?: number;
+  activityDataUnit: string;
+  emissionFactorType: string;
+  co2EmissionFactor: number;
+  n2oEmissionFactor: number;
+  ch4EmissionFactor: number;
+  sourceReference: string;
+}
+
+const defaultActivityData: ActivityData = {
+  activityDataAmount: undefined,
+  activityDataUnit: "kWh",
+  emissionFactorType: "Local",
+  co2EmissionFactor: 10,
+  n2oEmissionFactor: 10,
+  ch4EmissionFactor: 10,
+  sourceReference: "",
+};
 
 type Inputs = {
   valueType: string;
   methodology: string;
-  fuelActivityDataAmount?: number;
-  fuelActivityDataUnit: string;
-  fuelEmissionFactorType: string;
-  fuelCo2EmissionFactor: number;
-  fuelN2oEmissionFactor: number;
-  fuelCh4EmissionFactor: number;
-  fuelSourceReference: string;
+  subcategories: SubcategoryOption[];
+  fuel: ActivityData;
   gridActivityDataAmount?: number;
   gridActivityDataUnit: string;
   gridEmissionFactorType: string;
@@ -42,13 +63,8 @@ type Inputs = {
 const defaultValues: Inputs = {
   valueType: "",
   methodology: "",
-  fuelActivityDataAmount: undefined,
-  fuelActivityDataUnit: "kWh",
-  fuelEmissionFactorType: "Local",
-  fuelCo2EmissionFactor: 10,
-  fuelN2oEmissionFactor: 10,
-  fuelCh4EmissionFactor: 10,
-  fuelSourceReference: "",
+  subcategories: [],
+  fuel: defaultActivityData,
   gridActivityDataAmount: undefined,
   gridActivityDataUnit: "kWh",
   gridEmissionFactorType: "Local",
@@ -114,6 +130,11 @@ export function SubsectorDrawer({
   const methodology = watch("methodology");
   const isSubmitEnabled = !!valueType && !!methodology;
 
+  const subcategoryOptions = subcategories.map((subcategory: SubCategory) => ({
+    label: subcategory.subcategoryName,
+    value: subcategory.subcategoryId,
+  }));
+
   return (
     <Drawer
       isOpen={isOpen}
@@ -172,7 +193,12 @@ export function SubsectorDrawer({
                 <Box
                   className={valueType === "one-value" ? undefined : "hidden"}
                 >
-                  <EmissionsForm t={t} register={register} errors={errors} control={control} />
+                  <EmissionsForm
+                    t={t}
+                    register={register}
+                    errors={errors}
+                    control={control}
+                  />
                 </Box>
                 {/*** Values for each subcategory ***/}
                 <Box
@@ -180,12 +206,13 @@ export function SubsectorDrawer({
                     valueType === "subcategory-values" ? undefined : "hidden"
                   }
                 >
-                  <ReactSelect
-                    isMulti
-                    options={subcategories.map((subcategory: SubCategory) => ({
-                      label: subcategory.subcategoryName,
-                      value: subcategory.subcategoryId,
-                    }))}
+                  <TagSelect<Inputs>
+                    options={subcategoryOptions}
+                    name="subcategories"
+                    id="subcategories"
+                    placeholder={t("select-subcategories")}
+                    rules={{ required: t("subcategories-required") }}
+                    control={control}
                   />
                 </Box>
               </form>

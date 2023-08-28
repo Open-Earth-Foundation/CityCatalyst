@@ -162,7 +162,7 @@ export function SubsectorDrawer({
                 {t("sector")} - {t(subsector.sectorName)}
               </Heading>
               <Heading size="lg">{t(subsector.title)}</Heading>
-              <Text color="contentTertiary">
+              <Text color="content.tertiary">
                 {t(subsector.title + "-description")}
               </Text>
               <Heading size="md">{t("enter-subsector-data")}</Heading>
@@ -174,7 +174,7 @@ export function SubsectorDrawer({
                     label={t("value-types-tooltip")}
                     placement="bottom-start"
                   >
-                    <InfoOutlineIcon mt={-1} color="contentTertiary" />
+                    <InfoOutlineIcon mt={-1} color="content.tertiary" />
                   </Tooltip>
                 </Heading>
                 <HStack spacing={4} {...getRootProps()}>

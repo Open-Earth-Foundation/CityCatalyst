@@ -65,10 +65,10 @@ export function EmissionsForm({
           hasArrow
           label={t("methodology-tooltip")}
           bg="contentSecondary"
-          color="baseLight"
+          color="base.light"
           placement="bottom-start"
         >
-          <InfoOutlineIcon mt={-0.5} color="contentTertiary" />
+          <InfoOutlineIcon mt={-0.5} color="content.tertiary" />
         </Tooltip>
       </Heading>
       <HStack spacing={4} {...getRootProps()}>
@@ -89,7 +89,7 @@ export function EmissionsForm({
                 as={MdError}
                 boxSize={4}
                 ml={2}
-                color="sentimentNegativeDefault"
+                color="sentiment.negativeDefault"
               />
             )}
           </Tab>
@@ -100,7 +100,7 @@ export function EmissionsForm({
                 as={MdError}
                 boxSize={4}
                 ml={2}
-                color="sentimentNegativeDefault"
+                color="sentiment.negativeDefault"
               />
             )}
           </Tab>

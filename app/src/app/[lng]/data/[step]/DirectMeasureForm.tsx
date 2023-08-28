@@ -36,12 +36,12 @@ export function DirectMeasureForm({
           label={t("value-types-tooltip")}
           placement="bottom-start"
         >
-          <InfoOutlineIcon mt={-0.5} color="contentTertiary" />
+          <InfoOutlineIcon mt={-0.5} color="content.tertiary" />
         </Tooltip>
       </Heading>
       <HStack spacing={4} mb={12} className="items-start">
         <FormControl isInvalid={!!errors.directCo2Emissions}>
-          <FormLabel color="contentTertiary">
+          <FormLabel color="content.tertiary">
             {t("co2-emissions-value")}
           </FormLabel>
           <InputGroup>
@@ -52,8 +52,8 @@ export function DirectMeasureForm({
               />
             </NumberInput>
             <InputRightAddon
-              bgColor="white"
-              color="contentTertiary"
+              bgColor="base.light"
+              color="content.tertiary"
             >
               tCO2e
             </InputRightAddon>
@@ -61,7 +61,7 @@ export function DirectMeasureForm({
           <FormErrorMessage>{errors.directCo2Emissions?.message}</FormErrorMessage>
         </FormControl>
         <FormControl isInvalid={!!errors.directCh4Emissions}>
-          <FormLabel color="contentTertiary">
+          <FormLabel color="content.tertiary">
             {t("ch4-emissions-value")}
           </FormLabel>
           <InputGroup>
@@ -72,8 +72,8 @@ export function DirectMeasureForm({
               />
             </NumberInput>
             <InputRightAddon
-              bgColor="white"
-              color="contentTertiary"
+              bgColor="base.light"
+              color="content.tertiary"
             >
               tCH4e
             </InputRightAddon>
@@ -81,7 +81,7 @@ export function DirectMeasureForm({
           <FormErrorMessage>{errors.directCh4Emissions?.message}</FormErrorMessage>
         </FormControl>
         <FormControl isInvalid={!!errors.directN2oEmissions}>
-          <FormLabel color="contentTertiary">
+          <FormLabel color="content.tertiary">
             {t("n2o-emissions-value")}
           </FormLabel>
           <InputGroup>
@@ -92,8 +92,8 @@ export function DirectMeasureForm({
               />
             </NumberInput>
             <InputRightAddon
-              bgColor="white"
-              color="contentTertiary"
+              bgColor="base.light"
+              color="content.tertiary"
             >
               tN2Oe
             </InputRightAddon>

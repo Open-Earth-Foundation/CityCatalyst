@@ -288,7 +288,7 @@ export const appTheme = extendTheme({
             px: 3,
             py: 1,
             borderRadius: "full",
-            borderColor: "backgroundNeutral",
+            borderColor: "background.neutral",
             borderWidth: 1,
             color: "background.neutral",
           },

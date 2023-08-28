@@ -212,11 +212,11 @@ export default function OnboardingSteps({
             <Heading size="lg" mb={2}>
               {currentStep.title}
             </Heading>
-            <Text color="tertiary">{currentStep.details}</Text>
+            <Text color="content.tertiary">{currentStep.details}</Text>
             <Flex direction="row">
               <Progress
                 value={totalStepCompletion * 100}
-                color="interactiveQuaternary"
+                color="interactive.quaternary"
                 w="full"
                 borderRadius={16}
                 mr={6}
@@ -231,7 +231,7 @@ export default function OnboardingSteps({
               <TagLeftIcon
                 as={CircleIcon}
                 boxSize={6}
-                color="interactiveQuaternary"
+                color="interactive.quaternary"
               />
               <TagLabel>
                 {t("data-connected-percent", {
@@ -243,7 +243,7 @@ export default function OnboardingSteps({
               <TagLeftIcon
                 as={CircleIcon}
                 boxSize={6}
-                color="interactiveTertiary"
+                color="interactive.tertiary"
               />
               <TagLabel>
                 {t("data-added-percent", {
@@ -259,7 +259,7 @@ export default function OnboardingSteps({
         <Heading size="lg" mb={2}>
           {t("check-data-heading")}
         </Heading>
-        <Text color="tertiary" mb={12}>
+        <Text color="content.tertiary" mb={12}>
           {t("check-data-details")}
         </Text>
         <Flex direction="row" className="space-x-4">
@@ -269,7 +269,7 @@ export default function OnboardingSteps({
               onClick={() => onSourceClick(source)}
               variant="outline"
               borderColor={
-                (source.isConnected && "interactiveTertiary") || undefined
+                (source.isConnected && "interactive.tertiary") || undefined
               }
               className="hover:drop-shadow-xl transition-shadow"
             >
@@ -282,7 +282,7 @@ export default function OnboardingSteps({
                   <TagLeftIcon
                     as={MdPlaylistAddCheck}
                     boxSize={4}
-                    color="contentTertiary"
+                    color="content.tertiary"
                   />
                   <TagLabel fontSize={12}>
                     {t("data-quality")}: {t("quality-" + source.dataQuality)}
@@ -292,14 +292,14 @@ export default function OnboardingSteps({
                   <TagLeftIcon
                     as={FiTarget}
                     boxSize={4}
-                    color="contentTertiary"
+                    color="content.tertiary"
                   />
                   <TagLabel fontSize={12}>
                     {t("scope")}: {source.scopes.join(", ")}
                   </TagLabel>
                 </Tag>
               </Flex>
-              <Text color="contentTertiary" noOfLines={5}>
+              <Text color="content.tertiary" noOfLines={5}>
                 {source.description}
               </Text>
               <Link
@@ -324,7 +324,7 @@ export default function OnboardingSteps({
               ) : (
                 <Button
                   variant="outline"
-                  bgColor="backgroundNeutral"
+                  bgColor="background.neutral"
                   onClick={() => onConnectClick(source)}
                 >
                   {t("connect-data")}
@@ -339,7 +339,7 @@ export default function OnboardingSteps({
         <Heading size="lg" mb={2}>
           {t("add-data-heading")}
         </Heading>
-        <Text color="tertiary" mb={12}>
+        <Text color="content.tertiary" mb={12}>
           {t("add-data-details")}
         </Text>
         <Heading size="sm" mb={4}>
@@ -363,15 +363,15 @@ export default function OnboardingSteps({
                     boxSize={8}
                     color={
                       subSector.isAdded
-                        ? "interactiveTertiary"
-                        : "sentimentWarningDefault"
+                        ? "interactive.tertiary"
+                        : "sentiment.warningDefault"
                     }
                   />
                   <Stack w="full">
                     <Heading size="xs" noOfLines={3} maxWidth="200px">
                       {t(subSector.title)}
                     </Heading>
-                    <Text color="contentTertiary">
+                    <Text color="content.tertiary">
                       {t("scope")}: {subSector.scopes.join(", ")}
                     </Text>
                   </Stack>

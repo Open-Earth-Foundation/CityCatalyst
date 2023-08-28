@@ -50,7 +50,7 @@ export function ActivityDataTab({
               label={t("value-types-tooltip")}
               placement="bottom-start"
             >
-              <InfoOutlineIcon mt={-0.5} color="contentTertiary" />
+              <InfoOutlineIcon mt={-0.5} color="content.tertiary" />
             </Tooltip>
           </FormLabel>
           <InputGroup>
@@ -67,7 +67,7 @@ export function ActivityDataTab({
               className="border-l-2"
               pl={4}
               pr={0}
-              bgColor="white"
+              bgColor="base.light"
             >
               <Select
                 variant="unstyled"
@@ -103,12 +103,12 @@ export function ActivityDataTab({
           label={t("value-types-tooltip")}
           placement="bottom-start"
         >
-          <InfoOutlineIcon mt={-0.5} color="contentTertiary" />
+          <InfoOutlineIcon mt={-0.5} color="content.tertiary" />
         </Tooltip>
       </Heading>
       <HStack spacing={4} mb={5}>
         <FormControl>
-          <FormLabel color="contentTertiary">
+          <FormLabel color="content.tertiary">
             {t("co2-emission-factor")}
           </FormLabel>
           <InputGroup>
@@ -116,12 +116,12 @@ export function ActivityDataTab({
               <NumberInputField
                 borderRightRadius={0}
                 {...register(prefix + "Co2EmissionFactor")}
-                bgColor="backgroundNeutral"
+                bgColor="background.neutral"
               />
             </NumberInput>
             <InputRightAddon
-              bgColor="backgroundNeutral"
-              color="contentTertiary"
+              bgColor="background.neutral"
+              color="content.tertiary"
             >
               CO2/kWh
             </InputRightAddon>
@@ -129,7 +129,7 @@ export function ActivityDataTab({
           <FormHelperText>&nbsp;</FormHelperText>
         </FormControl>
         <FormControl>
-          <FormLabel color="contentTertiary">
+          <FormLabel color="content.tertiary">
             {t("n2o-emission-factor")}
           </FormLabel>
           <InputGroup>
@@ -137,22 +137,22 @@ export function ActivityDataTab({
               <NumberInputField
                 borderRightRadius={0}
                 {...register(prefix + "N2oEmissionFactor")}
-                bgColor="backgroundNeutral"
+                bgColor="background.neutral"
               />
             </NumberInput>
             <InputRightAddon
-              bgColor="backgroundNeutral"
-              color="contentTertiary"
+              bgColor="background.neutral"
+              color="content.tertiary"
             >
               N2O/kWh
             </InputRightAddon>
           </InputGroup>
-          <FormHelperText color="contentTertiary">
+          <FormHelperText color="content.tertiary">
             {t("optional")}
           </FormHelperText>
         </FormControl>
         <FormControl>
-          <FormLabel color="contentTertiary">
+          <FormLabel color="content.tertiary">
             {t("ch4-emission-factor")}
           </FormLabel>
           <InputGroup>
@@ -160,24 +160,24 @@ export function ActivityDataTab({
               <NumberInputField
                 borderRightRadius={0}
                 {...register(prefix + "Ch4EmissionFactor")}
-                bgColor="backgroundNeutral"
+                bgColor="background.neutral"
               />
             </NumberInput>
             <InputRightAddon
-              bgColor="backgroundNeutral"
-              color="contentTertiary"
+              bgColor="background.neutral"
+              color="content.tertiary"
             >
               CH4/kWh
             </InputRightAddon>
           </InputGroup>
-          <FormHelperText color="contentTertiary">
+          <FormHelperText color="content.tertiary">
             {t("optional")}
           </FormHelperText>
         </FormControl>
       </HStack>
       <HStack className="items-start" mb={5}>
-        <InfoOutlineIcon mt={1} color="contentLink" />
-        <Text color="contentTertiary">{t("emissions-factor-details")}</Text>
+        <InfoOutlineIcon mt={1} color="content.link" />
+        <Text color="content.tertiary">{t("emissions-factor-details")}</Text>
       </HStack>
       <FormControl isInvalid={!!errors[prefix + "SourceReference"]} mb={12}>
         <FormLabel>{t("source-reference")}</FormLabel>
@@ -192,8 +192,8 @@ export function ActivityDataTab({
         </FormErrorMessage>
       </FormControl>
       <HStack className="items-start" mb={13}>
-        <InfoOutlineIcon mt={1} color="contentLink" />
-        <Text color="contentTertiary">
+        <InfoOutlineIcon mt={1} color="content.link" />
+        <Text color="content.tertiary">
           <Trans
             t={t}
             i18nKey="calculations-details"

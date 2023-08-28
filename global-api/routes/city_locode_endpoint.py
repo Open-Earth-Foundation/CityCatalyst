@@ -12,7 +12,7 @@ def db_query(locode, year, reference_number):
             "SELECT * FROM asset "
             + "WHERE reference_number = :reference_number "
             + "AND locode = :locode "
-            + "AND year = :year "
+            + "AND EXTRACT(YEAR FROM end_time) = :year"
         )
 
         result = session.execute(

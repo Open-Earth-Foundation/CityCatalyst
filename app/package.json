@@ -30,7 +30,7 @@
     "@types/http-errors": "^2.0.1",
     "@types/node": "20.4.2",
     "@types/pg": "^8.10.2",
-    "@types/react": "18.2.20",
+    "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "accept-language": "^3.0.18",
     "autoprefixer": "10.4.14",

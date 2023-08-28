@@ -42,7 +42,7 @@ export function ActivityDataTab({
   return (
     <TabPanel px={0.5}>
       <HStack spacing={4} mb={12} className="items-start">
-        <FormControl isInvalid={!!errors[prefix + "ActivityDataAmount"]}>
+        <FormControl isInvalid={!!errors[prefix + "activityDataAmount"]}>
           <FormLabel>
             {t("activity-data-amount")}{" "}
             <Tooltip
@@ -58,7 +58,7 @@ export function ActivityDataTab({
               <NumberInputField
                 placeholder={t("activity-data-amount-placeholder")}
                 borderRightRadius={0}
-                {...register(prefix + "ActivityDataAmount", {
+                {...register(prefix + "activityDataAmount", {
                   required: t("value-required"),
                 })}
               />
@@ -71,7 +71,7 @@ export function ActivityDataTab({
             >
               <Select
                 variant="unstyled"
-                {...register(prefix + "ActivityDataUnit")}
+                {...register(prefix + "activityDataUnit")}
               >
                 {activityDataUnits.map((unit) => (
                   <option key={unit} value={unit}>
@@ -87,7 +87,7 @@ export function ActivityDataTab({
         </FormControl>
         <FormControl>
           <FormLabel>{t("emission-factor-type")}</FormLabel>
-          <Select {...register(prefix + "EmissionFactorType")}>
+          <Select {...register(prefix + "emissionFactorType")}>
             {emissionFactorTypes.map((type) => (
               <option key={type} value={type}>
                 {type}
@@ -115,7 +115,7 @@ export function ActivityDataTab({
             <NumberInput defaultValue={0} min={0}>
               <NumberInputField
                 borderRightRadius={0}
-                {...register(prefix + "Co2EmissionFactor")}
+                {...register(prefix + "co2EmissionFactor")}
                 bgColor="background.neutral"
               />
             </NumberInput>
@@ -136,7 +136,7 @@ export function ActivityDataTab({
             <NumberInput defaultValue={0} min={0}>
               <NumberInputField
                 borderRightRadius={0}
-                {...register(prefix + "N2oEmissionFactor")}
+                {...register(prefix + "n2oEmissionFactor")}
                 bgColor="background.neutral"
               />
             </NumberInput>
@@ -159,7 +159,7 @@ export function ActivityDataTab({
             <NumberInput defaultValue={0} min={0}>
               <NumberInputField
                 borderRightRadius={0}
-                {...register(prefix + "Ch4EmissionFactor")}
+                {...register(prefix + "ch4EmissionFactor")}
                 bgColor="background.neutral"
               />
             </NumberInput>
@@ -179,16 +179,16 @@ export function ActivityDataTab({
         <InfoOutlineIcon mt={1} color="content.link" />
         <Text color="content.tertiary">{t("emissions-factor-details")}</Text>
       </HStack>
-      <FormControl isInvalid={!!errors[prefix + "SourceReference"]} mb={12}>
+      <FormControl isInvalid={!!errors[prefix + "sourceReference"]} mb={12}>
         <FormLabel>{t("source-reference")}</FormLabel>
         <Textarea
           placeholder={t("source-reference-placeholder")}
-          {...register(prefix + "SourceReference", {
+          {...register(prefix + "sourceReference", {
             required: t("source-reference-required"),
           })}
         />
         <FormErrorMessage>
-          {errors[prefix + "SourceReference"]?.message}
+          {errors[prefix + "sourceReference"]?.message}
         </FormErrorMessage>
       </FormControl>
       <HStack className="items-start" mb={13}>

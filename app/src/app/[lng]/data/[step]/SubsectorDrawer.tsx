@@ -57,13 +57,7 @@ type Inputs = {
   methodology: string;
   subcategories: SubcategoryOption[];
   fuel: ActivityData;
-  gridActivityDataAmount?: number;
-  gridActivityDataUnit: string;
-  gridEmissionFactorType: string;
-  gridCo2EmissionFactor: number;
-  gridN2oEmissionFactor: number;
-  gridCh4EmissionFactor: number;
-  gridSourceReference: string;
+  grid: ActivityData;
 };
 
 const defaultValues: Inputs = {
@@ -71,13 +65,7 @@ const defaultValues: Inputs = {
   methodology: "",
   subcategories: [],
   fuel: defaultActivityData,
-  gridActivityDataAmount: undefined,
-  gridActivityDataUnit: "kWh",
-  gridEmissionFactorType: "Local",
-  gridCo2EmissionFactor: 10,
-  gridN2oEmissionFactor: 10,
-  gridCh4EmissionFactor: 10,
-  gridSourceReference: "",
+  grid: defaultActivityData,
 };
 
 export function SubsectorDrawer({
@@ -222,7 +210,7 @@ export function SubsectorDrawer({
                     rules={{ required: t("subcategories-required") }}
                     control={control}
                   />
-                  <Accordion allowToggle mt={12}>
+                  <Accordion allowToggle allowMultiple my={12}>
                     {subcategories.map((subcategory, i) => (
                       <AccordionItem key={subcategory.value}>
                         <h2>
@@ -236,7 +224,10 @@ export function SubsectorDrawer({
                                   TODO: Get category text body
                                 </Text>
                               </Box>
-                              <Tag variant={i == 0 ? "success" : "warning"} mx={6}>
+                              <Tag
+                                variant={i == 0 ? "success" : "warning"}
+                                mx={6}
+                              >
                                 {i == 0 ? t("completed") : t("incomplete")}
                               </Tag>
                               <AccordionIcon
@@ -248,7 +239,9 @@ export function SubsectorDrawer({
                             </HStack>
                           </AccordionButton>
                         </h2>
-                        <AccordionPanel pb={4}>Text</AccordionPanel>
+                        <AccordionPanel pb={4}>
+                          <EmissionsForm t={t} register={register} errors={errors} control={control} />
+                        </AccordionPanel>
                       </AccordionItem>
                     ))}
                   </Accordion>

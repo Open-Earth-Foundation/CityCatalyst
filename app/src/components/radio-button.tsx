@@ -16,6 +16,7 @@ export function RadioButton(props: any) {
         borderWidth="1px"
         borderRadius="full"
         boxShadow="md"
+        bg="base.light"
         _checked={{
           bg: "background.neutral",
           color: "interactive.secondary",

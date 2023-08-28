@@ -63,7 +63,9 @@ export const appTheme = extendTheme({
       positiveOverlay: "#EFFDE5",
       positiveLight: "#f0f7eb",
       positiveDark: "#b9cfa9",
+      positiveDefault: "#24BE00",
       warningDefault: "#C98300",
+      warningOverlay: "#FEF8E1",
       negativeDefault: "#F23D33",
     },
 
@@ -308,6 +310,35 @@ export const appTheme = extendTheme({
           },
           label: {
             color: "content.alternative",
+          },
+        },
+        success: {
+          container: {
+            px: 4,
+            py: 1,
+            borderRadius: "full",
+            borderWidth: 1,
+            borderColor: "sentiment.positiveDefault",
+            bgColor: "sentiment.positiveOverlay",
+            color: "sentiment.positiveDefault",
+            fontWeight: 500,
+          },
+          label: {
+            color: "sentiment.positiveDefault",
+          },
+        },
+        warning: {
+          container: {
+            px: 4,
+            py: 1,
+            borderRadius: "full",
+            borderWidth: 1,
+            borderColor: "sentiment.warningDefault",
+            bgColor: "sentiment.warningOverlay",
+            color: "sentiment.warningDefault",
+          },
+          label: {
+            color: "sentiment.warningDefault",
           },
         },
       },

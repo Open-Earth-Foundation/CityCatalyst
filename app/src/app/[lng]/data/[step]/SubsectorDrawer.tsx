@@ -1,6 +1,11 @@
 import { RadioButton } from "@/components/radio-button";
 import { ArrowBackIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   Box,
   Button,
   Drawer,
@@ -10,6 +15,7 @@ import {
   HStack,
   Heading,
   Stack,
+  Tag,
   Text,
   Tooltip,
   useRadioGroup,
@@ -24,7 +30,7 @@ import { TagSelect } from "@/components/TagSelect";
 type SubcategoryOption = {
   label: string;
   value: string;
-}
+};
 
 type ActivityData = {
   activityDataAmount?: number;
@@ -34,7 +40,7 @@ type ActivityData = {
   n2oEmissionFactor: number;
   ch4EmissionFactor: number;
   sourceReference: string;
-}
+};
 
 const defaultActivityData: ActivityData = {
   activityDataAmount: undefined,
@@ -73,12 +79,6 @@ const defaultValues: Inputs = {
   gridCh4EmissionFactor: 10,
   gridSourceReference: "",
 };
-
-const subcategories: SubCategory[] = [
-  { subcategoryId: "1337", subcategoryName: "Manufacturing" },
-  { subcategoryId: "1338", subcategoryName: "Industrial facilities" },
-  { subcategoryId: "1339", subcategoryName: "Construction activities" },
-];
 
 export function SubsectorDrawer({
   subsector,
@@ -126,14 +126,22 @@ export function SubsectorDrawer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subsector]);
 
+  const subcategoryData: SubCategory[] = [
+    { subcategoryId: "1337", subcategoryName: "Manufacturing" },
+    { subcategoryId: "1338", subcategoryName: "Industrial facilities" },
+    { subcategoryId: "1339", subcategoryName: "Construction activities" },
+  ];
+  const subcategoryOptions = subcategoryData.map(
+    (subcategory: SubCategory) => ({
+      label: subcategory.subcategoryName,
+      value: subcategory.subcategoryId,
+    })
+  );
+
   const valueType = watch("valueType");
   const methodology = watch("methodology");
   const isSubmitEnabled = !!valueType && !!methodology;
-
-  const subcategoryOptions = subcategories.map((subcategory: SubCategory) => ({
-    label: subcategory.subcategoryName,
-    value: subcategory.subcategoryId,
-  }));
+  const subcategories = watch("subcategories");
 
   return (
     <Drawer
@@ -214,6 +222,36 @@ export function SubsectorDrawer({
                     rules={{ required: t("subcategories-required") }}
                     control={control}
                   />
+                  <Accordion allowToggle mt={12}>
+                    {subcategories.map((subcategory, i) => (
+                      <AccordionItem key={subcategory.value}>
+                        <h2>
+                          <AccordionButton>
+                            <HStack w="full">
+                              <Box as="span" flex="1" textAlign="left" w="full">
+                                <Heading size="sm" color="content.alternative">
+                                  {subcategory.label}
+                                </Heading>
+                                <Text color="content.tertiary">
+                                  TODO: Get category text body
+                                </Text>
+                              </Box>
+                              <Tag variant={i == 0 ? "success" : "warning"} mx={6}>
+                                {i == 0 ? t("completed") : t("incomplete")}
+                              </Tag>
+                              <AccordionIcon
+                                borderWidth={1}
+                                boxSize={6}
+                                borderRadius="full"
+                                borderColor="border.overlay"
+                              />
+                            </HStack>
+                          </AccordionButton>
+                        </h2>
+                        <AccordionPanel pb={4}>Text</AccordionPanel>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
                 </Box>
               </form>
             </>

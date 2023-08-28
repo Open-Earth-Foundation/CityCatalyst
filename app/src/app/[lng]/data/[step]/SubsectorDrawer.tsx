@@ -1,3 +1,4 @@
+import { TagSelect } from "@/components/TagSelect";
 import { RadioButton } from "@/components/radio-button";
 import { ArrowBackIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import {
@@ -11,21 +12,17 @@ import {
   Drawer,
   DrawerContent,
   DrawerOverlay,
-  FormControl,
   HStack,
   Heading,
-  Stack,
   Tag,
   Text,
   Tooltip,
   useRadioGroup,
 } from "@chakra-ui/react";
-import { Select as ReactSelect } from "chakra-react-select";
 import { TFunction } from "i18next";
 import { RefObject, useEffect, useState } from "react";
 import { SubmitHandler, useController, useForm } from "react-hook-form";
 import { EmissionsForm } from "./EmissionsForm";
-import { TagSelect } from "@/components/TagSelect";
 
 type SubcategoryOption = {
   label: string;
@@ -42,6 +39,30 @@ type ActivityData = {
   sourceReference: string;
 };
 
+type DirectMeasureData = {
+  co2Emissions: number;
+  ch4Emissions: number;
+  n2oEmissions: number;
+  dataQuality: string;
+  sourceReference: string;
+};
+
+type SubcategoryData = {
+  fuel: ActivityData;
+  grid: ActivityData;
+  direct: DirectMeasureData;
+};
+
+type Inputs = {
+  valueType: string;
+  methodology: string;
+  subcategories: SubcategoryOption[];
+  fuel: ActivityData;
+  grid: ActivityData;
+  direct: DirectMeasureData;
+  subcategoryData: Record<string, SubcategoryData>;
+};
+
 const defaultActivityData: ActivityData = {
   activityDataAmount: undefined,
   activityDataUnit: "kWh",
@@ -52,12 +73,12 @@ const defaultActivityData: ActivityData = {
   sourceReference: "",
 };
 
-type Inputs = {
-  valueType: string;
-  methodology: string;
-  subcategories: SubcategoryOption[];
-  fuel: ActivityData;
-  grid: ActivityData;
+const defaultDirectMeasureData: DirectMeasureData = {
+  co2Emissions: 0,
+  ch4Emissions: 0,
+  n2oEmissions: 0,
+  dataQuality: "",
+  sourceReference: "",
 };
 
 const defaultValues: Inputs = {
@@ -66,6 +87,8 @@ const defaultValues: Inputs = {
   subcategories: [],
   fuel: defaultActivityData,
   grid: defaultActivityData,
+  direct: defaultDirectMeasureData,
+  subcategoryData: {},
 };
 
 export function SubsectorDrawer({
@@ -240,7 +263,13 @@ export function SubsectorDrawer({
                           </AccordionButton>
                         </h2>
                         <AccordionPanel pb={4}>
-                          <EmissionsForm t={t} register={register} errors={errors} control={control} />
+                          <EmissionsForm
+                            t={t}
+                            register={register}
+                            errors={errors}
+                            control={control}
+                            prefix={`subcategoryData.${subcategory.value}.`}
+                          />
                         </AccordionPanel>
                       </AccordionItem>
                     ))}

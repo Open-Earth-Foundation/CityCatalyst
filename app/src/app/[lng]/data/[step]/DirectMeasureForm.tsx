@@ -21,11 +21,13 @@ export function DirectMeasureForm({
   register,
   errors,
   className,
+  prefix = "",
 }: {
   t: TFunction;
   register: Function;
   errors: Record<string, any>;
   className?: string;
+  prefix?: string;
 }) {
   return (
     <Box className={className} pl={0.5}>
@@ -48,7 +50,7 @@ export function DirectMeasureForm({
             <NumberInput defaultValue={0}>
               <NumberInputField
                 borderRightRadius={0}
-                {...register("directCo2Emissions", { required: t("value-required") })}
+                {...register(prefix + "co2Emissions", { required: t("value-required") })}
               />
             </NumberInput>
             <InputRightAddon
@@ -68,7 +70,7 @@ export function DirectMeasureForm({
             <NumberInput defaultValue={0}>
               <NumberInputField
                 borderRightRadius={0}
-                {...register("directCh4Emissions", { required: t("value-required") })}
+                {...register(prefix + "ch4Emissions", { required: t("value-required") })}
               />
             </NumberInput>
             <InputRightAddon
@@ -88,7 +90,7 @@ export function DirectMeasureForm({
             <NumberInput defaultValue={0}>
               <NumberInputField
                 borderRightRadius={0}
-                {...register("directN2oEmissions", { required: t("value-required") })}
+                {...register(prefix + "n2oEmissions", { required: t("value-required") })}
               />
             </NumberInput>
             <InputRightAddon
@@ -103,7 +105,7 @@ export function DirectMeasureForm({
       </HStack>
       <FormControl isInvalid={!!errors.directDataQuality} mb={12}>
         <FormLabel>{t("data-quality")}</FormLabel>
-        <Select placeholder={t("data-quality-placeholder")} {...register("directDataQuality", {required: t("option-required")})}>
+        <Select placeholder={t("data-quality-placeholder")} {...register(prefix + "dataQuality", {required: t("option-required")})}>
           <option value="high">{t("detailed-emissions-data")}</option>
           <option value="medium">{t("modeled-emissions-data")}</option>
           <option value="low">{t("highly-modeled-uncertain-emissions-data")}</option>
@@ -112,7 +114,7 @@ export function DirectMeasureForm({
       </FormControl>
       <FormControl isInvalid={errors.directSourceReference}>
         <FormLabel>{t("source-reference")}</FormLabel>
-        <Textarea placeholder={t("source-reference-placeholder")} {...register("directSourceReference", { required: t("source-reference-required") })} />
+        <Textarea placeholder={t("source-reference-placeholder")} {...register(prefix + "sourceReference", { required: t("source-reference-required") })} />
         <FormErrorMessage>{errors.directSourceReference?.message}</FormErrorMessage> 
       </FormControl>
     </Box>

@@ -66,7 +66,7 @@ export function EmissionsForm({
         <Tooltip
           hasArrow
           label={t("methodology-tooltip")}
-          bg="contentSecondary"
+          bg="content.secondary"
           color="base.light"
           placement="bottom-start"
         >
@@ -128,6 +128,7 @@ export function EmissionsForm({
         t={t}
         register={register}
         errors={errors}
+        prefix={prefix + "direct."}
       />
     </Box>
   );

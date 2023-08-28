@@ -15,7 +15,7 @@ export default function OnboardingDone({ params: { lng } }: { params: { lng: str
   const year = '2023';
 
   return (
-    <div className="pt-[148px] w-[1024px] max-w-full mx-auto px-4 flex flex-col items-center">
+    <div className="pt-[148px] w-[1024px] max-w-full mx-auto px-4 pb-12 flex flex-col items-center">
       <Image src="/assets/check-circle.svg" width={64} height={64} alt="Checkmark" />
       <Heading size="xl" mt={12} mb={20}>
         <Trans t={t}>done-heading</Trans>

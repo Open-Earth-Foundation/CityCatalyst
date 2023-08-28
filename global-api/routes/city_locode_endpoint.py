@@ -4,6 +4,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import SessionLocal, sessionmaker
 from decouple import config
 import pandas as pd
+import numpy as np
 
 # Define the database engine
 engine = create_engine(config("DATABASE_URL"))
@@ -11,15 +12,14 @@ engine = create_engine(config("DATABASE_URL"))
 # Define SessionLocal for database interactions
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-
 # Extract the data by locode, year and sector/subsector
 def db_query(locode, year, reference_number):
     with SessionLocal() as session:
         query = text(
-            "SELECT * FROM Asset "
+            "SELECT * FROM asset "
             + "WHERE reference_number = :reference_number "
             + "AND locode = :locode "
-            + "AND year = :year "
+            + "AND EXTRACT(YEAR FROM end_time) = :year"
         )
 
         result = session.execute(
@@ -51,85 +51,66 @@ def get_emissions_by_city_and_year(
 
     # Group each gas and add them to have "total emissions by gas"
     results = sources.groupby("gas").emissions_quantity.sum()
+    results = results.apply(lambda x: int(x) if isinstance(x, np.int64) else x)
 
     # Build Totals dictionary
-    Totals = {
+    totals = {
         "totals": {
             "emissions": {
-                "co2_mass": results.get("co2", 0),
-                "co2_co2eq": results.get("co2", 0),
-                "ch4_mass": results.get("ch4", 0),
-                "ch4_co2eq_100yr": results.get("ch4", 0) * ch4_GWP_100yr,
-                "ch4_co2eq_20yr": results.get("ch4", 0) * ch4_GWP_20yr,
-                "n2o_mass": results.get("n2o", 0),
-                "n2o_co2eq_100yr": results.get("n2o", 0) * n2o_GWP_100yr,
-                "n2o_co2eq_20yr": results.get("n2o", 0) * n2o_GWP_20yr,
-                "co2eq_100yr": results.get("co2e_100yr", 0),
-                "co2eq_20yr": results.get("co2e_20yr", 0),
-                "gpc_quality": gpc_quality_data,
+                "co2_mass": str(results.get("co2", 0)),
+                "co2_co2eq": str(results.get("co2", 0)),
+                "ch4_mass": str(results.get("ch4", 0)),
+                "ch4_co2eq_100yr": str(results.get("ch4", 0) * ch4_GWP_100yr),
+                "ch4_co2eq_20yr": str(results.get("ch4", 0) * ch4_GWP_20yr),
+                "n2o_mass": str(results.get("n2o", 0)),
+                "n2o_co2eq_100yr": str(results.get("n2o", 0) * n2o_GWP_100yr),
+                "n2o_co2eq_20yr": str(results.get("n2o", 0) * n2o_GWP_20yr),
+                "co2eq_100yr": str(results.get("co2e_100yr", 0)),
+                "co2eq_20yr": str(results.get("co2e_20yr", 0)),
+                "gpc_quality": str(gpc_quality_data),
             }
         }
     }
 
     # Build Points dictionary
-    Points = {
-        "points": [
-            {
-                "Ownership": {
-                    "asset_name": sources["asset_name"][i],
-                    "asset_id": sources["asset_id"][i],
-                    "lat": sources["lat"][i],
-                    "lon": sources["lon"][i],
-                },
-                "Capacity": {
-                    "value": sources["capacity"][i],
-                    "units": sources["capacity_units"][i],
-                    "factor": sources["capacity_factor"][i],
-                },
-                "Activity": {
-                    "value": sources["activity"][i],
-                    "units": sources["activity_units"][i],
-                    "gpc_quality": gpc_quality_data,
-                },
-                "Emissions_factor": {
-                    "value": sources["emissions_factor"][i],
-                    "units": sources["emissions_factor_units"][i],
-                    "gpc_quality": gpc_quality_EF,
-                },
-                "Emissions": {
-                    "co2_mass": sources[sources["gas"] == "co2"]["emissions_quantity"][
-                        i
-                    ],
-                    "co2_co2eq": sources[sources["gas"] == "co2"]["co2e"][i],
-                    "ch4_mass": sources[sources["gas"] == "ch4"]["emissions_quantity"][
-                        i
-                    ],
-                    "ch4_co2eq_100yr": sources[sources["gas"] == "ch4"][
-                        "emissions_quantity"
-                    ][i]
-                    * ch4_GWP_100yr,
-                    "ch4_co2eq_20yr": sources[sources["gas"] == "ch4"][
-                        "emissions_quantity"
-                    ][i]
-                    * ch4_GWP_20yr,
-                    "n2o_mass": sources[sources["gas"] == "n2o"]["emissions_quantity"][
-                        i
-                    ],
-                    "n2o_co2eq_100yr": sources[sources["gas"] == "n2o"][
-                        "emissions_quantity"
-                    ][i]
-                    * n2o_GWP_100yr,
-                    "n2o_co2eq_20yr": sources[sources["gas"] == "n2o"][
-                        "emissions_quantity"
-                    ][i]
-                    * n2o_GWP_20yr,
-                    "co2eq_100yr": sources[sources["gas"] == "co2e_100yr"][i],
-                    "co2eq_20yr": sources[sources["gas"] == "co2e_20yr"][i],
-                    "gpc_quality": gpc_quality_data,
-                },
-            }
-            for i in range(len(sources))
-        ]
+    points = {
+        "points":{
+            "Ownership": {
+                "asset_name": str(sources["asset_name"]),
+                "asset_id": str(sources["asset_id"]),
+                "lat": str(sources["lat"]),
+                "lon": str(sources["lon"]),    
+            },
+            "Capacity": {
+                "value": str(sources["capacity"]),
+                "units": str(sources["capacity_units"]),
+                "factor": str(sources["capacity_factor"]),
+            },
+            "Activity": {
+                "value": str(sources["activity"]),
+                "units": str(sources["activity_units"]),
+                "gpc_quality": str(gpc_quality_data),
+            },
+            "Emissions_factor": {
+                "value": str(sources["emissions_factor"]),
+                "units": str(sources["emissions_factor_units"]),
+                "gpc_quality":str(gpc_quality_EF),
+            },
+            "Emissions": {
+                "co2_mass": str(sources[sources["gas"] == "co2"]["emissions_quantity"] if "co2" in sources["gas"].values else "NA"),
+                "co2_co2eq": str(sources[sources["gas"] == "co2"]["emissions_quantity"] if "co2" in sources["gas"].values else "NA"),
+                "ch4_mass": str(sources[sources["gas"] == "ch4"]["emissions_quantity"] if "ch4" in sources["gas"].values else "NA"),
+                "ch4_co2eq_100yr": str(sources[sources["gas"] == "ch4"][ "emissions_quantity"]* ch4_GWP_100yr if "ch4" in sources["gas"].values else "NA"),
+                "ch4_co2eq_20yr": str(sources[sources["gas"] == "ch4"]["emissions_quantity"]* ch4_GWP_20yr if "ch4" in sources["gas"].values else "NA"),
+                "n2o_mass": str(sources[sources["gas"] == "n2o"]["emissions_quantity"] if "n2o" in sources["gas"].values else "NA"),
+                "n2o_co2eq_100yr": str(sources[sources["gas"] == "n2o"]["emissions_quantity"]* n2o_GWP_100yr if "n2o" in sources["gas"].values else "NA"),
+                "n2o_co2eq_20yr": str(sources[sources["gas"] == "n2o"]["emissions_quantity"]* n2o_GWP_20yr if "n2o" in sources["gas"].values else "NA"),
+                "co2eq_100yr": str(sources[sources["gas"] == "co2e_100yr"]),
+                "co2eq_20yr": str(sources[sources["gas"] == "co2e_20yr"]),
+                "gpc_quality": str(gpc_quality_data),
+            },
+        }
     }
 
-    return {"totals": Totals, "points": Points}
+    return {"totals": totals, "points": points}
+

@@ -9,6 +9,7 @@ import {
   AccordionPanel,
   Box,
   Button,
+  Divider,
   Drawer,
   DrawerContent,
   DrawerOverlay,
@@ -275,22 +276,23 @@ export function SubsectorDrawer({
                     ))}
                   </Accordion>
                 </Box>
+                <Divider ml={-16} mr={-16} w="200%" borderColor="#333" />
+                <Box w="full" pb={12} pt={6}>
+                  <Button
+                    onClick={handleSubmit(onSubmit)}
+                    isDisabled={!isSubmitEnabled}
+                    isLoading={isSaving}
+                    type="submit"
+                    formNoValidate
+                    w="full"
+                    h={16}
+                  >
+                    {t("add-data")}
+                  </Button>
+                </Box>
               </form>
             </>
           )}
-        </Box>
-        <Box w="full" py={6} px={12} mt={6} className="border-t-2">
-          <Button
-            onClick={handleSubmit(onSubmit)}
-            isDisabled={!isSubmitEnabled}
-            isLoading={isSaving}
-            type="submit"
-            formNoValidate
-            w="full"
-            h={16}
-          >
-            {t("add-data")}
-          </Button>
         </Box>
       </DrawerContent>
     </Drawer>

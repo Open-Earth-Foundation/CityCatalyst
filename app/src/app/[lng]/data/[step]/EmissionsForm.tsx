@@ -1,7 +1,7 @@
 import { RadioButton } from "@/components/radio-button";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import {
-    Box,
+  Box,
   HStack,
   Heading,
   Icon,
@@ -82,54 +82,57 @@ export function EmissionsForm({
         </RadioButton>
       </HStack>
       {/*** Activity data ***/}
-      <Tabs className={methodology == "activity-data" ? undefined : "hidden"}>
-        <TabList>
-          <Tab>
-            {t("fuel-combustion")}{" "}
-            {hasFuelError && (
-              <Icon
-                as={MdError}
-                boxSize={4}
-                ml={2}
-                color="sentiment.negativeDefault"
-              />
-            )}
-          </Tab>
-          <Tab>
-            {t("grid-supplied-energy")}{" "}
-            {hasGridError && (
-              <Icon
-                as={MdError}
-                boxSize={4}
-                ml={2}
-                color="sentiment.negativeDefault"
-              />
-            )}
-          </Tab>
-        </TabList>
-        <TabPanels>
-          <ActivityDataTab
-            t={t}
-            register={register}
-            errors={errors}
-            prefix={prefix + "fuel."}
-          />
-          <ActivityDataTab
-            t={t}
-            register={register}
-            errors={errors}
-            prefix={prefix + "grid."}
-          />
-        </TabPanels>
-      </Tabs>
+      {methodology === "activity-data" && (
+        <Tabs>
+          <TabList>
+            <Tab>
+              {t("fuel-combustion")}{" "}
+              {hasFuelError && (
+                <Icon
+                  as={MdError}
+                  boxSize={4}
+                  ml={2}
+                  color="sentiment.negativeDefault"
+                />
+              )}
+            </Tab>
+            <Tab>
+              {t("grid-supplied-energy")}{" "}
+              {hasGridError && (
+                <Icon
+                  as={MdError}
+                  boxSize={4}
+                  ml={2}
+                  color="sentiment.negativeDefault"
+                />
+              )}
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <ActivityDataTab
+              t={t}
+              register={register}
+              errors={errors}
+              prefix={prefix + "fuel."}
+            />
+            <ActivityDataTab
+              t={t}
+              register={register}
+              errors={errors}
+              prefix={prefix + "grid."}
+            />
+          </TabPanels>
+        </Tabs>
+      )}
       {/*** Direct measure ***/}
-      <DirectMeasureForm
-        className={methodology == "direct-measure" ? undefined : "hidden"}
-        t={t}
-        register={register}
-        errors={errors}
-        prefix={prefix + "direct."}
-      />
+      {methodology === "direct-measure" && (
+        <DirectMeasureForm
+          t={t}
+          register={register}
+          errors={errors}
+          prefix={prefix + "direct."}
+        />
+      )}
     </Box>
   );
 }

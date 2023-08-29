@@ -181,22 +181,17 @@ export function SubsectorDrawer({
                   </RadioButton>
                 </HStack>
                 {/*** One value for the sub-sector ***/}
-                <Box
-                  className={valueType === "one-value" ? undefined : "hidden"}
-                >
+                {valueType === "one-value" && 
                   <EmissionsForm
                     t={t}
                     register={register}
                     errors={errors}
                     control={control}
                   />
-                </Box>
+                }
                 {/*** Values for each subcategory ***/}
-                <Box
-                  className={
-                    valueType === "subcategory-values" ? undefined : "hidden"
-                  }
-                >
+                {valueType === "subcategory-values" && (
+                  <>
                   <TagSelect<Inputs>
                     options={subcategoryOptions}
                     name="subcategories"
@@ -205,7 +200,7 @@ export function SubsectorDrawer({
                     rules={{ required: t("subcategories-required") }}
                     control={control}
                   />
-                  <Accordion allowToggle allowMultiple my={12}>
+                  <Accordion allowToggle my={12}>
                     {subcategories.map((subcategory, i) => (
                       <AccordionItem key={subcategory.value}>
                         <h2>
@@ -246,7 +241,8 @@ export function SubsectorDrawer({
                       </AccordionItem>
                     ))}
                   </Accordion>
-                </Box>
+                </>
+                )}
                 <Divider ml={-16} mr={-16} w="200%" borderColor="#333" />
                 <Box w="full" pb={12} pt={6}>
                   <Button

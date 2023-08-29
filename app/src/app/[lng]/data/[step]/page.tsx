@@ -194,8 +194,8 @@ export default function OnboardingSteps({
       >
         {t("go-back")}
       </Button>
-      <div className="w-full flex justify-center mb-8">
-        <div className="w-[800px]">
+      <div className="w-full flex md:justify-center mb-8">
+        <div className="lg:w-[800px]">
           <WizardSteps
             currentStep={activeStep}
             steps={steps}

@@ -25,12 +25,12 @@ export default function WizardSteps({
   onSelect?: (selectedStep: number) => void;
 }) {
   const orientation: "horizontal" | "vertical" | undefined = useBreakpointValue(
-    { base: "vertical", md: "horizontal" },
-    { fallback: "md" }
+    { base: "vertical", sm: "horizontal" },
+    { fallback: "sm" }
   );
   const gap: "0" | undefined = useBreakpointValue(
-    { base: "0", md: undefined },
-    { fallback: "md" }
+    { base: "0", sm: undefined },
+    { fallback: "sm" }
   );
 
   return (
@@ -39,7 +39,7 @@ export default function WizardSteps({
       my={8}
       colorScheme="brandScheme"
       size="lg"
-      height="120px"
+      height="180px"
       orientation={orientation}
       gap={gap}
     >

@@ -94,5 +94,7 @@
   "detailed-emissions-data": "Detailed emissions data",
   "modeled-emissions-data": "Modeled emissions data using robust assumptions",
   "highly-modeled-uncertain-emissions-data": "Highly-modeled or uncertain emissions data",
-  "select-subcategories": "Select the subcategories to be added"
+  "select-subcategories": "Select the subcategories to be added",
+  "completed": "Completed",
+  "incomplete": "Incomplete"
 }

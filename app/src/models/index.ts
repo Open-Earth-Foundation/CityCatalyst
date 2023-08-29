@@ -1,12 +1,12 @@
-import { Sequelize } from 'sequelize';
-import pg from 'pg';
-import { initModels } from './init-models';
+import { Sequelize } from "sequelize";
+import pg from "pg";
+import { initModels } from "./init-models";
 
 export const db: {
-  initialized: boolean,
-  initialize: () => Promise<void>,
-  sequelize?: Sequelize | null,
-  models: Record<string, any>,
+  initialized: boolean;
+  initialize: () => Promise<void>;
+  sequelize?: Sequelize | null;
+  models: Record<string, any>;
 } = {
   initialized: false,
   sequelize: null,
@@ -20,7 +20,7 @@ async function initialize() {
     username: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_NAME,
-    dialect: 'postgres',
+    dialect: "postgres",
     dialectModule: pg,
   });
 

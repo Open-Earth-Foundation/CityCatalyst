@@ -10,7 +10,7 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
 
   const city = await db.models.City.findOne({ where: { locode: params.city } });
   if (!city) {
-    throw new createHttpError.NotFound('City not found');
+    throw new createHttpError.NotFound("City not found");
   }
 
   const inventory = await db.models.Inventory.create({
@@ -20,4 +20,3 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
   });
   return NextResponse.json({ data: inventory });
 });
-

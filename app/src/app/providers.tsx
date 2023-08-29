@@ -1,114 +1,113 @@
-'use client'
+"use client";
 
-import { CacheProvider } from '@chakra-ui/next-js';
-import { ChakraProvider, extendTheme } from '@chakra-ui/react';
+import { CacheProvider } from "@chakra-ui/next-js";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
-import { Open_Sans, Poppins } from 'next/font/google'
-const poppins = Poppins({ weight: '500', subsets: ['latin'] });
-const openSans = Open_Sans({ subsets: ['latin'] });
+import { Open_Sans, Poppins } from "next/font/google";
+const poppins = Poppins({ weight: "500", subsets: ["latin"] });
+const openSans = Open_Sans({ subsets: ["latin"] });
 
 export const theme = extendTheme({
   colors: {
     brand: {
-      primary: '#001EA7',
-      secondary: '#2351DC',
+      primary: "#001EA7",
+      secondary: "#2351DC",
     },
 
     content: {
-      primary: '#00001F',
-      secondary: '#00001F',
-      tertiary: '#7A7B9A',
+      primary: "#00001F",
+      secondary: "#00001F",
+      tertiary: "#7A7B9A",
     },
 
     semantic: {
-      success: '#24BE00',
-      successOverlay: '#EFFDE5',
-      warning: '#C98300',
-      warningOverlay: '#FEF8E1',
-      danger: '#F23D33',
-      dangerOverlay: '#FFEAEE',
+      success: "#24BE00",
+      successOverlay: "#EFFDE5",
+      warning: "#C98300",
+      warningOverlay: "#FEF8E1",
+      danger: "#F23D33",
+      dangerOverlay: "#FFEAEE",
     },
 
     base: {
-      light: '#FFFFFF',
-      dark: '#00001F'
+      light: "#FFFFFF",
+      dark: "#00001F",
     },
 
     border: {
-      neutral: '#D7D8FA',
-      overlay: '#E6E7FF'
+      neutral: "#D7D8FA",
+      overlay: "#E6E7FF",
     },
 
     background: {
       default: "#FFFFFF",
       neutral: "#E8EAFB",
       alternative: "#EFFDE5",
-      overlay: "#C5CBF5"
+      overlay: "#C5CBF5",
     },
 
     interactive: {
-      primary: '#008600',
-      accent: '#5FE500',
-      secondary:'#2351DC',
-      tertiary: '#24BE00',
-      control: '#7A7B9A',
-      connected: "#FA7200"
+      primary: "#008600",
+      accent: "#5FE500",
+      secondary: "#2351DC",
+      tertiary: "#24BE00",
+      control: "#7A7B9A",
+      connected: "#FA7200",
     },
 
     brandScheme: {
-      100: '#C5CBF5',
-      500: '#2351DC',
+      100: "#C5CBF5",
+      500: "#2351DC",
     },
 
-    body:"#232640",
-
+    body: "#232640",
   },
 
   fonts: {
-    heading: 'var(--font-poppins)',
-    body: 'var(--font-opensans)',
+    heading: "var(--font-poppins)",
+    body: "var(--font-opensans)",
   },
 
   fontSizes: {
     display: {
       lg: "57px",
       md: "45px",
-      sm: "36px"
+      sm: "36px",
     },
 
     headline: {
       lg: "32px",
       md: "36px",
-      sm: "24px"
+      sm: "24px",
     },
 
     title: {
       lg: "22px",
       md: "16px",
-      sm: "14px"
+      sm: "14px",
     },
 
     label: {
       lg: "14px",
       md: "12px",
-      sm: "11px"
+      sm: "11px",
     },
 
     body: {
       xl: "22px",
       lg: "16px",
       md: "14px",
-      sm: '12px'
+      sm: "12px",
     },
 
     button: {
-      lg: '20px',
-      md: '14px',
-      sm: '12px'
+      lg: "20px",
+      md: "14px",
+      sm: "12px",
     },
-    
+
     caption: "12px",
-    overline: '10px'
+    overline: "10px",
   },
 
   fontWeights: {
@@ -118,7 +117,7 @@ export const theme = extendTheme({
     regular: 400,
     medium: 500,
     semibold: 600,
-    bold: 700
+    bold: 700,
   },
 
   lineHeights: {
@@ -134,14 +133,13 @@ export const theme = extendTheme({
     "24": "24px",
     "20": "20px",
     "16": "16px",
-
   },
 
   letterSpacing: {
     normal: 0,
     wide: "0.5px",
     wider: "1.25px",
-    widest: "1.5px"
+    widest: "1.5px",
   },
 
   spacing: {
@@ -155,7 +153,7 @@ export const theme = extendTheme({
     "xxl-3": "56px",
     "xxl-4": "64px",
     "xxl-5": "72px",
-    "xxl-6": "80px"
+    "xxl-6": "80px",
   },
 
   shadows: {
@@ -163,7 +161,7 @@ export const theme = extendTheme({
     "2dp": "0px 2px 4px -2px #0000001A, 0px 4px 6px -1px #0000001A",
     "4dp": "0px 4px 6px -4px #0000001A, 0px 10px 15px -3px #0000001A",
     "8dp": "0px 8px 10px -6px #0000001A, 0px 20px 25px -5px #0000001A",
-    "12dp": "0px 25px 50px -12px #00000040"
+    "12dp": "0px 25px 50px -12px #00000040",
   },
 
   borderRadius: {
@@ -171,76 +169,72 @@ export const theme = extendTheme({
     minimal: "4px",
     rounded: "8px",
     "rounded-xl": "16px",
-    "rounded-xxl": "20px"
+    "rounded-xxl": "20px",
   },
 
-  breakpoints:{
+  breakpoints: {
     xs: "360px",
     sm: "600px",
     md: "905px",
     lg: "1240px",
-    xl: "1440px"
+    xl: "1440px",
   },
 
   components: {
     Button: {
       baseStyle: {
-        textTransform: 'uppercase',
+        textTransform: "uppercase",
         borderRadius: 50,
       },
       variants: {
         outline: {
-          border: '2px solid',
-          borderColor: '#2351DC',
-          color: '#2351DC',
+          border: "2px solid",
+          borderColor: "#2351DC",
+          color: "#2351DC",
           _hover: {
-            transform: 'scale(0.98)',
-            borderColor: '#5a7be0',
-            color: '#5a7be0',
+            transform: "scale(0.98)",
+            borderColor: "#5a7be0",
+            color: "#5a7be0",
           },
           _active: {
-            borderColor: '#899ee0',
-            color: '#899ee0',
+            borderColor: "#899ee0",
+            color: "#899ee0",
           },
           _loading: {
             opacity: 0.8,
           },
         },
         solid: {
-          bg: '#2351DC',
-          color: 'white',
+          bg: "#2351DC",
+          color: "white",
           _hover: {
-            transform: 'scale(0.98)',
-            bg: '#5a7be0',
+            transform: "scale(0.98)",
+            bg: "#5a7be0",
           },
           _active: {
-            bg: '#899ee0',
+            bg: "#899ee0",
           },
           _loading: {
             opacity: 0.8,
             _hover: {
-              bg: '#5a7be0',
+              bg: "#5a7be0",
             },
           },
         },
         ghost: {
-          color: '#5a7be0',
+          color: "#5a7be0",
         },
       },
     },
     Link: {
       baseStyle: {
-        color: '#2351DC',
+        color: "#2351DC",
       },
     },
   },
 });
 
-export function Providers({
-  children
-}: {
-  children: React.ReactNode,
-}) {
+export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <>
       <style jsx global>
@@ -252,11 +246,8 @@ export function Providers({
         `}
       </style>
       <CacheProvider>
-        <ChakraProvider theme={theme}>
-          {children}
-        </ChakraProvider>
+        <ChakraProvider theme={theme}>{children}</ChakraProvider>
       </CacheProvider>
     </>
   );
 }
-

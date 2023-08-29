@@ -2,7 +2,7 @@ import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-const data = { message: 'Hello World' };
+const data = { message: "Hello World" };
 
 export const GET = apiHandler(async () => {
   return NextResponse.json({ data });
@@ -18,4 +18,3 @@ export const POST = apiHandler(async (req: Request) => {
   data.message = body.message;
   return NextResponse.json({ data });
 });
-

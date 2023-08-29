@@ -262,7 +262,7 @@ export default function OnboardingSteps({
         <Text color="content.tertiary" mb={12}>
           {t("check-data-details")}
         </Text>
-        <Flex direction="row" className="space-x-4">
+        <Flex direction="row" className="space-y-4 md:space-y-0 md:space-x-4 flex-wrap md:flex-nowrap">
           {dataSources.map((source) => (
             <Card
               key={source.id}

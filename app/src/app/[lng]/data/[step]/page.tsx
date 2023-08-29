@@ -14,13 +14,12 @@ import {
   Icon,
   IconButton,
   Progress,
+  SimpleGrid,
   Stack,
   Tag,
   TagLabel,
   TagLeftIcon,
   Text,
-  Wrap,
-  WrapItem,
   useDisclosure,
   useSteps,
 } from "@chakra-ui/react";
@@ -38,9 +37,9 @@ import {
   MdOutlineSkipNext,
   MdPlaylistAddCheck,
 } from "react-icons/md";
-import subSectorData from "./subsectors.json";
 import { SourceDrawer } from "./SourceDrawer";
 import { SubsectorDrawer } from "./SubsectorDrawer";
+import subSectorData from "./subsectors.json";
 
 const dataSourceDescription =
   "Leveraging satellite imagery, this dataset provides key information about residential structures, aiding in the assessment of their energy usage and corresponding carbon footprints";
@@ -262,7 +261,10 @@ export default function OnboardingSteps({
         <Text color="content.tertiary" mb={12}>
           {t("check-data-details")}
         </Text>
-        <Flex direction="row" className="space-y-4 md:space-y-0 md:space-x-4 flex-wrap md:flex-nowrap">
+        <Flex
+          direction="row"
+          className="space-y-4 md:space-y-0 md:space-x-4 flex-wrap md:flex-nowrap"
+        >
           {dataSources.map((source) => (
             <Card
               key={source.id}
@@ -345,51 +347,48 @@ export default function OnboardingSteps({
         <Heading size="sm" mb={4}>
           {t("select-subsector")}
         </Heading>
-        <Wrap direction="row" spacing={4}>
+        <SimpleGrid minChildWidth="250px" spacing={4}>
           {subSectors.map((subSector) => (
-            <WrapItem key={subSector.id} width="32%" maxWidth="32%">
-              <Card
-                maxHeight="120px"
-                height="120px"
-                w="full"
-                className="hover:drop-shadow-xl transition-shadow"
-                onClick={() => onSubsectorClick(subSector)}
-              >
-                <Flex direction="row" className="space-x-4 items-center h-full">
-                  <Icon
-                    as={
-                      subSector.isAdded ? MdOutlineCheckCircle : DataAlertIcon
-                    }
-                    boxSize={8}
-                    color={
-                      subSector.isAdded
-                        ? "interactive.tertiary"
-                        : "sentiment.warningDefault"
-                    }
-                  />
-                  <Stack w="full">
-                    <Heading size="xs" noOfLines={3} maxWidth="200px">
-                      {t(subSector.title)}
-                    </Heading>
-                    <Text color="content.tertiary">
-                      {t("scope")}: {subSector.scopes.join(", ")}
-                    </Text>
-                  </Stack>
-                  <IconButton
-                    aria-label={t("edit-subsector")}
-                    variant="solidIcon"
-                    icon={
-                      <Icon
-                        as={subSector.isAdded ? MdOutlineEdit : MdAdd}
-                        boxSize={6}
-                      />
-                    }
-                  />
-                </Flex>
-              </Card>
-            </WrapItem>
+            <Card
+              maxHeight="120px"
+              height="120px"
+              w="full"
+              className="hover:drop-shadow-xl transition-shadow"
+              onClick={() => onSubsectorClick(subSector)}
+              key={subSector.id}
+            >
+              <Flex direction="row" className="space-x-4 items-center h-full">
+                <Icon
+                  as={subSector.isAdded ? MdOutlineCheckCircle : DataAlertIcon}
+                  boxSize={8}
+                  color={
+                    subSector.isAdded
+                      ? "interactive.tertiary"
+                      : "sentiment.warningDefault"
+                  }
+                />
+                <Stack w="full">
+                  <Heading size="xs" noOfLines={3} maxWidth="200px">
+                    {t(subSector.title)}
+                  </Heading>
+                  <Text color="content.tertiary">
+                    {t("scope")}: {subSector.scopes.join(", ")}
+                  </Text>
+                </Stack>
+                <IconButton
+                  aria-label={t("edit-subsector")}
+                  variant="solidIcon"
+                  icon={
+                    <Icon
+                      as={subSector.isAdded ? MdOutlineEdit : MdAdd}
+                      boxSize={6}
+                    />
+                  }
+                />
+              </Flex>
+            </Card>
           ))}
-        </Wrap>
+        </SimpleGrid>
       </Card>
       {/*** Bottom bar ***/}
       <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand flex flex-row py-8 px-8 drop-shadow-2xl hover:drop-shadow-4xl transition-all">

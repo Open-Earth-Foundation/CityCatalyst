@@ -123,7 +123,7 @@ export function SubsectorDrawer({
 
   const valueType = watch("valueType");
   const methodology = watch("methodology");
-  const isSubmitEnabled = !!valueType && !!methodology;
+  const isSubmitEnabled = !!valueType && (!!methodology || valueType == "subcategory-values");
   const subcategories = watch("subcategories");
 
   return (

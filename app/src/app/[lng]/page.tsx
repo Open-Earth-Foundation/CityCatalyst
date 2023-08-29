@@ -166,7 +166,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   backgroundColor="base.light"
                   borderColor="interactive.accent"
                   borderWidth="thin"
-                  className="h-[132px] w-[533px] px-[24px]"
+                  className="h-[132px] w-[533px] px-[24px] py-0"
                 >
                   <Box className="flex items-center w-fill">
                     <Box>
@@ -204,7 +204,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                 <Card
                   shadow="2dp"
                   backgroundColor="base.light"
-                  className="h-[132px] w-[533px] px-[24px]"
+                  className="h-[132px] w-[533px] px-[24px] py-0"
                 >
                   <Box className="flex items-center w-fill">
                     <Box>

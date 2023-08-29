@@ -49,7 +49,7 @@ export function EmissionsForm({
     errors.gridSourceReference;
 
   const { field } = useController({
-    name: "methodology",
+    name: prefix + "methodology",
     control,
     defaultValue: "",
   });

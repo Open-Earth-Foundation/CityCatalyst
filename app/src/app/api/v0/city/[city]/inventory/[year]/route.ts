@@ -1,10 +1,9 @@
 import { db } from "@/models";
 import { City } from "@/models/City";
 import { apiHandler } from "@/util/api";
-import { createCityRequest, createInventoryRequest } from "@/util/validation";
+import { createInventoryRequest } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
-import { randomUUID } from "node:crypto";
 
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const city = await db.models.City.findOne({ where: { locode: params.city } });
@@ -17,7 +16,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
     throw new createHttpError.NotFound('Inventory not found');
   }
 
-  return NextResponse.json({ data: city });
+  return NextResponse.json({ data: inventory });
 });
 
 export const DELETE = apiHandler(async (_req: NextRequest, { params }) => {
@@ -32,7 +31,7 @@ export const DELETE = apiHandler(async (_req: NextRequest, { params }) => {
   }
 
   await inventory.destroy();
-  return NextResponse.json({ data: city, deleted: true });
+  return NextResponse.json({ data: inventory, deleted: true });
 });
 
 

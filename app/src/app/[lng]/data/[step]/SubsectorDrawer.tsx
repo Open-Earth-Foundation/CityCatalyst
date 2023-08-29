@@ -25,35 +25,6 @@ import { RefObject, useEffect, useState } from "react";
 import { SubmitHandler, useController, useForm } from "react-hook-form";
 import { EmissionsForm } from "./EmissionsForm";
 
-type SubcategoryOption = {
-  label: string;
-  value: string;
-};
-
-type ActivityData = {
-  activityDataAmount?: number;
-  activityDataUnit: string;
-  emissionFactorType: string;
-  co2EmissionFactor: number;
-  n2oEmissionFactor: number;
-  ch4EmissionFactor: number;
-  sourceReference: string;
-};
-
-type DirectMeasureData = {
-  co2Emissions: number;
-  ch4Emissions: number;
-  n2oEmissions: number;
-  dataQuality: string;
-  sourceReference: string;
-};
-
-type SubcategoryData = {
-  fuel: ActivityData;
-  grid: ActivityData;
-  direct: DirectMeasureData;
-};
-
 type Inputs = {
   valueType: string;
   methodology: string;

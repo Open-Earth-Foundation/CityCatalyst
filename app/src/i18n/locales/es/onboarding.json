@@ -1,0 +1,32 @@
+{
+  "onboarding-heading": "¡Comienza tu inventario de emisiones!",
+  "onboarding-details": "Necesitamos establecer y confirmar la ciudad donde deseas hacer el inventario.<br/>¡Estás a un paso de obtener tu inventario de emisiones con metodología GPC!",
+  "start-button": "Comenzar inventario",
+
+  "setup-heading": "Selecciona Ciudad y Año",
+  "go-back": "Regresa",
+  "setup-step": "Selecciona Ciudad y Año",
+  "confirm-step": "Confirmar Información de la Ciudad",
+  "setup-details": "Selecciona la ciudad y el año para los que deseas crear tu inventario de emisiones",
+  "select-city": "Selecciona una ciudad",
+  "select-city-placeholder": "Buscar por ciudad",
+  "select-city-required": "La ciudad es requerida",
+  "inventory-year": "Año del inventario",
+  "inventory-year-placeholder": "Seleccionar año",
+  "inventory-year-required": "El año es requerido",
+  "gpc-basic-message": "Solo los inventarios básicos de GPC son compatibles momentáneamente",
+  "save-button": "Guardar y Continuar",
+  "search-city-button": "Buscar otra Ciudad",
+  "confirm-button": "Confirmar y Continuar",
+
+  "confirm-heading": "Confirmar Información de la Ciudad",
+  "confirm-details": "Revisa y confirma esta información sobre tu ciudad. Si hay un error, por favor envíanos un correo electrónico para editarlo.<br /><br />Utilizamos <1>fuentes de datos abiertos</1> para completar previamente el perfil de la ciudad.", 
+  "total-population": "Población total",
+  "total-land-area": "Superficie total del terreno",
+  "geographical-boundaries": "Límites geográficos",
+
+  "done-heading": "Inventario creado con éxito<br />",
+  "inventory-title": "Inventario Básico de Emisiones GPC - Año {{year}}",
+  "done-details": "Creaste tu perfil de ciudad para comenzar tu inventario de GEI con metodología GPC Básico.<br/>Además, encontramos para tu ciudad más de 10 conjuntos de datos externos que puedes conectar para completar tu inventario.",
+  "check-dashboard": "Ir al Inicio"
+}

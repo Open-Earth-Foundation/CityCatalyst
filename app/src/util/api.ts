@@ -5,7 +5,9 @@ import { ZodError } from "zod";
 import { db } from "@/models";
 import { ValidationError } from "sequelize";
 
-export function apiHandler(handler: (req: NextRequest, props: { params: Record<string, string> }) => Promise<NextResponse>) {
+export type NextHandler = (req: NextRequest, props: { params: Record<string, string> }) => Promise<NextResponse>;
+
+export function apiHandler(handler: NextHandler) {
   return async (req: NextRequest, props: { params: Record<string, string> }) => {
     try {
       if (!db.initialized) {
@@ -23,6 +25,7 @@ export function apiHandler(handler: (req: NextRequest, props: { params: Record<s
 }
 
 function errorHandler(err: unknown, req: NextRequest) {
+  // TODO log structured request info like route here
   console.error(err);
   if (createHttpError.isHttpError(err) && err.expose) {
     return NextResponse.json({ error: { message: err.message } }, { status: err.statusCode });

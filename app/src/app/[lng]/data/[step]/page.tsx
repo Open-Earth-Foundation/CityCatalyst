@@ -4,7 +4,7 @@ import { CircleIcon, DataAlertIcon } from "@/components/icons";
 import WizardSteps from "@/components/wizard-steps";
 import { useTranslation } from "@/i18n/client";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import { Link } from "@chakra-ui/next-js";
+import { Link } from "@chakra-ui/react";
 import {
   Box,
   Button,
@@ -304,12 +304,9 @@ export default function OnboardingSteps({
                 {source.description}
               </Text>
               <Link
-                href={source.url}
                 className="underline"
                 mt={4}
                 mb={6}
-                target="_blank"
-                rel="noopener noreferrer"
               >
                 {t("see-more-details")}
               </Link>

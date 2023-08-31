@@ -382,7 +382,7 @@ export const appTheme = extendTheme({
           },
           button: {
             borderRadius: "8px",
-          }
+          },
         },
       },
       defaultProps: {

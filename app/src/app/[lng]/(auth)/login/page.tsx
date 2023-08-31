@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import EmailInput from "@/components/email-input";
 import PasswordInput from "@/components/password-input";
@@ -17,17 +17,17 @@ type Inputs = {
 
 function VerifiedNotification({ t }: { t: TFunction }) {
   const searchParams = useSearchParams();
-  const isVerified = !!searchParams.get('verification-code');
+  const isVerified = !!searchParams.get("verification-code");
   const toast = useToast();
   useEffect(() => {
     if (isVerified) {
       toast({
-        title: t('verified-toast-title'),
-        description: t('verified-toast-description'),
-        status: 'success',
+        title: t("verified-toast-title"),
+        description: t("verified-toast-description"),
+        status: "success",
         duration: null,
         isClosable: true,
-        position: 'bottom-right',
+        position: "bottom-right",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -36,31 +36,54 @@ function VerifiedNotification({ t }: { t: TFunction }) {
   return null;
 }
 
-export default function Login({ params: { lng } }: { params: { lng: string } }) {
-  const { t } = useTranslation(lng, 'auth');
+export default function Login({
+  params: { lng },
+}: {
+  params: { lng: string };
+}) {
+  const { t } = useTranslation(lng, "auth");
   const router = useRouter();
-  const { handleSubmit, register, formState: { errors, isSubmitting } } = useForm<Inputs>();
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting },
+  } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log(data);
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
     router.push(`/`);
   };
 
   return (
     <>
-      <Heading size="xl">{t('login-heading')}</Heading>
-      <Text my={4} color="#7A7B9A">{t('login-details')}</Text>
+      <Heading size="xl">{t("login-heading")}</Heading>
+      <Text my={4} color="#7A7B9A">
+        {t("login-details")}
+      </Text>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <EmailInput register={register} error={errors.email} t={t} />
         <PasswordInput register={register} error={errors.password} t={t} />
         <div className="w-full text-right">
-          <Link href="/forgot-password" className="underline">{t('forgot-password')}</Link>
+          <Link href="/forgot-password" className="underline">
+            {t("forgot-password")}
+          </Link>
         </div>
-        <Button type="submit" formNoValidate isLoading={isSubmitting} h={16} width="full" className="bg-[#2351DC]">{t('log-in')}</Button>
+        <Button
+          type="submit"
+          formNoValidate
+          isLoading={isSubmitting}
+          h={16}
+          width="full"
+          className="bg-[#2351DC]"
+        >
+          {t("log-in")}
+        </Button>
       </form>
       <Text className="w-full text-center mt-4 text-sm" color="#7A7B9A">
-        {t('no-account')}{' '}
-        <Link href="/signup" className="underline">{t('sign-up')}</Link>
+        {t("no-account")}{" "}
+        <Link href="/signup" className="underline">
+          {t("sign-up")}
+        </Link>
       </Text>
       <Suspense>
         <VerifiedNotification t={t} />

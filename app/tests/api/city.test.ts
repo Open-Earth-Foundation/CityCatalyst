@@ -109,7 +109,9 @@ describe("City API", () => {
     const req = createRequest(url, invalidCity);
     const res = await updateCity(req, { params: { city: city.locode } });
     assert.equal(res.status, 400);
-    const { error: { issues } } = await res.json();
+    const {
+      error: { issues },
+    } = await res.json();
     assert.equal(issues.length, 5);
   });
 

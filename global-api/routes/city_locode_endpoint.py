@@ -1,9 +1,16 @@
-from main import app, engine, SessionLocal
+from main import app
 from fastapi import HTTPException
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine, text
+from sqlalchemy.orm import SessionLocal, sessionmaker
+from decouple import config
 import pandas as pd
 import numpy as np
+
+# Define the database engine
+engine = create_engine(config("DATABASE_URL"))
+
+# Define SessionLocal for database interactions
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Extract the data by locode, year and sector/subsector
 def db_query(locode, year, reference_number):
@@ -44,7 +51,6 @@ def get_emissions_by_city_and_year(
 
     # Group each gas and add them to have "total emissions by gas"
     results = sources.groupby("gas").emissions_quantity.sum()
-
     results = results.apply(lambda x: int(x) if isinstance(x, np.int64) else x)
 
     # Build Totals dictionary
@@ -107,3 +113,4 @@ def get_emissions_by_city_and_year(
     }
 
     return {"totals": totals, "points": points}
+

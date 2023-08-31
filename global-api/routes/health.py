@@ -17,11 +17,4 @@ def health_check():
             return {'status': 'ok'}
     except Exception as e:
         raise HTTPException(status_code=503, detail="Service unavailable")
-    
-
-    
-
-
-
-
 

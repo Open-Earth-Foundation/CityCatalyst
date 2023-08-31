@@ -1,16 +1,17 @@
 import { z } from "zod";
 
-export const emailPattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+export const emailPattern =
+  /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 export const geoJSON = z.object({
   title: z.string(),
   description: z.string(),
   geometry: z.object({
-    type: z.literal('Feature'),
+    type: z.literal("Feature"),
     properties: z.object({}),
     geometry: z.object({
       coordinates: z.number().array(),
-      type: z.literal('Point'),
+      type: z.literal("Point"),
     }),
   }),
 });
@@ -31,4 +32,3 @@ export const createInventoryRequest = z.object({
   totalEmissions: z.number().int().optional(),
 });
 export type CreateInventoryRequest = z.infer<typeof createInventoryRequest>;
-

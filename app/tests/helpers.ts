@@ -6,4 +6,3 @@ export function createRequest(url: string, body?: any) {
   request.json = mock.fn(() => Promise.resolve(body));
   return request;
 }
-

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { NavigationBar } from "@/components/navigation-bar";
 
@@ -6,8 +6,8 @@ export default function AuthLayout({
   children,
   params: { lng },
 }: {
-  children: React.ReactNode,
-  params: { lng: string },
+  children: React.ReactNode;
+  params: { lng: string };
 }) {
   return (
     <main className="h-screen flex flex-col">
@@ -18,4 +18,3 @@ export default function AuthLayout({
     </main>
   );
 }
-

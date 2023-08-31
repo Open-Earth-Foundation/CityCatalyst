@@ -170,7 +170,6 @@ export default function OnboardingSteps({
   };
   const onSubsectorSave = (subsector: SubSector) => {
     console.log("Save subsector", subsector);
-    onSubsectorDrawerClose();
   };
 
   const [isConfirming, setConfirming] = useState(false);

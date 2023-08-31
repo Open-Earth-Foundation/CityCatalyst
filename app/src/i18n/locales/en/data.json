@@ -84,7 +84,7 @@
   "source-reference": "Source reference",
   "source-reference-required": "Add a description of the reference source and justified emission factors, if applicable",
   "source-reference-placeholder": "Write in detail from which source the entered value comes from",
-  "calculations-details": "All calculations consider a <1>GWP value of {{gwpValue}}</1>.",
+  "calculations-details": "All calculations consider a <1>GWP value of {{co2Value}} for CO2 and {{ch4Value}} for CH4</1>.",
 
   "co2-emissions-value": "CO2 emissions value",
   "ch4-emissions-value": "CH4 emissions value",

@@ -197,9 +197,9 @@ export function ActivityDataTab({
           <Trans
             t={t}
             i18nKey="calculations-details"
-            values={{ gwpValue: 1337 }}
+            values={{ ch4Value: 133.7, co2Value: 102.5 }}
           >
-            All calculations consider a <b>GWP value of X</b>.
+            All calculations consider a <b>GWP value of X for CO2 and Y for CH4</b>.
           </Trans>
         </Text>
       </HStack>

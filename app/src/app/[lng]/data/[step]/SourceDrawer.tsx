@@ -63,7 +63,7 @@ export function SourceDrawer({
                   <TagLeftIcon
                     as={MdPlaylistAddCheck}
                     boxSize={6}
-                    color="contentTertiary"
+                    color="content.tertiary"
                   />
                   <TagLabel fontSize={14}>
                     {t("data-quality")}: {t("quality-" + source.dataQuality)}
@@ -73,7 +73,7 @@ export function SourceDrawer({
                   <TagLeftIcon
                     as={MdCalendarToday}
                     boxSize={6}
-                    color="contentTertiary"
+                    color="content.tertiary"
                   />
                   <TagLabel fontSize={14}>
                     {t("updated-every")} {t(source.updateFrequency)}
@@ -81,9 +81,9 @@ export function SourceDrawer({
                 </Tag>
               </Flex>
               <Stack className="space-y-4">
-                <Text color="contentTertiary">{source.description}</Text>
+                <Text color="content.tertiary">{source.description}</Text>
                 <Heading size="sm">{t("sources")}</Heading>
-                <Text color="contentTertiary" ml={6}>
+                <Text color="content.tertiary" ml={6}>
                   <ul>
                     {source.sources.map((source) => (
                       <li key={source}>{source}</li>
@@ -91,7 +91,7 @@ export function SourceDrawer({
                   </ul>
                 </Text>
                 <Heading size="sm">{t("methodology")}</Heading>
-                <Text color="contentTertiary">{source.methodology}</Text>
+                <Text color="content.tertiary">{source.methodology}</Text>
               </Stack>
             </DrawerBody>
           )}

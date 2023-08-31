@@ -58,6 +58,7 @@ export function ActivityDataTab({
               <NumberInputField
                 placeholder={t("activity-data-amount-placeholder")}
                 borderRightRadius={0}
+                bgColor="base.light"
                 {...register(prefix + "activityDataAmount", {
                   required: t("value-required"),
                 })}
@@ -87,7 +88,7 @@ export function ActivityDataTab({
         </FormControl>
         <FormControl>
           <FormLabel>{t("emission-factor-type")}</FormLabel>
-          <Select {...register(prefix + "emissionFactorType")}>
+          <Select {...register(prefix + "emissionFactorType")} bgColor="base.light">
             {emissionFactorTypes.map((type) => (
               <option key={type} value={type}>
                 {type}
@@ -183,6 +184,7 @@ export function ActivityDataTab({
         <FormLabel>{t("source-reference")}</FormLabel>
         <Textarea
           placeholder={t("source-reference-placeholder")}
+          bgColor="base.light"
           {...register(prefix + "sourceReference", {
             required: t("source-reference-required"),
           })}

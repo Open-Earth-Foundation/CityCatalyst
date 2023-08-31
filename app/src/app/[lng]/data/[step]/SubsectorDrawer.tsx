@@ -110,9 +110,9 @@ export function SubsectorDrawer({
   }, [subsector]);
 
   const subcategoryData: SubCategory[] = [
-    { subcategoryId: "1337", subcategoryName: "Manufacturing" },
-    { subcategoryId: "1338", subcategoryName: "Industrial facilities" },
-    { subcategoryId: "1339", subcategoryName: "Construction activities" },
+    { subcategoryId: "1337a", subcategoryName: "Manufacturing" },
+    { subcategoryId: "1338b", subcategoryName: "Industrial facilities" },
+    { subcategoryId: "1339c", subcategoryName: "Construction activities" },
   ];
   const subcategoryOptions = subcategoryData.map(
     (subcategory: SubCategory) => ({

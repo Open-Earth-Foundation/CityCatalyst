@@ -17,6 +17,7 @@ import { ActivityDataTab } from "./ActivityDataTab";
 import { DirectMeasureForm } from "./DirectMeasureForm";
 import { TFunction } from "i18next";
 import { Control, useController } from "react-hook-form";
+import { resolve } from "@/util/helpers";
 
 const fields = [
   "activityDataAmount",
@@ -41,8 +42,12 @@ export function EmissionsForm({
   control: Control<any, any>;
   prefix?: string;
 }) {
-  const hasFuelError = fields.some((field) => !!errors[prefix + "fuel." + field]);
-  const hasGridError = fields.some((field) => !!errors[prefix + "grid." + field]);
+  const hasFuelError = fields.some(
+    (field) => !!resolve(prefix + "fuel." + field, errors)
+  );
+  const hasGridError = fields.some(
+    (field) => !!resolve(prefix + "grid." + field, errors)
+  );
 
   const { field } = useController({
     name: prefix + "methodology",

@@ -15,6 +15,8 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
+import { resolve } from "@/util/helpers";
+import { useEffect } from "react";
 
 export function DirectMeasureForm({
   t,
@@ -29,6 +31,7 @@ export function DirectMeasureForm({
   className?: string;
   prefix?: string;
 }) {
+  useEffect(() => console.log(prefix, errors), [prefix, errors])
   return (
     <Box className={className} pl={0.5}>
       <Heading size="sm" mb={4} className="font-normal">
@@ -42,7 +45,7 @@ export function DirectMeasureForm({
         </Tooltip>
       </Heading>
       <HStack spacing={4} mb={12} className="items-start">
-        <FormControl isInvalid={!!errors.directCo2Emissions}>
+        <FormControl isInvalid={!!resolve(prefix + "co2Emissions", errors)}>
           <FormLabel color="content.tertiary">
             {t("co2-emissions-value")}
           </FormLabel>
@@ -60,9 +63,9 @@ export function DirectMeasureForm({
               tCO2e
             </InputRightAddon>
           </InputGroup>
-          <FormErrorMessage>{errors.directCo2Emissions?.message}</FormErrorMessage>
+          <FormErrorMessage>{resolve(prefix + "co2Emissions", errors)?.message}</FormErrorMessage>
         </FormControl>
-        <FormControl isInvalid={!!errors.directCh4Emissions}>
+        <FormControl isInvalid={!!resolve(prefix + "ch4Emissions", errors)}>
           <FormLabel color="content.tertiary">
             {t("ch4-emissions-value")}
           </FormLabel>
@@ -80,9 +83,9 @@ export function DirectMeasureForm({
               tCH4e
             </InputRightAddon>
           </InputGroup>
-          <FormErrorMessage>{errors.directCh4Emissions?.message}</FormErrorMessage>
+          <FormErrorMessage>{resolve(prefix + "ch4Emissions", errors)?.message}</FormErrorMessage>
         </FormControl>
-        <FormControl isInvalid={!!errors.directN2oEmissions}>
+        <FormControl isInvalid={!!resolve(prefix + "n2oEmissions", errors)}>
           <FormLabel color="content.tertiary">
             {t("n2o-emissions-value")}
           </FormLabel>
@@ -100,22 +103,22 @@ export function DirectMeasureForm({
               tN2Oe
             </InputRightAddon>
           </InputGroup>
-          <FormErrorMessage>{errors.directN2oEmissions?.message}</FormErrorMessage>
+          <FormErrorMessage>{resolve(prefix + "n2oEmissions", errors)?.message}</FormErrorMessage>
         </FormControl>
       </HStack>
-      <FormControl isInvalid={!!errors.directDataQuality} mb={12}>
+      <FormControl isInvalid={!!resolve(prefix + "dataQuality", errors)} mb={12}>
         <FormLabel>{t("data-quality")}</FormLabel>
         <Select placeholder={t("data-quality-placeholder")} {...register(prefix + "dataQuality", {required: t("option-required")})}>
           <option value="high">{t("detailed-emissions-data")}</option>
           <option value="medium">{t("modeled-emissions-data")}</option>
           <option value="low">{t("highly-modeled-uncertain-emissions-data")}</option>
         </Select>
-        <FormErrorMessage>{errors.directDataQuality?.message}</FormErrorMessage>
+        <FormErrorMessage>{resolve(prefix + "dataQuality", errors)?.message}</FormErrorMessage>
       </FormControl>
-      <FormControl isInvalid={errors.directSourceReference}>
+      <FormControl isInvalid={!!resolve(prefix + "sourceReference", errors)}>
         <FormLabel>{t("source-reference")}</FormLabel>
         <Textarea placeholder={t("source-reference-placeholder")} {...register(prefix + "sourceReference", { required: t("source-reference-required") })} />
-        <FormErrorMessage>{errors.directSourceReference?.message}</FormErrorMessage> 
+        <FormErrorMessage>{resolve(prefix + "sourceReference", errors)?.message}</FormErrorMessage> 
       </FormControl>
     </Box>
   );

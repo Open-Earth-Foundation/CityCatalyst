@@ -18,6 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
+import { resolve } from "@/util/helpers";
 
 const activityDataUnits = ["kWh", "Unit1", "Unit2", "Unit3"];
 const emissionFactorTypes = [
@@ -42,7 +43,7 @@ export function ActivityDataTab({
   return (
     <TabPanel px={0.5}>
       <HStack spacing={4} mb={12} className="items-start">
-        <FormControl isInvalid={!!errors[prefix + "activityDataAmount"]}>
+        <FormControl isInvalid={!!resolve(prefix + "activityDataAmount", errors)}>
           <FormLabel>
             {t("activity-data-amount")}{" "}
             <Tooltip
@@ -83,7 +84,7 @@ export function ActivityDataTab({
             </InputRightAddon>
           </InputGroup>
           <FormErrorMessage>
-            {errors[prefix + "ActivityDataAmount"]?.message}
+            {resolve(prefix + "activityDataAmount", errors)?.message}
           </FormErrorMessage>
         </FormControl>
         <FormControl>
@@ -180,7 +181,7 @@ export function ActivityDataTab({
         <InfoOutlineIcon mt={1} color="content.link" />
         <Text color="content.tertiary">{t("emissions-factor-details")}</Text>
       </HStack>
-      <FormControl isInvalid={!!errors[prefix + "sourceReference"]} mb={12}>
+      <FormControl isInvalid={!!resolve(prefix + "sourceReference", errors)} mb={12}>
         <FormLabel>{t("source-reference")}</FormLabel>
         <Textarea
           placeholder={t("source-reference-placeholder")}
@@ -190,7 +191,7 @@ export function ActivityDataTab({
           })}
         />
         <FormErrorMessage>
-          {errors[prefix + "sourceReference"]?.message}
+          {resolve(prefix + "sourceReference", errors)?.message}
         </FormErrorMessage>
       </FormControl>
       <HStack className="items-start" mb={13}>

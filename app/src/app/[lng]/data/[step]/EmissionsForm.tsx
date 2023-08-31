@@ -18,6 +18,16 @@ import { DirectMeasureForm } from "./DirectMeasureForm";
 import { TFunction } from "i18next";
 import { Control, useController } from "react-hook-form";
 
+const fields = [
+  "activityDataAmount",
+  "activityDataUnit",
+  "emissionFactorType",
+  "co2EmissionFactor",
+  "n2oEmissionFactor",
+  "ch4EmissionFactor",
+  "sourceReference",
+];
+
 export function EmissionsForm({
   t,
   register,
@@ -31,22 +41,8 @@ export function EmissionsForm({
   control: Control<any, any>;
   prefix?: string;
 }) {
-  const hasFuelError =
-    errors.fuelActivityDataAmount ||
-    errors.fuelActivityDataUnit ||
-    errors.fuelEmissionFactorType ||
-    errors.fuelCo2EmissionFactor ||
-    errors.fuelN2oEmissionFactor ||
-    errors.fuelCh4EmissionFactor ||
-    errors.fuelSourceReference;
-  const hasGridError =
-    errors.gridActivityDataAmount ||
-    errors.gridActivityDataUnit ||
-    errors.gridEmissionFactorType ||
-    errors.gridCo2EmissionFactor ||
-    errors.gridN2oEmissionFactor ||
-    errors.gridCh4EmissionFactor ||
-    errors.gridSourceReference;
+  const hasFuelError = fields.some((field) => !!errors[prefix + "fuel." + field]);
+  const hasGridError = fields.some((field) => !!errors[prefix + "grid." + field]);
 
   const { field } = useController({
     name: prefix + "methodology",

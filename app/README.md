@@ -33,6 +33,7 @@ createuser citycatalyst
 ```
 
 Then, create the database
+
 ```bash
 createdb citycatalyst -O citycatalyst
 ```

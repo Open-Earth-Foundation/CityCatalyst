@@ -8,7 +8,6 @@ api_router = APIRouter(prefix="/api/v0")
 # Define SessionLocal for database interactions
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-
 # Extract the data by locode, year and sector/subsector
 def db_query(locode, year, reference_number):
     with SessionLocal() as session:
@@ -48,7 +47,6 @@ def get_emissions_by_city_and_year(
 
     # Group each gas and add them to have "total emissions by gas"
     results = sources.groupby("gas").emissions_quantity.sum()
-
     results = results.apply(lambda x: int(x) if isinstance(x, np.int64) else x)
 
     # Build Totals dictionary

@@ -23,7 +23,7 @@ logging.basicConfig(
     encoding="utf-8",
     level=logging.DEBUG,
     format="%(asctime)s:%(levelname)s:%(pathname)s:%(message)s",
-    datefmt=("%Y-%m-%d %H:%M:%S"),
+    datefmt=("%Y-%m-%d %H:%M:%S"),                                                                                                                                                                                                                                                                                                                  
 )
 logger = logging.getLogger(__name__)
 

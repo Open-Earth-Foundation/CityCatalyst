@@ -1,5 +1,10 @@
 import { emailPattern } from "@/util/validation";
-import { FormControl, FormErrorMessage, FormLabel, Input } from "@chakra-ui/react";
+import {
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Input,
+} from "@chakra-ui/react";
 import { FieldError } from "react-hook-form";
 
 export default function EmailInput({
@@ -7,28 +12,28 @@ export default function EmailInput({
   error,
   register,
   t,
-  name = t('email-address'),
-  id = 'email',
+  name = t("email-address"),
+  id = "email",
 }: {
-  children?: React.ReactNode,
-  error: FieldError | undefined,
-  register: Function,
-  t: Function,
-  name?: String,
-  id?: String,
+  children?: React.ReactNode;
+  error: FieldError | undefined;
+  register: Function;
+  t: Function;
+  name?: String;
+  id?: String;
 }) {
   return (
     <FormControl isInvalid={!!error}>
       <FormLabel>{name}</FormLabel>
       <Input
         type="email"
-        placeholder={t('email-placeholder')}
+        placeholder={t("email-placeholder")}
         size="lg"
         {...register(id, {
-          required: t('email-required'),
+          required: t("email-required"),
           pattern: {
             value: emailPattern,
-            message: t('email-invalid'),
+            message: t("email-invalid"),
           },
         })}
       />
@@ -37,4 +42,3 @@ export default function EmailInput({
     </FormControl>
   );
 }
-

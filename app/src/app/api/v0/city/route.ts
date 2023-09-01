@@ -12,4 +12,3 @@ export const POST = apiHandler(async (req: Request) => {
   });
   return NextResponse.json({ data: city });
 });
-

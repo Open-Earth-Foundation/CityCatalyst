@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -475,14 +475,38 @@ module.exports = {
 
   async down(queryInterface) {
     const tables = [
-      'User', 'City', 'CityUser', 'Publisher', 'ReportingLevel', 'Scope',
-      'Sector', 'SubSector', 'SubCategory', 'ActivityData', 'EmissionsFactor',
-      'GHGs', 'DataSource', 'Methodology', 'DataSourceActivityData',
-      'DataSourceEmissionsFactor', 'DataSourceGHGs', 'DataSourceMethodology',
-      'DataSourceReportingLevel', 'DataSourceScope', 'DataSourceSector',
-      'DataSourceSubCategory', 'DataSourceSubSector', 'GDP', 'Inventory',
-      'Population', 'SectorValue', 'SubCategoryValue',
-      'SubSectorReportingLevel', 'SubSectorScope', 'SubSectorValue', 'Version'
+      "User",
+      "City",
+      "CityUser",
+      "Publisher",
+      "ReportingLevel",
+      "Scope",
+      "Sector",
+      "SubSector",
+      "SubCategory",
+      "ActivityData",
+      "EmissionsFactor",
+      "GHGs",
+      "DataSource",
+      "Methodology",
+      "DataSourceActivityData",
+      "DataSourceEmissionsFactor",
+      "DataSourceGHGs",
+      "DataSourceMethodology",
+      "DataSourceReportingLevel",
+      "DataSourceScope",
+      "DataSourceSector",
+      "DataSourceSubCategory",
+      "DataSourceSubSector",
+      "GDP",
+      "Inventory",
+      "Population",
+      "SectorValue",
+      "SubCategoryValue",
+      "SubSectorReportingLevel",
+      "SubSectorScope",
+      "SubSectorValue",
+      "Version",
     ];
 
     return queryInterface.sequelize.transaction(async (transaction) => {
@@ -490,6 +514,5 @@ module.exports = {
         await transaction.dropTable(table, { cascade: true, transaction });
       }
     });
-  }
+  },
 };
-

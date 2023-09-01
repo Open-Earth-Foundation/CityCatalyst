@@ -1,7 +1,7 @@
-import * as Sequelize from 'sequelize';
-import { DataTypes, Model, Optional } from 'sequelize';
-import type { DataSource, DataSourceId } from './DataSource';
-import type { GHGs, GHGsId } from './GHGs';
+import * as Sequelize from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
+import type { DataSource, DataSourceId } from "./DataSource";
+import type { GHGs, GHGsId } from "./GHGs";
 
 export interface DataSourceGHGsAttributes {
   datasourceId: string;
@@ -13,9 +13,15 @@ export interface DataSourceGHGsAttributes {
 export type DataSourceGHGsPk = "datasourceId" | "ghgId";
 export type DataSourceGHGsId = DataSourceGHGs[DataSourceGHGsPk];
 export type DataSourceGHGsOptionalAttributes = "created" | "lastUpdated";
-export type DataSourceGHGsCreationAttributes = Optional<DataSourceGHGsAttributes, DataSourceGHGsOptionalAttributes>;
+export type DataSourceGHGsCreationAttributes = Optional<
+  DataSourceGHGsAttributes,
+  DataSourceGHGsOptionalAttributes
+>;
 
-export class DataSourceGHGs extends Model<DataSourceGHGsAttributes, DataSourceGHGsCreationAttributes> implements DataSourceGHGsAttributes {
+export class DataSourceGHGs
+  extends Model<DataSourceGHGsAttributes, DataSourceGHGsCreationAttributes>
+  implements DataSourceGHGsAttributes
+{
   datasourceId!: string;
   ghgId!: string;
   created?: Date;
@@ -24,7 +30,10 @@ export class DataSourceGHGs extends Model<DataSourceGHGsAttributes, DataSourceGH
   // DataSourceGHGs belongsTo DataSource via datasourceId
   datasource!: DataSource;
   getDatasource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
-  setDatasource!: Sequelize.BelongsToSetAssociationMixin<DataSource, DataSourceId>;
+  setDatasource!: Sequelize.BelongsToSetAssociationMixin<
+    DataSource,
+    DataSourceId
+  >;
   createDatasource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
   // DataSourceGHGs belongsTo GHGs via ghgId
   ghg!: GHGs;
@@ -33,44 +42,44 @@ export class DataSourceGHGs extends Model<DataSourceGHGsAttributes, DataSourceGH
   createGhg!: Sequelize.BelongsToCreateAssociationMixin<GHGs>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof DataSourceGHGs {
-    return DataSourceGHGs.init({
-    datasourceId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      primaryKey: true,
-      references: {
-        model: 'DataSource',
-        key: 'datasource_id'
-      },
-      field: 'datasource_id'
-    },
-    ghgId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      primaryKey: true,
-      references: {
-        model: 'GHGs',
-        key: 'ghg_id'
-      },
-      field: 'ghg_id'
-    }
-  }, {
-    sequelize,
-    tableName: 'DataSourceGHGs',
-    schema: 'public',
-    timestamps: true,
-    createdAt: 'created',
-    updatedAt: 'last_updated',
-    indexes: [
+    return DataSourceGHGs.init(
       {
-        name: "DataSourceGHGs_pkey",
-        unique: true,
-        fields: [
-          { name: "datasource_id" },
-          { name: "ghg_id" },
-        ]
+        datasourceId: {
+          type: DataTypes.UUID,
+          allowNull: false,
+          primaryKey: true,
+          references: {
+            model: "DataSource",
+            key: "datasource_id",
+          },
+          field: "datasource_id",
+        },
+        ghgId: {
+          type: DataTypes.UUID,
+          allowNull: false,
+          primaryKey: true,
+          references: {
+            model: "GHGs",
+            key: "ghg_id",
+          },
+          field: "ghg_id",
+        },
       },
-    ]
-  });
+      {
+        sequelize,
+        tableName: "DataSourceGHGs",
+        schema: "public",
+        timestamps: true,
+        createdAt: "created",
+        updatedAt: "last_updated",
+        indexes: [
+          {
+            name: "DataSourceGHGs_pkey",
+            unique: true,
+            fields: [{ name: "datasource_id" }, { name: "ghg_id" }],
+          },
+        ],
+      },
+    );
   }
 }

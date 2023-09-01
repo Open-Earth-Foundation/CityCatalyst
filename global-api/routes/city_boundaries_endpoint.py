@@ -1,8 +1,10 @@
 from main import app, SessionLocal
-from fastapi import HTTPException
+from fastapi import HTTPException,APIRouter
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
 import json
+
+api_router = APIRouter(prefix="/api/v0")
 
 # Extract the polygon by locode
 def db_query(locode):
@@ -18,7 +20,7 @@ def db_query(locode):
 
     return result[0] if result else None
 
-@app.get("/api/v0/cityboundary/city/{locode}")
+@api_router.get("/cityboundary/city/{locode}")
 def get_city_boundary(locode: str):
     city_geometry = db_query(locode)
     

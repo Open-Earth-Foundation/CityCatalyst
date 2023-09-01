@@ -1,0 +1,2 @@
+datasource_id,name,URL,geographical_location,publisher_id
+4f7ffff1-d9a6-4437-b17a-9d860ef4f6a7,IPCC Emission Factor Database (EFDB) [US only],https://www.ipcc-nggip.iges.or.jp/EFDB/main.php,US,1ea6aaaa-024d-4411-a3c2-da76d8fc9857

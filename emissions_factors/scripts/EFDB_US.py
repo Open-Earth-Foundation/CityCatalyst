@@ -223,7 +223,7 @@ if __name__ == "__main__":
 
     df_out["value"] = df_out["value"].round(3)
 
-    COLUMNS = ["gpc_sector", "value", "units_merged", "region", "reference"]
+    COLUMNS = ["gpc_sector", "value", "units_merged", "gas", "region", "reference"]
     df_emissions_factor = df_out.loc[:, COLUMNS].rename(
         columns={
             "units_merged": "units",

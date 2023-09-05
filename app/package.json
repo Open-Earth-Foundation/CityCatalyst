@@ -52,7 +52,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.46.0",
-    "react-i18next": "^13.1.2",
+    "react-i18next": "^13.2.2",
     "react-icons": "^4.10.1",
     "sequelize": "^6.32.1",
     "sequelize-cli": "^6.6.1",

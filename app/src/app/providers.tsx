@@ -1,13 +1,13 @@
 "use client";
 
 import { CacheProvider } from "@chakra-ui/next-js";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import { ChakraProvider, extendTheme, theme } from "@chakra-ui/react";
 
 import { Open_Sans, Poppins } from "next/font/google";
 const poppins = Poppins({ weight: "500", subsets: ["latin"] });
 const openSans = Open_Sans({ subsets: ["latin"] });
 
-export const theme = extendTheme({
+export const appTheme = extendTheme({
   colors: {
     brand: {
       primary: "#001EA7",
@@ -18,6 +18,8 @@ export const theme = extendTheme({
       primary: "#00001F",
       secondary: "#00001F",
       tertiary: "#7A7B9A",
+      link: "#2351DC",
+      alternative: "#001EA7",
     },
 
     semantic: {
@@ -44,15 +46,28 @@ export const theme = extendTheme({
       neutral: "#E8EAFB",
       alternative: "#EFFDE5",
       overlay: "#C5CBF5",
+      transparentGrey: "rgba(232, 234, 251, 0.20)",
     },
 
     interactive: {
       primary: "#008600",
+      primaryLight: "#61c261",
       accent: "#5FE500",
       secondary: "#2351DC",
       tertiary: "#24BE00",
+      quaternary: "#F17105",
       control: "#7A7B9A",
       connected: "#FA7200",
+    },
+
+    sentiment: {
+      positiveOverlay: "#EFFDE5",
+      positiveLight: "#f0f7eb",
+      positiveDark: "#b9cfa9",
+      positiveDefault: "#24BE00",
+      warningDefault: "#C98300",
+      warningOverlay: "#FEF8E1",
+      negativeDefault: "#F23D33",
     },
 
     brandScheme: {
@@ -221,14 +236,157 @@ export const theme = extendTheme({
             },
           },
         },
+        solidPrimary: {
+          ...theme.components.Button.variants?.solid,
+          bg: "sentiment.positiveOverlay",
+          color: "interactive.primary",
+          _hover: {
+            transform: "scale(0.98)",
+            bg: "sentiment.positiveLight",
+            color: "interactive.primaryLight",
+          },
+          _active: {
+            bg: "sentiment.positiveDark",
+            color: "sentiment.positiveOverlay",
+          },
+          _loading: {
+            opacity: 0.8,
+            bg: "sentiment.positiveLight",
+          },
+        },
         ghost: {
           color: "#5a7be0",
+        },
+        solidIcon: {
+          bgColor: "background.neutral",
+          color: "interactive.secondary",
+          _hover: {
+            color: "white",
+            bg: "#5a7be0",
+          },
+          _active: {
+            bg: "#899ee0",
+          },
         },
       },
     },
     Link: {
       baseStyle: {
-        color: "#2351DC",
+        color: "brand.secondary",
+      },
+    },
+    Card: {
+      baseStyle: {
+        container: {
+          borderRadius: 8,
+          px: 6,
+          py: 8,
+        },
+      },
+    },
+    Tag: {
+      variants: {
+        brand: {
+          container: {
+            px: 3,
+            py: 1,
+            borderRadius: "full",
+            borderColor: "background.neutral",
+            borderWidth: 1,
+            color: "background.neutral",
+          },
+          label: {
+            color: "content.secondary",
+            fontSize: "14",
+            borderWidth: 0,
+            mt: -0.5,
+          },
+        },
+        filled: {
+          container: {
+            px: 4,
+            py: 1,
+            borderRadius: "full",
+            bgColor: "background.neutral",
+          },
+          label: {
+            color: "content.alternative",
+          },
+        },
+        success: {
+          container: {
+            px: 4,
+            py: 1,
+            borderRadius: "full",
+            borderWidth: 1,
+            borderColor: "sentiment.positiveDefault",
+            bgColor: "sentiment.positiveOverlay",
+            color: "sentiment.positiveDefault",
+            fontWeight: 500,
+          },
+          label: {
+            color: "sentiment.positiveDefault",
+          },
+        },
+        warning: {
+          container: {
+            px: 4,
+            py: 1,
+            borderRadius: "full",
+            borderWidth: 1,
+            borderColor: "sentiment.warningDefault",
+            bgColor: "sentiment.warningOverlay",
+            color: "sentiment.warningDefault",
+          },
+          label: {
+            color: "sentiment.warningDefault",
+          },
+        },
+      },
+      defaultProps: {
+        variant: "brand",
+      },
+    },
+    Tooltip: {
+      baseStyle: {
+        bg: "content.secondary",
+        color: "base.light",
+        px: 4,
+        py: 2,
+        borderRadius: "lg",
+      },
+    },
+    Tabs: {
+      variants: {
+        line: {
+          tab: {
+            _selected: {
+              color: "interactive.secondary",
+              borderColor: "interactive.secondary",
+              fontWeight: "bold",
+            },
+          },
+        },
+      },
+    },
+    Accordion: {
+      variants: {
+        brand: {
+          container: {
+            borderRadius: "8px",
+            bgColor: "background.transparentGrey",
+            borderWidth: 0,
+            px: 4,
+            py: 4,
+            mb: 6,
+          },
+          button: {
+            borderRadius: "8px",
+          },
+        },
+      },
+      defaultProps: {
+        variant: "brand",
       },
     },
   },
@@ -246,7 +404,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         `}
       </style>
       <CacheProvider>
-        <ChakraProvider theme={theme}>{children}</ChakraProvider>
+        <ChakraProvider theme={appTheme}>{children}</ChakraProvider>
       </CacheProvider>
     </>
   );

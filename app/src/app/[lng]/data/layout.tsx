@@ -2,7 +2,7 @@
 
 import { NavigationBar } from "@/components/navigation-bar";
 
-export default function AuthLayout({
+export default function DataLayout({
   children,
   params: { lng },
 }: {
@@ -11,10 +11,8 @@ export default function AuthLayout({
 }) {
   return (
     <main className="h-screen flex flex-col">
-      <NavigationBar lng={lng} showNav={false} />
-      <div className="w-full h-full bg-city bg-left-bottom bg-no-repeat px-8">
-        {children}
-      </div>
+      <NavigationBar lng={lng} />
+      <div className="w-full h-full">{children}</div>
     </main>
   );
 }

@@ -32,8 +32,11 @@ import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { TbBuildingCommunity } from "react-icons/tb";
 import SubSectorCard from "@/components/Cards/SubSectorCard";
 import Footer from "@/components/Sections/Footer";
+import { useRouter } from "next/navigation";
 
 export default function Home({ params: { lng } }: { params: { lng: string } }) {
+  const router = useRouter();
+
   return (
     <>
       <NavigationBar lng={lng} />
@@ -157,13 +160,13 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               </Box>
             </Box>
             <Box className="flex gap-[24px] relative justify-between top-[100px]">
-              <Link href="/">
+              <Link href="/data">
                 <Card
                   shadow="2dp"
                   backgroundColor="base.light"
                   borderColor="interactive.accent"
                   borderWidth="thin"
-                  className="h-[132px] w-[533px] px-[24px]"
+                  className="h-[132px] w-[533px] px-[24px] py-0"
                 >
                   <Box className="flex items-center w-fill">
                     <Box>
@@ -197,11 +200,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   </Box>
                 </Card>
               </Link>
-              <Link href="/data">
+              <Link href="/">
                 <Card
                   shadow="2dp"
                   backgroundColor="base.light"
-                  className="h-[132px] w-[533px] px-[24px]"
+                  className="h-[132px] w-[533px] px-[24px] py-0"
                 >
                   <Box className="flex items-center w-fill">
                     <Box>
@@ -372,6 +375,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                       </Box>
                       <Box>
                         <Button
+                          onClick={() => router.push("/data/1")}
                           variant="outline"
                           className="border-2 w-[256px] h-[48px] gap-2"
                         >
@@ -492,6 +496,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                       </Box>
                       <Box>
                         <Button
+                          onClick={() => router.push("/data/2")}
                           variant="outline"
                           className="border-2 w-[256px] h-[48px] gap-2"
                         >
@@ -599,6 +604,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                       </Box>
                       <Box>
                         <Button
+                          onClick={() => router.push("/data/3")}
                           variant="outline"
                           className="border-2 w-[256px] h-[48px] gap-2"
                         >

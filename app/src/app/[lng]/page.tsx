@@ -1,6 +1,9 @@
 "use client";
 
+import SubSectorCard from "@/components/Cards/SubSectorCard";
+import Footer from "@/components/Sections/Footer";
 import { NavigationBar } from "@/components/navigation-bar";
+import { InfoOutlineIcon } from "@chakra-ui/icons";
 import {
   Accordion,
   AccordionButton,
@@ -17,6 +20,11 @@ import {
   Link,
   Text,
 } from "@chakra-ui/react";
+import Image from "next/image";
+import NextLink from "next/link";
+import { useRouter } from "next/navigation";
+import { BsTruck } from "react-icons/bs";
+import { FiDownload } from "react-icons/fi";
 import {
   MdArrowForward,
   MdArrowOutward,
@@ -24,15 +32,8 @@ import {
   MdOutlineAddchart,
   MdOutlineAspectRatio,
 } from "react-icons/md";
-import { BsTruck } from "react-icons/bs";
 import { PiTrashLight } from "react-icons/pi";
-import Image from "next/image";
-import { FiDownload } from "react-icons/fi";
-import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { TbBuildingCommunity } from "react-icons/tb";
-import SubSectorCard from "@/components/Cards/SubSectorCard";
-import Footer from "@/components/Sections/Footer";
-import { useRouter } from "next/navigation";
 
 export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const router = useRouter();
@@ -160,13 +161,13 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               </Box>
             </Box>
             <Box className="flex gap-[24px] relative justify-between top-[100px]">
-              <Link href="/data">
+              <NextLink href="/data">
                 <Card
                   shadow="2dp"
                   backgroundColor="base.light"
                   borderColor="interactive.accent"
                   borderWidth="thin"
-                  className="h-[132px] w-[533px] px-[24px] py-0"
+                  className="h-[132px] w-[533px] px-[24px] py-0 hover:shadow-xl"
                 >
                   <Box className="flex items-center w-fill">
                     <Box>
@@ -199,12 +200,12 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     </Box>
                   </Box>
                 </Card>
-              </Link>
-              <Link href="/">
+              </NextLink>
+              <NextLink href="/">
                 <Card
                   shadow="2dp"
                   backgroundColor="base.light"
-                  className="h-[132px] w-[533px] px-[24px] py-0"
+                  className="h-[132px] w-[533px] px-[24px] py-0 hover:shadow-xl"
                 >
                   <Box className="flex items-center w-fill">
                     <Box>
@@ -237,7 +238,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     </Box>
                   </Box>
                 </Card>
-              </Link>
+              </NextLink>
             </Box>
           </Box>
         </Box>

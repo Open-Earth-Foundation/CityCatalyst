@@ -184,6 +184,14 @@ export default function OnboardingSteps({
     }
   };
 
+  const onSkip = () => {
+    if (activeStep >= steps.length - 1) {
+      router.push("/"); // go back to dashboard until there is a confirmation page
+    } else {
+      goToNext();
+    }
+  };
+
   return (
     <div className="pt-16 w-[1090px] max-w-full mx-auto px-4">
       <Button
@@ -303,11 +311,7 @@ export default function OnboardingSteps({
               <Text color="content.tertiary" noOfLines={5}>
                 {source.description}
               </Text>
-              <Link
-                className="underline"
-                mt={4}
-                mb={6}
-              >
+              <Link className="underline" mt={4} mb={6}>
                 {t("see-more-details")}
               </Link>
               {source.isConnected ? (
@@ -396,7 +400,7 @@ export default function OnboardingSteps({
         </Box>
         <Button
           h={16}
-          onClick={goToNext}
+          onClick={onSkip}
           variant="ghost"
           leftIcon={<Icon as={MdOutlineSkipNext} boxSize={6} />}
           size="sm"

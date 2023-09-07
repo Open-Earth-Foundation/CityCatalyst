@@ -5,7 +5,15 @@ import pandas as pd
 from pathlib import Path
 import re
 import statistics
-from utils import make_dir, write_dic_to_csv, uuid_generate_v4
+from utils import (
+    make_dir,
+    write_dic_to_csv,
+    uuid_generate_v4,
+    get_filename,
+    set_seed,
+    string_to_hash,
+)
+
 
 IPCC_2006_THAT_ARE_GPC_BASIC = [
     "1.A - Fuel Combustion Activities",
@@ -118,6 +126,12 @@ def save_to_csv(fl, data):
 
 
 if __name__ == "__main__":
+    # set random.seed so UUID is reproducible
+    #! assumes records always generated in same order
+    seed_string = get_filename()
+    seed_value = string_to_hash(seed_string)
+    set_seed(seed_value)
+
     # output directory
     output_dir = "../data_processed/EFDB_US/"
     output_dir = os.path.abspath(output_dir)

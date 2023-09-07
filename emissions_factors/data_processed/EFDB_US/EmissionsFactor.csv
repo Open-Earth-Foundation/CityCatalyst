@@ -1,19 +1,19 @@
 gpc_refno,emissions_factor,units,gas,region,reference,emissions_factor_id
-I.1.1,14.92,g/MJ Natural Gas,CO2,US,Data provided by Japan Natural Gas Association and The Federation of Electric Power Companies,cc58add0-5267-48b5-9281-5672c4d65092
-I.2.1,14.92,g/MJ Natural Gas,CO2,US,Data provided by Japan Natural Gas Association and The Federation of Electric Power Companies,9e0801f9-a509-4354-9f13-dcb975503a37
-I.3.1,14.92,g/MJ Natural Gas,CO2,US,Data provided by Japan Natural Gas Association and The Federation of Electric Power Companies,9b7da87f-723b-4f40-ab03-126ffc33c04b
-I.4.1,14.92,g/MJ Natural Gas,CO2,US,Data provided by Japan Natural Gas Association and The Federation of Electric Power Companies,c2d4b3b3-ebc1-4830-9f6c-1c7cc071854d
-I.5.1,14.92,g/MJ Natural Gas,CO2,US,Data provided by Japan Natural Gas Association and The Federation of Electric Power Companies,c167b117-daa2-44df-8845-226be3141ef6
-I.6.1,14.92,g/MJ Natural Gas,CO2,US,Data provided by Japan Natural Gas Association and The Federation of Electric Power Companies,bdb63446-0439-4ff3-9507-48575a070bdf
-II.1.1,0.021,g/mile Biogasoline,CH4,US,"Exhaust and evaporative emissions testing of flexible-fuels vehicles, CRC Report No. E-80, Coordinating Research Council, Inc., USA, 2011. (Appendix II)",f689434f-31a4-45d0-afa5-9dec0a14351c
-II.1.1,0.025,g/mile Biogasoline,CH4,US,"Exhaust and evaporative emissions testing of flexible-fuels vehicles, CRC Report No. E-80, Coordinating Research Council, Inc., USA, 2011. (Appendix II)",290c4ea5-df19-4f06-8645-c94de1d4237a
-II.1.1,0.029,g/mile Biogasoline,CH4,US,"Exhaust and evaporative emissions testing of flexible-fuels vehicles, CRC Report No. E-80, Coordinating Research Council, Inc., USA, 2011. (Appendix II)",1a6625d3-0b04-4263-a5e9-2a7465692949
-II.1.1,0.036,g/mile Biogasoline,CH4,US,"Exhaust and evaporative emissions testing of flexible-fuels vehicles, CRC Report No. E-80, Coordinating Research Council, Inc., USA, 2011. (Appendix II)",0a775d3c-c7aa-4795-a14a-8a3601eaac59
-IV.1,8395.0,kg/PJ of oil and gas produced,CH4,US,"US EPA (1992), Procedures for Emission Inventory Preparation, Vol. IV: Mobile Sources, EPA-450/4-81-026d. All emissions have been scaled down to 1988 energy consumption or production levels",1551288c-0cbd-4490-89a0-4093037a2621
-IV.1,2480.0,kg/PJ of oil produced,CH4,US,"US EPA (1992), Procedures for Emission Inventory Preparation, Vol. IV: Mobile Sources, EPA-450/4-81-026d. All emissions have been scaled down to 1988 energy consumption or production levels",bce8e38a-9507-4395-b3f0-2f6a5b7f66ab
-IV.1,888.0,kg/PJ of oil refined,CH4,US,"US EPA (1992), Procedures for Emission Inventory Preparation, Vol. IV: Mobile Sources, EPA-450/4-81-026d. All emissions have been scaled down to 1988 energy consumption or production levels",3cad0bc1-d3a9-4843-9e5a-116644df4171
-IV.1,71905.0,kg/PJ of gas produced,CH4,US,"US EPA (1992), Procedures for Emission Inventory Preparation, Vol. IV: Mobile Sources, EPA-450/4-81-026d. All emissions have been scaled down to 1988 energy consumption or production levels",55a91428-be30-41c6-b9f2-4df7e240eefc
-IV.1,88135.0,kg/PJ of gas consumed,CH4,US,"US EPA (1992), Procedures for Emission Inventory Preparation, Vol. IV: Mobile Sources, EPA-450/4-81-026d. All emissions have been scaled down to 1988 energy consumption or production levels",b324978b-9d47-476e-99ba-b752dc1d410e
-IV.1,24100.0,scf/event,CH4,US,,f64a24bc-9a04-47b2-bb07-728a21f102ad
-IV.1,9650.0,scf/event,CH4,US,,ea0cf721-f41f-49cb-9b45-22397eb0c28c
-IV.1,1260.0,scf/event,CH4,US,,4be68dc2-4e20-4466-8f9e-38bae64fb83f
+I.1.1,14.92,g/MJ Natural Gas,CO2,US,Data provided by Japan Natural Gas Association and The Federation of Electric Power Companies,52b1d5d9-ce74-49d8-8c7c-699b8bef6b33
+I.2.1,14.92,g/MJ Natural Gas,CO2,US,Data provided by Japan Natural Gas Association and The Federation of Electric Power Companies,4db10957-5949-4d20-81db-9e9047ca02e0
+I.3.1,14.92,g/MJ Natural Gas,CO2,US,Data provided by Japan Natural Gas Association and The Federation of Electric Power Companies,85464263-d494-4cf9-baad-b1fada9de461
+I.4.1,14.92,g/MJ Natural Gas,CO2,US,Data provided by Japan Natural Gas Association and The Federation of Electric Power Companies,99977951-e714-4822-a58b-accf19fc822c
+I.5.1,14.92,g/MJ Natural Gas,CO2,US,Data provided by Japan Natural Gas Association and The Federation of Electric Power Companies,1858ca3e-225e-43dd-841c-3d245cea8e40
+I.6.1,14.92,g/MJ Natural Gas,CO2,US,Data provided by Japan Natural Gas Association and The Federation of Electric Power Companies,2c513475-6797-4e5f-b25e-e0d33891eef1
+II.1.1,0.021,g/mile Biogasoline,CH4,US,"Exhaust and evaporative emissions testing of flexible-fuels vehicles, CRC Report No. E-80, Coordinating Research Council, Inc., USA, 2011. (Appendix II)",effc891c-02de-4123-bb30-5ad0017088c7
+II.1.1,0.025,g/mile Biogasoline,CH4,US,"Exhaust and evaporative emissions testing of flexible-fuels vehicles, CRC Report No. E-80, Coordinating Research Council, Inc., USA, 2011. (Appendix II)",46945cc9-b6db-475a-b2bc-a1da37d868e2
+II.1.1,0.029,g/mile Biogasoline,CH4,US,"Exhaust and evaporative emissions testing of flexible-fuels vehicles, CRC Report No. E-80, Coordinating Research Council, Inc., USA, 2011. (Appendix II)",64eab424-4a50-4d05-8750-6ae2db85b9c9
+II.1.1,0.036,g/mile Biogasoline,CH4,US,"Exhaust and evaporative emissions testing of flexible-fuels vehicles, CRC Report No. E-80, Coordinating Research Council, Inc., USA, 2011. (Appendix II)",3fc5ffd9-ebeb-4b27-8d0d-30e3d5d94b4d
+IV.1,8395.0,kg/PJ of oil and gas produced,CH4,US,"US EPA (1992), Procedures for Emission Inventory Preparation, Vol. IV: Mobile Sources, EPA-450/4-81-026d. All emissions have been scaled down to 1988 energy consumption or production levels",22803eb6-8a52-4383-9538-9a36f23c89f3
+IV.1,2480.0,kg/PJ of oil produced,CH4,US,"US EPA (1992), Procedures for Emission Inventory Preparation, Vol. IV: Mobile Sources, EPA-450/4-81-026d. All emissions have been scaled down to 1988 energy consumption or production levels",17e02ed4-d97e-48fc-940e-85421af1c2cb
+IV.1,888.0,kg/PJ of oil refined,CH4,US,"US EPA (1992), Procedures for Emission Inventory Preparation, Vol. IV: Mobile Sources, EPA-450/4-81-026d. All emissions have been scaled down to 1988 energy consumption or production levels",b2f96717-8882-475a-a6a8-6d10c577c817
+IV.1,71905.0,kg/PJ of gas produced,CH4,US,"US EPA (1992), Procedures for Emission Inventory Preparation, Vol. IV: Mobile Sources, EPA-450/4-81-026d. All emissions have been scaled down to 1988 energy consumption or production levels",717137d6-aa14-492b-a402-c5892b347b01
+IV.1,88135.0,kg/PJ of gas consumed,CH4,US,"US EPA (1992), Procedures for Emission Inventory Preparation, Vol. IV: Mobile Sources, EPA-450/4-81-026d. All emissions have been scaled down to 1988 energy consumption or production levels",9f7db415-b6f1-4584-a293-26baf1937d9b
+IV.1,24100.0,scf/event,CH4,US,,0cfa89dd-40e9-4029-adc6-830040d27e4c
+IV.1,9650.0,scf/event,CH4,US,,2d5a71db-4f17-4a24-8f2c-d890ac950187
+IV.1,1260.0,scf/event,CH4,US,,6ae771e6-8927-4938-a9d4-d6875f75c59e

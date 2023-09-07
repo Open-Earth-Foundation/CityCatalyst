@@ -1,11 +1,47 @@
 import csv
+import hashlib
 from pathlib import Path
+import random
+import sys
 import uuid
+
+
+def get_filename():
+    """returns the file name"""
+    return Path(sys.argv[0]).name
+
+
+def string_to_hash(string):
+    """generate reproducible hash from a string
+
+    Parameters
+    -----------
+    string: str
+        string you want to hash
+
+    Returns
+    --------
+    hash: int
+        a sha256 hash of the string
+
+    Example
+    ---------
+    hash_value = string_to_hash('oef')
+    # ans: 41573739547895909249334528024575358810890736899293161579861901619623096988500
+    """
+    hasher = hashlib.sha256()
+    hasher.update(string.encode("utf-8"))
+    return int(hasher.hexdigest(), 16)
+
+
+def set_seed(seed_value):
+    """sets seed of random number generator"""
+    random.seed(seed_value)
 
 
 def uuid_generate_v4():
     """generate a version 4 UUID"""
-    return str(uuid.uuid4())
+    return uuid.UUID(int=random.getrandbits(128), version=4)
 
 
 def write_dic_to_csv(output_dir, name, dic) -> None:

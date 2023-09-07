@@ -20,7 +20,7 @@
   "confirm-button": "Confirm and Continue",
 
   "confirm-heading": "Confirm City's Information",
-  "confirm-details": "Review and confirm this information about your city. If there is an error please send us an email to edit it.<br /><br />We use <1>open data sources</1> to pre-fill the city profile.",
+  "confirm-details": "Review and confirm this information about your city. If there is an error please send us an email to edit it.<br /><br />We use <2>open data sources</2> to pre-fill the city profile.",
   "total-population": "Total population",
   "total-land-area": "Total land area",
   "geographical-boundaries": "Geographical boundaries",

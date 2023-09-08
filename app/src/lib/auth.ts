@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import { User } from "@/models/User";
+import { db } from "@/models";
 
 export enum Roles {
   User = "user",
@@ -31,15 +32,27 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        let user: User | null = await User.findOne({
-          where: { email: credentials.email },
-        });
-        if (!user) {
+        let user: User | null = null;
+        try {
+          if (!db.initialized) {
+            await db.initialize();
+          }
+          user = await db.models.User.findOne({
+            where: { email: credentials.email },
+          });
+        } catch (err: any) {
+          console.error("Failed to login:", err);
           return null;
         }
-        if (
-          user.passwordHash !== (await bcrypt.hash(credentials.password, 10))
-        ) {
+
+        if (!user || !user.passwordHash) {
+          console.error("No user found!");
+          return null;
+        }
+
+        const isValid = await bcrypt.compare(credentials.password, user.passwordHash);
+        if (!isValid) {
+          console.log("Invalid password!");
           return null;
         }
         return {

@@ -17,7 +17,7 @@ spec:
       volumes:
         - name: postgres
           persistentVolumeClaim:
-            claimName: cc-db-pvc
+            claimName: cc-global-api-db-pvc
       containers:
         - name: postgresql
           image: postgis/postgis:15-3.4

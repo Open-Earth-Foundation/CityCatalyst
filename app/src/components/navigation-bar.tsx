@@ -1,13 +1,28 @@
 "use client";
 
 import { useTranslation } from "@/i18n/client";
+import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { Link } from "@chakra-ui/next-js";
-import { Avatar, Box, Divider, Heading, Select, Text } from "@chakra-ui/react";
+import {
+  Avatar,
+  Box,
+  Button,
+  Divider,
+  Heading,
+  Icon,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Select,
+  Text,
+} from "@chakra-ui/react";
 import i18next from "i18next";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import NextLink from "next/link";
 import { ChangeEventHandler } from "react";
+import { MdLogout } from "react-icons/md";
 
 export function NavigationBar({
   lng,
@@ -29,7 +44,7 @@ export function NavigationBar({
 
   return (
     <Box
-      className="flex flex-row space-between px-8 py-4 align-middle space-x-12 items-center"
+      className="flex flex-row px-8 py-4 align-middle space-x-12 items-center"
       bgColor="content.alternative"
     >
       <NextLink href="/">
@@ -74,19 +89,49 @@ export function NavigationBar({
         <option value="es">ES</option>
       </Select>
       {status === "authenticated" && session.user && (
-        <div className="flex flex-row items-center cursor-pointer" onClick={() => signOut()}>
-          <Avatar
-            size="sm"
-            bg="interactive.connected"
-            color="base.light"
-            mr={4}
-            name={session.user.name!}
-            src={session.user.image!}
-          />
-          <Heading size="sm" color="base.light" className="whitespace-nowrap">
-            {session.user.name}
-          </Heading>
-        </div>
+        <Menu>
+          {({ isOpen }) => (
+            <>
+              <MenuButton
+                as={Button}
+                variant="ghost"
+                color="base.light"
+                size="md"
+                minW="220px"
+                leftIcon={
+                  <Avatar
+                    size="sm"
+                    bg="interactive.connected"
+                    color="base.light"
+                    name={session.user?.name!}
+                    src={session.user?.image!}
+                  />
+                }
+                rightIcon={isOpen ? <TriangleUpIcon /> : <TriangleDownIcon />}
+                className="whitespace-nowrap normal-case"
+                _hover={{
+                  bg: "#FFF2",
+                }}
+                _active={{
+                  bg: "#FFF3",
+                }}
+              >
+                {session.user?.name}
+              </MenuButton>
+              <MenuList>
+                <MenuItem onClick={() => signOut()}>
+                  <Icon
+                    as={MdLogout}
+                    boxSize={6}
+                    color="sentiment.negativeDefault"
+                    mr={4}
+                  />
+                  {t("log-out")}
+                </MenuItem>
+              </MenuList>
+            </>
+          )}
+        </Menu>
       )}
     </Box>
   );

@@ -4,5 +4,6 @@
   "log-in": "Log In",
   "sign-up": "Sign up",
   "dashboard": "Dashboard",
-  "go-back": "Go back"
+  "go-back": "Go back",
+  "log-out": "Log Out"
 }

@@ -3,6 +3,11 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import { User } from "@/models/User";
 
+export enum Roles {
+  User = "user",
+  Admin = "admin",
+}
+
 export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/login",

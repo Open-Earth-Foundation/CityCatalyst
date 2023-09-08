@@ -2,11 +2,12 @@
 
 import { useTranslation } from "@/i18n/client";
 import { Link } from "@chakra-ui/next-js";
-import { Box, Divider, Select, Text } from "@chakra-ui/react";
+import { Avatar, Box, Divider, Heading, Select, Text } from "@chakra-ui/react";
 import i18next from "i18next";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { ChangeEventHandler } from "react";
 import NextLink from "next/link";
+import { ChangeEventHandler } from "react";
 
 export function NavigationBar({
   lng,
@@ -24,9 +25,13 @@ export function NavigationBar({
     const newPath = location.pathname.replace(/^\/[A-Za-z]+/, `/${newLng}`);
     history.replaceState("", "", newPath);
   };
+  const { data: session, status } = useSession();
 
   return (
-    <Box className="flex flex-row space-between px-8 py-4 align-middle space-x-12" bgColor="content.alternative">
+    <Box
+      className="flex flex-row space-between px-8 py-4 align-middle space-x-12 items-center"
+      bgColor="content.alternative"
+    >
       <NextLink href="/">
         <Image
           src="/assets/logo.svg"
@@ -37,32 +42,29 @@ export function NavigationBar({
         />
       </NextLink>
       <NextLink href="/">
-        <Text size="18" color="base.light" className="font-bold mt-1">
+        <Heading size="18" color="base.light">
           {t("title")}
-        </Text>
+        </Heading>
       </NextLink>
       <div className="w-full" />
       {showNav && (
-        <Link
-          href="/"
+        <NextLink href="/">
+          <Heading color="base.light" size="sm" className="opacity-75" ml={6}>
+            {t("dashboard")}
+          </Heading>
+        </NextLink>
+      )}
+      <NextLink href="/help">
+        <Heading
           color="base.light"
-          size="16"
-          className="opacity-75 mt-1"
+          size="sm"
+          className="opacity-75"
           ml={6}
         >
-          {t("dashboard")}
-        </Link>
-      )}
-      <Link
-        href="/help"
-        color="base.light"
-        size="16"
-        className="opacity-75 mt-1"
-        ml={6}
-      >
-        {t("help")}
-      </Link>
-      <Divider orientation="vertical" />
+          {t("help")}
+        </Heading>
+      </NextLink>
+      <Divider orientation="vertical" h={6} />
       <Select
         variant="unstyled"
         onChange={onChangeLanguage}
@@ -71,12 +73,26 @@ export function NavigationBar({
         w={20}
         size="md"
         color="base.light"
-        mt={1}
       >
         <option value="en">EN</option>
         <option value="de">DE</option>
         <option value="es">ES</option>
       </Select>
+      {status === "authenticated" && session.user && (
+        <div className="flex flex-row items-center">
+          <Avatar
+            size="sm"
+            bg="interactive.connected"
+            color="base.light"
+            mr={4}
+            name={session.user.name!}
+            src={session.user.image!}
+          />
+          <Heading size="sm" color="base.light">
+            {session.user.name}
+          </Heading>
+        </div>
+      )}
     </Box>
   );
 }

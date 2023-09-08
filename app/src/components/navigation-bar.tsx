@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslation } from "@/i18n/client";
+import { languages } from "@/i18n/settings";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
-import { Link } from "@chakra-ui/next-js";
 import {
   Avatar,
   Box,
@@ -14,15 +14,17 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
-  Select,
-  Text,
 } from "@chakra-ui/react";
 import i18next from "i18next";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import NextLink from "next/link";
-import { ChangeEventHandler } from "react";
+import { CircleFlag } from "react-circle-flags";
 import { MdLogout } from "react-icons/md";
+
+function countryFromLanguage(language: string) {
+  return language == "en" ? "us" : language;
+}
 
 export function NavigationBar({
   lng,
@@ -32,12 +34,11 @@ export function NavigationBar({
   showNav?: boolean;
 }) {
   const { t } = useTranslation(lng, "navigation");
-  const onChangeLanguage: ChangeEventHandler<HTMLSelectElement> = (event) => {
-    const newLng = event.target.value;
-    i18next.changeLanguage(newLng);
+  const onChangeLanguage = (language: string) => {
+    i18next.changeLanguage(language);
 
     // change language in URL without reloading page
-    const newPath = location.pathname.replace(/^\/[A-Za-z]+/, `/${newLng}`);
+    const newPath = location.pathname.replace(/^\/[A-Za-z]+/, `/${language}`);
     history.replaceState("", "", newPath);
   };
   const { data: session, status } = useSession();
@@ -75,19 +76,47 @@ export function NavigationBar({
         </Heading>
       </NextLink>
       <Divider orientation="vertical" h={6} />
-      <Select
-        variant="unstyled"
-        onChange={onChangeLanguage}
-        defaultValue={lng}
-        minW={20}
-        w={20}
-        size="md"
-        color="base.light"
-      >
-        <option value="en">EN</option>
-        <option value="de">DE</option>
-        <option value="es">ES</option>
-      </Select>
+      <Menu>
+        {({ isOpen }) => (
+          <>
+            <MenuButton
+              as={Button}
+              variant="ghost"
+              color="base.light"
+              size="md"
+              minW="120px"
+              leftIcon={
+                <CircleFlag countryCode={countryFromLanguage(i18next.language)} width="24" />
+              }
+              rightIcon={isOpen ? <TriangleUpIcon /> : <TriangleDownIcon />}
+              className="whitespace-nowrap normal-case"
+              _hover={{
+                bg: "#FFF2",
+              }}
+              _active={{
+                bg: "#FFF3",
+              }}
+            >
+              {i18next.language.toUpperCase()}
+            </MenuButton>
+            <MenuList minW="140px">
+              {languages.map((language) => (
+                <MenuItem
+                  onClick={() => onChangeLanguage(language)}
+                  key={language}
+                >
+                  <CircleFlag
+                    countryCode={countryFromLanguage(language)}
+                    width="24"
+                    className="mr-4"
+                  />
+                  {language.toUpperCase()}
+                </MenuItem>
+              ))}
+            </MenuList>
+          </>
+        )}
+      </Menu>
       {status === "authenticated" && session.user && (
         <Menu>
           {({ isOpen }) => (

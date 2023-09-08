@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 """
 FastApi application instance intialized with `title` and `debug mode`
 """
-app = FastAPI(title=settings.PROJECT_NAME, debug=True)
+app = FastAPI(title=settings.PROJECT_NAME, debug=settings.DEBUG,)
 
 """
 Function to generate custom OpenAPI documentation

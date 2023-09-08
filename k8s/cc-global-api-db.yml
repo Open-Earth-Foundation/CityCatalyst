@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cc-db-deploy
+  name: cc-global-api-db-deploy
   labels:
     app: db
 spec:

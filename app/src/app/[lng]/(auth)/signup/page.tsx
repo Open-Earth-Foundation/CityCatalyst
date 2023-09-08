@@ -59,7 +59,7 @@ export default function Signup({
   return (
     <>
       <Heading size="xl">{t("signup-heading")}</Heading>
-      <Text mt={4} mb={8} color="#7A7B9A">
+      <Text mt={4} mb={8} color="content.tertiary">
         {t("signup-details")}
       </Text>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -81,7 +81,7 @@ export default function Signup({
         <EmailInput register={register} error={errors.email} t={t} />
         <PasswordInput register={register} error={errors.password} t={t}>
           <FormHelperText>
-            <InfoOutlineIcon color="#2351DC" boxSize={4} mt={-0.5} mr={1.5} />{" "}
+            <InfoOutlineIcon color="interactive.secondary" boxSize={4} mt={-0.5} mr={1.5} />{" "}
             {t("password-hint")}
           </FormHelperText>
         </PasswordInput>
@@ -122,7 +122,7 @@ export default function Signup({
         </FormControl>
         <FormControl isInvalid={!!errors.acceptTerms}>
           <Checkbox
-            color="#7A7B9A"
+            color="content.tertiary"
             size="md"
             {...register("acceptTerms", {
               required: t("accept-terms-required"),
@@ -145,12 +145,12 @@ export default function Signup({
           isLoading={isSubmitting}
           h={16}
           width="full"
-          className="bg-[#2351DC]"
+          bgColor="interactive.secondary"
         >
           {t("create-account")}
         </Button>
       </form>
-      <Text className="w-full text-center mt-4 text-sm" color="#7A7B9A">
+      <Text className="w-full text-center mt-4 text-sm" color="content.tertiary">
         {t("have-account")}{" "}
         <Link href="/login" className="underline">
           {t("log-in")}

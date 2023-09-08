@@ -2,11 +2,9 @@ from fastapi import APIRouter, HTTPException
 from sqlalchemy import text
 from sqlalchemy.orm import sessionmaker
 import pandas as pd
-from db.database import engine
+from db.database import SessionLocal
 
 api_router = APIRouter(prefix="/api/v0")
-# Define SessionLocal for database interactions
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Extract the data by locode, year and sector/subsector
 def db_query(locode, year, reference_number):
@@ -75,7 +73,7 @@ def get_emissions_by_city_and_year(
                 "asset_name": str(sources["asset_name"]),
                 "asset_id": str(sources["asset_id"]),
                 "lat": str(sources["lat"]),
-                "lon": str(sources["lon"]),    
+                "lon": str(sources["lon"]),
             },
             "Capacity": {
                 "value": str(sources["capacity"]),

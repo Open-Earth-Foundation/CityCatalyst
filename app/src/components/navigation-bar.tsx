@@ -2,7 +2,7 @@
 
 import { useTranslation } from "@/i18n/client";
 import { Link } from "@chakra-ui/next-js";
-import { Divider, Select, Text } from "@chakra-ui/react";
+import { Box, Divider, Select, Text } from "@chakra-ui/react";
 import i18next from "i18next";
 import Image from "next/image";
 import { ChangeEventHandler } from "react";
@@ -26,7 +26,7 @@ export function NavigationBar({
   };
 
   return (
-    <div className="flex flex-row space-between px-8 py-4 align-middle bg-[#001EA7] space-x-12">
+    <Box className="flex flex-row space-between px-8 py-4 align-middle space-x-12" bgColor="content.alternative">
       <NextLink href="/">
         <Image
           src="/assets/logo.svg"
@@ -37,7 +37,7 @@ export function NavigationBar({
         />
       </NextLink>
       <NextLink href="/">
-        <Text size="18" color="white" className="font-bold mt-1">
+        <Text size="18" color="base.light" className="font-bold mt-1">
           {t("title")}
         </Text>
       </NextLink>
@@ -45,7 +45,7 @@ export function NavigationBar({
       {showNav && (
         <Link
           href="/"
-          color="white"
+          color="base.light"
           size="16"
           className="opacity-75 mt-1"
           ml={6}
@@ -55,7 +55,7 @@ export function NavigationBar({
       )}
       <Link
         href="/help"
-        color="white"
+        color="base.light"
         size="16"
         className="opacity-75 mt-1"
         ml={6}
@@ -70,13 +70,13 @@ export function NavigationBar({
         minW={20}
         w={20}
         size="md"
-        color="white"
+        color="base.light"
         mt={1}
       >
         <option value="en">EN</option>
         <option value="de">DE</option>
         <option value="es">ES</option>
       </Select>
-    </div>
+    </Box>
   );
 }

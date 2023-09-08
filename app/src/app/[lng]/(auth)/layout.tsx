@@ -12,10 +12,10 @@ export default function AuthLayout({
   return (
     <main className="h-screen flex flex-col">
       <NavigationBar lng={lng} showNav={false} />
-      <div className="flex flex-row items-stretch h-full">
-        <div className="bg-[#02061c] w-[485px] h-full hidden md:block bg-roads bg-no-repeat" />
+      <div className="flex flex-row items-stretch flex-1">
+        <div className="bg-[#02061c] w-[485px] hidden md:block bg-roads bg-no-repeat" />
         <div className="w-full">
-          <div className="pt-[148px] w-[480px] max-w-full mx-auto px-4">
+          <div className="pt-[148px] pb-4 w-[480px] max-w-full mx-auto px-4">
             {children}
           </div>
         </div>

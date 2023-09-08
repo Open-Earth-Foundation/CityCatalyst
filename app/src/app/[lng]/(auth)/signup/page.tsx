@@ -57,7 +57,7 @@ export default function Signup({
     }
 
     try {
-      const res = await fetch("/api/v0/signup", {
+      const res = await fetch("/api/v0/auth/register", {
         method: "POST",
         body: JSON.stringify(data),
         headers: {

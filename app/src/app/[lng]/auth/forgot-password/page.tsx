@@ -25,7 +25,7 @@ export default function ForgotPassword({
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log(data);
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    router.push(`/check-email?email=${data.email}&reset=true`);
+    router.push(`/auth/check-email?email=${data.email}&reset=true`);
   };
 
   return (

@@ -72,7 +72,7 @@ export default function Signup({
         return;
       }
 
-      const callbackUrl = `/check-email?email=${data.email}`;
+      const callbackUrl = `/auth/check-email?email=${data.email}`;
       const loginResponse = await signIn("credentials", {
         redirect: false,
         email: data.email,
@@ -196,7 +196,7 @@ export default function Signup({
         color="content.tertiary"
       >
         {t("have-account")}{" "}
-        <Link href="/login" className="underline">
+        <Link href="/auth/login" className="underline">
           {t("log-in")}
         </Link>
       </Text>

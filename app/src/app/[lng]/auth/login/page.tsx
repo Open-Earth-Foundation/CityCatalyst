@@ -84,7 +84,7 @@ export default function Login({
         <PasswordInput register={register} error={errors.password} t={t} />
         <Text color="semantic.danger">{error}</Text>
         <div className="w-full text-right">
-          <Link href="/forgot-password" className="underline">
+          <Link href="/auth/forgot-password" className="underline">
             {t("forgot-password")}
           </Link>
         </div>
@@ -101,7 +101,7 @@ export default function Login({
       </form>
       <Text className="w-full text-center mt-4 text-sm" color="content.tertiary">
         {t("no-account")}{" "}
-        <Link href="/signup" className="underline">
+        <Link href="/auth/signup" className="underline">
           {t("sign-up")}
         </Link>
       </Text>

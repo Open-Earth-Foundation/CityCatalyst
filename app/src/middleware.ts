@@ -1,6 +1,8 @@
 import { fallbackLng, languages } from "@/i18n/settings";
 import acceptLanguage from "accept-language";
 import { NextRequest, NextResponse } from "next/server";
+import authMiddleware, { NextRequestWithAuth } from "next-auth/middleware";
+import { NextMiddlewareResult } from "next/dist/server/web/types";
 
 acceptLanguage.languages(languages);
 
@@ -9,9 +11,10 @@ export const config = {
   matcher: ["/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js).*)"],
 };
 
+const authMatcher = /^\/[a-z]{0,2}[\/]?auth\//;
 const cookieName = "i18next";
 
-export function middleware(req: NextRequest) {
+export function middleware(req: NextRequestWithAuth) {
   let lng;
   if (req.cookies.has(cookieName)) {
     lng = acceptLanguage.get(req.cookies.get(cookieName)?.value);
@@ -31,20 +34,33 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(
       new URL(
         `/${lng}${req.nextUrl.pathname}?${req.nextUrl.searchParams}`,
-        req.url,
-      ),
+        req.url
+      )
     );
   }
 
   if (req.headers.has("referer")) {
     const refererUrl = new URL(req.headers.get("referer")!);
     const lngInReferer = languages.find((l) =>
-      refererUrl.pathname.startsWith(`/${l}`),
+      refererUrl.pathname.startsWith(`/${l}`)
     );
-    const response = NextResponse.next();
-    if (lngInReferer) response.cookies.set(cookieName, lngInReferer);
+    const response = next(req);
+    if (response instanceof NextResponse && lngInReferer) {
+      response.cookies.set(cookieName, lngInReferer);
+    }
     return response;
   }
 
-  return NextResponse.next();
+  return next(req);
+}
+
+async function next(req: NextRequestWithAuth): Promise<NextMiddlewareResult> {
+  const basePath = new URL(req.url).pathname;
+  console.log("Matcher", basePath, req.url);
+  if (!authMatcher.test(basePath)) {
+    console.log("Matches!")
+    return await authMiddleware(req);
+  } else {
+    return NextResponse.next();
+  }
 }

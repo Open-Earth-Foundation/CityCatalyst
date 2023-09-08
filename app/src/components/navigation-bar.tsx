@@ -4,7 +4,7 @@ import { useTranslation } from "@/i18n/client";
 import { Link } from "@chakra-ui/next-js";
 import { Avatar, Box, Divider, Heading, Select, Text } from "@chakra-ui/react";
 import i18next from "i18next";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import NextLink from "next/link";
 import { ChangeEventHandler } from "react";
@@ -55,12 +55,7 @@ export function NavigationBar({
         </NextLink>
       )}
       <NextLink href="/help">
-        <Heading
-          color="base.light"
-          size="sm"
-          className="opacity-75"
-          ml={6}
-        >
+        <Heading color="base.light" size="sm" className="opacity-75" ml={6}>
           {t("help")}
         </Heading>
       </NextLink>
@@ -79,7 +74,7 @@ export function NavigationBar({
         <option value="es">ES</option>
       </Select>
       {status === "authenticated" && session.user && (
-        <div className="flex flex-row items-center">
+        <div className="flex flex-row items-center cursor-pointer" onClick={() => signOut()}>
           <Avatar
             size="sm"
             bg="interactive.connected"
@@ -88,7 +83,7 @@ export function NavigationBar({
             name={session.user.name!}
             src={session.user.image!}
           />
-          <Heading size="sm" color="base.light">
+          <Heading size="sm" color="base.light" className="whitespace-nowrap">
             {session.user.name}
           </Heading>
         </div>

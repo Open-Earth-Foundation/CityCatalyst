@@ -76,7 +76,7 @@ export default function Login({
   return (
     <>
       <Heading size="xl">{t("login-heading")}</Heading>
-      <Text my={4} color="#7A7B9A">
+      <Text my={4} color="content.tertiary">
         {t("login-details")}
       </Text>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -94,12 +94,12 @@ export default function Login({
           isLoading={isSubmitting}
           h={16}
           width="full"
-          className="bg-[#2351DC]"
+          bgColor="interactive.secondary"
         >
           {t("log-in")}
         </Button>
       </form>
-      <Text className="w-full text-center mt-4 text-sm" color="#7A7B9A">
+      <Text className="w-full text-center mt-4 text-sm" color="content.tertiary">
         {t("no-account")}{" "}
         <Link href="/signup" className="underline">
           {t("sign-up")}

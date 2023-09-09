@@ -1,0 +1,54 @@
+# modify the backend and nginx port according to the need.
+
+version: "3.9"
+services:
+  be:
+    container_name: global_api_backend
+    build:
+      context: .
+      dockerfile: ./dockerfiles/be.Dockerfile
+    command: ["sh", "/code/start.sh"]
+    env_file:
+      - .env
+    volumes:
+      - ./:/code
+    expose:
+      - 8001
+    depends_on:
+      - db
+
+  db:
+    container_name: global_api_db
+    image: postgres:15-bullseye
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=ccglobal
+      - POSTGRES_USER=ccglobal
+      - POSTGRES_PASSWORD=ccglobal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ccglobal", "-d", "db_prod"]
+      interval: 10s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+
+  nginx:
+    container_name: global_api_nginx
+    image: nginx
+    volumes:
+      - ./dockerfiles/configs/nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 9000:9000
+    depends_on:
+      - be
+
+volumes:
+  pg_data:
+    name: global_api_pg_data
+
+networks:
+  default:
+    name: global_api_network

@@ -88,6 +88,7 @@ Entry point of the fastapi application (Drive Code)
     - change the port number if port is already occupied
     - modify the logging level according to the need
 """
+# comment out if you want to run project without docker.
 
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level="debug", reload=True)
+# if __name__ == "__main__":
+#     uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level="debug", reload=True)

@@ -2,11 +2,25 @@
 
 This is the Global API server used by CityCatalyst for accessing data from services that don't have a public API.
 
-### Requirements
+### Setup Locally In Docker Container
+#### Requirements
+Needs docker installed with docker compose on machine
+
+```bash
+docker compose build --build-args build_env=dev && docker compose up -d && docker compose logs -f --tail 100
+```
+To interact with backend container.
+```bash
+docker compose exec be bash
+```
+To interact with postgres databse inside container.
+```bash
+docker compose exec db psql -U `postgres_username`
+```
+### Setup Locally
+#### Requirements
 
 It runs on Python 3, and requires a Postgres database.
-
-### Setup
 
 #### Code
 

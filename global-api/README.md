@@ -9,6 +9,8 @@ Needs docker installed with docker compose on machine
 ```bash
 docker compose build --build-args build_env=dev && docker compose up -d && docker compose logs -f --tail 100
 ```
+For production environment change `build_env=dev` to `build_env=prod` 
+
 To interact with backend container.
 ```bash
 docker compose exec be bash

@@ -428,7 +428,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                 100% completed
               </Heading>
             </Box>
-            <Box className="flex gap-5 mt-[16px]">
+            <Box className="flex gap-[16px] mt-[16px]">
               <Box className="w-[279px] flex gap-2 px-3 items-center justify-center rounded-full h-[30px] border border-[#E8EAFB]">
                 <Box
                   borderRadius="full"

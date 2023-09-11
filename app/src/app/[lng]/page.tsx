@@ -317,7 +317,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   </Box>
                 </Card>
               </NextLink>
-              <NextLink href="/">
+              <Box>
                 <Card
                   onClick={handleDownload}
                   shadow="2dp"
@@ -355,7 +355,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     </Box>
                   </Box>
                 </Card>
-              </NextLink>
+              </Box>
             </Box>
           </Box>
         </Box>

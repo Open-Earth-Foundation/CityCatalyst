@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cc-global-api-db-deploy
+  labels:
+    app: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      volumes:
+        - name: postgres
+          persistentVolumeClaim:
+            claimName: cc-global-api-db-pvc
+      containers:
+        - name: postgresql
+          image: postgis/postgis:15-3.4
+          imagePullPolicy: Always
+          resources:
+            limits:
+              memory: "1024Mi"
+              cpu: "1000m"
+          env:
+            - name: "POSTGRES_USER"
+              value: "ccglobal"
+            - name: "POSTGRES_PASSWORD"
+              value: ""
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - mountPath: "/var/lib/postgresql/"
+              name: postgres

@@ -11,43 +11,8 @@ on:
     branches: ["develop"]
 
 jobs:
-  runTests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - name: Install dependencies
-        run: cd app && npm install
-
-      - name: Set up database
-        run: |
-          docker run --name github_action_postgresql -d -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_PASSWORD="" postgres
-          sleep 10
-          createuser -w -h localhost -p 5432 -U postgres citycatalyst
-          createdb -w -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst
-          cd app
-          cp env.example .env
-          npm run db:migrate
-
-      - name: Run NextJS build
-        run: |
-          cd app
-          npm run build
-
-      - name: Run tests
-        run: |
-          cd app
-          npm run test
-
-      - name: Shut down database
-        run: docker stop github_action_postgresql
 
   pushToGHCR:
-    needs: runTests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -62,9 +27,9 @@ jobs:
       - name: Pushing CC Web to GHCR
         env:
           VERSION: ${{ github.sha }}
-          IMAGE: ghcr.io/open-earth-foundation/citycatalyst
+          IMAGE: ghcr.io/open-earth-foundation/citycatalyst-global-api
         run: |
-          docker build -t $IMAGE:$VERSION app
+          docker build -t $IMAGE:$VERSION global-api
           docker tag $IMAGE:$VERSION $IMAGE:latest
           docker push $IMAGE:$VERSION
           docker push $IMAGE:latest
@@ -87,6 +52,6 @@ jobs:
 
       - name: Deploying service
         run: |
-          kubectl create -f k8s/cc-migrate.yml -n default
-          kubectl apply -f k8s/cc-web-deploy.yml -n default
-          kubectl rollout restart deployment cc-web-deploy -n default
+          kubectl create -f k8s/cc-global-api-migrate.yml -n default
+          kubectl apply -f k8s/cc-global-api-deploy.yml -n default
+          kubectl rollout restart deployment cc-global-api-deploy -n default

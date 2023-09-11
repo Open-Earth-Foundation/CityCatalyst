@@ -28,9 +28,9 @@ spec:
               cpu: "1000m"
           env:
             - name: "POSTGRES_USER"
-              value: "citycatalyst"
+              value: "ccglobal"
             - name: "POSTGRES_PASSWORD"
-              value: "development"
+              value: ""
           ports:
             - containerPort: 5432
           volumeMounts:

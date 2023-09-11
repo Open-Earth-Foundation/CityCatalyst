@@ -1,6 +1,6 @@
 describe("Login page", () => {
   it("redirects to dashboard after entering correct data", () => {
-    cy.visit("/login");
+    cy.visit("/auth/login");
     cy.contains("Log In");
     cy.get('input[name="email"]').type("test@openearth.org");
     cy.get('input[name="password"]').type("password");

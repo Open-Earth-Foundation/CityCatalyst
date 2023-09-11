@@ -11,3 +11,4 @@ geopandas==0.13.2
 shapely==2.0.1
 osmnx==1.6.0
 psycopg2-binary==2.9.7
+pydantic-settings==2.*

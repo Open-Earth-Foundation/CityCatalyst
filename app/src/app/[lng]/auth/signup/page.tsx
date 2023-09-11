@@ -16,7 +16,9 @@ import {
   Input,
   Text,
 } from "@chakra-ui/react";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
 
@@ -39,27 +41,60 @@ export default function Signup({
   const {
     handleSubmit,
     register,
-    setError,
+    setError: setFormError,
     formState: { errors, isSubmitting },
   } = useForm<Inputs>();
+
+  const [error, setError] = useState("");
+
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    console.log(data);
     if (data.password !== data.confirmPassword) {
-      setError("confirmPassword", {
+      setFormError("confirmPassword", {
         type: "custom",
         message: "Passwords don't match!",
       });
       return;
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    router.push(`/check-email?email=${data.email}`);
+    try {
+      const res = await fetch("/api/v0/auth/register", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        console.log("Failed to sign up", data);
+        setError(data.error.message);
+        return;
+      }
+
+      const callbackUrl = `/auth/check-email?email=${data.email}`;
+      const loginResponse = await signIn("credentials", {
+        redirect: false,
+        email: data.email,
+        password: data.password,
+        callbackUrl,
+      });
+
+      if (!loginResponse?.error) {
+        router.push(callbackUrl);
+      } else {
+        console.log("Failed to login", loginResponse)
+        setError(t("invalid-email-password"));
+      }
+    } catch (error: any) {
+      setError(error);
+    }
   };
 
   return (
     <>
       <Heading size="xl">{t("signup-heading")}</Heading>
-      <Text mt={4} mb={8} color="#7A7B9A">
+      <Text mt={4} mb={8} color="content.tertiary">
         {t("signup-details")}
       </Text>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -81,7 +116,12 @@ export default function Signup({
         <EmailInput register={register} error={errors.email} t={t} />
         <PasswordInput register={register} error={errors.password} t={t}>
           <FormHelperText>
-            <InfoOutlineIcon color="#2351DC" boxSize={4} mt={-0.5} mr={1.5} />{" "}
+            <InfoOutlineIcon
+              color="interactive.secondary"
+              boxSize={4}
+              mt={-0.5}
+              mr={1.5}
+            />{" "}
             {t("password-hint")}
           </FormHelperText>
         </PasswordInput>
@@ -122,7 +162,7 @@ export default function Signup({
         </FormControl>
         <FormControl isInvalid={!!errors.acceptTerms}>
           <Checkbox
-            color="#7A7B9A"
+            color="content.tertiary"
             size="md"
             {...register("acceptTerms", {
               required: t("accept-terms-required"),
@@ -139,20 +179,24 @@ export default function Signup({
             {errors.acceptTerms && errors.acceptTerms.message}
           </FormErrorMessage>
         </FormControl>
+        {error && <Text color="semantic.danger">{error}</Text>}
         <Button
           type="submit"
           formNoValidate
           isLoading={isSubmitting}
           h={16}
           width="full"
-          className="bg-[#2351DC]"
+          bgColor="interactive.secondary"
         >
           {t("create-account")}
         </Button>
       </form>
-      <Text className="w-full text-center mt-4 text-sm" color="#7A7B9A">
+      <Text
+        className="w-full text-center mt-4 text-sm"
+        color="content.tertiary"
+      >
         {t("have-account")}{" "}
-        <Link href="/login" className="underline">
+        <Link href="/auth/login" className="underline">
           {t("log-in")}
         </Link>
       </Text>

@@ -38,27 +38,37 @@ alembic upgrade head
 
 You should re-run alembic each time a new database migration is added.
 
-### Skeleton directory for Global API server
+#### Configuration
 
-.
+Copy `sample.env` to `.env` and edit it to match your configuration.
 
-├── .env
+```bash
+cp sample.env .env
+```
 
-├── .github/
+Configuration options are:
 
-├── .gitignore
+- `PROJECT_NAME`: name of the project; default is `CityCatalyst-Global-API`
+- `DB_NAME`: name of your database; default is `ccglobal` or whatever
+    you set in the database setup above
+- `DB_USER`: `ccglobal` or whatever you used above
+- `DB_PASSWORD`: blank, unless you added something
+- `DB_HOST`: localhost or whatever you used above
+- `DB_PORT`: integer; usually 5432
 
-├── README.md
+### Running
 
-├── models/
+```bash
+python main.py
+```
 
-├── requirements.txt
+On MacOS or other systems, you have to use `python3` instead of `python`.
 
-├── routes/
+```bash
+python3 main.py
+```
 
-├── tests/
-
-└── utils/
+### Code layout
 
 `routes` will have the API routes
 
@@ -66,6 +76,6 @@ You should re-run alembic each time a new database migration is added.
 
 `tests` will have our test functions
 
-`.githu`b will have setup github actions to run our tests
+`.github` will have setup github actions to run our tests
 
 `utils` will have utility scripts

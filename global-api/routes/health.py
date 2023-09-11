@@ -1,9 +1,11 @@
-from fastapi import HTTPException
 from contextlib import closing
-from fastapi import HTTPException
-from main import app, engine 
+from db.database import engine
+from fastapi import APIRouter, HTTPException
 
-@app.get("/health")
+api_router = APIRouter()
+
+
+@api_router.get("/health")
 def health_check():
     """
     Check the health of the service by testing the database connection.
@@ -17,4 +19,12 @@ def health_check():
             return {'status': 'ok'}
     except Exception as e:
         raise HTTPException(status_code=503, detail="Service unavailable")
+
+    
+
+    
+
+
+
+
 

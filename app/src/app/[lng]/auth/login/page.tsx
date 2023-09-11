@@ -6,9 +6,10 @@ import { useTranslation } from "@/i18n/client";
 import { Link } from "@chakra-ui/next-js";
 import { Button, Heading, Text, useToast } from "@chakra-ui/react";
 import { TFunction } from "i18next";
+import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { Suspense, useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 
 type Inputs = {
   email: string;
@@ -48,23 +49,42 @@ export default function Login({
     register,
     formState: { errors, isSubmitting },
   } = useForm<Inputs>();
+
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const [error, setError] = useState("");
+
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    console.log(data);
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    router.push(`/`);
+    try {
+      const res = await signIn("credentials", {
+        redirect: false,
+        email: data.email,
+        password: data.password,
+        callbackUrl,
+      });
+      console.log(res);
+      if (!res?.error) {
+        router.push(callbackUrl);
+      } else {
+        setError(t("invalid-email-password"));
+      }
+    } catch (error: any) {
+      setError(error);
+    }
   };
 
   return (
     <>
       <Heading size="xl">{t("login-heading")}</Heading>
-      <Text my={4} color="#7A7B9A">
+      <Text my={4} color="content.tertiary">
         {t("login-details")}
       </Text>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <EmailInput register={register} error={errors.email} t={t} />
         <PasswordInput register={register} error={errors.password} t={t} />
+        <Text color="semantic.danger">{error}</Text>
         <div className="w-full text-right">
-          <Link href="/forgot-password" className="underline">
+          <Link href="/auth/forgot-password" className="underline">
             {t("forgot-password")}
           </Link>
         </div>
@@ -74,14 +94,14 @@ export default function Login({
           isLoading={isSubmitting}
           h={16}
           width="full"
-          className="bg-[#2351DC]"
+          bgColor="interactive.secondary"
         >
           {t("log-in")}
         </Button>
       </form>
-      <Text className="w-full text-center mt-4 text-sm" color="#7A7B9A">
+      <Text className="w-full text-center mt-4 text-sm" color="content.tertiary">
         {t("no-account")}{" "}
-        <Link href="/signup" className="underline">
+        <Link href="/auth/signup" className="underline">
           {t("sign-up")}
         </Link>
       </Text>

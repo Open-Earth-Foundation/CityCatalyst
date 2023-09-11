@@ -1,16 +1,10 @@
-from main import app
-from fastapi import HTTPException
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import SessionLocal, sessionmaker
-from decouple import config
+from fastapi import APIRouter, HTTPException
+from sqlalchemy import text
+from sqlalchemy.orm import sessionmaker
 import pandas as pd
-import numpy as np
+from db.database import SessionLocal
 
-# Define the database engine
-engine = create_engine(config("DATABASE_URL"))
-
-# Define SessionLocal for database interactions
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+api_router = APIRouter(prefix="/api/v0")
 
 # Extract the data by locode, year and sector/subsector
 def db_query(locode, year, reference_number):
@@ -41,7 +35,7 @@ gpc_quality_data = "TBD"
 gpc_quality_EF = "TBD"
 
 
-@app.get("/api/v0/climatetrace/city/{locode}/{year}/{gpcReferenceNumber}")
+@api_router.get("/climatetrace/city/{locode}/{year}/{gpcReferenceNumber}")
 def get_emissions_by_city_and_year(
     locode: str, year: int, inventoryPart: str, gpcReferenceNumber: float
 ):
@@ -79,7 +73,7 @@ def get_emissions_by_city_and_year(
                 "asset_name": str(sources["asset_name"]),
                 "asset_id": str(sources["asset_id"]),
                 "lat": str(sources["lat"]),
-                "lon": str(sources["lon"]),    
+                "lon": str(sources["lon"]),
             },
             "Capacity": {
                 "value": str(sources["capacity"]),
@@ -113,4 +107,3 @@ def get_emissions_by_city_and_year(
     }
 
     return {"totals": totals, "points": points}
-

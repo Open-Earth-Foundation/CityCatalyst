@@ -12,15 +12,15 @@ spec:
         image: ghcr.io/open-earth-foundation/citycatalyst-global-api:latest
         imagePullPolicy: Always
         env:
-        - name: NODE_ENV
-          value: development
-        - name: DATABASE_HOST
-          value: "cc-db"
-        - name: DATABASE_USER
-          value: "citycatalyst"
-        - name: DATABASE_PASSWORD
-          value: "development"
-        command: ["npm",  "run", "db:migrate"]
+        - name: DB_HOST
+          value: "cc-global-api-db"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_USER
+          value: "ccglobal"
+        - name: DB_PASSWORD
+          value: ""
+        command: ["alembic",  "upgrade", "head"]
         resources:
           limits:
             memory: "1024Mi"

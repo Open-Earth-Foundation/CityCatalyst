@@ -16,22 +16,20 @@ spec:
     spec:
       containers:
         - name: cc-global-api
-          image: ghcr.io/open-earth-foundation/global-api:latest
+          image: ghcr.io/open-earth-foundation/citycatalyst-global-api:latest
           # Set to Never for local
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
           env:
-            - name: NODE_ENV
-              value: "production"
-            - name: PORT
-              value: "3000"
-            - name: DATABASE_HOST
-              value: "cc-db"
-            - name: DATABASE_USER
-              value: "citycatalyst"
-            - name: DATABASE_PASSWORD
-              value: "development"
+            - name: DB_HOST
+              value: "cc-global-api-db"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_USER
+              value: "ccglobal"
+            - name: DB_PASSWORD
+              value: ""
           resources:
             limits:
               memory: "1024Mi"

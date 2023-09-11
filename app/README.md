@@ -57,6 +57,11 @@ npm run db:migrate
 
 You'll need to re-run the migrations whenever you make changes to the database schema.
 
+### Environment
+
+Copy `env.example` to a file called `.env`  
+The environment variables `NEXTAUTH_SECRET` and `NEXTAUTH_URL` are required for running unless `NODE_ENV` is set to a value that's different than `production`.
+
 ## Running
 
 ### Development

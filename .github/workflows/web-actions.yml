@@ -15,6 +15,10 @@ jobs:
 
   runTests:
     runs-on: ubuntu-latest
+    env:
+      NODE_ENV: ci
+      NEXTAUTH_SECRET: "diTMz/XLX4edSmmfzwJtmzKjCJGRt81Gf0PdjO3IPs8="
+      NEXTAUTH_URL: "http://localhost:3000"
     steps:
 
     - uses: actions/checkout@v3

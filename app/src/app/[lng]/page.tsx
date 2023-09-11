@@ -3,7 +3,7 @@
 import SubSectorCard from "@/components/Cards/SubSectorCard";
 import Footer from "@/components/Sections/Footer";
 import { NavigationBar } from "@/components/navigation-bar";
-import { InfoOutlineIcon } from "@chakra-ui/icons";
+import { CheckCircleIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import {
   Accordion,
   AccordionButton,
@@ -28,15 +28,131 @@ import { FiDownload } from "react-icons/fi";
 import {
   MdArrowForward,
   MdArrowOutward,
+  MdCheckCircleOutline,
   MdGroup,
   MdOutlineAddchart,
   MdOutlineAspectRatio,
 } from "react-icons/md";
 import { PiTrashLight } from "react-icons/pi";
 import { TbBuildingCommunity } from "react-icons/tb";
+import { useToast } from "@chakra-ui/react";
 
 export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const router = useRouter();
+  const toast = useToast();
+  enum STATUS {
+    INFO = "info",
+    SUCCESS = "success",
+    ERROR = "error",
+  }
+
+  const CITY_INTENTORY_YEAR = "DE_BER";
+
+  const showToast = (
+    title: string,
+    description: string,
+    status: any,
+    duration: number,
+    bgColor: string,
+  ) => {
+    toast({
+      description: description,
+      status: status,
+      duration: duration,
+      isClosable: true,
+      render: () => (
+        <Box
+          display="flex"
+          gap="8px"
+          color="white"
+          alignItems="center"
+          justifyContent="space-between"
+          p={3}
+          bg={bgColor}
+          width="600px"
+          height="60px"
+          borderRadius="8px"
+        >
+          <Box display="flex" gap="8px" alignItems="center">
+            {status === "info" || status === "error" ? (
+              <InfoOutlineIcon fontSize="24px" />
+            ) : (
+              <MdCheckCircleOutline fontSize="24px" />
+            )}
+            <Text
+              color="base.light"
+              fontWeight="bold"
+              lineHeight="52"
+              fontSize="label.lg"
+              fontFamily="heading"
+            >
+              {title}
+            </Text>
+          </Box>
+          {status === "error" ? (
+            <Button
+              onClick={handleDownload}
+              fontWeight="600"
+              fontSize="16px"
+              letterSpacing="1.25px"
+              variant="unstyled"
+              bgColor="none"
+            >
+              Try again
+            </Button>
+          ) : (
+            ""
+          )}
+        </Box>
+      ),
+    });
+  };
+  const handleDownload = () => {
+    showToast(
+      "Preparing your dataset for download",
+      "Please wait while we fetch your data",
+      STATUS.INFO,
+      2000,
+      "semantic.info",
+    );
+    fetch(`/api/v0/city/:city/inventory/${CITY_INTENTORY_YEAR}.xls`)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const contentDisposition = res.headers.get("Content-Disposition");
+        if (contentDisposition) {
+          const match = contentDisposition.match(/filename="(.+)"/);
+          const filename = match ? match[1] : `${CITY_INTENTORY_YEAR}.xls`;
+          return res.blob().then((blob) => {
+            const downloadLink = document.createElement("a");
+            downloadLink.href = URL.createObjectURL(blob);
+            downloadLink.download = filename;
+
+            downloadLink.click();
+            showToast(
+              "Inventory report download completed!",
+              "Downloading your data",
+              STATUS.SUCCESS,
+              2000,
+              "interactive.primary",
+            );
+            URL.revokeObjectURL(downloadLink.href);
+          });
+        }
+      })
+
+      .catch((error) => {
+        showToast(
+          "Download failed",
+          "There was an error during download",
+          STATUS.ERROR,
+          2000,
+          "semantic.danger",
+        );
+      });
+  };
 
   return (
     <>
@@ -203,6 +319,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               </NextLink>
               <NextLink href="/">
                 <Card
+                  onClick={handleDownload}
                   shadow="2dp"
                   backgroundColor="base.light"
                   className="h-[132px] w-[533px] px-[24px] py-0 hover:shadow-xl"

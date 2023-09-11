@@ -29,6 +29,7 @@ export const appTheme = extendTheme({
       warningOverlay: "#FEF8E1",
       danger: "#F23D33",
       dangerOverlay: "#FFEAEE",
+      info: "#001EA7",
     },
 
     base: {

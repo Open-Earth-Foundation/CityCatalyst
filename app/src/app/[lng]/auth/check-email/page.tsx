@@ -51,7 +51,7 @@ export default function CheckEmail({
       <Suspense>
         <DynamicContent t={t} />
       </Suspense>
-      <NextLink href="/login" passHref legacyBehavior>
+      <NextLink href="/auth/login" passHref legacyBehavior>
         <Button as="a" h={16} width="full" mt={4}>
           {t("back-to-login")}
         </Button>

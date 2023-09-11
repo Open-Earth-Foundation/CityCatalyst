@@ -412,11 +412,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               </Link>{" "}
               about GPC Protocol
             </Text>
-            <Box className="flex w-full justify-between items-center mt-2">
+            <Box className="flex w-full justify-between items-center mt-2 gap-[24px]">
               <Box
                 backgroundColor="interactive.tertiary"
                 borderRadius="full"
-                className="w-[850px] flex h-[16px]"
+                className="w-[946px] flex h-[16px]"
               >
                 <Box
                   backgroundColor="interactive.connected"
@@ -424,9 +424,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   className="h-full w-[308px]"
                 />
               </Box>
-              <Heading fontWeight="semibold" fontSize="body.md">
-                100% completed
-              </Heading>
+              <Box>
+                <Heading fontWeight="semibold" fontSize="body.md">
+                  100% completed
+                </Heading>
+              </Box>
             </Box>
             <Box className="flex gap-[16px] mt-[16px]">
               <Box className="w-[279px] flex gap-2 px-3 items-center justify-center rounded-full h-[30px] border border-[#E8EAFB]">

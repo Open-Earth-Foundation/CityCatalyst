@@ -228,7 +228,14 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         </Text>
                         <InfoOutlineIcon w={3} h={3} color="brandScheme.100" />
                       </Box>
-                      <Text fontSize="body.md" color="brandScheme.100">
+                      <Text
+                        fontSize="body.md"
+                        color="brandScheme.100"
+                        fontStyle="normal"
+                        fontWeight={400}
+                        lineHeight="20px"
+                        letterSpacing="wide"
+                      >
                         Total emissions in 2023
                       </Text>
                     </Box>
@@ -254,7 +261,14 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         </Text>
                         <InfoOutlineIcon w={3} h={3} color="brandScheme.100" />
                       </Box>
-                      <Text fontSize="body.md" color="brandScheme.100">
+                      <Text
+                        fontSize="body.md"
+                        color="brandScheme.100"
+                        fontStyle="normal"
+                        fontWeight={400}
+                        lineHeight="20px"
+                        letterSpacing="wide"
+                      >
                         Total Population
                       </Text>
                     </Box>
@@ -280,7 +294,14 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         </Text>
                         <InfoOutlineIcon w={3} h={3} color="brandScheme.100" />
                       </Box>
-                      <Text fontSize="body.md" color="brandScheme.100">
+                      <Text
+                        fontSize="body.md"
+                        color="brandScheme.100"
+                        fontStyle="normal"
+                        fontWeight={400}
+                        lineHeight="20px"
+                        letterSpacing="wide"
+                      >
                         Total land area
                       </Text>
                     </Box>

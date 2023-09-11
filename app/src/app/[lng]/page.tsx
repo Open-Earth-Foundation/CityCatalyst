@@ -36,6 +36,7 @@ import {
 import { PiTrashLight } from "react-icons/pi";
 import { TbBuildingCommunity } from "react-icons/tb";
 import { useToast } from "@chakra-ui/react";
+import { useState } from "react";
 
 export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const router = useRouter();
@@ -47,6 +48,25 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
   }
 
   const CITY_INTENTORY_YEAR = "DE_BER";
+
+  // Accordion
+
+  const [isStationaryEnSectorOpen, setIsStationarySectorEnOpen] =
+    useState(false);
+  const [isTransportSecOpen, setIsTransportSecOpen] = useState(false);
+  const [isWasteSectorOpen, setWasteSectorOpen] = useState(false);
+
+  // Function to toggle the accordion section
+  const toggleAccordionA = () => {
+    setIsStationarySectorEnOpen(!isStationaryEnSectorOpen);
+  };
+  const toggleAccordionB = () => {
+    setIsTransportSecOpen(!isTransportSecOpen);
+  };
+
+  const toggleAccordionC = () => {
+    setWasteSectorOpen(!isWasteSectorOpen);
+  };
 
   const showToast = (
     title: string,
@@ -551,6 +571,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         </Box>
                       </AccordionPanel>
                       <AccordionButton
+                        onClick={toggleAccordionA}
                         className="flex justify-center"
                         background="none"
                         color="content.tertiary"
@@ -561,7 +582,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           fontWeight="semibold"
                           fontSize="button.md"
                         >
-                          VIEW MORE
+                          {isStationaryEnSectorOpen ? "VIEW LESS" : "VIEW MORE"}
                         </Text>
                         <AccordionIcon h={7} w={7} />
                       </AccordionButton>
@@ -660,6 +681,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         </Box>
                       </AccordionPanel>
                       <AccordionButton
+                        onClick={toggleAccordionB}
                         className="flex justify-center"
                         background="none"
                         color="content.tertiary"
@@ -670,7 +692,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           fontWeight="semibold"
                           fontSize="button.md"
                         >
-                          VIEW MORE
+                          {isTransportSecOpen ? "VIEW LESS" : "VIEW MORE"}
                         </Text>
                         <AccordionIcon h={7} w={7} />
                       </AccordionButton>
@@ -776,6 +798,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         </Box>
                       </AccordionPanel>
                       <AccordionButton
+                        onClick={toggleAccordionC}
                         className="flex justify-center"
                         background="none"
                         color="content.tertiary"
@@ -786,7 +809,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           fontWeight="semibold"
                           fontSize="button.md"
                         >
-                          VIEW MORE
+                          {isWasteSectorOpen ? "VIEW LESS" : "VIEW MORE"}
                         </Text>
                         <AccordionIcon h={7} w={7} />
                       </AccordionButton>

@@ -1,6 +1,6 @@
 fastapi==0.103.1
 uvicorn==0.23.2
-black==23.7.0
+black==23.9.1
 flake8==6.1.0
 mypy==1.5.1
 pandas==2.1.0

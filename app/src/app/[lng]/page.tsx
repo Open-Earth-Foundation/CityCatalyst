@@ -515,7 +515,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         <Button
                           onClick={() => router.push("/data/1")}
                           variant="outline"
-                          className="border-2 w-[256px] h-[48px] gap-2"
+                          className="border-2 w-[256px] h-[48px] py-[16px] gap-2"
                         >
                           <Text
                             fontFamily="heading"
@@ -524,7 +524,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           >
                             ADD DATA TO SECTOR
                           </Text>
-                          <MdArrowForward color="#2351DC" />
+                          <MdArrowForward color="#2351DC" size={24} />
                         </Button>
                       </Box>
                     </Box>
@@ -637,7 +637,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         <Button
                           onClick={() => router.push("/data/2")}
                           variant="outline"
-                          className="border-2 w-[256px] h-[48px] gap-2"
+                          className="border-2 w-[256px] h-[48px] py-[16px] gap-2"
                         >
                           <Text
                             fontFamily="heading"
@@ -646,7 +646,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           >
                             ADD DATA TO SECTOR
                           </Text>
-                          <MdArrowForward color="#2351DC" />
+                          <MdArrowForward color="#2351DC" size={24} />
                         </Button>
                       </Box>
                     </Box>
@@ -746,7 +746,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         <Button
                           onClick={() => router.push("/data/3")}
                           variant="outline"
-                          className="border-2 w-[256px] h-[48px] gap-2"
+                          className="border-2 w-[256px] h-[48px] py-[16px] gap-2"
                         >
                           <Text
                             fontFamily="heading"
@@ -755,7 +755,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           >
                             ADD DATA TO SECTOR
                           </Text>
-                          <MdArrowForward color="#2351DC" />
+                          <MdArrowForward color="#2351DC" size={24} />
                         </Button>
                       </Box>
                     </Box>

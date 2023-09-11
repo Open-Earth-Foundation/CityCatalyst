@@ -146,7 +146,7 @@ if __name__ == "__main__":
     # =================================================================
     publisher_data = {
         "publisher_id": uuid_generate_v4(),
-        "publisher_name": "IPCC",
+        "name": "IPCC",
         "URL": "https://www.ipcc.ch/",
     }
 

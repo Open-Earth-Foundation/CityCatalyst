@@ -32,3 +32,21 @@ export const createInventoryRequest = z.object({
   totalEmissions: z.number().int().optional(),
 });
 export type CreateInventoryRequest = z.infer<typeof createInventoryRequest>;
+
+// enforces: min one upper- and lowercase charater and one number, min length 4 characters
+export const passwordRegex =
+  /^(?=(.*[a-z]){1,})(?=(.*[A-Z]){1,})(?=(.*[0-9]){1,}).{4,}$/;
+export const signupRequest = z
+  .object({
+    name: z.string().min(4),
+    email: z.string().email(),
+    password: z.string().min(4).regex(passwordRegex),
+    confirmPassword: z.string().min(4),
+    inviteCode: z.string().min(6).max(6),
+    acceptTerms: z.literal<boolean>(true),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+export type SignupRequest = z.infer<typeof signupRequest>;

@@ -35,7 +35,7 @@ export default function UpdatePassword({
       return;
     }
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    router.push(`/reset-successful`);
+    router.push(`/auth/reset-successful`);
   };
 
   return (

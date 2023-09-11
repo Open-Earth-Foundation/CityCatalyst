@@ -19,7 +19,7 @@ const Footer = () => {
           </Box>
           <Box
             fontFamily="heading"
-            className="text-white text-[14px] grid grid-cols-3 gap-6 font-poppins"
+            className="text-white text-[14px] w-[60%] grid grid-cols-3  gap-6 font-poppins"
           >
             <FooterLink url="/" title="About Open Climate" />
             <FooterLink url="/" title="Contribution Guide" />

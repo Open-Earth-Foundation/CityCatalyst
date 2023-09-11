@@ -3,7 +3,7 @@
 import SubSectorCard from "@/components/Cards/SubSectorCard";
 import Footer from "@/components/Sections/Footer";
 import { NavigationBar } from "@/components/navigation-bar";
-import { InfoOutlineIcon } from "@chakra-ui/icons";
+import { CheckCircleIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import {
   Accordion,
   AccordionButton,
@@ -28,15 +28,152 @@ import { FiDownload } from "react-icons/fi";
 import {
   MdArrowForward,
   MdArrowOutward,
+  MdCheckCircleOutline,
   MdGroup,
   MdOutlineAddchart,
   MdOutlineAspectRatio,
 } from "react-icons/md";
 import { PiTrashLight } from "react-icons/pi";
 import { TbBuildingCommunity } from "react-icons/tb";
+import { useToast } from "@chakra-ui/react";
+import { useState } from "react";
+
+enum STATUS {
+  INFO = "info",
+  SUCCESS = "success",
+  ERROR = "error",
+}
+
+const CITY_INTENTORY_YEAR = "DE_BER";
 
 export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const router = useRouter();
+  const toast = useToast();
+
+  // Accordion
+
+  const [isStationaryEnSectorOpen, setIsStationarySectorEnOpen] =
+    useState(false);
+  const [isTransportSecOpen, setIsTransportSecOpen] = useState(false);
+  const [isWasteSectorOpen, setWasteSectorOpen] = useState(false);
+
+  // Function to toggle the accordion section
+  const toggleAccordionA = () => {
+    setIsStationarySectorEnOpen(!isStationaryEnSectorOpen);
+  };
+  const toggleAccordionB = () => {
+    setIsTransportSecOpen(!isTransportSecOpen);
+  };
+
+  const toggleAccordionC = () => {
+    setWasteSectorOpen(!isWasteSectorOpen);
+  };
+
+  const showToast = (
+    title: string,
+    description: string,
+    status: any,
+    duration: number,
+    bgColor: string,
+  ) => {
+    toast({
+      description: description,
+      status: status,
+      duration: duration,
+      isClosable: true,
+      render: () => (
+        <Box
+          display="flex"
+          gap="8px"
+          color="white"
+          alignItems="center"
+          justifyContent="space-between"
+          p={3}
+          bg={bgColor}
+          width="600px"
+          height="60px"
+          borderRadius="8px"
+        >
+          <Box display="flex" gap="8px" alignItems="center">
+            {status === "info" || status === "error" ? (
+              <InfoOutlineIcon fontSize="24px" />
+            ) : (
+              <MdCheckCircleOutline fontSize="24px" />
+            )}
+            <Text
+              color="base.light"
+              fontWeight="bold"
+              lineHeight="52"
+              fontSize="label.lg"
+              fontFamily="heading"
+            >
+              {title}
+            </Text>
+          </Box>
+          {status === "error" ? (
+            <Button
+              onClick={handleDownload}
+              fontWeight="600"
+              fontSize="16px"
+              letterSpacing="1.25px"
+              variant="unstyled"
+              bgColor="none"
+            >
+              Try again
+            </Button>
+          ) : (
+            ""
+          )}
+        </Box>
+      ),
+    });
+  };
+  const handleDownload = () => {
+    showToast(
+      "Preparing your dataset for download",
+      "Please wait while we fetch your data",
+      STATUS.INFO,
+      2000,
+      "semantic.info",
+    );
+    fetch(`/api/v0/city/:city/inventory/${CITY_INTENTORY_YEAR}.xls`)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const contentDisposition = res.headers.get("Content-Disposition");
+        if (contentDisposition) {
+          const match = contentDisposition.match(/filename="(.+)"/);
+          const filename = match ? match[1] : `${CITY_INTENTORY_YEAR}.xls`;
+          return res.blob().then((blob) => {
+            const downloadLink = document.createElement("a");
+            downloadLink.href = URL.createObjectURL(blob);
+            downloadLink.download = filename;
+
+            downloadLink.click();
+            showToast(
+              "Inventory report download completed!",
+              "Downloading your data",
+              STATUS.SUCCESS,
+              2000,
+              "interactive.primary",
+            );
+            URL.revokeObjectURL(downloadLink.href);
+          });
+        }
+      })
+
+      .catch((error) => {
+        showToast(
+          "Download failed",
+          "There was an error during download",
+          STATUS.ERROR,
+          2000,
+          "semantic.danger",
+        );
+      });
+  };
 
   return (
     <>
@@ -92,7 +229,14 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         </Text>
                         <InfoOutlineIcon w={3} h={3} color="brandScheme.100" />
                       </Box>
-                      <Text fontSize="body.md" color="brandScheme.100">
+                      <Text
+                        fontSize="body.md"
+                        color="brandScheme.100"
+                        fontStyle="normal"
+                        fontWeight={400}
+                        lineHeight="20px"
+                        letterSpacing="wide"
+                      >
                         Total emissions in 2023
                       </Text>
                     </Box>
@@ -118,7 +262,14 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         </Text>
                         <InfoOutlineIcon w={3} h={3} color="brandScheme.100" />
                       </Box>
-                      <Text fontSize="body.md" color="brandScheme.100">
+                      <Text
+                        fontSize="body.md"
+                        color="brandScheme.100"
+                        fontStyle="normal"
+                        fontWeight={400}
+                        lineHeight="20px"
+                        letterSpacing="wide"
+                      >
                         Total Population
                       </Text>
                     </Box>
@@ -144,7 +295,14 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         </Text>
                         <InfoOutlineIcon w={3} h={3} color="brandScheme.100" />
                       </Box>
-                      <Text fontSize="body.md" color="brandScheme.100">
+                      <Text
+                        fontSize="body.md"
+                        color="brandScheme.100"
+                        fontStyle="normal"
+                        fontWeight={400}
+                        lineHeight="20px"
+                        letterSpacing="wide"
+                      >
                         Total land area
                       </Text>
                     </Box>
@@ -201,8 +359,9 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   </Box>
                 </Card>
               </NextLink>
-              <NextLink href="/">
+              <Box>
                 <Card
+                  onClick={handleDownload}
                   shadow="2dp"
                   backgroundColor="base.light"
                   className="h-[132px] w-[533px] px-[24px] py-0 hover:shadow-xl"
@@ -238,7 +397,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     </Box>
                   </Box>
                 </Card>
-              </NextLink>
+              </Box>
             </Box>
           </Box>
         </Box>
@@ -275,11 +434,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               </Link>{" "}
               about GPC Protocol
             </Text>
-            <Box className="flex w-full justify-between items-center mt-2">
+            <Box className="flex w-full justify-between items-center mt-2 gap-[24px]">
               <Box
                 backgroundColor="interactive.tertiary"
                 borderRadius="full"
-                className="w-[850px] flex h-[16px]"
+                className="w-[946px] flex h-[16px]"
               >
                 <Box
                   backgroundColor="interactive.connected"
@@ -287,11 +446,13 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   className="h-full w-[308px]"
                 />
               </Box>
-              <Heading fontWeight="semibold" fontSize="body.md">
-                100% completed
-              </Heading>
+              <Box>
+                <Heading fontWeight="semibold" fontSize="body.md">
+                  100% completed
+                </Heading>
+              </Box>
             </Box>
-            <Box className="flex gap-5 mt-[16px]">
+            <Box className="flex gap-[16px] mt-[16px]">
               <Box className="w-[279px] flex gap-2 px-3 items-center justify-center rounded-full h-[30px] border border-[#E8EAFB]">
                 <Box
                   borderRadius="full"
@@ -378,7 +539,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         <Button
                           onClick={() => router.push("/data/1")}
                           variant="outline"
-                          className="border-2 w-[256px] h-[48px] gap-2"
+                          className="border-2 w-[256px] h-[48px] py-[16px] gap-2"
                         >
                           <Text
                             fontFamily="heading"
@@ -387,7 +548,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           >
                             ADD DATA TO SECTOR
                           </Text>
-                          <MdArrowForward color="#2351DC" />
+                          <MdArrowForward color="#2351DC" size={24} />
                         </Button>
                       </Box>
                     </Box>
@@ -434,6 +595,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         </Box>
                       </AccordionPanel>
                       <AccordionButton
+                        onClick={toggleAccordionA}
                         className="flex justify-center"
                         background="none"
                         color="content.tertiary"
@@ -443,8 +605,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           fontFamily="heading"
                           fontWeight="semibold"
                           fontSize="button.md"
+                          letterSpacing="wider"
+                          fontStyle="normal"
+                          className="hover:underline hover:text-[#001EA7]"
                         >
-                          VIEW MORE
+                          {isStationaryEnSectorOpen ? "VIEW LESS" : "VIEW MORE"}
                         </Text>
                         <AccordionIcon h={7} w={7} />
                       </AccordionButton>
@@ -499,7 +664,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         <Button
                           onClick={() => router.push("/data/2")}
                           variant="outline"
-                          className="border-2 w-[256px] h-[48px] gap-2"
+                          className="border-2 w-[256px] h-[48px] py-[16px] gap-2"
                         >
                           <Text
                             fontFamily="heading"
@@ -508,7 +673,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           >
                             ADD DATA TO SECTOR
                           </Text>
-                          <MdArrowForward color="#2351DC" />
+                          <MdArrowForward color="#2351DC" size={24} />
                         </Button>
                       </Box>
                     </Box>
@@ -543,6 +708,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         </Box>
                       </AccordionPanel>
                       <AccordionButton
+                        onClick={toggleAccordionB}
                         className="flex justify-center"
                         background="none"
                         color="content.tertiary"
@@ -552,8 +718,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           fontFamily="heading"
                           fontWeight="semibold"
                           fontSize="button.md"
+                          letterSpacing="wider"
+                          fontStyle="normal"
+                          className="hover:underline hover:text-[#001EA7]"
                         >
-                          VIEW MORE
+                          {isTransportSecOpen ? "VIEW LESS" : "VIEW MORE"}
                         </Text>
                         <AccordionIcon h={7} w={7} />
                       </AccordionButton>
@@ -607,7 +776,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         <Button
                           onClick={() => router.push("/data/3")}
                           variant="outline"
-                          className="border-2 w-[256px] h-[48px] gap-2"
+                          className="border-2 w-[256px] h-[48px] py-[16px] gap-2"
                         >
                           <Text
                             fontFamily="heading"
@@ -616,7 +785,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           >
                             ADD DATA TO SECTOR
                           </Text>
-                          <MdArrowForward color="#2351DC" />
+                          <MdArrowForward color="#2351DC" size={24} />
                         </Button>
                       </Box>
                     </Box>
@@ -659,6 +828,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         </Box>
                       </AccordionPanel>
                       <AccordionButton
+                        onClick={toggleAccordionC}
                         className="flex justify-center"
                         background="none"
                         color="content.tertiary"
@@ -668,8 +838,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           fontFamily="heading"
                           fontWeight="semibold"
                           fontSize="button.md"
+                          letterSpacing="wider"
+                          fontStyle="normal"
+                          className="hover:underline hover:text-[#001EA7]"
                         >
-                          VIEW MORE
+                          {isWasteSectorOpen ? "VIEW LESS" : "VIEW MORE"}
                         </Text>
                         <AccordionIcon h={7} w={7} />
                       </AccordionButton>

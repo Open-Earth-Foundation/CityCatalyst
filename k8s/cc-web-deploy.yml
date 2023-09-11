@@ -32,6 +32,10 @@ spec:
           value: "citycatalyst"
         - name: DATABASE_PASSWORD
           value: "development"
+        - name: NEXTAUTH_SECRET
+          value: "12ZDzcUbcuYsWk6UEBWvJoaIdFpAtE3UkeMjVdFepbk="
+        - name: NEXTAUTH_URL
+          value: "https://citycatalyst.openearth.dev"
         resources:
           limits:
             memory: "1024Mi"

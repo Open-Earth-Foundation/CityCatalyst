@@ -604,6 +604,9 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           fontFamily="heading"
                           fontWeight="semibold"
                           fontSize="button.md"
+                          letterSpacing="wider"
+                          fontStyle="normal"
+                          className="hover:underline hover:text-[#001EA7]"
                         >
                           {isStationaryEnSectorOpen ? "VIEW LESS" : "VIEW MORE"}
                         </Text>
@@ -714,6 +717,9 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           fontFamily="heading"
                           fontWeight="semibold"
                           fontSize="button.md"
+                          letterSpacing="wider"
+                          fontStyle="normal"
+                          className="hover:underline hover:text-[#001EA7]"
                         >
                           {isTransportSecOpen ? "VIEW LESS" : "VIEW MORE"}
                         </Text>
@@ -831,6 +837,9 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           fontFamily="heading"
                           fontWeight="semibold"
                           fontSize="button.md"
+                          letterSpacing="wider"
+                          fontStyle="normal"
+                          className="hover:underline hover:text-[#001EA7]"
                         >
                           {isWasteSectorOpen ? "VIEW LESS" : "VIEW MORE"}
                         </Text>

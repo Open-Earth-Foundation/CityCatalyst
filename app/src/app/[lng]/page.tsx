@@ -38,16 +38,17 @@ import { TbBuildingCommunity } from "react-icons/tb";
 import { useToast } from "@chakra-ui/react";
 import { useState } from "react";
 
+enum STATUS {
+  INFO = "info",
+  SUCCESS = "success",
+  ERROR = "error",
+}
+
+const CITY_INTENTORY_YEAR = "DE_BER";
+
 export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const router = useRouter();
   const toast = useToast();
-  enum STATUS {
-    INFO = "info",
-    SUCCESS = "success",
-    ERROR = "error",
-  }
-
-  const CITY_INTENTORY_YEAR = "DE_BER";
 
   // Accordion
 

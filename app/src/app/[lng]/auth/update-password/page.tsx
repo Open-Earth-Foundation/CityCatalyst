@@ -4,7 +4,7 @@ import PasswordInput from "@/components/password-input";
 import { useTranslation } from "@/i18n/client";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { Button, FormHelperText, Heading, Text } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
 
 type Inputs = {
@@ -19,6 +19,9 @@ export default function UpdatePassword({
 }) {
   const { t } = useTranslation(lng, "auth");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+
   const {
     handleSubmit,
     register,

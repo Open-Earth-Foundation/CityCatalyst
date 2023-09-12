@@ -1,19 +1,25 @@
-import { Html } from "@react-email/html";
-import { Text } from "@react-email/text";
-import { Section } from "@react-email/section";
-import { Container } from "@react-email/container";
-import { Button } from "@react-email/button";
-import { Link } from "@react-email/link";
+import {
+  Body,
+  Button,
+  Container,
+  Head,
+  Html,
+  Link,
+  Preview,
+  Text,
+} from "@react-email/components";
 
 export default function ForgotPasswordTemplate({ url }: { url: string }) {
   return (
     <Html>
-      <Section style={main}>
+      <Head />
+      <Preview>CityCatalyst: Reset your password</Preview>
+      <Body style={main}>
         <Container style={container}>
           <Text style={brandHeading}>CityCatalyst</Text>
           <Text style={heading}>Forgot your password?</Text>
-          <Text style={paragraph}>Reset it using this link:</Text>
-          <Button href={url} style={button}>
+          <Text style={paragraph}>Reset it by clicking the button below:</Text>
+          <Button pX={16} pY={16} href={url} style={button}>
             Reset Password
           </Button>
           <Text style={paragraph}>
@@ -21,7 +27,7 @@ export default function ForgotPasswordTemplate({ url }: { url: string }) {
           </Text>
           <Link href={url}>{url}</Link>
         </Container>
-      </Section>
+      </Body>
     </Html>
   );
 }
@@ -29,6 +35,8 @@ export default function ForgotPasswordTemplate({ url }: { url: string }) {
 // Styles for the email template
 const main = {
   backgroundColor: "#ffffff",
+  fontFamily:
+    '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
 };
 
 const container = {
@@ -39,10 +47,10 @@ const container = {
 
 const brandHeading = {
   fontSize: "40px",
-  lineHeight: "1.3",
+  lineHeight: "1.5",
   fontWeight: "700",
   color: "#2351DC",
-}
+};
 
 const heading = {
   fontSize: "32px",
@@ -62,6 +70,5 @@ const button = {
   backgroundColor: "#2351DC",
   borderRadius: "0.5em",
   lineHeight: 1.5,
-  padding: "0.75em 1.5em",
   color: "#FFF",
 };

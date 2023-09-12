@@ -5,6 +5,7 @@ import { useTranslation } from "@/i18n/client";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { Button, FormHelperText, Heading, Text } from "@chakra-ui/react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 
 type Inputs = {
@@ -20,25 +21,45 @@ export default function UpdatePassword({
   const { t } = useTranslation(lng, "auth");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const resetToken = searchParams.get("token");
+  const [error, setError] = useState("");
 
   const {
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
-    setError,
+    setError: setFormError,
   } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    console.log(data);
     if (data.password !== data.confirmPassword) {
-      setError("confirmPassword", {
+      setFormError("confirmPassword", {
         type: "custom",
         message: "Passwords don't match!",
       });
       return;
     }
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    router.push(`/auth/reset-successful`);
+    const body = { newPassword: data.password, resetToken };
+    try {
+      const res = await fetch("/api/v0/auth/password", {
+        method: "POST",
+        body: JSON.stringify(body),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        console.log("Failed to reset password", data);
+        setError(data.error.message);
+        return;
+      }
+
+      setError("");
+      router.push(`/auth/reset-successful`);
+    } catch (err: any) {
+      setError(err);
+    }
   };
 
   return (
@@ -66,6 +87,7 @@ export default function UpdatePassword({
           id="confirmPassword"
           t={t}
         />
+        {error && <Text color="semantic.danger">{error}</Text>}
         <Button type="submit" isLoading={isSubmitting} h={16} width="full">
           {t("reset-button")}
         </Button>

@@ -9,13 +9,6 @@ import { randomUUID } from "node:crypto";
 export const POST = apiHandler(async (req: Request) => {
   const body = signupRequest.parse(await req.json());
   const passwordHash = await bcrypt.hash(body.password, 12);
-  console.log("Creating user", {
-    userId: randomUUID(),
-    name: body.name,
-    email: body.email.toLowerCase(),
-    passwordHash,
-    role: Roles.User,
-  })
   const user = await db.models.User.create({
     userId: randomUUID(),
     name: body.name,

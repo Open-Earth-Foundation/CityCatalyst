@@ -54,3 +54,8 @@ export type SignupRequest = z.infer<typeof signupRequest>;
 export const forgotRequest = z.object({
   email: z.string().email(),
 });
+
+export const resetPasswordRequest = z.object({
+  newPassword: z.string().min(4).regex(passwordRegex),
+  resetToken: z.string(),
+});

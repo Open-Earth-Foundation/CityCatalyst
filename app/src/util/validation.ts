@@ -50,3 +50,7 @@ export const signupRequest = z
     path: ["confirmPassword"],
   });
 export type SignupRequest = z.infer<typeof signupRequest>;
+
+export const forgotRequest = z.object({
+  email: z.string().email(),
+});

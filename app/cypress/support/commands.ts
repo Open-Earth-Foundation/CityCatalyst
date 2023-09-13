@@ -35,3 +35,51 @@
 //     }
 //   }
 // }
+
+Cypress.Commands.add("signup", (email, password) => {
+  cy.request({
+    method: "POST",
+    url: "/api/v0/auth/register",
+    failOnStatusCode: false,
+    body: {
+      email,
+      password,
+      confirmPassword: password,
+      name: "Test Account",
+      inviteCode: "123456",
+      acceptTerms: true,
+    },
+  }).then((res) => {
+    console.log("Signup res", res);
+  });
+});
+
+Cypress.Commands.add("login", async (email, password) => {
+  cy.request("/api/auth/csrf").then((csrfRes) => {
+    expect(csrfRes.body).to.have.property("csrfToken");
+    const csrfToken = csrfRes.body.csrfToken;
+    cy.request("POST", "/api/auth/signin/credentials", {
+      csrfToken,
+      email,
+      password,
+    }).then((res) => {
+      console.log(res.body);
+    });
+  });
+});
+
+Cypress.Commands.add("logout", () => {
+  cy.visit("/api/auth/signout");
+  cy.get("form").submit();
+});
+
+export {};
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      signup(email: string, password: string): Chainable<void>;
+      login(email: string, password: string): Promise<void>;
+      logout(): Chainable<void>;
+    }
+  }
+}

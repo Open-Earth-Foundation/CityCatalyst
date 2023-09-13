@@ -19,6 +19,9 @@ jobs:
       NODE_ENV: test
       NEXTAUTH_SECRET: "diTMz/XLX4edSmmfzwJtmzKjCJGRt81Gf0PdjO3IPs8="
       NEXTAUTH_URL: "http://localhost:3000"
+    defaults:
+      run:
+        working-directory: ./app
     steps:
       - uses: actions/checkout@v3
 
@@ -29,7 +32,7 @@ jobs:
           cache-dependency-path: app/package-lock.json
 
       - name: Install dependencies
-        run: cd app && npm ci
+        run: npm ci
 
       - name: Set up database
         run: |
@@ -37,24 +40,17 @@ jobs:
           sleep 10
           createuser -w -h localhost -p 5432 -U postgres citycatalyst
           createdb -w -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst
-          cd app
           cp env.example .env
           npm run db:migrate
 
       - name: Run NextJS build
-        run: |
-          cd app
-          npm run build
+        run: npm run build
 
       - name: Run API tests
-        run: |
-          cd app
-          npm run api:test
+        run: npm run api:test
 
       - name: Run Cypress tests
-        run: |
-          cd app
-          npm run cy:test
+        run: npm run cy:test
 
       - name: Shut down database
         run: docker stop github_action_postgresql

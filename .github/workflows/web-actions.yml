@@ -26,9 +26,11 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: 20
+        cache: 'npm'
+        cache-dependency-pathy: app/package-lock.json
 
     - name: Install dependencies
-      run: cd app && npm install
+      run: cd app && npm ci
 
     - name: Set up database
       run: |

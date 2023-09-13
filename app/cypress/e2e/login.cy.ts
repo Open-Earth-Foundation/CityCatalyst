@@ -1,11 +1,13 @@
 describe("Login page", () => {
   it("redirects to dashboard after entering correct data", () => {
-    cy.signup("test@openearth.org", "Test123!");
+    const email = "login-test@openearth.org";
+    const password = "Test123!";
+    cy.signup(email, password);
 
     cy.visit("/auth/login");
     cy.contains("Log In");
-    cy.get('input[name="email"]').type("test@openearth.org", { log: false });
-    cy.get('input[name="password"]').type("Test123!", { log: false });
+    cy.get('input[name="email"]').type(email, { log: false });
+    cy.get('input[name="password"]').type(password, { log: false });
     cy.get('button[type="submit"]').click();
 
     cy.url().should("equal", Cypress.config().baseUrl + "/en");

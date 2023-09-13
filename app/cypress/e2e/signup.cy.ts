@@ -1,6 +1,9 @@
 describe("Signup page", () => {
   it("redirects to dashboard after entering correct data", () => {
-    cy.deleteAccount("signup-test@openearth.org", "Password123!");
+    // prevent API from being called (response stub)
+    cy.intercept("POST", "/api/v0/auth/register", {
+      statusCode: 200,
+    }).as("register");
 
     cy.visit("/auth/signup");
     cy.contains("Sign Up");
@@ -13,6 +16,7 @@ describe("Signup page", () => {
       .siblings(".chakra-checkbox__control")
       .click();
     cy.get('button[type="submit"]').click();
+    cy.wait("@register"); // make sure API request is sent
 
     cy.url().should("contain", "/auth/check-email");
     cy.contains("Check Your Email");

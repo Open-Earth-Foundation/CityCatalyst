@@ -45,10 +45,15 @@ jobs:
         cd app
         npm run build
 
-    - name: Run tests
+    - name: Run API tests
       run: |
         cd app
-        npm run test
+        npm run api:test
+
+    - name: Run Cypress tests
+      run: |
+        cd app
+        npm run cy:test
 
     - name: Shut down database
       run: docker stop github_action_postgresql

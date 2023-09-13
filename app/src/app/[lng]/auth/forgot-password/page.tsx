@@ -4,6 +4,7 @@ import EmailInput from "@/components/email-input";
 import { useTranslation } from "@/i18n/client";
 import { Button, Heading, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 type Inputs = {
@@ -22,10 +23,30 @@ export default function ForgotPassword({
     register,
     formState: { errors, isSubmitting },
   } = useForm<Inputs>();
+  const [error, setError] = useState("");
+
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    console.log(data);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    router.push(`/auth/check-email?email=${data.email}&reset=true`);
+    try {
+      const res = await fetch("/api/v0/auth/forgot", {
+        method: "POST",
+        body: JSON.stringify({ email: data.email }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        console.log("Failed to send reset password email", data);
+        setError(data.error.message);
+        return;
+      }
+
+      setError("");
+      router.push(`/auth/check-email?email=${data.email}&reset=true`);
+    } catch (err: any) {
+      setError(err);
+    }
   };
 
   return (
@@ -36,6 +57,7 @@ export default function ForgotPassword({
       </Text>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <EmailInput register={register} error={errors.email} t={t} />
+        {error && <Text color="semantic.danger">{error}</Text>}
         <Button
           type="submit"
           formNoValidate

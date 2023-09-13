@@ -18,7 +18,7 @@
     "db:gen-migration": "sequelize-cli migration:generate --name",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
-    "cy:test": "start-server-and-test start http://localhost:3000 cy:run",
+    "cy:test": "start-server-and-test start http://localhost:3000/en/auth/login cy:run",
     "prettier": "npx prettier . --write",
     "email": "email dev --dir src/lib/emails"
   },

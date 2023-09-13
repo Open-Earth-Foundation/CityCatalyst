@@ -50,9 +50,12 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const isValid = await bcrypt.compare(credentials.password, user.passwordHash);
+        const isValid = await bcrypt.compare(
+          credentials.password,
+          user.passwordHash,
+        );
         if (!isValid) {
-          console.log("Invalid password!");
+          console.error("Invalid password!");
           return null;
         }
         return {

@@ -130,5 +130,7 @@ dist
 .pnp.*
 
 # Python stuff
-
 __pycache__
+
+# react-email
+.react-email

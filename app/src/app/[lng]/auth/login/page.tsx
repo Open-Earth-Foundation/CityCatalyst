@@ -62,8 +62,9 @@ export default function Login({
         password: data.password,
         callbackUrl,
       });
-      console.log(res);
+
       if (!res?.error) {
+        setError("");
         router.push(callbackUrl);
       } else {
         setError(t("invalid-email-password"));

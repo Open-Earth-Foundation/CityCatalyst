@@ -73,19 +73,22 @@ export default function Signup({
       }
 
       const callbackUrl = `/auth/check-email?email=${data.email}`;
-      const loginResponse = await signIn("credentials", {
-        redirect: false,
-        email: data.email,
-        password: data.password,
-        callbackUrl,
-      });
+      router.push(callbackUrl);
 
-      if (!loginResponse?.error) {
-        router.push(callbackUrl);
-      } else {
-        console.log("Failed to login", loginResponse)
-        setError(t("invalid-email-password"));
-      }
+      // TODO automatic login required?
+      // const loginResponse = await signIn("credentials", {
+      //   redirect: false,
+      //   email: data.email,
+      //   password: data.password,
+      //   callbackUrl,
+      // });
+
+      // if (!loginResponse?.error) {
+      //   router.push(callbackUrl);
+      // } else {
+      //   console.log("Failed to login", loginResponse)
+      //   setError(t("invalid-email-password"));
+      // }
     } catch (error: any) {
       setError(error);
     }

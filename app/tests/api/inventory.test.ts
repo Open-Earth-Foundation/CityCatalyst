@@ -98,6 +98,37 @@ describe("Inventory API", () => {
     assert.equal(res.status, 404);
   });
 
+  it("should calculate progress for an inventory", async () => {
+    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}/progress`;
+    const req = createRequest(url);
+    const res = await calculateProgress(req, {
+      params: { city: locode, year: inventory.year.toString() },
+    });
+    assert.equal(res.status, 200);
+    const { totalProgress, sectorProgress } = await res.json();
+    assert.deepEqual(totalProgress, { total: 9, thirdParty: 3, uploaded: 3 });
+    assert.deepEqual(sectorProgress, [
+      {
+        total: 3,
+        thirdParty: 1,
+        uploaded: 1,
+        sector: { sectorId: "1337", sectorName: "Sector 1" },
+      },
+      {
+        total: 3,
+        thirdParty: 1,
+        uploaded: 1,
+        sector: { sectorId: "1338", sectorName: "Sector 2" },
+      },
+      {
+        total: 3,
+        thirdParty: 1,
+        uploaded: 1,
+        sector: { sectorId: "1339", sectorName: "Sector 3" },
+      },
+    ]);
+  });
+
   it("should update an inventory", async () => {
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
     const req = createRequest(url, inventory2);
@@ -145,36 +176,5 @@ describe("Inventory API", () => {
       params: { city: "XX_INVALID", year: "0" },
     });
     assert.equal(res.status, 404);
-  });
-
-  it("should calculate progress for an inventory", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}/progress`;
-    const req = createRequest(url);
-    const res = await calculateProgress(req, {
-      params: { city: locode, year: inventory.year.toString() },
-    });
-    assert.equal(res.status, 200);
-    const { totalProgress, sectorProgress } = await res.json();
-    assert.deepEqual(totalProgress, { total: 9, thirdParty: 3, uploaded: 3 });
-    assert.deepEqual(sectorProgress, [
-      {
-        total: 3,
-        thirdParty: 1,
-        uploaded: 1,
-        sector: { sectorId: "1337", sectorName: "Sector 1" },
-      },
-      {
-        total: 3,
-        thirdParty: 1,
-        uploaded: 1,
-        sector: { sectorId: "1338", sectorName: "Sector 2" },
-      },
-      {
-        total: 3,
-        thirdParty: 1,
-        uploaded: 1,
-        sector: { sectorId: "1339", sectorName: "Sector 3" },
-      },
-    ]);
   });
 });

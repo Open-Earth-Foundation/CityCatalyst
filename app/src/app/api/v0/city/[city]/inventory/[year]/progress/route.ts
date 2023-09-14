@@ -28,11 +28,11 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
             as: "subSectorValues",
             include: [{ model: db.models.SubSector, as: "subsector" }],
           },
-          {
-            model: db.models.SubCategoryValue,
-            as: "subCategoryValues",
-            include: [{ model: db.models.SubCategory, as: "subcategory" }],
-          },
+          // {
+          //   model: db.models.SubCategoryValue,
+          //   as: "subCategoryValues",
+          //   include: [{ model: db.models.SubCategory, as: "subcategory" }],
+          // },
         ],
       },
     ],
@@ -43,7 +43,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
 
   // TODO cache this
   const sectors: Sector[] = await db.models.Sector.findAll({
-    include: [db.models.SubSector, db.models.SubCategory],
+    include: [{ model: db.models.SubSector, as: "subSectors" }],
   });
   const sectorTotals: Record<string, number> = sectors.reduce(
     (acc, sector) => {

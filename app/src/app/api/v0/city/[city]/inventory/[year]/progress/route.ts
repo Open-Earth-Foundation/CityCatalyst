@@ -1,5 +1,4 @@
 import { db } from "@/models";
-import { Inventory } from "@/models/Inventory";
 import { Sector } from "@/models/Sector";
 import { SectorValue } from "@/models/SectorValue";
 import { apiHandler } from "@/util/api";
@@ -12,7 +11,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
     throw new createHttpError.NotFound("City not found");
   }
 
-  const inventory: Inventory = await db.models.Inventory.findOne({
+  const inventory = await db.models.Inventory.findOne({
     where: { cityId: city.cityId, year: params.year },
     include: [
       {
@@ -59,8 +58,14 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
         (acc, subSectorValue) => {
           if (subSectorValue.source === "user") {
             acc.uploaded++;
-          } else {
+          } else if (subSectorValue.source === "third_party") {
             acc.thirdParty++;
+          } else {
+            console.error(
+              "Invalid value for SubSectorValue source:",
+              subSectorValue.subsector.subsectorName,
+              subSectorValue.source,
+            );
           }
           return acc;
         },
@@ -69,6 +74,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
       return {
         sector: sectorValue.sector,
         total: sectorTotals[sectorValue.sector.sectorId],
+        subSectors: sectorValue.subSectorValues.map((value) => value.subsector),
         ...sectorCounts,
       };
     },

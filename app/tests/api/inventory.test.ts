@@ -13,6 +13,7 @@ import { randomUUID } from "node:crypto";
 import { after, before, describe, it } from "node:test";
 import { Op } from "sequelize";
 import { createRequest } from "../helpers";
+import { SubSectorAttributes } from "@/models/SubSector";
 
 const locode = "XX_INVENTORY_CITY";
 
@@ -39,9 +40,24 @@ describe("Inventory API", () => {
     const projectDir = process.cwd();
     env.loadEnvConfig(projectDir);
     await db.initialize();
-    await db.models.Inventory.destroy({
+    const existingInventory = await db.models.Inventory.findOne({
       where: { year: { [Op.or]: [inventory.year, inventory2.year] } },
     });
+    if (existingInventory != null) {
+      await db.models.SubSectorValue.destroy({
+        where: { inventoryId: existingInventory.inventoryId },
+      });
+      await db.models.SubSector.destroy({
+        where: { subsectorName: { [Op.like]: "XX_INVENTORY_%" } },
+      });
+      await db.models.SectorValue.destroy({
+        where: { inventoryId: existingInventory.inventoryId },
+      });
+      await db.models.Sector.destroy({
+        where: { sectorName: { [Op.like]: "XX_INVENTORY_%" } },
+      });
+      await existingInventory.destroy();
+    }
     await db.models.City.destroy({ where: { locode } });
     await db.models.City.create({ cityId: randomUUID(), locode });
   });
@@ -99,34 +115,87 @@ describe("Inventory API", () => {
   });
 
   it("should calculate progress for an inventory", async () => {
+    // setup mock data
+    const existingInventory = await db.models.Inventory.findOne({
+      where: { year: inventory.year },
+    });
+    assert.notEqual(existingInventory, null);
+    const sectorNames = ["TEST1", "TEST2", "TEST3"];
+    const sources = ["user", "third_party", undefined];
+    for (const sectorName of sectorNames) {
+      const sectorId = randomUUID();
+      await db.models.Sector.create({
+        sectorId,
+        sectorName: "XX_INVENTORY_" + sectorName,
+      });
+      const sectorValueId = randomUUID();
+      await db.models.SectorValue.create({
+        sectorValueId,
+        sectorId,
+        inventoryId: existingInventory!.inventoryId,
+      });
+      for (let i = 0; i < sectorNames.length; i++) {
+        const subsectorId = randomUUID();
+        await db.models.SubSector.create({
+          subsectorId,
+          sectorId,
+          subsectorName: "XX_INVENTORY_" + sectorName + "_" + sectorNames[i],
+        });
+        if (sources[i] != null) {
+          await db.models.SubSectorValue.create({
+            subsectorValueId: randomUUID(),
+            subsectorId,
+            sectorValueId,
+            source: sources[i],
+            inventoryId: existingInventory!.inventoryId,
+          });
+        }
+      }
+    }
+
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}/progress`;
     const req = createRequest(url);
     const res = await calculateProgress(req, {
       params: { city: locode, year: inventory.year.toString() },
     });
+
     assert.equal(res.status, 200);
     const { totalProgress, sectorProgress } = await res.json();
-    assert.deepEqual(totalProgress, { total: 9, thirdParty: 3, uploaded: 3 });
-    assert.deepEqual(sectorProgress, [
+    const cleanedSectorProgress = sectorProgress.map(
+      ({
+        sector,
+        subSectors,
+        ...progress
+      }: {
+        sector: { sectorName: string; sectorId: string };
+        subSectors: SubSectorAttributes[];
+      }) => {
+        assert.notEqual(sector.sectorId, null);
+        assert.equal(subSectors.length, 2);
+        return { sector: { sectorName: sector.sectorName }, ...progress };
+      },
+    );
+    assert.deepEqual(cleanedSectorProgress, [
       {
         total: 3,
         thirdParty: 1,
         uploaded: 1,
-        sector: { sectorId: "1337", sectorName: "Sector 1" },
+        sector: { sectorName: "XX_INVENTORY_TEST1" },
       },
       {
         total: 3,
         thirdParty: 1,
         uploaded: 1,
-        sector: { sectorId: "1338", sectorName: "Sector 2" },
+        sector: { sectorName: "XX_INVENTORY_TEST2" },
       },
       {
         total: 3,
         thirdParty: 1,
         uploaded: 1,
-        sector: { sectorId: "1339", sectorName: "Sector 3" },
+        sector: { sectorName: "XX_INVENTORY_TEST3" },
       },
     ]);
+    assert.deepEqual(totalProgress, { total: 9, thirdParty: 3, uploaded: 3 });
   });
 
   it("should update an inventory", async () => {

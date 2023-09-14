@@ -17,15 +17,21 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
     include: [
       {
         model: db.models.SectorValue,
+        as: "sectorValues",
         include: [
-          db.models.Sector,
+          {
+            model: db.models.Sector,
+            as: "sector",
+          },
           {
             model: db.models.SubSectorValue,
-            include: [db.models.SubSector, db.models.DataSource],
+            as: "subSectorValues",
+            include: [{ model: db.models.SubSector, as: "subsector" }],
           },
           {
             model: db.models.SubCategoryValue,
-            include: [db.models.SubCategory, db.models.DataSource],
+            as: "subCategoryValues",
+            include: [{ model: db.models.SubCategory, as: "subcategory" }],
           },
         ],
       },

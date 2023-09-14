@@ -14,6 +14,7 @@ export interface SubSectorValueAttributes {
   emissionsFactorId?: string;
   subsectorId?: string;
   sectorValueId?: string;
+  source?: string;
   inventoryId?: string;
   created?: Date;
   lastUpdated?: Date;
@@ -26,6 +27,7 @@ export type SubSectorValueOptionalAttributes =
   | "activityValue"
   | "emissionFactorValue"
   | "totalEmissions"
+  | "source"
   | "emissionsFactorId"
   | "subsectorId"
   | "sectorValueId"
@@ -46,6 +48,7 @@ export class SubSectorValue
   activityValue?: number;
   emissionFactorValue?: number;
   totalEmissions?: number;
+  source?: string;
   emissionsFactorId?: string;
   subsectorId?: string;
   sectorValueId?: string;
@@ -108,6 +111,11 @@ export class SubSectorValue
           type: DataTypes.DECIMAL,
           allowNull: true,
           field: "total_emissions",
+        },
+        source: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: "source",
         },
         emissionsFactorId: {
           type: DataTypes.UUID,

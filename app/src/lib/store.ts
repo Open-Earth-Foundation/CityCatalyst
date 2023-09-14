@@ -1,7 +1,7 @@
 import { api } from "@/services/api";
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import cityReducer from "@/slices/citySlice";
+import cityReducer from "@/features/city/citySlice";
 
 export const store = configureStore({
   reducer: {

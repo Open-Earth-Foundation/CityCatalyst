@@ -52,11 +52,11 @@ describe("Inventory API", () => {
 
   beforeEach(async () => {
     await db.models.Inventory.destroy({
-      where: { year: { [Op.or]: [inventory.year, inventory2.year] } },
+      where: { cityId: city.cityId },
     });
     await db.models.Inventory.create({
       inventoryId: randomUUID(),
-      cityId: city.cityId,  
+      cityId: city.cityId,
       ...inventory,
     });
   });

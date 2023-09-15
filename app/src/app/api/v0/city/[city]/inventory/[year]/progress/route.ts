@@ -27,11 +27,6 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
             as: "subSectorValues",
             include: [{ model: db.models.SubSector, as: "subsector" }],
           },
-          // {
-          //   model: db.models.SubCategoryValue,
-          //   as: "subCategoryValues",
-          //   include: [{ model: db.models.SubCategory, as: "subcategory" }],
-          // },
         ],
       },
     ],

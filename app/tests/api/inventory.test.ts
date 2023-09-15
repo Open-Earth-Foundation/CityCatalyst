@@ -10,10 +10,11 @@ import { CreateInventoryRequest } from "@/util/validation";
 import env from "@next/env";
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";
-import { after, before, describe, it } from "node:test";
+import { after, before, beforeEach, describe, it } from "node:test";
 import { Op } from "sequelize";
 import { createRequest } from "../helpers";
 import { SubSectorAttributes } from "@/models/SubSector";
+import { City } from "@/models/City";
 
 const locode = "XX_INVENTORY_CITY";
 
@@ -36,30 +37,28 @@ const invalidInventory = {
 };
 
 describe("Inventory API", () => {
+  let city: City;
   before(async () => {
     const projectDir = process.cwd();
     env.loadEnvConfig(projectDir);
     await db.initialize();
-    const existingInventory = await db.models.Inventory.findOne({
+    // this also deletes all Sector/SubSectorValue instances associated with it (cascade)
+    await db.models.Inventory.destroy({
       where: { year: { [Op.or]: [inventory.year, inventory2.year] } },
     });
-    if (existingInventory != null) {
-      await db.models.SubSectorValue.destroy({
-        where: { inventoryId: existingInventory.inventoryId },
-      });
-      await db.models.SubSector.destroy({
-        where: { subsectorName: { [Op.like]: "XX_INVENTORY_%" } },
-      });
-      await db.models.SectorValue.destroy({
-        where: { inventoryId: existingInventory.inventoryId },
-      });
-      await db.models.Sector.destroy({
-        where: { sectorName: { [Op.like]: "XX_INVENTORY_%" } },
-      });
-      await existingInventory.destroy();
-    }
     await db.models.City.destroy({ where: { locode } });
-    await db.models.City.create({ cityId: randomUUID(), locode });
+    city = await db.models.City.create({ cityId: randomUUID(), locode });
+  });
+
+  beforeEach(async () => {
+    await db.models.Inventory.destroy({
+      where: { year: { [Op.or]: [inventory.year, inventory2.year] } },
+    });
+    await db.models.Inventory.create({
+      inventoryId: randomUUID(),
+      cityId: city.cityId,  
+      ...inventory,
+    });
   });
 
   after(async () => {
@@ -67,6 +66,9 @@ describe("Inventory API", () => {
   });
 
   it("should create an inventory", async () => {
+    await db.models.Inventory.destroy({
+      where: { year: inventory.year },
+    });
     const url = "http://localhost:3000/api/v0/city" + locode;
     const req = createRequest(url, inventory);
     const res = await createInventory(req, {
@@ -109,6 +111,55 @@ describe("Inventory API", () => {
     const url = "http://localhost:3000/api/v0/city/XX_INVALID/inventory/0";
     const req = createRequest(url, invalidInventory);
     const res = await findInventory(req, {
+      params: { city: "XX_INVALID", year: "0" },
+    });
+    assert.equal(res.status, 404);
+  });
+
+  it("should update an inventory", async () => {
+    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
+    const req = createRequest(url, inventory2);
+    const res = await updateInventory(req, {
+      params: { city: locode, year: inventory.year.toString() },
+    });
+    assert.equal(res.status, 200);
+    const { data } = await res.json();
+    assert.equal(data.inventoryName, inventory2.inventoryName);
+    assert.equal(data.year, inventory2.year);
+    assert.equal(data.totalEmissions, inventory2.totalEmissions);
+  });
+
+  it("should not update an inventory with invalid data", async () => {
+    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
+    const req = createRequest(url, invalidInventory);
+    const res = await updateInventory(req, {
+      params: { city: locode, year: inventory.year.toString() },
+    });
+    assert.equal(res.status, 400);
+    const {
+      error: { issues },
+    } = await res.json();
+    assert.equal(issues.length, 3);
+  });
+
+  it("should delete an inventory", async () => {
+    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
+    const req = createRequest(url);
+    const res = await deleteInventory(req, {
+      params: { city: locode, year: inventory.year.toString() },
+    });
+    assert.equal(res.status, 200);
+    const { data, deleted } = await res.json();
+    assert.equal(deleted, true);
+    assert.equal(data.inventoryName, inventory.inventoryName);
+    assert.equal(data.year, inventory.year);
+    assert.equal(data.totalEmissions, inventory.totalEmissions);
+  });
+
+  it("should not delete a non-existing inventory", async () => {
+    const url = `http://localhost:3000/api/v0/city/XX_INVALID/inventory/0`;
+    const req = createRequest(url);
+    const res = await deleteInventory(req, {
       params: { city: "XX_INVALID", year: "0" },
     });
     assert.equal(res.status, 404);
@@ -199,54 +250,5 @@ describe("Inventory API", () => {
       },
     ]);
     assert.deepEqual(totalProgress, { total: 9, thirdParty: 3, uploaded: 3 });
-  });
-
-  it("should update an inventory", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
-    const req = createRequest(url, inventory2);
-    const res = await updateInventory(req, {
-      params: { city: locode, year: inventory.year.toString() },
-    });
-    assert.equal(res.status, 200);
-    const { data } = await res.json();
-    assert.equal(data.inventoryName, inventory2.inventoryName);
-    assert.equal(data.year, inventory2.year);
-    assert.equal(data.totalEmissions, inventory2.totalEmissions);
-  });
-
-  it("should not update an inventory with invalid data", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
-    const req = createRequest(url, invalidInventory);
-    const res = await updateInventory(req, {
-      params: { city: locode, year: inventory.year.toString() },
-    });
-    assert.equal(res.status, 400);
-    const {
-      error: { issues },
-    } = await res.json();
-    assert.equal(issues.length, 3);
-  });
-
-  it("should delete an inventory", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
-    const req = createRequest(url);
-    const res = await deleteInventory(req, {
-      params: { city: locode, year: inventory2.year.toString() },
-    });
-    assert.equal(res.status, 200);
-    const { data, deleted } = await res.json();
-    assert.equal(deleted, true);
-    assert.equal(data.inventoryName, inventory2.inventoryName);
-    assert.equal(data.year, inventory2.year);
-    assert.equal(data.totalEmissions, inventory2.totalEmissions);
-  });
-
-  it("should not delete a non-existing inventory", async () => {
-    const url = `http://localhost:3000/api/v0/city/XX_INVALID/inventory/0`;
-    const req = createRequest(url);
-    const res = await deleteInventory(req, {
-      params: { city: "XX_INVALID", year: "0" },
-    });
-    assert.equal(res.status, 404);
   });
 });

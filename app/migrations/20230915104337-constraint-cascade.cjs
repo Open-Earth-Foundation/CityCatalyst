@@ -127,12 +127,12 @@ module.exports = {
         REFERENCES "ReportingLevel" ("reportinglevel_id")
         ON DELETE CASCADE ON UPDATE CASCADE;
 
-      ALTER TABLE "DataSourceSector" DROP CONSTRAINT "FK_DataSourceSector.datasource_id";
+      ALTER TABLE "DataSourceSector" DROP CONSTRAINT "FK_DataSourceSector_datasource_id";
       ALTER TABLE "DataSourceSector" ADD CONSTRAINT "FK_DataSourceSector.datasource_id"
         FOREIGN KEY("datasource_id")
         REFERENCES "DataSource" ("datasource_id")
         ON DELETE CASCADE ON UPDATE CASCADE;
-      ALTER TABLE "DataSourceSector" DROP CONSTRAINT "FK_DataSourceSector.sector_id";
+      ALTER TABLE "DataSourceSector" DROP CONSTRAINT "FK_DataSourceSector_sector_id";
       ALTER TABLE "DataSourceSector" ADD CONSTRAINT "FK_DataSourceSector.sector_id"
         FOREIGN KEY("sector_id")
         REFERENCES "Sector" ("sector_id")

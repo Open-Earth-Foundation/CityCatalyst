@@ -71,10 +71,27 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
         },
         { thirdParty: 0, uploaded: 0 },
       );
+      const sector = sectors.find(
+        (sector) => sector.sectorId === sectorValue.sectorId,
+      );
+      if (!sector) {
+        throw new createHttpError.InternalServerError(
+          `Sector ${sectorValue.sectorId} not found!`,
+        );
+      }
+      // add completed field to subsectors if there is a value for it
+      const subSectors = sector.subSectors.map((subSector) => {
+        const completed =
+          sectorValue.subSectorValues.find(
+            (subSectorValue) =>
+              subSectorValue.subsectorId === subSector.subsectorId,
+          ) != null;
+        return { completed, ...subSector };
+      });
       return {
         sector: sectorValue.sector,
         total: sectorTotals[sectorValue.sector.sectorId],
-        subSectors: sectorValue.subSectorValues.map((value) => value.subsector),
+        subSectors,
         ...sectorCounts,
       };
     },

@@ -167,11 +167,14 @@ describe("Inventory API", () => {
         subSectors,
         ...progress
       }: {
-        sector: { sectorName: string; sectorId: string };
-        subSectors: SubSectorAttributes[];
+        sector: { sectorName: string; sectorId: string; completed: boolean };
+        subSectors: Array<SubSectorAttributes & { completed: boolean }>;
       }) => {
         assert.notEqual(sector.sectorId, null);
-        assert.equal(subSectors.length, 2);
+        assert.equal(subSectors.length, 3);
+        for (const subSector of subSectors) {
+          assert.notEqual(subSector.completed, null);
+        }
         return { sector: { sectorName: sector.sectorName }, ...progress };
       },
     );

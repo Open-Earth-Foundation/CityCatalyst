@@ -121,7 +121,7 @@ describe("Inventory API", () => {
     });
     assert.notEqual(existingInventory, null);
     const sectorNames = ["TEST1", "TEST2", "TEST3"];
-    const sources = ["user", "third_party", undefined];
+    const entryMethods = ["user", "third_party", undefined];
     for (const sectorName of sectorNames) {
       const sectorId = randomUUID();
       await db.models.Sector.create({
@@ -141,12 +141,12 @@ describe("Inventory API", () => {
           sectorId,
           subsectorName: "XX_INVENTORY_" + sectorName + "_" + sectorNames[i],
         });
-        if (sources[i] != null) {
+        if (entryMethods[i] != null) {
           await db.models.SubSectorValue.create({
             subsectorValueId: randomUUID(),
             subsectorId,
             sectorValueId,
-            source: sources[i],
+            entryMethod: entryMethods[i],
             inventoryId: existingInventory!.inventoryId,
           });
         }

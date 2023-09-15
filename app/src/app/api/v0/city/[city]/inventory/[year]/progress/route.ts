@@ -56,15 +56,15 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
     (sectorValue: SectorValue) => {
       const sectorCounts = sectorValue.subSectorValues.reduce(
         (acc, subSectorValue) => {
-          if (subSectorValue.source === "user") {
+          if (subSectorValue.entryMethod === "user") {
             acc.uploaded++;
-          } else if (subSectorValue.source === "third_party") {
+          } else if (subSectorValue.entryMethod === "third_party") {
             acc.thirdParty++;
           } else {
             console.error(
-              "Invalid value for SubSectorValue source:",
-              subSectorValue.subsector.subsectorName,
-              subSectorValue.source,
+              "Invalid value for SubSectorValue.entryMethod of subsector",
+              subSectorValue.subsector.subsectorName + ":",
+              subSectorValue.entryMethod,
             );
           }
           return acc;

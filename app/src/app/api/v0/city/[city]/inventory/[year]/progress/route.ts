@@ -25,7 +25,10 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
           {
             model: db.models.SubSectorValue,
             as: "subSectorValues",
-            include: [{ model: db.models.SubSector, as: "subsector" }],
+            include: [
+              { model: db.models.SubSector, as: "subsector" },
+              { model: db.models.DataSource, attributes: ["datasourceId", "sourceType"], as: "dataSource" },
+            ],
           },
         ],
       },
@@ -47,19 +50,26 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
     {} as Record<string, number>,
   );
 
+  // count SubSectorValues grouped by source type and sector
   const sectorProgress = inventory.sectorValues.map(
     (sectorValue: SectorValue) => {
       const sectorCounts = sectorValue.subSectorValues.reduce(
         (acc, subSectorValue) => {
-          if (subSectorValue.entryMethod === "user") {
+          if (!subSectorValue.dataSource) {
+            return acc;
+          }
+
+          if (subSectorValue.dataSource.sourceType === "user") {
             acc.uploaded++;
-          } else if (subSectorValue.entryMethod === "third_party") {
+          } else if (subSectorValue.dataSource.sourceType === "third_party") {
             acc.thirdParty++;
           } else {
             console.error(
-              "Invalid value for SubSectorValue.entryMethod of subsector",
-              subSectorValue.subsector.subsectorName + ":",
-              subSectorValue.entryMethod,
+              "Invalid value for SubSectorValue.dataSource.sourceType of subsector",
+              subSectorValue.subsector.subsectorName,
+              "in its data source",
+              subSectorValue.dataSource.datasourceId + ":",
+              subSectorValue.dataSource.sourceType,
             );
           }
           return acc;

@@ -225,7 +225,7 @@ describe("Inventory API", () => {
     });
 
     assert.equal(res.status, 200);
-    const { totalProgress, sectorProgress } = await res.json();
+    const { totalProgress, sectorProgress } = (await res.json()).data;
     const cleanedSectorProgress = sectorProgress.map(
       ({
         sector,

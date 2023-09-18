@@ -27,7 +27,11 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
             as: "subSectorValues",
             include: [
               { model: db.models.SubSector, as: "subsector" },
-              { model: db.models.DataSource, attributes: ["datasourceId", "sourceType"], as: "dataSource" },
+              {
+                model: db.models.DataSource,
+                attributes: ["datasourceId", "sourceType"],
+                as: "dataSource",
+              },
             ],
           },
         ],
@@ -112,5 +116,5 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
     { total: 0, thirdParty: 0, uploaded: 0 },
   );
 
-  return NextResponse.json({ totalProgress, sectorProgress });
+  return NextResponse.json({ data: { totalProgress, sectorProgress } });
 });

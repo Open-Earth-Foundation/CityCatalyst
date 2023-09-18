@@ -46,6 +46,9 @@ describe("Inventory API", () => {
     await db.models.Inventory.destroy({
       where: { year: { [Op.or]: [inventory.year, inventory2.year] } },
     });
+    await db.models.DataSource.destroy({
+      where: { name: { [Op.like]: "XX_INVENTORY_TEST_%" } },
+    });
     await db.models.City.destroy({ where: { locode } });
     city = await db.models.City.create({ cityId: randomUUID(), locode });
   });

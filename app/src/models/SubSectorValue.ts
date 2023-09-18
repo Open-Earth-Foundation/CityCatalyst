@@ -16,7 +16,7 @@ export interface SubSectorValueAttributes {
   subsectorId?: string;
   sectorValueId?: string;
   inventoryId?: string;
-  dataSourceId?: string;
+  datasourceId?: string;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -32,7 +32,7 @@ export type SubSectorValueOptionalAttributes =
   | "subsectorId"
   | "sectorValueId"
   | "inventoryId"
-  | "dataSourceId"
+  | "datasourceId"
   | "created"
   | "lastUpdated";
 export type SubSectorValueCreationAttributes = Optional<
@@ -53,7 +53,7 @@ export class SubSectorValue
   subsectorId?: string;
   sectorValueId?: string;
   inventoryId?: string;
-  dataSourceId?: string;
+  datasourceId?: string;
   created?: Date;
   lastUpdated?: Date;
 
@@ -83,7 +83,7 @@ export class SubSectorValue
   getSubsector!: Sequelize.BelongsToGetAssociationMixin<SubSector>;
   setSubsector!: Sequelize.BelongsToSetAssociationMixin<SubSector, SubSectorId>;
   createSubsector!: Sequelize.BelongsToCreateAssociationMixin<SubSector>;
-  // SubSectorValue belongsTo DataSource via dataSourceId
+  // SubSectorValue belongsTo DataSource via datasourceId
   dataSource!: DataSource;
   getDataSource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
   setDataSource!: Sequelize.BelongsToSetAssociationMixin<DataSource, DataSourceId>;
@@ -154,7 +154,7 @@ export class SubSectorValue
           },
           field: "inventory_id",
         },
-        dataSourceId: {
+        datasourceId: {
           type: DataTypes.UUID,
           allowNull: true,
           references: {

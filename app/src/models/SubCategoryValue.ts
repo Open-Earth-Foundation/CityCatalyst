@@ -16,7 +16,7 @@ export interface SubCategoryValueAttributes {
   subcategoryId?: string;
   sectorValueId?: string;
   inventoryId?: string;
-  dataSourceId?: string;
+  datasourceId?: string;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -32,7 +32,7 @@ export type SubCategoryValueOptionalAttributes =
   | "subcategoryId"
   | "sectorValueId"
   | "inventoryId"
-  | "dataSourceId" 
+  | "datasourceId" 
   | "created"
   | "lastUpdated";
 export type SubCategoryValueCreationAttributes = Optional<
@@ -53,7 +53,7 @@ export class SubCategoryValue
   subcategoryId?: string;
   sectorValueId?: string;
   inventoryId?: string;
-  dataSourceId?: string;
+  datasourceId?: string;
   created?: Date;
   lastUpdated?: Date;
 
@@ -86,7 +86,7 @@ export class SubCategoryValue
     SubCategoryId
   >;
   createSubcategory!: Sequelize.BelongsToCreateAssociationMixin<SubCategory>;
-  // SubCategoryValue belongsTo DataSource via dataSourceId
+  // SubCategoryValue belongsTo DataSource via datasourceId
   dataSource!: DataSource;
   getDataSource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
   setDataSource!: Sequelize.BelongsToSetAssociationMixin<DataSource, DataSourceId>;
@@ -157,7 +157,7 @@ export class SubCategoryValue
           },
           field: "inventory_id",
         },
-        dataSourceId: {
+        datasourceId: {
           type: DataTypes.UUID,
           allowNull: true,
           references: {

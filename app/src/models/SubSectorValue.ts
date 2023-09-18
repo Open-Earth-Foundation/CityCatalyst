@@ -15,7 +15,6 @@ export interface SubSectorValueAttributes {
   emissionsFactorId?: string;
   subsectorId?: string;
   sectorValueId?: string;
-  entryMethod?: string;
   inventoryId?: string;
   dataSourceId?: string;
   created?: Date;
@@ -29,7 +28,6 @@ export type SubSectorValueOptionalAttributes =
   | "activityValue"
   | "emissionFactorValue"
   | "totalEmissions"
-  | "entryMethod"
   | "emissionsFactorId"
   | "subsectorId"
   | "sectorValueId"
@@ -51,7 +49,6 @@ export class SubSectorValue
   activityValue?: number;
   emissionFactorValue?: number;
   totalEmissions?: number;
-  entryMethod?: string;
   emissionsFactorId?: string;
   subsectorId?: string;
   sectorValueId?: string;
@@ -120,11 +117,6 @@ export class SubSectorValue
           type: DataTypes.DECIMAL,
           allowNull: true,
           field: "total_emissions",
-        },
-        entryMethod: {
-          type: DataTypes.STRING(255),
-          allowNull: true,
-          field: "entry_method",
         },
         emissionsFactorId: {
           type: DataTypes.UUID,

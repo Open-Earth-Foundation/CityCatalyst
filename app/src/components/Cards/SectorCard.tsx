@@ -32,7 +32,9 @@ export function SectorCard({
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const toggleAccordion = () => setAccordionOpen(!isAccordionOpen);
 
-  let totalProgress = 0, thirdPartyProgress = 0, uploadedProgress = 0;
+  let totalProgress = 0,
+    thirdPartyProgress = 0,
+    uploadedProgress = 0;
   if (sectorProgress.total > 0) {
     thirdPartyProgress = sectorProgress.thirdParty / sectorProgress.total;
     uploadedProgress = sectorProgress.uploaded / sectorProgress.total;
@@ -119,7 +121,12 @@ export function SectorCard({
               values={[thirdPartyProgress, uploadedProgress]}
               colors={["interactive.connected", "interactive.tertiary"]}
             />
-            <Text fontFamily="heading" fontWeight="semibold" fontSize="body.md" className="whitespace-nowrap">
+            <Text
+              fontFamily="heading"
+              fontWeight="semibold"
+              fontSize="body.md"
+              className="whitespace-nowrap"
+            >
               {formatPercent(totalProgress)}% Completed
             </Text>
           </Box>
@@ -131,20 +138,14 @@ export function SectorCard({
             <AccordionPanel padding={0}>
               <Text className="font-[600]">Sub-sectors required</Text>
               <Box className="grid grid-cols-3 gap-4 py-4">
-                <SubSectorCard title="Residential Buildings" scopes="1, 2" />
-                <SubSectorCard
-                  title="Commercial and institutional buildings and facilities"
-                  scopes="1, 2"
-                />
-                <SubSectorCard
-                  title="Manufacturing industries and construction"
-                  scopes="1, 2"
-                />
-                <SubSectorCard title="Energy industries" scopes="1, 2" />
-                <SubSectorCard
-                  title="Fugitive emissions from oil and natural gas systems"
-                  scopes="1, 2"
-                />
+                {sectorProgress.subSectors.map((subSector, i) => (
+                  <SubSectorCard
+                    key={i}
+                    title={subSector.subsectorName}
+                    scopes="1, 2"
+                    isCompleted={subSector.completed}
+                  />
+                ))}
               </Box>
             </AccordionPanel>
             <AccordionButton

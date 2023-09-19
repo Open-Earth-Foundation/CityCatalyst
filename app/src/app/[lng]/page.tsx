@@ -37,6 +37,7 @@ import { PiTrashLight } from "react-icons/pi";
 import { TbBuildingCommunity } from "react-icons/tb";
 import { useToast } from "@chakra-ui/react";
 import { useState } from "react";
+import { api } from "@/services/api";
 
 enum STATUS {
   INFO = "info",
@@ -50,8 +51,16 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const router = useRouter();
   const toast = useToast();
 
-  // Accordion
+  // query API data
+  // TODO get these from user record
+  const locode = "XX_INVENTORY_CITY";
+  const year = 3000;
+  const { data: inventory, isLoading: isInventoryLoading } =
+    api.useGetInventoryQuery({locode, year});
+  const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
+    api.useGetInventoryProgressQuery({locode, year});
 
+  // Accordion
   const [isStationaryEnSectorOpen, setIsStationarySectorEnOpen] =
     useState(false);
   const [isTransportSecOpen, setIsTransportSecOpen] = useState(false);
@@ -64,7 +73,6 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const toggleAccordionB = () => {
     setIsTransportSecOpen(!isTransportSecOpen);
   };
-
   const toggleAccordionC = () => {
     setWasteSectorOpen(!isWasteSectorOpen);
   };
@@ -163,8 +171,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
           });
         }
       })
-
       .catch((error) => {
+        console.error("Download error:", error);
         showToast(
           "Download failed",
           "There was an error during download",
@@ -204,6 +212,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     lineHeight="52"
                     className="flex"
                   >
+                    {inventory?.city?.name}
                     Ciudad Autónoma de Buenos Aires
                   </Heading>
                 </Box>
@@ -237,7 +246,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         lineHeight="20px"
                         letterSpacing="wide"
                       >
-                        Total emissions in 2023
+                        Total emissions in {inventory?.year || "..."}
                       </Text>
                     </Box>
                   </Box>

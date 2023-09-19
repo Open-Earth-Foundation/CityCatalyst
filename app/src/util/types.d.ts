@@ -1,5 +1,7 @@
 import type { SectorAttributes } from "@/models/Sector";
 
+type InventoryResponse = InventoryAttributes & { city: CityAttributes };
+
 interface SectorProgress {
   sector: SectorAttributes;
   total: number;

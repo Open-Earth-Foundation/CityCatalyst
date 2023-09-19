@@ -16,6 +16,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   if (!inventory) {
     throw new createHttpError.NotFound("Inventory not found");
   }
+  inventory.city = city;
 
   return NextResponse.json({ data: inventory });
 });

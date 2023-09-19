@@ -2,8 +2,10 @@
 
 import SubSectorCard from "@/components/Cards/SubSectorCard";
 import Footer from "@/components/Sections/Footer";
+import { CircleIcon } from "@/components/icons";
 import { NavigationBar } from "@/components/navigation-bar";
-import { CheckCircleIcon, InfoOutlineIcon } from "@chakra-ui/icons";
+import { api } from "@/services/api";
+import { InfoOutlineIcon } from "@chakra-ui/icons";
 import {
   Accordion,
   AccordionButton,
@@ -18,11 +20,17 @@ import {
   CardHeader,
   Heading,
   Link,
+  Progress,
+  Tag,
+  TagLabel,
+  TagLeftIcon,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import Image from "next/image";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { BsTruck } from "react-icons/bs";
 import { FiDownload } from "react-icons/fi";
 import {
@@ -35,9 +43,6 @@ import {
 } from "react-icons/md";
 import { PiTrashLight } from "react-icons/pi";
 import { TbBuildingCommunity } from "react-icons/tb";
-import { useToast } from "@chakra-ui/react";
-import { useState } from "react";
-import { api } from "@/services/api";
 
 enum STATUS {
   INFO = "info",
@@ -46,6 +51,10 @@ enum STATUS {
 }
 
 const CITY_INTENTORY_YEAR = "DE_BER";
+
+function formatPercent(progress: number) {
+  return Math.floor(progress);
+}
 
 export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const router = useRouter();
@@ -56,9 +65,18 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const locode = "XX_INVENTORY_CITY";
   const year = 3000;
   const { data: inventory, isLoading: isInventoryLoading } =
-    api.useGetInventoryQuery({locode, year});
+    api.useGetInventoryQuery({ locode, year });
   const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
-    api.useGetInventoryProgressQuery({locode, year});
+    api.useGetInventoryProgressQuery({ locode, year });
+  let totalProgress = 0,
+    thirdPartyProgress = 0,
+    uploadedProgress = 0;
+  if (inventoryProgress && inventoryProgress.totalProgress.total > 0) {
+    const { uploaded, thirdParty, total } = inventoryProgress.totalProgress;
+    totalProgress = (100 * (uploaded + thirdParty)) / total;
+    thirdPartyProgress = (100 * thirdParty) / total;
+    uploadedProgress = (100 * uploaded) / total;
+  }
 
   // Accordion
   const [isStationaryEnSectorOpen, setIsStationarySectorEnOpen] =
@@ -246,7 +264,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         lineHeight="20px"
                         letterSpacing="wide"
                       >
-                        Total emissions in {inventory?.year || "..."}
+                        Total emissions in {year}
                       </Text>
                     </Box>
                   </Box>
@@ -420,7 +438,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                 fontWeight="semibold"
                 lineHeight="32"
               >
-                GPC Basic Emission Inventory Calculation - Year 2023
+                GPC Basic Emission Inventory Calculation - Year {year}
               </Heading>
               <InfoOutlineIcon color="interactive.control" />
             </Box>
@@ -431,67 +449,55 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               letterSpacing="wide"
             >
               The data you have submitted is now officially incorporated into
-              your city&apos;s 2023 GHG Emissions Inventory, compiled according
-              to the GPC Basic methodology.{" "}
+              your city&apos;s {year} GHG Emissions Inventory, compiled
+              according to the GPC Basic methodology.{" "}
               <Link
                 href={"/"}
                 fontWeight="bold"
-                color="brand.primary"
-                className="text-[#2351DC] font-[700] underline"
+                color="brand.secondary"
+                className="font-[700] underline"
               >
                 Learn more
               </Link>{" "}
               about GPC Protocol
             </Text>
-            <Box className="flex w-full justify-between items-center mt-2 gap-[24px]">
-              <Box
-                backgroundColor="interactive.tertiary"
+            <Box className="flex w-full justify-between items-center mt-2 gap-6">
+              <Progress
+                value={totalProgress}
+                isIndeterminate={isInventoryProgressLoading}
                 borderRadius="full"
-                className="w-[946px] flex h-[16px]"
+                w="full"
+              />
+              <Heading
+                fontWeight="semibold"
+                fontSize="body.md"
+                className="whitespace-nowrap"
               >
-                <Box
-                  backgroundColor="interactive.connected"
-                  borderRadius="full"
-                  className="h-full w-[308px]"
-                />
-              </Box>
-              <Box>
-                <Heading fontWeight="semibold" fontSize="body.md">
-                  100% completed
-                </Heading>
-              </Box>
+                {formatPercent(totalProgress)}% completed
+              </Heading>
             </Box>
-            <Box className="flex gap-[16px] mt-[16px]">
-              <Box className="w-[279px] flex gap-2 px-3 items-center justify-center rounded-full h-[30px] border border-[#E8EAFB]">
-                <Box
-                  borderRadius="full"
-                  backgroundColor="interactive.connected"
-                  className="h-[12px] w-[12px]"
+            <Box className="flex gap-4 mt-2">
+              <Tag>
+                <TagLeftIcon
+                  as={CircleIcon}
+                  boxSize={6}
+                  color="interactive.connected"
                 />
-                <Text
-                  fontSize="label.md"
-                  lineHeight="20"
-                  fontWeight="regular"
-                  letterSpacing="wide"
-                >
-                  33% Connected third-party data
-                </Text>
-              </Box>
-              <Box className="w-[192px] flex gap-2 px-3 items-center justify-center rounded-full h-[30px] border border-[#E8EAFB]">
-                <Box
-                  borderRadius="full"
-                  backgroundColor="interactive.tertiary"
-                  className="h-[12px] w-[12px]"
+                <TagLabel>
+                  {formatPercent(thirdPartyProgress)}% Connected third-party
+                  data
+                </TagLabel>
+              </Tag>
+              <Tag>
+                <TagLeftIcon
+                  as={CircleIcon}
+                  boxSize={6}
+                  color="interactive.tertiary"
                 />
-                <Text
-                  fontSize="label.md"
-                  lineHeight="20"
-                  fontWeight="regular"
-                  letterSpacing="wide"
-                >
-                  66% Uploaded data
-                </Text>
-              </Box>
+                <TagLabel>
+                  {formatPercent(uploadedProgress)}% Uploaded data
+                </TagLabel>
+              </Tag>
             </Box>
             <Box className=" flex flex-col gap-[24px] py-[48px]">
               <Text

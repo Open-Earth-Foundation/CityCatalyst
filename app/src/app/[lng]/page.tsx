@@ -17,6 +17,7 @@ import {
   CardHeader,
   Center,
   Heading,
+  Icon,
   Link,
   Spinner,
   Tag,
@@ -206,13 +207,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                 </Box>
                 <Box className="flex gap-8 mt-[24px]">
                   <Box className="flex align-baseline gap-3">
-                    <Box>
-                      <MdArrowOutward
-                        className="relative top-0"
-                        size={24}
-                        fill="#5FE500"
-                      />
-                    </Box>
+                    <Icon
+                      as={MdArrowOutward}
+                      boxSize={6}
+                      fill="interactive.accent"
+                    />
                     <Box>
                       <Box className="flex gap-1">
                         <Text
@@ -239,13 +238,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     </Box>
                   </Box>
                   <Box className="flex align-baseline gap-3">
-                    <Box>
-                      <MdGroup
-                        className="relative top-0"
-                        size={24}
-                        fill="#C5CBF5"
-                      />
-                    </Box>
+                    <Icon
+                      as={MdGroup}
+                      boxSize={6}
+                      fill="background.overlay"
+                    />
                     <Box>
                       <Box className="flex gap-1">
                         <Text
@@ -272,13 +269,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     </Box>
                   </Box>
                   <Box className="flex align-baseline gap-3">
-                    <Box>
-                      <MdOutlineAspectRatio
-                        className="relative top-0"
-                        size={24}
-                        fill="#C5CBF5"
-                      />
-                    </Box>
+                    <Icon
+                      as={MdOutlineAspectRatio}
+                      boxSize={6}
+                      fill="background.overlay"
+                    />
                     <Box>
                       <Box className="flex gap-1">
                         <Text

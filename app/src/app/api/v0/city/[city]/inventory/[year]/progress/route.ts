@@ -95,7 +95,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
             (subSectorValue) =>
               subSectorValue.subsectorId === subSector.subsectorId,
           ) != null;
-        return { completed, ...subSector };
+        return { completed, ...subSector.dataValues };
       });
       return {
         sector: sectorValue.sector,

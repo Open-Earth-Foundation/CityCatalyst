@@ -43,6 +43,7 @@ import type { SubSector, SubSectorId } from "./SubSector";
 export interface DataSourceAttributes {
   datasourceId: string;
   name?: string;
+  sourceType?: string;
   url?: string;
   description?: string;
   accessType?: string;
@@ -67,6 +68,7 @@ export type DataSourcePk = "datasourceId";
 export type DataSourceId = DataSource[DataSourcePk];
 export type DataSourceOptionalAttributes =
   | "name"
+  | "sourceType"
   | "url"
   | "description"
   | "accessType"
@@ -96,6 +98,7 @@ export class DataSource
 {
   datasourceId!: string;
   name?: string;
+  sourceType?: string;
   url?: string;
   description?: string;
   accessType?: string;
@@ -781,6 +784,11 @@ export class DataSource
         name: {
           type: DataTypes.STRING(255),
           allowNull: true,
+        },
+        sourceType: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: "source_type",
         },
         url: {
           type: DataTypes.STRING(255),

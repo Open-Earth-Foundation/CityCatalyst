@@ -4,6 +4,7 @@ import type { EmissionsFactor, EmissionsFactorId } from "./EmissionsFactor";
 import type { Inventory, InventoryId } from "./Inventory";
 import type { SectorValue, SectorValueId } from "./SectorValue";
 import type { SubSector, SubSectorId } from "./SubSector";
+import type { DataSource, DataSourceId } from "./DataSource";
 
 export interface SubSectorValueAttributes {
   subsectorValueId: string;
@@ -15,6 +16,7 @@ export interface SubSectorValueAttributes {
   subsectorId?: string;
   sectorValueId?: string;
   inventoryId?: string;
+  datasourceId?: string;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -30,6 +32,7 @@ export type SubSectorValueOptionalAttributes =
   | "subsectorId"
   | "sectorValueId"
   | "inventoryId"
+  | "datasourceId"
   | "created"
   | "lastUpdated";
 export type SubSectorValueCreationAttributes = Optional<
@@ -50,6 +53,7 @@ export class SubSectorValue
   subsectorId?: string;
   sectorValueId?: string;
   inventoryId?: string;
+  datasourceId?: string;
   created?: Date;
   lastUpdated?: Date;
 
@@ -79,6 +83,11 @@ export class SubSectorValue
   getSubsector!: Sequelize.BelongsToGetAssociationMixin<SubSector>;
   setSubsector!: Sequelize.BelongsToSetAssociationMixin<SubSector, SubSectorId>;
   createSubsector!: Sequelize.BelongsToCreateAssociationMixin<SubSector>;
+  // SubSectorValue belongsTo DataSource via datasourceId
+  dataSource!: DataSource;
+  getDataSource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
+  setDataSource!: Sequelize.BelongsToSetAssociationMixin<DataSource, DataSourceId>;
+  createDataSource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof SubSectorValue {
     return SubSectorValue.init(
@@ -144,6 +153,15 @@ export class SubSectorValue
             key: "inventory_id",
           },
           field: "inventory_id",
+        },
+        datasourceId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: "DataSource",
+            key: "datasource_id",
+          },
+          field: "datasource_id",
         },
       },
       {

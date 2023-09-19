@@ -1,17 +1,17 @@
 import { Sequelize } from "sequelize";
 import pg from "pg";
-import { initModels } from "./init-models";
+import * as models from "./init-models";
 
 export const db: {
   initialized: boolean;
   initialize: () => Promise<void>;
   sequelize?: Sequelize | null;
-  models: Record<string, any>;
+  models: Omit<typeof models, "initModels">;
 } = {
   initialized: false,
   sequelize: null,
   initialize,
-  models: {},
+  models,
 };
 
 async function initialize() {
@@ -24,7 +24,7 @@ async function initialize() {
     dialectModule: pg,
   });
 
-  db.models = initModels(sequelize);
+  db.models = models.initModels(sequelize);
 
   db.sequelize = sequelize;
   db.initialized = true;

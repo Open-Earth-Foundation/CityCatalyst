@@ -1,42 +1,41 @@
 "use client";
 
-import SubSectorCard from "@/components/Cards/SubSectorCard";
+import { SectorCard } from "@/components/Cards/SectorCard";
 import Footer from "@/components/Sections/Footer";
+import { SegmentedProgress } from "@/components/SegmentedProgress";
+import { CircleIcon } from "@/components/icons";
 import { NavigationBar } from "@/components/navigation-bar";
-import { CheckCircleIcon, InfoOutlineIcon } from "@chakra-ui/icons";
+import { api } from "@/services/api";
+import { formatPercent } from "@/util/helpers";
+import { InfoOutlineIcon } from "@chakra-ui/icons";
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
   Avatar,
   Box,
   Button,
   Card,
   CardBody,
   CardHeader,
+  Center,
   Heading,
+  Icon,
   Link,
+  Spinner,
+  Tag,
+  TagLabel,
+  TagLeftIcon,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import Image from "next/image";
 import NextLink from "next/link";
-import { useRouter } from "next/navigation";
-import { BsTruck } from "react-icons/bs";
 import { FiDownload } from "react-icons/fi";
 import {
-  MdArrowForward,
   MdArrowOutward,
   MdCheckCircleOutline,
   MdGroup,
   MdOutlineAddchart,
   MdOutlineAspectRatio,
 } from "react-icons/md";
-import { PiTrashLight } from "react-icons/pi";
-import { TbBuildingCommunity } from "react-icons/tb";
-import { useToast } from "@chakra-ui/react";
-import { useState } from "react";
 
 enum STATUS {
   INFO = "info",
@@ -47,27 +46,25 @@ enum STATUS {
 const CITY_INTENTORY_YEAR = "DE_BER";
 
 export default function Home({ params: { lng } }: { params: { lng: string } }) {
-  const router = useRouter();
   const toast = useToast();
 
-  // Accordion
-
-  const [isStationaryEnSectorOpen, setIsStationarySectorEnOpen] =
-    useState(false);
-  const [isTransportSecOpen, setIsTransportSecOpen] = useState(false);
-  const [isWasteSectorOpen, setWasteSectorOpen] = useState(false);
-
-  // Function to toggle the accordion section
-  const toggleAccordionA = () => {
-    setIsStationarySectorEnOpen(!isStationaryEnSectorOpen);
-  };
-  const toggleAccordionB = () => {
-    setIsTransportSecOpen(!isTransportSecOpen);
-  };
-
-  const toggleAccordionC = () => {
-    setWasteSectorOpen(!isWasteSectorOpen);
-  };
+  // query API data
+  // TODO get these from user record
+  const locode = "XX_INVENTORY_CITY";
+  const year = 3000;
+  const { data: inventory, isLoading: isInventoryLoading } =
+    api.useGetInventoryQuery({ locode, year });
+  const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
+    api.useGetInventoryProgressQuery({ locode, year });
+  let totalProgress = 0,
+    thirdPartyProgress = 0,
+    uploadedProgress = 0;
+  if (inventoryProgress && inventoryProgress.totalProgress.total > 0) {
+    const { uploaded, thirdParty, total } = inventoryProgress.totalProgress;
+    totalProgress = (uploaded + thirdParty) / total;
+    thirdPartyProgress = thirdParty / total;
+    uploadedProgress = uploaded / total;
+  }
 
   const showToast = (
     title: string,
@@ -163,8 +160,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
           });
         }
       })
-
       .catch((error) => {
+        console.error("Download error:", error);
         showToast(
           "Download failed",
           "There was an error during download",
@@ -204,18 +201,17 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     lineHeight="52"
                     className="flex"
                   >
+                    {inventory?.city?.name}
                     Ciudad Autónoma de Buenos Aires
                   </Heading>
                 </Box>
                 <Box className="flex gap-8 mt-[24px]">
                   <Box className="flex align-baseline gap-3">
-                    <Box>
-                      <MdArrowOutward
-                        className="relative top-0"
-                        size={24}
-                        fill="#5FE500"
-                      />
-                    </Box>
+                    <Icon
+                      as={MdArrowOutward}
+                      boxSize={6}
+                      fill="interactive.accent"
+                    />
                     <Box>
                       <Box className="flex gap-1">
                         <Text
@@ -237,18 +233,16 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         lineHeight="20px"
                         letterSpacing="wide"
                       >
-                        Total emissions in 2023
+                        Total emissions in {year}
                       </Text>
                     </Box>
                   </Box>
                   <Box className="flex align-baseline gap-3">
-                    <Box>
-                      <MdGroup
-                        className="relative top-0"
-                        size={24}
-                        fill="#C5CBF5"
-                      />
-                    </Box>
+                    <Icon
+                      as={MdGroup}
+                      boxSize={6}
+                      fill="background.overlay"
+                    />
                     <Box>
                       <Box className="flex gap-1">
                         <Text
@@ -275,13 +269,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     </Box>
                   </Box>
                   <Box className="flex align-baseline gap-3">
-                    <Box>
-                      <MdOutlineAspectRatio
-                        className="relative top-0"
-                        size={24}
-                        fill="#C5CBF5"
-                      />
-                    </Box>
+                    <Icon
+                      as={MdOutlineAspectRatio}
+                      boxSize={6}
+                      fill="background.overlay"
+                    />
                     <Box>
                       <Box className="flex gap-1">
                         <Text
@@ -411,7 +403,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                 fontWeight="semibold"
                 lineHeight="32"
               >
-                GPC Basic Emission Inventory Calculation - Year 2023
+                GPC Basic Emission Inventory Calculation - Year {year}
               </Heading>
               <InfoOutlineIcon color="interactive.control" />
             </Box>
@@ -422,67 +414,53 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               letterSpacing="wide"
             >
               The data you have submitted is now officially incorporated into
-              your city&apos;s 2023 GHG Emissions Inventory, compiled according
-              to the GPC Basic methodology.{" "}
+              your city&apos;s {year} GHG Emissions Inventory, compiled
+              according to the GPC Basic methodology.{" "}
               <Link
                 href={"/"}
                 fontWeight="bold"
-                color="brand.primary"
-                className="text-[#2351DC] font-[700] underline"
+                color="brand.secondary"
+                className="font-[700] underline"
               >
                 Learn more
               </Link>{" "}
               about GPC Protocol
             </Text>
-            <Box className="flex w-full justify-between items-center mt-2 gap-[24px]">
-              <Box
-                backgroundColor="interactive.tertiary"
-                borderRadius="full"
-                className="w-[946px] flex h-[16px]"
+            <Box className="flex w-full justify-between items-center mt-2 gap-6">
+              <SegmentedProgress
+                values={[thirdPartyProgress, uploadedProgress]}
+                colors={["interactive.connected", "interactive.tertiary"]}
+              />
+              <Heading
+                fontWeight="semibold"
+                fontSize="body.md"
+                className="whitespace-nowrap"
               >
-                <Box
-                  backgroundColor="interactive.connected"
-                  borderRadius="full"
-                  className="h-full w-[308px]"
-                />
-              </Box>
-              <Box>
-                <Heading fontWeight="semibold" fontSize="body.md">
-                  100% completed
-                </Heading>
-              </Box>
+                {formatPercent(totalProgress)}% completed
+              </Heading>
             </Box>
-            <Box className="flex gap-[16px] mt-[16px]">
-              <Box className="w-[279px] flex gap-2 px-3 items-center justify-center rounded-full h-[30px] border border-[#E8EAFB]">
-                <Box
-                  borderRadius="full"
-                  backgroundColor="interactive.connected"
-                  className="h-[12px] w-[12px]"
+            <Box className="flex gap-4 mt-2">
+              <Tag>
+                <TagLeftIcon
+                  as={CircleIcon}
+                  boxSize={6}
+                  color="interactive.connected"
                 />
-                <Text
-                  fontSize="label.md"
-                  lineHeight="20"
-                  fontWeight="regular"
-                  letterSpacing="wide"
-                >
-                  33% Connected third-party data
-                </Text>
-              </Box>
-              <Box className="w-[192px] flex gap-2 px-3 items-center justify-center rounded-full h-[30px] border border-[#E8EAFB]">
-                <Box
-                  borderRadius="full"
-                  backgroundColor="interactive.tertiary"
-                  className="h-[12px] w-[12px]"
+                <TagLabel>
+                  {formatPercent(thirdPartyProgress)}% Connected third-party
+                  data
+                </TagLabel>
+              </Tag>
+              <Tag>
+                <TagLeftIcon
+                  as={CircleIcon}
+                  boxSize={6}
+                  color="interactive.tertiary"
                 />
-                <Text
-                  fontSize="label.md"
-                  lineHeight="20"
-                  fontWeight="regular"
-                  letterSpacing="wide"
-                >
-                  66% Uploaded data
-                </Text>
-              </Box>
+                <TagLabel>
+                  {formatPercent(uploadedProgress)}% Uploaded data
+                </TagLabel>
+              </Tag>
             </Box>
             <Box className=" flex flex-col gap-[24px] py-[48px]">
               <Text
@@ -493,363 +471,19 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               >
                 Sectors required from inventory
               </Text>
-              <Box
-                backgroundColor="base.light"
-                borderRadius="rounded"
-                className="w-full flex flex-col min-h-[268px] px-6 py-8"
-              >
-                <Box className="flex gap-5">
-                  <Box className="flex items-start mt-2">
-                    <TbBuildingCommunity color="#2351DC" size={32} />
-                  </Box>
-                  <Box>
-                    <Box className="flex items-center justify-between">
-                      <Box className="flex flex-col">
-                        <Box className="flex gap-2 py-1 w-[715px]">
-                          <Heading
-                            fontSize="title.lg"
-                            fontWeight="semibold"
-                            lineHeight="24"
-                            className="pb-[8px]"
-                          >
-                            Stationary Energy
-                          </Heading>
-                        </Box>
-                        <Text
-                          color="interactive.control"
-                          fontSize="body.lg"
-                          lineHeight="24"
-                          letterSpacing="wide"
-                        >
-                          This sector deals with emissions that result from the
-                          generation of electricity, heat, and steam, as well as
-                          their consumption.
-                        </Text>
-                        <Heading
-                          fontWeight="semibold"
-                          fontSize="body.md"
-                          lineHeight="20"
-                          letterSpacing="wide"
-                          className="py-[16px]"
-                        >
-                          Scope Required for GPC Basic Inventory: 1, 2
-                        </Heading>
-                      </Box>
-                      <Box>
-                        <Button
-                          onClick={() => router.push("/data/1")}
-                          variant="outline"
-                          className="border-2 w-[256px] h-[48px] py-[16px] gap-2"
-                        >
-                          <Text
-                            fontFamily="heading"
-                            color="brand.secondary"
-                            fontSize="button.md"
-                          >
-                            ADD DATA TO SECTOR
-                          </Text>
-                          <MdArrowForward color="#2351DC" size={24} />
-                        </Button>
-                      </Box>
-                    </Box>
-                    <Box className="flex w-full justify-between items-center just">
-                      <Box className="w-[848px] flex rounded-full h-[8px] bg-[#24BE00]">
-                        <Box className="h-full w-[239px] rounded-l-full bg-[#FA7200]" />
-                      </Box>
-                      <Text
-                        fontFamily="heading"
-                        fontWeight="semibold"
-                        fontSize="body.md"
-                      >
-                        100% Completed
-                      </Text>
-                    </Box>
-                  </Box>
-                </Box>
-                <Box className="w-full pt-[24px] items-center justify-center">
-                  <Accordion border="none" allowToggle w="full">
-                    <AccordionItem border="none">
-                      <AccordionPanel padding={0}>
-                        <Text className="font-[600]">Sub-sectors required</Text>
-                        <Box className="grid grid-cols-3 gap-4 py-4">
-                          <SubSectorCard
-                            title="Residential Buildings"
-                            scopes="1, 2"
-                          />
-                          <SubSectorCard
-                            title="Commercial and institutional buildings and facilities"
-                            scopes="1, 2"
-                          />
-                          <SubSectorCard
-                            title="Manufacturing industries and construction"
-                            scopes="1, 2"
-                          />
-                          <SubSectorCard
-                            title="Energy industries"
-                            scopes="1, 2"
-                          />
-                          <SubSectorCard
-                            title="Fugitive emissions from oil and natural gas systems"
-                            scopes="1, 2"
-                          />
-                        </Box>
-                      </AccordionPanel>
-                      <AccordionButton
-                        onClick={toggleAccordionA}
-                        className="flex justify-center"
-                        background="none"
-                        color="content.tertiary"
-                        gap={2}
-                      >
-                        <Text
-                          fontFamily="heading"
-                          fontWeight="semibold"
-                          fontSize="button.md"
-                          letterSpacing="wider"
-                          fontStyle="normal"
-                          className="hover:underline hover:text-[#001EA7]"
-                        >
-                          {isStationaryEnSectorOpen ? "VIEW LESS" : "VIEW MORE"}
-                        </Text>
-                        <AccordionIcon h={7} w={7} />
-                      </AccordionButton>
-                    </AccordionItem>
-                  </Accordion>
-                </Box>
-              </Box>
-              <Box
-                backgroundColor="base.light"
-                borderRadius="rounded"
-                className="w-full flex flex-col min-h-[268px] px-6 py-8"
-              >
-                <Box className="flex gap-5">
-                  <Box className="flex items-start mt-2">
-                    <BsTruck color="#2351DC" size={32} />
-                  </Box>
-                  <Box>
-                    <Box className="flex items-center justify-between">
-                      <Box className="flex flex-col">
-                        <Box className="flex gap-2 py-1 w-[715px]">
-                          <Heading
-                            fontSize="title.lg"
-                            fontWeight="semibold"
-                            lineHeight="24"
-                            className="pb-[8px]"
-                          >
-                            Transportation
-                          </Heading>
-                        </Box>
-                        <Text
-                          color="interactive.control"
-                          fontSize="body.lg"
-                          lineHeight="24"
-                          letterSpacing="wide"
-                        >
-                          This sector deals with emissions from the
-                          transportation of goods and people within the city
-                          boundary.
-                        </Text>
-                        <Text
-                          fontFamily="heading"
-                          fontWeight="semibold"
-                          fontSize="body.md"
-                          lineHeight="20"
-                          letterSpacing="wide"
-                          className="py-[16px]"
-                        >
-                          Scope Required for GPC Basic Inventory: 1, 2
-                        </Text>
-                      </Box>
-                      <Box>
-                        <Button
-                          onClick={() => router.push("/data/2")}
-                          variant="outline"
-                          className="border-2 w-[256px] h-[48px] py-[16px] gap-2"
-                        >
-                          <Text
-                            fontFamily="heading"
-                            color="brand.secondary"
-                            fontSize="button.md"
-                          >
-                            ADD DATA TO SECTOR
-                          </Text>
-                          <MdArrowForward color="#2351DC" size={24} />
-                        </Button>
-                      </Box>
-                    </Box>
-                    <Box className="flex w-full justify-between items-center just">
-                      <Box className="w-[848px] flex rounded-full h-[8px] bg-[#24BE00]">
-                        <Box className="h-full w-[239px] rounded-l-full bg-[#FA7200]" />
-                      </Box>
-                      <Text
-                        fontFamily="heading"
-                        fontWeight="semibold"
-                        fontSize="body.md"
-                      >
-                        100% Completed
-                      </Text>
-                    </Box>
-                  </Box>
-                </Box>
-                <Box className="w-full pt-[24px] items-center justify-center">
-                  <Accordion border="none" allowToggle w="full">
-                    <AccordionItem border="none">
-                      <AccordionPanel padding={0}>
-                        <Text className="font-[600]">Sub-sectors required</Text>
-                        <Box className="grid grid-cols-3 gap-4 py-4">
-                          <SubSectorCard title="On-Road" scopes="1, 2" />
-                          <SubSectorCard title="Aviation" scopes="1, 2" />
-                          <SubSectorCard title="Railways" scopes="1, 2" />
-                          <SubSectorCard title="Off Road" scopes="1, 2" />
-                          <SubSectorCard
-                            title="Waterbone navigation"
-                            scopes="1, 2"
-                          />
-                        </Box>
-                      </AccordionPanel>
-                      <AccordionButton
-                        onClick={toggleAccordionB}
-                        className="flex justify-center"
-                        background="none"
-                        color="content.tertiary"
-                        gap={2}
-                      >
-                        <Text
-                          fontFamily="heading"
-                          fontWeight="semibold"
-                          fontSize="button.md"
-                          letterSpacing="wider"
-                          fontStyle="normal"
-                          className="hover:underline hover:text-[#001EA7]"
-                        >
-                          {isTransportSecOpen ? "VIEW LESS" : "VIEW MORE"}
-                        </Text>
-                        <AccordionIcon h={7} w={7} />
-                      </AccordionButton>
-                    </AccordionItem>
-                  </Accordion>
-                </Box>
-              </Box>
-              <Box
-                backgroundColor="base.light"
-                borderRadius="rounded"
-                className="w-full flex flex-col min-h-[268px] px-6 py-8"
-              >
-                <Box className="flex gap-5">
-                  <Box className="flex items-start mt-2">
-                    <PiTrashLight color="#2351DC" size={32} />
-                  </Box>
-                  <Box>
-                    <Box className="flex items-center justify-between">
-                      <Box className="flex flex-col">
-                        <Box className="flex gap-2 py-1 w-[715px]">
-                          <Heading
-                            fontSize="title.lg"
-                            fontWeight="semibold"
-                            lineHeight="24"
-                            className="pb-[8px]"
-                          >
-                            Waste and wastewater
-                          </Heading>
-                        </Box>
-                        <Text
-                          color="interactive.control"
-                          fontSize="body.lg"
-                          lineHeight="24"
-                          letterSpacing="wide"
-                        >
-                          This sector covers emissions generated from waste
-                          management processes.
-                        </Text>
-                        <Text
-                          fontFamily="heading"
-                          fontWeight="semibold"
-                          fontSize="body.md"
-                          lineHeight="20"
-                          letterSpacing="wide"
-                          className="py-[16px]"
-                        >
-                          Scope Required for GPC Basic Inventory: 1, 2
-                        </Text>
-                      </Box>
-                      <Box>
-                        <Button
-                          onClick={() => router.push("/data/3")}
-                          variant="outline"
-                          className="border-2 w-[256px] h-[48px] py-[16px] gap-2"
-                        >
-                          <Text
-                            fontFamily="heading"
-                            color="brand.secondary"
-                            fontSize="button.md"
-                          >
-                            ADD DATA TO SECTOR
-                          </Text>
-                          <MdArrowForward color="#2351DC" size={24} />
-                        </Button>
-                      </Box>
-                    </Box>
-                    <Box className="flex w-full justify-between items-center gap-5">
-                      <Box className="w-[848px] flex rounded-full h-[8px] bg-[#24BE00]">
-                        <Box className="h-full w-[239px] rounded-l-full bg-[#FA7200]" />
-                      </Box>
-                      <Text
-                        fontFamily="heading"
-                        fontWeight="semibold"
-                        fontSize="body.md"
-                      >
-                        100% Completed
-                      </Text>
-                    </Box>
-                  </Box>
-                </Box>
-                <Box className="w-full pt-[24px] items-center justify-center">
-                  <Accordion border="none" allowToggle w="full">
-                    <AccordionItem border="none">
-                      <AccordionPanel padding={0}>
-                        <Text className="font-[600]">Sub-sectors required</Text>
-                        <Box className="grid grid-cols-3 gap-4 py-4">
-                          <SubSectorCard
-                            title="Disposal of solid waste generated in the city"
-                            scopes="1, 2"
-                          />
-                          <SubSectorCard
-                            title="Biological treatment of waste generated in the city"
-                            scopes="1, 2"
-                          />
-                          <SubSectorCard
-                            title="Incineration and open burning of waste generated in the city"
-                            scopes="1, 2"
-                          />
-                          <SubSectorCard
-                            title="Wastewater generated in the city"
-                            scopes="1, 2"
-                          />
-                        </Box>
-                      </AccordionPanel>
-                      <AccordionButton
-                        onClick={toggleAccordionC}
-                        className="flex justify-center"
-                        background="none"
-                        color="content.tertiary"
-                        gap={2}
-                      >
-                        <Text
-                          fontFamily="heading"
-                          fontWeight="semibold"
-                          fontSize="button.md"
-                          letterSpacing="wider"
-                          fontStyle="normal"
-                          className="hover:underline hover:text-[#001EA7]"
-                        >
-                          {isWasteSectorOpen ? "VIEW LESS" : "VIEW MORE"}
-                        </Text>
-                        <AccordionIcon h={7} w={7} />
-                      </AccordionButton>
-                    </AccordionItem>
-                  </Accordion>
-                </Box>
-              </Box>
+              {isInventoryProgressLoading ? (
+                <Center>
+                  <Spinner size="lg" />
+                </Center>
+              ) : (
+                inventoryProgress?.sectorProgress.map((sectorProgress, i) => (
+                  <SectorCard
+                    key={i}
+                    sectorProgress={sectorProgress}
+                    stepNumber={i + 1}
+                  />
+                ))
+              )}
             </Box>
           </Box>
         </Box>

@@ -1,6 +1,7 @@
 "use client";
 
 import { SectorCard } from "@/components/Cards/SectorCard";
+import { CityMap } from "@/components/CityMap";
 import Footer from "@/components/Sections/Footer";
 import { SegmentedProgress } from "@/components/SegmentedProgress";
 import { CircleIcon } from "@/components/icons";
@@ -301,14 +302,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   </Box>
                 </Box>
               </Box>
-              <Box>
-                <Image
-                  src="/assets/map_placeholder.png"
-                  alt=""
-                  width={622}
-                  height={517}
-                />
-              </Box>
+              <CityMap locode={locode} width={422} height={317} />
             </Box>
             <Box className="flex gap-[24px] relative justify-between top-[100px]">
               <NextLink href="/data">

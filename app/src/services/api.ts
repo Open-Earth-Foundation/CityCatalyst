@@ -24,7 +24,7 @@ export const openclimateAPI = createApi({
     baseUrl: "https://openclimate.openearth.dev",
   }),
   endpoints: (builder) => ({
-    getOCtCity: builder.query<any, string>({
+    getOCCity: builder.query<any, string>({
       query: (q) => `/api/v1/search/actor?q=${q}`,
     }),
   }),
@@ -32,4 +32,4 @@ export const openclimateAPI = createApi({
 
 // hooks are automatically generated
 export const { useGetCityQuery, useAddCityMutation } = api;
-export const { useGetOCtCityQuery } = openclimateAPI;
+export const { useGetOCCityQuery } = openclimateAPI;

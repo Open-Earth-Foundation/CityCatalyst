@@ -39,7 +39,7 @@ import { MdOutlineAspectRatio, MdOutlinePeopleAlt } from "react-icons/md";
 import { Link } from "@chakra-ui/next-js";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { TFunction } from "i18next";
-import { useGetOCtCityQuery, useAddCityMutation } from "@/services/api";
+import { useAddCityMutation, useGetOCCityQuery } from "@/services/api";
 import RecentSearches from "@/components/recent-searches";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { set } from "@/features/city/openclimateCitySlice";
@@ -111,7 +111,9 @@ function SetupStep({
     isLoading,
     isSuccess,
     isError,
-  } = useGetOCtCityQuery(cityInputQuery);
+  } = useGetOCCityQuery(cityInputQuery, {
+    skip: cityInputQuery.length <= 2 ? true : false,
+  });
 
   const renderParentPath = (path: []) => {
     let pathString = "";

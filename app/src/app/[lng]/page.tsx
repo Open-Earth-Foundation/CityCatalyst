@@ -27,7 +27,6 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import Image from "next/image";
 import NextLink from "next/link";
 import { FiDownload } from "react-icons/fi";
 import {
@@ -239,11 +238,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     </Box>
                   </Box>
                   <Box className="flex align-baseline gap-3">
-                    <Icon
-                      as={MdGroup}
-                      boxSize={6}
-                      fill="background.overlay"
-                    />
+                    <Icon as={MdGroup} boxSize={6} fill="background.overlay" />
                     <Box>
                       <Box className="flex gap-1">
                         <Text
@@ -302,7 +297,9 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   </Box>
                 </Box>
               </Box>
-              <CityMap locode={locode} width={422} height={317} />
+              <Box mt={-25}>
+                <CityMap locode={locode} width={422} height={317} />
+              </Box>
             </Box>
             <Box className="flex gap-[24px] relative justify-between top-[100px]">
               <NextLink href="/data">

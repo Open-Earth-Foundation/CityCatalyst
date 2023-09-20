@@ -1,7 +1,6 @@
 "use client";
 
 import { SectorCard } from "@/components/Cards/SectorCard";
-import { CityMap } from "@/components/CityMap";
 import Footer from "@/components/Sections/Footer";
 import { SegmentedProgress } from "@/components/SegmentedProgress";
 import { CircleIcon } from "@/components/icons";
@@ -27,6 +26,7 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
+import dynamic from "next/dynamic";
 import NextLink from "next/link";
 import { FiDownload } from "react-icons/fi";
 import {
@@ -44,6 +44,9 @@ enum STATUS {
 }
 
 const CITY_INTENTORY_YEAR = "DE_BER";
+
+// only render map on the client
+const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
 export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const toast = useToast();

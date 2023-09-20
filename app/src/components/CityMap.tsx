@@ -64,7 +64,12 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
         {data && (
           <GeoJSON
             data={data as GeoJsonObject}
-            style={{ color: "#648bff", weight: 5, opacity: 0.65, fillOpacity: 0.3 }}
+            style={{
+              color: "#648bff",
+              weight: 5,
+              opacity: 0.65,
+              fillOpacity: 0.3,
+            }}
           />
         )}
         <BoundingBoxFocus boundingBox={boundingBox} />
@@ -72,3 +77,5 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
     </Box>
   );
 };
+
+export default CityMap;

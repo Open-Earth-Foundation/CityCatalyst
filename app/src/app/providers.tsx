@@ -5,11 +5,47 @@ import { store } from "@/lib/store";
 import { CacheProvider } from "@chakra-ui/next-js";
 import { ChakraProvider } from "@chakra-ui/react";
 import { SessionProvider } from "next-auth/react";
-import { Open_Sans, Poppins } from "next/font/google";
+import localFont from "next/font/local";
 import { Provider } from "react-redux";
 
-const poppins = Poppins({ weight: "500", subsets: ["latin"] });
-const openSans = Open_Sans({ subsets: ["latin"] });
+const poppins = localFont({
+  src: [
+    {
+      weight: "300",
+      style: "normal",
+      path: "./fonts/open-sans-v36-latin_latin-ext-300.woff2",
+    },
+    {
+      weight: "400",
+      style: "normal",
+      path: "./fonts/open-sans-v36-latin_latin-ext-regular.woff2",
+    },
+    {
+      weight: "700",
+      style: "normal",
+      path: "./fonts/open-sans-v36-latin_latin-ext-700.woff2",
+    },
+  ],
+});
+const openSans = localFont({
+  src: [
+    {
+      weight: "300",
+      style: "normal",
+      path: "./fonts/open-sans-v36-latin_latin-ext-300.woff2",
+    },
+    {
+      weight: "400",
+      style: "normal",
+      path: "./fonts/poppins-v20-latin_latin-ext-regular.woff2",
+    },
+    {
+      weight: "700",
+      style: "normal",
+      path: "./fonts/poppins-v20-latin_latin-ext-700.woff2",
+    },
+  ],
+});
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (

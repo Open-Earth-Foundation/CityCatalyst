@@ -27,6 +27,8 @@
   "connect-data": "Connect data",
   "data-connected": "Data connected",
   "edit-subsector": "Edit subsector",
+  "more-datasets": "View more datasets",
+  "less-datasets": "View less datasets",
 
   "add-data-heading": "Add your own local values manually",
   "add-data-details": "Manually add your calculated values for required sub-sectors to the inventory.",

@@ -28,6 +28,8 @@ import { useEffect, useState } from "react";
 import { FiTarget, FiTrash2, FiTruck } from "react-icons/fi";
 import {
   MdAdd,
+  MdArrowDropDown,
+  MdArrowDropUp,
   MdCheckCircle,
   MdOutlineCheckCircle,
   MdOutlineEdit,
@@ -45,7 +47,7 @@ const dataSourceDescription =
   "Leveraging satellite imagery, this dataset provides key information about residential structures, aiding in the assessment of their energy usage and corresponding carbon footprints";
 const dataSourceMethodoloygy =
   "Power sector emissions are estimated by first assembling a global geolocated inventory of power plants, generation, and metered emissions data. Machine learning models then predict power plant generation from satellite images. These predictions are aggregated and combined with available generation data and carbon intensity factors to derive emissions estimates.";
-const dataSources: DataSource[] = [
+const rawDataSources: DataSource[] = [
   {
     id: 0,
     icon: MdOutlineHouse,
@@ -88,6 +90,16 @@ const dataSources: DataSource[] = [
   },
 ];
 
+const dataSources = rawDataSources
+  .reduce((acc, source) => {
+    acc.push(source, source, source);
+    return acc;
+  }, [] as DataSource[])
+  .map((source, id) => {
+    source.id = id;
+    return source;
+  });
+
 export default function OnboardingSteps({
   params: { lng, step },
 }: {
@@ -129,7 +141,7 @@ export default function OnboardingSteps({
     // change step param in URL without reloading
     const newPath = location.pathname.replace(
       /\/[0-9]+$/,
-      `/${activeStep + 1}`
+      `/${activeStep + 1}`,
     );
     history.replaceState("", "", newPath);
   }, [activeStep]);
@@ -146,7 +158,6 @@ export default function OnboardingSteps({
     onOpen: onSourceDrawerOpen,
   } = useDisclosure();
   const onSourceClick = (source: DataSource) => {
-    console.log(source);
     setSelectedSource(source);
     onSourceDrawerOpen();
   };
@@ -191,6 +202,8 @@ export default function OnboardingSteps({
       goToNext();
     }
   };
+
+  const [isDataSectionExpanded, setDataSectionExpanded] = useState(false);
 
   return (
     <div className="pt-16 w-[1090px] max-w-full mx-auto px-4">
@@ -268,73 +281,87 @@ export default function OnboardingSteps({
         <Text color="content.tertiary" mb={12}>
           {t("check-data-details")}
         </Text>
-        <Flex
-          direction="row"
-          className="space-y-4 md:space-y-0 md:space-x-4 flex-wrap md:flex-nowrap"
+        <SimpleGrid minChildWidth="250px" spacing={4}>
+          {dataSources
+            .slice(0, isDataSectionExpanded ? dataSources.length : 6)
+            .map((source) => (
+              <Card
+                key={source.id}
+                onClick={() => onSourceClick(source)}
+                variant="outline"
+                borderColor={
+                  (source.isConnected && "interactive.tertiary") || undefined
+                }
+                className="hover:drop-shadow-xl transition-shadow"
+              >
+                <Icon as={source.icon} boxSize={9} mb={6} />
+                <Heading size="sm" noOfLines={2}>
+                  {source.title}
+                </Heading>
+                <Flex direction="row" my={4}>
+                  <Tag mr={1}>
+                    <TagLeftIcon
+                      as={MdPlaylistAddCheck}
+                      boxSize={4}
+                      color="content.tertiary"
+                    />
+                    <TagLabel fontSize={12}>
+                      {t("data-quality")}: {t("quality-" + source.dataQuality)}
+                    </TagLabel>
+                  </Tag>
+                  <Tag>
+                    <TagLeftIcon
+                      as={FiTarget}
+                      boxSize={4}
+                      color="content.tertiary"
+                    />
+                    <TagLabel fontSize={12}>
+                      {t("scope")}: {source.scopes.join(", ")}
+                    </TagLabel>
+                  </Tag>
+                </Flex>
+                <Text color="content.tertiary" noOfLines={5}>
+                  {source.description}
+                </Text>
+                <Link className="underline" mt={4} mb={6}>
+                  {t("see-more-details")}
+                </Link>
+                {source.isConnected ? (
+                  <Button
+                    variant="solidPrimary"
+                    px={6}
+                    py={4}
+                    leftIcon={<Icon as={MdCheckCircle} />}
+                  >
+                    {t("data-connected")}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    bgColor="background.neutral"
+                    onClick={() => onConnectClick(source)}
+                  >
+                    {t("connect-data")}
+                  </Button>
+                )}
+              </Card>
+            ))}
+        </SimpleGrid>
+        <Button
+          variant="ghost"
+          color="content.tertiary"
+          onClick={() => setDataSectionExpanded(!isDataSectionExpanded)}
+          mt={8}
+          fontWeight="normal"
+          rightIcon={
+            <Icon
+              boxSize={6}
+              as={isDataSectionExpanded ? MdArrowDropUp : MdArrowDropDown}
+            />
+          }
         >
-          {dataSources.map((source) => (
-            <Card
-              key={source.id}
-              onClick={() => onSourceClick(source)}
-              variant="outline"
-              borderColor={
-                (source.isConnected && "interactive.tertiary") || undefined
-              }
-              className="hover:drop-shadow-xl transition-shadow"
-            >
-              <Icon as={source.icon} boxSize={9} mb={6} />
-              <Heading size="sm" noOfLines={2}>
-                {source.title}
-              </Heading>
-              <Flex direction="row" my={4}>
-                <Tag mr={1}>
-                  <TagLeftIcon
-                    as={MdPlaylistAddCheck}
-                    boxSize={4}
-                    color="content.tertiary"
-                  />
-                  <TagLabel fontSize={12}>
-                    {t("data-quality")}: {t("quality-" + source.dataQuality)}
-                  </TagLabel>
-                </Tag>
-                <Tag>
-                  <TagLeftIcon
-                    as={FiTarget}
-                    boxSize={4}
-                    color="content.tertiary"
-                  />
-                  <TagLabel fontSize={12}>
-                    {t("scope")}: {source.scopes.join(", ")}
-                  </TagLabel>
-                </Tag>
-              </Flex>
-              <Text color="content.tertiary" noOfLines={5}>
-                {source.description}
-              </Text>
-              <Link className="underline" mt={4} mb={6}>
-                {t("see-more-details")}
-              </Link>
-              {source.isConnected ? (
-                <Button
-                  variant="solidPrimary"
-                  px={6}
-                  py={4}
-                  leftIcon={<Icon as={MdCheckCircle} />}
-                >
-                  {t("data-connected")}
-                </Button>
-              ) : (
-                <Button
-                  variant="outline"
-                  bgColor="background.neutral"
-                  onClick={() => onConnectClick(source)}
-                >
-                  {t("connect-data")}
-                </Button>
-              )}
-            </Card>
-          ))}
-        </Flex>
+          {t(isDataSectionExpanded ? "less-datasets" : "more-datasets")}
+        </Button>
       </Card>
       {/*** Manual data entry section for subsectors ***/}
       <Card mb={48}>

@@ -2,7 +2,12 @@
 
 import WizardSteps from "@/components/wizard-steps";
 import { useTranslation } from "@/i18n/client";
-import { ArrowBackIcon, InfoOutlineIcon, SearchIcon } from "@chakra-ui/icons";
+import {
+  ArrowBackIcon,
+  CheckIcon,
+  InfoOutlineIcon,
+  SearchIcon,
+} from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -16,13 +21,14 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  InputRightElement,
   Select,
   Text,
   useSteps,
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { SyntheticEvent, useEffect, useRef, useState } from "react";
 import {
   FieldErrors,
   SubmitHandler,
@@ -60,6 +66,9 @@ function SetupStep({
 
   const [onInputClicked, setOnInputClicked] = useState<boolean>(false);
   const [cityInputQuery, setCityInputQuery] = useState<string>("");
+  const [isCityNew, setIsCityNew] = useState<boolean>(false);
+  const [isYearSelected, setIsYearSelected] = useState<boolean>(false);
+  const [yearValue, setYearValue] = useState<number>();
   const dispatch = useAppDispatch();
 
   const handleInputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,8 +80,15 @@ function SetupStep({
   const handleSetCity = (city: OCCityArributes) => {
     setCityInputQuery(city.name);
     setOnInputClicked(false);
-    console.log(city);
     dispatch(set(city));
+
+    // TODO: chech whether city exists or not
+    setIsCityNew(true);
+  };
+
+  const handleYear = (e: any) => {
+    setIsYearSelected(true);
+    setYearValue(e.target.value);
   };
 
   useEffect(() => {
@@ -82,8 +98,12 @@ function SetupStep({
   useEffect(() => {
     if (cityInputQuery.length === 0) {
       setOnInputClicked(false);
+      setIsCityNew(false);
     }
-  }, [cityInputQuery]);
+    if (!yearValue) {
+      setIsYearSelected(false);
+    }
+  }, [cityInputQuery, yearValue]);
 
   // import custom redux-hooks
   const {
@@ -137,6 +157,16 @@ function SetupStep({
                   onChange={handleInputOnChange}
                   value={cityInputQuery}
                 />
+                <InputRightElement>
+                  {isCityNew && (
+                    <CheckIcon
+                      color="semantic.success"
+                      boxSize={4}
+                      mt={2}
+                      mr={2}
+                    />
+                  )}
+                </InputRightElement>
               </InputGroup>
               {onInputClicked && (
                 <Box
@@ -187,19 +217,32 @@ function SetupStep({
             </FormControl>
             <FormControl isInvalid={!!errors.year}>
               <FormLabel>{t("inventory-year")}</FormLabel>
-              <Select
-                placeholder={t("inventory-year-placeholder")}
-                size="lg"
-                {...register("year", {
-                  required: t("inventory-year-required"),
-                })}
-              >
-                {years.map((year: number, i: number) => (
-                  <option value={year} key={i}>
-                    {year}
-                  </option>
-                ))}
-              </Select>
+              <InputGroup>
+                <Select
+                  placeholder={t("inventory-year-placeholder")}
+                  size="lg"
+                  {...register("year", {
+                    required: t("inventory-year-required"),
+                  })}
+                  onChange={handleYear}
+                >
+                  {years.map((year: number, i: number) => (
+                    <option value={year} key={i}>
+                      {year}
+                    </option>
+                  ))}
+                </Select>
+                <InputRightElement>
+                  {isYearSelected && (
+                    <CheckIcon
+                      color="semantic.success"
+                      boxSize={4}
+                      mt={2}
+                      mr={2}
+                    />
+                  )}
+                </InputRightElement>
+              </InputGroup>
               <FormErrorMessage>
                 {errors.year && errors.year.message}
               </FormErrorMessage>
@@ -313,7 +356,6 @@ export default function OnboardingSetup({
 
   const onSubmit: SubmitHandler<Inputs> = async (newData) => {
     // TODO persist data in local storage and jump to step 2 on reload?
-    console.log(newData);
     const city = {
       name: newData.city,
       locode: storedData.city?.actor_id,

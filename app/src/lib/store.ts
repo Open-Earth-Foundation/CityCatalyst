@@ -1,15 +1,20 @@
-import { api } from "@/services/api";
+import { api, openclimateAPI } from "@/services/api";
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import cityReducer from "@/features/city/citySlice";
+import openclimateCityReducer from "@/features/city/openclimateCitySlice";
 
 export const store = configureStore({
   reducer: {
     [api.reducerPath]: api.reducer,
+    [openclimateAPI.reducerPath]: openclimateAPI.reducer,
     city: cityReducer,
+    openclimatecity: openclimateCityReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(api.middleware),
+    getDefaultMiddleware()
+      .concat(api.middleware)
+      .concat(openclimateAPI.middleware),
 });
 
 // required for refetchOnFocus/refetchOnReconnect behaviors

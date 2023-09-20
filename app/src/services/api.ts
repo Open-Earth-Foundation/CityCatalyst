@@ -8,8 +8,28 @@ export const api = createApi({
     getCity: builder.query<CityAttributes, string>({
       query: (locode) => `city/${locode}`,
     }),
+    addCity: builder.mutation<CityAttributes, {}>({
+      query: (data) => ({
+        url: `/city`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+  }),
+});
+
+export const openclimateAPI = createApi({
+  reducerPath: "openclimateapi",
+  baseQuery: fetchBaseQuery({
+    baseUrl: "https://openclimate.openearth.dev",
+  }),
+  endpoints: (builder) => ({
+    getOCtCity: builder.query<any, string>({
+      query: (q) => `/api/v1/search/actor?q=${q}`,
+    }),
   }),
 });
 
 // hooks are automatically generated
-export const { useGetCityQuery } = api;
+export const { useGetCityQuery, useAddCityMutation } = api;
+export const { useGetOCtCityQuery } = openclimateAPI;

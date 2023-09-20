@@ -22,7 +22,7 @@ import {
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import {
   FieldErrors,
   SubmitHandler,
@@ -33,6 +33,11 @@ import { MdOutlineAspectRatio, MdOutlinePeopleAlt } from "react-icons/md";
 import { Link } from "@chakra-ui/next-js";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { TFunction } from "i18next";
+import { useGetOCtCityQuery, useAddCityMutation } from "@/services/api";
+import RecentSearches from "@/components/recent-searches";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { set } from "@/features/city/openclimateCitySlice";
+import { OCCityArributes } from "@/models/City";
 
 type Inputs = {
   city: String;
@@ -43,13 +48,67 @@ function SetupStep({
   errors,
   register,
   t,
+  setValue,
 }: {
   errors: FieldErrors<Inputs>;
   register: UseFormRegister<Inputs>;
   t: TFunction;
+  setValue: any;
 }) {
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 7 }, (_x, i) => currentYear - i);
+
+  const [onInputClicked, setOnInputClicked] = useState<boolean>(false);
+  const [cityInputQuery, setCityInputQuery] = useState<string>("");
+  const dispatch = useAppDispatch();
+
+  const handleInputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setCityInputQuery(e.target.value);
+    setOnInputClicked(true);
+  };
+
+  const handleSetCity = (city: OCCityArributes) => {
+    setCityInputQuery(city.name);
+    setOnInputClicked(false);
+    console.log(city);
+    dispatch(set(city));
+  };
+
+  useEffect(() => {
+    setValue("city", cityInputQuery);
+  }, [cityInputQuery, setValue]);
+
+  useEffect(() => {
+    if (cityInputQuery.length === 0) {
+      setOnInputClicked(false);
+    }
+  }, [cityInputQuery]);
+
+  // import custom redux-hooks
+  const {
+    data: cities,
+    isLoading,
+    isSuccess,
+    isError,
+  } = useGetOCtCityQuery(cityInputQuery);
+
+  const renderParentPath = (path: []) => {
+    let pathString = "";
+    const pathCopy = [...path];
+
+    pathCopy
+      ?.reverse()
+      .slice(1)
+      .map((parent: any) => {
+        if (pathString) {
+          pathString = pathString + " > ";
+        }
+        pathString = pathString + parent.name;
+      });
+
+    return pathString;
+  };
   return (
     <>
       <div>
@@ -75,8 +134,53 @@ function SetupStep({
                   {...register("city", {
                     required: t("select-city-required"),
                   })}
+                  onChange={handleInputOnChange}
+                  value={cityInputQuery}
                 />
               </InputGroup>
+              {onInputClicked && (
+                <Box
+                  shadow="2dp"
+                  className="h-auto max-h-[272px] transition-all duration-150 overflow-scroll flex flex-col py-3 gap-3 rounded-lg w-full absolute bg-white z-50 mt-2 border border-[1px solid #E6E7FF]"
+                >
+                  {!isLoading && !cityInputQuery && <RecentSearches />}
+                  {isLoading && <p className="px-4">Fetching Cities...</p>}
+                  {isSuccess &&
+                    cities &&
+                    cities.data.map((city: any) => {
+                      return (
+                        <Box
+                          onClick={() => handleSetCity(city)}
+                          key={city.actor_id}
+                          className="h-[72px] py-3 w-full flex flex-col justify-center group px-4 hover:bg-[#2351DC] transition-all duration-150 cursor-pointer"
+                        >
+                          <Text
+                            className="group-hover:text-white"
+                            color="content.secondary"
+                            fontSize="body.lg"
+                            fontFamily="body"
+                            fontWeight="normal"
+                            lineHeight="24"
+                            letterSpacing="wide"
+                          >
+                            {city.name}
+                          </Text>
+                          <Text
+                            className="group-hover:text-[#E8EAFB]"
+                            color="content.tertiary"
+                            fontSize="body.lg"
+                            fontFamily="body.md"
+                            fontWeight="normal"
+                            lineHeight="20"
+                            letterSpacing="wide"
+                          >
+                            {renderParentPath(city.root_path_geo)}
+                          </Text>
+                        </Box>
+                      );
+                    })}
+                </Box>
+              )}
               <FormErrorMessage>
                 {errors.city && errors.city.message}
               </FormErrorMessage>
@@ -184,6 +288,7 @@ export default function OnboardingSetup({
     handleSubmit,
     register,
     getValues,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<Inputs>();
 
@@ -193,24 +298,42 @@ export default function OnboardingSetup({
     count: steps.length,
   });
 
-  const [data, setData] = useState({});
+  const [addCity] = useAddCityMutation();
+
+  type City = {
+    name: string;
+    locode: string;
+  };
+
+  const [data, setData] = useState<City>({ name: "", locode: "" });
   const cityId = "AR_BUE"; // TODO get from OpenClimate API
   const [isConfirming, setConfirming] = useState(false);
+
+  const storedData = useAppSelector((state) => state.openclimatecity);
 
   const onSubmit: SubmitHandler<Inputs> = async (newData) => {
     // TODO persist data in local storage and jump to step 2 on reload?
     console.log(newData);
-    setData(newData);
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    const city = {
+      name: newData.city,
+      locode: storedData.city?.actor_id,
+    } as any;
+    setData(city);
+
     goToNext();
   };
 
   const onConfirm = async () => {
     // TODO actually save data in backend here
     setConfirming(true);
+    const formdata = {
+      name: data.name,
+      locode: data.locode,
+    };
+    addCity(formdata);
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setConfirming(false);
-    router.push("/onboarding/done/" + cityId);
+    router.push("/onboarding/done/" + storedData.city?.actor_id);
   };
 
   return (
@@ -230,7 +353,12 @@ export default function OnboardingSetup({
         </div>
         <div className="flex flex-col md:flex-row md:space-x-12 md:space-y-0 space-y-12 align-top mt-8 md:mt-16 mb-48">
           {activeStep === 0 && (
-            <SetupStep errors={errors} register={register} t={t} />
+            <SetupStep
+              errors={errors}
+              setValue={setValue}
+              register={register}
+              t={t}
+            />
           )}
           {activeStep === 1 && (
             <ConfirmStep cityName={getValues("city")} t={t} />

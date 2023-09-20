@@ -1,5 +1,8 @@
 import type { CityAttributes, InventoryAttributes } from "@/models/init-models";
-import type { InventoryResponse, InventoryProgressResponse } from "@/util/types";
+import type {
+  InventoryProgressResponse,
+  InventoryResponse,
+} from "@/util/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
@@ -9,6 +12,10 @@ export const api = createApi({
     getCity: builder.query<CityAttributes, string>({
       query: (locode) => `city/${locode}`,
       transformResponse: (response: { data: CityAttributes }) => response.data,
+    }),
+    getCityBoundary: builder.query<GeoJSON.GeoJSON, string>({
+      query: (locode) => `city/${locode}/boundary`,
+      transformResponse: (response: { data: GeoJSON.GeoJSON }) => response.data,
     }),
     getInventory: builder.query<
       InventoryResponse,

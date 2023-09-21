@@ -28,7 +28,7 @@ import {
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { SyntheticEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FieldErrors,
   SubmitHandler,

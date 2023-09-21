@@ -4,6 +4,7 @@ import type { EmissionsFactor, EmissionsFactorId } from "./EmissionsFactor";
 import type { Inventory, InventoryId } from "./Inventory";
 import type { SectorValue, SectorValueId } from "./SectorValue";
 import type { SubCategory, SubCategoryId } from "./SubCategory";
+import type { DataSource, DataSourceId } from "./DataSource";
 
 export interface SubCategoryValueAttributes {
   subcategoryValueId: string;
@@ -15,6 +16,7 @@ export interface SubCategoryValueAttributes {
   subcategoryId?: string;
   sectorValueId?: string;
   inventoryId?: string;
+  datasourceId?: string;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -30,6 +32,7 @@ export type SubCategoryValueOptionalAttributes =
   | "subcategoryId"
   | "sectorValueId"
   | "inventoryId"
+  | "datasourceId" 
   | "created"
   | "lastUpdated";
 export type SubCategoryValueCreationAttributes = Optional<
@@ -50,6 +53,7 @@ export class SubCategoryValue
   subcategoryId?: string;
   sectorValueId?: string;
   inventoryId?: string;
+  datasourceId?: string;
   created?: Date;
   lastUpdated?: Date;
 
@@ -82,6 +86,11 @@ export class SubCategoryValue
     SubCategoryId
   >;
   createSubcategory!: Sequelize.BelongsToCreateAssociationMixin<SubCategory>;
+  // SubCategoryValue belongsTo DataSource via datasourceId
+  dataSource!: DataSource;
+  getDataSource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
+  setDataSource!: Sequelize.BelongsToSetAssociationMixin<DataSource, DataSourceId>;
+  createDataSource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof SubCategoryValue {
     return SubCategoryValue.init(
@@ -147,6 +156,15 @@ export class SubCategoryValue
             key: "inventory_id",
           },
           field: "inventory_id",
+        },
+        datasourceId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: "DataSource",
+            key: "datasource_id",
+          },
+          field: "datasource_id",
         },
       },
       {

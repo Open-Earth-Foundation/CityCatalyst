@@ -1,5 +1,4 @@
 import { db } from "@/models";
-import { City } from "@/models/City";
 import { apiHandler } from "@/util/api";
 import { createInventoryRequest } from "@/util/validation";
 import createHttpError from "http-errors";
@@ -17,6 +16,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   if (!inventory) {
     throw new createHttpError.NotFound("Inventory not found");
   }
+  inventory.city = city;
 
   return NextResponse.json({ data: inventory });
 });
@@ -41,7 +41,7 @@ export const DELETE = apiHandler(async (_req: NextRequest, { params }) => {
 export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   const body = createInventoryRequest.parse(await req.json());
 
-  let city: City = await db.models.City.findOne({
+  let city = await db.models.City.findOne({
     where: { locode: params.city },
   });
   if (!city) {

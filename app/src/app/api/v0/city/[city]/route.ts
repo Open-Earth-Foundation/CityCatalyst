@@ -1,5 +1,4 @@
 import { db } from "@/models";
-import { City } from "@/models/City";
 import { apiHandler } from "@/util/api";
 import { createCityRequest } from "@/util/validation";
 import createHttpError from "http-errors";
@@ -27,7 +26,7 @@ export const DELETE = apiHandler(async (_req: NextRequest, { params }) => {
 export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   const body = createCityRequest.parse(await req.json());
 
-  let city: City = await db.models.City.findOne({
+  let city = await db.models.City.findOne({
     where: { locode: params.city },
   });
   if (!city) {

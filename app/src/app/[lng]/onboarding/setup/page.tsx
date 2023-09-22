@@ -165,7 +165,7 @@ function SetupStep({
                       color="semantic.success"
                       boxSize={4}
                       mt={2}
-                      mr={2}
+                      mr={10}
                     />
                   )}
                 </InputRightElement>
@@ -240,7 +240,7 @@ function SetupStep({
                       color="semantic.success"
                       boxSize={4}
                       mt={2}
-                      mr={2}
+                      mr={10}
                     />
                   )}
                 </InputRightElement>

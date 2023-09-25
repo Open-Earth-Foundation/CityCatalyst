@@ -107,6 +107,7 @@ export function SectorCard({
                   variant="outline"
                   className="border-2 w-[256px] h-[48px] py-[16px] gap-2"
                   color="brand.secondary"
+                  ml={2}
                 >
                   <Text fontFamily="heading" fontSize="button.md">
                     ADD DATA TO SECTOR
@@ -120,6 +121,7 @@ export function SectorCard({
             <SegmentedProgress
               values={[thirdPartyProgress, uploadedProgress]}
               colors={["interactive.connected", "interactive.tertiary"]}
+              height={2}
             />
             <Text
               fontFamily="heading"

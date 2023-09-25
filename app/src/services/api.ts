@@ -33,5 +33,31 @@ export const api = createApi({
       transformResponse: (response: { data: InventoryProgressResponse }) =>
         response.data,
     }),
+    addCity: builder.mutation<CityAttributes, {}>({
+      query: (data) => ({
+        url: `/city`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
+
+export const openclimateAPI = createApi({
+  reducerPath: "openclimateapi",
+  baseQuery: fetchBaseQuery({
+    baseUrl:
+      process.env.NODE_ENV === "production"
+        ? "https://openclimate.network"
+        : "https://openclimate.openearth.dev",
+  }),
+  endpoints: (builder) => ({
+    getOCCity: builder.query<any, string>({
+      query: (q) => `/api/v1/search/actor?q=${q}`,
+    }),
+  }),
+});
+
+// hooks are automatically generated
+export const { useGetCityQuery, useAddCityMutation } = api;
+export const { useGetOCCityQuery } = openclimateAPI;

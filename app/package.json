@@ -28,7 +28,7 @@
     "@chakra-ui/react": "^2.8.1",
     "@react-email/components": "^0.0.7",
     "@reduxjs/toolkit": "^1.9.5",
-    "@storybook/react": "^7.0.27",
+    "@storybook/react": "^7.4.5",
     "@storybook/testing-library": "^0.0.14-next.2",
     "@types/bcrypt": "^5.0.0",
     "@types/http-errors": "^2.0.1",

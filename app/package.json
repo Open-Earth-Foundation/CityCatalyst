@@ -86,7 +86,7 @@
     "prettier": "3.0.2",
     "sequelize-auto": "^0.8.8",
     "start-server-and-test": "^2.0.0",
-    "storybook": "^7.4.0",
+    "storybook": "^7.4.5",
     "tsx": "^3.12.7"
   },
   "engines": {

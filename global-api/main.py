@@ -1,5 +1,6 @@
 import logging
 import uvicorn
+import sys
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
@@ -20,12 +21,12 @@ Logger instance initialized and configured
 """
 
 logging.basicConfig(
-    filename=get_or_create_log_file("logs/api.log"),
-    encoding="utf-8",
+    stream=sys.stdout,
     level=logging.DEBUG,
     format="%(asctime)s:%(levelname)s:%(pathname)s:%(message)s",
-    datefmt=("%Y-%m-%d %H:%M:%S"),                                                                                                                                                                                                                                                                                                                  
+    datefmt="%Y-%m-%d %H:%M:%S",
 )
+
 logger = logging.getLogger(__name__)
 
 
@@ -43,7 +44,7 @@ def custom_openapi():
     # check if the OpenApI schema has already been generated
     if app.openapi_schema:
         return app.openapi_schema
-    """ 
+    """
     generate the OpenAPI schema using the get_openapi function
         - title  Title of Fastapi application.
         - version  Current Version of the application.
@@ -83,7 +84,7 @@ app.include_router(
     tags=["Climate Trace"],
 )
 
-""" 
+"""
 Entry point of the fastapi application (Drive Code)
     - change the port number if port is already occupied
     - modify the logging level according to the need

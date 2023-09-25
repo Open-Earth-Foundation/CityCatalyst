@@ -1,4 +1,4 @@
-name: Push Web app to GHCR and deploy to EKS
+name: Push Global API to GHCR and deploy to EKS
 
 on:
   workflow_dispatch:

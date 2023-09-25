@@ -1,11 +1,11 @@
 FROM python:3.11
 
-WORKDIR /code
+WORKDIR /opt/app
 
-COPY ./requirements.txt /code/requirements.txt
+COPY ./requirements.txt /opt/app/requirements.txt
 
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /opt/app/requirements.txt
 
-COPY . /code/
+COPY . /opt/app
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80", "--proxy-headers"]
+CMD ["python", "/opt/app/main.py"]

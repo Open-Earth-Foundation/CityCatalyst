@@ -17,7 +17,7 @@ spec:
       volumes:
         - name: postgres
           persistentVolumeClaim:
-            claimName: cc-db-pvc
+            claimName: cc-global-api-db-pvc
       containers:
         - name: postgresql
           image: postgres:15
@@ -30,7 +30,7 @@ spec:
             - name: "POSTGRES_USER"
               value: "ccglobal"
             - name: "POSTGRES_PASSWORD"
-              value: ""
+              value: "ccglobal"
           ports:
             - containerPort: 5432
           volumeMounts:

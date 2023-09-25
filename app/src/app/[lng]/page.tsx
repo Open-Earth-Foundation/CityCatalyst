@@ -415,9 +415,6 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               letterSpacing="wide"
             >
               {t("gpc-data-description")} {year} {t("add-data-description-ctn")}
-              {/* The data you have submitted is now officially incorporated into
-              your city&apos;s {year} GHG Emissions Inventory, compiled
-              according to the GPC Basic methodology.{" "} */}
               <Link
                 href={"/"}
                 fontWeight="bold"
@@ -484,6 +481,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     key={i}
                     sectorProgress={sectorProgress}
                     stepNumber={i + 1}
+                    t={t}
                   />
                 ))
               )}

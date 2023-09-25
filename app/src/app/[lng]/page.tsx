@@ -26,7 +26,7 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import Image from "next/image";
+import dynamic from "next/dynamic";
 import NextLink from "next/link";
 import { FiDownload } from "react-icons/fi";
 import {
@@ -44,6 +44,9 @@ enum STATUS {
 }
 
 const CITY_INTENTORY_YEAR = "DE_BER";
+
+// only render map on the client
+const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
 export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const toast = useToast();
@@ -238,11 +241,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     </Box>
                   </Box>
                   <Box className="flex align-baseline gap-3">
-                    <Icon
-                      as={MdGroup}
-                      boxSize={6}
-                      fill="background.overlay"
-                    />
+                    <Icon as={MdGroup} boxSize={6} fill="background.overlay" />
                     <Box>
                       <Box className="flex gap-1">
                         <Text
@@ -301,13 +300,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   </Box>
                 </Box>
               </Box>
-              <Box>
-                <Image
-                  src="/assets/map_placeholder.png"
-                  alt=""
-                  width={622}
-                  height={517}
-                />
+              <Box mt={-25}>
+                <CityMap locode={locode} width={422} height={317} />
               </Box>
             </Box>
             <Box className="flex gap-[24px] relative justify-between top-[100px]">
@@ -317,7 +311,9 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   backgroundColor="base.light"
                   borderColor="interactive.accent"
                   borderWidth="thin"
-                  className="h-[132px] w-[533px] px-[24px] py-0 hover:shadow-xl"
+                  className="h-[132px] w-[533px] hover:shadow-xl"
+                  py={0}
+                  px={6}
                 >
                   <Box className="flex items-center w-fill">
                     <Box>
@@ -356,7 +352,9 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   onClick={handleDownload}
                   shadow="2dp"
                   backgroundColor="base.light"
-                  className="h-[132px] w-[533px] px-[24px] py-0 hover:shadow-xl"
+                  className="h-[132px] w-[533px] hover:shadow-xl"
+                  py={0}
+                  px={6}
                 >
                   <Box className="flex items-center w-fill">
                     <Box>

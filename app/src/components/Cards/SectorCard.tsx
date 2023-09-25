@@ -120,6 +120,7 @@ export function SectorCard({
             <SegmentedProgress
               values={[thirdPartyProgress, uploadedProgress]}
               colors={["interactive.connected", "interactive.tertiary"]}
+              height={2}
             />
             <Text
               fontFamily="heading"

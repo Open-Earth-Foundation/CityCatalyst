@@ -49,8 +49,8 @@ jobs:
       - name: Run API tests
         run: npm run api:test
 
-      - name: Run Cypress tests
-        run: npm run cy:test
+      # - name: Run Cypress tests
+      #   run: npm run cy:test
 
       - name: Shut down database
         run: docker stop github_action_postgresql

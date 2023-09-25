@@ -38,3 +38,22 @@ spec:
             limits:
               memory: "1024Mi"
               cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+              httpHeaders:
+              - name: X-Liveness-Probe
+                value: "True"
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8000
+              httpHeaders:
+              - name: X-Liveness-Probe
+                value: "True"
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 30

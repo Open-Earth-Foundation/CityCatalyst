@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/i18n/client";
+import { useAppSelector } from "@/lib/hooks";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { Button, Card, Flex, Heading, Text } from "@chakra-ui/react";
 import Image from "next/image";
@@ -12,6 +13,7 @@ export default function OnboardingDone({
 }: {
   params: { lng: string };
 }) {
+  const data = useAppSelector((state) => state.openClimateCity.city);
   const { t } = useTranslation(lng, "onboarding");
 
   // TODO load these from the API
@@ -33,7 +35,7 @@ export default function OnboardingDone({
         <Flex direction="row">
           <div className="rounded-full bg-brand w-8 h-8 mr-4 flex-grow-0" />
           <div className="max-w-full flex-shrink-1 space-y-4">
-            <Heading fontSize="2xl">{cityName}</Heading>
+            <Heading fontSize="2xl">{data?.name}</Heading>
             <Heading fontSize="lg">{t("inventory-title", { year })}</Heading>
             <Text color="tertiary">
               <Trans t={t}>done-details</Trans>

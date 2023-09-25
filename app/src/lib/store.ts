@@ -9,7 +9,7 @@ export const store = configureStore({
     [api.reducerPath]: api.reducer,
     [openclimateAPI.reducerPath]: openclimateAPI.reducer,
     city: cityReducer,
-    openclimatecity: openclimateCityReducer,
+    openClimateCity: openclimateCityReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()

@@ -13,7 +13,7 @@ export default function OnboardingDone({
 }: {
   params: { lng: string };
 }) {
-  const data = useAppSelector((state) => state.openclimatecity.city);
+  const data = useAppSelector((state) => state.openClimateCity.city);
   const { t } = useTranslation(lng, "onboarding");
 
   // TODO load these from the API

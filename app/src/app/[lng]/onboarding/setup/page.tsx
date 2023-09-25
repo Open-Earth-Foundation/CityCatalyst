@@ -351,13 +351,12 @@ export default function OnboardingSetup({
   };
 
   const [data, setData] = useState<City>({ name: "", locode: "" });
-  const cityId = "AR_BUE"; // TODO get from OpenClimate API
+
   const [isConfirming, setConfirming] = useState(false);
 
-  const storedData = useAppSelector((state) => state.openclimatecity);
+  const storedData = useAppSelector((state) => state.openClimateCity);
 
   const onSubmit: SubmitHandler<Inputs> = async (newData) => {
-    // TODO persist data in local storage and jump to step 2 on reload?
     const city = {
       name: newData.city,
       locode: storedData.city?.actor_id,

@@ -11,7 +11,7 @@ const initialState = {
 } as CityState;
 
 export const openclimateCitySlice = createSlice({
-  name: "openclimatecity",
+  name: "openClimateCity",
   // state type is inferred from the initial state
   initialState,
   reducers: {

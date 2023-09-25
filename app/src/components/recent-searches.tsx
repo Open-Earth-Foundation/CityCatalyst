@@ -2,6 +2,23 @@ import { Box, Text } from "@chakra-ui/react";
 import React from "react";
 
 const RecentSearches = () => {
+  const data = [
+    {
+      id: 1,
+      name: "Rio de Janeiro",
+      path: "Brazil {" > "} Rio de Janeiro",
+    },
+    {
+      id: 2,
+      name: "Brisbane",
+      path: "Australia {" > "} Queensland",
+    },
+    {
+      id: 3,
+      name: "Ciudad Autónoma de Buenos Aires",
+      path: "Argentina {" > "} Capital Federal",
+    },
+  ];
   const hasRecentSearches = true;
   return (
     <Box>
@@ -20,84 +37,34 @@ const RecentSearches = () => {
       {hasRecentSearches ? (
         <Box>
           <ul className="list-none">
-            <li>
-              <Box className="h-[72px] w-full flex flex-col justify-center group px-4 hover:bg-[#2351DC] transition-all duration-150 cursor-pointer">
-                <Text
-                  className="group-hover:text-white"
-                  color="content.secondary"
-                  fontSize="body.lg"
-                  fontFamily="body"
-                  fontWeight="normal"
-                  lineHeight="24"
-                  letterSpacing="wide"
-                >
-                  Rio de Janeiro
-                </Text>
-                <Text
-                  className="group-hover:text-[#E8EAFB]"
-                  color="content.tertiary"
-                  fontSize="body.lg"
-                  fontFamily="body.md"
-                  fontWeight="normal"
-                  lineHeight="20"
-                  letterSpacing="wide"
-                >
-                  Brazil {">"} Rio de Janeiro
-                </Text>
-              </Box>
-            </li>
-            <li>
-              <Box className="h-[72px] w-full flex flex-col justify-center group px-4 hover:bg-[#2351DC] transition-all duration-150 cursor-pointer">
-                <Text
-                  className="group-hover:text-white"
-                  color="content.secondary"
-                  fontSize="body.lg"
-                  fontFamily="body"
-                  fontWeight="normal"
-                  lineHeight="24"
-                  letterSpacing="wide"
-                >
-                  Brisbane
-                </Text>
-                <Text
-                  className="group-hover:text-[#E8EAFB]"
-                  color="content.tertiary"
-                  fontSize="body.lg"
-                  fontFamily="body.md"
-                  fontWeight="normal"
-                  lineHeight="20"
-                  letterSpacing="wide"
-                >
-                  Australia {">"} Queensland
-                </Text>
-              </Box>
-            </li>
-            <li>
-              <Box className="h-[72px] w-full flex flex-col justify-center group px-4 hover:bg-[#2351DC] transition-all duration-150 cursor-pointer">
-                <Text
-                  className="group-hover:text-white"
-                  color="content.secondary"
-                  fontSize="body.lg"
-                  fontFamily="body"
-                  fontWeight="normal"
-                  lineHeight="24"
-                  letterSpacing="wide"
-                >
-                  Ciudad Autónoma de Buenos Aires
-                </Text>
-                <Text
-                  className="group-hover:text-[#E8EAFB]"
-                  color="content.tertiary"
-                  fontSize="body.lg"
-                  fontFamily="body.md"
-                  fontWeight="normal"
-                  lineHeight="20"
-                  letterSpacing="wide"
-                >
-                  Argentina {">"} Capital Federal
-                </Text>
-              </Box>
-            </li>
+            {data.map((data) => (
+              <li key={data.id}>
+                <Box className="h-[72px] w-full flex flex-col justify-center group px-4 hover:bg-[#2351DC] transition-all duration-150 cursor-pointer">
+                  <Text
+                    className="group-hover:text-white"
+                    color="content.secondary"
+                    fontSize="body.lg"
+                    fontFamily="body"
+                    fontWeight="normal"
+                    lineHeight="24"
+                    letterSpacing="wide"
+                  >
+                    {data.name}
+                  </Text>
+                  <Text
+                    className="group-hover:text-[#E8EAFB]"
+                    color="content.tertiary"
+                    fontSize="body.lg"
+                    fontFamily="body.md"
+                    fontWeight="normal"
+                    lineHeight="20"
+                    letterSpacing="wide"
+                  >
+                    {data.path}
+                  </Text>
+                </Box>
+              </li>
+            ))}
           </ul>
         </Box>
       ) : (

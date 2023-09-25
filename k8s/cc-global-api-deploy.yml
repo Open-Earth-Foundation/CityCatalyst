@@ -22,6 +22,8 @@ spec:
           ports:
             - containerPort: 8000
           env:
+            - name: PROJECT_NAME
+              value: "CityCatalyst Global API"
             - name: DB_HOST
               value: "cc-global-api-db"
             - name: DB_PORT
@@ -29,6 +31,8 @@ spec:
             - name: DB_USER
               value: "ccglobal"
             - name: DB_PASSWORD
+              value: "ccglobal"
+            - name: DB_NAME
               value: "ccglobal"
           resources:
             limits:

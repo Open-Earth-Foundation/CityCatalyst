@@ -490,7 +490,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
           </Box>
         </Box>
       </section>
-      <Footer />
+      <Footer lng={lng} />
     </>
   );
 }

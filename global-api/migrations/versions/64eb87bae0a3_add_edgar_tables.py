@@ -20,7 +20,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.create_table('edgar_grid',
-        sa.Column('id', sa.Integer, primary_key=True, autoincrement=True),
+        sa.Column('id', sa.dialects.postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column('lat_center', sa.Float, nullable=False),
         sa.Column('lon_center', sa.Float, nullable=False),
         sa.Column('geometry', sa.String, nullable=False),
@@ -30,22 +30,22 @@ def upgrade() -> None:
     )
 
     op.create_table('edgar_data',
-        sa.Column('id', sa.Integer, primary_key=True, autoincrement=True),
+        sa.Column('id', sa.dialects.postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column('year', sa.Integer, nullable=False),
         sa.Column('reference_number', sa.String, nullable=False),
         sa.Column("gas", sa.String(), nullable=False),
         sa.Column("emissions_quantity", sa.Integer(), nullable=False),
         sa.Column("emissions_quantity_units", sa.String(), nullable=False),
-        sa.Column('grid_id', sa.Integer, sa.ForeignKey('edgar_grid.id'), nullable=False),
+        sa.Column('grid_id', sa.dialects.postgresql.UUID(as_uuid=True), sa.ForeignKey('edgar_grid.id'), nullable=False),
         sa.Column("created_date", sa.DateTime(), nullable=False),
         sa.Column("modified_date", sa.DateTime(), server_default=text('CURRENT_TIMESTAMP'))
     )
 
     op.create_table('edgar_city_data',
-        sa.Column('id', sa.Integer, primary_key=True, autoincrement=True),
+        sa.Column('id', sa.dialects.postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column('locode', sa.String, nullable=False),
         sa.Column('fraction_in_city', sa.Float, nullable=False),
-        sa.Column('grid_id', sa.Integer, sa.ForeignKey('edgar_grid.id'), nullable=False),
+        sa.Column('grid_id', sa.dialects.postgresql.UUID(as_uuid=True), sa.ForeignKey('edgar_grid.id'), nullable=False),
         sa.Column("created_date", sa.DateTime(), nullable=False),
         sa.Column("modified_date", sa.DateTime(), server_default=text('CURRENT_TIMESTAMP'))
     )

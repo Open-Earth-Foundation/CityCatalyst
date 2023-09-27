@@ -49,6 +49,9 @@ describe("Inventory API", () => {
     await db.models.DataSource.destroy({
       where: { name: { [Op.like]: "XX_INVENTORY_TEST_%" } },
     });
+    await db.models.Sector.destroy({
+      where: { sectorName: { [Op.like]: "XX_INVENTORY_TEST_%" } },
+    });
     await db.models.City.destroy({ where: { locode } });
     city = await db.models.City.create({ cityId: randomUUID(), locode });
   });
@@ -82,6 +85,12 @@ describe("Inventory API", () => {
     assert.equal(data.inventoryName, inventory.inventoryName);
     assert.equal(data.year, inventory.year);
     assert.equal(data.totalEmissions, inventory.totalEmissions);
+
+    const sectors = await db.models.Sector.findAll();
+    const sectorValues = await db.models.SectorValue.findAll({
+      where: { inventoryId: data.inventoryId },
+    });
+    assert.equal(sectors.length, sectorValues.length);
   });
 
   it("should not create an inventory with invalid data", async () => {

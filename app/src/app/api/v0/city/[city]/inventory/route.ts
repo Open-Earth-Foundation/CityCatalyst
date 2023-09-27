@@ -1,4 +1,5 @@
 import { db } from "@/models";
+import { SectorValue } from "@/models/SectorValue";
 import { apiHandler } from "@/util/api";
 import { createInventoryRequest } from "@/util/validation";
 import createHttpError from "http-errors";
@@ -13,10 +14,27 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
     throw new createHttpError.NotFound("City not found");
   }
 
-  const inventory = await db.models.Inventory.create({
-    inventoryId: randomUUID(),
-    cityId: city.cityId,
-    ...body,
+  return await db.sequelize!.transaction(async (transaction) => {
+    const inventory = await db.models.Inventory.create(
+      {
+        inventoryId: randomUUID(),
+        cityId: city.cityId,
+        ...body,
+      },
+      { transaction },
+    );
+
+    const sectors = await db.models.Sector.findAll({ transaction });
+    const sectorValues = sectors.map((sector) => ({
+      sectorValueId: randomUUID(),
+      sectorId: sector.sectorId,
+    }));
+    await db.models.SectorValue.bulkCreate(sectorValues);
+    await inventory.addSectorValues(
+      sectorValues.map((val) => new SectorValue(val)),
+      { transaction },
+    );
+
+    return NextResponse.json({ data: inventory });
   });
-  return NextResponse.json({ data: inventory });
 });

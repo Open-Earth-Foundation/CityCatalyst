@@ -5,6 +5,8 @@ import Footer from "@/components/Sections/Footer";
 import { SegmentedProgress } from "@/components/SegmentedProgress";
 import { CircleIcon } from "@/components/icons";
 import { NavigationBar } from "@/components/navigation-bar";
+import { useTranslation } from "@/i18n/client";
+import { Trans } from "react-i18next/TransWithoutContext";
 import { api } from "@/services/api";
 import { formatPercent } from "@/util/helpers";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
@@ -50,6 +52,8 @@ const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
 export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const toast = useToast();
+
+  const { t } = useTranslation(lng, "dashboard");
 
   // query API data
   // TODO get these from user record
@@ -189,7 +193,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   lineHeight="32"
                   fontWeight="semibold"
                 >
-                  Welcome Back,
+                  <Trans t={t}>welcome-back</Trans>,
                 </Text>
                 <Box className="flex items-center gap-4 w-[644px] h-[104px]">
                   <Avatar
@@ -236,7 +240,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         lineHeight="20px"
                         letterSpacing="wide"
                       >
-                        Total emissions in {year}
+                        <Trans t={t}>total-emissions-in</Trans> {year}
                       </Text>
                     </Box>
                   </Box>
@@ -263,7 +267,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         lineHeight="20px"
                         letterSpacing="wide"
                       >
-                        Total Population
+                        <Trans t={t}>total-population</Trans>
                       </Text>
                     </Box>
                   </Box>
@@ -294,7 +298,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         lineHeight="20px"
                         letterSpacing="wide"
                       >
-                        Total land area
+                        <Trans t={t}>total-land-area</Trans>
                       </Text>
                     </Box>
                   </Box>
@@ -329,7 +333,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           color="interactive.primary"
                           fontWeight="semibold"
                         >
-                          Add Data to Inventory
+                          <Trans t={t}>add-data-to-inventory</Trans>
                         </Text>
                       </CardHeader>
                       <CardBody className="h-[75px]">
@@ -339,8 +343,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           lineHeight="24"
                           letterSpacing="wide"
                         >
-                          Upload data or connect third-party data to complete
-                          the GPC Basic Emissions Inventory
+                          <Trans t={t}>add-data-to-inventory-description</Trans>
                         </Text>
                       </CardBody>
                     </Box>
@@ -370,7 +373,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           color="interactive.secondary"
                           fontWeight="semibold"
                         >
-                          Download
+                          <Trans t={t}>download</Trans>
                         </Text>
                       </CardHeader>
                       <CardBody className="h-[75px]">
@@ -380,8 +383,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           lineHeight="24"
                           letterSpacing="wide"
                         >
-                          View and download your inventory data in CSV or GPC
-                          format and share your progress
+                          <Trans t={t}>download-description</Trans>
                         </Text>
                       </CardBody>
                     </Box>
@@ -401,7 +403,10 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                 fontWeight="semibold"
                 lineHeight="32"
               >
-                GPC Basic Emission Inventory Calculation - Year {year}
+                <Trans t={t}>
+                  gpc-basic-emissions-inventory-calculations-year
+                </Trans>{" "}
+                {year}
               </Heading>
               <InfoOutlineIcon color="interactive.control" />
             </Box>
@@ -411,18 +416,15 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               color="interactive.control"
               letterSpacing="wide"
             >
-              The data you have submitted is now officially incorporated into
-              your city&apos;s {year} GHG Emissions Inventory, compiled
-              according to the GPC Basic methodology.{" "}
-              <Link
-                href={"/"}
-                fontWeight="bold"
-                color="brand.secondary"
-                className="font-[700] underline"
-              >
-                Learn more
-              </Link>{" "}
-              about GPC Protocol
+              <Trans i18nKey="dashboard:gpc-inventory-description" year={year}>
+                The data you have submitted is now officially incorporated into
+                your city&apos;s {{ year }} GHG Emissions Inventory, compiled
+                according to the GPC Basic methodology.{" "}
+                <Link href="/" fontWeight="bold" color="brand.secondary">
+                  Learn more
+                </Link>{" "}
+                about GPC Protocol
+              </Trans>
             </Text>
             <Box className="flex w-full justify-between items-center mt-2 gap-6">
               <SegmentedProgress
@@ -434,7 +436,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                 fontSize="body.md"
                 className="whitespace-nowrap"
               >
-                {formatPercent(totalProgress)}% completed
+                {formatPercent(totalProgress)}% <Trans t={t}>completed</Trans>
               </Heading>
             </Box>
             <Box className="flex gap-4 mt-2">
@@ -445,8 +447,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   color="interactive.connected"
                 />
                 <TagLabel>
-                  {formatPercent(thirdPartyProgress)}% Connected third-party
-                  data
+                  {formatPercent(thirdPartyProgress)}%{" "}
+                  <Trans t={t}>connect-third-party-data</Trans>
                 </TagLabel>
               </Tag>
               <Tag>
@@ -456,7 +458,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   color="interactive.tertiary"
                 />
                 <TagLabel>
-                  {formatPercent(uploadedProgress)}% Uploaded data
+                  {formatPercent(uploadedProgress)}%{" "}
+                  <Trans t={t}>uploaded-data</Trans>
                 </TagLabel>
               </Tag>
             </Box>
@@ -467,7 +470,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                 fontWeight="semibold"
                 lineHeight="24"
               >
-                Sectors required from inventory
+                <Trans t={t}>sectors-required-from-inventory</Trans>
               </Text>
               {isInventoryProgressLoading ? (
                 <Center>
@@ -479,6 +482,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     key={i}
                     sectorProgress={sectorProgress}
                     stepNumber={i + 1}
+                    t={t}
                   />
                 ))
               )}

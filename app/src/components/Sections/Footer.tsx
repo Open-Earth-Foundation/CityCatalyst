@@ -3,8 +3,11 @@ import Image from "next/image";
 import { Link } from "@chakra-ui/react";
 import React from "react";
 import FooterLink from "../Navigation/FooterLink";
+import { TFunction } from "i18next";
+import { useTranslation } from "@/i18n/client";
 
-const Footer = () => {
+const Footer = ({ lng }: { lng: string }) => {
+  const { t } = useTranslation(lng, "footer");
   return (
     <footer className="w-full h-[320px] bg-[#00001f] pt-[48px]">
       <Box className="w-full px-[64px]">
@@ -21,12 +24,12 @@ const Footer = () => {
             fontFamily="heading"
             className="text-white text-[14px] w-[60%] grid grid-cols-3  gap-6 font-poppins"
           >
-            <FooterLink url="/" title="About Open Climate" />
-            <FooterLink url="/" title="Contribution Guide" />
-            <FooterLink url="/" title="Go to GitHub" />
-            <FooterLink url="/" title="CAD2.0 Community" />
-            <FooterLink url="/" title="Read the docs" />
-            <FooterLink url="/" title="Python Client" />
+            <FooterLink url="/" title={t("about-citycatalyst")} />
+            <FooterLink url="/" title={t("contribution-guide")} />
+            <FooterLink url="/" title={t("goto-gh")} />
+            <FooterLink url="/" title={t("cad")} />
+            <FooterLink url="/" title={t("read-the-docs")} />
+            <FooterLink url="/" title={t("python-client-docs")} />
           </Box>
           <Box>
             <Button
@@ -41,7 +44,7 @@ const Footer = () => {
                 letterSpacing="wider"
                 textTransform="uppercase"
               >
-                contact us
+                {t("contact-us")}
               </Text>
             </Button>
           </Box>
@@ -71,8 +74,7 @@ const Footer = () => {
               lineHeight="20"
               fontWeight="regular"
             >
-              This site is a beta version, we appreciate all feedback to improve
-              the platform
+              {t("beta-text")}
             </Text>
             <Link
               href="/"
@@ -82,7 +84,7 @@ const Footer = () => {
               letterSpacing="wide"
               textDecoration="underline"
             >
-              Send Feedback
+              {t("send-feedback")}
             </Link>
           </Box>
           <Image

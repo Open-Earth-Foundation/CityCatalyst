@@ -15,6 +15,7 @@
     "db:migrate": "sequelize-cli db:migrate",
     "db:migrate:undo": "sequelize-cli db:migrate:undo",
     "db:seed": "sequelize-cli db:seed:all",
+    "db:seed:undo": "sequelize-cli db:seed:undo",
     "db:gen-migration": "sequelize-cli migration:generate --name",
     "cy:open": "cypress open",
     "cy:run": "cypress run",

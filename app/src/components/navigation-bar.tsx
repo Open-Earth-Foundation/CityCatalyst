@@ -99,7 +99,7 @@ export function NavigationBar({
             >
               {i18next.language.toUpperCase()}
             </MenuButton>
-            <MenuList minW="140px" zIndex={500}>
+            <MenuList minW="140px" zIndex={2000}>
               {languages.map((language) => (
                 <MenuItem
                   onClick={() => onChangeLanguage(language)}
@@ -147,7 +147,7 @@ export function NavigationBar({
               >
                 {session.user?.name}
               </MenuButton>
-              <MenuList zIndex={500}>
+              <MenuList zIndex={2000}>
                 <MenuItem onClick={() => signOut()}>
                   <Icon
                     as={MdLogout}

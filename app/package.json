@@ -43,6 +43,7 @@
     "autoprefixer": "10.4.15",
     "bcrypt": "^5.1.1",
     "chakra-react-select": "^4.7.0",
+    "csv-parse": "^5.5.0",
     "eslint": "8.48.0",
     "eslint-config-next": "13.4.16",
     "eslint-plugin-storybook": "^0.6.13",

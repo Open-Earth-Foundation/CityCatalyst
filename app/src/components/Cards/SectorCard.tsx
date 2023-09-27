@@ -21,13 +21,17 @@ import { TbBuildingCommunity } from "react-icons/tb";
 import { useState } from "react";
 import { SegmentedProgress } from "../SegmentedProgress";
 import { formatPercent } from "@/util/helpers";
+import { TFunction } from "i18next";
+import { Trans } from "react-i18next/TransWithoutContext";
 
 export function SectorCard({
   sectorProgress,
   stepNumber,
+  t,
 }: {
   sectorProgress: SectorProgress;
   stepNumber: number;
+  t: TFunction;
 }) {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const toggleAccordion = () => setAccordionOpen(!isAccordionOpen);
@@ -96,7 +100,7 @@ export function SectorCard({
                 letterSpacing="wide"
                 className="py-[16px]"
               >
-                Scope Required for GPC Basic Inventory:{" "}
+                <Trans t={t}>scope-required-for-gpc</Trans>:{" "}
                 {sectorScopes.join(", ")}
               </Heading>
             </Box>
@@ -110,7 +114,7 @@ export function SectorCard({
                   ml={2}
                 >
                   <Text fontFamily="heading" fontSize="button.md">
-                    ADD DATA TO SECTOR
+                    <Trans t={t}>add-data-to-sector</Trans>
                   </Text>
                   <MdArrowForward size={24} />
                 </Button>
@@ -129,7 +133,7 @@ export function SectorCard({
               fontSize="body.md"
               className="whitespace-nowrap"
             >
-              {formatPercent(totalProgress)}% Completed
+              {formatPercent(totalProgress)}% <Trans t={t}>completed</Trans>
             </Text>
           </Box>
         </Box>
@@ -138,7 +142,9 @@ export function SectorCard({
         <Accordion border="none" allowToggle w="full">
           <AccordionItem border="none">
             <AccordionPanel padding={0}>
-              <Text className="font-[600]">Sub-sectors required</Text>
+              <Text className="font-[600]">
+                <Trans t={t}>sub-sectors-required</Trans>
+              </Text>
               <Box className="grid grid-cols-3 gap-4 py-4">
                 {sectorProgress.subSectors.map((subSector, i) => (
                   <SubSectorCard
@@ -165,7 +171,7 @@ export function SectorCard({
                 fontStyle="normal"
                 className="hover:underline hover:text-[#001EA7]"
               >
-                {isAccordionOpen ? "VIEW LESS" : "VIEW MORE"}
+                {isAccordionOpen ? t("view-less") : t("view-more")}
               </Text>
               <AccordionIcon h={7} w={7} />
             </AccordionButton>

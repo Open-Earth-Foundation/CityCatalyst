@@ -414,16 +414,15 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               color="interactive.control"
               letterSpacing="wide"
             >
-              {t("gpc-data-description")} {year} {t("add-data-description-ctn")}
-              <Link
-                href={"/"}
-                fontWeight="bold"
-                color="brand.secondary"
-                className="font-[700] underline"
-              >
-                {t("learn-more")}
-              </Link>{" "}
-              {t("about-gpc-protocol")}
+              <Trans i18nKey="dashboard:gpc-inventory-description" year={year}>
+                The data you have submitted is now officially incorporated into
+                your city&apos;s {{ year }} GHG Emissions Inventory, compiled
+                according to the GPC Basic methodology.{" "}
+                <Link href="/" fontWeight="bold" color="brand.secondary">
+                  Learn more
+                </Link>{" "}
+                about GPC Protocol
+              </Trans>
             </Text>
             <Box className="flex w-full justify-between items-center mt-2 gap-6">
               <SegmentedProgress

@@ -9,19 +9,13 @@ async function parseFile(filename) {
     .createReadStream(
       `${__dirname}/../../gpc_seeder/data_processed/${filename}.csv`,
     )
-    .pipe(parse({ delimiter: "," }));
+    .pipe(parse({ delimiter: ",", columns: true }));
 
   for await (const record of parser) {
-    records.push(record); // TODO transform to object
+    records.push(record);
   }
 
-  // transform into array of key/ value objects
-  const header = records.shift();
-  const entries = records.map((record) => {
-    return Object.assign(...record.map((value, i) => ({ [header[i]]: value })));
-  });
-  console.log("Entries", entries[0]);
-  return entries;
+  return records;
 }
 
 /** @type {import('sequelize-cli').Migration} */

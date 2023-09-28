@@ -34,7 +34,7 @@ def upgrade() -> None:
         sa.Column('year', sa.Integer, nullable=False),
         sa.Column('reference_number', sa.String, nullable=False),
         sa.Column("gas", sa.String(), nullable=False),
-        sa.Column("emissions_quantity", sa.Integer(), nullable=False),
+        sa.Column("emissions_quantity", sa.Float(), nullable=False),
         sa.Column("emissions_quantity_units", sa.String(), nullable=False),
         sa.Column('grid_id', sa.dialects.postgresql.UUID(as_uuid=True), sa.ForeignKey('edgar_grid.id'), nullable=False),
         sa.Column("created_date", sa.DateTime(), nullable=False),

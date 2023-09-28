@@ -9,6 +9,7 @@ from utils.helpers import get_or_create_log_file
 from routes.health import api_router as health_check_route
 from routes.city_locode_endpoint import api_router as city_locode_route
 from routes.city_boundaries_endpoint import api_router as city_boundaries_route
+from routes.city_locode_endpoint_edgar import api_router as edgar_city_locode_route
 
 """
 Logger instance initialized and configured
@@ -82,6 +83,11 @@ app.include_router(
 app.include_router(
     city_boundaries_route,
     tags=["Climate Trace"],
+)
+
+app.include_router(
+    edgar_city_locode_route,
+    tags=["EDGAR"],
 )
 
 """

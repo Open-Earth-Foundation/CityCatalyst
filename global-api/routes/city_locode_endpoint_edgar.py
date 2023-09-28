@@ -47,7 +47,7 @@ def db_query(locode, year, reference_number):
 
 
 @api_router.get("/edgar/city/{locode}/{year}/{gpcReferenceNumber}")
-def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: float):
+def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: str):
     records = db_query(locode, year, gpcReferenceNumber)
     series = (
         pd.DataFrame(records)
@@ -59,6 +59,7 @@ def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: f
         .groupby("gas")
         .sum("emissions_total")
         .astype({"emissions_total": int})
+        .loc[:,['emissions_total']]
         .squeeze()
     )
 

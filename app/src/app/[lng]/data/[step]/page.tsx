@@ -417,8 +417,8 @@ export default function OnboardingSteps({
       </Card>
       {/*** Bottom bar ***/}
       <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand py-8 px-8 drop-shadow-2xl hover:drop-shadow-4xl transition-all">
-        <Box className="w-[1090px] max-w-full mx-auto px-4 flex flex-row flex-wrap">
-          <Box className="grow">
+        <Box className="w-[1090px] max-w-full mx-auto px-4 flex flex-row flex-wrap gap-y-4">
+          <Box className="grow w-full md:w-0">
             <Text fontSize="sm">Step {activeStep + 1}</Text>
             <Text fontSize="2xl" as="b">
               {steps[activeStep]?.title}

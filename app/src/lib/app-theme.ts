@@ -251,6 +251,9 @@ export const appTheme = extendTheme({
         },
         ghost: {
           color: "content.link",
+          fontFamily: "var(--font-poppins)",
+          letterSpacing: "1.25px",
+          lineHeight: "16px",
         },
         solidIcon: {
           bgColor: "background.neutral",

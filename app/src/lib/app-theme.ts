@@ -180,6 +180,7 @@ export const appTheme = extendTheme({
     "rounded-xxl": "20px",
   },
 
+  /*
   breakpoints: {
     xs: "360px",
     sm: "600px",
@@ -187,6 +188,7 @@ export const appTheme = extendTheme({
     lg: "1240px",
     xl: "1440px",
   },
+  */
 
   components: {
     Button: {

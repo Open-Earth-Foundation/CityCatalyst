@@ -25,12 +25,12 @@ export default function WizardSteps({
   onSelect?: (selectedStep: number) => void;
 }) {
   const orientation: "horizontal" | "vertical" | undefined = useBreakpointValue(
-    { base: "vertical", sm: "horizontal" },
-    { fallback: "sm" }
+    { base: "vertical", md: "horizontal" },
+    { fallback: "md" }
   );
   const gap: "0" | undefined = useBreakpointValue(
-    { base: "0", sm: undefined },
-    { fallback: "sm" }
+    { base: "0", md: undefined },
+    { fallback: "md" }
   );
 
   return (

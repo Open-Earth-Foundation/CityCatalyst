@@ -418,33 +418,35 @@ export default function OnboardingSteps({
         </SimpleGrid>
       </Card>
       {/*** Bottom bar ***/}
-      <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand flex flex-row py-8 px-8 drop-shadow-2xl hover:drop-shadow-4xl transition-all">
-        <Box className="w-full">
-          <Text fontSize="sm">Step {activeStep + 1}</Text>
-          <Text fontSize="2xl" as="b">
-            {steps[activeStep]?.title}
-          </Text>
+      <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand py-8 px-8 drop-shadow-2xl hover:drop-shadow-4xl transition-all">
+        <Box className="w-[1090px] max-w-full mx-auto px-4 flex flex-row flex-wrap">
+          <Box className="grow">
+            <Text fontSize="sm">Step {activeStep + 1}</Text>
+            <Text fontSize="2xl" as="b">
+              {steps[activeStep]?.title}
+            </Text>
+          </Box>
+          <Button
+            h={16}
+            onClick={onSkip}
+            variant="ghost"
+            leftIcon={<Icon as={MdOutlineSkipNext} boxSize={6} />}
+            size="sm"
+            px={12}
+            mr={6}
+          >
+            {t("skip-step-button")}
+          </Button>
+          <Button
+            h={16}
+            isLoading={isConfirming}
+            px={12}
+            onClick={onConfirm}
+            size="sm"
+          >
+            {t("save-continue-button")}
+          </Button>
         </Box>
-        <Button
-          h={16}
-          onClick={onSkip}
-          variant="ghost"
-          leftIcon={<Icon as={MdOutlineSkipNext} boxSize={6} />}
-          size="sm"
-          px={12}
-          mr={6}
-        >
-          {t("skip-step-button")}
-        </Button>
-        <Button
-          h={16}
-          isLoading={isConfirming}
-          px={12}
-          onClick={onConfirm}
-          size="sm"
-        >
-          {t("save-continue-button")}
-        </Button>
       </div>
       {/*** Drawers ***/}
       <SourceDrawer

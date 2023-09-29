@@ -22,22 +22,22 @@ def db_query(locode, year, reference_number):
         query = text(
             """
             SELECT
-                ecd.grid_id,
-                eg.area,
-                ecd.fraction_in_city,
-                ed.emissions_quantity,
-                ed.gas,
-                ed.year,
-                ed.reference_number
+                cco.grid_id,
+                cg.area,
+                cco.fraction_in_city,
+                gce.emissions_quantity,
+                gce.gas,
+                gce.year,
+                gce.reference_number
             FROM
-                edgar_city_data ecd
+                "CityCellOverlapEdgar" cco
             JOIN
-                edgar_grid eg ON ecd.grid_id = eg.id
+                "GridCellEdgar" cg ON ecd.grid_id = cg.id
             JOIN
-                edgar_data ed ON ecd.grid_id = ed.grid_id
-            WHERE ecd.locode = :locode
-            AND ed.reference_number = :reference_number
-            AND ed.year = :year;"""
+                "GridCellEmissionsEdgar" gce ON ecd.grid_id = gce.grid_id
+            WHERE cco.locode = :locode
+            AND gce.reference_number = :reference_number
+            AND gce.year = :year;"""
         )
 
         params = {"locode": locode, "year": year, "reference_number": reference_number}

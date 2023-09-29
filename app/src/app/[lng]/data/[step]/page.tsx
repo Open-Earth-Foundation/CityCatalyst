@@ -192,6 +192,7 @@ export default function OnboardingSteps({
     if (activeStep >= steps.length - 1) {
       router.push("/"); // go back to dashboard until there is a confirmation page
     } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
       goToNext();
     }
   };
@@ -200,6 +201,7 @@ export default function OnboardingSteps({
     if (activeStep >= steps.length - 1) {
       router.push("/"); // go back to dashboard until there is a confirmation page
     } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
       goToNext();
     }
   };
@@ -235,7 +237,10 @@ export default function OnboardingSteps({
             <Text color="content.tertiary">{currentStep.details}</Text>
             <Flex direction="row">
               <SegmentedProgress
-                values={[currentStep.connectedProgress, currentStep.addedProgress]}
+                values={[
+                  currentStep.connectedProgress,
+                  currentStep.addedProgress,
+                ]}
                 height={4}
               />
               <Heading size="sm" ml={6} className="whitespace-nowrap -mt-1">

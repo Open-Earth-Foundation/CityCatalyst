@@ -42,6 +42,7 @@ import {
 import { SourceDrawer } from "./SourceDrawer";
 import { SubsectorDrawer } from "./SubsectorDrawer";
 import subSectorData from "./subsectors.json";
+import { SegmentedProgress } from "@/components/SegmentedProgress";
 
 const dataSourceDescription =
   "Leveraging satellite imagery, this dataset provides key information about residential structures, aiding in the assessment of their energy usage and corresponding carbon footprints";
@@ -233,14 +234,11 @@ export default function OnboardingSteps({
             </Heading>
             <Text color="content.tertiary">{currentStep.details}</Text>
             <Flex direction="row">
-              <Progress
-                value={totalStepCompletion * 100}
-                color="interactive.quaternary"
-                w="full"
-                borderRadius={16}
-                mr={6}
+              <SegmentedProgress
+                values={[currentStep.connectedProgress, currentStep.addedProgress]}
+                height={4}
               />
-              <Heading size="sm" className="whitespace-nowrap -mt-1">
+              <Heading size="sm" ml={6} className="whitespace-nowrap -mt-1">
                 {t("completion-percent", {
                   progress: formatPercentage(totalStepCompletion),
                 })}

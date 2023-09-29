@@ -118,12 +118,13 @@ export function SubsectorDrawer({
     (subcategory: SubCategory) => ({
       label: subcategory.subcategoryName,
       value: subcategory.subcategoryId,
-    })
+    }),
   );
 
   const valueType = watch("valueType");
   const methodology = watch("methodology");
-  const isSubmitEnabled = !!valueType && (!!methodology || valueType == "subcategory-values");
+  const isSubmitEnabled =
+    !!valueType && (!!methodology || valueType == "subcategory-values");
   const subcategories = watch("subcategories");
 
   return (
@@ -135,11 +136,12 @@ export function SubsectorDrawer({
       finalFocusRef={finalFocusRef}
     >
       <DrawerOverlay />
-      <DrawerContent px={0} py={0} className="overflow-auto">
-        <Box px={16} py={12} h="full" className="space-y-6">
+      <DrawerContent px={0} py={0} minH="full" className="overflow-auto">
+        <Box px={16} pt={12} minH="full" className="space-y-6 flex flex-col">
           <Button
             variant="ghost"
             leftIcon={<ArrowBackIcon boxSize={6} />}
+            className="self-start"
             onClick={onClose}
             px={6}
             py={4}
@@ -157,7 +159,10 @@ export function SubsectorDrawer({
                 {t(subsector.title + "-description")}
               </Text>
               <Heading size="md">{t("enter-subsector-data")}</Heading>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="space-y-6 grow flex flex-col"
+              >
                 <Heading size="sm" className="font-normal">
                   {t("value-types")}{" "}
                   <Tooltip
@@ -181,70 +186,78 @@ export function SubsectorDrawer({
                   </RadioButton>
                 </HStack>
                 {/*** One value for the sub-sector ***/}
-                {valueType === "one-value" && 
+                {valueType === "one-value" && (
                   <EmissionsForm
                     t={t}
                     register={register}
                     errors={errors}
                     control={control}
                   />
-                }
+                )}
                 {/*** Values for each subcategory ***/}
                 {valueType === "subcategory-values" && (
                   <>
-                  <TagSelect<Inputs>
-                    options={subcategoryOptions}
-                    name="subcategories"
-                    id="subcategories"
-                    placeholder={t("select-subcategories")}
-                    rules={{ required: t("subcategories-required") }}
-                    control={control}
-                  />
-                  <Accordion allowToggle my={12}>
-                    {subcategories.map((subcategory, i) => (
-                      <AccordionItem key={subcategory.value}>
-                        <h2>
-                          <AccordionButton>
-                            <HStack w="full">
-                              <Box as="span" flex="1" textAlign="left" w="full">
-                                <Heading size="sm" color="content.alternative">
-                                  {subcategory.label}
-                                </Heading>
-                                <Text color="content.tertiary">
-                                  TODO: Get category text body
-                                </Text>
-                              </Box>
-                              <Tag
-                                variant={i == 0 ? "success" : "warning"}
-                                mx={6}
-                              >
-                                {i == 0 ? t("completed") : t("incomplete")}
-                              </Tag>
-                              <AccordionIcon
-                                borderWidth={1}
-                                boxSize={6}
-                                borderRadius="full"
-                                borderColor="border.overlay"
-                              />
-                            </HStack>
-                          </AccordionButton>
-                        </h2>
-                        <AccordionPanel pb={4}>
-                          <EmissionsForm
-                            t={t}
-                            register={register}
-                            errors={errors}
-                            control={control}
-                            prefix={`subcategoryData.${subcategory.value}.`}
-                          />
-                        </AccordionPanel>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                </>
+                    <TagSelect<Inputs>
+                      options={subcategoryOptions}
+                      name="subcategories"
+                      id="subcategories"
+                      placeholder={t("select-subcategories")}
+                      rules={{ required: t("subcategories-required") }}
+                      control={control}
+                    />
+                    <Accordion allowToggle className="space-y-6">
+                      {subcategories.map((subcategory, i) => (
+                        <AccordionItem key={subcategory.value} mb={0}>
+                          <h2>
+                            <AccordionButton>
+                              <HStack w="full">
+                                <Box
+                                  as="span"
+                                  flex="1"
+                                  textAlign="left"
+                                  w="full"
+                                >
+                                  <Heading
+                                    size="sm"
+                                    color="content.alternative"
+                                  >
+                                    {subcategory.label}
+                                  </Heading>
+                                  <Text color="content.tertiary">
+                                    TODO: Get category text body
+                                  </Text>
+                                </Box>
+                                <Tag
+                                  variant={i == 0 ? "success" : "warning"}
+                                  mx={6}
+                                >
+                                  {i == 0 ? t("completed") : t("incomplete")}
+                                </Tag>
+                                <AccordionIcon
+                                  borderWidth={1}
+                                  boxSize={6}
+                                  borderRadius="full"
+                                  borderColor="border.overlay"
+                                />
+                              </HStack>
+                            </AccordionButton>
+                          </h2>
+                          <AccordionPanel pb={4}>
+                            <EmissionsForm
+                              t={t}
+                              register={register}
+                              errors={errors}
+                              control={control}
+                              prefix={`subcategoryData.${subcategory.value}.`}
+                            />
+                          </AccordionPanel>
+                        </AccordionItem>
+                      ))}
+                    </Accordion>
+                  </>
                 )}
-                <Divider ml={-16} mr={-16} w="200%" borderColor="#333" />
-                <Box w="full" pb={12} pt={6}>
+                <Box w="full" className="grow flex flex-col">
+                  <Box className="grow" />
                   <Button
                     onClick={handleSubmit(onSubmit)}
                     isDisabled={!isSubmitEnabled}
@@ -253,6 +266,8 @@ export function SubsectorDrawer({
                     formNoValidate
                     w="full"
                     h={16}
+                    mb={12}
+                    mt={6}
                   >
                     {t("add-data")}
                   </Button>

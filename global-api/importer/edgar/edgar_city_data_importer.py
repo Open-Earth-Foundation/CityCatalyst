@@ -37,11 +37,11 @@ if __name__ == "__main__":
     list_grid_coords = get_edgar_grid_coords_and_wkt(session)
     df_grid = (
         pd.DataFrame(list_grid_coords)
-        .rename(columns={"id": "grid_id"})
-        .astype({"grid_id": str})
+        .rename(columns={"id": "cell_id"})
+        .astype({"cell_id": str})
     )
 
-    table = Table("edgar_city_data", metadata_obj, autoload_with=engine)
+    table = Table("CityCellOverlapEdgar", metadata_obj, autoload_with=engine)
 
     lon_res = 0.1
     lat_res = 0.1
@@ -71,7 +71,7 @@ if __name__ == "__main__":
         geoms = df_tmp.to_dict(orient="records")
 
         for row in geoms:
-            cell_id = str(row.get("grid_id"))
+            cell_id = str(row.get("cell_id"))
             cell_wkt = row.get("geometry")
 
             record_id = uuid_generate_v3(locode + cell_id)
@@ -88,7 +88,7 @@ if __name__ == "__main__":
                     "id": record_id,
                     "locode": locode,
                     "fraction_in_city": fraction_in_city,
-                    "grid_id": cell_id,
+                    "cell_id": cell_id,
                     "created_date": str(datetime.now()),
                 }
 

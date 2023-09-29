@@ -32,7 +32,7 @@ if __name__ == "__main__":
     engine = create_engine(args.database_uri)
     metadata_obj = MetaData()
 
-    table = Table("edgar_grid", metadata_obj, autoload_with=engine)
+    table = Table("GridCellEdgar", metadata_obj, autoload_with=engine)
 
     lats = ds.lat.values
     lons = ds.lon.values

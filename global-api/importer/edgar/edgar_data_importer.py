@@ -31,11 +31,11 @@ if __name__ == "__main__":
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    table = Table("edgar_data", metadata_obj, autoload_with=engine)
+    table = Table("GridCellEmissionsEdgar", metadata_obj, autoload_with=engine)
 
     results = get_edgar_entire_grid(session)
     df_grid = (
-        pd.DataFrame(results).rename(columns={"id": "grid_id"}).astype({"grid_id": str})
+        pd.DataFrame(results).rename(columns={"id": "cell_id"}).astype({"cell_id": str})
     )
 
     get_gpc_refno = {
@@ -88,7 +88,7 @@ if __name__ == "__main__":
                     .assign(
                         id=lambda x: x.apply(
                             lambda row: uuid_generate_v3(
-                                f"edgar{row['grid_id']}{row['year']}{row['gas']}{row['reference_number']}"
+                                f"edgar{row['cell_id']}{row['year']}{row['gas']}{row['reference_number']}"
                             ),
                             axis=1,
                         )

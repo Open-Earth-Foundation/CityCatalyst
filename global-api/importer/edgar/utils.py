@@ -493,7 +493,7 @@ def get_edgar_cells_in_bounds(session, bbox_north, bbox_south, bbox_east, bbox_w
     query = text(
         """
         SELECT id, geometry
-        FROM edgar_grid
+        FROM "GridCellEdgar"
         WHERE lon_center >= :bbox_west
         AND lon_center <= :bbox_east
         AND lat_center <= :bbox_north
@@ -523,7 +523,7 @@ def get_edgar_entire_grid(session):
     query = text(
         """
         SELECT id, lat_center, lon_center
-        FROM edgar_grid;"""
+        FROM "GridCellEdgar";"""
     )
 
     return session.execute(query).fetchall()
@@ -534,7 +534,7 @@ def get_edgar_grid_coords_and_wkt(session):
     query = text(
         """
         SELECT id, lat_center, lon_center, geometry
-        FROM edgar_grid;"""
+        FROM "GridCellEdgar";"""
     )
 
     return session.execute(query).fetchall()

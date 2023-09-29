@@ -214,6 +214,8 @@ export default function OnboardingSteps({
         variant="ghost"
         leftIcon={<ArrowBackIcon boxSize={6} />}
         onClick={() => router.back()}
+        fontFamily="var(--font-poppins)"
+        letterSpacing="1.25px"
       >
         {t("go-back")}
       </Button>

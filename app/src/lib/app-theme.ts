@@ -250,7 +250,7 @@ export const appTheme = extendTheme({
           },
         },
         ghost: {
-          color: "#5a7be0",
+          color: "content.link",
         },
         solidIcon: {
           bgColor: "background.neutral",

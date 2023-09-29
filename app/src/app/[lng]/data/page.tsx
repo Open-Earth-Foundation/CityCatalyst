@@ -56,6 +56,7 @@ export default function Onboarding({
         <Flex className="space-x-4" mt={12}>
           <Card
             className="space-y-6 grow w-1/3"
+            boxShadow="none"
             p={6}
             borderColor="border.overlay"
             borderWidth={1}
@@ -71,6 +72,7 @@ export default function Onboarding({
           </Card>
           <Card
             className="space-y-6 grow w-1/3"
+            boxShadow="none"
             p={6}
             borderColor="border.overlay"
             borderWidth={1}
@@ -86,6 +88,7 @@ export default function Onboarding({
           </Card>
           <Card
             className="space-y-6 grow w-1/3"
+            boxShadow="none"
             p={6}
             borderColor="border.overlay"
             borderWidth={1}

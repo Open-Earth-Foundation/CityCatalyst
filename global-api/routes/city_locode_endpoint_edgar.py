@@ -22,7 +22,7 @@ def db_query(locode, year, reference_number):
         query = text(
             """
             SELECT
-                cco.grid_id,
+                cco.cell_id,
                 cg.area,
                 cco.fraction_in_city,
                 gce.emissions_quantity,
@@ -32,9 +32,9 @@ def db_query(locode, year, reference_number):
             FROM
                 "CityCellOverlapEdgar" cco
             JOIN
-                "GridCellEdgar" cg ON ecd.grid_id = cg.id
+                "GridCellEdgar" cg ON cco.cell_id = cg.id
             JOIN
-                "GridCellEmissionsEdgar" gce ON ecd.grid_id = gce.grid_id
+                "GridCellEmissionsEdgar" gce ON cco.cell_id = gce.cell_id
             WHERE cco.locode = :locode
             AND gce.reference_number = :reference_number
             AND gce.year = :year;"""
@@ -59,7 +59,7 @@ def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: s
         .groupby("gas")
         .sum("emissions_total")
         .astype({"emissions_total": int})
-        .loc[:,['emissions_total']]
+        .loc[:, ["emissions_total"]]
         .squeeze()
     )
 

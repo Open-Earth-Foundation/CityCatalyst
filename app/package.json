@@ -37,7 +37,7 @@
     "@types/node": "20.4.2",
     "@types/nodemailer": "^6.4.10",
     "@types/pg": "^8.10.2",
-    "@types/react": "18.2.21",
+    "@types/react": "18.2.24",
     "@types/react-dom": "18.2.7",
     "accept-language": "^3.0.18",
     "autoprefixer": "10.4.15",

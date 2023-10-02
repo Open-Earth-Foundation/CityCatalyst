@@ -12,9 +12,8 @@ export const POST = apiHandler(
     context: { session?: Session; params: Record<string, string> },
   ) => {
     const body = createCityRequest.parse(await req.json());
-    console.log("context: ", context);
     if (!context.session)
-      throw new createHttpError.Unauthorized("Must be logged in");
+      throw new createHttpError.Unauthorized("Unauthorized");
     const city = await db.models.City.create({
       cityId: randomUUID(),
       ...body,

@@ -26,7 +26,9 @@ def upgrade() -> None:
         sa.Column("lon_center", sa.Float, nullable=False),
         sa.Column("geometry", sa.String, nullable=False),
         sa.Column("area", sa.Float, nullable=False),
-        sa.Column("created_date", sa.DateTime(), server_default=text("CURRENT_TIMESTAMP")),
+        sa.Column(
+            "created_date", sa.DateTime(), server_default=text("CURRENT_TIMESTAMP")
+        ),
         sa.Column(
             "modified_date", sa.DateTime(), server_default=text("CURRENT_TIMESTAMP")
         ),
@@ -46,7 +48,9 @@ def upgrade() -> None:
             sa.ForeignKey("GridCellEdgar.id"),
             nullable=False,
         ),
-        sa.Column("created_date", sa.DateTime(),server_default=text("CURRENT_TIMESTAMP")),
+        sa.Column(
+            "created_date", sa.DateTime(), server_default=text("CURRENT_TIMESTAMP")
+        ),
         sa.Column(
             "modified_date", sa.DateTime(), server_default=text("CURRENT_TIMESTAMP")
         ),
@@ -63,7 +67,9 @@ def upgrade() -> None:
             sa.ForeignKey("GridCellEdgar.id"),
             nullable=False,
         ),
-        sa.Column("created_date", sa.DateTime(), server_default=text("CURRENT_TIMESTAMP")),
+        sa.Column(
+            "created_date", sa.DateTime(), server_default=text("CURRENT_TIMESTAMP")
+        ),
         sa.Column(
             "modified_date", sa.DateTime(), server_default=text("CURRENT_TIMESTAMP")
         ),

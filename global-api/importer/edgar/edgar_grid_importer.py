@@ -1,5 +1,6 @@
-# import EDGAR grid into database
-# >> python edgar_grid_importer.py --database-uri DB_URI
+# import EDGAR grid cells into database
+# Note: run this script first
+# >> python gridcelledgar_importer.py --database-uri DB_URI
 # author: L. Gloege
 # created: 2023-09-28
 

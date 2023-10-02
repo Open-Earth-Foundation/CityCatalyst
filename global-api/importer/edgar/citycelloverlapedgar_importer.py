@@ -20,6 +20,10 @@ from utils import (
     uuid_generate_v3,
 )
 
+# EDGAR grid resolution
+lon_res = 0.1 # degrees
+lat_res = 0.1 # degrees
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -42,9 +46,6 @@ if __name__ == "__main__":
     )
 
     table = Table("CityCellOverlapEdgar", metadata_obj, autoload_with=engine)
-
-    lon_res = 0.1
-    lat_res = 0.1
 
     results = all_locodes_and_geometries(session)
 

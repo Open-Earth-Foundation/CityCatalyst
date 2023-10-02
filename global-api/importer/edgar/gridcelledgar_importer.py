@@ -18,6 +18,10 @@ from utils import (
     uuid_generate_v3,
 )
 
+# EDGAR grid resolution
+lat_res = 0.1  # degrees
+lon_res = 0.1  # degrees
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -37,9 +41,6 @@ if __name__ == "__main__":
 
     lats = ds.lat.values
     lons = ds.lon.values
-
-    lat_res = 0.1  # degrees
-    lon_res = 0.1  # degrees
 
     for lat in tqdm(lats):
         for lon in lons:

@@ -1,5 +1,5 @@
 # import EDGAR data into database
-# >> python edgar_data_importer.py --database-uri DB_URI
+# >> python gridcellemissionsedgar_importer.py --database-uri DB_URI
 # author: L. Gloege
 # created: 2023-09-28
 

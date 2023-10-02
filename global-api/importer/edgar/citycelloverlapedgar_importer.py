@@ -1,5 +1,5 @@
 # import EDGAR city data into database
-# >> python edgar_city_data_importer.py --database-uri DB_URI
+# >> python citycelloverlapedgar_importer.py --database-uri DB_URI
 # author: L. Gloege
 # created: 2023-09-28
 

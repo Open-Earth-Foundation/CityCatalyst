@@ -242,7 +242,7 @@ export function SubsectorDrawer({
                               </HStack>
                             </AccordionButton>
                           </h2>
-                          <AccordionPanel>
+                          <AccordionPanel pt={4}>
                             <EmissionsForm
                               t={t}
                               register={register}

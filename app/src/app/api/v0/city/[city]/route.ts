@@ -51,7 +51,7 @@ export const PATCH = apiHandler(
   ) => {
     const body = createCityRequest.parse(await req.json());
     const { params, session } = context;
-    if (!session) throw new createHttpError.Unauthorized("Must be logged in");
+    if (!session) throw new createHttpError.Unauthorized("Unauthorized");
 
     let city = await db.models.City.findOne({
       where: { locode: params.city },

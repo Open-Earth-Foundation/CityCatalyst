@@ -15,7 +15,7 @@ import {
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { MdHomeWork } from "react-icons/md";
+import { MdOutlineHomeWork } from "react-icons/md";
 import { FiTrash2, FiTruck } from "react-icons/fi";
 
 export default function Onboarding({
@@ -61,7 +61,7 @@ export default function Onboarding({
             borderColor="border.overlay"
             borderWidth={1}
           >
-            <Icon as={MdHomeWork} boxSize={8} color="brand.secondary" />
+            <Icon as={MdOutlineHomeWork} boxSize={8} color="brand.secondary" />
             <Heading size="md">{t("stationary-energy")}</Heading>
             <Divider borderColor="border.overlay" />
             <Text color="content.tertiary">{t("stationary-energy-details")}</Text>

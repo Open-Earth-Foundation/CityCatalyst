@@ -18,7 +18,7 @@ import { Trans } from "react-i18next/TransWithoutContext";
 import { MdOutlineHomeWork } from "react-icons/md";
 import { FiTrash2, FiTruck } from "react-icons/fi";
 
-export default function Onboarding({
+export default function AddDataIntro({
   params: { lng },
 }: {
   params: { lng: string };

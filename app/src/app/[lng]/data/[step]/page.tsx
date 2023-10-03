@@ -101,7 +101,7 @@ const dataSources = rawDataSources
     return source;
   });
 
-export default function OnboardingSteps({
+export default function AddDataSteps({
   params: { lng, step },
 }: {
   params: { lng: string; step: string };

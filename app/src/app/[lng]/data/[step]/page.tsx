@@ -229,7 +229,7 @@ export default function AddDataSteps({
       {/*** Sector summary section ***/}
       <Card mb={12}>
         <Flex direction="row">
-          <Icon as={currentStep.icon} boxSize={8} color="brand" mr={4} />
+          <Icon as={currentStep.icon} boxSize={8} color="brand.secondary" mr={4} />
           <div className="space-y-4 w-full">
             <Heading size="lg" mb={2}>
               {currentStep.title}

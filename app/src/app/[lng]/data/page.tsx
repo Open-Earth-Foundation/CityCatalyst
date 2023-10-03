@@ -35,14 +35,14 @@ export default function Onboarding({
       >
         Go Back
       </Button>
-      <Heading size="xl" mb={6} mt={12} className="w-full text-center">
+      <Heading fontSize="32px" mb={6} mt={12} className="w-full text-center">
         {t("data-heading")}
       </Heading>
       <Text color="content.tertiary" className="w-full text-center">
         <Trans i18nKey="data-details" t={t} />
       </Text>
       <Card mt={16} p={6} borderColor="border.overlay" borderWidth={1}>
-        <Heading size="lg" mb={1}>{t("data-view-heading")}</Heading>
+        <Heading size="xl" mb={1}>{t("data-view-heading")}</Heading>
         <Text color="content.tertiary">
           <Trans i18nKey="data-view-details" t={t}>
             GPC Basic encompasses three primary sectors: Stationary Energy,

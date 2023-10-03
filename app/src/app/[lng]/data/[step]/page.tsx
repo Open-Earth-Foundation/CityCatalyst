@@ -422,8 +422,8 @@ export default function AddDataSteps({
         </SimpleGrid>
       </Card>
       {/*** Bottom bar ***/}
-      <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand py-8 px-8 drop-shadow-2xl hover:drop-shadow-4xl transition-all">
-        <Box className="w-[1090px] max-w-full mx-auto px-4 flex flex-row flex-wrap gap-y-4">
+      <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand py-4 px-4 drop-shadow-2xl hover:drop-shadow-4xl transition-all">
+        <Box className="w-[1090px] max-w-full mx-auto flex flex-row flex-wrap gap-y-2">
           <Box className="grow w-full md:w-0">
             <Text fontSize="sm">Step {activeStep + 1}</Text>
             <Text fontSize="2xl" as="b">
@@ -436,15 +436,15 @@ export default function AddDataSteps({
             variant="ghost"
             leftIcon={<Icon as={MdOutlineSkipNext} boxSize={6} />}
             size="sm"
-            px={12}
-            mr={6}
+            px={8}
+            mr={4}
           >
             {t("skip-step-button")}
           </Button>
           <Button
             h={16}
             isLoading={isConfirming}
-            px={12}
+            px={8}
             onClick={onConfirm}
             size="sm"
           >

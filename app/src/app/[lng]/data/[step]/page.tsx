@@ -295,7 +295,8 @@ export default function AddDataSteps({
                 borderColor={
                   (source.isConnected && "interactive.tertiary") || undefined
                 }
-                className="hover:drop-shadow-xl transition-shadow"
+                borderWidth={2}
+                className="shadow-none hover:drop-shadow-xl transition-shadow"
               >
                 <Icon as={source.icon} boxSize={9} mb={6} />
                 <Heading size="sm" noOfLines={2}>

@@ -372,7 +372,7 @@ export class DataSource
   >;
   createSubCategory!: Sequelize.HasOneCreateAssociationMixin<SubCategory>;
   // DataSource hasOneSubSector via subSectorId
-  subSectors!: SubSector;
+  subSector!: SubSector;
   getSubSector!: Sequelize.HasOneGetAssociationMixin<SubSector>;
   setSubSector!: Sequelize.HasOneSetAssociationMixin<
     SubSector,

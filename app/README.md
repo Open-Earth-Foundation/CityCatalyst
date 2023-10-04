@@ -57,6 +57,14 @@ npm run db:migrate
 
 You'll need to re-run the migrations whenever you make changes to the database schema.
 
+You can then run the seeders, which will fill the database with the required data for the GPC format (sectors, subsectors, subcategories etc.):
+
+```bash
+npm run db:seed
+```
+
+If necessary, you can undo individual migrations with `npm run db:migrate:undo` and seeders with `npm run db:seed:undo`.
+
 ### Environment
 
 Copy `env.example` to a file called `.env`.  

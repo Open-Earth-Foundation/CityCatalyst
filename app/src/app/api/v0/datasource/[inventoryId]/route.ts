@@ -2,7 +2,9 @@ import { filterSources } from "@/lib/filter-sources";
 import { db } from "@/models";
 import { City } from "@/models/City";
 import { DataSource } from "@/models/DataSource";
+import { Inventory } from "@/models/Inventory";
 import { apiHandler } from "@/util/api";
+import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { Op } from "sequelize";
@@ -55,13 +57,95 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
   const applicableSources = filterSources(inventory, sources);
   const applicableSourceIds = applicableSources.map(source => source.datasourceId);
   const invalidSources = sources.filter((source) => !applicableSourceIds.includes(source.datasourceId));
-  const failed = invalidSources.map(source => source.datasourceId);
+  const invalidSourceIds = invalidSources.map(source => source.datasourceId);
 
   // TODO check if the user has made manual edits that would be overwritten
-  const successful = applicableSourceIds;
-
-  // TODO apply sources
   // TODO create new versioning record
 
-  return NextResponse.json({ data: { successful, failed } });
+  // download source data and apply in database
+  const sourceResults = await Promise.all(applicableSources.map(async (source) => {
+    const result = { id: source.datasourceId, success: true };
+    
+    if (source.retrievalMethod === "global_api") {
+      result.success = await retrieveGlobalAPISource(source, inventory);
+    } else {
+      console.error(`Unsupported retrieval method ${source.retrievalMethod} for data source ${source.datasourceId}`);
+      result.success = false;
+    }
+
+    return result;
+  }));
+
+  const successful = sourceResults.filter(result => result.success).map(result => result.id);
+  const failed = sourceResults
+    .filter((result) => !result.success)
+    .map((result) => result.id);
+
+  return NextResponse.json({ data: { successful, failed, invalid: invalidSourceIds } });
 });
+
+async function retrieveGlobalAPISource(source: DataSource, inventory: Inventory): Promise<boolean> {
+  if (
+    !source.apiEndpoint ||
+    !inventory.city.locode ||
+    inventory.year == null ||
+    !(source.subsectorId || source.subcategoryId)
+  ) {
+    return false;
+  }
+
+  const url = source.apiEndpoint
+    .replace(":locode", inventory.city.locode)
+    .replace(":year", inventory.year.toString());
+  // TODO required?
+  // .replace(":gpcReferenceNumber", source.subSector.subsectorName);
+
+  let data;
+  try {
+    const response = await fetch(url);
+    data = await response.json();
+  } catch (err) {
+    console.error(
+      `Failed to query data source ${source.datasourceId} at URL ${url}:`,
+      err,
+    );
+    return false;
+  }
+
+  if (data.points.length === 0) {
+    return false;
+  }
+
+  // TODO how to represent multiple values from points in a single SubSectorValue?
+  const point = data.points[0];
+  const values = {
+    datasourceId: source.datasourceId,
+    totalEmissions:
+      point.emissions.co2_co2eq +
+      point.emissions.ch4_co2eq +
+      point.emissions.n2o_co2eq, // TODO store separately? ActivityValue?
+    emissionFactorValue: point.emissions_factor.value, // TODO store units and gpc_quality in EmissionsFactor?
+    activityValue: point.activity.value,
+    activityUnits: point.activity.units,
+    inventoryId: inventory.inventoryId,
+  };
+
+  if (source.subsectorId) {
+    const subSector = await db.models.SubSectorValue.create({
+      subsectorValueId: randomUUID(),
+      subsectorId: source.subsectorId,
+      ...values,
+    });
+  } else if (source.subcategoryId) {
+    const subCategory = await db.models.SubCategoryValue.create({
+      subcategoryValueId: randomUUID(),
+      subcategoryId: source.subcategoryId,
+      ...values,
+    });
+    // TODO add parent SubSectorValue if not present yet?
+  } else {
+    return false;
+  }
+
+  return true;
+}

@@ -59,3 +59,7 @@ export const resetPasswordRequest = z.object({
   newPassword: z.string().min(4).regex(passwordRegex),
   resetToken: z.string(),
 });
+
+export const createSectorRequest = z.object({
+  sectorName: z.string(),
+});

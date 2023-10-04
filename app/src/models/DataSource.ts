@@ -38,7 +38,9 @@ export interface DataSourceAttributes {
   url?: string;
   description?: string;
   accessType?: string;
-  geographicalLocation?: string;
+  geographicalLocation?: string; // comma separated list of locodes for either EARTH, country, region or city
+  startYear?: number; // inclusive
+  endYear?: number; // inclusive
   latestAccountingYear?: number;
   frequencyOfUpdate?: string;
   spacialResolution?: string;
@@ -67,6 +69,8 @@ export type DataSourceOptionalAttributes =
   | "description"
   | "accessType"
   | "geographicalLocation"
+  | "startYear"
+  | "endYear"
   | "latestAccountingYear"
   | "frequencyOfUpdate"
   | "spacialResolution"
@@ -100,6 +104,8 @@ export class DataSource
   description?: string;
   accessType?: string;
   geographicalLocation?: string;
+  startYear?: number; // inclusive
+  endYear?: number; // inclusive
   latestAccountingYear?: number;
   frequencyOfUpdate?: string;
   spacialResolution?: string;
@@ -733,6 +739,16 @@ export class DataSource
           type: DataTypes.STRING(255),
           allowNull: true,
           field: "geographical_location",
+        },
+        startYear: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+          field: "start_year",
+        },
+        endYear: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+          field: "end_year",
         },
         latestAccountingYear: {
           type: DataTypes.INTEGER,

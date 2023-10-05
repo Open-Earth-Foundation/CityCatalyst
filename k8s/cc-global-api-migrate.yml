@@ -1,27 +1,16 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: cc-migrate-
+  generateName: cc-global-api-migrate-
 spec:
   ttlSecondsAfterFinished: 86400
   template:
     spec:
       restartPolicy: OnFailure
       containers:
-      - name: cc-migrate
+      - name: cc-global-api
         image: ghcr.io/open-earth-foundation/citycatalyst-global-api:latest
-        imagePullPolicy: Always
         env:
-        - name: DB_HOST
-          value: "cc-global-api-db"
-        - name: DB_PORT
-          value: "5432"
-        - name: DB_USER
-          value: "ccglobal"
-        - name: DB_PASSWORD
-          value: ""
-        command: ["alembic",  "upgrade", "head"]
-        resources:
-          limits:
-            memory: "1024Mi"
-            cpu: "1000m"
+        - name: ALEMBIC_URL
+          value: "postgresql://ccglobal:ccglobal@cc-global-api-db/ccglobal"
+        command: ["alembic", "upgrade", "head"]

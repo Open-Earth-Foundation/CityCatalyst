@@ -28,14 +28,22 @@ spec:
           value: "3000"
         - name: DATABASE_HOST
           value: "cc-db"
+        - name: DATABASE_NAME
+          value: "citycatalyst"
         - name: DATABASE_USER
           value: "citycatalyst"
         - name: DATABASE_PASSWORD
           value: "development"
-        - name: NEXTAUTH_SECRET
-          value: "12ZDzcUbcuYsWk6UEBWvJoaIdFpAtE3UkeMjVdFepbk="
         - name: NEXTAUTH_URL
           value: "https://citycatalyst.openearth.dev"
+        - name: HOST
+          value: "https://citycatalyst.openearth.dev"
+        - name: SMTP_FROM_EMAIL
+          value: "citycatalyst@openearth.dev"
+        - name: SMTP_HOST
+          value: "email-smtp.us-west-2.amazonaws.com"
+        - name: SMTP_PORT
+          value: "465"
         resources:
           limits:
             memory: "1024Mi"

@@ -102,4 +102,8 @@ jobs:
       run: |
         kubectl create -f k8s/cc-migrate.yml -n default
         kubectl apply -f k8s/cc-web-deploy.yml -n default
+        kubectl set env deployment/cc-web-deploy SMTP_USER=${{secrets.SMTP_USER}}
+        kubectl set env deployment/cc-web-deploy SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}}
+        kubectl set env deployment/cc-web-deploy NEXTAUTH_SECRET=${{secrets.NEXTAUTH_SECRET}}
+        kubectl set env deployment/cc-web-deploy RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}}
         kubectl rollout restart deployment cc-web-deploy -n default

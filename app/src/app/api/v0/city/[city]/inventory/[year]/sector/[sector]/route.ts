@@ -45,5 +45,5 @@ export const DELETE = apiHandler(async (req: NextRequest, { params }) => {
 
   await sector.destroy();
 
-  return NextResponse.json({ data: sector, delete: true });
+  return NextResponse.json({ data: sector, deleted: true });
 });

@@ -61,7 +61,14 @@ export const resetPasswordRequest = z.object({
 });
 
 export const createSectorRequest = z.object({
-  sectorName: z.string().min(4),
+  sectorName: z.string().min(1),
 });
 
 export type CreateSectorRequest = z.infer<typeof createSectorRequest>;
+
+export const createSubSectorRequest = z.object({
+  subsectorName: z.string().min(1),
+  sectorId: z.string(),
+});
+
+export type CreateSubSectorRequest = z.infer<typeof createSubSectorRequest>;

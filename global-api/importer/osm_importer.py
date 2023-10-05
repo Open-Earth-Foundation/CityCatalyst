@@ -1,6 +1,8 @@
 # script to load OSM polygons into the database
 # >> python osm_importer.py --database_uri DB_URI --log_file PATH_TO_LOGFILE
 # by default, this will read the polygon data from a file on IPFS:
+# https://ipfs.io/ipfs/bafybeiajpp2sbogwvfjojz5knyt6en32ia7rsuuyrjxuf4ln4urhwbhumm/osm_data_updated.csv.gz
+# This file updates the original OSM data with the correct bounding box. The original data is her:
 # https://ipfs.io/ipfs/QmVjaumaEr8aTyS48AzpsVvws7pT1kqXjLudYvqSCMt52r?filename=output.csv.gz
 
 import argparse
@@ -111,7 +113,8 @@ if __name__ == "__main__":
     else:
         # dataset created using importer/osmid_to_geometry.py
         # script was run by EP and output was stored on IPFS
-        file = "https://ipfs.io/ipfs/QmVjaumaEr8aTyS48AzpsVvws7pT1kqXjLudYvqSCMt52r?filename=output.csv.gz"
+        # the file was then updated by LG to include correct bounding box for each polygon
+        file = "https://ipfs.io/ipfs/bafybeiajpp2sbogwvfjojz5knyt6en32ia7rsuuyrjxuf4ln4urhwbhumm/osm_data_updated.csv.gz"
 
         logging.info(
             f"Reading data from: {file} (may take about 30 seconds to read the data)"

@@ -89,16 +89,17 @@ async function retrieveGlobalAPISource(source: DataSource, inventory: Inventory)
     !source.apiEndpoint ||
     !inventory.city.locode ||
     inventory.year == null ||
-    !(source.subsectorId || source.subcategoryId)
+    !(source.subsectorId || source.subcategoryId) ||
+    !source.subSector.subsectorName
   ) {
     return false;
   }
 
   const url = source.apiEndpoint
     .replace(":locode", inventory.city.locode)
-    .replace(":year", inventory.year.toString());
-  // TODO required?
-  // .replace(":gpcReferenceNumber", source.subSector.subsectorName);
+    .replace(":year", inventory.year.toString())
+    // TODO required? where to get the GPC ref no for sector/subsector from?
+    .replace(":gpcReferenceNumber", source.subSector.subsectorName);
 
   let data;
   try {
@@ -116,17 +117,13 @@ async function retrieveGlobalAPISource(source: DataSource, inventory: Inventory)
     return false;
   }
 
-  // TODO how to represent multiple values from points in a single SubSectorValue?
-  const point = data.points[0];
+  const emissions = data.total.emissions;
   const values = {
     datasourceId: source.datasourceId,
     totalEmissions:
-      point.emissions.co2_co2eq +
-      point.emissions.ch4_co2eq +
-      point.emissions.n2o_co2eq, // TODO store separately? ActivityValue?
-    emissionFactorValue: point.emissions_factor.value, // TODO store units and gpc_quality in EmissionsFactor?
-    activityValue: point.activity.value,
-    activityUnits: point.activity.units,
+      emissions.co2_co2eq +
+      emissions.ch4_co2eq +
+      emissions.n2o_co2eq, // TODO store separately? ActivityValue?
     inventoryId: inventory.inventoryId,
   };
 

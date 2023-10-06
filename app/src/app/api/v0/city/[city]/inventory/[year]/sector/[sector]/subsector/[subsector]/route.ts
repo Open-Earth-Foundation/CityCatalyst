@@ -8,7 +8,6 @@ export const GET = apiHandler(async (req: NextRequest, { params }) => {
   const subsector = await db.models.SubSector.findOne({
     where: { subsectorId: params.subsector },
   });
-  console.log(params);
   if (!subsector) {
     throw new createHttpError.NotFound("Sub sector not found");
   }

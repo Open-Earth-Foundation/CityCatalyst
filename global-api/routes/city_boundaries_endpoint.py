@@ -27,6 +27,4 @@ def get_city_boundary(locode: str):
     if not city_geometry:
         raise HTTPException(status_code=404, detail="City boundary not found")
 
-    city_polygon = json.loads(city_geometry)
-
-    return {"city_polygon": city_polygon}
+    return {"city_geometry": city_geometry}

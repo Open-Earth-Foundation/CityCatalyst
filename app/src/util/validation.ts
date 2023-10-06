@@ -72,3 +72,13 @@ export const createSubSectorRequest = z.object({
 });
 
 export type CreateSubSectorRequest = z.infer<typeof createSubSectorRequest>;
+
+export const createSubCategory = z.object({
+  subcategoryName: z.string().min(1),
+  activityName: z.string().min(1),
+  subsectorId: z.string(),
+  scopeId: z.string(),
+  reportinglevelId: z.string(),
+});
+
+export type CreateSubCategory = z.infer<typeof createSubCategory>;

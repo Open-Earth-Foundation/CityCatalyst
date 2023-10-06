@@ -41,9 +41,9 @@ spec:
         - name: SMTP_FROM_EMAIL
           value: "citycatalyst@openearth.dev"
         - name: SMTP_HOST
-          value: "email-smtp.us-west-2.amazonaws.com"
+          value: "email-smtp.us-east-1.amazonaws.com"
         - name: SMTP_PORT
-          value: "465"
+          value: "587"
         resources:
           limits:
             memory: "1024Mi"

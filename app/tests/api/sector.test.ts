@@ -148,7 +148,6 @@ describe("Sector API", () => {
     });
     assert.equal(res.status, 200);
     const { data, deleted } = await res.json();
-    console.log(data);
     assert.equal(deleted, true);
     assert.equal(data.sectorName, sector2.sectorName);
   });

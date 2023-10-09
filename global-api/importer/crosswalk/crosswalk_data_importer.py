@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
     results = get_crosswalk_entire_grid(session)
     df_grid = (
-        pd.DataFrame(results).rename(columns={"id": "grid_id"}).astype({"grid_id": str})
+        pd.DataFrame(results).rename(columns={"id": "cell_id"}).astype({"cell_id": str})
     )
 
     get_gpc_refno = {
@@ -56,69 +56,74 @@ if __name__ == "__main__":
         "residential": "I.1.1",
     }
 
-    ds.carbon_emissions.attrs.get('long_name')
-
-    gas_shortname = {gas: "CO"}
-
     sectors = get_gpc_refno.keys()
+    sectors = get_gpc_refno.keys()
+    domains = ['US', 'AK']
+    uncertainty = 'hi'
 
-    for sector in sectors:
-        gpc_refno = get_gpc_refno.get(sector)
-        
-        ds = get_crosswalk(sector, gas, year)
+    for domain in domains:
+        for sector in sectors:
+            gpc_refno = get_gpc_refno.get(sector)
 
-        units = ds[EMISSIONS_VAR].attrs.get("units")
-        assert units == "Mg km-2 year-1", f"check units: ({units}) != Mg km-2 year-1"
+            ds = get_crosswalk(str(domain), sector, uncertainty)
 
-        df_tmp = ds.to_dataframe()
-        filt = df_tmp[EMISSIONS_VAR] > 0
-        df_filt = (
-            df_tmp.loc[filt]
-            .reset_index()
-            .rename(columns={"lat": "lat_center", "lon": "lon_center"})
-        )
-        
-        df_filt['year'] = [df_filt.time[x].year for x in range(len(df_filt))]
+            EMISSIONS_VAR = 'carbon_emissions'
 
-        df_merged = df_filt.merge(df_grid, on=["lon_center", "lat_center"])
+            gas = ds[EMISSIONS_VAR].attrs.get('long_name')
+            gas_shortname = {gas: "CO"}
 
-        df_final = (
-            df_merged.assign(
-                emissions_quantity=lambda row: row[EMISSIONS_VAR]
-                * 1000 #Mg to Kg
+            units = ds[EMISSIONS_VAR].attrs.get("units")
+            assert units == "Mg km-2 year-1", f"check units: ({units}) != Mg km-2 year-1"
+
+            df_tmp = ds.to_dataframe()
+            filt = df_tmp[EMISSIONS_VAR] > 0
+            df_filt = (
+                df_tmp.loc[filt]
+                .reset_index()
+                .rename(columns={"lat": "lat_center", "lon": "lon_center"})
             )
-            .assign(emissions_quantity_units="kg m-2 yr-1")
-            .assign(reference_number=gpc_refno)
-            .assign(gas=gas_shortname.get(gas))
-            .assign(
-                id=lambda x: x.apply(
-                    lambda row: uuid_generate_v3(
-                        f"crosswalk{row['grid_id']}{row['year']}{row['gas']}{row['reference_number']}"
-                    ),
-                    axis=1,
+            df_filt['year'] = [df_filt.time[x].year for x in range(len(df_filt))]
+
+            df_merged = df_filt.merge(df_grid, on=["lon_center", "lat_center"])
+
+            df_final = (
+                df_merged.assign(
+                    emissions_quantity=lambda row: row[EMISSIONS_VAR]
+                    * (44/12)    #CO to CO2
+                    * 1000       #Mg to kg
+                )
+                .assign(emissions_quantity_units="kg m-2 yr-1")
+                .assign(reference_number=gpc_refno)
+                .assign(gas="CO2")
+                .assign(
+                    id=lambda x: x.apply(
+                        lambda row: uuid_generate_v3(
+                            f"crosswalk{row['grid_id']}{row['year']}{row['gas']}{row['reference_number']}"
+                        ),
+                        axis=1,
+                    )
+                )
+                .assign(created_date=str(datetime.now()))
+                .drop(
+                    columns=[
+                        "time",
+                        "nv",
+                        "x",
+                        "y",
+                        "time_bnds",
+                        "lat_center",
+                        "lon_center",
+                        "crs",
+                        f"{EMISSIONS_VAR}",
+                    ]
                 )
             )
-            .assign(created_date=str(datetime.now()))
-            .drop(
-                columns=[
-                    "time",
-                    "nv",
-                    "x",
-                    "y",
-                    "time_bnds",
-                    "lat_center",
-                    "lon_center",
-                    "crs",
-                    f"{EMISSIONS_VAR}",
-                ]
+
+            record_generator = (
+                record for record in df_final.to_dict(orient="records")
             )
-        )
 
-        record_generator = (
-            record for record in df_final.to_dict(orient="records")
-        )
-
-        for record in record_generator:
-            insert_record(engine, table, "id", record)
+            for record in record_generator:
+                insert_record(engine, table, "id", record)
 
     session.close()

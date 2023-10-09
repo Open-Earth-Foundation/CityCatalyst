@@ -392,7 +392,7 @@ def xarray_intersection(
     )
     
 def get_crosswalk(domain, sector, uncertainty):
-    """retrieve crosswalk data"""
+    """Retrieve crosswalk data and load it into memory."""
     BASE_URL = "https://thredds.daac.ornl.gov/thredds/fileServer/ornldaac/1741"
     DOMAIN = domain
     SECTOR = sector
@@ -400,12 +400,14 @@ def get_crosswalk(domain, sector, uncertainty):
     url = f"{BASE_URL}/Vulcan_v3_{DOMAIN}_annual_1km_{SECTOR}_{UNCERTAINTY}.nc4"
 
     try:
+        # Open the file
         with fsspec.open(url, "rb") as file:
-            ds = xr.open_dataset(file)
+            # Open the dataset and load it into memory
+            ds = xr.open_dataset(file).load()
 
-        # convert from 360 to 180 longitude
-        ds = ds.assign_coords(lon=(((ds.lon + 180) % 360) - 180).round(2)).sortby("lon")
-        return ds.rio.write_crs("EPSG:4326")
+            file.close()
+
+            return ds.rio.write_crs("EPSG:4326")
     except FileNotFoundError as e:
         print(f"FileNotFoundError: {e}")
         return None
@@ -459,8 +461,8 @@ def get_bbox_coords(session, locode):
     return session.execute(query, {"locode": locode}).fetchall()
 
 
-def get_edgar_cells_in_bounds(session, bbox_north, bbox_south, bbox_east, bbox_west):
-    """get geometry from edgar
+def get_crosswalk_cells_in_bounds(session, bbox_north, bbox_south, bbox_east, bbox_west):
+    """get geometry from crosswalk
 
     Parameters
     ----------
@@ -483,7 +485,7 @@ def get_edgar_cells_in_bounds(session, bbox_north, bbox_south, bbox_east, bbox_w
     query = text(
         """
         SELECT id, geometry
-        FROM edgar_grid
+        FROM "crosswalk_GridCell"
         WHERE lon_center >= :bbox_west
         AND lon_center <= :bbox_east
         AND lat_center <= :bbox_north
@@ -513,7 +515,7 @@ def get_crosswalk_entire_grid(session):
     query = text(
         """
         SELECT id, lat_center, lon_center
-        FROM crosswalk_GridCell;"""
+        FROM "crosswalk_GridCell";"""
     )
 
     return session.execute(query).fetchall()
@@ -524,7 +526,7 @@ def get_crosswalk_grid_coords_and_wkt(session):
     query = text(
         """
         SELECT id, lat_center, lon_center, geometry
-        FROM crosswalk_GridCell;"""
+        FROM "crosswalk_GridCell";"""
     )
 
     return session.execute(query).fetchall()

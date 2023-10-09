@@ -13,13 +13,11 @@ Created on Fri Sep 29 16:43:02 2023
 import argparse
 from datetime import datetime
 import os
-from shapely.geometry import Polygon
-import geopy.distance
 from sqlalchemy import create_engine, MetaData, Table
 from tqdm import tqdm
 from utils import (
     area_of_polygon,
-    coords_dict,
+    bounding_coords,
     polygon_from_coords,
     get_crosswalk,
     insert_record,
@@ -45,28 +43,28 @@ if __name__ == "__main__":
 
     lats = ds.lat.values
     lons = ds.lon.values
+    
+    for lat_row in tqdm(lats):
+        for lat in lat_row:
+            for lon_row in lons:
+                for lon in lon_row:
 
-    for lat in tqdm(lats):
-        for lon in lons:
-            coords_dict = bounding_coords(
-                lat_center, lon_center, distance_m=500
-                )
-            coords_dict = bounding_coords(
-                lat_center=lat, lon_center=lon, distance_m=500
-            )
+                    coords_dict = bounding_coords(
+                        lat_center=lat, lon_center=lon, distance_m=500
+                        )
 
-            polygon = polygon_from_coords(**coords_dict)
+                    polygon = polygon_from_coords(**coords_dict)
 
-            area = area_of_polygon(polygon)
-            cell_id = uuid_generate_v3(polygon.wkt)
+                    area = area_of_polygon(polygon)
+                    cell_id = uuid_generate_v3(polygon.wkt)
 
-            record = {
-                "id": cell_id,
-                "lat_center": round(float(lat), 2),
-                "lon_center": round(float(lon), 2),
-                "geometry": polygon.wkt,
-                "area": round(area),
-                "created_date": str(datetime.now()),
-            }
+                    record = {
+                        "id": cell_id,
+                        "lat_center": round(float(lat), 2),
+                        "lon_center": round(float(lon), 2),
+                        "geometry": polygon.wkt,
+                        "area": round(area),
+                        "created_date": str(datetime.now()),
+                        }
 
-            insert_record(engine, table, "id", record)
+                insert_record(engine, table, "id", record)

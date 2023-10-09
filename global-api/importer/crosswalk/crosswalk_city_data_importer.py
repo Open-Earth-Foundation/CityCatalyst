@@ -50,8 +50,8 @@ if __name__ == "__main__":
 
     table = Table("crosswalk_CityGridOverlap", metadata_obj, autoload_with=engine)
 
-    lon_res = 0.05
-    lat_res = 0.05
+    lon_res = 0.02
+    lat_res = 0.02
 
     results = all_locodes_and_geometries(session)
 
@@ -78,7 +78,7 @@ if __name__ == "__main__":
         geoms = df_tmp.to_dict(orient="records")
 
         for row in geoms:
-            cell_id = str(row.get("grid_id"))
+            cell_id = str(row.get("cell_id"))
             cell_wkt = row.get("geometry")
 
             record_id = uuid_generate_v3(locode + cell_id)

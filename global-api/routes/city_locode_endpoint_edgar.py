@@ -79,4 +79,4 @@ def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: s
         }
     }
 
-    return {"totals": totals}
+    return totals

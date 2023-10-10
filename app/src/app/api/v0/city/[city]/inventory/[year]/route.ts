@@ -13,10 +13,19 @@ export const GET = apiHandler(
     const { params, session } = context;
     const city = await db.models.City.findOne({
       where: { locode: params.city },
+      include: [
+        {
+          model: db.models.User,
+          as: "users",
+          where: {
+            userId: session?.user.id,
+          },
+        },
+      ],
     });
     if (!session) throw new createHttpError.Unauthorized("Unauthorized");
     if (!city) {
-      throw new createHttpError.NotFound("City not found");
+      throw new createHttpError.NotFound("User is not part of this city");
     }
 
     const inventory = await db.models.Inventory.findOne({
@@ -39,10 +48,19 @@ export const DELETE = apiHandler(
     const { params, session } = context;
     const city = await db.models.City.findOne({
       where: { locode: params.city },
+      include: [
+        {
+          model: db.models.User,
+          as: "users",
+          where: {
+            userId: session?.user.id,
+          },
+        },
+      ],
     });
     if (!session) throw new createHttpError.Unauthorized("Unauthorized");
     if (!city) {
-      throw new createHttpError.NotFound("City not found");
+      throw new createHttpError.NotFound("User is not part of this city");
     }
 
     const inventory = await db.models.Inventory.findOne({
@@ -67,11 +85,20 @@ export const PATCH = apiHandler(
 
     let city = await db.models.City.findOne({
       where: { locode: params.city },
+      include: [
+        {
+          model: db.models.User,
+          as: "users",
+          where: {
+            userId: session?.user.id,
+          },
+        },
+      ],
     });
 
     if (!session) throw new createHttpError.Unauthorized("Unauthorized");
     if (!city) {
-      throw new createHttpError.NotFound("City not found");
+      throw new createHttpError.NotFound("User is not part of this city");
     }
 
     let inventory = await db.models.Inventory.findOne({

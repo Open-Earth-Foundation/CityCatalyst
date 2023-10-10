@@ -13,14 +13,22 @@ export const POST = apiHandler(
   ) => {
     const body = createInventoryRequest.parse(await req.json());
     const { params, session } = context;
+    if (!session) throw new createHttpError.Unauthorized("Unauthorized");
     const city = await db.models.City.findOne({
       where: { locode: params.city },
+      include: [
+        {
+          model: db.models.User,
+          as: "users",
+          where: {
+            userId: session?.user.id,
+          },
+        },
+      ],
     });
 
-    if (!session) throw new createHttpError.Unauthorized("Unauthorized");
-
     if (!city) {
-      throw new createHttpError.NotFound("City not found");
+      throw new createHttpError.NotFound("User is not part of this city");
     }
 
     const inventory = await db.models.Inventory.create({

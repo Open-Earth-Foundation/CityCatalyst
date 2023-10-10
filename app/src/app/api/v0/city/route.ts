@@ -18,6 +18,7 @@ export const POST = apiHandler(
       cityId: randomUUID(),
       ...body,
     });
+    city.addUser("7b730ed9-5c7a-4758-a658-c31673700cc9");
     return NextResponse.json({ data: city });
   },
 );

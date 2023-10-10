@@ -44,6 +44,9 @@ export class City
   extends Model<CityAttributes, CityCreationAttributes>
   implements CityAttributes
 {
+  users(users: any) {
+    throw new Error("Method not implemented.");
+  }
   cityId!: string;
   locode?: string;
   name?: string;
@@ -61,14 +64,8 @@ export class City
   addUser!: Sequelize.BelongsToManyAddAssociationMixin<User, UserId>;
   addUsers!: Sequelize.BelongsToManyAddAssociationsMixin<User, UserId>;
   createUser!: Sequelize.BelongsToManyCreateAssociationMixin<User>;
-  removeUser!: Sequelize.BelongsToManyRemoveAssociationMixin<
-    User,
-    UserId
-  >;
-  removeUsers!: Sequelize.BelongsToManyRemoveAssociationsMixin<
-    User,
-    UserId
-  >;
+  removeUser!: Sequelize.BelongsToManyRemoveAssociationMixin<User, UserId>;
+  removeUsers!: Sequelize.BelongsToManyRemoveAssociationsMixin<User, UserId>;
   hasUser!: Sequelize.BelongsToManyHasAssociationMixin<User, UserId>;
   hasUsers!: Sequelize.BelongsToManyHasAssociationsMixin<User, UserId>;
   countUsers!: Sequelize.BelongsToManyCountAssociationsMixin;

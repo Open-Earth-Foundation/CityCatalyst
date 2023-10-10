@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 from utils import uuid_generate_v3, write_dic_to_csv, make_dir
 
+SUBSECTORS_WITH_SCOPES = ['IPPU', 'AFOLU']
 
 def filter_list_of_dicts(lst, key):
     """filter a lister of diciontaries based on key"""
@@ -46,11 +47,17 @@ if __name__ == "__main__":
             subcategory_name = row["subcategory"]
             sector = Sector(sector_name, row["sector_refno"])
             sectors.append(sector)
+
+            if any(term in sector_name for term in SUBSECTORS_WITH_SCOPES):
+                subsector_scope = row["scope"]
+            else:
+                subsector_scope = ''
+
             subsector = SubSector(
                 sector,
                 subsector_name,
                 row["subsector_refno"],
-                row["scope"],
+                subsector_scope,
                 row["reporting_level"],
             )
             subsectors.append(subsector)

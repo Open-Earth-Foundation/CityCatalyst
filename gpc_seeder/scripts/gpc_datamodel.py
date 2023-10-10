@@ -127,31 +127,31 @@ class GPC:
         return None
 
     def subsector_refno(self, sector: str, subsector: str) -> Optional[str]:
-        subsector = self._find_subsector(sector, subsector)
-        return subsector.refno if subsector else None
+        subsector_obj = self._find_subsector(sector, subsector)
+        return subsector_obj.refno if subsector_obj else None
 
     def subsector_scope(self, sector: str, subsector: str) -> Optional[str]:
-        subsector = self._find_subsector(sector, subsector)
-        return subsector.scope if subsector else None
+        subsector_obj = self._find_subsector(sector, subsector)
+        return subsector_obj.scope if subsector_obj else None
 
     def subsector_reporting_level(self, sector: str, subsector: str) -> Optional[str]:
-        subsector = self._find_subsector(sector, subsector)
-        return subsector.reporting_level if subsector else None
+        subsector_obj = self._find_subsector(sector, subsector)
+        return subsector_obj.reporting_level if subsector_obj else None
 
     def subcategory_refno(
         self, sector: str, subsector: str, subcategory: str
     ) -> Optional[str]:
-        subcategory = self._find_subcategory(sector, subsector, subcategory)
-        return subcategory.refno if subcategory else None
+        subcategory_obj = self._find_subcategory(sector, subsector, subcategory)
+        return subcategory_obj.refno if subcategory_obj else None
 
     def subcategory_scope(
         self, sector: str, subsector: str, subcategory: str
     ) -> Optional[str]:
-        subcategory = self._find_subcategory(sector, subsector, subcategory)
-        return subcategory.scope if subcategory else None
+        subcategory_obj = self._find_subcategory(sector, subsector, subcategory)
+        return subcategory_obj.scope if subcategory_obj else None
 
     def subcategory_reporting_level(
         self, sector: str, subsector: str, subcategory: str
     ) -> Optional[str]:
-        subcategory = self._find_subcategory(sector, subsector, subcategory)
-        return subcategory.reporting_level if subcategory else None
+        subcategory_obj = self._find_subcategory(sector, subsector, subcategory)
+        return subcategory_obj.reporting_level if subcategory_obj else None

@@ -17,7 +17,7 @@ import { Sector } from "@/models/Sector";
 
 const sectorId = randomUUID();
 const sectorName = "Test Sector";
-const locode = "XX7_INVENTORY_CITY";
+const locode = "XX_INVENTORY_CITY";
 const year = "3000";
 
 const sector1: CreateSectorRequest = {

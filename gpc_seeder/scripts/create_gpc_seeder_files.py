@@ -117,6 +117,7 @@ if __name__ == "__main__":
         {
             "sector_id": uuid_generate_v3(name=sector),
             "sector_name": sector,
+            "reference_number": gpc.sector_refno(sector),
             "created": now_str,
             "last_updated": now_str,
         }
@@ -142,6 +143,7 @@ if __name__ == "__main__":
                     "sector_id": sector_id,
                     "subsector_id": subsector_id,
                     "subsector_name": subsector,
+                    "reference_number": gpc.subsector_refno(sector, subsector)
                 }
             )
             for subcategory in gpc.list_subcategories(
@@ -167,6 +169,7 @@ if __name__ == "__main__":
                         "subcategory_id": subcategory_id,
                         "subsector_id": subsector_id,
                         "subcategory_name": subcategory,
+                        "reference_number": gpc.subcategory_refno(sector, subsector, subcategory),
                         "scope_id": scope_id,
                         "reportinglevel_id": reportinglevel_id,
                         "created": now_str,

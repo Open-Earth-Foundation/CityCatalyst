@@ -138,12 +138,15 @@ if __name__ == "__main__":
         for subsector in gpc.list_subsectors(sector):
             sector_and_subsector = " ".join([sector, subsector])
             subsector_id = uuid_generate_v3(name=sector_and_subsector)
+            subsector_scope = gpc.subsector_scope(sector=sector, subsector=subsector)
+            subsector_scope_id = scope_ids.get(subsector_scope)
             subsector_data.append(
                 {
                     "sector_id": sector_id,
                     "subsector_id": subsector_id,
                     "subsector_name": subsector,
-                    "reference_number": gpc.subsector_refno(sector, subsector)
+                    "reference_number": gpc.subsector_refno(sector, subsector),
+                    "scope_id": subsector_scope_id
                 }
             )
             for subcategory in gpc.list_subcategories(

@@ -124,7 +124,7 @@ describe("Sub Sector API", () => {
     const {
       error: { issues },
     } = await res.json();
-    assert.equal(issues.length, 1);
+    assert.equal(issues.length, 2);
   });
 
   it("Should find a sub sector", async () => {
@@ -190,7 +190,7 @@ describe("Sub Sector API", () => {
     const {
       error: { issues },
     } = await res.json();
-    assert.equal(issues.length, 1);
+    assert.equal(issues.length, 2);
   });
 
   it("Should delete a sub sector", async () => {

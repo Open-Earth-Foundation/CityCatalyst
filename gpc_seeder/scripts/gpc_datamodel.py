@@ -108,6 +108,12 @@ class GPC:
     def list_reporting_levels(self) -> List[str]:
         return list(set([item.reporting_level for item in self.subcategories]))
 
+    def _find_sector(self, sector: str) -> Optional[Sector]:
+        for sector_obj in self.sectors:
+            if sector_obj.name == sector:
+                return sector_obj
+        return None
+
     def _find_subsector(self, sector: str, subsector: str) -> Optional[SubSector]:
         for subsector_obj in self.subsectors:
             if subsector_obj.sector.name == sector and subsector_obj.name == subsector:
@@ -125,6 +131,10 @@ class GPC:
             ):
                 return subcategory_obj
         return None
+
+    def sector_refno(self, sector: str) -> Optional[str]:
+        sector_obj = self._find_sector(sector)
+        return sector_obj.refno if sector_obj else None
 
     def subsector_refno(self, sector: str, subsector: str) -> Optional[str]:
         subsector_obj = self._find_subsector(sector, subsector)

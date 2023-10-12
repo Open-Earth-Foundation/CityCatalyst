@@ -419,8 +419,8 @@ export function initModels(sequelize: Sequelize) {
     as: "dataSourceActivityData",
     foreignKey: "activitydataId",
   });
-  CityUser.belongsTo(City, { as: "city", foreignKey: "cityId" });
-  City.hasMany(CityUser, { as: "cityUsers", foreignKey: "cityId" });
+  User.belongsToMany(City, { through: CityUser, as: "cities", foreignKey: "cityId", otherKey: "userId" });
+  City.belongsToMany(User, { through: CityUser, as: "users", foreignKey: "userId", otherKey: "cityId" });
   GDP.belongsTo(City, { as: "city", foreignKey: "cityId" });
   City.hasMany(GDP, { as: "gdps", foreignKey: "cityId" });
   Inventory.belongsTo(City, { as: "city", foreignKey: "cityId" });
@@ -720,8 +720,6 @@ export function initModels(sequelize: Sequelize) {
     as: "subSectorValues",
     foreignKey: "subsectorId",
   });
-  CityUser.belongsTo(User, { as: "user", foreignKey: "userId" });
-  User.hasMany(CityUser, { as: "cityUsers", foreignKey: "userId" });
   User.belongsTo(User, { as: "organization", foreignKey: "organizationId" });
   User.hasMany(User, { as: "users", foreignKey: "organizationId" });
 

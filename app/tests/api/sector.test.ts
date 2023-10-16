@@ -1,9 +1,9 @@
-import { POST as createSector } from "@/app/api/v0/city/[city]/inventory/[year]/sector/route";
+import { POST as createSector } from "@/app/api/v0/city/[city]/inventory/[year]/sectorvalue/route";
 import {
   DELETE as deleteSector,
   GET as findSector,
   PATCH as updateSector,
-} from "@/app/api/v0/city/[city]/inventory/[year]/sector/[sector]/route";
+} from "@/app/api/v0/city/[city]/inventory/[year]/sectorvalue/[sectorvalue]/route";
 import { db } from "@/models";
 import { CreateSectorRequest } from "@/util/validation";
 import env from "@next/env";

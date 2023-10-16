@@ -1,9 +1,9 @@
-import { POST as createSubSector } from "@/app/api/v0/city/[city]/inventory/[year]/sector/[sector]/subsector/route";
+import { POST as createSubSector } from "@/app/api/v0/city/[city]/inventory/[year]/sectorValue/[sectorValue]/subsector/route";
 import {
   DELETE as deleteSubSector,
   GET as findSubSector,
   PATCH as updateSubSector,
-} from "@/app/api/v0/city/[city]/inventory/[year]/sector/[sector]/subsector/[subsector]/route";
+} from "@/app/api/v0/city/[city]/inventory/[year]/sectorValue/[sectorValue]/subsector/[subsector]/route";
 
 import { db } from "@/models";
 import { CreateSubSectorRequest } from "@/util/validation";

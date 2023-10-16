@@ -60,25 +60,42 @@ export const resetPasswordRequest = z.object({
   resetToken: z.string(),
 });
 
-export const createSectorRequest = z.object({
-  sectorName: z.string().min(1),
+export const createSectorValueRequest = z.object({
+  totalEmissions: z.number().optional(),
+  sectorId: z.string().uuid().optional(),
+  inventoryId: z.string().uuid().optional(),
 });
 
-export type CreateSectorRequest = z.infer<typeof createSectorRequest>;
+export type CreateSectorValueRequest = z.infer<typeof createSectorValueRequest>;
 
-export const createSubSectorRequest = z.object({
-  subsectorName: z.string().min(1),
-  sectorId: z.string().uuid(),
+export const createSubSectorValueRequest = z.object({
+  activityUnits: z.string(),
+  activityValue: z.number(),
+  emissionFactorValue: z.number(),
+  totalEmissions: z.number(),
+  emissionsFactorId: z.string().uuid().optional(),
+  sectorValueId: z.string().uuid().optional(),
+  inventoryId: z.string().uuid().optional(),
+  datasourceId: z.string().uuid().optional(),
+  sectorId: z.string().uuid().optional(),
 });
 
-export type CreateSubSectorRequest = z.infer<typeof createSubSectorRequest>;
+export type CreateSubSectorValueRequest = z.infer<
+  typeof createSubSectorValueRequest
+>;
 
-export const createSubCategory = z.object({
-  subcategoryName: z.string().min(1),
-  activityName: z.string().min(1),
-  subsectorId: z.string().uuid(),
-  scopeId: z.string().uuid(),
-  reportinglevelId: z.string().uuid(),
+export const createSubCategoryValue = z.object({
+  activityUnits: z.string(),
+  activityValue: z.number(),
+  emissionFactorValue: z.number(),
+  totalEmissions: z.number(),
+  emissionsFactorId: z.string().uuid().optional(),
+  subcategoryId: z.string().uuid().optional(),
+  sectorValueId: z.string().uuid().optional(),
+  inventoryId: z.string().uuid().optional(),
+  datasourceId: z.string().uuid().optional(),
 });
 
-export type CreateSubCategory = z.infer<typeof createSubCategory>;
+export type CreateSubCategoryValueRequest = z.infer<
+  typeof createSubCategoryValue
+>;

@@ -44,6 +44,9 @@ def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: s
 
     records = db_query(locode, year, gpcReferenceNumber)
 
+    if not records:
+        return {'totals':'None', 'points':'None'}
+
     df = pd.DataFrame(records)
 
     series = (

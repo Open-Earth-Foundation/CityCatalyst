@@ -9,13 +9,13 @@ import type {
   SubSectorReportingLevel,
   SubSectorReportingLevelId,
 } from "./SubSectorReportingLevel";
-import type { SubSectorScope, SubSectorScopeId } from "./SubSectorScope";
 import type { SubSectorValue, SubSectorValueId } from "./SubSectorValue";
 
 export interface SubSectorAttributes {
   subsectorId: string;
   subsectorName?: string;
   sectorId?: string;
+  referenceNumber?: string;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -25,6 +25,7 @@ export type SubSectorId = SubSector[SubSectorPk];
 export type SubSectorOptionalAttributes =
   | "subsectorName"
   | "sectorId"
+  | "referenceNumber"
   | "created"
   | "lastUpdated";
 export type SubSectorCreationAttributes = Optional<
@@ -39,6 +40,7 @@ export class SubSector
   subsectorId!: string;
   subsectorName?: string;
   sectorId?: string;
+  referenceNumber?: string;
   created?: Date;
   lastUpdated?: Date;
 
@@ -114,38 +116,38 @@ export class SubSector
   >;
   countReportinglevelIdReportingLevelSubSectorReportingLevels!: Sequelize.BelongsToManyCountAssociationsMixin;
   // SubSector belongsToMany Scope via subsectorId and scopeId
-  scopeIdScopeSubSectorScopes!: Scope[];
-  getScopeIdScopeSubSectorScopes!: Sequelize.BelongsToManyGetAssociationsMixin<Scope>;
-  setScopeIdScopeSubSectorScopes!: Sequelize.BelongsToManySetAssociationsMixin<
+  scopeIdScopeScopes!: Scope[];
+  getScopeIdScopeScopes!: Sequelize.BelongsToManyGetAssociationsMixin<Scope>;
+  setScopeIdScopeScopes!: Sequelize.BelongsToManySetAssociationsMixin<
     Scope,
     ScopeId
   >;
-  addScopeIdScopeSubSectorScope!: Sequelize.BelongsToManyAddAssociationMixin<
+  addScopeIdScopeScope!: Sequelize.BelongsToManyAddAssociationMixin<
     Scope,
     ScopeId
   >;
-  addScopeIdScopeSubSectorScopes!: Sequelize.BelongsToManyAddAssociationsMixin<
+  addScopeIdScopeScopes!: Sequelize.BelongsToManyAddAssociationsMixin<
     Scope,
     ScopeId
   >;
-  createScopeIdScopeSubSectorScope!: Sequelize.BelongsToManyCreateAssociationMixin<Scope>;
-  removeScopeIdScopeSubSectorScope!: Sequelize.BelongsToManyRemoveAssociationMixin<
+  createScopeIdScopeScope!: Sequelize.BelongsToManyCreateAssociationMixin<Scope>;
+  removeScopeIdScopeScope!: Sequelize.BelongsToManyRemoveAssociationMixin<
     Scope,
     ScopeId
   >;
-  removeScopeIdScopeSubSectorScopes!: Sequelize.BelongsToManyRemoveAssociationsMixin<
+  removeScopeIdScopeScopes!: Sequelize.BelongsToManyRemoveAssociationsMixin<
     Scope,
     ScopeId
   >;
-  hasScopeIdScopeSubSectorScope!: Sequelize.BelongsToManyHasAssociationMixin<
+  hasScopeIdScopeScope!: Sequelize.BelongsToManyHasAssociationMixin<
     Scope,
     ScopeId
   >;
-  hasScopeIdScopeSubSectorScopes!: Sequelize.BelongsToManyHasAssociationsMixin<
+  hasScopeIdScopeScopes!: Sequelize.BelongsToManyHasAssociationsMixin<
     Scope,
     ScopeId
   >;
-  countScopeIdScopeSubSectorScopes!: Sequelize.BelongsToManyCountAssociationsMixin;
+  countScopeIdScopeScopes!: Sequelize.BelongsToManyCountAssociationsMixin;
   // SubSector hasMany SubCategory via subsectorId
   subCategories!: SubCategory[];
   getSubCategories!: Sequelize.HasManyGetAssociationsMixin<SubCategory>;
@@ -212,39 +214,14 @@ export class SubSector
     SubSectorReportingLevelId
   >;
   countSubSectorReportingLevels!: Sequelize.HasManyCountAssociationsMixin;
-  // SubSector hasMany SubSectorScope via subsectorId
-  subSectorScopes!: SubSectorScope[];
-  getSubSectorScopes!: Sequelize.HasManyGetAssociationsMixin<SubSectorScope>;
-  setSubSectorScopes!: Sequelize.HasManySetAssociationsMixin<
-    SubSectorScope,
-    SubSectorScopeId
+  // SubSector hasOne Scope via scopeId
+  scope!: Scope;
+  getScope!: Sequelize.HasOneGetAssociationMixin<Scope>;
+  setScope!: Sequelize.HasOneSetAssociationMixin<
+    Scope,
+    ScopeId
   >;
-  addSubSectorScope!: Sequelize.HasManyAddAssociationMixin<
-    SubSectorScope,
-    SubSectorScopeId
-  >;
-  addSubSectorScopes!: Sequelize.HasManyAddAssociationsMixin<
-    SubSectorScope,
-    SubSectorScopeId
-  >;
-  createSubSectorScope!: Sequelize.HasManyCreateAssociationMixin<SubSectorScope>;
-  removeSubSectorScope!: Sequelize.HasManyRemoveAssociationMixin<
-    SubSectorScope,
-    SubSectorScopeId
-  >;
-  removeSubSectorScopes!: Sequelize.HasManyRemoveAssociationsMixin<
-    SubSectorScope,
-    SubSectorScopeId
-  >;
-  hasSubSectorScope!: Sequelize.HasManyHasAssociationMixin<
-    SubSectorScope,
-    SubSectorScopeId
-  >;
-  hasSubSectorScopes!: Sequelize.HasManyHasAssociationsMixin<
-    SubSectorScope,
-    SubSectorScopeId
-  >;
-  countSubSectorScopes!: Sequelize.HasManyCountAssociationsMixin;
+  createScope!: Sequelize.HasOneCreateAssociationMixin<Scope>;
   // SubSector hasMany SubSectorValue via subsectorId
   subSectorValues!: SubSectorValue[];
   getSubSectorValues!: Sequelize.HasManyGetAssociationsMixin<SubSectorValue>;
@@ -301,6 +278,11 @@ export class SubSector
             key: "sector_id",
           },
           field: "sector_id",
+        },
+        referenceNumber: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: "reference_number",
         },
       },
       {

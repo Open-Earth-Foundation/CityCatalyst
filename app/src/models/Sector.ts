@@ -8,13 +8,18 @@ import type { SubSector, SubSectorId } from "./SubSector";
 export interface SectorAttributes {
   sectorId: string;
   sectorName?: string;
+  referenceNumber?: string;
   created?: Date;
   lastUpdated?: Date;
 }
 
 export type SectorPk = "sectorId";
 export type SectorId = Sector[SectorPk];
-export type SectorOptionalAttributes = "sectorName" | "created" | "lastUpdated";
+export type SectorOptionalAttributes =
+  | "sectorName"
+  | "referenceNumber"
+  | "created"
+  | "lastUpdated";
 export type SectorCreationAttributes = Optional<
   SectorAttributes,
   SectorOptionalAttributes
@@ -26,6 +31,7 @@ export class Sector
 {
   sectorId!: string;
   sectorName?: string;
+  referenceNumber?: string;
   created?: Date;
   lastUpdated?: Date;
 
@@ -160,6 +166,11 @@ export class Sector
           type: DataTypes.STRING(255),
           allowNull: true,
           field: "sector_name",
+        },
+        referenceNumber: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: "reference_number",
         },
       },
       {

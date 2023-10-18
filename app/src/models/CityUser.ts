@@ -52,6 +52,7 @@ export class CityUser
           allowNull: false,
           primaryKey: true,
           field: "city_user_id",
+          defaultValue: Sequelize.UUIDV4(),
         },
         userId: {
           type: DataTypes.UUID,

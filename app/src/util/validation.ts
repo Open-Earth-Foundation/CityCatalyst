@@ -59,3 +59,26 @@ export const resetPasswordRequest = z.object({
   newPassword: z.string().min(4).regex(passwordRegex),
   resetToken: z.string(),
 });
+
+export const createSectorRequest = z.object({
+  sectorName: z.string().min(1),
+});
+
+export type CreateSectorRequest = z.infer<typeof createSectorRequest>;
+
+export const createSubSectorRequest = z.object({
+  subsectorName: z.string().min(1),
+  sectorId: z.string().uuid(),
+});
+
+export type CreateSubSectorRequest = z.infer<typeof createSubSectorRequest>;
+
+export const createSubCategory = z.object({
+  subcategoryName: z.string().min(1),
+  activityName: z.string().min(1),
+  subsectorId: z.string().uuid(),
+  scopeId: z.string().uuid(),
+  reportinglevelId: z.string().uuid(),
+});
+
+export type CreateSubCategory = z.infer<typeof createSubCategory>;

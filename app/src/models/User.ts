@@ -1,6 +1,6 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
-import type { CityUser, CityUserId } from "./CityUser";
+import type { City, CityId } from "./City";
 
 export interface UserAttributes {
   userId: string;
@@ -47,24 +47,24 @@ export class User
   lastUpdated?: Date;
   organizationId?: string;
 
-  // User hasMany CityUser via userId
-  cityUsers!: CityUser[];
-  getCityUsers!: Sequelize.HasManyGetAssociationsMixin<CityUser>;
-  setCityUsers!: Sequelize.HasManySetAssociationsMixin<CityUser, CityUserId>;
-  addCityUser!: Sequelize.HasManyAddAssociationMixin<CityUser, CityUserId>;
-  addCityUsers!: Sequelize.HasManyAddAssociationsMixin<CityUser, CityUserId>;
-  createCityUser!: Sequelize.HasManyCreateAssociationMixin<CityUser>;
-  removeCityUser!: Sequelize.HasManyRemoveAssociationMixin<
-    CityUser,
-    CityUserId
+  // City BelongsToMany City via CityId
+  cities!: City[];
+  getCities!: Sequelize.BelongsToManyGetAssociationsMixin<City>;
+  setCities!: Sequelize.BelongsToManySetAssociationsMixin<City, CityId>;
+  addCity!: Sequelize.BelongsToManyAddAssociationMixin<City, CityId>;
+  addCities!: Sequelize.BelongsToManyAddAssociationsMixin<City, CityId>;
+  createCity!: Sequelize.BelongsToManyCreateAssociationMixin<City>;
+  removeCity!: Sequelize.BelongsToManyRemoveAssociationMixin<
+    City,
+    CityId
   >;
-  removeCityUsers!: Sequelize.HasManyRemoveAssociationsMixin<
-    CityUser,
-    CityUserId
+  removeCities!: Sequelize.BelongsToManyRemoveAssociationsMixin<
+    City,
+    CityId
   >;
-  hasCityUser!: Sequelize.HasManyHasAssociationMixin<CityUser, CityUserId>;
-  hasCityUsers!: Sequelize.HasManyHasAssociationsMixin<CityUser, CityUserId>;
-  countCityUsers!: Sequelize.HasManyCountAssociationsMixin;
+  hasCity!: Sequelize.BelongsToManyHasAssociationMixin<City, CityId>;
+  hasCities!: Sequelize.BelongsToManyHasAssociationsMixin<City, CityId>;
+  countCities!: Sequelize.BelongsToManyCountAssociationsMixin;
   // User belongsTo User via organizationId
   organization!: User;
   getOrganization!: Sequelize.BelongsToGetAssociationMixin<User>;

@@ -1,6 +1,8 @@
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 
 import { db } from "@/models";
 import { ValidationError } from "sequelize";
@@ -20,10 +22,13 @@ export function apiHandler(handler: NextHandler) {
         await db.initialize();
       }
 
-      // TODO JWT authentication logic here
-      // await jwtMiddleware(req);
+      const session = await getServerSession(authOptions);
+      const context = {
+        ...props,
+        session,
+      };
 
-      return await handler(req, props);
+      return await handler(req, context);
     } catch (err) {
       return errorHandler(err, req);
     }

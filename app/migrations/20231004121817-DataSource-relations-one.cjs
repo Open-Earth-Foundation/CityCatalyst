@@ -15,6 +15,7 @@ module.exports = {
         transaction,
         type: "foreign key",
         references: { table, field },
+        fields: [field],
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       });
@@ -36,7 +37,7 @@ module.exports = {
     });
   },
 
-  async down (queryInterface, Sequelize) {
+  async down (queryInterface) {
     return queryInterface.sequelize.transaction(async (transaction) => {
       queryInterface.removeConstraint("DataSource", "FK_DataSource.sector_id", {transaction});
       queryInterface.removeConstraint("DataSource", "FK_DataSource.subsector_id", {transaction});

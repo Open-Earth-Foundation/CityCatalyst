@@ -180,6 +180,7 @@ export const appTheme = extendTheme({
     "rounded-xxl": "20px",
   },
 
+  /*
   breakpoints: {
     xs: "360px",
     sm: "600px",
@@ -187,12 +188,16 @@ export const appTheme = extendTheme({
     lg: "1240px",
     xl: "1440px",
   },
+  */
 
   components: {
     Button: {
       baseStyle: {
         textTransform: "uppercase",
         borderRadius: 50,
+        fontFamily: "var(--font-poppins)",
+        letterSpacing: "1.25px",
+        lineHeight: "16px",
       },
       variants: {
         outline: {
@@ -200,7 +205,6 @@ export const appTheme = extendTheme({
           borderColor: "#2351DC",
           color: "#2351DC",
           _hover: {
-            transform: "scale(0.98)",
             borderColor: "#5a7be0",
             color: "#5a7be0",
           },
@@ -216,7 +220,6 @@ export const appTheme = extendTheme({
           bg: "#2351DC",
           color: "white",
           _hover: {
-            transform: "scale(0.98)",
             bg: "#5a7be0",
           },
           _active: {
@@ -234,7 +237,6 @@ export const appTheme = extendTheme({
           bg: "sentiment.positiveOverlay",
           color: "interactive.primary",
           _hover: {
-            transform: "scale(0.98)",
             bg: "sentiment.positiveLight",
             color: "interactive.primaryLight",
           },
@@ -248,7 +250,7 @@ export const appTheme = extendTheme({
           },
         },
         ghost: {
-          color: "#5a7be0",
+          color: "content.link",
         },
         solidIcon: {
           bgColor: "background.neutral",

@@ -15,10 +15,10 @@ import {
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { MdHomeWork } from "react-icons/md";
+import { MdOutlineHomeWork } from "react-icons/md";
 import { FiTrash2, FiTruck } from "react-icons/fi";
 
-export default function Onboarding({
+export default function AddDataIntro({
   params: { lng },
 }: {
   params: { lng: string };
@@ -35,14 +35,14 @@ export default function Onboarding({
       >
         Go Back
       </Button>
-      <Heading size="xl" mb={6} mt={12} className="w-full text-center">
+      <Heading fontSize="32px" mb={6} mt={12} className="w-full text-center">
         {t("data-heading")}
       </Heading>
       <Text color="content.tertiary" className="w-full text-center">
         <Trans i18nKey="data-details" t={t} />
       </Text>
       <Card mt={16} p={6} borderColor="border.overlay" borderWidth={1}>
-        <Heading size="lg" mb={1}>{t("data-view-heading")}</Heading>
+        <Heading size="xl" mb={1}>{t("data-view-heading")}</Heading>
         <Text color="content.tertiary">
           <Trans i18nKey="data-view-details" t={t}>
             GPC Basic encompasses three primary sectors: Stationary Energy,
@@ -56,11 +56,12 @@ export default function Onboarding({
         <Flex className="space-x-4" mt={12}>
           <Card
             className="space-y-6 grow w-1/3"
+            boxShadow="none"
             p={6}
             borderColor="border.overlay"
             borderWidth={1}
           >
-            <Icon as={MdHomeWork} boxSize={8} color="brand.secondary" />
+            <Icon as={MdOutlineHomeWork} boxSize={8} color="brand.secondary" />
             <Heading size="md">{t("stationary-energy")}</Heading>
             <Divider borderColor="border.overlay" />
             <Text color="content.tertiary">{t("stationary-energy-details")}</Text>
@@ -71,6 +72,7 @@ export default function Onboarding({
           </Card>
           <Card
             className="space-y-6 grow w-1/3"
+            boxShadow="none"
             p={6}
             borderColor="border.overlay"
             borderWidth={1}
@@ -86,6 +88,7 @@ export default function Onboarding({
           </Card>
           <Card
             className="space-y-6 grow w-1/3"
+            boxShadow="none"
             p={6}
             borderColor="border.overlay"
             borderWidth={1}

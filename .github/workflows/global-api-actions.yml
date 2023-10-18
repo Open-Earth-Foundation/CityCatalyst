@@ -8,6 +8,7 @@ on:
       - global-api/**
       - k8s/cc-global-api-deploy.yml
       - k8s/cc-global-api.yml
+      - k8s/cc-global-api-migrate.yml
     branches: ["develop"]
 
 jobs:
@@ -24,7 +25,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Pushing CC Web to GHCR
+      - name: Pushing Global API to GHCR
         env:
           VERSION: ${{ github.sha }}
           IMAGE: ghcr.io/open-earth-foundation/citycatalyst-global-api

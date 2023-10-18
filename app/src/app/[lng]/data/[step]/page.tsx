@@ -42,6 +42,7 @@ import {
 import { SourceDrawer } from "./SourceDrawer";
 import { SubsectorDrawer } from "./SubsectorDrawer";
 import subSectorData from "./subsectors.json";
+import { SegmentedProgress } from "@/components/SegmentedProgress";
 
 const dataSourceDescription =
   "Leveraging satellite imagery, this dataset provides key information about residential structures, aiding in the assessment of their energy usage and corresponding carbon footprints";
@@ -100,7 +101,7 @@ const dataSources = rawDataSources
     return source;
   });
 
-export default function OnboardingSteps({
+export default function AddDataSteps({
   params: { lng, step },
 }: {
   params: { lng: string; step: string };
@@ -191,6 +192,7 @@ export default function OnboardingSteps({
     if (activeStep >= steps.length - 1) {
       router.push("/"); // go back to dashboard until there is a confirmation page
     } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
       goToNext();
     }
   };
@@ -199,6 +201,7 @@ export default function OnboardingSteps({
     if (activeStep >= steps.length - 1) {
       router.push("/"); // go back to dashboard until there is a confirmation page
     } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
       goToNext();
     }
   };
@@ -215,7 +218,7 @@ export default function OnboardingSteps({
         {t("go-back")}
       </Button>
       <div className="w-full flex md:justify-center mb-8">
-        <div className="lg:w-[800px]">
+        <div className="lg:w-[900px] max-w-full">
           <WizardSteps
             currentStep={activeStep}
             steps={steps}
@@ -226,21 +229,21 @@ export default function OnboardingSteps({
       {/*** Sector summary section ***/}
       <Card mb={12}>
         <Flex direction="row">
-          <Icon as={currentStep.icon} boxSize={8} color="brand" mr={4} />
+          <Icon as={currentStep.icon} boxSize={8} color="brand.secondary" mr={4} />
           <div className="space-y-4 w-full">
             <Heading size="lg" mb={2}>
               {currentStep.title}
             </Heading>
             <Text color="content.tertiary">{currentStep.details}</Text>
             <Flex direction="row">
-              <Progress
-                value={totalStepCompletion * 100}
-                color="interactive.quaternary"
-                w="full"
-                borderRadius={16}
-                mr={6}
+              <SegmentedProgress
+                values={[
+                  currentStep.connectedProgress,
+                  currentStep.addedProgress,
+                ]}
+                height={4}
               />
-              <Heading size="sm" className="whitespace-nowrap -mt-1">
+              <Heading size="sm" ml={6} className="whitespace-nowrap -mt-1">
                 {t("completion-percent", {
                   progress: formatPercentage(totalStepCompletion),
                 })}
@@ -292,7 +295,8 @@ export default function OnboardingSteps({
                 borderColor={
                   (source.isConnected && "interactive.tertiary") || undefined
                 }
-                className="hover:drop-shadow-xl transition-shadow"
+                borderWidth={2}
+                className="shadow-none hover:drop-shadow-xl transition-shadow"
               >
                 <Icon as={source.icon} boxSize={9} mb={6} />
                 <Heading size="sm" noOfLines={2}>
@@ -418,33 +422,35 @@ export default function OnboardingSteps({
         </SimpleGrid>
       </Card>
       {/*** Bottom bar ***/}
-      <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand flex flex-row py-8 px-8 drop-shadow-2xl hover:drop-shadow-4xl transition-all">
-        <Box className="w-full">
-          <Text fontSize="sm">Step {activeStep + 1}</Text>
-          <Text fontSize="2xl" as="b">
-            {steps[activeStep]?.title}
-          </Text>
+      <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand py-4 px-4 drop-shadow-2xl hover:drop-shadow-4xl transition-all">
+        <Box className="w-[1090px] max-w-full mx-auto flex flex-row flex-wrap gap-y-2">
+          <Box className="grow w-full md:w-0">
+            <Text fontSize="sm">Step {activeStep + 1}</Text>
+            <Text fontSize="2xl" as="b">
+              {steps[activeStep]?.title}
+            </Text>
+          </Box>
+          <Button
+            h={16}
+            onClick={onSkip}
+            variant="ghost"
+            leftIcon={<Icon as={MdOutlineSkipNext} boxSize={6} />}
+            size="sm"
+            px={8}
+            mr={4}
+          >
+            {t("skip-step-button")}
+          </Button>
+          <Button
+            h={16}
+            isLoading={isConfirming}
+            px={8}
+            onClick={onConfirm}
+            size="sm"
+          >
+            {t("save-continue-button")}
+          </Button>
         </Box>
-        <Button
-          h={16}
-          onClick={onSkip}
-          variant="ghost"
-          leftIcon={<Icon as={MdOutlineSkipNext} boxSize={6} />}
-          size="sm"
-          px={12}
-          mr={6}
-        >
-          {t("skip-step-button")}
-        </Button>
-        <Button
-          h={16}
-          isLoading={isConfirming}
-          px={12}
-          onClick={onConfirm}
-          size="sm"
-        >
-          {t("save-continue-button")}
-        </Button>
       </div>
       {/*** Drawers ***/}
       <SourceDrawer

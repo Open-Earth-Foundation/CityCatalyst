@@ -52,6 +52,8 @@ type ProfileInputs = {
   role: string;
 };
 
+type UserDetails = { id: string; name: string; email: string; role: string };
+
 export default function Settings({
   params: { lng },
 }: {
@@ -100,11 +102,9 @@ export default function Settings({
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [role, setRole] = useState<string>("");
-  const [filteredUsers, setFilteredUsers] = useState<
-    Array<{ id: string; name: string; email: string; role: string }>
-  >([]);
+  const [filteredUsers, setFilteredUsers] = useState<Array<UserDetails>>([]);
   const [filteredUsersByRole, setFilteredUsersByRole] = useState<
-    Array<{ id: string; name: string; email: string; role: string }>
+    Array<UserDetails>
   >([]);
 
   useEffect(() => {

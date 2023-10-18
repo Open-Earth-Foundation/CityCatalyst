@@ -57,7 +57,7 @@ def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: s
         .squeeze()
     )
 
-    totals = {
+    return {
         "totals": {
             "emissions": {
                 "co2_mass": str(series.get("CO2", 0)),
@@ -66,5 +66,3 @@ def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: s
             }
         }
     }
-
-    return {"totals": totals}

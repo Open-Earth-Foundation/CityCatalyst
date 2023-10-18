@@ -127,13 +127,13 @@ async function retrieveGlobalAPISource(source: DataSource, inventory: Inventory)
   };
 
   if (source.subsectorId) {
-    const subSector = await db.models.SubSectorValue.create({
+    const subSectorValue = await db.models.SubSectorValue.create({
       subsectorValueId: randomUUID(),
       subsectorId: source.subsectorId,
       ...values,
     });
   } else if (source.subcategoryId) {
-    const subCategory = await db.models.SubCategoryValue.create({
+    const subCategoryValue = await db.models.SubCategoryValue.create({
       subcategoryValueId: randomUUID(),
       subcategoryId: source.subcategoryId,
       ...values,

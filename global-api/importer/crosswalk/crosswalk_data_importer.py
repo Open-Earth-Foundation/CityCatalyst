@@ -1,13 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Sep 29 16:43:02 2023
-
-@author: maureenfonseca
-"""
 
 # import Crosswalk Labs data into database
-# >> python crosswalk_data_importer.py --database-uri DB_URI
+# >> python crosswalk_data_importer.py --database_uri DB_URI
 
 import argparse
 from datetime import datetime
@@ -16,7 +11,9 @@ import pandas as pd
 from sqlalchemy import create_engine, MetaData, Table
 from sqlalchemy.orm import sessionmaker
 from utils import (
-    get_crosswalk,
+    tds_catalog,
+    tds_generator,
+    get_dataset_url,
     insert_record,
     uuid_generate_v3,
     get_crosswalk_entire_grid,
@@ -57,23 +54,44 @@ if __name__ == "__main__":
     }
 
     sectors = get_gpc_refno.keys()
-    sectors = get_gpc_refno.keys()
-    domains = ['US', 'AK']
-    uncertainty = 'hi'
+    domains = ["US", "AK"]
+
+    # TDS catalog
+    url = "https://thredds.daac.ornl.gov/thredds/catalog/ornldaac/1741/catalog.xml"
+    catalog = tds_catalog(url)
+
+    # lists all the datasets in the catalog
+    gen = tds_generator(catalog)
+    datasets = [fl for fl in gen]
 
     for domain in domains:
         for sector in sectors:
             gpc_refno = get_gpc_refno.get(sector)
 
-            ds = get_crosswalk(str(domain), sector, uncertainty)
+            # filter the datasets by keywords
+            keywords = [domain, sector]
+            datasets_filtered = [
+                dataset
+                for dataset in datasets
+                if dataset.endswith("_hi.nc4")
+                and all(keyword in dataset for keyword in keywords)
+            ]
 
-            EMISSIONS_VAR = 'carbon_emissions'
+            # read dataset_url
+            dataset_url = get_dataset_url(catalog, datasets_filtered[0])
 
-            gas = ds[EMISSIONS_VAR].attrs.get('long_name')
+            # read the file
+            ds = xr.open_dataset(dataset_url)
+
+            EMISSIONS_VAR = "carbon_emissions"
+
+            gas = ds[EMISSIONS_VAR].attrs.get("long_name")
             gas_shortname = {gas: "CO"}
 
             units = ds[EMISSIONS_VAR].attrs.get("units")
-            assert units == "Mg km-2 year-1", f"check units: ({units}) != Mg km-2 year-1"
+            assert (
+                units == "Mg km-2 year-1"
+            ), f"check units: ({units}) != Mg km-2 year-1"
 
             df_tmp = ds.to_dataframe()
             filt = df_tmp[EMISSIONS_VAR] > 0
@@ -82,15 +100,15 @@ if __name__ == "__main__":
                 .reset_index()
                 .rename(columns={"lat": "lat_center", "lon": "lon_center"})
             )
-            df_filt['year'] = [df_filt.time[x].year for x in range(len(df_filt))]
+            df_filt["year"] = [df_filt.time[x].year for x in range(len(df_filt))]
 
             df_merged = df_filt.merge(df_grid, on=["lon_center", "lat_center"])
 
             df_final = (
                 df_merged.assign(
                     emissions_quantity=lambda row: row[EMISSIONS_VAR]
-                    * (44/12)    #CO to CO2
-                    * 1000       #Mg to kg
+                    * (44 / 12)  # CO to CO2
+                    * 1000  # Mg to kg
                 )
                 .assign(emissions_quantity_units="kg m-2 yr-1")
                 .assign(reference_number=gpc_refno)
@@ -119,9 +137,7 @@ if __name__ == "__main__":
                 )
             )
 
-            record_generator = (
-                record for record in df_final.to_dict(orient="records")
-            )
+            record_generator = (record for record in df_final.to_dict(orient="records"))
 
             for record in record_generator:
                 insert_record(engine, table, "id", record)

@@ -28,6 +28,7 @@ from sqlalchemy import text
 import uuid
 import xarray as xr
 from xarray import DataArray
+from siphon.catalog import TDSCatalog
 
 
 def write_dic_to_csv(output_dir, name, dic) -> None:
@@ -92,9 +93,11 @@ def uuid_generate_v3(name, namespace=uuid.NAMESPACE_OID):
     assert isinstance(namespace, uuid.UUID), "namespace needs to be a uuid.UUID"
     return str(uuid.uuid3(namespace, name))
 
+
 def load_wkt(text):
     """load wkt as shapely polygon"""
     return wkt.loads(text)
+
 
 def bounding_coords(lat_center, lon_center, distance_m=500):
     """calculate the boundaing coordinates from centroid and distance
@@ -118,40 +121,32 @@ def bounding_coords(lat_center, lon_center, distance_m=500):
         each dictionary is the coordinates like this {'lat_min','lon_min','lat_max','lon_max'}
     """
     distance = geopy.distance.distance(meters=distance_m)
-    geopy.distance.ELLIPSOID = 'WGS-84'
+    geopy.distance.ELLIPSOID = "WGS-84"
 
-    lat_max = (
-        distance
-        .destination(point=(lat_center, lon_center), bearing=0)
-        .latitude
-    )
-    
-    lat_min = (
-        distance
-        .destination(point=(lat_center, lon_center), bearing=180)
-        .latitude
-    )
-    
-    lon_max = (
-        distance
-        .destination(point=(lat_center, lon_center), bearing=90)
-        .longitude
-    )
-    
-    lon_min = (
-        distance
-        .destination(point=(lat_center, lon_center), bearing=270)
-        .longitude
-    )
-    
-    return {'lat_min': lat_min, 'lon_min': lon_min, 'lat_max': lat_max, 'lon_max': lon_max}
+    lat_max = distance.destination(point=(lat_center, lon_center), bearing=0).latitude
 
-def polygon_from_coords(lat_min, lon_min, lat_max, lon_max, *args, **kwargs):    
+    lat_min = distance.destination(point=(lat_center, lon_center), bearing=180).latitude
+
+    lon_max = distance.destination(point=(lat_center, lon_center), bearing=90).longitude
+
+    lon_min = distance.destination(
+        point=(lat_center, lon_center), bearing=270
+    ).longitude
+
+    return {
+        "lat_min": lat_min,
+        "lon_min": lon_min,
+        "lat_max": lat_max,
+        "lon_max": lon_max,
+    }
+
+
+def polygon_from_coords(lat_min, lon_min, lat_max, lon_max, *args, **kwargs):
     coords = [
         (lon_min, lat_min),
         (lon_max, lat_min),
         (lon_max, lat_max),
-        (lon_min, lat_max)
+        (lon_min, lat_max),
     ]
     return Polygon(coords)
 
@@ -250,7 +245,7 @@ def earth_radius(lat):
     # define WGS84 oblate spheroid
     a = 6378137
     b = 6356752.3142
-    e2 = 1 - (b**2 / a**2)
+    e2 = 1 - (b ** 2 / a ** 2)
 
     # geodecic to geocentric (equation 3-110 in WGS84)
     lat = deg2rad(lat)
@@ -368,12 +363,7 @@ def gdf_to_xarray(gdf):
     lon_coord = xr.DataArray(lons_unique, dims="lon", name="lon")
     lat_coord = xr.DataArray(lats_unique, dims="lat", name="lat")
 
-    return xr.Dataset(
-        {
-            "lat": lat_coord,
-            "lon": lon_coord,
-        }
-    ).sortby(["lon", "lat"])
+    return xr.Dataset({"lat": lat_coord, "lon": lon_coord,}).sortby(["lon", "lat"])
 
 
 def xarray_intersection(
@@ -390,27 +380,21 @@ def xarray_intersection(
     return ds.rio.set_spatial_dims(x_dim=x_dim, y_dim=y_dim).rio.clip(
         geometries, crs=crs, all_touched=all_touched
     )
-    
-def get_crosswalk(domain, sector, uncertainty):
-    """Retrieve crosswalk data and load it into memory."""
-    BASE_URL = "https://thredds.daac.ornl.gov/thredds/fileServer/ornldaac/1741"
-    DOMAIN = domain
-    SECTOR = sector
-    UNCERTAINTY = uncertainty
-    url = f"{BASE_URL}/Vulcan_v3_{DOMAIN}_annual_1km_{SECTOR}_{UNCERTAINTY}.nc4"
 
-    try:
-        # Open the file
-        with fsspec.open(url, "rb") as file:
-            # Open the dataset and load it into memory
-            ds = xr.open_dataset(file).load()
 
-            file.close()
+def tds_catalog(url):
+    """create a catalog client"""
+    return TDSCatalog(url)
 
-            return ds.rio.write_crs("EPSG:4326")
-    except FileNotFoundError as e:
-        print(f"FileNotFoundError: {e}")
-        return None
+
+def tds_generator(catalog):
+    """generator for files in a THREDDS catalog"""
+    yield from (dataset for dataset in catalog.datasets)
+
+
+def get_dataset_url(catalog, dataset):
+    """retrieve the URL to the dataset"""
+    return catalog.datasets[dataset].access_urls["OPENDAP"]
 
 
 def insert_record(engine, table, pkey, record):
@@ -461,7 +445,9 @@ def get_bbox_coords(session, locode):
     return session.execute(query, {"locode": locode}).fetchall()
 
 
-def get_crosswalk_cells_in_bounds(session, bbox_north, bbox_south, bbox_east, bbox_west):
+def get_crosswalk_cells_in_bounds(
+    session, bbox_north, bbox_south, bbox_east, bbox_west
+):
     """get geometry from crosswalk
 
     Parameters

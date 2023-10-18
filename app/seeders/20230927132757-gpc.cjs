@@ -12,6 +12,10 @@ async function parseFile(filename) {
     .pipe(parse({ delimiter: ",", columns: true }));
 
   for await (const record of parser) {
+    // prevent errors because of empty UUIDs
+    if (record.scope_id == "") {
+      delete record.scope_id;
+    }
     records.push(record);
   }
 

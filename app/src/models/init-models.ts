@@ -337,8 +337,14 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "datasourceId",
     otherKey: "subsectorId",
   });
-  SubSectorValue.belongsTo(DataSource, { as: "dataSource", foreignKey: "datasourceId" });
-  SubCategoryValue.belongsTo(DataSource, { as: "dataSource", foreignKey: "datasourceId" });
+  SubSectorValue.belongsTo(DataSource, {
+    as: "dataSource",
+    foreignKey: "datasourceId",
+  });
+  SubCategoryValue.belongsTo(DataSource, {
+    as: "dataSource",
+    foreignKey: "datasourceId",
+  });
   EmissionsFactor.belongsToMany(DataSource, {
     as: "datasourceIdDataSourceDataSourceEmissionsFactors",
     through: DataSourceEmissionsFactor,
@@ -419,8 +425,18 @@ export function initModels(sequelize: Sequelize) {
     as: "dataSourceActivityData",
     foreignKey: "activitydataId",
   });
-  User.belongsToMany(City, { through: CityUser, as: "cities", foreignKey: "cityId", otherKey: "userId" });
-  City.belongsToMany(User, { through: CityUser, as: "users", foreignKey: "userId", otherKey: "cityId" });
+  User.belongsToMany(City, {
+    through: CityUser,
+    as: "cities",
+    foreignKey: "userId",
+    otherKey: "cityId",
+  });
+  City.belongsToMany(User, {
+    through: CityUser,
+    as: "users",
+    foreignKey: "cityId",
+    otherKey: "userId",
+  });
   GDP.belongsTo(City, { as: "city", foreignKey: "cityId" });
   City.hasMany(GDP, { as: "gdps", foreignKey: "cityId" });
   Inventory.belongsTo(City, { as: "city", foreignKey: "cityId" });

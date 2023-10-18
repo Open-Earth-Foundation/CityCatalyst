@@ -7,7 +7,6 @@ api_router = APIRouter(prefix="/api/v0")
 
 # GPC quality classification
 gpc_quality_data = "TBD"
-gpc_quality_EF = "TBD"
 
 
 # Extract the data by locode, year and sector/subsector
@@ -57,12 +56,12 @@ def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: s
         .squeeze()
     )
 
-    return {
-        "totals": {
-            "emissions": {
-                "co2_mass": str(series.get("CO2", 0)),
-                "co2_co2eq": str(series.get("CO2", 0)),
-                "gpc_quality": str(gpc_quality_data),
-            }
+    totals = {
+        "emissions": {
+            "co2_mass": str(series.get("CO2", 0)),
+            "co2_co2eq": str(series.get("CO2", 0)),
+            "gpc_quality": str(gpc_quality_data),
         }
     }
+
+    return {"totals": totals}

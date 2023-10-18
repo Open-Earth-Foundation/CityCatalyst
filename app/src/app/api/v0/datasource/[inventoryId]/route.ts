@@ -90,7 +90,7 @@ async function retrieveGlobalAPISource(source: DataSource, inventory: Inventory)
     !inventory.city.locode ||
     inventory.year == null ||
     !(source.subsectorId || source.subcategoryId) ||
-    !source.subSector.subsectorName
+    !source.subSector.referenceNumber
   ) {
     return false;
   }
@@ -98,8 +98,7 @@ async function retrieveGlobalAPISource(source: DataSource, inventory: Inventory)
   const url = source.apiEndpoint
     .replace(":locode", inventory.city.locode)
     .replace(":year", inventory.year.toString())
-    // TODO required? where to get the GPC ref no for sector/subsector from?
-    .replace(":gpcReferenceNumber", source.subSector.subsectorName);
+    .replace(":gpcReferenceNumber", source.subSector.referenceNumber);
 
   let data;
   try {

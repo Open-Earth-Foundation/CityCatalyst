@@ -58,9 +58,9 @@ def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: s
 
     totals = {
         "emissions": {
-            "co2_mass": str(series.get("CO2", 0)),
-            "co2_co2eq": str(series.get("CO2", 0)),
-            "gpc_quality": str(gpc_quality_data),
+            "co2_mass": series.get("CO2", 0),
+            "co2_co2eq": series.get("CO2", 0),
+            "gpc_quality": gpc_quality_data,
         }
     }
 

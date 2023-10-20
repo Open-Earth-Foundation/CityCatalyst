@@ -62,6 +62,7 @@ export const appTheme = extendTheme({
       warningDefault: "#C98300",
       warningOverlay: "#FEF8E1",
       negativeDefault: "#F23D33",
+      negativeOverlay: "#FFEAEE",
     },
 
     brandScheme: {

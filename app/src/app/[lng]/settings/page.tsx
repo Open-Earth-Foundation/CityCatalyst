@@ -9,10 +9,26 @@ import {
   Box,
   Button,
   Checkbox,
+  CheckboxGroup,
+  CheckboxIcon,
+  Icon,
   IconButton,
   Input,
   InputGroup,
   InputLeftElement,
+  List,
+  ListIcon,
+  ListItem,
+  Menu,
+  MenuItem,
+  MenuList,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
   Select,
   Tab,
   TabList,
@@ -29,30 +45,43 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
 } from "@chakra-ui/react";
 
 import { useSession } from "next-auth/react";
 import FormInput from "@/components/form-input";
 import FormSelectInput from "@/components/form-select-input";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Session } from "next-auth";
-import { MdMoreVert } from "react-icons/md";
+
+import {
+  MdMoreVert,
+  MdOutlineIndeterminateCheckBox,
+  MdOutlineModeEditOutline,
+} from "react-icons/md";
 import {
   AddIcon,
-  ArrowBackIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   SearchIcon,
 } from "@chakra-ui/icons";
+import { FiTrash2 } from "react-icons/fi";
+import AddUserModal from "@/components/Modals/add-user-modal";
+import UpdateUserModal from "@/components/Modals/update-user-modal";
+import DeleteUserModal from "@/components/Modals/delete-user-modal";
 
-type ProfileInputs = {
+export type ProfileInputs = {
   name: string;
   email: string;
   city: string;
   role: string;
 };
 
-type UserDetails = { id: string; name: string; email: string; role: string };
+export type UserDetails = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+};
 
 export default function Settings({
   params: { lng },
@@ -137,6 +166,30 @@ export default function Settings({
       setFilteredUsersByRole(filteredUsers);
     }
   }, [searchTerm, filteredUsers, role]);
+
+  const {
+    isOpen: isUserModalOpen,
+    onOpen: onUserModalOpen,
+    onClose: onUserModalClose,
+  } = useDisclosure();
+  const {
+    isOpen: isUserUpdateModalOpen,
+    onOpen: onUserUpdateModalOpen,
+    onClose: onUserUpdateModalClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isUserDeleteModalOpen,
+    onOpen: onUserDeleteModalOpen,
+    onClose: onUserDeleteModalClose,
+  } = useDisclosure();
+
+  const [userData, setUserData] = useState<UserDetails>({
+    email: "",
+    id: "",
+    name: "",
+    role: "",
+  });
 
   return (
     <Box backgroundColor="background.backgroundLight" paddingBottom="125px">
@@ -446,6 +499,7 @@ export default function Settings({
                                 textTransform="uppercase"
                                 fontWeight="semibold"
                                 fontSize="button.md"
+                                onClick={onUserModalOpen}
                               >
                                 add user
                               </Button>
@@ -509,7 +563,8 @@ export default function Settings({
                                   fontWeight="normal"
                                   letterSpacing="wide"
                                 >
-                                  1-50 of 300
+                                  1-{filteredUsers.length} of{" "}
+                                  {filteredUsers.length}
                                 </Text>
                                 <Box display="flex" gap="8px">
                                   <Button variant="ghost" h="24px" w="24px">
@@ -529,6 +584,54 @@ export default function Settings({
                                 </Box>
                               </Box>
                             </Box>
+                            {selectedUsers.length > 0 && (
+                              <Box
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="space-between"
+                              >
+                                <Box
+                                  display="flex"
+                                  alignItems="center"
+                                  gap="8px"
+                                >
+                                  <Button
+                                    variant="ghost"
+                                    padding="0"
+                                    marginLeft="-10px"
+                                    onClick={() => setSelectedUsers([])}
+                                  >
+                                    <MdOutlineIndeterminateCheckBox
+                                      size={24}
+                                      color="content.link"
+                                    />
+                                  </Button>
+                                  <Text
+                                    color="content.tertiary"
+                                    fontSize="body.md"
+                                    fontFamily="heading"
+                                    fontWeight="normal"
+                                    letterSpacing="wide"
+                                  >
+                                    {selectedUsers.length} Selected users
+                                  </Text>
+                                </Box>
+                                <Box>
+                                  <Button
+                                    color="sentiment.negativeDefault"
+                                    textTransform="capitalize"
+                                    fontSize="body.md"
+                                    fontFamily="heading"
+                                    fontWeight="normal"
+                                    letterSpacing="wide"
+                                    leftIcon={<FiTrash2 size={24} />}
+                                    variant="ghost"
+                                  >
+                                    Remove users
+                                  </Button>
+                                </Box>
+                              </Box>
+                            )}
                             <Box>
                               <TableContainer>
                                 <Table
@@ -599,12 +702,99 @@ export default function Settings({
                                           >
                                             {user.role}
                                           </Badge>
-                                          <Button
-                                            variant="ghost"
-                                            color="interactive.control"
-                                          >
-                                            <MdMoreVert size={24} />
-                                          </Button>
+                                          <Popover isLazy>
+                                            <PopoverTrigger>
+                                              <Button
+                                                variant="ghost"
+                                                color="interactive.control"
+                                              >
+                                                <MdMoreVert size={24} />
+                                              </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent
+                                              h="128px"
+                                              w="175px"
+                                              borderRadius="8px"
+                                              shadow="2dp"
+                                              borderWidth="1px"
+                                              borderStyle="solid"
+                                              borderColor="border.neutral"
+                                              padding="10px"
+                                              paddingLeft="0"
+                                              paddingRight="0"
+                                            >
+                                              <PopoverArrow />
+
+                                              <PopoverBody padding="0">
+                                                <List padding="0">
+                                                  <ListItem
+                                                    display="flex"
+                                                    cursor="pointer"
+                                                    gap="16px"
+                                                    color="content.tertiary"
+                                                    alignItems="center"
+                                                    paddingLeft="16px"
+                                                    paddingRight="16px"
+                                                    paddingTop="12px"
+                                                    paddingBottom="12px"
+                                                    _hover={{
+                                                      background:
+                                                        "background.neutral",
+                                                    }}
+                                                    onClick={() => {
+                                                      setUserData(user);
+                                                      onUserUpdateModalOpen();
+                                                    }}
+                                                  >
+                                                    <MdOutlineModeEditOutline
+                                                      size={24}
+                                                    />
+
+                                                    <Text
+                                                      color="content.secondary"
+                                                      fontFamily="heading"
+                                                      letterSpacing="wide"
+                                                      fontWeight="normal"
+                                                      fontSize="body.lg"
+                                                    >
+                                                      Edit User
+                                                    </Text>
+                                                  </ListItem>
+                                                  <ListItem
+                                                    display="flex"
+                                                    cursor="pointer"
+                                                    gap="16px"
+                                                    color="sentiment.negativeDefault"
+                                                    alignItems="center"
+                                                    paddingLeft="16px"
+                                                    paddingRight="16px"
+                                                    paddingTop="12px"
+                                                    paddingBottom="12px"
+                                                    _hover={{
+                                                      background:
+                                                        "background.neutral",
+                                                    }}
+                                                    onClick={() => {
+                                                      setUserData(user);
+                                                      onUserDeleteModalOpen();
+                                                    }}
+                                                  >
+                                                    <FiTrash2 size={24} />
+
+                                                    <Text
+                                                      color="content.secondary"
+                                                      fontFamily="heading"
+                                                      letterSpacing="wide"
+                                                      fontWeight="normal"
+                                                      fontSize="body.lg"
+                                                    >
+                                                      Remove User
+                                                    </Text>
+                                                  </ListItem>
+                                                </List>
+                                              </PopoverBody>
+                                            </PopoverContent>
+                                          </Popover>
                                         </Td>
                                       </Tr>
                                     ))}
@@ -632,6 +822,17 @@ export default function Settings({
           </Box>
         </Box>
       </Box>
+      <AddUserModal isOpen={isUserModalOpen} onClose={onUserModalClose} />
+      <UpdateUserModal
+        isOpen={isUserUpdateModalOpen}
+        onClose={onUserUpdateModalClose}
+        userData={userData}
+      />
+      <DeleteUserModal
+        isOpen={isUserDeleteModalOpen}
+        onClose={onUserDeleteModalClose}
+        userData={userData}
+      />
     </Box>
   );
 }

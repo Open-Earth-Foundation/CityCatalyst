@@ -62,9 +62,23 @@ const FormInput: FC<FormInputProps> = ({
         background={isDisabled ? "background.neutral" : "background.default"}
         color={isDisabled ? "content.tertiary" : "content.secondary"}
         readOnly={isDisabled}
-        {...register(id)}
+        {...register(id, {
+          required: `This is a required field!`,
+        })}
         onChange={onInputChange2}
+        placeholder={label}
       />
+      {error && (
+        <Text
+          color="sentiment.negativeDefault"
+          fontFamily="heading"
+          fontSize="body.md"
+          fontWeight="normal"
+          letterSpacing="wide"
+        >
+          {error.message}
+        </Text>
+      )}
     </FormControl>
   );
 };

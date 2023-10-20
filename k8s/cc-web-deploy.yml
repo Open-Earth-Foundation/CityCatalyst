@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cc-web-deploy
+  labels:
+    app: cc-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cc-web
+  template:
+    metadata:
+      labels:
+        app: cc-web
+    spec:
+      containers:
+      - name: cc-web
+        image: ghcr.io/open-earth-foundation/citycatalyst:latest
+        # Set to Never for local
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3000"
+        - name: DATABASE_HOST
+          value: "cc-db"
+        - name: DATABASE_NAME
+          value: "citycatalyst"
+        - name: DATABASE_USER
+          value: "citycatalyst"
+        - name: DATABASE_PASSWORD
+          value: "development"
+        - name: NEXTAUTH_URL
+          value: "https://citycatalyst.openearth.dev"
+        - name: HOST
+          value: "https://citycatalyst.openearth.dev"
+        - name: SMTP_FROM_EMAIL
+          value: "citycatalyst@openearth.dev"
+        - name: SMTP_HOST
+          value: "email-smtp.us-east-1.amazonaws.com"
+        - name: SMTP_PORT
+          value: "587"
+        resources:
+          limits:
+            memory: "1024Mi"
+            cpu: "1000m"

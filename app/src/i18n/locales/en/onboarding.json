@@ -1,0 +1,32 @@
+{
+  "onboarding-heading": "Let's Start Your Emissions Inventory!",
+  "onboarding-details": "We need to set and confirm the city where you want to do the inventory.<br/>You are one step closer to getting your GPC emissions inventory!",
+  "start-button": "Start City Inventory Profile",
+
+  "setup-heading": "Select City and Year",
+  "go-back": "Go Back",
+  "setup-step": "Setting up your Inventory",
+  "confirm-step": "Confirm City's Information",
+  "setup-details": "Please select the city and year for which you want to create your emissions inventory",
+  "select-city": "Select city",
+  "select-city-placeholder": "Search by city",
+  "select-city-required": "City is required",
+  "inventory-year": "Inventory year",
+  "inventory-year-placeholder": "Select year",
+  "inventory-year-required": "Year is required",
+  "gpc-basic-message": "Only GPC Basic Inventories are supported momentarily",
+  "save-button": "Save and Continue",
+  "search-city-button": "Search for another City",
+  "confirm-button": "Confirm and Continue",
+
+  "confirm-heading": "Confirm City's Information",
+  "confirm-details": "Review and confirm this information about your city. If there is an error please send us an email to edit it.<br /><br />We use <2>open data sources</2> to pre-fill the city profile.",
+  "total-population": "Total population",
+  "total-land-area": "Total land area",
+  "geographical-boundaries": "Geographical boundaries",
+
+  "done-heading": "Your City Inventory Profile<br />Was Successfully Created",
+  "inventory-title": "GPC Basic Emission Inventory - Year {{year}}",
+  "done-details": "You created your city profile to start your GPC Basic GHG inventory.<br/>Also, we found for your city 10+ external datasets that you can connect to complete your inventory.",
+  "check-dashboard": "Check Dashboard"
+}

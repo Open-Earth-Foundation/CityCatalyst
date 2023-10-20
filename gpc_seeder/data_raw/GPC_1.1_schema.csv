@@ -1,0 +1,54 @@
+sector,subsector,subcategory,sector_refno,subsector_refno,subcategory_refno,scope,reporting_level,gpc_version,url
+Stationary Energy,Residential buildings,Emissions from fuel combustion within the city boundary,I,I.1,I.1.1,1,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Stationary Energy,Residential buildings,Emissions from grid-supplied energy consumed within the city boundary,I,I.1,I.1.2,2,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Stationary Energy,Residential buildings,Emissions from transmission and distribution losses from grid-supplied energy consumption,I,I.1,I.1.3,3,basic+,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Stationary Energy,Commercial and institutional buildings and facilities,Emissions from fuel combustion within the city boundary,I,I.2,I.2.1,1,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Stationary Energy,Commercial and institutional buildings and facilities,Emissions from grid-supplied energy consumed within the city boundary,I,I.2,I.2.2,2,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Stationary Energy,Commercial and institutional buildings and facilities,Emissions from transmission and distribution losses from grid-supplied energy consumption,I,I.2,I.2.3,3,basic+,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Stationary Energy,Manufacturing industries and construction,Emissions from fuel combustion within the city boundary,I,I.3,I.3.1,1,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Stationary Energy,Manufacturing industries and construction,Emissions from grid-supplied energy consumed within the city boundary,I,I.3,I.3.2,2,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Stationary Energy,Manufacturing industries and construction,Emissions from transmission and distribution losses from grid-supplied energy consumption,I,I.3,I.3.3,3,basic+,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Stationary Energy,Energy industries,Emissions from energy used in power plant auxiliary operations within the city boundary,I,I.4,I.4.1,1,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Stationary Energy,Energy industries,Emissions from grid-supplied energy consumed in power plant auxiliary operations within the city boundary,I,I.4,I.4.2,2,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Stationary Energy,Energy industries,Emissions from transmission and distribution losses from grid-supplied energy consumption in power plant auxiliary operations,I,I.4,I.4.3,3,basic+,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Stationary Energy,Energy industries,Emissions from energy generation supplied to the grid,I,I.4,I.4.4,1,territorial,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Stationary Energy,"Agriculture, forestry and fishing activities",Emissions from fuel combustion within the city boundary,I,I.5,I.5.1,1,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Stationary Energy,"Agriculture, forestry and fishing activities",Emissions from grid-supplied energy consumed within the city boundary,I,I.5,I.5.2,2,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Stationary Energy,"Agriculture, forestry and fishing activities",Emissions from transmission and distribution losses from grid-supplied energy consumption,I,I.5,I.5.3,3,basic+,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Stationary Energy,Non-specified sources,Emissions from fuel combustion within the city boundary,I,I.6,I.6.1,1,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Stationary Energy,Non-specified sources,Emissions from grid-supplied energy consumed within the city boundary,I,I.6,I.6.2,2,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Stationary Energy,Non-specified sources,Emissions from transmission and distribution losses from grid-supplied energy consumption,I,I.6,I.63,3,basic+,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Stationary Energy,"Fugitive emissions from mining, processing, storage, and transportation of coal",Emissions from fugitive emissions within the city boundary,I,I.7,I.7.1,1,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Stationary Energy,Fugitive emissions from oil and natural gas systems,Emissions from fugitive emissions within the city boundary,I,I.8,I.8.1,1,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Transportation,On-road transportation,Emissions from fuel combustion on-road transportation occurring within the city boundary,II,II.1,II.1.1,1,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Transportation,On-road transportation,Emissions from grid-supplied energy consumed within the city boundary for on-road transportation,II,II.1,II.1.2,2,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Transportation,On-road transportation,"Emissions from portion of transboundary journeys occurring outside the city boundary, and transmission and distribution losses from grid-supplied energy consumption",II,II.1,II.1.3,3,basic+,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Transportation,Railways,Emissions from fuel combustion for railway transportation occurring within the city boundary,II,II.2,II.2.1,1,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Transportation,Railways,Emissions from grid-supplied energy consumed within the city boundary for railways,II,II.2,II.2.2,2,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Transportation,Railways,"Emissions from portion of transboundary journeys occurring outside the city boundary, and transmission and distribution losses from grid-supplied energy consumption",II,II.2,II.2.3,3,basic+,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Transportation,Waterborne navigation,Emissions from fuel combustion for waterborne navigation occurring within the city boundary,II,II.3,II.3.1,1,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Transportation,Waterborne navigation,Emissions from grid-supplied energy consumed within the city boundary for waterborne navigation,II,II.3,II.3.2,2,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Transportation,Waterborne navigation,"Emissions from portion of transboundary journeys occurring outside the city boundary, and transmission and distribution losses from grid-supplied energy consumption",II,II.3,II.3.3,3,basic+,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Transportation,Aviation,Emissions from fuel combustion for aviation occurring within the city boundary,II,II.4,II.4.1,1,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Transportation,Aviation,Emissions from grid-supplied energy consumed within the city boundary for aviation,II,II.4,II.4.2,2,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Transportation,Aviation,"Emissions from portion of transboundary journeys occurring outside the city boundary, and transmission and distribution losses from grid-supplied energy consumption",II,II.4,II.4.3,3,basic+,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Transportation,Off-road transportation,Emissions from fuel combustion for off-road transportation occurring within the city boundary,II,II.5,II.5.1,1,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Transportation,Off-road transportation,Emissions from grid-supplied energy consumed within the city boundary for off-road transportation,II,II.5,II.5.2,2,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Waste,Solid waste disposal,Emissions from solid waste generated within the city boundary and disposed in landfills or open dumps within the city boundary,III,III.1,III.1.1,1,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Waste,Solid waste disposal,Emissions from solid waste generated within the city boundary but disposed in landfills or open dumps outside the city boundary,III,III.1,III.1.2,3,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Waste,Solid waste disposal,Emissions from waste generated outside the city boundary and disposed in landfills or open dumps within the city boundary,III,III.1,III.1.3,1,territorial,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Waste,Biological treatment of waste,Emissions from solid waste generated within the city boundary that is treated biologically within the city boundary,III,III.2,III.2.1,1,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Waste,Biological treatment of waste,Emissions from solid waste generated within the city boundary but treated biologically outside of the city boundary,III,III.2,III.2.2,3,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Waste,Biological treatment of waste,Emissions from waste generated outside the city boundary but treated biologically within the city boundary,III,III.2,III.2.3,1,territorial,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Waste,Incineration and open burning,Emissions from solid waste generated and treated within the city boundary,III,III.3,III.3.1,1,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Waste,Incineration and open burning,Emissions from solid waste generated within the city boundary but treated outside of the city boundary,III,III.3,III.3.2,3,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Waste,Incineration and open burning,Emissions from waste generated outside the city boundary but treated within the city boundary,III,III.3,III.3.3,1,territorial,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Waste,Wastewater treatment and discharge,Emissions from wastewater generated and treated within the city boundary,III,III.4,III.4.1,1,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Waste,Wastewater treatment and discharge,Emissions from wastewater generated within the city boundary but treated outside of the city boundary,III,III.4,III.4.2,3,basic,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Waste,Wastewater treatment and discharge,Emissions from wastewater generated outside the city boundary but treated within the city boundary,III,III.4,III.4.3,1,territorial,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Industrial Processes and Product Uses (IPPU),Emissions from industrial processes occurring within the city boundary,,IV,IV.1,,1,basic+,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Industrial Processes and Product Uses (IPPU),Emissions from product use occurring within the city boundary,,IV,IV.2,,1,basic+,1.1,https://ghgprotocol.org/ghg-protocol-cities
+"Agriculture, Forestry, and Other Land Use (AFOLU)",Emissions from livestock within the city boundary,,V,V.1,,1,basic+,1.1,https://ghgprotocol.org/ghg-protocol-cities
+"Agriculture, Forestry, and Other Land Use (AFOLU)",Emissions from land within the city boundary,,V,V.2,,1,basic+,1.1,https://ghgprotocol.org/ghg-protocol-cities
+"Agriculture, Forestry, and Other Land Use (AFOLU)",Emissions from aggregate sources and non-CO2 emission sources on land within the city boundary,,V,V.3,,1,basic+,1.1,https://ghgprotocol.org/ghg-protocol-cities
+Other Scope 3,Other Scope 3,,VI,VI.1,,3,other,1.1,https://ghgprotocol.org/ghg-protocol-cities

@@ -1,34 +1,97 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# CityCatalyst
 
-## Getting Started
+This is the main CityCatalyst Web app. This directory includes both the
+frontend and backend code for the app, as well as database management scripts.
 
-First, run the development server:
+## Installation
+
+### Code
+
+To install, clone the [CityCatalyst repository](https://github.com/Open-Earth-Foundation/CityCatalyst):
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+git clone https://github.com/Open-Earth-Foundation/CityCatalyst.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then, install the dependencies:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cd CityCatalyst/app
+npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Database
 
-## Learn More
+You'll need to run a [PostgreSQL](https://www.postgresql.org/) database, locally or remotely.
 
-To learn more about Next.js, take a look at the following resources:
+You'll need access to the `psql`, `createuser`, and `createdb` commands.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Create a database user:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+```bash
+createuser citycatalyst
+```
 
-## Deploy on Vercel
+Then, create the database
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+createdb citycatalyst -O citycatalyst
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+You'll need to have environment variables set up for the database connection.
+You can do this by creating a `.env` file in the `app` directory. If you've followed the
+above directions, You should just be able to copy the `env.example` file:
+
+```bash
+cp env.example .env
+```
+
+You can edit the `.env` file to match your database configuration.
+
+Finally, you can run the database migrations:
+
+```bash
+cd CityCatalyst/app
+npm run db:migrate
+```
+
+You'll need to re-run the migrations whenever you make changes to the database schema.
+
+You can then run the seeders, which will fill the database with the required data for the GPC format (sectors, subsectors, subcategories etc.):
+
+```bash
+npm run db:seed
+```
+
+If necessary, you can undo individual migrations with `npm run db:migrate:undo` and seeders with `npm run db:seed:undo`.
+
+### Environment
+
+Copy `env.example` to a file called `.env`.  
+The environment variables `NEXTAUTH_SECRET` and `NEXTAUTH_URL` are required for running unless `NODE_ENV` is set to a value that's different than `production`.
+
+## Running
+
+### Development
+
+To run the app in development mode, run:
+
+```bash
+cd CityCatalyst/app
+npm run dev
+```
+
+### Docker
+
+You can also run the app in a Docker container. To do so, you'll need to build the Docker image:
+
+```bash
+cd CityCatalyst/app
+docker build -t ghcr.io/open-earth-foundation/citycatalyst .
+```
+
+Then, you can run the app in a container:
+
+```bash
+docker run -p 3000:3000 ghcr.io/open-earth-foundation/citycatalyst
+```

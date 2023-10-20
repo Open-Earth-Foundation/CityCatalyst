@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cc-db-deploy
+  labels:
+    app: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      volumes:
+        - name: postgres
+          persistentVolumeClaim:
+            claimName: cc-db-pvc
+      containers:
+        - name: postgresql
+          image: postgres:15
+          imagePullPolicy: Always
+          resources:
+            limits:
+              memory: "1024Mi"
+              cpu: "1000m"
+          env:
+            - name: "POSTGRES_USER"
+              value: "citycatalyst"
+            - name: "POSTGRES_PASSWORD"
+              value: "development"
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - mountPath: "/var/lib/postgresql/"
+              name: postgres

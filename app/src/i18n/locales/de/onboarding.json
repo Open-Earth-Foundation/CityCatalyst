@@ -1,0 +1,32 @@
+{
+  "onboarding-heading": "Beginnen Sie Ihr Emissions-Inventar!",
+  "onboarding-details": "Wir müssen die Stadt und das Jahr bestätigen, für die Sie das Inventar erstellen möchten.<br/>Sie sind einen Schritt näher an Ihrem GPC Emissions-Inventar!",
+  "start-button": "Emissions-Inventar beginnen",
+
+  "setup-heading": "Stadt und Jahr auswählen",
+  "go-back": "Zurück",
+  "setup-step": "Anlegen Ihres Inventars",
+  "confirm-step": "Bestätigen der Informationen",
+  "setup-details": "Bitten wählen Sie die Stadt und das Jahr aus, für die Sie ein Emissions-Inventar erstellen möchten.",
+  "select-city": "Stadt auswählen",
+  "select-city-placeholder": "Stadt suchen",
+  "select-city-required": "Stadt ist ein Pflichtfeld",
+  "inventory-year": "Inventar Jahr",
+  "inventory-year-placeholder": "Jahr auswählen",
+  "inventory-year-required": "Jahr ist ein Pflichtfeld",
+  "gpc-basic-message": "Only GPC Basic Inventories are supported momentarily",
+  "save-button": "Speichern und Fortfahren",
+  "search-city-button": "Andere Stadt suchen",
+  "confirm-button": "Bestätigen und Fortfahren",
+
+  "confirm-heading": "Informationen bestätigen",
+  "confirm-details": "Überprüfen und bestätigen Sie die Informationen über Ihre Stadt. Wenn Sie einen Fehler finden, senden Sie uns bitte eine Email.<br /><br />Wir benutzen <2>offene Datenquellen</2>, um ihr Stadt-Profil auszufüllen.",
+  "total-population": "Gesamt-Bevölkerung",
+  "total-land-area": "Gesamte Landfläche",
+  "geographical-boundaries": "Geographische Grenzen",
+
+  "done-heading": "Ihr Stadt-Inventar-Profil<br />wurde erfolgreich erstellt",
+  "inventory-title": "GPC Basic Emissions-Inventar - Jahr {{year}}",
+  "done-details": "Sie haben ihr Stadt-Profile erstellt, um mit der Erstellung Ihres GPC Basic GHG Inventars zu beginnen.<br/>Wir haben ebenfalls 10+ externe Datenquellen gefunden, die Sie verbinden können, um Ihr Inventar zu vervollständigen.",
+  "check-dashboard": "Dashboard überprüfen"
+}

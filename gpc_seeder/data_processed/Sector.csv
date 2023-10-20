@@ -1,0 +1,7 @@
+sector_id,sector_name,reference_number,created,last_updated
+6e986105-3df9-30de-8997-041d93537278,Industrial Processes and Product Uses (IPPU),IV,2023-10-10,2023-10-10
+b7845aa4-e50b-3b8c-8941-77d098a73e82,"Agriculture, Forestry, and Other Land Use (AFOLU)",V,2023-10-10,2023-10-10
+5da765a9-1ca6-37e1-bcd6-7b387f909a4e,Stationary Energy,I,2023-10-10,2023-10-10
+73eb7b71-159c-3eda-b7fc-f6eb53754dc3,Transportation,II,2023-10-10,2023-10-10
+d5acb72e-d915-310f-b3a3-77f634bcbf5e,Waste,III,2023-10-10,2023-10-10
+501ace3b-f63f-3267-bd57-69ad6ff5ab77,Other Scope 3,VI,2023-10-10,2023-10-10

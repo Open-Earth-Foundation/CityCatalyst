@@ -43,7 +43,7 @@ export interface DataSourceAttributes {
   endYear?: number; // inclusive
   latestAccountingYear?: number;
   frequencyOfUpdate?: string;
-  spacialResolution?: string;
+  spacialResolution?: string; // TODO fix typo (spatial)
   language?: string;
   accessibility?: string;
   dataQuality?: string;

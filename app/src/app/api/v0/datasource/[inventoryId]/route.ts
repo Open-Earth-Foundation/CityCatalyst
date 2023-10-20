@@ -117,12 +117,10 @@ async function retrieveGlobalAPISource(source: DataSource, inventory: Inventory)
   }
 
   const emissions = data.total.emissions;
+  // TODO store values for co2, ch4, n2o separately for accounting and editing
   const values = {
     datasourceId: source.datasourceId,
-    totalEmissions:
-      emissions.co2_co2eq +
-      emissions.ch4_co2eq +
-      emissions.n2o_co2eq, // TODO store separately? ActivityValue?
+    totalEmissions: emissions.co2eq_100yr,
     inventoryId: inventory.inventoryId,
   };
 

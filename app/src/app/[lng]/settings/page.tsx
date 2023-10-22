@@ -9,25 +9,16 @@ import {
   Box,
   Button,
   Checkbox,
-  CheckboxGroup,
-  CheckboxIcon,
-  Icon,
   IconButton,
   Input,
   InputGroup,
   InputLeftElement,
   List,
-  ListIcon,
   ListItem,
-  Menu,
-  MenuItem,
-  MenuList,
   Popover,
   PopoverArrow,
   PopoverBody,
-  PopoverCloseButton,
   PopoverContent,
-  PopoverHeader,
   PopoverTrigger,
   Select,
   Tab,
@@ -35,13 +26,11 @@ import {
   TabPanel,
   TabPanels,
   Table,
-  TableCaption,
   TableContainer,
   Tabs,
   Tbody,
   Td,
   Text,
-  Tfoot,
   Th,
   Thead,
   Tr,
@@ -52,9 +41,11 @@ import { useSession } from "next-auth/react";
 import FormInput from "@/components/form-input";
 import FormSelectInput from "@/components/form-select-input";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 import {
   MdMoreVert,
+  MdOutlineFileDownload,
   MdOutlineIndeterminateCheckBox,
   MdOutlineModeEditOutline,
 } from "react-icons/md";
@@ -69,6 +60,9 @@ import AddUserModal from "@/components/Modals/add-user-modal";
 import UpdateUserModal from "@/components/Modals/update-user-modal";
 import DeleteUserModal from "@/components/Modals/delete-user-modal";
 
+import DeleteCityModal from "@/components/Modals/delete-city-modal";
+import NextLink from "next/link";
+
 export type ProfileInputs = {
   name: string;
   email: string;
@@ -81,6 +75,14 @@ export type UserDetails = {
   name: string;
   email: string;
   role: string;
+};
+
+export type CityData = {
+  id: string;
+  name: string;
+  state: string;
+  country: string;
+  lastUpdated: string;
 };
 
 export default function Settings({
@@ -146,6 +148,7 @@ export default function Settings({
         role: "contributer",
       },
     ];
+
     const result = users.filter(
       (users) =>
         users.name
@@ -157,6 +160,9 @@ export default function Settings({
     );
 
     setFilteredUsers(result);
+  }, [role, searchTerm]);
+
+  useEffect(() => {
     const selectedUserByRole = filteredUsers.filter((users) =>
       users.role.toLocaleLowerCase().includes(role.toLocaleLowerCase()),
     );
@@ -165,7 +171,24 @@ export default function Settings({
     } else {
       setFilteredUsersByRole(filteredUsers);
     }
-  }, [searchTerm, filteredUsers, role]);
+  }, [filteredUsers, role]);
+
+  const cities = [
+    {
+      id: "1",
+      name: "Test City 1",
+      state: "Test Region",
+      country: "Argentina",
+      lastUpdated: "2023-10-10T12:05:41.340Z",
+    },
+    {
+      id: "2",
+      name: "Test City 2",
+      state: "Test Region",
+      country: "Argentina",
+      lastUpdated: "2023-10-10T12:05:41.340Z",
+    },
+  ];
 
   const {
     isOpen: isUserModalOpen,
@@ -184,11 +207,25 @@ export default function Settings({
     onClose: onUserDeleteModalClose,
   } = useDisclosure();
 
+  const {
+    isOpen: isCityDeleteModalOpen,
+    onOpen: onCityDeleteModalOpen,
+    onClose: onCityDeleteModalClose,
+  } = useDisclosure();
+
   const [userData, setUserData] = useState<UserDetails>({
     email: "",
     id: "",
     name: "",
     role: "",
+  });
+
+  const [cityData, setCityData] = useState<CityData>({
+    id: "",
+    name: "",
+    state: "",
+    country: "",
+    lastUpdated: "",
   });
 
   return (
@@ -803,8 +840,183 @@ export default function Settings({
                               </TableContainer>
                             </Box>
                           </TabPanel>
-                          <TabPanel>
-                            <p>three!</p>
+                          <TabPanel
+                            width="831px"
+                            padding="24px"
+                            display="flex"
+                            flexDirection="column"
+                            gap="24px"
+                          >
+                            <Box
+                              height="36px"
+                              display="flex"
+                              alignItems="center"
+                              justifyContent="space-between"
+                            >
+                              <Text
+                                fontSize="title.md"
+                                fontWeight="semibold"
+                                lineHeight="24px"
+                                color="content.secondary"
+                              >
+                                Cities
+                              </Text>
+                              <NextLink href="/onboarding/setup">
+                                <Button
+                                  aria-label="Add User"
+                                  leftIcon={<AddIcon />}
+                                  type="submit"
+                                  h="48px"
+                                  w="169px"
+                                  gap="8px"
+                                  paddingTop="16px"
+                                  paddingBottom="16px"
+                                  paddingLeft="24px"
+                                  paddingRight="24px"
+                                  letterSpacing="widest"
+                                  textTransform="uppercase"
+                                  fontWeight="semibold"
+                                  fontSize="button.md"
+                                >
+                                  add city
+                                </Button>
+                              </NextLink>
+                            </Box>
+                            <Box>
+                              <TableContainer>
+                                <Table
+                                  variant="simple"
+                                  borderWidth="1px"
+                                  borderStyle="solid"
+                                  borderColor="border.neutral"
+                                >
+                                  <Thead>
+                                    <Tr>
+                                      <Th>CITY NAME</Th>
+                                      <Th>STATE / PROVINCE</Th>
+                                      <Th>PROVINCE</Th>
+                                      <Th>LAST UPDATED</Th>
+                                    </Tr>
+                                  </Thead>
+                                  <Tbody fontFamily="heading">
+                                    {cities.map((city) => (
+                                      <Tr key={city.id}>
+                                        <Td>{city.name}</Td>
+                                        <Td>{city.state}</Td>
+                                        <Td>{city.country}</Td>
+                                        <Td
+                                          display="flex"
+                                          alignItems="center"
+                                          gap="8px"
+                                        >
+                                          <Text>{city.lastUpdated}</Text>
+                                          <Popover isLazy>
+                                            <PopoverTrigger>
+                                              <IconButton
+                                                aria-label="action-button"
+                                                variant="ghost"
+                                                color="interactive.control"
+                                                height="36px"
+                                                width="36px"
+                                                icon={<MdMoreVert size={24} />}
+                                              ></IconButton>
+                                            </PopoverTrigger>
+                                            <PopoverContent
+                                              h="128px"
+                                              w="239px"
+                                              borderRadius="8px"
+                                              shadow="2dp"
+                                              borderWidth="1px"
+                                              borderStyle="solid"
+                                              borderColor="border.neutral"
+                                              padding="10px"
+                                              paddingLeft="0"
+                                              paddingRight="0"
+                                            >
+                                              <PopoverArrow />
+
+                                              <PopoverBody padding="0">
+                                                <List padding="0">
+                                                  <ListItem
+                                                    className="group "
+                                                    display="flex"
+                                                    cursor="pointer"
+                                                    gap="16px"
+                                                    color="content.tertiary"
+                                                    alignItems="center"
+                                                    paddingLeft="16px"
+                                                    paddingRight="16px"
+                                                    paddingTop="12px"
+                                                    paddingBottom="12px"
+                                                    _hover={{
+                                                      background:
+                                                        "content.link",
+                                                      color: "white",
+                                                    }}
+                                                    onClick={() => {
+                                                      alert(city.id);
+                                                    }}
+                                                  >
+                                                    <MdOutlineFileDownload
+                                                      size={24}
+                                                    />
+
+                                                    <Text
+                                                      color="content.secondary"
+                                                      fontFamily="heading"
+                                                      letterSpacing="wide"
+                                                      fontWeight="normal"
+                                                      fontSize="body.lg"
+                                                      className="group group-hover:text-white"
+                                                    >
+                                                      Download City&apos;s Data
+                                                    </Text>
+                                                  </ListItem>
+                                                  <ListItem
+                                                    display="flex"
+                                                    cursor="pointer"
+                                                    gap="16px"
+                                                    className="group "
+                                                    color="sentiment.negativeDefault"
+                                                    alignItems="center"
+                                                    paddingLeft="16px"
+                                                    paddingRight="16px"
+                                                    paddingTop="12px"
+                                                    paddingBottom="12px"
+                                                    _hover={{
+                                                      background:
+                                                        "content.link",
+                                                      color: "white",
+                                                    }}
+                                                    onClick={() => {
+                                                      setCityData(city);
+                                                      onCityDeleteModalOpen();
+                                                    }}
+                                                  >
+                                                    <FiTrash2 size={24} />
+
+                                                    <Text
+                                                      color="content.secondary"
+                                                      fontFamily="heading"
+                                                      letterSpacing="wide"
+                                                      fontWeight="normal"
+                                                      fontSize="body.lg"
+                                                      className="group group-hover:text-white"
+                                                    >
+                                                      Remove City
+                                                    </Text>
+                                                  </ListItem>
+                                                </List>
+                                              </PopoverBody>
+                                            </PopoverContent>
+                                          </Popover>
+                                        </Td>
+                                      </Tr>
+                                    ))}
+                                  </Tbody>
+                                </Table>
+                              </TableContainer>
+                            </Box>
                           </TabPanel>
                         </TabPanels>
                       </Tabs>
@@ -832,6 +1044,13 @@ export default function Settings({
         isOpen={isUserDeleteModalOpen}
         onClose={onUserDeleteModalClose}
         userData={userData}
+      />
+      <DeleteCityModal
+        isOpen={isCityDeleteModalOpen}
+        onClose={onCityDeleteModalClose}
+        userData={userData}
+        tf={t}
+        lng={lng}
       />
     </Box>
   );

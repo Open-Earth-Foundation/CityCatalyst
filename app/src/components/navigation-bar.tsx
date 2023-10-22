@@ -163,7 +163,7 @@ export function NavigationBar({
                 height="128px"
                 zIndex={2000}
               >
-                <Link href="/settings">
+                <NextLink href="/settings">
                   <MenuItem
                     paddingTop="12px"
                     paddingBottom="12px"
@@ -178,7 +178,7 @@ export function NavigationBar({
                     />
                     {t("settings")}
                   </MenuItem>
-                </Link>
+                </NextLink>
                 <MenuItem
                   paddingTop="12px"
                   paddingBottom="12px"

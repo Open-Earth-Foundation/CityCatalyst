@@ -3,31 +3,57 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    queryInterface.addColumn("Sector", "reference_number", Sequelize.STRING);
-    queryInterface.addColumn("SubSector", "reference_number", Sequelize.STRING);
-    queryInterface.addColumn(
-      "SubCategory",
-      "reference_number",
-      Sequelize.STRING,
-    );
-    queryInterface.addColumn("SubSector", "scope_id", Sequelize.UUID);
-    queryInterface.addConstraint("SubSector", {
-      type: "foreign key",
-      name: "FK_SubSector_scope_id",
-      fields: ["scope_id"],
-      references: { table: "Scope", field: "scope_id" },
-      onDelete: "SET NULL",
-      onUpdate: "SET NULL",
+    return queryInterface.sequelize.transaction(async (transaction) => {
+      await queryInterface.addColumn(
+        "Sector",
+        "reference_number",
+        Sequelize.STRING,
+        { transaction },
+      );
+      await queryInterface.addColumn(
+        "SubSector",
+        "reference_number",
+        Sequelize.STRING,
+        { transaction },
+      );
+      await queryInterface.addColumn(
+        "SubCategory",
+        "reference_number",
+        Sequelize.STRING,
+        { transaction },
+      );
+      await queryInterface.addColumn("SubSector", "scope_id", Sequelize.UUID, {
+        transaction,
+      });
+      await queryInterface.addConstraint("SubSector", {
+        type: "foreign key",
+        name: "FK_SubSector_scope_id",
+        fields: ["scope_id"],
+        references: { table: "Scope", field: "scope_id" },
+        onDelete: "SET NULL",
+        onUpdate: "SET NULL",
+        transaction,
+      });
+      await queryInterface.dropTable("SubSectorScope", { transaction });
     });
-    queryInterface.dropTable("SubSectorScope");
   },
 
   async down(queryInterface) {
-    queryInterface.removeColumn("Sector", "reference_number");
-    queryInterface.removeColumn("SubSector", "reference_number");
-    queryInterface.removeColumn("SubCategory", "reference_number");
-    queryInterface.removeColumn("SubSector", "scope_id");
-    queryInterface.sequelize.query(`
+    return queryInterface.sequelize.transaction(async (transaction) => {
+      await queryInterface.removeColumn("Sector", "reference_number", {
+        transaction,
+      });
+      await queryInterface.removeColumn("SubSector", "reference_number", {
+        transaction,
+      });
+      await queryInterface.removeColumn("SubCategory", "reference_number", {
+        transaction,
+      });
+      await queryInterface.removeColumn("SubSector", "scope_id", {
+        transaction,
+      });
+      await queryInterface.sequelize.query(
+        `
       CREATE TABLE "SubSectorScope" (
         "subsector_id" uuid,
         "scope_id" uuid,
@@ -43,6 +69,9 @@ module.exports = {
           REFERENCES "Scope" ("scope_id")
           ON DELETE CASCADE ON UPDATE CASCADE
       );
-    `);
+    `,
+        { transaction },
+      );
+    });
   },
 };

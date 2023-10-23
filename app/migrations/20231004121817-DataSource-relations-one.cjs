@@ -4,12 +4,12 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     return queryInterface.sequelize.transaction(async (transaction) => {
-      queryInterface.dropTable("DataSourceSector", { transaction });
-      queryInterface.dropTable("DataSourceSubSector", { transaction });
-      queryInterface.dropTable("DataSourceSubCategory", { transaction });
-      queryInterface.addColumn("DataSource", "sector_id", Sequelize.UUID, { transaction });
-      queryInterface.addColumn("DataSource", "subsector_id", Sequelize.UUID, { transaction });
-      queryInterface.addColumn("DataSource", "subcategory_id", Sequelize.UUID, { transaction });
+      await queryInterface.dropTable("DataSourceSector", { transaction });
+      await queryInterface.dropTable("DataSourceSubSector", { transaction });
+      await queryInterface.dropTable("DataSourceSubCategory", { transaction });
+      await queryInterface.addColumn("DataSource", "sector_id", Sequelize.UUID, { transaction });
+      await queryInterface.addColumn("DataSource", "subsector_id", Sequelize.UUID, { transaction });
+      await queryInterface.addColumn("DataSource", "subcategory_id", Sequelize.UUID, { transaction });
 
       const constraintOptions = (table, field) => ({
         transaction,
@@ -20,15 +20,15 @@ module.exports = {
         onDelete: "cascade",
         onUpdate: "cascade",
       });
-      queryInterface.addConstraint(
+      await queryInterface.addConstraint(
         "DataSource",
         constraintOptions("Sector", "sector_id"),
       );
-      queryInterface.addConstraint(
+      await queryInterface.addConstraint(
         "DataSource",
         constraintOptions("SubSector", "subsector_id"),
       );
-      queryInterface.addConstraint(
+      await queryInterface.addConstraint(
         "DataSource",
         constraintOptions("SubCategory", "subcategory_id"),
       );
@@ -37,17 +37,17 @@ module.exports = {
 
   async down (queryInterface) {
     return queryInterface.sequelize.transaction(async (transaction) => {
-      queryInterface.removeConstraint("DataSource", "FK_DataSource.sector_id", {transaction});
-      queryInterface.removeConstraint("DataSource", "FK_DataSource.subsector_id", {transaction});
-      queryInterface.removeConstraint(
+      await queryInterface.removeConstraint("DataSource", "FK_DataSource.sector_id", {transaction});
+      await queryInterface.removeConstraint("DataSource", "FK_DataSource.subsector_id", {transaction});
+      await queryInterface.removeConstraint(
         "DataSource",
         "FK_DataSource.subcategory_id",
         { transaction },
       );
-      queryInterface.removeColumn("DataSource", "sector_id", { transaction });
-      queryInterface.removeColumn("DataSource", "subsector_id", { transaction });
-      queryInterface.removeColumn("DataSource", "subcategory_id", { transaction });
-      queryInterface.sequelize.query(
+      await queryInterface.removeColumn("DataSource", "sector_id", { transaction });
+      await queryInterface.removeColumn("DataSource", "subsector_id", { transaction });
+      await queryInterface.removeColumn("DataSource", "subcategory_id", { transaction });
+      await queryInterface.sequelize.query(
         `CREATE TABLE "DataSourceSector" (
           "datasource_id" uuid,
           "sector_id" uuid,

@@ -45,7 +45,7 @@
     "bcrypt": "^5.1.1",
     "chakra-react-select": "^4.7.0",
     "csv-parse": "^5.5.2",
-    "eslint": "8.51.0",
+    "eslint": "8.52.0",
     "eslint-config-next": "13.4.16",
     "eslint-plugin-storybook": "^0.6.13",
     "framer-motion": "^10.16.2",

@@ -14,24 +14,22 @@ module.exports = {
       const constraintOptions = (table, field) => ({
         transaction,
         type: "foreign key",
+        name: `FK_${table}.${field}`,
         references: { table, field },
         fields: [field],
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE",
+        onDelete: "cascade",
+        onUpdate: "cascade",
       });
       queryInterface.addConstraint(
         "DataSource",
-        "FK_DataSource.sector_id",
         constraintOptions("Sector", "sector_id"),
       );
       queryInterface.addConstraint(
         "DataSource",
-        "FK_DataSource.subsector_id",
         constraintOptions("SubSector", "subsector_id"),
       );
       queryInterface.addConstraint(
         "DataSource",
-        "FK_DataSource.subcategory_id",
         constraintOptions("SubCategory", "subcategory_id"),
       );
     });

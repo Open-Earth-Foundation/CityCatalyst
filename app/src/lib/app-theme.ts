@@ -389,5 +389,12 @@ export const appTheme = extendTheme({
         variant: "brand",
       },
     },
+    Progress: {
+      baseStyle: {
+        filledTrack: {
+          bg: "#24BE00",
+        },
+      },
+    },
   },
 });

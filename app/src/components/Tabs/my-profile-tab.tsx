@@ -42,6 +42,7 @@ import {
   SearchIcon,
 } from "@chakra-ui/icons";
 import {
+  MdDomain,
   MdMoreVert,
   MdOutlineFileDownload,
   MdOutlineIndeterminateCheckBox,
@@ -788,7 +789,12 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                         <Tbody fontFamily="heading">
                           {cities.map((city) => (
                             <Tr key={city.id}>
-                              <Td>{city.name}</Td>
+                              <Td display="flex" alignItems="center" gap="16px">
+                                <Box color="interactive.secondary">
+                                  <MdDomain size={24} />
+                                </Box>
+                                <Text>{city.name}</Text>
+                              </Td>
                               <Td>{city.state}</Td>
                               <Td>{city.country}</Td>
                               <Td display="flex" alignItems="center" gap="8px">

@@ -17,6 +17,8 @@ import {
 import { useSession } from "next-auth/react";
 
 import MyProfileTab from "@/components/Tabs/my-profile-tab";
+import MyFilesTab from "@/components/Tabs/my-files-tab";
+import MyInventoriesTab from "@/components/Tabs/my-inventories-tab";
 
 export type ProfileInputs = {
   name: string;
@@ -116,12 +118,13 @@ export default function Settings({
                   status={status}
                   t={t}
                 />
-                <TabPanel>
-                  <p>two!</p>
-                </TabPanel>
-                <TabPanel>
-                  <p>three!</p>
-                </TabPanel>
+                <MyFilesTab lng={lng} session={session} status={status} t={t} />
+                <MyInventoriesTab
+                  lng={lng}
+                  session={session}
+                  status={status}
+                  t={t}
+                />
               </TabPanels>
             </Tabs>
           </Box>

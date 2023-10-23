@@ -88,12 +88,12 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
   }, [setValue, session, status]);
 
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
-    console.log(data);
+    // TODO
+    // Submit data via the api
   };
 
   const onInputChange = (e: any) => {
     setInputValue(e.target.value);
-    console.log(e.target.value);
   };
 
   const [selectedUsers, setSelectedUsers] = useState<any>([]);

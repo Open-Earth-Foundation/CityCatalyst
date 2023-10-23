@@ -93,12 +93,12 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
   }, [setValue, session, status]);
 
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
-    console.log(data);
+    //  Todo
+    // send data to api
   };
 
   const onInputChange = (e: any) => {
     setInputValue(e.target.value);
-    console.log(e.target.value);
   };
 
   const [selectedUsers, setSelectedUsers] = useState<any>([]);
@@ -234,7 +234,6 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
     .flatMap((city) => city.inventory.map((item: any) => item.year))
     .filter((year, index, self) => self.indexOf(year) === index)
     .sort();
-  console.log(years);
 
   const {
     isOpen: isUserModalOpen,
@@ -471,7 +470,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
                                     const inventory = city.inventory.find(
                                       (item: any) => item.year === year,
                                     );
-                                    console.log(inventory);
+
                                     if (
                                       inventory &&
                                       inventory.files.length > 0

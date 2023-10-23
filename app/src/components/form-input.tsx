@@ -25,17 +25,12 @@ const FormInput: FC<FormInputProps> = ({
     value,
   );
 
-  //   if (value) console.log(value);
-
   useEffect(() => {
     if (value) setInputValue(value);
   }, [value]);
 
-  if (inputValue?.length) console.log(inputValue);
-
   const onInputChange2 = (e: any) => {
     setInputValue(e.target.value);
-    console.log(e.target.value);
   };
 
   return (

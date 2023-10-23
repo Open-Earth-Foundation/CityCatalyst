@@ -167,7 +167,6 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
     .flatMap((city) => city.inventory.map((item: any) => item.year))
     .filter((year, index, self) => self.indexOf(year) === index)
     .sort();
-  console.log(years);
 
   const {
     isOpen: isInventoryDeleteModalOpen,
@@ -349,7 +348,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                                   const inventory = city.inventory.find(
                                     (item: any) => item.year === year,
                                   );
-                                  console.log(inventory);
+
                                   if (inventory && inventory.progress) {
                                     return (
                                       <Td key={city.id}>

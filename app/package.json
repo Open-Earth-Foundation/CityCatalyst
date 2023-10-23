@@ -28,7 +28,7 @@
     "@chakra-ui/next-js": "^2.1.5",
     "@chakra-ui/react": "^2.8.1",
     "@react-email/components": "^0.0.7",
-    "@reduxjs/toolkit": "^1.9.5",
+    "@reduxjs/toolkit": "^1.9.7",
     "@storybook/react": "^7.4.5",
     "@storybook/testing-library": "^0.2.2",
     "@types/bcrypt": "^5.0.0",

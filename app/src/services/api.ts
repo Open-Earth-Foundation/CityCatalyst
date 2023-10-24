@@ -1,4 +1,8 @@
-import type { CityAttributes, InventoryAttributes } from "@/models/init-models";
+import {
+  UserAttributes,
+  type CityAttributes,
+  type InventoryAttributes,
+} from "@/models/init-models";
 import type {
   InventoryProgressResponse,
   InventoryResponse,
@@ -33,10 +37,32 @@ export const api = createApi({
       transformResponse: (response: { data: InventoryProgressResponse }) =>
         response.data,
     }),
-    addCity: builder.mutation<CityAttributes, {}>({
+    addCity: builder.mutation<CityAttributes, { name: string; locode: string }>(
+      {
+        query: (data) => ({
+          url: `/city`,
+          method: "POST",
+          body: data,
+        }),
+      },
+    ),
+    addInventory: builder.mutation<
+      InventoryAttributes,
+      { locode: string; year: number }
+    >({
       query: (data) => ({
-        url: `/city`,
+        url: `/city/${data.locode}/inventory`,
         method: "POST",
+        body: data,
+      }),
+    }),
+    setUserInfo: builder.mutation<
+      UserAttributes,
+      { defaultCityLocode: string; defaultInventoryYear: number }
+    >({
+      query: (data) => ({
+        url: `/user`,
+        method: "PATCH",
         body: data,
       }),
     }),
@@ -59,5 +85,10 @@ export const openclimateAPI = createApi({
 });
 
 // hooks are automatically generated
-export const { useGetCityQuery, useAddCityMutation } = api;
+export const {
+  useGetCityQuery,
+  useAddCityMutation,
+  useAddInventoryMutation,
+  useSetUserInfoMutation,
+} = api;
 export const { useGetOCCityQuery } = openclimateAPI;

@@ -39,14 +39,19 @@ import { MdOutlineAspectRatio, MdOutlinePeopleAlt } from "react-icons/md";
 import { Link } from "@chakra-ui/next-js";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { TFunction } from "i18next";
-import { useAddCityMutation, useGetOCCityQuery } from "@/services/api";
+import {
+  useAddCityMutation,
+  useAddInventoryMutation,
+  useGetOCCityQuery,
+  useSetUserInfoMutation,
+} from "@/services/api";
 import RecentSearches from "@/components/recent-searches";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { set } from "@/features/city/openclimateCitySlice";
 import { OCCityArributes } from "@/models/City";
 
 type Inputs = {
-  city: String;
+  city: string;
   year: number;
 };
 
@@ -105,7 +110,7 @@ function SetupStep({
     }
   }, [cityInputQuery, yearValue]);
 
-  // import custom redux-hooks
+  // import custom redux hooks
   const {
     data: cities,
     isLoading,
@@ -131,6 +136,7 @@ function SetupStep({
 
     return pathString;
   };
+
   return (
     <>
       <div>
@@ -344,39 +350,50 @@ export default function OnboardingSetup({
   });
 
   const [addCity] = useAddCityMutation();
+  const [addInventory] = useAddInventoryMutation();
+  const [setUserInfo] = useSetUserInfoMutation();
 
-  type City = {
+  const [data, setData] = useState<{
     name: string;
     locode: string;
-  };
-
-  const [data, setData] = useState<City>({ name: "", locode: "" });
+    year: number;
+  }>({ name: "", locode: "", year: -1 });
 
   const [isConfirming, setConfirming] = useState(false);
 
   const storedData = useAppSelector((state) => state.openClimateCity);
 
   const onSubmit: SubmitHandler<Inputs> = async (newData) => {
-    const city = {
+    if (!newData.city || !storedData.city?.actor_id || newData.year < 0) {
+      return;
+    }
+
+    setData({
       name: newData.city,
       locode: storedData.city?.actor_id,
-    } as any;
-    setData(city);
+      year: newData.year,
+    });
 
     goToNext();
   };
 
   const onConfirm = async () => {
-    // TODO actually save data in backend here
+    // save data in backend
     setConfirming(true);
-    const formdata = {
+    await addCity({
       name: data.name,
       locode: data.locode,
-    };
-    addCity(formdata);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    });
+    await addInventory({
+      locode: data.locode,
+      year: data.year,
+    });
+    await setUserInfo({
+      defaultCityLocode: data.locode,
+      defaultInventoryYear: data.year,
+    });
     setConfirming(false);
-    router.push("/onboarding/done/" + storedData.city?.actor_id);
+    router.push("/onboarding/done/" + data.locode);
   };
 
   return (

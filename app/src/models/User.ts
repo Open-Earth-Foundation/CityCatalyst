@@ -10,6 +10,8 @@ export interface UserAttributes {
   email?: string;
   passwordHash?: string;
   role?: string;
+  defaultCityLocode?: string;
+  defaultInventoryYear?: number;
   created?: Date;
   lastUpdated?: Date;
   organizationId?: string;
@@ -24,6 +26,8 @@ export type UserOptionalAttributes =
   | "email"
   | "passwordHash"
   | "role"
+  | "defaultCityLocode"
+  | "defaultInventoryYear"
   | "created"
   | "lastUpdated"
   | "organizationId";
@@ -43,6 +47,8 @@ export class User
   email?: string;
   passwordHash?: string;
   role?: string;
+  defaultCityLocode?: string;
+  defaultInventoryYear?: number;
   created?: Date;
   lastUpdated?: Date;
   organizationId?: string;
@@ -108,6 +114,16 @@ export class User
         role: {
           type: DataTypes.TEXT,
           allowNull: true,
+        },
+        defaultCityLocode: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: "default_city_locode",
+        },
+        defaultInventoryYear: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+          field: "default_inventory_year",
         },
         organizationId: {
           type: DataTypes.UUID,

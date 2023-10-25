@@ -30,6 +30,7 @@ import {
 import dynamic from "next/dynamic";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
+import { CircleFlag } from "react-circle-flags";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { FiDownload } from "react-icons/fi";
 import {
@@ -216,21 +217,29 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   <Trans t={t}>welcome-back</Trans>,
                 </Text>
                 <Box className="flex items-center gap-4 w-[644px] h-[104px]">
-                  <Avatar
-                    className="h-[32px] w-[32px]"
-                    name="Argentina"
-                    src="https://upload.wikimedia.org/wikipedia/commons/1/1a/Flag_of_Argentina.svg"
-                  />
-                  <Heading
-                    fontSize="display.md"
-                    color="base.light"
-                    fontWeight="semibold"
-                    lineHeight="52"
-                    className="flex"
-                  >
-                    {inventory?.city?.name}
-                    Ciudad Autónoma de Buenos Aires
-                  </Heading>
+                  {inventory?.city ? (
+                    <>
+                      <CircleFlag
+                        countryCode={inventory.city.locode
+                          .substring(0, 2)
+                          .toLowerCase()}
+                        width={32}
+                      />
+                      <Heading
+                        fontSize="display.md"
+                        color="base.light"
+                        fontWeight="semibold"
+                        lineHeight="52"
+                        className="flex"
+                      >
+                        {inventory?.city?.name}
+                      </Heading>
+                    </>
+                  ) : (
+                    (isUserInfoLoading || isInventoryLoading) && (
+                      <Spinner size="lg" color="white" />
+                    )
+                  )}
                 </Box>
                 <Box className="flex gap-8 mt-[24px]">
                   <Box className="flex align-baseline gap-3">

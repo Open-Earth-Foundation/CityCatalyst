@@ -3,16 +3,16 @@ kind: Deployment
 metadata:
   name: cc-db-deploy
   labels:
-    app: db
+    app: cc-db
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: db
+      app: cc-db
   template:
     metadata:
       labels:
-        app: db
+        app: cc-db
     spec:
       volumes:
         - name: postgres

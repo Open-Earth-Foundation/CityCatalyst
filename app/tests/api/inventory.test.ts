@@ -44,20 +44,20 @@ const sector = {
 const subSector1 = {
   subsectorId: randomUUID(),
   sectorId: sector.sectorId,
-  subsectorName: "XX_INVENTORY_TEST_SUBSECTOR_1"
+  subsectorName: "XX_INVENTORY_TEST_SUBSECTOR_1",
 };
 
 const subSector2 = {
   subsectorId: randomUUID(),
   sectorId: sector.sectorId,
-  subsectorName: "XX_INVENTORY_TEST_SUBSECTOR_2"
-}
+  subsectorName: "XX_INVENTORY_TEST_SUBSECTOR_2",
+};
 
 const subCategory = {
   subcategoryId: randomUUID(),
   subcategoryName: "XX_INVENTORY_TEST_SUBCATEGORY",
   sectorId: sector.sectorId,
-  subSectorId: subSector2.subsectorId
+  subSectorId: subSector2.subsectorId,
 };
 
 const subSectorValue = {
@@ -74,7 +74,7 @@ const subCategoryValue = {
   emissionFactorValue: 20,
   totalEmissions: 400,
   subsectorId: subSector2.subsectorId,
-  subcategoryId: subCategory.subcategoryId
+  subcategoryId: subCategory.subcategoryId,
 };
 
 describe("Inventory API", () => {
@@ -91,10 +91,16 @@ describe("Inventory API", () => {
       where: { name: { [Op.like]: "XX_INVENTORY_TEST_%" } },
     });
     await db.models.City.destroy({ where: { locode } });
-    await db.models.SubCategory.destroy({ where: { subcategoryId: subCategory.subcategoryId }});
-    await db.models.SubSector.destroy({ where: { subsectorId: subSector1.subsectorId }});
-    await db.models.SubSector.destroy({ where: { subsectorId: subSector2.subsectorId }});
-    await db.models.Sector.destroy({ where: { sectorId: sector.sectorId }});
+    await db.models.SubCategory.destroy({
+      where: { subcategoryId: subCategory.subcategoryId },
+    });
+    await db.models.SubSector.destroy({
+      where: { subsectorId: subSector1.subsectorId },
+    });
+    await db.models.SubSector.destroy({
+      where: { subsectorId: subSector2.subsectorId },
+    });
+    await db.models.Sector.destroy({ where: { sectorId: sector.sectorId } });
     city = await db.models.City.create({ cityId: randomUUID(), locode });
     await db.models.Sector.create(sector);
     await db.models.SubSector.create(subSector1);
@@ -106,7 +112,7 @@ describe("Inventory API", () => {
     await db.models.Inventory.destroy({
       where: { cityId: city.cityId },
     });
-    const inventoryId:string = randomUUID();
+    const inventoryId: string = randomUUID();
     await db.models.Inventory.create({
       inventoryId,
       cityId: city.cityId,
@@ -115,20 +121,26 @@ describe("Inventory API", () => {
     await db.models.SubSectorValue.create({
       inventoryId,
       subsectorValueId: randomUUID(),
-      ...subSectorValue
+      ...subSectorValue,
     });
     await db.models.SubCategoryValue.create({
       inventoryId,
       subcategoryValueId: randomUUID(),
-      ...subCategoryValue
+      ...subCategoryValue,
     });
   });
 
   after(async () => {
-    await db.models.SubCategory.destroy({ where: { subcategoryId: subCategory.subcategoryId }});
-    await db.models.SubSector.destroy({ where: { subsectorId: subSector1.subsectorId }});
-    await db.models.SubSector.destroy({ where: { subsectorId: subSector2.subsectorId }});
-    await db.models.Sector.destroy({ where: { sectorId: sector.sectorId }});
+    await db.models.SubCategory.destroy({
+      where: { subcategoryId: subCategory.subcategoryId },
+    });
+    await db.models.SubSector.destroy({
+      where: { subsectorId: subSector1.subsectorId },
+    });
+    await db.models.SubSector.destroy({
+      where: { subsectorId: subSector2.subsectorId },
+    });
+    await db.models.Sector.destroy({ where: { sectorId: sector.sectorId } });
     await db.models.City.destroy({ where: { locode } });
     if (db.sequelize) await db.sequelize.close();
   });
@@ -179,7 +191,7 @@ describe("Inventory API", () => {
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}?format=csv`;
     const req = createRequest(url);
     const res = await findInventory(req, {
-      params: { city: locode, year: inventory.year.toString() }
+      params: { city: locode, year: inventory.year.toString() },
     });
     assert.equal(res.status, 200);
     assert.equal(res.headers.get("content-type"), "text/csv");
@@ -189,15 +201,17 @@ describe("Inventory API", () => {
     assert.ok(lines.length > 0);
     const headers = lines[0].split(",");
     assert.equal(headers.length, 6);
-    assert.equal(headers[0], "Inventory Reference");
-    assert.equal(headers[1], "Total Emissions");
-    assert.equal(headers[2], "Activity Units");
-    assert.equal(headers[3], "Activity Value");
-    assert.equal(headers[4], "Emission Factor Value");
-    assert.equal(headers[5], "Datasource ID");
+    assert.equal(headers, [
+      "Inventory Reference",
+      "Total Emissions",
+      "Activity Units",
+      "Activity Value",
+      "Emission Factor Value",
+      "Datasource ID",
+    ]);
     assert.ok(lines.length > 1);
     assert.strictEqual(lines.length, 3);
-    assert.ok(lines.slice(1).every(line => line.split(",").length == 6));
+    assert.ok(lines.slice(1).every((line) => line.split(",").length == 6));
   });
 
   it("should find an inventory with xls format", async () => {
@@ -207,9 +221,9 @@ describe("Inventory API", () => {
       params: { city: locode, year: inventory.year.toString() },
     });
     assert.equal(res.status, 200);
-    assert.equal(res.headers.get("content-type"), 'application/vnd.ms-excel');
+    assert.equal(res.headers.get("content-type"), "application/vnd.ms-excel");
     assert.ok(res.headers.get("content-disposition")?.startsWith("attachment"));
-    const body = await res.blob()
+    const body = await res.blob();
   });
 
   it("should not find non-existing inventories", async () => {

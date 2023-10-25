@@ -55,7 +55,7 @@
     "i18next-resources-to-backend": "^1.1.4",
     "jsonwebtoken": "^9.0.2",
     "leaflet": "^1.9.4",
-    "next": "13.4.19",
+    "next": "13.5.0",
     "next-auth": "^4.23.2",
     "nodemailer": "^6.9.5",
     "pg": "^8.11.3",

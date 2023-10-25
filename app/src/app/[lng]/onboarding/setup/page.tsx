@@ -366,17 +366,27 @@ export default function OnboardingSetup({
   const storedData = useAppSelector((state) => state.openClimateCity);
 
   const onSubmit: SubmitHandler<Inputs> = async (newData) => {
-    if (!newData.city || !storedData.city?.actor_id || newData.year < 0) {
+    const year = Number(newData.year);
+    if (!newData.city || !storedData.city?.actor_id || year < 0) {
       return;
     }
 
     setData({
       name: newData.city,
       locode: storedData.city?.actor_id,
-      year: newData.year,
+      year,
     });
 
     goToNext();
+  };
+
+  const makeErrorToast = (title: string, description?: string) => {
+    toast({
+      title,
+      description,
+      status: "error",
+      isClosable: true,
+    });
   };
 
   const onConfirm = async () => {
@@ -387,6 +397,16 @@ export default function OnboardingSetup({
         name: data.name,
         locode: data.locode,
       }).unwrap();
+    } catch (err: any) {
+      // if the city exists, continue (can still add new inventory year)
+      if (err.data?.error?.message !== "Entity exists already.") {
+        makeErrorToast("Failed to add city!", err.data?.error?.message);
+        setConfirming(false);
+        return;
+      }
+    }
+
+    try {
       await addInventory({
         locode: data.locode,
         year: data.year,
@@ -400,12 +420,7 @@ export default function OnboardingSetup({
       router.push("/onboarding/done/" + data.locode);
     } catch (err: any) {
       console.error("Failed to create new inventory!", err);
-      toast({
-        title: "Failed to create inventory!",
-        description: err.data?.error?.message,
-        status: "error",
-        isClosable: true,
-      });
+      makeErrorToast("Failed to create inventory!", err.data?.error?.message);
       setConfirming(false);
     }
   };

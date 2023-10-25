@@ -57,6 +57,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const router = useRouter();
 
   // query API data
+  // TODO maybe rework this logic into one RTK query:
+  // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#performing-multiple-requests-with-a-single-query
   let locode: string | null = null;
   let year: number | null = null;
   const { data: userInfo, isLoading: isUserInfoLoading } =

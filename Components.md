@@ -4,7 +4,7 @@ Evan Prodromou
 
 19 May 2023
 
-This document describes the components of the [CityCatalyst UML diagram](./CityCatalyst_Components.svg).
+This document describes the components of the [CityCatalyst UML diagram](./docs/CityCatalyst_Components.svg).
 
 
 # CityCatalyst Server
@@ -35,7 +35,7 @@ A Web-based client application. Written in JavaScript. Client-side only; can be 
 * **User Model**: A model of the current user, including settings and preferences. Uses the API client.
 * **UI Framework**: A structure for defining the UI. ReactJS.
 * **UI Component Library**: A component library for the UI. ReactJS-Bootstrap.
-* **I18n. **Framework for supporting multiple languages. [https://react.i18next.com/](https://react.i18next.com/) 
+* **I18n. **Framework for supporting multiple languages. [https://react.i18next.com/](https://react.i18next.com/)
 * **State management**. Maintaining state on the client side. Redux or TBD.
 
 

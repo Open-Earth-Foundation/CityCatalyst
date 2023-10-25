@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 from utils import uuid_generate_v3, write_dic_to_csv, make_dir
 
+SUBSECTORS_WITH_SCOPES = ['IPPU', 'AFOLU']
 
 def filter_list_of_dicts(lst, key):
     """filter a lister of diciontaries based on key"""
@@ -46,11 +47,17 @@ if __name__ == "__main__":
             subcategory_name = row["subcategory"]
             sector = Sector(sector_name, row["sector_refno"])
             sectors.append(sector)
+
+            if any(term in sector_name for term in SUBSECTORS_WITH_SCOPES):
+                subsector_scope = row["scope"]
+            else:
+                subsector_scope = ''
+
             subsector = SubSector(
                 sector,
                 subsector_name,
                 row["subsector_refno"],
-                row["scope"],
+                subsector_scope,
                 row["reporting_level"],
             )
             subsectors.append(subsector)
@@ -110,6 +117,7 @@ if __name__ == "__main__":
         {
             "sector_id": uuid_generate_v3(name=sector),
             "sector_name": sector,
+            "reference_number": gpc.sector_refno(sector),
             "created": now_str,
             "last_updated": now_str,
         }
@@ -130,11 +138,15 @@ if __name__ == "__main__":
         for subsector in gpc.list_subsectors(sector):
             sector_and_subsector = " ".join([sector, subsector])
             subsector_id = uuid_generate_v3(name=sector_and_subsector)
+            subsector_scope = gpc.subsector_scope(sector=sector, subsector=subsector)
+            subsector_scope_id = scope_ids.get(subsector_scope)
             subsector_data.append(
                 {
                     "sector_id": sector_id,
                     "subsector_id": subsector_id,
                     "subsector_name": subsector,
+                    "reference_number": gpc.subsector_refno(sector, subsector),
+                    "scope_id": subsector_scope_id
                 }
             )
             for subcategory in gpc.list_subcategories(
@@ -160,6 +172,7 @@ if __name__ == "__main__":
                         "subcategory_id": subcategory_id,
                         "subsector_id": subsector_id,
                         "subcategory_name": subcategory,
+                        "reference_number": gpc.subcategory_refno(sector, subsector, subcategory),
                         "scope_id": scope_id,
                         "reportinglevel_id": reportinglevel_id,
                         "created": now_str,

@@ -20,6 +20,7 @@ export interface SubSectorAttributes {
   subsectorId: string;
   subsectorName?: string;
   sectorId?: string;
+  referenceNumber?: string;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -29,6 +30,7 @@ export type SubSectorId = SubSector[SubSectorPk];
 export type SubSectorOptionalAttributes =
   | "subsectorName"
   | "sectorId"
+  | "referenceNumber"
   | "created"
   | "lastUpdated";
 export type SubSectorCreationAttributes = Optional<
@@ -43,6 +45,7 @@ export class SubSector
   subsectorId!: string;
   subsectorName?: string;
   sectorId?: string;
+  referenceNumber?: string;
   created?: Date;
   lastUpdated?: Date;
 
@@ -338,6 +341,11 @@ export class SubSector
             key: "sector_id",
           },
           field: "sector_id",
+        },
+        referenceNumber: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: "reference_number",
         },
       },
       {

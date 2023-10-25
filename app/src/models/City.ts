@@ -1,6 +1,6 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
-import type { CityUser, CityUserId } from "./CityUser";
+import type { User, UserId } from "./User";
 import type { GDP, GDPId } from "./GDP";
 import type { Inventory, InventoryId } from "./Inventory";
 import type { Population, PopulationId } from "./Population";
@@ -44,6 +44,9 @@ export class City
   extends Model<CityAttributes, CityCreationAttributes>
   implements CityAttributes
 {
+  users(users: any) {
+    throw new Error("Method not implemented.");
+  }
   cityId!: string;
   locode?: string;
   name?: string;
@@ -54,24 +57,18 @@ export class City
   created?: Date;
   lastUpdated?: Date;
 
-  // City hasMany CityUser via cityId
-  cityUsers!: CityUser[];
-  getCityUsers!: Sequelize.HasManyGetAssociationsMixin<CityUser>;
-  setCityUsers!: Sequelize.HasManySetAssociationsMixin<CityUser, CityUserId>;
-  addCityUser!: Sequelize.HasManyAddAssociationMixin<CityUser, CityUserId>;
-  addCityUsers!: Sequelize.HasManyAddAssociationsMixin<CityUser, CityUserId>;
-  createCityUser!: Sequelize.HasManyCreateAssociationMixin<CityUser>;
-  removeCityUser!: Sequelize.HasManyRemoveAssociationMixin<
-    CityUser,
-    CityUserId
-  >;
-  removeCityUsers!: Sequelize.HasManyRemoveAssociationsMixin<
-    CityUser,
-    CityUserId
-  >;
-  hasCityUser!: Sequelize.HasManyHasAssociationMixin<CityUser, CityUserId>;
-  hasCityUsers!: Sequelize.HasManyHasAssociationsMixin<CityUser, CityUserId>;
-  countCityUsers!: Sequelize.HasManyCountAssociationsMixin;
+  // City belongsToMany User via CityUser.cityId
+  Users!: User[];
+  getUsers!: Sequelize.BelongsToManyGetAssociationsMixin<User>;
+  setUsers!: Sequelize.BelongsToManySetAssociationsMixin<User, UserId>;
+  addUser!: Sequelize.BelongsToManyAddAssociationMixin<User, UserId>;
+  addUsers!: Sequelize.BelongsToManyAddAssociationsMixin<User, UserId>;
+  createUser!: Sequelize.BelongsToManyCreateAssociationMixin<User>;
+  removeUser!: Sequelize.BelongsToManyRemoveAssociationMixin<User, UserId>;
+  removeUsers!: Sequelize.BelongsToManyRemoveAssociationsMixin<User, UserId>;
+  hasUser!: Sequelize.BelongsToManyHasAssociationMixin<User, UserId>;
+  hasUsers!: Sequelize.BelongsToManyHasAssociationsMixin<User, UserId>;
+  countUsers!: Sequelize.BelongsToManyCountAssociationsMixin;
   // City hasMany GDP via cityId
   gdps!: GDP[];
   getGdps!: Sequelize.HasManyGetAssociationsMixin<GDP>;

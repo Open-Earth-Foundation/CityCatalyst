@@ -9,6 +9,7 @@ from routes.health import api_router as health_check_route
 from routes.city_locode_endpoint import api_router as city_locode_route
 from routes.city_boundaries_endpoint import api_router as city_boundaries_route
 from routes.city_locode_endpoint_crosswalk import api_router as crosswalk_city_locode_route
+from routes.city_locode_endpoint_edgar import api_router as edgar_city_locode_route
 
 """
 Logger instance initialized and configured
@@ -89,7 +90,12 @@ app.include_router(
     tags=["Crosswalk Labs"],
 )
 
-""" 
+app.include_router(
+    edgar_city_locode_route,
+    tags=["EDGAR"],
+)
+
+"""
 Entry point of the fastapi application (Drive Code)
     - change the port number if port is already occupied
     - modify the logging level according to the need

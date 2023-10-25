@@ -19,6 +19,11 @@ interface InventoryProgressResponse {
   sectorProgress: SectorProgress[];
 }
 
+interface UserInfoResponse {
+  defaultCityLocode: string | null;
+  defaultInventoryYear: number | null;
+}
+
 declare module "next-auth" {
   interface Session {
     user: {

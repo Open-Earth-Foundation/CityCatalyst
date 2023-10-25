@@ -6,7 +6,6 @@ import { SegmentedProgress } from "@/components/SegmentedProgress";
 import { CircleIcon } from "@/components/icons";
 import { NavigationBar } from "@/components/navigation-bar";
 import { useTranslation } from "@/i18n/client";
-import { Trans } from "react-i18next/TransWithoutContext";
 import { api } from "@/services/api";
 import { formatPercent } from "@/util/helpers";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
@@ -30,6 +29,8 @@ import {
 } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 import NextLink from "next/link";
+import { useRouter } from "next/navigation";
+import { Trans } from "react-i18next/TransWithoutContext";
 import { FiDownload } from "react-icons/fi";
 import {
   MdArrowOutward,
@@ -51,18 +52,35 @@ const CITY_INTENTORY_YEAR = "DE_BER";
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
 export default function Home({ params: { lng } }: { params: { lng: string } }) {
-  const toast = useToast();
-
   const { t } = useTranslation(lng, "dashboard");
+  const toast = useToast();
+  const router = useRouter();
 
   // query API data
-  // TODO get these from user record
-  const locode = "XX_INVENTORY_CITY";
-  const year = 3000;
+  let locode: string | null = null;
+  let year: number | null = null;
+  const { data: userInfo, isLoading: isUserInfoLoading } =
+    api.useGetUserInfoQuery();
+  if (!isUserInfoLoading && userInfo) {
+    locode = userInfo.defaultCityLocode;
+    year = userInfo.defaultInventoryYear;
+
+    // if the user doesn't have a default city/ year, redirect to onboarding page
+    if (!locode || !year) {
+      router.push("/onboarding");
+    }
+  }
   const { data: inventory, isLoading: isInventoryLoading } =
-    api.useGetInventoryQuery({ locode, year });
+    api.useGetInventoryQuery(
+      { locode: locode!, year: year! },
+      { skip: !locode || !year },
+    );
   const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
-    api.useGetInventoryProgressQuery({ locode, year });
+    api.useGetInventoryProgressQuery(
+      { locode: locode!, year: year! },
+      { skip: !locode || !year },
+    );
+
   let totalProgress = 0,
     thirdPartyProgress = 0,
     uploadedProgress = 0;
@@ -472,7 +490,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               >
                 <Trans t={t}>sectors-required-from-inventory</Trans>
               </Text>
-              {isInventoryProgressLoading ? (
+              {isUserInfoLoading || isInventoryProgressLoading ? (
                 <Center>
                   <Spinner size="lg" />
                 </Center>

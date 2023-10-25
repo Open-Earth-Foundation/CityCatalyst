@@ -6,6 +6,7 @@ import {
 import type {
   InventoryProgressResponse,
   InventoryResponse,
+  UserInfoResponse,
 } from "@/util/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
@@ -61,10 +62,15 @@ export const api = createApi({
       { defaultCityLocode: string; defaultInventoryYear: number }
     >({
       query: (data) => ({
-        url: `/user`,
+        url: "/user",
         method: "PATCH",
         body: data,
       }),
+    }),
+    getUserInfo: builder.query<UserInfoResponse, {}>({
+      query: () => "/user",
+      transformResponse: (response: { data: UserInfoResponse }) =>
+        response.data,
     }),
   }),
 });

@@ -7,7 +7,7 @@ module.exports = {
       await queryInterface.addColumn(
         "User",
         "default_city_locode",
-        Sequelize.CHAR,
+        Sequelize.STRING,
         { transaction },
       );
       await queryInterface.addColumn(

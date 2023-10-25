@@ -3,16 +3,16 @@ kind: Deployment
 metadata:
   name: cc-global-api-db-deploy
   labels:
-    app: db
+    app: global-api-db
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: db
+      app: global-api-db
   template:
     metadata:
       labels:
-        app: db
+        app: global-api-db
     spec:
       volumes:
         - name: postgres

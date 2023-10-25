@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const GET = apiHandler(
   async (
-    _req: NextRequest,
+    req: NextRequest,
     context: { session?: Session; params: Record<string, string> },
   ) => {
     const { params, session } = context;
@@ -38,40 +38,44 @@ export const GET = apiHandler(
     }
     inventory.city = city;
 
-  let body:Buffer|null = null;
-  let headers:Record<string, string>|null = null;
+    let body: Buffer | null = null;
+    let headers: Record<string, string> | null = null;
 
-  switch (_req.nextUrl.searchParams.get('format')?.toLowerCase()) {
-    case "csv":
-      body = await inventoryCSV(inventory);
-      headers = {
-        "Content-Type": "text/csv",
-        "Content-Disposition": `attachment; filename="inventory-${inventory.city.locode}-${inventory.year}.csv"`,
-      }
-      break;
-    case "xls":
-      body = await inventoryXLS(inventory);
-      headers = {
-        "Content-Type": "application/vnd.ms-excel",
-        "Content-Disposition": `attachment; filename="inventory-${inventory.city.locode}-${inventory.year}.xls"`,
-      }
-      break;
-    case "json":
-    default:
-      body = Buffer.from(JSON.stringify({data: inventory.toJSON()}), "utf-8");
-      headers = {
-        "Content-Type": "application/json"
-      }
-      break;
-  }
+    switch (req.nextUrl.searchParams.get("format")?.toLowerCase()) {
+      case "csv":
+        body = await inventoryCSV(inventory);
+        headers = {
+          "Content-Type": "text/csv",
+          "Content-Disposition": `attachment; filename="inventory-${inventory.city.locode}-${inventory.year}.csv"`,
+        };
+        break;
+      case "xls":
+        body = await inventoryXLS(inventory);
+        headers = {
+          "Content-Type": "application/vnd.ms-excel",
+          "Content-Disposition": `attachment; filename="inventory-${inventory.city.locode}-${inventory.year}.xls"`,
+        };
+        break;
+      case "json":
+      default:
+        body = Buffer.from(
+          JSON.stringify({ data: inventory.toJSON() }),
+          "utf-8",
+        );
+        headers = {
+          "Content-Type": "application/json",
+        };
+        break;
+    }
 
-  return new NextResponse(body, {headers});
-});
+    return new NextResponse(body, { headers });
+  },
+);
 
-async function inventoryCSV(inventory: any) : Promise<Buffer> {
-  const subSectorValues:SubSectorValue[] =
+async function inventoryCSV(inventory: any): Promise<Buffer> {
+  const subSectorValues: SubSectorValue[] =
     await inventory.getSubSectorValues();
-  const subCategoryValues:SubCategoryValue[] =
+  const subCategoryValues: SubCategoryValue[] =
     await inventory.getSubCategoryValues();
   const headers = [
     "Inventory Reference",
@@ -79,32 +83,34 @@ async function inventoryCSV(inventory: any) : Promise<Buffer> {
     "Activity Units",
     "Activity Value",
     "Emission Factor Value",
-    "Datasource ID"
+    "Datasource ID",
   ].join(",");
-  const subSectorLines = subSectorValues.map((value:SubSectorValue) => {
+  const subSectorLines = subSectorValues.map((value: SubSectorValue) => {
     return [
       value.subsectorId,
       value.totalEmissions,
       value.activityUnits,
       value.activityValue,
       value.emissionFactorValue,
-      value.datasourceId
+      value.datasourceId,
     ].join(",");
   });
-  const subCategoryLines = subCategoryValues.map((value:SubCategoryValue) => {
+  const subCategoryLines = subCategoryValues.map((value: SubCategoryValue) => {
     return [
       value.subcategoryId,
       value.totalEmissions,
       value.activityUnits,
       value.activityValue,
       value.emissionFactorValue,
-      value.datasourceId
+      value.datasourceId,
     ].join(",");
   });
-  return Buffer.from([headers, ...subSectorLines, ...subCategoryLines].join("\n"));
+  return Buffer.from(
+    [headers, ...subSectorLines, ...subCategoryLines].join("\n"),
+  );
 }
 
-async function inventoryXLS(inventory: any) : Promise<Buffer> {
+async function inventoryXLS(inventory: any): Promise<Buffer> {
   return Buffer.from("Not implemented");
 }
 

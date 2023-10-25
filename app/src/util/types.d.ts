@@ -20,6 +20,8 @@ interface InventoryProgressResponse {
 }
 
 interface UserInfoResponse {
+  userId: string;
+  name: string;
   defaultCityLocode: string | null;
   defaultInventoryYear: number | null;
 }

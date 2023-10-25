@@ -49,7 +49,7 @@ export const api = createApi({
     ),
     addInventory: builder.mutation<
       InventoryAttributes,
-      { locode: string; year: number }
+      { locode: string; year: number; inventoryName: string }
     >({
       query: (data) => ({
         url: `/city/${data.locode}/inventory`,

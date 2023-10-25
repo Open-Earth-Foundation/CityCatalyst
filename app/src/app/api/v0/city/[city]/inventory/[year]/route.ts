@@ -30,11 +30,11 @@ export const GET = apiHandler(
 
     const inventory = await db.models.Inventory.findOne({
       where: { cityId: city.cityId, year: params.year },
+      include: [{ model: db.models.City, as: "city" }],
     });
     if (!inventory) {
       throw new createHttpError.NotFound("Inventory not found");
     }
-    inventory.city = city;
 
     return NextResponse.json({ data: inventory });
   },

@@ -67,7 +67,7 @@ export const api = createApi({
         body: data,
       }),
     }),
-    getUserInfo: builder.query<UserInfoResponse, {}>({
+    getUserInfo: builder.query<UserInfoResponse, void>({
       query: () => "/user",
       transformResponse: (response: { data: UserInfoResponse }) =>
         response.data,

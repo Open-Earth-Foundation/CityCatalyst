@@ -6,12 +6,11 @@ import {
 } from "@/app/api/v0/city/[city]/inventory/[year]/sector/[sector]/route";
 import { db } from "@/models";
 import { CreateSectorRequest } from "@/util/validation";
-import env from "@next/env";
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, beforeEach, describe, it } from "node:test";
 
-import { createRequest } from "../helpers";
+import { createRequest, setupTests } from "../helpers";
 
 import { Sector } from "@/models/Sector";
 
@@ -35,8 +34,7 @@ const invalidSector = {
 describe("Sector API", () => {
   let sector: Sector;
   before(async () => {
-    const projectDir = process.cwd();
-    env.loadEnvConfig(projectDir);
+    setupTests();
     await db.initialize();
     await db.models.Sector.destroy({
       where: {

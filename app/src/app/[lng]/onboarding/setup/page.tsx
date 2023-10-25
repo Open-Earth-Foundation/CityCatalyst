@@ -25,6 +25,7 @@ import {
   Select,
   Text,
   useSteps,
+  useToast,
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -335,6 +336,7 @@ export default function OnboardingSetup({
 }) {
   const { t } = useTranslation(lng, "onboarding");
   const router = useRouter();
+  const toast = useToast();
   const {
     handleSubmit,
     register,
@@ -380,20 +382,32 @@ export default function OnboardingSetup({
   const onConfirm = async () => {
     // save data in backend
     setConfirming(true);
-    await addCity({
-      name: data.name,
-      locode: data.locode,
-    });
-    await addInventory({
-      locode: data.locode,
-      year: data.year,
-    });
-    await setUserInfo({
-      defaultCityLocode: data.locode,
-      defaultInventoryYear: data.year,
-    });
-    setConfirming(false);
-    router.push("/onboarding/done/" + data.locode);
+    try {
+      await addCity({
+        name: data.name,
+        locode: data.locode,
+      }).unwrap();
+      await addInventory({
+        locode: data.locode,
+        year: data.year,
+        inventoryName: `${data.name} - ${data.year}`,
+      }).unwrap();
+      await setUserInfo({
+        defaultCityLocode: data.locode,
+        defaultInventoryYear: data.year,
+      }).unwrap();
+      setConfirming(false);
+      router.push("/onboarding/done/" + data.locode);
+    } catch (err: any) {
+      console.error("Failed to create new inventory!", err);
+      toast({
+        title: "Failed to create inventory!",
+        description: err.data?.error?.message,
+        status: "error",
+        isClosable: true,
+      });
+      setConfirming(false);
+    }
   };
 
   return (

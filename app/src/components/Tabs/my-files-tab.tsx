@@ -537,8 +537,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
                                         <Badge
                                           color="blue"
                                           borderRadius="full"
-                                          paddingLeft="16px"
-                                          paddingRight="16px"
+                                          px="16px"
                                           paddingTop="4px"
                                           paddingBottom="4px"
                                           borderWidth="1px"
@@ -594,8 +593,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
                                             borderStyle="solid"
                                             borderColor="border.neutral"
                                             padding="10px"
-                                            paddingLeft="0"
-                                            paddingRight="0"
+                                            px="0"
                                           >
                                             <PopoverArrow />
                                             <PopoverBody padding="0">
@@ -607,8 +605,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
                                                   gap="16px"
                                                   color="content.tertiary"
                                                   alignItems="center"
-                                                  paddingLeft="16px"
-                                                  paddingRight="16px"
+                                                  px="16px"
                                                   paddingTop="12px"
                                                   paddingBottom="12px"
                                                   _hover={{
@@ -641,8 +638,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
                                                   className="group "
                                                   color="sentiment.negativeDefault"
                                                   alignItems="center"
-                                                  paddingLeft="16px"
-                                                  paddingRight="16px"
+                                                  px="16px"
                                                   paddingTop="12px"
                                                   paddingBottom="12px"
                                                   _hover={{

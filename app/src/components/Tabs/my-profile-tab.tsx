@@ -385,8 +385,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                           w="auto"
                           paddingTop="16px"
                           paddingBottom="16px"
-                          paddingLeft="24px"
-                          paddingRight="24px"
+                          px="24px"
                           letterSpacing="widest"
                           textTransform="uppercase"
                           fontWeight="semibold"
@@ -429,8 +428,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                       gap="8px"
                       paddingTop="16px"
                       paddingBottom="16px"
-                      paddingLeft="24px"
-                      paddingRight="24px"
+                      px="24px"
                       letterSpacing="widest"
                       textTransform="uppercase"
                       fontWeight="semibold"
@@ -599,8 +597,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                                 <Badge
                                   color="blue"
                                   borderRadius="full"
-                                  paddingLeft="16px"
-                                  paddingRight="16px"
+                                  px="16px"
                                   paddingTop="4px"
                                   paddingBottom="4px"
                                   borderWidth="1px"
@@ -645,8 +642,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                                     borderStyle="solid"
                                     borderColor="border.neutral"
                                     padding="10px"
-                                    paddingLeft="0"
-                                    paddingRight="0"
+                                    px="0"
                                   >
                                     <PopoverArrow />
 
@@ -658,8 +654,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                                           gap="16px"
                                           color="content.tertiary"
                                           alignItems="center"
-                                          paddingLeft="16px"
-                                          paddingRight="16px"
+                                          px="16px"
                                           paddingTop="12px"
                                           paddingBottom="12px"
                                           _hover={{
@@ -688,8 +683,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                                           gap="16px"
                                           color="sentiment.negativeDefault"
                                           alignItems="center"
-                                          paddingLeft="16px"
-                                          paddingRight="16px"
+                                          px="16px"
                                           paddingTop="12px"
                                           paddingBottom="12px"
                                           _hover={{
@@ -755,8 +749,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                         gap="8px"
                         paddingTop="16px"
                         paddingBottom="16px"
-                        paddingLeft="24px"
-                        paddingRight="24px"
+                        px="24px"
                         letterSpacing="widest"
                         textTransform="uppercase"
                         fontWeight="semibold"
@@ -815,8 +808,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                                     borderStyle="solid"
                                     borderColor="border.neutral"
                                     padding="10px"
-                                    paddingLeft="0"
-                                    paddingRight="0"
+                                    px="0"
                                   >
                                     <PopoverArrow />
 
@@ -829,8 +821,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                                           gap="16px"
                                           color="content.tertiary"
                                           alignItems="center"
-                                          paddingLeft="16px"
-                                          paddingRight="16px"
+                                          px="16px"
                                           paddingTop="12px"
                                           paddingBottom="12px"
                                           _hover={{
@@ -861,8 +852,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                                           className="group "
                                           color="sentiment.negativeDefault"
                                           alignItems="center"
-                                          paddingLeft="16px"
-                                          paddingRight="16px"
+                                          px="16px"
                                           paddingTop="12px"
                                           paddingBottom="12px"
                                           _hover={{

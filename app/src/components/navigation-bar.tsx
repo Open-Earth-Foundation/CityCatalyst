@@ -164,12 +164,7 @@ export function NavigationBar({
                 zIndex={2000}
               >
                 <NextLink href="/settings">
-                  <MenuItem
-                    paddingTop="12px"
-                    paddingBottom="12px"
-                    paddingLeft="16px"
-                    paddingRight="16px"
-                  >
+                  <MenuItem paddingTop="12px" paddingBottom="12px" px="16px">
                     <Icon
                       as={FiSettings}
                       boxSize={6}
@@ -182,8 +177,7 @@ export function NavigationBar({
                 <MenuItem
                   paddingTop="12px"
                   paddingBottom="12px"
-                  paddingLeft="16px"
-                  paddingRight="16px"
+                  px="16px"
                   onClick={() => signOut()}
                 >
                   <Icon

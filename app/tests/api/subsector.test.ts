@@ -7,12 +7,11 @@ import {
 
 import { db } from "@/models";
 import { CreateSubSectorRequest } from "@/util/validation";
-import env from "@next/env";
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, beforeEach, describe, it } from "node:test";
 
-import { createRequest } from "../helpers";
+import { createRequest, setupTests } from "../helpers";
 
 import { SubSector } from "@/models/SubSector";
 import { Sector } from "@/models/Sector";
@@ -30,11 +29,6 @@ const subsector1: CreateSubSectorRequest = {
   sectorId,
 };
 
-const subsector2: CreateSubSectorRequest = {
-  subsectorName: "Test Sector 2",
-  sectorId: randomUUID(),
-};
-
 const invalidSubSector = {
   subsectorName: 0,
   sectorId: "INVALID_XX",
@@ -44,8 +38,7 @@ describe("Sub Sector API", () => {
   let subsector: SubSector;
   let sector: Sector;
   before(async () => {
-    const projectDir = process.cwd();
-    env.loadEnvConfig(projectDir);
+    setupTests();
     await db.initialize();
     await db.models.SubSector.destroy({
       where: {

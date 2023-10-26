@@ -12,13 +12,15 @@ export const POST = apiHandler(
     context: { session?: Session; params: Record<string, string> },
   ) => {
     const body = createCityRequest.parse(await req.json());
-    if (!context.session)
+    if (!context.session) {
       throw new createHttpError.Unauthorized("Unauthorized");
+    }
+
     const city = await db.models.City.create({
       cityId: randomUUID(),
       ...body,
     });
-    city.addUser("7b730ed9-5c7a-4758-a658-c31673700cc9");
+    await city.addUser(context.session.user.id);
     return NextResponse.json({ data: city });
   },
 );

@@ -7,12 +7,11 @@ import { GET as calculateProgress } from "@/app/api/v0/city/[city]/inventory/[ye
 import { POST as createInventory } from "@/app/api/v0/city/[city]/inventory/route";
 import { db } from "@/models";
 import { CreateInventoryRequest } from "@/util/validation";
-import env from "@next/env";
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, beforeEach, describe, it } from "node:test";
 import { Op } from "sequelize";
-import { createRequest } from "../helpers";
+import { createRequest, setupTests } from "../helpers";
 import { SubSectorAttributes } from "@/models/SubSector";
 import { City } from "@/models/City";
 
@@ -80,8 +79,7 @@ const subCategoryValue = {
 describe("Inventory API", () => {
   let city: City;
   before(async () => {
-    const projectDir = process.cwd();
-    env.loadEnvConfig(projectDir);
+    setupTests();
     await db.initialize();
     // this also deletes all Sector/SubSectorValue instances associated with it (cascade)
     await db.models.Inventory.destroy({

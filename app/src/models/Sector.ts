@@ -1,7 +1,6 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import type { DataSource, DataSourceId } from "./DataSource";
-import type { DataSourceSector, DataSourceSectorId } from "./DataSourceSector";
 import type { SectorValue, SectorValueId } from "./SectorValue";
 import type { SubSector, SubSectorId } from "./SubSector";
 
@@ -35,72 +34,39 @@ export class Sector
   created?: Date;
   lastUpdated?: Date;
 
-  // Sector belongsToMany DataSource via sectorId and datasourceId
-  datasourceIdDataSourceDataSourceSectors!: DataSource[];
-  getDatasourceIdDataSourceDataSourceSectors!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
-  setDatasourceIdDataSourceDataSourceSectors!: Sequelize.BelongsToManySetAssociationsMixin<
+  // Sector hasMany DataSource via sectorId
+  dataSources!: DataSource[];
+  getDataSources!: Sequelize.HasManyGetAssociationsMixin<DataSource>;
+  setDataSources!: Sequelize.HasManySetAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  addDatasourceIdDataSourceDataSourceSector!: Sequelize.BelongsToManyAddAssociationMixin<
+  addDataSource!: Sequelize.HasManyAddAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  addDatasourceIdDataSourceDataSourceSectors!: Sequelize.BelongsToManyAddAssociationsMixin<
+  addDataSources!: Sequelize.HasManyAddAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  createDatasourceIdDataSourceDataSourceSector!: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
-  removeDatasourceIdDataSourceDataSourceSector!: Sequelize.BelongsToManyRemoveAssociationMixin<
+  createDataSource!: Sequelize.HasManyCreateAssociationMixin<DataSource>;
+  removeDataSource!: Sequelize.HasManyRemoveAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  removeDatasourceIdDataSourceDataSourceSectors!: Sequelize.BelongsToManyRemoveAssociationsMixin<
+  removeDataSources!: Sequelize.HasManyRemoveAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  hasDatasourceIdDataSourceDataSourceSector!: Sequelize.BelongsToManyHasAssociationMixin<
+  hasDataSource!: Sequelize.HasManyHasAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  hasDatasourceIdDataSourceDataSourceSectors!: Sequelize.BelongsToManyHasAssociationsMixin<
+  hasDataSources!: Sequelize.HasManyHasAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  countDatasourceIdDataSourceDataSourceSectors!: Sequelize.BelongsToManyCountAssociationsMixin;
-  // Sector hasMany DataSourceSector via sectorId
-  dataSourceSectors!: DataSourceSector[];
-  getDataSourceSectors!: Sequelize.HasManyGetAssociationsMixin<DataSourceSector>;
-  setDataSourceSectors!: Sequelize.HasManySetAssociationsMixin<
-    DataSourceSector,
-    DataSourceSectorId
-  >;
-  addDataSourceSector!: Sequelize.HasManyAddAssociationMixin<
-    DataSourceSector,
-    DataSourceSectorId
-  >;
-  addDataSourceSectors!: Sequelize.HasManyAddAssociationsMixin<
-    DataSourceSector,
-    DataSourceSectorId
-  >;
-  createDataSourceSector!: Sequelize.HasManyCreateAssociationMixin<DataSourceSector>;
-  removeDataSourceSector!: Sequelize.HasManyRemoveAssociationMixin<
-    DataSourceSector,
-    DataSourceSectorId
-  >;
-  removeDataSourceSectors!: Sequelize.HasManyRemoveAssociationsMixin<
-    DataSourceSector,
-    DataSourceSectorId
-  >;
-  hasDataSourceSector!: Sequelize.HasManyHasAssociationMixin<
-    DataSourceSector,
-    DataSourceSectorId
-  >;
-  hasDataSourceSectors!: Sequelize.HasManyHasAssociationsMixin<
-    DataSourceSector,
-    DataSourceSectorId
-  >;
-  countDataSourceSectors!: Sequelize.HasManyCountAssociationsMixin;
+  countDataSources!: Sequelize.HasManyCountAssociationsMixin;
   // Sector hasMany SectorValue via sectorId
   sectorValues!: SectorValue[];
   getSectorValues!: Sequelize.HasManyGetAssociationsMixin<SectorValue>;

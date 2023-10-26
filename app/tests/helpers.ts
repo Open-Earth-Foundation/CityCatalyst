@@ -1,7 +1,6 @@
 import { AppSession, Auth } from "@/lib/auth";
 import env from "@next/env";
 import { NextRequest } from "next/server";
-import { randomUUID } from "node:crypto";
 import { mock } from "node:test";
 
 const mockUrl = "http://localhost:3000/api/v0";

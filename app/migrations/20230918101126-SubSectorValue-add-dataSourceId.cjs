@@ -3,14 +3,14 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    queryInterface.addColumn(
-      "SubSectorValue",
-      "datasource_id",
-      Sequelize.UUID,
-    );
-    queryInterface.addConstraint(
-      "SubSectorValue",
-      {
+    return queryInterface.sequelize.transaction(async (transaction) => {
+      await queryInterface.addColumn(
+        "SubSectorValue",
+        "datasource_id",
+        Sequelize.UUID,
+        { transaction },
+      );
+      await queryInterface.addConstraint("SubSectorValue", {
         type: "foreign key",
         name: "FK_SubSectorValue_datasource_id",
         fields: ["datasource_id"],
@@ -20,15 +20,21 @@ module.exports = {
         },
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
-      },
-    );
+        transaction,
+      });
+    });
   },
 
   async down(queryInterface) {
-    queryInterface.removeConstraint(
-      "SubSectorValue",
-      "FK_SubSectorValue_datasource_id",
-    );
-    queryInterface.removeColumn("SubSectorValue", "datasource_id");
+    return queryInterface.sequelize.transaction(async (transaction) => {
+      await queryInterface.removeConstraint(
+        "SubSectorValue",
+        "FK_SubSectorValue_datasource_id",
+        { transaction },
+      );
+      await queryInterface.removeColumn("SubSectorValue", "datasource_id", {
+        transaction,
+      });
+    });
   },
 };

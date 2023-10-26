@@ -46,21 +46,6 @@ import type {
   DataSourceScopeAttributes,
   DataSourceScopeCreationAttributes,
 } from "./DataSourceScope";
-import { DataSourceSector as _DataSourceSector } from "./DataSourceSector";
-import type {
-  DataSourceSectorAttributes,
-  DataSourceSectorCreationAttributes,
-} from "./DataSourceSector";
-import { DataSourceSubCategory as _DataSourceSubCategory } from "./DataSourceSubCategory";
-import type {
-  DataSourceSubCategoryAttributes,
-  DataSourceSubCategoryCreationAttributes,
-} from "./DataSourceSubCategory";
-import { DataSourceSubSector as _DataSourceSubSector } from "./DataSourceSubSector";
-import type {
-  DataSourceSubSectorAttributes,
-  DataSourceSubSectorCreationAttributes,
-} from "./DataSourceSubSector";
 import { EmissionsFactor as _EmissionsFactor } from "./EmissionsFactor";
 import type {
   EmissionsFactorAttributes,
@@ -124,11 +109,6 @@ import type {
   SubSectorReportingLevelAttributes,
   SubSectorReportingLevelCreationAttributes,
 } from "./SubSectorReportingLevel";
-import { SubSectorScope as _SubSectorScope } from "./SubSectorScope";
-import type {
-  SubSectorScopeAttributes,
-  SubSectorScopeCreationAttributes,
-} from "./SubSectorScope";
 import { SubSectorValue as _SubSectorValue } from "./SubSectorValue";
 import type {
   SubSectorValueAttributes,
@@ -150,9 +130,6 @@ export {
   _DataSourceMethodology as DataSourceMethodology,
   _DataSourceReportingLevel as DataSourceReportingLevel,
   _DataSourceScope as DataSourceScope,
-  _DataSourceSector as DataSourceSector,
-  _DataSourceSubCategory as DataSourceSubCategory,
-  _DataSourceSubSector as DataSourceSubSector,
   _EmissionsFactor as EmissionsFactor,
   _GDP as GDP,
   _GHGs as GHGs,
@@ -168,7 +145,6 @@ export {
   _SubCategoryValue as SubCategoryValue,
   _SubSector as SubSector,
   _SubSectorReportingLevel as SubSectorReportingLevel,
-  _SubSectorScope as SubSectorScope,
   _SubSectorValue as SubSectorValue,
   _User as User,
   _Version as Version,
@@ -195,12 +171,6 @@ export type {
   DataSourceReportingLevelCreationAttributes,
   DataSourceScopeAttributes,
   DataSourceScopeCreationAttributes,
-  DataSourceSectorAttributes,
-  DataSourceSectorCreationAttributes,
-  DataSourceSubCategoryAttributes,
-  DataSourceSubCategoryCreationAttributes,
-  DataSourceSubSectorAttributes,
-  DataSourceSubSectorCreationAttributes,
   EmissionsFactorAttributes,
   EmissionsFactorCreationAttributes,
   GDPAttributes,
@@ -231,8 +201,6 @@ export type {
   SubSectorCreationAttributes,
   SubSectorReportingLevelAttributes,
   SubSectorReportingLevelCreationAttributes,
-  SubSectorScopeAttributes,
-  SubSectorScopeCreationAttributes,
   SubSectorValueAttributes,
   SubSectorValueCreationAttributes,
   UserAttributes,
@@ -254,9 +222,6 @@ export function initModels(sequelize: Sequelize) {
   const DataSourceReportingLevel =
     _DataSourceReportingLevel.initModel(sequelize);
   const DataSourceScope = _DataSourceScope.initModel(sequelize);
-  const DataSourceSector = _DataSourceSector.initModel(sequelize);
-  const DataSourceSubCategory = _DataSourceSubCategory.initModel(sequelize);
-  const DataSourceSubSector = _DataSourceSubSector.initModel(sequelize);
   const EmissionsFactor = _EmissionsFactor.initModel(sequelize);
   const GDP = _GDP.initModel(sequelize);
   const GHGs = _GHGs.initModel(sequelize);
@@ -272,7 +237,6 @@ export function initModels(sequelize: Sequelize) {
   const SubCategoryValue = _SubCategoryValue.initModel(sequelize);
   const SubSector = _SubSector.initModel(sequelize);
   const SubSectorReportingLevel = _SubSectorReportingLevel.initModel(sequelize);
-  const SubSectorScope = _SubSectorScope.initModel(sequelize);
   const SubSectorValue = _SubSectorValue.initModel(sequelize);
   const User = _User.initModel(sequelize);
   const Version = _Version.initModel(sequelize);
@@ -319,23 +283,17 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "datasourceId",
     otherKey: "scopeId",
   });
-  DataSource.belongsToMany(Sector, {
-    as: "sectorIdSectors",
-    through: DataSourceSector,
+  DataSource.hasOne(Sector, {
+    as: "sector",
     foreignKey: "datasourceId",
-    otherKey: "sectorId",
   });
-  DataSource.belongsToMany(SubCategory, {
-    as: "subcategoryIdSubCategories",
-    through: DataSourceSubCategory,
+  DataSource.hasOne(SubCategory, {
+    as: "subCategory",
     foreignKey: "datasourceId",
-    otherKey: "subcategoryId",
   });
-  DataSource.belongsToMany(SubSector, {
-    as: "subsectorIdSubSectors",
-    through: DataSourceSubSector,
+  DataSource.hasOne(SubSector, {
+    as: "subSector",
     foreignKey: "datasourceId",
-    otherKey: "subsectorId",
   });
   SubSectorValue.belongsTo(DataSource, {
     as: "dataSource",
@@ -381,29 +339,21 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "scopeId",
     otherKey: "datasourceId",
   });
-  Scope.belongsToMany(SubSector, {
-    as: "subsectorIdSubSectorSubSectorScopes",
-    through: SubSectorScope,
+  Scope.hasMany(SubSector, {
+    as: "subsectors",
     foreignKey: "scopeId",
-    otherKey: "subsectorId",
   });
-  Sector.belongsToMany(DataSource, {
-    as: "datasourceIdDataSourceDataSourceSectors",
-    through: DataSourceSector,
+  Sector.hasMany(DataSource, {
+    as: "dataSources",
     foreignKey: "sectorId",
-    otherKey: "datasourceId",
   });
-  SubCategory.belongsToMany(DataSource, {
-    as: "datasourceIdDataSourceDataSourceSubCategories",
-    through: DataSourceSubCategory,
+  SubCategory.hasMany(DataSource, {
+    as: "dataSources",
     foreignKey: "subcategoryId",
-    otherKey: "datasourceId",
   });
-  SubSector.belongsToMany(DataSource, {
-    as: "datasourceIdDataSourceDataSourceSubSectors",
-    through: DataSourceSubSector,
+  SubSector.hasMany(DataSource, {
+    as: "dataSources",
     foreignKey: "subsectorId",
-    otherKey: "datasourceId",
   });
   SubSector.belongsToMany(ReportingLevel, {
     as: "reportinglevelIdReportingLevelSubSectorReportingLevels",
@@ -411,11 +361,9 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "subsectorId",
     otherKey: "reportinglevelId",
   });
-  SubSector.belongsToMany(Scope, {
-    as: "scopeIdScopeSubSectorScopes",
-    through: SubSectorScope,
-    foreignKey: "subsectorId",
-    otherKey: "scopeId",
+  SubSector.hasOne(Scope, {
+    as: "scope",
+    foreignKey: "scopeId",
   });
   DataSourceActivityData.belongsTo(ActivityData, {
     as: "activitydatum",
@@ -489,30 +437,6 @@ export function initModels(sequelize: Sequelize) {
   });
   DataSource.hasMany(DataSourceScope, {
     as: "dataSourceScopes",
-    foreignKey: "datasourceId",
-  });
-  DataSourceSector.belongsTo(DataSource, {
-    as: "datasource",
-    foreignKey: "datasourceId",
-  });
-  DataSource.hasMany(DataSourceSector, {
-    as: "dataSourceSectors",
-    foreignKey: "datasourceId",
-  });
-  DataSourceSubCategory.belongsTo(DataSource, {
-    as: "datasource",
-    foreignKey: "datasourceId",
-  });
-  DataSource.hasMany(DataSourceSubCategory, {
-    as: "dataSourceSubCategories",
-    foreignKey: "datasourceId",
-  });
-  DataSourceSubSector.belongsTo(DataSource, {
-    as: "datasource",
-    foreignKey: "datasourceId",
-  });
-  DataSource.hasMany(DataSourceSubSector, {
-    as: "dataSourceSubSectors",
     foreignKey: "datasourceId",
   });
   GDP.belongsTo(DataSource, { as: "datasource", foreignKey: "datasourceId" });
@@ -642,16 +566,6 @@ export function initModels(sequelize: Sequelize) {
   });
   SubCategory.belongsTo(Scope, { as: "scope", foreignKey: "scopeId" });
   Scope.hasMany(SubCategory, { as: "subCategories", foreignKey: "scopeId" });
-  SubSectorScope.belongsTo(Scope, { as: "scope", foreignKey: "scopeId" });
-  Scope.hasMany(SubSectorScope, {
-    as: "subSectorScopes",
-    foreignKey: "scopeId",
-  });
-  DataSourceSector.belongsTo(Sector, { as: "sector", foreignKey: "sectorId" });
-  Sector.hasMany(DataSourceSector, {
-    as: "dataSourceSectors",
-    foreignKey: "sectorId",
-  });
   SectorValue.belongsTo(Sector, { as: "sector", foreignKey: "sectorId" });
   Sector.hasMany(SectorValue, { as: "sectorValues", foreignKey: "sectorId" });
   SubSector.belongsTo(Sector, { as: "sector", foreignKey: "sectorId" });
@@ -680,14 +594,6 @@ export function initModels(sequelize: Sequelize) {
     as: "activityData",
     foreignKey: "subcategoryId",
   });
-  DataSourceSubCategory.belongsTo(SubCategory, {
-    as: "subcategory",
-    foreignKey: "subcategoryId",
-  });
-  SubCategory.hasMany(DataSourceSubCategory, {
-    as: "dataSourceSubCategories",
-    foreignKey: "subcategoryId",
-  });
   SubCategoryValue.belongsTo(SubCategory, {
     as: "subcategory",
     foreignKey: "subcategoryId",
@@ -695,14 +601,6 @@ export function initModels(sequelize: Sequelize) {
   SubCategory.hasMany(SubCategoryValue, {
     as: "subCategoryValues",
     foreignKey: "subcategoryId",
-  });
-  DataSourceSubSector.belongsTo(SubSector, {
-    as: "subsector",
-    foreignKey: "subsectorId",
-  });
-  SubSector.hasMany(DataSourceSubSector, {
-    as: "dataSourceSubSectors",
-    foreignKey: "subsectorId",
   });
   SubCategory.belongsTo(SubSector, {
     as: "subsector",
@@ -718,14 +616,6 @@ export function initModels(sequelize: Sequelize) {
   });
   SubSector.hasMany(SubSectorReportingLevel, {
     as: "subSectorReportingLevels",
-    foreignKey: "subsectorId",
-  });
-  SubSectorScope.belongsTo(SubSector, {
-    as: "subsector",
-    foreignKey: "subsectorId",
-  });
-  SubSector.hasMany(SubSectorScope, {
-    as: "subSectorScopes",
     foreignKey: "subsectorId",
   });
   SubSectorValue.belongsTo(SubSector, {
@@ -750,9 +640,6 @@ export function initModels(sequelize: Sequelize) {
     DataSourceMethodology: DataSourceMethodology,
     DataSourceReportingLevel: DataSourceReportingLevel,
     DataSourceScope: DataSourceScope,
-    DataSourceSector: DataSourceSector,
-    DataSourceSubCategory: DataSourceSubCategory,
-    DataSourceSubSector: DataSourceSubSector,
     EmissionsFactor: EmissionsFactor,
     GDP: GDP,
     GHGs: GHGs,
@@ -768,7 +655,6 @@ export function initModels(sequelize: Sequelize) {
     SubCategoryValue: SubCategoryValue,
     SubSector: SubSector,
     SubSectorReportingLevel: SubSectorReportingLevel,
-    SubSectorScope: SubSectorScope,
     SubSectorValue: SubSectorValue,
     User: User,
     Version: Version,

@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const GET = apiHandler(async (req: NextRequest, { params }) => {
   const subsectorValue = await db.models.SubSectorValue.findOne({
-    where: { subsectorValueId: params.subsectorValue },
+    where: { subsectorValueId: params.subsector },
   });
   if (!subsectorValue) {
     throw new createHttpError.NotFound("Sub sector value not found");
@@ -17,7 +17,7 @@ export const GET = apiHandler(async (req: NextRequest, { params }) => {
 export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   const body = createSubSectorValueRequest.parse(await req.json());
   let subsectorValue = await db.models.SubSectorValue.findOne({
-    where: { subsectorValueId: params.subsectorValue },
+    where: { subsectorValueId: params.subsector },
   });
 
   if (!subsectorValue) {
@@ -32,7 +32,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
 export const DELETE = apiHandler(async (req: NextRequest, { params }) => {
   const subsectorValue = await db.models.SubSectorValue.findOne({
     where: {
-      subsectorValueId: params.subsectorValue,
+      subsectorValueId: params.subsector,
     },
   });
   if (!subsectorValue) {

@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const GET = apiHandler(async (req: NextRequest, { params }) => {
   const sectorValue = await db.models.SectorValue.findOne({
     where: {
-      sectorValueId: params.sectorValue,
+      sectorValueId: params.sector,
     },
   });
 
@@ -21,7 +21,7 @@ export const GET = apiHandler(async (req: NextRequest, { params }) => {
 export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   const body = createSectorValueRequest.parse(await req.json());
   let sectorValue = await db.models.SectorValue.findOne({
-    where: { sectorValueId: params.sectorValue },
+    where: { sectorValueId: params.sector },
   });
 
   if (!sectorValue) {
@@ -36,7 +36,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
 export const DELETE = apiHandler(async (req: NextRequest, { params }) => {
   const sectorValue = await db.models.SectorValue.findOne({
     where: {
-      sectorValueId: params.sectorValue,
+      sectorValueId: params.sector,
     },
   });
   if (!sectorValue) {

@@ -364,12 +364,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                         error={errors.email}
                         id="email"
                       />
-                      <FormInput
-                        label="City or Region"
-                        register={register}
-                        error={errors.city}
-                        id="city"
-                      />
+
                       <FormSelectInput
                         label="Role"
                         value={inputValue}

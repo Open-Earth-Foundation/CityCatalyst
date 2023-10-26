@@ -4,7 +4,7 @@ metadata:
   name: cc-db
 spec:
   selector:
-    app: db
+    app: cc-db
   ports:
   - protocol: TCP
     port: 5432

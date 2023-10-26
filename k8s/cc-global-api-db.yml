@@ -4,7 +4,7 @@ metadata:
   name: cc-global-api-db
 spec:
   selector:
-    app: db
+    app: global-api-db
   ports:
   - protocol: TCP
     port: 5432

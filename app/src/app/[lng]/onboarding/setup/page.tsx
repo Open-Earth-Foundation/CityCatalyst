@@ -25,6 +25,7 @@ import {
   Select,
   Text,
   useSteps,
+  useToast,
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -39,14 +40,19 @@ import { MdOutlineAspectRatio, MdOutlinePeopleAlt } from "react-icons/md";
 import { Link } from "@chakra-ui/next-js";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { TFunction } from "i18next";
-import { useAddCityMutation, useGetOCCityQuery } from "@/services/api";
+import {
+  useAddCityMutation,
+  useAddInventoryMutation,
+  useGetOCCityQuery,
+  useSetUserInfoMutation,
+} from "@/services/api";
 import RecentSearches from "@/components/recent-searches";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { set } from "@/features/city/openclimateCitySlice";
 import { OCCityArributes } from "@/models/City";
 
 type Inputs = {
-  city: String;
+  city: string;
   year: number;
 };
 
@@ -105,7 +111,7 @@ function SetupStep({
     }
   }, [cityInputQuery, yearValue]);
 
-  // import custom redux-hooks
+  // import custom redux hooks
   const {
     data: cities,
     isLoading,
@@ -131,6 +137,7 @@ function SetupStep({
 
     return pathString;
   };
+
   return (
     <>
       <div>
@@ -329,6 +336,7 @@ export default function OnboardingSetup({
 }) {
   const { t } = useTranslation(lng, "onboarding");
   const router = useRouter();
+  const toast = useToast();
   const {
     handleSubmit,
     register,
@@ -344,39 +352,77 @@ export default function OnboardingSetup({
   });
 
   const [addCity] = useAddCityMutation();
+  const [addInventory] = useAddInventoryMutation();
+  const [setUserInfo] = useSetUserInfoMutation();
 
-  type City = {
+  const [data, setData] = useState<{
     name: string;
     locode: string;
-  };
-
-  const [data, setData] = useState<City>({ name: "", locode: "" });
+    year: number;
+  }>({ name: "", locode: "", year: -1 });
 
   const [isConfirming, setConfirming] = useState(false);
 
   const storedData = useAppSelector((state) => state.openClimateCity);
 
   const onSubmit: SubmitHandler<Inputs> = async (newData) => {
-    const city = {
+    const year = Number(newData.year);
+    if (!newData.city || !storedData.city?.actor_id || year < 0) {
+      return;
+    }
+
+    setData({
       name: newData.city,
       locode: storedData.city?.actor_id,
-    } as any;
-    setData(city);
+      year,
+    });
 
     goToNext();
   };
 
+  const makeErrorToast = (title: string, description?: string) => {
+    toast({
+      title,
+      description,
+      status: "error",
+      isClosable: true,
+    });
+  };
+
   const onConfirm = async () => {
-    // TODO actually save data in backend here
+    // save data in backend
     setConfirming(true);
-    const formdata = {
-      name: data.name,
-      locode: data.locode,
-    };
-    addCity(formdata);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setConfirming(false);
-    router.push("/onboarding/done/" + storedData.city?.actor_id);
+    try {
+      await addCity({
+        name: data.name,
+        locode: data.locode,
+      }).unwrap();
+    } catch (err: any) {
+      // if the city exists, continue (can still add new inventory year)
+      if (err.data?.error?.message !== "Entity exists already.") {
+        makeErrorToast("Failed to add city!", err.data?.error?.message);
+        setConfirming(false);
+        return;
+      }
+    }
+
+    try {
+      await addInventory({
+        locode: data.locode,
+        year: data.year,
+        inventoryName: `${data.name} - ${data.year}`,
+      }).unwrap();
+      await setUserInfo({
+        defaultCityLocode: data.locode,
+        defaultInventoryYear: data.year,
+      }).unwrap();
+      setConfirming(false);
+      router.push("/onboarding/done/" + data.locode);
+    } catch (err: any) {
+      console.error("Failed to create new inventory!", err);
+      makeErrorToast("Failed to create inventory!", err.data?.error?.message);
+      setConfirming(false);
+    }
   };
 
   return (

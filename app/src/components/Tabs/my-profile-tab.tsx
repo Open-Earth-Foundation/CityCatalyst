@@ -217,7 +217,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
               fontFamily="body"
               fontStyle="normal"
             >
-              My Profile
+              {t("my-profile")}
             </Text>
             <Text
               color="content.tertiary"
@@ -228,7 +228,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
               letterSpacing="wide"
               marginTop="8px"
             >
-              Here you can find and edit all your profile information.
+              {t("my-profile-sub-title")}
             </Text>
           </Box>
           <Box>
@@ -262,7 +262,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                     borderColor: "content.link",
                   }}
                 >
-                  Account Details
+                  {t("account-details")}
                 </Tab>
                 <Tab
                   sx={{
@@ -287,7 +287,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                     borderColor: "content.link",
                   }}
                 >
-                  Users
+                  {t("users")}
                 </Tab>
                 <Tab
                   sx={{
@@ -312,7 +312,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                     borderColor: "content.link",
                   }}
                 >
-                  City
+                  {t("city")}
                 </Tab>
               </TabList>
 
@@ -332,7 +332,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                       fontFamily="body"
                       fontStyle="normal"
                     >
-                      Account Details
+                      {t("account-details")}
                     </Text>
                     <Text
                       color="content.tertiary"
@@ -343,7 +343,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                       letterSpacing="wide"
                       marginTop="8px"
                     >
-                      Here you can find and edit all your profile information.
+                      {t("my-profile-sub-title")}
                     </Text>
                   </Box>
                   <Box display="flex" flexDirection="column" gap="24px">
@@ -352,13 +352,13 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                       className="flex flex-col gap-[24px]"
                     >
                       <FormInput
-                        label="Full Name"
+                        label={t("full-name")}
                         register={register}
                         error={errors.name}
                         id="name"
                       />
                       <FormInput
-                        label="Email"
+                        label={t("email")}
                         isDisabled
                         register={register}
                         error={errors.email}
@@ -366,7 +366,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                       />
 
                       <FormSelectInput
-                        label="Role"
+                        label={t("role")}
                         value={inputValue}
                         register={register}
                         error={errors.role}
@@ -382,7 +382,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                         <Button
                           type="submit"
                           h="48px"
-                          w="169px"
+                          w="auto"
                           paddingTop="16px"
                           paddingBottom="16px"
                           paddingLeft="24px"
@@ -392,7 +392,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                           fontWeight="semibold"
                           fontSize="button.md"
                         >
-                          save changes
+                          {t("save-changes")}
                         </Button>
                       </Box>
                     </form>
@@ -416,15 +416,16 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                       fontWeight="semibold"
                       lineHeight="24px"
                       color="content.secondary"
+                      textTransform="capitalize"
                     >
-                      Manage Users
+                      {t("manage-users")}
                     </Text>
                     <Button
                       aria-label="Add User"
                       leftIcon={<AddIcon />}
                       type="submit"
                       h="48px"
-                      w="169px"
+                      w="auto"
                       gap="8px"
                       paddingTop="16px"
                       paddingBottom="16px"
@@ -436,7 +437,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                       fontSize="button.md"
                       onClick={onUserModalOpen}
                     >
-                      add user
+                      {t("add-user")}
                     </Button>
                   </Box>
                   <Box display="flex" justifyContent="space-between">
@@ -467,7 +468,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                           fontFamily="heading"
                           letterSpacing="wide"
                           color="content.tertiary"
-                          placeholder="Search by name or email address"
+                          placeholder={t("search-filter-placeholder")}
                           border="none"
                           h="100%"
                           onChange={(e) => setSearchTerm(e.target.value)}
@@ -481,9 +482,9 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                         borderColor="border.neutral"
                         onChange={(e) => setRole(e.target.value)}
                       >
-                        <option value="all">ALL</option>
-                        <option value="admin">ADMIN</option>
-                        <option value="contributer">CONTRIBUTER</option>
+                        <option value="all">{t("all")}</option>
+                        <option value="admin">{t("admin")}</option>
+                        <option value="contributer">{t("contribuiter")}</option>
                       </Select>
                     </Box>
                     <Box display="flex" alignItems="center" gap="8px">
@@ -539,7 +540,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                           fontWeight="normal"
                           letterSpacing="wide"
                         >
-                          {selectedUsers.length} Selected users
+                          {selectedUsers.length} {t("selected-users")}
                         </Text>
                       </Box>
                       <Box>
@@ -553,7 +554,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                           leftIcon={<FiTrash2 size={24} />}
                           variant="ghost"
                         >
-                          Remove users
+                          {t("remove-users")}
                         </Button>
                       </Box>
                     </Box>
@@ -568,10 +569,10 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                       >
                         <Thead>
                           <Tr>
-                            <Th>SELECT</Th>
-                            <Th>NAME</Th>
-                            <Th>EMAIL</Th>
-                            <Th>ROLE</Th>
+                            <Th>{t("select")}</Th>
+                            <Th>{t("name")}</Th>
+                            <Th>{t("email")}</Th>
+                            <Th>{t("role")}</Th>
                           </Tr>
                         </Thead>
                         <Tbody fontFamily="heading">
@@ -624,7 +625,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                                       : "sentiment.warningOverlay"
                                   }
                                 >
-                                  {user.role}
+                                  {t(`${user.role}`)}
                                 </Badge>
                                 <Popover isLazy>
                                   <PopoverTrigger>
@@ -637,7 +638,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                                   </PopoverTrigger>
                                   <PopoverContent
                                     h="128px"
-                                    w="175px"
+                                    w="250px"
                                     borderRadius="8px"
                                     shadow="2dp"
                                     borderWidth="1px"
@@ -678,7 +679,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                                             fontWeight="normal"
                                             fontSize="body.lg"
                                           >
-                                            Edit User
+                                            {t("edit-user")}
                                           </Text>
                                         </ListItem>
                                         <ListItem
@@ -708,7 +709,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                                             fontWeight="normal"
                                             fontSize="body.lg"
                                           >
-                                            Remove User
+                                            {t("remove-user")}
                                           </Text>
                                         </ListItem>
                                       </List>
@@ -742,7 +743,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                       lineHeight="24px"
                       color="content.secondary"
                     >
-                      Cities
+                      {t("city")}
                     </Text>
                     <NextLink href="/onboarding/setup">
                       <Button
@@ -750,7 +751,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                         leftIcon={<AddIcon />}
                         type="submit"
                         h="48px"
-                        w="169px"
+                        w="auto"
                         gap="8px"
                         paddingTop="16px"
                         paddingBottom="16px"
@@ -761,7 +762,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                         fontWeight="semibold"
                         fontSize="button.md"
                       >
-                        add city
+                        {t("add-user")}
                       </Button>
                     </NextLink>
                   </Box>
@@ -775,10 +776,10 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                       >
                         <Thead>
                           <Tr>
-                            <Th>CITY NAME</Th>
-                            <Th>STATE / PROVINCE</Th>
-                            <Th>PROVINCE</Th>
-                            <Th>LAST UPDATED</Th>
+                            <Th>{t("city-name")}</Th>
+                            <Th>{t("state-province")}</Th>
+                            <Th>{t("country")}</Th>
+                            <Th>{t("last-updated")}</Th>
                           </Tr>
                         </Thead>
                         <Tbody fontFamily="heading">
@@ -807,7 +808,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                                   </PopoverTrigger>
                                   <PopoverContent
                                     h="128px"
-                                    w="239px"
+                                    w="300px"
                                     borderRadius="8px"
                                     shadow="2dp"
                                     borderWidth="1px"
@@ -850,7 +851,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                                             fontSize="body.lg"
                                             className="group group-hover:text-white"
                                           >
-                                            Download City&apos;s Data
+                                            {t("download-city-data")}
                                           </Text>
                                         </ListItem>
                                         <ListItem
@@ -883,7 +884,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                                             fontSize="body.lg"
                                             className="group group-hover:text-white"
                                           >
-                                            Remove City
+                                            {t("remove-city")}
                                           </Text>
                                         </ListItem>
                                       </List>

@@ -293,7 +293,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
               fontFamily="body"
               fontStyle="normal"
             >
-              My Files
+              {t("my-files")}
             </Text>
             <Text
               color="content.tertiary"
@@ -304,8 +304,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
               letterSpacing="wide"
               marginTop="8px"
             >
-              Here you can find all your files uploaded, pending request
-              harmonization, and included in the GHG Inventory
+              {t("my-files-sub-title")}
             </Text>
           </Box>
 
@@ -318,7 +317,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
               letterSpacing="wide"
               marginTop="8px"
             >
-              City
+              {t("city")}
             </Text>
             <Tabs
               display="flex"
@@ -403,7 +402,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
                           setInventoryYear(null);
                         }}
                       >
-                        ALL INVENTORY YEARS{" "}
+                        {t("all-inventory-years")}{" "}
                       </Text>
                       <Text
                         color="content.link"
@@ -435,9 +434,9 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
                           >
                             <Thead>
                               <Tr>
-                                <Th>INVENTORY YEAR</Th>
-                                <Th>FILES</Th>
-                                <Th isNumeric>LAST UPDATED</Th>
+                                <Th>{t("inventory-year")}</Th>
+                                <Th>{t("files")}</Th>
+                                <Th isNumeric>{t("last-updated")}</Th>
                               </Tr>
                             </Thead>
                             <Tbody
@@ -502,10 +501,10 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
                           >
                             <Thead>
                               <Tr>
-                                <Th>NAME</Th>
-                                <Th>SECTOR</Th>
-                                <Th>STATUS</Th>
-                                <Th isNumeric>LAST UPDATED</Th>
+                                <Th>{t("name")}</Th>
+                                <Th>{t("sector")}</Th>
+                                <Th>{t("status")}</Th>
+                                <Th isNumeric>{t("last-updated")}</Th>
                               </Tr>
                             </Thead>
                             <Tbody
@@ -564,7 +563,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
                                               : "sentiment.positiveOverlay"
                                           }
                                         >
-                                          {file.status}
+                                          {t(`${file.status}`)}
                                         </Badge>
                                       </Td>
                                       <Td
@@ -632,7 +631,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
                                                     fontSize="body.lg"
                                                     className="group group-hover:text-white"
                                                   >
-                                                    Download File
+                                                    {t("download-file")}
                                                   </Text>
                                                 </ListItem>
                                                 <ListItem
@@ -664,7 +663,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
                                                     fontSize="body.lg"
                                                     className="group group-hover:text-white"
                                                   >
-                                                    Delete File
+                                                    {t("delete-file")}
                                                   </Text>
                                                 </ListItem>
                                               </List>

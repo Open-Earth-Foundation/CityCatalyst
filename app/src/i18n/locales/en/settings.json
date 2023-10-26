@@ -9,6 +9,14 @@
     "users": "Users",
     "city": "City",
     "full-name": "Full Name",
+    "manage-users": "manage users",
+    "search-filter-placeholder":"Search by name or email address",
+    "all": "All",
+    "select": "Select",
+    "city-name": "City Name",
+    "state-province": "State / Province",
+    "country": "Country",
+    "name": "Name",
     "email": "Email",
     "role": "Role",
     "admin": "Admin",
@@ -27,7 +35,7 @@
     "remove-user": "Remove User",
     "update-user": "Update User",
     "delete-user-prompt-message": "Are you sure you want to permanently remove user from your team?",
-    "download-city-data": "download City's Data",
+    "download-city-data": "Download City's Data",
     "remove-city": "Remove City",
     "remove-city-propmt-message": "Are you sure you want to permanently remove this city from CityCatalyst?",
     "password": "Password",
@@ -36,5 +44,7 @@
     "add-to-inventory": "Add to inventory",
     "download-file": "Download File",
     "delete-file": "Delete File",
-    "status": "Status"
+    "status": "Status",
+    "download-csv": "Download in CSV",
+    "delete-inventory": "Delete Inventory"
 }

@@ -64,7 +64,7 @@ export default function Settings({
               fontSize="headline.lg"
               fontFamily="body"
             >
-              Settings
+              {t("settings")}
             </Text>
             <Text
               color="content.tertiary"
@@ -75,8 +75,7 @@ export default function Settings({
               letterSpacing="wide"
               marginTop="8px"
             >
-              Connect third-party data or upload your own data in order to
-              compile your GHG inventory with GPC Basic methodology
+              {t("settings-sub-title")}
             </Text>
           </Box>
           <Box marginTop="48px" borderBottomColor={"border.overlay"}>
@@ -88,7 +87,7 @@ export default function Settings({
                     fontStyle="normal"
                     lineHeight="24px"
                   >
-                    My Profile
+                    {t("my-profile")}
                   </Text>
                 </Tab>
                 <Tab>
@@ -97,7 +96,7 @@ export default function Settings({
                     fontStyle="normal"
                     lineHeight="24px"
                   >
-                    My Files
+                    {t("my-files")}
                   </Text>
                 </Tab>
                 <Tab>
@@ -106,7 +105,7 @@ export default function Settings({
                     fontStyle="normal"
                     lineHeight="24px"
                   >
-                    My Inventories
+                    {t("my-inventories")}
                   </Text>
                 </Tab>
               </TabList>

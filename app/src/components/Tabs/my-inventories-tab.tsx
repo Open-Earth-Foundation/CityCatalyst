@@ -202,7 +202,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
               fontFamily="body"
               fontStyle="normal"
             >
-              My Inventories
+              {t("my-inventories")}
             </Text>
             <Text
               color="content.tertiary"
@@ -213,7 +213,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
               letterSpacing="wide"
               marginTop="8px"
             >
-              Here you can find all your inventories to edit or download.
+              {t("my-inventories-sub-title")}
             </Text>
           </Box>
 
@@ -226,7 +226,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
               letterSpacing="wide"
               marginTop="8px"
             >
-              City
+              {t("city")}
             </Text>
             <Tabs
               display="flex"
@@ -309,7 +309,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                         textTransform="uppercase"
                         cursor="pointer"
                       >
-                        ALL INVENTORY YEARS
+                        {t("all-inventory-years")}
                       </Text>
                     </Box>
                     <Box display="flex" flexDirection="column" gap="24px">
@@ -322,9 +322,9 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                         >
                           <Thead>
                             <Tr>
-                              <Th>INVENTORY YEAR</Th>
-                              <Th>STATUS</Th>
-                              <Th isNumeric>LAST UPDATED</Th>
+                              <Th>{t("inventory-year")}</Th>
+                              <Th>{t("status")}</Th>
+                              <Th isNumeric>{t("last-updated")}</Th>
                             </Tr>
                           </Thead>
                           <Tbody
@@ -378,7 +378,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                                     </PopoverTrigger>
                                     <PopoverContent
                                       h="128px"
-                                      w="239px"
+                                      w="260px"
                                       borderRadius="8px"
                                       shadow="2dp"
                                       borderWidth="1px"
@@ -420,7 +420,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                                               fontSize="body.lg"
                                               className="group group-hover:text-white"
                                             >
-                                              Download in CSV
+                                              {t("download-csv")}
                                             </Text>
                                           </ListItem>
                                           <ListItem
@@ -452,7 +452,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                                               fontSize="body.lg"
                                               className="group group-hover:text-white"
                                             >
-                                              Delete Inventory
+                                              {t("delete-inventory")}
                                             </Text>
                                           </ListItem>
                                         </List>

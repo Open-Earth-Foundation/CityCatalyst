@@ -10,9 +10,17 @@
     "city": "Ciudad",
     "full-name": "Nombre completo",
     "email": "Correo electrónico",
+    "manage-users": "gestionar usuarios",
     "role": "Rol",
+    "city-name": "Nombre de la ciudad",
+    "state-province": "Estado / Provincia",
+    "country": "País",
     "admin": "Administrador",
     "contributer": "Colaborador",
+    "name": "Nombre",
+    "all": "Añadir",
+    "select": "auswählen",
+    "search-filter-placeholder": "Buscar por nombre o dirección de correo electrónico",
     "save-changes": "Guardar cambios",
     "my-files-sub-title": "Aquí puede encontrar todos sus archivos subidos, pendientes de armonización de solicitudes e incluidos en el inventario de GEI",
     "all-inventory-years": "todos los años de inventario",
@@ -36,5 +44,7 @@
     "add-to-inventory": "Añadir al inventario",
     "download-file": "Descargar archivo",
     "delete-file": "Eliminar archivo",
-    "status": "Estado"
+    "status": "Estado",
+    "download-csv": "Descargar en CSV",
+    "delete-inventory": "Eliminar inventario"
 }

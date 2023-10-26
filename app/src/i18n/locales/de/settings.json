@@ -8,8 +8,16 @@
     "account-details": "Kontodetails",
     "users": "Benutzer",
     "city": "Stadt",
+    "select": "seleccionar",
+    "name": "Name",
+    "city-name": "Stadtname",
+    "state-province": "Bundesland / Provinz",
+    "country": "Land",
     "full-name": "Vollständiger Name",
+    "manage-users": "Benutzer verwalten",
     "email": "E-Mail",
+    "search-filter-placeholder": "Nach Name oder E-Mail-Adresse suchen",
+    "all": "Hinzufügen",
     "role": "Rolle",
     "admin": "Administrator",
     "contributer": "Mitwirkender",
@@ -36,5 +44,7 @@
     "add-to-inventory": "Zum Inventar hinzufügen",
     "download-file": "Datei herunterladen",
     "delete-file": "Datei löschen",
-    "status": "Status"
+    "status": "Status",
+    "download-csv": "Als CSV herunterladen",
+    "delete-inventory": "Inventar löschen"
 }

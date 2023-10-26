@@ -15,6 +15,7 @@ export interface SubCategoryAttributes {
   subcategoryId: string;
   subcategoryName?: string;
   activityName?: string;
+  referenceNumber?: string;
   subsectorId?: string;
   scopeId?: string;
   reportinglevelId?: string;
@@ -27,6 +28,7 @@ export type SubCategoryId = SubCategory[SubCategoryPk];
 export type SubCategoryOptionalAttributes =
   | "subcategoryName"
   | "activityName"
+  | "referenceNumber"
   | "subsectorId"
   | "scopeId"
   | "reportinglevelId"
@@ -44,6 +46,7 @@ export class SubCategory
   subcategoryId!: string;
   subcategoryName?: string;
   activityName?: string;
+  referenceNumber?: string;
   subsectorId?: string;
   scopeId?: string;
   reportinglevelId?: string;
@@ -219,6 +222,11 @@ export class SubCategory
           type: DataTypes.STRING(255),
           allowNull: true,
           field: "activity_name",
+        },
+        referenceNumber: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: "reference_number",
         },
         subsectorId: {
           type: DataTypes.UUID,

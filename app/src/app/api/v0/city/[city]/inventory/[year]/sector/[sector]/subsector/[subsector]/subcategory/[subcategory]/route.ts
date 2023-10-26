@@ -16,7 +16,7 @@ export const GET = apiHandler(async (req: NextRequest, { params }) => {
   return NextResponse.json({ data: subcategory });
 });
 
-export const UPDATE = apiHandler(async (req: NextRequest, { params }) => {
+export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   const body = createSubCategory.parse(await req.json());
   let subcategory = await db.models.SubSector.findOne({
     where: { subsectorId: params.subcategory },

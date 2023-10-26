@@ -53,6 +53,7 @@ export class CityUser
           primaryKey: true,
           defaultValue: Sequelize.UUIDV4,
           field: "city_user_id",
+          defaultValue: Sequelize.UUIDV4(),
         },
         userId: {
           type: DataTypes.UUID,

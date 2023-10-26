@@ -44,6 +44,9 @@ export class City
   extends Model<CityAttributes, CityCreationAttributes>
   implements CityAttributes
 {
+  users(users: any) {
+    throw new Error("Method not implemented.");
+  }
   cityId!: string;
   locode?: string;
   name?: string;

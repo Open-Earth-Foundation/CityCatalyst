@@ -40,6 +40,7 @@ export const appTheme = extendTheme({
       alternative: "#EFFDE5",
       overlay: "#C5CBF5",
       transparentGrey: "rgba(232, 234, 251, 0.20)",
+      backgroundLight: "#FAFAFA",
     },
 
     interactive: {
@@ -61,6 +62,7 @@ export const appTheme = extendTheme({
       warningDefault: "#C98300",
       warningOverlay: "#FEF8E1",
       negativeDefault: "#F23D33",
+      negativeOverlay: "#FFEAEE",
     },
 
     brandScheme: {
@@ -179,7 +181,9 @@ export const appTheme = extendTheme({
     "rounded-xl": "16px",
     "rounded-xxl": "20px",
   },
-
+  borders: {
+    inputBox: " 1px solid #D7D8FB",
+  },
   /*
   breakpoints: {
     xs: "360px",
@@ -355,6 +359,7 @@ export const appTheme = extendTheme({
       variants: {
         line: {
           tab: {
+            borderColor: "#E6E7FF",
             _selected: {
               color: "interactive.secondary",
               borderColor: "interactive.secondary",
@@ -382,6 +387,13 @@ export const appTheme = extendTheme({
       },
       defaultProps: {
         variant: "brand",
+      },
+    },
+    Progress: {
+      baseStyle: {
+        filledTrack: {
+          bg: "#24BE00",
+        },
       },
     },
   },

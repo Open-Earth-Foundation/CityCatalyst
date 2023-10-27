@@ -18,6 +18,7 @@ export default function PasswordInput({
   t,
   name = t("password"),
   id = "password",
+  w,
 }: {
   children?: React.ReactNode;
   error: FieldError | undefined;
@@ -25,12 +26,13 @@ export default function PasswordInput({
   t: Function;
   name?: String;
   id?: String;
+  w?: string;
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const handlePasswordVisibility = () => setShowPassword(!showPassword);
 
   return (
-    <FormControl isInvalid={!!error}>
+    <FormControl isInvalid={!!error} w={w}>
       <FormLabel>{name}</FormLabel>
       <InputGroup>
         <Input

@@ -95,3 +95,13 @@ export const createSubCategory = z.object({
 });
 
 export type CreateSubCategoryRequest = z.infer<typeof createSubCategory>;
+
+export const createUserRequest = z.object({
+  name: z.string().min(1),
+  isOrganization: z.boolean(),
+  email: z.string().email(),
+  role: z.string(),
+  organizationId: z.string().optional(),
+});
+
+export type CreateUserRequest = z.infer<typeof createUserRequest>;

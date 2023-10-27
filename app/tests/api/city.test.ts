@@ -9,7 +9,7 @@ import { CreateCityRequest } from "@/util/validation";
 import env from "@next/env";
 import assert from "node:assert";
 import { after, before, describe, it } from "node:test";
-import { createRequest } from "../helpers";
+import { createRequest, setupTests } from "../helpers";
 
 const city: CreateCityRequest = {
   locode: "XX_CITY",
@@ -37,8 +37,7 @@ const invalidCity = {
 
 describe("City API", () => {
   before(async () => {
-    const projectDir = process.cwd();
-    env.loadEnvConfig(projectDir);
+    setupTests();
     await db.initialize();
     await db.models.City.destroy({ where: { locode: city.locode } });
   });

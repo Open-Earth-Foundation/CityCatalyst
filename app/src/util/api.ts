@@ -1,3 +1,4 @@
+import { Auth } from "@/lib/auth";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
@@ -20,10 +21,13 @@ export function apiHandler(handler: NextHandler) {
         await db.initialize();
       }
 
-      // TODO JWT authentication logic here
-      // await jwtMiddleware(req);
+      const session = await Auth.getServerSession();
+      const context = {
+        ...props,
+        session,
+      };
 
-      return await handler(req, props);
+      return await handler(req, context);
     } catch (err) {
       return errorHandler(err, req);
     }

@@ -2,10 +2,6 @@ import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import type { ActivityData, ActivityDataId } from "./ActivityData";
 import type { DataSource, DataSourceId } from "./DataSource";
-import type {
-  DataSourceSubCategory,
-  DataSourceSubCategoryId,
-} from "./DataSourceSubCategory";
 import type { ReportingLevel, ReportingLevelId } from "./ReportingLevel";
 import type { Scope, ScopeId } from "./Scope";
 import type { SubCategoryValue, SubCategoryValueId } from "./SubCategoryValue";
@@ -15,6 +11,7 @@ export interface SubCategoryAttributes {
   subcategoryId: string;
   subcategoryName?: string;
   activityName?: string;
+  referenceNumber?: string;
   subsectorId?: string;
   scopeId?: string;
   reportinglevelId?: string;
@@ -27,6 +24,7 @@ export type SubCategoryId = SubCategory[SubCategoryPk];
 export type SubCategoryOptionalAttributes =
   | "subcategoryName"
   | "activityName"
+  | "referenceNumber"
   | "subsectorId"
   | "scopeId"
   | "reportinglevelId"
@@ -44,6 +42,7 @@ export class SubCategory
   subcategoryId!: string;
   subcategoryName?: string;
   activityName?: string;
+  referenceNumber?: string;
   subsectorId?: string;
   scopeId?: string;
   reportinglevelId?: string;
@@ -96,72 +95,39 @@ export class SubCategory
     ActivityDataId
   >;
   countActivityData!: Sequelize.HasManyCountAssociationsMixin;
-  // SubCategory belongsToMany DataSource via subcategoryId and datasourceId
-  datasourceIdDataSourceDataSourceSubCategories!: DataSource[];
-  getDatasourceIdDataSourceDataSourceSubCategories!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
-  setDatasourceIdDataSourceDataSourceSubCategories!: Sequelize.BelongsToManySetAssociationsMixin<
+  // SubCategory hasMany DataSource via subcategoryId
+  dataSources!: DataSource[];
+  getDataSources!: Sequelize.HasManyGetAssociationsMixin<DataSource>;
+  setDataSources!: Sequelize.HasManySetAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  addDatasourceIdDataSourceDataSourceSubCategory!: Sequelize.BelongsToManyAddAssociationMixin<
+  addDataSource!: Sequelize.HasManyAddAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  addDatasourceIdDataSourceDataSourceSubCategories!: Sequelize.BelongsToManyAddAssociationsMixin<
+  addDataSources!: Sequelize.HasManyAddAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  createDatasourceIdDataSourceDataSourceSubCategory!: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
-  removeDatasourceIdDataSourceDataSourceSubCategory!: Sequelize.BelongsToManyRemoveAssociationMixin<
+  createDataSource!: Sequelize.HasManyCreateAssociationMixin<DataSource>;
+  removeDataSource!: Sequelize.HasManyRemoveAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  removeDatasourceIdDataSourceDataSourceSubCategories!: Sequelize.BelongsToManyRemoveAssociationsMixin<
+  removeDataSources!: Sequelize.HasManyRemoveAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  hasDatasourceIdDataSourceDataSourceSubCategory!: Sequelize.BelongsToManyHasAssociationMixin<
+  hasDataSource!: Sequelize.HasManyHasAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  hasDatasourceIdDataSourceDataSourceSubCategories!: Sequelize.BelongsToManyHasAssociationsMixin<
+  hasDataSources!: Sequelize.HasManyHasAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  countDatasourceIdDataSourceDataSourceSubCategories!: Sequelize.BelongsToManyCountAssociationsMixin;
-  // SubCategory hasMany DataSourceSubCategory via subcategoryId
-  dataSourceSubCategories!: DataSourceSubCategory[];
-  getDataSourceSubCategories!: Sequelize.HasManyGetAssociationsMixin<DataSourceSubCategory>;
-  setDataSourceSubCategories!: Sequelize.HasManySetAssociationsMixin<
-    DataSourceSubCategory,
-    DataSourceSubCategoryId
-  >;
-  addDataSourceSubCategory!: Sequelize.HasManyAddAssociationMixin<
-    DataSourceSubCategory,
-    DataSourceSubCategoryId
-  >;
-  addDataSourceSubCategories!: Sequelize.HasManyAddAssociationsMixin<
-    DataSourceSubCategory,
-    DataSourceSubCategoryId
-  >;
-  createDataSourceSubCategory!: Sequelize.HasManyCreateAssociationMixin<DataSourceSubCategory>;
-  removeDataSourceSubCategory!: Sequelize.HasManyRemoveAssociationMixin<
-    DataSourceSubCategory,
-    DataSourceSubCategoryId
-  >;
-  removeDataSourceSubCategories!: Sequelize.HasManyRemoveAssociationsMixin<
-    DataSourceSubCategory,
-    DataSourceSubCategoryId
-  >;
-  hasDataSourceSubCategory!: Sequelize.HasManyHasAssociationMixin<
-    DataSourceSubCategory,
-    DataSourceSubCategoryId
-  >;
-  hasDataSourceSubCategories!: Sequelize.HasManyHasAssociationsMixin<
-    DataSourceSubCategory,
-    DataSourceSubCategoryId
-  >;
-  countDataSourceSubCategories!: Sequelize.HasManyCountAssociationsMixin;
+  countDataSources!: Sequelize.HasManyCountAssociationsMixin;
   // SubCategory hasMany SubCategoryValue via subcategoryId
   subCategoryValues!: SubCategoryValue[];
   getSubCategoryValues!: Sequelize.HasManyGetAssociationsMixin<SubCategoryValue>;
@@ -219,6 +185,11 @@ export class SubCategory
           type: DataTypes.STRING(255),
           allowNull: true,
           field: "activity_name",
+        },
+        referenceNumber: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: "reference_number",
         },
         subsectorId: {
           type: DataTypes.UUID,

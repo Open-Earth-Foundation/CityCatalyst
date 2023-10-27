@@ -10,7 +10,7 @@ import { FC, useEffect } from "react";
 import { GeoJSON, MapContainer, TileLayer, useMap } from "react-leaflet";
 
 export interface CityMapProps {
-  locode: string;
+  locode: string | null;
   width: number;
   height: number;
 }
@@ -33,7 +33,9 @@ function BoundingBoxFocus({ boundingBox }: { boundingBox?: number[] }) {
 }
 
 export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
-  const { data, isLoading } = api.useGetCityBoundaryQuery(locode);
+  const { data, isLoading } = api.useGetCityBoundaryQuery(locode!, {
+    skip: !locode,
+  });
   let boundingBox: number[] | undefined = [34, -37, 35, -38];
   if (data) {
     boundingBox = geoJSONBoundingBox(data);

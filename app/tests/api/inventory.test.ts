@@ -7,12 +7,11 @@ import { GET as calculateProgress } from "@/app/api/v0/city/[city]/inventory/[ye
 import { POST as createInventory } from "@/app/api/v0/city/[city]/inventory/route";
 import { db } from "@/models";
 import { CreateInventoryRequest } from "@/util/validation";
-import env from "@next/env";
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, beforeEach, describe, it } from "node:test";
 import { Op } from "sequelize";
-import { createRequest } from "../helpers";
+import { createRequest, setupTests } from "../helpers";
 import { SubSectorAttributes } from "@/models/SubSector";
 import { City } from "@/models/City";
 
@@ -36,11 +35,51 @@ const invalidInventory = {
   totalEmissions: "246kg co2eq",
 };
 
+const sector = {
+  sectorId: randomUUID(),
+  sectorName: "XX_INVENTORY_TEST_SECTOR",
+};
+
+const subSector1 = {
+  subsectorId: randomUUID(),
+  sectorId: sector.sectorId,
+  subsectorName: "XX_INVENTORY_TEST_SUBSECTOR_1",
+};
+
+const subSector2 = {
+  subsectorId: randomUUID(),
+  sectorId: sector.sectorId,
+  subsectorName: "XX_INVENTORY_TEST_SUBSECTOR_2",
+};
+
+const subCategory = {
+  subcategoryId: randomUUID(),
+  subcategoryName: "XX_INVENTORY_TEST_SUBCATEGORY",
+  sectorId: sector.sectorId,
+  subSectorId: subSector2.subsectorId,
+};
+
+const subSectorValue = {
+  activityValue: 10,
+  activityUnits: "kg",
+  emissionFactorValue: 10,
+  totalEmissions: 100,
+  subsectorId: subSector1.subsectorId,
+};
+
+const subCategoryValue = {
+  activityValue: 20,
+  activityUnits: "km",
+  emissionFactorValue: 20,
+  totalEmissions: 400,
+  subsectorId: subSector2.subsectorId,
+  subcategoryId: subCategory.subcategoryId,
+};
+
 describe("Inventory API", () => {
   let city: City;
   before(async () => {
-    const projectDir = process.cwd();
-    env.loadEnvConfig(projectDir);
+    setupTests();
     await db.initialize();
     // this also deletes all Sector/SubSectorValue instances associated with it (cascade)
     await db.models.Inventory.destroy({
@@ -50,21 +89,57 @@ describe("Inventory API", () => {
       where: { name: { [Op.like]: "XX_INVENTORY_TEST_%" } },
     });
     await db.models.City.destroy({ where: { locode } });
+    await db.models.SubCategory.destroy({
+      where: { subcategoryId: subCategory.subcategoryId },
+    });
+    await db.models.SubSector.destroy({
+      where: { subsectorId: subSector1.subsectorId },
+    });
+    await db.models.SubSector.destroy({
+      where: { subsectorId: subSector2.subsectorId },
+    });
+    await db.models.Sector.destroy({ where: { sectorId: sector.sectorId } });
     city = await db.models.City.create({ cityId: randomUUID(), locode });
+    await db.models.Sector.create(sector);
+    await db.models.SubSector.create(subSector1);
+    await db.models.SubSector.create(subSector2);
+    await db.models.SubCategory.create(subCategory);
   });
 
   beforeEach(async () => {
     await db.models.Inventory.destroy({
       where: { cityId: city.cityId },
     });
+    const inventoryId: string = randomUUID();
     await db.models.Inventory.create({
-      inventoryId: randomUUID(),
+      inventoryId,
       cityId: city.cityId,
       ...inventory,
+    });
+    await db.models.SubSectorValue.create({
+      inventoryId,
+      subsectorValueId: randomUUID(),
+      ...subSectorValue,
+    });
+    await db.models.SubCategoryValue.create({
+      inventoryId,
+      subcategoryValueId: randomUUID(),
+      ...subCategoryValue,
     });
   });
 
   after(async () => {
+    await db.models.SubCategory.destroy({
+      where: { subcategoryId: subCategory.subcategoryId },
+    });
+    await db.models.SubSector.destroy({
+      where: { subsectorId: subSector1.subsectorId },
+    });
+    await db.models.SubSector.destroy({
+      where: { subsectorId: subSector2.subsectorId },
+    });
+    await db.models.Sector.destroy({ where: { sectorId: sector.sectorId } });
+    await db.models.City.destroy({ where: { locode } });
     if (db.sequelize) await db.sequelize.close();
   });
 
@@ -108,6 +183,45 @@ describe("Inventory API", () => {
     assert.equal(data.inventoryName, inventory.inventoryName);
     assert.equal(data.year, inventory.year);
     assert.equal(data.totalEmissions, inventory.totalEmissions);
+  });
+
+  it("should find an inventory with csv format", async () => {
+    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}?format=csv`;
+    const req = createRequest(url);
+    const res = await findInventory(req, {
+      params: { city: locode, year: inventory.year.toString() },
+    });
+    assert.equal(res.status, 200);
+    assert.equal(res.headers.get("content-type"), "text/csv");
+    assert.ok(res.headers.get("content-disposition")?.startsWith("attachment"));
+    const csv = await res.text();
+    const lines = csv.split("\n");
+    assert.ok(lines.length > 0);
+    const headers = lines[0].split(",");
+    assert.equal(headers.length, 6);
+    assert.equal(headers, [
+      "Inventory Reference",
+      "Total Emissions",
+      "Activity Units",
+      "Activity Value",
+      "Emission Factor Value",
+      "Datasource ID",
+    ]);
+    assert.ok(lines.length > 1);
+    assert.strictEqual(lines.length, 3);
+    assert.ok(lines.slice(1).every((line) => line.split(",").length == 6));
+  });
+
+  it("should find an inventory with xls format", async () => {
+    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}?format=xls`;
+    const req = createRequest(url);
+    const res = await findInventory(req, {
+      params: { city: locode, year: inventory.year.toString() },
+    });
+    assert.equal(res.status, 200);
+    assert.equal(res.headers.get("content-type"), "application/vnd.ms-excel");
+    assert.ok(res.headers.get("content-disposition")?.startsWith("attachment"));
+    const body = await res.blob();
   });
 
   it("should not find non-existing inventories", async () => {

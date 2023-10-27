@@ -18,8 +18,10 @@ import {
 import i18next from "i18next";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import NextLink from "next/link";
 import { CircleFlag } from "react-circle-flags";
+import { FiSettings } from "react-icons/fi";
 import { MdLogout } from "react-icons/md";
 
 function countryFromLanguage(language: string) {
@@ -86,7 +88,10 @@ export function NavigationBar({
               size="md"
               minW="120px"
               leftIcon={
-                <CircleFlag countryCode={countryFromLanguage(i18next.language)} width="24" />
+                <CircleFlag
+                  countryCode={countryFromLanguage(i18next.language)}
+                  width="24"
+                />
               }
               rightIcon={isOpen ? <TriangleUpIcon /> : <TriangleDownIcon />}
               className="whitespace-nowrap normal-case"
@@ -147,8 +152,34 @@ export function NavigationBar({
               >
                 {session.user?.name}
               </MenuButton>
-              <MenuList zIndex={2000}>
-                <MenuItem onClick={() => signOut()}>
+              <MenuList
+                paddingTop="8px"
+                paddingBottom="8px"
+                shadow="2dp"
+                minW="150px"
+                display="flex"
+                flexDirection="column"
+                justifyContent="space-around"
+                height="128px"
+                zIndex={2000}
+              >
+                <NextLink href="/settings">
+                  <MenuItem paddingTop="12px" paddingBottom="12px" px="16px">
+                    <Icon
+                      as={FiSettings}
+                      boxSize={6}
+                      color="content.tertiary"
+                      mr={4}
+                    />
+                    {t("settings")}
+                  </MenuItem>
+                </NextLink>
+                <MenuItem
+                  paddingTop="12px"
+                  paddingBottom="12px"
+                  px="16px"
+                  onClick={() => signOut()}
+                >
                   <Icon
                     as={MdLogout}
                     boxSize={6}

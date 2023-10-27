@@ -19,15 +19,6 @@ import type {
   DataSourceReportingLevelId,
 } from "./DataSourceReportingLevel";
 import type { DataSourceScope, DataSourceScopeId } from "./DataSourceScope";
-import type { DataSourceSector, DataSourceSectorId } from "./DataSourceSector";
-import type {
-  DataSourceSubCategory,
-  DataSourceSubCategoryId,
-} from "./DataSourceSubCategory";
-import type {
-  DataSourceSubSector,
-  DataSourceSubSectorId,
-} from "./DataSourceSubSector";
 import type { EmissionsFactor, EmissionsFactorId } from "./EmissionsFactor";
 import type { GDP, GDPId } from "./GDP";
 import type { GHGs, GHGsId } from "./GHGs";
@@ -47,10 +38,12 @@ export interface DataSourceAttributes {
   url?: string;
   description?: string;
   accessType?: string;
-  geographicalLocation?: string;
+  geographicalLocation?: string; // comma separated list of locodes for either EARTH, country, region or city
+  startYear?: number; // inclusive
+  endYear?: number; // inclusive
   latestAccountingYear?: number;
   frequencyOfUpdate?: string;
-  spacialResolution?: string;
+  spacialResolution?: string; // TODO fix typo (spatial)
   language?: string;
   accessibility?: string;
   dataQuality?: string;
@@ -60,6 +53,9 @@ export interface DataSourceAttributes {
   publisherId?: string;
   retrievalMethod?: string;
   apiEndpoint?: string;
+  sectorId?: string;
+  subsectorId?: string;
+  subcategoryId?: string;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -73,6 +69,8 @@ export type DataSourceOptionalAttributes =
   | "description"
   | "accessType"
   | "geographicalLocation"
+  | "startYear"
+  | "endYear"
   | "latestAccountingYear"
   | "frequencyOfUpdate"
   | "spacialResolution"
@@ -85,6 +83,9 @@ export type DataSourceOptionalAttributes =
   | "publisherId"
   | "retrievalMethod"
   | "apiEndpoint"
+  | "sectorId"
+  | "subsectorId"
+  | "subcategoryId"
   | "created"
   | "lastUpdated";
 export type DataSourceCreationAttributes = Optional<
@@ -103,6 +104,8 @@ export class DataSource
   description?: string;
   accessType?: string;
   geographicalLocation?: string;
+  startYear?: number; // inclusive
+  endYear?: number; // inclusive
   latestAccountingYear?: number;
   frequencyOfUpdate?: string;
   spacialResolution?: string;
@@ -115,6 +118,9 @@ export class DataSource
   publisherId?: string;
   retrievalMethod?: string;
   apiEndpoint?: string;
+  sectorId?: string;
+  subsectorId?: string;
+  subcategoryId?: string;
   created?: Date;
   lastUpdated?: Date;
 
@@ -349,105 +355,30 @@ export class DataSource
     DataSourceScopeId
   >;
   countDataSourceScopes!: Sequelize.HasManyCountAssociationsMixin;
-  // DataSource hasMany DataSourceSector via datasourceId
-  dataSourceSectors!: DataSourceSector[];
-  getDataSourceSectors!: Sequelize.HasManyGetAssociationsMixin<DataSourceSector>;
-  setDataSourceSectors!: Sequelize.HasManySetAssociationsMixin<
-    DataSourceSector,
-    DataSourceSectorId
+  // DataSource hasOne Sector via sectorId
+  sector!: Sector;
+  getSector!: Sequelize.HasOneGetAssociationMixin<Sector>;
+  setSector!: Sequelize.HasOneSetAssociationMixin<
+    Sector,
+    SectorId
   >;
-  addDataSourceSector!: Sequelize.HasManyAddAssociationMixin<
-    DataSourceSector,
-    DataSourceSectorId
+  createSector!: Sequelize.HasOneCreateAssociationMixin<Sector>;
+  // DataSource hasOne SubCategory via subCategoryId
+  subCategory!: SubCategory;
+  getSubCategory!: Sequelize.HasOneGetAssociationMixin<SubCategory>;
+  setSubCategory!: Sequelize.HasOneSetAssociationMixin<
+    SubCategory,
+    SubCategoryId
   >;
-  addDataSourceSectors!: Sequelize.HasManyAddAssociationsMixin<
-    DataSourceSector,
-    DataSourceSectorId
+  createSubCategory!: Sequelize.HasOneCreateAssociationMixin<SubCategory>;
+  // DataSource hasOneSubSector via subSectorId
+  subSector!: SubSector;
+  getSubSector!: Sequelize.HasOneGetAssociationMixin<SubSector>;
+  setSubSector!: Sequelize.HasOneSetAssociationMixin<
+    SubSector,
+    SubSectorId
   >;
-  createDataSourceSector!: Sequelize.HasManyCreateAssociationMixin<DataSourceSector>;
-  removeDataSourceSector!: Sequelize.HasManyRemoveAssociationMixin<
-    DataSourceSector,
-    DataSourceSectorId
-  >;
-  removeDataSourceSectors!: Sequelize.HasManyRemoveAssociationsMixin<
-    DataSourceSector,
-    DataSourceSectorId
-  >;
-  hasDataSourceSector!: Sequelize.HasManyHasAssociationMixin<
-    DataSourceSector,
-    DataSourceSectorId
-  >;
-  hasDataSourceSectors!: Sequelize.HasManyHasAssociationsMixin<
-    DataSourceSector,
-    DataSourceSectorId
-  >;
-  countDataSourceSectors!: Sequelize.HasManyCountAssociationsMixin;
-  // DataSource hasMany DataSourceSubCategory via datasourceId
-  dataSourceSubCategories!: DataSourceSubCategory[];
-  getDataSourceSubCategories!: Sequelize.HasManyGetAssociationsMixin<DataSourceSubCategory>;
-  setDataSourceSubCategories!: Sequelize.HasManySetAssociationsMixin<
-    DataSourceSubCategory,
-    DataSourceSubCategoryId
-  >;
-  addDataSourceSubCategory!: Sequelize.HasManyAddAssociationMixin<
-    DataSourceSubCategory,
-    DataSourceSubCategoryId
-  >;
-  addDataSourceSubCategories!: Sequelize.HasManyAddAssociationsMixin<
-    DataSourceSubCategory,
-    DataSourceSubCategoryId
-  >;
-  createDataSourceSubCategory!: Sequelize.HasManyCreateAssociationMixin<DataSourceSubCategory>;
-  removeDataSourceSubCategory!: Sequelize.HasManyRemoveAssociationMixin<
-    DataSourceSubCategory,
-    DataSourceSubCategoryId
-  >;
-  removeDataSourceSubCategories!: Sequelize.HasManyRemoveAssociationsMixin<
-    DataSourceSubCategory,
-    DataSourceSubCategoryId
-  >;
-  hasDataSourceSubCategory!: Sequelize.HasManyHasAssociationMixin<
-    DataSourceSubCategory,
-    DataSourceSubCategoryId
-  >;
-  hasDataSourceSubCategories!: Sequelize.HasManyHasAssociationsMixin<
-    DataSourceSubCategory,
-    DataSourceSubCategoryId
-  >;
-  countDataSourceSubCategories!: Sequelize.HasManyCountAssociationsMixin;
-  // DataSource hasMany DataSourceSubSector via datasourceId
-  dataSourceSubSectors!: DataSourceSubSector[];
-  getDataSourceSubSectors!: Sequelize.HasManyGetAssociationsMixin<DataSourceSubSector>;
-  setDataSourceSubSectors!: Sequelize.HasManySetAssociationsMixin<
-    DataSourceSubSector,
-    DataSourceSubSectorId
-  >;
-  addDataSourceSubSector!: Sequelize.HasManyAddAssociationMixin<
-    DataSourceSubSector,
-    DataSourceSubSectorId
-  >;
-  addDataSourceSubSectors!: Sequelize.HasManyAddAssociationsMixin<
-    DataSourceSubSector,
-    DataSourceSubSectorId
-  >;
-  createDataSourceSubSector!: Sequelize.HasManyCreateAssociationMixin<DataSourceSubSector>;
-  removeDataSourceSubSector!: Sequelize.HasManyRemoveAssociationMixin<
-    DataSourceSubSector,
-    DataSourceSubSectorId
-  >;
-  removeDataSourceSubSectors!: Sequelize.HasManyRemoveAssociationsMixin<
-    DataSourceSubSector,
-    DataSourceSubSectorId
-  >;
-  hasDataSourceSubSector!: Sequelize.HasManyHasAssociationMixin<
-    DataSourceSubSector,
-    DataSourceSubSectorId
-  >;
-  hasDataSourceSubSectors!: Sequelize.HasManyHasAssociationsMixin<
-    DataSourceSubSector,
-    DataSourceSubSectorId
-  >;
-  countDataSourceSubSectors!: Sequelize.HasManyCountAssociationsMixin;
+  createSubSector!: Sequelize.HasOneCreateAssociationMixin<SubSector>;
   // DataSource belongsToMany EmissionsFactor via datasourceId and emissionsFactorId
   emissionsFactorIdEmissionsFactors!: EmissionsFactor[];
   getEmissionsFactorIdEmissionsFactors!: Sequelize.BelongsToManyGetAssociationsMixin<EmissionsFactor>;
@@ -809,6 +740,16 @@ export class DataSource
           allowNull: true,
           field: "geographical_location",
         },
+        startYear: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+          field: "start_year",
+        },
+        endYear: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+          field: "end_year",
+        },
         latestAccountingYear: {
           type: DataTypes.INTEGER,
           allowNull: true,
@@ -868,6 +809,33 @@ export class DataSource
           type: DataTypes.STRING(255),
           allowNull: true,
           field: "api_endpoint",
+        },
+        sectorId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: "Sector",
+            key: "sector_id",
+          },
+          field: "sector_id",
+        },
+        subsectorId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: "SubSector",
+            key: "subsector_id",
+          },
+          field: "subsector_id",
+        },
+        subcategoryId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: "SubCategory",
+            key: "subcategory_id",
+          },
+          field: "subcategory_id",
         },
       },
       {

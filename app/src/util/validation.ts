@@ -60,15 +60,15 @@ export const resetPasswordRequest = z.object({
   resetToken: z.string(),
 });
 
-export const createSectorValueRequest = z.object({
+export const createSectorRequest = z.object({
   totalEmissions: z.number().optional(),
   sectorId: z.string().uuid().optional(),
   inventoryId: z.string().uuid().optional(),
 });
 
-export type CreateSectorValueRequest = z.infer<typeof createSectorValueRequest>;
+export type CreateSectorRequest = z.infer<typeof createSectorRequest>;
 
-export const createSubSectorValueRequest = z.object({
+export const createSubSectorRequest = z.object({
   activityUnits: z.string(),
   activityValue: z.number(),
   emissionFactorValue: z.number(),
@@ -80,11 +80,9 @@ export const createSubSectorValueRequest = z.object({
   sectorId: z.string().uuid().optional(),
 });
 
-export type CreateSubSectorValueRequest = z.infer<
-  typeof createSubSectorValueRequest
->;
+export type CreateSubSectorRequest = z.infer<typeof createSubSectorRequest>;
 
-export const createSubCategoryValue = z.object({
+export const createSubCategory = z.object({
   activityUnits: z.string(),
   activityValue: z.number(),
   emissionFactorValue: z.number(),
@@ -96,6 +94,4 @@ export const createSubCategoryValue = z.object({
   datasourceId: z.string().uuid().optional(),
 });
 
-export type CreateSubCategoryValueRequest = z.infer<
-  typeof createSubCategoryValue
->;
+export type CreateSubCategoryRequest = z.infer<typeof createSubCategory>;

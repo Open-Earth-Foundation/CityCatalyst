@@ -1,6 +1,6 @@
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
-import { createSectorValueRequest } from "@/util/validation";
+import { createSectorRequest } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -19,7 +19,7 @@ export const GET = apiHandler(async (req: NextRequest, { params }) => {
 });
 
 export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
-  const body = createSectorValueRequest.parse(await req.json());
+  const body = createSectorRequest.parse(await req.json());
   let sectorValue = await db.models.SectorValue.findOne({
     where: { sectorValueId: params.sector },
   });

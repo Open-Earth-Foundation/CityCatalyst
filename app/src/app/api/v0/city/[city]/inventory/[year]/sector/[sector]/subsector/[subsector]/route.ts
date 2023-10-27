@@ -1,6 +1,6 @@
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
-import { createSubSectorValueRequest } from "@/util/validation";
+import { createSubSectorRequest } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -15,7 +15,7 @@ export const GET = apiHandler(async (req: NextRequest, { params }) => {
 });
 
 export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
-  const body = createSubSectorValueRequest.parse(await req.json());
+  const body = createSubSectorRequest.parse(await req.json());
   let subsectorValue = await db.models.SubSectorValue.findOne({
     where: { subsectorValueId: params.subsector },
   });

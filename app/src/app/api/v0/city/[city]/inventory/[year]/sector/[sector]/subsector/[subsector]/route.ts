@@ -36,7 +36,7 @@ export const DELETE = apiHandler(async (req: NextRequest, { params }) => {
     },
   });
   if (!subsectorValue) {
-    throw new createHttpError.NotFound("Sub value sector not found");
+    throw new createHttpError.NotFound("Sub sector value  not found");
   }
 
   await subsectorValue.destroy();

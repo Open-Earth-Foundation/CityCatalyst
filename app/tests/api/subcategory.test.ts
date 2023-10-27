@@ -12,7 +12,7 @@ import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, beforeEach, describe, it } from "node:test";
 
-import { createRequest } from "../helpers";
+import { createRequest, setupTests } from "../helpers";
 
 import { SubSectorValue } from "@/models/SubSectorValue";
 import { SectorValue } from "@/models/SectorValue";
@@ -55,6 +55,7 @@ describe("Sub Category API", () => {
   let sectorValue: SectorValue;
   let subcategoryValue: SubCategoryValue;
   before(async () => {
+    setupTests();
     const projectDir = process.cwd();
     env.loadEnvConfig(projectDir);
     await db.initialize();
@@ -62,6 +63,29 @@ describe("Sub Category API", () => {
       where: {
         subcategoryValueId,
       },
+    });
+
+    sectorValue = await db.models.SectorValue.create({
+      sectorValueId,
+      totalEmissions,
+    });
+
+    subsectorValue = await db.models.SubSectorValue.create({
+      subsectorValueId,
+      sectorValueId,
+      totalEmissions,
+      activityUnits,
+      activityValue,
+      emissionFactorValue,
+    });
+
+    subcategoryValue = await db.models.SubCategoryValue.create({
+      subcategoryValueId,
+      sectorValueId,
+      totalEmissions,
+      activityUnits,
+      activityValue,
+      emissionFactorValue,
     });
   });
 
@@ -109,8 +133,8 @@ describe("Sub Category API", () => {
   });
 
   it("Should create a sub category", async () => {
-    await db.models.SubSectorValue.destroy({
-      where: { subsectorValueId },
+    await db.models.SubCategoryValue.destroy({
+      where: { subcategoryValueId },
     });
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector/${sectorValueId}/subsector/${subsectorValueId}/subcategory`;
     const req = createRequest(url, subcategoryValue1);
@@ -119,11 +143,12 @@ describe("Sub Category API", () => {
         city: locode,
         year: year,
         sector: sectorValueId,
+        subsector: subsectorValueId,
       },
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
-    console.log(data);
+
     assert.equal(data.totalEmissions, subcategoryValue1.totalEmissions);
     assert.equal(data.activityUnits, subcategoryValue1.activityUnits);
     assert.equal(data.activityValue, subcategoryValue1.activityValue);

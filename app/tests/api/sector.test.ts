@@ -16,7 +16,7 @@ import { SectorValue } from "@/models/SectorValue";
 import { City } from "@/models/City";
 
 const sectorValueId = randomUUID();
-const locode = "XX_INVENTORY_CITY1";
+const locode = "XX_INVENTORY_CITY2";
 const year = "3000";
 const totalEmissions = 44000;
 
@@ -86,7 +86,6 @@ describe("Sector API", () => {
     const res = await createSector(req, {
       params: { city: locode, year: year },
     });
-    console.log(res);
     assert.equal(res.status, 200);
     const { data } = await res.json();
     assert.equal(data.totalEmissions, sectorValue1.totalEmissions);

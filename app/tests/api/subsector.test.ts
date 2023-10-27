@@ -117,7 +117,6 @@ describe("Sub Sector API", () => {
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
-    console.log(data);
     assert.equal(data.totalEmissions, subsectorValue1.totalEmissions);
     assert.equal(data.activityUnits, subsectorValue1.activityUnits);
     assert.equal(data.activityValue, subsectorValue1.activityValue);
@@ -154,7 +153,6 @@ describe("Sub Sector API", () => {
       },
     });
     const { data } = await res.json();
-    console.log(data);
     assert.equal(res.status, 200);
     assert.equal(data.totalEmissions, totalEmissions);
     assert.equal(data.activityUnits, activityUnits);
@@ -233,7 +231,7 @@ describe("Sub Sector API", () => {
     assert.equal(data.emissionFactorValue, emissionFactorValue);
   });
 
-  it("Should not delete a non-existing sub sector", async () => {
+  it("Should not delete a non-existing sub category", async () => {
     const url = `http://localhost:3000/api/v0/city/XX_INVALID/inventory/0/sector/${randomUUID()}/subsector/${randomUUID()}`;
     const req = createRequest(url, subsectorValue1);
     const res = await deleteSubSector(req, {

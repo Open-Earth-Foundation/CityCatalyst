@@ -100,6 +100,7 @@ describe("Inventory API", () => {
     });
     await db.models.Sector.destroy({ where: { sectorId: sector.sectorId } });
     city = await db.models.City.create({ cityId: randomUUID(), locode });
+    await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
     await city.addUser(testUserID);
     await db.models.Sector.create(sector);
     await db.models.SubSector.create(subSector1);

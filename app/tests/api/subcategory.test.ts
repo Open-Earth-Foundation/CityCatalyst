@@ -82,6 +82,7 @@ describe("Sub Category API", () => {
       cityId: randomUUID(),
       locode,
     });
+    await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
     await city.addUser(testUserID);
     const inventory = await db.models.Inventory.create({
       inventoryId: randomUUID(),

@@ -11,7 +11,7 @@ import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, beforeEach, describe, it } from "node:test";
 import { Op } from "sequelize";
-import { createRequest, setupTests } from "../helpers";
+import { createRequest, setupTests, testUserID } from "../helpers";
 import { SubSectorAttributes } from "@/models/SubSector";
 import { City } from "@/models/City";
 
@@ -100,6 +100,7 @@ describe("Inventory API", () => {
     });
     await db.models.Sector.destroy({ where: { sectorId: sector.sectorId } });
     city = await db.models.City.create({ cityId: randomUUID(), locode });
+    await city.addUser(testUserID);
     await db.models.Sector.create(sector);
     await db.models.SubSector.create(subSector1);
     await db.models.SubSector.create(subSector2);
@@ -199,7 +200,7 @@ describe("Inventory API", () => {
     assert.ok(lines.length > 0);
     const headers = lines[0].split(",");
     assert.equal(headers.length, 6);
-    assert.equal(headers, [
+    assert.deepEqual(headers, [
       "Inventory Reference",
       "Total Emissions",
       "Activity Units",

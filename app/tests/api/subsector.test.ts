@@ -11,15 +11,16 @@ import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, beforeEach, describe, it } from "node:test";
 
-import { createRequest, setupTests } from "../helpers";
+import { mockRequest, setupTests } from "../helpers";
 
 import { SubSectorValue } from "@/models/SubSectorValue";
 import { SectorValue } from "@/models/SectorValue";
+import { Inventory } from "@/models/Inventory";
 
 const sectorValueId = randomUUID();
 const subsectorValueId = randomUUID();
 
-const locode = "XX7_INVENTORY_CITY";
+const locode = "XX_SUBSECTOR_CITY";
 const year = "3000";
 const totalEmissions = 44000;
 const activityUnits = "UNITS";
@@ -48,6 +49,7 @@ const invalidSubSectorValue = {
 };
 
 describe("Sub Sector API", () => {
+  let inventory: Inventory;
   let subsectorValue: SubSectorValue;
   let sectorValue: SectorValue;
   before(async () => {
@@ -58,19 +60,22 @@ describe("Sub Sector API", () => {
         subsectorValueId,
       },
     });
+    await db.models.Inventory.destroy({
+      where: {
+        inventoryName: "TEST_SUBSECTOR_INVENTORY",
+      },
+    });
+    await db.models.City.destroy({ where: { locode } });
 
-    sectorValue = await db.models.SectorValue.create({
-      sectorValueId,
-      totalEmissions,
+    const city = await db.models.City.create({
+      cityId: randomUUID(),
+      locode,
     });
 
-    subsectorValue = await db.models.SubSectorValue.create({
-      subsectorValueId,
-      sectorValueId,
-      totalEmissions,
-      activityUnits,
-      activityValue,
-      emissionFactorValue,
+    inventory = await db.models.Inventory.create({
+      cityId: city.cityId,
+      inventoryName: "TEST_SUBSECTOR_INVENTORY",
+      inventoryId: randomUUID(),
     });
   });
 
@@ -83,12 +88,14 @@ describe("Sub Sector API", () => {
       where: { sectorValueId },
     });
 
-    await db.models.SectorValue.create({
+    sectorValue = await db.models.SectorValue.create({
+      inventoryId: inventory.inventoryId,
       sectorValueId,
       totalEmissions,
     });
 
-    await db.models.SubSectorValue.create({
+    subsectorValue = await db.models.SubSectorValue.create({
+      inventoryId: inventory.inventoryId,
       subsectorValueId,
       totalEmissions,
       sectorValueId,
@@ -106,8 +113,7 @@ describe("Sub Sector API", () => {
     await db.models.SubSectorValue.destroy({
       where: { subsectorValueId },
     });
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector/${sectorValueId}/subsector`;
-    const req = createRequest(url, subsectorValue1);
+    const req = mockRequest(subsectorValue1);
     const res = await createSubSector(req, {
       params: {
         city: locode,
@@ -124,8 +130,7 @@ describe("Sub Sector API", () => {
   });
 
   it("Should not create a sub sector with invalid data", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector/${sectorValueId}/subsector`;
-    const req = createRequest(url, invalidSubSectorValue);
+    const req = mockRequest(invalidSubSectorValue);
     const res = await createSubSector(req, {
       params: {
         city: locode,
@@ -142,8 +147,7 @@ describe("Sub Sector API", () => {
   });
 
   it("Should find a sub sector", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector/${sectorValueId}/subsector/${subsectorValueId}`;
-    const req = createRequest(url, subsectorValue1);
+    const req = mockRequest(subsectorValue1);
     const res = await findSubSector(req, {
       params: {
         city: locode,
@@ -161,8 +165,7 @@ describe("Sub Sector API", () => {
   });
 
   it("Should not find a non-existing sub sector", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector/${sectorValueId}/subsector/XX_INVALID_SUBSECTOR_ID`;
-    const req = createRequest(url, invalidSubSectorValue);
+    const req = mockRequest(invalidSubSectorValue);
     const res = await findSubSector(req, {
       params: {
         city: locode,
@@ -175,8 +178,7 @@ describe("Sub Sector API", () => {
   });
 
   it("Should update a sub sector", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector/${sectorValueId}/subsector/${subsectorValueId}`;
-    const req = createRequest(url, subsectorValue1);
+    const req = mockRequest(subsectorValue1);
     const res = await updateSubSector(req, {
       params: {
         city: locode,
@@ -194,8 +196,7 @@ describe("Sub Sector API", () => {
   });
 
   it("Should not update a sub sector with invalid data", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector/${sectorValueId}/subsector/${subsectorValueId}`;
-    const req = createRequest(url, invalidSubSectorValue);
+    const req = mockRequest(invalidSubSectorValue);
     const res = await updateSubSector(req, {
       params: {
         city: locode,
@@ -212,8 +213,7 @@ describe("Sub Sector API", () => {
   });
 
   it("Should delete a sub sector", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector/${sectorValueId}/subsector/${subsectorValueId}`;
-    const req = createRequest(url, subsectorValue1);
+    const req = mockRequest(subsectorValue1);
     const res = await deleteSubSector(req, {
       params: {
         city: locode,
@@ -232,8 +232,7 @@ describe("Sub Sector API", () => {
   });
 
   it("Should not delete a non-existing sub category", async () => {
-    const url = `http://localhost:3000/api/v0/city/XX_INVALID/inventory/0/sector/${randomUUID()}/subsector/${randomUUID()}`;
-    const req = createRequest(url, subsectorValue1);
+    const req = mockRequest(subsectorValue1);
     const res = await deleteSubSector(req, {
       params: {
         city: "XX_INVALID",

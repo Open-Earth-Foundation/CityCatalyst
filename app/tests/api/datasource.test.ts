@@ -10,7 +10,7 @@ import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, beforeEach, describe, it } from "node:test";
 import { Op } from "sequelize";
-import { mockRequest } from "../helpers";
+import { mockRequest, setupTests } from "../helpers";
 import { City } from "@/models/City";
 import { CreateInventoryRequest } from "@/util/validation";
 import { Sector } from "@/models/Sector";
@@ -54,12 +54,11 @@ describe("DataSource API", () => {
   let inventory: Inventory;
   let sector: Sector;
   before(async () => {
-    const projectDir = process.cwd();
-    env.loadEnvConfig(projectDir);
+    setupTests();
     await db.initialize();
     // this also deletes all Sector/SubSectorValue instances associated with it (cascade)
     await db.models.Inventory.destroy({
-      where: { year: inventory.year },
+      where: { year: inventoryData.year },
     });
     await db.models.DataSource.destroy({
       where: { name: { [Op.like]: "XX_DATASOURCE_TEST%" } },
@@ -79,6 +78,8 @@ describe("DataSource API", () => {
       sectorId: randomUUID(),
       sectorName: "XX_DATASOURCE_TEST_1",
     });
+
+    fetchMock.config.overwriteRoutes = true;
     for (let i = 0; i < 3; i++) {
       const source = await db.models.DataSource.create({
         datasourceId: randomUUID(),
@@ -93,7 +94,7 @@ describe("DataSource API", () => {
       const url = source
         .apiEndpoint!.replace(":locode", locode)
         .replace(":year", inventory.year!.toString())
-        .replace(":gpcReferenceNumber", sector.sectorName!); // TODO subsector.gpcReferenceNumber when available
+        .replace(":gpcReferenceNumber", sector.referenceNumber!);
       fetchMock.mock(url, mockGlobalApiResponses[i]);
     }
   });
@@ -122,11 +123,13 @@ describe("DataSource API", () => {
 
   it("should get the data sources for all sectors", async () => {
     const req = mockRequest();
-    const res = await getDataSourcesForSector(req, {
+    const res = await getAllDataSources(req, {
       params: { inventoryId: inventory.inventoryId },
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
     assert.equal(data.data.length, 2);
   });
+
+  // TODO add tests for applyDataSources
 });

@@ -6,7 +6,6 @@ import {
 import { POST as createCity } from "@/app/api/v0/city/route";
 import { db } from "@/models";
 import { CreateCityRequest } from "@/util/validation";
-import env from "@next/env";
 import assert from "node:assert";
 import { after, before, describe, it } from "node:test";
 import { createRequest, setupTests } from "../helpers";

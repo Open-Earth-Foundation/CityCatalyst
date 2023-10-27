@@ -27,6 +27,10 @@ if __name__ == "__main__":
     table = Table("datasource", metadata_obj, autoload_with=engine)
 
     BASE_URL = "https://ccglobal.openearth.dev"
+
+    if os.environ.get("ENV").lower() == 'production':
+        BASE_URL = "https://ccglobal.openearth.cloud"
+
     PUBLISHER = "ClimateTRACE"
 
     # ---------------------------------------

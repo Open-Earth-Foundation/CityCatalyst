@@ -5,10 +5,9 @@ import {
 } from "@/app/api/v0/datasource/[inventoryId]/route";
 
 import { db } from "@/models";
-import env from "@next/env";
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";
-import { after, before, beforeEach, describe, it } from "node:test";
+import { after, before, describe, it } from "node:test";
 import { Op } from "sequelize";
 import { mockRequest, setupTests } from "../helpers";
 import { City } from "@/models/City";
@@ -30,6 +29,9 @@ const sourceLocations = [
   "DE,US,XX",
   "DE_BLN,US_NY,XX_DATASOURCE_CITY",
 ];
+
+const apiEndpoint =
+  "http://localhost:4000/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber";
 
 const mockGlobalApiResponses = [
   {
@@ -85,8 +87,7 @@ describe("DataSource API", () => {
         datasourceId: randomUUID(),
         name: "XX_DATASOURCE_TEST_" + i,
         sectorId: sector.sectorId,
-        apiEndpoint:
-          "http://localhost:4000/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
+        apiEndpoint,
         startYear: 4000 + i,
         endYear: 4010 + i,
         geographicalLocation: sourceLocations[i],
@@ -97,12 +98,6 @@ describe("DataSource API", () => {
         .replace(":gpcReferenceNumber", sector.referenceNumber!);
       fetchMock.mock(url, mockGlobalApiResponses[i]);
     }
-  });
-
-  beforeEach(async () => {
-    await db.models.Inventory.destroy({
-      where: { cityId: city.cityId },
-    });
   });
 
   after(async () => {
@@ -116,9 +111,14 @@ describe("DataSource API", () => {
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
-    assert.equal(data.inventoryName, inventory.inventoryName);
-    assert.equal(data.year, inventory.year);
-    assert.equal(data.totalEmissions, inventory.totalEmissions);
+    console.log("slag", data);
+    assert.equal(data.length, 1);
+    assert.equal(data[0].name, "XX_DATASOURCE_TEST_0");
+    assert.equal(data[0].sectorId, sector.sectorId);
+    assert.equal(data[0].apiEndpoint, apiEndpoint);
+    assert.equal(data[0].geographicalLocation, "EARTH");
+    assert.equal(data[0].startYear, 4000);
+    assert.equal(data[0].endYear, 4010);
   });
 
   it("should get the data sources for all sectors", async () => {
@@ -128,7 +128,7 @@ describe("DataSource API", () => {
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
-    assert.equal(data.data.length, 2);
+    assert.equal(data.length, 1);
   });
 
   // TODO add tests for applyDataSources

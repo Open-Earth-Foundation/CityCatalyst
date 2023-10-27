@@ -8,7 +8,7 @@ import { db } from "@/models";
 import { CreateCityRequest } from "@/util/validation";
 import assert from "node:assert";
 import { after, before, describe, it } from "node:test";
-import { createRequest, setupTests } from "../helpers";
+import { mockRequest, setupTests } from "../helpers";
 
 const city: CreateCityRequest = {
   locode: "XX_CITY",
@@ -46,8 +46,7 @@ describe("City API", () => {
   });
 
   it("should create a city", async () => {
-    const url = "http://localhost:3000/api/v0/city";
-    const req = createRequest(url, city);
+    const req = mockRequest(city);
     const res = await createCity(req, { params: {} });
     assert.equal(res.status, 200);
     const { data } = await res.json();
@@ -59,8 +58,7 @@ describe("City API", () => {
   });
 
   it("should not create a city with invalid data", async () => {
-    const url = "http://localhost:3000/api/v0/city";
-    const req = createRequest(url, invalidCity);
+    const req = mockRequest(invalidCity);
     const res = await createCity(req, { params: {} });
     assert.equal(res.status, 400);
     const {
@@ -70,8 +68,7 @@ describe("City API", () => {
   });
 
   it("should find a city", async () => {
-    const url = "http://localhost:3000/api/v0/city/" + city.locode;
-    const req = createRequest(url);
+    const req = mockRequest();
     const res = await findCity(req, { params: { city: city.locode } });
     assert.equal(res.status, 200);
     const { data } = await res.json();
@@ -83,15 +80,13 @@ describe("City API", () => {
   });
 
   it("should not find a non-existing city", async () => {
-    const url = "http://localhost:3000/api/v0/city/XX_INVALID";
-    const req = createRequest(url);
+    const req = mockRequest();
     const res = await findCity(req, { params: { city: "XX_INVALID" } });
     assert.equal(res.status, 404);
   });
 
   it("should update a city", async () => {
-    const url = "http://localhost:3000/api/v0/city/" + city.locode;
-    const req = createRequest(url, city2);
+    const req = mockRequest(city2);
     const res = await updateCity(req, { params: { city: city.locode } });
     assert.equal(res.status, 200);
     const { data } = await res.json();
@@ -103,8 +98,7 @@ describe("City API", () => {
   });
 
   it("should not update a city with invalid values", async () => {
-    const url = "http://localhost:3000/api/v0/city/" + city.locode;
-    const req = createRequest(url, invalidCity);
+    const req = mockRequest(invalidCity);
     const res = await updateCity(req, { params: { city: city.locode } });
     assert.equal(res.status, 400);
     const {
@@ -114,8 +108,7 @@ describe("City API", () => {
   });
 
   it("should delete a city", async () => {
-    const url = "http://localhost:3000/api/v0/city/" + city.locode;
-    const req = createRequest(url);
+    const req = mockRequest();
     const res = await deleteCity(req, { params: { city: city.locode } });
     assert.equal(res.status, 200);
     const { data, deleted } = await res.json();
@@ -128,8 +121,7 @@ describe("City API", () => {
   });
 
   it("should not delete a non-existing city", async () => {
-    const url = "http://localhost:3000/api/v0/city/XX_INVALID";
-    const req = createRequest(url);
+    const req = mockRequest();
     const res = await deleteCity(req, { params: { city: "XX_INVALID" } });
     assert.equal(res.status, 404);
   });

@@ -283,17 +283,17 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "datasourceId",
     otherKey: "scopeId",
   });
-  DataSource.hasOne(Sector, {
+  DataSource.belongsTo(Sector, {
     as: "sector",
-    foreignKey: "datasourceId",
+    foreignKey: "sectorId",
   });
-  DataSource.hasOne(SubCategory, {
+  DataSource.belongsTo(SubCategory, {
     as: "subCategory",
-    foreignKey: "datasourceId",
+    foreignKey: "subcategoryId",
   });
-  DataSource.hasOne(SubSector, {
+  DataSource.belongsTo(SubSector, {
     as: "subSector",
-    foreignKey: "datasourceId",
+    foreignKey: "subsectorId",
   });
   SubSectorValue.belongsTo(DataSource, {
     as: "dataSource",
@@ -338,10 +338,6 @@ export function initModels(sequelize: Sequelize) {
     through: DataSourceScope,
     foreignKey: "scopeId",
     otherKey: "datasourceId",
-  });
-  Scope.hasMany(SubSector, {
-    as: "subsectors",
-    foreignKey: "scopeId",
   });
   Sector.hasMany(DataSource, {
     as: "dataSources",

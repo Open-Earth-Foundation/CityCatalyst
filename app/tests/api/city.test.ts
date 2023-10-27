@@ -8,7 +8,7 @@ import { db } from "@/models";
 import { CreateCityRequest } from "@/util/validation";
 import assert from "node:assert";
 import { after, before, describe, it } from "node:test";
-import { mockRequest, setupTests } from "../helpers";
+import { mockRequest, setupTests, testUserID } from "../helpers";
 
 const city: CreateCityRequest = {
   locode: "XX_CITY",
@@ -39,6 +39,7 @@ describe("City API", () => {
     setupTests();
     await db.initialize();
     await db.models.City.destroy({ where: { locode: city.locode } });
+    await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
   });
 
   after(async () => {

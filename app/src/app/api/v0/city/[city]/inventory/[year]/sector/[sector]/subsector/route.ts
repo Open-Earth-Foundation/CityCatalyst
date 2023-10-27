@@ -13,10 +13,10 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
     throw new createHttpError.NotFound("City not found");
   }
 
-  const subsector = await db.models.SubSector.create({
-    subsectorId: randomUUID(),
+  const subsectorValue = await db.models.SubSectorValue.create({
+    subsectorValueId: randomUUID(),
     ...body,
   });
 
-  return NextResponse.json({ data: subsector });
+  return NextResponse.json({ data: subsectorValue });
 });

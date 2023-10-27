@@ -5,41 +5,41 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = apiHandler(async (req: NextRequest, { params }) => {
-  const subsector = await db.models.SubSector.findOne({
-    where: { subsectorId: params.subsector },
+  const subsectorValue = await db.models.SubSectorValue.findOne({
+    where: { subsectorValueId: params.subsector },
   });
-  if (!subsector) {
-    throw new createHttpError.NotFound("Sub sector not found");
+  if (!subsectorValue) {
+    throw new createHttpError.NotFound("Sub sector value not found");
   }
-  return NextResponse.json({ data: subsector });
+  return NextResponse.json({ data: subsectorValue });
 });
 
 export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   const body = createSubSectorRequest.parse(await req.json());
-  let subsector = await db.models.SubSector.findOne({
-    where: { subsectorId: params.subsector },
+  let subsectorValue = await db.models.SubSectorValue.findOne({
+    where: { subsectorValueId: params.subsector },
   });
 
-  if (!subsector) {
-    throw new createHttpError.NotFound("Sub sector not found");
+  if (!subsectorValue) {
+    throw new createHttpError.NotFound("Sub sector value not found");
   }
 
-  subsector = await subsector.update(body);
+  subsectorValue = await subsectorValue.update(body);
 
-  return NextResponse.json({ data: subsector });
+  return NextResponse.json({ data: subsectorValue });
 });
 
 export const DELETE = apiHandler(async (req: NextRequest, { params }) => {
-  const subsector = await db.models.SubSector.findOne({
+  const subsectorValue = await db.models.SubSectorValue.findOne({
     where: {
-      subsectorId: params.subsector,
+      subsectorValueId: params.subsector,
     },
   });
-  if (!subsector) {
-    throw new createHttpError.NotFound("Sub sector not found");
+  if (!subsectorValue) {
+    throw new createHttpError.NotFound("Sub sector value  not found");
   }
 
-  await subsector.destroy();
+  await subsectorValue.destroy();
 
-  return NextResponse.json({ data: subsector, deleted: true });
+  return NextResponse.json({ data: subsectorValue, deleted: true });
 });

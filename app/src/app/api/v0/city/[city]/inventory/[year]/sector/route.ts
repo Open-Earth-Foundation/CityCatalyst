@@ -13,10 +13,10 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
     throw new createHttpError.NotFound("City not found");
   }
 
-  const sector = await db.models.Sector.create({
-    sectorId: randomUUID(),
+  const sectorValue = await db.models.SectorValue.create({
+    sectorValueId: randomUUID(),
     ...body,
   });
 
-  return NextResponse.json({ data: sector });
+  return NextResponse.json({ data: sectorValue });
 });

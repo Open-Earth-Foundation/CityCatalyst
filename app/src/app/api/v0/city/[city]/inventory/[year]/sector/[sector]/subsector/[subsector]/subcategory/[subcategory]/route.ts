@@ -5,43 +5,43 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = apiHandler(async (req: NextRequest, { params }) => {
-  const subcategory = await db.models.SubCategory.findOne({
-    where: { subcategoryId: params.subcategory },
+  const subcategoryValue = await db.models.SubCategoryValue.findOne({
+    where: { subcategoryValueId: params.subcategory },
   });
 
-  if (!subcategory) {
-    throw new createHttpError.NotFound("Sub category not found");
+  if (!subcategoryValue) {
+    throw new createHttpError.NotFound("Sub category value not found");
   }
 
-  return NextResponse.json({ data: subcategory });
+  return NextResponse.json({ data: subcategoryValue });
 });
 
 export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   const body = createSubCategory.parse(await req.json());
-  let subcategory = await db.models.SubSector.findOne({
-    where: { subsectorId: params.subcategory },
+  let subcategoryValue = await db.models.SubCategoryValue.findOne({
+    where: { subcategoryValueId: params.subcategory },
   });
 
-  if (!subcategory) {
-    throw new createHttpError.NotFound("Sub category not found");
+  if (!subcategoryValue) {
+    throw new createHttpError.NotFound("Sub category value not found");
   }
 
-  subcategory = await subcategory.update(body);
+  subcategoryValue = await subcategoryValue.update(body);
 
-  return NextResponse.json({ data: subcategory });
+  return NextResponse.json({ data: subcategoryValue });
 });
 
 export const DELETE = apiHandler(async (req: NextRequest, { params }) => {
-  const subcategory = await db.models.SubCategory.findOne({
+  const subcategoryValue = await db.models.SubCategoryValue.findOne({
     where: {
-      subcategoryId: params.subsector,
+      subcategoryValueId: params.subcategory,
     },
   });
-  if (!subcategory) {
-    throw new createHttpError.NotFound("Sub category not found");
+  if (!subcategoryValue) {
+    throw new createHttpError.NotFound("Sub category value not found");
   }
 
-  await subcategory.destroy();
+  await subcategoryValue.destroy();
 
-  return NextResponse.json({ data: subcategory, deleted: true });
+  return NextResponse.json({ data: subcategoryValue, deleted: true });
 });

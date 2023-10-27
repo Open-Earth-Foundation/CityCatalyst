@@ -61,27 +61,40 @@ export const resetPasswordRequest = z.object({
 });
 
 export const createSectorRequest = z.object({
-  sectorName: z.string().min(1),
+  totalEmissions: z.number().optional(),
+  sectorId: z.string().uuid().optional(),
+  inventoryId: z.string().uuid().optional(),
 });
 
 export type CreateSectorRequest = z.infer<typeof createSectorRequest>;
 
 export const createSubSectorRequest = z.object({
-  subsectorName: z.string().min(1),
-  sectorId: z.string().uuid(),
+  activityUnits: z.string(),
+  activityValue: z.number(),
+  emissionFactorValue: z.number(),
+  totalEmissions: z.number(),
+  emissionsFactorId: z.string().uuid().optional(),
+  sectorValueId: z.string().uuid().optional(),
+  inventoryId: z.string().uuid().optional(),
+  datasourceId: z.string().uuid().optional(),
+  sectorId: z.string().uuid().optional(),
 });
 
 export type CreateSubSectorRequest = z.infer<typeof createSubSectorRequest>;
 
 export const createSubCategory = z.object({
-  subcategoryName: z.string().min(1),
-  activityName: z.string().min(1),
-  subsectorId: z.string().uuid(),
-  scopeId: z.string().uuid(),
-  reportinglevelId: z.string().uuid(),
+  activityUnits: z.string(),
+  activityValue: z.number(),
+  emissionFactorValue: z.number(),
+  totalEmissions: z.number(),
+  emissionsFactorId: z.string().uuid().optional(),
+  subcategoryId: z.string().uuid().optional(),
+  sectorValueId: z.string().uuid().optional(),
+  inventoryId: z.string().uuid().optional(),
+  datasourceId: z.string().uuid().optional(),
 });
 
-export type CreateSubCategory = z.infer<typeof createSubCategory>;
+export type CreateSubCategoryRequest = z.infer<typeof createSubCategory>;
 
 export const createUserRequest = z.object({
   name: z.string().min(1),

@@ -12,50 +12,64 @@ import { after, before, beforeEach, describe, it } from "node:test";
 
 import { createRequest, setupTests } from "../helpers";
 
-import { Sector } from "@/models/Sector";
+import { SectorValue } from "@/models/SectorValue";
+import { City } from "@/models/City";
 
-const sectorId = randomUUID();
-const sectorName = "Test Sector";
-const locode = "XX_INVENTORY_CITY";
+const sectorValueId = randomUUID();
+const locode = "XX_INVENTORY_CITY2";
 const year = "3000";
+const totalEmissions = 44000;
 
-const sector1: CreateSectorRequest = {
-  sectorName: "Test Sector",
+const sectorValue1: CreateSectorRequest = {
+  totalEmissions: 4000,
 };
 
-const sector2: CreateSectorRequest = {
-  sectorName: "Test Sector 2",
+const sectorValue2: CreateSectorRequest = {
+  totalEmissions: 5000,
 };
 
-const invalidSector = {
-  sectorName: 0,
+const invalidSectorValue = {
+  totalEmissions: "XX_TOTAL_EMISSIONS",
 };
 
 describe("Sector API", () => {
-  let sector: Sector;
+  let sectorValue: SectorValue;
+  let city: City;
   before(async () => {
     setupTests();
     await db.initialize();
-    await db.models.Sector.destroy({
+    await db.models.SectorValue.destroy({
       where: {
-        sectorId: sectorId,
+        sectorValueId,
       },
     });
 
-    sector = await db.models.Sector.create({
-      sectorId: randomUUID(),
-      sectorName,
+    await db.models.City.destroy({
+      where: {
+        locode,
+      },
+    });
+
+    city = await db.models.City.create({
+      cityId: randomUUID(),
+      locode,
+    });
+
+    sectorValue = await db.models.SectorValue.create({
+      sectorValueId: randomUUID(),
+      totalEmissions,
     });
   });
 
   beforeEach(async () => {
-    await db.models.Sector.destroy({
-      where: { sectorId },
+    await db.models.SectorValue.destroy({
+      where: { sectorValueId },
     });
 
-    await db.models.Sector.create({
-      sectorId,
-      sectorName,
+    await db.models.SectorValue.create({
+      sectorValueId,
+
+      totalEmissions,
     });
   });
 
@@ -64,22 +78,22 @@ describe("Sector API", () => {
   });
 
   it("Should create a sector", async () => {
-    await db.models.Sector.destroy({
-      where: { sectorId },
+    await db.models.SectorValue.destroy({
+      where: { sectorValueId },
     });
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector`;
-    const req = createRequest(url, sector1);
+    const req = createRequest(url, sectorValue1);
     const res = await createSector(req, {
       params: { city: locode, year: year },
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
-    assert.equal(data.sectorName, sector.sectorName);
+    assert.equal(data.totalEmissions, sectorValue1.totalEmissions);
   });
 
   it("should not create an inventory with invalid data", async () => {
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector`;
-    const req = createRequest(url, invalidSector);
+    const req = createRequest(url, invalidSectorValue);
     const res = await createSector(req, {
       params: { city: locode, year: year },
     });
@@ -91,19 +105,19 @@ describe("Sector API", () => {
   });
 
   it("should find a sector", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector/${sector.sectorId}`;
+    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector/${sectorValueId}`;
     const req = createRequest(url);
     const res = await findSector(req, {
-      params: { city: locode, year: year, sector: sector.sectorId },
+      params: { city: locode, year: year, sector: sectorValueId },
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
-    assert.equal(data.sectorName, sector.sectorName);
+    assert.equal(data.totalEmissions, sectorValue.totalEmissions);
   });
 
   it("should not find non-existing sectors", async () => {
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector/XX_INVALID_SECTOR_ID`;
-    const req = createRequest(url, invalidSector);
+    const req = createRequest(url, invalidSectorValue);
     const res = await findSector(req, {
       params: {
         city: locode,
@@ -116,20 +130,20 @@ describe("Sector API", () => {
 
   it("should update a sector", async () => {
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector`;
-    const req = createRequest(url, sector2);
+    const req = createRequest(url, sectorValue2);
     const res = await updateSector(req, {
-      params: { city: locode, year: year, sector: sector.sectorId },
+      params: { city: locode, year: year, sector: sectorValue.sectorValueId },
     });
     const { data } = await res.json();
     assert.equal(res.status, 200);
-    assert.equal(data.sectorName, sector2.sectorName);
+    assert.equal(data.totalEmissions, sectorValue2.totalEmissions);
   });
 
   it("should not update a sector with invalid data", async () => {
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector`;
-    const req = createRequest(url, invalidSector);
+    const req = createRequest(url, invalidSectorValue);
     const res = await updateSector(req, {
-      params: { city: locode, year: year, sector: sector.sectorId },
+      params: { city: locode, year: year, sector: sectorValue.sectorValueId },
     });
     assert.equal(res.status, 400);
     const {
@@ -142,12 +156,12 @@ describe("Sector API", () => {
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector`;
     const req = createRequest(url);
     const res = await deleteSector(req, {
-      params: { city: locode, year: year, sector: sector.sectorId },
+      params: { city: locode, year: year, sector: sectorValue.sectorValueId },
     });
     assert.equal(res.status, 200);
     const { data, deleted } = await res.json();
     assert.equal(deleted, true);
-    assert.equal(data.sectorName, sector2.sectorName);
+    assert.equal(data.totalEmissions, sectorValue2.totalEmissions);
   });
 
   it("should not delete a non-existing sector", async () => {

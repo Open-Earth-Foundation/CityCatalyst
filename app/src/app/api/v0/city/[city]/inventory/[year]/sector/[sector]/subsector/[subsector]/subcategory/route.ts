@@ -1,6 +1,6 @@
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
-import { createSubCategory, createSubSectorRequest } from "@/util/validation";
+import { createSubCategory } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
@@ -13,10 +13,10 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
     throw new createHttpError.NotFound("City not found");
   }
 
-  const subcategory = await db.models.SubCategory.create({
-    subcategoryId: randomUUID(),
+  const subcategoryValue = await db.models.SubCategoryValue.create({
+    subcategoryValueId: randomUUID(),
     ...body,
   });
 
-  return NextResponse.json({ data: subcategory });
+  return NextResponse.json({ data: subcategoryValue });
 });

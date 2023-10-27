@@ -5,45 +5,45 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = apiHandler(async (req: NextRequest, { params }) => {
-  const sector = await db.models.Sector.findOne({
+  const sectorValue = await db.models.SectorValue.findOne({
     where: {
-      sectorId: params.sector,
+      sectorValueId: params.sector,
     },
   });
 
-  if (!sector) {
-    throw new createHttpError.NotFound("Sector not found");
+  if (!sectorValue) {
+    throw new createHttpError.NotFound("Sector Value not found");
   }
 
-  return NextResponse.json({ data: sector });
+  return NextResponse.json({ data: sectorValue });
 });
 
 export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   const body = createSectorRequest.parse(await req.json());
-  let sector = await db.models.Sector.findOne({
-    where: { sectorId: params.sector },
+  let sectorValue = await db.models.SectorValue.findOne({
+    where: { sectorValueId: params.sector },
   });
 
-  if (!sector) {
-    throw new createHttpError.NotFound("Sector not found");
+  if (!sectorValue) {
+    throw new createHttpError.NotFound("Sector value not found");
   }
 
-  sector = await sector.update(body);
+  sectorValue = await sectorValue.update(body);
 
-  return NextResponse.json({ data: sector });
+  return NextResponse.json({ data: sectorValue });
 });
 
 export const DELETE = apiHandler(async (req: NextRequest, { params }) => {
-  const sector = await db.models.Sector.findOne({
+  const sectorValue = await db.models.SectorValue.findOne({
     where: {
-      sectorId: params.sector,
+      sectorValueId: params.sector,
     },
   });
-  if (!sector) {
-    throw new createHttpError.NotFound("Sector not found");
+  if (!sectorValue) {
+    throw new createHttpError.NotFound("Sector value not found");
   }
 
-  await sector.destroy();
+  await sectorValue.destroy();
 
-  return NextResponse.json({ data: sector, deleted: true });
+  return NextResponse.json({ data: sectorValue, deleted: true });
 });

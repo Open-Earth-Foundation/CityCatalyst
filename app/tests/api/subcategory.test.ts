@@ -12,7 +12,7 @@ import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, beforeEach, describe, it } from "node:test";
 
-import { createRequest, setupTests } from "../helpers";
+import { mockRequest, setupTests, testUserID } from "../helpers";
 
 import { SubSectorValue } from "@/models/SubSectorValue";
 import { SectorValue } from "@/models/SectorValue";
@@ -22,7 +22,7 @@ const sectorValueId = randomUUID();
 const subsectorValueId = randomUUID();
 const subcategoryValueId = randomUUID();
 
-const locode = "XX7_INVENTORY_CITY";
+const locode = "XX_SUBCATEGORY_CITY";
 const year = "3000";
 const totalEmissions = 44000;
 const activityUnits = "UNITS";
@@ -59,57 +59,44 @@ describe("Sub Category API", () => {
     const projectDir = process.cwd();
     env.loadEnvConfig(projectDir);
     await db.initialize();
-    await db.models.SubCategoryValue.destroy({
-      where: {
-        subcategoryValueId,
-      },
-    });
-
-    sectorValue = await db.models.SectorValue.create({
-      sectorValueId,
-      totalEmissions,
-    });
-
-    subsectorValue = await db.models.SubSectorValue.create({
-      subsectorValueId,
-      sectorValueId,
-      totalEmissions,
-      activityUnits,
-      activityValue,
-      emissionFactorValue,
-    });
-
-    subcategoryValue = await db.models.SubCategoryValue.create({
-      subcategoryValueId,
-      sectorValueId,
-      totalEmissions,
-      activityUnits,
-      activityValue,
-      emissionFactorValue,
-    });
   });
 
   beforeEach(async () => {
     await db.models.SubSectorValue.destroy({
       where: { subsectorValueId },
     });
-
     await db.models.SectorValue.destroy({
       where: { sectorValueId },
     });
-
     await db.models.SubCategoryValue.destroy({
       where: {
         subcategoryValueId,
       },
     });
+    await db.models.Inventory.destroy({
+      where: { inventoryName: "TEST_SUBCATEGORY_INVENTORY" },
+    });
+    await db.models.City.destroy({ where: { locode } });
 
-    await db.models.SectorValue.create({
+    const city = await db.models.City.create({
+      cityId: randomUUID(),
+      locode,
+    });
+    await city.addUser(testUserID);
+    const inventory = await db.models.Inventory.create({
+      inventoryId: randomUUID(),
+      inventoryName: "TEST_SUBCATEGORY_INVENTORY",
+      cityId: city.cityId,
+    });
+
+    sectorValue = await db.models.SectorValue.create({
+      inventoryId: inventory.inventoryId,
       sectorValueId,
       totalEmissions,
     });
 
-    await db.models.SubSectorValue.create({
+    subsectorValue = await db.models.SubSectorValue.create({
+      inventoryId: inventory.inventoryId,
       subsectorValueId,
       totalEmissions,
       sectorValueId,
@@ -118,7 +105,8 @@ describe("Sub Category API", () => {
       emissionFactorValue,
     });
 
-    await db.models.SubCategoryValue.create({
+    subcategoryValue = await db.models.SubCategoryValue.create({
+      inventoryId: inventory.inventoryId,
       subcategoryValueId,
       totalEmissions,
       sectorValueId,
@@ -136,8 +124,7 @@ describe("Sub Category API", () => {
     await db.models.SubCategoryValue.destroy({
       where: { subcategoryValueId },
     });
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector/${sectorValueId}/subsector/${subsectorValueId}/subcategory`;
-    const req = createRequest(url, subcategoryValue1);
+    const req = mockRequest(subcategoryValue1);
     const res = await createSubCategory(req, {
       params: {
         city: locode,
@@ -159,8 +146,7 @@ describe("Sub Category API", () => {
   });
 
   it("Should not create a sub category with invalid data", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector/${sectorValueId}/subsector/${subsectorValueId}/subategory`;
-    const req = createRequest(url, invalidSubCategoryValue);
+    const req = mockRequest(invalidSubCategoryValue);
     const res = await createSubCategory(req, {
       params: {
         city: locode,
@@ -177,8 +163,7 @@ describe("Sub Category API", () => {
   });
 
   it("Should find a sub category", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector/${sectorValueId}/subsector/${subsectorValueId}/subcategory/${subcategoryValueId}`;
-    const req = createRequest(url, subcategoryValue1);
+    const req = mockRequest(subcategoryValue1);
     const res = await findSubCategory(req, {
       params: {
         city: locode,
@@ -199,8 +184,7 @@ describe("Sub Category API", () => {
   });
 
   it("Should not find a non-existing sub category", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector/${sectorValueId}/subsector/${randomUUID()}/subcategory/${randomUUID()}`;
-    const req = createRequest(url, invalidSubCategoryValue);
+    const req = mockRequest(invalidSubCategoryValue);
     const res = await findSubCategory(req, {
       params: {
         city: locode,
@@ -214,8 +198,7 @@ describe("Sub Category API", () => {
   });
 
   it("Should update a sub category", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector/${sectorValueId}/subsector/${subsectorValueId}/subcategory/${subcategoryValueId}`;
-    const req = createRequest(url, subcategoryValue1);
+    const req = mockRequest(subcategoryValue1);
     const res = await updateSubCategory(req, {
       params: {
         city: locode,
@@ -237,8 +220,7 @@ describe("Sub Category API", () => {
   });
 
   it("Should not update a sub category with invalid data", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector/${sectorValueId}/subsector/${subsectorValueId}/subcategory/${subcategoryValueId}`;
-    const req = createRequest(url, invalidSubCategoryValue);
+    const req = mockRequest(invalidSubCategoryValue);
     const res = await updateSubCategory(req, {
       params: {
         city: locode,
@@ -256,8 +238,7 @@ describe("Sub Category API", () => {
   });
 
   it("Should delete a sub category", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector/${sectorValueId}/subsector/${subsectorValueId}`;
-    const req = createRequest(url, subcategoryValue2);
+    const req = mockRequest(subcategoryValue2);
     const res = await deleteSubCategory(req, {
       params: {
         city: locode,
@@ -277,8 +258,7 @@ describe("Sub Category API", () => {
   });
 
   it("Should not delete a non-existing sub sector", async () => {
-    const url = `http://localhost:3000/api/v0/city/XX_INVALID/inventory/0/sector/${randomUUID()}/subsector/${randomUUID()}/subcategory/${randomUUID()}`;
-    const req = createRequest(url, subcategoryValue2);
+    const req = mockRequest(subcategoryValue2);
     const res = await deleteSubCategory(req, {
       params: {
         city: "XX_INVALID",

@@ -2,8 +2,10 @@ import {
   UserAttributes,
   type CityAttributes,
   type InventoryAttributes,
+  DataSourceAttributes,
 } from "@/models/init-models";
 import type {
+    DataSourceResponse,
   InventoryProgressResponse,
   InventoryResponse,
   UserInfoResponse,
@@ -70,6 +72,14 @@ export const api = createApi({
     getUserInfo: builder.query<UserInfoResponse, void>({
       query: () => "/user",
       transformResponse: (response: { data: UserInfoResponse }) =>
+        response.data,
+    }),
+    getAllDataSources: builder.query<
+      DataSourceResponse,
+      { inventoryId: string }
+    >({
+      query: ({ inventoryId }) => `datasource/${inventoryId}`,
+      transformResponse: (response: { data: DataSourceResponse }) =>
         response.data,
     }),
   }),

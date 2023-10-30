@@ -1,3 +1,4 @@
+import { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
 
 type InventoryResponse = InventoryAttributes & { city: CityAttributes };
@@ -11,6 +12,7 @@ interface SectorProgress {
 }
 
 interface InventoryProgressResponse {
+  inventoryId: string;
   totalProgress: {
     total: number;
     thirdParty: number;
@@ -25,6 +27,10 @@ interface UserInfoResponse {
   defaultCityLocode: string | null;
   defaultInventoryYear: number | null;
 }
+
+type DataSourceResponse = (DataSourceAttributes & {
+  scopes: ScopeAttributes;
+})[];
 
 declare module "next-auth" {
   interface Session {

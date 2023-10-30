@@ -53,7 +53,18 @@ export const GET = apiHandler(
 
     // TODO cache this
     const sectors: Sector[] = await db.models.Sector.findAll({
-      include: [{ model: db.models.SubSector, as: "subSectors" }],
+      include: [
+        {
+          model: db.models.SubSector,
+          as: "subSectors",
+          include: [
+            {
+              model: db.models.Scope,
+              as: "scope",
+            },
+          ],
+        },
+      ],
     });
     const sectorTotals: Record<string, number> = sectors.reduce(
       (acc, sector) => {

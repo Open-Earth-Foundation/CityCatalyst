@@ -46,7 +46,6 @@ import {
 } from "react-icons/md";
 import { SourceDrawer } from "./SourceDrawer";
 import { SubsectorDrawer } from "./SubsectorDrawer";
-import subSectorData from "./subsectors.json";
 
 // export default async function ServerWrapper({params}: {params: any}) {
 //   const session = await getServerSession(authOptions);
@@ -67,11 +66,15 @@ export default function AddDataSteps({
   const locode = userInfo?.defaultCityLocode;
   const year = userInfo?.defaultInventoryYear;
 
-  const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
-    api.useGetInventoryProgressQuery(
-      { locode: locode!, year: year! },
-      { skip: !locode || !year },
-    );
+  const {
+    data: inventoryProgress,
+    isLoading: isInventoryProgressLoading,
+    error: inventoryProgressError,
+  } = api.useGetInventoryProgressQuery(
+    { locode: locode!, year: year! },
+    { skip: !locode || !year },
+  );
+  const isInventoryLoading = isUserInfoLoading || isInventoryProgressLoading;
 
   const {
     data: dataSources,
@@ -82,7 +85,7 @@ export default function AddDataSteps({
     { skip: !inventoryProgress },
   );
 
-  const steps = [
+  const steps: DataStep[] = [
     {
       title: t("stationary-energy"),
       details: t("stationary-energy-details"),
@@ -90,6 +93,8 @@ export default function AddDataSteps({
       connectedProgress: 0,
       addedProgress: 0,
       referenceNumber: "I",
+      sector: null,
+      subSectors: null,
     },
     {
       title: t("transportation"),
@@ -98,6 +103,8 @@ export default function AddDataSteps({
       connectedProgress: 0,
       addedProgress: 0,
       referenceNumber: "II",
+      sector: null,
+      subSectors: null,
     },
     {
       title: t("waste"),
@@ -106,6 +113,8 @@ export default function AddDataSteps({
       connectedProgress: 0,
       addedProgress: 0,
       referenceNumber: "III",
+      sector: null,
+      subSectors: null,
     },
   ];
   if (inventoryProgress != null) {
@@ -121,6 +130,8 @@ export default function AddDataSteps({
         );
         continue;
       }
+      step.sector = sectorProgress.sector;
+      step.subSectors = sectorProgress.subSectors;
       if (sectorProgress.total === 0) {
         continue;
       }
@@ -172,7 +183,6 @@ export default function AddDataSteps({
     onClose: onSubsectorDrawerClose,
     onOpen: onSubsectorDrawerOpen,
   } = useDisclosure();
-  const subSectors: SubSector[] = subSectorData[activeStep];
   const onSubsectorClick = (subsector: SubSector) => {
     console.log(subsector);
     setSelectedSubsector(subsector);
@@ -300,7 +310,9 @@ export default function AddDataSteps({
             <Center>
               <HStack>
                 <QuestionIcon boxSize={8} color="content.tertiary" mr={1} />
-                <Text size="md" color="content.tertiary">{t("no-data-sources")}</Text>
+                <Text size="md" color="content.tertiary">
+                  {t("no-data-sources")}
+                </Text>
               </HStack>
             </Center>
           ) : (
@@ -406,46 +418,60 @@ export default function AddDataSteps({
           {t("select-subsector")}
         </Heading>
         <SimpleGrid minChildWidth="250px" spacing={4}>
-          {subSectors.map((subSector) => (
-            <Card
-              maxHeight="120px"
-              height="120px"
-              w="full"
-              className="hover:drop-shadow-xl transition-shadow"
-              onClick={() => onSubsectorClick(subSector)}
-              key={subSector.id}
-            >
-              <Flex direction="row" className="space-x-4 items-center h-full">
-                <Icon
-                  as={subSector.isAdded ? MdOutlineCheckCircle : DataAlertIcon}
-                  boxSize={8}
-                  color={
-                    subSector.isAdded
-                      ? "interactive.tertiary"
-                      : "sentiment.warningDefault"
-                  }
-                />
-                <Stack w="full">
-                  <Heading size="xs" noOfLines={3} maxWidth="200px">
-                    {t(subSector.title)}
-                  </Heading>
-                  <Text color="content.tertiary">
-                    {t("scope")}: {subSector.scopes.join(", ")}
-                  </Text>
-                </Stack>
-                <IconButton
-                  aria-label={t("edit-subsector")}
-                  variant="solidIcon"
-                  icon={
-                    <Icon
-                      as={subSector.isAdded ? MdOutlineEdit : MdAdd}
-                      boxSize={6}
-                    />
-                  }
-                />
-              </Flex>
-            </Card>
-          ))}
+          {isInventoryLoading || !currentStep.subSectors ? (
+            <Center>
+              <Spinner size="lg" />
+            </Center>
+          ) : inventoryProgressError ? (
+            <Center>
+              <WarningIcon boxSize={8} color="semantic.danger" />
+            </Center>
+          ) : (
+            currentStep.subSectors.map((subSector: SubSector) => (
+              <Card
+                maxHeight="120px"
+                height="120px"
+                w="full"
+                className="hover:drop-shadow-xl transition-shadow"
+                onClick={() => onSubsectorClick(subSector)}
+                key={subSector.subsectorId}
+              >
+                <Flex direction="row" className="space-x-4 items-center h-full">
+                  <Icon
+                    as={
+                      subSector.completed ? MdOutlineCheckCircle : DataAlertIcon
+                    }
+                    boxSize={8}
+                    color={
+                      subSector.completed
+                        ? "interactive.tertiary"
+                        : "sentiment.warningDefault"
+                    }
+                  />
+                  <Stack w="full">
+                    <Heading size="xs" noOfLines={3} maxWidth="200px">
+                      {t(subSector.subsectorName)}
+                    </Heading>
+                    {subSector.scope && (
+                      <Text color="content.tertiary">
+                        {t("scope")}: {subSector.scope.scopeName}
+                      </Text>
+                    )}
+                  </Stack>
+                  <IconButton
+                    aria-label={t("edit-subsector")}
+                    variant="solidIcon"
+                    icon={
+                      <Icon
+                        as={subSector.completed ? MdOutlineEdit : MdAdd}
+                        boxSize={6}
+                      />
+                    }
+                  />
+                </Flex>
+              </Card>
+            ))
+          )}
         </SimpleGrid>
       </Card>
       {/*** Bottom bar ***/}

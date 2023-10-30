@@ -18,6 +18,7 @@
   "data-added-percent": "{{progress}}% Added data",
   "check-data-heading": "Check and connect third-party data we found for you",
   "check-data-details": "Review and integrate automatically sourced data relevant to your city's GHG inventory.",
+  "no-data-sources": "No data sources found",
   "data-quality": "Data Quality",
   "quality-high": "High",
   "quality-medium": "Medium",

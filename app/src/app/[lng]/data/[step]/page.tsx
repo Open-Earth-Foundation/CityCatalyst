@@ -1,20 +1,26 @@
 "use client";
 
+import { SegmentedProgress } from "@/components/SegmentedProgress";
 import { CircleIcon, DataAlertIcon } from "@/components/icons";
 import WizardSteps from "@/components/wizard-steps";
 import { useTranslation } from "@/i18n/client";
-import { ArrowBackIcon, WarningIcon } from "@chakra-ui/icons";
-import { Center, Link, Spinner } from "@chakra-ui/react";
+import { ScopeAttributes } from "@/models/Scope";
+import { api } from "@/services/api";
+import { SectorProgress } from "@/util/types";
+import { ArrowBackIcon, QuestionIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
   Card,
+  Center,
   Flex,
+  HStack,
   Heading,
   Icon,
   IconButton,
-  Progress,
+  Link,
   SimpleGrid,
+  Spinner,
   Stack,
   Tag,
   TagLabel,
@@ -34,19 +40,13 @@ import {
   MdHomeWork,
   MdOutlineCheckCircle,
   MdOutlineEdit,
-  MdOutlineFactory,
   MdOutlineHomeWork,
-  MdOutlineHouse,
   MdOutlineSkipNext,
   MdPlaylistAddCheck,
 } from "react-icons/md";
 import { SourceDrawer } from "./SourceDrawer";
 import { SubsectorDrawer } from "./SubsectorDrawer";
 import subSectorData from "./subsectors.json";
-import { SegmentedProgress } from "@/components/SegmentedProgress";
-import { api } from "@/services/api";
-import { SectorProgress } from "@/util/types";
-import { ScopeAttributes } from "@/models/Scope";
 
 // export default async function ServerWrapper({params}: {params: any}) {
 //   const session = await getServerSession(authOptions);
@@ -73,11 +73,14 @@ export default function AddDataSteps({
       { skip: !locode || !year },
     );
 
-  const { data: dataSources, isLoading: areDataSourcesLoading } =
-    api.useGetAllDataSourcesQuery(
-      { inventoryId: inventoryProgress?.inventoryId! },
-      { skip: !inventoryProgress },
-    );
+  const {
+    data: dataSources,
+    isLoading: areDataSourcesLoading,
+    error: dataSourcesError,
+  } = api.useGetAllDataSourcesQuery(
+    { inventoryId: inventoryProgress?.inventoryId! },
+    { skip: !inventoryProgress },
+  );
 
   const steps = [
     {
@@ -285,13 +288,20 @@ export default function AddDataSteps({
           {t("check-data-details")}
         </Text>
         <SimpleGrid minChildWidth="250px" spacing={4}>
-          {areDataSourcesLoading ? (
+          {areDataSourcesLoading || !dataSources ? (
             <Center>
               <Spinner size="lg" />
             </Center>
-          ) : !dataSources ? (
+          ) : dataSourcesError ? (
             <Center>
               <WarningIcon boxSize={8} color="semantic.danger" />
+            </Center>
+          ) : dataSources && dataSources.length === 0 ? (
+            <Center>
+              <HStack>
+                <QuestionIcon boxSize={8} color="content.tertiary" mr={1} />
+                <Text size="md" color="content.tertiary">{t("no-data-sources")}</Text>
+              </HStack>
             </Center>
           ) : (
             dataSources

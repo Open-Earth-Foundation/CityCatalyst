@@ -3,6 +3,7 @@ import { db } from "@/models";
 import { City } from "@/models/City";
 import { DataSource } from "@/models/DataSource";
 import { Inventory } from "@/models/Inventory";
+import { Scope } from "@/models/Scope";
 import { apiHandler } from "@/util/api";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
@@ -28,6 +29,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
           startYear: { [Op.lte]: inventory.year },
           endYear: { [Op.gte]: inventory.year },
         },
+        include: [{ model: Scope, as: "scopes" }],
       },
     ],
   });
@@ -55,36 +57,51 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
     throw new createHttpError.NotFound("Sources not found");
   }
   const applicableSources = filterSources(inventory, sources);
-  const applicableSourceIds = applicableSources.map(source => source.datasourceId);
-  const invalidSources = sources.filter((source) => !applicableSourceIds.includes(source.datasourceId));
-  const invalidSourceIds = invalidSources.map(source => source.datasourceId);
+  const applicableSourceIds = applicableSources.map(
+    (source) => source.datasourceId,
+  );
+  const invalidSources = sources.filter(
+    (source) => !applicableSourceIds.includes(source.datasourceId),
+  );
+  const invalidSourceIds = invalidSources.map((source) => source.datasourceId);
 
   // TODO check if the user has made manual edits that would be overwritten
   // TODO create new versioning record
 
   // download source data and apply in database
-  const sourceResults = await Promise.all(applicableSources.map(async (source) => {
-    const result = { id: source.datasourceId, success: true };
-    
-    if (source.retrievalMethod === "global_api") {
-      result.success = await retrieveGlobalAPISource(source, inventory);
-    } else {
-      console.error(`Unsupported retrieval method ${source.retrievalMethod} for data source ${source.datasourceId}`);
-      result.success = false;
-    }
+  const sourceResults = await Promise.all(
+    applicableSources.map(async (source) => {
+      const result = { id: source.datasourceId, success: true };
 
-    return result;
-  }));
+      if (source.retrievalMethod === "global_api") {
+        result.success = await retrieveGlobalAPISource(source, inventory);
+      } else {
+        console.error(
+          `Unsupported retrieval method ${source.retrievalMethod} for data source ${source.datasourceId}`,
+        );
+        result.success = false;
+      }
 
-  const successful = sourceResults.filter(result => result.success).map(result => result.id);
+      return result;
+    }),
+  );
+
+  const successful = sourceResults
+    .filter((result) => result.success)
+    .map((result) => result.id);
   const failed = sourceResults
     .filter((result) => !result.success)
     .map((result) => result.id);
 
-  return NextResponse.json({ data: { successful, failed, invalid: invalidSourceIds } });
+  return NextResponse.json({
+    data: { successful, failed, invalid: invalidSourceIds },
+  });
 });
 
-async function retrieveGlobalAPISource(source: DataSource, inventory: Inventory): Promise<boolean> {
+async function retrieveGlobalAPISource(
+  source: DataSource,
+  inventory: Inventory,
+): Promise<boolean> {
   if (
     !source.apiEndpoint ||
     !inventory.city.locode ||

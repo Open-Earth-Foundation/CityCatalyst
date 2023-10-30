@@ -101,7 +101,7 @@ export function SectorCard({
                 className="py-[16px]"
               >
                 <Trans t={t}>scope-required-for-gpc</Trans>:{" "}
-                {sectorScopes.join(", ")}
+                {sectorScopes?.join(", ") || "none"}
               </Heading>
             </Box>
             <Box>

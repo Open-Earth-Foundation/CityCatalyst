@@ -63,8 +63,13 @@ const defaultValues: Inputs = {
   subcategoryData: {},
 };
 
+function nameToI18NKey(name: string): string {
+  return name.replaceAll(" ", "-").toLowerCase();
+}
+
 export function SubsectorDrawer({
   subsector,
+  sectorName,
   isOpen,
   onClose,
   finalFocusRef,
@@ -72,6 +77,7 @@ export function SubsectorDrawer({
   t,
 }: {
   subsector?: SubSector;
+  sectorName?: string;
   isOpen: boolean;
   onClose: () => void;
   onSave: (subsector: SubSector) => void;
@@ -151,12 +157,12 @@ export function SubsectorDrawer({
           </Button>
           {subsector && (
             <>
-              <Heading size="sm">
-                {t("sector")} - {t(subsector.sectorName)}
-              </Heading>
-              <Heading size="lg">{t(subsector.title)}</Heading>
+              {sectorName && <Heading size="sm">
+                {t("sector")} - {t(sectorName)}
+              </Heading>}
+              <Heading size="lg">{t(subsector.subsectorName)}</Heading>
               <Text color="content.tertiary">
-                {t(subsector.title + "-description")}
+                {t(nameToI18NKey(subsector.subsectorName) + "-description")}
               </Text>
               <Heading size="md">{t("enter-subsector-data")}</Heading>
               <form

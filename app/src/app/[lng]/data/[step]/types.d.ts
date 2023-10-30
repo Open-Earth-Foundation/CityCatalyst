@@ -1,13 +1,24 @@
-type SubSector = {
-  id: number | string;
+interface DataStep {
   title: string;
-  scopes: number[];
-  isAdded: boolean;
-  sectorName: string;
+  details: string;
+  icon: any;
+  connectedProgress: number;
+  addedProgress: number;
+  referenceNumber: string;
+  sector: Sector | null;
+  subSectors: Array<SubSectorAttributes & { completed: boolean }> | null;
+};
+
+type SubSector = {
+  subsectorId: string;
+  name: string;
+  scope: { scopeName: string };
+  completed: boolean;
+  subsectorName: string;
 };
 
 type DataSource = {
-  id: number | string;
+  datasourceId: string;
   icon: any;
   title: string;
   dataQuality: "low" | "medium" | "high";
@@ -59,4 +70,3 @@ type SubcategoryData = {
   grid: ActivityData;
   direct: DirectMeasureData;
 };
-

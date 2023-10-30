@@ -57,7 +57,7 @@
     "jsonwebtoken": "^9.0.2",
     "leaflet": "^1.9.4",
     "next": "13.5.6",
-    "next-auth": "^4.24.3",
+    "next-auth": "^4.24.4",
     "nodemailer": "^6.9.5",
     "pg": "^8.11.3",
     "pg-hstore": "^2.3.4",

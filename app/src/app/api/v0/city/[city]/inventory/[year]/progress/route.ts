@@ -64,9 +64,13 @@ export const GET = apiHandler(
     );
 
     // count SubSectorValues grouped by source type and sector
-    const sectorProgress = inventory.sectorValues.map(
-      (sectorValue: SectorValue) => {
-        const sectorCounts = sectorValue.subSectorValues.reduce(
+    const sectorProgress = sectors.map((sector: Sector) => {
+      const sectorValue = inventory.sectorValues.find(
+        (sectorVal) => sector.sectorId === sectorVal.sectorId,
+      );
+      let sectorCounts = { thirdParty: 0, uploaded: 0 };
+      if (sectorValue) {
+        sectorCounts = sectorValue.subSectorValues.reduce(
           (acc, subSectorValue) => {
             if (!subSectorValue.dataSource) {
               return acc;
@@ -89,31 +93,28 @@ export const GET = apiHandler(
           },
           { thirdParty: 0, uploaded: 0 },
         );
-        const sector = sectors.find(
-          (sector) => sector.sectorId === sectorValue.sectorId,
-        );
-        if (!sector) {
-          throw new createHttpError.InternalServerError(
-            `Sector ${sectorValue.sectorId} not found!`,
-          );
-        }
-        // add completed field to subsectors if there is a value for it
-        const subSectors = sector.subSectors.map((subSector) => {
-          const completed =
+      }
+
+      // add completed field to subsectors if there is a value for it
+      const subSectors = sector.subSectors.map((subSector) => {
+        let completed = false;
+        if (sectorValue) {
+          completed =
             sectorValue.subSectorValues.find(
               (subSectorValue) =>
                 subSectorValue.subsectorId === subSector.subsectorId,
             ) != null;
-          return { completed, ...subSector.dataValues };
-        });
-        return {
-          sector: sectorValue.sector,
-          total: sectorTotals[sectorValue.sector.sectorId],
-          subSectors,
-          ...sectorCounts,
-        };
-      },
-    );
+        }
+        return { completed, ...subSector.dataValues };
+      });
+
+      return {
+        sector: sector,
+        total: sectorTotals[sector.sectorId],
+        subSectors,
+        ...sectorCounts,
+      };
+    });
 
     const totalProgress = sectorProgress.reduce(
       (acc, sectorInfo) => {

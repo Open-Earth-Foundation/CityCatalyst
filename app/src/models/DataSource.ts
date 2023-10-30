@@ -572,32 +572,32 @@ export class DataSource
   >;
   countReportinglevelIdReportingLevels!: Sequelize.BelongsToManyCountAssociationsMixin;
   // DataSource belongsToMany Scope via datasourceId and scopeId
-  scopeIdScopes!: Scope[];
-  getScopeIdScopes!: Sequelize.BelongsToManyGetAssociationsMixin<Scope>;
-  setScopeIdScopes!: Sequelize.BelongsToManySetAssociationsMixin<
+  scopes!: Scope[];
+  getScopes!: Sequelize.BelongsToManyGetAssociationsMixin<Scope>;
+  setScopes!: Sequelize.BelongsToManySetAssociationsMixin<
     Scope,
     ScopeId
   >;
-  addScopeIdScope!: Sequelize.BelongsToManyAddAssociationMixin<Scope, ScopeId>;
-  addScopeIdScopes!: Sequelize.BelongsToManyAddAssociationsMixin<
+  addScope!: Sequelize.BelongsToManyAddAssociationMixin<Scope, ScopeId>;
+  addScopes!: Sequelize.BelongsToManyAddAssociationsMixin<
     Scope,
     ScopeId
   >;
-  createScopeIdScope!: Sequelize.BelongsToManyCreateAssociationMixin<Scope>;
-  removeScopeIdScope!: Sequelize.BelongsToManyRemoveAssociationMixin<
+  createScope!: Sequelize.BelongsToManyCreateAssociationMixin<Scope>;
+  removeScope!: Sequelize.BelongsToManyRemoveAssociationMixin<
     Scope,
     ScopeId
   >;
-  removeScopeIdScopes!: Sequelize.BelongsToManyRemoveAssociationsMixin<
+  removeScopes!: Sequelize.BelongsToManyRemoveAssociationsMixin<
     Scope,
     ScopeId
   >;
-  hasScopeIdScope!: Sequelize.BelongsToManyHasAssociationMixin<Scope, ScopeId>;
-  hasScopeIdScopes!: Sequelize.BelongsToManyHasAssociationsMixin<
+  hasScope!: Sequelize.BelongsToManyHasAssociationMixin<Scope, ScopeId>;
+  hasScopes!: Sequelize.BelongsToManyHasAssociationsMixin<
     Scope,
     ScopeId
   >;
-  countScopeIdScopes!: Sequelize.BelongsToManyCountAssociationsMixin;
+  countScopes!: Sequelize.BelongsToManyCountAssociationsMixin;
   // DataSource belongsToMany Sector via datasourceId and sectorId
   sectorIdSectors!: Sector[];
   getSectorIdSectors!: Sequelize.BelongsToManyGetAssociationsMixin<Sector>;

@@ -278,7 +278,7 @@ export function initModels(sequelize: Sequelize) {
     otherKey: "reportinglevelId",
   });
   DataSource.belongsToMany(Scope, {
-    as: "scopeIdScopes",
+    as: "scopes",
     through: DataSourceScope,
     foreignKey: "datasourceId",
     otherKey: "scopeId",
@@ -334,7 +334,7 @@ export function initModels(sequelize: Sequelize) {
     otherKey: "subsectorId",
   });
   Scope.belongsToMany(DataSource, {
-    as: "datasourceIdDataSourceDataSourceScopes",
+    as: "dataSources",
     through: DataSourceScope,
     foreignKey: "scopeId",
     otherKey: "datasourceId",

@@ -125,6 +125,12 @@ export const GET = apiHandler(
       { total: 0, thirdParty: 0, uploaded: 0 },
     );
 
-    return NextResponse.json({ data: { totalProgress, sectorProgress } });
+    return NextResponse.json({
+      data: {
+        inventoryId: inventory.inventoryId,
+        totalProgress,
+        sectorProgress,
+      },
+    });
   },
 );

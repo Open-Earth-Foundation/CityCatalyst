@@ -1,20 +1,19 @@
 "use client";
 
 import { SegmentedProgress } from "@/components/SegmentedProgress";
-import { CircleIcon, DataAlertIcon } from "@/components/icons";
+import { CircleIcon, DataAlertIcon, WorldSearchIcon } from "@/components/icons";
 import WizardSteps from "@/components/wizard-steps";
 import { useTranslation } from "@/i18n/client";
 import { ScopeAttributes } from "@/models/Scope";
 import { api } from "@/services/api";
 import { SectorProgress } from "@/util/types";
-import { ArrowBackIcon, QuestionIcon, WarningIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
   Card,
   Center,
   Flex,
-  HStack,
   Heading,
   Icon,
   IconButton,
@@ -46,12 +45,61 @@ import {
 } from "react-icons/md";
 import { SourceDrawer } from "./SourceDrawer";
 import { SubsectorDrawer } from "./SubsectorDrawer";
+import { Trans } from "react-i18next/TransWithoutContext";
+import { TFunction } from "i18next";
 
 // export default async function ServerWrapper({params}: {params: any}) {
 //   const session = await getServerSession(authOptions);
-//   const user = await getUserInfo(session?.user.id);
-//   return AddDataSteps({params, session});
+//   const userInfo = await getUserInfo(session?.user.id);
+//   return AddDataSteps({params, userInfo});
 // }
+
+function getMailURI(locode?: string, sector?: string, year?: number): string {
+  return `mailto://info@openearth.org,greta@openearth.org?subject=Missing third party data source&body=City: ${locode}%0ASector: ${sector}%0AYear: ${year}`;
+}
+
+function NoDataSourcesMessage({
+  t,
+  locode,
+  sector,
+  year,
+}: {
+  t: TFunction;
+  locode?: string;
+  sector?: string;
+  year?: number;
+}) {
+  return (
+    <Flex align="center" direction="column">
+      <Icon
+        as={WorldSearchIcon}
+        boxSize={20}
+        color="interactive.secondary"
+        borderRadius="full"
+        p={4}
+        bgColor="background.neutral"
+        mb={6}
+      />
+      <Heading
+        size="lg"
+        color="interactive.secondary"
+        mb={2}
+        textAlign="center"
+      >
+        {t("no-data-sources")}
+      </Heading>
+      <Text color="content.tertiary" align="center" size="sm">
+        <Trans t={t} i18nKey="no-data-sources-description">
+          I<br />I
+          <Link href={getMailURI(locode, sector, year)} className="underline">
+            please report this
+          </Link>
+          I
+        </Trans>
+      </Text>
+    </Flex>
+  );
+}
 
 export default function AddDataSteps({
   params: { lng, step },
@@ -307,14 +355,12 @@ export default function AddDataSteps({
               <WarningIcon boxSize={8} color="semantic.danger" />
             </Center>
           ) : dataSources && dataSources.length === 0 ? (
-            <Center>
-              <HStack>
-                <QuestionIcon boxSize={8} color="content.tertiary" mr={1} />
-                <Text size="md" color="content.tertiary">
-                  {t("no-data-sources")}
-                </Text>
-              </HStack>
-            </Center>
+            <NoDataSourcesMessage
+              t={t}
+              sector={currentStep.referenceNumber}
+              locode={locode || undefined}
+              year={year || undefined}
+            />
           ) : (
             dataSources
               .slice(0, isDataSectionExpanded ? dataSources.length : 6)

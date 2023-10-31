@@ -1,6 +1,6 @@
 import { TagSelect } from "@/components/TagSelect";
 import { RadioButton } from "@/components/radio-button";
-import { ArrowBackIcon, InfoOutlineIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Accordion,
   AccordionButton,
@@ -9,12 +9,13 @@ import {
   AccordionPanel,
   Box,
   Button,
-  Divider,
+  Center,
   Drawer,
   DrawerContent,
   DrawerOverlay,
   HStack,
   Heading,
+  Spinner,
   Tag,
   Text,
   Tooltip,
@@ -85,12 +86,14 @@ export function SubsectorDrawer({
   finalFocusRef?: RefObject<any>;
   t: TFunction;
 }) {
-  console.log("subs", subsector)
-  const { data: subsectorValue, isLoading: isSubsectorValueLoading } =
-    api.useGetSubsectorValueQuery(
-      { subSectorId: subsector?.subsectorId! },
-      { skip: !subsector },
-    );
+  const {
+    data: subsectorValue,
+    isLoading: isSubsectorValueLoading,
+    error: subsectorValueError,
+  } = api.useGetSubsectorValueQuery(
+    { subSectorId: subsector?.subsectorId! },
+    { skip: !subsector },
+  );
   const [setSubsectorValue, { isLoading: isSaving }] =
     api.useSetSubsectorValueMutation();
 
@@ -174,121 +177,138 @@ export function SubsectorDrawer({
               <Text color="content.tertiary">
                 {t(nameToI18NKey(subsector.subsectorName) + "-description")}
               </Text>
-              <Heading size="md">{t("enter-subsector-data")}</Heading>
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="space-y-6 grow flex flex-col"
-              >
-                <Heading size="sm" className="font-normal">
-                  {t("value-types")}{" "}
-                  <Tooltip
-                    hasArrow
-                    label={t("value-types-tooltip")}
-                    placement="bottom-start"
+              {isSubsectorValueLoading ? (
+                <Center>
+                  <Spinner size="lg" />
+                </Center>
+              ) : subsectorValueError ? (
+                <Center>
+                  <HStack mt={4}>
+                    <WarningIcon boxSize={7} color="semantic.danger" />
+                    <Text color="semantic.danger">{t("load-failed-subsector-value")}</Text>
+                  </HStack>
+                </Center>
+              ) : (
+                <>
+                  <Heading size="md">{t("enter-subsector-data")}</Heading>
+                  <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    className="space-y-6 grow flex flex-col"
                   >
-                    <InfoOutlineIcon mt={-1} color="content.tertiary" />
-                  </Tooltip>
-                </Heading>
-                <HStack spacing={4} {...getRootProps()}>
-                  <RadioButton {...getRadioProps({ value: "one-value" })}>
-                    {t("one-value")}
-                  </RadioButton>
-                  <RadioButton
-                    {...getRadioProps({
-                      value: "subcategory-values",
-                    })}
-                  >
-                    {t("subcategory-values")}
-                  </RadioButton>
-                </HStack>
-                {/*** One value for the sub-sector ***/}
-                {valueType === "one-value" && (
-                  <EmissionsForm
-                    t={t}
-                    register={register}
-                    errors={errors}
-                    control={control}
-                  />
-                )}
-                {/*** Values for each subcategory ***/}
-                {valueType === "subcategory-values" && (
-                  <>
-                    <TagSelect<Inputs>
-                      options={subcategoryOptions}
-                      name="subcategories"
-                      id="subcategories"
-                      placeholder={t("select-subcategories")}
-                      rules={{ required: t("subcategories-required") }}
-                      control={control}
-                    />
-                    <Accordion allowToggle className="space-y-6">
-                      {subcategories.map((subcategory, i) => (
-                        <AccordionItem key={subcategory.value} mb={0}>
-                          <h2>
-                            <AccordionButton>
-                              <HStack w="full">
-                                <Box
-                                  as="span"
-                                  flex="1"
-                                  textAlign="left"
-                                  w="full"
-                                >
-                                  <Heading
-                                    size="sm"
-                                    color="content.alternative"
-                                  >
-                                    {subcategory.label}
-                                  </Heading>
-                                  <Text color="content.tertiary">
-                                    TODO: Get category text body
-                                  </Text>
-                                </Box>
-                                <Tag
-                                  variant={i == 0 ? "success" : "warning"}
-                                  mx={6}
-                                >
-                                  {i == 0 ? t("completed") : t("incomplete")}
-                                </Tag>
-                                <AccordionIcon
-                                  borderWidth={1}
-                                  boxSize={6}
-                                  borderRadius="full"
-                                  borderColor="border.overlay"
+                    <Heading size="sm" className="font-normal">
+                      {t("value-types")}{" "}
+                      <Tooltip
+                        hasArrow
+                        label={t("value-types-tooltip")}
+                        placement="bottom-start"
+                      >
+                        <InfoOutlineIcon mt={-1} color="content.tertiary" />
+                      </Tooltip>
+                    </Heading>
+                    <HStack spacing={4} {...getRootProps()}>
+                      <RadioButton {...getRadioProps({ value: "one-value" })}>
+                        {t("one-value")}
+                      </RadioButton>
+                      <RadioButton
+                        {...getRadioProps({
+                          value: "subcategory-values",
+                        })}
+                      >
+                        {t("subcategory-values")}
+                      </RadioButton>
+                    </HStack>
+                    {/*** One value for the sub-sector ***/}
+                    {valueType === "one-value" && (
+                      <EmissionsForm
+                        t={t}
+                        register={register}
+                        errors={errors}
+                        control={control}
+                      />
+                    )}
+                    {/*** Values for each subcategory ***/}
+                    {valueType === "subcategory-values" && (
+                      <>
+                        <TagSelect<Inputs>
+                          options={subcategoryOptions}
+                          name="subcategories"
+                          id="subcategories"
+                          placeholder={t("select-subcategories")}
+                          rules={{ required: t("subcategories-required") }}
+                          control={control}
+                        />
+                        <Accordion allowToggle className="space-y-6">
+                          {subcategories.map((subcategory, i) => (
+                            <AccordionItem key={subcategory.value} mb={0}>
+                              <h2>
+                                <AccordionButton>
+                                  <HStack w="full">
+                                    <Box
+                                      as="span"
+                                      flex="1"
+                                      textAlign="left"
+                                      w="full"
+                                    >
+                                      <Heading
+                                        size="sm"
+                                        color="content.alternative"
+                                      >
+                                        {subcategory.label}
+                                      </Heading>
+                                      <Text color="content.tertiary">
+                                        TODO: Get category text body
+                                      </Text>
+                                    </Box>
+                                    <Tag
+                                      variant={i == 0 ? "success" : "warning"}
+                                      mx={6}
+                                    >
+                                      {i == 0
+                                        ? t("completed")
+                                        : t("incomplete")}
+                                    </Tag>
+                                    <AccordionIcon
+                                      borderWidth={1}
+                                      boxSize={6}
+                                      borderRadius="full"
+                                      borderColor="border.overlay"
+                                    />
+                                  </HStack>
+                                </AccordionButton>
+                              </h2>
+                              <AccordionPanel pt={4}>
+                                <EmissionsForm
+                                  t={t}
+                                  register={register}
+                                  errors={errors}
+                                  control={control}
+                                  prefix={`subcategoryData.${subcategory.value}.`}
                                 />
-                              </HStack>
-                            </AccordionButton>
-                          </h2>
-                          <AccordionPanel pt={4}>
-                            <EmissionsForm
-                              t={t}
-                              register={register}
-                              errors={errors}
-                              control={control}
-                              prefix={`subcategoryData.${subcategory.value}.`}
-                            />
-                          </AccordionPanel>
-                        </AccordionItem>
-                      ))}
-                    </Accordion>
-                  </>
-                )}
-                <Box w="full" className="grow flex flex-col">
-                  <Box className="grow" />
-                  <Button
-                    onClick={handleSubmit(onSubmit)}
-                    isDisabled={!isSubmitEnabled}
-                    isLoading={isSaving}
-                    type="submit"
-                    formNoValidate
-                    w="full"
-                    h={16}
-                    mb={12}
-                    mt={6}
-                  >
-                    {t("add-data")}
-                  </Button>
-                </Box>
-              </form>
+                              </AccordionPanel>
+                            </AccordionItem>
+                          ))}
+                        </Accordion>
+                      </>
+                    )}
+                    <Box w="full" className="grow flex flex-col">
+                      <Box className="grow" />
+                      <Button
+                        onClick={handleSubmit(onSubmit)}
+                        isDisabled={!isSubmitEnabled}
+                        isLoading={isSaving}
+                        type="submit"
+                        formNoValidate
+                        w="full"
+                        h={16}
+                        mb={12}
+                        mt={6}
+                      >
+                        {t("add-data")}
+                      </Button>
+                    </Box>
+                  </form>
+                </>
+              )}
             </>
           )}
         </Box>

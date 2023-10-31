@@ -62,6 +62,7 @@
   "methodology": "Methodology",
 
   "sector": "Sector",
+  "load-failed-subsector-value": "Failed to load sub-sector data!",
   "enter-subsector-data": "Enter the sub-sector data",
   "value-types": "What types of values do you have?",
   "value-types-tooltip": "Select \"One Value for the Sub-sector\" if you have a single, consolidated data value representing the entire sub-sector. Choose \"Values for Each Subcategory\" if your data is broken down into separate values for specific categories within this sub-sector",

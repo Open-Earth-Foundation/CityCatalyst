@@ -60,7 +60,7 @@ const Footer = ({ lng }: { lng: string }) => {
               fontWeight="semibold"
               letterSpacing="wide"
             >
-              v {currentVersion}
+              v{currentVersion}
             </Text>
             <Box
               backgroundColor="border.neutral"

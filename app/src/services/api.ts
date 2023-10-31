@@ -2,12 +2,13 @@ import {
   UserAttributes,
   type CityAttributes,
   type InventoryAttributes,
-  DataSourceAttributes,
+  SubSectorValueAttributes,
 } from "@/models/init-models";
 import type {
-    DataSourceResponse,
+  DataSourceResponse,
   InventoryProgressResponse,
   InventoryResponse,
+  SubsectorValueUpdateQuery,
   UserInfoResponse,
 } from "@/util/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -80,6 +81,26 @@ export const api = createApi({
     >({
       query: ({ inventoryId }) => `datasource/${inventoryId}`,
       transformResponse: (response: { data: DataSourceResponse }) =>
+        response.data,
+    }),
+    getSubsectorValue: builder.query<
+      SubSectorValueAttributes,
+      { subSectorId: string }
+    >({
+      query: ({ subSectorId }) => `/subsector/${subSectorId}`,
+      transformResponse: (response: { data: SubSectorValueAttributes }) =>
+        response.data,
+    }),
+    setSubsectorValue: builder.mutation<
+      SubSectorValueAttributes,
+      SubsectorValueUpdateQuery
+    >({
+      query: (data) => ({
+        url: `/subsector/${data.subSectorId}`,
+        method: "POST",
+        body: data.data,
+      }),
+      transformResponse: (response: { data: SubSectorValueAttributes }) =>
         response.data,
     }),
   }),

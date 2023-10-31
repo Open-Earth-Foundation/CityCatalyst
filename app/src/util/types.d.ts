@@ -32,6 +32,11 @@ type DataSourceResponse = (DataSourceAttributes & {
   scopes: ScopeAttributes;
 })[];
 
+interface SubsectorValueUpdateQuery {
+  subSectorId: string;
+  data: SubSectorValueAttributes;
+}
+
 declare module "next-auth" {
   interface Session {
     user: {

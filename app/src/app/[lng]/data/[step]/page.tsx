@@ -561,6 +561,7 @@ export default function AddDataSteps({
       />
       <SubsectorDrawer
         subsector={selectedSubsector}
+        sectorName={currentStep.title}
         isOpen={isSubsectorDrawerOpen}
         onClose={onSubsectorDrawerClose}
         onSave={onSubsectorSave}

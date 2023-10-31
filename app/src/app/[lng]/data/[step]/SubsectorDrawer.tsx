@@ -24,6 +24,7 @@ import { TFunction } from "i18next";
 import { RefObject, useEffect, useState } from "react";
 import { SubmitHandler, useController, useForm } from "react-hook-form";
 import { EmissionsForm } from "./EmissionsForm";
+import { api } from "@/services/api";
 
 type Inputs = {
   valueType: string;
@@ -80,11 +81,19 @@ export function SubsectorDrawer({
   sectorName?: string;
   isOpen: boolean;
   onClose: () => void;
-  onSave: (subsector: SubSector) => void;
+  onSave: (subsector: SubSector, data: Inputs) => void;
   finalFocusRef?: RefObject<any>;
   t: TFunction;
 }) {
-  const [isSaving, setSaving] = useState(false);
+  console.log("subs", subsector)
+  const { data: subsectorValue, isLoading: isSubsectorValueLoading } =
+    api.useGetSubsectorValueQuery(
+      { subSectorId: subsector?.subsectorId! },
+      { skip: !subsector },
+    );
+  const [setSubsectorValue, { isLoading: isSaving }] =
+    api.useSetSubsectorValueMutation();
+
   const {
     register,
     handleSubmit,
@@ -94,11 +103,10 @@ export function SubsectorDrawer({
     control,
   } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    if (!subsector) return;
     console.log("Sector data", data);
-    setSaving(true);
-    onSave(subsector!); // TODO use new data from API to update
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setSaving(false);
+    await setSubsectorValue({ subSectorId: subsector.subsectorId, data });
+    onSave(subsector, data);
     onClose();
   };
 
@@ -157,9 +165,11 @@ export function SubsectorDrawer({
           </Button>
           {subsector && (
             <>
-              {sectorName && <Heading size="sm">
-                {t("sector")} - {t(sectorName)}
-              </Heading>}
+              {sectorName && (
+                <Heading size="sm">
+                  {t("sector")} - {t(sectorName)}
+                </Heading>
+              )}
               <Heading size="lg">{t(subsector.subsectorName)}</Heading>
               <Text color="content.tertiary">
                 {t(nameToI18NKey(subsector.subsectorName) + "-description")}

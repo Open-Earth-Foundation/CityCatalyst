@@ -449,7 +449,12 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                 The data you have submitted is now officially incorporated into
                 your city&apos;s {{ year }} GHG Emissions Inventory, compiled
                 according to the GPC Basic methodology.{" "}
-                <Link href="/" fontWeight="bold" color="brand.secondary">
+                <Link
+                  href="https://ghgprotocol.org/ghg-protocol-cities"
+                  target="_blank"
+                  fontWeight="bold"
+                  color="brand.secondary"
+                >
                   Learn more
                 </Link>{" "}
                 about GPC Protocol

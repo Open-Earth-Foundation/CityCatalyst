@@ -5,8 +5,10 @@ import React from "react";
 import FooterLink from "../Navigation/FooterLink";
 import { TFunction } from "i18next";
 import { useTranslation } from "@/i18n/client";
+import { getCurrentVersion } from "@/util/helpers";
 
 const Footer = ({ lng }: { lng: string }) => {
+  const currentVersion = getCurrentVersion();
   const { t } = useTranslation(lng, "footer");
   return (
     <footer className="w-full h-[320px] bg-[#00001f] pt-[48px]">
@@ -51,7 +53,15 @@ const Footer = ({ lng }: { lng: string }) => {
         </Box>
         <Box backgroundColor="body" className="h-[1px]" />
         <Box className="pt-[48px] flex justify-between">
-          <Box className="flex gap-5">
+          <Box className="flex gap-4">
+            <Text
+              fontSize="title.sm"
+              color="base.light"
+              fontWeight="semibold"
+              letterSpacing="wide"
+            >
+              v{currentVersion}
+            </Text>
             <Box
               backgroundColor="border.neutral"
               borderRadius="full"

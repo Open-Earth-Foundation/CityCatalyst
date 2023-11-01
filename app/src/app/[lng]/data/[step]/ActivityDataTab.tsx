@@ -200,9 +200,8 @@ export function ActivityDataTab({
           <Trans
             t={t}
             i18nKey="calculations-details"
-            values={{ ch4Value: 133.7, co2Value: 102.5 }}
           >
-            All calculations consider a <b>GWP value of X for CO2 and Y for CH4</b>.
+            All calculations use the <Link href="https://erce.energy/erceipccsixthassessment/" target="_blank" rel="noreferrer">IPCC AR6 100-year GWPs</Link>.
           </Trans>
         </Text>
       </HStack>

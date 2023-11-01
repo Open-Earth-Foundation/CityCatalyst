@@ -154,7 +154,7 @@ export default function Signup({
             <Trans t={t} i18nKey="no-invite-code">
               Don&apos;t have an invitation code?{" "}
               <Link
-                href="https://openclimate.network/waiting-list"
+                href="https://citycatalyst.openearth.org/#webflow-form"
                 target="_blank"
                 rel="noreferrer"
               >

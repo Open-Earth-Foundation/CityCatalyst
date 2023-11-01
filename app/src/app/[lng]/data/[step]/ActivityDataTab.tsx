@@ -215,7 +215,7 @@ export function ActivityDataTab({
             t={t}
             i18nKey="calculations-details"
           >
-            All calculations use the <Link href="https://erce.energy/erceipccsixthassessment/" target="_blank" rel="noreferrer">IPCC AR6 100-year GWPs</Link>.
+            All calculations use the <Link href="https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_Chapter07.pdf#page=95" target="_blank" rel="noreferrer">IPCC AR6 100-year GWPs</Link>.
           </Trans>
         </Text>
       </HStack>

@@ -3,6 +3,7 @@ import { apiHandler } from "@/util/api";
 import { createSubSectorRequest } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
+import { randomUUID } from "node:crypto";
 
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const subsectorValue = await db.models.SubSectorValue.findOne({
@@ -20,11 +21,15 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
     where: { subsectorId: params.subsector, inventoryId: params.inventory },
   });
 
-  if (!subsectorValue) {
-    throw new createHttpError.NotFound("Sub sector value not found");
+  if (subsectorValue) {
+    subsectorValue = await subsectorValue.update(body);
+  } else {
+    subsectorValue = await db.models.SubSectorValue.create({
+      subsectorValueId: randomUUID(),
+      inventoryId: params.inventory,
+      ...body,
+    });
   }
-
-  subsectorValue = await subsectorValue.update(body);
 
   return NextResponse.json({ data: subsectorValue });
 });

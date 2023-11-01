@@ -3,6 +3,7 @@ import { apiHandler } from "@/util/api";
 import { createSectorRequest } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
+import { randomUUID } from "node:crypto";
 
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const sectorValue = await db.models.SectorValue.findOne({
@@ -22,11 +23,15 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
     where: { sectorId: params.sector, inventoryId: params.inventory },
   });
 
-  if (!sectorValue) {
-    throw new createHttpError.NotFound("Sector value not found");
+  if (sectorValue) {
+    sectorValue = await sectorValue.update(body);
+  } else {
+    sectorValue = await db.models.SectorValue.create({
+      sectorValueId: randomUUID(),
+      inventoryId: params.inventory,
+      ...body,
+    });
   }
-
-  sectorValue = await sectorValue.update(body);
 
   return NextResponse.json({ data: sectorValue });
 });

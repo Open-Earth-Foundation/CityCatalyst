@@ -3,6 +3,7 @@ import { apiHandler } from "@/util/api";
 import { createSubCategory } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
+import { randomUUID } from "node:crypto";
 
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const subcategoryValue = await db.models.SubCategoryValue.findOne({
@@ -22,11 +23,15 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
     where: { subcategoryId: params.sector, inventoryId: params.inventory },
   });
 
-  if (!subcategoryValue) {
-    throw new createHttpError.NotFound("Sub category value not found");
+  if (subcategoryValue) {
+    subcategoryValue = await subcategoryValue.update(body);
+  } else {
+    subcategoryValue = await db.models.SubCategoryValue.create({
+      subcategoryValueId: randomUUID(),
+      inventoryId: params.inventory,
+      ...body,
+    });
   }
-
-  subcategoryValue = await subcategoryValue.update(body);
 
   return NextResponse.json({ data: subcategoryValue });
 });

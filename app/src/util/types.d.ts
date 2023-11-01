@@ -34,6 +34,7 @@ type DataSourceResponse = (DataSourceAttributes & {
 
 interface SubsectorValueUpdateQuery {
   subSectorId: string;
+  inventoryId: string;
   data: SubSectorValueAttributes;
 }
 

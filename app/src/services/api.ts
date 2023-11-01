@@ -85,9 +85,10 @@ export const api = createApi({
     }),
     getSubsectorValue: builder.query<
       SubSectorValueAttributes,
-      { subSectorId: string }
+      { subSectorId: string; inventoryId: string }
     >({
-      query: ({ subSectorId }) => `/subsector/${subSectorId}`,
+      query: ({ subSectorId, inventoryId }) =>
+        `/inventory/${inventoryId}/subsector/${subSectorId}`,
       transformResponse: (response: { data: SubSectorValueAttributes }) =>
         response.data,
     }),
@@ -96,8 +97,8 @@ export const api = createApi({
       SubsectorValueUpdateQuery
     >({
       query: (data) => ({
-        url: `/city/${data.locode}/inventory/${data.year}/subsector/`,
-        method: "POST",
+        url: `/inventory/${data.inventoryId}/subsector/${data.subSectorId}`,
+        method: "PATCH",
         body: data.data,
       }),
       transformResponse: (response: { data: SubSectorValueAttributes }) =>

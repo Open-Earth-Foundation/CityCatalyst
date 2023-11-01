@@ -25,6 +25,7 @@ import {
   TagLabel,
   TagLeftIcon,
   Text,
+  Tooltip,
   useToast,
 } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
@@ -437,7 +438,13 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                 </Trans>{" "}
                 {year}
               </Heading>
-              <InfoOutlineIcon color="interactive.control" />
+              <Tooltip
+                hasArrow
+                label={t("gpc-calculation")}
+                placement="bottom-start"
+              >
+                <InfoOutlineIcon color="interactive.control" />
+              </Tooltip>
             </Box>
             <Text
               fontWeight="regular"

@@ -6,13 +6,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const sectorValue = await db.models.SectorValue.findOne({
-    where: {
-      sectorValueId: params.sector,
-    },
+    where: { sectorId: params.sector, inventoryId: params.inventory },
   });
 
   if (!sectorValue) {
-    throw new createHttpError.NotFound("Sector Value not found");
+    throw new createHttpError.NotFound("Sector value not found");
   }
 
   return NextResponse.json({ data: sectorValue });
@@ -21,7 +19,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
 export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   const body = createSectorRequest.parse(await req.json());
   let sectorValue = await db.models.SectorValue.findOne({
-    where: { sectorValueId: params.sector },
+    where: { sectorId: params.sector, inventoryId: params.inventory },
   });
 
   if (!sectorValue) {
@@ -35,9 +33,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
 
 export const DELETE = apiHandler(async (_req: NextRequest, { params }) => {
   const sectorValue = await db.models.SectorValue.findOne({
-    where: {
-      sectorValueId: params.sector,
-    },
+    where: { sectorId: params.sector, inventoryId: params.inventory },
   });
   if (!sectorValue) {
     throw new createHttpError.NotFound("Sector value not found");

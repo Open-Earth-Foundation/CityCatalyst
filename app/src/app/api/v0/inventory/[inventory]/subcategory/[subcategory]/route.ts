@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const subcategoryValue = await db.models.SubCategoryValue.findOne({
-    where: { subcategoryValueId: params.subcategory },
+    where: { subcategoryId: params.sector, inventoryId: params.inventory },
   });
 
   if (!subcategoryValue) {
@@ -19,7 +19,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
 export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   const body = createSubCategory.parse(await req.json());
   let subcategoryValue = await db.models.SubCategoryValue.findOne({
-    where: { subcategoryValueId: params.subcategory },
+    where: { subcategoryId: params.sector, inventoryId: params.inventory },
   });
 
   if (!subcategoryValue) {
@@ -33,9 +33,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
 
 export const DELETE = apiHandler(async (_req: NextRequest, { params }) => {
   const subcategoryValue = await db.models.SubCategoryValue.findOne({
-    where: {
-      subcategoryValueId: params.subcategory,
-    },
+    where: { subcategoryId: params.subcategory, inventoryId: params.inventory },
   });
   if (!subcategoryValue) {
     throw new createHttpError.NotFound("Sub category value not found");

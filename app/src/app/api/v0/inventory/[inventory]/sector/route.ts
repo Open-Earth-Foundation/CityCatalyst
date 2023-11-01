@@ -4,11 +4,12 @@ import { createSectorRequest } from "@/util/validation";
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 
-export const POST = apiHandler(async (req: NextRequest) => {
+export const POST = apiHandler(async (req: NextRequest, { params }) => {
   const body = createSectorRequest.parse(await req.json());
 
   const sectorValue = await db.models.SectorValue.create({
     sectorValueId: randomUUID(),
+    inventoryId: params.inventory,
     ...body,
   });
 

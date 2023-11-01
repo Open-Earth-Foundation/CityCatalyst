@@ -4,7 +4,7 @@ import { createSectorRequest } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 
-export const GET = apiHandler(async (req: NextRequest, { params }) => {
+export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const sectorValue = await db.models.SectorValue.findOne({
     where: {
       sectorValueId: params.sector,
@@ -33,7 +33,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   return NextResponse.json({ data: sectorValue });
 });
 
-export const DELETE = apiHandler(async (req: NextRequest, { params }) => {
+export const DELETE = apiHandler(async (_req: NextRequest, { params }) => {
   const sectorValue = await db.models.SectorValue.findOne({
     where: {
       sectorValueId: params.sector,

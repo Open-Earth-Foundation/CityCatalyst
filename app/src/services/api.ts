@@ -96,7 +96,7 @@ export const api = createApi({
       SubsectorValueUpdateQuery
     >({
       query: (data) => ({
-        url: `/subsector/${data.subSectorId}`,
+        url: `/city/${data.locode}/inventory/${data.year}/subsector/`,
         method: "POST",
         body: data.data,
       }),

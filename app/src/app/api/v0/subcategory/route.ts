@@ -8,11 +8,6 @@ import { randomUUID } from "node:crypto";
 export const POST = apiHandler(async (req: NextRequest, { params }) => {
   const body = createSubCategory.parse(await req.json());
 
-  const city = await db.models.City.findOne({ where: { locode: params.city } });
-  if (!city) {
-    throw new createHttpError.NotFound("City not found");
-  }
-
   const subcategoryValue = await db.models.SubCategoryValue.create({
     subcategoryValueId: randomUUID(),
     ...body,

@@ -4,7 +4,7 @@ import { createSubCategory } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 
-export const GET = apiHandler(async (req: NextRequest, { params }) => {
+export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const subcategoryValue = await db.models.SubCategoryValue.findOne({
     where: { subcategoryValueId: params.subcategory },
   });
@@ -31,7 +31,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   return NextResponse.json({ data: subcategoryValue });
 });
 
-export const DELETE = apiHandler(async (req: NextRequest, { params }) => {
+export const DELETE = apiHandler(async (_req: NextRequest, { params }) => {
   const subcategoryValue = await db.models.SubCategoryValue.findOne({
     where: {
       subcategoryValueId: params.subcategory,

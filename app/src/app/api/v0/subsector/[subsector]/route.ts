@@ -4,7 +4,7 @@ import { createSubSectorRequest } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 
-export const GET = apiHandler(async (req: NextRequest, { params }) => {
+export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const subsectorValue = await db.models.SubSectorValue.findOne({
     where: { subsectorValueId: params.subsector },
   });
@@ -29,7 +29,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   return NextResponse.json({ data: subsectorValue });
 });
 
-export const DELETE = apiHandler(async (req: NextRequest, { params }) => {
+export const DELETE = apiHandler(async (_req: NextRequest, { params }) => {
   const subsectorValue = await db.models.SubSectorValue.findOne({
     where: {
       subsectorValueId: params.subsector,

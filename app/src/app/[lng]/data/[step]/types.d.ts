@@ -49,7 +49,7 @@ type SubcategoryOption = {
 
 type ActivityData = {
   activityDataAmount?: number;
-  activityDataUnit: string;
+  activityDataUnit?: string;
   emissionFactorType: string;
   co2EmissionFactor: number;
   n2oEmissionFactor: number;

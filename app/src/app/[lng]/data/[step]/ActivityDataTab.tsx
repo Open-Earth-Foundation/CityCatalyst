@@ -8,6 +8,7 @@ import {
   Heading,
   InputGroup,
   InputRightAddon,
+  Link,
   NumberInput,
   NumberInputField,
   Select,
@@ -20,7 +21,11 @@ import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { resolve } from "@/util/helpers";
 
-const activityDataUnits = ["kWh", "Unit1", "Unit2", "Unit3"];
+const activityDataUnits: Record<string, string[]> = {
+  I: ["l", "m3", "ft3", "bbl", "gal (US)", "gal (UK)", "MWh", "GJ", "BTUs", "MW", "Other"],
+  II: ["l", "m3", "ft3", "bbl", "gal (US)", "gal (UK)", "km", "mi", "Other"],
+  III: ["g", "kg", "t", "kt", "lt", "st", "lb", "Other"],
+}
 const emissionFactorTypes = [
   "Local",
   "Regional",
@@ -34,12 +39,19 @@ export function ActivityDataTab({
   register,
   errors,
   prefix,
+  watch,
+  sectorNumber,
 }: {
   t: TFunction;
   register: Function;
   errors: Record<string, any>;
   prefix: string;
+  watch: Function,
+  sectorNumber: string; // I, II, III
 }) {
+  const selectedUnit = watch(prefix + "activityDataUnit");
+  const selectedEmissionFactorType = watch(prefix + "emissionFactorType");
+
   return (
     <TabPanel px={0.5}>
       <HStack spacing={4} mb={12} className="items-start">
@@ -75,7 +87,7 @@ export function ActivityDataTab({
                 variant="unstyled"
                 {...register(prefix + "activityDataUnit")}
               >
-                {activityDataUnits.map((unit) => (
+                {activityDataUnits[sectorNumber].map((unit) => (
                   <option key={unit} value={unit}>
                     {unit}
                   </option>
@@ -90,6 +102,7 @@ export function ActivityDataTab({
         <FormControl>
           <FormLabel>{t("emission-factor-type")}</FormLabel>
           <Select {...register(prefix + "emissionFactorType")} bgColor="base.light">
+            {/* TODO translate values and use internal value for saving */}
             {emissionFactorTypes.map((type) => (
               <option key={type} value={type}>
                 {type}
@@ -114,7 +127,8 @@ export function ActivityDataTab({
             {t("co2-emission-factor")}
           </FormLabel>
           <InputGroup>
-            <NumberInput defaultValue={0} min={0}>
+            {/* TODO translate values and use internal value for checking */}
+            <NumberInput defaultValue={0} min={0} isDisabled={selectedEmissionFactorType !== "Add custom"}>
               <NumberInputField
                 borderRightRadius={0}
                 {...register(prefix + "co2EmissionFactor")}
@@ -125,7 +139,7 @@ export function ActivityDataTab({
               bgColor="background.neutral"
               color="content.tertiary"
             >
-              CO2/kWh
+              CO2/{selectedUnit}
             </InputRightAddon>
           </InputGroup>
           <FormHelperText>&nbsp;</FormHelperText>
@@ -135,7 +149,7 @@ export function ActivityDataTab({
             {t("n2o-emission-factor")}
           </FormLabel>
           <InputGroup>
-            <NumberInput defaultValue={0} min={0}>
+            <NumberInput defaultValue={0} min={0} isDisabled={selectedEmissionFactorType !== "Add custom"}>
               <NumberInputField
                 borderRightRadius={0}
                 {...register(prefix + "n2oEmissionFactor")}
@@ -146,7 +160,7 @@ export function ActivityDataTab({
               bgColor="background.neutral"
               color="content.tertiary"
             >
-              N2O/kWh
+              N2O/{selectedUnit}
             </InputRightAddon>
           </InputGroup>
           <FormHelperText color="content.tertiary">
@@ -158,7 +172,7 @@ export function ActivityDataTab({
             {t("ch4-emission-factor")}
           </FormLabel>
           <InputGroup>
-            <NumberInput defaultValue={0} min={0}>
+            <NumberInput defaultValue={0} min={0} isDisabled={selectedEmissionFactorType !== "Add custom"}>
               <NumberInputField
                 borderRightRadius={0}
                 {...register(prefix + "ch4EmissionFactor")}
@@ -169,7 +183,7 @@ export function ActivityDataTab({
               bgColor="background.neutral"
               color="content.tertiary"
             >
-              CH4/kWh
+              CH4/{selectedUnit}
             </InputRightAddon>
           </InputGroup>
           <FormHelperText color="content.tertiary">

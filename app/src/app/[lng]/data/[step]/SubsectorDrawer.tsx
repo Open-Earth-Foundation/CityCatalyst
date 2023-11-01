@@ -22,10 +22,12 @@ import {
   useRadioGroup,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import { RefObject, useEffect, useState } from "react";
+import { RefObject, useEffect } from "react";
 import { SubmitHandler, useController, useForm } from "react-hook-form";
 import { EmissionsForm } from "./EmissionsForm";
 import { api } from "@/services/api";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { SubSectorValueAttributes } from "@/models/SubSectorValue";
 
 type Inputs = {
   valueType: string;
@@ -39,7 +41,7 @@ type Inputs = {
 
 const defaultActivityData: ActivityData = {
   activityDataAmount: undefined,
-  activityDataUnit: "kWh",
+  activityDataUnit: undefined,
   emissionFactorType: "Local",
   co2EmissionFactor: 10,
   n2oEmissionFactor: 10,
@@ -69,9 +71,16 @@ function nameToI18NKey(name: string): string {
   return name.replaceAll(" ", "-").toLowerCase();
 }
 
+// TODO create custom type that includes relations?
+function extractFormValues(subsectorValue: SubSectorValueAttributes) {
+  return defaultValues; // TODO update with data
+}
+
 export function SubsectorDrawer({
   subsector,
   sectorName,
+  sectorNumber,
+  inventoryId,
   isOpen,
   onClose,
   finalFocusRef,
@@ -80,6 +89,8 @@ export function SubsectorDrawer({
 }: {
   subsector?: SubSector;
   sectorName?: string;
+  sectorNumber?: string; // I, II, III
+  inventoryId?: string;
   isOpen: boolean;
   onClose: () => void;
   onSave: (subsector: SubSector, data: Inputs) => void;
@@ -91,11 +102,14 @@ export function SubsectorDrawer({
     isLoading: isSubsectorValueLoading,
     error: subsectorValueError,
   } = api.useGetSubsectorValueQuery(
-    { subSectorId: subsector?.subsectorId! },
-    { skip: !subsector },
+    { subSectorId: subsector?.subsectorId!, inventoryId: inventoryId! },
+    { skip: !subsector || !inventoryId },
   );
   const [setSubsectorValue, { isLoading: isSaving }] =
     api.useSetSubsectorValueMutation();
+
+  let noPreviousValue =
+    (subsectorValueError as FetchBaseQueryError)?.status === 404;
 
   const {
     register,
@@ -108,7 +122,11 @@ export function SubsectorDrawer({
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (!subsector) return;
     console.log("Sector data", data);
-    await setSubsectorValue({ subSectorId: subsector.subsectorId, data });
+    await setSubsectorValue({
+      subSectorId: subsector.subsectorId,
+      inventoryId: inventoryId!,
+      data,
+    });
     onSave(subsector, data);
     onClose();
   };
@@ -122,9 +140,14 @@ export function SubsectorDrawer({
 
   // reset form values when choosing another subsector
   useEffect(() => {
-    reset(defaultValues);
+    if (subsectorValue) {
+      // TODO store previous form values if it's unsaved?
+      reset(extractFormValues(subsectorValue));
+    } else {
+      reset(defaultValues);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subsector]);
+  }, [subsectorValue, subsector]);
 
   const subcategoryData: SubCategory[] = [
     { subcategoryId: "1337a", subcategoryName: "Manufacturing" },
@@ -181,11 +204,13 @@ export function SubsectorDrawer({
                 <Center>
                   <Spinner size="lg" />
                 </Center>
-              ) : subsectorValueError ? (
+              ) : subsectorValueError && !noPreviousValue ? (
                 <Center>
                   <HStack mt={4}>
                     <WarningIcon boxSize={7} color="semantic.danger" />
-                    <Text color="semantic.danger">{t("load-failed-subsector-value")}</Text>
+                    <Text color="semantic.danger">
+                      {t("load-failed-subsector-value")}
+                    </Text>
                   </HStack>
                 </Center>
               ) : (
@@ -224,6 +249,8 @@ export function SubsectorDrawer({
                         register={register}
                         errors={errors}
                         control={control}
+                        watch={watch}
+                        sectorNumber={sectorNumber!}
                       />
                     )}
                     {/*** Values for each subcategory ***/}
@@ -283,6 +310,8 @@ export function SubsectorDrawer({
                                   errors={errors}
                                   control={control}
                                   prefix={`subcategoryData.${subcategory.value}.`}
+                                  watch={watch}
+                                  sectorNumber={sectorNumber!}
                                 />
                               </AccordionPanel>
                             </AccordionItem>

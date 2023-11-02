@@ -152,7 +152,7 @@ export function NavigationBar({
                 }}
               >
                 <Text
-                  w="140px"
+                  w="120px"
                   overflow="hidden"
                   textOverflow="ellipsis"
                   whiteSpace="nowrap"

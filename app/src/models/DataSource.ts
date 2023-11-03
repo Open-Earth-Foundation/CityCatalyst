@@ -43,7 +43,7 @@ export interface DataSourceAttributes {
   endYear?: number; // inclusive
   latestAccountingYear?: number;
   frequencyOfUpdate?: string;
-  spacialResolution?: string; // TODO fix typo (spatial)
+  spatialResolution?: string;
   language?: string;
   accessibility?: string;
   dataQuality?: string;
@@ -73,7 +73,7 @@ export type DataSourceOptionalAttributes =
   | "endYear"
   | "latestAccountingYear"
   | "frequencyOfUpdate"
-  | "spacialResolution"
+  | "spatialResolution"
   | "language"
   | "accessibility"
   | "dataQuality"
@@ -108,7 +108,7 @@ export class DataSource
   endYear?: number; // inclusive
   latestAccountingYear?: number;
   frequencyOfUpdate?: string;
-  spacialResolution?: string;
+  spatialResolution?: string;
   language?: string;
   accessibility?: string;
   dataQuality?: string;
@@ -760,10 +760,10 @@ export class DataSource
           allowNull: true,
           field: "frequency_of_update",
         },
-        spacialResolution: {
+        spatialResolution: {
           type: DataTypes.STRING(255),
           allowNull: true,
-          field: "spacial_resolution",
+          field: "spatial_resolution",
         },
         language: {
           type: DataTypes.STRING(255),

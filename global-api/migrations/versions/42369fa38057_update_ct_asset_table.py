@@ -20,18 +20,26 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.drop_constraint("asset_pkey", "asset", type_="primary")
-    op.alter_column("asset", "id", new_column_name="old_id")
+    op.alter_column("asset",
+                    "id",
+                    new_column_name="old_id",
+                    primary_key=False,
+                    nullable=True)
     op.add_column("asset",
                   sa.Column("id",
                   sa.UUID(),
+                  nullable=False,
                   primary_key=True,
                   default=sa.text("gen_random_uuid()")))
-    op.alter_column("asset", "emissions_quantity", type=sa.BigInteger)
+    op.create_primary_key("asset_pkey", "asset", ["id"])
+    op.execute('ALTER TABLE asset ALTER COLUMN emissions_quantity TYPE BIGINT')
 
 def downgrade() -> None:
-    op.alter_column("asset", "emissions_quantity", type=sa.Integer)
+    op.execute('ALTER TABLE asset ALTER COLUMN emissions_quantity TYPE INTEGER')
+    op.drop_constraint("asset_pkey", "asset", type_="primary")
     op.drop_column("asset", "id")
     op.alter_column("asset",
                     "old_id",
                     new_column_name="id",
-                    primary_key=True)
+                    primary_key=True,
+                    nullable=False)

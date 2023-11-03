@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: cc-global-api-import-climatetrace-
+  generateName: cc-global-api-import-edgar-
 spec:
   ttlSecondsAfterFinished: 86400
   template:

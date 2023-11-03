@@ -9,6 +9,6 @@ SQLAlchemy==2.0.22
 alembic==1.12.1
 geopandas==0.14.0
 shapely==2.0.2
-osmnx==1.7.0
+osmnx==1.7.1
 psycopg2-binary==2.9.9
 pydantic-settings==2.*

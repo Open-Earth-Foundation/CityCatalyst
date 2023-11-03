@@ -13,4 +13,4 @@ spec:
         env:
         - name: ALEMBIC_URL
           value: "postgresql://ccglobal:ccglobal@cc-global-api-db/ccglobal"
-        command: ["alembic", "upgrade", "head"]
+        command: ["alembic", "upgrade", "heads"]

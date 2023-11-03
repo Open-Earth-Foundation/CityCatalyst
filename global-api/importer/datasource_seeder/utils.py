@@ -72,7 +72,7 @@ class DataSource:
     geographical_location: str
     start_year: int
     end_year: int
-    lastest_accounting_year: int
+    latest_accounting_year: int
     frequency_of_update: str
     spatial_resolution: str
     language: str

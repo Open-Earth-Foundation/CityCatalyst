@@ -51,9 +51,13 @@ module.exports = {
     // TODO remove column gpc_reference_number, find subsector with it and assign the subsector's ID to the data source
 
     await queryInterface.sequelize.transaction(async (transaction) => {
-      await queryInterface.bulkInsert("Publisher", publishers, { transaction });
+      await queryInterface.bulkInsert("Publisher", publishers, {
+        transaction,
+        updateOnDuplicate: ["publisher_id"],
+      });
       await queryInterface.bulkInsert("DataSource", dataSources, {
         transaction,
+        updateOnDuplicate: ["datasource_id"],
       });
     });
   },

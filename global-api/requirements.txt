@@ -4,7 +4,7 @@ black==23.10.1
 flake8==6.1.0
 mypy==1.6.1
 pandas==2.1.1
-pytest==7.4.2
+pytest==7.4.3
 SQLAlchemy==2.0.22
 alembic==1.12.0
 geopandas==0.14.0

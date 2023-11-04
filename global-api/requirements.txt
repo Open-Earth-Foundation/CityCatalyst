@@ -7,7 +7,7 @@ fsspec==2023.*
 geopandas==0.14.0
 mypy==1.6.1
 osmnx==1.7.1
-pandas==2.1.1
+pandas==2.1.2
 psycopg2-binary==2.9.9
 pydantic-settings==2.*
 pytest==7.4.3

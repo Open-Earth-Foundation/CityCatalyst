@@ -362,7 +362,6 @@ export default function AddDataSteps({
               .map((source) => (
                 <Card
                   key={source.datasourceId}
-                  onClick={() => onSourceClick(source)}
                   variant="outline"
                   borderColor={
                     (source.isConnected && "interactive.tertiary") || undefined
@@ -404,7 +403,12 @@ export default function AddDataSteps({
                   <Text color="content.tertiary" noOfLines={5}>
                     {source.description}
                   </Text>
-                  <Link className="underline" mt={4} mb={6}>
+                  <Link
+                    className="underline"
+                    mt={4}
+                    mb={6}
+                    onClick={() => onSourceClick(source)}
+                  >
                     {t("see-more-details")}
                   </Link>
                   {source.isConnected ? (

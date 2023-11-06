@@ -44,6 +44,7 @@ import {
   useAddCityMutation,
   useAddInventoryMutation,
   useGetOCCityQuery,
+  useGetOCCityDataQuery,
   useSetUserInfoMutation,
 } from "@/services/api";
 import RecentSearches from "@/components/recent-searches";
@@ -271,10 +272,12 @@ function ConfirmStep({
   cityName,
   t,
   locode,
+  area,
 }: {
   cityName: String;
   t: TFunction;
   locode: string;
+  area: number;
 }) {
   return (
     <>
@@ -315,7 +318,7 @@ function ConfirmStep({
               <Icon as={MdOutlineAspectRatio} boxSize={6} mt={1} mr={2} />
               <Box>
                 <Text fontSize="xl">
-                  782Km<sup>2</sup>
+                  {area}Km<sup>2</sup>
                   <InfoOutlineIcon boxSize={4} mt={-0.5} ml={1} color="brand" />
                 </Text>
                 <Text fontSize="xs">{t("total-land-area")}</Text>
@@ -383,6 +386,8 @@ export default function OnboardingSetup({
     goToNext();
   };
 
+  const { data: cityData } = useGetOCCityDataQuery(data.locode);
+
   const makeErrorToast = (title: string, description?: string) => {
     toast({
       title,
@@ -392,6 +397,30 @@ export default function OnboardingSetup({
     });
   };
 
+  const [ocCityData, setocCityData] = useState<{
+    area: number;
+    region: string;
+    country: string;
+  }>();
+
+  useEffect(() => {
+    if (cityData) {
+      const cityObject = {
+        area: cityData.data?.territory?.area ?? 0,
+        region:
+          storedData.city?.root_path_geo.filter(
+            (item: any) => item.type === "adm1",
+          )[0]?.name ?? "",
+        country:
+          storedData.city?.root_path_geo.filter(
+            (item: any) => item.type === "country",
+          )[0]?.name ?? "",
+      };
+
+      setocCityData(cityObject);
+    }
+  }, [cityData, storedData.city?.root_path_geo]);
+
   const onConfirm = async () => {
     // save data in backend
     setConfirming(true);
@@ -399,6 +428,9 @@ export default function OnboardingSetup({
       await addCity({
         name: data.name,
         locode: data.locode,
+        area: ocCityData?.area!,
+        region: ocCityData?.region!,
+        country: ocCityData?.country!,
       }).unwrap();
     } catch (err: any) {
       // if the city exists, continue (can still add new inventory year)
@@ -457,6 +489,7 @@ export default function OnboardingSetup({
               cityName={getValues("city")}
               t={t}
               locode={data.locode}
+              area={ocCityData?.area!}
             />
           )}
         </div>

@@ -32,6 +32,7 @@ import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { CircleFlag } from "react-circle-flags";
 import { Trans } from "react-i18next/TransWithoutContext";
+import { useGetCityQuery } from "@/services/api";
 import { FiDownload } from "react-icons/fi";
 import {
   MdArrowOutward,
@@ -78,6 +79,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
       { locode: locode!, year: year! },
       { skip: !locode || !year },
     );
+
   const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
     api.useGetInventoryProgressQuery(
       { locode: locode!, year: year! },
@@ -200,6 +202,13 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
       });
   };
 
+  const {
+    data: city,
+    isLoading,
+    isSuccess,
+    isError,
+  } = useGetCityQuery(inventory && inventory.city.locode);
+
   return (
     <>
       <NavigationBar lng={lng} />
@@ -315,7 +324,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           fontWeight="semibold"
                           lineHeight="32"
                         >
-                          782<span className="text-[16px]">km2</span>
+                          {city?.area}
+                          <span className="text-[16px]">km2</span>
                         </Text>
                         <InfoOutlineIcon w={3} h={3} color="brandScheme.100" />
                       </Box>

@@ -375,7 +375,7 @@ export default function AddDataSteps({
                 >
                   {/* TODO add icon to DataSource */}
                   <Icon as={MdHomeWork} boxSize={9} mb={6} />
-                  <Heading size="sm" noOfLines={2}>
+                  <Heading size="sm" noOfLines={2} minHeight={10}>
                     {source.name}
                   </Heading>
                   <Flex direction="row" my={4}>

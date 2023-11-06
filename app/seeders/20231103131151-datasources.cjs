@@ -48,7 +48,34 @@ module.exports = {
       },
     ];
 
-    // TODO remove column gpc_reference_number, find subsector with it and assign the subsector's ID to the data source
+    // remove column gpc_reference_number, find subsector/ subcategory with it
+    // and assign the ID to the data source
+    const subsectors = await queryInterface.select(null, "SubSector");
+    const subcategories = await queryInterface.select(null, "SubCategory");
+    const sourcesWithIds = dataSources.map((source) => {
+      const referenceNumber = source.gpc_reference_number;
+      delete source.gpc_reference_number;
+
+      if (referenceNumber != null) {
+        const subcategory = subcategories.find(
+          (cat) => cat.reference_number === referenceNumber,
+        );
+        if (subcategory) {
+          console.log("Found subcategory for source", source.datasource_id, "with refno", referenceNumber);
+          source.subcategory_id = subcategory.subcategory_id;
+        } else {
+          console.log("Found subsector for source", source.datasource_id, "with refno", referenceNumber);
+          const subsector = subsectors.find(
+            (sec) => sec.reference_number === referenceNumber,
+          );
+          if (subsector) {
+            source.subsector_id = subsector.subsector_id;
+          }
+        }
+      }
+
+      return source;
+    });
 
     await queryInterface.sequelize.transaction(async (transaction) => {
       await queryInterface.bulkInsert("Publisher", publishers, {
@@ -56,6 +83,7 @@ module.exports = {
         updateOnDuplicate: ["publisher_id"],
       });
       await queryInterface.bulkInsert("DataSource", dataSources, {
+      await queryInterface.bulkInsert("DataSource", sourcesWithIds, {
         transaction,
         updateOnDuplicate: ["datasource_id"],
       });

@@ -400,7 +400,7 @@ export default function AddDataSteps({
                       </TagLabel>
                     </Tag>
                   </Flex>
-                  <Text color="content.tertiary" noOfLines={5}>
+                  <Text color="content.tertiary" noOfLines={5} minHeight={120}>
                     {source.description}
                   </Text>
                   <Link

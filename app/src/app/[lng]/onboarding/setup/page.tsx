@@ -50,6 +50,7 @@ import RecentSearches from "@/components/recent-searches";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { set } from "@/features/city/openclimateCitySlice";
 import { OCCityArributes } from "@/models/City";
+import CityMap from "@/components/CityMap";
 
 type Inputs = {
   city: string;
@@ -266,7 +267,15 @@ function SetupStep({
   );
 }
 
-function ConfirmStep({ cityName, t }: { cityName: String; t: TFunction }) {
+function ConfirmStep({
+  cityName,
+  t,
+  locode,
+}: {
+  cityName: String;
+  t: TFunction;
+  locode: string;
+}) {
   return (
     <>
       <div>
@@ -316,13 +325,7 @@ function ConfirmStep({ cityName, t }: { cityName: String; t: TFunction }) {
           <Text mb={4} mt={7}>
             {t("geographical-boundaries")}
           </Text>
-          <Image
-            src="/assets/map_placeholder.png"
-            width={441}
-            height={200}
-            alt="City placeholder image"
-            className="object-cover"
-          />
+          <CityMap locode={locode} height={400} width={450} />
         </Card>
       </div>
     </>
@@ -450,7 +453,11 @@ export default function OnboardingSetup({
             />
           )}
           {activeStep === 1 && (
-            <ConfirmStep cityName={getValues("city")} t={t} />
+            <ConfirmStep
+              cityName={getValues("city")}
+              t={t}
+              locode={data.locode}
+            />
           )}
         </div>
         <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand flex flex-row py-8 px-8 drop-shadow-2xl hover:drop-shadow-4xl transition-all">

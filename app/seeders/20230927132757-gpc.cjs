@@ -34,23 +34,23 @@ module.exports = {
     await queryInterface.sequelize.transaction(async (transaction) => {
       await queryInterface.bulkInsert("Scope", scopes, {
         transaction,
-        updateOnDuplicate: ["scope_id"],
+        // updateOnDuplicate: ["scope_id"],
       });
       await queryInterface.bulkInsert("ReportingLevel", reportingLevels, {
         transaction,
-        updateOnDuplicate: ["reportinglevel_id"],
+        // updateOnDuplicate: ["reportinglevel_id"],
       });
       await queryInterface.bulkInsert("Sector", sectors, {
         transaction,
-        updateOnDuplicate: ["sector_id"],
+        // updateOnDuplicate: ["sector_id"],
       });
       await queryInterface.bulkInsert("SubSector", subSectors, {
         transaction,
-        updateOnDuplicate: ["subsector_id"],
+        // updateOnDuplicate: ["subsector_id"],
       });
       await queryInterface.bulkInsert("SubCategory", subCategories, {
         transaction,
-        updateOnDuplicate: ["subcategory_id"],
+        // updateOnDuplicate: ["subcategory_id"],
       });
     });
   },

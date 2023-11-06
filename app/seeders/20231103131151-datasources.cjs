@@ -80,12 +80,11 @@ module.exports = {
     await queryInterface.sequelize.transaction(async (transaction) => {
       await queryInterface.bulkInsert("Publisher", publishers, {
         transaction,
-        updateOnDuplicate: ["publisher_id"],
+        // updateOnDuplicate: ["publisher_id"],
       });
-      await queryInterface.bulkInsert("DataSource", dataSources, {
       await queryInterface.bulkInsert("DataSource", sourcesWithIds, {
         transaction,
-        updateOnDuplicate: ["datasource_id"],
+        // updateOnDuplicate: ["datasource_id"],
       });
     });
   },

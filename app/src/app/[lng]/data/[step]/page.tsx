@@ -47,15 +47,10 @@ import { SourceDrawer } from "./SourceDrawer";
 import { SubsectorDrawer } from "./SubsectorDrawer";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { TFunction } from "i18next";
-
-// export default async function ServerWrapper({params}: {params: any}) {
-//   const session = await getServerSession(authOptions);
-//   const userInfo = await getUserInfo(session?.user.id);
-//   return AddDataSteps({params, userInfo});
-// }
+import { DataSourceAttributes } from "@/models/DataSource";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
-  return `mailto://info@openearth.org,greta@openearth.org?subject=Missing third party data source&body=City: ${locode}%0ASector: ${sector}%0AYear: ${year}`;
+  return `mailto://info@openearth.org,greta@openearth.org?subject=Missing third party data sources&body=City: ${locode}%0ASector: ${sector}%0AYear: ${year}`;
 }
 
 function NoDataSourcesMessage({
@@ -209,18 +204,18 @@ export default function AddDataSteps({
   const formatPercentage = (percentage: number) =>
     Math.round(percentage * 1000) / 10;
 
-  const [selectedSource, setSelectedSource] = useState<DataSource>();
+  const [selectedSource, setSelectedSource] = useState<DataSourceAttributes>();
   const {
     isOpen: isSourceDrawerOpen,
     onClose: onSourceDrawerClose,
     onOpen: onSourceDrawerOpen,
   } = useDisclosure();
-  const onSourceClick = (source: DataSource) => {
+  const onSourceClick = (source: DataSourceAttributes) => {
     setSelectedSource(source);
     onSourceDrawerOpen();
   };
 
-  const onConnectClick = (source: DataSource) => {
+  const onConnectClick = (source: DataSourceAttributes) => {
     console.log("Connect source", source);
     onSourceDrawerClose();
   };

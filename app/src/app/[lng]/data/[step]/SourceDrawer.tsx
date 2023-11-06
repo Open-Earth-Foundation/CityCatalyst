@@ -1,3 +1,4 @@
+import { DataSourceAttributes } from "@/models/DataSource";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -8,6 +9,7 @@ import {
   Flex,
   Heading,
   Icon,
+  Link,
   Stack,
   Tag,
   TagLabel,
@@ -16,7 +18,11 @@ import {
   chakra,
 } from "@chakra-ui/react";
 import { RefObject } from "react";
-import { MdCalendarToday, MdPlaylistAddCheck } from "react-icons/md";
+import {
+  MdCalendarToday,
+  MdOutlineHomeWork,
+  MdPlaylistAddCheck,
+} from "react-icons/md";
 
 export function SourceDrawer({
   source,
@@ -26,7 +32,7 @@ export function SourceDrawer({
   finalFocusRef,
   t,
 }: {
-  source?: DataSource;
+  source?: DataSourceAttributes;
   isOpen: boolean;
   onClose: () => void;
   onConnectClick: () => void;
@@ -56,8 +62,8 @@ export function SourceDrawer({
           </Button>
           {source && (
             <DrawerBody className="space-y-6">
-              <Icon as={source.icon} boxSize={9} />
-              <Heading size="lg">{source.title}</Heading>
+              <Icon as={MdOutlineHomeWork} boxSize={9} />
+              <Heading size="lg">{source.name}</Heading>
               <Flex direction="row" my={4}>
                 <Tag mr={1}>
                   <TagLeftIcon
@@ -76,7 +82,10 @@ export function SourceDrawer({
                     color="content.tertiary"
                   />
                   <TagLabel fontSize={14}>
-                    {t("updated-every")} {t(source.updateFrequency)}
+                    {t("updated-every")}{" "}
+                    {source.frequencyOfUpdate == "annual"
+                      ? t("year")
+                      : t(source.frequencyOfUpdate)}
                   </TagLabel>
                 </Tag>
               </Flex>
@@ -84,23 +93,28 @@ export function SourceDrawer({
                 <Text color="content.tertiary">{source.description}</Text>
                 <Heading size="sm">{t("sources")}</Heading>
                 <Text color="content.tertiary" ml={6}>
-                  <ul>
-                    {source.sources.map((source) => (
-                      <li key={source}>{source}</li>
-                    ))}
-                  </ul>
+                  {source.sourceType}
+                  {/* <ul> */}
+                  {/*   {source.sources.map((source) => ( */}
+                  {/*     <li key={source}>{source}</li> */}
+                  {/*   ))} */}
+                  {/* </ul> */}
                 </Text>
                 <Heading size="sm">{t("methodology")}</Heading>
-                <Text color="content.tertiary">{source.methodology}</Text>
+                <Text color="content.tertiary">
+                  <Link
+                    href={source.methodologyUrl}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    {source.methodologyUrl}
+                  </Link>
+                </Text>
               </Stack>
             </DrawerBody>
           )}
         </chakra.div>
-        <Stack
-          w="full"
-          px={16}
-          className="drop-shadow-top border-t-2"
-        >
+        <Stack w="full" px={16} className="drop-shadow-top border-t-2">
           <Button onClick={onConnectClick} w="full" h={16} my={6}>
             {t("connect-data")}
           </Button>

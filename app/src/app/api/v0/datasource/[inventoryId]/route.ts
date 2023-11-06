@@ -4,6 +4,8 @@ import { City } from "@/models/City";
 import { DataSource } from "@/models/DataSource";
 import { Inventory } from "@/models/Inventory";
 import { Scope } from "@/models/Scope";
+import { SubCategoryValue } from "@/models/SubCategoryValue";
+import { SubSectorValue } from "@/models/SubSectorValue";
 import { apiHandler } from "@/util/api";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
@@ -28,7 +30,21 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
         startYear: { [Op.lte]: inventory.year },
         endYear: { [Op.gte]: inventory.year },
       },
-      include: [{ model: Scope, as: "scopes" }],
+      include: [
+        { model: Scope, as: "scopes" },
+        {
+          model: SubSectorValue,
+          as: "subSectorValues",
+          required: false,
+          where: { inventoryId: params.inventoryId },
+        },
+        {
+          model: SubCategoryValue,
+          as: "subCategoryValues",
+          required: false,
+          where: { inventoryId: params.inventoryId },
+        },
+      ],
     },
   ];
 

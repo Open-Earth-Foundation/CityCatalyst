@@ -1,3 +1,5 @@
+import { DataSourceAttributes } from "@/models/DataSource";
+
 interface DataStep {
   title: string;
   details: string;
@@ -17,18 +19,9 @@ type SubSector = {
   subsectorName: string;
 };
 
-type DataSource = {
-  datasourceId: string;
-  icon: any;
-  title: string;
-  dataQuality: "low" | "medium" | "high";
-  scopes: number[];
-  description: string;
-  url: string;
-  isConnected: boolean;
-  updateFrequency: string;
-  sources: string[];
-  methodology: string;
+type DataSource = DataSourceAttributes & {
+  subSectorValues: SubSectorValue[];
+  subCategoryValues: SubCategoryValue[];
 };
 
 type SubCategory = {

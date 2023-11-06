@@ -47,10 +47,14 @@ import { SourceDrawer } from "./SourceDrawer";
 import { SubsectorDrawer } from "./SubsectorDrawer";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { TFunction } from "i18next";
-import { DataSourceAttributes } from "@/models/DataSource";
+import { DataSource, DataStep, SubSector } from "./types";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   return `mailto://info@openearth.org,greta@openearth.org?subject=Missing third party data sources&body=City: ${locode}%0ASector: ${sector}%0AYear: ${year}`;
+}
+
+function isSourceConnected(source: DataSource): boolean {
+  return source.subSectorValues.length > 0 || source.subCategoryValues.length > 0;
 }
 
 function NoDataSourcesMessage({
@@ -204,18 +208,18 @@ export default function AddDataSteps({
   const formatPercentage = (percentage: number) =>
     Math.round(percentage * 1000) / 10;
 
-  const [selectedSource, setSelectedSource] = useState<DataSourceAttributes>();
+  const [selectedSource, setSelectedSource] = useState<DataSource>();
   const {
     isOpen: isSourceDrawerOpen,
     onClose: onSourceDrawerClose,
     onOpen: onSourceDrawerOpen,
   } = useDisclosure();
-  const onSourceClick = (source: DataSourceAttributes) => {
+  const onSourceClick = (source: DataSource) => {
     setSelectedSource(source);
     onSourceDrawerOpen();
   };
 
-  const onConnectClick = (source: DataSourceAttributes) => {
+  const onConnectClick = (source: DataSource) => {
     console.log("Connect source", source);
     onSourceDrawerClose();
   };
@@ -364,7 +368,7 @@ export default function AddDataSteps({
                   key={source.datasourceId}
                   variant="outline"
                   borderColor={
-                    (source.isConnected && "interactive.tertiary") || undefined
+                    (isSourceConnected(source) && "interactive.tertiary") || undefined
                   }
                   borderWidth={2}
                   className="shadow-none hover:drop-shadow-xl transition-shadow"
@@ -411,7 +415,7 @@ export default function AddDataSteps({
                   >
                     {t("see-more-details")}
                   </Link>
-                  {source.isConnected ? (
+                  {isSourceConnected(source) ? (
                     <Button
                       variant="solidPrimary"
                       px={6}

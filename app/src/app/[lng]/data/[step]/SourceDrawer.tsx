@@ -20,7 +20,7 @@ import {
 import { RefObject } from "react";
 import {
   MdCalendarToday,
-  MdOutlineHomeWork,
+  MdHomeWork,
   MdPlaylistAddCheck,
 } from "react-icons/md";
 
@@ -62,7 +62,7 @@ export function SourceDrawer({
           </Button>
           {source && (
             <DrawerBody className="space-y-6">
-              <Icon as={MdOutlineHomeWork} boxSize={9} />
+              <Icon as={MdHomeWork} boxSize={9} />
               <Heading size="lg">{source.name}</Heading>
               <Flex direction="row" my={4}>
                 <Tag mr={1}>

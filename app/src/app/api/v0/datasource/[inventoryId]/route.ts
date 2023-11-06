@@ -20,20 +20,34 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
     throw new createHttpError.NotFound("Inventory not found");
   }
 
-  const sectors = await db.models.Sector.findAll({
-    include: [
-      {
-        model: DataSource,
-        as: "dataSources",
-        where: {
-          startYear: { [Op.lte]: inventory.year },
-          endYear: { [Op.gte]: inventory.year },
-        },
-        include: [{ model: Scope, as: "scopes" }],
+  const include = [
+    {
+      model: DataSource,
+      as: "dataSources",
+      where: {
+        startYear: { [Op.lte]: inventory.year },
+        endYear: { [Op.gte]: inventory.year },
       },
-    ],
-  });
-  const sources = sectors.flatMap((sector) => sector.dataSources);
+      include: [{ model: Scope, as: "scopes" }],
+    },
+  ];
+
+  const sectors = await db.models.Sector.findAll({ include });
+  const subSectors = await db.models.SubSector.findAll({ include });
+  const subCategories = await db.models.SubCategory.findAll({ include });
+
+  const sectorSources = sectors.flatMap((sector) => sector.dataSources);
+  const subSectorSources = subSectors.flatMap(
+    (subSector) => subSector.dataSources,
+  );
+  const subCategorySources = subCategories.flatMap(
+    (subCategory) => subCategory.dataSources,
+  );
+
+  const sources = sectorSources
+    .concat(subSectorSources)
+    .concat(subCategorySources);
+  console.log("All sources", sources);
   const applicableSources = filterSources(inventory, sources);
   return NextResponse.json({ data: applicableSources });
 });

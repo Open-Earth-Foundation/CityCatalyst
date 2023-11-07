@@ -4,7 +4,9 @@ import { City } from "@/models/City";
 import { DataSource } from "@/models/DataSource";
 import { Inventory } from "@/models/Inventory";
 import { Scope } from "@/models/Scope";
+import { SubCategory } from "@/models/SubCategory";
 import { SubCategoryValue } from "@/models/SubCategoryValue";
+import { SubSector } from "@/models/SubSector";
 import { SubSectorValue } from "@/models/SubSectorValue";
 import { apiHandler } from "@/util/api";
 import { randomUUID } from "crypto";
@@ -68,10 +70,12 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   return NextResponse.json({ data: applicableSources });
 });
 
-const applySourcesRequest = z.array(z.string().uuid());
+const applySourcesRequest = z.object({
+  dataSourceIds: z.array(z.string().uuid()),
+});
 
 export const POST = apiHandler(async (req: NextRequest, { params }) => {
-  const sourceIds = await applySourcesRequest.parse(await req.json());
+  const body = await applySourcesRequest.parse(await req.json());
   const inventory = await db.models.Inventory.findOne({
     where: { inventoryId: params.inventoryId },
     include: [{ model: City, as: "city" }],
@@ -81,7 +85,11 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
   }
 
   const sources = await db.models.DataSource.findAll({
-    where: { datasourceId: sourceIds },
+    where: { datasourceId: body.dataSourceIds },
+    include: [
+      { model: SubSector, required: false, as: "subSector" },
+      { model: SubCategory, required: false, as: "subCategory" },
+    ],
   });
   if (!sources) {
     throw new createHttpError.NotFound("Sources not found");
@@ -132,12 +140,15 @@ async function retrieveGlobalAPISource(
   source: DataSource,
   inventory: Inventory,
 ): Promise<boolean> {
+  const referenceNumber =
+    source.subCategory?.referenceNumber || source.subSector?.referenceNumber;
+
   if (
     !source.apiEndpoint ||
     !inventory.city.locode ||
     inventory.year == null ||
     !(source.subsectorId || source.subcategoryId) ||
-    !source.subSector.referenceNumber
+    !referenceNumber
   ) {
     return false;
   }
@@ -145,7 +156,7 @@ async function retrieveGlobalAPISource(
   const url = source.apiEndpoint
     .replace(":locode", inventory.city.locode)
     .replace(":year", inventory.year.toString())
-    .replace(":gpcReferenceNumber", source.subSector.referenceNumber);
+    .replace(":gpcReferenceNumber", referenceNumber);
 
   let data;
   try {
@@ -159,7 +170,8 @@ async function retrieveGlobalAPISource(
     return false;
   }
 
-  if (data.points.length === 0) {
+  if (typeof data.total !== "object") {
+    console.error("Incorrect response from Global API for URL:", url, data);
     return false;
   }
 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from sqlalchemy import text
 import pandas as pd
 from db.database import SessionLocal
@@ -42,6 +42,10 @@ def db_query(locode, year, reference_number):
 @api_router.get("/crosswalk/city/{locode}/{year}/{gpcReferenceNumber}")
 def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: str):
     records = db_query(locode, year, gpcReferenceNumber)
+
+    if not records:
+        raise HTTPException(status_code=404, detail="No data available")
+
     series = (
         pd.DataFrame(records)
         .assign(

@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from sqlalchemy import text
 import pandas as pd
 from db.database import SessionLocal
@@ -50,6 +50,9 @@ def db_query():
 @api_router.get("/catalogue")
 def get_datasources():
     records = db_query()
+
+    if not records:
+        raise HTTPException(status_code=404, detail="No data available")
 
     df = pd.DataFrame(records)
 

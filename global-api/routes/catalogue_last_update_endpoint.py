@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from sqlalchemy import text
 import pandas as pd
 from db.database import SessionLocal
@@ -23,4 +23,8 @@ def db_query():
 @api_router.get("/catalogue/last-update")
 def get_last_update():
     last_update_unix_time = db_query()
+
+    if not last_update_unix_time:
+        raise HTTPException(status_code=404, detail="No data available")
+
     return {"last_update": last_update_unix_time}

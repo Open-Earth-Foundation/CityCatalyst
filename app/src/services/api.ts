@@ -6,6 +6,7 @@ import {
 } from "@/models/init-models";
 import type {
   ConnectDataSourceQuery,
+  ConnectDataSourceResponse,
   DataSourceResponse,
   InventoryProgressResponse,
   InventoryResponse,
@@ -106,7 +107,7 @@ export const api = createApi({
         response.data,
     }),
     connectDataSource: builder.mutation<
-      DataSourceResponse,
+      ConnectDataSourceResponse,
       ConnectDataSourceQuery
     >({
       query: (data) => ({
@@ -114,7 +115,7 @@ export const api = createApi({
         method: "POST",
         body: { dataSourceIds: data.dataSourceIds },
       }),
-      transformResponse: (response: { data: DataSourceResponse }) =>
+      transformResponse: (response: { data: ConnectDataSourceResponse }) =>
         response.data,
     }),
   }),

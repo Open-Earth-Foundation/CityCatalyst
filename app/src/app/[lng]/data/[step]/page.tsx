@@ -226,6 +226,15 @@ export default function AddDataSteps({
     onSourceDrawerOpen();
   };
 
+  const showError = (title: string, description: string) => {
+    toast({
+      title,
+      description,
+      status: "error",
+      isClosable: true,
+    });
+  };
+
   const [connectingDataSourceId, setConnectingDataSourceId] = useState<
     string | null
   >(null);
@@ -239,10 +248,25 @@ export default function AddDataSteps({
     console.log("Connect source", source);
     setConnectingDataSourceId(source.datasourceId);
     try {
-      await connectDataSource({
+      const response = await connectDataSource({
         inventoryId: inventoryProgress.inventoryId,
         dataSourceIds: [source.datasourceId],
       }).unwrap();
+
+      if (response.failed.length > 0) {
+        showError(
+          t("data-source-connect-failed"),
+          t("data-source-connect-load-error"),
+        );
+        return;
+      } else if(response.invalid.length > 0) {
+        showError(
+          t("data-source-connect-failed"),
+          t("data-source-connect-invalid-error"),
+        );
+        return;
+      }
+
       onSourceDrawerClose();
       setConnectingDataSourceId(null);
     } catch (error: any) {

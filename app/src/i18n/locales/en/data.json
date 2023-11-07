@@ -28,6 +28,8 @@
   "see-more-details": "See more details",
   "connect-data": "Connect data",
   "data-source-connect-failed": "Failed to connect the data source",
+  "data-source-connect-load-error": "There was an error while loading the data",
+  "data-source-connect-invalid-error": "The data source does not apply to your inventory year or city",
   "data-connected": "Data connected",
   "edit-subsector": "Edit subsector",
   "more-datasets": "View more datasets",

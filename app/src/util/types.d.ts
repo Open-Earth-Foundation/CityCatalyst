@@ -37,6 +37,12 @@ interface ConnectDataSourceQuery {
   dataSourceIds: string[];
 }
 
+interface ConnectDataSourceResponse {
+  successful: string[];
+  failed: string[];
+  invalid: string[];
+}
+
 interface SubsectorValueUpdateQuery {
   subSectorId: string;
   inventoryId: string;

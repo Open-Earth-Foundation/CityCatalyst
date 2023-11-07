@@ -171,12 +171,12 @@ async function retrieveGlobalAPISource(
     return false;
   }
 
-  if (typeof data.total !== "object") {
+  if (typeof data.totals !== "object") {
     console.error("Incorrect response from Global API for URL:", url, data);
     return false;
   }
 
-  const emissions = data.total.emissions;
+  const emissions = data.totals.emissions;
   // TODO store values for co2, ch4, n2o separately for accounting and editing
   const values = {
     datasourceId: source.datasourceId,

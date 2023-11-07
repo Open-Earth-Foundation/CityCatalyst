@@ -1,9 +1,8 @@
-import { POST as createSubSector } from "@/app/api/v0/city/[city]/inventory/[year]/sector/[sector]/subsector/route";
 import {
   DELETE as deleteSubSector,
   GET as findSubSector,
-  PATCH as updateSubSector,
-} from "@/app/api/v0/city/[city]/inventory/[year]/sector/[sector]/subsector/[subsector]/route";
+  PATCH as upsertSubSector,
+} from "@/app/api/v0/inventory/[inventory]/subsector/[subsector]/route";
 
 import { db } from "@/models";
 import { CreateSubSectorRequest } from "@/util/validation";
@@ -114,11 +113,10 @@ describe("Sub Sector API", () => {
       where: { subsectorValueId },
     });
     const req = mockRequest(subsectorValue1);
-    const res = await createSubSector(req, {
+    const res = await upsertSubSector(req, {
       params: {
-        city: locode,
-        year: year,
-        sector: sectorValueId,
+        inventory: inventory.inventoryId,
+        subsector: subsectorValueId,
       },
     });
     assert.equal(res.status, 200);
@@ -131,11 +129,9 @@ describe("Sub Sector API", () => {
 
   it("Should not create a sub sector with invalid data", async () => {
     const req = mockRequest(invalidSubSectorValue);
-    const res = await createSubSector(req, {
+    const res = await upsertSubSector(req, {
       params: {
-        city: locode,
-        year: year,
-        sector: sectorValueId,
+        inventory: inventory.inventoryId,
         subsector: subsectorValueId,
       },
     });
@@ -150,9 +146,7 @@ describe("Sub Sector API", () => {
     const req = mockRequest(subsectorValue1);
     const res = await findSubSector(req, {
       params: {
-        city: locode,
-        year: year,
-        sector: sectorValueId,
+        inventory: inventory.inventoryId,
         subsector: subsectorValueId,
       },
     });
@@ -168,9 +162,7 @@ describe("Sub Sector API", () => {
     const req = mockRequest(invalidSubSectorValue);
     const res = await findSubSector(req, {
       params: {
-        city: locode,
-        year: year,
-        sector: sectorValueId,
+        inventory: inventory.inventoryId,
         subsector: randomUUID(),
       },
     });
@@ -179,11 +171,9 @@ describe("Sub Sector API", () => {
 
   it("Should update a sub sector", async () => {
     const req = mockRequest(subsectorValue1);
-    const res = await updateSubSector(req, {
+    const res = await upsertSubSector(req, {
       params: {
-        city: locode,
-        year: year,
-        sector: sectorValueId,
+        inventory: inventory.inventoryId,
         subsector: subsectorValueId,
       },
     });
@@ -197,11 +187,9 @@ describe("Sub Sector API", () => {
 
   it("Should not update a sub sector with invalid data", async () => {
     const req = mockRequest(invalidSubSectorValue);
-    const res = await updateSubSector(req, {
+    const res = await upsertSubSector(req, {
       params: {
-        city: locode,
-        year: year,
-        sector: sectorValueId,
+        inventory: inventory.inventoryId,
         subsector: subsectorValueId,
       },
     });
@@ -216,9 +204,7 @@ describe("Sub Sector API", () => {
     const req = mockRequest(subsectorValue1);
     const res = await deleteSubSector(req, {
       params: {
-        city: locode,
-        year: year,
-        sector: sectorValueId,
+        inventory: inventory.inventoryId,
         subsector: subsectorValueId,
       },
     });
@@ -231,13 +217,11 @@ describe("Sub Sector API", () => {
     assert.equal(data.emissionFactorValue, emissionFactorValue);
   });
 
-  it("Should not delete a non-existing sub category", async () => {
+  it("Should not delete a non-existing sub sector", async () => {
     const req = mockRequest(subsectorValue1);
     const res = await deleteSubSector(req, {
       params: {
-        city: "XX_INVALID",
-        year: "0",
-        sector: randomUUID(),
+        inventory: randomUUID(),
         subsector: randomUUID(),
       },
     });

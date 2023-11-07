@@ -4,6 +4,7 @@ import { City } from "@/models/City";
 import { DataSource } from "@/models/DataSource";
 import { Inventory } from "@/models/Inventory";
 import { Scope } from "@/models/Scope";
+import { Sector } from "@/models/Sector";
 import { SubCategory } from "@/models/SubCategory";
 import { SubCategoryValue } from "@/models/SubCategoryValue";
 import { SubSector } from "@/models/SubSector";
@@ -87,8 +88,25 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
   const sources = await db.models.DataSource.findAll({
     where: { datasourceId: body.dataSourceIds },
     include: [
-      { model: SubSector, required: false, as: "subSector" },
-      { model: SubCategory, required: false, as: "subCategory" },
+      {
+        model: SubSector,
+        required: false,
+        as: "subSector",
+        include: [{ model: Sector, required: false, as: "sector" }],
+      },
+      {
+        model: SubCategory,
+        required: false,
+        as: "subCategory",
+        include: [
+          {
+            model: SubSector,
+            required: false,
+            as: "subSector",
+            include: [{ model: Sector, required: false, as: "sector" }],
+          },
+        ],
+      },
     ],
   });
   if (!sources) {

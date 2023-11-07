@@ -155,7 +155,7 @@ async function retrieveGlobalAPISource(
   }
 
   const url = source.apiEndpoint
-    .replace(":locode", inventory.city.locode)
+    .replace(":locode", inventory.city.locode.replace("-", " "))
     .replace(":year", inventory.year.toString())
     .replace(":gpcReferenceNumber", referenceNumber);
 

@@ -5,6 +5,7 @@ from db.database import SessionLocal
 
 api_router = APIRouter(prefix="/api/v0")
 
+
 def db_query():
     columns = [
         "datasource_id",
@@ -30,17 +31,19 @@ def db_query():
         "api_endpoint",
         "gpc_reference_number",
         "created_date",
-        "modified_date"
+        "modified_date",
     ]
 
-    column_names = ', '.join(columns)
+    column_names = ", ".join(columns)
 
     with SessionLocal() as session:
         query = text(
             """
             SELECT {}
             FROM datasource;
-            """.format(column_names)
+            """.format(
+                column_names
+            )
         )
         result = session.execute(query).fetchall()
 

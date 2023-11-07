@@ -27,6 +27,7 @@
   "scope": "Scope",
   "see-more-details": "See more details",
   "connect-data": "Connect data",
+  "data-source-connect-failed": "Failed to connect the data source",
   "data-connected": "Data connected",
   "edit-subsector": "Edit subsector",
   "more-datasets": "View more datasets",

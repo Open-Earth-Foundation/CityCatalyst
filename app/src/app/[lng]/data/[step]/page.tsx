@@ -27,6 +27,7 @@ import {
   Text,
   useDisclosure,
   useSteps,
+  useToast,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -54,7 +55,9 @@ function getMailURI(locode?: string, sector?: string, year?: number): string {
 }
 
 function isSourceConnected(source: DataSource): boolean {
-  return source.subSectorValues.length > 0 || source.subCategoryValues.length > 0;
+  return (
+    source.subSectorValues.length > 0 || source.subCategoryValues.length > 0
+  );
 }
 
 function NoDataSourcesMessage({
@@ -107,6 +110,7 @@ export default function AddDataSteps({
 }) {
   const { t } = useTranslation(lng, "data");
   const router = useRouter();
+  const toast = useToast();
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
@@ -131,6 +135,9 @@ export default function AddDataSteps({
     { inventoryId: inventoryProgress?.inventoryId! },
     { skip: !inventoryProgress },
   );
+
+  const [connectDataSource, { isLoading: isConnectDataSourceLoading }] =
+    api.useConnectDataSourceMutation();
 
   const steps: DataStep[] = [
     {
@@ -219,9 +226,34 @@ export default function AddDataSteps({
     onSourceDrawerOpen();
   };
 
-  const onConnectClick = (source: DataSource) => {
+  const [connectingDataSourceId, setConnectingDataSourceId] = useState<
+    string | null
+  >(null);
+  const onConnectClick = async (source: DataSource) => {
+    if (!inventoryProgress) {
+      console.error(
+        "Tried to assign data source while inventory progress was not yet loaded!",
+      );
+      return;
+    }
     console.log("Connect source", source);
-    onSourceDrawerClose();
+    setConnectingDataSourceId(source.datasourceId);
+    try {
+      await connectDataSource({
+        inventoryId: inventoryProgress.inventoryId,
+        dataSourceIds: [source.datasourceId],
+      }).unwrap();
+      onSourceDrawerClose();
+      setConnectingDataSourceId(null);
+    } catch (error: any) {
+      console.error("Failed to connect data source", source, error);
+      toast({
+        title: t("data-source-connect-failed"),
+        description: error.data?.error?.message,
+        status: "error",
+        isClosable: true,
+      });
+    }
   };
 
   const [selectedSubsector, setSelectedSubsector] = useState<SubSector>();
@@ -368,7 +400,8 @@ export default function AddDataSteps({
                   key={source.datasourceId}
                   variant="outline"
                   borderColor={
-                    (isSourceConnected(source) && "interactive.tertiary") || undefined
+                    (isSourceConnected(source) && "interactive.tertiary") ||
+                    undefined
                   }
                   borderWidth={2}
                   className="shadow-none hover:drop-shadow-xl transition-shadow"
@@ -429,6 +462,10 @@ export default function AddDataSteps({
                       variant="outline"
                       bgColor="background.neutral"
                       onClick={() => onConnectClick(source)}
+                      isLoading={
+                        isConnectDataSourceLoading &&
+                        source.datasourceId === connectingDataSourceId
+                      }
                     >
                       {t("connect-data")}
                     </Button>
@@ -560,6 +597,7 @@ export default function AddDataSteps({
         isOpen={isSourceDrawerOpen}
         onClose={onSourceDrawerClose}
         onConnectClick={() => onConnectClick(selectedSource!)}
+        isConnectLoading={isConnectDataSourceLoading}
         t={t}
       />
       <SubsectorDrawer

@@ -32,6 +32,11 @@ type DataSourceResponse = (DataSourceAttributes & {
   scopes: ScopeAttributes;
 })[];
 
+interface ConnectDataSourceQuery {
+  inventoryId: string;
+  dataSourceIds: string[];
+}
+
 interface SubsectorValueUpdateQuery {
   subSectorId: string;
   inventoryId: string;

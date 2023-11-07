@@ -30,6 +30,7 @@ export function SourceDrawer({
   onClose,
   onConnectClick,
   finalFocusRef,
+  isConnectLoading,
   t,
 }: {
   source?: DataSourceAttributes;
@@ -37,6 +38,7 @@ export function SourceDrawer({
   onClose: () => void;
   onConnectClick: () => void;
   finalFocusRef?: RefObject<any>;
+  isConnectLoading: boolean;
   t: Function;
 }) {
   return (
@@ -115,7 +117,13 @@ export function SourceDrawer({
           )}
         </chakra.div>
         <Stack w="full" px={16} className="drop-shadow-top border-t-2">
-          <Button onClick={onConnectClick} w="full" h={16} my={6}>
+          <Button
+            onClick={onConnectClick}
+            w="full"
+            h={16}
+            my={6}
+            isLoading={isConnectLoading}
+          >
             {t("connect-data")}
           </Button>
         </Stack>

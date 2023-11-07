@@ -5,6 +5,7 @@ import {
   SubSectorValueAttributes,
 } from "@/models/init-models";
 import type {
+  ConnectDataSourceQuery,
   DataSourceResponse,
   InventoryProgressResponse,
   InventoryResponse,
@@ -102,6 +103,18 @@ export const api = createApi({
         body: data.data,
       }),
       transformResponse: (response: { data: SubSectorValueAttributes }) =>
+        response.data,
+    }),
+    connectDataSource: builder.mutation<
+      DataSourceResponse,
+      ConnectDataSourceQuery
+    >({
+      query: (data) => ({
+        url: `/datasource/${data.inventoryId}`,
+        method: "POST",
+        body: { dataSourceIds: data.dataSourceIds },
+      }),
+      transformResponse: (response: { data: DataSourceResponse }) =>
         response.data,
     }),
   }),

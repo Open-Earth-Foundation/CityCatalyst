@@ -46,6 +46,8 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
           required: false,
           where: { inventoryId: params.inventoryId },
         },
+        { model: SubSector, as: "subSector" },
+        { model: SubCategory, as: "subCategory" },
       ],
     },
   ];
@@ -65,7 +67,6 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const sources = sectorSources
     .concat(subSectorSources)
     .concat(subCategorySources);
-  console.log("All sources", sources);
   const applicableSources = filterSources(inventory, sources);
   return NextResponse.json({ data: applicableSources });
 });

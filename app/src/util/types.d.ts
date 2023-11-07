@@ -1,5 +1,7 @@
 import { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
+import { SubCategoryAttributes } from "@/models/SubCategory";
+import { SubSectorAttributes } from "@/models/SubSector";
 
 type InventoryResponse = InventoryAttributes & { city: CityAttributes };
 
@@ -29,7 +31,9 @@ interface UserInfoResponse {
 }
 
 type DataSourceResponse = (DataSourceAttributes & {
-  scopes: ScopeAttributes;
+  scopes: ScopeAttributes[];
+  subSector?: SubSectorAttributes;
+  subCategory?: SubCategoryAttributes;
 })[];
 
 interface ConnectDataSourceQuery {

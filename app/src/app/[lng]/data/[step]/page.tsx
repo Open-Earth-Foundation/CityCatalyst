@@ -128,7 +128,7 @@ export default function AddDataSteps({
   const isInventoryLoading = isUserInfoLoading || isInventoryProgressLoading;
 
   const {
-    data: dataSources,
+    data: allDataSources,
     isLoading: areDataSourcesLoading,
     error: dataSourcesError,
   } = api.useGetAllDataSourcesQuery(
@@ -214,6 +214,16 @@ export default function AddDataSteps({
     currentStep.connectedProgress + currentStep.addedProgress;
   const formatPercentage = (percentage: number) =>
     Math.round(percentage * 1000) / 10;
+
+  // only display data sources relevant to current sector
+  const dataSources = allDataSources?.filter((source) => {
+    const referenceNumber = source.subCategory?.referenceNumber || source.subSector?.referenceNumber;
+    if (!referenceNumber) return false;
+    const sectorReferenceNumber = referenceNumber.split(".")[0];
+
+    return sectorReferenceNumber === currentStep.referenceNumber;
+  });
+
 
   const [selectedSource, setSelectedSource] = useState<DataSource>();
   const {

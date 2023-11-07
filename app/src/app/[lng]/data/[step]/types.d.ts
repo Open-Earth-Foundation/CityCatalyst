@@ -6,6 +6,7 @@ interface DataStep {
   icon: any;
   connectedProgress: number;
   addedProgress: number;
+  totalSubSectors: number;
   referenceNumber: string;
   sector: Sector | null;
   subSectors: Array<SubSectorAttributes & { completed: boolean }> | null;

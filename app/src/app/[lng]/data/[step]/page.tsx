@@ -54,12 +54,6 @@ function getMailURI(locode?: string, sector?: string, year?: number): string {
   return `mailto://info@openearth.org,greta@openearth.org?subject=Missing third party data sources&body=City: ${locode}%0ASector: ${sector}%0AYear: ${year}`;
 }
 
-function isSourceConnected(source: DataSource): boolean {
-  return (
-    source.subSectorValues.length > 0 || source.subCategoryValues.length > 0
-  );
-}
-
 function NoDataSourcesMessage({
   t,
   locode,
@@ -146,6 +140,7 @@ export default function AddDataSteps({
       icon: MdOutlineHomeWork,
       connectedProgress: 0,
       addedProgress: 0,
+      totalSubSectors: 0,
       referenceNumber: "I",
       sector: null,
       subSectors: null,
@@ -156,6 +151,7 @@ export default function AddDataSteps({
       icon: FiTruck,
       connectedProgress: 0,
       addedProgress: 0,
+      totalSubSectors: 0,
       referenceNumber: "II",
       sector: null,
       subSectors: null,
@@ -166,6 +162,7 @@ export default function AddDataSteps({
       icon: FiTrash2,
       connectedProgress: 0,
       addedProgress: 0,
+      totalSubSectors: 0,
       referenceNumber: "III",
       sector: null,
       subSectors: null,
@@ -186,6 +183,7 @@ export default function AddDataSteps({
       }
       step.sector = sectorProgress.sector;
       step.subSectors = sectorProgress.subSectors;
+      step.totalSubSectors = sectorProgress.total;
       if (sectorProgress.total === 0) {
         continue;
       }
@@ -217,13 +215,13 @@ export default function AddDataSteps({
 
   // only display data sources relevant to current sector
   const dataSources = allDataSources?.filter((source) => {
-    const referenceNumber = source.subCategory?.referenceNumber || source.subSector?.referenceNumber;
+    const referenceNumber =
+      source.subCategory?.referenceNumber || source.subSector?.referenceNumber;
     if (!referenceNumber) return false;
     const sectorReferenceNumber = referenceNumber.split(".")[0];
 
     return sectorReferenceNumber === currentStep.referenceNumber;
   });
-
 
   const [selectedSource, setSelectedSource] = useState<DataSource>();
   const {
@@ -248,6 +246,8 @@ export default function AddDataSteps({
   const [connectingDataSourceId, setConnectingDataSourceId] = useState<
     string | null
   >(null);
+  const [newlyConnectedDataSourceIds, setNewlyConnectedDataSourceIds] =
+    useState<string[]>([]);
   const onConnectClick = async (source: DataSource) => {
     if (!inventoryProgress) {
       console.error(
@@ -269,7 +269,7 @@ export default function AddDataSteps({
           t("data-source-connect-load-error"),
         );
         return;
-      } else if(response.invalid.length > 0) {
+      } else if (response.invalid.length > 0) {
         showError(
           t("data-source-connect-failed"),
           t("data-source-connect-invalid-error"),
@@ -277,8 +277,18 @@ export default function AddDataSteps({
         return;
       }
 
-      onSourceDrawerClose();
-      setConnectingDataSourceId(null);
+      if (response.successful.length > 0) {
+        setNewlyConnectedDataSourceIds(
+          newlyConnectedDataSourceIds.concat(response.successful),
+        );
+        if (currentStep.totalSubSectors > 0) {
+          currentStep.connectedProgress = Math.min(
+            currentStep.connectedProgress + 1 / currentStep.totalSubSectors,
+            1.0,
+          );
+        }
+        onSourceDrawerClose();
+      }
     } catch (error: any) {
       console.error("Failed to connect data source", source, error);
       toast({
@@ -287,8 +297,18 @@ export default function AddDataSteps({
         status: "error",
         isClosable: true,
       });
+    } finally {
+      setConnectingDataSourceId(null);
     }
   };
+
+  function isSourceConnected(source: DataSource): boolean {
+    return (
+      source.subSectorValues.length > 0 ||
+      source.subCategoryValues.length > 0 ||
+      newlyConnectedDataSourceIds.indexOf(source.datasourceId) > -1
+    );
+  }
 
   const [selectedSubsector, setSelectedSubsector] = useState<SubSector>();
   const {

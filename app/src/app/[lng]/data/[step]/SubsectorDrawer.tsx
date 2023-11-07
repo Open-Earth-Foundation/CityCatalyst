@@ -28,6 +28,14 @@ import { EmissionsForm } from "./EmissionsForm";
 import { api } from "@/services/api";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { SubSectorValueAttributes } from "@/models/SubSectorValue";
+import type {
+  ActivityData,
+  DirectMeasureData,
+  SubCategory,
+  SubSector,
+  SubcategoryData,
+  SubcategoryOption,
+} from "./types";
 
 type Inputs = {
   valueType: string;

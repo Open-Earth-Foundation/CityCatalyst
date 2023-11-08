@@ -89,6 +89,9 @@ describe("Inventory API", () => {
     await db.models.DataSource.destroy({
       where: { name: { [Op.like]: "XX_INVENTORY_TEST_%" } },
     });
+    await db.models.Sector.destroy({
+      where: { sectorName: { [Op.like]: "XX_INVENTORY_TEST%" } },
+    });
     await db.models.City.destroy({ where: { locode } });
     await db.models.SubCategory.destroy({
       where: { subcategoryId: subCategory.subcategoryId },
@@ -121,6 +124,12 @@ describe("Inventory API", () => {
       inventoryId,
       cityId: city.cityId,
       ...inventory,
+    });
+    await db.models.Sector.destroy({
+      where: { sectorName: { [Op.like]: "XX_INVENTORY_TEST%" } },
+    });
+    await db.models.SubSector.destroy({
+      where: { subsectorName: { [Op.like]: "XX_INVENTORY_%" } },
     });
     await db.models.SubSectorValue.create({
       inventoryId,

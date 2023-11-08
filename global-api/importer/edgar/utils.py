@@ -445,6 +445,14 @@ def all_locodes_and_geometries(session):
     return session.execute(query).fetchall()
 
 
+def all_locodes_and_geometries_generator(session):
+    """Generate locode and geometry pairs from the database."""
+    query = text("""SELECT locode, geometry FROM osm;""")
+    result = session.execute(query)
+    for row in result:
+        yield row
+
+
 def all_locodes(session):
     """get shapefile from locode"""
     query = text("""SELECT locode FROM osm;""")

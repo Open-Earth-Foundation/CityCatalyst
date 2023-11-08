@@ -6,19 +6,18 @@
 import argparse
 from datetime import datetime
 import os
-import pandas as pd
 from sqlalchemy import create_engine, MetaData, Table
 from sqlalchemy.orm import sessionmaker
-from tqdm import tqdm
 from utils import (
-    all_locodes_and_geometries,
+    all_locodes_and_geometries_generator,
     area_of_polygon,
     bounds_from_polygon,
-    get_edgar_grid_coords_and_wkt,
     insert_record,
     load_wkt,
     uuid_generate_v3,
+    get_edgar_cells_in_bounds
 )
+import sys
 
 # EDGAR grid resolution
 lon_res = 0.1 # degrees
@@ -38,17 +37,11 @@ if __name__ == "__main__":
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    list_grid_coords = get_edgar_grid_coords_and_wkt(session)
-    df_grid = (
-        pd.DataFrame(list_grid_coords)
-        .rename(columns={"id": "cell_id"})
-    )
-
     table = Table("CityCellOverlapEdgar", metadata_obj, autoload_with=engine)
 
-    results = all_locodes_and_geometries(session)
+    results_generator = all_locodes_and_geometries_generator(session)
 
-    for row in tqdm(results):
+    for row in results_generator:
         locode = row.locode
         boundary_str = row.geometry
         boundary_polygon = load_wkt(boundary_str)
@@ -60,19 +53,11 @@ if __name__ == "__main__":
         bbox_east = east + lon_res
         bbox_west = west - lon_res
 
-        # filter for coords
-        filt = (
-            (df_grid["lat_center"] >= bbox_south)
-            & (df_grid["lat_center"] <= bbox_north)
-            & (df_grid["lon_center"] >= bbox_west)
-            & (df_grid["lon_center"] <= bbox_east)
-        )
-        df_tmp = df_grid.loc[filt]
-        geoms = df_tmp.to_dict(orient="records")
+        records = get_edgar_cells_in_bounds(session, bbox_north, bbox_south, bbox_east, bbox_west)
 
-        for row in geoms:
-            cell_id = str(row.get("cell_id"))
-            cell_wkt = row.get("geometry")
+        for record in records:
+            cell_id = str(record.id)
+            cell_wkt = record.geometry
 
             record_id = uuid_generate_v3(locode + cell_id)
 

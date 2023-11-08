@@ -15,13 +15,13 @@ from utils import (
     insert_record,
     load_wkt,
     uuid_generate_v3,
-    get_edgar_cells_in_bounds
+    get_edgar_cells_in_bounds,
 )
 import sys
 
 # EDGAR grid resolution
-lon_res = 0.1 # degrees
-lat_res = 0.1 # degrees
+lon_res = 0.1  # degrees
+lat_res = 0.1  # degrees
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -53,7 +53,9 @@ if __name__ == "__main__":
         bbox_east = east + lon_res
         bbox_west = west - lon_res
 
-        records = get_edgar_cells_in_bounds(session, bbox_north, bbox_south, bbox_east, bbox_west)
+        records = get_edgar_cells_in_bounds(
+            session, bbox_north, bbox_south, bbox_east, bbox_west
+        )
 
         for record in records:
             cell_id = str(record.id)

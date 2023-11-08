@@ -133,7 +133,7 @@ export default function AddDataSteps({
   const [connectDataSource, { isLoading: isConnectDataSourceLoading }] =
     api.useConnectDataSourceMutation();
 
-  const steps: DataStep[] = [
+  const [steps, setSteps] = useState<DataStep[]>([
     {
       title: t("stationary-energy"),
       details: t("stationary-energy-details"),
@@ -167,7 +167,7 @@ export default function AddDataSteps({
       sector: null,
       subSectors: null,
     },
-  ];
+  ]);
 
   useEffect(() => {
     if (inventoryProgress == null) {
@@ -175,7 +175,7 @@ export default function AddDataSteps({
     }
 
     const progress = inventoryProgress.sectorProgress;
-    for (const step of steps) {
+    const updatedSteps = steps.map((step) => {
       const sectorProgress: SectorProgress | undefined = progress.find(
         (p) => p.sector.referenceNumber === step.referenceNumber,
       );
@@ -184,17 +184,25 @@ export default function AddDataSteps({
           "No progress entry found for sector",
           step.referenceNumber,
         );
-        continue;
+        return step;
       }
       step.sector = sectorProgress.sector;
       step.subSectors = sectorProgress.subSectors;
       step.totalSubSectors = sectorProgress.total;
       if (sectorProgress.total === 0) {
-        continue;
+        return step;
       }
-      step.connectedProgress = sectorProgress.thirdParty / sectorProgress.total;
-      step.addedProgress = sectorProgress.uploaded / sectorProgress.total;
-    }
+      const connectedProgress =
+        sectorProgress.thirdParty / sectorProgress.total;
+      const addedProgress = sectorProgress.uploaded / sectorProgress.total;
+      step.connectedProgress = Math.max(
+        connectedProgress,
+        step.connectedProgress,
+      );
+      step.addedProgress = Math.max(addedProgress, step.addedProgress);
+      return step;
+    });
+    setSteps(updatedSteps);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inventoryProgress]);
 
@@ -288,12 +296,23 @@ export default function AddDataSteps({
         setNewlyConnectedDataSourceIds(
           newlyConnectedDataSourceIds.concat(response.successful),
         );
-        if (currentStep.totalSubSectors > 0) {
-          currentStep.connectedProgress = Math.min(
-            currentStep.connectedProgress + 1.0 / currentStep.totalSubSectors,
-            1.0,
-          );
-        }
+        setSteps(
+          steps.map((step, i) => {
+            if (i !== activeStep) {
+              return step;
+            }
+            if (step.totalSubSectors === 0) {
+              console.error(
+                "Step has no totalSubSectors value, can't increase progress!",
+              );
+              return step;
+            }
+            const newProgress =
+              step.connectedProgress + 1.0 / step.totalSubSectors;
+            step.connectedProgress = Math.min(newProgress, 1.0);
+            return step;
+          }),
+        );
         onSourceDrawerClose();
       }
     } catch (error: any) {

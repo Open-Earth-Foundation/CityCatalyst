@@ -16,9 +16,7 @@ import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
 import { Sector } from "@/models/Sector";
 
-const sectorValueId = randomUUID();
-const locode = "XX_INVENTORY_CITY2";
-const inventoryId = "8e54dc85-71d6-4113-97c8-cd25e52ad17c";
+const locode = "XX_SECTOR_CITY";
 const inventoryName = "TEST_SECTOR_INVENTORY";
 const sectorName = "TEST_SECTOR_SECTOR";
 const year = 3000;
@@ -45,14 +43,18 @@ describe("Sector API", () => {
   before(async () => {
     setupTests();
     await db.initialize();
-    await db.models.SectorValue.destroy({
-      where: { sectorValueId },
+
+    const prevInventory = await db.models.Inventory.findOne({
+      where: { inventoryName },
     });
+    if (prevInventory) {
+      await db.models.SectorValue.destroy({
+        where: { inventoryId: prevInventory?.inventoryId },
+      });
+      await prevInventory.destroy();
+    }
     await db.models.Sector.destroy({
       where: { sectorName },
-    });
-    await db.models.Inventory.destroy({
-      where: { inventoryName },
     });
     await db.models.City.destroy({
       where: { locode },
@@ -63,7 +65,7 @@ describe("Sector API", () => {
       locode,
     });
     inventory = await db.models.Inventory.create({
-      inventoryId,
+      inventoryId: randomUUID(),
       cityId: city.cityId,
       year,
       inventoryName,
@@ -94,7 +96,7 @@ describe("Sector API", () => {
 
   it("Should create a sector", async () => {
     await db.models.SectorValue.destroy({
-      where: { sectorValueId },
+      where: { sectorValueId: sectorValue.sectorValueId },
     });
     const req = mockRequest(sectorValue1);
     const res = await upsertSector(req, {

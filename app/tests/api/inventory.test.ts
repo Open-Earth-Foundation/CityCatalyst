@@ -12,19 +12,26 @@ import { randomUUID } from "node:crypto";
 import { after, before, beforeEach, describe, it } from "node:test";
 import { Op } from "sequelize";
 import { createRequest, mockRequest, setupTests, testUserID } from "../helpers";
-import { SubSectorAttributes } from "@/models/SubSector";
+import { SubSector, SubSectorAttributes } from "@/models/SubSector";
 import { City } from "@/models/City";
+import { Inventory } from "@/models/Inventory";
+import { Sector } from "@/models/Sector";
+import { SubCategory } from "@/models/SubCategory";
 
 const locode = "XX_INVENTORY_CITY";
 const inventoryName = "TEST_INVENTORY_INVENTORY";
+const sectorName = "XX_INVENTORY_TEST_SECTOR";
+const subcategoryName = "XX_INVENTORY_TEST_SUBCATEGORY";
+const subsectorName = "XX_INVENTORY_TEST_SUBSECTOR_1";
+const subSectorName2 = "XX_INVENTORY_TEST_SUBSECTOR_2";
 
-const inventory: CreateInventoryRequest = {
+const inventoryData: CreateInventoryRequest = {
   inventoryName,
   year: 3000,
   totalEmissions: 1337,
 };
 
-const inventory2: CreateInventoryRequest = {
+const inventoryData2: CreateInventoryRequest = {
   inventoryName,
   year: 3001,
   totalEmissions: 1338,
@@ -36,36 +43,11 @@ const invalidInventory = {
   totalEmissions: "246kg co2eq",
 };
 
-const sector = {
-  sectorId: randomUUID(),
-  sectorName: "XX_INVENTORY_TEST_SECTOR",
-};
-
-const subSector1 = {
-  subsectorId: randomUUID(),
-  sectorId: sector.sectorId,
-  subsectorName: "XX_INVENTORY_TEST_SUBSECTOR_1",
-};
-
-const subSector2 = {
-  subsectorId: randomUUID(),
-  sectorId: sector.sectorId,
-  subsectorName: "XX_INVENTORY_TEST_SUBSECTOR_2",
-};
-
-const subCategory = {
-  subcategoryId: randomUUID(),
-  subcategoryName: "XX_INVENTORY_TEST_SUBCATEGORY",
-  sectorId: sector.sectorId,
-  subSectorId: subSector2.subsectorId,
-};
-
 const subSectorValue = {
   activityValue: 10,
   activityUnits: "kg",
   emissionFactorValue: 10,
   totalEmissions: 100,
-  subsectorId: subSector1.subsectorId,
 };
 
 const subCategoryValue = {
@@ -73,12 +55,16 @@ const subCategoryValue = {
   activityUnits: "km",
   emissionFactorValue: 20,
   totalEmissions: 400,
-  subsectorId: subSector2.subsectorId,
-  subcategoryId: subCategory.subcategoryId,
 };
 
 describe("Inventory API", () => {
   let city: City;
+  let inventory: Inventory;
+  let sector: Sector;
+  let subCategory: SubCategory;
+  let subSector: SubSector;
+  let subSector2: SubSector;
+
   before(async () => {
     setupTests();
     await db.initialize();
@@ -94,51 +80,58 @@ describe("Inventory API", () => {
     });
     await db.models.City.destroy({ where: { locode } });
     await db.models.SubCategory.destroy({
-      where: { subcategoryId: subCategory.subcategoryId },
+      where: { subcategoryName },
     });
     await db.models.SubSector.destroy({
-      where: { subsectorId: subSector1.subsectorId },
+      where: { subsectorName: { [Op.like]: "XX_INVENTORY_%" } },
     });
-    await db.models.SubSector.destroy({
-      where: { subsectorId: subSector2.subsectorId },
+    await db.models.Sector.destroy({
+      where: { sectorName: { [Op.like]: "XX_INVENTORY_TEST%" } },
     });
-    await db.models.Sector.destroy({ where: { sectorId: sector.sectorId } });
+    await db.models.Sector.destroy({ where: { sectorName } });
     await db.models.Sector.destroy({
       where: { sectorName: { [Op.like]: "XX_INVENTORY_PROGRESS_TEST%" } },
     });
     city = await db.models.City.create({ cityId: randomUUID(), locode });
     await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
     await city.addUser(testUserID);
-    await db.models.Sector.create(sector);
-    await db.models.SubSector.create(subSector1);
-    await db.models.SubSector.create(subSector2);
-    await db.models.SubCategory.create(subCategory);
+    sector = await db.models.Sector.create({
+      sectorId: randomUUID(),
+      sectorName,
+    });
+    subSector = await db.models.SubSector.create({
+      subsectorId: randomUUID(),
+      sectorId: sector.sectorId,
+      subsectorName: subsectorName,
+    });
+    subSector2 = await db.models.SubSector.create({
+      subsectorId: randomUUID(),
+      sectorId: sector.sectorId,
+      subsectorName: subSectorName2,
+    });
+    subCategory = await db.models.SubCategory.create({
+      subcategoryId: randomUUID(),
+      subsectorId: subSector2.subsectorId,
+    });
   });
 
   beforeEach(async () => {
-    await db.models.Inventory.destroy({
-      where: { cityId: city.cityId },
-    });
-    const inventoryId: string = randomUUID();
-    await db.models.Inventory.create({
-      inventoryId,
+    await db.models.Inventory.destroy({ where: { inventoryName } });
+    inventory = await db.models.Inventory.create({
+      inventoryId: randomUUID(),
       cityId: city.cityId,
-      ...inventory,
-    });
-    await db.models.Sector.destroy({
-      where: { sectorName: { [Op.like]: "XX_INVENTORY_TEST%" } },
-    });
-    await db.models.SubSector.destroy({
-      where: { subsectorName: { [Op.like]: "XX_INVENTORY_%" } },
+      ...inventoryData,
     });
     await db.models.SubSectorValue.create({
-      inventoryId,
       subsectorValueId: randomUUID(),
+      inventoryId: inventory.inventoryId,
+      subsectorId: subSector.subsectorId,
       ...subSectorValue,
     });
     await db.models.SubCategoryValue.create({
-      inventoryId,
       subcategoryValueId: randomUUID(),
+      inventoryId: inventory.inventoryId,
+      subcategoryId: subCategory.subcategoryId,
       ...subCategoryValue,
     });
   });
@@ -148,7 +141,7 @@ describe("Inventory API", () => {
       where: { subcategoryId: subCategory.subcategoryId },
     });
     await db.models.SubSector.destroy({
-      where: { subsectorId: subSector1.subsectorId },
+      where: { subsectorId: subSector.subsectorId },
     });
     await db.models.SubSector.destroy({
       where: { subsectorId: subSector2.subsectorId },
@@ -160,10 +153,10 @@ describe("Inventory API", () => {
 
   it("should create an inventory", async () => {
     await db.models.Inventory.destroy({
-      where: { year: inventory.year },
+      where: { inventoryName },
     });
     const url = "http://localhost:3000/api/v0/city" + locode;
-    const req = createRequest(url, inventory);
+    const req = createRequest(url, inventoryData);
     const res = await createInventory(req, {
       params: { city: locode },
     });
@@ -191,7 +184,7 @@ describe("Inventory API", () => {
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
     const req = createRequest(url);
     const res = await findInventory(req, {
-      params: { city: locode, year: inventory.year.toString() },
+      params: { city: locode, year: inventory.year!.toString() },
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
@@ -200,11 +193,11 @@ describe("Inventory API", () => {
     assert.equal(data.totalEmissions, inventory.totalEmissions);
   });
 
-  it("should find an inventory with csv format", async () => {
+  it("should download an inventory in csv format", async () => {
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}?format=csv`;
     const req = createRequest(url);
     const res = await findInventory(req, {
-      params: { city: locode, year: inventory.year.toString() },
+      params: { city: locode, year: inventory.year!.toString() },
     });
     assert.equal(res.status, 200);
     assert.equal(res.headers.get("content-type"), "text/csv");
@@ -222,16 +215,16 @@ describe("Inventory API", () => {
       "Emission Factor Value",
       "Datasource ID",
     ]);
-    assert.ok(lines.length > 1);
+    assert.ok(lines.length > 1, csv);
     assert.strictEqual(lines.length, 3);
     assert.ok(lines.slice(1).every((line) => line.split(",").length == 6));
   });
 
-  it("should find an inventory with xls format", async () => {
+  it("should download an inventory in xls format", async () => {
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}?format=xls`;
     const req = createRequest(url);
     const res = await findInventory(req, {
-      params: { city: locode, year: inventory.year.toString() },
+      params: { city: locode, year: inventory.year!.toString() },
     });
     assert.equal(res.status, 200);
     assert.equal(res.headers.get("content-type"), "application/vnd.ms-excel");
@@ -250,22 +243,22 @@ describe("Inventory API", () => {
 
   it("should update an inventory", async () => {
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
-    const req = createRequest(url, inventory2);
+    const req = createRequest(url, inventoryData2);
     const res = await updateInventory(req, {
-      params: { city: locode, year: inventory.year.toString() },
+      params: { city: locode, year: inventory.year!.toString() },
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
-    assert.equal(data.inventoryName, inventory2.inventoryName);
-    assert.equal(data.year, inventory2.year);
-    assert.equal(data.totalEmissions, inventory2.totalEmissions);
+    assert.equal(data.inventoryName, inventoryData2.inventoryName);
+    assert.equal(data.year, inventoryData2.year);
+    assert.equal(data.totalEmissions, inventoryData2.totalEmissions);
   });
 
   it("should not update an inventory with invalid data", async () => {
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
     const req = createRequest(url, invalidInventory);
     const res = await updateInventory(req, {
-      params: { city: locode, year: inventory.year.toString() },
+      params: { city: locode, year: inventory.year!.toString() },
     });
     assert.equal(res.status, 400);
     const {
@@ -278,7 +271,7 @@ describe("Inventory API", () => {
     const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
     const req = createRequest(url);
     const res = await deleteInventory(req, {
-      params: { city: locode, year: inventory.year.toString() },
+      params: { city: locode, year: inventory.year!.toString() },
     });
     assert.equal(res.status, 200);
     const { data, deleted } = await res.json();
@@ -349,7 +342,7 @@ describe("Inventory API", () => {
 
     const req = mockRequest();
     const res = await calculateProgress(req, {
-      params: { city: locode, year: inventory.year.toString() },
+      params: { city: locode, year: inventory.year!.toString() },
     });
 
     assert.equal(res.status, 200);

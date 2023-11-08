@@ -141,10 +141,9 @@ describe("Sub Category API", () => {
     const res = await upsertSubCategory(req, {
       params: {
         inventory: inventory.inventoryId,
-        subcategory: subCategoryValue.subcategoryValueId,
+        subcategory: subCategory.subcategoryId,
       },
     });
-    console.log("yay", await res.text());
     assert.equal(res.status, 200);
     const { data } = await res.json();
 

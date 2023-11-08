@@ -6,7 +6,6 @@ import {
 
 import { db } from "@/models";
 import { CreateSubCategoryRequest } from "@/util/validation";
-import env from "@next/env";
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, beforeEach, describe, it } from "node:test";
@@ -23,7 +22,7 @@ const locode = "XX_SUBCATEGORY_CITY";
 const totalEmissions = 44000;
 const activityUnits = "UNITS";
 const activityValue = 1000;
-const emissionFactorValue = 5;
+const emissionFactorValue = 12;
 const inventoryName = "TEST_SUBCATEGORY_INVENTORY";
 const subcategoryName = "TEST_SUBCATEGORY_SUBCATEGORY";
 

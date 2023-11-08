@@ -75,6 +75,7 @@
     "sequelize-cli": "^6.6.1",
     "tailwindcss": "3.3.3",
     "typescript": "5.2.2",
+    "wellknown": "^0.5.0",
     "zod": "^3.22.3"
   },
   "devDependencies": {
@@ -84,6 +85,7 @@
     "@storybook/blocks": "^7.4.6",
     "@storybook/nextjs": "^7.5.2",
     "@types/glob": "^8.1.0",
+    "@types/wellknown": "^0.5.8",
     "cypress": "^13.3.3",
     "glob": "^10.3.10",
     "prettier": "3.0.3",

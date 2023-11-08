@@ -4,7 +4,7 @@ import { api } from "@/services/api";
 import { geoJSONBoundingBox } from "@/util/geojson";
 import { Box, Center, Spinner } from "@chakra-ui/react";
 import type { GeoJsonObject } from "geojson";
-import { LatLngBoundsLiteral } from "leaflet";
+import { LatLngBoundsLiteral, LatLngExpression } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { FC, useEffect } from "react";
 import { GeoJSON, MapContainer, TileLayer, useMap } from "react-leaflet";
@@ -18,7 +18,8 @@ export interface CityMapProps {
 function BoundingBoxFocus({ boundingBox }: { boundingBox?: number[] }) {
   const map = useMap();
   useEffect(() => {
-    if (!boundingBox || boundingBox.length < 4) {
+    if (!boundingBox || boundingBox.some(isNaN)) {
+      console.error("Invalid bounding box:", boundingBox);
       return;
     }
     // GeoJSON is [lng, lat] and Leaflet is [lat, lng]
@@ -26,7 +27,7 @@ function BoundingBoxFocus({ boundingBox }: { boundingBox?: number[] }) {
       [boundingBox[1], boundingBox[0]],
       [boundingBox[3], boundingBox[2]],
     ];
-    map.fitBounds(bounds, { padding: [0.5, 0.5] });
+    map.fitBounds(bounds, { padding: [50, 50] });
   }, [boundingBox, map]);
 
   return null;
@@ -36,9 +37,13 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
   const { data, isLoading } = api.useGetCityBoundaryQuery(locode!, {
     skip: !locode,
   });
-  let boundingBox: number[] | undefined = [34, -37, 35, -38];
+  let boundingBox: number[] | undefined;
+  let mapCenter: LatLngExpression | undefined = [34.0, -37.0];
   if (data) {
+    console.log(data);
     boundingBox = geoJSONBoundingBox(data);
+  } else {
+    console.log("no data");
   }
   return (
     <Box w={width} h={height} className="relative">
@@ -54,7 +59,7 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
         </Box>
       )}
       <MapContainer
-        center={[34.0, -37.0]}
+        center={mapCenter}
         zoom={13}
         scrollWheelZoom={false}
         style={{ width, height }}

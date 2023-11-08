@@ -38,15 +38,22 @@ export const api = createApi({
       transformResponse: (response: { data: InventoryProgressResponse }) =>
         response.data,
     }),
-    addCity: builder.mutation<CityAttributes, { name: string; locode: string }>(
+    addCity: builder.mutation<
+      CityAttributes,
       {
-        query: (data) => ({
-          url: `/city`,
-          method: "POST",
-          body: data,
-        }),
-      },
-    ),
+        name: string;
+        locode: string;
+        area: number;
+        region: string;
+        country: string;
+      }
+    >({
+      query: (data) => ({
+        url: `/city`,
+        method: "POST",
+        body: data,
+      }),
+    }),
     addInventory: builder.mutation<
       InventoryAttributes,
       { locode: string; year: number; inventoryName: string }
@@ -87,6 +94,9 @@ export const openclimateAPI = createApi({
     getOCCity: builder.query<any, string>({
       query: (q) => `/api/v1/search/actor?q=${q}`,
     }),
+    getOCCityData: builder.query<any, string>({
+      query: (locode) => `/api/v1/actor/${locode}`,
+    }),
   }),
 });
 
@@ -97,4 +107,4 @@ export const {
   useAddInventoryMutation,
   useSetUserInfoMutation,
 } = api;
-export const { useGetOCCityQuery } = openclimateAPI;
+export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

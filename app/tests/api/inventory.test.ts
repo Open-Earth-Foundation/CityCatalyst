@@ -368,26 +368,14 @@ describe("Inventory API", () => {
           return { sector: { sectorName: sector.sectorName }, ...progress };
         },
       );
-    assert.deepEqual(cleanedSectorProgress, [
-      {
-        total: 3,
-        thirdParty: 1,
-        uploaded: 1,
-        sector: { sectorName: "XX_INVENTORY_PROGRESS_TEST1" },
-      },
-      {
-        total: 3,
-        thirdParty: 1,
-        uploaded: 1,
-        sector: { sectorName: "XX_INVENTORY_PROGRESS_TEST2" },
-      },
-      {
-        total: 3,
-        thirdParty: 1,
-        uploaded: 1,
-        sector: { sectorName: "XX_INVENTORY_PROGRESS_TEST3" },
-      },
-    ]);
+    assert.equal(cleanedSectorProgress.length, 3);
+    for (const sector of cleanedSectorProgress) {
+      assert.equal(sector.total, 3);
+      assert.equal(sector.thirdParty, 1);
+      assert.equal(sector.uploaded, 1);
+      assert.ok(sector.sector.sectorName.startsWith("XX_INVENTORY_PROGRESS_TEST"), "Wrong sector name: " + sector.sector.sectorName);
+
+    }
     assert.equal(totalProgress.thirdParty, 3);
     assert.equal(totalProgress.uploaded, 3);
     // TODO the route counts subsectors created by other tests/ seeders

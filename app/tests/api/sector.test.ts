@@ -64,12 +64,6 @@ describe("Sector API", () => {
       cityId: randomUUID(),
       locode,
     });
-    inventory = await db.models.Inventory.create({
-      inventoryId: randomUUID(),
-      cityId: city.cityId,
-      year,
-      inventoryName,
-    });
     sector = await db.models.Sector.create({
       sectorId: randomUUID(),
       sectorName,
@@ -81,7 +75,16 @@ describe("Sector API", () => {
     await db.models.SectorValue.destroy({
       where: { sectorId: sector.sectorId },
     });
+    await db.models.Inventory.destroy({
+      where: { inventoryName },
+    });
 
+    inventory = await db.models.Inventory.create({
+      inventoryId: randomUUID(),
+      cityId: city.cityId,
+      year,
+      inventoryName,
+    });
     sectorValue = await db.models.SectorValue.create({
       sectorValueId: randomUUID(),
       sectorId: sector.sectorId,

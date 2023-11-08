@@ -17,6 +17,7 @@ import { SectorValue } from "@/models/SectorValue";
 import { SubCategoryValue } from "@/models/SubCategoryValue";
 import { SubSectorValue } from "@/models/SubSectorValue";
 import { SubCategory } from "@/models/SubCategory";
+import { Op } from "sequelize";
 
 const locode = "XX_SUBCATEGORY_CITY";
 const totalEmissions = 44000;
@@ -60,6 +61,9 @@ describe("Sub Category API", () => {
 
     await db.models.SubCategory.destroy({
       where: { subcategoryName },
+    });
+    await db.models.SubSector.destroy({
+      where: { subsectorName: { [Op.like]: "XX_INVENTORY_%" } },
     });
     await db.models.City.destroy({ where: { locode } });
 

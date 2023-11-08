@@ -14,6 +14,7 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  Text,
 } from "@chakra-ui/react";
 import i18next from "i18next";
 import { signOut, useSession } from "next-auth/react";
@@ -150,7 +151,14 @@ export function NavigationBar({
                   bg: "#FFF3",
                 }}
               >
-                {session.user?.name}
+                <Text
+                  w="120px"
+                  overflow="hidden"
+                  textOverflow="ellipsis"
+                  whiteSpace="nowrap"
+                >
+                  {session.user?.name}
+                </Text>
               </MenuButton>
               <MenuList
                 paddingTop="8px"

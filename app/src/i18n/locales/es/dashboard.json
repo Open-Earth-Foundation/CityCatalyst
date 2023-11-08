@@ -8,6 +8,7 @@
     "about-gpc-protocol": "sobre el protocolo GPC",
     "download": "Descargar",
     "download-description": "Visualiza y descarga tus datos de inventario en formato CSV o GPC, y comparte tu progreso",
+    "gpc-calculation": "Esta barra de progreso muestra cuánto de su inventario de GPC ya está lleno, tanto en verde (indicando datos que ha agregado manualmente) como en naranja (datos provenientes de conjuntos de datos de terceros).",
     "gpc-basic-emissions-inventory-calculations-year": "Cálculo del Inventario Básico de Emisiones GPC - Año",
     "gpc-inventory-description": "Los datos que has enviado ahora están oficialmente incorporados al Inventario de Emisiones de GEI de tu ciudad para {{year}}, compilados según la metodología básica de GPC. <4>Obtén más</4> información sobre el Protocolo GPC.",
     "completed": "completado",

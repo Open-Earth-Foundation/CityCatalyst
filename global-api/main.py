@@ -10,6 +10,8 @@ from routes.city_locode_endpoint import api_router as city_locode_route
 from routes.city_boundaries_endpoint import api_router as city_boundaries_route
 from routes.city_locode_endpoint_crosswalk import api_router as crosswalk_city_locode_route
 from routes.city_locode_endpoint_edgar import api_router as edgar_city_locode_route
+from routes.catalogue_endpoint import api_router as catalouge_route
+from routes.catalogue_last_update_endpoint import api_router as catalogue_last_update_endpoint
 
 """
 Logger instance initialized and configured
@@ -26,7 +28,7 @@ logging.basicConfig(
     encoding="utf-8",
     level=logging.DEBUG,
     format="%(asctime)s:%(levelname)s:%(pathname)s:%(message)s",
-    datefmt=("%Y-%m-%d %H:%M:%S"),                                                                                                                                                                                                                                                                                                                  
+    datefmt=("%Y-%m-%d %H:%M:%S"),
 )
 logger = logging.getLogger(__name__)
 
@@ -45,7 +47,7 @@ def custom_openapi():
     # check if the OpenApI schema has already been generated
     if app.openapi_schema:
         return app.openapi_schema
-    """ 
+    """
     generate the OpenAPI schema using the get_openapi function
         - title  Title of Fastapi application.
         - version  Current Version of the application.
@@ -70,7 +72,6 @@ app.openapi = custom_openapi
 def read_root():
     return {"message": "Welcome"}
 
-
 app.include_router(
     health_check_route,
     tags=["Database Health Check"],
@@ -93,6 +94,16 @@ app.include_router(
 app.include_router(
     edgar_city_locode_route,
     tags=["EDGAR"],
+)
+
+app.include_router(
+    catalogue_last_update_endpoint,
+    tags=["Datasource Catalogue"],
+)
+
+app.include_router(
+    catalouge_route,
+    tags=["Datasource Catalogue"],
 )
 
 """

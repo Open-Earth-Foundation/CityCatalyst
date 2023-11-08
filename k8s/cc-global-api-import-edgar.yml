@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: cc-global-api-migrate-
+  generateName: cc-global-api-import-edgar-
 spec:
   ttlSecondsAfterFinished: 86400
   template:
@@ -10,7 +10,4 @@ spec:
       containers:
       - name: cc-global-api
         image: ghcr.io/open-earth-foundation/citycatalyst-global-api:latest
-        env:
-        - name: ALEMBIC_URL
-          value: "postgresql://ccglobal:ccglobal@cc-global-api-db/ccglobal"
-        command: ["alembic", "upgrade", "heads"]
+        command: ["importer/edgar/import_edgar.sh", "postgresql://ccglobal:ccglobal@cc-global-api-db/ccglobal"]

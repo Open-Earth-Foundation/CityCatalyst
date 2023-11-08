@@ -51,7 +51,9 @@ import RecentSearches from "@/components/recent-searches";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { set } from "@/features/city/openclimateCitySlice";
 import { OCCityArributes } from "@/models/City";
-import CityMap from "@/components/CityMap";
+import dynamic from "next/dynamic";
+
+const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
 type Inputs = {
   city: string;

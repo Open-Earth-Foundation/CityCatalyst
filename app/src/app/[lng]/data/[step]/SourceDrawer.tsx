@@ -115,18 +115,17 @@ export function SourceDrawer({
               </Stack>
             </DrawerBody>
           )}
-        </chakra.div>
-        <Stack w="full" px={16} className="drop-shadow-top border-t-2">
-          <Button
-            onClick={onConnectClick}
+          <Stack
             w="full"
-            h={16}
-            my={6}
-            isLoading={isConnectLoading}
+            className="drop-shadow-top border-t-2 absolute left-0 flex justify-center items-center"
           >
-            {t("connect-data")}
-          </Button>
-        </Stack>
+            <Button onClick={onConnectClick} w="543px" h={16} my={6}
+            isLoading={isConnectLoading}
+            >
+              {t("connect-data")}
+            </Button>
+          </Stack>
+        </chakra.div>
       </DrawerContent>
     </Drawer>
   );

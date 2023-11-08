@@ -3,6 +3,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import cityReducer from "@/features/city/citySlice";
 import openclimateCityReducer from "@/features/city/openclimateCitySlice";
+import openclimateCityDataReducer from "@/features/city/openclimateCityDataSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     [openclimateAPI.reducerPath]: openclimateAPI.reducer,
     city: cityReducer,
     openClimateCity: openclimateCityReducer,
+    openClimateCityData: openclimateCityDataReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()

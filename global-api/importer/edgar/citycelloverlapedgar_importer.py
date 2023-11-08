@@ -42,7 +42,6 @@ if __name__ == "__main__":
     df_grid = (
         pd.DataFrame(list_grid_coords)
         .rename(columns={"id": "cell_id"})
-        .astype({"cell_id": str})
     )
 
     table = Table("CityCellOverlapEdgar", metadata_obj, autoload_with=engine)

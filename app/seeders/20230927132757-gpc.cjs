@@ -7,7 +7,7 @@ async function parseFile(filename) {
   const records = [];
   const parser = fs
     .createReadStream(
-      `${__dirname}/../../gpc_seeder/data_processed/${filename}.csv`,
+      `${__dirname}/../seed-data/gpc_seeder/data_processed/${filename}.csv`,
     )
     .pipe(parse({ delimiter: ",", columns: true }));
 

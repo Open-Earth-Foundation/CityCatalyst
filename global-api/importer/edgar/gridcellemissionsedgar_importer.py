@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
     results = get_edgar_entire_grid(session)
     df_grid = (
-        pd.DataFrame(results).rename(columns={"id": "cell_id"}).astype({"cell_id": str})
+        pd.DataFrame(results).rename(columns={"id": "cell_id"})
     )
 
     get_gpc_refno = {
@@ -88,7 +88,7 @@ if __name__ == "__main__":
                     .assign(
                         id=lambda x: x.apply(
                             lambda row: uuid_generate_v3(
-                                f"edgar{row['cell_id']}{row['year']}{row['gas']}{row['reference_number']}"
+                                f"edgar{str(row['cell_id'])}{row['year']}{row['gas']}{row['reference_number']}"
                             ),
                             axis=1,
                         )

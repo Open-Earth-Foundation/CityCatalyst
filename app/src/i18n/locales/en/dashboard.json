@@ -25,5 +25,6 @@
     "transportation": "Transportation",
     "transportation-description": "This sector deals with emissions from the transportation of goods and people within the city boundary.",
     "waste-and-wastewater": "Waste and wastewater",
-    "waste-and-wastewater-description": "This sector covers emissions generated from waste management processes."
+    "waste-and-wastewater-description": "This sector covers emissions generated from waste management processes.",
+    "unnamed-sector": "Unnamed Sector"
 }

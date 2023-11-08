@@ -149,7 +149,7 @@ export function SectorCard({
                 {sectorProgress.subSectors.map((subSector, i) => (
                   <SubSectorCard
                     key={i}
-                    title={subSector.subsectorName}
+                    title={subSector.subsectorName || t("unnamed-sector")}
                     scopes="1, 2"
                     isCompleted={subSector.completed}
                   />

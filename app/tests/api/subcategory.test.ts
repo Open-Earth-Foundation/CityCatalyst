@@ -17,17 +17,15 @@ import { Inventory } from "@/models/Inventory";
 import { SectorValue } from "@/models/SectorValue";
 import { SubCategoryValue } from "@/models/SubCategoryValue";
 import { SubSectorValue } from "@/models/SubSectorValue";
-
-const sectorValueId = randomUUID();
-const subsectorValueId = randomUUID();
-const subcategoryValueId = randomUUID();
+import { SubCategory } from "@/models/SubCategory";
 
 const locode = "XX_SUBCATEGORY_CITY";
-const year = "3000";
 const totalEmissions = 44000;
 const activityUnits = "UNITS";
 const activityValue = 1000;
 const emissionFactorValue = 5;
+const inventoryName = "TEST_SUBCATEGORY_INVENTORY";
+const subcategoryName = "TEST_SUBCATEGORY_SUBCATEGORY";
 
 const subcategoryValue1: CreateSubCategoryRequest = {
   activityUnits: "UNITS",
@@ -54,29 +52,32 @@ describe("Sub Category API", () => {
   let inventory: Inventory;
   let subSectorValue: SubSectorValue;
   let sectorValue: SectorValue;
+  let subCategory: SubCategory;
   let subCategoryValue: SubCategoryValue;
+
   before(async () => {
     setupTests();
-    const projectDir = process.cwd();
-    env.loadEnvConfig(projectDir);
     await db.initialize();
-  });
 
-  beforeEach(async () => {
-    // TODO these never exist as a random UUID is generated each time
-    await db.models.SubSectorValue.destroy({
-      where: { subsectorValueId },
-    });
-    await db.models.SectorValue.destroy({
-      where: { sectorValueId },
-    });
-    await db.models.SubCategoryValue.destroy({
-      where: { subcategoryValueId },
-    });
-    await db.models.Inventory.destroy({
-      where: { inventoryName: "TEST_SUBCATEGORY_INVENTORY" },
+    await db.models.SubCategory.destroy({
+      where: { subcategoryName },
     });
     await db.models.City.destroy({ where: { locode } });
+
+    const prevInventory = await db.models.Inventory.findOne({
+      where: { inventoryName },
+    });
+    if (prevInventory) {
+      await db.models.SubSectorValue.destroy({
+        where: { inventoryId: prevInventory.inventoryId },
+      });
+      await db.models.SectorValue.destroy({
+        where: { inventoryId: prevInventory.inventoryId },
+      });
+      await db.models.Inventory.destroy({
+        where: { inventoryName },
+      });
+    }
 
     const city = await db.models.City.create({
       cityId: randomUUID(),
@@ -92,25 +93,36 @@ describe("Sub Category API", () => {
 
     sectorValue = await db.models.SectorValue.create({
       inventoryId: inventory.inventoryId,
-      sectorValueId,
+      sectorValueId: randomUUID(),
       totalEmissions,
     });
 
     subSectorValue = await db.models.SubSectorValue.create({
       inventoryId: inventory.inventoryId,
-      subsectorValueId,
+      subsectorValueId: randomUUID(),
       totalEmissions,
-      sectorValueId,
+      sectorValueId: sectorValue.sectorValueId,
       activityUnits,
       activityValue,
       emissionFactorValue,
     });
 
+    subCategory = await db.models.SubCategory.create({
+      subcategoryId: randomUUID(),
+      subcategoryName,
+    });
+  });
+
+  beforeEach(async () => {
+    await db.models.SubCategoryValue.destroy({
+      where: { subcategoryValueId: inventory.inventoryId },
+    });
     subCategoryValue = await db.models.SubCategoryValue.create({
       inventoryId: inventory.inventoryId,
-      subcategoryValueId,
+      subcategoryValueId: randomUUID(),
+      subcategoryId: subCategory.subcategoryId,
       totalEmissions,
-      sectorValueId,
+      sectorValueId: sectorValue.sectorValueId,
       activityUnits,
       activityValue,
       emissionFactorValue,
@@ -123,15 +135,16 @@ describe("Sub Category API", () => {
 
   it("Should create a sub category", async () => {
     await db.models.SubCategoryValue.destroy({
-      where: { subcategoryValueId },
+      where: { subcategoryValueId: subCategoryValue.subcategoryValueId },
     });
     const req = mockRequest(subcategoryValue1);
     const res = await upsertSubCategory(req, {
       params: {
         inventory: inventory.inventoryId,
-        subcategory: subcategoryValueId,
+        subcategory: subCategoryValue.subcategoryValueId,
       },
     });
+    console.log("yay", await res.text());
     assert.equal(res.status, 200);
     const { data } = await res.json();
 
@@ -149,7 +162,7 @@ describe("Sub Category API", () => {
     const res = await upsertSubCategory(req, {
       params: {
         inventory: inventory.inventoryId,
-        subcategory: subcategoryValueId,
+        subcategory: subCategory.subcategoryId,
       },
     });
     assert.equal(res.status, 400);
@@ -164,7 +177,7 @@ describe("Sub Category API", () => {
     const res = await findSubCategory(req, {
       params: {
         inventory: inventory.inventoryId,
-        subcategory: subcategoryValueId,
+        subcategory: subCategory.subcategoryId,
       },
     });
 
@@ -193,7 +206,7 @@ describe("Sub Category API", () => {
     const res = await upsertSubCategory(req, {
       params: {
         inventory: inventory.inventoryId,
-        subcategory: subcategoryValueId,
+        subcategory: subCategory.subcategoryId,
       },
     });
     const { data } = await res.json();
@@ -212,7 +225,7 @@ describe("Sub Category API", () => {
     const res = await upsertSubCategory(req, {
       params: {
         inventory: inventory.inventoryId,
-        subcategory: subcategoryValueId,
+        subcategory: subCategory.subcategoryId,
       },
     });
     assert.equal(res.status, 400);
@@ -227,7 +240,7 @@ describe("Sub Category API", () => {
     const res = await deleteSubCategory(req, {
       params: {
         inventory: inventory.inventoryId,
-        subcategory: subcategoryValueId,
+        subcategory: subCategory.subcategoryId,
       },
     });
     assert.equal(res.status, 200);

@@ -168,7 +168,12 @@ export default function AddDataSteps({
       subSectors: null,
     },
   ];
-  if (inventoryProgress != null) {
+
+  useEffect(() => {
+    if (inventoryProgress == null) {
+      return;
+    }
+
     const progress = inventoryProgress.sectorProgress;
     for (const step of steps) {
       const sectorProgress: SectorProgress | undefined = progress.find(
@@ -190,12 +195,14 @@ export default function AddDataSteps({
       step.connectedProgress = sectorProgress.thirdParty / sectorProgress.total;
       step.addedProgress = sectorProgress.uploaded / sectorProgress.total;
     }
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inventoryProgress]);
 
   const { activeStep, goToNext, setActiveStep } = useSteps({
     index: Number(step) - 1,
     count: steps.length,
   });
+  const currentStep = steps[activeStep];
   const onStepSelected = (selectedStep: number) => {
     setActiveStep(selectedStep);
   };
@@ -207,7 +214,7 @@ export default function AddDataSteps({
     );
     history.replaceState("", "", newPath);
   }, [activeStep]);
-  const currentStep = steps[activeStep];
+
   const totalStepCompletion =
     currentStep.connectedProgress + currentStep.addedProgress;
   const formatPercentage = (percentage: number) =>
@@ -283,7 +290,7 @@ export default function AddDataSteps({
         );
         if (currentStep.totalSubSectors > 0) {
           currentStep.connectedProgress = Math.min(
-            currentStep.connectedProgress + 1 / currentStep.totalSubSectors,
+            currentStep.connectedProgress + 1.0 / currentStep.totalSubSectors,
             1.0,
           );
         }

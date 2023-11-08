@@ -18,10 +18,11 @@ import { Sector } from "@/models/Sector";
 
 const sectorValueId = randomUUID();
 const locode = "XX_INVENTORY_CITY2";
+const inventoryId = "8e54dc85-71d6-4113-97c8-cd25e52ad17c";
 const inventoryName = "TEST_SECTOR_INVENTORY";
 const sectorName = "TEST_SECTOR_SECTOR";
-const year = "3000";
-const totalEmissions = 44000;
+const year = 3000;
+const totalEmissions = 4000;
 
 const sectorValue1: CreateSectorRequest = {
   totalEmissions: 4000,
@@ -62,9 +63,9 @@ describe("Sector API", () => {
       locode,
     });
     inventory = await db.models.Inventory.create({
-      inventoryId: randomUUID(),
+      inventoryId,
       cityId: city.cityId,
-      year: 5000,
+      year,
       inventoryName,
     });
     sector = await db.models.Sector.create({
@@ -72,20 +73,17 @@ describe("Sector API", () => {
       sectorName,
       referenceNumber: "X.X.X",
     });
-    sectorValue = await db.models.SectorValue.create({
-      sectorValueId: randomUUID(),
-      totalEmissions,
-    });
   });
 
   beforeEach(async () => {
     await db.models.SectorValue.destroy({
-      where: { sectorValueId },
+      where: { sectorId: sector.sectorId },
     });
 
-    await db.models.SectorValue.create({
-      sectorValueId,
-
+    sectorValue = await db.models.SectorValue.create({
+      sectorValueId: randomUUID(),
+      sectorId: sector.sectorId,
+      inventoryId: inventory.inventoryId,
       totalEmissions,
     });
   });
@@ -167,7 +165,7 @@ describe("Sector API", () => {
     assert.equal(res.status, 200);
     const { data, deleted } = await res.json();
     assert.equal(deleted, true);
-    assert.equal(data.totalEmissions, sectorValue2.totalEmissions);
+    assert.equal(data.totalEmissions, sectorValue1.totalEmissions);
   });
 
   it("should not delete a non-existing sector", async () => {

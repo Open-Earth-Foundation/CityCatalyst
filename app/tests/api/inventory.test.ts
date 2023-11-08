@@ -16,15 +16,16 @@ import { SubSectorAttributes } from "@/models/SubSector";
 import { City } from "@/models/City";
 
 const locode = "XX_INVENTORY_CITY";
+const inventoryName = "TEST_INVENTORY_INVENTORY";
 
 const inventory: CreateInventoryRequest = {
-  inventoryName: "Test Inventory",
+  inventoryName,
   year: 3000,
   totalEmissions: 1337,
 };
 
 const inventory2: CreateInventoryRequest = {
-  inventoryName: "Test Inventory 2",
+  inventoryName,
   year: 3001,
   totalEmissions: 1338,
 };
@@ -83,7 +84,7 @@ describe("Inventory API", () => {
     await db.initialize();
     // this also deletes all Sector/SubSectorValue instances associated with it (cascade)
     await db.models.Inventory.destroy({
-      where: { year: { [Op.or]: [inventory.year, inventory2.year] } },
+      where: { inventoryName },
     });
     await db.models.DataSource.destroy({
       where: { name: { [Op.like]: "XX_INVENTORY_TEST_%" } },

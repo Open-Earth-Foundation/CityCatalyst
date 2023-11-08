@@ -7,7 +7,7 @@ import { randomUUID } from "node:crypto";
 
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const subcategoryValue = await db.models.SubCategoryValue.findOne({
-    where: { subcategoryId: params.sector, inventoryId: params.inventory },
+    where: { subcategoryId: params.subcategory, inventoryId: params.inventory },
   });
 
   if (!subcategoryValue) {
@@ -20,7 +20,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
 export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   const body = createSubCategory.parse(await req.json());
   let subcategoryValue = await db.models.SubCategoryValue.findOne({
-    where: { subcategoryId: params.sector, inventoryId: params.inventory },
+    where: { subcategoryId: params.subcategory, inventoryId: params.inventory },
   });
 
   if (subcategoryValue) {

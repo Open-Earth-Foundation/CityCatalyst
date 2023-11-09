@@ -133,5 +133,5 @@ describe("DataSource API", () => {
     assert.equal(data.length, 1);
   });
 
-  // TODO add tests for applyDataSources
+  it.todo("should apply data sources");
 });

@@ -248,8 +248,7 @@ async function retrieveGlobalAPISource(
       ...values,
       subcategoryValueId: randomUUID(),
       subcategoryId: source.subcategoryId,
-      // TODO add relation from SubCategoryValue to SubSectorValue
-      // subsectorValueId: subSectorValue.subsectorValueId,
+      subsectorValueId: subSectorValue.subsectorValueId,
     });
   } else {
     return false;

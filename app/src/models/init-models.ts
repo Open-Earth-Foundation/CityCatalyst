@@ -299,9 +299,17 @@ export function initModels(sequelize: Sequelize) {
     as: "dataSource",
     foreignKey: "datasourceId",
   });
+  SubSectorValue.hasMany(SubCategoryValue, {
+    as: "subCategoryValues",
+    foreignKey: "subsectorValueId",
+  });
   SubCategoryValue.belongsTo(DataSource, {
     as: "dataSource",
     foreignKey: "datasourceId",
+  });
+  SubCategoryValue.belongsTo(SubSectorValue, {
+    as: "subsectorValue",
+    foreignKey: "subsectorValueId",
   });
   EmissionsFactor.belongsToMany(DataSource, {
     as: "datasourceIdDataSourceDataSourceEmissionsFactors",

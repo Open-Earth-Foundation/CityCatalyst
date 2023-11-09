@@ -7,7 +7,10 @@ import { Scope } from "@/models/Scope";
 import { SubCategory } from "@/models/SubCategory";
 import { SubCategoryValue } from "@/models/SubCategoryValue";
 import { SubSector } from "@/models/SubSector";
-import { SubSectorValue } from "@/models/SubSectorValue";
+import {
+  SubSectorValue,
+  SubSectorValueCreationAttributes,
+} from "@/models/SubSectorValue";
 import { apiHandler } from "@/util/api";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
@@ -137,6 +140,40 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
   });
 });
 
+async function initSubSectorValue(
+  source: DataSource,
+  inventory: Inventory,
+  totalEmissions: number,
+  values: Partial<SubSectorValueCreationAttributes>,
+): Promise<SubSectorValue> {
+  let sectorValue = await db.models.SectorValue.findOne({
+    where: {
+      sectorId: source.subSector.sectorId,
+      inventoryId: inventory.inventoryId,
+    },
+  });
+  // TODO have to init/ update totalEmissions here?
+  if (!sectorValue) {
+    sectorValue = await db.models.SectorValue.create({
+      sectorValueId: randomUUID(),
+      sectorId: source.subSector.sectorId,
+      inventoryId: inventory.inventoryId,
+      totalEmissions,
+    });
+  } else {
+    await sectorValue.update({
+      totalEmissions: (sectorValue.totalEmissions || 0) + totalEmissions,
+    });
+  }
+  const subSectorValue = await db.models.SubSectorValue.create({
+    ...values,
+    sectorValueId: sectorValue.sectorValueId,
+    subsectorId: source.subsectorId,
+    subsectorValueId: randomUUID(),
+  });
+  return subSectorValue;
+}
+
 async function retrieveGlobalAPISource(
   source: DataSource,
   inventory: Inventory,
@@ -178,25 +215,42 @@ async function retrieveGlobalAPISource(
 
   const emissions = data.totals.emissions;
   // TODO store values for co2, ch4, n2o separately for accounting and editing
+  const totalEmissions = emissions.co2eq_100yr;
   const values = {
     datasourceId: source.datasourceId,
-    totalEmissions: emissions.co2eq_100yr,
+    totalEmissions,
     inventoryId: inventory.inventoryId,
   };
 
   if (source.subsectorId) {
-    const subSectorValue = await db.models.SubSectorValue.create({
-      subsectorValueId: randomUUID(),
-      subsectorId: source.subsectorId,
-      ...values,
-    });
+    await initSubSectorValue(source, inventory, totalEmissions, values);
   } else if (source.subcategoryId) {
+    // add parent SubSectorValue if not present yet
+    let subSectorValue = await db.models.SubSectorValue.findOne({
+      where: {
+        subsectorId: source.subCategory.subsectorId,
+        inventoryId: inventory.inventoryId,
+      },
+    });
+    if (!subSectorValue) {
+      subSectorValue = await initSubSectorValue(
+        source,
+        inventory,
+        totalEmissions,
+        values,
+      );
+    } else {
+      await subSectorValue.update({
+        totalEmissions: (subSectorValue.totalEmissions || 0) + totalEmissions,
+      });
+    }
     const subCategoryValue = await db.models.SubCategoryValue.create({
+      ...values,
       subcategoryValueId: randomUUID(),
       subcategoryId: source.subcategoryId,
-      ...values,
+      // TODO add relation from SubCategoryValue to SubSectorValue
+      // subsectorValueId: subSectorValue.subsectorValueId,
     });
-    // TODO add parent SubSectorValue if not present yet?
   } else {
     return false;
   }

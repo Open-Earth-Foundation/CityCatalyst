@@ -1,9 +1,10 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from sqlalchemy import text
 import pandas as pd
 from db.database import SessionLocal
 
 api_router = APIRouter(prefix="/api/v0")
+
 
 def db_query():
     columns = [
@@ -30,17 +31,19 @@ def db_query():
         "api_endpoint",
         "gpc_reference_number",
         "created_date",
-        "modified_date"
+        "modified_date",
     ]
 
-    column_names = ', '.join(columns)
+    column_names = ", ".join(columns)
 
     with SessionLocal() as session:
         query = text(
             """
             SELECT {}
             FROM datasource;
-            """.format(column_names)
+            """.format(
+                column_names
+            )
         )
         result = session.execute(query).fetchall()
 
@@ -50,6 +53,9 @@ def db_query():
 @api_router.get("/catalogue")
 def get_datasources():
     records = db_query()
+
+    if not records:
+        raise HTTPException(status_code=404, detail="No data available")
 
     df = pd.DataFrame(records)
 

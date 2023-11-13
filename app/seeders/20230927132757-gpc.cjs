@@ -24,7 +24,7 @@ async function parseFile(filename) {
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface) {
+  async up(queryInterface, Sequelize) {
     const scopes = await parseFile("Scope");
     const reportingLevels = await parseFile("ReportingLevel");
     const sectors = await parseFile("Sector");
@@ -32,14 +32,25 @@ module.exports = {
     const subCategories = await parseFile("SubCategory");
 
     await queryInterface.sequelize.transaction(async (transaction) => {
-      await queryInterface.bulkInsert("Scope", scopes, { transaction });
+      await queryInterface.bulkInsert("Scope", scopes, {
+        transaction,
+        // updateOnDuplicate: ["scope_id"],
+      });
       await queryInterface.bulkInsert("ReportingLevel", reportingLevels, {
         transaction,
+        // updateOnDuplicate: ["reportinglevel_id"],
       });
-      await queryInterface.bulkInsert("Sector", sectors, { transaction });
-      await queryInterface.bulkInsert("SubSector", subSectors, { transaction });
+      await queryInterface.bulkInsert("Sector", sectors, {
+        transaction,
+        // updateOnDuplicate: ["sector_id"],
+      });
+      await queryInterface.bulkInsert("SubSector", subSectors, {
+        transaction,
+        // updateOnDuplicate: ["subsector_id"],
+      });
       await queryInterface.bulkInsert("SubCategory", subCategories, {
         transaction,
+        // updateOnDuplicate: ["subcategory_id"],
       });
     });
   },

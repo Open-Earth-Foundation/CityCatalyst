@@ -64,38 +64,38 @@ export class Scope
   >;
   countActivityData!: Sequelize.HasManyCountAssociationsMixin;
   // Scope belongsToMany DataSource via scopeId and datasourceId
-  datasourceIdDataSourceDataSourceScopes!: DataSource[];
-  getDatasourceIdDataSourceDataSourceScopes!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
-  setDatasourceIdDataSourceDataSourceScopes!: Sequelize.BelongsToManySetAssociationsMixin<
+  dataSources!: DataSource[];
+  getDataSources!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
+  setDataSources!: Sequelize.BelongsToManySetAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  addDatasourceIdDataSourceDataSourceScope!: Sequelize.BelongsToManyAddAssociationMixin<
+  addDataSource!: Sequelize.BelongsToManyAddAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  addDatasourceIdDataSourceDataSourceScopes!: Sequelize.BelongsToManyAddAssociationsMixin<
+  addDataSources!: Sequelize.BelongsToManyAddAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  createDatasourceIdDataSourceDataSourceScope!: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
-  removeDatasourceIdDataSourceDataSourceScope!: Sequelize.BelongsToManyRemoveAssociationMixin<
+  createDataSource!: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
+  removeDataSource!: Sequelize.BelongsToManyRemoveAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  removeDatasourceIdDataSourceDataSourceScopes!: Sequelize.BelongsToManyRemoveAssociationsMixin<
+  removeDataSources!: Sequelize.BelongsToManyRemoveAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  hasDatasourceIdDataSourceDataSourceScope!: Sequelize.BelongsToManyHasAssociationMixin<
+  hasDataSource!: Sequelize.BelongsToManyHasAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  hasDatasourceIdDataSourceDataSourceScopes!: Sequelize.BelongsToManyHasAssociationsMixin<
+  hasDataSources!: Sequelize.BelongsToManyHasAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  countDatasourceIdDataSourceDataSourceScopes!: Sequelize.BelongsToManyCountAssociationsMixin;
+  countDataSources!: Sequelize.BelongsToManyCountAssociationsMixin;
   // Scope hasMany DataSourceScope via scopeId
   dataSourceScopes!: DataSourceScope[];
   getDataSourceScopes!: Sequelize.HasManyGetAssociationsMixin<DataSourceScope>;

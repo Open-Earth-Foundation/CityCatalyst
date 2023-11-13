@@ -1,23 +1,28 @@
-type SubSector = {
-  id: number | string;
+import { DataSourceAttributes } from "@/models/DataSource";
+
+interface DataStep {
   title: string;
-  scopes: number[];
-  isAdded: boolean;
-  sectorName: string;
+  details: string;
+  icon: any;
+  connectedProgress: number;
+  addedProgress: number;
+  totalSubSectors: number;
+  referenceNumber: string;
+  sector: Sector | null;
+  subSectors: Array<SubSectorAttributes & { completed: boolean }> | null;
 };
 
-type DataSource = {
-  id: number | string;
-  icon: any;
-  title: string;
-  dataQuality: "low" | "medium" | "high";
-  scopes: number[];
-  description: string;
-  url: string;
-  isConnected: boolean;
-  updateFrequency: string;
-  sources: string[];
-  methodology: string;
+type SubSector = {
+  subsectorId: string;
+  name: string;
+  scope: { scopeName: string };
+  completed: boolean;
+  subsectorName: string;
+};
+
+type DataSource = DataSourceAttributes & {
+  subSectorValues: SubSectorValue[];
+  subCategoryValues: SubCategoryValue[];
 };
 
 type SubCategory = {
@@ -38,7 +43,7 @@ type SubcategoryOption = {
 
 type ActivityData = {
   activityDataAmount?: number;
-  activityDataUnit: string;
+  activityDataUnit?: string;
   emissionFactorType: string;
   co2EmissionFactor: number;
   n2oEmissionFactor: number;
@@ -59,4 +64,3 @@ type SubcategoryData = {
   grid: ActivityData;
   direct: DirectMeasureData;
 };
-

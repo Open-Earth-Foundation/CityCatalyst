@@ -101,7 +101,7 @@ export function SectorCard({
                 className="py-[16px]"
               >
                 <Trans t={t}>scope-required-for-gpc</Trans>:{" "}
-                {sectorScopes.join(", ")}
+                {sectorScopes?.join(", ") || "none"}
               </Heading>
             </Box>
             <Box>
@@ -149,7 +149,7 @@ export function SectorCard({
                 {sectorProgress.subSectors.map((subSector, i) => (
                   <SubSectorCard
                     key={i}
-                    title={subSector.subsectorName}
+                    title={subSector.subsectorName || t("unnamed-sector")}
                     scopes="1, 2"
                     isCompleted={subSector.completed}
                   />

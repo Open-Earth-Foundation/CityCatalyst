@@ -8,6 +8,7 @@ import { NavigationBar } from "@/components/navigation-bar";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import { formatPercent } from "@/util/helpers";
+import { SectorProgress } from "@/util/types";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import {
   Avatar,
@@ -53,6 +54,19 @@ const CITY_INTENTORY_YEAR = "DE_BER";
 
 // only render map on the client
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
+
+function sortSectors(a: SectorProgress, b: SectorProgress): number {
+  const refA = a.sector.referenceNumber;
+  const refB = b.sector.referenceNumber;
+  if (!refA || !refB) {
+    return 0;
+  } else if (refA < refB) {
+    return -1;
+  } else if (refA > refB) {
+    return 1;
+  }
+  return 0;
+}
 
 export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const { t } = useTranslation(lng, "dashboard");
@@ -528,14 +542,17 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   <Spinner size="lg" />
                 </Center>
               ) : (
-                inventoryProgress?.sectorProgress.map((sectorProgress, i) => (
-                  <SectorCard
-                    key={i}
-                    sectorProgress={sectorProgress}
-                    stepNumber={i + 1}
-                    t={t}
-                  />
-                ))
+                inventoryProgress?.sectorProgress
+                  .slice()
+                  .sort(sortSectors)
+                  .map((sectorProgress, i) => (
+                    <SectorCard
+                      key={i}
+                      sectorProgress={sectorProgress}
+                      stepNumber={i + 1}
+                      t={t}
+                    />
+                  ))
               )}
             </Box>
           </Box>

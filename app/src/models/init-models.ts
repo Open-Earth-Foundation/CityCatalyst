@@ -278,7 +278,7 @@ export function initModels(sequelize: Sequelize) {
     otherKey: "reportinglevelId",
   });
   DataSource.belongsToMany(Scope, {
-    as: "scopeIdScopes",
+    as: "scopes",
     through: DataSourceScope,
     foreignKey: "datasourceId",
     otherKey: "scopeId",
@@ -299,9 +299,17 @@ export function initModels(sequelize: Sequelize) {
     as: "dataSource",
     foreignKey: "datasourceId",
   });
+  SubSectorValue.hasMany(SubCategoryValue, {
+    as: "subCategoryValues",
+    foreignKey: "subsectorValueId",
+  });
   SubCategoryValue.belongsTo(DataSource, {
     as: "dataSource",
     foreignKey: "datasourceId",
+  });
+  SubCategoryValue.belongsTo(SubSectorValue, {
+    as: "subsectorValue",
+    foreignKey: "subsectorValueId",
   });
   EmissionsFactor.belongsToMany(DataSource, {
     as: "datasourceIdDataSourceDataSourceEmissionsFactors",
@@ -334,7 +342,7 @@ export function initModels(sequelize: Sequelize) {
     otherKey: "subsectorId",
   });
   Scope.belongsToMany(DataSource, {
-    as: "datasourceIdDataSourceDataSourceScopes",
+    as: "dataSources",
     through: DataSourceScope,
     foreignKey: "scopeId",
     otherKey: "datasourceId",
@@ -451,6 +459,14 @@ export function initModels(sequelize: Sequelize) {
   });
   DataSource.hasMany(Population, {
     as: "populations",
+    foreignKey: "datasourceId",
+  });
+  DataSource.hasMany(SubSectorValue, {
+    as: "subSectorValues",
+    foreignKey: "datasourceId",
+  });
+  DataSource.hasMany(SubCategoryValue, {
+    as: "subCategoryValues",
     foreignKey: "datasourceId",
   });
   DataSourceEmissionsFactor.belongsTo(EmissionsFactor, {

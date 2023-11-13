@@ -40,7 +40,7 @@ if __name__ == "__main__":
     # asset_enteric-fermentation_emissions
     datasource_data = dict(
         publisher_id=PUBLISHER,
-        name="asset_enteric-fermentation_emissions",
+        name="ClimateTRACE Enteric Fermentation Emissions",
         description="Approach relies on the hypothesis that beef or daily facility area size can be used as a predictor to estimate the total cattle population, which can then be used to estimate enteric fermentation emissions.",
         source_type="",
         access_type="globalapi",
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     # asset_manure-management_emissions
     datasource_data = dict(
         publisher_id=PUBLISHER,
-        name="asset_manure-management_emissions",
+        name="ClimateTRACE Manure Management Emissions",
         description="Approach relies on the hypothesis that beef or daily facility area size can be used as a predictor to estimate the total cattle population, which can then be used to estimate manure management emissions.",
         source_type="",
         access_type="globalapi",
@@ -104,7 +104,7 @@ if __name__ == "__main__":
     # asset_solid-waste-disposal_emissions
     datasource_data = dict(
         publisher_id=PUBLISHER,
-        name="asset_solid-waste-disposal_emissions",
+        name="ClimateTRACE Solid Waste Disposal Emissions",
         description="ClimateTRACE sought to combine the best available sources into a model that could be deployed globally to estimate emissions.",
         source_type="",
         access_type="globalapi",
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     # asset_domestic-aviation_emissions
     datasource_data = dict(
         publisher_id=PUBLISHER,
-        name="asset_domestic-aviation_emissions",
+        name="ClimateTRACE Domestic Aviation Emissions",
         description="Emissions estimated based on fuel consumption.",
         source_type="",
         access_type="globalapi",
@@ -168,7 +168,7 @@ if __name__ == "__main__":
     # asset_international-aviation_emissions
     datasource_data = dict(
         publisher_id=PUBLISHER,
-        name="asset_international-aviation_emissions",
+        name="ClimateTRACE International Aviation Emissions",
         description="Emissions estimated based on fuel consumption.",
         source_type="",
         access_type="globalapi",
@@ -200,7 +200,7 @@ if __name__ == "__main__":
     # asset_coal-mining_emissions
     datasource_data = dict(
         publisher_id=PUBLISHER,
-        name="asset_coal-mining_emissions",
+        name="ClimateTRACE Coal Mining Emissions",
         description="Estimate emissions from mining and quarrying extraction on a statistical basis by taking production numbers at national and facility level and applying specific emissions factors.",
         source_type="",
         access_type="globalapi",
@@ -232,7 +232,7 @@ if __name__ == "__main__":
     # asset_oil-and-gas-production-and-transport_emissions
     datasource_data = dict(
         publisher_id=PUBLISHER,
-        name="asset_oil-and-gas-production-and-transport_emissions",
+        name="ClimateTRACE Oil and Gas Production and Transport Emissions",
         description="ClimateTRACE uses a hybrid model to estimate emissions globally",
         source_type="",
         access_type="globalapi",
@@ -264,7 +264,7 @@ if __name__ == "__main__":
     # asset_oil-and-gas-refining_emissions
     datasource_data = dict(
         publisher_id=PUBLISHER,
-        name="asset_oil-and-gas-refining_emissions",
+        name="ClimateTRACE Oil and Gas Refining Emissions",
         description="ClimateTRACE uses a hybrid model to estimate emissions globally",
         source_type="",
         access_type="globalapi",
@@ -296,7 +296,7 @@ if __name__ == "__main__":
     # asset_road-transportation_emissions
     datasource_data = dict(
         publisher_id=PUBLISHER,
-        name="asset_road-transportation_emissions",
+        name="ClimateTRACE Road Transportation Emissions",
         description="Hybrid emissions estimate model with two parts. 1. ML models trained to predict road transport activity 2. emission factors pipeline to convert activity to emissions.",
         source_type="",
         access_type="globalapi",

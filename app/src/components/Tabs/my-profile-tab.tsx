@@ -123,7 +123,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
         id: "2",
         name: "Jane Smith",
         email: "jane@example.com",
-        role: "contributer",
+        role: "contributor",
       },
     ];
 
@@ -399,7 +399,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                   </Box>
                 </TabPanel>
                 <TabPanel
-                  width="831px"
+                  width="full"
                   padding="24px"
                   display="flex"
                   flexDirection="column"
@@ -483,7 +483,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                       >
                         <option value="all">{t("all")}</option>
                         <option value="admin">{t("admin")}</option>
-                        <option value="contributer">{t("contribuiter")}</option>
+                        <option value="contributor">{t("contributor")}</option>
                       </Select>
                     </Box>
                     <Box display="flex" alignItems="center" gap="8px">
@@ -729,7 +729,6 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                   </Box>
                 </TabPanel>
                 <TabPanel
-                  width="831px"
                   padding="24px"
                   display="flex"
                   flexDirection="column"

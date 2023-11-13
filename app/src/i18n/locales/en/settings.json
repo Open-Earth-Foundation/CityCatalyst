@@ -20,7 +20,7 @@
     "email": "Email",
     "role": "Role",
     "admin": "Admin",
-    "contributer": "Contributer",
+    "contributor": "Contributor",
     "save-changes": "Save Changes",
     "my-files-sub-title": "Here you can find all your files uploaded, pending request harmonization, and included in the GHG Inventory",
     "all-inventory-years": "all inventory years",

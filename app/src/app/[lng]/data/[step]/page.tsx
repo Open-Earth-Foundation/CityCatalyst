@@ -1,20 +1,25 @@
 "use client";
 
-import { CircleIcon, DataAlertIcon } from "@/components/icons";
+import { SegmentedProgress } from "@/components/SegmentedProgress";
+import { CircleIcon, DataAlertIcon, WorldSearchIcon } from "@/components/icons";
 import WizardSteps from "@/components/wizard-steps";
 import { useTranslation } from "@/i18n/client";
-import { ArrowBackIcon } from "@chakra-ui/icons";
-import { Link } from "@chakra-ui/react";
+import { ScopeAttributes } from "@/models/Scope";
+import { api } from "@/services/api";
+import { SectorProgress } from "@/util/types";
+import { ArrowBackIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
   Card,
+  Center,
   Flex,
   Heading,
   Icon,
   IconButton,
-  Progress,
+  Link,
   SimpleGrid,
+  Spinner,
   Stack,
   Tag,
   TagLabel,
@@ -22,6 +27,7 @@ import {
   Text,
   useDisclosure,
   useSteps,
+  useToast,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -31,75 +37,65 @@ import {
   MdArrowDropDown,
   MdArrowDropUp,
   MdCheckCircle,
+  MdHomeWork,
   MdOutlineCheckCircle,
   MdOutlineEdit,
-  MdOutlineFactory,
   MdOutlineHomeWork,
-  MdOutlineHouse,
   MdOutlineSkipNext,
   MdPlaylistAddCheck,
 } from "react-icons/md";
 import { SourceDrawer } from "./SourceDrawer";
 import { SubsectorDrawer } from "./SubsectorDrawer";
-import subSectorData from "./subsectors.json";
-import { SegmentedProgress } from "@/components/SegmentedProgress";
+import { Trans } from "react-i18next/TransWithoutContext";
+import { TFunction } from "i18next";
+import { DataSource, DataStep, SubSector } from "./types";
 
-const dataSourceDescription =
-  "Leveraging satellite imagery, this dataset provides key information about residential structures, aiding in the assessment of their energy usage and corresponding carbon footprints";
-const dataSourceMethodoloygy =
-  "Power sector emissions are estimated by first assembling a global geolocated inventory of power plants, generation, and metered emissions data. Machine learning models then predict power plant generation from satellite images. These predictions are aggregated and combined with available generation data and carbon intensity factors to derive emissions estimates.";
-const rawDataSources: DataSource[] = [
-  {
-    id: 0,
-    icon: MdOutlineHouse,
-    title: "Residential buildings - Google Environmental Insights",
-    dataQuality: "high",
-    scopes: [1, 2],
-    description: dataSourceDescription,
-    url: "https://openclimate.network",
-    isConnected: false,
-    updateFrequency: "year",
-    sources: ["Satellite imagery", "Ground truth", "Alternative"],
-    methodology: dataSourceMethodoloygy,
-  },
-  {
-    id: 1,
-    icon: MdOutlineHomeWork,
-    title:
-      "Commercial and institutional buildings and facilities - Google Environmental Insights",
-    dataQuality: "low",
-    scopes: [1, 3],
-    description: dataSourceDescription,
-    url: "https://openclimate.network",
-    isConnected: false,
-    updateFrequency: "month",
-    sources: ["Satellite imagery", "Ground truth", "Alternative"],
-    methodology: dataSourceMethodoloygy,
-  },
-  {
-    id: 2,
-    icon: MdOutlineFactory,
-    title: "Energy industries - Google Environmental Insights",
-    dataQuality: "medium",
-    scopes: [3],
-    description: dataSourceDescription,
-    url: "https://openclimate.network",
-    isConnected: true,
-    updateFrequency: "day",
-    sources: ["Satellite imagery", "Ground truth", "Alternative"],
-    methodology: dataSourceMethodoloygy,
-  },
-];
+function getMailURI(locode?: string, sector?: string, year?: number): string {
+  return `mailto://info@openearth.org,greta@openearth.org?subject=Missing third party data sources&body=City: ${locode}%0ASector: ${sector}%0AYear: ${year}`;
+}
 
-const dataSources = rawDataSources
-  .reduce((acc, source) => {
-    acc.push(source, source, source);
-    return acc;
-  }, [] as DataSource[])
-  .map((source, id) => {
-    source.id = id;
-    return source;
-  });
+function NoDataSourcesMessage({
+  t,
+  locode,
+  sector,
+  year,
+}: {
+  t: TFunction;
+  locode?: string;
+  sector?: string;
+  year?: number;
+}) {
+  return (
+    <Flex align="center" direction="column">
+      <Icon
+        as={WorldSearchIcon}
+        boxSize={20}
+        color="interactive.secondary"
+        borderRadius="full"
+        p={4}
+        bgColor="background.neutral"
+        mb={6}
+      />
+      <Heading
+        size="lg"
+        color="interactive.secondary"
+        mb={2}
+        textAlign="center"
+      >
+        {t("no-data-sources")}
+      </Heading>
+      <Text color="content.tertiary" align="center" size="sm">
+        <Trans t={t} i18nKey="no-data-sources-description">
+          I<br />I
+          <Link href={getMailURI(locode, sector, year)} className="underline">
+            please report this
+          </Link>
+          I
+        </Trans>
+      </Text>
+    </Flex>
+  );
+}
 
 export default function AddDataSteps({
   params: { lng, step },
@@ -108,33 +104,113 @@ export default function AddDataSteps({
 }) {
   const { t } = useTranslation(lng, "data");
   const router = useRouter();
-  const steps = [
+  const toast = useToast();
+
+  const { data: userInfo, isLoading: isUserInfoLoading } =
+    api.useGetUserInfoQuery();
+  const locode = userInfo?.defaultCityLocode;
+  const year = userInfo?.defaultInventoryYear;
+
+  const {
+    data: inventoryProgress,
+    isLoading: isInventoryProgressLoading,
+    error: inventoryProgressError,
+  } = api.useGetInventoryProgressQuery(
+    { locode: locode!, year: year! },
+    { skip: !locode || !year },
+  );
+  const isInventoryLoading = isUserInfoLoading || isInventoryProgressLoading;
+
+  const {
+    data: allDataSources,
+    isLoading: areDataSourcesLoading,
+    error: dataSourcesError,
+  } = api.useGetAllDataSourcesQuery(
+    { inventoryId: inventoryProgress?.inventoryId! },
+    { skip: !inventoryProgress },
+  );
+
+  const [connectDataSource, { isLoading: isConnectDataSourceLoading }] =
+    api.useConnectDataSourceMutation();
+
+  const [steps, setSteps] = useState<DataStep[]>([
     {
       title: t("stationary-energy"),
       details: t("stationary-energy-details"),
       icon: MdOutlineHomeWork,
-      connectedProgress: 0.041,
-      addedProgress: 0.6662,
+      connectedProgress: 0,
+      addedProgress: 0,
+      totalSubSectors: 0,
+      referenceNumber: "I",
+      sector: null,
+      subSectors: null,
     },
     {
       title: t("transportation"),
       details: t("transportation-details"),
       icon: FiTruck,
-      connectedProgress: 0.234,
-      addedProgress: 0.432,
+      connectedProgress: 0,
+      addedProgress: 0,
+      totalSubSectors: 0,
+      referenceNumber: "II",
+      sector: null,
+      subSectors: null,
     },
     {
       title: t("waste"),
       details: t("waste-details"),
       icon: FiTrash2,
-      connectedProgress: 0.11,
-      addedProgress: 0.5,
+      connectedProgress: 0,
+      addedProgress: 0,
+      totalSubSectors: 0,
+      referenceNumber: "III",
+      sector: null,
+      subSectors: null,
     },
-  ];
+  ]);
+
+  useEffect(() => {
+    if (inventoryProgress == null) {
+      return;
+    }
+
+    const progress = inventoryProgress.sectorProgress;
+    const updatedSteps = steps.map((step) => {
+      const sectorProgress: SectorProgress | undefined = progress.find(
+        (p) => p.sector.referenceNumber === step.referenceNumber,
+      );
+      if (!sectorProgress) {
+        console.error(
+          "No progress entry found for sector",
+          step.referenceNumber,
+        );
+        return step;
+      }
+      step.sector = sectorProgress.sector;
+      step.subSectors = sectorProgress.subSectors;
+      step.totalSubSectors = sectorProgress.total;
+      if (sectorProgress.total === 0) {
+        return step;
+      }
+      const connectedProgress =
+        sectorProgress.thirdParty / sectorProgress.total;
+      const addedProgress = sectorProgress.uploaded / sectorProgress.total;
+      step.connectedProgress = Math.max(
+        connectedProgress,
+        step.connectedProgress,
+      );
+      step.addedProgress = Math.max(addedProgress, step.addedProgress);
+      return step;
+    });
+    setSteps(updatedSteps);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inventoryProgress]);
+
   const { activeStep, goToNext, setActiveStep } = useSteps({
     index: Number(step) - 1,
     count: steps.length,
   });
+  const currentStep = steps[activeStep];
   const onStepSelected = (selectedStep: number) => {
     setActiveStep(selectedStep);
   };
@@ -146,11 +222,21 @@ export default function AddDataSteps({
     );
     history.replaceState("", "", newPath);
   }, [activeStep]);
-  const currentStep = steps[activeStep];
+
   const totalStepCompletion =
     currentStep.connectedProgress + currentStep.addedProgress;
   const formatPercentage = (percentage: number) =>
     Math.round(percentage * 1000) / 10;
+
+  // only display data sources relevant to current sector
+  const dataSources = allDataSources?.filter((source) => {
+    const referenceNumber =
+      source.subCategory?.referenceNumber || source.subSector?.referenceNumber;
+    if (!referenceNumber) return false;
+    const sectorReferenceNumber = referenceNumber.split(".")[0];
+
+    return sectorReferenceNumber === currentStep.referenceNumber;
+  });
 
   const [selectedSource, setSelectedSource] = useState<DataSource>();
   const {
@@ -163,10 +249,92 @@ export default function AddDataSteps({
     onSourceDrawerOpen();
   };
 
-  const onConnectClick = (source: DataSource) => {
-    console.log("Connect source", source);
-    onSourceDrawerClose();
+  const showError = (title: string, description: string) => {
+    toast({
+      title,
+      description,
+      status: "error",
+      isClosable: true,
+    });
   };
+
+  const [connectingDataSourceId, setConnectingDataSourceId] = useState<
+    string | null
+  >(null);
+  const [newlyConnectedDataSourceIds, setNewlyConnectedDataSourceIds] =
+    useState<string[]>([]);
+  const onConnectClick = async (source: DataSource) => {
+    if (!inventoryProgress) {
+      console.error(
+        "Tried to assign data source while inventory progress was not yet loaded!",
+      );
+      return;
+    }
+    console.log("Connect source", source);
+    setConnectingDataSourceId(source.datasourceId);
+    try {
+      const response = await connectDataSource({
+        inventoryId: inventoryProgress.inventoryId,
+        dataSourceIds: [source.datasourceId],
+      }).unwrap();
+
+      if (response.failed.length > 0) {
+        showError(
+          t("data-source-connect-failed"),
+          t("data-source-connect-load-error"),
+        );
+        return;
+      } else if (response.invalid.length > 0) {
+        showError(
+          t("data-source-connect-failed"),
+          t("data-source-connect-invalid-error"),
+        );
+        return;
+      }
+
+      if (response.successful.length > 0) {
+        setNewlyConnectedDataSourceIds(
+          newlyConnectedDataSourceIds.concat(response.successful),
+        );
+        setSteps(
+          steps.map((step, i) => {
+            if (i !== activeStep) {
+              return step;
+            }
+            if (step.totalSubSectors === 0) {
+              console.error(
+                "Step has no totalSubSectors value, can't increase progress!",
+              );
+              return step;
+            }
+            const newProgress =
+              step.connectedProgress + 1.0 / step.totalSubSectors;
+            step.connectedProgress = Math.min(newProgress, 1.0);
+            return step;
+          }),
+        );
+        onSourceDrawerClose();
+      }
+    } catch (error: any) {
+      console.error("Failed to connect data source", source, error);
+      toast({
+        title: t("data-source-connect-failed"),
+        description: error.data?.error?.message,
+        status: "error",
+        isClosable: true,
+      });
+    } finally {
+      setConnectingDataSourceId(null);
+    }
+  };
+
+  function isSourceConnected(source: DataSource): boolean {
+    return (
+      source.subSectorValues.length > 0 ||
+      source.subCategoryValues.length > 0 ||
+      newlyConnectedDataSourceIds.indexOf(source.datasourceId) > -1
+    );
+  }
 
   const [selectedSubsector, setSelectedSubsector] = useState<SubSector>();
   const {
@@ -174,7 +342,6 @@ export default function AddDataSteps({
     onClose: onSubsectorDrawerClose,
     onOpen: onSubsectorDrawerOpen,
   } = useDisclosure();
-  const subSectors: SubSector[] = subSectorData[activeStep];
   const onSubsectorClick = (subsector: SubSector) => {
     console.log(subsector);
     setSelectedSubsector(subsector);
@@ -229,7 +396,12 @@ export default function AddDataSteps({
       {/*** Sector summary section ***/}
       <Card mb={12}>
         <Flex direction="row">
-          <Icon as={currentStep.icon} boxSize={8} color="brand.secondary" mr={4} />
+          <Icon
+            as={currentStep.icon}
+            boxSize={8}
+            color="brand.secondary"
+            mr={4}
+          />
           <div className="space-y-4 w-full">
             <Heading size="lg" mb={2}>
               {currentStep.title}
@@ -285,87 +457,120 @@ export default function AddDataSteps({
           {t("check-data-details")}
         </Text>
         <SimpleGrid minChildWidth="250px" spacing={4}>
-          {dataSources
-            .slice(0, isDataSectionExpanded ? dataSources.length : 6)
-            .map((source) => (
-              <Card
-                key={source.id}
-                onClick={() => onSourceClick(source)}
-                variant="outline"
-                borderColor={
-                  (source.isConnected && "interactive.tertiary") || undefined
-                }
-                borderWidth={2}
-                className="shadow-none hover:drop-shadow-xl transition-shadow"
-              >
-                <Icon as={source.icon} boxSize={9} mb={6} />
-                <Heading size="sm" noOfLines={2}>
-                  {source.title}
-                </Heading>
-                <Flex direction="row" my={4}>
-                  <Tag mr={1}>
-                    <TagLeftIcon
-                      as={MdPlaylistAddCheck}
-                      boxSize={4}
-                      color="content.tertiary"
-                    />
-                    <TagLabel fontSize={12}>
-                      {t("data-quality")}: {t("quality-" + source.dataQuality)}
-                    </TagLabel>
-                  </Tag>
-                  <Tag>
-                    <TagLeftIcon
-                      as={FiTarget}
-                      boxSize={4}
-                      color="content.tertiary"
-                    />
-                    <TagLabel fontSize={12}>
-                      {t("scope")}: {source.scopes.join(", ")}
-                    </TagLabel>
-                  </Tag>
-                </Flex>
-                <Text color="content.tertiary" noOfLines={5}>
-                  {source.description}
-                </Text>
-                <Link className="underline" mt={4} mb={6}>
-                  {t("see-more-details")}
-                </Link>
-                {source.isConnected ? (
-                  <Button
-                    variant="solidPrimary"
-                    px={6}
-                    py={4}
-                    leftIcon={<Icon as={MdCheckCircle} />}
-                  >
-                    {t("data-connected")}
-                  </Button>
-                ) : (
-                  <Button
-                    variant="outline"
-                    bgColor="background.neutral"
-                    onClick={() => onConnectClick(source)}
-                  >
-                    {t("connect-data")}
-                  </Button>
-                )}
-              </Card>
-            ))}
-        </SimpleGrid>
-        <Button
-          variant="ghost"
-          color="content.tertiary"
-          onClick={() => setDataSectionExpanded(!isDataSectionExpanded)}
-          mt={8}
-          fontWeight="normal"
-          rightIcon={
-            <Icon
-              boxSize={6}
-              as={isDataSectionExpanded ? MdArrowDropUp : MdArrowDropDown}
+          {areDataSourcesLoading || !dataSources ? (
+            <Center>
+              <Spinner size="lg" />
+            </Center>
+          ) : dataSourcesError ? (
+            <Center>
+              <WarningIcon boxSize={8} color="semantic.danger" />
+            </Center>
+          ) : dataSources && dataSources.length === 0 ? (
+            <NoDataSourcesMessage
+              t={t}
+              sector={currentStep.referenceNumber}
+              locode={locode || undefined}
+              year={year || undefined}
             />
-          }
-        >
-          {t(isDataSectionExpanded ? "less-datasets" : "more-datasets")}
-        </Button>
+          ) : (
+            dataSources
+              .slice(0, isDataSectionExpanded ? dataSources.length : 6)
+              .map((source) => (
+                <Card
+                  key={source.datasourceId}
+                  variant="outline"
+                  borderColor={
+                    (isSourceConnected(source) && "interactive.tertiary") ||
+                    undefined
+                  }
+                  borderWidth={2}
+                  className="shadow-none hover:drop-shadow-xl transition-shadow"
+                >
+                  {/* TODO add icon to DataSource */}
+                  <Icon as={MdHomeWork} boxSize={9} mb={6} />
+                  <Heading size="sm" noOfLines={2} minHeight={10}>
+                    {source.name}
+                  </Heading>
+                  <Flex direction="row" my={4}>
+                    <Tag mr={1}>
+                      <TagLeftIcon
+                        as={MdPlaylistAddCheck}
+                        boxSize={4}
+                        color="content.tertiary"
+                      />
+                      <TagLabel fontSize={12}>
+                        {t("data-quality")}:{" "}
+                        {t("quality-" + source.dataQuality)}
+                      </TagLabel>
+                    </Tag>
+                    <Tag>
+                      <TagLeftIcon
+                        as={FiTarget}
+                        boxSize={4}
+                        color="content.tertiary"
+                      />
+                      <TagLabel fontSize={12}>
+                        {t("scope")}:{" "}
+                        {source.scopes
+                          .map((s: ScopeAttributes) => s.scopeName)
+                          .join(", ")}
+                      </TagLabel>
+                    </Tag>
+                  </Flex>
+                  <Text color="content.tertiary" noOfLines={5} minHeight={120}>
+                    {source.description}
+                  </Text>
+                  <Link
+                    className="underline"
+                    mt={4}
+                    mb={6}
+                    onClick={() => onSourceClick(source)}
+                  >
+                    {t("see-more-details")}
+                  </Link>
+                  {isSourceConnected(source) ? (
+                    <Button
+                      variant="solidPrimary"
+                      px={6}
+                      py={4}
+                      leftIcon={<Icon as={MdCheckCircle} />}
+                    >
+                      {t("data-connected")}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      bgColor="background.neutral"
+                      onClick={() => onConnectClick(source)}
+                      isLoading={
+                        isConnectDataSourceLoading &&
+                        source.datasourceId === connectingDataSourceId
+                      }
+                    >
+                      {t("connect-data")}
+                    </Button>
+                  )}
+                </Card>
+              ))
+          )}
+        </SimpleGrid>
+        {dataSources && dataSources.length > 6 && (
+          <Button
+            variant="ghost"
+            color="content.tertiary"
+            onClick={() => setDataSectionExpanded(!isDataSectionExpanded)}
+            mt={8}
+            fontWeight="normal"
+            rightIcon={
+              <Icon
+                boxSize={6}
+                as={isDataSectionExpanded ? MdArrowDropUp : MdArrowDropDown}
+              />
+            }
+          >
+            {t(isDataSectionExpanded ? "less-datasets" : "more-datasets")}
+          </Button>
+        )}
       </Card>
       {/*** Manual data entry section for subsectors ***/}
       <Card mb={48}>
@@ -379,46 +584,60 @@ export default function AddDataSteps({
           {t("select-subsector")}
         </Heading>
         <SimpleGrid minChildWidth="250px" spacing={4}>
-          {subSectors.map((subSector) => (
-            <Card
-              maxHeight="120px"
-              height="120px"
-              w="full"
-              className="hover:drop-shadow-xl transition-shadow"
-              onClick={() => onSubsectorClick(subSector)}
-              key={subSector.id}
-            >
-              <Flex direction="row" className="space-x-4 items-center h-full">
-                <Icon
-                  as={subSector.isAdded ? MdOutlineCheckCircle : DataAlertIcon}
-                  boxSize={8}
-                  color={
-                    subSector.isAdded
-                      ? "interactive.tertiary"
-                      : "sentiment.warningDefault"
-                  }
-                />
-                <Stack w="full">
-                  <Heading size="xs" noOfLines={3} maxWidth="200px">
-                    {t(subSector.title)}
-                  </Heading>
-                  <Text color="content.tertiary">
-                    {t("scope")}: {subSector.scopes.join(", ")}
-                  </Text>
-                </Stack>
-                <IconButton
-                  aria-label={t("edit-subsector")}
-                  variant="solidIcon"
-                  icon={
-                    <Icon
-                      as={subSector.isAdded ? MdOutlineEdit : MdAdd}
-                      boxSize={6}
-                    />
-                  }
-                />
-              </Flex>
-            </Card>
-          ))}
+          {isInventoryLoading || !currentStep.subSectors ? (
+            <Center>
+              <Spinner size="lg" />
+            </Center>
+          ) : inventoryProgressError ? (
+            <Center>
+              <WarningIcon boxSize={8} color="semantic.danger" />
+            </Center>
+          ) : (
+            currentStep.subSectors.map((subSector: SubSector) => (
+              <Card
+                maxHeight="120px"
+                height="120px"
+                w="full"
+                className="hover:drop-shadow-xl transition-shadow"
+                onClick={() => onSubsectorClick(subSector)}
+                key={subSector.subsectorId}
+              >
+                <Flex direction="row" className="space-x-4 items-center h-full">
+                  <Icon
+                    as={
+                      subSector.completed ? MdOutlineCheckCircle : DataAlertIcon
+                    }
+                    boxSize={8}
+                    color={
+                      subSector.completed
+                        ? "interactive.tertiary"
+                        : "sentiment.warningDefault"
+                    }
+                  />
+                  <Stack w="full">
+                    <Heading size="xs" noOfLines={3} maxWidth="200px">
+                      {t(subSector.subsectorName)}
+                    </Heading>
+                    {subSector.scope && (
+                      <Text color="content.tertiary">
+                        {t("scope")}: {subSector.scope.scopeName}
+                      </Text>
+                    )}
+                  </Stack>
+                  <IconButton
+                    aria-label={t("edit-subsector")}
+                    variant="solidIcon"
+                    icon={
+                      <Icon
+                        as={subSector.completed ? MdOutlineEdit : MdAdd}
+                        boxSize={6}
+                      />
+                    }
+                  />
+                </Flex>
+              </Card>
+            ))
+          )}
         </SimpleGrid>
       </Card>
       {/*** Bottom bar ***/}
@@ -458,10 +677,13 @@ export default function AddDataSteps({
         isOpen={isSourceDrawerOpen}
         onClose={onSourceDrawerClose}
         onConnectClick={() => onConnectClick(selectedSource!)}
+        isConnectLoading={isConnectDataSourceLoading}
         t={t}
       />
       <SubsectorDrawer
         subsector={selectedSubsector}
+        sectorName={currentStep.title}
+        sectorNumber={currentStep.referenceNumber}
         isOpen={isSubsectorDrawerOpen}
         onClose={onSubsectorDrawerClose}
         onSave={onSubsectorSave}

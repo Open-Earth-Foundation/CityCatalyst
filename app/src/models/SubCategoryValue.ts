@@ -5,6 +5,7 @@ import type { Inventory, InventoryId } from "./Inventory";
 import type { SectorValue, SectorValueId } from "./SectorValue";
 import type { SubCategory, SubCategoryId } from "./SubCategory";
 import type { DataSource, DataSourceId } from "./DataSource";
+import { SubSectorValue, SubSectorValueId } from "./SubSectorValue";
 
 export interface SubCategoryValueAttributes {
   subcategoryValueId: string;
@@ -14,6 +15,7 @@ export interface SubCategoryValueAttributes {
   totalEmissions?: number;
   emissionsFactorId?: string;
   subcategoryId?: string;
+  subsectorValueId?: string;
   sectorValueId?: string;
   inventoryId?: string;
   datasourceId?: string;
@@ -30,6 +32,7 @@ export type SubCategoryValueOptionalAttributes =
   | "totalEmissions"
   | "emissionsFactorId"
   | "subcategoryId"
+  | "subsectorValueId"
   | "sectorValueId"
   | "inventoryId"
   | "datasourceId" 
@@ -51,6 +54,7 @@ export class SubCategoryValue
   totalEmissions?: number;
   emissionsFactorId?: string;
   subcategoryId?: string;
+  subsectorValueId?: string;
   sectorValueId?: string;
   inventoryId?: string;
   datasourceId?: string;
@@ -91,6 +95,13 @@ export class SubCategoryValue
   getDataSource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
   setDataSource!: Sequelize.BelongsToSetAssociationMixin<DataSource, DataSourceId>;
   createDataSource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
+  // SubCategoryValue belongsTo SubSectorValue via subsectorValueId
+  subsectorValue!: SubSectorValue;
+  getSubsectorValue!: Sequelize.BelongsToGetAssociationMixin<SubSectorValue>;
+  setSubsectorValue!: Sequelize.BelongsToSetAssociationMixin<
+    SubSectorValue,
+    SubSectorValueId
+  >;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof SubCategoryValue {
     return SubCategoryValue.init(
@@ -138,6 +149,15 @@ export class SubCategoryValue
             key: "subcategory_id",
           },
           field: "subcategory_id",
+        },
+        subsectorValueId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: "SubSectorValue",
+            key: "subsector_value_id",
+          },
+          field: "subsector_value_id",
         },
         sectorValueId: {
           type: DataTypes.UUID,

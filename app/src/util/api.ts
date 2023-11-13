@@ -57,7 +57,7 @@ function errorHandler(err: unknown, req: NextRequest) {
     );
   } else {
     return NextResponse.json(
-      { error: { nessage: "Internal server error", error: err } },
+      { error: { message: "Internal server error", error: err } },
       { status: 500 },
     );
   }

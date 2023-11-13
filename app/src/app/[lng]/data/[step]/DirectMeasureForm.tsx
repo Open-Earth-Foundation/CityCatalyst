@@ -60,7 +60,7 @@ export function DirectMeasureForm({
               />
             </NumberInput>
             <InputRightAddon bgColor="base.light" color="content.tertiary">
-              tCO2e
+              tCO2
             </InputRightAddon>
           </InputGroup>
           <FormErrorMessage>
@@ -82,7 +82,7 @@ export function DirectMeasureForm({
               />
             </NumberInput>
             <InputRightAddon bgColor="base.light" color="content.tertiary">
-              tCH4e
+              tCH4
             </InputRightAddon>
           </InputGroup>
           <FormErrorMessage>
@@ -104,7 +104,7 @@ export function DirectMeasureForm({
               />
             </NumberInput>
             <InputRightAddon bgColor="base.light" color="content.tertiary">
-              tN2Oe
+              tN2O
             </InputRightAddon>
           </InputGroup>
           <FormErrorMessage>

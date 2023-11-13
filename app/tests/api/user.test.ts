@@ -29,8 +29,7 @@ describe("User API", () => {
   before(async () => {
     setupTests();
     await db.initialize();
-    await db.models.User.destroy({ where: { userId: userData.userId } });
-    await db.models.User.create(userData);
+    await db.models.User.upsert(userData);
   });
 
   after(async () => {

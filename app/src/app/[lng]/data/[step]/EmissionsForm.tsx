@@ -35,12 +35,16 @@ export function EmissionsForm({
   errors,
   control,
   prefix = "",
+  watch,
+  sectorNumber,
 }: {
   t: TFunction;
   register: Function;
   errors: Record<string, any>;
   control: Control<any, any>;
   prefix?: string;
+  watch: Function;
+  sectorNumber: string;
 }) {
   const hasFuelError = fields.some(
     (field) => !!resolve(prefix + "fuel." + field, errors)
@@ -115,12 +119,16 @@ export function EmissionsForm({
               register={register}
               errors={errors}
               prefix={prefix + "fuel."}
+              watch={watch}
+              sectorNumber={sectorNumber}
             />
             <ActivityDataTab
               t={t}
               register={register}
               errors={errors}
               prefix={prefix + "grid."}
+              watch={watch}
+              sectorNumber={sectorNumber}
             />
           </TabPanels>
         </Tabs>

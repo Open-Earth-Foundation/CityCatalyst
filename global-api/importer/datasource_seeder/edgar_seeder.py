@@ -40,7 +40,7 @@ if __name__ == "__main__":
     # I.3.1
     datasource_data = dict(
         publisher_id=PUBLISHER,
-        name="EDGARv7.0 Combustion for manufacturing",
+        name="EDGARv7.0 Manufacturing Combustion Emissions",
         description="",
         source_type="",
         access_type="globalapi",
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     # II.1.1
     datasource_data = dict(
         publisher_id=PUBLISHER,
-        name="EDGARv7.0 Road transportation (no resuspension)",
+        name="EDGARv7.0 Road Transportation Emissions (No Resuspension)",
         description="",
         source_type="",
         access_type="globalapi",

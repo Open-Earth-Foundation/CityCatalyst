@@ -4,7 +4,7 @@ black==23.10.1
 fastapi==0.104.1
 flake8==6.1.0
 fsspec==2023.*
-geopandas==0.14.0
+geopandas==0.14.1
 mypy==1.6.1
 osmnx==1.7.1
 pandas==2.1.2

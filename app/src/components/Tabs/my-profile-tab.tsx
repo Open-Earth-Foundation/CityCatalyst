@@ -558,12 +558,15 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                     </Box>
                   )}
                   <Box>
-                    <TableContainer>
+                    <TableContainer
+                      borderWidth="1px"
+                      borderColor="border.overlay"
+                      borderRadius="12px"
+                    >
                       <Table
                         variant="simple"
-                        borderWidth="1px"
                         borderStyle="solid"
-                        borderColor="border.neutral"
+                        borderWidth="0px"
                       >
                         <Thead>
                           <Tr>

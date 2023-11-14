@@ -99,9 +99,9 @@
   "ch4-emissions-value": "Emissions value - CH4",
   "n2o-emissions-value": "Emissions value - N2O",
   "data-quality-placeholder": "Select data quality",
-  "detailed-emissions-data": "Detailed emissions data",
-  "modeled-emissions-data": "Modeled emissions data using robust assumptions",
-  "highly-modeled-uncertain-emissions-data": "Highly-modeled or uncertain emissions data",
+  "detailed-emissions-data": "High - Detailed emissions data",
+  "modeled-emissions-data": "Medium - Modeled emissions data using robust assumptions",
+  "highly-modeled-uncertain-emissions-data": "Low - Highly-modeled or uncertain emissions data",
   "select-subcategories": "Select the subcategories to be added",
   "completed": "Completed",
   "incomplete": "Incomplete"

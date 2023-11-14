@@ -18,6 +18,8 @@ from utils import (
 )
 import logging
 
+logging.basicConfig(level=logging.INFO)
+
 # EDGAR grid resolution
 lon_res = 0.1  # degrees
 lat_res = 0.1  # degrees

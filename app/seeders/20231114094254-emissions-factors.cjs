@@ -3,9 +3,9 @@
 const fs = require("node:fs");
 const { parse } = require("csv-parse");
 
-const folder = "EFDB_2006_IPCC_guidelines";
+const folders = ["EFDB_2006_IPCC_guidelines", "EFDB_US"];
 
-async function parseFile(filename) {
+async function parseFile(filename, folder) {
   const records = [];
   const parser = fs
     .createReadStream(
@@ -23,31 +23,59 @@ async function parseFile(filename) {
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface) {
-    const dataSources = await parseFile("DataSource");
-    const dataSourceEmissionsFactors = await parseFile(
-      "DataSourceEmissionsFactor",
-    );
-    const emissionsFactors = await parseFile("EmissionsFactor");
-    const publishers = await parseFile("Publisher");
-
     await queryInterface.sequelize.transaction(async (transaction) => {
-      await queryInterface.bulkInsert("Publisher", publishers, { transaction });
-      await queryInterface.bulkInsert("DataSource", dataSources, {
-        transaction,
-      });
-      await queryInterface.bulkInsert("EmissionsFactor", emissionsFactors, {
-        transaction,
-      });
-      await queryInterface.bulkInsert(
-        "DataSourceEmissionsFactor",
-        dataSourceEmissionsFactors,
-        { transaction },
-      );
+      for (const folder of folders) {
+        const dataSources = await parseFile("DataSource", folder);
+        const dataSourceEmissionsFactors = await parseFile(
+          "DataSourceEmissionsFactor",
+          folder,
+        );
+        const emissionsFactors = await parseFile("EmissionsFactor", folder);
+        const publishers = await parseFile("Publisher", folder);
+
+        await queryInterface.bulkInsert("Publisher", publishers, {
+          transaction,
+        });
+        await queryInterface.bulkInsert("DataSource", dataSources, {
+          transaction,
+        });
+        await queryInterface.bulkInsert("EmissionsFactor", emissionsFactors, {
+          transaction,
+        });
+        await queryInterface.bulkInsert(
+          "DataSourceEmissionsFactor",
+          dataSourceEmissionsFactors,
+          { transaction },
+        );
+      }
     });
   },
 
   async down(queryInterface) {
-    await queryInterface.bulkDelete("DataSourceEmissionFactor", null);
-    await queryInterface.bulkDelete("EmissionFactor", null);
+    await queryInterface.sequelize.transaction(async (transaction) => {
+      await queryInterface.bulkDelete("DataSourceEmissionsFactor", null, {
+        transaction,
+      });
+      await queryInterface.bulkDelete("EmissionsFactor", null, { transaction });
+
+      for (const folder of folders) {
+        const dataSources = await parseFile("DataSource", folder);
+        const publishers = await parseFile("Publisher", folder);
+
+        const dataSourceIds = dataSources.map((s) => s.datasource_id);
+        const publisherIds = publishers.map((p) => p.publisher_id);
+
+        await queryInterface.bulkDelete(
+          "DataSource",
+          { id: { [Sequelize.Op.in]: dataSourceIds } },
+          { transaction },
+        );
+        await queryInterface.bulkDelete(
+          "Publisher",
+          { id: { [Sequelize.Op.in]: publisherIds } },
+          { transaction },
+        );
+      }
+    });
   },
 };

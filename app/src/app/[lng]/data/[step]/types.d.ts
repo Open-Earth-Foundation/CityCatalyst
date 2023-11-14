@@ -61,8 +61,6 @@ type DirectMeasureData = {
 
 type SubcategoryData = {
   methodology: "activity-data" | "direct-measure" | "";
-  energyType: "fuel-combustion" | "grid-supplied-energy";
-  fuel: ActivityData;
-  grid: ActivityData;
+  activity: ActivityData;
   direct: DirectMeasureData;
 };

@@ -12,7 +12,6 @@ import {
   NumberInput,
   NumberInputField,
   Select,
-  TabPanel,
   Text,
   Textarea,
   Tooltip,
@@ -22,10 +21,22 @@ import { Trans } from "react-i18next/TransWithoutContext";
 import { resolve } from "@/util/helpers";
 
 const activityDataUnits: Record<string, string[]> = {
-  I: ["l", "m3", "ft3", "bbl", "gal (US)", "gal (UK)", "MWh", "GJ", "BTUs", "MW", "Other"],
+  I: [
+    "l",
+    "m3",
+    "ft3",
+    "bbl",
+    "gal (US)",
+    "gal (UK)",
+    "MWh",
+    "GJ",
+    "BTUs",
+    "MW",
+    "Other",
+  ],
   II: ["l", "m3", "ft3", "bbl", "gal (US)", "gal (UK)", "km", "mi", "Other"],
   III: ["g", "kg", "t", "kt", "lt", "st", "lb", "Other"],
-}
+};
 const emissionFactorTypes = [
   "Local",
   "Regional",
@@ -46,16 +57,18 @@ export function ActivityDataTab({
   register: Function;
   errors: Record<string, any>;
   prefix: string;
-  watch: Function,
+  watch: Function;
   sectorNumber: string; // I, II, III
 }) {
   const selectedUnit = watch(prefix + "activityDataUnit");
   const selectedEmissionFactorType = watch(prefix + "emissionFactorType");
 
   return (
-    <TabPanel px={0.5}>
+    <>
       <HStack spacing={4} mb={12} className="items-start">
-        <FormControl isInvalid={!!resolve(prefix + "activityDataAmount", errors)}>
+        <FormControl
+          isInvalid={!!resolve(prefix + "activityDataAmount", errors)}
+        >
           <FormLabel>
             {t("activity-data-amount")}{" "}
             <Tooltip
@@ -101,7 +114,10 @@ export function ActivityDataTab({
         </FormControl>
         <FormControl>
           <FormLabel>{t("emission-factor-type")}</FormLabel>
-          <Select {...register(prefix + "emissionFactorType")} bgColor="base.light">
+          <Select
+            {...register(prefix + "emissionFactorType")}
+            bgColor="base.light"
+          >
             {/* TODO translate values and use internal value for saving */}
             {emissionFactorTypes.map((type) => (
               <option key={type} value={type}>
@@ -128,7 +144,11 @@ export function ActivityDataTab({
           </FormLabel>
           <InputGroup>
             {/* TODO translate values and use internal value for checking */}
-            <NumberInput defaultValue={0} min={0} isDisabled={selectedEmissionFactorType !== "Add custom"}>
+            <NumberInput
+              defaultValue={0}
+              min={0}
+              isDisabled={selectedEmissionFactorType !== "Add custom"}
+            >
               <NumberInputField
                 borderRightRadius={0}
                 {...register(prefix + "co2EmissionFactor")}
@@ -149,7 +169,11 @@ export function ActivityDataTab({
             {t("n2o-emission-factor")}
           </FormLabel>
           <InputGroup>
-            <NumberInput defaultValue={0} min={0} isDisabled={selectedEmissionFactorType !== "Add custom"}>
+            <NumberInput
+              defaultValue={0}
+              min={0}
+              isDisabled={selectedEmissionFactorType !== "Add custom"}
+            >
               <NumberInputField
                 borderRightRadius={0}
                 {...register(prefix + "n2oEmissionFactor")}
@@ -172,7 +196,11 @@ export function ActivityDataTab({
             {t("ch4-emission-factor")}
           </FormLabel>
           <InputGroup>
-            <NumberInput defaultValue={0} min={0} isDisabled={selectedEmissionFactorType !== "Add custom"}>
+            <NumberInput
+              defaultValue={0}
+              min={0}
+              isDisabled={selectedEmissionFactorType !== "Add custom"}
+            >
               <NumberInputField
                 borderRightRadius={0}
                 {...register(prefix + "ch4EmissionFactor")}
@@ -195,7 +223,10 @@ export function ActivityDataTab({
         <InfoOutlineIcon mt={1} color="content.link" />
         <Text color="content.tertiary">{t("emissions-factor-details")}</Text>
       </HStack>
-      <FormControl isInvalid={!!resolve(prefix + "sourceReference", errors)} mb={12}>
+      <FormControl
+        isInvalid={!!resolve(prefix + "sourceReference", errors)}
+        mb={12}
+      >
         <FormLabel>{t("source-reference")}</FormLabel>
         <Textarea
           placeholder={t("source-reference-placeholder")}
@@ -211,14 +242,19 @@ export function ActivityDataTab({
       <HStack className="items-start" mb={13}>
         <InfoOutlineIcon mt={1} color="content.link" />
         <Text color="content.tertiary">
-          <Trans
-            t={t}
-            i18nKey="calculations-details"
-          >
-            All calculations use the <Link href="https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_Chapter07.pdf#page=95" target="_blank" rel="noreferrer">IPCC AR6 100-year GWPs</Link>.
+          <Trans t={t} i18nKey="calculations-details">
+            All calculations use the{" "}
+            <Link
+              href="https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_Chapter07.pdf#page=95"
+              target="_blank"
+              rel="noreferrer"
+            >
+              IPCC AR6 100-year GWPs
+            </Link>
+            .
           </Trans>
         </Text>
       </HStack>
-    </TabPanel>
+    </>
   );
 }

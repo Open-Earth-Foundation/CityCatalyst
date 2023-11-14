@@ -42,8 +42,7 @@ type Inputs = {
   valueType: "one-value" | "subcategory-values" | "";
   methodology: "activity-data" | "direct-measure" | "";
   energyType: "fuel-combustion" | "grid-supplied-energy";
-  fuel: ActivityData;
-  grid: ActivityData;
+  activity: ActivityData;
   direct: DirectMeasureData;
   subcategories: SubcategoryOption[];
   subcategoryData: Record<string, SubcategoryData>;
@@ -72,8 +71,7 @@ const defaultValues: Inputs = {
   methodology: "",
   energyType: "fuel-combustion",
   subcategories: [],
-  fuel: defaultActivityData,
-  grid: defaultActivityData,
+  activity: defaultActivityData,
   direct: defaultDirectMeasureData,
   subcategoryData: {},
 };
@@ -125,7 +123,6 @@ export function SubsectorDrawer({
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
     watch,
     reset,
@@ -141,8 +138,7 @@ export function SubsectorDrawer({
       let subSectorData;
 
       if (data.methodology === "activity-data") {
-        subSectorData =
-          data.energyType === "fuel-combustion" ? data.fuel : data.grid;
+        subSectorData = data.activity;
       } else if (data.methodology === "direct-measure") {
         subSectorData = data.direct;
       } else {
@@ -160,8 +156,7 @@ export function SubsectorDrawer({
         let subCategoryData;
 
         if (value.methodology === "activity-data") {
-          subCategoryData =
-            value.energyType === "fuel-combustion" ? value.fuel : value.grid;
+          subCategoryData = value.activity;
         } else if (data.methodology === "direct-measure") {
           subCategoryData = value.direct;
         } else {
@@ -291,7 +286,6 @@ export function SubsectorDrawer({
                       <EmissionsForm
                         t={t}
                         register={register}
-                        setValue={setValue}
                         errors={errors}
                         control={control}
                         watch={watch}
@@ -352,7 +346,6 @@ export function SubsectorDrawer({
                                 <EmissionsForm
                                   t={t}
                                   register={register}
-                                  setValue={setValue}
                                   errors={errors}
                                   control={control}
                                   prefix={`subcategoryData.${subcategory.value}.`}

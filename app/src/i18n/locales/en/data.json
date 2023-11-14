@@ -93,7 +93,7 @@
   "source-reference": "Source reference",
   "source-reference-required": "Add a description of the reference source and justified emission factors, if applicable",
   "source-reference-placeholder": "Write in detail from which source the entered value comes from",
-  "calculations-details": "All calculations use the <1>IPCC AR6 100-year GWPs</1>.",
+  "calculations-details": "All calculations use the <2>IPCC AR6 100-year GWPs</2>.",
   "co2-emissions-value": "CO2 emissions value",
   "ch4-emissions-value": "CH4 emissions value",
   "n2o-emissions-value": "N2O emissions value",

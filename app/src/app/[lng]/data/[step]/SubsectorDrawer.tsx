@@ -1,5 +1,7 @@
 import { TagSelect } from "@/components/TagSelect";
 import { RadioButton } from "@/components/radio-button";
+import type { SubSectorValueAttributes } from "@/models/SubSectorValue";
+import { api } from "@/services/api";
 import { ArrowBackIcon, InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Accordion,
@@ -21,13 +23,12 @@ import {
   Tooltip,
   useRadioGroup,
 } from "@chakra-ui/react";
-import { TFunction } from "i18next";
-import { RefObject, useEffect } from "react";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import type { TFunction } from "i18next";
+import type { RefObject } from "react";
+import { useEffect } from "react";
 import { SubmitHandler, useController, useForm } from "react-hook-form";
 import { EmissionsForm } from "./EmissionsForm";
-import { api } from "@/services/api";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { SubSectorValueAttributes } from "@/models/SubSectorValue";
 import type {
   ActivityData,
   DirectMeasureData,
@@ -164,7 +165,9 @@ export function SubsectorDrawer({
         } else if (data.methodology === "direct-measure") {
           subCategoryData = value.direct;
         } else {
-          throw new Error(`Methodology for subcategory ${subCategoryId} not selected!`);
+          throw new Error(
+            `Methodology for subcategory ${subCategoryId} not selected!`,
+          );
         }
       }
     }

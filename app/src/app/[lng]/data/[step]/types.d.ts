@@ -18,6 +18,7 @@ type SubSector = {
   scope: { scopeName: string };
   completed: boolean;
   subsectorName: string;
+  subCategories: SubCategory[];
 };
 
 type DataSource = DataSourceAttributes & {

@@ -188,16 +188,16 @@ export function SubsectorDrawer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subsectorValue, subsector]);
 
-  const subcategoryData: SubCategory[] = [
-    { subcategoryId: "1337a", subcategoryName: "Manufacturing" },
-    { subcategoryId: "1338b", subcategoryName: "Industrial facilities" },
-    { subcategoryId: "1339c", subcategoryName: "Construction activities" },
-  ];
-  const subcategoryOptions = subcategoryData.map(
-    (subcategory: SubCategory) => ({
-      label: subcategory.subcategoryName,
-      value: subcategory.subcategoryId,
-    }),
+  const subcategoryData: SubCategory[] | undefined = subsector?.subCategories;
+  const subcategoryOptions = subcategoryData?.map(
+    (subcategory: SubCategory) => {
+      const name = subcategory.subcategoryName?.replace("Emissions from ", "") || "Unknown Subcategory";
+      const label = name.charAt(0).toUpperCase() + name.slice(1);
+      return {
+        label,
+        value: subcategory.subcategoryId,
+      };
+    },
   );
 
   const valueType = watch("valueType");

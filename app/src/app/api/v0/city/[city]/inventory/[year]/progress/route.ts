@@ -58,10 +58,8 @@ export const GET = apiHandler(
           model: db.models.SubSector,
           as: "subSectors",
           include: [
-            {
-              model: db.models.Scope,
-              as: "scope",
-            },
+            { model: db.models.SubCategory, as: "subCategories" },
+            { model: db.models.Scope, as: "scope" },
           ],
         },
       ],

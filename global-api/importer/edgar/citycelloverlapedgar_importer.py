@@ -11,13 +11,12 @@ from sqlalchemy.orm import sessionmaker
 from utils import (
     all_locodes_and_geometries_generator,
     area_of_polygon,
-    bounds_from_polygon,
     insert_record,
     load_wkt,
     uuid_generate_v3,
     get_edgar_cells_in_bounds,
 )
-import sys
+import logging
 
 # EDGAR grid resolution
 lon_res = 0.1  # degrees
@@ -42,10 +41,11 @@ if __name__ == "__main__":
     results_generator = all_locodes_and_geometries_generator(session)
 
     for row in results_generator:
+        logging.info(f"Locode: {row.locode}")
         locode = row.locode
         boundary_str = row.geometry
         boundary_polygon = load_wkt(boundary_str)
-        west, south, east, north = bounds_from_polygon(boundary_polygon)
+        west, south, east, north = row.bbox_west, row.bbox_south, row.bbox_east, row.bbox_north
 
         # add padding to ensure we get edge cells
         bbox_north = north + lat_res
@@ -53,12 +53,14 @@ if __name__ == "__main__":
         bbox_east = east + lon_res
         bbox_west = west - lon_res
 
+        logging.info(f"Bounding box: {bbox_north, bbox_south, bbox_east, bbox_west}")
         records = get_edgar_cells_in_bounds(
             session, bbox_north, bbox_south, bbox_east, bbox_west
         )
 
         for record in records:
             cell_id = str(record.id)
+            logging.info(f"Cell ID: {cell_id}")
             cell_wkt = record.geometry
 
             record_id = uuid_generate_v3(locode + cell_id)
@@ -68,10 +70,12 @@ if __name__ == "__main__":
             cell_area = area_of_polygon(cell)
             intersection_area = area_of_polygon(intersection_polygon)
 
+            logging.info(f"Intersection area: {intersection_area}")
+
             if intersection_area > 0:
                 fraction_in_city = intersection_area / cell_area
 
-                record = {
+                overlap = {
                     "id": record_id,
                     "locode": locode,
                     "fraction_in_city": fraction_in_city,
@@ -79,6 +83,6 @@ if __name__ == "__main__":
                     "created_date": str(datetime.now()),
                 }
 
-                insert_record(engine, table, "id", record)
+                insert_record(engine, table, "id", overlap)
 
     session.close()

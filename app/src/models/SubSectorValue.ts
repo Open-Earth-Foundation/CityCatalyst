@@ -12,6 +12,9 @@ export interface SubSectorValueAttributes {
   activityUnits?: string;
   activityValue?: number;
   emissionFactorValue?: number;
+  co2EmissionsValue?: number; // kg
+  ch4EmissionsValue?: number; // kg
+  n2oEmissionsValue?: number; // kg
   totalEmissions?: number;
   emissionsFactorId?: string;
   subsectorId?: string;
@@ -28,6 +31,9 @@ export type SubSectorValueOptionalAttributes =
   | "activityUnits"
   | "activityValue"
   | "emissionFactorValue"
+  | "co2EmissionsValue"
+  | "ch4EmissionsValue"
+  | "n2oEmissionsValue"
   | "totalEmissions"
   | "emissionsFactorId"
   | "subsectorId"
@@ -49,6 +55,9 @@ export class SubSectorValue
   activityUnits?: string;
   activityValue?: number;
   emissionFactorValue?: number;
+  co2EmissionsValue?: number; // kg
+  ch4EmissionsValue?: number; // kg
+  n2oEmissionsValue?: number; // kg
   totalEmissions?: number;
   emissionsFactorId?: string;
   subsectorId?: string;
@@ -146,6 +155,21 @@ export class SubSectorValue
           type: DataTypes.DECIMAL,
           allowNull: true,
           field: "emission_factor_value",
+        },
+        co2EmissionsValue: {
+          type: DataTypes.DECIMAL,
+          allowNull: true,
+          field: "co2_emissions_value",
+        },
+        ch4EmissionsValue: {
+          type: DataTypes.DECIMAL,
+          allowNull: true,
+          field: "ch4_emissions_value",
+        },
+        n2oEmissionsValue: {
+          type: DataTypes.DECIMAL,
+          allowNull: true,
+          field: "n2o_emissions_value",
         },
         totalEmissions: {
           type: DataTypes.DECIMAL,

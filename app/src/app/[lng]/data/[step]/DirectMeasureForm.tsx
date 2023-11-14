@@ -16,7 +16,6 @@ import {
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { resolve } from "@/util/helpers";
-import { useEffect } from "react";
 
 export function DirectMeasureForm({
   t,
@@ -31,7 +30,6 @@ export function DirectMeasureForm({
   className?: string;
   prefix?: string;
 }) {
-  useEffect(() => console.log(prefix, errors), [prefix, errors]);
   return (
     <Box className={className} pl={0.5}>
       <Heading size="sm" mb={4} className="font-normal">

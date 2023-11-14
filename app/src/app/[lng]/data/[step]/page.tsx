@@ -684,6 +684,7 @@ export default function AddDataSteps({
         subsector={selectedSubsector}
         sectorName={currentStep.title}
         sectorNumber={currentStep.referenceNumber}
+        inventoryId={inventoryProgress?.inventoryId}
         isOpen={isSubsectorDrawerOpen}
         onClose={onSubsectorDrawerClose}
         onSave={onSubsectorSave}

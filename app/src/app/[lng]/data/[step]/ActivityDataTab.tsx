@@ -224,6 +224,28 @@ export function ActivityDataTab({
         <Text color="content.tertiary">{t("emissions-factor-details")}</Text>
       </HStack>
       <FormControl
+        isInvalid={!!resolve(prefix + "dataQuality", errors)}
+        mb={12}
+      >
+        <FormLabel>{t("data-quality")}</FormLabel>
+        <Select
+          bgColor="base.light"
+          placeholder={t("data-quality-placeholder")}
+          {...register(prefix + "dataQuality", {
+            required: t("option-required"),
+          })}
+        >
+          <option value="high">{t("detailed-emissions-data")}</option>
+          <option value="medium">{t("modeled-emissions-data")}</option>
+          <option value="low">
+            {t("highly-modeled-uncertain-emissions-data")}
+          </option>
+        </Select>
+        <FormErrorMessage>
+          {resolve(prefix + "dataQuality", errors)?.message}
+        </FormErrorMessage>
+      </FormControl>
+      <FormControl
         isInvalid={!!resolve(prefix + "sourceReference", errors)}
         mb={12}
       >

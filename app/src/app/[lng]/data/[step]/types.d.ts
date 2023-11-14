@@ -49,6 +49,7 @@ type ActivityData = {
   co2EmissionFactor: number;
   n2oEmissionFactor: number;
   ch4EmissionFactor: number;
+  dataQuality: string;
   sourceReference: string;
 };
 

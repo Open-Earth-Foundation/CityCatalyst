@@ -38,12 +38,13 @@ import type {
 } from "./types";
 
 type Inputs = {
-  valueType: string;
-  methodology: string;
-  subcategories: SubcategoryOption[];
+  valueType: "one-value" | "subcategory-values" | "";
+  methodology: "activity-data" | "direct-measure" | "";
+  energyType: "fuel-combustion" | "grid-supplied-energy";
   fuel: ActivityData;
   grid: ActivityData;
   direct: DirectMeasureData;
+  subcategories: SubcategoryOption[];
   subcategoryData: Record<string, SubcategoryData>;
 };
 
@@ -68,6 +69,7 @@ const defaultDirectMeasureData: DirectMeasureData = {
 const defaultValues: Inputs = {
   valueType: "",
   methodology: "",
+  energyType: "fuel-combustion",
   subcategories: [],
   fuel: defaultActivityData,
   grid: defaultActivityData,
@@ -79,8 +81,8 @@ function nameToI18NKey(name: string): string {
   return name.replaceAll(" ", "-").toLowerCase();
 }
 
-// TODO create custom type that includes relations?
-function extractFormValues(subsectorValue: SubSectorValueAttributes) {
+// TODO create custom type that includes relations instead of using SubSectorValueAttributes?
+function extractFormValues(subsectorValue: SubSectorValueAttributes): Inputs {
   return defaultValues; // TODO update with data
 }
 
@@ -122,19 +124,50 @@ export function SubsectorDrawer({
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
     watch,
     reset,
     control,
   } = useForm<Inputs>();
+
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (!subsector) return;
-    console.log("Sector data", data);
-    await setSubsectorValue({
-      subSectorId: subsector.subsectorId,
-      inventoryId: inventoryId!,
-      data,
-    });
+    console.log("Subsector data", data);
+
+    // decide which data from the form to save
+    if (data.valueType === "one-value") {
+      let subSectorData;
+
+      if (data.methodology === "activity-data") {
+        subSectorData =
+          data.energyType === "fuel-combustion" ? data.fuel : data.grid;
+      } else if (data.methodology === "direct-measure") {
+        subSectorData = data.direct;
+      } else {
+        throw new Error("Methodology not selected!");
+      }
+
+      await setSubsectorValue({
+        subSectorId: subsector.subsectorId,
+        inventoryId: inventoryId!,
+        data: subSectorData,
+      });
+    } else if (data.valueType === "subcategory-values") {
+      for (const subCategoryId in data.subcategoryData) {
+        const value = data.subcategoryData[subCategoryId];
+        let subCategoryData;
+
+        if (value.methodology === "activity-data") {
+          subCategoryData =
+            value.energyType === "fuel-combustion" ? value.fuel : value.grid;
+        } else if (data.methodology === "direct-measure") {
+          subCategoryData = value.direct;
+        } else {
+          throw new Error(`Methodology for subcategory ${subCategoryId} not selected!`);
+        }
+      }
+    }
     onSave(subsector, data);
     onClose();
   };
@@ -255,6 +288,7 @@ export function SubsectorDrawer({
                       <EmissionsForm
                         t={t}
                         register={register}
+                        setValue={setValue}
                         errors={errors}
                         control={control}
                         watch={watch}
@@ -315,6 +349,7 @@ export function SubsectorDrawer({
                                 <EmissionsForm
                                   t={t}
                                   register={register}
+                                  setValue={setValue}
                                   errors={errors}
                                   control={control}
                                   prefix={`subcategoryData.${subcategory.value}.`}

@@ -16,7 +16,7 @@ import { MdError } from "react-icons/md";
 import { ActivityDataTab } from "./ActivityDataTab";
 import { DirectMeasureForm } from "./DirectMeasureForm";
 import { TFunction } from "i18next";
-import { Control, useController } from "react-hook-form";
+import { Control, Controller, useController } from "react-hook-form";
 import { resolve } from "@/util/helpers";
 
 const fields = [
@@ -29,9 +29,42 @@ const fields = [
   "sourceReference",
 ];
 
+function ControlledTabs({
+  control,
+  name,
+  children,
+}: {
+  control: Control;
+  name: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      render={({ field: { value, onChange } }) => {
+        const setEnergyTypeTabIndex = (index: number) => {
+          const value =
+            index === 0 ? "fuel-combustion" : "grid-supplied-energy";
+          onChange(value);
+        };
+        return (
+          <Tabs
+            onChange={setEnergyTypeTabIndex}
+            index={value === "fuel-combustion" ? 0 : 1}
+          >
+            {children}
+          </Tabs>
+        );
+      }}
+    />
+  );
+}
+
 export function EmissionsForm({
   t,
   register,
+  setValue,
   errors,
   control,
   prefix = "",
@@ -40,6 +73,7 @@ export function EmissionsForm({
 }: {
   t: TFunction;
   register: Function;
+  setValue: Function;
   errors: Record<string, any>;
   control: Control<any, any>;
   prefix?: string;
@@ -47,10 +81,10 @@ export function EmissionsForm({
   sectorNumber: string;
 }) {
   const hasFuelError = fields.some(
-    (field) => !!resolve(prefix + "fuel." + field, errors)
+    (field) => !!resolve(prefix + "fuel." + field, errors),
   );
   const hasGridError = fields.some(
-    (field) => !!resolve(prefix + "grid." + field, errors)
+    (field) => !!resolve(prefix + "grid." + field, errors),
   );
 
   const { field } = useController({
@@ -88,7 +122,7 @@ export function EmissionsForm({
       </HStack>
       {/*** Activity data ***/}
       {methodology === "activity-data" && (
-        <Tabs>
+        <ControlledTabs control={control} name={prefix + "energyType"}>
           <TabList>
             <Tab>
               {t("fuel-combustion")}{" "}
@@ -131,7 +165,7 @@ export function EmissionsForm({
               sectorNumber={sectorNumber}
             />
           </TabPanels>
-        </Tabs>
+        </ControlledTabs>
       )}
       {/*** Direct measure ***/}
       {methodology === "direct-measure" && (

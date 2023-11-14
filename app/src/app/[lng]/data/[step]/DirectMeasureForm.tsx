@@ -33,7 +33,7 @@ export function DirectMeasureForm({
   return (
     <Box className={className} pl={0.5}>
       <Heading size="sm" mb={4} className="font-normal">
-        {t("emission-factors-values")}{" "}
+        {t("emissions-values")}{" "}
         <Tooltip
           hasArrow
           label={t("value-types-tooltip")}

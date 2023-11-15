@@ -5,13 +5,8 @@ import { NextRequest, NextResponse } from "next/server";
 import wellknown from "wellknown";
 
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
-  const city = await db.models.City.findOne({ where: { locode: params.city } });
-  if (!city) {
-    throw new createHttpError.NotFound("City not found");
-  }
-
   const boundary = await fetch(
-    `https://ccglobal.openearth.dev/api/v0/cityboundary/city/${city.locode}`,
+    `https://ccglobal.openearth.dev/api/v0/cityboundary/city/${params.city}`,
   );
 
   const data = await boundary.json();

@@ -495,7 +495,7 @@ export default function OnboardingSetup({
             />
           )}
         </div>
-        <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand flex flex-row py-8 px-8 drop-shadow-2xl hover:drop-shadow-4xl transition-all">
+        <div className="bg-white w-full fixed z-[9999] bottom-0 left-0 border-t-4 border-brand flex flex-row py-8 px-8 drop-shadow-2xl hover:drop-shadow-4xl transition-all">
           <Box className="w-full">
             <Text fontSize="sm">Step {activeStep + 1}</Text>
             <Text fontSize="2xl" as="b">

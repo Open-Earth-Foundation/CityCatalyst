@@ -456,7 +456,7 @@ export default function OnboardingSetup({
         defaultInventoryYear: data.year,
       }).unwrap();
       setConfirming(false);
-      router.push("/onboarding/done/" + data.locode);
+      router.push("/onboarding/done/" + data.locode + "/" + data.year);
     } catch (err: any) {
       console.error("Failed to create new inventory!", err);
       makeErrorToast("Failed to create inventory!", err.data?.error?.message);

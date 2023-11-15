@@ -190,7 +190,7 @@ function SetupStep({
                   {isLoading && <p className="px-4">Fetching Cities...</p>}
                   {isSuccess &&
                     cities &&
-                    cities.data.map((city: any) => {
+                    cities.map((city: any) => {
                       return (
                         <Box
                           onClick={() => handleSetCity(city)}
@@ -388,7 +388,9 @@ export default function OnboardingSetup({
     goToNext();
   };
 
-  const { data: cityData } = useGetOCCityDataQuery(data.locode);
+  const { data: cityData } = useGetOCCityDataQuery(data.locode, {
+    skip: data.locode.length ? false : true,
+  });
 
   const makeErrorToast = (title: string, description?: string) => {
     toast({

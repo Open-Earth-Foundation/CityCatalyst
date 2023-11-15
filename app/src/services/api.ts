@@ -93,6 +93,9 @@ export const openclimateAPI = createApi({
   endpoints: (builder) => ({
     getOCCity: builder.query<any, string>({
       query: (q) => `/api/v1/search/actor?q=${q}`,
+      transformResponse: (response: any) => {
+        return response.data.filter((item: any) => item.type === "city");
+      },
     }),
     getOCCityData: builder.query<any, string>({
       query: (locode) => `/api/v1/actor/${locode}`,

@@ -85,6 +85,7 @@ async function syncDataCatalogue() {
   );
   if (lastUpdate <= previousUpdate) {
     console.warn("Already on the newest data catalogue version, exiting.");
+    await db.sequelize?.close();
     return;
   }
 

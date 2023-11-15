@@ -1,6 +1,7 @@
 import pandas as pd
 import requests
 
+
 def nominatim_reverse(
     point=None,
     lat=None,
@@ -11,7 +12,7 @@ def nominatim_reverse(
     email=None,
     debug=None,
     *args,
-    **kwargs
+    **kwargs,
 ):
     """reverse geocode a lat lon location
     Parameters
@@ -50,16 +51,16 @@ def nominatim_reverse(
 
     if point is not None:
         point_dict = point_to_latlon(point)
-        lat = point_dict['lat']
-        lon = point_dict['lon']
+        lat = point_dict["lat"]
+        lon = point_dict["lon"]
 
     params = {
-        'lat': lat,
-        'lon': lon,
-        'format': _format,
-        'accept-language': language,
-        'zoom': zoom,
-        'email': email
+        "lat": lat,
+        "lon": lon,
+        "format": _format,
+        "accept-language": language,
+        "zoom": zoom,
+        "email": email,
     }
 
     response = requests.get(ENDPOINT, params=params)
@@ -83,8 +84,8 @@ def response_to_df(response):
     response = nominatim_reverse(point='POINT(-53.559279 -31.513208)')
     df = response_to_df(response)
     """
-    df_address = pd.DataFrame([response['address']])
-    response.pop('address')
+    df_address = pd.DataFrame([response["address"]])
+    response.pop("address")
     df_minus_address = pd.DataFrame([response])
     return pd.concat([df_minus_address, df_address], axis=1)
 
@@ -109,21 +110,23 @@ def name_to_locode(city=None, is_part_of=None, *args, **kwargs):
     dic = name_to_locode(**params)
     """
     ENDPOINT = f"https://openclimate.network/api/v1/search/actor"
-    params = {'q': city}
-    headers = {'Accept': 'application/vnd.api+json'}
+    params = {"q": city}
+    headers = {"Accept": "application/vnd.api+json"}
     response = requests.get(ENDPOINT, params=params, headers=headers, timeout=3)
-    data_list = dict(response.json())['data']
-    actor_id = float('NaN')
+    data_list = dict(response.json())["data"]
+    actor_id = float("NaN")
     if data_list:
         for data in data_list:
-            actor_id = data.get('actor_id')
+            actor_id = data.get("actor_id")
 
-            if (data.get('type') == 'city') and (data.get('is_part_of') == is_part_of):
-                return {'city': city, 'ISO3166-2': is_part_of, 'locode':actor_id}
+            if (data.get("type") == "city") and (data.get("is_part_of") == is_part_of):
+                return {"city": city, "ISO3166-2": is_part_of, "locode": actor_id}
 
-            if (data.get('type') == 'city') and (data.get('is_part_of') == is_part_of[-2:]):
-                return {'city': city, 'ISO3166-2': is_part_of, 'locode':actor_id}
+            if (data.get("type") == "city") and (
+                data.get("is_part_of") == is_part_of[-2:]
+            ):
+                return {"city": city, "ISO3166-2": is_part_of, "locode": actor_id}
 
-        return {'city': city, 'ISO3166-2': is_part_of, 'locode':'NaN'}
+        return {"city": city, "ISO3166-2": is_part_of, "locode": "NaN"}
 
-    return {'city': city, 'ISO3166-2': is_part_of, 'locode':actor_id}
+    return {"city": city, "ISO3166-2": is_part_of, "locode": actor_id}

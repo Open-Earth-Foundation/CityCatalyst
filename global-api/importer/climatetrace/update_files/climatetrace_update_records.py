@@ -6,6 +6,7 @@ from pathlib import Path
 from sqlalchemy import create_engine, MetaData, Table
 from sqlalchemy.orm import sessionmaker
 
+
 def upsert_record(engine, table, pkey, record):
     """Update or insert a record in the table based on the primary key (pkey)."""
     fields = [col.name for col in table.columns]
@@ -14,19 +15,26 @@ def upsert_record(engine, table, pkey, record):
     pkey_value = table_data.get(pkey)
 
     with engine.begin() as conn:
-        existing_record = conn.execute(table.select().where(table.columns[pkey] == pkey_value)).fetchone()
+        existing_record = conn.execute(
+            table.select().where(table.columns[pkey] == pkey_value)
+        ).fetchone()
 
         if existing_record:
-            conn.execute(table.update().where(table.columns[pkey] == pkey_value).values(**table_data))
+            conn.execute(
+                table.update()
+                .where(table.columns[pkey] == pkey_value)
+                .values(**table_data)
+            )
         else:
             conn.execute(table.insert().values(**table_data))
 
 
 def csv_to_dict_generator(file_path):
-    with open(file_path, 'r') as file:
+    with open(file_path, "r") as file:
         csv_reader = csv.DictReader(file)
         for row in csv_reader:
             yield row
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -61,9 +69,7 @@ if __name__ == "__main__":
     record_generator = csv_to_dict_generator(file)
 
     for record in record_generator:
-        table_data = {
-            key: record.get(key) for key in record.keys() if key in fields
-        }
+        table_data = {key: record.get(key) for key in record.keys() if key in fields}
 
         upsert_record(engine, asset, "id", table_data)
 

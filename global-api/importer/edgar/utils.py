@@ -456,7 +456,7 @@ def all_locodes_and_geometries_generator(session):
 
         try:
             # Execute the query using the cursor
-            cursor.execute("SELECT locode, geometry FROM osm ORDER BY locode;")
+            cursor.execute("SELECT locode, geometry, bbox_west, bbox_south, bbox_east, bbox_north FROM osm ORDER BY locode;")
 
             # Fetch rows in batches
             while True:

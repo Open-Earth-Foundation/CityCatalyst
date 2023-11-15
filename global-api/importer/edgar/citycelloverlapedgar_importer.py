@@ -54,11 +54,11 @@ if __name__ == "__main__":
 
     for row in results_generator:
         count = count + 1
-        logger.info(f"{count}: Locode: {row.locode}")
-        locode = row.locode
-        boundary_str = row.geometry
+        locode, boundary_str, west, south, east, north = row
+        logger.info(f"{count}: Locode: {locode}")
         boundary_polygon = load_wkt(boundary_str)
-        west, south, east, north = row.bbox_west, row.bbox_south, row.bbox_east, row.bbox_north
+        city_area = area_of_polygon(boundary_polygon)
+        logger.info(f"City area: {city_area}")
 
         # add padding to ensure we get edge cells
         bbox_north = north + lat_res
@@ -70,6 +70,8 @@ if __name__ == "__main__":
         records = get_edgar_cells_in_bounds(
             session, bbox_north, bbox_south, bbox_east, bbox_west
         )
+
+        total_intersection_area = 0
 
         for record in records:
             cell_id = str(record.id)
@@ -86,8 +88,12 @@ if __name__ == "__main__":
 
             logger.info(f"Intersection area: {intersection_area}")
 
+            total_intersection_area = total_intersection_area + intersection_area
+
             if intersection_area > 0:
                 fraction_in_city = intersection_area / cell_area
+
+                logger.info(f"fraction in city: {fraction_in_city}")
 
                 overlap = {
                     "id": record_id,
@@ -99,6 +105,9 @@ if __name__ == "__main__":
 
                 insert_record(engine, table, "id", overlap)
 
-    logger.info(f"Running query")
+        logger.info(f"Total intersection area: {total_intersection_area}")
+        logger.info(f"City area percent in intersections: {(total_intersection_area/city_area)*100.0}")
+
+    logger.info(f"Total count: {count}")
 
     session.close()

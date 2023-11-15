@@ -441,16 +441,33 @@ def insert_record(engine, table, pkey, record):
 
 def all_locodes_and_geometries(session):
     """get shapefile from locode"""
-    query = text("""SELECT locode, geometry FROM osm;""")
+    query = text("""SELECT locode, geometry FROM osm ORDER BY locode;""")
     return session.execute(query).fetchall()
 
-
 def all_locodes_and_geometries_generator(session):
-    """Generate locode and geometry pairs from the database."""
-    query = text("""SELECT locode, geometry FROM osm;""")
-    result = session.execute(query)
-    for row in result:
-        yield row
+    """Generate locode and geometry pairs from the database using server-side cursors."""
+    # Start a transaction
+    with session.begin():
+        # Get a raw connection
+        connection = session.connection()
+
+        # Create a server-side cursor
+        cursor = connection.connection.cursor(name='locode_geometry_cursor')
+
+        try:
+            # Execute the query using the cursor
+            cursor.execute("SELECT locode, geometry FROM osm ORDER BY locode;")
+
+            # Fetch rows in batches
+            while True:
+                records = cursor.fetchmany(size=100)  # Adjust the batch size as needed
+                if not records:
+                    break
+                for record in records:
+                    yield record
+        finally:
+            # Ensure the cursor is closed after use
+            cursor.close()
 
 
 def all_locodes(session):

@@ -33,23 +33,55 @@ module.exports = {
 
     await queryInterface.sequelize.transaction(async (transaction) => {
       for (const scope of scopes) {
-        await queryInterface.upsert("Scope", scope, { transaction });
+        await queryInterface.upsert(
+          "Scope",
+          scope,
+          scope,
+          { scopeId: scope.scopeId },
+          { transaction, model: queryInterface.sequelize.models.Scope },
+        );
       }
       for (const reportingLevel of reportingLevels) {
-        await queryInterface.upsert("ReportingLevel", reportingLevel, {
-          transaction,
-        });
+        await queryInterface.upsert(
+          "ReportingLevel",
+          reportingLevel,
+          reportingLevel,
+          { reportinglevelId: reportingLevel.reportinglevelId },
+          {
+            transaction,
+            model: queryInterface.sequelize.models.ReportingLevel,
+          },
+        );
       }
       for (const sector of sectors) {
-        await queryInterface.upsert("Sector", sector, { transaction });
+        await queryInterface.upsert(
+          "Sector",
+          sector,
+          sector,
+          { sectorId: sector.sectorId },
+          { transaction, model: queryInterface.sequelize.models.Sector },
+        );
       }
       for (const subSector of subSectors) {
-        await queryInterface.upsert("SubSector", subSector, { transaction });
+        await queryInterface.upsert(
+          "SubSector",
+          subSector,
+          subSector,
+          { subsectorId: subSector.subsectorId },
+          { transaction, model: queryInterface.sequelize.models.SubSector },
+        );
       }
       for (const subCategory of subCategories) {
-        await queryInterface.upsert("SubCategory", subCategory, {
-          transaction,
-        });
+        await queryInterface.upsert(
+          "SubCategory",
+          subCategory,
+          subCategory,
+          { subcategoryId: subCategory.subcategoryId },
+          {
+            transaction,
+            model: queryInterface.sequelize.models.SubCategory,
+          },
+        );
       }
 
       /* re-enable when updateOnDuplicate is fixed in sequelize

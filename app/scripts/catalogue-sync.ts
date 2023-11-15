@@ -68,8 +68,8 @@ async function syncDataCatalogue() {
   const lastUpdateResponse = await fetch(
     `${GLOBAL_API_URL}/api/v0/catalogue/last-update`,
   );
-  const lastUpdate = await lastUpdateResponse.json();
-  if (!lastUpdate?.last_update) {
+  const lastUpdateData = await lastUpdateResponse.json();
+  if (!lastUpdateData?.last_update) {
     throw new Error(
       "Failed to query last catalogue update with error " +
         lastUpdateResponse.status +
@@ -77,11 +77,13 @@ async function syncDataCatalogue() {
         lastUpdateResponse.statusText,
     );
   }
+  // convert to unix timestamp in ms
+  const lastUpdate = lastUpdateData.last_update * 1000;
 
   console.log(
-    `Last update: DB - ${previousUpdate}, API - ${lastUpdate.last_update}`,
+    `Last update: DB - ${previousUpdate}, API - ${lastUpdate}`,
   );
-  if (lastUpdate.last_update <= previousUpdate) {
+  if (lastUpdate <= previousUpdate) {
     console.warn("Already on the newest data catalogue version, exiting.");
     return;
   }
@@ -206,8 +208,10 @@ async function syncDataCatalogue() {
   );
   */
 
-  await catalogue.update({ lastUpdate: lastUpdate.last_update });
+  await catalogue.update({ lastUpdate: new Date(lastUpdate) });
   console.log("Updated Catalogue, done!");
+
+  await db.sequelize?.close();
 }
 
 syncDataCatalogue();

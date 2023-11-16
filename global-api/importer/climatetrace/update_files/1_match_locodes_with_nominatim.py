@@ -35,9 +35,11 @@ if __name__ == "__main__":
             filename = tmp_dir / f"file_{counter}.csv"
 
             if not filename.exists():
-                osmid = osmid_from_nominatim(lat=lat, lon=lon, email='luke@openearth.org')
+                osmid = osmid_from_nominatim(
+                    lat=lat, lon=lon, email="luke@openearth.org"
+                )
                 locode = osmid_dict.get(str(osmid), None)
 
                 if locode:
-                    output_dict = {'lat': lat, 'lon': lon, 'locode': locode}
+                    output_dict = {"lat": lat, "lon": lon, "locode": locode}
                     dict_to_csv(filename, output_dict)

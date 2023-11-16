@@ -207,6 +207,7 @@ async function retrieveGlobalAPISource(
   }
 
   const url = source.apiEndpoint
+    .replace("openearth.cloud", "openearth.dev") // TODO remove once data catalogue is fixed
     .replace(":locode", inventory.city.locode.replace("-", " "))
     .replace(":year", inventory.year.toString())
     .replace(":gpcReferenceNumber", referenceNumber);

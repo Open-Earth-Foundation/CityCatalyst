@@ -52,6 +52,7 @@ const defaultActivityData: ActivityData = {
   activityDataAmount: undefined,
   activityDataUnit: undefined,
   emissionFactorType: "Local",
+  dataQuality: "",
   co2EmissionFactor: 10,
   n2oEmissionFactor: 10,
   ch4EmissionFactor: 10,

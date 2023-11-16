@@ -229,12 +229,27 @@ export default function AddDataSteps({
       {/*** Sector summary section ***/}
       <Card mb={12}>
         <Flex direction="row">
-          <Icon as={currentStep.icon} boxSize={8} color="brand.secondary" mr={4} />
+          <Icon
+            as={currentStep.icon}
+            boxSize={8}
+            color="brand.secondary"
+            mr={4}
+          />
           <div className="space-y-4 w-full">
-            <Heading size="lg" mb={2}>
+            <Heading
+              fontFamily="body"
+              fontSize="24px"
+              fontWeight="semibold"
+              textTransform="capitalize"
+              lineHeight="32px"
+              size="lg"
+              mb={2}
+            >
               {currentStep.title}
             </Heading>
-            <Text color="content.tertiary">{currentStep.details}</Text>
+            <Text color="content.tertiary" fontFamily="heading">
+              {currentStep.details}
+            </Text>
             <Flex direction="row">
               <SegmentedProgress
                 values={[

@@ -4,6 +4,7 @@ import { useTranslation } from "@/i18n/client";
 import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import { Link } from "@chakra-ui/next-js";
 import {
+  Box,
   Button,
   Card,
   Divider,
@@ -27,7 +28,10 @@ export default function AddDataIntro({
   const router = useRouter();
 
   return (
-    <div className="pt-16 w-[1090px] max-w-full mx-auto px-4">
+    <Box
+      bg="background.backgroundLight"
+      className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4"
+    >
       <Button
         variant="ghost"
         leftIcon={<ArrowBackIcon boxSize={6} />}
@@ -35,20 +39,47 @@ export default function AddDataIntro({
       >
         Go Back
       </Button>
-      <Heading fontSize="32px" mb={6} mt={12} className="w-full text-center">
+      <Heading
+        fontSize="32px"
+        fontFamily="body"
+        lineHeight="40px"
+        fontWeight="semibold"
+        mb={6}
+        mt={12}
+        className="w-full text-center"
+      >
         {t("data-heading")}
       </Heading>
-      <Text color="content.tertiary" className="w-full text-center">
+      <Text
+        color="content.tertiary"
+        fontFamily="heading"
+        className="w-full text-center"
+      >
         <Trans i18nKey="data-details" t={t} />
       </Text>
       <Card mt={16} p={6} borderColor="border.overlay" borderWidth={1}>
-        <Heading size="xl" mb={1}>{t("data-view-heading")}</Heading>
-        <Text color="content.tertiary">
+        <Heading
+          fontSize="24px"
+          fontFamily="body"
+          mb={1}
+          fontWeight="semibold"
+          lineHeight="32px"
+          fontStyle="normal"
+          textTransform="capitalize"
+        >
+          {t("data-view-heading")}
+        </Heading>
+        <Text color="content.tertiary" fontFamily="heading">
           <Trans i18nKey="data-view-details" t={t}>
             GPC Basic encompasses three primary sectors: Stationary Energy,
             Transportation and Waste . Fill out the necessary data for each
             sector to build a comprehensive GHG inventory.{" "}
-            <Link className="underline" href="https://ghgprotocol.org/ghg-protocol-cities" target="_blank" rel="noopener noreferrer">
+            <Link
+              className="underline"
+              href="https://ghgprotocol.org/ghg-protocol-cities"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Learn more
             </Link>
           </Trans>
@@ -64,7 +95,9 @@ export default function AddDataIntro({
             <Icon as={MdOutlineHomeWork} boxSize={8} color="brand.secondary" />
             <Heading size="md">{t("stationary-energy")}</Heading>
             <Divider borderColor="border.overlay" />
-            <Text color="content.tertiary">{t("stationary-energy-details")}</Text>
+            <Text color="content.tertiary">
+              {t("stationary-energy-details")}
+            </Text>
             <div className="grow" />
             <Heading size="sm" color="brand.secondary" className="font-normal">
               {t("stationary-energy-scope")}
@@ -116,6 +149,6 @@ export default function AddDataIntro({
           </Button>
         </NextLink>
       </div>
-    </div>
+    </Box>
   );
 }

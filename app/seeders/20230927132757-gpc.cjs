@@ -22,6 +22,34 @@ async function parseFile(filename) {
   return records;
 }
 
+async function bulkUpsert(
+  queryInterface,
+  tableName,
+  entries,
+  idColumnName,
+  transaction,
+) {
+  for (const entry of entries) {
+    const id = entry[idColumnName];
+    const item = await queryInterface.sequelize.query(
+      `SELECT COUNT(*) FROM "${tableName}" WHERE "${idColumnName}" = '${id}';`,
+      { transaction },
+    );
+    if (item[0][0].count === "0") {
+      await queryInterface.bulkInsert(tableName, [entry], { transaction });
+    } else {
+      await queryInterface.bulkUpdate(
+        tableName,
+        entry,
+        { [idColumnName]: entry[idColumnName] },
+        {
+          transaction,
+        },
+      );
+    }
+  }
+}
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface) {
@@ -32,25 +60,41 @@ module.exports = {
     const subCategories = await parseFile("SubCategory");
 
     await queryInterface.sequelize.transaction(async (transaction) => {
-      for (const scope of scopes) {
-        await queryInterface.upsert("Scope", scope, { transaction });
-      }
-      for (const reportingLevel of reportingLevels) {
-        await queryInterface.upsert("ReportingLevel", reportingLevel, {
-          transaction,
-        });
-      }
-      for (const sector of sectors) {
-        await queryInterface.upsert("Sector", sector, { transaction });
-      }
-      for (const subSector of subSectors) {
-        await queryInterface.upsert("SubSector", subSector, { transaction });
-      }
-      for (const subCategory of subCategories) {
-        await queryInterface.upsert("SubCategory", subCategory, {
-          transaction,
-        });
-      }
+      await bulkUpsert(
+        queryInterface,
+        "Scope",
+        scopes,
+        "scope_id",
+        transaction,
+      );
+      await bulkUpsert(
+        queryInterface,
+        "ReportingLevel",
+        reportingLevels,
+        "reportinglevel_id",
+        transaction,
+      );
+      await bulkUpsert(
+        queryInterface,
+        "Sector",
+        sectors,
+        "sector_id",
+        transaction,
+      );
+      await bulkUpsert(
+        queryInterface,
+        "SubSector",
+        subSectors,
+        "subsector_id",
+        transaction,
+      );
+      await bulkUpsert(
+        queryInterface,
+        "SubCategory",
+        subCategories,
+        "subcategory_id",
+        transaction,
+      );
 
       /* re-enable when updateOnDuplicate is fixed in sequelize
       await queryInterface.bulkInsert("Scope", scopes, {

@@ -25,7 +25,7 @@ import uuid
 import xarray as xr
 from xarray import DataArray
 import zipfile
-
+import geojson
 
 def write_dic_to_csv(output_dir, name, dic) -> None:
     """writes dictionary to a csv

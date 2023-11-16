@@ -1,7 +1,8 @@
-import { ScopeAttributes } from "@/models/Scope";
+import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
-import { SubCategoryAttributes } from "@/models/SubCategory";
-import { SubSectorAttributes } from "@/models/SubSector";
+import type { SubCategoryAttributes } from "@/models/SubCategory";
+import type { SubSectorAttributes } from "@/models/SubSector";
+import type { SubSector } from "@/util/types";
 
 type InventoryResponse = InventoryAttributes & { city: CityAttributes };
 
@@ -10,7 +11,7 @@ interface SectorProgress {
   total: number;
   thirdParty: number;
   uploaded: number;
-  subSectors: Array<SubSectorAttributes & { completed: boolean }>;
+  subSectors: SubSector[];
 }
 
 interface InventoryProgressResponse {

@@ -2,6 +2,7 @@
 
 const fs = require("node:fs");
 const { parse } = require("csv-parse");
+const { bulkUpsert } = require("./util/util.cjs");
 
 const folders = ["EFDB_2006_IPCC_guidelines", "EFDB_US"];
 
@@ -33,19 +34,33 @@ module.exports = {
         const emissionsFactors = await parseFile("EmissionsFactor", folder);
         const publishers = await parseFile("Publisher", folder);
 
-        await queryInterface.bulkInsert("Publisher", publishers, {
+        await bulkUpsert(
+          queryInterface,
+          "Publisher",
+          publishers,
+          "publisher_id",
           transaction,
-        });
-        await queryInterface.bulkInsert("DataSource", dataSources, {
+        );
+        await bulkUpsert(
+          queryInterface,
+          "DataSource",
+          dataSources,
+          "datasource_id",
           transaction,
-        });
-        await queryInterface.bulkInsert("EmissionsFactor", emissionsFactors, {
+        );
+        await bulkUpsert(
+          queryInterface,
+          "EmissionsFactor",
+          emissionsFactors,
+          "emissions_factor_id",
           transaction,
-        });
-        await queryInterface.bulkInsert(
+        );
+        await bulkUpsert(
+          queryInterface,
           "DataSourceEmissionsFactor",
           dataSourceEmissionsFactors,
-          { transaction },
+          "emissions_factor_id", // TODO handle multiple primary keys
+          transaction,
         );
       }
     });

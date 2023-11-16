@@ -20,6 +20,9 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
+logger = logging.getLogger(__name__)
+logger.debug('This is a debug message')
+
 # EDGAR grid resolution
 lon_res = 0.1  # degrees
 lat_res = 0.1  # degrees
@@ -33,6 +36,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
+    logger.info(f"Connecting to database")
     engine = create_engine(args.database_uri)
     metadata_obj = MetaData()
     Session = sessionmaker(bind=engine)
@@ -40,14 +44,21 @@ if __name__ == "__main__":
 
     table = Table("CityCellOverlapEdgar", metadata_obj, autoload_with=engine)
 
+    logger.info(f"Running query")
+
     results_generator = all_locodes_and_geometries_generator(session)
 
+    logger.info(f"Query done")
+
+    count = 0
+
     for row in results_generator:
-        logging.info(f"Locode: {row.locode}")
-        locode = row.locode
-        boundary_str = row.geometry
+        count = count + 1
+        locode, boundary_str, west, south, east, north = row
+        logger.info(f"{count}: Locode: {locode}")
         boundary_polygon = load_wkt(boundary_str)
-        west, south, east, north = row.bbox_west, row.bbox_south, row.bbox_east, row.bbox_north
+        city_area = area_of_polygon(boundary_polygon)
+        logger.info(f"City area: {city_area}")
 
         # add padding to ensure we get edge cells
         bbox_north = north + lat_res
@@ -55,27 +66,34 @@ if __name__ == "__main__":
         bbox_east = east + lon_res
         bbox_west = west - lon_res
 
-        logging.info(f"Bounding box: {bbox_north, bbox_south, bbox_east, bbox_west}")
+        logger.info(f"Bounding box: {bbox_north, bbox_south, bbox_east, bbox_west}")
         records = get_edgar_cells_in_bounds(
             session, bbox_north, bbox_south, bbox_east, bbox_west
         )
 
+        total_intersection_area = 0
+
         for record in records:
             cell_id = str(record.id)
-            logging.info(f"Cell ID: {cell_id}")
+            logger.info(f"Cell ID: {cell_id}")
             cell_wkt = record.geometry
 
             record_id = uuid_generate_v3(locode + cell_id)
 
+            logger.info("Calculating overlap")
             cell = load_wkt(cell_wkt)
             intersection_polygon = cell.intersection(boundary_polygon)
             cell_area = area_of_polygon(cell)
             intersection_area = area_of_polygon(intersection_polygon)
 
-            logging.info(f"Intersection area: {intersection_area}")
+            logger.info(f"Intersection area: {intersection_area}")
+
+            total_intersection_area = total_intersection_area + intersection_area
 
             if intersection_area > 0:
                 fraction_in_city = intersection_area / cell_area
+
+                logger.info(f"fraction in city: {fraction_in_city}")
 
                 overlap = {
                     "id": record_id,
@@ -86,5 +104,10 @@ if __name__ == "__main__":
                 }
 
                 insert_record(engine, table, "id", overlap)
+
+        logger.info(f"Total intersection area: {total_intersection_area}")
+        logger.info(f"City area percent in intersections: {(total_intersection_area/city_area)*100.0}")
+
+    logger.info(f"Total count: {count}")
 
     session.close()

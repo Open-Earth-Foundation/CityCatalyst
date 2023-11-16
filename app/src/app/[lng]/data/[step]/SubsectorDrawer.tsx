@@ -323,7 +323,7 @@ export function SubsectorDrawer({
                                         {subcategory.label}
                                       </Heading>
                                       <Text color="content.tertiary">
-                                        TODO: Get category text body
+                                        {/* TODO: Get category text body */}
                                       </Text>
                                     </Box>
                                     <Tag

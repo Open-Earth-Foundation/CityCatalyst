@@ -12,7 +12,7 @@ def db_query(session):
     query = text(
         """
     SELECT
-    DISTINCT id, lat, lon, reference_number
+    DISTINCT id, lat, lon
     FROM asset
     WHERE (reference_number LIKE 'I.%'
     OR reference_number LIKE 'II.%'
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     df_out = pd.merge(df, df_new_locodes[["lat", "lon", "locode"]], on=["lat", "lon"])
 
     df_out[["id", "locode"]].dropna().to_csv(
-        "./climatetrace_update_locodes.csv",
+        "./updated_locodes.csv",
         index=False,
         quotechar='"',
         quoting=csv.QUOTE_ALL,

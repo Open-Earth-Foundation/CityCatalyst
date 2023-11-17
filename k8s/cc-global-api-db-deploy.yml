@@ -31,6 +31,8 @@ spec:
               value: "ccglobal"
             - name: "POSTGRES_PASSWORD"
               value: "ccglobal"
+            - name: PGDATA
+              value: /var/lib/postgresql/pgdata
           ports:
             - containerPort: 5432
           volumeMounts:

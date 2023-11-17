@@ -31,6 +31,8 @@ spec:
               value: "citycatalyst"
             - name: "POSTGRES_PASSWORD"
               value: "development"
+            - name: PGDATA
+              value: /var/lib/postgresql/pgdata
           ports:
             - containerPort: 5432
           volumeMounts:

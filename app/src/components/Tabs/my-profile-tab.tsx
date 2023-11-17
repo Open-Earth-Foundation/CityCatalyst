@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   Checkbox,
+  Icon,
   IconButton,
   Input,
   InputGroup,
@@ -122,7 +123,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
         id: "2",
         name: "Jane Smith",
         email: "jane@example.com",
-        role: "contributer",
+        role: "contributor",
       },
     ];
 
@@ -398,7 +399,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                   </Box>
                 </TabPanel>
                 <TabPanel
-                  width="831px"
+                  width="full"
                   padding="24px"
                   display="flex"
                   flexDirection="column"
@@ -482,7 +483,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                       >
                         <option value="all">{t("all")}</option>
                         <option value="admin">{t("admin")}</option>
-                        <option value="contributer">{t("contribuiter")}</option>
+                        <option value="contributor">{t("contributor")}</option>
                       </Select>
                     </Box>
                     <Box display="flex" alignItems="center" gap="8px">
@@ -558,13 +559,12 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                     </Box>
                   )}
                   <Box>
-                    <TableContainer>
-                      <Table
-                        variant="simple"
-                        borderWidth="1px"
-                        borderStyle="solid"
-                        borderColor="border.neutral"
-                      >
+                    <TableContainer
+                      borderWidth="1px"
+                      borderColor="border.overlay"
+                      borderRadius="12px"
+                    >
+                      <Table variant="simple" borderStyle="solid">
                         <Thead>
                           <Tr>
                             <Th>{t("select")}</Th>
@@ -652,27 +652,32 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                                           display="flex"
                                           cursor="pointer"
                                           gap="16px"
-                                          color="content.tertiary"
+                                          color="content.secondary"
                                           alignItems="center"
                                           px="16px"
                                           paddingTop="12px"
                                           paddingBottom="12px"
+                                          className="group"
                                           _hover={{
-                                            background: "background.neutral",
+                                            background: "interactive.secondary",
                                           }}
                                           onClick={() => {
                                             setUserData(user);
                                             onUserUpdateModalOpen();
                                           }}
                                         >
-                                          <MdOutlineModeEditOutline size={24} />
+                                          <MdOutlineModeEditOutline
+                                            size={24}
+                                            className="group-hover:text-light text-content_tertiary"
+                                          />
 
                                           <Text
-                                            color="content.secondary"
                                             fontFamily="heading"
                                             letterSpacing="wide"
+                                            color="content.secondary"
                                             fontWeight="normal"
                                             fontSize="body.lg"
+                                            className="group-hover:text-light"
                                           >
                                             {t("edit-user")}
                                           </Text>
@@ -686,15 +691,19 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                                           px="16px"
                                           paddingTop="12px"
                                           paddingBottom="12px"
+                                          className="group"
                                           _hover={{
-                                            background: "background.neutral",
+                                            background: "interactive.secondary",
                                           }}
                                           onClick={() => {
                                             setUserData(user);
                                             onUserDeleteModalOpen();
                                           }}
                                         >
-                                          <FiTrash2 size={24} />
+                                          <FiTrash2
+                                            size={24}
+                                            className="group-hover:text-light text-sentiment_negative_default"
+                                          />
 
                                           <Text
                                             color="content.secondary"
@@ -702,6 +711,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                                             letterSpacing="wide"
                                             fontWeight="normal"
                                             fontSize="body.lg"
+                                            className="group-hover:text-light"
                                           >
                                             {t("remove-user")}
                                           </Text>
@@ -719,7 +729,6 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                   </Box>
                 </TabPanel>
                 <TabPanel
-                  width="831px"
                   padding="24px"
                   display="flex"
                   flexDirection="column"
@@ -760,13 +769,12 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                     </NextLink>
                   </Box>
                   <Box>
-                    <TableContainer>
-                      <Table
-                        variant="simple"
-                        borderWidth="1px"
-                        borderStyle="solid"
-                        borderColor="border.neutral"
-                      >
+                    <TableContainer
+                      borderWidth="1px"
+                      borderColor="border.overlay"
+                      borderRadius="12px"
+                    >
+                      <Table variant="simple" borderStyle="solid">
                         <Thead>
                           <Tr>
                             <Th>{t("city-name")}</Th>
@@ -778,10 +786,12 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                         <Tbody fontFamily="heading">
                           {cities.map((city) => (
                             <Tr key={city.id}>
-                              <Td display="flex" alignItems="center" gap="16px">
+                              <Td>
                                 <Box color="interactive.secondary">
                                   <MdDomain size={24} />
                                 </Box>
+                              </Td>
+                              <Td>
                                 <Text>{city.name}</Text>
                               </Td>
                               <Td>{city.state}</Td>

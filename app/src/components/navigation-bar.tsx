@@ -24,6 +24,7 @@ import NextLink from "next/link";
 import { CircleFlag } from "react-circle-flags";
 import { FiSettings } from "react-icons/fi";
 import { MdLogout } from "react-icons/md";
+import Cookies from "js-cookie";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -38,7 +39,12 @@ export function NavigationBar({
 }) {
   const { t } = useTranslation(lng, "navigation");
   const onChangeLanguage = (language: string) => {
-    i18next.changeLanguage(language);
+    Cookies.set("i18next", language);
+    const cookieLanguage = Cookies.get("i18next");
+
+    if (cookieLanguage) {
+      i18next.changeLanguage(cookieLanguage);
+    }
 
     // change language in URL without reloading page
     const newPath = location.pathname.replace(/^\/[A-Za-z]+/, `/${language}`);

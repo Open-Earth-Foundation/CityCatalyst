@@ -33,15 +33,15 @@ export function middleware(req: NextRequestWithAuth) {
     return NextResponse.redirect(
       new URL(
         `/${lng}${req.nextUrl.pathname}?${req.nextUrl.searchParams}`,
-        req.url
-      )
+        req.url,
+      ),
     );
   }
 
   if (req.headers.has("referer")) {
     const refererUrl = new URL(req.headers.get("referer")!);
     const lngInReferer = languages.find((l) =>
-      refererUrl.pathname.startsWith(`/${l}`)
+      refererUrl.pathname.startsWith(`/${l}`),
     );
     const response = next(req);
     if (response instanceof NextResponse && lngInReferer) {

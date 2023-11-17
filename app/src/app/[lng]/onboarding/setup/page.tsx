@@ -190,7 +190,7 @@ function SetupStep({
                   {isLoading && <p className="px-4">Fetching Cities...</p>}
                   {isSuccess &&
                     cities &&
-                    cities.data.map((city: any) => {
+                    cities.map((city: any) => {
                       return (
                         <Box
                           onClick={() => handleSetCity(city)}
@@ -388,7 +388,9 @@ export default function OnboardingSetup({
     goToNext();
   };
 
-  const { data: cityData } = useGetOCCityDataQuery(data.locode);
+  const { data: cityData } = useGetOCCityDataQuery(data.locode, {
+    skip: data.locode.length ? false : true,
+  });
 
   const makeErrorToast = (title: string, description?: string) => {
     toast({
@@ -454,7 +456,7 @@ export default function OnboardingSetup({
         defaultInventoryYear: data.year,
       }).unwrap();
       setConfirming(false);
-      router.push("/onboarding/done/" + data.locode);
+      router.push("/onboarding/done/" + data.locode + "/" + data.year);
     } catch (err: any) {
       console.error("Failed to create new inventory!", err);
       makeErrorToast("Failed to create inventory!", err.data?.error?.message);
@@ -495,7 +497,7 @@ export default function OnboardingSetup({
             />
           )}
         </div>
-        <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand flex flex-row py-8 px-8 drop-shadow-2xl hover:drop-shadow-4xl transition-all">
+        <div className="bg-white w-full fixed z-[9999] bottom-0 left-0 border-t-4 border-brand flex flex-row py-8 px-8 drop-shadow-2xl hover:drop-shadow-4xl transition-all">
           <Box className="w-full">
             <Text fontSize="sm">Step {activeStep + 1}</Text>
             <Text fontSize="2xl" as="b">

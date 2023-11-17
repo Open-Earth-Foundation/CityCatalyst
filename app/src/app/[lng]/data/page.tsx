@@ -41,7 +41,6 @@ export default function AddDataIntro({
       </Button>
       <Heading
         fontSize="32px"
-        fontFamily="body"
         lineHeight="40px"
         fontWeight="semibold"
         mb={6}
@@ -50,17 +49,12 @@ export default function AddDataIntro({
       >
         {t("data-heading")}
       </Heading>
-      <Text
-        color="content.tertiary"
-        fontFamily="heading"
-        className="w-full text-center"
-      >
+      <Text color="content.tertiary" className="w-full text-center">
         <Trans i18nKey="data-details" t={t} />
       </Text>
       <Card mt={16} p={6} borderColor="border.overlay" borderWidth={1}>
         <Heading
           fontSize="24px"
-          fontFamily="body"
           mb={1}
           fontWeight="semibold"
           lineHeight="32px"
@@ -69,7 +63,7 @@ export default function AddDataIntro({
         >
           {t("data-view-heading")}
         </Heading>
-        <Text color="content.tertiary" fontFamily="heading">
+        <Text color="content.tertiary">
           <Trans i18nKey="data-view-details" t={t}>
             GPC Basic encompasses three primary sectors: Stationary Energy,
             Transportation and Waste . Fill out the necessary data for each

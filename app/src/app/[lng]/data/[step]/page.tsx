@@ -237,7 +237,6 @@ export default function AddDataSteps({
           />
           <div className="space-y-4 w-full">
             <Heading
-              fontFamily="body"
               fontSize="24px"
               fontWeight="semibold"
               textTransform="capitalize"
@@ -247,9 +246,7 @@ export default function AddDataSteps({
             >
               {currentStep.title}
             </Heading>
-            <Text color="content.tertiary" fontFamily="heading">
-              {currentStep.details}
-            </Text>
+            <Text color="content.tertiary">{currentStep.details}</Text>
             <Flex direction="row">
               <SegmentedProgress
                 values={[

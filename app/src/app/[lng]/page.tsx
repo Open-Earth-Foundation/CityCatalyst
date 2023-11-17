@@ -133,7 +133,6 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               fontWeight="bold"
               lineHeight="52"
               fontSize="label.lg"
-              fontFamily="heading"
             >
               {title}
             </Text>
@@ -288,7 +287,6 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     <Box>
                       <Box className="flex gap-1">
                         <Text
-                          fontFamily="heading"
                           color="base.light"
                           fontSize="headline.sm"
                           fontWeight="semibold"

@@ -50,8 +50,6 @@ enum STATUS {
   ERROR = "error",
 }
 
-const CITY_INTENTORY_YEAR = "DE_BER";
-
 // only render map on the client
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -177,7 +175,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
       2000,
       "semantic.info",
     );
-    fetch(`/api/v0/city/:city/inventory/${CITY_INTENTORY_YEAR}.xls`)
+    fetch(`/api/v0/city/${locode}/inventory/${year}?format=csv`)
       .then((res) => {
         if (!res.ok) {
           throw new Error("Network response was not ok");
@@ -186,7 +184,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
         const contentDisposition = res.headers.get("Content-Disposition");
         if (contentDisposition) {
           const match = contentDisposition.match(/filename="(.+)"/);
-          const filename = match ? match[1] : `${CITY_INTENTORY_YEAR}.xls`;
+          const filename = match ? match[1] : `${locode}_${year}.csv`;
           return res.blob().then((blob) => {
             const downloadLink = document.createElement("a");
             downloadLink.href = URL.createObjectURL(blob);

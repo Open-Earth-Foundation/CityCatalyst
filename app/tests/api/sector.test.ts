@@ -1,24 +1,26 @@
-import { POST as createSector } from "@/app/api/v0/city/[city]/inventory/[year]/sector/route";
 import {
   DELETE as deleteSector,
   GET as findSector,
-  PATCH as updateSector,
-} from "@/app/api/v0/city/[city]/inventory/[year]/sector/[sector]/route";
+  PATCH as upsertSector,
+} from "@/app/api/v0/inventory/[inventory]/sector/[sector]/route";
 import { db } from "@/models";
 import { CreateSectorRequest } from "@/util/validation";
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, beforeEach, describe, it } from "node:test";
 
-import { createRequest, setupTests } from "../helpers";
+import { mockRequest, setupTests } from "../helpers";
 
 import { SectorValue } from "@/models/SectorValue";
 import { City } from "@/models/City";
+import { Inventory } from "@/models/Inventory";
+import { Sector } from "@/models/Sector";
 
-const sectorValueId = randomUUID();
-const locode = "XX_INVENTORY_CITY2";
-const year = "3000";
-const totalEmissions = 44000;
+const locode = "XX_SECTOR_CITY";
+const inventoryName = "TEST_SECTOR_INVENTORY";
+const sectorName = "TEST_SECTOR_SECTOR";
+const year = 3000;
+const totalEmissions = 4000;
 
 const sectorValue1: CreateSectorRequest = {
   totalEmissions: 4000,
@@ -33,42 +35,60 @@ const invalidSectorValue = {
 };
 
 describe("Sector API", () => {
-  let sectorValue: SectorValue;
   let city: City;
+  let inventory: Inventory;
+  let sector: Sector;
+  let sectorValue: SectorValue;
+
   before(async () => {
     setupTests();
     await db.initialize();
-    await db.models.SectorValue.destroy({
-      where: {
-        sectorValueId,
-      },
-    });
 
+    const prevInventory = await db.models.Inventory.findOne({
+      where: { inventoryName },
+    });
+    if (prevInventory) {
+      await db.models.SectorValue.destroy({
+        where: { inventoryId: prevInventory?.inventoryId },
+      });
+      await prevInventory.destroy();
+    }
+    await db.models.Sector.destroy({
+      where: { sectorName },
+    });
     await db.models.City.destroy({
-      where: {
-        locode,
-      },
+      where: { locode },
     });
 
     city = await db.models.City.create({
       cityId: randomUUID(),
       locode,
     });
-
-    sectorValue = await db.models.SectorValue.create({
-      sectorValueId: randomUUID(),
-      totalEmissions,
+    sector = await db.models.Sector.create({
+      sectorId: randomUUID(),
+      sectorName,
+      referenceNumber: "X.X.X",
     });
   });
 
   beforeEach(async () => {
     await db.models.SectorValue.destroy({
-      where: { sectorValueId },
+      where: { sectorId: sector.sectorId },
+    });
+    await db.models.Inventory.destroy({
+      where: { inventoryName },
     });
 
-    await db.models.SectorValue.create({
-      sectorValueId,
-
+    inventory = await db.models.Inventory.create({
+      inventoryId: randomUUID(),
+      cityId: city.cityId,
+      year,
+      inventoryName,
+    });
+    sectorValue = await db.models.SectorValue.create({
+      sectorValueId: randomUUID(),
+      sectorId: sector.sectorId,
+      inventoryId: inventory.inventoryId,
       totalEmissions,
     });
   });
@@ -79,12 +99,11 @@ describe("Sector API", () => {
 
   it("Should create a sector", async () => {
     await db.models.SectorValue.destroy({
-      where: { sectorValueId },
+      where: { sectorValueId: sectorValue.sectorValueId },
     });
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector`;
-    const req = createRequest(url, sectorValue1);
-    const res = await createSector(req, {
-      params: { city: locode, year: year },
+    const req = mockRequest(sectorValue1);
+    const res = await upsertSector(req, {
+      params: { inventory: inventory.inventoryId, sector: sector.sectorId },
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
@@ -92,10 +111,9 @@ describe("Sector API", () => {
   });
 
   it("should not create an inventory with invalid data", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector`;
-    const req = createRequest(url, invalidSectorValue);
-    const res = await createSector(req, {
-      params: { city: locode, year: year },
+    const req = mockRequest(invalidSectorValue);
+    const res = await upsertSector(req, {
+      params: { inventory: inventory.inventoryId, sector: sector.sectorId },
     });
     assert.equal(res.status, 400);
     const {
@@ -105,10 +123,9 @@ describe("Sector API", () => {
   });
 
   it("should find a sector", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector/${sectorValueId}`;
-    const req = createRequest(url);
+    const req = mockRequest();
     const res = await findSector(req, {
-      params: { city: locode, year: year, sector: sectorValueId },
+      params: { inventory: inventory.inventoryId, sector: sector.sectorId },
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
@@ -116,23 +133,17 @@ describe("Sector API", () => {
   });
 
   it("should not find non-existing sectors", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector/XX_INVALID_SECTOR_ID`;
-    const req = createRequest(url, invalidSectorValue);
+    const req = mockRequest(invalidSectorValue);
     const res = await findSector(req, {
-      params: {
-        city: locode,
-        year: year,
-        sector: randomUUID(),
-      },
+      params: { inventory: inventory.inventoryId, sector: randomUUID() },
     });
     assert.equal(res.status, 404);
   });
 
   it("should update a sector", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector`;
-    const req = createRequest(url, sectorValue2);
-    const res = await updateSector(req, {
-      params: { city: locode, year: year, sector: sectorValue.sectorValueId },
+    const req = mockRequest(sectorValue2);
+    const res = await upsertSector(req, {
+      params: { inventory: inventory.inventoryId, sector: sector.sectorId },
     });
     const { data } = await res.json();
     assert.equal(res.status, 200);
@@ -140,10 +151,9 @@ describe("Sector API", () => {
   });
 
   it("should not update a sector with invalid data", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector`;
-    const req = createRequest(url, invalidSectorValue);
-    const res = await updateSector(req, {
-      params: { city: locode, year: year, sector: sectorValue.sectorValueId },
+    const req = mockRequest(invalidSectorValue);
+    const res = await upsertSector(req, {
+      params: { inventory: inventory.inventoryId, sector: sector.sectorId },
     });
     assert.equal(res.status, 400);
     const {
@@ -153,22 +163,20 @@ describe("Sector API", () => {
   });
 
   it("should delete a sector", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${year}/sector`;
-    const req = createRequest(url);
+    const req = mockRequest();
     const res = await deleteSector(req, {
-      params: { city: locode, year: year, sector: sectorValue.sectorValueId },
+      params: { inventory: inventory.inventoryId, sector: sector.sectorId },
     });
     assert.equal(res.status, 200);
     const { data, deleted } = await res.json();
     assert.equal(deleted, true);
-    assert.equal(data.totalEmissions, sectorValue2.totalEmissions);
+    assert.equal(data.totalEmissions, sectorValue1.totalEmissions);
   });
 
   it("should not delete a non-existing sector", async () => {
-    const url = `http://localhost:3000/api/v0/city/XX_INVALID/inventory/0/sector`;
-    const req = createRequest(url);
+    const req = mockRequest();
     const res = await deleteSector(req, {
-      params: { city: "XX_INVALID", year: "0", sector: randomUUID() },
+      params: { inventory: randomUUID(), sector: randomUUID() },
     });
     assert.equal(res.status, 404);
   });

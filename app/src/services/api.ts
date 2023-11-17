@@ -2,10 +2,15 @@ import {
   UserAttributes,
   type CityAttributes,
   type InventoryAttributes,
+  SubSectorValueAttributes,
 } from "@/models/init-models";
 import type {
+  ConnectDataSourceQuery,
+  ConnectDataSourceResponse,
+  DataSourceResponse,
   InventoryProgressResponse,
   InventoryResponse,
+  SubsectorValueUpdateQuery,
   UserInfoResponse,
 } from "@/util/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -77,6 +82,47 @@ export const api = createApi({
     getUserInfo: builder.query<UserInfoResponse, void>({
       query: () => "/user",
       transformResponse: (response: { data: UserInfoResponse }) =>
+        response.data,
+    }),
+    getAllDataSources: builder.query<
+      DataSourceResponse,
+      { inventoryId: string }
+    >({
+      query: ({ inventoryId }) => `datasource/${inventoryId}`,
+      transformResponse: (response: { data: DataSourceResponse }) =>
+        response.data,
+    }),
+    getSubsectorValue: builder.query<
+      SubSectorValueAttributes,
+      { subSectorId: string; inventoryId: string }
+    >({
+      query: ({ subSectorId, inventoryId }) =>
+        `/inventory/${inventoryId}/subsector/${subSectorId}`,
+      transformResponse: (response: { data: SubSectorValueAttributes }) =>
+        response.data,
+    }),
+    setSubsectorValue: builder.mutation<
+      SubSectorValueAttributes,
+      SubsectorValueUpdateQuery
+    >({
+      query: (data) => ({
+        url: `/inventory/${data.inventoryId}/subsector/${data.subSectorId}`,
+        method: "PATCH",
+        body: data.data,
+      }),
+      transformResponse: (response: { data: SubSectorValueAttributes }) =>
+        response.data,
+    }),
+    connectDataSource: builder.mutation<
+      ConnectDataSourceResponse,
+      ConnectDataSourceQuery
+    >({
+      query: (data) => ({
+        url: `/datasource/${data.inventoryId}`,
+        method: "POST",
+        body: { dataSourceIds: data.dataSourceIds },
+      }),
+      transformResponse: (response: { data: ConnectDataSourceResponse }) =>
         response.data,
     }),
   }),

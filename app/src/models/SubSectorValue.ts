@@ -5,12 +5,16 @@ import type { Inventory, InventoryId } from "./Inventory";
 import type { SectorValue, SectorValueId } from "./SectorValue";
 import type { SubSector, SubSectorId } from "./SubSector";
 import type { DataSource, DataSourceId } from "./DataSource";
+import { SubCategoryValue, SubCategoryValueId } from "./SubCategoryValue";
 
 export interface SubSectorValueAttributes {
   subsectorValueId: string;
   activityUnits?: string;
   activityValue?: number;
   emissionFactorValue?: number;
+  co2EmissionsValue?: number; // kg
+  ch4EmissionsValue?: number; // kg
+  n2oEmissionsValue?: number; // kg
   totalEmissions?: number;
   emissionsFactorId?: string;
   subsectorId?: string;
@@ -27,6 +31,9 @@ export type SubSectorValueOptionalAttributes =
   | "activityUnits"
   | "activityValue"
   | "emissionFactorValue"
+  | "co2EmissionsValue"
+  | "ch4EmissionsValue"
+  | "n2oEmissionsValue"
   | "totalEmissions"
   | "emissionsFactorId"
   | "subsectorId"
@@ -48,6 +55,9 @@ export class SubSectorValue
   activityUnits?: string;
   activityValue?: number;
   emissionFactorValue?: number;
+  co2EmissionsValue?: number; // kg
+  ch4EmissionsValue?: number; // kg
+  n2oEmissionsValue?: number; // kg
   totalEmissions?: number;
   emissionsFactorId?: string;
   subsectorId?: string;
@@ -88,6 +98,39 @@ export class SubSectorValue
   getDataSource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
   setDataSource!: Sequelize.BelongsToSetAssociationMixin<DataSource, DataSourceId>;
   createDataSource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
+  // SubSectorValue hasMany SubCategoryValue via subsectorValueId
+  subCategoryValues!: SubCategoryValue[];
+  getSubCategoryValues!: Sequelize.HasManyGetAssociationsMixin<SubCategoryValue>;
+  setSubCategoryValues!: Sequelize.HasManySetAssociationsMixin<
+    SubCategoryValue,
+    SubCategoryValueId
+  >;
+  addSubCategoryValue!: Sequelize.HasManyAddAssociationMixin<
+    SubCategoryValue,
+    SubCategoryValueId
+  >;
+  addSubCategoryValues!: Sequelize.HasManyAddAssociationsMixin<
+    SubCategoryValue,
+    SubCategoryValueId
+  >;
+  createSubCategoryValue!: Sequelize.HasManyCreateAssociationMixin<SubCategoryValue>;
+  removeSubCategoryValue!: Sequelize.HasManyRemoveAssociationMixin<
+    SubCategoryValue,
+    SubCategoryValueId
+  >;
+  removeSubCategoryValues!: Sequelize.HasManyRemoveAssociationsMixin<
+    SubCategoryValue,
+    SubCategoryValueId
+  >;
+  hasSubCategoryValue!: Sequelize.HasManyHasAssociationMixin<
+    SubCategoryValue,
+    SubCategoryValueId
+  >;
+  hasSubCategoryValues!: Sequelize.HasManyHasAssociationsMixin<
+    SubCategoryValue,
+    SubCategoryValueId
+  >;
+  countSubCategoryValues!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof SubSectorValue {
     return SubSectorValue.init(
@@ -112,6 +155,21 @@ export class SubSectorValue
           type: DataTypes.DECIMAL,
           allowNull: true,
           field: "emission_factor_value",
+        },
+        co2EmissionsValue: {
+          type: DataTypes.DECIMAL,
+          allowNull: true,
+          field: "co2_emissions_value",
+        },
+        ch4EmissionsValue: {
+          type: DataTypes.DECIMAL,
+          allowNull: true,
+          field: "ch4_emissions_value",
+        },
+        n2oEmissionsValue: {
+          type: DataTypes.DECIMAL,
+          allowNull: true,
+          field: "n2o_emissions_value",
         },
         totalEmissions: {
           type: DataTypes.DECIMAL,

@@ -6,23 +6,26 @@
 import argparse
 from datetime import datetime
 import os
-import pandas as pd
 from sqlalchemy import create_engine, MetaData, Table
 from sqlalchemy.orm import sessionmaker
-from tqdm import tqdm
 from utils import (
-    all_locodes_and_geometries,
+    all_locodes_and_geometries_generator,
     area_of_polygon,
-    bounds_from_polygon,
-    get_edgar_grid_coords_and_wkt,
     insert_record,
     load_wkt,
     uuid_generate_v3,
+    get_edgar_cells_in_bounds,
 )
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
+logger = logging.getLogger(__name__)
+logger.debug('This is a debug message')
 
 # EDGAR grid resolution
-lon_res = 0.1 # degrees
-lat_res = 0.1 # degrees
+lon_res = 0.1  # degrees
+lat_res = 0.1  # degrees
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -33,26 +36,29 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
+    logger.info(f"Connecting to database")
     engine = create_engine(args.database_uri)
     metadata_obj = MetaData()
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    list_grid_coords = get_edgar_grid_coords_and_wkt(session)
-    df_grid = (
-        pd.DataFrame(list_grid_coords)
-        .rename(columns={"id": "cell_id"})
-    )
-
     table = Table("CityCellOverlapEdgar", metadata_obj, autoload_with=engine)
 
-    results = all_locodes_and_geometries(session)
+    logger.info(f"Running query")
 
-    for row in tqdm(results):
-        locode = row.locode
-        boundary_str = row.geometry
+    results_generator = all_locodes_and_geometries_generator(session)
+
+    logger.info(f"Query done")
+
+    count = 0
+
+    for row in results_generator:
+        count = count + 1
+        locode, boundary_str, west, south, east, north = row
+        logger.info(f"{count}: Locode: {locode}")
         boundary_polygon = load_wkt(boundary_str)
-        west, south, east, north = bounds_from_polygon(boundary_polygon)
+        city_area = area_of_polygon(boundary_polygon)
+        logger.info(f"City area: {city_area}")
 
         # add padding to ensure we get edge cells
         bbox_north = north + lat_res
@@ -60,31 +66,36 @@ if __name__ == "__main__":
         bbox_east = east + lon_res
         bbox_west = west - lon_res
 
-        # filter for coords
-        filt = (
-            (df_grid["lat_center"] >= bbox_south)
-            & (df_grid["lat_center"] <= bbox_north)
-            & (df_grid["lon_center"] >= bbox_west)
-            & (df_grid["lon_center"] <= bbox_east)
+        logger.info(f"Bounding box: {bbox_north, bbox_south, bbox_east, bbox_west}")
+        records = get_edgar_cells_in_bounds(
+            session, bbox_north, bbox_south, bbox_east, bbox_west
         )
-        df_tmp = df_grid.loc[filt]
-        geoms = df_tmp.to_dict(orient="records")
 
-        for row in geoms:
-            cell_id = str(row.get("cell_id"))
-            cell_wkt = row.get("geometry")
+        total_intersection_area = 0
+
+        for record in records:
+            cell_id = str(record.id)
+            logger.info(f"Cell ID: {cell_id}")
+            cell_wkt = record.geometry
 
             record_id = uuid_generate_v3(locode + cell_id)
 
+            logger.info("Calculating overlap")
             cell = load_wkt(cell_wkt)
             intersection_polygon = cell.intersection(boundary_polygon)
             cell_area = area_of_polygon(cell)
             intersection_area = area_of_polygon(intersection_polygon)
 
+            logger.info(f"Intersection area: {intersection_area}")
+
+            total_intersection_area = total_intersection_area + intersection_area
+
             if intersection_area > 0:
                 fraction_in_city = intersection_area / cell_area
 
-                record = {
+                logger.info(f"fraction in city: {fraction_in_city}")
+
+                overlap = {
                     "id": record_id,
                     "locode": locode,
                     "fraction_in_city": fraction_in_city,
@@ -92,6 +103,11 @@ if __name__ == "__main__":
                     "created_date": str(datetime.now()),
                 }
 
-                insert_record(engine, table, "id", record)
+                insert_record(engine, table, "id", overlap)
+
+        logger.info(f"Total intersection area: {total_intersection_area}")
+        logger.info(f"City area percent in intersections: {(total_intersection_area/city_area)*100.0}")
+
+    logger.info(f"Total count: {count}")
 
     session.close()

@@ -17,6 +17,7 @@ import { Inventory } from "@/models/Inventory";
 import fetchMock from "fetch-mock";
 
 const locode = "XX_DATASOURCE_CITY";
+const sectorName = "XX_DATASOURCE_TEST_1";
 
 const inventoryData: CreateInventoryRequest = {
   inventoryName: "Test Inventory",
@@ -71,6 +72,7 @@ describe("DataSource API", () => {
       locode,
       name: "CC_",
     });
+    await db.models.Sector.destroy({ where: { sectorName } });
     inventory = await db.models.Inventory.create({
       inventoryId: randomUUID(),
       cityId: city.cityId,
@@ -78,7 +80,7 @@ describe("DataSource API", () => {
     });
     sector = await db.models.Sector.create({
       sectorId: randomUUID(),
-      sectorName: "XX_DATASOURCE_TEST_1",
+      sectorName,
     });
 
     fetchMock.config.overwriteRoutes = true;
@@ -131,5 +133,5 @@ describe("DataSource API", () => {
     assert.equal(data.length, 1);
   });
 
-  // TODO add tests for applyDataSources
+  it.todo("should apply data sources");
 });

@@ -19,9 +19,9 @@ export const GET = apiHandler(
         {
           model: db.models.User,
           as: "users",
-          where: {
-            userId: session?.user.id,
-          },
+          // where: {
+          //   userId: session?.user.id,
+          // },
         },
       ],
     });
@@ -126,9 +126,9 @@ export const DELETE = apiHandler(
         {
           model: db.models.User,
           as: "users",
-          where: {
-            userId: session?.user.id,
-          },
+          // where: {
+          //   userId: session?.user.id,
+          // },
         },
       ],
     });
@@ -163,9 +163,9 @@ export const PATCH = apiHandler(
         {
           model: db.models.User,
           as: "users",
-          where: {
-            userId: session?.user.id,
-          },
+          // where: {
+          //   userId: session?.user.id,
+          // },
         },
       ],
     });

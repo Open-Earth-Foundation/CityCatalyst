@@ -1,4 +1,8 @@
+import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
+import type { SubCategoryAttributes } from "@/models/SubCategory";
+import type { SubSectorAttributes } from "@/models/SubSector";
+import type { SubSector } from "@/util/types";
 
 type InventoryResponse = InventoryAttributes & { city: CityAttributes };
 
@@ -7,10 +11,11 @@ interface SectorProgress {
   total: number;
   thirdParty: number;
   uploaded: number;
-  subSectors: Array<SubSectorAttributes & { completed: boolean }>;
+  subSectors: SubSector[];
 }
 
 interface InventoryProgressResponse {
+  inventoryId: string;
   totalProgress: {
     total: number;
     thirdParty: number;
@@ -24,6 +29,29 @@ interface UserInfoResponse {
   name: string;
   defaultCityLocode: string | null;
   defaultInventoryYear: number | null;
+}
+
+type DataSourceResponse = (DataSourceAttributes & {
+  scopes: ScopeAttributes[];
+  subSector?: SubSectorAttributes;
+  subCategory?: SubCategoryAttributes;
+})[];
+
+interface ConnectDataSourceQuery {
+  inventoryId: string;
+  dataSourceIds: string[];
+}
+
+interface ConnectDataSourceResponse {
+  successful: string[];
+  failed: string[];
+  invalid: string[];
+}
+
+interface SubsectorValueUpdateQuery {
+  subSectorId: string;
+  inventoryId: string;
+  data: SubSectorValueAttributes;
 }
 
 declare module "next-auth" {

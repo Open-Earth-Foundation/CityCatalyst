@@ -2,7 +2,7 @@ import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { createCityRequest } from "@/util/validation";
 import createHttpError from "http-errors";
-import { Session, User } from "next-auth";
+import { Session } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = apiHandler(
@@ -19,9 +19,9 @@ export const GET = apiHandler(
         {
           model: db.models.User,
           as: "users",
-          where: {
-            userId: session.user.id,
-          },
+          // where: {
+          //   userId: session.user.id,
+          // },
         },
       ],
     });
@@ -47,9 +47,9 @@ export const DELETE = apiHandler(
         {
           model: db.models.User,
           as: "users",
-          where: {
-            userId: session.user.id,
-          },
+          // where: {
+          //   userId: session.user.id,
+          // },
         },
       ],
     });
@@ -77,9 +77,9 @@ export const PATCH = apiHandler(
         {
           model: db.models.User,
           as: "users",
-          where: {
-            userId: session.user.id,
-          },
+          // where: {
+          //   userId: session.user.id,
+          // },
         },
       ],
     });

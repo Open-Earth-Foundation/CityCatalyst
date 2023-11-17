@@ -4,6 +4,11 @@ import type {
   ActivityDataAttributes,
   ActivityDataCreationAttributes,
 } from "./ActivityData";
+import { Catalogue as _Catalogue } from "./Catalogue";
+import type {
+  CatalogueAttributes,
+  CatalogueCreationAttributes,
+} from "./Catalogue";
 import { City as _City } from "./City";
 import type { CityAttributes, CityCreationAttributes } from "./City";
 import { CityUser as _CityUser } from "./CityUser";
@@ -121,6 +126,7 @@ import type { VersionAttributes, VersionCreationAttributes } from "./Version";
 
 export {
   _ActivityData as ActivityData,
+  _Catalogue as Catalogue,
   _City as City,
   _CityUser as CityUser,
   _DataSource as DataSource,
@@ -153,6 +159,8 @@ export {
 export type {
   ActivityDataAttributes,
   ActivityDataCreationAttributes,
+  CatalogueAttributes,
+  CatalogueCreationAttributes,
   CityAttributes,
   CityCreationAttributes,
   CityUserAttributes,
@@ -211,6 +219,7 @@ export type {
 
 export function initModels(sequelize: Sequelize) {
   const ActivityData = _ActivityData.initModel(sequelize);
+  const Catalogue = _Catalogue.initModel(sequelize);
   const City = _City.initModel(sequelize);
   const CityUser = _CityUser.initModel(sequelize);
   const DataSource = _DataSource.initModel(sequelize);
@@ -278,7 +287,7 @@ export function initModels(sequelize: Sequelize) {
     otherKey: "reportinglevelId",
   });
   DataSource.belongsToMany(Scope, {
-    as: "scopeIdScopes",
+    as: "scopes",
     through: DataSourceScope,
     foreignKey: "datasourceId",
     otherKey: "scopeId",
@@ -299,9 +308,17 @@ export function initModels(sequelize: Sequelize) {
     as: "dataSource",
     foreignKey: "datasourceId",
   });
+  SubSectorValue.hasMany(SubCategoryValue, {
+    as: "subCategoryValues",
+    foreignKey: "subsectorValueId",
+  });
   SubCategoryValue.belongsTo(DataSource, {
     as: "dataSource",
     foreignKey: "datasourceId",
+  });
+  SubCategoryValue.belongsTo(SubSectorValue, {
+    as: "subsectorValue",
+    foreignKey: "subsectorValueId",
   });
   EmissionsFactor.belongsToMany(DataSource, {
     as: "datasourceIdDataSourceDataSourceEmissionsFactors",
@@ -334,7 +351,7 @@ export function initModels(sequelize: Sequelize) {
     otherKey: "subsectorId",
   });
   Scope.belongsToMany(DataSource, {
-    as: "datasourceIdDataSourceDataSourceScopes",
+    as: "dataSources",
     through: DataSourceScope,
     foreignKey: "scopeId",
     otherKey: "datasourceId",
@@ -451,6 +468,14 @@ export function initModels(sequelize: Sequelize) {
   });
   DataSource.hasMany(Population, {
     as: "populations",
+    foreignKey: "datasourceId",
+  });
+  DataSource.hasMany(SubSectorValue, {
+    as: "subSectorValues",
+    foreignKey: "datasourceId",
+  });
+  DataSource.hasMany(SubCategoryValue, {
+    as: "subCategoryValues",
     foreignKey: "datasourceId",
   });
   DataSourceEmissionsFactor.belongsTo(EmissionsFactor, {
@@ -627,6 +652,7 @@ export function initModels(sequelize: Sequelize) {
 
   return {
     ActivityData: ActivityData,
+    Catalogue: Catalogue,
     City: City,
     CityUser: CityUser,
     DataSource: DataSource,

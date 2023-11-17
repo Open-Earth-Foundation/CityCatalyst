@@ -4,6 +4,28 @@ from datetime import datetime
 from pathlib import Path
 import uuid
 
+
+def upsert_record(engine, table, pkey, record):
+    """Update or insert a record in the table based on the primary key (pkey)."""
+    fields = [col.name for col in table.columns]
+    table_data = {key: record[key] for key in record.keys() if key in fields}
+
+    pkey_value = table_data.get(pkey)
+
+    with engine.begin() as conn:
+        existing_record = conn.execute(
+            table.select().where(table.columns[pkey] == pkey_value)
+        ).fetchone()
+
+        if existing_record:
+            conn.execute(
+                table.update()
+                .where(table.columns[pkey] == pkey_value)
+                .values(**table_data)
+            )
+        else:
+            conn.execute(table.insert().values(**table_data))
+
 def insert_record(engine, table, pkey, record):
     """insert record into table"""
     fields = [col.name for col in table.columns]

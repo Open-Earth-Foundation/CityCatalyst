@@ -11,7 +11,7 @@ GROUP BY "filename";
 import argparse
 import os
 from sqlalchemy import create_engine, MetaData, Table
-from utils import DataSource, uuid_generate_v3, insert_record
+from utils import DataSource, uuid_generate_v3, upsert_record
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -42,7 +42,7 @@ if __name__ == "__main__":
         publisher_id=PUBLISHER,
         name="ClimateTRACE Enteric Fermentation Emissions",
         description="Approach relies on the hypothesis that beef or daily facility area size can be used as a predictor to estimate the total cattle population, which can then be used to estimate enteric fermentation emissions.",
-        source_type="",
+        source_type="third_party",
         access_type="globalapi",
         url="https://climatetrace.org/",
         geographical_location="global",
@@ -74,7 +74,7 @@ if __name__ == "__main__":
         publisher_id=PUBLISHER,
         name="ClimateTRACE Manure Management Emissions",
         description="Approach relies on the hypothesis that beef or daily facility area size can be used as a predictor to estimate the total cattle population, which can then be used to estimate manure management emissions.",
-        source_type="",
+        source_type="third_party",
         access_type="globalapi",
         url="https://climatetrace.org/",
         geographical_location="global",
@@ -106,7 +106,7 @@ if __name__ == "__main__":
         publisher_id=PUBLISHER,
         name="ClimateTRACE Solid Waste Disposal Emissions",
         description="ClimateTRACE sought to combine the best available sources into a model that could be deployed globally to estimate emissions.",
-        source_type="",
+        source_type="third_party",
         access_type="globalapi",
         url="https://climatetrace.org/",
         geographical_location="global",
@@ -138,7 +138,7 @@ if __name__ == "__main__":
         publisher_id=PUBLISHER,
         name="ClimateTRACE Domestic Aviation Emissions",
         description="Emissions estimated based on fuel consumption.",
-        source_type="",
+        source_type="third_party",
         access_type="globalapi",
         url="https://climatetrace.org/",
         geographical_location="global",
@@ -170,7 +170,7 @@ if __name__ == "__main__":
         publisher_id=PUBLISHER,
         name="ClimateTRACE International Aviation Emissions",
         description="Emissions estimated based on fuel consumption.",
-        source_type="",
+        source_type="third_party",
         access_type="globalapi",
         url="https://climatetrace.org/",
         geographical_location="global",
@@ -202,7 +202,7 @@ if __name__ == "__main__":
         publisher_id=PUBLISHER,
         name="ClimateTRACE Coal Mining Emissions",
         description="Estimate emissions from mining and quarrying extraction on a statistical basis by taking production numbers at national and facility level and applying specific emissions factors.",
-        source_type="",
+        source_type="third_party",
         access_type="globalapi",
         url="https://climatetrace.org/",
         geographical_location="global",
@@ -234,7 +234,7 @@ if __name__ == "__main__":
         publisher_id=PUBLISHER,
         name="ClimateTRACE Oil and Gas Production and Transport Emissions",
         description="ClimateTRACE uses a hybrid model to estimate emissions globally",
-        source_type="",
+        source_type="third_party",
         access_type="globalapi",
         url="https://climatetrace.org/",
         geographical_location="global",
@@ -266,7 +266,7 @@ if __name__ == "__main__":
         publisher_id=PUBLISHER,
         name="ClimateTRACE Oil and Gas Refining Emissions",
         description="ClimateTRACE uses a hybrid model to estimate emissions globally",
-        source_type="",
+        source_type="third_party",
         access_type="globalapi",
         url="https://climatetrace.org/",
         geographical_location="global",
@@ -298,7 +298,7 @@ if __name__ == "__main__":
         publisher_id=PUBLISHER,
         name="ClimateTRACE Road Transportation Emissions",
         description="Hybrid emissions estimate model with two parts. 1. ML models trained to predict road transport activity 2. emission factors pipeline to convert activity to emissions.",
-        source_type="",
+        source_type="third_party",
         access_type="globalapi",
         url="https://climatetrace.org/",
         geographical_location="global",
@@ -342,4 +342,4 @@ if __name__ == "__main__":
     records = [datasource.__dict__ for datasource in merged_datasources]
 
     for record in records:
-        insert_record(engine, table, "datasource_id", record)
+        upsert_record(engine, table, "datasource_id", record)

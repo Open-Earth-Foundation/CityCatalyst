@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cc-global-api-db-backup
+spec:
+  # run every day at 3AM
+  schedule: 0 3 * * *
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 86400
+      template:
+        spec:
+          restartPolicy: OnFailure
+          volumes:
+          - name: backup
+            persistentVolumeClaim:
+              claimName: cc-global-api-db-backup-pvc
+          containers:
+          - name: cc-global-api-db-backup
+            image: postgres:15
+            imagePullPolicy: Always
+            env:
+            - name: PGUSER
+              value: "ccglobal"
+            - name: PGHOST
+              value: "cc-global-api-db"
+            - name: PGDATABASE
+              value: "ccglobal"
+            - name: PGPASSWORD
+              value: "ccglobal"
+            args:
+            - |
+              pg_dump | gzip > /var/backups/ccglobal.sql.gz
+            command: ['/bin/bash', '-c']
+            resources:
+              limits:
+                memory: "1024Mi"
+                cpu: "1000m"
+            volumeMounts:
+            - mountPath: "/var/backups/"
+              name: backup

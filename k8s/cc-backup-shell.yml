@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cc-backup-shell
+spec:
+  containers:
+  - name: cc-backup-shell
+    image: busybox
+    command: ["sh", "-c", "sleep infinity"]
+    volumeMounts:
+    - name: cc-db-backup
+      mountPath: /var/backups/cc-db
+    - name: cc-global-api-db-backup
+      mountPath: /var/backups/cc-global-api-db
+    resources:
+      limits:
+        memory: "1024Mi"
+        cpu: "1000m"
+  volumes:
+  - name: cc-db-backup
+    persistentVolumeClaim:
+      claimName: cc-db-backup-pvc
+  - name: cc-global-api-db-backup
+    persistentVolumeClaim:
+      claimName: cc-global-api-db-backup-pvc

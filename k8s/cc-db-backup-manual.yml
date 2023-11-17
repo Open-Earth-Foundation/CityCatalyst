@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: cc-db-backup-manual-
+spec:
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      restartPolicy: OnFailure
+      volumes:
+      - name: backup
+        persistentVolumeClaim:
+          claimName: cc-db-backup-pvc
+      containers:
+      - name: cc-db-backup-manual
+        image: postgres:15
+        imagePullPolicy: Always
+        env:
+        - name: PGUSER
+          value: "citycatalyst"
+        - name: PGHOST
+          value: "cc-db"
+        - name: PGDATABASE
+          value: "citycatalyst"
+        - name: PGPASSWORD
+          value: "development"
+        args:
+        - |
+          pg_dump | gzip > /var/backups/citycatalyst.sql.gz
+        command: ['/bin/bash', '-c']
+        resources:
+          limits:
+            memory: "1024Mi"
+            cpu: "1000m"
+        volumeMounts:
+        - mountPath: "/var/backups/"
+          name: backup

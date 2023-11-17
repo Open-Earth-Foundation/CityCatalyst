@@ -38,6 +38,11 @@ if __name__ == "__main__":
         help="path to file you want to import (optional) (default: reads data from IPFS)",
     )
     parser.add_argument(
+        "--url",
+        help="url to import",
+        default='https://ipfs.io/ipfs/bafybeiajpp2sbogwvfjojz5knyt6en32ia7rsuuyrjxuf4ln4urhwbhumm/osm_data_updated.csv.gz',
+    )
+    parser.add_argument(
         "--log_file", help="path to log file", default="./osm_importer.log"
     )
     args = parser.parse_args()
@@ -110,11 +115,8 @@ if __name__ == "__main__":
                 if not primary_key_exists:
                     ins = osm.insert().values(**table_data)
                     conn.execute(ins)
-    else:
-        # dataset created using importer/osmid_to_geometry.py
-        # script was run by EP and output was stored on IPFS
-        # the file was then updated by LG to include correct bounding box for each polygon
-        file = "https://ipfs.io/ipfs/bafybeiajpp2sbogwvfjojz5knyt6en32ia7rsuuyrjxuf4ln4urhwbhumm/osm_data_updated.csv.gz"
+    elif args.url:
+        file = args.url
 
         logging.info(
             f"Reading data from: {file} (may take about 30 seconds to read the data)"

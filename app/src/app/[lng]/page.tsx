@@ -432,7 +432,10 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
           </Box>
         </Box>
       </Box>
-      <section className="h-full bg-[#fafafa] pt-[128px] pb-[100px]">
+      <Box
+        className="h-full pt-[128px] pb-[100px]"
+        bg="background.backgroundLight"
+      >
         <Box className="flex mx-auto w-[1090px]">
           <Box className="flex flex-col gap-[8px] w-full h-300">
             <Box className="flex items-center gap-3">
@@ -538,7 +541,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
             </Box>
           </Box>
         </Box>
-      </section>
+      </Box>
       <Footer lng={lng} />
     </>
   );

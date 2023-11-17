@@ -28,10 +28,7 @@ export default function AddDataIntro({
   const router = useRouter();
 
   return (
-    <Box
-      bg="background.backgroundLight"
-      className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4"
-    >
+    <Box className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
       <Button
         variant="ghost"
         leftIcon={<ArrowBackIcon boxSize={6} />}

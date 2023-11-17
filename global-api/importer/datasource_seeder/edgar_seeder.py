@@ -11,7 +11,7 @@ GROUP BY "reference_number";
 import argparse
 import os
 from sqlalchemy import create_engine, MetaData, Table
-from utils import DataSource, uuid_generate_v3, insert_record
+from utils import DataSource, uuid_generate_v3, upsert_record
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -42,7 +42,7 @@ if __name__ == "__main__":
         publisher_id=PUBLISHER,
         name="EDGARv7.0 Manufacturing Combustion Emissions",
         description="",
-        source_type="",
+        source_type="third_party",
         access_type="globalapi",
         url="https://joint-research-centre.ec.europa.eu/index_en",
         geographical_location="global",
@@ -74,7 +74,7 @@ if __name__ == "__main__":
         publisher_id=PUBLISHER,
         name="EDGARv7.0 Road Transportation Emissions (No Resuspension)",
         description="",
-        source_type="",
+        source_type="third_party",
         access_type="globalapi",
         url="https://joint-research-centre.ec.europa.eu/index_en",
         geographical_location="global",
@@ -108,4 +108,4 @@ if __name__ == "__main__":
     records = [datasource.__dict__ for datasource in merged_datasources]
 
     for record in records:
-        insert_record(engine, table, "datasource_id", record)
+        upsert_record(engine, table, "datasource_id", record)

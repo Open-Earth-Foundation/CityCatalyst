@@ -4,30 +4,13 @@ import {
   Box,
   HStack,
   Heading,
-  Icon,
-  Tab,
-  TabList,
-  TabPanels,
-  Tabs,
   Tooltip,
   useRadioGroup,
 } from "@chakra-ui/react";
-import { MdError } from "react-icons/md";
 import { ActivityDataTab } from "./ActivityDataTab";
 import { DirectMeasureForm } from "./DirectMeasureForm";
 import { TFunction } from "i18next";
 import { Control, useController } from "react-hook-form";
-import { resolve } from "@/util/helpers";
-
-const fields = [
-  "activityDataAmount",
-  "activityDataUnit",
-  "emissionFactorType",
-  "co2EmissionFactor",
-  "n2oEmissionFactor",
-  "ch4EmissionFactor",
-  "sourceReference",
-];
 
 export function EmissionsForm({
   t,
@@ -46,13 +29,6 @@ export function EmissionsForm({
   watch: Function;
   sectorNumber: string;
 }) {
-  const hasFuelError = fields.some(
-    (field) => !!resolve(prefix + "fuel." + field, errors)
-  );
-  const hasGridError = fields.some(
-    (field) => !!resolve(prefix + "grid." + field, errors)
-  );
-
   const { field } = useController({
     name: prefix + "methodology",
     control,
@@ -88,50 +64,14 @@ export function EmissionsForm({
       </HStack>
       {/*** Activity data ***/}
       {methodology === "activity-data" && (
-        <Tabs>
-          <TabList>
-            <Tab>
-              {t("fuel-combustion")}{" "}
-              {hasFuelError && (
-                <Icon
-                  as={MdError}
-                  boxSize={4}
-                  ml={2}
-                  color="sentiment.negativeDefault"
-                />
-              )}
-            </Tab>
-            <Tab>
-              {t("grid-supplied-energy")}{" "}
-              {hasGridError && (
-                <Icon
-                  as={MdError}
-                  boxSize={4}
-                  ml={2}
-                  color="sentiment.negativeDefault"
-                />
-              )}
-            </Tab>
-          </TabList>
-          <TabPanels>
-            <ActivityDataTab
-              t={t}
-              register={register}
-              errors={errors}
-              prefix={prefix + "fuel."}
-              watch={watch}
-              sectorNumber={sectorNumber}
-            />
-            <ActivityDataTab
-              t={t}
-              register={register}
-              errors={errors}
-              prefix={prefix + "grid."}
-              watch={watch}
-              sectorNumber={sectorNumber}
-            />
-          </TabPanels>
-        </Tabs>
+        <ActivityDataTab
+          t={t}
+          register={register}
+          errors={errors}
+          prefix={prefix + "activity."}
+          watch={watch}
+          sectorNumber={sectorNumber}
+        />
       )}
       {/*** Direct measure ***/}
       {methodology === "direct-measure" && (

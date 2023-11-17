@@ -13,6 +13,10 @@ module.exports = {
       colors: {
         brand: "#2351DC",
         tertiary: "#7A7B9A",
+        light: "#FFFFFF",
+        content_tertiary: "#7A7B9A",
+        content_secondary: "#232640",
+        sentiment_negative_default: "#F23D33"
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

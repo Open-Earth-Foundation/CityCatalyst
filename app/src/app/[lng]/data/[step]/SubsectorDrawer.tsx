@@ -1,5 +1,7 @@
 import { TagSelect } from "@/components/TagSelect";
 import { RadioButton } from "@/components/radio-button";
+import type { SubSectorValueAttributes } from "@/models/SubSectorValue";
+import { api } from "@/services/api";
 import { ArrowBackIcon, InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Accordion,
@@ -21,13 +23,12 @@ import {
   Tooltip,
   useRadioGroup,
 } from "@chakra-ui/react";
-import { TFunction } from "i18next";
-import { RefObject, useEffect } from "react";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import type { TFunction } from "i18next";
+import type { RefObject } from "react";
+import { useEffect } from "react";
 import { SubmitHandler, useController, useForm } from "react-hook-form";
 import { EmissionsForm } from "./EmissionsForm";
-import { api } from "@/services/api";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { SubSectorValueAttributes } from "@/models/SubSectorValue";
 import type {
   ActivityData,
   DirectMeasureData,
@@ -38,12 +39,12 @@ import type {
 } from "./types";
 
 type Inputs = {
-  valueType: string;
-  methodology: string;
-  subcategories: SubcategoryOption[];
-  fuel: ActivityData;
-  grid: ActivityData;
+  valueType: "one-value" | "subcategory-values" | "";
+  methodology: "activity-data" | "direct-measure" | "";
+  energyType: "fuel-combustion" | "grid-supplied-energy";
+  activity: ActivityData;
   direct: DirectMeasureData;
+  subcategories: SubcategoryOption[];
   subcategoryData: Record<string, SubcategoryData>;
 };
 
@@ -51,6 +52,7 @@ const defaultActivityData: ActivityData = {
   activityDataAmount: undefined,
   activityDataUnit: undefined,
   emissionFactorType: "Local",
+  dataQuality: "",
   co2EmissionFactor: 10,
   n2oEmissionFactor: 10,
   ch4EmissionFactor: 10,
@@ -68,9 +70,9 @@ const defaultDirectMeasureData: DirectMeasureData = {
 const defaultValues: Inputs = {
   valueType: "",
   methodology: "",
+  energyType: "fuel-combustion",
   subcategories: [],
-  fuel: defaultActivityData,
-  grid: defaultActivityData,
+  activity: defaultActivityData,
   direct: defaultDirectMeasureData,
   subcategoryData: {},
 };
@@ -79,8 +81,8 @@ function nameToI18NKey(name: string): string {
   return name.replaceAll(" ", "-").toLowerCase();
 }
 
-// TODO create custom type that includes relations?
-function extractFormValues(subsectorValue: SubSectorValueAttributes) {
+// TODO create custom type that includes relations instead of using SubSectorValueAttributes?
+function extractFormValues(subsectorValue: SubSectorValueAttributes): Inputs {
   return defaultValues; // TODO update with data
 }
 
@@ -127,14 +129,44 @@ export function SubsectorDrawer({
     reset,
     control,
   } = useForm<Inputs>();
+
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (!subsector) return;
-    console.log("Sector data", data);
-    await setSubsectorValue({
-      subSectorId: subsector.subsectorId,
-      inventoryId: inventoryId!,
-      data,
-    });
+    console.log("Subsector data", data);
+
+    // decide which data from the form to save
+    if (data.valueType === "one-value") {
+      let subSectorData;
+
+      if (data.methodology === "activity-data") {
+        subSectorData = data.activity;
+      } else if (data.methodology === "direct-measure") {
+        subSectorData = data.direct;
+      } else {
+        throw new Error("Methodology not selected!");
+      }
+
+      await setSubsectorValue({
+        subSectorId: subsector.subsectorId,
+        inventoryId: inventoryId!,
+        data: subSectorData,
+      });
+    } else if (data.valueType === "subcategory-values") {
+      for (const subCategoryId in data.subcategoryData) {
+        const value = data.subcategoryData[subCategoryId];
+        let subCategoryData;
+
+        if (value.methodology === "activity-data") {
+          subCategoryData = value.activity;
+        } else if (data.methodology === "direct-measure") {
+          subCategoryData = value.direct;
+        } else {
+          throw new Error(
+            `Methodology for subcategory ${subCategoryId} not selected!`,
+          );
+        }
+      }
+    }
     onSave(subsector, data);
     onClose();
   };
@@ -157,16 +189,16 @@ export function SubsectorDrawer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subsectorValue, subsector]);
 
-  const subcategoryData: SubCategory[] = [
-    { subcategoryId: "1337a", subcategoryName: "Manufacturing" },
-    { subcategoryId: "1338b", subcategoryName: "Industrial facilities" },
-    { subcategoryId: "1339c", subcategoryName: "Construction activities" },
-  ];
-  const subcategoryOptions = subcategoryData.map(
-    (subcategory: SubCategory) => ({
-      label: subcategory.subcategoryName,
-      value: subcategory.subcategoryId,
-    }),
+  const subcategoryData: SubCategory[] | undefined = subsector?.subCategories;
+  const subcategoryOptions = subcategoryData?.map(
+    (subcategory: SubCategory) => {
+      const name = subcategory.subcategoryName?.replace("Emissions from ", "") || "Unknown Subcategory";
+      const label = name.charAt(0).toUpperCase() + name.slice(1);
+      return {
+        label,
+        value: subcategory.subcategoryId,
+      };
+    },
   );
 
   const valueType = watch("valueType");
@@ -291,7 +323,7 @@ export function SubsectorDrawer({
                                         {subcategory.label}
                                       </Heading>
                                       <Text color="content.tertiary">
-                                        TODO: Get category text body
+                                        {/* TODO: Get category text body */}
                                       </Text>
                                     </Box>
                                     <Tag

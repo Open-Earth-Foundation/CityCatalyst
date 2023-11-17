@@ -2,6 +2,7 @@
 
 const fs = require("node:fs");
 const { parse } = require("csv-parse");
+const { bulkUpsert } = require("./util/util.cjs");
 
 async function parseFile(filename) {
   const records = [];
@@ -24,7 +25,7 @@ async function parseFile(filename) {
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     const scopes = await parseFile("Scope");
     const reportingLevels = await parseFile("ReportingLevel");
     const sectors = await parseFile("Sector");
@@ -32,26 +33,64 @@ module.exports = {
     const subCategories = await parseFile("SubCategory");
 
     await queryInterface.sequelize.transaction(async (transaction) => {
+      await bulkUpsert(
+        queryInterface,
+        "Scope",
+        scopes,
+        "scope_id",
+        transaction,
+      );
+      await bulkUpsert(
+        queryInterface,
+        "ReportingLevel",
+        reportingLevels,
+        "reportinglevel_id",
+        transaction,
+      );
+      await bulkUpsert(
+        queryInterface,
+        "Sector",
+        sectors,
+        "sector_id",
+        transaction,
+      );
+      await bulkUpsert(
+        queryInterface,
+        "SubSector",
+        subSectors,
+        "subsector_id",
+        transaction,
+      );
+      await bulkUpsert(
+        queryInterface,
+        "SubCategory",
+        subCategories,
+        "subcategory_id",
+        transaction,
+      );
+
+      /* re-enable when updateOnDuplicate is fixed in sequelize
       await queryInterface.bulkInsert("Scope", scopes, {
         transaction,
-        // updateOnDuplicate: ["scope_id"],
+        updateOnDuplicate: ["scope_id"],
       });
       await queryInterface.bulkInsert("ReportingLevel", reportingLevels, {
         transaction,
-        // updateOnDuplicate: ["reportinglevel_id"],
+        updateOnDuplicate: ["reportinglevel_id"],
       });
       await queryInterface.bulkInsert("Sector", sectors, {
         transaction,
-        // updateOnDuplicate: ["sector_id"],
+        updateOnDuplicate: ["sector_id"],
       });
       await queryInterface.bulkInsert("SubSector", subSectors, {
         transaction,
-        // updateOnDuplicate: ["subsector_id"],
+        updateOnDuplicate: ["subsector_id"],
       });
       await queryInterface.bulkInsert("SubCategory", subCategories, {
         transaction,
-        // updateOnDuplicate: ["subcategory_id"],
+        updateOnDuplicate: ["subcategory_id"],
       });
+      */
     });
   },
 

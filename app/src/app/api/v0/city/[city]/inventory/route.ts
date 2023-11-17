@@ -20,9 +20,9 @@ export const POST = apiHandler(
         {
           model: db.models.User,
           as: "users",
-          where: {
-            userId: session?.user.id,
-          },
+          // where: {
+          //   userId: session?.user.id,
+          // },
         },
       ],
     });

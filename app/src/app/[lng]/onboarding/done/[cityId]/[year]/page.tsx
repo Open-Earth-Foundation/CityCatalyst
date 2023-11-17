@@ -9,16 +9,14 @@ import NextLink from "next/link";
 import { Trans } from "react-i18next/TransWithoutContext";
 
 export default function OnboardingDone({
-  params: { lng },
+  params: { lng, year },
 }: {
-  params: { lng: string };
+  params: { lng: string; year: number };
 }) {
   const data = useAppSelector((state) => state.openClimateCity.city);
   const { t } = useTranslation(lng, "onboarding");
 
-  // TODO load these from the API
-  const cityName = "Ciudad Autónoma de Buenos Aires";
-  const year = "2023";
+  console.log(data);
 
   return (
     <div className="pt-[148px] w-[1024px] max-w-full mx-auto px-4 pb-12 flex flex-col items-center">

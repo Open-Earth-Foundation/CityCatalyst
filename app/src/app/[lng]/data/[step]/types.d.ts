@@ -18,6 +18,7 @@ type SubSector = {
   scope: { scopeName: string };
   completed: boolean;
   subsectorName: string;
+  subCategories: SubCategory[];
 };
 
 type DataSource = DataSourceAttributes & {
@@ -48,6 +49,7 @@ type ActivityData = {
   co2EmissionFactor: number;
   n2oEmissionFactor: number;
   ch4EmissionFactor: number;
+  dataQuality: string;
   sourceReference: string;
 };
 
@@ -60,7 +62,7 @@ type DirectMeasureData = {
 };
 
 type SubcategoryData = {
-  fuel: ActivityData;
-  grid: ActivityData;
+  methodology: "activity-data" | "direct-measure" | "";
+  activity: ActivityData;
   direct: DirectMeasureData;
 };

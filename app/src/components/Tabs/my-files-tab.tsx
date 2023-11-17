@@ -425,13 +425,12 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
                     </Box>
                     <Box display="flex" flexDirection="column" gap="24px">
                       {!isYearSelected ? (
-                        <TableContainer>
-                          <Table
-                            variant="simple"
-                            borderWidth="1px"
-                            borderStyle="solid"
-                            borderColor="border.neutral"
-                          >
+                        <TableContainer
+                          borderWidth="1px"
+                          borderColor="border.overlay"
+                          borderRadius="12px"
+                        >
+                          <Table variant="simple" borderStyle="solid">
                             <Thead>
                               <Tr>
                                 <Th>{t("inventory-year")}</Th>
@@ -492,13 +491,12 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
                           </Table>
                         </TableContainer>
                       ) : (
-                        <TableContainer>
-                          <Table
-                            variant="simple"
-                            borderWidth="1px"
-                            borderStyle="solid"
-                            borderColor="border.neutral"
-                          >
+                        <TableContainer
+                          borderWidth="1px"
+                          borderColor="border.overlay"
+                          borderRadius="12px"
+                        >
+                          <Table variant="simple" borderStyle="solid">
                             <Thead>
                               <Tr>
                                 <Th>{t("name")}</Th>

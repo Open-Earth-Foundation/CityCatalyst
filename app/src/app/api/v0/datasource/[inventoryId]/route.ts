@@ -92,7 +92,9 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
     where: { datasourceId: body.dataSourceIds },
     include: [
       { model: SubSector, required: false, as: "subSector" },
-      { model: SubCategory, required: false, as: "subCategory" },
+      { model: SubCategory, required: false, as: "subCategory", include: [{
+        model: SubSector, required: false, as: "subsector",
+      }]},
     ],
   });
   if (!sources) {
@@ -145,10 +147,23 @@ async function initSubSectorValue(
   inventory: Inventory,
   totalEmissions: number,
   values: Partial<SubSectorValueCreationAttributes>,
+  sectorId: string,
+  subsectorId: string,
 ): Promise<SubSectorValue> {
+  if (!sectorId) {
+    throw new createHttpError.InternalServerError(
+      "Failed to find sector ID for source " + source.datasourceId,
+    );
+  }
+  if (!subsectorId) {
+    throw new createHttpError.InternalServerError(
+      "Failed to find subsector ID for source " + source.datasourceId,
+    );
+  }
+
   let sectorValue = await db.models.SectorValue.findOne({
     where: {
-      sectorId: source.subSector.sectorId,
+      sectorId,
       inventoryId: inventory.inventoryId,
     },
   });
@@ -156,7 +171,7 @@ async function initSubSectorValue(
   if (!sectorValue) {
     sectorValue = await db.models.SectorValue.create({
       sectorValueId: randomUUID(),
-      sectorId: source.subSector.sectorId,
+      sectorId,
       inventoryId: inventory.inventoryId,
       totalEmissions,
     });
@@ -168,7 +183,7 @@ async function initSubSectorValue(
   const subSectorValue = await db.models.SubSectorValue.create({
     ...values,
     sectorValueId: sectorValue.sectorValueId,
-    subsectorId: source.subsectorId,
+    subsectorId,
     subsectorValueId: randomUUID(),
   });
   return subSectorValue;
@@ -192,6 +207,7 @@ async function retrieveGlobalAPISource(
   }
 
   const url = source.apiEndpoint
+    .replace("openearth.cloud", "openearth.dev") // TODO remove once data catalogue is fixed
     .replace(":locode", inventory.city.locode.replace("-", " "))
     .replace(":year", inventory.year.toString())
     .replace(":gpcReferenceNumber", referenceNumber);
@@ -223,12 +239,19 @@ async function retrieveGlobalAPISource(
   };
 
   if (source.subsectorId) {
-    await initSubSectorValue(source, inventory, totalEmissions, values);
+    await initSubSectorValue(
+      source,
+      inventory,
+      totalEmissions,
+      values,
+      source.subSector.sectorId!,
+      source.subsectorId,
+    );
   } else if (source.subcategoryId) {
     // add parent SubSectorValue if not present yet
     let subSectorValue = await db.models.SubSectorValue.findOne({
       where: {
-        subsectorId: source.subCategory.subsectorId,
+        subsectorId: source.subCategory?.subsectorId,
         inventoryId: inventory.inventoryId,
       },
     });
@@ -238,6 +261,8 @@ async function retrieveGlobalAPISource(
         inventory,
         totalEmissions,
         values,
+        source.subCategory?.subsector?.sectorId!,
+        source.subCategory?.subsectorId!,
       );
     } else {
       await subSectorValue.update({

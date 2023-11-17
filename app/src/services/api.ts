@@ -139,12 +139,21 @@ export const openclimateAPI = createApi({
   endpoints: (builder) => ({
     getOCCity: builder.query<any, string>({
       query: (q) => `/api/v1/search/actor?q=${q}`,
+      transformResponse: (response: any) => {
+        return response.data.filter((item: any) => item.type === "city");
+      },
     }),
     getOCCityData: builder.query<any, string>({
       query: (locode) => `/api/v1/actor/${locode}`,
     }),
   }),
 });
+
+// Global API URL
+export const GLOBAL_API_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://ccglobal.citycatalyst.io"
+    : "https://ccglobal.openearth.dev";
 
 // hooks are automatically generated
 export const {

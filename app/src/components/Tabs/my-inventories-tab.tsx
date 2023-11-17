@@ -313,15 +313,16 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                       </Text>
                     </Box>
                     <Box display="flex" flexDirection="column" gap="24px">
-                      <TableContainer w="783px">
-                        <Table
-                          variant="simple"
-                          borderWidth="1px"
-                          borderStyle="solid"
-                          borderColor="border.neutral"
-                        >
+                      <TableContainer
+                        w="783px"
+                        borderWidth="1px"
+                        borderColor="border.overlay"
+                        borderRadius="12px"
+                      >
+                        <Table variant="simple" borderStyle="solid">
                           <Thead>
                             <Tr>
+                              <Th></Th>
                               <Th>{t("inventory-year")}</Th>
                               <Th>{t("status")}</Th>
                               <Th isNumeric>{t("last-updated")}</Th>
@@ -334,14 +335,12 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                           >
                             {years.map((year) => (
                               <Tr key={year}>
-                                <Td
-                                  display="flex"
-                                  gap="16px"
-                                  alignItems="center"
-                                >
+                                <Td>
                                   <Box color="content.tertiary">
                                     <MdOutlineFolder size={24} />
                                   </Box>
+                                </Td>
+                                <Td>
                                   <Text>{year}</Text>
                                 </Td>
                                 {cities.map((city) => {

@@ -5,9 +5,16 @@ import { geoJSONBoundingBox } from "@/util/geojson";
 import { Box, Center, Spinner } from "@chakra-ui/react";
 import type { GeoJsonObject } from "geojson";
 import { LatLngBoundsLiteral, LatLngExpression } from "leaflet";
+import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { FC, useEffect } from "react";
-import { GeoJSON, MapContainer, TileLayer, useMap } from "react-leaflet";
+import { FC, useEffect, useRef, useState } from "react";
+import {
+  GeoJSON,
+  MapContainer,
+  Marker,
+  TileLayer,
+  useMap,
+} from "react-leaflet";
 
 export interface CityMapProps {
   locode: string | null;
@@ -18,7 +25,7 @@ export interface CityMapProps {
 function BoundingBoxFocus({ boundingBox }: { boundingBox?: number[] }) {
   const map = useMap();
   useEffect(() => {
-    if (!boundingBox || boundingBox.some(isNaN)) {
+    if (!boundingBox || boundingBox.some(isNaN) || boundingBox.length !== 4) {
       console.error("Invalid bounding box:", boundingBox);
       return;
     }
@@ -37,14 +44,30 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
   const { data, isLoading } = api.useGetCityBoundaryQuery(locode!, {
     skip: !locode,
   });
+
+  const mapRef = useRef<L.Map | null>(null);
   let boundingBox: number[] | undefined;
   let mapCenter: LatLngExpression | undefined = [34.0, -37.0];
-  if (data) {
-    console.log(data);
-    boundingBox = geoJSONBoundingBox(data);
-  } else {
-    console.log("no data");
-  }
+  useEffect(() => {
+    if (mapRef.current) {
+      mapRef.current?.whenReady(() => {
+        if (data) {
+          const boundingBox = geoJSONBoundingBox(data);
+          if (boundingBox && !boundingBox.some(isNaN)) {
+            const bounds: LatLngBoundsLiteral = [
+              [boundingBox[1], boundingBox[0]],
+              [boundingBox[3], boundingBox[2]],
+            ];
+            mapRef.current
+              ? mapRef.current.fitBounds(bounds, { padding: [50, 50] })
+              : boundingBox;
+          }
+        } else {
+          console.log("no data");
+        }
+      });
+    }
+  }, [data]);
   return (
     <Box w={width} h={height} className="relative">
       {isLoading && (
@@ -60,9 +83,10 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
       )}
       <MapContainer
         center={mapCenter}
-        zoom={13}
-        scrollWheelZoom={false}
+        zoom={2}
+        scrollWheelZoom={true}
         style={{ width, height }}
+        ref={mapRef}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

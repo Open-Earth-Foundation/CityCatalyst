@@ -50,8 +50,6 @@ enum STATUS {
   ERROR = "error",
 }
 
-const CITY_INTENTORY_YEAR = "DE_BER";
-
 // only render map on the client
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -147,7 +145,6 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               fontWeight="bold"
               lineHeight="52"
               fontSize="label.lg"
-              fontFamily="heading"
             >
               {title}
             </Text>
@@ -178,7 +175,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
       2000,
       "semantic.info",
     );
-    fetch(`/api/v0/city/:city/inventory/${CITY_INTENTORY_YEAR}.xls`)
+    fetch(`/api/v0/city/${locode}/inventory/${year}?format=csv`)
       .then((res) => {
         if (!res.ok) {
           throw new Error("Network response was not ok");
@@ -187,7 +184,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
         const contentDisposition = res.headers.get("Content-Disposition");
         if (contentDisposition) {
           const match = contentDisposition.match(/filename="(.+)"/);
-          const filename = match ? match[1] : `${CITY_INTENTORY_YEAR}.xls`;
+          const filename = match ? match[1] : `${locode}_${year}.csv`;
           return res.blob().then((blob) => {
             const downloadLink = document.createElement("a");
             downloadLink.href = URL.createObjectURL(blob);
@@ -302,7 +299,6 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     <Box>
                       <Box className="flex gap-1">
                         <Text
-                          fontFamily="heading"
                           color="base.light"
                           fontSize="headline.sm"
                           fontWeight="semibold"
@@ -448,7 +444,10 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
           </Box>
         </Box>
       </Box>
-      <section className="h-full bg-[#fafafa] pt-[128px] pb-[100px]">
+      <Box
+        className="h-full pt-[128px] pb-[100px]"
+        bg="background.backgroundLight"
+      >
         <Box className="flex mx-auto w-[1090px]">
           <Box className="flex flex-col gap-[8px] w-full h-300">
             <Box className="flex items-center gap-3">
@@ -544,6 +543,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               ) : (
                 inventoryProgress?.sectorProgress
                   .slice()
+                  .filter((sectorProgress) => {
+                    return ["I", "II", "III"].includes(
+                      sectorProgress.sector.referenceNumber || "",
+                    );
+                  })
                   .sort(sortSectors)
                   .map((sectorProgress, i) => (
                     <SectorCard
@@ -557,7 +561,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
             </Box>
           </Box>
         </Box>
-      </section>
+      </Box>
       <Footer lng={lng} />
     </>
   );

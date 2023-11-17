@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cc-sync-catalogue
+spec:
+  # run every monday
+  schedule: 0 0 * * 1
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 86400
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: cc-sync-catalogue
+            image: ghcr.io/open-earth-foundation/citycatalyst:latest
+            imagePullPolicy: Always
+            env:
+            - name: NODE_ENV
+              value: development
+            - name: DATABASE_NAME
+              value: "citycatalyst"
+            - name: DATABASE_HOST
+              value: "cc-db"
+            - name: DATABASE_USER
+              value: "citycatalyst"
+            - name: DATABASE_PASSWORD
+              value: "development"
+            command: ["npm", "run", "sync-catalogue"]
+            resources:
+              limits:
+                memory: "1024Mi"
+                cpu: "1000m"

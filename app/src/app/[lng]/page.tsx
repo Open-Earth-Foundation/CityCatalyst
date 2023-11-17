@@ -543,6 +543,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               ) : (
                 inventoryProgress?.sectorProgress
                   .slice()
+                  .filter((sectorProgress) => {
+                    return ["I", "II", "III"].includes(
+                      sectorProgress.sector.referenceNumber || "",
+                    );
+                  })
                   .sort(sortSectors)
                   .map((sectorProgress, i) => (
                     <SectorCard

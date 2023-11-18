@@ -1,6 +1,4 @@
-import { db } from "@/models";
 import { apiHandler } from "@/util/api";
-import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import wellknown from "wellknown";
 import { GLOBAL_API_URL } from "@/services/api";

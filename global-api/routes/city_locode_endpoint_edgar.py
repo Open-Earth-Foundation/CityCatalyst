@@ -22,22 +22,18 @@ def db_query(locode, year, reference_number):
         query = text(
             """
             SELECT
-                cco.cell_id,
-                cg.area,
-                cco.fraction_in_city,
-                gce.emissions_quantity,
                 gce.gas,
-                gce.year,
-                gce.reference_number
+                SUM(gce.emissions_quantity * cco.fraction_in_city) AS total_emissions
             FROM
                 "CityCellOverlapEdgar" cco
             JOIN
-                "GridCellEdgar" cg ON cco.cell_id = cg.id
-            JOIN
-                "GridCellEmissionsEdgar" gce ON cco.cell_id = gce.cell_id
+                "GridCellEmissionsEdgar" gce
+            ON
+                cco.cell_lat = gce.cell_lat AND cco.cell_lon = gce.cell_lon
             WHERE cco.locode = :locode
             AND gce.reference_number = :reference_number
-            AND gce.year = :year;"""
+            AND gce.year = :year
+            GROUP BY gce.gas"""
         )
 
         params = {"locode": locode, "year": year, "reference_number": reference_number}
@@ -53,31 +49,24 @@ def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: s
     if not records:
         raise HTTPException(status_code=404, detail="No data available")
 
-    series = (
-        pd.DataFrame(records)
-        .assign(
-            emissions_total=lambda row: row["area"]
-            * row["fraction_in_city"]
-            * row["emissions_quantity"]
-        )
-        .groupby("gas")
-        .sum("emissions_total")
-        .astype({"emissions_total": int})
-        .loc[:, ["emissions_total"]]
-        .squeeze()
-    )
+    masses = {'CO2': 0.0, 'CH4': 0.0, 'N2O': 0.0}
+
+    for record in records:
+        gas = record[0]
+        mass = record[1]
+        masses[gas] = mass
 
     totals = {
         "totals": {
             "emissions": {
-                "co2_mass": str(series.get("CO2", 0)),
-                "co2_co2eq": str(series.get("CO2", 0)),
-                "ch4_mass": str(series.get("CH4", 0)),
-                "ch4_co2eq_100yr": str(series.get("CH4", 0) * ch4_GWP_100yr),
-                "ch4_co2eq_20yr": str(series.get("CH4", 0) * ch4_GWP_20yr),
-                "n2o_mass": str(series.get("N2O", 0)),
-                "n2o_co2eq_100yr": str(series.get("N2O", 0) * n2o_GWP_100yr),
-                "n2o_co2eq_20yr": str(series.get("N2O", 0) * n2o_GWP_20yr),
+                "co2_mass": str(masses["CO2"]),
+                "co2_co2eq": str(masses["CO2"]),
+                "ch4_mass": str(masses["CH4"]),
+                "ch4_co2eq_100yr": str(masses["CH4"] * ch4_GWP_100yr),
+                "ch4_co2eq_20yr": str(masses["CH4"] * ch4_GWP_20yr),
+                "n2o_mass": str(masses["N2O"]),
+                "n2o_co2eq_100yr": str(masses["N2O"] * n2o_GWP_100yr),
+                "n2o_co2eq_20yr": str(masses["N2O"] * n2o_GWP_20yr),
                 "gpc_quality": str(gpc_quality_data),
             }
         }

@@ -563,3 +563,14 @@ def get_edgar_grid_coords_and_wkt(session):
     )
 
     return session.execute(query).fetchall()
+
+def area_of_cell(lat: float, lon: float, lon_res: float, lat_res: float):
+    coords = create_grid_cell_coords(
+                    lat=lat,
+                    lon=lon,
+                    lon_res=lon_res,
+                    lat_res=lat_res
+                )
+    polygon = Polygon(coords)
+    cell = load_wkt(polygon.wkt)
+    return area_of_polygon(cell)

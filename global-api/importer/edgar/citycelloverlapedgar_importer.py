@@ -11,11 +11,12 @@ from sqlalchemy.orm import sessionmaker
 from utils import (
     all_locodes_and_geometries_generator,
     area_of_polygon,
+    create_grid_cell_coords,
     insert_record,
     load_wkt,
     uuid_generate_v3,
-    get_edgar_cells_in_bounds,
 )
+from shapely.geometry import Polygon
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -67,43 +68,43 @@ if __name__ == "__main__":
         bbox_west = west - lon_res
 
         logger.info(f"Bounding box: {bbox_north, bbox_south, bbox_east, bbox_west}")
-        records = get_edgar_cells_in_bounds(
-            session, bbox_north, bbox_south, bbox_east, bbox_west
-        )
 
         total_intersection_area = 0
 
-        for record in records:
-            cell_id = str(record.id)
-            logger.info(f"Cell ID: {cell_id}")
-            cell_wkt = record.geometry
+        for lat in range(round(bbox_south * 10), round(bbox_north * 10) + 1):
+            for lon in range(round(bbox_west * 10), round(bbox_east * 10) + 1):
+                logger.info(f"Cell: {lat, lon}")
+                coords = create_grid_cell_coords(
+                    lat=lat/10.0,
+                    lon=lon/10.0,
+                    lon_res=lon_res,
+                    lat_res=lat_res
+                )
+                polygon = Polygon(coords)
+                cell = load_wkt(polygon.wkt)
+                intersection_polygon = cell.intersection(boundary_polygon)
+                cell_area = area_of_polygon(cell)
+                intersection_area = area_of_polygon(intersection_polygon)
 
-            record_id = uuid_generate_v3(locode + cell_id)
+                logger.info(f"Intersection area: {intersection_area}")
 
-            logger.info("Calculating overlap")
-            cell = load_wkt(cell_wkt)
-            intersection_polygon = cell.intersection(boundary_polygon)
-            cell_area = area_of_polygon(cell)
-            intersection_area = area_of_polygon(intersection_polygon)
+                total_intersection_area = total_intersection_area + intersection_area
 
-            logger.info(f"Intersection area: {intersection_area}")
+                if intersection_area > 0:
+                    fraction_in_city = intersection_area / cell_area
 
-            total_intersection_area = total_intersection_area + intersection_area
+                    logger.info(f"fraction in city: {fraction_in_city}")
 
-            if intersection_area > 0:
-                fraction_in_city = intersection_area / cell_area
+                    overlap = {
+                        "id": uuid_generate_v3(f'{locode}_{lat}_{lon}'),
+                        "locode": locode,
+                        "fraction_in_city": fraction_in_city,
+                        "cell_lat": lat,
+                        "cell_lon": lon,
+                        "created_date": str(datetime.now()),
+                    }
 
-                logger.info(f"fraction in city: {fraction_in_city}")
-
-                overlap = {
-                    "id": record_id,
-                    "locode": locode,
-                    "fraction_in_city": fraction_in_city,
-                    "cell_id": cell_id,
-                    "created_date": str(datetime.now()),
-                }
-
-                insert_record(engine, table, "id", overlap)
+                    insert_record(engine, table, "id", overlap)
 
         logger.info(f"Total intersection area: {total_intersection_area}")
         logger.info(f"City area percent in intersections: {(total_intersection_area/city_area)*100.0}")

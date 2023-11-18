@@ -151,7 +151,7 @@ export const openclimateAPI = createApi({
 
 // Global API URL
 export const GLOBAL_API_URL =
-  process.env.NODE_ENV === "production"
+  process.env.CC_ENV === "production"
     ? "https://ccglobal.citycatalyst.io"
     : "https://ccglobal.openearth.dev";
 

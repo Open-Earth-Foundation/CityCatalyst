@@ -4,7 +4,7 @@ import env from "@next/env";
 import { randomUUID } from "node:crypto";
 
 const GLOBAL_API_URL =
-  process.env.NODE_ENV === "production"
+  process.env.CC_ENV === "production"
     ? "https://ccglobal.citycatalyst.io"
     : "https://ccglobal.openearth.dev";
 

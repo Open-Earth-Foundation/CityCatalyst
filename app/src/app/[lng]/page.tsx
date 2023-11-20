@@ -11,7 +11,6 @@ import { formatPercent } from "@/util/helpers";
 import { SectorProgress } from "@/util/types";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import {
-  Avatar,
   Box,
   Button,
   Card,
@@ -34,7 +33,6 @@ import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { CircleFlag } from "react-circle-flags";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { useGetCityQuery } from "@/services/api";
 import { FiDownload } from "react-icons/fi";
 import {
   MdArrowOutward,
@@ -100,6 +98,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
       { locode: locode!, year: year! },
       { skip: !locode || !year },
     );
+
+  const { data: city } = api.useGetCityQuery(locode!, { skip: !locode });
 
   let totalProgress = 0,
     thirdPartyProgress = 0,
@@ -215,13 +215,6 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
         );
       });
   };
-
-  const {
-    data: city,
-    isLoading,
-    isSuccess,
-    isError,
-  } = useGetCityQuery(inventory && inventory.city.locode);
 
   return (
     <>

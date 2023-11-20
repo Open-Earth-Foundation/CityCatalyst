@@ -51,7 +51,8 @@ export default function Login({
   } = useForm<Inputs>();
 
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const defaultUrl = "https://" + document.location.host;
+  const callbackUrl = searchParams.get("callbackUrl") || defaultUrl;
   const [error, setError] = useState("");
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {

@@ -82,9 +82,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
     locode = userInfo.defaultCityLocode;
     year = userInfo.defaultInventoryYear;
 
+    // TODO also add this to login logic or after email verification to prevent extra redirect?
     // if the user doesn't have a default city/ year, redirect to onboarding page
     if (!locode || !year) {
-      router.push("/onboarding");
+      // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
+      setTimeout(() => router.push("/onboarding"), 0);
     }
   }
   const { data: inventory, isLoading: isInventoryLoading } =

@@ -51,7 +51,7 @@ export default function Login({
   } = useForm<Inputs>();
 
   const searchParams = useSearchParams();
-  const defaultUrl = "https://" + document.location.host;
+  const defaultUrl = `https://${document.location.host}/${lng}`;
   const callbackUrl = searchParams.get("callbackUrl") || defaultUrl;
   const [error, setError] = useState("");
 
@@ -65,8 +65,8 @@ export default function Login({
       });
 
       if (!res?.error) {
-        setError("");
         router.push(callbackUrl);
+        setError("");
       } else {
         console.error("Sign in failure:", res.error);
         setError(t("invalid-email-password"));

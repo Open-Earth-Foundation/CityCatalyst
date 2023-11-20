@@ -16,7 +16,6 @@ import {
   Input,
   Text,
 } from "@chakra-ui/react";
-import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";

@@ -63,13 +63,16 @@ export default function Login({
         callbackUrl,
       });
 
+      console.log("Redirecting", res?.error, callbackUrl);
       if (!res?.error) {
         setError("");
         router.push(callbackUrl);
       } else {
+        console.error("Sign in failure:", res.error);
         setError(t("invalid-email-password"));
       }
     } catch (error: any) {
+      console.error("Failed to sign in:", error);
       setError(error);
     }
   };
@@ -100,7 +103,10 @@ export default function Login({
           {t("log-in")}
         </Button>
       </form>
-      <Text className="w-full text-center mt-4 text-sm" color="content.tertiary">
+      <Text
+        className="w-full text-center mt-4 text-sm"
+        color="content.tertiary"
+      >
         {t("no-account")}{" "}
         <Link href="/auth/signup" className="underline">
           {t("sign-up")}

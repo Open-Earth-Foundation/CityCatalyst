@@ -64,7 +64,6 @@ export default function Login({
         callbackUrl,
       });
 
-      console.log("Redirecting", res?.error, callbackUrl);
       if (!res?.error) {
         setError("");
         router.push(callbackUrl);

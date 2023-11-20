@@ -19,7 +19,6 @@ import {
 import i18next from "i18next";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
-import Link from "next/link";
 import NextLink from "next/link";
 import { CircleFlag } from "react-circle-flags";
 import { FiSettings } from "react-icons/fi";

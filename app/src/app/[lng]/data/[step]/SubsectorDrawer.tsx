@@ -39,7 +39,7 @@ import type {
 } from "./types";
 
 type Inputs = {
-  valueType: "one-value" | "subcategory-values" | "";
+  valueType: "scope-values" | "unavailable" | "";
   methodology: "activity-data" | "direct-measure" | "";
   energyType: "fuel-combustion" | "grid-supplied-energy";
   activity: ActivityData;
@@ -68,7 +68,7 @@ const defaultDirectMeasureData: DirectMeasureData = {
 };
 
 const defaultValues: Inputs = {
-  valueType: "",
+  valueType: "scope-values",
   methodology: "",
   energyType: "fuel-combustion",
   subcategories: [],
@@ -135,23 +135,13 @@ export function SubsectorDrawer({
     console.log("Subsector data", data);
 
     // decide which data from the form to save
-    if (data.valueType === "one-value") {
-      let subSectorData;
-
-      if (data.methodology === "activity-data") {
-        subSectorData = data.activity;
-      } else if (data.methodology === "direct-measure") {
-        subSectorData = data.direct;
-      } else {
-        throw new Error("Methodology not selected!");
-      }
-
+    if (data.valueType === "unavailable") {
       await setSubsectorValue({
         subSectorId: subsector.subsectorId,
         inventoryId: inventoryId!,
-        data: subSectorData,
+        data: { unavailable: true },
       });
-    } else if (data.valueType === "subcategory-values") {
+    } else if (data.valueType === "scope-values") {
       for (const subCategoryId in data.subcategoryData) {
         const value = data.subcategoryData[subCategoryId];
         let subCategoryData;
@@ -192,7 +182,9 @@ export function SubsectorDrawer({
   const subcategoryData: SubCategory[] | undefined = subsector?.subCategories;
   const subcategoryOptions = subcategoryData?.map(
     (subcategory: SubCategory) => {
-      const name = subcategory.subcategoryName?.replace("Emissions from ", "") || "Unknown Subcategory";
+      const name =
+        subcategory.subcategoryName?.replace("Emissions from ", "") ||
+        "Unknown Subcategory";
       const label = name.charAt(0).toUpperCase() + name.slice(1);
       return {
         label,
@@ -204,7 +196,7 @@ export function SubsectorDrawer({
   const valueType = watch("valueType");
   const methodology = watch("methodology");
   const isSubmitEnabled =
-    !!valueType && (!!methodology || valueType == "subcategory-values");
+    !!valueType && (!!methodology || valueType == "scope-values");
   const subcategories = watch("subcategories");
 
   return (
@@ -271,30 +263,23 @@ export function SubsectorDrawer({
                       </Tooltip>
                     </Heading>
                     <HStack spacing={4} {...getRootProps()}>
-                      <RadioButton {...getRadioProps({ value: "one-value" })}>
-                        {t("one-value")}
-                      </RadioButton>
                       <RadioButton
                         {...getRadioProps({
-                          value: "subcategory-values",
+                          value: "scope-values",
                         })}
                       >
-                        {t("subcategory-values")}
+                        {t("scope-values")}
+                      </RadioButton>
+                      <RadioButton {...getRadioProps({ value: "unavailable" })}>
+                        {t("unavailable-not-applicable")}
                       </RadioButton>
                     </HStack>
                     {/*** One value for the sub-sector ***/}
-                    {valueType === "one-value" && (
-                      <EmissionsForm
-                        t={t}
-                        register={register}
-                        errors={errors}
-                        control={control}
-                        watch={watch}
-                        sectorNumber={sectorNumber!}
-                      />
+                    {valueType === "unavailable" && (
+                      <Text size="md" color="content.tertiary"></Text>
                     )}
                     {/*** Values for each subcategory ***/}
-                    {valueType === "subcategory-values" && (
+                    {valueType === "scope-values" && (
                       <>
                         <TagSelect<Inputs>
                           options={subcategoryOptions}

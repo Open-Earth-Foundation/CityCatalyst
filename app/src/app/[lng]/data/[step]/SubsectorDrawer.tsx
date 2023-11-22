@@ -15,11 +15,16 @@ import {
   Drawer,
   DrawerContent,
   DrawerOverlay,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
   HStack,
   Heading,
+  Select,
   Spinner,
   Tag,
   Text,
+  Textarea,
   Tooltip,
   useRadioGroup,
 } from "@chakra-ui/react";
@@ -37,11 +42,19 @@ import type {
   SubcategoryData,
   SubcategoryOption,
 } from "./types";
+import { resolve } from "@/util/helpers";
 
 type Inputs = {
   valueType: "scope-values" | "unavailable" | "";
   methodology: "activity-data" | "direct-measure" | "";
   energyType: "fuel-combustion" | "grid-supplied-energy";
+  unavailableReason:
+    | "no-occurrance"
+    | "not-estimated"
+    | "confidential-information"
+    | "presented-elsewhere"
+    | "";
+  unavailableExplanation: string;
   activity: ActivityData;
   direct: DirectMeasureData;
   subcategories: SubcategoryOption[];
@@ -71,6 +84,8 @@ const defaultValues: Inputs = {
   valueType: "scope-values",
   methodology: "",
   energyType: "fuel-combustion",
+  unavailableReason: "",
+  unavailableExplanation: "",
   subcategories: [],
   activity: defaultActivityData,
   direct: defaultDirectMeasureData,
@@ -194,9 +209,7 @@ export function SubsectorDrawer({
   );
 
   const valueType = watch("valueType");
-  const methodology = watch("methodology");
-  const isSubmitEnabled =
-    !!valueType && (!!methodology || valueType == "scope-values");
+  const isSubmitEnabled = !!valueType;
   const subcategories = watch("subcategories");
 
   return (
@@ -276,7 +289,57 @@ export function SubsectorDrawer({
                     </HStack>
                     {/*** One value for the sub-sector ***/}
                     {valueType === "unavailable" && (
-                      <Text size="md" color="content.tertiary"></Text>
+                      <>
+                        <FormControl
+                          isInvalid={!!resolve("unavailableReason", errors)}
+                          mb={12}
+                        >
+                          <FormLabel>{t("unavailable-reason")}</FormLabel>
+                          <Select
+                            bgColor="base.light"
+                            placeholder={t("unavailable-reason-placeholder")}
+                            {...register("unavailableReason", {
+                              required: t("option-required"),
+                            })}
+                          >
+                            <option value="no-occurrance">
+                              {t("no-occurrance")}
+                            </option>
+                            <option value="not-estimated">
+                              {t("not-estimated")}
+                            </option>
+                            <option value="confidential-information">
+                              {t("confidential-information")}
+                            </option>
+                            <option value="presented-elsewhere">
+                              {t("presented-elsewhere")}
+                            </option>
+                          </Select>
+                          <FormErrorMessage>
+                            {resolve("unavailableReason", errors)?.message}
+                          </FormErrorMessage>
+                        </FormControl>
+
+                        <FormControl
+                          isInvalid={
+                            !!resolve("unavailableExplanation", errors)
+                          }
+                        >
+                          <FormLabel>{t("unavailable-explanation")}</FormLabel>
+                          <Textarea
+                            placeholder={t(
+                              "unavailable-explanation-placeholder",
+                            )}
+                            bgColor="base.light"
+                            {...register("unavailableExplanation", {
+                              required: t("unavailable-explanation-required"),
+                            })}
+                          />
+                          <FormErrorMessage>
+                            {resolve("unavailableExplanation", errors)?.message}
+                          </FormErrorMessage>
+                        </FormControl>
+                      </>
                     )}
                     {/*** Values for each subcategory ***/}
                     {valueType === "scope-values" && (

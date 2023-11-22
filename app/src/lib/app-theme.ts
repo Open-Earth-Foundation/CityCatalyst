@@ -397,5 +397,24 @@ export const appTheme = extendTheme({
         },
       },
     },
+    Form: {
+      variants: {
+        brand: {
+          container: {
+            label: {
+              fontFamily: "heading",
+              fontWeight: "500",
+              lineHeight: "20px",
+              letterSpacing: "0.5px",
+              fontSize: "14px",
+              mb: 4,
+            },
+          },
+        },
+      },
+      defaultProps: {
+        variant: "brand",
+      },
+    },
   },
 });

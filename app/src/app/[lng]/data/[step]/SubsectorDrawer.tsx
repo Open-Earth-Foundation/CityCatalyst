@@ -265,28 +265,32 @@ export function SubsectorDrawer({
                     onSubmit={handleSubmit(onSubmit)}
                     className="space-y-6 grow flex flex-col"
                   >
-                    <Heading size="sm" className="font-normal">
-                      {t("value-types")}{" "}
-                      <Tooltip
-                        hasArrow
-                        label={t("value-types-tooltip")}
-                        placement="bottom-start"
-                      >
-                        <InfoOutlineIcon mt={-1} color="content.tertiary" />
-                      </Tooltip>
-                    </Heading>
-                    <HStack spacing={4} {...getRootProps()}>
-                      <RadioButton
-                        {...getRadioProps({
-                          value: "scope-values",
-                        })}
-                      >
-                        {t("scope-values")}
-                      </RadioButton>
-                      <RadioButton {...getRadioProps({ value: "unavailable" })}>
-                        {t("unavailable-not-applicable")}
-                      </RadioButton>
-                    </HStack>
+                    <FormControl>
+                      <FormLabel>
+                        {t("value-types")}{" "}
+                        {/* TODO content for this Tooltip?
+                        <Tooltip
+                          hasArrow
+                          label={t("value-types-tooltip")}
+                          placement="bottom-start"
+                        >
+                          <InfoOutlineIcon mt={-1} color="content.tertiary" />
+                        </Tooltip>
+                        */}
+                      </FormLabel>
+                      <HStack spacing={4} {...getRootProps()}>
+                        <RadioButton
+                          {...getRadioProps({ value: "scope-values" })}
+                        >
+                          {t("scope-values")}
+                        </RadioButton>
+                        <RadioButton
+                          {...getRadioProps({ value: "unavailable" })}
+                        >
+                          {t("unavailable-not-applicable")}
+                        </RadioButton>
+                      </HStack>
+                    </FormControl>
                     {/*** One value for the sub-sector ***/}
                     {valueType === "unavailable" && (
                       <>

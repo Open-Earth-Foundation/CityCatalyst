@@ -220,7 +220,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
     <>
       <NavigationBar lng={lng} />
       <Box bg="brand.primary" className="w-full h-[491px] pt-[150px]" px={8}>
-        <Box className="flex mx-auto max-w-full">
+        <Box className="flex mx-auto max-w-full w-[1090px]">
           <Box className="w-full h-[240px] flex flex-col justify-center">
             <Box className="flex h-[240px]">
               <Box className="flex gap-[24px] flex-col h-full w-full">
@@ -444,7 +444,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
         bg="background.backgroundLight"
         px={8}
       >
-        <Box className="flex mx-auto max-w-full">
+        <Box className="flex mx-auto max-w-full w-[1090px]">
           <Box className="flex flex-col gap-[8px] w-full h-300">
             <Box className="flex items-center gap-3">
               <Heading

@@ -195,18 +195,48 @@ export function SubsectorDrawer({
   }, [subsectorValue, subsector]);
 
   const subcategoryData: SubCategory[] | undefined = subsector?.subCategories;
-  const scopes = subcategoryData?.map(
-    (subcategory: SubCategory) => {
-      const name =
-        subcategory.subcategoryName?.replace("Emissions from ", "") ||
-        "Unknown Subcategory";
-      const label = name.charAt(0).toUpperCase() + name.slice(1);
-      return {
-        label,
-        value: subcategory.subcategoryId,
-      };
-    },
-  );
+  const scopes = subcategoryData?.map((subcategory: SubCategory) => {
+    const name =
+      subcategory.subcategoryName?.replace("Emissions from ", "") ||
+      "Unknown Subcategory";
+    const label = name.charAt(0).toUpperCase() + name.slice(1);
+    return {
+      label,
+      value: subcategory.subcategoryId,
+    };
+  });
+
+  const scopeData = watch("subcategoryData");
+  const isScopeCompleted = (scopeId: string) => {
+    const data = scopeData[scopeId];
+    if (data?.methodology === "activity-data") {
+      const activity = data.activity;
+      if (!activity) return false;
+      return (
+        activity.activityDataAmount != null &&
+        activity.activityDataUnit != null &&
+        activity.emissionFactorType !== "" &&
+        !(
+          activity.emissionFactorType === "Add custom" &&
+          +activity.co2EmissionFactor === 0 &&
+          +activity.n2oEmissionFactor === 0 &&
+          +activity.ch4EmissionFactor === 0
+        ) &&
+        activity.dataQuality !== "" &&
+        activity.sourceReference !== ""
+      );
+    } else if (data?.methodology === "direct-measure") {
+      if (!data.direct) return false;
+      return (
+        (data.direct.co2Emissions > 0 ||
+          data.direct.ch4Emissions > 0 ||
+          data.direct.n2oEmissions > 0) &&
+        data.direct.dataQuality !== "" &&
+        data.direct.sourceReference !== ""
+      );
+    }
+    return false;
+  };
 
   const valueType = watch("valueType");
   const isSubmitEnabled = !!valueType;
@@ -368,12 +398,15 @@ export function SubsectorDrawer({
                                       {/* TODO: Get scope text body */}
                                     </Text>
                                   </Box>
-                                  <Tag
-                                    variant={i == 0 ? "success" : "warning"}
-                                    mx={6}
-                                  >
-                                    {i == 0 ? t("completed") : t("incomplete")}
-                                  </Tag>
+                                  {isScopeCompleted(scope.value) ? (
+                                    <Tag variant="success" mx={6}>
+                                      {t("completed")}
+                                    </Tag>
+                                  ) : (
+                                    <Tag variant="warning" mx={6}>
+                                      {t("incomplete")}
+                                    </Tag>
+                                  )}
                                   <AccordionIcon
                                     borderWidth={1}
                                     boxSize={6}

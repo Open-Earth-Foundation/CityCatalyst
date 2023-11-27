@@ -58,7 +58,7 @@ export function SectorCard({
   const sectorScopesList = [
     [1, 2],
     [1, 2],
-    [1, 2],
+    [1, 3],
   ];
   const sectorScopes = sectorScopesList[stepNumber - 1];
 

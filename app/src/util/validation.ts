@@ -70,12 +70,15 @@ export type CreateSectorRequest = z.infer<typeof createSectorRequest>;
 export const createSubSectorRequest = z.object({
   activityUnits: z.string(),
   activityValue: z.number(),
-  emissionFactorValue: z.number(),
-  totalEmissions: z.number(),
+  emissionFactorValue: z.number().optional(),
+  totalEmissions: z.number().optional(),
   emissionsFactorId: z.string().uuid().optional(),
   sectorValueId: z.string().uuid().optional(),
-  datasourceId: z.string().uuid().optional(),
-  sectorId: z.string().uuid().optional(),
+  dataSource: z.object({
+    sourceType: z.string(),
+    dataQuality: z.string(),
+    notes: z.string(),
+  }),
 });
 
 export type CreateSubSectorRequest = z.infer<typeof createSubSectorRequest>;
@@ -83,12 +86,15 @@ export type CreateSubSectorRequest = z.infer<typeof createSubSectorRequest>;
 export const createSubCategory = z.object({
   activityUnits: z.string(),
   activityValue: z.number(),
-  emissionFactorValue: z.number(),
-  totalEmissions: z.number(),
+  emissionFactorValue: z.number().optional(),
+  totalEmissions: z.number().optional(),
   emissionsFactorId: z.string().uuid().optional(),
-  subcategoryId: z.string().uuid().optional(),
   sectorValueId: z.string().uuid().optional(),
-  datasourceId: z.string().uuid().optional(),
+  dataSource: z.object({
+    sourceType: z.string(),
+    dataQuality: z.string(),
+    notes: z.string(),
+  }).optional(),
 });
 
 export type CreateSubCategoryRequest = z.infer<typeof createSubCategory>;

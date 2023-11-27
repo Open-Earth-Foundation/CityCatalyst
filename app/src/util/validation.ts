@@ -68,17 +68,16 @@ export const createSectorRequest = z.object({
 export type CreateSectorRequest = z.infer<typeof createSectorRequest>;
 
 export const createSubSectorRequest = z.object({
-  activityUnits: z.string(),
-  activityValue: z.number(),
+  activityUnits: z.string().optional(),
+  activityValue: z.number().optional(),
   emissionFactorValue: z.number().optional(),
   totalEmissions: z.number().optional(),
   emissionsFactorId: z.string().uuid().optional(),
-  sectorValueId: z.string().uuid().optional(),
   dataSource: z.object({
     sourceType: z.string(),
     dataQuality: z.string(),
     notes: z.string(),
-  }),
+  }).optional(),
 });
 
 export type CreateSubSectorRequest = z.infer<typeof createSubSectorRequest>;
@@ -89,7 +88,6 @@ export const createSubCategory = z.object({
   emissionFactorValue: z.number().optional(),
   totalEmissions: z.number().optional(),
   emissionsFactorId: z.string().uuid().optional(),
-  sectorValueId: z.string().uuid().optional(),
   dataSource: z.object({
     sourceType: z.string(),
     dataQuality: z.string(),

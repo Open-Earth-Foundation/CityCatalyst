@@ -66,16 +66,16 @@ export function SectorCard({
     <Box
       backgroundColor="base.light"
       borderRadius="rounded"
-      className="w-full flex flex-col min-h-[268px] px-6 py-8"
+      className="max-w-full flex flex-col min-h-[268px] px-6 py-8"
     >
-      <Box className="flex gap-5">
+      <Box className="flex gap-5 w-full">
         <Box className="flex items-start mt-2">
           <Icon color="brand.secondary" boxSize={8} as={sectorIcon} />
         </Box>
-        <Box>
+        <Box className="w-full">
           <Box className="flex items-center justify-between">
             <Box className="flex flex-col">
-              <Box className="flex gap-2 py-1 w-[715px]">
+              <Box className="flex gap-2 py-1">
                 <Heading
                   fontSize="title.lg"
                   fontWeight="semibold"

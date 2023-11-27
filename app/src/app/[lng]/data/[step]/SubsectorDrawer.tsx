@@ -1,4 +1,3 @@
-import { TagSelect } from "@/components/TagSelect";
 import { RadioButton } from "@/components/radio-button";
 import type { SubSectorValueAttributes } from "@/models/SubSectorValue";
 import { api } from "@/services/api";
@@ -98,6 +97,7 @@ function nameToI18NKey(name: string): string {
 
 // TODO create custom type that includes relations instead of using SubSectorValueAttributes?
 function extractFormValues(subsectorValue: SubSectorValueAttributes): Inputs {
+  console.log("Form input", subsectorValue);
   return defaultValues; // TODO update with data
 }
 
@@ -195,7 +195,7 @@ export function SubsectorDrawer({
   }, [subsectorValue, subsector]);
 
   const subcategoryData: SubCategory[] | undefined = subsector?.subCategories;
-  const subcategoryOptions = subcategoryData?.map(
+  const scopes = subcategoryData?.map(
     (subcategory: SubCategory) => {
       const name =
         subcategory.subcategoryName?.replace("Emissions from ", "") ||
@@ -210,7 +210,6 @@ export function SubsectorDrawer({
 
   const valueType = watch("valueType");
   const isSubmitEnabled = !!valueType;
-  const subcategories = watch("subcategories");
 
   return (
     <Drawer
@@ -345,71 +344,59 @@ export function SubsectorDrawer({
                         </FormControl>
                       </>
                     )}
-                    {/*** Values for each subcategory ***/}
+                    {/*** Values for each scope ***/}
                     {valueType === "scope-values" && (
-                      <>
-                        <TagSelect<Inputs>
-                          options={subcategoryOptions}
-                          name="subcategories"
-                          id="subcategories"
-                          placeholder={t("select-subcategories")}
-                          rules={{ required: t("subcategories-required") }}
-                          control={control}
-                        />
-                        <Accordion allowToggle className="space-y-6">
-                          {subcategories.map((subcategory, i) => (
-                            <AccordionItem key={subcategory.value} mb={0}>
-                              <h2>
-                                <AccordionButton>
-                                  <HStack w="full">
-                                    <Box
-                                      as="span"
-                                      flex="1"
-                                      textAlign="left"
-                                      w="full"
+                      <Accordion allowToggle className="space-y-6">
+                        {scopes?.map((scope, i) => (
+                          <AccordionItem key={scope.value} mb={0}>
+                            <h2>
+                              <AccordionButton>
+                                <HStack w="full">
+                                  <Box
+                                    as="span"
+                                    flex="1"
+                                    textAlign="left"
+                                    w="full"
+                                  >
+                                    <Heading
+                                      size="sm"
+                                      color="content.alternative"
                                     >
-                                      <Heading
-                                        size="sm"
-                                        color="content.alternative"
-                                      >
-                                        {subcategory.label}
-                                      </Heading>
-                                      <Text color="content.tertiary">
-                                        {/* TODO: Get category text body */}
-                                      </Text>
-                                    </Box>
-                                    <Tag
-                                      variant={i == 0 ? "success" : "warning"}
-                                      mx={6}
-                                    >
-                                      {i == 0
-                                        ? t("completed")
-                                        : t("incomplete")}
-                                    </Tag>
-                                    <AccordionIcon
-                                      borderWidth={1}
-                                      boxSize={6}
-                                      borderRadius="full"
-                                      borderColor="border.overlay"
-                                    />
-                                  </HStack>
-                                </AccordionButton>
-                              </h2>
-                              <AccordionPanel pt={4}>
-                                <EmissionsForm
-                                  t={t}
-                                  register={register}
-                                  errors={errors}
-                                  control={control}
-                                  prefix={`subcategoryData.${subcategory.value}.`}
-                                  watch={watch}
-                                  sectorNumber={sectorNumber!}
-                                />
-                              </AccordionPanel>
-                            </AccordionItem>
-                          ))}
-                        </Accordion>
-                      </>
+                                      {scope.label}
+                                    </Heading>
+                                    <Text color="content.tertiary">
+                                      {/* TODO: Get scope text body */}
+                                    </Text>
+                                  </Box>
+                                  <Tag
+                                    variant={i == 0 ? "success" : "warning"}
+                                    mx={6}
+                                  >
+                                    {i == 0 ? t("completed") : t("incomplete")}
+                                  </Tag>
+                                  <AccordionIcon
+                                    borderWidth={1}
+                                    boxSize={6}
+                                    borderRadius="full"
+                                    borderColor="border.overlay"
+                                  />
+                                </HStack>
+                              </AccordionButton>
+                            </h2>
+                            <AccordionPanel pt={4}>
+                              <EmissionsForm
+                                t={t}
+                                register={register}
+                                errors={errors}
+                                control={control}
+                                prefix={`subcategoryData.${scope.value}.`}
+                                watch={watch}
+                                sectorNumber={sectorNumber!}
+                              />
+                            </AccordionPanel>
+                          </AccordionItem>
+                        ))}
+                      </Accordion>
                     )}
                     <Box w="full" className="grow flex flex-col">
                       <Box className="grow" />

@@ -1,3 +1,4 @@
+import { SubCategoryValueData } from "@/app/[lng]/data/[step]/types";
 import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
@@ -52,6 +53,12 @@ interface SubsectorValueUpdateQuery {
   subSectorId: string;
   inventoryId: string;
   data: SubSectorValueAttributes;
+}
+
+interface SubCategoryValueUpdateQuery {
+  subCategoryId: string;
+  inventoryId: string;
+  data: SubCategoryValueData;
 }
 
 declare module "next-auth" {

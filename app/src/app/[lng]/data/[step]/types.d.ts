@@ -10,7 +10,7 @@ interface DataStep {
   referenceNumber: string;
   sector: Sector | null;
   subSectors: Array<SubSectorAttributes & { completed: boolean }> | null;
-};
+}
 
 type SubSector = {
   subsectorId: string;
@@ -66,3 +66,8 @@ type SubcategoryData = {
   activity: ActivityData;
   direct: DirectMeasureData;
 };
+
+type SubCategoryValueData = Omit<
+  SubCategoryValueAttributes,
+  "subcategoryValueId"
+> & { dataSource?: Omit<DataSourceAttributes, "datasourceId"> };

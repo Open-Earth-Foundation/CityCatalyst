@@ -1,8 +1,9 @@
-import {
+import type {
   UserAttributes,
-  type CityAttributes,
-  type InventoryAttributes,
+  CityAttributes,
+  InventoryAttributes,
   SubSectorValueAttributes,
+  SubCategoryValueAttributes,
 } from "@/models/init-models";
 import type {
   ConnectDataSourceQuery,
@@ -10,6 +11,7 @@ import type {
   DataSourceResponse,
   InventoryProgressResponse,
   InventoryResponse,
+  SubCategoryValueUpdateQuery,
   SubsectorValueUpdateQuery,
   UserInfoResponse,
 } from "@/util/types";
@@ -111,6 +113,18 @@ export const api = createApi({
         body: data.data,
       }),
       transformResponse: (response: { data: SubSectorValueAttributes }) =>
+        response.data,
+    }),
+    setSubCategoryValue: builder.mutation<
+      SubCategoryValueAttributes,
+      SubCategoryValueUpdateQuery
+    >({
+      query: (data) => ({
+        url: `/inventory/${data.inventoryId}/subcategory/${data.subCategoryId}`,
+        method: "PATCH",
+        body: data.data,
+      }),
+      transformResponse: (response: { data: SubCategoryValueAttributes }) =>
         response.data,
     }),
     connectDataSource: builder.mutation<

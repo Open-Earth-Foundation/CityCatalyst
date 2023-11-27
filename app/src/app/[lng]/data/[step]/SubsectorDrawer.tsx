@@ -37,9 +37,9 @@ import type {
   ActivityData,
   DirectMeasureData,
   SubCategory,
+  SubCategoryValueData,
   SubSector,
   SubcategoryData,
-  SubcategoryOption,
 } from "./types";
 import { resolve } from "@/util/helpers";
 
@@ -56,7 +56,6 @@ type Inputs = {
   unavailableExplanation: string;
   activity: ActivityData;
   direct: DirectMeasureData;
-  subcategories: SubcategoryOption[];
   subcategoryData: Record<string, SubcategoryData>;
 };
 
@@ -85,7 +84,6 @@ const defaultValues: Inputs = {
   energyType: "fuel-combustion",
   unavailableReason: "",
   unavailableExplanation: "",
-  subcategories: [],
   activity: defaultActivityData,
   direct: defaultDirectMeasureData,
   subcategoryData: {},
@@ -132,6 +130,7 @@ export function SubsectorDrawer({
   );
   const [setSubsectorValue, { isLoading: isSaving }] =
     api.useSetSubsectorValueMutation();
+  const [setSubCategoryValue] = api.useSetSubCategoryValueMutation();
 
   let noPreviousValue =
     (subsectorValueError as FetchBaseQueryError)?.status === 404;
@@ -157,20 +156,56 @@ export function SubsectorDrawer({
         data: { unavailable: true },
       });
     } else if (data.valueType === "scope-values") {
-      for (const subCategoryId in data.subcategoryData) {
-        const value = data.subcategoryData[subCategoryId];
-        let subCategoryData;
+      // await setSubsectorValue({
+      //   subSectorId: subsector.subsectorId,
+      //   inventoryId: inventoryId!,
+      //   data: {
+      //     dataSource: {
+      //       sourceType: "user",
+      //     },
+      //   },
+      // });
+      const results = await Promise.all(
+        Object.keys(data.subcategoryData).map((subcategoryId) => {
+          const value = data.subcategoryData[subcategoryId];
+          let subCategoryValue: SubCategoryValueData = {
+            subcategoryId,
+            inventoryId: inventoryId!,
+          };
 
-        if (value.methodology === "activity-data") {
-          subCategoryData = value.activity;
-        } else if (data.methodology === "direct-measure") {
-          subCategoryData = value.direct;
-        } else {
-          throw new Error(
-            `Methodology for subcategory ${subCategoryId} not selected!`,
-          );
-        }
-      }
+          if (value.methodology === "activity-data") {
+            subCategoryValue.activityValue = +value.activity.activityDataAmount!;
+            subCategoryValue.activityUnits = value.activity.activityDataUnit;
+            // TODO emission factor ID, manual emissions factor values for each gas
+
+            subCategoryValue.dataSource = {
+              sourceType: "user",
+              dataQuality: value.activity.dataQuality, // TODO map to low/ medium/ high?
+              notes: value.activity.sourceReference,
+            };
+          } else if (data.methodology === "direct-measure") {
+            subCategoryValue.co2EmissionsValue = +value.direct.co2Emissions;
+            subCategoryValue.ch4EmissionsValue = +value.direct.ch4Emissions;
+            subCategoryValue.n2oEmissionsValue = +value.direct.n2oEmissions;
+            subCategoryValue.dataSource = {
+              sourceType: "user",
+              dataQuality: value.direct.dataQuality,
+              notes: value.direct.sourceReference,
+            };
+          } else {
+            throw new Error(
+              `Methodology for subcategory ${subcategoryId} not selected!`,
+            );
+          }
+
+          return setSubCategoryValue({
+            subCategoryId: subcategoryId,
+            inventoryId: inventoryId!,
+            data: subCategoryValue,
+          });
+        }),
+      );
+      console.log("Save results", results)
     }
     onSave(subsector, data);
     onClose();

@@ -92,16 +92,17 @@ export function SourceDrawer({
                 </Tag>
               </Flex>
               <Stack className="space-y-4">
-                <Text color="content.tertiary">{source.description}</Text>
                 <Heading size="sm">{t("sources")}</Heading>
+                <Text color="content.tertiary">{source.description}</Text>
+                {/*
                 <Text color="content.tertiary" ml={6}>
-                  {source.sourceType}
-                  {/* <ul> */}
-                  {/*   {source.sources.map((source) => ( */}
-                  {/*     <li key={source}>{source}</li> */}
-                  {/*   ))} */}
-                  {/* </ul> */}
+                  <ul>
+                    {source.sources.map((source) => (
+                      <li key={source}>{source}</li>
+                    ))}
+                  </ul>
                 </Text>
+                */}
                 <Heading size="sm">{t("methodology")}</Heading>
                 <Text color="content.tertiary">
                   <Link
@@ -119,8 +120,12 @@ export function SourceDrawer({
             w="full"
             className="drop-shadow-top border-t-2 absolute left-0 flex justify-center items-center"
           >
-            <Button onClick={onConnectClick} w="543px" h={16} my={6}
-            isLoading={isConnectLoading}
+            <Button
+              onClick={onConnectClick}
+              w="543px"
+              h={16}
+              my={6}
+              isLoading={isConnectLoading}
             >
               {t("connect-data")}
             </Button>

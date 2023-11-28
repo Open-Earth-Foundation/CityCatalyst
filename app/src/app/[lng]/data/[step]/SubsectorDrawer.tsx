@@ -138,7 +138,7 @@ export function SubsectorDrawer({
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     watch,
     reset,
     control,
@@ -471,7 +471,7 @@ export function SubsectorDrawer({
                       <Button
                         onClick={handleSubmit(onSubmit)}
                         isDisabled={!isSubmitEnabled}
-                        isLoading={isSaving}
+                        isLoading={isSubmitting}
                         type="submit"
                         formNoValidate
                         w="full"

@@ -38,6 +38,14 @@ type DataSourceResponse = (DataSourceAttributes & {
   subCategory?: SubCategoryAttributes;
 })[];
 
+type SubCategoryWithSource = SubCategoryAttributes & {
+  dataSource: DataSourceAttributes;
+}
+
+type SubSectorValueResponse = SubSectorValueAttributes & {
+  subCategoryValues: SubCategoryWithSource[];
+};
+
 interface ConnectDataSourceQuery {
   inventoryId: string;
   dataSourceIds: string[];

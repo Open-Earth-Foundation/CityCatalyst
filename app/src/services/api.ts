@@ -12,6 +12,7 @@ import type {
   InventoryProgressResponse,
   InventoryResponse,
   SubCategoryValueUpdateQuery,
+  SubSectorValueResponse,
   SubsectorValueUpdateQuery,
   UserInfoResponse,
 } from "@/util/types";
@@ -95,12 +96,12 @@ export const api = createApi({
         response.data,
     }),
     getSubsectorValue: builder.query<
-      SubSectorValueAttributes,
+      SubSectorValueResponse,
       { subSectorId: string; inventoryId: string }
     >({
       query: ({ subSectorId, inventoryId }) =>
         `/inventory/${inventoryId}/subsector/${subSectorId}`,
-      transformResponse: (response: { data: SubSectorValueAttributes }) =>
+      transformResponse: (response: { data: SubSectorValueResponse }) =>
         response.data,
     }),
     setSubsectorValue: builder.mutation<

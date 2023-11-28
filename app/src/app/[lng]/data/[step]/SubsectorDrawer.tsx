@@ -153,18 +153,12 @@ export function SubsectorDrawer({
       await setSubsectorValue({
         subSectorId: subsector.subsectorId,
         inventoryId: inventoryId!,
-        data: { unavailable: true },
+        data: {
+          unavailableReason: data.unavailableReason,
+          unavailableExplanation: data.unavailableExplanation,
+        },
       });
     } else if (data.valueType === "scope-values") {
-      // await setSubsectorValue({
-      //   subSectorId: subsector.subsectorId,
-      //   inventoryId: inventoryId!,
-      //   data: {
-      //     dataSource: {
-      //       sourceType: "user",
-      //     },
-      //   },
-      // });
       const results = await Promise.all(
         Object.keys(data.subcategoryData).map((subcategoryId) => {
           const value = data.subcategoryData[subcategoryId];
@@ -174,7 +168,8 @@ export function SubsectorDrawer({
           };
 
           if (value.methodology === "activity-data") {
-            subCategoryValue.activityValue = +value.activity.activityDataAmount!;
+            subCategoryValue.activityValue =
+              +value.activity.activityDataAmount!;
             subCategoryValue.activityUnits = value.activity.activityDataUnit;
             // TODO emission factor ID, manual emissions factor values for each gas
 
@@ -205,7 +200,7 @@ export function SubsectorDrawer({
           });
         }),
       );
-      console.log("Save results", results)
+      console.log("Save results", results);
     }
     onSave(subsector, data);
     onClose();

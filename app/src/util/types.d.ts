@@ -2,6 +2,8 @@ import { SubCategoryValueData } from "@/app/[lng]/data/[step]/types";
 import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
+import type { DataSourceAttributes } from "@/models/DataSource";
+import type { SubCategoryValueAttributes } from "@/models/SubCategoryValue";
 import type { SubSectorAttributes } from "@/models/SubSector";
 import type { SubSector } from "@/util/types";
 
@@ -38,12 +40,12 @@ type DataSourceResponse = (DataSourceAttributes & {
   subCategory?: SubCategoryAttributes;
 })[];
 
-type SubCategoryWithSource = SubCategoryAttributes & {
+type SubCategoryValueWithSource = SubCategoryValueAttributes & {
   dataSource: DataSourceAttributes;
-}
+};
 
 type SubSectorValueResponse = SubSectorValueAttributes & {
-  subCategoryValues: SubCategoryWithSource[];
+  subCategoryValues: SubCategoryValueWithSource[];
 };
 
 interface ConnectDataSourceQuery {

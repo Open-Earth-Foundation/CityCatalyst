@@ -1,7 +1,11 @@
 import { RadioButton } from "@/components/radio-button";
-import type { SubSectorValueAttributes } from "@/models/SubSectorValue";
 import { api } from "@/services/api";
-import { ArrowBackIcon, InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
+import { resolve } from "@/util/helpers";
+import type {
+  SubCategoryValueWithSource,
+  SubSectorValueResponse,
+} from "@/util/types";
+import { ArrowBackIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Accordion,
   AccordionButton,
@@ -24,7 +28,6 @@ import {
   Tag,
   Text,
   Textarea,
-  Tooltip,
   useRadioGroup,
 } from "@chakra-ui/react";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
@@ -41,7 +44,6 @@ import type {
   SubSector,
   SubcategoryData,
 } from "./types";
-import { resolve } from "@/util/helpers";
 
 type Inputs = {
   valueType: "scope-values" | "unavailable" | "";
@@ -94,9 +96,45 @@ function nameToI18NKey(name: string): string {
 }
 
 // TODO create custom type that includes relations instead of using SubSectorValueAttributes?
-function extractFormValues(subsectorValue: SubSectorValueAttributes): Inputs {
-  console.log("Form input", subsectorValue);
-  return defaultValues; // TODO update with data
+function extractFormValues(subSectorValue: SubSectorValueResponse): Inputs {
+  console.log("Form input", subSectorValue);
+  const inputs: Inputs = Object.assign({}, defaultValues);
+  if (subSectorValue.unavailableReason) {
+    inputs.valueType = "unavailable";
+    inputs.unavailableReason = subSectorValue.unavailableReason || "";
+    inputs.unavailableExplanation = subSectorValue.unavailableExplanation || "";
+  } else {
+    inputs.valueType = "scope-values";
+    inputs.subcategoryData = subSectorValue.subCategoryValues.map(
+      (value: SubCategoryValueWithSource) => {
+        const methodology =
+          value.activityValue != null ? "activity-data" : "direct-measure";
+        const data: SubcategoryData = {
+          methodology,
+          activity: defaultActivityData,
+          direct: defaultDirectMeasureData,
+        };
+
+        if (methodology === "activity-data") {
+          data.activity.activityDataAmount = value.activityValue;
+          data.activity.activityDataUnit = value.activityUnits;
+          // TODO emission factor ID, manual emissions factor values for each gas
+          data.activity.dataQuality = value.dataSource.dataQuality || "";
+          data.activity.sourceReference = value.dataSource.notes || "";
+        } else if (methodology === "direct-measure") {
+          data.direct.co2Emissions = value.co2EmissionsValue || 0;
+          data.direct.ch4Emissions = value.ch4EmissionsValue || 0;
+          data.direct.n2oEmissions = value.n2oEmissionsValue || 0;
+          data.direct.dataQuality = value.dataSource.dataQuality || "";
+          data.direct.sourceReference = value.dataSource.notes || "";
+        }
+
+        return data;
+      },
+    );
+  }
+  console.log("Form values", inputs);
+  return inputs;
 }
 
 export function SubsectorDrawer({
@@ -128,8 +166,7 @@ export function SubsectorDrawer({
     { subSectorId: subsector?.subsectorId!, inventoryId: inventoryId! },
     { skip: !subsector || !inventoryId },
   );
-  const [setSubsectorValue, { isLoading: isSaving }] =
-    api.useSetSubsectorValueMutation();
+  const [setSubsectorValue] = api.useSetSubsectorValueMutation();
   const [setSubCategoryValue] = api.useSetSubCategoryValueMutation();
 
   let noPreviousValue =
@@ -175,7 +212,7 @@ export function SubsectorDrawer({
 
             subCategoryValue.dataSource = {
               sourceType: "user",
-              dataQuality: value.activity.dataQuality, // TODO map to low/ medium/ high?
+              dataQuality: value.activity.dataQuality,
               notes: value.activity.sourceReference,
             };
           } else if (value.methodology === "direct-measure") {

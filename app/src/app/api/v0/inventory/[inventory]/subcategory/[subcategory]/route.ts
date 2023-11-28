@@ -77,9 +77,21 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
           "No subsector found for subcategory " + params.subcategory,
         );
       }
+      let sectorValue = await db.models.SectorValue.findOne({
+        where: { sectorId: subSector.sectorId }
+      });
+      if (!sectorValue) {
+        sectorValue = await db.models.SectorValue.create({
+          sectorValueId: randomUUID(),
+          sectorId: subSector.sectorId,
+          inventoryId: params.inventory,
+        })
+      }
       subSectorValue = await db.models.SubSectorValue.create({
         subsectorValueId: randomUUID(),
-        subsectorId: subSector?.subsectorId,
+        subsectorId: subSector.subsectorId,
+        inventoryId: params.inventory,
+        sectorValueId: sectorValue.sectorValueId,
       });
     }
 

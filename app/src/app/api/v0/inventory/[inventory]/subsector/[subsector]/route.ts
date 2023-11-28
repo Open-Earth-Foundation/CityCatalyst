@@ -8,7 +8,18 @@ import { randomUUID } from "node:crypto";
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const subsectorValue = await db.models.SubSectorValue.findOne({
     where: { subsectorId: params.subsector, inventoryId: params.inventory },
-    include: [{ model: db.models.SubCategoryValue, as: "subCategoryValues" }],
+    include: [
+      {
+        model: db.models.SubCategoryValue,
+        as: "subCategoryValues",
+        include: [
+          {
+            model: db.models.DataSource,
+            as: "dataSource",
+          },
+        ],
+      },
+    ],
   });
   if (!subsectorValue) {
     throw new createHttpError.NotFound("Sub sector value not found");

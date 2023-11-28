@@ -183,7 +183,7 @@ export function SubsectorDrawer({
               dataQuality: value.activity.dataQuality, // TODO map to low/ medium/ high?
               notes: value.activity.sourceReference,
             };
-          } else if (data.methodology === "direct-measure") {
+          } else if (value.methodology === "direct-measure") {
             subCategoryValue.co2EmissionsValue = +value.direct.co2Emissions;
             subCategoryValue.ch4EmissionsValue = +value.direct.ch4Emissions;
             subCategoryValue.n2oEmissionsValue = +value.direct.n2oEmissions;

@@ -8,6 +8,7 @@ import { randomUUID } from "node:crypto";
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const subsectorValue = await db.models.SubSectorValue.findOne({
     where: { subsectorId: params.subsector, inventoryId: params.inventory },
+    include: [{ model: db.models.SubCategoryValue, as: "subCategoryValues" }],
   });
   if (!subsectorValue) {
     throw new createHttpError.NotFound("Sub sector value not found");
@@ -17,21 +18,48 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
 
 export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   const body = createSubSectorRequest.parse(await req.json());
-  let subsectorValue = await db.models.SubSectorValue.findOne({
+  let subSectorValue = await db.models.SubSectorValue.findOne({
     where: { subsectorId: params.subsector, inventoryId: params.inventory },
   });
 
-  if (subsectorValue) {
-    subsectorValue = await subsectorValue.update(body);
+  if (subSectorValue) {
+    subSectorValue = await subSectorValue.update(body);
   } else {
-    subsectorValue = await db.models.SubSectorValue.create({
+    const subSector = await db.models.SubSector.findOne({
+      include: [
+        {
+          model: db.models.SubCategory,
+          as: "subCategories",
+          where: { subcategoryId: params.subcategory },
+          required: true,
+        },
+      ],
+    });
+    if (!subSector) {
+      throw new createHttpError.InternalServerError(
+        "No subsector found for subsector " + params.subsector,
+      );
+    }
+    let sectorValue = await db.models.SectorValue.findOne({
+      where: { sectorId: subSector.sectorId },
+    });
+    if (!sectorValue) {
+      sectorValue = await db.models.SectorValue.create({
+        sectorValueId: randomUUID(),
+        sectorId: subSector.sectorId,
+        inventoryId: params.inventory,
+      });
+    }
+    subSectorValue = await db.models.SubSectorValue.create({
       subsectorValueId: randomUUID(),
+      subsectorId: subSector.subsectorId,
       inventoryId: params.inventory,
+      sectorValueId: sectorValue.sectorValueId,
       ...body,
     });
   }
 
-  return NextResponse.json({ data: subsectorValue });
+  return NextResponse.json({ data: subSectorValue });
 });
 
 export const DELETE = apiHandler(async (_req: NextRequest, { params }) => {

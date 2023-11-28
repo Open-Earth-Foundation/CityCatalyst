@@ -73,6 +73,8 @@ export const createSubSectorRequest = z.object({
   emissionFactorValue: z.number().optional(),
   totalEmissions: z.number().optional(),
   emissionsFactorId: z.string().uuid().optional(),
+  unavailableReason: z.string().optional(),
+  unavailableExplanation: z.string().optional(),
   dataSource: z.object({
     sourceType: z.string(),
     dataQuality: z.string(),

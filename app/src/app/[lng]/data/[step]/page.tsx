@@ -223,8 +223,9 @@ export default function AddDataSteps({
     history.replaceState("", "", newPath);
   }, [activeStep]);
 
-  const totalStepCompletion =
-    currentStep.connectedProgress + currentStep.addedProgress;
+  const totalStepCompletion = currentStep
+    ? currentStep.connectedProgress + currentStep.addedProgress
+    : 0;
   const formatPercentage = (percentage: number) =>
     Math.round(percentage * 1000) / 10;
 

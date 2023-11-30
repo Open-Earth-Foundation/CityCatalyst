@@ -21,8 +21,6 @@ type SubSector = {
   subCategories: SubCategory[];
 };
 
-type DataSource = DataSourceWithValues;
-
 type SubCategory = {
   subcategoryId: string;
   subcategoryName?: string;

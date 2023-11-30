@@ -36,11 +36,12 @@ interface UserInfoResponse {
   defaultInventoryYear: number | null;
 }
 
-type DataSourceResponse = (DataSourceAttributes & {
+type DataSourceWithValues = DataSourceAttributes & {
   scopes: ScopeAttributes[];
   subSector?: SubSectorAttributes;
   subCategory?: SubCategoryAttributes;
-})[];
+};
+type DataSourceResponse = DataSourceWithValues[];
 
 type SubCategoryValueWithSource = SubCategoryValueAttributes & {
   dataSource: DataSourceAttributes;

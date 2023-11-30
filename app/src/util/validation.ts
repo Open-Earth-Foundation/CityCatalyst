@@ -85,9 +85,12 @@ export const createSubSectorRequest = z.object({
 export type CreateSubSectorRequest = z.infer<typeof createSubSectorRequest>;
 
 export const createSubCategory = z.object({
-  activityUnits: z.string(),
-  activityValue: z.number(),
+  activityUnits: z.string().optional(),
+  activityValue: z.number().optional(),
   emissionFactorValue: z.number().optional(),
+  co2EmissionsValue: z.number().optional(),
+  n2oEmissionsValue: z.number().optional(),
+  ch4EmissionsValue: z.number().optional(),
   totalEmissions: z.number().optional(),
   emissionsFactorId: z.string().uuid().optional(),
   dataSource: z.object({

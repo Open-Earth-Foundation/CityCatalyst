@@ -25,6 +25,11 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   });
   const sourceData = body.dataSource;
   delete body.dataSource;
+  const newDataSource = {
+    ...sourceData,
+    sourceType: "user",
+    datasourceId: randomUUID(),
+  };
 
   // lazy initialization of SubSectorValue and SectorValue
   // TODO should be moved to a service method for reusability
@@ -82,19 +87,19 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   if (subCategoryValue) {
     // update or replace data source if necessary
     let datasourceId: string | undefined = undefined;
-    if (sourceData) {
-      if (subCategoryValue.datasourceId) {
-        if (subCategoryValue.dataSource.sourceType === "user") {
+    if (subCategoryValue.datasourceId) {
+      if (subCategoryValue.dataSource.sourceType === "user") {
+        if (sourceData) {
           await subCategoryValue.dataSource.update(sourceData);
-          datasourceId = subCategoryValue.datasourceId;
-        } else {
-          const source = await db.models.DataSource.create({
-            ...sourceData,
-            datasourceId: randomUUID(),
-          });
-          datasourceId = source.datasourceId;
         }
+        datasourceId = subCategoryValue.datasourceId;
+      } else {
+        const source = await db.models.DataSource.create(newDataSource);
+        datasourceId = source.datasourceId;
       }
+    } else {
+      const source = await db.models.DataSource.create(newDataSource);
+      datasourceId = source.datasourceId;
     }
 
     subCategoryValue = await subCategoryValue.update({
@@ -106,10 +111,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
       datasourceId,
     });
   } else {
-    const source = await db.models.DataSource.create({
-      ...sourceData,
-      datasourceId: randomUUID(),
-    });
+    const source = await db.models.DataSource.create(newDataSource);
 
     subCategoryValue = await db.models.SubCategoryValue.create({
       ...body,

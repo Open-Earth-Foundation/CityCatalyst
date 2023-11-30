@@ -37,7 +37,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
         include: [
           {
             model: db.models.SubCategory,
-            as: "subCategory",
+            as: "subCategories",
             where: { subcategoryId: params.subcategory },
             required: true,
           },

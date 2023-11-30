@@ -21,7 +21,13 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
   reducerPath: "api",
-  tagTypes: ["UserInfo", "InventoryProgress", "UserInventories"],
+  tagTypes: [
+    "UserInfo",
+    "InventoryProgress",
+    "UserInventories",
+    "SubSectorValue",
+    "SubCategoryValue",
+  ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
     getCity: builder.query<CityAttributes, string>({
@@ -109,6 +115,7 @@ export const api = createApi({
         `/inventory/${inventoryId}/subsector/${subSectorId}`,
       transformResponse: (response: { data: SubSectorValueResponse }) =>
         response.data,
+      providesTags: ["SubSectorValue"],
     }),
     setSubsectorValue: builder.mutation<
       SubSectorValueAttributes,
@@ -121,7 +128,7 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: SubSectorValueAttributes }) =>
         response.data,
-      invalidatesTags: ["InventoryProgress"],
+      invalidatesTags: ["InventoryProgress", "SubSectorValue"],
     }),
     setSubCategoryValue: builder.mutation<
       SubCategoryValueAttributes,
@@ -134,6 +141,7 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: SubCategoryValueAttributes }) =>
         response.data,
+      invalidatesTags: ["SubCategoryValue", "SubSectorValue"]
     }),
     connectDataSource: builder.mutation<
       ConnectDataSourceResponse,

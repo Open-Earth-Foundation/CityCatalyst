@@ -11,38 +11,33 @@ import { Provider } from "react-redux";
 const openSans = localFont({
   src: [
     {
-      weight: "300",
-      style: "normal",
-      path: "./fonts/open-sans-v36-latin_latin-ext-300.woff2",
-    },
-    {
       weight: "400",
       style: "normal",
       path: "./fonts/open-sans-v36-latin_latin-ext-regular.woff2",
     },
     {
-      weight: "700",
+      weight: "600",
       style: "normal",
-      path: "./fonts/open-sans-v36-latin_latin-ext-700.woff2",
+      path: "./fonts/open-sans-v36-latin_latin-ext-600.woff2",
     },
   ],
 });
 const poppins = localFont({
   src: [
     {
-      weight: "300",
-      style: "normal",
-      path: "./fonts/poppins-v20-latin_latin-ext-300.woff2",
-    },
-    {
       weight: "400",
       style: "normal",
       path: "./fonts/poppins-v20-latin_latin-ext-regular.woff2",
     },
     {
-      weight: "700",
+      weight: "500",
       style: "normal",
-      path: "./fonts/poppins-v20-latin_latin-ext-700.woff2",
+      path: "./fonts/poppins-v20-latin_latin-ext-500.woff2",
+    },
+    {
+      weight: "600",
+      style: "normal",
+      path: "./fonts/poppins-v20-latin_latin-ext-600.woff2",
     },
   ],
 });

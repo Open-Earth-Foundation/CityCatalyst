@@ -1,8 +1,11 @@
-import { TagSelect } from "@/components/TagSelect";
 import { RadioButton } from "@/components/radio-button";
-import type { SubSectorValueAttributes } from "@/models/SubSectorValue";
 import { api } from "@/services/api";
-import { ArrowBackIcon, InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
+import { resolve } from "@/util/helpers";
+import type {
+  SubCategoryValueWithSource,
+  SubSectorValueResponse,
+} from "@/util/types";
+import { ArrowBackIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Accordion,
   AccordionButton,
@@ -15,12 +18,16 @@ import {
   Drawer,
   DrawerContent,
   DrawerOverlay,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
   HStack,
   Heading,
+  Select,
   Spinner,
   Tag,
   Text,
-  Tooltip,
+  Textarea,
   useRadioGroup,
 } from "@chakra-ui/react";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
@@ -33,18 +40,24 @@ import type {
   ActivityData,
   DirectMeasureData,
   SubCategory,
+  SubCategoryValueData,
   SubSector,
   SubcategoryData,
-  SubcategoryOption,
 } from "./types";
 
 type Inputs = {
-  valueType: "one-value" | "subcategory-values" | "";
+  valueType: "scope-values" | "unavailable" | "";
   methodology: "activity-data" | "direct-measure" | "";
   energyType: "fuel-combustion" | "grid-supplied-energy";
+  unavailableReason:
+    | "no-occurrance"
+    | "not-estimated"
+    | "confidential-information"
+    | "presented-elsewhere"
+    | "";
+  unavailableExplanation: string;
   activity: ActivityData;
   direct: DirectMeasureData;
-  subcategories: SubcategoryOption[];
   subcategoryData: Record<string, SubcategoryData>;
 };
 
@@ -68,10 +81,11 @@ const defaultDirectMeasureData: DirectMeasureData = {
 };
 
 const defaultValues: Inputs = {
-  valueType: "",
+  valueType: "scope-values",
   methodology: "",
   energyType: "fuel-combustion",
-  subcategories: [],
+  unavailableReason: "",
+  unavailableExplanation: "",
   activity: defaultActivityData,
   direct: defaultDirectMeasureData,
   subcategoryData: {},
@@ -82,8 +96,50 @@ function nameToI18NKey(name: string): string {
 }
 
 // TODO create custom type that includes relations instead of using SubSectorValueAttributes?
-function extractFormValues(subsectorValue: SubSectorValueAttributes): Inputs {
-  return defaultValues; // TODO update with data
+function extractFormValues(subSectorValue: SubSectorValueResponse): Inputs {
+  console.log("Form input", subSectorValue);
+  const inputs: Inputs = Object.assign({}, defaultValues);
+  if (subSectorValue.unavailableReason) {
+    inputs.valueType = "unavailable";
+    inputs.unavailableReason = subSectorValue.unavailableReason as any || "";
+    inputs.unavailableExplanation = subSectorValue.unavailableExplanation || "";
+  } else {
+    inputs.valueType = "scope-values";
+    inputs.subcategoryData = subSectorValue.subCategoryValues.reduce(
+      (
+        record: Record<string, SubcategoryData>,
+        value: SubCategoryValueWithSource,
+      ) => {
+        const methodology =
+          value.activityValue != null ? "activity-data" : "direct-measure";
+        const data: SubcategoryData = {
+          methodology,
+          activity: defaultActivityData,
+          direct: defaultDirectMeasureData,
+        };
+
+        if (methodology === "activity-data") {
+          data.activity.activityDataAmount = value.activityValue;
+          data.activity.activityDataUnit = value.activityUnits;
+          // TODO emission factor ID, manual emissions factor values for each gas
+          data.activity.dataQuality = value.dataSource.dataQuality || "";
+          data.activity.sourceReference = value.dataSource.notes || "";
+        } else if (methodology === "direct-measure") {
+          data.direct.co2Emissions = (value.co2EmissionsValue || 0) / 1000;
+          data.direct.ch4Emissions = (value.ch4EmissionsValue || 0) / 1000;
+          data.direct.n2oEmissions = (value.n2oEmissionsValue || 0) / 1000;
+          data.direct.dataQuality = value.dataSource.dataQuality || "";
+          data.direct.sourceReference = value.dataSource.notes || "";
+        }
+
+        record[value.subcategoryId!] = data;
+        return record;
+      },
+      {},
+    );
+  }
+  console.log("Form values", inputs);
+  return inputs;
 }
 
 export function SubsectorDrawer({
@@ -115,8 +171,8 @@ export function SubsectorDrawer({
     { subSectorId: subsector?.subsectorId!, inventoryId: inventoryId! },
     { skip: !subsector || !inventoryId },
   );
-  const [setSubsectorValue, { isLoading: isSaving }] =
-    api.useSetSubsectorValueMutation();
+  const [setSubsectorValue] = api.useSetSubsectorValueMutation();
+  const [setSubCategoryValue] = api.useSetSubCategoryValueMutation();
 
   let noPreviousValue =
     (subsectorValueError as FetchBaseQueryError)?.status === 404;
@@ -124,7 +180,7 @@ export function SubsectorDrawer({
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     watch,
     reset,
     control,
@@ -135,37 +191,69 @@ export function SubsectorDrawer({
     console.log("Subsector data", data);
 
     // decide which data from the form to save
-    if (data.valueType === "one-value") {
-      let subSectorData;
-
-      if (data.methodology === "activity-data") {
-        subSectorData = data.activity;
-      } else if (data.methodology === "direct-measure") {
-        subSectorData = data.direct;
-      } else {
-        throw new Error("Methodology not selected!");
-      }
-
+    if (data.valueType === "unavailable") {
       await setSubsectorValue({
         subSectorId: subsector.subsectorId,
         inventoryId: inventoryId!,
-        data: subSectorData,
+        data: {
+          unavailableReason: data.unavailableReason,
+          unavailableExplanation: data.unavailableExplanation,
+        },
       });
-    } else if (data.valueType === "subcategory-values") {
-      for (const subCategoryId in data.subcategoryData) {
-        const value = data.subcategoryData[subCategoryId];
-        let subCategoryData;
+    } else if (data.valueType === "scope-values") {
+      await setSubsectorValue({
+        subSectorId: subsector.subsectorId,
+        inventoryId: inventoryId!,
+        data: {
+          unavailableReason: "",
+          unavailableExplanation: "",
+        },
+      });
+      const results = await Promise.all(
+        Object.keys(data.subcategoryData).map((subcategoryId) => {
+          const value = data.subcategoryData[subcategoryId];
+          let subCategoryValue: SubCategoryValueData = {
+            subcategoryId,
+            inventoryId: inventoryId!,
+          };
 
-        if (value.methodology === "activity-data") {
-          subCategoryData = value.activity;
-        } else if (data.methodology === "direct-measure") {
-          subCategoryData = value.direct;
-        } else {
-          throw new Error(
-            `Methodology for subcategory ${subCategoryId} not selected!`,
-          );
-        }
-      }
+          if (value.methodology === "activity-data") {
+            subCategoryValue.activityValue =
+              +value.activity.activityDataAmount!;
+            subCategoryValue.activityUnits = value.activity.activityDataUnit;
+            // TODO emission factor ID, manual emissions factor values for each gas
+
+            subCategoryValue.dataSource = {
+              sourceType: "user",
+              dataQuality: value.activity.dataQuality,
+              notes: value.activity.sourceReference,
+            };
+          } else if (value.methodology === "direct-measure") {
+            subCategoryValue.co2EmissionsValue =
+              +value.direct.co2Emissions * 1000;
+            subCategoryValue.ch4EmissionsValue =
+              +value.direct.ch4Emissions * 1000;
+            subCategoryValue.n2oEmissionsValue =
+              +value.direct.n2oEmissions * 1000;
+            subCategoryValue.dataSource = {
+              sourceType: "user",
+              dataQuality: value.direct.dataQuality,
+              notes: value.direct.sourceReference,
+            };
+          } else {
+            throw new Error(
+              `Methodology for subcategory ${subcategoryId} not selected!`,
+            );
+          }
+
+          return setSubCategoryValue({
+            subCategoryId: subcategoryId,
+            inventoryId: inventoryId!,
+            data: subCategoryValue,
+          });
+        }),
+      );
+      console.log("Save results", results);
     }
     onSave(subsector, data);
     onClose();
@@ -190,22 +278,51 @@ export function SubsectorDrawer({
   }, [subsectorValue, subsector]);
 
   const subcategoryData: SubCategory[] | undefined = subsector?.subCategories;
-  const subcategoryOptions = subcategoryData?.map(
-    (subcategory: SubCategory) => {
-      const name = subcategory.subcategoryName?.replace("Emissions from ", "") || "Unknown Subcategory";
-      const label = name.charAt(0).toUpperCase() + name.slice(1);
-      return {
-        label,
-        value: subcategory.subcategoryId,
-      };
-    },
-  );
+  const scopes = subcategoryData?.map((subcategory: SubCategory) => {
+    const name =
+      subcategory.subcategoryName?.replace("Emissions from ", "") ||
+      "Unknown Subcategory";
+    const label = name.charAt(0).toUpperCase() + name.slice(1);
+    return {
+      label,
+      value: subcategory.subcategoryId,
+    };
+  });
+
+  const scopeData = watch("subcategoryData");
+  const isScopeCompleted = (scopeId: string) => {
+    const data = scopeData[scopeId];
+    if (data?.methodology === "activity-data") {
+      const activity = data.activity;
+      if (!activity) return false;
+      return (
+        activity.activityDataAmount != null &&
+        activity.activityDataUnit != null &&
+        activity.emissionFactorType !== "" &&
+        !(
+          activity.emissionFactorType === "Add custom" &&
+          +activity.co2EmissionFactor === 0 &&
+          +activity.n2oEmissionFactor === 0 &&
+          +activity.ch4EmissionFactor === 0
+        ) &&
+        activity.dataQuality !== "" &&
+        activity.sourceReference !== ""
+      );
+    } else if (data?.methodology === "direct-measure") {
+      if (!data.direct) return false;
+      return (
+        (data.direct.co2Emissions > 0 ||
+          data.direct.ch4Emissions > 0 ||
+          data.direct.n2oEmissions > 0) &&
+        data.direct.dataQuality !== "" &&
+        data.direct.sourceReference !== ""
+      );
+    }
+    return false;
+  };
 
   const valueType = watch("valueType");
-  const methodology = watch("methodology");
-  const isSubmitEnabled =
-    !!valueType && (!!methodology || valueType == "subcategory-values");
-  const subcategories = watch("subcategories");
+  const isSubmitEnabled = !!valueType;
 
   return (
     <Drawer
@@ -260,111 +377,149 @@ export function SubsectorDrawer({
                     onSubmit={handleSubmit(onSubmit)}
                     className="space-y-6 grow flex flex-col"
                   >
-                    <Heading size="sm" className="font-normal">
-                      {t("value-types")}{" "}
-                      <Tooltip
-                        hasArrow
-                        label={t("value-types-tooltip")}
-                        placement="bottom-start"
-                      >
-                        <InfoOutlineIcon mt={-1} color="content.tertiary" />
-                      </Tooltip>
-                    </Heading>
-                    <HStack spacing={4} {...getRootProps()}>
-                      <RadioButton {...getRadioProps({ value: "one-value" })}>
-                        {t("one-value")}
-                      </RadioButton>
-                      <RadioButton
-                        {...getRadioProps({
-                          value: "subcategory-values",
-                        })}
-                      >
-                        {t("subcategory-values")}
-                      </RadioButton>
-                    </HStack>
+                    <FormControl>
+                      <FormLabel>
+                        {t("value-types")}{" "}
+                        {/* TODO content for this Tooltip?
+                        <Tooltip
+                          hasArrow
+                          label={t("value-types-tooltip")}
+                          placement="bottom-start"
+                        >
+                          <InfoOutlineIcon mt={-1} color="content.tertiary" />
+                        </Tooltip>
+                        */}
+                      </FormLabel>
+                      <HStack spacing={4} {...getRootProps()}>
+                        <RadioButton
+                          {...getRadioProps({ value: "scope-values" })}
+                        >
+                          {t("scope-values")}
+                        </RadioButton>
+                        <RadioButton
+                          {...getRadioProps({ value: "unavailable" })}
+                        >
+                          {t("unavailable-not-applicable")}
+                        </RadioButton>
+                      </HStack>
+                    </FormControl>
                     {/*** One value for the sub-sector ***/}
-                    {valueType === "one-value" && (
-                      <EmissionsForm
-                        t={t}
-                        register={register}
-                        errors={errors}
-                        control={control}
-                        watch={watch}
-                        sectorNumber={sectorNumber!}
-                      />
-                    )}
-                    {/*** Values for each subcategory ***/}
-                    {valueType === "subcategory-values" && (
+                    {valueType === "unavailable" && (
                       <>
-                        <TagSelect<Inputs>
-                          options={subcategoryOptions}
-                          name="subcategories"
-                          id="subcategories"
-                          placeholder={t("select-subcategories")}
-                          rules={{ required: t("subcategories-required") }}
-                          control={control}
-                        />
-                        <Accordion allowToggle className="space-y-6">
-                          {subcategories.map((subcategory, i) => (
-                            <AccordionItem key={subcategory.value} mb={0}>
-                              <h2>
-                                <AccordionButton>
-                                  <HStack w="full">
-                                    <Box
-                                      as="span"
-                                      flex="1"
-                                      textAlign="left"
-                                      w="full"
-                                    >
-                                      <Heading
-                                        size="sm"
-                                        color="content.alternative"
-                                      >
-                                        {subcategory.label}
-                                      </Heading>
-                                      <Text color="content.tertiary">
-                                        {/* TODO: Get category text body */}
-                                      </Text>
-                                    </Box>
-                                    <Tag
-                                      variant={i == 0 ? "success" : "warning"}
-                                      mx={6}
-                                    >
-                                      {i == 0
-                                        ? t("completed")
-                                        : t("incomplete")}
-                                    </Tag>
-                                    <AccordionIcon
-                                      borderWidth={1}
-                                      boxSize={6}
-                                      borderRadius="full"
-                                      borderColor="border.overlay"
-                                    />
-                                  </HStack>
-                                </AccordionButton>
-                              </h2>
-                              <AccordionPanel pt={4}>
-                                <EmissionsForm
-                                  t={t}
-                                  register={register}
-                                  errors={errors}
-                                  control={control}
-                                  prefix={`subcategoryData.${subcategory.value}.`}
-                                  watch={watch}
-                                  sectorNumber={sectorNumber!}
-                                />
-                              </AccordionPanel>
-                            </AccordionItem>
-                          ))}
-                        </Accordion>
+                        <FormControl
+                          isInvalid={!!resolve("unavailableReason", errors)}
+                          mb={12}
+                        >
+                          <FormLabel>{t("unavailable-reason")}</FormLabel>
+                          <Select
+                            bgColor="base.light"
+                            placeholder={t("unavailable-reason-placeholder")}
+                            {...register("unavailableReason", {
+                              required: t("option-required"),
+                            })}
+                          >
+                            <option value="no-occurrance">
+                              {t("no-occurrance")}
+                            </option>
+                            <option value="not-estimated">
+                              {t("not-estimated")}
+                            </option>
+                            <option value="confidential-information">
+                              {t("confidential-information")}
+                            </option>
+                            <option value="presented-elsewhere">
+                              {t("presented-elsewhere")}
+                            </option>
+                          </Select>
+                          <FormErrorMessage>
+                            {resolve("unavailableReason", errors)?.message}
+                          </FormErrorMessage>
+                        </FormControl>
+
+                        <FormControl
+                          isInvalid={
+                            !!resolve("unavailableExplanation", errors)
+                          }
+                        >
+                          <FormLabel>{t("unavailable-explanation")}</FormLabel>
+                          <Textarea
+                            placeholder={t(
+                              "unavailable-explanation-placeholder",
+                            )}
+                            bgColor="base.light"
+                            {...register("unavailableExplanation", {
+                              required: t("unavailable-explanation-required"),
+                            })}
+                          />
+                          <FormErrorMessage>
+                            {resolve("unavailableExplanation", errors)?.message}
+                          </FormErrorMessage>
+                        </FormControl>
                       </>
+                    )}
+                    {/*** Values for each scope ***/}
+                    {valueType === "scope-values" && (
+                      <Accordion allowToggle className="space-y-6">
+                        {scopes?.map((scope) => (
+                          <AccordionItem key={scope.value} mb={0}>
+                            <h2>
+                              <AccordionButton>
+                                <HStack w="full">
+                                  <Box
+                                    as="span"
+                                    flex="1"
+                                    textAlign="left"
+                                    w="full"
+                                  >
+                                    <Heading
+                                      size="sm"
+                                      color="content.alternative"
+                                    >
+                                      {scope.label}
+                                    </Heading>
+                                    <Text color="content.tertiary">
+                                      {/* TODO: Get scope text body */}
+                                    </Text>
+                                  </Box>
+                                  {isScopeCompleted(scope.value) ? (
+                                    <Tag variant="success" mx={6}>
+                                      {t("completed")}
+                                    </Tag>
+                                  ) : (
+                                    <Tag variant="warning" mx={6}>
+                                      {t("incomplete")}
+                                    </Tag>
+                                  )}
+                                  <AccordionIcon
+                                    borderWidth={1}
+                                    boxSize={6}
+                                    borderRadius="full"
+                                    borderColor="border.overlay"
+                                  />
+                                </HStack>
+                              </AccordionButton>
+                            </h2>
+                            <AccordionPanel pt={4}>
+                              <EmissionsForm
+                                t={t}
+                                register={register}
+                                errors={errors}
+                                control={control}
+                                prefix={`subcategoryData.${scope.value}.`}
+                                watch={watch}
+                                sectorNumber={sectorNumber!}
+                              />
+                            </AccordionPanel>
+                          </AccordionItem>
+                        ))}
+                      </Accordion>
                     )}
                     <Box w="full" className="grow flex flex-col">
                       <Box className="grow" />
                       <Button
                         onClick={handleSubmit(onSubmit)}
                         isDisabled={!isSubmitEnabled}
-                        isLoading={isSaving}
+                        isLoading={isSubmitting}
                         type="submit"
                         formNoValidate
                         w="full"

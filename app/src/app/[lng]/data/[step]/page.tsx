@@ -6,7 +6,7 @@ import WizardSteps from "@/components/wizard-steps";
 import { useTranslation } from "@/i18n/client";
 import { ScopeAttributes } from "@/models/Scope";
 import { api } from "@/services/api";
-import { SectorProgress } from "@/util/types";
+import type { DataSource, SectorProgress } from "@/util/types";
 import { ArrowBackIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -29,8 +29,10 @@ import {
   useSteps,
   useToast,
 } from "@chakra-ui/react";
+import { TFunction } from "i18next";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Trans } from "react-i18next/TransWithoutContext";
 import { FiTarget, FiTrash2, FiTruck } from "react-icons/fi";
 import {
   MdAdd,
@@ -46,9 +48,7 @@ import {
 } from "react-icons/md";
 import { SourceDrawer } from "./SourceDrawer";
 import { SubsectorDrawer } from "./SubsectorDrawer";
-import { Trans } from "react-i18next/TransWithoutContext";
-import { TFunction } from "i18next";
-import { DataSource, DataStep, SubSector } from "./types";
+import type { DataStep, SubSector } from "./types";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   return `mailto://info@openearth.org,greta@openearth.org?subject=Missing third party data sources&body=City: ${locode}%0ASector: ${sector}%0AYear: ${year}`;
@@ -223,8 +223,9 @@ export default function AddDataSteps({
     history.replaceState("", "", newPath);
   }, [activeStep]);
 
-  const totalStepCompletion =
-    currentStep.connectedProgress + currentStep.addedProgress;
+  const totalStepCompletion = currentStep
+    ? currentStep.connectedProgress + currentStep.addedProgress
+    : 0;
   const formatPercentage = (percentage: number) =>
     Math.round(percentage * 1000) / 10;
 
@@ -330,8 +331,8 @@ export default function AddDataSteps({
 
   function isSourceConnected(source: DataSource): boolean {
     return (
-      source.subSectorValues.length > 0 ||
-      source.subCategoryValues.length > 0 ||
+      (source.subSectorValues && source.subSectorValues.length > 0) ||
+      (source.subCategoryValues && source.subCategoryValues.length > 0) ||
       newlyConnectedDataSourceIds.indexOf(source.datasourceId) > -1
     );
   }

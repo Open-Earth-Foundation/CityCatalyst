@@ -37,18 +37,11 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
     subSectorValue = await subSectorValue.update(body);
   } else {
     const subSector = await db.models.SubSector.findOne({
-      include: [
-        {
-          model: db.models.SubCategory,
-          as: "subCategories",
-          where: { subcategoryId: params.subcategory },
-          required: true,
-        },
-      ],
+      where: { subsectorId: params.subsector },
     });
     if (!subSector) {
       throw new createHttpError.InternalServerError(
-        "No subsector found for subsector " + params.subsector,
+        "No subsector found for id " + params.subsector,
       );
     }
     let sectorValue = await db.models.SectorValue.findOne({

@@ -201,6 +201,14 @@ export function SubsectorDrawer({
         },
       });
     } else if (data.valueType === "scope-values") {
+      await setSubsectorValue({
+        subSectorId: subsector.subsectorId,
+        inventoryId: inventoryId!,
+        data: {
+          unavailableReason: "",
+          unavailableExplanation: "",
+        },
+      });
       const results = await Promise.all(
         Object.keys(data.subcategoryData).map((subcategoryId) => {
           const value = data.subcategoryData[subcategoryId];

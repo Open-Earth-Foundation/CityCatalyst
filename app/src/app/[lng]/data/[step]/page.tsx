@@ -29,8 +29,10 @@ import {
   useSteps,
   useToast,
 } from "@chakra-ui/react";
+import { TFunction } from "i18next";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Trans } from "react-i18next/TransWithoutContext";
 import { FiTarget, FiTrash2, FiTruck } from "react-icons/fi";
 import {
   MdAdd,
@@ -46,8 +48,6 @@ import {
 } from "react-icons/md";
 import { SourceDrawer } from "./SourceDrawer";
 import { SubsectorDrawer } from "./SubsectorDrawer";
-import { Trans } from "react-i18next/TransWithoutContext";
-import { TFunction } from "i18next";
 import { DataSource, DataStep, SubSector } from "./types";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
@@ -330,8 +330,8 @@ export default function AddDataSteps({
 
   function isSourceConnected(source: DataSource): boolean {
     return (
-      source.subSectorValues.length > 0 ||
-      source.subCategoryValues.length > 0 ||
+      source.subSector != null ||
+      source.subCategory != null ||
       newlyConnectedDataSourceIds.indexOf(source.datasourceId) > -1
     );
   }

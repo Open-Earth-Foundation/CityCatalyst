@@ -101,7 +101,7 @@ function extractFormValues(subSectorValue: SubSectorValueResponse): Inputs {
   const inputs: Inputs = Object.assign({}, defaultValues);
   if (subSectorValue.unavailableReason) {
     inputs.valueType = "unavailable";
-    inputs.unavailableReason = subSectorValue.unavailableReason || "";
+    inputs.unavailableReason = subSectorValue.unavailableReason as any || "";
     inputs.unavailableExplanation = subSectorValue.unavailableExplanation || "";
   } else {
     inputs.valueType = "scope-values";

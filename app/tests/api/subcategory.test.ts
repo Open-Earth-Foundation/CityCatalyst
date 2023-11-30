@@ -18,6 +18,7 @@ import { SubCategoryValue } from "@/models/SubCategoryValue";
 import { SubSectorValue } from "@/models/SubSectorValue";
 import { SubCategory } from "@/models/SubCategory";
 import { Op } from "sequelize";
+import { SubSector } from "@/models/SubSector";
 
 const locode = "XX_SUBCATEGORY_CITY";
 const totalEmissions = 44000;
@@ -26,6 +27,7 @@ const activityValue = 1000;
 const emissionFactorValue = 12;
 const inventoryName = "TEST_SUBCATEGORY_INVENTORY";
 const subcategoryName = "TEST_SUBCATEGORY_SUBCATEGORY";
+const subsectorName = "TEST_SUBCATEGORY_SUBSECTOR";
 
 const subcategoryValue1: CreateSubCategoryRequest = {
   activityUnits: "UNITS",
@@ -53,6 +55,7 @@ describe("Sub Category API", () => {
   let subSectorValue: SubSectorValue;
   let sectorValue: SectorValue;
   let subCategory: SubCategory;
+  let subSector: SubSector;
   let subCategoryValue: SubCategoryValue;
 
   before(async () => {
@@ -63,7 +66,7 @@ describe("Sub Category API", () => {
       where: { subcategoryName },
     });
     await db.models.SubSector.destroy({
-      where: { subsectorName: { [Op.like]: "XX_INVENTORY_%" } },
+      where: { subsectorName },
     });
     await db.models.City.destroy({ where: { locode } });
 
@@ -100,9 +103,15 @@ describe("Sub Category API", () => {
       totalEmissions,
     });
 
+    subSector = await db.models.SubSector.create({
+      subsectorId: randomUUID(),
+      subsectorName,
+    });
+
     subSectorValue = await db.models.SubSectorValue.create({
       inventoryId: inventory.inventoryId,
       subsectorValueId: randomUUID(),
+      subsectorId: subSector.subsectorId,
       totalEmissions,
       sectorValueId: sectorValue.sectorValueId,
       activityUnits,
@@ -112,6 +121,7 @@ describe("Sub Category API", () => {
 
     subCategory = await db.models.SubCategory.create({
       subcategoryId: randomUUID(),
+      subsectorId: subSector.subsectorId,
       subcategoryName,
     });
   });

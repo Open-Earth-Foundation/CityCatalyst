@@ -452,7 +452,7 @@ export function SubsectorDrawer({
                     {/*** Values for each scope ***/}
                     {valueType === "scope-values" && (
                       <Accordion allowToggle className="space-y-6">
-                        {scopes?.map((scope, i) => (
+                        {scopes?.map((scope) => (
                           <AccordionItem key={scope.value} mb={0}>
                             <h2>
                               <AccordionButton>

@@ -10,6 +10,7 @@ import type {
   DataSourceResponse,
   InventoryProgressResponse,
   InventoryResponse,
+  InventoryWithCity,
   SubsectorValueUpdateQuery,
   UserInfoResponse,
 } from "@/util/types";
@@ -32,7 +33,7 @@ export const api = createApi({
       { locode: string; year: number }
     >({
       query: ({ locode, year }) => `city/${locode}/inventory/${year}`,
-      transformResponse: (response: { data: InventoryAttributes }) =>
+      transformResponse: (response: { data: InventoryResponse }) =>
         response.data,
     }),
     getInventoryProgress: builder.query<
@@ -123,6 +124,11 @@ export const api = createApi({
         body: { dataSourceIds: data.dataSourceIds },
       }),
       transformResponse: (response: { data: ConnectDataSourceResponse }) =>
+        response.data,
+    }),
+    getUserInventories: builder.query<InventoryWithCity[], void>({
+      query: () => "/user/inventories",
+      transformResponse: (response: { data: InventoryWithCity[] }) =>
         response.data,
     }),
   }),

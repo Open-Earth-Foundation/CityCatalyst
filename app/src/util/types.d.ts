@@ -2,6 +2,8 @@ import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
 import type { SubSectorAttributes } from "@/models/SubSector";
+import type { InventoryAttributes } from "@/models/Inventory";
+import type { CityAttributes } from "@/models/City";
 import type { SubSector } from "@/util/types";
 
 type InventoryResponse = InventoryAttributes & { city: CityAttributes };
@@ -53,6 +55,8 @@ interface SubsectorValueUpdateQuery {
   inventoryId: string;
   data: SubSectorValueAttributes;
 }
+
+type InventoryWithCity = InventoryAttributes & { city: CityAttributes };
 
 declare module "next-auth" {
   interface Session {

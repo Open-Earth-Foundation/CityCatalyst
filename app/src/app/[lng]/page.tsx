@@ -1,6 +1,7 @@
 "use client";
 
 import { SectorCard } from "@/components/Cards/SectorCard";
+import { InventorySelect } from "@/components/InventorySelect";
 import Footer from "@/components/Sections/Footer";
 import { SegmentedProgress } from "@/components/SegmentedProgress";
 import { CircleIcon } from "@/components/icons";
@@ -236,9 +237,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   {inventory?.city ? (
                     <>
                       <CircleFlag
-                        countryCode={inventory.city.locode
-                          .substring(0, 2)
-                          .toLowerCase()}
+                        countryCode={
+                          inventory.city.locode
+                            ?.substring(0, 2)
+                            .toLowerCase() || ""
+                        }
                         width={32}
                       />
                       <Heading
@@ -250,6 +253,10 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                       >
                         {inventory?.city?.name}
                       </Heading>
+                      <InventorySelect
+                        currentLocode={locode}
+                        currentYear={year}
+                      />
                     </>
                   ) : (
                     (isUserInfoLoading || isInventoryLoading) && (

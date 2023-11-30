@@ -133,7 +133,7 @@ export const openclimateAPI = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl:
       process.env.NODE_ENV === "production"
-        ? "https://openclimate.network"
+        ? "https://app.openclimate.network"
         : "https://openclimate.openearth.dev",
   }),
   endpoints: (builder) => ({

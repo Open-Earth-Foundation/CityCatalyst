@@ -14,8 +14,8 @@ import type {
   SubCategoryValueUpdateQuery,
   SubSectorValueResponse,
   InventoryWithCity,
-  SubsectorValueUpdateQuery,
   UserInfoResponse,
+  SubSectorValueUpdateQuery,
 } from "@/util/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
@@ -119,7 +119,7 @@ export const api = createApi({
     }),
     setSubsectorValue: builder.mutation<
       SubSectorValueAttributes,
-      SubsectorValueUpdateQuery
+      SubSectorValueUpdateQuery
     >({
       query: (data) => ({
         url: `/inventory/${data.inventoryId}/subsector/${data.subSectorId}`,
@@ -141,7 +141,7 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: SubCategoryValueAttributes }) =>
         response.data,
-      invalidatesTags: ["SubCategoryValue", "SubSectorValue"]
+      invalidatesTags: ["SubCategoryValue", "SubSectorValue"],
     }),
     connectDataSource: builder.mutation<
       ConnectDataSourceResponse,

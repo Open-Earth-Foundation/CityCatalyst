@@ -18,7 +18,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
   reducerPath: "api",
-  tagTypes: ["UserInfo", "InventoryProgress"],
+  tagTypes: ["UserInfo", "InventoryProgress", "UserInventories"],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
     getCity: builder.query<CityAttributes, string>({
@@ -71,6 +71,7 @@ export const api = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["UserInventories"],
     }),
     setUserInfo: builder.mutation<
       UserAttributes,
@@ -136,6 +137,7 @@ export const api = createApi({
       query: () => "/user/inventories",
       transformResponse: (response: { data: InventoryWithCity[] }) =>
         response.data,
+      providesTags: ["UserInventories"],
     }),
   }),
 });

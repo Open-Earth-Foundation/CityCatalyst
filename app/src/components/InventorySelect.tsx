@@ -37,9 +37,6 @@ export const InventorySelect = ({
       defaultCityLocode: inventory.city.locode!,
       defaultInventoryYear: inventory.year!,
     }).unwrap();
-    // TODO invalidate user default inventory instead
-    // router.refresh();
-    document?.location.reload();
   };
 
   return (

@@ -18,6 +18,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
   reducerPath: "api",
+  tagTypes: ["UserInfo", "CityBoundary"],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
     getCity: builder.query<CityAttributes, string>({
@@ -79,11 +80,13 @@ export const api = createApi({
         method: "PATCH",
         body: data,
       }),
+      invalidatesTags: ["UserInfo"],
     }),
     getUserInfo: builder.query<UserInfoResponse, void>({
       query: () => "/user",
       transformResponse: (response: { data: UserInfoResponse }) =>
         response.data,
+      providesTags: ["UserInfo"],
     }),
     getAllDataSources: builder.query<
       DataSourceResponse,

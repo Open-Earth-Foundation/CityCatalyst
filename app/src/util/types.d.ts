@@ -5,6 +5,8 @@ import type { SubCategoryAttributes } from "@/models/SubCategory";
 import type { DataSourceAttributes } from "@/models/DataSource";
 import type { SubCategoryValueAttributes } from "@/models/SubCategoryValue";
 import type { SubSectorAttributes } from "@/models/SubSector";
+import type { InventoryAttributes } from "@/models/Inventory";
+import type { CityAttributes } from "@/models/City";
 import type { SubSector } from "@/util/types";
 
 type InventoryResponse = InventoryAttributes & { city: CityAttributes };
@@ -70,6 +72,8 @@ interface SubCategoryValueUpdateQuery {
   inventoryId: string;
   data: SubCategoryValueData;
 }
+
+type InventoryWithCity = InventoryAttributes & { city: CityAttributes };
 
 declare module "next-auth" {
   interface Session {

@@ -1,13 +1,25 @@
 "use client";
 
+import RecentSearches from "@/components/recent-searches";
 import WizardSteps from "@/components/wizard-steps";
+import { set } from "@/features/city/openclimateCitySlice";
 import { useTranslation } from "@/i18n/client";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { OCCityArributes } from "@/models/City";
+import {
+  useAddCityMutation,
+  useAddInventoryMutation,
+  useGetOCCityDataQuery,
+  useGetOCCityQuery,
+  useSetUserInfoMutation,
+} from "@/services/api";
 import {
   ArrowBackIcon,
   CheckIcon,
   InfoOutlineIcon,
   SearchIcon,
 } from "@chakra-ui/icons";
+import { Link } from "@chakra-ui/next-js";
 import {
   Box,
   Button,
@@ -27,7 +39,8 @@ import {
   useSteps,
   useToast,
 } from "@chakra-ui/react";
-import Image from "next/image";
+import { TFunction } from "i18next";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -36,22 +49,8 @@ import {
   UseFormRegister,
   useForm,
 } from "react-hook-form";
-import { MdOutlineAspectRatio, MdOutlinePeopleAlt } from "react-icons/md";
-import { Link } from "@chakra-ui/next-js";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { TFunction } from "i18next";
-import {
-  useAddCityMutation,
-  useAddInventoryMutation,
-  useGetOCCityQuery,
-  useGetOCCityDataQuery,
-  useSetUserInfoMutation,
-} from "@/services/api";
-import RecentSearches from "@/components/recent-searches";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { set } from "@/features/city/openclimateCitySlice";
-import { OCCityArributes } from "@/models/City";
-import dynamic from "next/dynamic";
+import { MdOutlineAspectRatio, MdOutlinePeopleAlt } from "react-icons/md";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 

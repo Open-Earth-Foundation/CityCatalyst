@@ -13,6 +13,7 @@ import type {
   InventoryResponse,
   SubCategoryValueUpdateQuery,
   SubSectorValueResponse,
+  InventoryWithCity,
   SubsectorValueUpdateQuery,
   UserInfoResponse,
 } from "@/util/types";
@@ -20,6 +21,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
   reducerPath: "api",
+  tagTypes: ["UserInfo", "InventoryProgress", "UserInventories"],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
     getCity: builder.query<CityAttributes, string>({
@@ -35,7 +37,7 @@ export const api = createApi({
       { locode: string; year: number }
     >({
       query: ({ locode, year }) => `city/${locode}/inventory/${year}`,
-      transformResponse: (response: { data: InventoryAttributes }) =>
+      transformResponse: (response: { data: InventoryResponse }) =>
         response.data,
     }),
     getInventoryProgress: builder.query<
@@ -45,6 +47,7 @@ export const api = createApi({
       query: ({ locode, year }) => `city/${locode}/inventory/${year}/progress`,
       transformResponse: (response: { data: InventoryProgressResponse }) =>
         response.data,
+      providesTags: ["InventoryProgress"],
     }),
     addCity: builder.mutation<
       CityAttributes,
@@ -71,6 +74,7 @@ export const api = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["UserInventories"],
     }),
     setUserInfo: builder.mutation<
       UserAttributes,
@@ -81,11 +85,13 @@ export const api = createApi({
         method: "PATCH",
         body: data,
       }),
+      invalidatesTags: ["UserInfo"],
     }),
     getUserInfo: builder.query<UserInfoResponse, void>({
       query: () => "/user",
       transformResponse: (response: { data: UserInfoResponse }) =>
         response.data,
+      providesTags: ["UserInfo"],
     }),
     getAllDataSources: builder.query<
       DataSourceResponse,
@@ -115,6 +121,7 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: SubSectorValueAttributes }) =>
         response.data,
+      invalidatesTags: ["InventoryProgress"],
     }),
     setSubCategoryValue: builder.mutation<
       SubCategoryValueAttributes,
@@ -139,6 +146,13 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: ConnectDataSourceResponse }) =>
         response.data,
+      invalidatesTags: ["InventoryProgress"],
+    }),
+    getUserInventories: builder.query<InventoryWithCity[], void>({
+      query: () => "/user/inventories",
+      transformResponse: (response: { data: InventoryWithCity[] }) =>
+        response.data,
+      providesTags: ["UserInventories"],
     }),
   }),
 });
@@ -148,7 +162,7 @@ export const openclimateAPI = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl:
       process.env.NODE_ENV === "production"
-        ? "https://openclimate.network"
+        ? "https://app.openclimate.network"
         : "https://openclimate.openearth.dev",
   }),
   endpoints: (builder) => ({

@@ -26,6 +26,59 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   const sourceData = body.dataSource;
   delete body.dataSource;
 
+  // lazy initialization of SubSectorValue and SectorValue
+  // TODO should be moved to a service method for reusability
+  let subSectorValue = await db.models.SubSectorValue.findOne({
+    where: { inventoryId: params.inventory },
+    include: [
+      {
+        model: db.models.SubSector,
+        as: "subSector",
+        include: [
+          {
+            model: db.models.SubCategory,
+            as: "subCategory",
+            where: { subcategoryId: params.subcategory },
+            required: true,
+          },
+        ],
+      },
+    ],
+  });
+  if (!subSectorValue) {
+    const subSector = await db.models.SubSector.findOne({
+      include: [
+        {
+          model: db.models.SubCategory,
+          as: "subCategories",
+          where: { subcategoryId: params.subcategory },
+          required: true,
+        },
+      ],
+    });
+    if (!subSector) {
+      throw new createHttpError.InternalServerError(
+        "No subsector found for subcategory " + params.subcategory,
+      );
+    }
+    let sectorValue = await db.models.SectorValue.findOne({
+      where: { sectorId: subSector.sectorId },
+    });
+    if (!sectorValue) {
+      sectorValue = await db.models.SectorValue.create({
+        sectorValueId: randomUUID(),
+        sectorId: subSector.sectorId,
+        inventoryId: params.inventory,
+      });
+    }
+    subSectorValue = await db.models.SubSectorValue.create({
+      subsectorValueId: randomUUID(),
+      subsectorId: subSector.subsectorId,
+      inventoryId: params.inventory,
+      sectorValueId: sectorValue.sectorValueId,
+    });
+  }
+
   if (subCategoryValue) {
     // update or replace data source if necessary
     let datasourceId: string | undefined = undefined;
@@ -36,72 +89,35 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
           datasourceId = subCategoryValue.datasourceId;
         } else {
           const source = await db.models.DataSource.create({
-            datasourceId: randomUUID(),
             ...sourceData,
+            datasourceId: randomUUID(),
           });
           datasourceId = source.datasourceId;
         }
       }
     }
-    subCategoryValue = await subCategoryValue.update({ datasourceId, ...body });
+
+    subCategoryValue = await subCategoryValue.update({
+      ...body,
+      subcategoryId: subCategoryValue.subcategoryId,
+      subcategoryValueId: subCategoryValue.subcategoryValueId,
+      subsectorValueId: subSectorValue.subsectorValueId,
+      inventoryId: params.inventory,
+      datasourceId,
+    });
   } else {
     const source = await db.models.DataSource.create({
-      datasourceId: randomUUID(),
       ...sourceData,
+      datasourceId: randomUUID(),
     });
-
-    let subSectorValue = await db.models.SubSectorValue.findOne({
-      where: { inventoryId: params.inventory },
-      include: [
-        {
-          model: db.models.SubCategoryValue,
-          as: "subCategoryValues",
-          where: { subcategoryId: params.subcategory },
-          required: true,
-        },
-      ],
-    });
-    if (!subSectorValue) {
-      const subSector = await db.models.SubSector.findOne({
-        include: [
-          {
-            model: db.models.SubCategory,
-            as: "subCategories",
-            where: { subcategoryId: params.subcategory },
-            required: true,
-          },
-        ],
-      });
-      if (!subSector) {
-        throw new createHttpError.InternalServerError(
-          "No subsector found for subcategory " + params.subcategory,
-        );
-      }
-      let sectorValue = await db.models.SectorValue.findOne({
-        where: { sectorId: subSector.sectorId }
-      });
-      if (!sectorValue) {
-        sectorValue = await db.models.SectorValue.create({
-          sectorValueId: randomUUID(),
-          sectorId: subSector.sectorId,
-          inventoryId: params.inventory,
-        })
-      }
-      subSectorValue = await db.models.SubSectorValue.create({
-        subsectorValueId: randomUUID(),
-        subsectorId: subSector.subsectorId,
-        inventoryId: params.inventory,
-        sectorValueId: sectorValue.sectorValueId,
-      });
-    }
 
     subCategoryValue = await db.models.SubCategoryValue.create({
+      ...body,
       subcategoryValueId: randomUUID(),
       subcategoryId: params.subcategory,
       subsectorValueId: subSectorValue.subsectorValueId,
       inventoryId: params.inventory,
       datasourceId: source.datasourceId,
-      ...body,
     });
   }
 

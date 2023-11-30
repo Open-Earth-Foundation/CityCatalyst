@@ -18,7 +18,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
   reducerPath: "api",
-  tagTypes: ["UserInfo", "CityBoundary"],
+  tagTypes: ["UserInfo", "InventoryProgress"],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
     getCity: builder.query<CityAttributes, string>({
@@ -44,6 +44,7 @@ export const api = createApi({
       query: ({ locode, year }) => `city/${locode}/inventory/${year}/progress`,
       transformResponse: (response: { data: InventoryProgressResponse }) =>
         response.data,
+      providesTags: ["InventoryProgress"],
     }),
     addCity: builder.mutation<
       CityAttributes,
@@ -116,6 +117,7 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: SubSectorValueAttributes }) =>
         response.data,
+      invalidatesTags: ["InventoryProgress"],
     }),
     connectDataSource: builder.mutation<
       ConnectDataSourceResponse,
@@ -128,6 +130,7 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: ConnectDataSourceResponse }) =>
         response.data,
+      invalidatesTags: ["InventoryProgress"],
     }),
     getUserInventories: builder.query<InventoryWithCity[], void>({
       query: () => "/user/inventories",

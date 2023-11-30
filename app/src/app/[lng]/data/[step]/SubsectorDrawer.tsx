@@ -122,9 +122,9 @@ function extractFormValues(subSectorValue: SubSectorValueResponse): Inputs {
           data.activity.dataQuality = value.dataSource.dataQuality || "";
           data.activity.sourceReference = value.dataSource.notes || "";
         } else if (methodology === "direct-measure") {
-          data.direct.co2Emissions = value.co2EmissionsValue || 0;
-          data.direct.ch4Emissions = value.ch4EmissionsValue || 0;
-          data.direct.n2oEmissions = value.n2oEmissionsValue || 0;
+          data.direct.co2Emissions = (value.co2EmissionsValue || 0) / 1000;
+          data.direct.ch4Emissions = (value.ch4EmissionsValue || 0) / 1000;
+          data.direct.n2oEmissions = (value.n2oEmissionsValue || 0) / 1000;
           data.direct.dataQuality = value.dataSource.dataQuality || "";
           data.direct.sourceReference = value.dataSource.notes || "";
         }
@@ -216,9 +216,9 @@ export function SubsectorDrawer({
               notes: value.activity.sourceReference,
             };
           } else if (value.methodology === "direct-measure") {
-            subCategoryValue.co2EmissionsValue = +value.direct.co2Emissions;
-            subCategoryValue.ch4EmissionsValue = +value.direct.ch4Emissions;
-            subCategoryValue.n2oEmissionsValue = +value.direct.n2oEmissions;
+            subCategoryValue.co2EmissionsValue = +value.direct.co2Emissions * 1000;
+            subCategoryValue.ch4EmissionsValue = +value.direct.ch4Emissions * 1000;
+            subCategoryValue.n2oEmissionsValue = +value.direct.n2oEmissions * 1000;
             subCategoryValue.dataSource = {
               sourceType: "user",
               dataQuality: value.direct.dataQuality,

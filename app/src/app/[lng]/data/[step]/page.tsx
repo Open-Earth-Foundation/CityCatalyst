@@ -331,8 +331,8 @@ export default function AddDataSteps({
 
   function isSourceConnected(source: DataSource): boolean {
     return (
-      source.subSector != null ||
-      source.subCategory != null ||
+      source.subSectorValues.length > 0 ||
+      source.subCategoryValues.length > 0 ||
       newlyConnectedDataSourceIds.indexOf(source.datasourceId) > -1
     );
   }

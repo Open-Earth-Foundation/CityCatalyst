@@ -106,6 +106,11 @@ app.include_router(
     tags=["Datasource Catalogue"],
 )
 
+app.include_router(
+    ghgrp_city_locode_route,
+    tags=["GHGRP EPA"],
+)
+
 """
 Entry point of the fastapi application (Drive Code)
     - change the port number if port is already occupied

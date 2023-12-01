@@ -6,7 +6,6 @@ Create Date: 2023-11-17 08:32:03.210927
 
 """
 from typing import Sequence, Union
-
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.sql import text
@@ -21,19 +20,20 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.create_table(
-        "GHGRP_EPA",
+        "ghgrp_epa",
         sa.Column("id", sa.dialects.postgresql.UUID(as_uuid=True), primary_key=True),
-        sa.Column("Facility Id", sa.String, nullable=False),
-        sa.Column("Facility Name", sa.String, nullable=False),
-        sa.Column("City", sa.String, nullable=False),
-        sa.Column("State", sa.String, nullable=False),
-        sa.Column("County", sa.String, nullable=False),
-        sa.Column("Latitude", sa.Float, nullable=False),
-        sa.Column("Longitude", sa.Float, nullable=False),
+        sa.Column("facility_id", sa.String, nullable=False),
+        sa.Column("facility_name", sa.String, nullable=False),
+        sa.Column("city", sa.String, nullable=False),
+        sa.Column("locode", sa.String, nullable=False),
+        sa.Column("state", sa.String, nullable=False),
+        sa.Column("county", sa.String, nullable=False),
+        sa.Column("latitude", sa.Float, nullable=False),
+        sa.Column("longitude", sa.Float, nullable=False),
         sa.Column("geometry", sa.String, nullable=False),
-        sa.Column("Industry Type (subparts)", sa.String, nullable=False),
-        sa.Column("final_subpart_ghgrp", sa.String, nullable=False),
-        sa.Column("Industry Type (sectors)", sa.String, nullable=False),
+        sa.Column("subparts", sa.String, nullable=False),
+        sa.Column("subpart_name", sa.String, nullable=False),
+        sa.Column("sectors", sa.String, nullable=False),
         sa.Column("final_sector", sa.String, nullable=False),
         sa.Column("GPC_ref_no", sa.String, nullable=False),
         sa.Column("year", sa.String, nullable=False),
@@ -51,4 +51,4 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_table("GHGRP_EPA")
+    op.drop_table("ghgrp_epa")

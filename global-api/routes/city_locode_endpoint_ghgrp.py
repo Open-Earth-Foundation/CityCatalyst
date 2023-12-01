@@ -8,8 +8,8 @@ from db.database import SessionLocal
 
 api_router = APIRouter(prefix="/api/v0")
 
-gpc_quality_data = "TBD"
-gpc_quality_EF = "TBD"
+gpc_quality_data = "high"
+gpc_quality_EF = "medium"
 
 
 def not_nan_or_none(value):
@@ -24,7 +24,7 @@ def db_query(locode, year, reference_number):
     with SessionLocal() as session:
         query = text(
             """
-            SELECT * FROM "GHGRP_EPA"
+            SELECT * FROM ghgrp_epa
             WHERE reference_number = :"GPC_ref_no"
             AND locode = :locode
             AND year = :year;

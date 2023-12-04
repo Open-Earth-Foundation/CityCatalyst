@@ -44,6 +44,8 @@ spec:
           value: "email-smtp.us-east-1.amazonaws.com"
         - name: SMTP_PORT
           value: "587"
+        - name: GLOBAL_API_URL
+          value: "http://ccglobal.openearth.dev"
         resources:
           limits:
             memory: "1024Mi"

@@ -20,25 +20,24 @@ def not_nan_or_none(value):
 
 
 # Extract the data by locode, year and sector/subsector
-def db_query(locode, year, reference_number):
+def db_query(locode, year, GPC_ref_no):
     with SessionLocal() as session:
         query = text(
             """
             SELECT * FROM ghgrp_epa
-            WHERE reference_number = :"GPC_ref_no"
+            WHERE "GPC_ref_no" = :GPC_ref_no
             AND locode = :locode
             AND year = :year;
             """
         )
-
-        params = {"locode": locode, "year": year, "reference_number": reference_number}
+        params = {"locode": locode, "year": year, "GPC_ref_no": GPC_ref_no}
         result = session.execute(query, params).fetchall()
 
     return result
 
 
 @api_router.get("/ghgrp_epa/city/{locode}/{year}/{gpcReferenceNumber}")
-def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: str):
+def get_emissions_by_city_and_year(locode: str, year: str, gpcReferenceNumber: str):
 
     records = db_query(locode, year, gpcReferenceNumber)
 
@@ -49,7 +48,7 @@ def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: s
 
     totals = {
         "emissions": {
-            "co2_e": df.sum("emissions_quantity"),
+            "co2_e": df["emissions_quantity"].sum(),
             "gpc_quality": str(gpc_quality_data),
         }
     }
@@ -68,17 +67,17 @@ def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: s
         if all(conditions):
 
             ownership = {
-                "facility_name": row["Facility Name"].item(),
-                "facility_id": row["Facility Id"].item(),
-                "lat": row["Latitude"].to_string(index=False, header=False).strip(),
-                "lon": row["Longitude"].to_string(index=False, header=False).strip(),
+                "facility_name": row["facility_name"].item(),
+                "facility_id": row["facility_id"].item(),
+                "lat": row["latitude"].to_string(index=False, header=False).strip(),
+                "lon": row["longitude"].to_string(index=False, header=False).strip(),
             }
 
             industry_type = {
-                "sectors": row["Industry Type (sectors)"].item(),
-                "subparts": row["Industry Type (subparts)"].item(),
+                "sectors": row["sectors"].item(),
+                "subparts": row["subparts"].item(),
                 "final_sector": row["final_sector"].item(),
-                "final_subpart": row["final_subpart_ghgrp"].item(),
+                "final_subpart": row["subpart_name"].item(),
             }
 
             emissions = {

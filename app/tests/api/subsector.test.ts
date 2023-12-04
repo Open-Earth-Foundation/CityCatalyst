@@ -25,7 +25,7 @@ const locode = "XX_SUBSECTOR_CITY";
 const totalEmissions = 44000;
 const activityUnits = "UNITS";
 const activityValue = 1000;
-const emissionFactorValue = 5;
+const emissionFactorValue = 12;
 
 const subsectorValue1: CreateSubSectorRequest = {
   activityUnits: "UNITS",

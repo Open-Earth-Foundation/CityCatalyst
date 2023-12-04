@@ -24,8 +24,10 @@ export function SegmentedProgress({
           key={i}
           backgroundColor={colorValues[i]}
           h={height}
-          w={`${100 * value / max}%`}
-          borderStartRadius={i == 0 ? "full" : undefined}
+          w={`${(100 * value) / max}%`}
+          borderStartRadius={
+            i == 0 || (i == 1 && values[0] == 0) ? "full" : undefined
+          }
           borderEndRadius={i == values.length - 1 ? "full" : undefined}
         />
       ))}

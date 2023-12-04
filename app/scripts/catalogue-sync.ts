@@ -3,10 +3,7 @@ import { DataSourceCreationAttributes } from "@/models/DataSource";
 import env from "@next/env";
 import { randomUUID } from "node:crypto";
 
-const GLOBAL_API_URL =
-  process.env.CC_ENV === "production"
-    ? "https://ccglobal.citycatalyst.io"
-    : "https://ccglobal.openearth.dev";
+const GLOBAL_API_URL = process.env.GLOBAL_API_URL || "http://api.citycatalyst.io";
 
 interface Source {
   datasource_id: string;
@@ -170,7 +167,7 @@ async function syncDataCatalogue() {
   for (const source of sources) {
     await db.models.DataSource.upsert(source);
   }
-  
+
   /* TODO switch to single query when this issue is fixed:
   // https://github.com/sequelize/sequelize/issues/15221
   // https://github.com/sequelize/sequelize/issues/13545
@@ -216,4 +213,3 @@ async function syncDataCatalogue() {
 }
 
 syncDataCatalogue();
-

@@ -1,8 +1,9 @@
-import {
+import type {
   UserAttributes,
-  type CityAttributes,
-  type InventoryAttributes,
+  CityAttributes,
+  InventoryAttributes,
   SubSectorValueAttributes,
+  SubCategoryValueAttributes,
 } from "@/models/init-models";
 import type {
   ConnectDataSourceQuery,
@@ -10,13 +11,23 @@ import type {
   DataSourceResponse,
   InventoryProgressResponse,
   InventoryResponse,
-  SubsectorValueUpdateQuery,
+  SubCategoryValueUpdateQuery,
+  SubSectorValueResponse,
+  InventoryWithCity,
   UserInfoResponse,
+  SubSectorValueUpdateQuery,
 } from "@/util/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
   reducerPath: "api",
+  tagTypes: [
+    "UserInfo",
+    "InventoryProgress",
+    "UserInventories",
+    "SubSectorValue",
+    "SubCategoryValue",
+  ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
     getCity: builder.query<CityAttributes, string>({
@@ -32,7 +43,7 @@ export const api = createApi({
       { locode: string; year: number }
     >({
       query: ({ locode, year }) => `city/${locode}/inventory/${year}`,
-      transformResponse: (response: { data: InventoryAttributes }) =>
+      transformResponse: (response: { data: InventoryResponse }) =>
         response.data,
     }),
     getInventoryProgress: builder.query<
@@ -42,6 +53,7 @@ export const api = createApi({
       query: ({ locode, year }) => `city/${locode}/inventory/${year}/progress`,
       transformResponse: (response: { data: InventoryProgressResponse }) =>
         response.data,
+      providesTags: ["InventoryProgress"],
     }),
     addCity: builder.mutation<
       CityAttributes,
@@ -68,6 +80,7 @@ export const api = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["UserInventories"],
     }),
     setUserInfo: builder.mutation<
       UserAttributes,
@@ -78,11 +91,13 @@ export const api = createApi({
         method: "PATCH",
         body: data,
       }),
+      invalidatesTags: ["UserInfo"],
     }),
     getUserInfo: builder.query<UserInfoResponse, void>({
       query: () => "/user",
       transformResponse: (response: { data: UserInfoResponse }) =>
         response.data,
+      providesTags: ["UserInfo"],
     }),
     getAllDataSources: builder.query<
       DataSourceResponse,
@@ -93,17 +108,18 @@ export const api = createApi({
         response.data,
     }),
     getSubsectorValue: builder.query<
-      SubSectorValueAttributes,
+      SubSectorValueResponse,
       { subSectorId: string; inventoryId: string }
     >({
       query: ({ subSectorId, inventoryId }) =>
         `/inventory/${inventoryId}/subsector/${subSectorId}`,
-      transformResponse: (response: { data: SubSectorValueAttributes }) =>
+      transformResponse: (response: { data: SubSectorValueResponse }) =>
         response.data,
+      providesTags: ["SubSectorValue"],
     }),
     setSubsectorValue: builder.mutation<
       SubSectorValueAttributes,
-      SubsectorValueUpdateQuery
+      SubSectorValueUpdateQuery
     >({
       query: (data) => ({
         url: `/inventory/${data.inventoryId}/subsector/${data.subSectorId}`,
@@ -112,6 +128,20 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: SubSectorValueAttributes }) =>
         response.data,
+      invalidatesTags: ["InventoryProgress", "SubSectorValue"],
+    }),
+    setSubCategoryValue: builder.mutation<
+      SubCategoryValueAttributes,
+      SubCategoryValueUpdateQuery
+    >({
+      query: (data) => ({
+        url: `/inventory/${data.inventoryId}/subcategory/${data.subCategoryId}`,
+        method: "PATCH",
+        body: data.data,
+      }),
+      transformResponse: (response: { data: SubCategoryValueAttributes }) =>
+        response.data,
+      invalidatesTags: ["SubCategoryValue", "SubSectorValue"],
     }),
     connectDataSource: builder.mutation<
       ConnectDataSourceResponse,
@@ -124,6 +154,13 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: ConnectDataSourceResponse }) =>
         response.data,
+      invalidatesTags: ["InventoryProgress"],
+    }),
+    getUserInventories: builder.query<InventoryWithCity[], void>({
+      query: () => "/user/inventories",
+      transformResponse: (response: { data: InventoryWithCity[] }) =>
+        response.data,
+      providesTags: ["UserInventories"],
     }),
   }),
 });
@@ -133,7 +170,7 @@ export const openclimateAPI = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl:
       process.env.NODE_ENV === "production"
-        ? "https://openclimate.network"
+        ? "https://app.openclimate.network"
         : "https://openclimate.openearth.dev",
   }),
   endpoints: (builder) => ({
@@ -150,10 +187,8 @@ export const openclimateAPI = createApi({
 });
 
 // Global API URL
-export const GLOBAL_API_URL =
-  process.env.CC_ENV === "production"
-    ? "https://ccglobal.citycatalyst.io"
-    : "https://ccglobal.openearth.dev";
+
+const GLOBAL_API_URL = process.env.GLOBAL_API_URL || "http://api.citycatalyst.io";
 
 // hooks are automatically generated
 export const {

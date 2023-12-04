@@ -16,6 +16,8 @@ export interface SubSectorValueAttributes {
   ch4EmissionsValue?: number; // kg
   n2oEmissionsValue?: number; // kg
   totalEmissions?: number;
+  unavailableReason?: string;
+  unavailableExplanation?: string;
   emissionsFactorId?: string;
   subsectorId?: string;
   sectorValueId?: string;
@@ -35,6 +37,8 @@ export type SubSectorValueOptionalAttributes =
   | "ch4EmissionsValue"
   | "n2oEmissionsValue"
   | "totalEmissions"
+  | "unavailableReason"
+  | "unavailableExplanation"
   | "emissionsFactorId"
   | "subsectorId"
   | "sectorValueId"
@@ -59,6 +63,8 @@ export class SubSectorValue
   ch4EmissionsValue?: number; // kg
   n2oEmissionsValue?: number; // kg
   totalEmissions?: number;
+  unavailableReason?: string;
+  unavailableExplanation?: string;
   emissionsFactorId?: string;
   subsectorId?: string;
   sectorValueId?: string;
@@ -175,6 +181,16 @@ export class SubSectorValue
           type: DataTypes.DECIMAL,
           allowNull: true,
           field: "total_emissions",
+        },
+        unavailableReason: {
+          type: DataTypes.TEXT,
+          allowNull: true,
+          field: "unavailable_reason",
+        },
+        unavailableExplanation: {
+          type: DataTypes.TEXT,
+          allowNull: true,
+          field: "unavailable_explanation",
         },
         emissionsFactorId: {
           type: DataTypes.UUID,

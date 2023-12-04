@@ -19,21 +19,111 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
 
 export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   const body = createSubCategory.parse(await req.json());
-  let subcategoryValue = await db.models.SubCategoryValue.findOne({
+  let subCategoryValue = await db.models.SubCategoryValue.findOne({
     where: { subcategoryId: params.subcategory, inventoryId: params.inventory },
+    include: [{ model: db.models.DataSource, as: "dataSource" }],
   });
+  const sourceData = body.dataSource;
+  delete body.dataSource;
+  const newDataSource = {
+    ...sourceData,
+    sourceType: "user",
+    datasourceId: randomUUID(),
+  };
 
-  if (subcategoryValue) {
-    subcategoryValue = await subcategoryValue.update(body);
-  } else {
-    subcategoryValue = await db.models.SubCategoryValue.create({
-      subcategoryValueId: randomUUID(),
+  // lazy initialization of SubSectorValue and SectorValue
+  // TODO should be moved to a service method for reusability
+  let subSectorValue = await db.models.SubSectorValue.findOne({
+    where: { inventoryId: params.inventory },
+    include: [
+      {
+        model: db.models.SubSector,
+        as: "subsector",
+        include: [
+          {
+            model: db.models.SubCategory,
+            as: "subCategories",
+            where: { subcategoryId: params.subcategory },
+            required: true,
+          },
+        ],
+      },
+    ],
+  });
+  if (!subSectorValue) {
+    const subSector = await db.models.SubSector.findOne({
+      include: [
+        {
+          model: db.models.SubCategory,
+          as: "subCategories",
+          where: { subcategoryId: params.subcategory },
+          required: true,
+        },
+      ],
+    });
+    if (!subSector) {
+      throw new createHttpError.InternalServerError(
+        "No subsector found for subcategory " + params.subcategory,
+      );
+    }
+    let sectorValue = await db.models.SectorValue.findOne({
+      where: { sectorId: subSector.sectorId },
+    });
+    if (!sectorValue) {
+      sectorValue = await db.models.SectorValue.create({
+        sectorValueId: randomUUID(),
+        sectorId: subSector.sectorId,
+        inventoryId: params.inventory,
+      });
+    }
+    subSectorValue = await db.models.SubSectorValue.create({
+      subsectorValueId: randomUUID(),
+      subsectorId: subSector.subsectorId,
       inventoryId: params.inventory,
-      ...body,
+      sectorValueId: sectorValue.sectorValueId,
     });
   }
 
-  return NextResponse.json({ data: subcategoryValue });
+  if (subCategoryValue) {
+    // update or replace data source if necessary
+    let datasourceId: string | undefined = undefined;
+    if (subCategoryValue.datasourceId) {
+      if (subCategoryValue.dataSource.sourceType === "user") {
+        if (sourceData) {
+          await subCategoryValue.dataSource.update(sourceData);
+        }
+        datasourceId = subCategoryValue.datasourceId;
+      } else {
+        const source = await db.models.DataSource.create(newDataSource);
+        datasourceId = source.datasourceId;
+      }
+    } else {
+      const source = await db.models.DataSource.create(newDataSource);
+      datasourceId = source.datasourceId;
+    }
+
+    subCategoryValue = await subCategoryValue.update({
+      ...body,
+      subcategoryId: subCategoryValue.subcategoryId,
+      subcategoryValueId: subCategoryValue.subcategoryValueId,
+      subsectorValueId: subSectorValue.subsectorValueId,
+      inventoryId: params.inventory,
+      datasourceId,
+    });
+  } else {
+    const source = await db.models.DataSource.create(newDataSource);
+
+    subCategoryValue = await db.models.SubCategoryValue.create({
+      ...body,
+      subcategoryValueId: randomUUID(),
+      subcategoryId: params.subcategory,
+      subsectorValueId: subSectorValue.subsectorValueId,
+      inventoryId: params.inventory,
+      datasourceId: source.datasourceId,
+    });
+  }
+
+  return NextResponse.json({ data: subCategoryValue });
 });
 
 export const DELETE = apiHandler(async (_req: NextRequest, { params }) => {

@@ -1,13 +1,15 @@
 import { fallbackLng, languages } from "@/i18n/settings";
 import acceptLanguage from "accept-language";
-import authMiddleware, { NextRequestWithAuth } from "next-auth/middleware";
-import { NextMiddlewareResult } from "next/dist/server/web/types";
+import { withAuth, type NextRequestWithAuth } from "next-auth/middleware";
+import type { NextMiddlewareResult } from "next/dist/server/web/types";
 import { NextResponse } from "next/server";
 
 acceptLanguage.languages(languages);
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js).*)"],
+  pages: { signIn: "/auth/login" },
+  session: { strategy: "jwt" },
 };
 
 const authMatcher = /^\/[a-z]{0,2}[\/]?auth\//;
@@ -56,7 +58,7 @@ export function middleware(req: NextRequestWithAuth) {
 async function next(req: NextRequestWithAuth): Promise<NextMiddlewareResult> {
   const basePath = new URL(req.url).pathname;
   if (!authMatcher.test(basePath)) {
-    return await authMiddleware(req);
+    return await withAuth(req, config);
   } else {
     return NextResponse.next();
   }

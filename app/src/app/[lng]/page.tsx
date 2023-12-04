@@ -1,6 +1,7 @@
 "use client";
 
 import { SectorCard } from "@/components/Cards/SectorCard";
+import { InventorySelect } from "@/components/InventorySelect";
 import Footer from "@/components/Sections/Footer";
 import { SegmentedProgress } from "@/components/SegmentedProgress";
 import { CircleIcon } from "@/components/icons";
@@ -219,8 +220,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
   return (
     <>
       <NavigationBar lng={lng} />
-      <Box bg="brand.primary" className="w-full h-[491px] pt-[150px]">
-        <Box className="flex mx-auto w-[1090px]">
+      <Box bg="brand.primary" className="w-full h-[491px] pt-[150px]" px={8}>
+        <Box className="flex mx-auto max-w-full w-[1090px]">
           <Box className="w-full h-[240px] flex flex-col justify-center">
             <Box className="flex h-[240px]">
               <Box className="flex gap-[24px] flex-col h-full w-full">
@@ -232,13 +233,15 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                 >
                   <Trans t={t}>welcome-back</Trans>,
                 </Text>
-                <Box className="flex items-center gap-4 w-[644px] h-[104px]">
+                <Box className="flex items-center gap-4">
                   {inventory?.city ? (
                     <>
                       <CircleFlag
-                        countryCode={inventory.city.locode
-                          .substring(0, 2)
-                          .toLowerCase()}
+                        countryCode={
+                          inventory.city.locode
+                            ?.substring(0, 2)
+                            .toLowerCase() || ""
+                        }
                         width={32}
                       />
                       <Heading
@@ -250,6 +253,10 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                       >
                         {inventory?.city?.name}
                       </Heading>
+                      <InventorySelect
+                        currentLocode={locode}
+                        currentYear={year}
+                      />
                     </>
                   ) : (
                     (isUserInfoLoading || isInventoryLoading) && (
@@ -360,7 +367,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   backgroundColor="base.light"
                   borderColor="interactive.accent"
                   borderWidth="thin"
-                  className="h-[132px] w-[533px] hover:shadow-xl"
+                  className="h-[132px] hover:shadow-xl"
                   py={0}
                   px={6}
                 >
@@ -400,7 +407,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   onClick={handleDownload}
                   shadow="2dp"
                   backgroundColor="base.light"
-                  className="h-[132px] w-[533px] hover:shadow-xl"
+                  className="h-[132px] hover:shadow-xl"
                   py={0}
                   px={6}
                 >
@@ -442,8 +449,9 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
       <Box
         className="h-full pt-[128px] pb-[100px]"
         bg="background.backgroundLight"
+        px={8}
       >
-        <Box className="flex mx-auto w-[1090px]">
+        <Box className="flex mx-auto max-w-full w-[1090px]">
           <Box className="flex flex-col gap-[8px] w-full h-300">
             <Box className="flex items-center gap-3">
               <Heading

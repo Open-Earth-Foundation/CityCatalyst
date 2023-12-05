@@ -1,0 +1,92 @@
+name: Push tagged Web app to GHCR and deploy to production
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - app/**
+      - k8s/cc-migrate.yml
+      - k8s/cc-web-deploy.yml
+      - k8s/cc-web.yml
+      - .github/workflows/web-actions.yml
+    tags:
+    - 'v*'
+
+jobs:
+  runTests:
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      NEXTAUTH_SECRET: "diTMz/XLX4edSmmfzwJtmzKjCJGRt81Gf0PdjO3IPs8="
+      NEXTAUTH_URL: "http://localhost:3000"
+    defaults:
+      run:
+        working-directory: ./app
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set up database
+        run: |
+          docker run --name github_action_postgresql -d -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_PASSWORD="" postgres
+          sleep 10
+          createuser -w -h localhost -p 5432 -U postgres citycatalyst
+          createdb -w -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst
+          cp env.example .env
+          npm run db:migrate
+
+      - name: Run NextJS build
+        run: npm run build
+
+      - name: Run API tests
+        run: npm run api:test
+
+      # - name: Run Cypress tests
+      #   run: npm run cy:test
+
+      - name: Shut down database
+        run: docker stop github_action_postgresql
+
+  pushToGHCR:
+    needs: runTests
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: actions/checkout@v3
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Pushing citycatalyst to GHCR
+      env:
+        SHA: ${{ github.sha }}
+        REF: ${{ github.ref }}
+        IMAGE: ghcr.io/open-earth-foundation/citycatalyst
+
+      run: |
+        export VERSION=${REF#refs/tags/v}
+        export MAJOR=${VERSION%.*.*}
+        export MINOR=${VERSION%.*}
+        echo Version: ${VERSION} Major: ${MAJOR} Minor: ${MINOR}
+        docker build -t $IMAGE:$SHA app
+        docker tag $IMAGE:$SHA $IMAGE:$VERSION
+        docker tag $IMAGE:$SHA $IMAGE:$MAJOR
+        docker tag $IMAGE:$SHA $IMAGE:$MINOR
+        docker tag $IMAGE:$SHA $IMAGE:stable
+        docker push $IMAGE:$SHA
+        docker push $IMAGE:$VERSION
+        docker push $IMAGE:$MAJOR
+        docker push $IMAGE:$MINOR
+        docker push $IMAGE:stable

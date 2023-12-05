@@ -18,18 +18,28 @@ if __name__ == "__main__":
     parser.add_argument(
         "--database_uri",
         help="database URI (e.g. postgresql://ccglobal:@localhost/ccglobal)",
-        default=os.environ.get("DB_URI"),
+        default=os.environ.get("DB_URI")
+    )
+    parser.add_argument(
+        "--base_url",
+        help="base url of the api",
+        default=os.environ.get("CC_GLOBAL_API_BASE_URL")
     )
     args = parser.parse_args()
+
+    base_url = args.base_url
+
+    if base_url is None:
+        raise ValueError("base_url is not set")
+
+    database_uri = args.database_uri
+
+    if database_uri is None:
+        raise ValueError("database_uri is not set")
 
     engine = create_engine(args.database_uri)
     metadata_obj = MetaData()
     table = Table("datasource", metadata_obj, autoload_with=engine)
-
-    BASE_URL = "https://ccglobal.openearth.dev"
-
-    if os.environ.get("ENV").lower() == 'production':
-        BASE_URL = "https://ccglobal.openearth.cloud"
 
     PUBLISHER = "Joint Research Centre"
 
@@ -58,7 +68,7 @@ if __name__ == "__main__":
         units="kg",
         methodology_url="https://edgar.jrc.ec.europa.eu/dataset_ghg70#intro",
         retrieval_method="global_api",
-        api_endpoint=f"{BASE_URL}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
+        api_endpoint=f"{base_url}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
         gpc_reference_number="I.3.1",
     )
 
@@ -90,7 +100,7 @@ if __name__ == "__main__":
         units="kg",
         methodology_url="https://edgar.jrc.ec.europa.eu/dataset_ghg70#intro",
         retrieval_method="global_api",
-        api_endpoint=f"{BASE_URL}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
+        api_endpoint=f"{base_url}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
         gpc_reference_number="II.1.1",
     )
 

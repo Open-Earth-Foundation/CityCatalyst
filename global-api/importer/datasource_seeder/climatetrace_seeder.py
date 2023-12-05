@@ -18,18 +18,28 @@ if __name__ == "__main__":
     parser.add_argument(
         "--database_uri",
         help="database URI (e.g. postgresql://ccglobal:@localhost/ccglobal)",
-        default=os.environ.get("DB_URI"),
+        default=os.environ.get("DB_URI")
+    )
+    parser.add_argument(
+        "--base_url",
+        help="base url of the api",
+        default=os.environ.get("CC_GLOBAL_API_BASE_URL")
     )
     args = parser.parse_args()
 
-    engine = create_engine(args.database_uri)
+    base_url = args.base_url
+
+    if base_url is None:
+        raise ValueError("base_url is not set")
+
+    database_uri = args.database_uri
+
+    if database_uri is None:
+        raise ValueError("database_uri is not set")
+
+    engine = create_engine(database_uri)
     metadata_obj = MetaData()
     table = Table("datasource", metadata_obj, autoload_with=engine)
-
-    BASE_URL = "https://ccglobal.openearth.dev"
-
-    if os.environ.get("ENV").lower() == 'production':
-        BASE_URL = "https://ccglobal.openearth.cloud"
 
     PUBLISHER = "ClimateTRACE"
 
@@ -58,7 +68,7 @@ if __name__ == "__main__":
         units="kg",
         methodology_url="https://github.com/climatetracecoalition/methodology-documents/blob/main/Agriculture/Agriculture%20sector-%20Enteric%20fermentation%20and%20Manure%20management%20(asset)%20Methodology.pdf",
         retrieval_method="global_api",
-        api_endpoint=f"{BASE_URL}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
+        api_endpoint=f"{base_url}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
         gpc_reference_number="V.1",
     )
 
@@ -90,7 +100,7 @@ if __name__ == "__main__":
         units="kg",
         methodology_url="https://github.com/climatetracecoalition/methodology-documents/blob/main/Agriculture/Agriculture%20sector-%20Enteric%20fermentation%20and%20Manure%20management%20(asset)%20Methodology.pdf",
         retrieval_method="global_api",
-        api_endpoint=f"{BASE_URL}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
+        api_endpoint=f"{base_url}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
         gpc_reference_number="V.1",
     )
 
@@ -122,7 +132,7 @@ if __name__ == "__main__":
         units="kg",
         methodology_url="https://github.com/climatetracecoalition/methodology-documents/blob/main/Waste/Waste%20Sector-%20Solid%20Waste%20Disposal%20(asset)%20Methodology.pdf",
         retrieval_method="global_api",
-        api_endpoint=f"{BASE_URL}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
+        api_endpoint=f"{base_url}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
         gpc_reference_number="III.1.1",
     )
 
@@ -154,7 +164,7 @@ if __name__ == "__main__":
         units="kg",
         methodology_url="https://github.com/climatetracecoalition/methodology-documents/blob/main/Transportation/Transportation%20sector-%20Domestic%20and%20International%20Aviation%20Methodology.pdf",
         retrieval_method="global_api",
-        api_endpoint=f"{BASE_URL}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
+        api_endpoint=f"{base_url}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
         gpc_reference_number="II.4.1",
     )
 
@@ -186,7 +196,7 @@ if __name__ == "__main__":
         units="kg",
         methodology_url="https://github.com/climatetracecoalition/methodology-documents/blob/main/Transportation/Transportation%20sector-%20Domestic%20and%20International%20Aviation%20Methodology.pdf",
         retrieval_method="global_api",
-        api_endpoint=f"{BASE_URL}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
+        api_endpoint=f"{base_url}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
         gpc_reference_number="II.4.3",
     )
 
@@ -218,7 +228,7 @@ if __name__ == "__main__":
         units="kg",
         methodology_url="https://github.com/climatetracecoalition/methodology-documents/blob/main/Fossil%20fuel%20operations/Fossil%20Fuel%20Operations%20sector-%20Coal%20mining%20Methodology.pdf",
         retrieval_method="global_api",
-        api_endpoint=f"{BASE_URL}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
+        api_endpoint=f"{base_url}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
         gpc_reference_number="I.7.1",
     )
 
@@ -250,7 +260,7 @@ if __name__ == "__main__":
         units="kg",
         methodology_url="https://github.com/climatetracecoalition/methodology-documents/blob/main/Fossil%20fuel%20operations/Fossil%20Fuel%20Operations%20sector-%20Oil%20and%20Gas%20Production%20and%20Transport%20Oil%2C%20and%20Gas%20Refining%20Methodology.pdf",
         retrieval_method="global_api",
-        api_endpoint=f"{BASE_URL}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
+        api_endpoint=f"{base_url}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
         gpc_reference_number="I.8.1",
     )
 
@@ -282,7 +292,7 @@ if __name__ == "__main__":
         units="kg",
         methodology_url="https://github.com/climatetracecoalition/methodology-documents/blob/main/Fossil%20fuel%20operations/Fossil%20Fuel%20Operations%20sector-%20Oil%20and%20Gas%20Production%20and%20Transport%20Oil%2C%20and%20Gas%20Refining%20Methodology.pdf",
         retrieval_method="global_api",
-        api_endpoint=f"{BASE_URL}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
+        api_endpoint=f"{base_url}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
         gpc_reference_number="I.4.1",
     )
 
@@ -314,7 +324,7 @@ if __name__ == "__main__":
         units="kg",
         methodology_url="https://github.com/climatetracecoalition/methodology-documents/blob/main/Transportation/Transportation%20Sector-%20Road%20transportation%20(asset)%20Methodology.pdf",
         retrieval_method="global_api",
-        api_endpoint=f"{BASE_URL}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
+        api_endpoint=f"{base_url}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
         gpc_reference_number="II.1.1",
     )
 

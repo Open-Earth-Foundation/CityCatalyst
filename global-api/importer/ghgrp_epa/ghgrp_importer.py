@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # script.py
 import sys
-sys.path.append('.')  
+sys.path.append('.')
 import argparse
 import logging
 import os
@@ -43,13 +43,14 @@ def insert_record(engine, table, pkey, record):
         insert(table)
         .values(table_data)
         .on_conflict_do_update(
-            index_elements=[pkey], 
+            index_elements=[pkey],
             set_=table_data
         )
     )
 
     with engine.connect() as conn:
         conn.execute(do_update_ins)
+
 
 
 def load_direct_emitters_from_zip(zip_file_path: str, file_name: str):
@@ -102,7 +103,7 @@ if __name__ == "__main__":
             filename = Path(file).stem
             df = load_direct_emitters_from_zip(zip_file, file)
             print(f'Working on: {filename}')
-            
+
             # preproccesing data
             df = restructure(df)
             df = nan_to_zero(df)
@@ -112,7 +113,7 @@ if __name__ == "__main__":
             df['final_sector'] = df['Industry Type (sectors)'].apply(lambda x: count_words(x))
             df = add_geometry(df)
             df = df.rename(columns={
-                "Facility Id": "facility_id", 
+                "Facility Id": "facility_id",
                 "Facility Name" : "facility_name",
                 "City" : "city",
                 "State" : "state",
@@ -123,7 +124,7 @@ if __name__ == "__main__":
                 "Industry Type (sectors)" : "sectors"
                 })
             df = drop_zero(df)
-            
+
             for index, row in df.iterrows():
                 subpart_name = row['subpart_name']
                 final_sector = row['final_sector']
@@ -141,16 +142,21 @@ if __name__ == "__main__":
                             df.at[index, 'GPC_ref_no'] = final_sector_data['gpc_refno']
                         else:
                             continue
-            
+
             # insertion process
             for index, row in df.iterrows():
+
                 record = row.to_dict()
-                
+
                 # metric tonnes to kg
                 record['emissions_quantity'] = record['emissions_quantity']*1000
-                
+
                 # get the locode and coordinate points
                 locode = lat_lon_to_locode(session, record['latitude'], record['longitude'])
+
+                if not locode:
+                    logging.warning(f"Could not find locode for facility {record['facility_id']}")
+                    continue
 
                 # add keys filename and reno to record
                 record["geometry"] = record["geometry"].wkt

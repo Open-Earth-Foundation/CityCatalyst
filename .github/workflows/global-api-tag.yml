@@ -37,7 +37,7 @@ jobs:
           export MAJOR=${VERSION%.*.*}
           export MINOR=${VERSION%.*}
           echo Version: ${VERSION} Major: ${MAJOR} Minor: ${MINOR}
-          docker build -t $IMAGE:$SHA .
+          docker build -t $IMAGE:$SHA global-api
           docker tag $IMAGE:$SHA $IMAGE:$VERSION
           docker tag $IMAGE:$SHA $IMAGE:$MAJOR
           docker tag $IMAGE:$SHA $IMAGE:$MINOR

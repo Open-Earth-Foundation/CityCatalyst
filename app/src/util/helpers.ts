@@ -4,7 +4,6 @@
  * @param obj: object to be searched
  * @param separator: key separator for path (. by default)
  */
-
 export function resolve(
   path: string | string[],
   obj: Record<string, any>,
@@ -21,4 +20,13 @@ export function formatPercent(percent: number) {
 export function getCurrentVersion(): string {
   const version = process.env.APP_VERSION!;
   return version;
+}
+
+export async function resolvePromisesSequentially(promises: Promise<any>[]) {
+  const results = [];
+  for (const promise of promises) {
+    results.push(await promise);
+  }
+
+  return results;
 }

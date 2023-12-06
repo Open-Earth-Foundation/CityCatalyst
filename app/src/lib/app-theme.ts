@@ -207,8 +207,8 @@ export const appTheme = extendTheme({
       variants: {
         outline: {
           border: "2px solid",
-          borderColor: "#2351DC",
-          color: "#2351DC",
+          borderColor: "interactive.secondary",
+          color: "interactive.secondary",
           _hover: {
             borderColor: "#5a7be0",
             color: "#5a7be0",
@@ -222,7 +222,7 @@ export const appTheme = extendTheme({
           },
         },
         solid: {
-          bg: "#2351DC",
+          bg: "interactive.secondary",
           color: "white",
           _hover: {
             bg: "#5a7be0",
@@ -231,9 +231,11 @@ export const appTheme = extendTheme({
             bg: "#899ee0",
           },
           _loading: {
-            opacity: 0.8,
+            bg: "background.overlay",
+            color: "content.link",
             _hover: {
               bg: "#5a7be0",
+              color: "base.light",
             },
           },
         },

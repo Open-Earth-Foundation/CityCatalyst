@@ -80,7 +80,7 @@ function SearchDataSourcesPrompt({
         variant="solid"
         leftIcon={<SearchIcon boxSize={6} />}
         isLoading={isSearching}
-        disabled={isDisabled}
+        isDisabled={isDisabled}
         loadingText={t("searching")}
         onClick={onSearchClicked}
         mb={2}

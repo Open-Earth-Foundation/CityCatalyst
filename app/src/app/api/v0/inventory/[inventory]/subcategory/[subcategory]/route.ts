@@ -39,6 +39,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
       {
         model: db.models.SubSector,
         as: "subsector",
+        required: true,
         include: [
           {
             model: db.models.SubCategory,

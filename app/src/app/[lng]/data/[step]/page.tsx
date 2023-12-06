@@ -297,23 +297,6 @@ export default function AddDataSteps({
         setNewlyConnectedDataSourceIds(
           newlyConnectedDataSourceIds.concat(response.successful),
         );
-        setSteps(
-          steps.map((step, i) => {
-            if (i !== activeStep) {
-              return step;
-            }
-            if (step.totalSubSectors === 0) {
-              console.error(
-                "Step has no totalSubSectors value, can't increase progress!",
-              );
-              return step;
-            }
-            const newProgress =
-              step.connectedProgress + 1.0 / step.totalSubSectors;
-            step.connectedProgress = Math.min(newProgress, 1.0);
-            return step;
-          }),
-        );
         onSourceDrawerClose();
       }
     } catch (error: any) {

@@ -7,7 +7,7 @@ import { useTranslation } from "@/i18n/client";
 import { ScopeAttributes } from "@/models/Scope";
 import { api } from "@/services/api";
 import type { DataSource, SectorProgress } from "@/util/types";
-import { ArrowBackIcon, WarningIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, SearchIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -52,6 +52,49 @@ import type { DataStep, SubSector } from "./types";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   return `mailto://info@openearth.org,greta@openearth.org?subject=Missing third party data sources&body=City: ${locode}%0ASector: ${sector}%0AYear: ${year}`;
+}
+
+function SearchDataSourcesPrompt({
+  t,
+  isSearching,
+  isDisabled,
+  onSearchClicked,
+}: {
+  t: TFunction;
+  isSearching: bool;
+  isDisabled: bool;
+  onSearchClicked: () => void;
+}) {
+  return (
+    <Flex align="center" direction="column">
+      <Icon
+        as={WorldSearchIcon}
+        boxSize={20}
+        color="interactive.secondary"
+        borderRadius="full"
+        p={4}
+        bgColor="background.neutral"
+        mb={6}
+      />
+      <Button
+        variant="solid"
+        leftIcon={<SearchIcon boxSize={6} />}
+        isLoading={isSearching}
+        disabled={isDisabled}
+        loadingText={t("searching")}
+        onClick={onSearchClicked}
+        mb={2}
+        px={6}
+        h={16}
+        py={4}
+      >
+        {t("search-available-datasets")}
+      </Button>
+      <Text color="content.tertiary" align="center" size="sm">
+        {t("wait-for-search")}
+      </Text>
+    </Flex>
+  );
 }
 
 function NoDataSourcesMessage({
@@ -121,14 +164,14 @@ export default function AddDataSteps({
   );
   const isInventoryLoading = isUserInfoLoading || isInventoryProgressLoading;
 
-  const {
-    data: allDataSources,
-    isLoading: areDataSourcesLoading,
-    error: dataSourcesError,
-  } = api.useGetAllDataSourcesQuery(
-    { inventoryId: inventoryProgress?.inventoryId! },
-    { skip: !inventoryProgress },
-  );
+  const [
+    loadDataSources,
+    {
+      data: allDataSources,
+      isLoading: areDataSourcesLoading,
+      error: dataSourcesError,
+    },
+  ] = api.useLazyGetAllDataSourcesQuery();
 
   const [connectDataSource, { isLoading: isConnectDataSourceLoading }] =
     api.useConnectDataSourceMutation();
@@ -337,6 +380,14 @@ export default function AddDataSteps({
     );
   }
 
+  function onSearchDataSourcesClicked() {
+    if (inventoryProgress) {
+      loadDataSources({ inventoryId: inventoryProgress.inventoryId });
+    } else {
+      console.error("Inventory progress is still loading!");
+    }
+  }
+
   const [selectedSubsector, setSelectedSubsector] = useState<SubSector>();
   const {
     isOpen: isSubsectorDrawerOpen,
@@ -465,10 +516,13 @@ export default function AddDataSteps({
           {t("check-data-details")}
         </Text>
         <SimpleGrid minChildWidth="250px" spacing={4}>
-          {areDataSourcesLoading || !dataSources ? (
-            <Center>
-              <Spinner size="lg" />
-            </Center>
+          {!dataSources ? (
+            <SearchDataSourcesPrompt
+              t={t}
+              isSearching={areDataSourcesLoading}
+              isDisabled={!inventoryProgress}
+              onSearchClicked={onSearchDataSourcesClicked}
+            />
           ) : dataSourcesError ? (
             <Center>
               <WarningIcon boxSize={8} color="semantic.danger" />

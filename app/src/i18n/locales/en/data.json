@@ -119,5 +119,8 @@
   "highly-modeled-uncertain-emissions-data": "Low - Highly-modeled or uncertain emissions data",
   "select-subcategories": "Select the subcategories to be added",
   "completed": "Completed",
-  "incomplete": "Incomplete"
+  "incomplete": "Incomplete",
+  "search-available-datasets": "Search for available datasets",
+  "searching": "Searching...",
+  "wait-for-search": "Please wait while we search for external data sources that match your inventory needs."
 }

@@ -82,7 +82,7 @@ describe("Sub Sector API", () => {
 
   beforeEach(async () => {
     await db.models.SubSectorValue.destroy({
-      where: { subsectorValueId },
+      where: { subsectorId: subSector.subsectorId },
     });
 
     await db.models.SectorValue.destroy({

@@ -61,8 +61,8 @@ function SearchDataSourcesPrompt({
   onSearchClicked,
 }: {
   t: TFunction;
-  isSearching: bool;
-  isDisabled: bool;
+  isSearching: boolean;
+  isDisabled: boolean;
   onSearchClicked: () => void;
 }) {
   return (

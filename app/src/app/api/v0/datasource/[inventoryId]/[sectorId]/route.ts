@@ -37,5 +37,17 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
     inventory,
     sector.dataSources,
   );
-  return NextResponse.json({ data: applicableSources });
+
+  // TODO add query parameter to make this optional?
+  const sourceData = await Promise.all(
+    applicableSources.map(async (source) => {
+      const data = await DataSourceService.retrieveGlobalAPISource(
+        source,
+        inventory,
+      );
+      return { source, data };
+    }),
+  );
+
+  return NextResponse.json({ data: sourceData });
 });

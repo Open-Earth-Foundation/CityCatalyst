@@ -67,7 +67,19 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
     .concat(subSectorSources)
     .concat(subCategorySources);
   const applicableSources = filterSources(inventory, sources);
-  return NextResponse.json({ data: applicableSources });
+
+  // TODO add query parameter to make this optional?
+  const sourceData = await Promise.all(
+    applicableSources.map(async (source) => {
+      const data = await DataSourceService.retrieveGlobalAPISource(
+        source,
+        inventory,
+      );
+      return { source, data };
+    }),
+  );
+
+  return NextResponse.json({ data: sourceData });
 });
 
 const applySourcesRequest = z.object({
@@ -149,4 +161,3 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
     data: { successful, failed, invalid: invalidSourceIds },
   });
 });
-

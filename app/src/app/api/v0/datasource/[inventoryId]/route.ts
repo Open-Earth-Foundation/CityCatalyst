@@ -66,7 +66,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const sources = sectorSources
     .concat(subSectorSources)
     .concat(subCategorySources);
-  const applicableSources = filterSources(inventory, sources);
+  const applicableSources = DataSourceService.filterSources(inventory, sources);
 
   // TODO add query parameter to make this optional?
   const sourceData = await Promise.all(

@@ -22,7 +22,7 @@ export default class DataSourceService {
       !(source.subsectorId || source.subcategoryId) ||
       !referenceNumber
     ) {
-      return false;
+      return null;
     }
 
     const url = source.apiEndpoint
@@ -39,13 +39,15 @@ export default class DataSourceService {
         `Failed to query data source ${source.datasourceId} at URL ${url}:`,
         err,
       );
-      return false;
+      return null;
     }
 
     if (typeof data.totals !== "object") {
       console.error("Incorrect response from Global API for URL:", url, data);
-      return false;
+      return null;
     }
+
+    return data;
   }
 
   public static async applyGlobalAPISource(

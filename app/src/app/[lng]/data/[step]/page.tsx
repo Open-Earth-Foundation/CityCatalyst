@@ -516,27 +516,27 @@ export default function AddDataSteps({
         <Text color="content.tertiary" mb={12}>
           {t("check-data-details")}
         </Text>
-        <SimpleGrid minChildWidth="250px" spacing={4}>
-          {!dataSources ? (
-            <SearchDataSourcesPrompt
-              t={t}
-              isSearching={areDataSourcesLoading}
-              isDisabled={!inventoryProgress}
-              onSearchClicked={onSearchDataSourcesClicked}
-            />
-          ) : dataSourcesError ? (
-            <Center>
-              <WarningIcon boxSize={8} color="semantic.danger" />
-            </Center>
-          ) : dataSources && dataSources.length === 0 ? (
-            <NoDataSourcesMessage
-              t={t}
-              sector={currentStep.referenceNumber}
-              locode={locode || undefined}
-              year={year || undefined}
-            />
-          ) : (
-            dataSources
+        {!dataSources ? (
+          <SearchDataSourcesPrompt
+            t={t}
+            isSearching={areDataSourcesLoading}
+            isDisabled={!inventoryProgress}
+            onSearchClicked={onSearchDataSourcesClicked}
+          />
+        ) : dataSourcesError ? (
+          <Center>
+            <WarningIcon boxSize={8} color="semantic.danger" />
+          </Center>
+        ) : dataSources && dataSources.length === 0 ? (
+          <NoDataSourcesMessage
+            t={t}
+            sector={currentStep.referenceNumber}
+            locode={locode || undefined}
+            year={year || undefined}
+          />
+        ) : (
+          <SimpleGrid columns={3} spacing={4}>
+            {dataSources
               .slice(0, isDataSectionExpanded ? dataSources.length : 6)
               .map(({ source, data }) => (
                 <Card
@@ -614,9 +614,9 @@ export default function AddDataSteps({
                     </Button>
                   )}
                 </Card>
-              ))
-          )}
-        </SimpleGrid>
+              ))}
+          </SimpleGrid>
+        )}
         {dataSources && dataSources.length > 6 && (
           <Button
             variant="ghost"

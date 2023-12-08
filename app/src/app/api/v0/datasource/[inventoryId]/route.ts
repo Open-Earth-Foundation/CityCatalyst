@@ -86,7 +86,7 @@ const applySourcesRequest = z.object({
 });
 
 export const POST = apiHandler(async (req: NextRequest, { params }) => {
-  const body = await applySourcesRequest.parse(await req.json());
+  const body = applySourcesRequest.parse(await req.json());
   const inventory = await db.models.Inventory.findOne({
     where: { inventoryId: params.inventoryId },
     include: [{ model: City, as: "city" }],

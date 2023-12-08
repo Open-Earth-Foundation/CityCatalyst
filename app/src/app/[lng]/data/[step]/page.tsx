@@ -273,9 +273,10 @@ export default function AddDataSteps({
     Math.round(percentage * 1000) / 10;
 
   // only display data sources relevant to current sector
-  const dataSources = allDataSources?.filter((source) => {
+  const dataSources = allDataSources?.filter(({ source, data }) => {
     const referenceNumber =
       source.subCategory?.referenceNumber || source.subSector?.referenceNumber;
+    if (!data) return false;
     if (!referenceNumber) return false;
     const sectorReferenceNumber = referenceNumber.split(".")[0];
 
@@ -537,7 +538,7 @@ export default function AddDataSteps({
           ) : (
             dataSources
               .slice(0, isDataSectionExpanded ? dataSources.length : 6)
-              .map((source) => (
+              .map(({ source, data }) => (
                 <Card
                   key={source.datasourceId}
                   variant="outline"

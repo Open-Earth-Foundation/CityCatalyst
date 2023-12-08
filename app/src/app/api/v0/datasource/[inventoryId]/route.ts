@@ -1,5 +1,4 @@
 import DataSourceService from "@/backend/DataSourceService";
-import { filterSources } from "@/lib/filter-sources";
 import { db } from "@/models";
 import { City } from "@/models/City";
 import { DataSource } from "@/models/DataSource";
@@ -117,7 +116,7 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
   if (!sources) {
     throw new createHttpError.NotFound("Sources not found");
   }
-  const applicableSources = filterSources(inventory, sources);
+  const applicableSources = DataSourceService.filterSources(inventory, sources);
   const applicableSourceIds = applicableSources.map(
     (source) => source.datasourceId,
   );

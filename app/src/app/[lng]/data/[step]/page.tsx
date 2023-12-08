@@ -45,6 +45,7 @@ import {
   MdOutlineHomeWork,
   MdOutlineSkipNext,
   MdPlaylistAddCheck,
+  MdRefresh,
 } from "react-icons/md";
 import { SourceDrawer } from "./SourceDrawer";
 import { SubsectorDrawer } from "./SubsectorDrawer";
@@ -169,6 +170,7 @@ export default function AddDataSteps({
     {
       data: allDataSources,
       isLoading: areDataSourcesLoading,
+      isFetching: areDataSourcesFetching,
       error: dataSourcesError,
     },
   ] = api.useLazyGetAllDataSourcesQuery();
@@ -510,12 +512,31 @@ export default function AddDataSteps({
       </Card>
       {/*** Third party data source section ***/}
       <Card mb={12}>
-        <Heading size="lg" mb={2}>
-          {t("check-data-heading")}
-        </Heading>
-        <Text color="content.tertiary" mb={12}>
-          {t("check-data-details")}
-        </Text>
+        <Flex
+          align="center"
+          verticalAlign="center"
+          justify="space-between"
+          mb={12}
+        >
+          <Stack>
+            <Heading size="lg" mb={2}>
+              {t("check-data-heading")}
+            </Heading>
+            <Text color="content.tertiary">{t("check-data-details")}</Text>
+          </Stack>
+          {dataSources && (
+            <IconButton
+              variant="solidIcon"
+              icon={<Icon as={MdRefresh} boxSize={9} />}
+              aria-label="Refresh"
+              size="lg"
+              h={16}
+              w={16}
+              isLoading={areDataSourcesFetching}
+              onClick={onSearchDataSourcesClicked}
+            />
+          )}
+        </Flex>
         {!dataSources ? (
           <SearchDataSourcesPrompt
             t={t}

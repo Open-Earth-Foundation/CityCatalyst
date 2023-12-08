@@ -269,6 +269,10 @@ export const appTheme = extendTheme({
           _active: {
             bg: "#899ee0",
           },
+          _loading: {
+            opacity: 0.8,
+            bg: "background.neutral",
+          },
         },
       },
     },

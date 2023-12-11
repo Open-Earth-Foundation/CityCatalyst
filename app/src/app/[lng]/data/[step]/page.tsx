@@ -91,7 +91,7 @@ function SearchDataSourcesPrompt({
       >
         {t("search-available-datasets")}
       </Button>
-      <Text color="content.tertiary" align="center" size="sm">
+      <Text color="content.tertiary" align="center" size="sm" variant="spaced">
         {t("wait-for-search")}
       </Text>
     </Flex>
@@ -522,7 +522,9 @@ export default function AddDataSteps({
             <Heading size="lg" mb={2}>
               {t("check-data-heading")}
             </Heading>
-            <Text color="content.tertiary">{t("check-data-details")}</Text>
+            <Text color="content.tertiary" variant="spaced">
+              {t("check-data-details")}
+            </Text>
           </Stack>
           {dataSources && (
             <IconButton

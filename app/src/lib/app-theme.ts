@@ -422,5 +422,14 @@ export const appTheme = extendTheme({
         variant: "brand",
       },
     },
+    Text: {
+      variants: {
+        spaced: {
+          fontWeight: "medium",
+          lineHeight: "20",
+          letterSpacing: "wide",
+        },
+      },
+    },
   },
 });

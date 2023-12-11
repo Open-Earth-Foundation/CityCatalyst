@@ -94,6 +94,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
       { skip: !locode || !year },
     );
 
+  console.log(inventory);
+
   const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
     api.useGetInventoryProgressQuery(
       { locode: locode!, year: year! },
@@ -101,6 +103,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
     );
 
   const { data: city } = api.useGetCityQuery(locode!, { skip: !locode });
+  console.log(city);
 
   let totalProgress = 0,
     thirdPartyProgress = 0,
@@ -280,7 +283,14 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           fontWeight="semibold"
                           lineHeight="32"
                         >
-                          700<span className="text-[16px]">Mtco2e</span>
+                          {inventory?.totalEmissions ? (
+                            <>
+                              {inventory.totalEmissions}{" "}
+                              <span className="text-[16px]">Mtco2e</span>
+                            </>
+                          ) : (
+                            "In progress"
+                          )}
                         </Text>
                         <InfoOutlineIcon w={3} h={3} color="brandScheme.100" />
                       </Box>
@@ -292,7 +302,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         lineHeight="20px"
                         letterSpacing="wide"
                       >
-                        <Trans t={t}>total-emissions-in</Trans> {year}
+                        <Trans t={t}>total-emissions-in</Trans>{" "}
+                        {inventory?.year}
                       </Text>
                     </Box>
                   </Box>
@@ -330,16 +341,28 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     />
                     <Box>
                       <Box className="flex gap-1">
-                        <Text
-                          fontFamily="heading"
-                          color="base.light"
-                          fontSize="headline.sm"
-                          fontWeight="semibold"
-                          lineHeight="32"
-                        >
-                          {city?.area}
-                          <span className="text-[16px]">km2</span>
-                        </Text>
+                        {city?.area == 0 ? (
+                          <Text
+                            fontFamily="heading"
+                            color="border.neutral"
+                            fontSize="headline.sm"
+                            fontWeight="semibold"
+                            lineHeight="32"
+                          >
+                            N/A
+                          </Text>
+                        ) : (
+                          <Text
+                            fontFamily="heading"
+                            color="base.light"
+                            fontSize="headline.sm"
+                            fontWeight="semibold"
+                            lineHeight="32"
+                          >
+                            {city?.area}
+                            <span className="text-[16px]">km2</span>
+                          </Text>
+                        )}
                         <InfoOutlineIcon w={3} h={3} color="brandScheme.100" />
                       </Box>
                       <Text

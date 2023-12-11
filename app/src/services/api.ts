@@ -181,6 +181,17 @@ export const api = createApi({
         };
       },
     }),
+    getCityPopulation: builder.query<
+      PopulationAttributes,
+      {
+        year: number;
+        locode: string;
+      }
+    >({
+      query: (data) => `/city/${data.locode}/population/${data.year}`,
+      transformResponse: (response: { data: PopulationAttributes }) =>
+        response.data,
+    }),
   }),
 });
 
@@ -217,5 +228,6 @@ export const {
   useAddInventoryMutation,
   useSetUserInfoMutation,
   useAddCityPopulationMutation,
+  useGetCityPopulationQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

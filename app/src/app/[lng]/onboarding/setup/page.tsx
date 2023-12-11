@@ -15,6 +15,7 @@ import {
   useGetOCCityQuery,
   useSetUserInfoMutation,
 } from "@/services/api";
+import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
 import {
   ArrowBackIcon,
   CheckIcon,
@@ -277,11 +278,13 @@ function ConfirmStep({
   t,
   locode,
   area,
+  population,
 }: {
   cityName: String;
   t: TFunction;
   locode: string;
   area: number;
+  population: number;
 }) {
   return (
     <>
@@ -312,7 +315,14 @@ function ConfirmStep({
               <Icon as={MdOutlinePeopleAlt} boxSize={6} mt={1} mr={2} />
               <Box>
                 <Text fontSize="xl">
-                  3,978.9M
+                  {population ? (
+                    <>
+                      {shortenNumber(population)}
+                      {getShortenNumberUnit(population)}
+                    </>
+                  ) : (
+                    "N/A"
+                  )}
                   <InfoOutlineIcon boxSize={4} mt={-0.5} ml={1} color="brand" />
                 </Text>
                 <Text fontSize="xs">{t("total-population")}</Text>
@@ -322,7 +332,14 @@ function ConfirmStep({
               <Icon as={MdOutlineAspectRatio} boxSize={6} mt={1} mr={2} />
               <Box>
                 <Text fontSize="xl">
-                  {area}km<sup>2</sup>
+                  {area > 0 ? (
+                    <>
+                      {" "}
+                      {area}km<sup>2</sup>
+                    </>
+                  ) : (
+                    "N/A"
+                  )}
                   <InfoOutlineIcon boxSize={4} mt={-0.5} ml={1} color="brand" />
                 </Text>
                 <Text fontSize="xs">{t("total-land-area")}</Text>
@@ -527,6 +544,7 @@ export default function OnboardingSetup({
               t={t}
               locode={data.locode}
               area={ocCityData?.area!}
+              population={populationData.population}
             />
           )}
         </div>

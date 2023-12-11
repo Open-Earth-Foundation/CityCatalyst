@@ -52,7 +52,9 @@ import { SubsectorDrawer } from "./SubsectorDrawer";
 import type { DataStep, SubSector } from "./types";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
-  return `mailto://info@openearth.org,greta@openearth.org?subject=Missing third party data sources&body=City: ${locode}%0ASector: ${sector}%0AYear: ${year}`;
+  const emails =
+    process.env.NEXT_PUBLIC_SUPPORT_EMAILS || "info@openearth.org,greta@openearth.org";
+  return `mailto://${emails}?subject=Missing third party data sources&body=City: ${locode}%0ASector: ${sector}%0AYear: ${year}`;
 }
 
 function SearchDataSourcesPrompt({

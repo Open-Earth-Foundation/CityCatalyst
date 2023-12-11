@@ -417,10 +417,6 @@ export default function OnboardingSetup({
     skip: data.locode.length ? false : true,
   });
 
-  console.log(
-    cityData?.data.population.filter((item: any) => item.year === data.year),
-  );
-
   const makeErrorToast = (title: string, description?: string) => {
     toast({
       title,
@@ -447,7 +443,7 @@ export default function OnboardingSetup({
         datasourceId: population[0]?.datasource_id,
       };
       setPopulationData(populationObject);
-      console.log(populationObject);
+
       const cityObject = {
         area: cityData.data?.territory?.area ?? 0,
         region:
@@ -477,15 +473,13 @@ export default function OnboardingSetup({
       })
         .unwrap()
         .then(async (res: any) => {
-          console.log(res);
           await addCityPopulation({
             cityId: res.data.cityId,
             locode: res.data.locode!,
             population: populationData.population,
             year: populationData.year,
           });
-        })
-        .then((res: any) => console.log(res));
+        });
     } catch (err: any) {
       // if the city exists, continue (can still add new inventory year)
       if (err.data?.error?.message !== "Entity exists already.") {

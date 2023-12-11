@@ -98,8 +98,6 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
       { skip: !locode || !year },
     );
 
-  console.log(inventory);
-
   const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
     api.useGetInventoryProgressQuery(
       { locode: locode!, year: year! },
@@ -107,14 +105,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
     );
 
   const { data: city } = api.useGetCityQuery(locode!, { skip: !locode });
-  console.log(city);
 
   const { data: population } = useGetCityPopulationQuery(
     { locode: locode!, year: year! },
     { skip: !locode || !year },
   );
-
-  console.log(population);
 
   let totalProgress = 0,
     thirdPartyProgress = 0,

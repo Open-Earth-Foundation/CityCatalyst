@@ -173,7 +173,6 @@ export const api = createApi({
       }
     >({
       query: (data) => {
-        console.log(data);
         return {
           url: `/city/${data.locode}/population`,
           method: `POST`,

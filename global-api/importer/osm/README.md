@@ -1,10 +1,10 @@
-# Datasource Catalogue
+# OSM importer
 
-Importing the EDGAR data
+Importing the Open Street Map data
 
 1. Save the database URI to an environment variable named `DB_URI`
 
-2. Run `./import_seeders.sh ` to import data
+2. Run `./import_osm.sh` to import data
 
 See the [`/global-api/README.md`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/global-api) for instructions on setting up a local instance of the database
 
@@ -19,9 +19,8 @@ Add it to the `~/.zshrc` file if you want the variable to persist.
 ### Directory tree
 
 ```sh
-├── README.md               # top level readme
-├── climatetrace_seeder.py  # seeder for climatetrace datasources
-├── edgar_seeder.py         # seeder for edgar datasources
-├── import_seeders.sh       # shell script to import seeders
-└── utils.py                # utility scripts used in  .py files
+├── README.md            # top level readme
+├── osm_importer.py      # importer for osm data
+├── import_osm.sh        # shell script to run importer
+└── osmid_to_geometry.py # script to get geometry from osmid
 ```

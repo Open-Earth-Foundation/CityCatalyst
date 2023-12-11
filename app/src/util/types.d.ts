@@ -44,7 +44,7 @@ type DataSource = DataSourceAttributes & {
   subCategoryValues?: SubCategoryValueAttributes[];
   subSectorValues?: SubSectorValueAttributes[];
 };
-type DataSourceResponse = DataSource[];
+type DataSourceResponse = { source: DataSource; data: any }[];
 
 type SubCategoryValueWithSource = SubCategoryValueAttributes & {
   dataSource: DataSourceAttributes;

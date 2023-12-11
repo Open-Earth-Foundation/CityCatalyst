@@ -16,7 +16,7 @@
   "completion-percent": "{{progress}}% completed",
   "data-connected-percent": "{{progress}}% Connected third-party data",
   "data-added-percent": "{{progress}}% Added data",
-  "check-data-heading": "Check and connect third-party data we found for you",
+  "check-data-heading": "Check And Connect Third-Party Data We Found For You",
   "check-data-details": "Review and integrate automatically sourced data relevant to your city's GHG inventory.",
   "no-data-sources": "No External Data Sources Available",
   "no-data-sources-description": "It seems like there are no external sources available at this moment.<1></1>If you know any, <3>please report this</3> and we’ll prioritize your request.",
@@ -35,7 +35,7 @@
   "more-datasets": "View more datasets",
   "less-datasets": "View less datasets",
 
-  "add-data-heading": "Add your own local values manually",
+  "add-data-heading": "Add Your Own Local Values Manually",
   "add-data-details": "Manually add your calculated values for required sub-sectors to the inventory.",
   "select-subsector": "Select sub-sector",
   "residential-buildings": "Residential buildings",

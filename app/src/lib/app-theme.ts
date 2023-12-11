@@ -431,5 +431,14 @@ export const appTheme = extendTheme({
         },
       },
     },
+    Heading: {
+      sizes: {
+        lg: {
+          fontSize: "24px",
+          lineHeight: "32px",
+          fontWeight: 600,
+        },
+      },
+    },
   },
 });

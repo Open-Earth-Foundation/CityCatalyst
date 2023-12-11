@@ -1,4 +1,4 @@
-aiohttp==3.8.*
+aiohttp==3.9.*
 alembic==1.12.1
 black==23.11.0
 fastapi==0.104.1

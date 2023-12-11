@@ -19,7 +19,7 @@ export default function ForgotPasswordTemplate({ url }: { url: string }) {
           <Text style={brandHeading}>CityCatalyst</Text>
           <Text style={heading}>Forgot your password?</Text>
           <Text style={paragraph}>Reset it by clicking the button below:</Text>
-          <Button pX={16} pY={16} href={url} style={button}>
+          <Button href={url} style={button}>
             Reset Password
           </Button>
           <Text style={paragraph}>
@@ -67,6 +67,7 @@ const paragraph = {
 
 const button = {
   fontSize: "18px",
+  padding: "16px",
   backgroundColor: "#2351DC",
   borderRadius: "0.5em",
   lineHeight: 1.5,

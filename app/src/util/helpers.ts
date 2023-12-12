@@ -22,6 +22,29 @@ export function getCurrentVersion(): string {
   return version;
 }
 
+export function shortenNumber(number: number): string {
+  if (number >= 1e9) {
+    return (number / 1e9).toFixed(1); // Billion
+  } else if (number >= 1e6) {
+    return (number / 1e6).toFixed(1); // Million
+  } else if (number >= 1e3) {
+    return (number / 1e3).toFixed(1); // Thousand
+  } else {
+    return number.toString();
+  }
+}
+
+export function getShortenNumberUnit(number: number): string {
+  if (number >= 1e9) {
+    return "B"; // Billion
+  } else if (number >= 1e6) {
+    return "M"; // Million
+  } else if (number >= 1e3) {
+    return "K"; // Thousand
+  } else {
+    return number.toString();
+  }
+}
 export async function resolvePromisesSequentially(promises: Promise<any>[]) {
   const results = [];
   for (const promise of promises) {

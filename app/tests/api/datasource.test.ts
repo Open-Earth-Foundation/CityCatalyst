@@ -114,12 +114,13 @@ describe("DataSource API", () => {
     assert.equal(res.status, 200);
     const { data } = await res.json();
     assert.equal(data.length, 1);
-    assert.equal(data[0].name, "XX_DATASOURCE_TEST_0");
-    assert.equal(data[0].sectorId, sector.sectorId);
-    assert.equal(data[0].apiEndpoint, apiEndpoint);
-    assert.equal(data[0].geographicalLocation, "EARTH");
-    assert.equal(data[0].startYear, 4000);
-    assert.equal(data[0].endYear, 4010);
+    const { source } = data[0];
+    assert.equal(source.name, "XX_DATASOURCE_TEST_0");
+    assert.equal(source.sectorId, sector.sectorId);
+    assert.equal(source.apiEndpoint, apiEndpoint);
+    assert.equal(source.geographicalLocation, "EARTH");
+    assert.equal(source.startYear, 4000);
+    assert.equal(source.endYear, 4010);
   });
 
   it("should get the data sources for all sectors", async () => {

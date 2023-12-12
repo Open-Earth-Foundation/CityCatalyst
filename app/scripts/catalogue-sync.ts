@@ -3,8 +3,6 @@ import { DataSourceCreationAttributes } from "@/models/DataSource";
 import env from "@next/env";
 import { randomUUID } from "node:crypto";
 
-const GLOBAL_API_URL = process.env.GLOBAL_API_URL || "http://api.citycatalyst.io";
-
 interface Source {
   datasource_id: string;
   name: string;
@@ -47,6 +45,11 @@ function snakeToCamel(str: string): string {
 async function syncDataCatalogue() {
   const projectDir = process.cwd();
   env.loadEnvConfig(projectDir);
+
+  const GLOBAL_API_URL =
+    process.env.GLOBAL_API_URL || "http://api.citycatalyst.io";
+  console.log("Using global API at", GLOBAL_API_URL);
+
   if (!db.initialized) {
     await db.initialize();
   }
@@ -77,9 +80,7 @@ async function syncDataCatalogue() {
   // convert to unix timestamp in ms
   const lastUpdate = lastUpdateData.last_update * 1000;
 
-  console.log(
-    `Last update: DB - ${previousUpdate}, API - ${lastUpdate}`,
-  );
+  console.log(`Last update: DB - ${previousUpdate}, API - ${lastUpdate}`);
   if (lastUpdate <= previousUpdate) {
     console.warn("Already on the newest data catalogue version, exiting.");
     await db.sequelize?.close();

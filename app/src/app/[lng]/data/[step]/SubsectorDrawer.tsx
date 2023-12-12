@@ -1,6 +1,6 @@
 import { RadioButton } from "@/components/radio-button";
 import { api } from "@/services/api";
-import { resolve } from "@/util/helpers";
+import { resolve, resolvePromisesSequentially } from "@/util/helpers";
 import type {
   SubCategoryValueWithSource,
   SubSectorValueResponse,
@@ -209,7 +209,7 @@ export function SubsectorDrawer({
           unavailableExplanation: "",
         },
       });
-      const results = await Promise.all(
+      const results = await resolvePromisesSequentially(
         Object.keys(data.subcategoryData).map((subcategoryId) => {
           const value = data.subcategoryData[subcategoryId];
           let subCategoryValue: SubCategoryValueData = {

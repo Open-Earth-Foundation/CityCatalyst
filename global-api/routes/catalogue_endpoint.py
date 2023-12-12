@@ -1,69 +1,35 @@
-from fastapi import APIRouter, HTTPException
-from sqlalchemy import text
-import pandas as pd
+from fastapi import APIRouter, HTTPException, Response
+from fastapi.responses import JSONResponse, PlainTextResponse
 from db.database import SessionLocal
+from models.datasource import Datasource
+from typing import Optional
+import csv
+import io
 
 api_router = APIRouter(prefix="/api/v0")
 
 
-def db_query():
-    columns = [
-        "datasource_id",
-        "name",
-        "source_type",
-        "url",
-        "description",
-        "access_type",
-        "geographical_location",
-        "start_year",
-        "end_year",
-        "latest_accounting_year",
-        "frequency_of_update",
-        "spatial_resolution",
-        "language",
-        "accessibility",
-        "data_quality",
-        "notes",
-        "units",
-        "methodology_url",
-        "publisher_id",
-        "retrieval_method",
-        "api_endpoint",
-        "gpc_reference_number",
-        "created_date",
-        "modified_date",
-    ]
+@api_router.get("/catalogue")
+def get_datasources(format: Optional[str] = None):
 
-    column_names = ", ".join(columns)
+    records = None
 
     with SessionLocal() as session:
-        query = text(
-            """
-            SELECT {}
-            FROM datasource;
-            """.format(
-                column_names
-            )
-        )
-        result = session.execute(query).fetchall()
-
-    return result
-
-
-@api_router.get("/catalogue")
-def get_datasources():
-    records = db_query()
+        query = session.query(Datasource).order_by(Datasource.gpc_reference_number.desc())
+        records = query.all()
 
     if not records:
         raise HTTPException(status_code=404, detail="No data available")
 
-    df = pd.DataFrame(records)
-
-    list_of_points = []
-    for _, row in df.iterrows():
-        data = row.replace({None: ""}).to_dict()
-        list_of_points.append(data)
-
-    response = {"datasources": list_of_points}
+    if format == "csv":
+        output = io.StringIO()
+        csvwriter = csv.writer(output)
+        names = [column.name for column in Datasource.__table__.columns]
+        csvwriter.writerow(names)
+        for datasource in records:
+            csvwriter.writerow([getattr(datasource, name) for name in names])
+        response = PlainTextResponse(content=output.getvalue(), media_type="text/csv")
+    else:
+        response = {"datasources": records}
 
     return response

@@ -4,7 +4,6 @@
  * @param obj: object to be searched
  * @param separator: key separator for path (. by default)
  */
-
 export function resolve(
   path: string | string[],
   obj: Record<string, any>,
@@ -45,4 +44,12 @@ export function getShortenNumberUnit(number: number): string {
   } else {
     return number.toString();
   }
+}
+export async function resolvePromisesSequentially(promises: Promise<any>[]) {
+  const results = [];
+  for (const promise of promises) {
+    results.push(await promise);
+  }
+
+  return results;
 }

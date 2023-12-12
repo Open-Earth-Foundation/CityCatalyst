@@ -88,8 +88,7 @@ export const GET = apiHandler(
             const sourceType = subSectorValue.dataSource.sourceType;
             if (sourceType === "user") {
               acc.uploaded++;
-            } else if (sourceType === "third_party" || !sourceType) {
-              // TODO remove empty case (!sourceType condition) once data catalogue is updated
+            } else if (sourceType === "third_party") {
               acc.thirdParty++;
             } else {
               console.error(

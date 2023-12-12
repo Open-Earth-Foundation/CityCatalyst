@@ -6,6 +6,7 @@ import { Button, Heading, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { logger } from "@/services/logger";
 
 type Inputs = {
   email: string;
@@ -37,7 +38,7 @@ export default function ForgotPassword({
 
       if (!res.ok) {
         const data = await res.json();
-        console.log("Failed to send reset password email", data);
+        logger.error("Failed to send reset password email", data);
         setError(data.error.message);
         return;
       }

@@ -49,6 +49,7 @@ import {
 import { SourceDrawer } from "./SourceDrawer";
 import { SubsectorDrawer } from "./SubsectorDrawer";
 import type { DataStep, SubSector } from "./types";
+import { logger } from "@/services/logger";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   return `mailto://info@openearth.org,greta@openearth.org?subject=Missing third party data sources&body=City: ${locode}%0ASector: ${sector}%0AYear: ${year}`;
@@ -271,7 +272,7 @@ export default function AddDataSteps({
       );
       return;
     }
-    console.log("Connect source", source);
+    logger.debug("Connect source", source);
     setConnectingDataSourceId(source.datasourceId);
     try {
       const response = await connectDataSource({
@@ -327,12 +328,12 @@ export default function AddDataSteps({
     onOpen: onSubsectorDrawerOpen,
   } = useDisclosure();
   const onSubsectorClick = (subsector: SubSector) => {
-    console.log(subsector);
+    logger.debug(subsector);
     setSelectedSubsector(subsector);
     onSubsectorDrawerOpen();
   };
   const onSubsectorSave = (subsector: SubSector) => {
-    console.log("Save subsector", subsector);
+    logger.debug("Save subsector", subsector);
   };
 
   const [isConfirming, setConfirming] = useState(false);

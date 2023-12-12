@@ -3,6 +3,7 @@ import acceptLanguage from "accept-language";
 import { withAuth, type NextRequestWithAuth } from "next-auth/middleware";
 import type { NextMiddlewareResult } from "next/dist/server/web/types";
 import { NextResponse } from "next/server";
+import { logger } from "@/services/logger";
 
 acceptLanguage.languages(languages);
 
@@ -15,8 +16,10 @@ export const config = {
 const authMatcher = /^\/[a-z]{0,2}[\/]?auth\//;
 const cookieName = "i18next";
 
-export function middleware(req: NextRequestWithAuth) {
+export async function middleware(req: NextRequestWithAuth) {
   let lng;
+  let response: NextResponse | NextMiddlewareResult | undefined;
+
   if (req.cookies.has(cookieName)) {
     lng = acceptLanguage.get(req.cookies.get(cookieName)?.value);
   }
@@ -32,15 +35,13 @@ export function middleware(req: NextRequestWithAuth) {
     !languages.some((loc) => req.nextUrl.pathname.startsWith(`/${loc}`)) &&
     !req.nextUrl.pathname.startsWith("/_next")
   ) {
-    return NextResponse.redirect(
+    response = NextResponse.redirect(
       new URL(
         `/${lng}${req.nextUrl.pathname}?${req.nextUrl.searchParams}`,
         req.url,
       ),
     );
-  }
-
-  if (req.headers.has("referer")) {
+  } else if (req.headers.has("referer")) {
     const refererUrl = new URL(req.headers.get("referer")!);
     const lngInReferer = languages.find((l) =>
       refererUrl.pathname.startsWith(`/${l}`),
@@ -49,10 +50,15 @@ export function middleware(req: NextRequestWithAuth) {
     if (response instanceof NextResponse && lngInReferer) {
       response.cookies.set(cookieName, lngInReferer);
     }
-    return response;
+  } else {
+    response = await next(req);
   }
 
-  return next(req);
+  if (response instanceof NextResponse) {
+    logger.info({status: response.status, url: req.url, method: req.method});
+  }
+
+  return response;
 }
 
 async function next(req: NextRequestWithAuth): Promise<NextMiddlewareResult> {

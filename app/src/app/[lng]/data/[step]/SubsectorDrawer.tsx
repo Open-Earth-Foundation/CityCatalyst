@@ -44,6 +44,7 @@ import type {
   SubSector,
   SubcategoryData,
 } from "./types";
+import { logger } from "@/services/logger";
 
 type Inputs = {
   valueType: "scope-values" | "unavailable" | "";
@@ -97,7 +98,7 @@ function nameToI18NKey(name: string): string {
 
 // TODO create custom type that includes relations instead of using SubSectorValueAttributes?
 function extractFormValues(subSectorValue: SubSectorValueResponse): Inputs {
-  console.log("Form input", subSectorValue);
+  logger.debug("Form input", subSectorValue);
   const inputs: Inputs = Object.assign({}, defaultValues);
   if (subSectorValue.unavailableReason) {
     inputs.valueType = "unavailable";
@@ -138,7 +139,7 @@ function extractFormValues(subSectorValue: SubSectorValueResponse): Inputs {
       {},
     );
   }
-  console.log("Form values", inputs);
+  logger.debug("Form values", inputs);
   return inputs;
 }
 
@@ -188,7 +189,7 @@ export function SubsectorDrawer({
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (!subsector) return;
-    console.log("Subsector data", data);
+    logger.debug("Subsector data", data);
 
     // decide which data from the form to save
     if (data.valueType === "unavailable") {
@@ -253,7 +254,7 @@ export function SubsectorDrawer({
           });
         }),
       );
-      console.log("Save results", results);
+      logger.debug("Save results", results);
     }
     onSave(subsector, data);
     onClose();

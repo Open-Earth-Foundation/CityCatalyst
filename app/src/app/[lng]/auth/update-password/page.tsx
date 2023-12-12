@@ -7,6 +7,7 @@ import { Button, FormHelperText, Heading, Text } from "@chakra-ui/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { logger } from "@/services/logger";
 
 type Inputs = {
   password: string;
@@ -50,7 +51,7 @@ export default function UpdatePassword({
 
       if (!res.ok) {
         const data = await res.json();
-        console.log("Failed to reset password", data);
+        logger.error("Failed to reset password", data);
         setError(data.error.message);
         return;
       }

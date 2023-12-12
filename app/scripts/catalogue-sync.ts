@@ -2,6 +2,7 @@ import { db } from "@/models";
 import { DataSourceCreationAttributes } from "@/models/DataSource";
 import env from "@next/env";
 import { randomUUID } from "node:crypto";
+import { logger } from "@/services/logger";
 
 const GLOBAL_API_URL = process.env.GLOBAL_API_URL || "http://api.citycatalyst.io";
 
@@ -77,7 +78,7 @@ async function syncDataCatalogue() {
   // convert to unix timestamp in ms
   const lastUpdate = lastUpdateData.last_update * 1000;
 
-  console.log(
+  logger.debug(
     `Last update: DB - ${previousUpdate}, API - ${lastUpdate}`,
   );
   if (lastUpdate <= previousUpdate) {
@@ -122,7 +123,7 @@ async function syncDataCatalogue() {
         (cat) => cat.referenceNumber === referenceNumber,
       );
       if (subcategory) {
-        console.log(
+        logger.debug(
           `Found sub-category for source ${source.datasource_id} with GPC reference number ${referenceNumber}`,
         );
         source.subcategory_id = subcategory.subcategoryId;
@@ -131,7 +132,7 @@ async function syncDataCatalogue() {
           (sec) => sec.referenceNumber === referenceNumber,
         );
         if (subsector) {
-          console.log(
+          logger.debug(
             `Found sub-sector for source ${source.datasource_id} with GPC reference number ${referenceNumber}`,
           );
           source.subsector_id = subsector.subsectorId;
@@ -162,7 +163,7 @@ async function syncDataCatalogue() {
   });
 
   console.dir(sources);
-  console.log("Saving sources...");
+  logger.debug("Saving sources...");
 
   for (const source of sources) {
     await db.models.DataSource.upsert(source);
@@ -207,7 +208,7 @@ async function syncDataCatalogue() {
   */
 
   await catalogue.update({ lastUpdate: new Date(lastUpdate) });
-  console.log("Updated Catalogue, done!");
+  logger.debug("Updated Catalogue, done!");
 
   await db.sequelize?.close();
 }

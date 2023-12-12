@@ -113,7 +113,6 @@ describe("DataSource API", () => {
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
-    console.log("slag", data);
     assert.equal(data.length, 1);
     assert.equal(data[0].name, "XX_DATASOURCE_TEST_0");
     assert.equal(data[0].sectorId, sector.sectorId);

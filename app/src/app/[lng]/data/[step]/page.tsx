@@ -50,6 +50,7 @@ import {
 import { SourceDrawer } from "./SourceDrawer";
 import { SubsectorDrawer } from "./SubsectorDrawer";
 import type { DataStep, SubSector } from "./types";
+import { nameToI18NKey } from "@/util/helpers";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -687,7 +688,7 @@ export default function AddDataSteps({
                   />
                   <Stack w="full">
                     <Heading size="xs" noOfLines={3} maxWidth="200px">
-                      {t(subSector.subsectorName)}
+                      {t(nameToI18NKey(subSector.subsectorName))}
                     </Heading>
                     {subSector.scope && (
                       <Text color="content.tertiary">

@@ -1,6 +1,6 @@
 import { RadioButton } from "@/components/radio-button";
 import { api } from "@/services/api";
-import { resolve, resolvePromisesSequentially } from "@/util/helpers";
+import { nameToI18NKey, resolve, resolvePromisesSequentially } from "@/util/helpers";
 import type {
   SubCategoryValueWithSource,
   SubSectorValueResponse,
@@ -90,11 +90,6 @@ const defaultValues: Inputs = {
   direct: defaultDirectMeasureData,
   subcategoryData: {},
 };
-
-function nameToI18NKey(name: string): string {
-  // remove all special characters and replace spaces with dashes
-  return name.replaceAll(/[^\w\s]/gi, "").replaceAll(" ", "-").toLowerCase();
-}
 
 // TODO create custom type that includes relations instead of using SubSectorValueAttributes?
 function extractFormValues(subSectorValue: SubSectorValueResponse): Inputs {
@@ -351,10 +346,10 @@ export function SubsectorDrawer({
             <>
               {sectorName && (
                 <Heading size="sm">
-                  {t("sector")} - {t(sectorName)}
+                  {t("sector")} - {t(nameToI18NKey(sectorName))}
                 </Heading>
               )}
-              <Heading size="lg">{t(subsector.subsectorName)}</Heading>
+              <Heading size="lg">{t(nameToI18NKey(subsector.subsectorName))}</Heading>
               <Text color="content.tertiary">
                 {t(nameToI18NKey(subsector.subsectorName) + "-description")}
               </Text>

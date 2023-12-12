@@ -6,13 +6,16 @@ import { set } from "@/features/city/openclimateCitySlice";
 import { useTranslation } from "@/i18n/client";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { OCCityArributes } from "@/models/City";
+import { PopulationAttributes } from "@/models/Population";
 import {
   useAddCityMutation,
+  useAddCityPopulationMutation,
   useAddInventoryMutation,
   useGetOCCityDataQuery,
   useGetOCCityQuery,
   useSetUserInfoMutation,
 } from "@/services/api";
+import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
 import {
   ArrowBackIcon,
   CheckIcon,
@@ -39,6 +42,7 @@ import {
   useSteps,
   useToast,
 } from "@chakra-ui/react";
+import { randomUUID } from "crypto";
 import { TFunction } from "i18next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
@@ -274,11 +278,13 @@ function ConfirmStep({
   t,
   locode,
   area,
+  population,
 }: {
   cityName: String;
   t: TFunction;
   locode: string;
   area: number;
+  population: number;
 }) {
   return (
     <>
@@ -309,7 +315,14 @@ function ConfirmStep({
               <Icon as={MdOutlinePeopleAlt} boxSize={6} mt={1} mr={2} />
               <Box>
                 <Text fontSize="xl">
-                  3,978.9M
+                  {population ? (
+                    <>
+                      {shortenNumber(population)}
+                      {getShortenNumberUnit(population)}
+                    </>
+                  ) : (
+                    "N/A"
+                  )}
                   <InfoOutlineIcon boxSize={4} mt={-0.5} ml={1} color="brand" />
                 </Text>
                 <Text fontSize="xs">{t("total-population")}</Text>
@@ -319,7 +332,14 @@ function ConfirmStep({
               <Icon as={MdOutlineAspectRatio} boxSize={6} mt={1} mr={2} />
               <Box>
                 <Text fontSize="xl">
-                  {area}km<sup>2</sup>
+                  {area > 0 ? (
+                    <>
+                      {" "}
+                      {area}km<sup>2</sup>
+                    </>
+                  ) : (
+                    "N/A"
+                  )}
                   <InfoOutlineIcon boxSize={4} mt={-0.5} ml={1} color="brand" />
                 </Text>
                 <Text fontSize="xs">{t("total-land-area")}</Text>
@@ -359,6 +379,7 @@ export default function OnboardingSetup({
   });
 
   const [addCity] = useAddCityMutation();
+  const [addCityPopulation] = useAddCityPopulationMutation();
   const [addInventory] = useAddInventoryMutation();
   const [setUserInfo] = useSetUserInfoMutation();
 
@@ -369,6 +390,11 @@ export default function OnboardingSetup({
   }>({ name: "", locode: "", year: -1 });
 
   const [isConfirming, setConfirming] = useState(false);
+  const [populationData, setPopulationData] = useState<{
+    year: number;
+    population: number;
+    datasourceId: string;
+  }>({ year: 0, population: 0, datasourceId: "" });
 
   const storedData = useAppSelector((state) => state.openClimateCity);
 
@@ -408,6 +434,16 @@ export default function OnboardingSetup({
 
   useEffect(() => {
     if (cityData) {
+      const population = cityData?.data.population.filter(
+        (item: any) => item.year === data.year,
+      );
+      const populationObject = {
+        year: population[0]?.year,
+        population: population[0]?.population,
+        datasourceId: population[0]?.datasource_id,
+      };
+      setPopulationData(populationObject);
+
       const cityObject = {
         area: cityData.data?.territory?.area ?? 0,
         region:
@@ -422,7 +458,7 @@ export default function OnboardingSetup({
 
       setocCityData(cityObject);
     }
-  }, [cityData, storedData.city?.root_path_geo]);
+  }, [cityData, storedData.city?.root_path_geo, data.year]);
 
   const onConfirm = async () => {
     // save data in backend
@@ -434,7 +470,16 @@ export default function OnboardingSetup({
         area: ocCityData?.area!,
         region: ocCityData?.region!,
         country: ocCityData?.country!,
-      }).unwrap();
+      })
+        .unwrap()
+        .then(async (res: any) => {
+          await addCityPopulation({
+            cityId: res.data.cityId,
+            locode: res.data.locode!,
+            population: populationData.population,
+            year: populationData.year,
+          });
+        });
     } catch (err: any) {
       // if the city exists, continue (can still add new inventory year)
       if (err.data?.error?.message !== "Entity exists already.") {
@@ -493,6 +538,7 @@ export default function OnboardingSetup({
               t={t}
               locode={data.locode}
               area={ocCityData?.area!}
+              population={populationData.population}
             />
           )}
         </div>

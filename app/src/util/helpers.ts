@@ -42,7 +42,7 @@ export function getShortenNumberUnit(number: number): string {
   } else if (number >= 1e3) {
     return "K"; // Thousand
   } else {
-    return number.toString();
+    return "";
   }
 }
 export async function resolvePromisesSequentially(promises: Promise<any>[]) {

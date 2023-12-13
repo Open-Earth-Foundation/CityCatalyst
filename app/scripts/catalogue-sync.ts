@@ -116,7 +116,7 @@ async function syncDataCatalogue() {
 
     if (!source.notes) {
       // publisher_id is still a name at this stage
-      source.notes = `Third-party data from ${source.name} by ${source.publisher_id}. For more details see ${source.url}.`;
+      source.notes = `${source.name} by ${source.publisher_id}. For more details see ${source.url}`;
     }
 
     if (source.geographical_location === "global") {

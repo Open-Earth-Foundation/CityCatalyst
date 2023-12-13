@@ -98,6 +98,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
       { skip: !locode || !year },
     );
 
+  console.log(inventory);
+
   const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
     api.useGetInventoryProgressQuery(
       { locode: locode!, year: year! },
@@ -240,7 +242,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   lineHeight="32"
                   fontWeight="semibold"
                 >
-                  <Trans t={t}>welcome-back</Trans>,
+                  {inventory ? <>{t("welcome-back")},</> : <>{t("welcome")},</>}
                 </Text>
                 <Box className="flex items-center gap-4">
                   {inventory?.city ? (
@@ -295,7 +297,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                               <span className="text-[16px]">Mtco2e</span>
                             </>
                           ) : (
-                            "In progress"
+                            <>{t("in-progress")}</>
                           )}
                         </Text>
                         <InfoOutlineIcon w={3} h={3} color="brandScheme.100" />

@@ -1,6 +1,7 @@
 import { db } from "@/models";
 import { DataSource } from "@/models/DataSource";
 import { Inventory } from "@/models/Inventory";
+import { SubCategoryValueAttributes } from "@/models/SubCategoryValue";
 import {
   SubSectorValue,
   SubSectorValueCreationAttributes,
@@ -89,10 +90,13 @@ export default class DataSourceService {
     const emissions = data.totals.emissions;
     // TODO store values for co2, ch4, n2o separately for accounting and editing
     const totalEmissions = emissions.co2eq_100yr;
-    const values = {
+    const values: Partial<SubCategoryValueAttributes> = {
       datasourceId: source.datasourceId,
-      totalEmissions,
       inventoryId: inventory.inventoryId,
+      totalEmissions,
+      co2EmissionsValue: emissions.co2_mass,
+      n2oEmissionsValue: emissions.n2o_mass,
+      ch4EmissionsValue: emissions.ch4_mass,
     };
 
     if (source.subsectorId) {

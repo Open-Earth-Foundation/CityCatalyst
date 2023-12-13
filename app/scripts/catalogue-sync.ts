@@ -4,8 +4,6 @@ import env from "@next/env";
 import { randomUUID } from "node:crypto";
 import { logger } from "@/services/logger";
 
-const GLOBAL_API_URL = process.env.GLOBAL_API_URL || "http://api.citycatalyst.io";
-
 interface Source {
   datasource_id: string;
   name: string;
@@ -83,9 +81,7 @@ async function syncDataCatalogue() {
   // convert to unix timestamp in ms
   const lastUpdate = lastUpdateData.last_update * 1000;
 
-  console.log(
-    `Last update: DB - ${previousUpdate}, API - ${lastUpdate}`,
-  );
+  console.log(`Last update: DB - ${previousUpdate}, API - ${lastUpdate}`);
   if (lastUpdate <= previousUpdate) {
     console.warn("Already on the newest data catalogue version, exiting.");
     await db.sequelize?.close();
@@ -117,6 +113,11 @@ async function syncDataCatalogue() {
     source.last_updated = new Date(source.modified_date!);
     delete source.created_date;
     delete source.modified_date;
+
+    if (!source.notes) {
+      // publisher_id is still a name at this stage
+      source.notes = `Third-party data from ${source.name} by ${source.publisher_id}. For more details see ${source.url}.`;
+    }
 
     if (source.geographical_location === "global") {
       source.geographical_location = "EARTH";

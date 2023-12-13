@@ -19,9 +19,10 @@ export const GET = apiHandler(
         {
           model: db.models.User,
           as: "users",
-          // where: {
-          //   userId: session.user.id,
-          // },
+        },
+        {
+          model: db.models.Population,
+          as: "populations",
         },
       ],
     });

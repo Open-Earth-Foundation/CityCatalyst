@@ -1,9 +1,10 @@
-import type {
-  UserAttributes,
-  CityAttributes,
-  InventoryAttributes,
-  SubSectorValueAttributes,
-  SubCategoryValueAttributes,
+import {
+  type UserAttributes,
+  type CityAttributes,
+  type InventoryAttributes,
+  type SubSectorValueAttributes,
+  type SubCategoryValueAttributes,
+  PopulationAttributes,
 } from "@/models/init-models";
 import type {
   ConnectDataSourceQuery,
@@ -162,6 +163,34 @@ export const api = createApi({
         response.data,
       providesTags: ["UserInventories"],
     }),
+    addCityPopulation: builder.mutation<
+      PopulationAttributes,
+      {
+        cityId: string;
+        population: number;
+        year: number;
+        locode: string;
+      }
+    >({
+      query: (data) => {
+        return {
+          url: `/city/${data.locode}/population`,
+          method: `POST`,
+          body: data,
+        };
+      },
+    }),
+    getCityPopulation: builder.query<
+      PopulationAttributes,
+      {
+        year: number;
+        locode: string;
+      }
+    >({
+      query: (data) => `/city/${data.locode}/population/${data.year}`,
+      transformResponse: (response: { data: PopulationAttributes }) =>
+        response.data,
+    }),
   }),
 });
 
@@ -188,7 +217,8 @@ export const openclimateAPI = createApi({
 
 // Global API URL
 
-export const GLOBAL_API_URL = process.env.GLOBAL_API_URL || "http://api.citycatalyst.io";
+export const GLOBAL_API_URL =
+  process.env.GLOBAL_API_URL || "https://api.citycatalyst.io";
 
 // hooks are automatically generated
 export const {
@@ -196,5 +226,7 @@ export const {
   useAddCityMutation,
   useAddInventoryMutation,
   useSetUserInfoMutation,
+  useAddCityPopulationMutation,
+  useGetCityPopulationQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

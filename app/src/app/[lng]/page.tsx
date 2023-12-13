@@ -368,7 +368,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     />
                     <Box>
                       <Box className="flex gap-1">
-                        {city?.area == 0 ? (
+                        {!city?.area ? (
                           <Text
                             fontFamily="heading"
                             color="border.neutral"

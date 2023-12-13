@@ -1,6 +1,5 @@
 import { db } from "@/models";
 import { Sector } from "@/models/Sector";
-import { SectorValue } from "@/models/SectorValue";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { Session } from "next-auth";

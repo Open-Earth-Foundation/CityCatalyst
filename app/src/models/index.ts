@@ -22,6 +22,7 @@ async function initialize() {
     database: process.env.DATABASE_NAME,
     dialect: "postgres",
     dialectModule: pg,
+    logging: false,
   });
 
   db.models = models.initModels(sequelize);

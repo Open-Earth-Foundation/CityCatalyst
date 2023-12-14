@@ -111,8 +111,8 @@ function extractFormValues(subSectorValue: SubSectorValueResponse): Inputs {
           value.activityValue != null ? "activity-data" : "direct-measure";
         const data: SubcategoryData = {
           methodology,
-          activity: defaultActivityData,
-          direct: defaultDirectMeasureData,
+          activity: {...defaultActivityData},
+          direct: {...defaultDirectMeasureData},
         };
 
         if (methodology === "activity-data") {

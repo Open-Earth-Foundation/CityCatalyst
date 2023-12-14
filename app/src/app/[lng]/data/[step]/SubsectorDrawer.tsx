@@ -1,6 +1,6 @@
 import { RadioButton } from "@/components/radio-button";
 import { api } from "@/services/api";
-import { resolve, resolvePromisesSequentially } from "@/util/helpers";
+import { nameToI18NKey, resolve, resolvePromisesSequentially } from "@/util/helpers";
 import type {
   SubCategoryValueWithSource,
   SubSectorValueResponse,
@@ -92,17 +92,13 @@ const defaultValues: Inputs = {
   subcategoryData: {},
 };
 
-function nameToI18NKey(name: string): string {
-  return name.replaceAll(" ", "-").toLowerCase();
-}
-
 // TODO create custom type that includes relations instead of using SubSectorValueAttributes?
 function extractFormValues(subSectorValue: SubSectorValueResponse): Inputs {
   logger.debug("Form input", subSectorValue);
   const inputs: Inputs = Object.assign({}, defaultValues);
   if (subSectorValue.unavailableReason) {
     inputs.valueType = "unavailable";
-    inputs.unavailableReason = subSectorValue.unavailableReason as any || "";
+    inputs.unavailableReason = (subSectorValue.unavailableReason as any) || "";
     inputs.unavailableExplanation = subSectorValue.unavailableExplanation || "";
   } else {
     inputs.valueType = "scope-values";
@@ -351,10 +347,10 @@ export function SubsectorDrawer({
             <>
               {sectorName && (
                 <Heading size="sm">
-                  {t("sector")} - {t(sectorName)}
+                  {t("sector")} - {t(nameToI18NKey(sectorName))}
                 </Heading>
               )}
-              <Heading size="lg">{t(subsector.subsectorName)}</Heading>
+              <Heading size="lg">{t(nameToI18NKey(subsector.subsectorName))}</Heading>
               <Text color="content.tertiary">
                 {t(nameToI18NKey(subsector.subsectorName) + "-description")}
               </Text>

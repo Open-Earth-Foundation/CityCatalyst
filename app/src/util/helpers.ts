@@ -53,3 +53,9 @@ export async function resolvePromisesSequentially(promises: Promise<any>[]) {
 
   return results;
 }
+
+export function nameToI18NKey(name: string): string {
+  // remove all special characters and replace spaces with dashes
+  return name.replaceAll(/[^\w\s-]/gi, "").replaceAll(" ", "-").toLowerCase();
+}
+

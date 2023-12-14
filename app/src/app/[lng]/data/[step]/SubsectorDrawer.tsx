@@ -1,5 +1,6 @@
 import { RadioButton } from "@/components/radio-button";
 import { api } from "@/services/api";
+import { logger } from "@/services/logger";
 import {
   nameToI18NKey,
   resolve,
@@ -16,6 +17,12 @@ import {
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Box,
   Button,
   Center,
@@ -32,12 +39,13 @@ import {
   Tag,
   Text,
   Textarea,
+  useDisclosure,
   useRadioGroup,
 } from "@chakra-ui/react";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import type { TFunction } from "i18next";
 import type { RefObject } from "react";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { SubmitHandler, useController, useForm } from "react-hook-form";
 import { EmissionsForm } from "./EmissionsForm";
 import type {
@@ -48,7 +56,6 @@ import type {
   SubSector,
   SubcategoryData,
 } from "./types";
-import { logger } from "@/services/logger";
 
 type Inputs = {
   valueType: "scope-values" | "unavailable" | "";
@@ -181,7 +188,7 @@ export function SubsectorDrawer({
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
     watch,
     reset,
     control,
@@ -217,6 +224,14 @@ export function SubsectorDrawer({
       );
     }
     return false;
+  };
+
+  const onTryClose = () => {
+    if (isDirty) {
+      onDialogOpen();
+    } else {
+      onClose();
+    }
   };
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
@@ -331,11 +346,22 @@ export function SubsectorDrawer({
   const valueType = watch("valueType");
   const isSubmitEnabled = !!valueType;
 
+  const {
+    isOpen: isDialogOpen,
+    onOpen: onDialogOpen,
+    onClose: onDialogClose,
+  } = useDisclosure();
+  const cancelDialogRef = React.useRef<HTMLButtonElement>(null);
+
   return (
     <Drawer
       isOpen={isOpen}
       placement="right"
       onClose={onClose}
+      onEsc={onTryClose}
+      onOverlayClick={onTryClose}
+      closeOnEsc={false}
+      closeOnOverlayClick={false}
       size="xl"
       finalFocusRef={finalFocusRef}
     >
@@ -346,7 +372,7 @@ export function SubsectorDrawer({
             variant="ghost"
             leftIcon={<ArrowBackIcon boxSize={6} />}
             className="self-start"
-            onClick={onClose}
+            onClick={onTryClose}
             px={6}
             py={4}
             mb={6}
@@ -546,6 +572,43 @@ export function SubsectorDrawer({
           )}
         </Box>
       </DrawerContent>
+      <AlertDialog
+        isOpen={isDialogOpen}
+        onClose={onDialogClose}
+        leastDestructiveRef={cancelDialogRef}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Discard unsaved data?
+            </AlertDialogHeader>
+            <AlertDialogBody>
+              You have unsaved data for this subsector. Do you want to discard
+              it?
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button
+                variant="outline"
+                ref={cancelDialogRef}
+                onClick={onDialogClose}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="danger"
+                onClick={() => {
+                  onClose();
+                  onDialogClose();
+                }}
+                ml={3}
+              >
+                Discard
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Drawer>
   );
 }

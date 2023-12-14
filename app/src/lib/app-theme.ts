@@ -240,19 +240,19 @@ export const appTheme = extendTheme({
           },
         },
         danger: {
-          bg: "semantic.danger",
+          bg: "sentiment.negativeDefault", // #F23D33
           color: "white",
           _hover: {
             bg: "#FF5F5F",
           },
           _active: {
-            bg: "#E22D23",
+            bg: "#E3241A",
           },
           _loading: {
             bg: "semantic.dangerOverlay",
-            color: "base.light",
+            color: "base.dark",
             _hover: {
-              bg: "#E22D23",
+              bg: "#E3241A",
               color: "base.light",
             },
           },

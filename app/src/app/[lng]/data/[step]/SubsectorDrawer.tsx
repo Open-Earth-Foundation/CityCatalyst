@@ -10,7 +10,7 @@ import type {
   SubCategoryValueWithSource,
   SubSectorValueResponse,
 } from "@/util/types";
-import { ArrowBackIcon, WarningIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, CloseIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Accordion,
   AccordionButton,
@@ -29,11 +29,13 @@ import {
   Drawer,
   DrawerContent,
   DrawerOverlay,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
   HStack,
   Heading,
+  IconButton,
   Select,
   Spinner,
   Tag,
@@ -56,6 +58,7 @@ import type {
   SubSector,
   SubcategoryData,
 } from "./types";
+import { Trans } from "react-i18next/TransWithoutContext";
 
 type Inputs = {
   valueType: "scope-values" | "unavailable" | "";
@@ -578,33 +581,52 @@ export function SubsectorDrawer({
         leastDestructiveRef={cancelDialogRef}
       >
         <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Discard unsaved data?
+          <AlertDialogContent minWidth={568}>
+            <AlertDialogHeader
+              fontSize="24"
+              fontWeight="600"
+              textAlign="center"
+              fontFamily="heading"
+              my={2}
+            >
+              <Flex justify="space-between">
+                <Box w={10} />
+              {t("unsaved-changes")}
+              <IconButton color="content.tertiary" icon={<CloseIcon />} onClick={onDialogClose} aria-label="Close" variant="ghost" />
+              </Flex>
             </AlertDialogHeader>
-            <AlertDialogBody>
-              You have unsaved data for this subsector. Do you want to discard
-              it?
+            <hr />
+            <AlertDialogBody textAlign="center" py={6} px={10}>
+              <Trans i18nKey="unsaved-changes-description" t={t} />
             </AlertDialogBody>
+            <hr />
 
-            <AlertDialogFooter>
-              <Button
-                variant="outline"
-                ref={cancelDialogRef}
-                onClick={onDialogClose}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="danger"
-                onClick={() => {
-                  onClose();
-                  onDialogClose();
-                }}
-                ml={3}
-              >
-                Discard
-              </Button>
+            <AlertDialogFooter my={2}>
+              <Flex justify="center" w="full">
+                <Button
+                  variant="outline"
+                  ref={cancelDialogRef}
+                  onClick={onDialogClose}
+                  px={6}
+                  width="230px"
+                  height={16}
+                >
+                  {t("keep-editing")}
+                </Button>
+                <Button
+                  variant="danger"
+                  onClick={() => {
+                    onClose();
+                    onDialogClose();
+                  }}
+                  ml={2}
+                  px={6}
+                  width="230px"
+                  height={16}
+                >
+                  {t("discard-changes")}
+                </Button>
+              </Flex>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialogOverlay>

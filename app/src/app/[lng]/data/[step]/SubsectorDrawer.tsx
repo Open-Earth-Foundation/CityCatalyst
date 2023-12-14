@@ -1,6 +1,10 @@
 import { RadioButton } from "@/components/radio-button";
 import { api } from "@/services/api";
-import { nameToI18NKey, resolve, resolvePromisesSequentially } from "@/util/helpers";
+import {
+  nameToI18NKey,
+  resolve,
+  resolvePromisesSequentially,
+} from "@/util/helpers";
 import type {
   SubCategoryValueWithSource,
   SubSectorValueResponse,
@@ -111,8 +115,8 @@ function extractFormValues(subSectorValue: SubSectorValueResponse): Inputs {
           value.activityValue != null ? "activity-data" : "direct-measure";
         const data: SubcategoryData = {
           methodology,
-          activity: {...defaultActivityData},
-          direct: {...defaultDirectMeasureData},
+          activity: { ...defaultActivityData },
+          direct: { ...defaultDirectMeasureData },
         };
 
         if (methodology === "activity-data") {
@@ -183,6 +187,38 @@ export function SubsectorDrawer({
     control,
   } = useForm<Inputs>();
 
+  const scopeData = watch("subcategoryData");
+  const isScopeCompleted = (scopeId: string) => {
+    const data = scopeData[scopeId];
+    if (data?.methodology === "activity-data") {
+      const activity = data.activity;
+      if (!activity) return false;
+      return (
+        activity.activityDataAmount != null &&
+        activity.activityDataUnit != null &&
+        activity.emissionFactorType !== "" &&
+        !(
+          activity.emissionFactorType === "Add custom" &&
+          +activity.co2EmissionFactor === 0 &&
+          +activity.n2oEmissionFactor === 0 &&
+          +activity.ch4EmissionFactor === 0
+        ) &&
+        activity.dataQuality !== "" &&
+        activity.sourceReference !== ""
+      );
+    } else if (data?.methodology === "direct-measure") {
+      if (!data.direct) return false;
+      return (
+        (data.direct.co2Emissions > 0 ||
+          data.direct.ch4Emissions > 0 ||
+          data.direct.n2oEmissions > 0) &&
+        data.direct.dataQuality !== "" &&
+        data.direct.sourceReference !== ""
+      );
+    }
+    return false;
+  };
+
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (!subsector) return;
     logger.debug("Subsector data", data);
@@ -209,6 +245,11 @@ export function SubsectorDrawer({
       const results = await resolvePromisesSequentially(
         Object.keys(data.subcategoryData).map((subcategoryId) => {
           const value = data.subcategoryData[subcategoryId];
+          if (!isScopeCompleted(subcategoryId)) {
+            logger.error(`Data not completed for scope ${subcategoryId}!`);
+            return Promise.resolve();
+          }
+
           let subCategoryValue: SubCategoryValueData = {
             subcategoryId,
             inventoryId: inventoryId!,
@@ -238,9 +279,10 @@ export function SubsectorDrawer({
               notes: value.direct.sourceReference,
             };
           } else {
-            throw new Error(
+            logger.error(
               `Methodology for subcategory ${subcategoryId} not selected!`,
             );
+            return Promise.resolve();
           }
 
           return setSubCategoryValue({
@@ -286,38 +328,6 @@ export function SubsectorDrawer({
     };
   });
 
-  const scopeData = watch("subcategoryData");
-  const isScopeCompleted = (scopeId: string) => {
-    const data = scopeData[scopeId];
-    if (data?.methodology === "activity-data") {
-      const activity = data.activity;
-      if (!activity) return false;
-      return (
-        activity.activityDataAmount != null &&
-        activity.activityDataUnit != null &&
-        activity.emissionFactorType !== "" &&
-        !(
-          activity.emissionFactorType === "Add custom" &&
-          +activity.co2EmissionFactor === 0 &&
-          +activity.n2oEmissionFactor === 0 &&
-          +activity.ch4EmissionFactor === 0
-        ) &&
-        activity.dataQuality !== "" &&
-        activity.sourceReference !== ""
-      );
-    } else if (data?.methodology === "direct-measure") {
-      if (!data.direct) return false;
-      return (
-        (data.direct.co2Emissions > 0 ||
-          data.direct.ch4Emissions > 0 ||
-          data.direct.n2oEmissions > 0) &&
-        data.direct.dataQuality !== "" &&
-        data.direct.sourceReference !== ""
-      );
-    }
-    return false;
-  };
-
   const valueType = watch("valueType");
   const isSubmitEnabled = !!valueType;
 
@@ -350,7 +360,9 @@ export function SubsectorDrawer({
                   {t("sector")} - {t(nameToI18NKey(sectorName))}
                 </Heading>
               )}
-              <Heading size="lg">{t(nameToI18NKey(subsector.subsectorName))}</Heading>
+              <Heading size="lg">
+                {t(nameToI18NKey(subsector.subsectorName))}
+              </Heading>
               <Text color="content.tertiary">
                 {t(nameToI18NKey(subsector.subsectorName) + "-description")}
               </Text>

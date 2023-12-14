@@ -239,6 +239,24 @@ export const appTheme = extendTheme({
             },
           },
         },
+        danger: {
+          bg: "semantic.danger",
+          color: "white",
+          _hover: {
+            bg: "#FF5F5F",
+          },
+          _active: {
+            bg: "#E22D23",
+          },
+          _loading: {
+            bg: "semantic.dangerOverlay",
+            color: "base.light",
+            _hover: {
+              bg: "#E22D23",
+              color: "base.light",
+            },
+          },
+        },
         solidPrimary: {
           ...theme.components.Button.variants?.solid,
           bg: "sentiment.positiveOverlay",

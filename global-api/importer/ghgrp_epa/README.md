@@ -6,8 +6,16 @@ These scripts are utilized to populate the database with Greenhouse Gas Reportin
 python ./importer/ghgrp_epa/ghgrp_importer.py --database_uri [database_uri] --file [zip file path] --log_file [.log file path]
 ```
 
-The emissions data included here correspond to the `Direct Emitters` from the [EPA database](https://www.epa.gov/ghgreporting/data-sets ) 
+The emissions data included here correspond to the `Direct Emitters` from the [EPA database](https://www.epa.gov/ghgreporting/data-sets )
 and their were classified following the [EPA classification](https://ccdsupport.com/confluence/display/ghgp/Understanding+Facility+Types )
+
+### Loader
+
+The transformation and the load are now separate. To load the data, run the following command:
+
+```bash
+psql -U ccglobal ccglobal -f ghgrp_epa_load.sql
+```
 
 ### EPA Methodology
 
@@ -156,5 +164,3 @@ gpc_classification = {
         'Zinc Production': {'gpc_refno': 'IV.1'}
     }
 }
-
- 

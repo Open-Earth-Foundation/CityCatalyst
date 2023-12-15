@@ -4,17 +4,7 @@ import React from "react";
 import { useTranslation } from "@/i18n/client";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { NavigationBar } from "@/components/navigation-bar";
-import {
-  Box,
-  Button,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Text,
-  Toast,
-} from "@chakra-ui/react";
+import { Box, Tab, TabList, TabPanels, Tabs, Text } from "@chakra-ui/react";
 
 import { useSession } from "next-auth/react";
 

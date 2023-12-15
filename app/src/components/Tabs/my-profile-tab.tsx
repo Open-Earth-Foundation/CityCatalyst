@@ -30,6 +30,7 @@ import {
   Text,
   Th,
   Thead,
+  useToast,
   Tr,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -40,9 +41,11 @@ import {
   AddIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  InfoOutlineIcon,
   SearchIcon,
 } from "@chakra-ui/icons";
 import {
+  MdCheckCircleOutline,
   MdDomain,
   MdMoreVert,
   MdOutlineFileDownload,
@@ -96,12 +99,12 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
       setValue("name", userInfo.name);
       setValue("city", "City");
       setValue("email", userInfo.email!);
-      setValue("role", "admin");
+      setValue("role", userInfo.role);
     }
   }, [setValue, session, status, userInfo]);
 
   const [setCurrentUserData] = useSetCurrentUserDataMutation();
-
+  const toast = useToast();
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
     // TODO
     // Submit data via the api
@@ -113,7 +116,41 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
       email: data.email,
       role: data.role,
       isOrganization: userInfo.isOrganization,
-    }).then((response: any) => console.log(response));
+    }).then(() =>
+      toast({
+        description: "User details updated!",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        render: () => (
+          <Box
+            display="flex"
+            gap="8px"
+            color="white"
+            alignItems="center"
+            justifyContent="space-between"
+            p={3}
+            bg="interactive.primary"
+            width="600px"
+            height="60px"
+            borderRadius="8px"
+          >
+            <Box display="flex" gap="8px" alignItems="center">
+              <MdCheckCircleOutline fontSize="24px" />
+
+              <Text
+                color="base.light"
+                fontWeight="bold"
+                lineHeight="52"
+                fontSize="label.lg"
+              >
+                User details updated
+              </Text>
+            </Box>
+          </Box>
+        ),
+      }),
+    );
   };
 
   const onInputChange = (e: any) => {

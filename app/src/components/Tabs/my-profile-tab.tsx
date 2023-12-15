@@ -64,14 +64,23 @@ import DeleteUserModal from "@/components/Modals/delete-user-modal";
 
 import DeleteCityModal from "@/components/Modals/delete-city-modal";
 import { TFunction } from "i18next";
+import { UserAttributes } from "@/models/User";
+import { api, useSetCurrentUserDataMutation } from "@/services/api";
 interface MyProfileTabProps {
   session: Session | null;
   status: "loading" | "authenticated" | "unauthenticated";
   t: TFunction;
   lng: string;
+  userInfo: UserAttributes | any;
 }
 
-const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
+const MyProfileTab: FC<MyProfileTabProps> = ({
+  session,
+  status,
+  t,
+  lng,
+  userInfo,
+}) => {
   const [inputValue, setInputValue] = useState<string>("");
   const {
     handleSubmit,
@@ -79,18 +88,32 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
     formState: { errors, isSubmitting },
     setValue,
   } = useForm<ProfileInputs>();
+
+  console.log(userInfo);
+
   useEffect(() => {
-    if (session?.user && status === "authenticated") {
-      setValue("name", session.user?.name!);
+    if (userInfo) {
+      setValue("name", userInfo.name);
       setValue("city", "City");
-      setValue("email", session.user.email!);
+      setValue("email", userInfo.email!);
       setValue("role", "admin");
     }
-  }, [setValue, session, status]);
+  }, [setValue, session, status, userInfo]);
+
+  const [setCurrentUserData] = useSetCurrentUserDataMutation();
 
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
     // TODO
     // Submit data via the api
+    console.log(data);
+    await setCurrentUserData({
+      locode: userInfo.defaultCityLocode,
+      userId: userInfo.userId,
+      name: data.name,
+      email: data.email,
+      role: data.role,
+      isOrganization: userInfo.isOrganization,
+    }).then((response: any) => console.log(response));
   };
 
   const onInputChange = (e: any) => {

@@ -121,6 +121,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
     uploadedProgress = uploaded / total;
   }
 
+  console.log(city);
+
   const showToast = (
     title: string,
     description: string,

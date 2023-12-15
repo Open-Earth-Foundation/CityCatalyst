@@ -6,12 +6,14 @@ import { Trans } from "react-i18next/TransWithoutContext";
 import { NavigationBar } from "@/components/navigation-bar";
 import {
   Box,
+  Button,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
   Text,
+  Toast,
 } from "@chakra-ui/react";
 
 import { useSession } from "next-auth/react";
@@ -19,12 +21,17 @@ import { useSession } from "next-auth/react";
 import MyProfileTab from "@/components/Tabs/my-profile-tab";
 import MyFilesTab from "@/components/Tabs/my-files-tab";
 import MyInventoriesTab from "@/components/Tabs/my-inventories-tab";
+import { api, useGetUserQuery } from "@/services/api";
+import { InfoOutlineIcon } from "@chakra-ui/icons";
+import { MdCheckCircleOutline } from "react-icons/md";
 
 export type ProfileInputs = {
   name: string;
   email: string;
   city: string;
   role: string;
+  locode: string;
+  userId: string;
 };
 
 export type UserDetails = {
@@ -50,6 +57,22 @@ export default function Settings({
   const { data: session, status } = useSession();
 
   const { t } = useTranslation(lng, "settings");
+
+  const { data: userInfo, isLoading: isUserInfoLoading } =
+    api.useGetUserInfoQuery();
+
+  console.log(userInfo);
+
+  const { data: currentUserData, isLoading: isUserDataLoading } =
+    api.useGetUserQuery(
+      {
+        locode: userInfo?.defaultCityLocode!,
+        userId: userInfo?.userId!,
+      },
+      { skip: !userInfo },
+    );
+
+  console.log(currentUserData);
 
   return (
     <Box backgroundColor="background.backgroundLight" paddingBottom="125px">
@@ -116,6 +139,7 @@ export default function Settings({
                   session={session}
                   status={status}
                   t={t}
+                  userInfo={currentUserData}
                 />
                 <MyFilesTab lng={lng} session={session} status={status} t={t} />
                 <MyInventoriesTab

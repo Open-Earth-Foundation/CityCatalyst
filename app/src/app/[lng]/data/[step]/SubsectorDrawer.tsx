@@ -389,7 +389,7 @@ export function SubsectorDrawer({
                   {t("sector")} - {t(nameToI18NKey(sectorName))}
                 </Heading>
               )}
-              <Heading size="lg">
+              <Heading fontSize="32px" fontWeight="bold" lineHeight="40px">
                 {t(nameToI18NKey(subsector.subsectorName))}
               </Heading>
               <Text color="content.tertiary">

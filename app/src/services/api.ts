@@ -259,6 +259,15 @@ export const api = createApi({
       }),
       invalidatesTags: ["UserData"],
     }),
+    removeUser: builder.mutation<
+      UserAttributes,
+      { userId: string; defaultCityLocode: string }
+    >({
+      query: ({ defaultCityLocode, userId }) => ({
+        url: `/city/${defaultCityLocode}/user/${userId}`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
@@ -300,5 +309,6 @@ export const {
   useSetCurrentUserDataMutation,
   useGetCityUsersQuery,
   useSetUserDataMutation,
+  useRemoveUserMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

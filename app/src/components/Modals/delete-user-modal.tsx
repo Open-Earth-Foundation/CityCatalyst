@@ -2,6 +2,7 @@
 
 import { UserDetails } from "@/app/[lng]/settings/page";
 import { UserAttributes } from "@/models/User";
+import { api } from "@/services/api";
 import {
   Modal,
   Button,
@@ -22,13 +23,22 @@ interface DeleteUserModalProps {
   isOpen: boolean;
   onClose: any;
   userData: UserAttributes;
+  userInfo: UserAttributes;
 }
 
 const DeleteUserModal: FC<DeleteUserModalProps> = ({
   isOpen,
   onClose,
   userData,
+  userInfo,
 }) => {
+  const [removeUser] = api.useRemoveUserMutation();
+  const handleDeleteUser = async (userId: string, locode: string) => {
+    await removeUser({
+      userId: userId,
+      defaultCityLocode: locode,
+    });
+  };
   return (
     <>
       <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
@@ -100,7 +110,12 @@ const DeleteUserModal: FC<DeleteUserModalProps> = ({
                 fontWeight="semibold"
                 fontSize="button.md"
                 type="button"
-                onClick={() => alert(userData.userId)}
+                onClick={() =>
+                  handleDeleteUser(
+                    userData.userId,
+                    userInfo?.defaultCityLocode!,
+                  )
+                }
               >
                 save changes
               </Button>

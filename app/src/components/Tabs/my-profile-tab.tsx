@@ -976,6 +976,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
         isOpen={isUserDeleteModalOpen}
         onClose={onUserDeleteModalClose}
         userData={userData}
+        userInfo={userInfo}
       />
       <DeleteCityModal
         isOpen={isCityDeleteModalOpen}
@@ -983,16 +984,6 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
         userData={userData}
         tf={t}
         lng={lng}
-      />
-      {/* <UpdateUserModal
-        isOpen={isUserUpdateModalOpen}
-        onClose={onUserUpdateModalClose}
-        userData={userData}
-      /> */}
-      <DeleteUserModal
-        isOpen={isUserDeleteModalOpen}
-        onClose={onUserDeleteModalClose}
-        userData={userData}
       />
       <DeleteCityModal
         isOpen={isCityDeleteModalOpen}

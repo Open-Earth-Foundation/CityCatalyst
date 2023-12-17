@@ -49,6 +49,7 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
   } = useForm<ProfileInputs>();
 
   const [setUserData] = api.useSetUserDataMutation();
+
   const toast = useToast();
 
   const [inputValue, setInputValue] = useState<string>("");

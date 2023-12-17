@@ -1,6 +1,7 @@
 "use client";
 
 import { UserDetails } from "@/app/[lng]/settings/page";
+import { UserAttributes } from "@/models/User";
 import {
   Modal,
   Button,
@@ -20,7 +21,7 @@ import { FiTrash2 } from "react-icons/fi";
 interface DeleteUserModalProps {
   isOpen: boolean;
   onClose: any;
-  userData: UserDetails;
+  userData: UserAttributes;
 }
 
 const DeleteUserModal: FC<DeleteUserModalProps> = ({
@@ -99,7 +100,7 @@ const DeleteUserModal: FC<DeleteUserModalProps> = ({
                 fontWeight="semibold"
                 fontSize="button.md"
                 type="button"
-                onClick={() => alert(userData.id)}
+                onClick={() => alert(userData.userId)}
               >
                 save changes
               </Button>

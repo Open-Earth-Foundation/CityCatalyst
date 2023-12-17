@@ -21,11 +21,12 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "@/i18n/client";
 import { TFunction } from "i18next";
 import { InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
+import { UserAttributes } from "@/models/User";
 
 interface DeleteCityModalProps {
   isOpen: boolean;
   onClose: any;
-  userData: UserDetails;
+  userData: UserAttributes;
   tf: TFunction;
   lng: string;
 }
@@ -159,7 +160,7 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
                       fontWeight="semibold"
                       fontSize="button.md"
                       type="button"
-                      onClick={() => alert(userData.id)}
+                      onClick={() => alert(userData.userId)}
                     >
                       Remove City
                     </Button>

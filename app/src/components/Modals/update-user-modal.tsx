@@ -23,11 +23,12 @@ import FormInput from "../form-input";
 import FormSelectInput from "../form-select-input";
 import { useSession } from "next-auth/react";
 import { Session } from "next-auth";
+import { UserAttributes } from "@/models/User";
 
 interface UpdateUserModalProps {
   isOpen: boolean;
   onClose: any;
-  userData: UserDetails;
+  userData: UserAttributes;
 }
 
 const UpdateUserModal: FC<UpdateUserModalProps> = ({
@@ -45,7 +46,7 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
   useEffect(() => {
     setValue("name", userData.name!);
     setValue("email", userData.email!);
-    setValue("role", userData.role);
+    setValue("role", userData.role!);
   }, [setValue, userData]);
 
   return (

@@ -62,7 +62,14 @@ export default function Settings({
       { skip: !userInfo },
     );
 
-  console.log(currentUserData);
+  console.log(userInfo);
+
+  const { data: cityUsers } = api.useGetCityUsersQuery(
+    { locode: userInfo?.defaultCityLocode! },
+    {
+      skip: !userInfo,
+    },
+  );
 
   return (
     <Box backgroundColor="background.backgroundLight" paddingBottom="125px">
@@ -130,6 +137,7 @@ export default function Settings({
                   status={status}
                   t={t}
                   userInfo={currentUserData}
+                  cityUsers={cityUsers}
                 />
                 <MyFilesTab lng={lng} session={session} status={status} t={t} />
                 <MyInventoriesTab

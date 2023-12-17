@@ -75,6 +75,7 @@ interface MyProfileTabProps {
   t: TFunction;
   lng: string;
   userInfo: UserAttributes | any;
+  cityUsers: UserAttributes[] | any;
 }
 
 const MyProfileTab: FC<MyProfileTabProps> = ({
@@ -83,6 +84,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
   t,
   lng,
   userInfo,
+  cityUsers,
 }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const {
@@ -92,8 +94,6 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
     setValue,
   } = useForm<ProfileInputs>();
 
-  console.log(userInfo);
-
   useEffect(() => {
     if (userInfo) {
       setValue("name", userInfo.name);
@@ -102,6 +102,8 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
       setValue("role", userInfo.role);
     }
   }, [setValue, session, status, userInfo]);
+
+  console.log(cityUsers);
 
   const [setCurrentUserData] = useSetCurrentUserDataMutation();
   const toast = useToast();
@@ -171,38 +173,31 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [role, setRole] = useState<string>("");
-  const [filteredUsers, setFilteredUsers] = useState<Array<UserDetails>>([]);
+  const [filteredUsers, setFilteredUsers] = useState<Array<UserAttributes>>([]);
   const [filteredUsersByRole, setFilteredUsersByRole] = useState<
-    Array<UserDetails>
+    Array<UserAttributes>
   >([]);
 
   useEffect(() => {
-    const users = [
-      { id: "1", name: "John Doe", email: "john@example.com", role: "admin" },
-      {
-        id: "2",
-        name: "Jane Smith",
-        email: "jane@example.com",
-        role: "contributor",
-      },
-    ];
+    if (cityUsers) {
+      const result = cityUsers.filter(
+        (users: any) =>
+          users.name
+            .toLocaleLowerCase()
+            .includes(searchTerm.toLocaleLowerCase()) ||
+          users.email
+            .toLocaleLowerCase()
+            .includes(searchTerm.toLocaleLowerCase()),
+      );
 
-    const result = users.filter(
-      (users) =>
-        users.name
-          .toLocaleLowerCase()
-          .includes(searchTerm.toLocaleLowerCase()) ||
-        users.email
-          .toLocaleLowerCase()
-          .includes(searchTerm.toLocaleLowerCase()),
-    );
-
-    setFilteredUsers(result);
-  }, [role, searchTerm]);
+      setFilteredUsers(result);
+    }
+  }, [role, searchTerm, cityUsers]);
 
   useEffect(() => {
-    const selectedUserByRole = filteredUsers.filter((users) =>
-      users.role.toLocaleLowerCase().includes(role.toLocaleLowerCase()),
+    const selectedUserByRole = filteredUsers.filter(
+      (users) =>
+        users?.role?.toLocaleLowerCase().includes(role.toLocaleLowerCase()),
     );
     if (role !== "all") {
       setFilteredUsersByRole(selectedUserByRole);
@@ -251,9 +246,9 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
     onClose: onCityDeleteModalClose,
   } = useDisclosure();
 
-  const [userData, setUserData] = useState<UserDetails>({
+  const [userData, setUserData] = useState<UserAttributes>({
     email: "",
-    id: "",
+    userId: "",
     name: "",
     role: "",
   });
@@ -635,16 +630,18 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                         </Thead>
                         <Tbody fontFamily="heading">
                           {filteredUsersByRole.map((user) => (
-                            <Tr key={user.id}>
+                            <Tr key={user.userId}>
                               <Td>
                                 <Checkbox
                                   onChange={(e) =>
                                     handleCheckboxChange(
-                                      user.id,
+                                      user.userId,
                                       e.target.checked,
                                     )
                                   }
-                                  isChecked={selectedUsers.includes(user.id)}
+                                  isChecked={selectedUsers.includes(
+                                    user.userId,
+                                  )}
                                 />
                               </Td>
                               <Td>{user.name}</Td>
@@ -964,7 +961,11 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
           </Box>
         </Box>
       </TabPanel>
-      <AddUserModal isOpen={isUserModalOpen} onClose={onUserModalClose} />
+      <AddUserModal
+        isOpen={isUserModalOpen}
+        onClose={onUserModalClose}
+        userInfo={userInfo}
+      />
       <UpdateUserModal
         isOpen={isUserUpdateModalOpen}
         onClose={onUserUpdateModalClose}

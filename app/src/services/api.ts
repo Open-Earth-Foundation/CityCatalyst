@@ -201,6 +201,7 @@ export const api = createApi({
       query: (data) => `/city/${data.locode}/user/${data.userId}`,
       transformResponse: (response: { data: any }) => response.data,
     }),
+
     setCurrentUserData: builder.mutation<
       UserAttributes,
       {
@@ -217,6 +218,32 @@ export const api = createApi({
         method: "PATCH",
         body: data,
       }),
+    }),
+    addUser: builder.mutation<
+      UserAttributes,
+      {
+        name: string;
+        email: string;
+        role: string;
+        userId: string;
+        locode: string;
+        isOrganization: boolean;
+      }
+    >({
+      query: (data) => ({
+        url: `/city/${data.locode}/user/`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getCityUsers: builder.query<
+      UserAttributes,
+      {
+        locode: string;
+      }
+    >({
+      query: (data) => `/city/${data.locode}/user/`,
+      transformResponse: (response: { data: any }) => response.data,
     }),
   }),
 });
@@ -257,5 +284,6 @@ export const {
   useGetCityPopulationQuery,
   useGetUserQuery,
   useSetCurrentUserDataMutation,
+  useGetCityUsersQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

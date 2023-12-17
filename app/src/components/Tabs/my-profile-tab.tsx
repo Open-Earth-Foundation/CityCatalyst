@@ -260,6 +260,19 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
     country: "",
     lastUpdated: "",
   });
+
+  const [removeUser] = api.useRemoveUserMutation();
+  const handleDeleteUsers = async () => {
+    selectedUsers.map(async (user: string) => {
+      await removeUser({
+        userId: user,
+        defaultCityLocode: userInfo.defaultCityLocode,
+      }).then((res) => console.log(res));
+    });
+  };
+
+  console.log(selectedUsers);
+
   return (
     <>
       <TabPanel>
@@ -607,6 +620,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                           letterSpacing="wide"
                           leftIcon={<FiTrash2 size={24} />}
                           variant="ghost"
+                          onClick={handleDeleteUsers}
                         >
                           {t("remove-users")}
                         </Button>

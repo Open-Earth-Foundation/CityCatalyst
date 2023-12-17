@@ -28,6 +28,7 @@ export const api = createApi({
     "UserInventories",
     "SubSectorValue",
     "SubCategoryValue",
+    "UserData",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
@@ -245,6 +246,19 @@ export const api = createApi({
       query: (data) => `/city/${data.locode}/user/`,
       transformResponse: (response: { data: any }) => response.data,
     }),
+    setUserData: builder.mutation<
+      UserAttributes,
+      Partial<UserAttributes> &
+        Pick<UserAttributes, "userId"> &
+        Pick<UserAttributes, "defaultCityLocode">
+    >({
+      query: ({ userId, defaultCityLocode, email, ...rest }) => ({
+        url: `/city/${defaultCityLocode}/user/${userId}`,
+        method: "PATCH",
+        body: rest,
+      }),
+      invalidatesTags: ["UserData"],
+    }),
   }),
 });
 
@@ -285,5 +299,6 @@ export const {
   useGetUserQuery,
   useSetCurrentUserDataMutation,
   useGetCityUsersQuery,
+  useSetUserDataMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

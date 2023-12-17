@@ -33,7 +33,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
 });
 
 export const PATCH = apiHandler(async (_req: NextRequest, { params }) => {
-  const body = createUserRequest.parse(await _req.json());
+  const body = await _req.json();
   let user = await db.models.User.findOne({ where: { userId: params.user } });
 
   if (!user) {

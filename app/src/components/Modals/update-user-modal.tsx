@@ -16,25 +16,30 @@ import {
   FormControl,
   FormLabel,
   Box,
+  useToast,
 } from "@chakra-ui/react";
-import React, { FC, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import React, { FC, useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import FormInput from "../form-input";
 import FormSelectInput from "../form-select-input";
 import { useSession } from "next-auth/react";
 import { Session } from "next-auth";
 import { UserAttributes } from "@/models/User";
+import { MdCheckCircleOutline } from "react-icons/md";
+import { api } from "@/services/api";
 
 interface UpdateUserModalProps {
   isOpen: boolean;
   onClose: any;
   userData: UserAttributes;
+  userInfo: UserAttributes;
 }
 
 const UpdateUserModal: FC<UpdateUserModalProps> = ({
   isOpen,
   onClose,
   userData,
+  userInfo,
 }) => {
   const {
     handleSubmit,
@@ -42,6 +47,61 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
     formState: { errors, isSubmitting },
     setValue,
   } = useForm<ProfileInputs>();
+
+  const [setUserData] = api.useSetUserDataMutation();
+  const toast = useToast();
+
+  const [inputValue, setInputValue] = useState<string>("");
+
+  console.log(userData);
+
+  const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
+    // TODO
+    // Submit data via the api
+    console.log(data);
+    await setUserData({
+      defaultCityLocode: userInfo.defaultCityLocode!,
+      userId: userData.userId,
+      name: data.name,
+      email: data.email,
+      role: data.role,
+      isOrganization: userInfo.isOrganization!,
+    }).then(() =>
+      toast({
+        description: "User details updated!",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        render: () => (
+          <Box
+            display="flex"
+            gap="8px"
+            color="white"
+            alignItems="center"
+            justifyContent="space-between"
+            p={3}
+            bg="interactive.primary"
+            width="600px"
+            height="60px"
+            borderRadius="8px"
+          >
+            <Box display="flex" gap="8px" alignItems="center">
+              <MdCheckCircleOutline fontSize="24px" />
+
+              <Text
+                color="base.light"
+                fontWeight="bold"
+                lineHeight="52"
+                fontSize="label.lg"
+              >
+                User details updated
+              </Text>
+            </Box>
+          </Box>
+        ),
+      }),
+    );
+  };
 
   useEffect(() => {
     setValue("name", userData.name!);
@@ -69,11 +129,7 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
           </ModalHeader>
           <ModalCloseButton marginTop="10px" />
           <ModalBody paddingTop="24px">
-            <form
-              onSubmit={handleSubmit(() => {
-                alert("hello");
-              })}
-            >
+            <form onSubmit={handleSubmit(onSubmit)}>
               <Box display="flex" flexDirection="column" gap="24px">
                 <FormInput
                   id="name"
@@ -90,11 +146,11 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
 
                 <FormSelectInput
                   label="Role"
-                  value="admin"
+                  value={inputValue}
                   register={register}
                   error={errors.role}
                   id="role"
-                  onInputChange={() => {}}
+                  onInputChange={(e: any) => setInputValue(e.target.value)}
                 />
                 <Button
                   h="56px"

@@ -127,7 +127,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
         id: "2",
         name: "Jane Smith",
         email: "jane@example.com",
-        role: "contributer",
+        role: "contributor",
       },
     ];
 

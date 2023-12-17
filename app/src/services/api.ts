@@ -268,6 +268,13 @@ export const api = createApi({
         method: "DELETE",
       }),
     }),
+    requestConfirmPassword: builder.mutation<string, { password: string }>({
+      query: ({ password }) => ({
+        url: `/auth/requestpassword`,
+        method: "POST",
+        body: { password },
+      }),
+    }),
   }),
 });
 

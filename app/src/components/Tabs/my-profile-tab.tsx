@@ -69,6 +69,7 @@ import DeleteCityModal from "@/components/Modals/delete-city-modal";
 import { TFunction } from "i18next";
 import { UserAttributes } from "@/models/User";
 import { api, useSetCurrentUserDataMutation } from "@/services/api";
+import { CityAttributes } from "@/models/City";
 interface MyProfileTabProps {
   session: Session | null;
   status: "loading" | "authenticated" | "unauthenticated";
@@ -103,7 +104,8 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
     }
   }, [setValue, session, status, userInfo]);
 
-  console.log(cityUsers);
+  const cities: any = userInfo && userInfo.cities;
+  console.log(cities);
 
   const [setCurrentUserData] = useSetCurrentUserDataMutation();
   const toast = useToast();
@@ -206,23 +208,6 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
     }
   }, [filteredUsers, role]);
 
-  const cities = [
-    {
-      id: "1",
-      name: "Test City 1",
-      state: "Test Region",
-      country: "Argentina",
-      lastUpdated: "2023-10-10T12:05:41.340Z",
-    },
-    {
-      id: "2",
-      name: "Test City 2",
-      state: "Test Region",
-      country: "Argentina",
-      lastUpdated: "2023-10-10T12:05:41.340Z",
-    },
-  ];
-
   const {
     isOpen: isUserModalOpen,
     onOpen: onUserModalOpen,
@@ -253,12 +238,12 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
     role: "",
   });
 
-  const [cityData, setCityData] = useState<CityData>({
-    id: "",
+  const [cityData, setCityData] = useState<CityAttributes>({
+    cityId: "",
     name: "",
-    state: "",
+    region: "",
     country: "",
-    lastUpdated: "",
+    lastUpdated: undefined,
   });
 
   const [removeUser] = api.useRemoveUserMutation();
@@ -835,11 +820,11 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                         fontWeight="semibold"
                         fontSize="button.md"
                       >
-                        {t("add-user")}
+                        {t("add-city")}
                       </Button>
                     </NextLink>
                   </Box>
-                  <Box>
+                  <Box maxHeight="500px" overflow="scroll">
                     <TableContainer
                       borderWidth="1px"
                       borderColor="border.overlay"
@@ -851,24 +836,37 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                             <Th>{t("city-name")}</Th>
                             <Th>{t("state-province")}</Th>
                             <Th>{t("country")}</Th>
-                            <Th>{t("last-updated")}</Th>
+                            <Th align="right">{t("last-updated")}</Th>
                           </Tr>
                         </Thead>
                         <Tbody fontFamily="heading">
-                          {cities.map((city) => (
-                            <Tr key={city.id}>
+                          {cities?.map((city: any) => (
+                            <Tr key={city.cityId}>
                               <Td>
-                                <Box color="interactive.secondary">
+                                <Box
+                                  color="interactive.secondary"
+                                  display="flex"
+                                  alignItems="center"
+                                  gap="10px"
+                                >
                                   <MdDomain size={24} />
+                                  <Text color="base.dark">{city.name}</Text>
                                 </Box>
                               </Td>
-                              <Td>
-                                <Text>{city.name}</Text>
-                              </Td>
-                              <Td>{city.state}</Td>
+
+                              <Td>{city.region}</Td>
                               <Td>{city.country}</Td>
-                              <Td display="flex" alignItems="center" gap="8px">
-                                <Text>{city.lastUpdated}</Text>
+                              <Td
+                                display="flex"
+                                alignItems="center"
+                                gap="8px"
+                                align="right"
+                              >
+                                <Text>
+                                  {new Date(
+                                    city.last_updated,
+                                  ).toLocaleDateString()}
+                                </Text>
                                 <Popover isLazy>
                                   <PopoverTrigger>
                                     <IconButton
@@ -910,7 +908,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                                             color: "white",
                                           }}
                                           onClick={() => {
-                                            alert(city.id);
+                                            alert(city.cityId);
                                           }}
                                         >
                                           <MdOutlineFileDownload size={24} />

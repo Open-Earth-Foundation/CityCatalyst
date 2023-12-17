@@ -18,9 +18,6 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
       {
         model: db.models.City,
         as: "cities",
-        where: {
-          locode: locode,
-        },
       },
     ],
   });

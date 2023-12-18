@@ -69,6 +69,7 @@ import DeleteFileModal from "@/components/Modals/delete-file-modal";
 import DeleteCityModal from "@/components/Modals/delete-city-modal";
 import { TFunction } from "i18next";
 import DeleteInventoryModal from "../Modals/delete-inventory-modal";
+import { UserAttributes } from "@/models/User";
 
 interface MyInventoriesTabProps {
   session: Session | null;
@@ -174,9 +175,9 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
     onClose: onInventoryDeleteModalClose,
   } = useDisclosure();
 
-  const [userData, setUserData] = useState<UserDetails>({
+  const [userData, setUserData] = useState<UserAttributes>({
     email: "",
-    id: "",
+    userId: "",
     name: "",
     role: "",
   });

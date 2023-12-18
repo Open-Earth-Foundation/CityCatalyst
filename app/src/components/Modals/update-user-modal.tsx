@@ -54,12 +54,9 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
 
   const [inputValue, setInputValue] = useState<string>("");
 
-  console.log(userData);
-
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
     // TODO
     // Submit data via the api
-    console.log(data);
     await setUserData({
       defaultCityLocode: userInfo.defaultCityLocode!,
       userId: userData.userId,
@@ -67,7 +64,8 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
       email: data.email,
       role: data.role,
       isOrganization: userInfo.isOrganization!,
-    }).then(() =>
+    }).then(() => {
+      onClose();
       toast({
         description: "User details updated!",
         status: "success",
@@ -100,8 +98,8 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
             </Box>
           </Box>
         ),
-      }),
-    );
+      });
+    });
   };
 
   useEffect(() => {

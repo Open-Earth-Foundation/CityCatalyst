@@ -48,7 +48,6 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
   const onSubmit: SubmitHandler<UserAttributes> = async (data) => {
     // TODO
     // Submit data via the api
-    console.log(data);
     await addUser({
       locode: userInfo.defaultCityLocode!,
       userId: userInfo.userId,

@@ -12,6 +12,8 @@
     "select": "seleccionar",
     "name": "Name",
     "city-name": "Stadtname",
+    "enter-password-description": "Geben Sie Ihr Passwort ein, um die Löschung der Städteinformationen zu bestätigen",
+    "incorrect-password": "Falsches Passwort! Bitte versuchen Sie es erneut",
     "state-province": "Bundesland / Provinz",
     "country": "Land",
     "full-name": "Vollständiger Name",

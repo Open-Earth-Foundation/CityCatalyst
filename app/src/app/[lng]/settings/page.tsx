@@ -51,8 +51,6 @@ export default function Settings({
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
 
-  console.log(userInfo);
-
   const { data: currentUserData, isLoading: isUserDataLoading } =
     api.useGetUserQuery(
       {
@@ -62,12 +60,11 @@ export default function Settings({
       { skip: !userInfo },
     );
 
-  console.log(currentUserData);
-
   const { data: cityUsers } = api.useGetCityUsersQuery(
     { locode: userInfo?.defaultCityLocode! },
     {
       skip: !userInfo,
+      pollingInterval: 3000,
     },
   );
 

@@ -105,14 +105,12 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
   }, [setValue, session, status, userInfo]);
 
   const cities: any = userInfo && userInfo.cities;
-  console.log(cities);
 
   const [setCurrentUserData] = useSetCurrentUserDataMutation();
   const toast = useToast();
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
     // TODO
     // Submit data via the api
-    console.log(data);
     await setCurrentUserData({
       locode: userInfo.defaultCityLocode,
       userId: userInfo.userId,
@@ -252,11 +250,9 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
       await removeUser({
         userId: user,
         defaultCityLocode: userInfo.defaultCityLocode,
-      }).then((res) => console.log(res));
+      });
     });
   };
-
-  console.log(selectedUsers);
 
   return (
     <>
@@ -994,13 +990,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
         isOpen={isCityDeleteModalOpen}
         onClose={onCityDeleteModalClose}
         userData={userData}
-        tf={t}
-        lng={lng}
-      />
-      <DeleteCityModal
-        isOpen={isCityDeleteModalOpen}
-        onClose={onCityDeleteModalClose}
-        userData={userData}
+        cityData={cityData}
         tf={t}
         lng={lng}
       />

@@ -136,7 +136,13 @@ export default function Settings({
                   userInfo={currentUserData}
                   cityUsers={cityUsers}
                 />
-                <MyFilesTab lng={lng} session={session} status={status} t={t} />
+                <MyFilesTab
+                  lng={lng}
+                  session={session}
+                  status={status}
+                  t={t}
+                  userInfo={currentUserData!}
+                />
                 <MyInventoriesTab
                   lng={lng}
                   session={session}

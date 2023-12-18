@@ -1,6 +1,6 @@
 aiohttp==3.9.*
 alembic==1.13.0
-black==23.11.0
+black==23.12.0
 fastapi==0.104.1
 flake8==6.1.0
 fsspec==2023.*

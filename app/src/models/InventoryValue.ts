@@ -9,7 +9,7 @@ export interface InventoryValueAttributes {
   gpcReferenceNumber?: string;
   activityValue?: number;
   activityUnits?: string;
-  co2eq?: BigInt;
+  co2eq?: bigint;
   co2eqYears?: number;
   sectorId?: string;
   subSectorId?: string;
@@ -48,7 +48,7 @@ export class InventoryValue
   gpcReferenceNumber?: string;
   activityValue?: number;
   activityUnits?: string;
-  co2eq?: BigInt;
+  co2eq?: bigint;
   co2eqYears?: number;
   sectorId?: string;
   subSectorId?: string;

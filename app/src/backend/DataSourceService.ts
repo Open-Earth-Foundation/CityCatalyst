@@ -101,7 +101,7 @@ export default class DataSourceService {
     const inventoryValue = await db.models.InventoryValue.create({
       ...values,
       id: randomUUID(),
-      scopeId: source.subcategoryId,
+      subCategoryId: source.subcategoryId,
     });
 
     return true;

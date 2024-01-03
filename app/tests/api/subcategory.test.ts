@@ -108,7 +108,7 @@ describe("Sub Category API", () => {
     inventoryValue = await db.models.InventoryValue.create({
       inventoryId: inventory.inventoryId,
       id: randomUUID(),
-      scopeId: subCategory.subcategoryId,
+      subCategoryId: subCategory.subcategoryId,
       co2eq,
       activityUnits,
       activityValue,

@@ -1,6 +1,5 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
-import type { EmissionsFactor, EmissionsFactorId } from "./EmissionsFactor";
 import type { Inventory, InventoryId } from "./Inventory";
 import type { SubCategory, SubCategoryId } from "./SubCategory";
 import type { DataSource, DataSourceId } from "./DataSource";
@@ -14,7 +13,7 @@ export interface InventoryValueAttributes {
   co2eqYears?: number;
   sectorId?: string;
   subSectorId?: string;
-  scopeId?: string;
+  subCategoryId?: string;
   inventoryId?: string;
   dataSourceId?: string;
   created?: Date;
@@ -31,7 +30,7 @@ export type InventoryValueOptionalAttributes =
   | "co2eqYears"
   | "sectorId"
   | "subSectorId"
-  | "scopeId"
+  | "subCategoryId"
   | "inventoryId"
   | "dataSourceId"
   | "created"
@@ -53,7 +52,7 @@ export class InventoryValue
   co2eqYears?: number;
   sectorId?: string;
   subSectorId?: string;
-  scopeId?: string;
+  subCategoryId?: string;
   inventoryId?: string;
   dataSourceId?: string;
   created?: Date;
@@ -102,14 +101,14 @@ export class InventoryValue
           allowNull: true,
           field: "activity_value",
         },
-        scopeId: {
+        subCategoryId: {
           type: DataTypes.UUID,
           allowNull: true,
           references: {
             model: "SubCategory",
             key: "subcategory_id",
           },
-          field: "scope_id",
+          field: "sub_category_id",
         },
         inventoryId: {
           type: DataTypes.UUID,

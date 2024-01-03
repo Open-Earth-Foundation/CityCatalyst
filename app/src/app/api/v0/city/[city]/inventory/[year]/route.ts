@@ -85,7 +85,7 @@ async function inventoryCSV(inventory: any): Promise<Buffer> {
   ].join(",");
   const inventoryLines = inventoryValues.map((value: InventoryValue) => {
     return [
-      value.scopeId,
+      value.subCategoryId,
       value.gpcReferenceNumber,
       value.co2eq,
       value.activityUnits,

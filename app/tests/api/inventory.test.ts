@@ -310,24 +310,18 @@ describe("Inventory API", () => {
         sectorName: "XX_INVENTORY_" + sectorName,
       });
       const sectorValueId = randomUUID();
-      await db.models.SectorValue.create({
-        sectorValueId,
-        sectorId,
-        inventoryId: existingInventory!.inventoryId,
-      });
       for (let i = 0; i < sectorNames.length; i++) {
-        const subsectorId = randomUUID();
+        const subSectorId = randomUUID();
         await db.models.SubSector.create({
-          subsectorId,
+          subsectorId: subSectorId,
           sectorId,
           subsectorName: "XX_INVENTORY_" + sectorName + "_" + sectorNames[i],
         });
         if (sources[i] != null) {
-          await db.models.SubSectorValue.create({
-            subsectorValueId: randomUUID(),
-            subsectorId,
-            sectorValueId,
-            datasourceId: sources[i]?.datasourceId,
+          await db.models.InventoryValue.create({
+            id: randomUUID(),
+            subSectorId,
+            dataSourceId: sources[i]?.datasourceId,
             inventoryId: existingInventory!.inventoryId,
           });
         }

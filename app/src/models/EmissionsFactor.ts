@@ -5,7 +5,7 @@ import type {
   DataSourceEmissionsFactor,
   DataSourceEmissionsFactorId,
 } from "./DataSourceEmissionsFactor";
-import type { InventoryValue, InventoryValueId } from "./InventoryValue";
+import type { GasValue, GasValueId } from "./GasValue";
 
 export interface EmissionsFactorAttributes {
   emissionsFactorId: string;
@@ -106,39 +106,39 @@ export class EmissionsFactor
     DataSourceEmissionsFactorId
   >;
   countDataSourceEmissionsFactors!: Sequelize.HasManyCountAssociationsMixin;
-  // EmissionsFactor hasMany SubCategoryValue via emissionsFactorId
-  subCategoryValues!: InventoryValue[];
-  getSubCategoryValues!: Sequelize.HasManyGetAssociationsMixin<InventoryValue>;
-  setSubCategoryValues!: Sequelize.HasManySetAssociationsMixin<
-    InventoryValue,
-    InventoryValueId
+  // EmissionsFactor hasMany GasValue via emissionsFactorId
+  gasValues!: GasValue[];
+  getGasValues!: Sequelize.HasManyGetAssociationsMixin<GasValue>;
+  setGasValues!: Sequelize.HasManySetAssociationsMixin<
+    GasValue,
+    GasValueId
   >;
-  addSubCategoryValue!: Sequelize.HasManyAddAssociationMixin<
-    InventoryValue,
-    InventoryValueId
+  addGasValue!: Sequelize.HasManyAddAssociationMixin<
+    GasValue,
+    GasValueId
   >;
-  addSubCategoryValues!: Sequelize.HasManyAddAssociationsMixin<
-    InventoryValue,
-    InventoryValueId
+  addGasValues!: Sequelize.HasManyAddAssociationsMixin<
+    GasValue,
+    GasValueId
   >;
-  createSubCategoryValue!: Sequelize.HasManyCreateAssociationMixin<InventoryValue>;
-  removeSubCategoryValue!: Sequelize.HasManyRemoveAssociationMixin<
-    InventoryValue,
-    InventoryValueId
+  createGasValue!: Sequelize.HasManyCreateAssociationMixin<GasValue>;
+  removeGasValue!: Sequelize.HasManyRemoveAssociationMixin<
+    GasValue,
+    GasValueId
   >;
-  removeSubCategoryValues!: Sequelize.HasManyRemoveAssociationsMixin<
-    InventoryValue,
-    InventoryValueId
+  removeGasValues!: Sequelize.HasManyRemoveAssociationsMixin<
+    GasValue,
+    GasValueId
   >;
-  hasSubCategoryValue!: Sequelize.HasManyHasAssociationMixin<
-    InventoryValue,
-    InventoryValueId
+  hasGasValue!: Sequelize.HasManyHasAssociationMixin<
+    GasValue,
+    GasValueId
   >;
-  hasSubCategoryValues!: Sequelize.HasManyHasAssociationsMixin<
-    InventoryValue,
-    InventoryValueId
+  hasGasValues!: Sequelize.HasManyHasAssociationsMixin<
+    GasValue,
+    GasValueId
   >;
-  countSubCategoryValues!: Sequelize.HasManyCountAssociationsMixin;
+  countGasValues!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof EmissionsFactor {
     return EmissionsFactor.init(

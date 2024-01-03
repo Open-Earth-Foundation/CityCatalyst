@@ -56,6 +56,16 @@ import type {
   EmissionsFactorAttributes,
   EmissionsFactorCreationAttributes,
 } from "./EmissionsFactor";
+import { GasValue as _GasValue } from "./GasValue";
+import type {
+  GasValueAttributes,
+  GasValueCreationAttributes,
+} from "./GasValue";
+import { GasToCO2Eq as _GasToCO2Eq } from "./GasToCO2Eq";
+import type {
+  GasToCO2EqAttributes,
+  GasToCO2EqCreationAttributes,
+} from "./GasToCO2Eq";
 import { GDP as _GDP } from "./GDP";
 import type { GDPAttributes, GDPCreationAttributes } from "./GDP";
 import { GHGs as _GHGs } from "./GHGs";
@@ -127,6 +137,8 @@ export {
   _DataSourceReportingLevel as DataSourceReportingLevel,
   _DataSourceScope as DataSourceScope,
   _EmissionsFactor as EmissionsFactor,
+  _GasValue as GasValue,
+  _GasToCO2Eq as GasToCO2Eq,
   _GDP as GDP,
   _GHGs as GHGs,
   _Inventory as Inventory,
@@ -169,6 +181,10 @@ export type {
   DataSourceScopeCreationAttributes,
   EmissionsFactorAttributes,
   EmissionsFactorCreationAttributes,
+  GasValueAttributes,
+  GasValueCreationAttributes,
+  GasToCO2EqAttributes,
+  GasToCO2EqCreationAttributes,
   GDPAttributes,
   GDPCreationAttributes,
   GHGsAttributes,
@@ -216,6 +232,8 @@ export function initModels(sequelize: Sequelize) {
     _DataSourceReportingLevel.initModel(sequelize);
   const DataSourceScope = _DataSourceScope.initModel(sequelize);
   const EmissionsFactor = _EmissionsFactor.initModel(sequelize);
+  const GasValue = _GasValue.initModel(sequelize);
+  const GasToCO2Eq = _GasToCO2Eq.initModel(sequelize);
   const GDP = _GDP.initModel(sequelize);
   const GHGs = _GHGs.initModel(sequelize);
   const Inventory = _Inventory.initModel(sequelize);
@@ -452,14 +470,6 @@ export function initModels(sequelize: Sequelize) {
     as: "dataSourceEmissionsFactors",
     foreignKey: "emissionsFactorId",
   });
-  InventoryValue.belongsTo(EmissionsFactor, {
-    as: "emissionsFactor",
-    foreignKey: "emissionsFactorId",
-  });
-  EmissionsFactor.hasMany(InventoryValue, {
-    as: "subCategoryValues",
-    foreignKey: "emissionsFactorId",
-  });
   DataSourceGHGs.belongsTo(GHGs, { as: "ghg", foreignKey: "ghgId" });
   GHGs.hasMany(DataSourceGHGs, { as: "dataSourceGhgs", foreignKey: "ghgId" });
   InventoryValue.belongsTo(Inventory, {
@@ -565,6 +575,22 @@ export function initModels(sequelize: Sequelize) {
   });
   User.belongsTo(User, { as: "organization", foreignKey: "organizationId" });
   User.hasMany(User, { as: "users", foreignKey: "organizationId" });
+  GasValue.belongsTo(InventoryValue, {
+    as: "inventoryValue",
+    foreignKey: "inventoryValueId",
+  });
+  InventoryValue.hasMany(GasValue, {
+    as: "gasValues",
+    foreignKey: "inventoryValueId",
+  });
+  GasValue.belongsTo(EmissionsFactor, {
+    as: "emissionsFactor",
+    foreignKey: "emissionsFactorId",
+  });
+  EmissionsFactor.hasMany(GasValue, {
+    as: "gasValues",
+    foreignKey: "emissionsFactorId",
+  });
 
   return {
     ActivityData: ActivityData,
@@ -579,6 +605,8 @@ export function initModels(sequelize: Sequelize) {
     DataSourceReportingLevel: DataSourceReportingLevel,
     DataSourceScope: DataSourceScope,
     EmissionsFactor: EmissionsFactor,
+    GasValue: GasValue,
+    GasToCO2Eq: GasToCO2Eq,
     GDP: GDP,
     GHGs: GHGs,
     Inventory: Inventory,

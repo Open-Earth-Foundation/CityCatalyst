@@ -74,7 +74,7 @@
     "react-circle-flags": "^0.0.19",
     "react-dom": "18.2.0",
     "react-email": "^1.9.5",
-    "react-hook-form": "^7.49.0",
+    "react-hook-form": "^7.49.2",
     "react-i18next": "^14.0.0",
     "react-icons": "^4.11.0",
     "react-leaflet": "^4.2.1",

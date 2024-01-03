@@ -70,12 +70,12 @@ export const GET = apiHandler(
 
     // count SubSectorValues grouped by source type and sector
     const sectorProgress = sectors.map((sector: Sector) => {
-      const sectorValue = inventory.inventoryValues.find(
+      const inventoryValues = inventory.inventoryValues.filter(
         (inventoryVal) => sector.sectorId === inventoryVal.sectorId,
       );
       let sectorCounts = { thirdParty: 0, uploaded: 0 };
-      if (sectorValue) {
-        sectorCounts = sectorValue.subSectorValues.reduce(
+      if (inventoryValues) {
+        sectorCounts = inventoryValues.reduce(
           (acc, subSectorValue) => {
             if (!subSectorValue.dataSource) {
               return acc;
@@ -89,7 +89,7 @@ export const GET = apiHandler(
             } else {
               console.error(
                 "Invalid value for SubSectorValue.dataSource.sourceType of subsector",
-                subSectorValue.subsector.subsectorName,
+                subSectorValue.subSector.subsectorName,
                 "in its data source",
                 subSectorValue.dataSource.datasourceId + ":",
                 subSectorValue.dataSource.sourceType,
@@ -104,9 +104,9 @@ export const GET = apiHandler(
       // add completed field to subsectors if there is a value for it
       const subSectors = sector.subSectors.map((subSector) => {
         let completed = false;
-        if (sectorValue) {
+        if (inventoryValues) {
           completed =
-            sectorValue.subSectorValues.find(
+            inventoryValues.subSectorValues.find(
               (subSectorValue) =>
                 subSectorValue.subsectorId === subSector.subsectorId,
             ) != null;

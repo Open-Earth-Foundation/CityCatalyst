@@ -106,7 +106,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
     subCategoryValue = await subCategoryValue.update({
       ...body,
       subcategoryId: subCategoryValue.subcategoryId,
-      subcategoryValueId: subCategoryValue.subcategoryValueId,
+      id: subCategoryValue.id,
       subsectorValueId: subSectorValue.subsectorValueId,
       inventoryId: params.inventory,
       datasourceId,
@@ -116,7 +116,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
 
     subCategoryValue = await db.models.SubCategoryValue.create({
       ...body,
-      subcategoryValueId: randomUUID(),
+      id: randomUUID(),
       subcategoryId: params.subcategory,
       subsectorValueId: subSectorValue.subsectorValueId,
       inventoryId: params.inventory,

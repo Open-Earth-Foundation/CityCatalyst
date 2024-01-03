@@ -89,21 +89,16 @@ import { Scope as _Scope } from "./Scope";
 import type { ScopeAttributes, ScopeCreationAttributes } from "./Scope";
 import { Sector as _Sector } from "./Sector";
 import type { SectorAttributes, SectorCreationAttributes } from "./Sector";
-import { SectorValue as _SectorValue } from "./SectorValue";
-import type {
-  SectorValueAttributes,
-  SectorValueCreationAttributes,
-} from "./SectorValue";
 import { SubCategory as _SubCategory } from "./SubCategory";
 import type {
   SubCategoryAttributes,
   SubCategoryCreationAttributes,
 } from "./SubCategory";
-import { SubCategoryValue as _SubCategoryValue } from "./SubCategoryValue";
+import { InventoryValue as _InventoryValue } from "./InventoryValue";
 import type {
-  SubCategoryValueAttributes,
-  SubCategoryValueCreationAttributes,
-} from "./SubCategoryValue";
+  InventoryValueAttributes,
+  InventoryValueCreationAttributes,
+} from "./InventoryValue";
 import { SubSector as _SubSector } from "./SubSector";
 import type {
   SubSectorAttributes,
@@ -114,11 +109,6 @@ import type {
   SubSectorReportingLevelAttributes,
   SubSectorReportingLevelCreationAttributes,
 } from "./SubSectorReportingLevel";
-import { SubSectorValue as _SubSectorValue } from "./SubSectorValue";
-import type {
-  SubSectorValueAttributes,
-  SubSectorValueCreationAttributes,
-} from "./SubSectorValue";
 import { User as _User } from "./User";
 import type { UserAttributes, UserCreationAttributes } from "./User";
 import { Version as _Version } from "./Version";
@@ -146,12 +136,10 @@ export {
   _ReportingLevel as ReportingLevel,
   _Scope as Scope,
   _Sector as Sector,
-  _SectorValue as SectorValue,
   _SubCategory as SubCategory,
-  _SubCategoryValue as SubCategoryValue,
+  _InventoryValue as InventoryValue,
   _SubSector as SubSector,
   _SubSectorReportingLevel as SubSectorReportingLevel,
-  _SubSectorValue as SubSectorValue,
   _User as User,
   _Version as Version,
 };
@@ -199,18 +187,14 @@ export type {
   ScopeCreationAttributes,
   SectorAttributes,
   SectorCreationAttributes,
-  SectorValueAttributes,
-  SectorValueCreationAttributes,
   SubCategoryAttributes,
   SubCategoryCreationAttributes,
-  SubCategoryValueAttributes,
-  SubCategoryValueCreationAttributes,
+  InventoryValueAttributes,
+  InventoryValueCreationAttributes,
   SubSectorAttributes,
   SubSectorCreationAttributes,
   SubSectorReportingLevelAttributes,
   SubSectorReportingLevelCreationAttributes,
-  SubSectorValueAttributes,
-  SubSectorValueCreationAttributes,
   UserAttributes,
   UserCreationAttributes,
   VersionAttributes,
@@ -241,12 +225,10 @@ export function initModels(sequelize: Sequelize) {
   const ReportingLevel = _ReportingLevel.initModel(sequelize);
   const Scope = _Scope.initModel(sequelize);
   const Sector = _Sector.initModel(sequelize);
-  const SectorValue = _SectorValue.initModel(sequelize);
   const SubCategory = _SubCategory.initModel(sequelize);
-  const SubCategoryValue = _SubCategoryValue.initModel(sequelize);
+  const InventoryValue = _InventoryValue.initModel(sequelize);
   const SubSector = _SubSector.initModel(sequelize);
   const SubSectorReportingLevel = _SubSectorReportingLevel.initModel(sequelize);
-  const SubSectorValue = _SubSectorValue.initModel(sequelize);
   const User = _User.initModel(sequelize);
   const Version = _Version.initModel(sequelize);
 
@@ -304,21 +286,9 @@ export function initModels(sequelize: Sequelize) {
     as: "subSector",
     foreignKey: "subsectorId",
   });
-  SubSectorValue.belongsTo(DataSource, {
+  InventoryValue.belongsTo(DataSource, {
     as: "dataSource",
     foreignKey: "datasourceId",
-  });
-  SubSectorValue.hasMany(SubCategoryValue, {
-    as: "subCategoryValues",
-    foreignKey: "subsectorValueId",
-  });
-  SubCategoryValue.belongsTo(DataSource, {
-    as: "dataSource",
-    foreignKey: "datasourceId",
-  });
-  SubCategoryValue.belongsTo(SubSectorValue, {
-    as: "subsectorValue",
-    foreignKey: "subsectorValueId",
   });
   EmissionsFactor.belongsToMany(DataSource, {
     as: "datasourceIdDataSourceDataSourceEmissionsFactors",
@@ -470,11 +440,7 @@ export function initModels(sequelize: Sequelize) {
     as: "populations",
     foreignKey: "datasourceId",
   });
-  DataSource.hasMany(SubSectorValue, {
-    as: "subSectorValues",
-    foreignKey: "datasourceId",
-  });
-  DataSource.hasMany(SubCategoryValue, {
+  DataSource.hasMany(InventoryValue, {
     as: "subCategoryValues",
     foreignKey: "datasourceId",
   });
@@ -486,46 +452,22 @@ export function initModels(sequelize: Sequelize) {
     as: "dataSourceEmissionsFactors",
     foreignKey: "emissionsFactorId",
   });
-  SubCategoryValue.belongsTo(EmissionsFactor, {
+  InventoryValue.belongsTo(EmissionsFactor, {
     as: "emissionsFactor",
     foreignKey: "emissionsFactorId",
   });
-  EmissionsFactor.hasMany(SubCategoryValue, {
+  EmissionsFactor.hasMany(InventoryValue, {
     as: "subCategoryValues",
-    foreignKey: "emissionsFactorId",
-  });
-  SubSectorValue.belongsTo(EmissionsFactor, {
-    as: "emissionsFactor",
-    foreignKey: "emissionsFactorId",
-  });
-  EmissionsFactor.hasMany(SubSectorValue, {
-    as: "subSectorValues",
     foreignKey: "emissionsFactorId",
   });
   DataSourceGHGs.belongsTo(GHGs, { as: "ghg", foreignKey: "ghgId" });
   GHGs.hasMany(DataSourceGHGs, { as: "dataSourceGhgs", foreignKey: "ghgId" });
-  SectorValue.belongsTo(Inventory, {
+  InventoryValue.belongsTo(Inventory, {
     as: "inventory",
     foreignKey: "inventoryId",
   });
-  Inventory.hasMany(SectorValue, {
-    as: "sectorValues",
-    foreignKey: "inventoryId",
-  });
-  SubCategoryValue.belongsTo(Inventory, {
-    as: "inventory",
-    foreignKey: "inventoryId",
-  });
-  Inventory.hasMany(SubCategoryValue, {
+  Inventory.hasMany(InventoryValue, {
     as: "subCategoryValues",
-    foreignKey: "inventoryId",
-  });
-  SubSectorValue.belongsTo(Inventory, {
-    as: "inventory",
-    foreignKey: "inventoryId",
-  });
-  Inventory.hasMany(SubSectorValue, {
-    as: "subSectorValues",
     foreignKey: "inventoryId",
   });
   Version.belongsTo(Inventory, { as: "inventory", foreignKey: "inventoryId" });
@@ -587,26 +529,8 @@ export function initModels(sequelize: Sequelize) {
   });
   SubCategory.belongsTo(Scope, { as: "scope", foreignKey: "scopeId" });
   Scope.hasMany(SubCategory, { as: "subCategories", foreignKey: "scopeId" });
-  SectorValue.belongsTo(Sector, { as: "sector", foreignKey: "sectorId" });
-  Sector.hasMany(SectorValue, { as: "sectorValues", foreignKey: "sectorId" });
   SubSector.belongsTo(Sector, { as: "sector", foreignKey: "sectorId" });
   Sector.hasMany(SubSector, { as: "subSectors", foreignKey: "sectorId" });
-  SubCategoryValue.belongsTo(SectorValue, {
-    as: "sectorValue",
-    foreignKey: "sectorValueId",
-  });
-  SectorValue.hasMany(SubCategoryValue, {
-    as: "subCategoryValues",
-    foreignKey: "sectorValueId",
-  });
-  SubSectorValue.belongsTo(SectorValue, {
-    as: "sectorValue",
-    foreignKey: "sectorValueId",
-  });
-  SectorValue.hasMany(SubSectorValue, {
-    as: "subSectorValues",
-    foreignKey: "sectorValueId",
-  });
   ActivityData.belongsTo(SubCategory, {
     as: "subcategory",
     foreignKey: "subcategoryId",
@@ -615,11 +539,11 @@ export function initModels(sequelize: Sequelize) {
     as: "activityData",
     foreignKey: "subcategoryId",
   });
-  SubCategoryValue.belongsTo(SubCategory, {
+  InventoryValue.belongsTo(SubCategory, {
     as: "subcategory",
     foreignKey: "subcategoryId",
   });
-  SubCategory.hasMany(SubCategoryValue, {
+  SubCategory.hasMany(InventoryValue, {
     as: "subCategoryValues",
     foreignKey: "subcategoryId",
   });
@@ -637,14 +561,6 @@ export function initModels(sequelize: Sequelize) {
   });
   SubSector.hasMany(SubSectorReportingLevel, {
     as: "subSectorReportingLevels",
-    foreignKey: "subsectorId",
-  });
-  SubSectorValue.belongsTo(SubSector, {
-    as: "subsector",
-    foreignKey: "subsectorId",
-  });
-  SubSector.hasMany(SubSectorValue, {
-    as: "subSectorValues",
     foreignKey: "subsectorId",
   });
   User.belongsTo(User, { as: "organization", foreignKey: "organizationId" });
@@ -672,12 +588,10 @@ export function initModels(sequelize: Sequelize) {
     ReportingLevel: ReportingLevel,
     Scope: Scope,
     Sector: Sector,
-    SectorValue: SectorValue,
     SubCategory: SubCategory,
-    SubCategoryValue: SubCategoryValue,
+    InventoryValue: InventoryValue,
     SubSector: SubSector,
     SubSectorReportingLevel: SubSectorReportingLevel,
-    SubSectorValue: SubSectorValue,
     User: User,
     Version: Version,
   };

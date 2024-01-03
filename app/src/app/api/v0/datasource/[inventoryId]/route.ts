@@ -4,9 +4,8 @@ import { City } from "@/models/City";
 import { DataSource } from "@/models/DataSource";
 import { Scope } from "@/models/Scope";
 import { SubCategory } from "@/models/SubCategory";
-import { SubCategoryValue } from "@/models/SubCategoryValue";
+import { InventoryValue } from "@/models/InventoryValue";
 import { SubSector } from "@/models/SubSector";
-import { SubSectorValue } from "@/models/SubSectorValue";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
@@ -33,14 +32,8 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
       include: [
         { model: Scope, as: "scopes" },
         {
-          model: SubSectorValue,
-          as: "subSectorValues",
-          required: false,
-          where: { inventoryId: params.inventoryId },
-        },
-        {
-          model: SubCategoryValue,
-          as: "subCategoryValues",
+          model: InventoryValue,
+          as: "inventoryValues",
           required: false,
           where: { inventoryId: params.inventoryId },
         },

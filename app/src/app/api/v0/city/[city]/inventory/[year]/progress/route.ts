@@ -23,24 +23,21 @@ export const GET = apiHandler(
       where: { cityId: city.cityId, year: params.year },
       include: [
         {
-          model: db.models.SectorValue,
-          as: "sectorValues",
+          model: db.models.InventoryValue,
+          as: "inventoryValues",
           include: [
             {
               model: db.models.Sector,
               as: "sector",
             },
             {
-              model: db.models.SubSectorValue,
-              as: "subSectorValues",
-              include: [
-                { model: db.models.SubSector, as: "subsector" },
-                {
-                  model: db.models.DataSource,
-                  attributes: ["datasourceId", "sourceType"],
-                  as: "dataSource",
-                },
-              ],
+              model: db.models.SubSector,
+              as: "subSector",
+            },
+            {
+              model: db.models.DataSource,
+              attributes: ["datasourceId", "sourceType"],
+              as: "dataSource",
             },
           ],
         },
@@ -73,8 +70,8 @@ export const GET = apiHandler(
 
     // count SubSectorValues grouped by source type and sector
     const sectorProgress = sectors.map((sector: Sector) => {
-      const sectorValue = inventory.sectorValues.find(
-        (sectorVal) => sector.sectorId === sectorVal.sectorId,
+      const sectorValue = inventory.inventoryValues.find(
+        (inventoryVal) => sector.sectorId === inventoryVal.sectorId,
       );
       let sectorCounts = { thirdParty: 0, uploaded: 0 };
       if (sectorValue) {

@@ -122,16 +122,10 @@ describe("Inventory API", () => {
       cityId: city.cityId,
       ...inventoryData,
     });
-    await db.models.SubSectorValue.create({
-      subsectorValueId: randomUUID(),
+    await db.models.InventoryValue.create({
+      id: randomUUID(),
       inventoryId: inventory.inventoryId,
-      subsectorId: subSector.subsectorId,
-      ...subSectorValue,
-    });
-    await db.models.SubCategoryValue.create({
-      subcategoryValueId: randomUUID(),
-      inventoryId: inventory.inventoryId,
-      subcategoryId: subCategory.subcategoryId,
+      subCategoryId: subCategory.subcategoryId,
       ...subCategoryValue,
     });
   });

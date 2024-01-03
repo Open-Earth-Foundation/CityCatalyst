@@ -3,7 +3,7 @@ import {
   type CityAttributes,
   type InventoryAttributes,
   type SubSectorValueAttributes,
-  type SubCategoryValueAttributes,
+  type InventoryValueAttributes,
   PopulationAttributes,
 } from "@/models/init-models";
 import type {
@@ -132,7 +132,7 @@ export const api = createApi({
       invalidatesTags: ["InventoryProgress", "SubSectorValue"],
     }),
     setSubCategoryValue: builder.mutation<
-      SubCategoryValueAttributes,
+      InventoryValueAttributes,
       SubCategoryValueUpdateQuery
     >({
       query: (data) => ({
@@ -140,7 +140,7 @@ export const api = createApi({
         method: "PATCH",
         body: data.data,
       }),
-      transformResponse: (response: { data: SubCategoryValueAttributes }) =>
+      transformResponse: (response: { data: InventoryValueAttributes }) =>
         response.data,
       invalidatesTags: ["SubCategoryValue", "SubSectorValue"],
     }),

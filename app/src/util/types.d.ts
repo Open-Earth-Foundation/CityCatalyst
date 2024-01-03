@@ -3,7 +3,7 @@ import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
 import type { DataSourceAttributes } from "@/models/DataSource";
-import type { SubCategoryValueAttributes } from "@/models/SubCategoryValue";
+import type { InventoryValueAttributes } from "@/models/SubCategoryValue";
 import type { SubSectorValueAttributes } from "@/models/SubSectorValue";
 import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
@@ -41,12 +41,12 @@ type DataSource = DataSourceAttributes & {
   scopes: ScopeAttributes[];
   subSector?: SubSectorAttributes;
   subCategory?: SubCategoryAttributes;
-  subCategoryValues?: SubCategoryValueAttributes[];
+  subCategoryValues?: InventoryValueAttributes[];
   subSectorValues?: SubSectorValueAttributes[];
 };
 type DataSourceResponse = { source: DataSource; data: any }[];
 
-type SubCategoryValueWithSource = SubCategoryValueAttributes & {
+type SubCategoryValueWithSource = InventoryValueAttributes & {
   dataSource: DataSourceAttributes;
 };
 

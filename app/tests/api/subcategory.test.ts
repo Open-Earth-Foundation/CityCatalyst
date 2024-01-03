@@ -13,15 +13,12 @@ import { after, before, beforeEach, describe, it } from "node:test";
 import { mockRequest, setupTests, testUserID } from "../helpers";
 
 import { Inventory } from "@/models/Inventory";
-import { SectorValue } from "@/models/SectorValue";
-import { SubCategoryValue } from "@/models/SubCategoryValue";
-import { SubSectorValue } from "@/models/SubSectorValue";
+import { InventoryValue } from "@/models/InventoryValue";
 import { SubCategory } from "@/models/SubCategory";
-import { Op } from "sequelize";
 import { SubSector } from "@/models/SubSector";
 
 const locode = "XX_SUBCATEGORY_CITY";
-const totalEmissions = 44000;
+const co2eq = BigInt(44000);
 const activityUnits = "UNITS";
 const activityValue = 1000;
 const emissionFactorValue = 12;
@@ -52,11 +49,9 @@ const invalidSubCategoryValue = {
 
 describe("Sub Category API", () => {
   let inventory: Inventory;
-  let subSectorValue: SubSectorValue;
-  let sectorValue: SectorValue;
   let subCategory: SubCategory;
   let subSector: SubSector;
-  let subCategoryValue: SubCategoryValue;
+  let inventoryValue: InventoryValue;
 
   before(async () => {
     setupTests();
@@ -74,10 +69,7 @@ describe("Sub Category API", () => {
       where: { inventoryName },
     });
     if (prevInventory) {
-      await db.models.SubSectorValue.destroy({
-        where: { inventoryId: prevInventory.inventoryId },
-      });
-      await db.models.SectorValue.destroy({
+      await db.models.InventoryValue.destroy({
         where: { inventoryId: prevInventory.inventoryId },
       });
       await db.models.Inventory.destroy({
@@ -97,26 +89,9 @@ describe("Sub Category API", () => {
       cityId: city.cityId,
     });
 
-    sectorValue = await db.models.SectorValue.create({
-      inventoryId: inventory.inventoryId,
-      sectorValueId: randomUUID(),
-      totalEmissions,
-    });
-
     subSector = await db.models.SubSector.create({
       subsectorId: randomUUID(),
       subsectorName,
-    });
-
-    subSectorValue = await db.models.SubSectorValue.create({
-      inventoryId: inventory.inventoryId,
-      subsectorValueId: randomUUID(),
-      subsectorId: subSector.subsectorId,
-      totalEmissions,
-      sectorValueId: sectorValue.sectorValueId,
-      activityUnits,
-      activityValue,
-      emissionFactorValue,
     });
 
     subCategory = await db.models.SubCategory.create({
@@ -127,18 +102,16 @@ describe("Sub Category API", () => {
   });
 
   beforeEach(async () => {
-    await db.models.SubCategoryValue.destroy({
-      where: { subcategoryValueId: inventory.inventoryId },
+    await db.models.InventoryValue.destroy({
+      where: { id: inventory.inventoryId },
     });
-    subCategoryValue = await db.models.SubCategoryValue.create({
+    inventoryValue = await db.models.InventoryValue.create({
       inventoryId: inventory.inventoryId,
-      subcategoryValueId: randomUUID(),
-      subcategoryId: subCategory.subcategoryId,
-      totalEmissions,
-      sectorValueId: sectorValue.sectorValueId,
+      id: randomUUID(),
+      scopeId: subCategory.subcategoryId,
+      co2eq,
       activityUnits,
       activityValue,
-      emissionFactorValue,
     });
   });
 
@@ -147,8 +120,8 @@ describe("Sub Category API", () => {
   });
 
   it("Should create a sub category", async () => {
-    await db.models.SubCategoryValue.destroy({
-      where: { subcategoryValueId: subCategoryValue.subcategoryValueId },
+    await db.models.InventoryValue.destroy({
+      where: { id: inventoryValue.id },
     });
     const req = mockRequest(subcategoryValue1);
     const res = await upsertSubCategory(req, {
@@ -196,7 +169,7 @@ describe("Sub Category API", () => {
     const { data } = await res.json();
 
     assert.equal(res.status, 200);
-    assert.equal(data.totalEmissions, totalEmissions);
+    assert.equal(data.totalEmissions, co2eq);
     assert.equal(data.activityUnits, activityUnits);
     assert.equal(data.activityValue, activityValue);
     assert.equal(data.emissionFactorValue, emissionFactorValue);
@@ -258,7 +231,7 @@ describe("Sub Category API", () => {
     assert.equal(res.status, 200);
     const { data, deleted } = await res.json();
     assert.equal(deleted, true);
-    assert.equal(data.totalEmissions, totalEmissions);
+    assert.equal(data.totalEmissions, co2eq);
     assert.equal(data.activityUnits, activityUnits);
     assert.equal(data.activityValue, activityValue);
     assert.equal(data.emissionFactorValue, emissionFactorValue);

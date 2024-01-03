@@ -1,6 +1,5 @@
 import { db } from "@/models";
-import { SubCategoryValue } from "@/models/SubCategoryValue";
-import { SubSectorValue } from "@/models/SubSectorValue";
+import { InventoryValue } from "@/models/InventoryValue";
 import { apiHandler } from "@/util/api";
 import { createInventoryRequest } from "@/util/validation";
 import createHttpError from "http-errors";
@@ -73,40 +72,30 @@ export const GET = apiHandler(
 );
 
 async function inventoryCSV(inventory: any): Promise<Buffer> {
-  const subSectorValues: SubSectorValue[] =
-    await inventory.getSubSectorValues();
-  const subCategoryValues: SubCategoryValue[] =
-    await inventory.getSubCategoryValues();
+  // TODO better export without UUIDs and merging in data source props, gas values, emission factors
+  const inventoryValues: InventoryValue[] = await inventory.getInventoryValues();
   const headers = [
     "Inventory Reference",
+    "GPC Reference Number",
     "Total Emissions",
     "Activity Units",
     "Activity Value",
     "Emission Factor Value",
     "Datasource ID",
   ].join(",");
-  const subSectorLines = subSectorValues.map((value: SubSectorValue) => {
+  const inventoryLines = inventoryValues.map((value: InventoryValue) => {
     return [
-      value.subsectorId,
-      value.totalEmissions,
+      value.scopeId,
+      value.gpcReferenceNumber,
+      value.co2eq,
       value.activityUnits,
       value.activityValue,
-      value.emissionFactorValue,
-      value.datasourceId,
-    ].join(",");
-  });
-  const subCategoryLines = subCategoryValues.map((value: SubCategoryValue) => {
-    return [
-      value.subcategoryId,
-      value.totalEmissions,
-      value.activityUnits,
-      value.activityValue,
-      value.emissionFactorValue,
-      value.datasourceId,
+      // value.emissionsFactor,
+      value.dataSourceId,
     ].join(",");
   });
   return Buffer.from(
-    [headers, ...subSectorLines, ...subCategoryLines].join("\n"),
+    [headers, ...inventoryLines].join("\n"),
   );
 }
 

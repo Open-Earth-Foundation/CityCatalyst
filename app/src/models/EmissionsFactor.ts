@@ -159,12 +159,12 @@ export class EmissionsFactor
           type: DataTypes.UUID,
           allowNull: false,
           primaryKey: true,
-          field: "emissions_factor_id",
+          field: "id",
         },
         emissionsPerActivity: {
           type: DataTypes.DECIMAL,
           allowNull: true,
-          field: "emissions_factor",
+          field: "emissions_per_activity",
         },
         url: {
           type: DataTypes.STRING(255),

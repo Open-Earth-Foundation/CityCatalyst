@@ -21,6 +21,7 @@ export const GET = apiHandler(
         "defaultCityLocode",
         "defaultInventoryYear",
         "role",
+        "email",
       ],
       where: {
         userId: context.session.user.id,

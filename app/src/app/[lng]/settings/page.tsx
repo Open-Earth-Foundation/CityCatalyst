@@ -133,7 +133,7 @@ export default function Settings({
                   session={session}
                   status={status}
                   t={t}
-                  userInfo={currentUserData}
+                  userInfo={userInfo}
                   cityUsers={cityUsers}
                 />
                 <MyFilesTab

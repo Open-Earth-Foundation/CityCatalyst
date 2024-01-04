@@ -49,21 +49,20 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
     setValue,
   } = useForm<{ password: string }>();
   const { t } = useTranslation(lng, "dashboard");
-  const [requestPasswordConfirm] = api.useRequestConfirmPasswordMutation();
+  const [requestPasswordConfirm] = api.useRequestVerificationMutation();
   const { data: token } = api.useGetRequestTokenQuery({}, { skip: !userData });
   const [removeCity] = api.useRemoveCityMutation();
   const [isPasswordCorrect, setIsPasswordCorrect] = useState<boolean>(true);
 
-  console.log(token);
-
   const onSubmit: SubmitHandler<{ password: string }> = async (data) => {
     await requestPasswordConfirm({
       password: data.password!,
+      token: token.verificationToken,
     }).then(async (res: any) => {
       if (res.data?.comparePassword) {
         await removeCity({
           locode: cityData.locode!,
-        }).then((res) => {
+        }).then((res: any) => {
           onClose();
           setIsPasswordCorrect(true);
         });

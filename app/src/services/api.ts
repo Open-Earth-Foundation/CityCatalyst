@@ -268,6 +268,17 @@ export const api = createApi({
         method: "DELETE",
       }),
     }),
+    // requestToken
+
+    getRequestToken: builder.query({
+      query: () => ({
+        url: "auth/verify",
+        method: "GET",
+      }),
+    }),
+
+    // verifyToken
+
     requestConfirmPassword: builder.mutation<string, { password: string }>({
       query: ({ password }) => ({
         url: `/auth/requestpassword`,
@@ -325,5 +336,6 @@ export const {
   useSetUserDataMutation,
   useRemoveUserMutation,
   useRequestConfirmPasswordMutation,
+  useGetRequestTokenQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

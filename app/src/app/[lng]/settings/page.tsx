@@ -64,7 +64,6 @@ export default function Settings({
     { locode: userInfo?.defaultCityLocode! },
     {
       skip: !userInfo,
-      pollingInterval: 3000,
     },
   );
 

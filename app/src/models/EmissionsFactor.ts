@@ -6,22 +6,27 @@ import type {
   DataSourceEmissionsFactorId,
 } from "./DataSourceEmissionsFactor";
 import type { GasValue, GasValueId } from "./GasValue";
+import { Inventory, InventoryId } from "./Inventory";
 
 export interface EmissionsFactorAttributes {
-  emissionsFactorId: string;
-  emissionsFactor?: number;
-  emissionsFactorUrl?: string;
+  id: string;
+  emissionsPerActivity?: number;
+  url?: string;
+  gas?: string;
   units?: string;
+  inventoryId?: string;
   created?: Date;
   lastUpdated?: Date;
 }
 
-export type EmissionsFactorPk = "emissionsFactorId";
+export type EmissionsFactorPk = "id";
 export type EmissionsFactorId = EmissionsFactor[EmissionsFactorPk];
 export type EmissionsFactorOptionalAttributes =
-  | "emissionsFactor"
-  | "emissionsFactorUrl"
+  | "emissionsPerActivity"
+  | "url"
+  | "gas"
   | "units"
+  | "inventoryId"
   | "created"
   | "lastUpdated";
 export type EmissionsFactorCreationAttributes = Optional<
@@ -33,13 +38,20 @@ export class EmissionsFactor
   extends Model<EmissionsFactorAttributes, EmissionsFactorCreationAttributes>
   implements EmissionsFactorAttributes
 {
-  emissionsFactorId!: string;
-  emissionsFactor?: number;
-  emissionsFactorUrl?: string;
+  id!: string;
+  emissionsPerActivity?: number;
+  url?: string;
+  gas?: string;
   units?: string;
+  inventoryId?: string;
   created?: Date;
   lastUpdated?: Date;
 
+  // EmissionsFactor belongsTo Inventory via inventoryId
+  inventory!: Inventory;
+  getInventory!: Sequelize.BelongsToGetAssociationMixin<Inventory>;
+  setInventory!: Sequelize.BelongsToSetAssociationMixin<Inventory, InventoryId>;
+  createInventory!: Sequelize.BelongsToCreateAssociationMixin<Inventory>;
   // EmissionsFactor belongsToMany DataSource via emissionsFactorId and datasourceId
   datasourceIdDataSourceDataSourceEmissionsFactors!: DataSource[];
   getDatasourceIdDataSourceDataSourceEmissionsFactors!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
@@ -143,25 +155,37 @@ export class EmissionsFactor
   static initModel(sequelize: Sequelize.Sequelize): typeof EmissionsFactor {
     return EmissionsFactor.init(
       {
-        emissionsFactorId: {
+        id: {
           type: DataTypes.UUID,
           allowNull: false,
           primaryKey: true,
           field: "emissions_factor_id",
         },
-        emissionsFactor: {
+        emissionsPerActivity: {
           type: DataTypes.DECIMAL,
           allowNull: true,
           field: "emissions_factor",
         },
-        emissionsFactorUrl: {
+        url: {
           type: DataTypes.STRING(255),
           allowNull: true,
-          field: "emissions_factor_url",
+        },
+        gas: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
         },
         units: {
           type: DataTypes.STRING(255),
           allowNull: true,
+        },
+        inventoryId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: "Inventory",
+            key: "inventory_id",
+          },
+          field: "inventory_id",
         },
       },
       {

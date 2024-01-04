@@ -591,6 +591,14 @@ export function initModels(sequelize: Sequelize) {
     as: "gasValues",
     foreignKey: "emissionsFactorId",
   });
+  Inventory.hasMany(EmissionsFactor, {
+    as: "emissionsFactors",
+    foreignKey: "inventoryId",
+  });
+  EmissionsFactor.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
 
   return {
     ActivityData: ActivityData,

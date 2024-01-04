@@ -68,5 +68,5 @@ export const POST = apiHandler(async (req: Request) => {
     user.passwordHash!,
   );
 
-  return NextResponse.json({ user, verificationTokenData, comparePassword });
+  return NextResponse.json({ comparePassword });
 });

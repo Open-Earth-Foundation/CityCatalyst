@@ -93,12 +93,6 @@ module.exports = {
       );
       await queryInterface.addColumn(
         "EmissionsFactor",
-        "gas",
-        Sequelize.STRING(255),
-        { transaction },
-      );
-      await queryInterface.addColumn(
-        "EmissionsFactor",
         "inventory_id",
         Sequelize.UUID,
         { transaction },
@@ -106,6 +100,7 @@ module.exports = {
       await queryInterface.addConstraint("EmissionsFactor", {
         type: "foreign key",
         name: "FK_EmissionsFactor_inventory_id",
+        fields: ["inventory_id"],
         references: {
           table: "Inventory",
           field: "inventory_id",
@@ -168,7 +163,7 @@ module.exports = {
 
   async down(queryInterface, Sequelize) {
     return queryInterface.sequelize.transaction(async (transaction) => {
-      throw "Not implemented";
+      throw new Error("Not implemented");
     });
   },
 };

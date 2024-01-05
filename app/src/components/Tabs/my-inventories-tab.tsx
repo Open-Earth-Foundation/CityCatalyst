@@ -2,14 +2,8 @@
 
 import {
   Avatar,
-  Badge,
   Box,
-  Button,
-  Checkbox,
   IconButton,
-  Input,
-  InputGroup,
-  InputLeftElement,
   List,
   ListItem,
   Popover,
@@ -18,7 +12,6 @@ import {
   PopoverContent,
   PopoverTrigger,
   Progress,
-  Select,
   Tab,
   TabList,
   TabPanel,
@@ -34,48 +27,30 @@ import {
   Tr,
   useDisclosure,
 } from "@chakra-ui/react";
-import React, { FC, useEffect, useMemo, useState } from "react";
-import FormInput from "../form-input";
-import FormSelectInput from "../form-select-input";
+import React, { FC, useEffect, useState } from "react";
+
 import {
-  AddIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  SearchIcon,
-} from "@chakra-ui/icons";
-import {
-  MdFolder,
   MdMoreVert,
   MdOutlineFileDownload,
   MdOutlineFolder,
-  MdOutlineIndeterminateCheckBox,
-  MdOutlineModeEditOutline,
 } from "react-icons/md";
 import { FiTrash2 } from "react-icons/fi";
-import { FaFileCsv } from "react-icons/fa";
-import NextLink from "next/link";
-import {
-  CityData,
-  ProfileInputs,
-  UserDetails,
-} from "@/app/[lng]/settings/page";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { Session } from "next-auth";
-import AddUserModal from "@/components/Modals/add-user-modal";
-import UpdateUserModal from "@/components/Modals/update-user-modal";
-import DeleteUserModal from "@/components/Modals/delete-user-modal";
-import DeleteFileModal from "@/components/Modals/delete-file-modal";
 
-import DeleteCityModal from "@/components/Modals/delete-city-modal";
+import { CityData } from "@/app/[lng]/settings/page";
+
+import { Session } from "next-auth";
+
 import { TFunction } from "i18next";
 import DeleteInventoryModal from "../Modals/delete-inventory-modal";
 import { UserAttributes } from "@/models/User";
+import { CityAttributes } from "@/models/City";
 
 interface MyInventoriesTabProps {
   session: Session | null;
   status: "loading" | "authenticated" | "unauthenticated";
   t: TFunction;
   lng: string;
+  cities: CityAttributes[] | any;
 }
 
 const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
@@ -83,6 +58,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
   status,
   t,
   lng,
+  // cities,
 }) => {
   const [cities, setCities] = useState<Array<any>>([]);
   const [tabIndex, setTabIndex] = useState(0);

@@ -109,8 +109,6 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
   const [setCurrentUserData] = useSetCurrentUserDataMutation();
   const toast = useToast();
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
-    // TODO
-    // Submit data via the api
     await setCurrentUserData({
       locode: userInfo.defaultCityLocode,
       userId: userInfo.userId,

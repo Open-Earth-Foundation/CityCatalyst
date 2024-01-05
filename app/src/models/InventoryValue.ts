@@ -3,6 +3,8 @@ import { DataTypes, Model, Optional } from "sequelize";
 import type { Inventory, InventoryId } from "./Inventory";
 import type { SubCategory, SubCategoryId } from "./SubCategory";
 import type { DataSource, DataSourceId } from "./DataSource";
+import { Sector, SectorId } from "./Sector";
+import { SubSector, SubSectorId } from "./SubSector";
 
 export interface InventoryValueAttributes {
   id: string;
@@ -63,6 +65,22 @@ export class InventoryValue
   getInventory!: Sequelize.BelongsToGetAssociationMixin<Inventory>;
   setInventory!: Sequelize.BelongsToSetAssociationMixin<Inventory, InventoryId>;
   createInventory!: Sequelize.BelongsToCreateAssociationMixin<Inventory>;
+  // InventoryValue belongsTo SubCategory via subcategoryId
+  sector!: Sector;
+  getSector!: Sequelize.BelongsToGetAssociationMixin<Sector>;
+  setSector!: Sequelize.BelongsToSetAssociationMixin<
+    Sector,
+    SectorId
+  >;
+  createSector!: Sequelize.BelongsToCreateAssociationMixin<Sector>;
+  // InventoryValue belongsTo SubCategory via subcategoryId
+  subSector!: SubSector;
+  getSubSector!: Sequelize.BelongsToGetAssociationMixin<SubSector>;
+  setSubSector!: Sequelize.BelongsToSetAssociationMixin<
+    SubSector,
+    SubSectorId
+  >;
+  createSubSector!: Sequelize.BelongsToCreateAssociationMixin<SubSector>;
   // InventoryValue belongsTo SubCategory via subcategoryId
   subcategory!: SubCategory;
   getSubcategory!: Sequelize.BelongsToGetAssociationMixin<SubCategory>;

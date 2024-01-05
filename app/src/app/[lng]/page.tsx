@@ -98,14 +98,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
       { skip: !locode || !year },
     );
 
-  console.log(inventory);
-
   const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
     api.useGetInventoryProgressQuery(
       { locode: locode!, year: year! },
       { skip: !locode || !year },
     );
-  console.log(inventoryProgress);
 
   const { data: city } = api.useGetCityQuery(locode!, { skip: !locode });
 

@@ -69,8 +69,6 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
   const { data: inventories, isLoading: isInventoriesLoading } =
     api.useGetInventoriesQuery({ locode }, { skip: !locode });
 
-  console.log(inventories);
-
   const {
     isOpen: isInventoryDeleteModalOpen,
     onOpen: onInventoryDeleteModalOpen,
@@ -242,6 +240,8 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                                   </Td>
 
                                   <Td>
+                                    {/* TODO */}
+                                    {/* generate status from progress API */}
                                     <Progress
                                       value={0}
                                       borderRadius="8px"
@@ -323,7 +323,6 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                                                 color: "white",
                                               }}
                                               onClick={() => {
-                                                // setCityData(city);
                                                 onInventoryDeleteModalOpen();
                                               }}
                                             >

@@ -64,7 +64,6 @@ export default function Settings({
     },
   );
 
-  // console.log(session, userInfo, currentUserData);
   const { data: cityUsers } = api.useGetCityUsersQuery(
     { locode: userInfo?.defaultCityLocode! },
     {

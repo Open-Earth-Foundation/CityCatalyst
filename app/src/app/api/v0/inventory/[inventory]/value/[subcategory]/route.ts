@@ -76,7 +76,7 @@ export const DELETE = apiHandler(async (_req: NextRequest, { params }) => {
     where: { subCategoryId: params.subcategory, inventoryId: params.inventory },
   });
   if (!subcategoryValue) {
-    throw new createHttpError.NotFound("Sub category value not found");
+    throw new createHttpError.NotFound("Inventory value not found");
   }
 
   await subcategoryValue.destroy();

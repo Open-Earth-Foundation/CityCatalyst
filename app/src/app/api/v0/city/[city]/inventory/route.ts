@@ -39,3 +39,27 @@ export const POST = apiHandler(
     return NextResponse.json({ data: inventory });
   },
 );
+
+export const GET = apiHandler(
+  async (
+    req: NextRequest,
+    context: { session?: Session; params: Record<string, string> },
+  ) => {
+    const { params, session } = context;
+    if (!session) throw new createHttpError.Unauthorized("Unauthorized");
+    const city = await db.models.City.findOne({
+      where: {
+        locode: params.city,
+      },
+    });
+    const inventory = await db.models.Inventory.findAll({
+      where: { cityId: city?.cityId },
+    });
+
+    if (!inventory) {
+      throw new createHttpError.BadRequest("Something went wrong!");
+    }
+
+    return NextResponse.json({ data: inventory });
+  },
+);

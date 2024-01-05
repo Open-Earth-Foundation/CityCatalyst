@@ -11,6 +11,19 @@ async function removeColumns(
   }
 }
 
+async function renameColumns(
+  tableName,
+  columnMapping,
+  queryInterface,
+  transaction,
+) {
+  for (const [oldName, newName] of Object.entries(columnMapping)) {
+    await queryInterface.renameColumn(tableName, oldName, newName, {
+      transaction,
+    });
+  }
+}
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -19,23 +32,15 @@ module.exports = {
       await queryInterface.renameTable("SubCategoryValue", "InventoryValue", {
         transaction,
       });
-      await queryInterface.renameColumn(
+      await renameColumns(
         "InventoryValue",
-        "subcategory_value_id",
-        "id",
-        { transaction },
-      );
-      await queryInterface.renameColumn(
-        "InventoryValue",
-        "datasource_id",
-        "data_source_id",
-        { transaction },
-      );
-      await queryInterface.renameColumn(
-        "InventoryValue",
-        "total_emissions",
-        "co2eq",
-        { transaction },
+        {
+          subcategory_value_id: "id",
+          datasource_id: "data_source_id",
+          total_emissions: "co2eq",
+        },
+        queryInterface,
+        transaction,
       );
       await queryInterface.changeColumn(
         "InventoryValue",
@@ -73,23 +78,15 @@ module.exports = {
       await queryInterface.dropTable("SectorValue", { transaction });
 
       /// EmissionsFactor ///
-      await queryInterface.renameColumn(
+      await renameColumns(
         "EmissionsFactor",
-        "emissions_factor_id",
-        "id",
-        { transaction },
-      );
-      await queryInterface.renameColumn(
-        "EmissionsFactor",
-        "emissions_factor",
-        "emissions_per_activity",
-        { transaction },
-      );
-      await queryInterface.renameColumn(
-        "EmissionsFactor",
-        "emissions_factor_url",
-        "url",
-        { transaction },
+        {
+          emissions_factor_id: "id",
+          emissions_factor: "emissions_per_activity",
+          emissions_factor_url: "url",
+        },
+        queryInterface,
+        transaction,
       );
       await queryInterface.addColumn(
         "EmissionsFactor",
@@ -163,6 +160,8 @@ module.exports = {
 
   async down(queryInterface, Sequelize) {
     return queryInterface.sequelize.transaction(async (transaction) => {
+      await queryInterface.dropTable("GasValue");
+      await queryInterface.dropTable("GasValue");
       throw new Error("Not implemented");
     });
   },

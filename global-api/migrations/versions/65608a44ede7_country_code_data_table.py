@@ -32,7 +32,7 @@ def upgrade() -> None:
         sa.Column("activity_units", sa.String, nullable=True),
         sa.Column("gas_name", sa.String, nullable=False),
         sa.Column("emissions_value", sa.String, nullable=False),
-        sa.Column("emissions_qunits", sa.Float, nullable=False),
+        sa.Column("emissions_units", sa.Float, nullable=False),
         sa.Column(
             "created_date", sa.DateTime(), server_default=text("CURRENT_TIMESTAMP")
         ),

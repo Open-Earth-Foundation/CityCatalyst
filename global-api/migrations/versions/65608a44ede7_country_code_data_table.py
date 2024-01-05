@@ -11,8 +11,8 @@ import sqlalchemy as sa
 from sqlalchemy.sql import text
 
 # revision identifiers, used by Alembic.
-revision: str = '65608a44ede7'
-down_revision: Union[str, None] = 'cc8d00d4372e'
+revision: str = "65608a44ede7"
+down_revision: Union[str, None] = "cc8d00d4372e"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -23,7 +23,7 @@ def upgrade() -> None:
         sa.Column("id", sa.dialects.postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column("source_name", sa.String, nullable=False),
         sa.Column("GPC_refno", sa.String, nullable=False),
-        sa.Column("country_name", sa.String, nullable=False),        
+        sa.Column("country_name", sa.String, nullable=False),
         sa.Column("country_code", sa.String, nullable=False),
         sa.Column("temporal_granularity", sa.String, nullable=False),
         sa.Column("year", sa.Float, nullable=False),

@@ -76,12 +76,12 @@ export const GET = apiHandler(
       let sectorCounts = { thirdParty: 0, uploaded: 0 };
       if (inventoryValues) {
         sectorCounts = inventoryValues.reduce(
-          (acc, subSectorValue) => {
-            if (!subSectorValue.dataSource) {
+          (acc, inventoryValue) => {
+            if (!inventoryValue.dataSource) {
               return acc;
             }
 
-            const sourceType = subSectorValue.dataSource.sourceType;
+            const sourceType = inventoryValue.dataSource.sourceType;
             if (sourceType === "user") {
               acc.uploaded++;
             } else if (sourceType === "third_party") {
@@ -89,10 +89,10 @@ export const GET = apiHandler(
             } else {
               console.error(
                 "Invalid value for SubSectorValue.dataSource.sourceType of subsector",
-                subSectorValue.subSector.subsectorName,
+                inventoryValue.subSector.subsectorName,
                 "in its data source",
-                subSectorValue.dataSource.datasourceId + ":",
-                subSectorValue.dataSource.sourceType,
+                inventoryValue.dataSource.datasourceId + ":",
+                inventoryValue.dataSource.sourceType,
               );
             }
             return acc;
@@ -106,9 +106,9 @@ export const GET = apiHandler(
         let completed = false;
         if (inventoryValues) {
           completed =
-            inventoryValues.subSectorValues.find(
-              (subSectorValue) =>
-                subSectorValue.subsectorId === subSector.subsectorId,
+            inventoryValues.find(
+              (inventoryValue) =>
+                inventoryValue.subSectorId === subSector.subsectorId,
             ) != null;
         }
         return { completed, ...subSector.dataValues };

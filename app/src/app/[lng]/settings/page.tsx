@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "@/i18n/client";
 import { NavigationBar } from "@/components/navigation-bar";
 import { Box, Tab, TabList, TabPanels, Tabs, Text } from "@chakra-ui/react";
@@ -63,8 +63,6 @@ export default function Settings({
       skip: !userInfo,
     },
   );
-
-  console.log(cities);
 
   // console.log(session, userInfo, currentUserData);
   const { data: cityUsers } = api.useGetCityUsersQuery(
@@ -155,6 +153,7 @@ export default function Settings({
                   session={session}
                   status={status}
                   cities={cities}
+                  userInfo={currentUserData!}
                   t={t}
                 />
               </TabPanels>

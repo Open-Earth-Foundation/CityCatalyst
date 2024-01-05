@@ -299,6 +299,13 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: any }) => response.data,
     }),
+    getInventories: builder.query<InventoryAttributes[], { locode: string }>({
+      query: ({ locode }) => ({
+        url: `/city/${locode}/inventory`,
+        method: "GET",
+      }),
+      transformResponse: (response: { data: any }) => response.data,
+    }),
   }),
 });
 
@@ -344,5 +351,6 @@ export const {
   useRequestVerificationMutation,
   useGetVerifcationTokenQuery,
   useGetCitiesQuery,
+  useGetInventoriesQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

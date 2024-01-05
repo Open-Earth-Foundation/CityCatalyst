@@ -44,6 +44,8 @@ import { TFunction } from "i18next";
 import DeleteInventoryModal from "../Modals/delete-inventory-modal";
 import { UserAttributes } from "@/models/User";
 import { CityAttributes } from "@/models/City";
+import { api } from "@/services/api";
+import { InventoryAttributes } from "@/models/Inventory";
 
 interface MyInventoriesTabProps {
   session: Session | null;
@@ -51,6 +53,7 @@ interface MyInventoriesTabProps {
   t: TFunction;
   lng: string;
   cities: CityAttributes[] | any;
+  userInfo: UserAttributes | any;
 }
 
 const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
@@ -58,92 +61,15 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
   status,
   t,
   lng,
-  // cities,
+  cities,
+  userInfo,
 }) => {
-  const [cities, setCities] = useState<Array<any>>([]);
   const [tabIndex, setTabIndex] = useState(0);
+  const [locode, setLocode] = useState<string>(userInfo?.defaultCityLocode);
+  const { data: inventories, isLoading: isInventoriesLoading } =
+    api.useGetInventoriesQuery({ locode }, { skip: !locode });
 
-  useEffect(() => {
-    const data = [
-      {
-        id: "1",
-        name: "Test City 1",
-        state: "Test Region",
-        country: "Argentina",
-        inventory: [
-          {
-            year: 2020,
-            progress: "60",
-            files: [
-              {
-                id: "1",
-                fileName: "your_nov_2020_data_file.csv",
-                sector: "Stationary Energy",
-                status: "pending",
-
-                lastUpdated: "22 November, 2022",
-              },
-              {
-                id: "2",
-                fileName: "your_dec_2020_data_file.csv",
-                sector: "Transportion",
-                status: "added to inventory",
-
-                lastUpdated: "1 December, 2022",
-              },
-            ],
-          },
-          {
-            year: 2021,
-            progress: "30",
-            files: [
-              {
-                id: "1",
-                fileName: "20_data_file.csv",
-                sector: "Stationay Energy",
-                status: "pending",
-                progress: "70",
-                lastUpdated: "22 November, 2022",
-              },
-              {
-                id: "2",
-                fileName: "20_data_file.csv",
-                sector: "Stationary Energy",
-                status: "pending",
-                progress: "70",
-                lastUpdated: "22 November, 2022",
-              },
-            ],
-          },
-          {
-            year: 2022,
-            progress: "90",
-            files: [
-              {
-                id: "1",
-                fileName: "21_data_file.csv",
-                status: "pending",
-                lastUpdated: "22 November, 2021",
-              },
-              {
-                id: "2",
-                fileName: "21_data_file.csv",
-                status: "pending",
-                lastUpdated: "22 November, 2021",
-              },
-            ],
-          },
-        ],
-        lastUpdated: "2023-10-10T12:05:41.340Z",
-      },
-    ];
-    setCities(data);
-  }, []);
-
-  const years = cities
-    .flatMap((city) => city.inventory.map((item: any) => item.year))
-    .filter((year, index, self) => self.indexOf(year) === index)
-    .sort();
+  console.log(inventories);
 
   const {
     isOpen: isInventoryDeleteModalOpen,
@@ -158,13 +84,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
     role: "",
   });
 
-  const [cityData, setCityData] = useState<CityData>({
-    id: "",
-    name: "",
-    state: "",
-    country: "",
-    lastUpdated: "",
-  });
+  const [cityData, setCityData] = useState<string>("");
 
   return (
     <>
@@ -214,12 +134,10 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
               onChange={(index) => setTabIndex(index)}
             >
               <TabList display="flex" flexDirection="column" gap="12px">
-                {cities.map(({ name, id, country, lastUpdated, state }) => (
+                {cities?.map((city: CityAttributes) => (
                   <Tab
-                    onClick={() =>
-                      setCityData({ name, country, id, lastUpdated, state })
-                    }
-                    key={id}
+                    key={city.cityId}
+                    onClick={() => setLocode(city?.locode!)}
                     sx={{
                       w: "223px",
                       justifyContent: "left",
@@ -242,15 +160,16 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                       borderColor: "content.link",
                     }}
                   >
-                    {name}
+                    {city.name}
                   </Tab>
                 ))}
               </TabList>
 
               <TabPanels backgroundColor="background.default">
-                {cities.map((city) => (
+                {cities?.map((city: CityAttributes) => (
                   <TabPanel
-                    key={city.id}
+                    onClick={() => setCityData(city.cityId)}
+                    key={city.cityId}
                     display="flex"
                     flexDirection="column"
                     gap="24px"
@@ -271,7 +190,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                           fontFamily="body"
                           fontStyle="normal"
                         >
-                          {cityData.name}
+                          {city.name}
                         </Text>
                       </Box>
                     </Box>
@@ -310,131 +229,124 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                             color="content.primary"
                             fontSize="body.md"
                           >
-                            {years.map((year) => (
-                              <Tr key={year}>
-                                <Td>
-                                  <Box color="content.tertiary">
-                                    <MdOutlineFolder size={24} />
-                                  </Box>
-                                </Td>
-                                <Td>
-                                  <Text>{year}</Text>
-                                </Td>
-                                {cities.map((city) => {
-                                  const inventory = city.inventory.find(
-                                    (item: any) => item.year === year,
-                                  );
+                            {inventories?.map(
+                              (inventory: InventoryAttributes) => (
+                                <Tr key={inventory.inventoryId}>
+                                  <Td>
+                                    <Box color="content.tertiary">
+                                      <MdOutlineFolder size={24} />
+                                    </Box>
+                                  </Td>
+                                  <Td>
+                                    <Text>{inventory.year}</Text>
+                                  </Td>
 
-                                  if (inventory && inventory.progress) {
-                                    return (
-                                      <Td key={city.id}>
-                                        <Progress
-                                          value={inventory.progress}
-                                          borderRadius="8px"
-                                          colorScheme="baseStyle"
-                                          height="8px"
-                                          width="137px"
-                                        />
-                                      </Td>
-                                    );
-                                  }
-                                })}
-                                <Td isNumeric>21 Sept, 2023</Td>
-                                <Td isNumeric>
-                                  <Popover isLazy>
-                                    <PopoverTrigger>
-                                      <IconButton
-                                        aria-label="action-button"
-                                        variant="ghost"
-                                        color="interactive.control"
-                                        height="36px"
-                                        width="36px"
-                                        icon={<MdMoreVert size={24} />}
-                                      ></IconButton>
-                                    </PopoverTrigger>
-                                    <PopoverContent
-                                      h="128px"
-                                      w="260px"
+                                  <Td>
+                                    <Progress
+                                      value={0}
                                       borderRadius="8px"
-                                      shadow="2dp"
-                                      borderWidth="1px"
-                                      borderStyle="solid"
-                                      borderColor="border.neutral"
-                                      padding="10px"
-                                      px="0"
-                                    >
-                                      <PopoverArrow />
-                                      <PopoverBody padding="0">
-                                        <List padding="0">
-                                          <ListItem
-                                            className="group "
-                                            display="flex"
-                                            cursor="pointer"
-                                            gap="16px"
-                                            color="content.tertiary"
-                                            alignItems="center"
-                                            px="16px"
-                                            paddingTop="12px"
-                                            paddingBottom="12px"
-                                            _hover={{
-                                              background: "content.link",
-                                              color: "white",
-                                            }}
-                                            onClick={() => {
-                                              alert(city.id);
-                                            }}
-                                          >
-                                            <MdOutlineFileDownload size={24} />
+                                      colorScheme="baseStyle"
+                                      height="8px"
+                                      width="137px"
+                                    />
+                                  </Td>
 
-                                            <Text
-                                              color="content.secondary"
-                                              fontFamily="heading"
-                                              letterSpacing="wide"
-                                              fontWeight="normal"
-                                              fontSize="body.lg"
-                                              className="group group-hover:text-white"
+                                  <Td isNumeric>21 Sept, 2023</Td>
+                                  <Td isNumeric>
+                                    <Popover isLazy>
+                                      <PopoverTrigger>
+                                        <IconButton
+                                          aria-label="action-button"
+                                          variant="ghost"
+                                          color="interactive.control"
+                                          height="36px"
+                                          width="36px"
+                                          icon={<MdMoreVert size={24} />}
+                                        ></IconButton>
+                                      </PopoverTrigger>
+                                      <PopoverContent
+                                        h="128px"
+                                        w="260px"
+                                        borderRadius="8px"
+                                        shadow="2dp"
+                                        borderWidth="1px"
+                                        borderStyle="solid"
+                                        borderColor="border.neutral"
+                                        padding="10px"
+                                        px="0"
+                                      >
+                                        <PopoverArrow />
+                                        <PopoverBody padding="0">
+                                          <List padding="0">
+                                            <ListItem
+                                              className="group "
+                                              display="flex"
+                                              cursor="pointer"
+                                              gap="16px"
+                                              color="content.tertiary"
+                                              alignItems="center"
+                                              px="16px"
+                                              paddingTop="12px"
+                                              paddingBottom="12px"
+                                              _hover={{
+                                                background: "content.link",
+                                                color: "white",
+                                              }}
                                             >
-                                              {t("download-csv")}
-                                            </Text>
-                                          </ListItem>
-                                          <ListItem
-                                            display="flex"
-                                            cursor="pointer"
-                                            gap="16px"
-                                            className="group "
-                                            color="sentiment.negativeDefault"
-                                            alignItems="center"
-                                            px="16px"
-                                            paddingTop="12px"
-                                            paddingBottom="12px"
-                                            _hover={{
-                                              background: "content.link",
-                                              color: "white",
-                                            }}
-                                            onClick={() => {
-                                              setCityData(city);
-                                              onInventoryDeleteModalOpen();
-                                            }}
-                                          >
-                                            <FiTrash2 size={24} />
-                                            <Text
-                                              color="content.secondary"
-                                              fontFamily="heading"
-                                              letterSpacing="wide"
-                                              fontWeight="normal"
-                                              fontSize="body.lg"
-                                              className="group group-hover:text-white"
+                                              <MdOutlineFileDownload
+                                                size={24}
+                                              />
+
+                                              <Text
+                                                color="content.secondary"
+                                                fontFamily="heading"
+                                                letterSpacing="wide"
+                                                fontWeight="normal"
+                                                fontSize="body.lg"
+                                                className="group group-hover:text-white"
+                                              >
+                                                {t("download-csv")}
+                                              </Text>
+                                            </ListItem>
+                                            <ListItem
+                                              display="flex"
+                                              cursor="pointer"
+                                              gap="16px"
+                                              className="group "
+                                              color="sentiment.negativeDefault"
+                                              alignItems="center"
+                                              px="16px"
+                                              paddingTop="12px"
+                                              paddingBottom="12px"
+                                              _hover={{
+                                                background: "content.link",
+                                                color: "white",
+                                              }}
+                                              onClick={() => {
+                                                // setCityData(city);
+                                                onInventoryDeleteModalOpen();
+                                              }}
                                             >
-                                              {t("delete-inventory")}
-                                            </Text>
-                                          </ListItem>
-                                        </List>
-                                      </PopoverBody>
-                                    </PopoverContent>
-                                  </Popover>
-                                </Td>
-                              </Tr>
-                            ))}
+                                              <FiTrash2 size={24} />
+                                              <Text
+                                                color="content.secondary"
+                                                fontFamily="heading"
+                                                letterSpacing="wide"
+                                                fontWeight="normal"
+                                                fontSize="body.lg"
+                                                className="group group-hover:text-white"
+                                              >
+                                                {t("delete-inventory")}
+                                              </Text>
+                                            </ListItem>
+                                          </List>
+                                        </PopoverBody>
+                                      </PopoverContent>
+                                    </Popover>
+                                  </Td>
+                                </Tr>
+                              ),
+                            )}
                           </Tbody>
                         </Table>
                       </TableContainer>

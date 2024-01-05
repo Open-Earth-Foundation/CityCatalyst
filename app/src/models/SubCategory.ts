@@ -128,39 +128,39 @@ export class SubCategory
     DataSourceId
   >;
   countDataSources!: Sequelize.HasManyCountAssociationsMixin;
-  // SubCategory hasMany SubCategoryValue via subcategoryId
-  subCategoryValues!: InventoryValue[];
-  getSubCategoryValues!: Sequelize.HasManyGetAssociationsMixin<InventoryValue>;
-  setSubCategoryValues!: Sequelize.HasManySetAssociationsMixin<
+  // SubCategory hasMany InventoryValue via subcategoryId
+  inventoryValues!: InventoryValue[];
+  getInventoryValues!: Sequelize.HasManyGetAssociationsMixin<InventoryValue>;
+  setInventoryValues!: Sequelize.HasManySetAssociationsMixin<
     InventoryValue,
     InventoryValueId
   >;
-  addSubCategoryValue!: Sequelize.HasManyAddAssociationMixin<
+  addInventoryValue!: Sequelize.HasManyAddAssociationMixin<
     InventoryValue,
     InventoryValueId
   >;
-  addSubCategoryValues!: Sequelize.HasManyAddAssociationsMixin<
+  addInventoryValues!: Sequelize.HasManyAddAssociationsMixin<
     InventoryValue,
     InventoryValueId
   >;
-  createSubCategoryValue!: Sequelize.HasManyCreateAssociationMixin<InventoryValue>;
-  removeSubCategoryValue!: Sequelize.HasManyRemoveAssociationMixin<
+  createInventoryValue!: Sequelize.HasManyCreateAssociationMixin<InventoryValue>;
+  removeInventoryValue!: Sequelize.HasManyRemoveAssociationMixin<
     InventoryValue,
     InventoryValueId
   >;
-  removeSubCategoryValues!: Sequelize.HasManyRemoveAssociationsMixin<
+  removeInventoryValues!: Sequelize.HasManyRemoveAssociationsMixin<
     InventoryValue,
     InventoryValueId
   >;
-  hasSubCategoryValue!: Sequelize.HasManyHasAssociationMixin<
+  hasInventoryValue!: Sequelize.HasManyHasAssociationMixin<
     InventoryValue,
     InventoryValueId
   >;
-  hasSubCategoryValues!: Sequelize.HasManyHasAssociationsMixin<
+  hasInventoryValues!: Sequelize.HasManyHasAssociationsMixin<
     InventoryValue,
     InventoryValueId
   >;
-  countSubCategoryValues!: Sequelize.HasManyCountAssociationsMixin;
+  countInventoryValues!: Sequelize.HasManyCountAssociationsMixin;
   // SubCategory belongsTo SubSector via subsectorId
   subsector!: SubSector;
   getSubsector!: Sequelize.BelongsToGetAssociationMixin<SubSector>;

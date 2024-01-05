@@ -459,7 +459,7 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "datasourceId",
   });
   DataSource.hasMany(InventoryValue, {
-    as: "subCategoryValues",
+    as: "inventoryValues",
     foreignKey: "datasourceId",
   });
   DataSourceEmissionsFactor.belongsTo(EmissionsFactor, {
@@ -477,7 +477,7 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "inventoryId",
   });
   Inventory.hasMany(InventoryValue, {
-    as: "subCategoryValues",
+    as: "inventoryValues",
     foreignKey: "inventoryId",
   });
   Version.belongsTo(Inventory, { as: "inventory", foreignKey: "inventoryId" });
@@ -554,7 +554,7 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "subcategoryId",
   });
   SubCategory.hasMany(InventoryValue, {
-    as: "subCategoryValues",
+    as: "inventoryValues",
     foreignKey: "subcategoryId",
   });
   SubCategory.belongsTo(SubSector, {

@@ -703,35 +703,35 @@ export class DataSource
   getPublisher!: Sequelize.BelongsToGetAssociationMixin<Publisher>;
   setPublisher!: Sequelize.BelongsToSetAssociationMixin<Publisher, PublisherId>;
   createPublisher!: Sequelize.BelongsToCreateAssociationMixin<Publisher>;
-  // DataSource hasMany SubCategoryValue via datasourceId
-  SubCategoryValues!: InventoryValue[];
-  getSubCategoryValues!: Sequelize.HasManyGetAssociationsMixin<InventoryValue>;
-  setSubCategoryValues!: Sequelize.HasManySetAssociationsMixin<
+  // DataSource hasMany InventoryValue via datasourceId
+  inventoryValues!: InventoryValue[];
+  getInventoryValues!: Sequelize.HasManyGetAssociationsMixin<InventoryValue>;
+  setInventoryValues!: Sequelize.HasManySetAssociationsMixin<
     InventoryValue,
     InventoryValueId
   >;
-  addSubCategoryValue!: Sequelize.HasManyAddAssociationMixin<
+  addInventoryValue!: Sequelize.HasManyAddAssociationMixin<
     InventoryValue,
     InventoryValueId
   >;
-  addSubCategoryValues!: Sequelize.HasManyAddAssociationsMixin<
+  addInventoryValues!: Sequelize.HasManyAddAssociationsMixin<
     InventoryValue,
     InventoryValueId
   >;
-  createSubCategoryValue!: Sequelize.HasManyCreateAssociationMixin<InventoryValue>;
-  removeSubCategoryValue!: Sequelize.HasManyRemoveAssociationMixin<
+  createInventoryValue!: Sequelize.HasManyCreateAssociationMixin<InventoryValue>;
+  removeInventoryValue!: Sequelize.HasManyRemoveAssociationMixin<
     InventoryValue,
     InventoryValueId
   >;
-  removeSubCategoryValues!: Sequelize.HasManyRemoveAssociationsMixin<
+  removeInventoryValues!: Sequelize.HasManyRemoveAssociationsMixin<
     InventoryValue,
     InventoryValueId
   >;
-  hasSubCategoryValue!: Sequelize.HasManyHasAssociationMixin<
+  hasInventoryValue!: Sequelize.HasManyHasAssociationMixin<
     InventoryValue,
     InventoryValueId
   >;
-  hasSubCategoryValues!: Sequelize.HasManyHasAssociationsMixin<
+  hasInventoryValues!: Sequelize.HasManyHasAssociationsMixin<
     InventoryValue,
     InventoryValueId
   >;

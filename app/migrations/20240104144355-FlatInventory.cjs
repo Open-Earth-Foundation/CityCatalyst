@@ -158,11 +158,118 @@ module.exports = {
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     return queryInterface.sequelize.transaction(async (transaction) => {
-      await queryInterface.dropTable("GasValue");
-      await queryInterface.dropTable("GasValue");
-      throw new Error("Not implemented");
+      /// GasValue, GasToCO2Eq ///
+      await queryInterface.dropTable("GasValue", { transaction });
+      await queryInterface.dropTable("GasToCO2Eq", { transaction });
+
+      /// EmissionsFactor ///
+      await queryInterface.removeConstraint(
+        "EmissionsFactor",
+        "FK_EmissionsFactor_inventory_id",
+        { transaction },
+      );
+      await queryInterface.removeColumn("EmissionsFactor", "inventory_id", {
+        transaction,
+      });
+
+      await renameColumns(
+        "EmissionsFactor",
+        {
+          id: "emissions_factor_id",
+          emissions_per_activity: "emissions_factor",
+          url: "emissions_factor_url",
+        },
+        queryInterface,
+        transaction,
+      );
+
+      /// SectorValue ///
+      await queryInterface.sequelize.query(
+        `CREATE TABLE "SectorValue" (
+          sector_value_id uuid PRIMARY KEY NOT NULL,
+          total_emissions numeric,
+          sector_id uuid,
+          inventory_id uuid,
+          created timestamp without time zone,
+          last_updated timestamp without time zone
+        );`,
+        { transaction },
+      );
+      await queryInterface.sequelize.query(
+        `ALTER TABLE ONLY "SectorValue"
+          ADD CONSTRAINT "FK_SectorValue.inventory_id" FOREIGN KEY (inventory_id) REFERENCES "Inventory"(inventory_id) ON UPDATE SET NULL ON DELETE SET NULL,
+          ADD CONSTRAINT "FK_SectorValue.sector_id" FOREIGN KEY (sector_id) REFERENCES "Sector"(sector_id) ON UPDATE SET NULL ON DELETE SET NULL;`,
+        { transaction },
+      );
+
+      /// SubSectorValue ///
+      await queryInterface.sequelize.query(
+        `CREATE TABLE "SubSectorValue" (
+          subsector_value_id uuid PRIMARY KEY NOT NULL,
+          activity_units character varying(255),
+          activity_value numeric,
+          emission_factor_value numeric,
+          total_emissions numeric,
+          emissions_factor_id uuid,
+          subsector_id uuid,
+          sector_value_id uuid,
+          inventory_id uuid,
+          created timestamp without time zone,
+          last_updated timestamp without time zone,
+          datasource_id uuid,
+          co2_emissions_value numeric,
+          ch4_emissions_value numeric,
+          n2o_emissions_value numeric,
+          unavailable_reason text,
+          unavailable_explanation text
+        );`,
+        { transaction },
+      );
+      await queryInterface.sequelize.query(
+        `ALTER TABLE ONLY "SubSectorValue"
+          ADD CONSTRAINT "FK_SubSectorValue.emissions_factor_id" FOREIGN KEY (emissions_factor_id) REFERENCES "EmissionsFactor"(emissions_factor_id) ON UPDATE SET NULL ON DELETE SET NULL,
+          ADD CONSTRAINT "FK_SubSectorValue.inventory_id" FOREIGN KEY (inventory_id) REFERENCES "Inventory"(inventory_id) ON UPDATE SET NULL ON DELETE SET NULL,
+          ADD CONSTRAINT "FK_SubSectorValue.sector_value_id" FOREIGN KEY (sector_value_id) REFERENCES "SectorValue"(sector_value_id) ON UPDATE SET NULL ON DELETE SET NULL,
+          ADD CONSTRAINT "FK_SubSectorValue.subsector_id" FOREIGN KEY (subsector_id) REFERENCES "SubSector"(subsector_id) ON UPDATE SET NULL ON DELETE SET NULL,
+          ADD CONSTRAINT "FK_SubSectorValue_datasource_id" FOREIGN KEY (datasource_id) REFERENCES "DataSource"(datasource_id) ON UPDATE CASCADE ON DELETE CASCADE;`,
+        { transaction },
+      );
+
+      /// SubCategoryValue ///
+      await queryInterface.dropTable("InventoryValue", { transaction });
+      await queryInterface.sequelize.query(
+        `CREATE TABLE public."SubCategoryValue" (
+          subcategory_value_id uuid PRIMARY KEY NOT NULL,
+          activity_units character varying(255),
+          activity_value numeric,
+          emission_factor_value numeric,
+          total_emissions numeric,
+          emissions_factor_id uuid,
+          subcategory_id uuid,
+          sector_value_id uuid,
+          inventory_id uuid,
+          created timestamp without time zone,
+          last_updated timestamp without time zone,
+          datasource_id uuid,
+          subsector_value_id uuid,
+          co2_emissions_value numeric,
+          ch4_emissions_value numeric,
+          n2o_emissions_value numeric
+        );`,
+        { transaction },
+      );
+      await queryInterface.sequelize.query(
+        `ALTER TABLE ONLY "SubCategoryValue"
+          ADD CONSTRAINT "FK_SubCategoryValue.emissions_factor_id" FOREIGN KEY (emissions_factor_id) REFERENCES "EmissionsFactor"(emissions_factor_id) ON UPDATE SET NULL ON DELETE SET NULL,
+          ADD CONSTRAINT "FK_SubCategoryValue.inventory_id" FOREIGN KEY (inventory_id) REFERENCES "Inventory"(inventory_id) ON UPDATE SET NULL ON DELETE SET NULL,
+          ADD CONSTRAINT "FK_SubCategoryValue.sector_value_id" FOREIGN KEY (sector_value_id) REFERENCES "SectorValue"(sector_value_id) ON UPDATE SET NULL ON DELETE SET NULL,
+          ADD CONSTRAINT "FK_SubCategoryValue.subcategory_id" FOREIGN KEY (subcategory_id) REFERENCES "SubCategory"(subcategory_id) ON UPDATE SET NULL ON DELETE SET NULL,
+          ADD CONSTRAINT "FK_SubCategoryValue_datasource_id" FOREIGN KEY (datasource_id) REFERENCES "DataSource"(datasource_id) ON UPDATE CASCADE ON DELETE CASCADE,
+          ADD CONSTRAINT "FK_SubCategoryValue_subsector_value_id" FOREIGN KEY (subsector_value_id) REFERENCES "SubSectorValue"(subsector_value_id) ON UPDATE SET NULL ON DELETE SET NULL;`,
+        { transaction },
+      );
     });
   },
 };

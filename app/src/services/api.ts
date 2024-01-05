@@ -285,6 +285,13 @@ export const api = createApi({
         body: { password, token },
       }),
     }),
+    getCities: builder.query<CityAttributes, null>({
+      query: () => ({
+        url: "/city",
+        method: "GET",
+      }),
+      transformResponse: (response: { data: any }) => response.data,
+    }),
     removeCity: builder.mutation<string, { locode: string }>({
       query: ({ locode }) => ({
         url: `/city/${locode}`,
@@ -336,5 +343,6 @@ export const {
   useRemoveUserMutation,
   useRequestVerificationMutation,
   useGetVerifcationTokenQuery,
+  useGetCitiesQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

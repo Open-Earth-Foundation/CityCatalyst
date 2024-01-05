@@ -60,7 +60,16 @@ export default function Settings({
       { skip: !userInfo },
     );
 
-  console.log(session, userInfo, currentUserData);
+  const { data: cities, isLoading: isCitiesLoading } = api.useGetCitiesQuery(
+    null,
+    {
+      skip: !userInfo,
+    },
+  );
+
+  console.log(cities);
+
+  // console.log(session, userInfo, currentUserData);
   const { data: cityUsers } = api.useGetCityUsersQuery(
     { locode: userInfo?.defaultCityLocode! },
     {
@@ -134,6 +143,7 @@ export default function Settings({
                   status={status}
                   t={t}
                   userInfo={userInfo}
+                  cities={cities}
                   cityUsers={cityUsers}
                 />
                 <MyFilesTab

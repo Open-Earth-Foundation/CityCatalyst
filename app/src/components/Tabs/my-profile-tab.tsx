@@ -77,6 +77,7 @@ interface MyProfileTabProps {
   lng: string;
   userInfo: UserAttributes | any;
   cityUsers: UserAttributes[] | any;
+  cities: CityAttributes[] | any;
 }
 
 const MyProfileTab: FC<MyProfileTabProps> = ({
@@ -86,6 +87,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
   lng,
   userInfo,
   cityUsers,
+  cities,
 }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const {
@@ -103,8 +105,6 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
       setValue("role", userInfo.role);
     }
   }, [setValue, session, status, userInfo]);
-
-  const cities: any = userInfo && userInfo.cities;
 
   const [setCurrentUserData] = useSetCurrentUserDataMutation();
   const toast = useToast();

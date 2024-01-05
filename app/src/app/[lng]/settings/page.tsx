@@ -2,7 +2,6 @@
 
 import React from "react";
 import { useTranslation } from "@/i18n/client";
-import { Trans } from "react-i18next/TransWithoutContext";
 import { NavigationBar } from "@/components/navigation-bar";
 import { Box, Tab, TabList, TabPanels, Tabs, Text } from "@chakra-ui/react";
 
@@ -11,9 +10,7 @@ import { useSession } from "next-auth/react";
 import MyProfileTab from "@/components/Tabs/my-profile-tab";
 import MyFilesTab from "@/components/Tabs/my-files-tab";
 import MyInventoriesTab from "@/components/Tabs/my-inventories-tab";
-import { api, useGetUserQuery } from "@/services/api";
-import { InfoOutlineIcon } from "@chakra-ui/icons";
-import { MdCheckCircleOutline } from "react-icons/md";
+import { api } from "@/services/api";
 
 export type ProfileInputs = {
   name: string;
@@ -157,6 +154,7 @@ export default function Settings({
                   lng={lng}
                   session={session}
                   status={status}
+                  cities={cities}
                   t={t}
                 />
               </TabPanels>

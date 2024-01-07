@@ -248,6 +248,43 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
       await removeUser({
         userId: user,
         defaultCityLocode: userInfo.defaultCityLocode,
+      }).then((res: any) => {
+        console.log(res);
+        if (res.data.deleted) {
+          toast({
+            description: "User details updated!",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+            render: () => (
+              <Box
+                display="flex"
+                gap="8px"
+                color="white"
+                alignItems="center"
+                justifyContent="space-between"
+                p={3}
+                bg="interactive.primary"
+                width="600px"
+                height="60px"
+                borderRadius="8px"
+              >
+                <Box display="flex" gap="8px" alignItems="center">
+                  <MdCheckCircleOutline fontSize="24px" />
+
+                  <Text
+                    color="base.light"
+                    fontWeight="bold"
+                    lineHeight="52"
+                    fontSize="label.lg"
+                  >
+                    User(s) details deleted from city
+                  </Text>
+                </Box>
+              </Box>
+            ),
+          });
+        }
       });
     });
   };

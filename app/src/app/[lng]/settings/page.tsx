@@ -48,15 +48,6 @@ export default function Settings({
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
 
-  const { data: currentUserData, isLoading: isUserDataLoading } =
-    api.useGetUserQuery(
-      {
-        locode: userInfo?.defaultCityLocode!,
-        userId: userInfo?.userId!,
-      },
-      { skip: !userInfo },
-    );
-
   const { data: cities, isLoading: isCitiesLoading } = api.useGetCitiesQuery(
     null,
     {

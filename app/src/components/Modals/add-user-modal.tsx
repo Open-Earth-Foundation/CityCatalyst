@@ -25,6 +25,7 @@ import FormSelectInput from "../form-select-input";
 import { MdCheckCircleOutline } from "react-icons/md";
 import { api } from "@/services/api";
 import { UserAttributes } from "@/models/User";
+import FormSelectOrganization from "../form-select-organization";
 
 interface AddUserModalProps {
   isOpen: boolean;
@@ -48,13 +49,14 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
   const onSubmit: SubmitHandler<UserAttributes> = async (data) => {
     // TODO
     // Submit data via the api
+
     await addUser({
       locode: userInfo.defaultCityLocode!,
-      userId: userInfo.userId,
       name: data.name!,
       email: data.email!,
       role: data.role!,
-      isOrganization: userInfo.isOrganization!,
+      isOrganization:
+        (data.isOrganization as unknown) === "true" ? true : false,
     }).then((res: any) => {
       if (res.error) {
         return toast({
@@ -132,7 +134,7 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
     <>
       <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent minH="524px" minW="568px" marginTop="10%">
+        <ModalContent minH="600px" minW="568px" marginTop="10%">
           <ModalHeader
             display="flex"
             justifyContent="center"
@@ -167,6 +169,14 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
                   register={register}
                   error={errors.role}
                   id="role"
+                  onInputChange={onInputChange}
+                />
+                <FormSelectOrganization
+                  label="Is organization"
+                  value={inputValue}
+                  register={register}
+                  error={errors.role}
+                  id="isOrganization"
                   onInputChange={onInputChange}
                 />
                 <Button

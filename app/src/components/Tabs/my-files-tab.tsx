@@ -73,7 +73,7 @@ interface MyFilesTabProps {
   session: Session | null;
   status: "loading" | "authenticated" | "unauthenticated";
   t: TFunction;
-  userInfo: UserAttributes;
+  userInfo: UserAttributes | any;
   lng: string;
 }
 

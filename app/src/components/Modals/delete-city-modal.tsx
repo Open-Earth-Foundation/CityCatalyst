@@ -12,6 +12,7 @@ import {
   Text,
   Box,
   Badge,
+  useToast,
 } from "@chakra-ui/react";
 import React, { FC, useState } from "react";
 
@@ -24,6 +25,7 @@ import { InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import { UserAttributes } from "@/models/User";
 import { api } from "@/services/api";
 import { CityAttributes } from "@/models/City";
+import { MdCheckCircleOutline } from "react-icons/md";
 
 interface DeleteCityModalProps {
   isOpen: boolean;
@@ -55,6 +57,7 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
   });
   const [removeCity] = api.useRemoveCityMutation();
   const [isPasswordCorrect, setIsPasswordCorrect] = useState<boolean>(true);
+  const toast = useToast();
 
   const onSubmit: SubmitHandler<{ password: string }> = async (data) => {
     await requestPasswordConfirm({
@@ -67,6 +70,39 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
         }).then((res: any) => {
           onClose();
           setIsPasswordCorrect(true);
+          toast({
+            description: "User details updated!",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+            render: () => (
+              <Box
+                display="flex"
+                gap="8px"
+                color="white"
+                alignItems="center"
+                justifyContent="space-between"
+                p={3}
+                bg="interactive.primary"
+                width="600px"
+                height="60px"
+                borderRadius="8px"
+              >
+                <Box display="flex" gap="8px" alignItems="center">
+                  <MdCheckCircleOutline fontSize="24px" />
+
+                  <Text
+                    color="base.light"
+                    fontWeight="bold"
+                    lineHeight="52"
+                    fontSize="label.lg"
+                  >
+                    City deleted successfully
+                  </Text>
+                </Box>
+              </Box>
+            ),
+          });
         });
       } else {
         setIsPasswordCorrect(false);

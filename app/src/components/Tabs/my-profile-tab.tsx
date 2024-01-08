@@ -196,12 +196,12 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
   }, [role, searchTerm, cityUsers]);
 
   useEffect(() => {
-    const selectedUserByRole = filteredUsers.filter(
+    const selectedUsersByRole = filteredUsers.filter(
       (users) =>
         users?.role?.toLocaleLowerCase().includes(role.toLocaleLowerCase()),
     );
     if (role !== "all") {
-      setFilteredUsersByRole(selectedUserByRole);
+      setFilteredUsersByRole(selectedUsersByRole);
     } else {
       setFilteredUsersByRole(filteredUsers);
     }

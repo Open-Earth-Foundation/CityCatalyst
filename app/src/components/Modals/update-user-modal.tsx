@@ -46,7 +46,7 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
     register,
     formState: { errors, isSubmitting },
     setValue,
-  } = useForm<ProfileInputs>();
+  } = useForm<UserAttributes>();
 
   const [setUserData] = api.useSetUserDataMutation();
 
@@ -54,7 +54,7 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
 
   const [inputValue, setInputValue] = useState<string>("");
 
-  const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
+  const onSubmit: SubmitHandler<UserAttributes> = async (data) => {
     // TODO
     // Submit data via the api
     await setUserData({
@@ -63,7 +63,8 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
       name: data.name,
       email: data.email,
       role: data.role,
-      isOrganization: userInfo.isOrganization!,
+      isOrganization:
+        (data.isOrganization as unknown) === "true" ? true : false,
     }).then(() => {
       onClose();
       toast({

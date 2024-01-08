@@ -106,16 +106,19 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
     }
   }, [setValue, session, status, userInfo]);
 
+  console.log(userInfo);
+
   const [setCurrentUserData] = useSetCurrentUserDataMutation();
   const toast = useToast();
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
+    console.log(data);
     await setCurrentUserData({
       locode: userInfo.defaultCityLocode,
       userId: userInfo.userId,
       name: data.name,
       email: data.email,
       role: data.role,
-      isOrganization: userInfo.isOrganization,
+      isOrganization: userInfo.isOrganization ? true : false,
     }).then(() =>
       toast({
         description: "User details updated!",

@@ -52,7 +52,7 @@
     "bcrypt": "^5.1.1",
     "csv-parse": "^5.5.2",
     "eslint": "8.52.0",
-    "eslint-config-next": "13.4.16",
+    "eslint-config-next": "14.0.4",
     "eslint-plugin-storybook": "^0.6.13",
     "fetch-mock": "^9.11.0",
     "framer-motion": "^10.16.2",

@@ -266,6 +266,7 @@ export const api = createApi({
         url: `/city/${defaultCityLocode}/user/${userId}`,
         method: "DELETE",
       }),
+      transformResponse: (response: { data: any }) => response.data,
     }),
     getVerifcationToken: builder.query<{ verificationToken: string }, null>({
       query: () => ({

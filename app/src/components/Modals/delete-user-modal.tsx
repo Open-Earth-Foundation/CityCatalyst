@@ -14,10 +14,12 @@ import {
   Text,
   Box,
   Badge,
+  useToast,
 } from "@chakra-ui/react";
 import React, { FC } from "react";
 
 import { FiTrash2 } from "react-icons/fi";
+import { MdCheckCircleOutline } from "react-icons/md";
 
 interface DeleteUserModalProps {
   isOpen: boolean;
@@ -32,11 +34,14 @@ const DeleteUserModal: FC<DeleteUserModalProps> = ({
   userData,
   userInfo,
 }) => {
+  const toast = useToast();
   const [removeUser] = api.useRemoveUserMutation();
   const handleDeleteUser = async (userId: string, locode: string) => {
     await removeUser({
       userId: userId,
       defaultCityLocode: locode,
+    }).then(() => {
+      onClose();
     });
   };
   return (

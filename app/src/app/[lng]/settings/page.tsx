@@ -48,8 +48,10 @@ export default function Settings({
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
 
+  let isVoid: void;
+
   const { data: cities, isLoading: isCitiesLoading } = api.useGetCitiesQuery(
-    null,
+    isVoid,
     {
       skip: !userInfo,
     },

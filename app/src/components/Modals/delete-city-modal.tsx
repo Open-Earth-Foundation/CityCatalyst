@@ -50,10 +50,10 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
     formState: { errors, isSubmitting },
     setValue,
   } = useForm<{ password: string }>();
-  let isVoid: void;
+
   const { t } = useTranslation(lng, "dashboard");
   const [requestPasswordConfirm] = api.useRequestVerificationMutation();
-  const { data: token } = api.useGetVerifcationTokenQuery(isVoid, {
+  const { data: token } = api.useGetVerifcationTokenQuery({
     skip: !userData,
   });
   const [removeCity] = api.useRemoveCityMutation();

@@ -268,7 +268,7 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: any }) => response.data,
     }),
-    getVerifcationToken: builder.query<{ verificationToken: string }, void>({
+    getVerifcationToken: builder.query({
       query: () => ({
         url: "auth/verify",
         method: "GET",
@@ -285,7 +285,7 @@ export const api = createApi({
         body: { password, token },
       }),
     }),
-    getCities: builder.query<CityAttributes, void>({
+    getCities: builder.query({
       query: () => ({
         url: "/city",
         method: "GET",

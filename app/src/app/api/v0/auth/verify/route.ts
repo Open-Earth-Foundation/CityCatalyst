@@ -25,14 +25,14 @@ export const GET = apiHandler(
       throw createHttpError.NotFound("User not found!");
     }
 
-    if (!process.env.RESET_TOKEN_SECRET) {
+    if (!process.env.VEFIFICATION_TOKEN_SECRET) {
       console.error("Need to assign RESET_TOKEN_SECRET in env!");
       throw createHttpError.InternalServerError("Configuration error");
     }
 
     const verificationToken = jwt.sign(
       { email: email },
-      process.env.RESET_TOKEN_SECRET,
+      process.env.VEFIFICATION_TOKEN_SECRET,
       {
         expiresIn: "1h",
       },
@@ -47,14 +47,14 @@ export const GET = apiHandler(
 export const POST = apiHandler(async (req: Request) => {
   const body = requestVerification.parse(await req.json());
 
-  if (!process.env.RESET_TOKEN_SECRET) {
+  if (!process.env.VEFIFICATION_TOKEN_SECRET) {
     console.error("Need to assign RESET_TOKEN_SECRET in env!");
     throw createHttpError.InternalServerError("Configuration error");
   }
 
   const verificationTokenData = jwt.verify(
     body.token,
-    process.env.RESET_TOKEN_SECRET,
+    process.env.VEFIFICATION_TOKEN_SECRET,
   );
   const email = (<any>verificationTokenData).email;
   const user = await db.models.User.findOne({ where: { email } });

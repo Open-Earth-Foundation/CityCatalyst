@@ -16,29 +16,125 @@ import {
   FormControl,
   FormLabel,
   Box,
+  useToast,
 } from "@chakra-ui/react";
-import React, { FC } from "react";
-import { useForm } from "react-hook-form";
+import React, { FC, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import FormInput from "../form-input";
 import FormSelectInput from "../form-select-input";
+import { MdCheckCircleOutline } from "react-icons/md";
+import { api } from "@/services/api";
+import { UserAttributes } from "@/models/User";
+import FormSelectOrganization from "../form-select-organization";
 
 interface AddUserModalProps {
   isOpen: boolean;
   onClose: any;
+  userInfo: UserAttributes;
 }
 
-const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose }) => {
+const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
   const {
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
     setValue,
   } = useForm<ProfileInputs>();
+  const [addUser] = api.useAddUserMutation();
+  const [inputValue, setInputValue] = useState<string>("");
+  const toast = useToast();
+  const onInputChange = (e: any) => {
+    setInputValue(e.target.value);
+  };
+  const onSubmit: SubmitHandler<UserAttributes> = async (data) => {
+    // TODO
+    // Submit data via the api
+
+    await addUser({
+      locode: userInfo.defaultCityLocode!,
+      name: data.name!,
+      email: data.email!,
+      role: data.role!,
+      isOrganization:
+        (data.isOrganization as unknown) === "true" ? true : false,
+    }).then((res: any) => {
+      if (res.error) {
+        return toast({
+          description: "Something went wrong",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          render: () => (
+            <Box
+              display="flex"
+              gap="8px"
+              color="white"
+              alignItems="center"
+              justifyContent="space-between"
+              p={3}
+              bg="sentiment.negativeDefault"
+              width="600px"
+              height="60px"
+              borderRadius="8px"
+            >
+              <Box display="flex" gap="8px" alignItems="center">
+                <MdCheckCircleOutline fontSize="24px" />
+
+                <Text
+                  color="base.light"
+                  fontWeight="bold"
+                  lineHeight="52"
+                  fontSize="label.lg"
+                >
+                  Something went wrong
+                </Text>
+              </Box>
+            </Box>
+          ),
+        });
+      } else {
+        onClose();
+        return toast({
+          description: "User add successfully!",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          render: () => (
+            <Box
+              display="flex"
+              gap="8px"
+              color="white"
+              alignItems="center"
+              justifyContent="space-between"
+              p={3}
+              bg="interactive.primary"
+              width="600px"
+              height="60px"
+              borderRadius="8px"
+            >
+              <Box display="flex" gap="8px" alignItems="center">
+                <MdCheckCircleOutline fontSize="24px" />
+
+                <Text
+                  color="base.light"
+                  fontWeight="bold"
+                  lineHeight="52"
+                  fontSize="label.lg"
+                >
+                  User details updated
+                </Text>
+              </Box>
+            </Box>
+          ),
+        });
+      }
+    });
+  };
   return (
     <>
       <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent minH="524px" minW="568px" marginTop="10%">
+        <ModalContent minH="600px" minW="568px" marginTop="10%">
           <ModalHeader
             display="flex"
             justifyContent="center"
@@ -52,11 +148,7 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose }) => {
           </ModalHeader>
           <ModalCloseButton marginTop="10px" />
           <ModalBody>
-            <form
-              onSubmit={handleSubmit(() => {
-                alert("hello");
-              })}
-            >
+            <form onSubmit={handleSubmit(onSubmit)}>
               <Box display="flex" flexDirection="column" gap="24px">
                 <FormInput
                   id="name"
@@ -73,11 +165,19 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose }) => {
 
                 <FormSelectInput
                   label="Role"
-                  value="admin"
+                  value={inputValue}
                   register={register}
                   error={errors.role}
                   id="role"
-                  onInputChange={() => {}}
+                  onInputChange={onInputChange}
+                />
+                <FormSelectOrganization
+                  label="Is organization"
+                  value={inputValue}
+                  register={register}
+                  error={errors.role}
+                  id="isOrganization"
+                  onInputChange={onInputChange}
                 />
                 <Button
                   h="56px"

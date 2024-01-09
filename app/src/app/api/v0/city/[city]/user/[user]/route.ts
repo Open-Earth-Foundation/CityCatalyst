@@ -3,6 +3,7 @@ import { apiHandler } from "@/util/api";
 import { createCityRequest, createUserRequest } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const locode = params.city;
@@ -18,9 +19,6 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
       {
         model: db.models.City,
         as: "cities",
-        where: {
-          locode: locode,
-        },
       },
     ],
   });
@@ -32,8 +30,13 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   return NextResponse.json({ data: user });
 });
 
+const updateUserRequest = z.object({
+  name: z.string(),
+  role: z.string(),
+});
+
 export const PATCH = apiHandler(async (_req: NextRequest, { params }) => {
-  const body = createUserRequest.parse(await _req.json());
+  const body = updateUserRequest.parse(await _req.json());
   let user = await db.models.User.findOne({ where: { userId: params.user } });
 
   if (!user) {

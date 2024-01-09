@@ -1,30 +1,24 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "@/i18n/client";
-import { Trans } from "react-i18next/TransWithoutContext";
 import { NavigationBar } from "@/components/navigation-bar";
-import {
-  Box,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Tab, TabList, TabPanels, Tabs, Text } from "@chakra-ui/react";
 
 import { useSession } from "next-auth/react";
 
 import MyProfileTab from "@/components/Tabs/my-profile-tab";
 import MyFilesTab from "@/components/Tabs/my-files-tab";
 import MyInventoriesTab from "@/components/Tabs/my-inventories-tab";
+import { api } from "@/services/api";
 
 export type ProfileInputs = {
   name: string;
   email: string;
   city: string;
   role: string;
+  locode: string;
+  userId: string;
 };
 
 export type UserDetails = {
@@ -50,6 +44,20 @@ export default function Settings({
   const { data: session, status } = useSession();
 
   const { t } = useTranslation(lng, "settings");
+
+  const { data: userInfo, isLoading: isUserInfoLoading } =
+    api.useGetUserInfoQuery();
+
+  const { data: cities, isLoading: isCitiesLoading } = api.useGetCitiesQuery({
+    skip: !userInfo,
+  });
+
+  const { data: cityUsers } = api.useGetCityUsersQuery(
+    { locode: userInfo?.defaultCityLocode! },
+    {
+      skip: !userInfo,
+    },
+  );
 
   return (
     <Box backgroundColor="background.backgroundLight" paddingBottom="125px">
@@ -116,12 +124,23 @@ export default function Settings({
                   session={session}
                   status={status}
                   t={t}
+                  userInfo={userInfo}
+                  cities={cities}
+                  cityUsers={cityUsers}
                 />
-                <MyFilesTab lng={lng} session={session} status={status} t={t} />
+                <MyFilesTab
+                  lng={lng}
+                  session={session}
+                  status={status}
+                  t={t}
+                  userInfo={userInfo!}
+                />
                 <MyInventoriesTab
                   lng={lng}
                   session={session}
                   status={status}
+                  cities={cities}
+                  userInfo={userInfo!}
                   t={t}
                 />
               </TabPanels>

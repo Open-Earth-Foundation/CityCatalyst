@@ -310,7 +310,6 @@ describe("Inventory API", () => {
         sectorId,
         sectorName: "XX_INVENTORY_" + sectorName,
       });
-      const sectorValueId = randomUUID();
       for (let i = 0; i < sectorNames.length; i++) {
         const subSectorId = randomUUID();
         await db.models.SubSector.create({
@@ -318,13 +317,23 @@ describe("Inventory API", () => {
           sectorId,
           subsectorName: "XX_INVENTORY_" + sectorName + "_" + sectorNames[i],
         });
-        if (sources[i] != null) {
-          await db.models.InventoryValue.create({
-            id: randomUUID(),
-            subSectorId,
-            datasourceId: sources[i]?.datasourceId,
-            inventoryId: existingInventory!.inventoryId,
+        for (let j = 0; j < sectorNames.length; j++) {
+          const subCategoryId = randomUUID();
+          await db.models.SubCategory.create({
+            subcategoryId: subCategoryId,
+            subsectorId: subSectorId,
+            subcategoryName: `XX_INVENTORY_${sectorName}_${sectorNames[i]}_${sectorNames[j]}`,
           });
+          if (sources[i] != null) {
+            await db.models.InventoryValue.create({
+              id: randomUUID(),
+              sectorId,
+              subSectorId,
+              subCategoryId,
+              datasourceId: sources[i]?.datasourceId,
+              inventoryId: existingInventory!.inventoryId,
+            });
+          }
         }
       }
     }
@@ -359,17 +368,17 @@ describe("Inventory API", () => {
       );
     assert.equal(cleanedSectorProgress.length, 3);
     for (const sector of cleanedSectorProgress) {
-      assert.equal(sector.total, 3);
-      assert.equal(sector.thirdParty, 1);
-      assert.equal(sector.uploaded, 1);
+      assert.equal(sector.total, 9);
+      assert.equal(sector.thirdParty, 3);
+      assert.equal(sector.uploaded, 3);
       assert.ok(
         sector.sector.sectorName.startsWith("XX_INVENTORY_PROGRESS_TEST"),
         "Wrong sector name: " + sector.sector.sectorName,
       );
     }
-    assert.equal(totalProgress.thirdParty, 3);
-    assert.equal(totalProgress.uploaded, 3);
+    assert.equal(totalProgress.thirdParty, 9);
+    assert.equal(totalProgress.uploaded, 9);
     // TODO the route counts subsectors created by other tests/ seeders
-    // assert.equal(totalProgress.total, 9);
+    // assert.equal(totalProgress.total, 27);
   });
 });

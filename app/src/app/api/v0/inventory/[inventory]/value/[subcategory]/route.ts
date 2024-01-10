@@ -33,20 +33,20 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
 
   if (inventoryValue) {
     // update or replace data source if necessary
-    let dataSourceId: string | undefined = undefined;
-    if (inventoryValue.dataSourceId) {
+    let datasourceId: string | undefined = undefined;
+    if (inventoryValue.datasourceId) {
       if (inventoryValue.dataSource.sourceType === "user") {
         if (sourceData) {
           await inventoryValue.dataSource.update(sourceData);
         }
-        dataSourceId = inventoryValue.dataSourceId;
+        datasourceId = inventoryValue.datasourceId;
       } else {
         const source = await db.models.DataSource.create(newDataSource);
-        dataSourceId = source.datasourceId;
+        datasourceId = source.datasourceId;
       }
     } else {
       const source = await db.models.DataSource.create(newDataSource);
-      dataSourceId = source.datasourceId;
+      datasourceId = source.datasourceId;
     }
 
     inventoryValue = await inventoryValue.update({
@@ -54,7 +54,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
       subCategoryId: inventoryValue.subCategoryId,
       id: inventoryValue.id,
       inventoryId: params.inventory,
-      dataSourceId,
+      datasourceId,
     });
   } else {
     const source = await db.models.DataSource.create(newDataSource);
@@ -64,7 +64,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
       id: randomUUID(),
       subCategoryId: params.subcategory,
       inventoryId: params.inventory,
-      dataSourceId: source.datasourceId,
+      datasourceId: source.datasourceId,
     });
   }
 

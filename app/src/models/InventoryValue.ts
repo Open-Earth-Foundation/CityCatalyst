@@ -119,6 +119,24 @@ export class InventoryValue
           allowNull: true,
           field: "activity_value",
         },
+        sectorId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: "Sector",
+            key: "sector_id",
+          },
+          field: "sector_id",
+        },
+        subSectorId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: "SubSector",
+            key: "subsector_id",
+          },
+          field: "sub_sector_id",
+        },
         subCategoryId: {
           type: DataTypes.UUID,
           allowNull: true,

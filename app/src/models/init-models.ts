@@ -541,20 +541,36 @@ export function initModels(sequelize: Sequelize) {
   Scope.hasMany(SubCategory, { as: "subCategories", foreignKey: "scopeId" });
   SubSector.belongsTo(Sector, { as: "sector", foreignKey: "sectorId" });
   Sector.hasMany(SubSector, { as: "subSectors", foreignKey: "sectorId" });
+  InventoryValue.belongsTo(SubSector, {
+    as: "subSector",
+    foreignKey: "subSectorId",
+  });
+  SubSector.hasMany(InventoryValue, {
+    as: "inventoryValues",
+    foreignKey: "subSectorId",
+  });
+  InventoryValue.belongsTo(Sector, {
+    as: "sector",
+    foreignKey: "sectorId",
+  });
+  Sector.hasMany(InventoryValue, {
+    as: "inventoryValues",
+    foreignKey: "sectorId",
+  });
+  InventoryValue.belongsTo(SubCategory, {
+    as: "subCategory",
+    foreignKey: "subCategoryId",
+  });
+  SubCategory.hasMany(InventoryValue, {
+    as: "inventoryValues",
+    foreignKey: "subCategoryId",
+  });
   ActivityData.belongsTo(SubCategory, {
     as: "subcategory",
     foreignKey: "subcategoryId",
   });
   SubCategory.hasMany(ActivityData, {
     as: "activityData",
-    foreignKey: "subcategoryId",
-  });
-  InventoryValue.belongsTo(SubCategory, {
-    as: "subcategory",
-    foreignKey: "subcategoryId",
-  });
-  SubCategory.hasMany(InventoryValue, {
-    as: "inventoryValues",
     foreignKey: "subcategoryId",
   });
   SubCategory.belongsTo(SubSector, {

@@ -43,14 +43,7 @@ const invalidInventory = {
   totalEmissions: "246kg co2eq",
 };
 
-const subSectorValue = {
-  activityValue: 10,
-  activityUnits: "kg",
-  emissionFactorValue: 10,
-  totalEmissions: 100,
-};
-
-const subCategoryValue = {
+const inventoryValue = {
   activityValue: 20,
   activityUnits: "km",
   emissionFactorValue: 20,
@@ -126,7 +119,7 @@ describe("Inventory API", () => {
       id: randomUUID(),
       inventoryId: inventory.inventoryId,
       subCategoryId: subCategory.subcategoryId,
-      ...subCategoryValue,
+      ...inventoryValue,
     });
   });
 

@@ -36,7 +36,6 @@ module.exports = {
         "InventoryValue",
         {
           subcategory_value_id: "id",
-          datasource_id: "data_source_id",
           total_emissions: "co2eq",
           subcategory_id: "sub_category_id",
         },

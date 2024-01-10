@@ -306,7 +306,7 @@ export function initModels(sequelize: Sequelize) {
   });
   InventoryValue.belongsTo(DataSource, {
     as: "dataSource",
-    foreignKey: "dataSourceId",
+    foreignKey: "datasourceId",
   });
   EmissionsFactor.belongsToMany(DataSource, {
     as: "datasourceIdDataSourceDataSourceEmissionsFactors",
@@ -460,7 +460,7 @@ export function initModels(sequelize: Sequelize) {
   });
   DataSource.hasMany(InventoryValue, {
     as: "inventoryValues",
-    foreignKey: "dataSourceId",
+    foreignKey: "datasourceId",
   });
   DataSourceEmissionsFactor.belongsTo(EmissionsFactor, {
     as: "emissionsFactor",

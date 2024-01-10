@@ -17,7 +17,7 @@ export interface InventoryValueAttributes {
   subSectorId?: string;
   subCategoryId?: string;
   inventoryId?: string;
-  dataSourceId?: string;
+  datasourceId?: string;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -34,7 +34,7 @@ export type InventoryValueOptionalAttributes =
   | "subSectorId"
   | "subCategoryId"
   | "inventoryId"
-  | "dataSourceId"
+  | "datasourceId"
   | "created"
   | "lastUpdated";
 export type InventoryValueCreationAttributes = Optional<
@@ -56,7 +56,7 @@ export class InventoryValue
   subSectorId?: string;
   subCategoryId?: string;
   inventoryId?: string;
-  dataSourceId?: string;
+  datasourceId?: string;
   created?: Date;
   lastUpdated?: Date;
 
@@ -155,14 +155,14 @@ export class InventoryValue
           },
           field: "inventory_id",
         },
-        dataSourceId: {
+        datasourceId: {
           type: DataTypes.UUID,
           allowNull: true,
           references: {
             model: "DataSource",
             key: "datasource_id",
           },
-          field: "data_source_id",
+          field: "datasource_id",
         },
       },
       {

@@ -61,14 +61,24 @@ export const resetPasswordRequest = z.object({
 });
 
 export const createInventoryValue = z.object({
-  activityUnits: z.string().optional(),
+  gpcReferenceNumber: z.string().optional(),
   activityValue: z.number().optional(),
+  activityUnits: z.string().optional(),
+  co2eq: z.bigint().optional(),
+  co2eqYears: z.number().optional(),
   emissionFactorValue: z.number().optional(),
-  co2EmissionsValue: z.number().optional(),
-  n2oEmissionsValue: z.number().optional(),
-  ch4EmissionsValue: z.number().optional(),
   totalEmissions: z.number().optional(),
+  gasValues: z.array(z.object({
+    gas: z.string(),
+    emissionsFactorId: z.string().uuid(),
+    gasAmount: z.bigint(),
+  })).optional(),
   emissionsFactorId: z.string().uuid().optional(),
+  emissionsFactor: z.object({
+    emissionsPerActivity: z.number(),
+    gas: z.string(),
+    units: z.string(),
+  }).optional(),
   dataSource: z
     .object({
       sourceType: z.string(),

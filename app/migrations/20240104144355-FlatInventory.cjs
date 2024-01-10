@@ -201,11 +201,6 @@ module.exports = {
       await queryInterface.dropTable("GasToCO2Eq", { transaction });
 
       /// EmissionsFactor ///
-      await queryInterface.removeConstraint(
-        "EmissionsFactor",
-        "FK_EmissionsFactor_inventory_id",
-        { transaction },
-      );
       await queryInterface.removeColumn("EmissionsFactor", "inventory_id", {
         transaction,
       });

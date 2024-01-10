@@ -1,6 +1,6 @@
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
-import { createSubCategory } from "@/util/validation";
+import { createInventoryValue } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
@@ -18,7 +18,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
 });
 
 export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
-  const body = createSubCategory.parse(await req.json());
+  const body = createInventoryValue.parse(await req.json());
   let inventoryValue = await db.models.InventoryValue.findOne({
     where: { subCategoryId: params.subcategory, inventoryId: params.inventory },
     include: [{ model: db.models.DataSource, as: "dataSource" }],

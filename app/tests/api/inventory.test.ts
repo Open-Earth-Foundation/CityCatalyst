@@ -200,9 +200,10 @@ describe("Inventory API", () => {
     const lines = csv.split("\n");
     assert.ok(lines.length > 0);
     const headers = lines[0].split(",");
-    assert.equal(headers.length, 6);
+    assert.equal(headers.length, 7);
     assert.deepEqual(headers, [
       "Inventory Reference",
+      "GPC Reference Number",
       "Total Emissions",
       "Activity Units",
       "Activity Value",
@@ -210,7 +211,7 @@ describe("Inventory API", () => {
       "Datasource ID",
     ]);
     assert.ok(lines.length > 1, csv);
-    assert.strictEqual(lines.length, 3);
+    assert.strictEqual(lines.length, 2);
     assert.ok(lines.slice(1).every((line) => line.split(",").length == 6));
   });
 
@@ -321,7 +322,7 @@ describe("Inventory API", () => {
           await db.models.InventoryValue.create({
             id: randomUUID(),
             subSectorId,
-            dataSourceId: sources[i]?.datasourceId,
+            datasourceId: sources[i]?.datasourceId,
             inventoryId: existingInventory!.inventoryId,
           });
         }
@@ -361,8 +362,10 @@ describe("Inventory API", () => {
       assert.equal(sector.total, 3);
       assert.equal(sector.thirdParty, 1);
       assert.equal(sector.uploaded, 1);
-      assert.ok(sector.sector.sectorName.startsWith("XX_INVENTORY_PROGRESS_TEST"), "Wrong sector name: " + sector.sector.sectorName);
-
+      assert.ok(
+        sector.sector.sectorName.startsWith("XX_INVENTORY_PROGRESS_TEST"),
+        "Wrong sector name: " + sector.sector.sectorName,
+      );
     }
     assert.equal(totalProgress.thirdParty, 3);
     assert.equal(totalProgress.uploaded, 3);

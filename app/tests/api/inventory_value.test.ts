@@ -1,11 +1,11 @@
 import {
-  DELETE as deleteSubCategory,
-  GET as findSubCategory,
-  PATCH as upsertSubCategory,
-} from "@/app/api/v0/inventory/[inventory]/subcategory/[subcategory]/route";
+  DELETE as deleteInventoryValue,
+  GET as findInventoryValue,
+  PATCH as upsertInventoryValue,
+} from "@/app/api/v0/inventory/[inventory]/value/[subcategory]/route";
 
 import { db } from "@/models";
-import { CreateSubCategoryRequest } from "@/util/validation";
+import { CreateInventoryValueRequest } from "@/util/validation";
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, beforeEach, describe, it } from "node:test";
@@ -26,21 +26,21 @@ const inventoryName = "TEST_SUBCATEGORY_INVENTORY";
 const subcategoryName = "TEST_SUBCATEGORY_SUBCATEGORY";
 const subsectorName = "TEST_SUBCATEGORY_SUBSECTOR";
 
-const subcategoryValue1: CreateSubCategoryRequest = {
+const inventoryValue1: CreateInventoryValueRequest = {
   activityUnits: "UNITS",
   activityValue: 1000,
   emissionFactorValue: 12,
   totalEmissions: 44000,
 };
 
-const subcategoryValue2: CreateSubCategoryRequest = {
+const inventoryValue2: CreateInventoryValueRequest = {
   activityUnits: "UNITS",
   activityValue: 1000,
   emissionFactorValue: 12,
   totalEmissions: 700000,
 };
 
-const invalidSubCategoryValue = {
+const invalidInventoryValue = {
   activityUnits: 0,
   activityValue: "1000s",
   emissionFactorValue: "va",
@@ -123,8 +123,8 @@ describe("Sub Category API", () => {
     await db.models.InventoryValue.destroy({
       where: { id: inventoryValue.id },
     });
-    const req = mockRequest(subcategoryValue1);
-    const res = await upsertSubCategory(req, {
+    const req = mockRequest(inventoryValue1);
+    const res = await upsertInventoryValue(req, {
       params: {
         inventory: inventory.inventoryId,
         subcategory: subCategory.subcategoryId,
@@ -133,18 +133,18 @@ describe("Sub Category API", () => {
     assert.equal(res.status, 200);
     const { data } = await res.json();
 
-    assert.equal(data.totalEmissions, subcategoryValue1.totalEmissions);
-    assert.equal(data.activityUnits, subcategoryValue1.activityUnits);
-    assert.equal(data.activityValue, subcategoryValue1.activityValue);
+    assert.equal(data.co2eq, inventoryValue1.);
+    assert.equal(data.activityUnits, inventoryValue1.activityUnits);
+    assert.equal(data.activityValue, inventoryValue1.activityValue);
     assert.equal(
       data.emissionFactorValue,
-      subcategoryValue1.emissionFactorValue,
+      inventoryValue1.emissionFactorValue,
     );
   });
 
   it("Should not create a sub category with invalid data", async () => {
-    const req = mockRequest(invalidSubCategoryValue);
-    const res = await upsertSubCategory(req, {
+    const req = mockRequest(invalidInventoryValue);
+    const res = await upsertInventoryValue(req, {
       params: {
         inventory: inventory.inventoryId,
         subcategory: subCategory.subcategoryId,
@@ -158,8 +158,8 @@ describe("Sub Category API", () => {
   });
 
   it("Should find a sub category", async () => {
-    const req = mockRequest(subcategoryValue1);
-    const res = await findSubCategory(req, {
+    const req = mockRequest(inventoryValue1);
+    const res = await findInventoryValue(req, {
       params: {
         inventory: inventory.inventoryId,
         subcategory: subCategory.subcategoryId,
@@ -176,8 +176,8 @@ describe("Sub Category API", () => {
   });
 
   it("Should not find a non-existing sub category", async () => {
-    const req = mockRequest(invalidSubCategoryValue);
-    const res = await findSubCategory(req, {
+    const req = mockRequest(invalidInventoryValue);
+    const res = await findInventoryValue(req, {
       params: {
         inventory: inventory.inventoryId,
         subcategory: randomUUID(),
@@ -187,8 +187,8 @@ describe("Sub Category API", () => {
   });
 
   it("Should update a sub category", async () => {
-    const req = mockRequest(subcategoryValue1);
-    const res = await upsertSubCategory(req, {
+    const req = mockRequest(inventoryValue1);
+    const res = await upsertInventoryValue(req, {
       params: {
         inventory: inventory.inventoryId,
         subcategory: subCategory.subcategoryId,
@@ -196,18 +196,18 @@ describe("Sub Category API", () => {
     });
     const { data } = await res.json();
     assert.equal(res.status, 200);
-    assert.equal(data.totalEmissions, subcategoryValue1.totalEmissions);
-    assert.equal(data.activityUnits, subcategoryValue1.activityUnits);
-    assert.equal(data.activityValue, subcategoryValue1.activityValue);
+    assert.equal(data.totalEmissions, inventoryValue1.totalEmissions);
+    assert.equal(data.activityUnits, inventoryValue1.activityUnits);
+    assert.equal(data.activityValue, inventoryValue1.activityValue);
     assert.equal(
       data.emissionFactorValue,
-      subcategoryValue1.emissionFactorValue,
+      inventoryValue1.emissionFactorValue,
     );
   });
 
   it("Should not update a sub category with invalid data", async () => {
-    const req = mockRequest(invalidSubCategoryValue);
-    const res = await upsertSubCategory(req, {
+    const req = mockRequest(invalidInventoryValue);
+    const res = await upsertInventoryValue(req, {
       params: {
         inventory: inventory.inventoryId,
         subcategory: subCategory.subcategoryId,
@@ -221,8 +221,8 @@ describe("Sub Category API", () => {
   });
 
   it("Should delete a sub category", async () => {
-    const req = mockRequest(subcategoryValue2);
-    const res = await deleteSubCategory(req, {
+    const req = mockRequest(inventoryValue2);
+    const res = await deleteInventoryValue(req, {
       params: {
         inventory: inventory.inventoryId,
         subcategory: subCategory.subcategoryId,
@@ -238,8 +238,8 @@ describe("Sub Category API", () => {
   });
 
   it("Should not delete a non-existing sub sector", async () => {
-    const req = mockRequest(subcategoryValue2);
-    const res = await deleteSubCategory(req, {
+    const req = mockRequest(inventoryValue2);
+    const res = await deleteInventoryValue(req, {
       params: {
         inventory: randomUUID(),
         subcategory: randomUUID(),

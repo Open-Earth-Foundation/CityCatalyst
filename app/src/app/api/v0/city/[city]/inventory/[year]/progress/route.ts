@@ -1,5 +1,6 @@
 import { db } from "@/models";
 import { Sector } from "@/models/Sector";
+import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { Session } from "next-auth";
@@ -35,6 +36,10 @@ export const GET = apiHandler(
               as: "subSector",
             },
             {
+              model: db.models.SubCategory,
+              as: "subCategory",
+            },
+            {
               model: db.models.DataSource,
               attributes: ["datasourceId", "sourceType"],
               as: "dataSource",
@@ -53,16 +58,16 @@ export const GET = apiHandler(
         {
           model: db.models.SubSector,
           as: "subSectors",
-          include: [
-            { model: db.models.SubCategory, as: "subCategories" },
-            { model: db.models.Scope, as: "scope" },
-          ],
+          include: [{ model: db.models.SubCategory, as: "subCategories" }],
         },
       ],
     });
     const sectorTotals: Record<string, number> = sectors.reduce(
       (acc, sector) => {
-        acc[sector.sectorId] = sector.subSectors.length;
+        const subCategoryCount = sector.subSectors
+          .map((s) => s.subCategories.length)
+          .reduce((acc, count) => acc + count, 0);
+        acc[sector.sectorId] = subCategoryCount;
         return acc;
       },
       {} as Record<string, number>,
@@ -78,6 +83,10 @@ export const GET = apiHandler(
         sectorCounts = inventoryValues.reduce(
           (acc, inventoryValue) => {
             if (!inventoryValue.dataSource) {
+              logger.warn(
+                "Missing data source for inventory value",
+                inventoryValue.id,
+              );
               return acc;
             }
 
@@ -88,8 +97,8 @@ export const GET = apiHandler(
               acc.thirdParty++;
             } else {
               console.error(
-                "Invalid value for SubSectorValue.dataSource.sourceType of subsector",
-                inventoryValue.subSector.subsectorName,
+                "Invalid value for InventoryValue.dataSource.sourceType of inventory value",
+                inventoryValue.id,
                 "in its data source",
                 inventoryValue.dataSource.datasourceId + ":",
                 inventoryValue.dataSource.sourceType,
@@ -104,14 +113,21 @@ export const GET = apiHandler(
       // add completed field to subsectors if there is a value for it
       const subSectors = sector.subSectors.map((subSector) => {
         let completed = false;
-        if (inventoryValues) {
-          completed =
-            inventoryValues.find(
-              (inventoryValue) =>
-                inventoryValue.subSectorId === subSector.subsectorId,
-            ) != null;
+        let totalCount = subSector.subCategories.length;
+        let completedCount = 0;
+        if (inventoryValues?.length > 0) {
+          completedCount = inventoryValues.filter(
+            (inventoryValue) =>
+              inventoryValue.subSectorId === subSector.subsectorId,
+          ).length;
+          completed = completedCount === totalCount;
         }
-        return { completed, ...subSector.dataValues };
+        return {
+          completed,
+          completedCount,
+          totalCount,
+          ...subSector.dataValues,
+        };
       });
 
       return {

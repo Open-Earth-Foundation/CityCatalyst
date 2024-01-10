@@ -38,6 +38,7 @@ module.exports = {
           subcategory_value_id: "id",
           datasource_id: "data_source_id",
           total_emissions: "co2eq",
+          subcategory_id: "sub_category_id",
         },
         queryInterface,
         transaction,
@@ -60,6 +61,42 @@ module.exports = {
         Sequelize.STRING,
         { transaction },
       );
+      await queryInterface.addColumn(
+        "InventoryValue",
+        "sector_id",
+        Sequelize.UUID,
+        { transaction },
+      );
+      await queryInterface.addConstraint("InventoryValue", {
+        type: "foreign key",
+        name: "FK_InventoryValue.sector_id",
+        fields: ["sector_id"],
+        references: {
+          table: "Sector",
+          field: "sector_id",
+        },
+        onDelete: "cascade",
+        onUpdate: "cascade",
+        transaction,
+      });
+      await queryInterface.addColumn(
+        "InventoryValue",
+        "sub_sector_id",
+        Sequelize.UUID,
+        { transaction },
+      );
+      await queryInterface.addConstraint("InventoryValue", {
+        type: "foreign key",
+        name: "FK_InventoryValue.sub_sector_id",
+        fields: ["sub_sector_id"],
+        references: {
+          table: "SubSector",
+          field: "subsector_id",
+        },
+        onDelete: "cascade",
+        onUpdate: "cascade",
+        transaction,
+      });
       await removeColumns(
         "InventoryValue",
         [
@@ -96,7 +133,7 @@ module.exports = {
       );
       await queryInterface.addConstraint("EmissionsFactor", {
         type: "foreign key",
-        name: "FK_EmissionsFactor_inventory_id",
+        name: "FK_EmissionsFactor.inventory_id",
         fields: ["inventory_id"],
         references: {
           table: "Inventory",

@@ -27,17 +27,17 @@ const subcategoryName = "TEST_SUBCATEGORY_SUBCATEGORY";
 const subsectorName = "TEST_SUBCATEGORY_SUBSECTOR";
 
 const inventoryValue1: CreateInventoryValueRequest = {
-  activityUnits: "UNITS",
-  activityValue: 1000,
-  emissionFactorValue: 12,
-  totalEmissions: 44000,
+  activityUnits,
+  activityValue,
+  emissionFactorValue,
+  co2eq,
 };
 
 const inventoryValue2: CreateInventoryValueRequest = {
-  activityUnits: "UNITS",
-  activityValue: 1000,
-  emissionFactorValue: 12,
-  totalEmissions: 700000,
+  activityUnits,
+  activityValue,
+  emissionFactorValue,
+  co2eq: BigInt(700000),
 };
 
 const invalidInventoryValue = {
@@ -132,10 +132,11 @@ describe("Sub Category API", () => {
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
+    console.log("data", data);
 
-    assert.equal(data.co2eq, inventoryValue1.);
     assert.equal(data.activityUnits, inventoryValue1.activityUnits);
     assert.equal(data.activityValue, inventoryValue1.activityValue);
+    assert.equal(data.co2eq, inventoryValue1.co2eq);
     assert.equal(
       data.emissionFactorValue,
       inventoryValue1.emissionFactorValue,

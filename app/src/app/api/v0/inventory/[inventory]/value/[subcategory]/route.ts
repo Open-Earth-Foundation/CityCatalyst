@@ -11,7 +11,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   });
 
   if (!inventoryValue) {
-    throw new createHttpError.NotFound("Sub category value not found");
+    throw new createHttpError.NotFound("Inventory value not found");
   }
 
   return NextResponse.json({ data: inventoryValue });
@@ -30,6 +30,14 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
     sourceType: "user",
     datasourceId: randomUUID(),
   };
+
+  const subCategory = await db.models.SubCategory.findOne({
+    where: { subcategoryId: params.subcategory },
+    include: [{ model: db.models.SubSector, as: "subsector" }],
+  });
+  if (!subCategory) {
+    throw new createHttpError.NotFound("Sub category not found: " + params.subcategory);
+  }
 
   if (inventoryValue) {
     // update or replace data source if necessary
@@ -63,6 +71,8 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
       ...body,
       id: randomUUID(),
       subCategoryId: params.subcategory,
+      subSectorId: subCategory.subsectorId,
+      sectorId: subCategory.subsector.sectorId,
       inventoryId: params.inventory,
       datasourceId: source.datasourceId,
     });

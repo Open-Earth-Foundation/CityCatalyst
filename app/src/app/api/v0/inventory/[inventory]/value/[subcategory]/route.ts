@@ -101,6 +101,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
           // has existing emissions factor with inventoryId (= defined by user)?
           if (gasValue.emissionsFactor?.inventoryId) {
             gasValue.emissionsFactor.update(emissionsFactorData);
+            emissionsFactorId = gasValue.emissionsFactorId;
           } else {
             const emissionsFactor = await db.models.EmissionsFactor.create({
               ...emissionsFactorData,
@@ -110,7 +111,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
             emissionsFactorId = emissionsFactor.id;
           }
         }
-        await gasValue.update(gasData);
+        await gasValue.update({ ...gasData, emissionsFactorId });
       }
     }
 

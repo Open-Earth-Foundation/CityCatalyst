@@ -1,9 +1,12 @@
 import { db } from "@/models";
+import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
+import { multiplyBigIntFloat } from "@/util/big_int";
 import { createInventoryValue } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
+import { Op } from "sequelize";
 
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const inventoryValue = await db.models.InventoryValue.findOne({
@@ -132,7 +135,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
           emissionsFactorId = emissionsFactor.id;
         }
 
-        await db.models.GasValue.create({
+        const newValue = await db.models.GasValue.create({
           ...gasData,
           id: randomUUID(),
           inventoryValueId: inventoryValue.id,
@@ -141,6 +144,45 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
       }
     }
   }
+
+  // calculate co2eq
+  // load gas values again to take any modifications into account
+  const newGasValues = await db.models.GasValue.findAll({
+    where: { inventoryValueId: inventoryValue.id },
+    include: { model: db.models.EmissionsFactor, as: "emissionsFactor" },
+  });
+  const gases: string[] = newGasValues
+    .map((value) => value.gas!)
+    .filter((value) => !!value);
+  const gasesToCo2Eq = await db.models.GasToCO2Eq.findAll({
+    where: { gas: { [Op.any]: gases } },
+  });
+  inventoryValue.co2eqYears = gasesToCo2Eq.reduce(
+    (acc, gasToCO2Eq) => Math.max(acc, gasToCO2Eq.co2eqYears || 0),
+    0,
+  );
+  inventoryValue.co2eq = newGasValues.reduce((acc, gasValue) => {
+    const gasToCo2Eq = gasesToCo2Eq.find((entry) => entry.gas === gasValue.gas);
+    if (gasToCo2Eq == null) {
+      logger.error("Failed to find GasToCo2Eq entry for gas " + gasValue.gas);
+      return acc;
+    }
+    if (inventoryValue?.activityValue != null) {
+      return (
+        acc +
+        BigInt(
+          inventoryValue.activityValue *
+            gasValue.emissionsFactor.emissionsPerActivity! *
+            gasToCo2Eq.co2eqPerKg!,
+        )
+      );
+    } else if (gasValue.gasAmount == null) {
+      logger.error("Neither activityValue nor GasValue.gasAmount present for InventoryValue " + inventoryValue?.id);
+      return acc;
+    } else {
+      return acc + multiplyBigIntFloat(gasValue.gasAmount!, gasToCo2Eq.co2eqPerKg!);
+    }
+  }, 0n);
 
   return NextResponse.json({ data: inventoryValue });
 });

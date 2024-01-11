@@ -74,8 +74,8 @@ module.exports = {
           table: "Sector",
           field: "sector_id",
         },
-        onDelete: "cascade",
-        onUpdate: "cascade",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
         transaction,
       });
       await queryInterface.addColumn(
@@ -92,8 +92,8 @@ module.exports = {
           table: "SubSector",
           field: "subsector_id",
         },
-        onDelete: "cascade",
-        onUpdate: "cascade",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
         transaction,
       });
       await removeColumns(
@@ -138,8 +138,8 @@ module.exports = {
           table: "Inventory",
           field: "inventory_id",
         },
-        onDelete: "cascade",
-        onUpdate: "cascade",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
         transaction,
       });
 
@@ -191,6 +191,30 @@ module.exports = {
         },
         { transaction },
       );
+      await queryInterface.addConstraint("GasValue", {
+        type: "foreign key",
+        name: "FK_GasValue.inventory_value_id",
+        fields: ["inventory_value_id"],
+        references: {
+          table: "InventoryValue",
+          field: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+        transaction,
+      });
+      await queryInterface.addConstraint("GasValue", {
+        type: "foreign key",
+        name: "FK_GasValue.emissions_factor_id",
+        fields: ["emissions_factor_id"],
+        references: {
+          table: "EmissionsFactor",
+          field: "id",
+        },
+        onDelete: "SET NULL",
+        onUpdate: "SET NULL",
+        transaction,
+      });
     });
   },
 

@@ -23,8 +23,11 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
     where: { subCategoryId: params.subcategory, inventoryId: params.inventory },
     include: [{ model: db.models.DataSource, as: "dataSource" }],
   });
+  const gasValuesData = body.gasValues;
+  delete body.gasValues;
   const sourceData = body.dataSource;
   delete body.dataSource;
+
   const newDataSource = {
     ...sourceData,
     sourceType: "user",
@@ -36,7 +39,9 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
     include: [{ model: db.models.SubSector, as: "subsector" }],
   });
   if (!subCategory) {
-    throw new createHttpError.NotFound("Sub category not found: " + params.subcategory);
+    throw new createHttpError.NotFound(
+      "Sub category not found: " + params.subcategory,
+    );
   }
 
   if (inventoryValue) {
@@ -59,9 +64,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
 
     inventoryValue = await inventoryValue.update({
       ...body,
-      subCategoryId: inventoryValue.subCategoryId,
       id: inventoryValue.id,
-      inventoryId: params.inventory,
       datasourceId,
     });
   } else {
@@ -76,6 +79,66 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
       inventoryId: params.inventory,
       datasourceId: source.datasourceId,
     });
+  }
+
+  const gasValues = await db.models.GasValue.findAll({
+    where: { inventoryValueId: inventoryValue.id },
+    include: { model: db.models.EmissionsFactor, as: "emissionsFactor" },
+  });
+  // only update gas values when data is passed
+  if (gasValuesData) {
+    for (const gasValue of gasValues) {
+      // remove deleted values or update
+      const gasData = gasValuesData.find((data) => data.gas === gasValue.gas);
+      if (!gasData) {
+        await gasValue.destroy();
+      } else {
+        // create user emissions factors if necessary
+        let emissionsFactorId = gasData.emissionsFactorId;
+        const emissionsFactorData = gasData.emissionsFactor;
+        delete gasData.emissionsFactor;
+        if (emissionsFactorData) {
+          // has existing emissions factor with inventoryId (= defined by user)?
+          if (gasValue.emissionsFactor?.inventoryId) {
+            gasValue.emissionsFactor.update(emissionsFactorData);
+          } else {
+            const emissionsFactor = await db.models.EmissionsFactor.create({
+              ...emissionsFactorData,
+              id: randomUUID(),
+              inventoryId: params.inventory,
+            });
+            emissionsFactorId = emissionsFactor.id;
+          }
+        }
+        await gasValue.update(gasData);
+      }
+    }
+
+    // create new gas values if necessary
+    for (const gasData of gasValuesData) {
+      const value = gasValues.find((value) => value.gas === gasData.gas);
+      if (!value) {
+        // create user emissions factors if necessary
+        let emissionsFactorId = gasData.emissionsFactorId;
+        const emissionsFactorData = gasData.emissionsFactor;
+        delete gasData.emissionsFactor;
+        if (emissionsFactorData) {
+          const emissionsFactor = await db.models.EmissionsFactor.create({
+            ...emissionsFactorData,
+            id: randomUUID(),
+            inventoryId: params.inventory,
+          });
+          emissionsFactorId = emissionsFactor.id;
+        }
+
+        await db.models.GasValue.create({
+          ...gasData,
+          id: randomUUID(),
+          inventoryValueId: inventoryValue.id,
+          emissionsFactorId,
+        });
+      }
+    }
   }
 
   return NextResponse.json({ data: inventoryValue });

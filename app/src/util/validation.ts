@@ -68,17 +68,20 @@ export const createInventoryValue = z.object({
   co2eqYears: z.number().optional(),
   emissionFactorValue: z.number().optional(),
   totalEmissions: z.number().optional(),
-  gasValues: z.array(z.object({
-    gas: z.string(),
-    emissionsFactorId: z.string().uuid(),
-    gasAmount: z.bigint(),
-  })).optional(),
-  emissionsFactorId: z.string().uuid().optional(),
-  emissionsFactor: z.object({
-    emissionsPerActivity: z.number(),
-    gas: z.string(),
-    units: z.string(),
-  }).optional(),
+  gasValues: z
+    .array(
+      z.object({
+        gas: z.string(),
+        gasAmount: z.bigint(),
+        emissionsFactorId: z.string().uuid().optional(),
+        emissionsFactor: z.object({
+          emissionsPerActivity: z.number(),
+          gas: z.string(),
+          units: z.string(),
+        }).optional(),
+      }),
+    )
+    .optional(),
   dataSource: z
     .object({
       sourceType: z.string(),

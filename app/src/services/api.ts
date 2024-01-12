@@ -108,10 +108,10 @@ export const api = createApi({
     }),
     getInventoryValue: builder.query<
       InventoryValueResponse,
-      { subSectorId: string; inventoryId: string }
+      { subCategoryId: string; inventoryId: string }
     >({
-      query: ({ subSectorId, inventoryId }) =>
-        `/inventory/${inventoryId}/value/${subSectorId}`,
+      query: ({ subCategoryId, inventoryId }) =>
+        `/inventory/${inventoryId}/value/${subCategoryId}`,
       transformResponse: (response: { data: InventoryValueResponse }) =>
         response.data,
       providesTags: ["InventoryValue"],

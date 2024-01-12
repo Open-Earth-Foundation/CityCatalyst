@@ -64,3 +64,13 @@ type SubcategoryData = {
   activity: ActivityData;
   direct: DirectMeasureData;
 };
+
+type GasValueData = Omit<GasValueAttributes, "id"> & {
+  emissionsFactor?: Omit<EmissionsFactorAttributes, "id">;
+};
+
+type InventoryValueData = Omit<InventoryValueAttributes, "id"> & {
+  dataSource?: Omit<DataSourceAttributes, "datasourceId">;
+  gasValues?: GasValueData[];
+};
+

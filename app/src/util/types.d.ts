@@ -65,15 +65,6 @@ interface ConnectDataSourceResponse {
   invalid: string[];
 }
 
-type GasValueData = Omit<GasValueAttributes, "id"> & {
-  emissionsFactor: Omit<EmissionsFactorAttributes, "id">;
-};
-
-type InventoryValueData = Omit<InventoryValueAttributes, "id"> & {
-  dataSource?: Omit<DataSourceAttributes, "datasourceId">;
-  gasValues?: GasValueData[];
-};
-
 interface InventoryValueUpdateQuery {
   subCategoryId: string;
   inventoryId: string;

@@ -1,7 +1,6 @@
 import { db } from "@/models";
 import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
-import { multiplyBigIntFloat } from "@/util/big_int";
 import { createInventoryValue } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
@@ -135,7 +134,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
           emissionsFactorId = emissionsFactor.id;
         }
 
-        const newValue = await db.models.GasValue.create({
+        await db.models.GasValue.create({
           ...gasData,
           id: randomUUID(),
           inventoryValueId: inventoryValue.id,
@@ -162,26 +161,37 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
     0,
   );
   inventoryValue.co2eq = newGasValues.reduce((acc, gasValue) => {
+    const hasActivityValue = inventoryValue?.activityValue != null;
     const gasToCo2Eq = gasesToCo2Eq.find((entry) => entry.gas === gasValue.gas);
     if (gasToCo2Eq == null) {
-      logger.error("Failed to find GasToCo2Eq entry for gas " + gasValue.gas);
+      logger.error(`Failed to find GasToCo2Eq entry for gas ${gasValue.gas}`);
       return acc;
     }
-    if (inventoryValue?.activityValue != null) {
-      return (
-        acc +
-        BigInt(
-          inventoryValue.activityValue *
-            gasValue.emissionsFactor.emissionsPerActivity! *
-            gasToCo2Eq.co2eqPerKg!,
-        )
+    if (!hasActivityValue && gasValue.gasAmount == null) {
+      logger.error(
+        `Neither activityValue nor GasValue.gasAmount present for InventoryValue ${inventoryValue?.id}`,
       );
-    } else if (gasValue.gasAmount == null) {
-      logger.error("Neither activityValue nor GasValue.gasAmount present for InventoryValue " + inventoryValue?.id);
       return acc;
-    } else {
-      return acc + multiplyBigIntFloat(gasValue.gasAmount!, gasToCo2Eq.co2eqPerKg!);
     }
+    if (hasActivityValue && gasValue.emissionsFactor == null) {
+      logger.error(
+        `No emissions factor present for InventoryValue ${inventoryValue?.id} and gas ${gasValue.gas}`,
+      );
+      return acc;
+    }
+
+    let gasAmount: bigint;
+    if (hasActivityValue) {
+      gasAmount = BigInt(
+        inventoryValue!.activityValue! *
+          gasValue.emissionsFactor.emissionsPerActivity!,
+      );
+    } else {
+      gasAmount = gasValue.gasAmount!;
+    }
+
+    // this assumes GWP values in the GasToCO2Eq table are always ints
+    return acc + gasAmount * BigInt(gasToCo2Eq.co2eqPerKg!);
   }, 0n);
 
   return NextResponse.json({ data: inventoryValue });

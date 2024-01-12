@@ -145,7 +145,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
     }
   }
 
-  // calculate co2eq
+  // calculate new co2eq value
   // load gas values again to take any modifications into account
   const newGasValues = await db.models.GasValue.findAll({
     where: { inventoryValueId: inventoryValue.id },

@@ -13,6 +13,8 @@ export interface InventoryValueAttributes {
   activityUnits?: string;
   co2eq?: bigint;
   co2eqYears?: number;
+  unavailableReason?: string;
+  unavailableExplanation?: string;
   sectorId?: string;
   subSectorId?: string;
   subCategoryId?: string;
@@ -30,6 +32,8 @@ export type InventoryValueOptionalAttributes =
   | "activityUnits"
   | "co2eq"
   | "co2eqYears"
+  | "unavailableReason"
+  | "unavailableExplanation"
   | "sectorId"
   | "subSectorId"
   | "subCategoryId"
@@ -52,6 +56,8 @@ export class InventoryValue
   activityUnits?: string;
   co2eq?: bigint;
   co2eqYears?: number;
+  unavailableReason?: string;
+  unavailableExplanation?: string;
   sectorId?: string;
   subSectorId?: string;
   subCategoryId?: string;
@@ -68,18 +74,12 @@ export class InventoryValue
   // InventoryValue belongsTo SubCategory via subcategoryId
   sector!: Sector;
   getSector!: Sequelize.BelongsToGetAssociationMixin<Sector>;
-  setSector!: Sequelize.BelongsToSetAssociationMixin<
-    Sector,
-    SectorId
-  >;
+  setSector!: Sequelize.BelongsToSetAssociationMixin<Sector, SectorId>;
   createSector!: Sequelize.BelongsToCreateAssociationMixin<Sector>;
   // InventoryValue belongsTo SubCategory via subcategoryId
   subSector!: SubSector;
   getSubSector!: Sequelize.BelongsToGetAssociationMixin<SubSector>;
-  setSubSector!: Sequelize.BelongsToSetAssociationMixin<
-    SubSector,
-    SubSectorId
-  >;
+  setSubSector!: Sequelize.BelongsToSetAssociationMixin<SubSector, SubSectorId>;
   createSubSector!: Sequelize.BelongsToCreateAssociationMixin<SubSector>;
   // InventoryValue belongsTo SubCategory via subcategoryId
   subcategory!: SubCategory;
@@ -92,7 +92,10 @@ export class InventoryValue
   // InventoryValue belongsTo DataSource via datasourceId
   dataSource!: DataSource;
   getDataSource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
-  setDataSource!: Sequelize.BelongsToSetAssociationMixin<DataSource, DataSourceId>;
+  setDataSource!: Sequelize.BelongsToSetAssociationMixin<
+    DataSource,
+    DataSourceId
+  >;
   createDataSource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof InventoryValue {
@@ -118,6 +121,16 @@ export class InventoryValue
           type: DataTypes.DECIMAL,
           allowNull: true,
           field: "activity_value",
+        },
+        unavailableReason: {
+          type: DataTypes.TEXT,
+          allowNull: true,
+          field: "unavailable_reason",
+        },
+        unavailableExplanation: {
+          type: DataTypes.TEXT,
+          allowNull: true,
+          field: "unavailable_explanation",
         },
         sectorId: {
           type: DataTypes.UUID,

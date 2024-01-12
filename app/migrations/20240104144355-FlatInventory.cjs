@@ -66,6 +66,18 @@ module.exports = {
         Sequelize.UUID,
         { transaction },
       );
+      await queryInterface.addColumn(
+        "InventoryValue",
+        "unavailable_reason",
+        Sequelize.TEXT,
+        { transaction },
+      );
+      await queryInterface.addColumn(
+        "InventoryValue",
+        "unavailable_explanation",
+        Sequelize.TEXT,
+        { transaction },
+      );
       await queryInterface.addConstraint("InventoryValue", {
         type: "foreign key",
         name: "FK_InventoryValue.sector_id",

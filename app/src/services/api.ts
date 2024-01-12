@@ -2,7 +2,6 @@ import {
   type UserAttributes,
   type CityAttributes,
   type InventoryAttributes,
-  type SubSectorValueAttributes,
   type InventoryValueAttributes,
   PopulationAttributes,
 } from "@/models/init-models";
@@ -12,11 +11,10 @@ import type {
   DataSourceResponse,
   InventoryProgressResponse,
   InventoryResponse,
-  SubCategoryValueUpdateQuery,
-  SubSectorValueResponse,
+  InventoryValueUpdateQuery,
+  InventoryValueResponse,
   InventoryWithCity,
   UserInfoResponse,
-  SubSectorValueUpdateQuery,
 } from "@/util/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
@@ -27,7 +25,7 @@ export const api = createApi({
     "InventoryProgress",
     "UserInventories",
     "SubSectorValue",
-    "SubCategoryValue",
+    "InventoryValue",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
@@ -108,41 +106,28 @@ export const api = createApi({
       transformResponse: (response: { data: DataSourceResponse }) =>
         response.data,
     }),
-    getSubsectorValue: builder.query<
-      SubSectorValueResponse,
+    getInventoryValue: builder.query<
+      InventoryValueResponse,
       { subSectorId: string; inventoryId: string }
     >({
       query: ({ subSectorId, inventoryId }) =>
-        `/inventory/${inventoryId}/subsector/${subSectorId}`,
-      transformResponse: (response: { data: SubSectorValueResponse }) =>
+        `/inventory/${inventoryId}/value/${subSectorId}`,
+      transformResponse: (response: { data: InventoryValueResponse }) =>
         response.data,
-      providesTags: ["SubSectorValue"],
+      providesTags: ["InventoryValue"],
     }),
-    setSubsectorValue: builder.mutation<
-      SubSectorValueAttributes,
-      SubSectorValueUpdateQuery
-    >({
-      query: (data) => ({
-        url: `/inventory/${data.inventoryId}/subsector/${data.subSectorId}`,
-        method: "PATCH",
-        body: data.data,
-      }),
-      transformResponse: (response: { data: SubSectorValueAttributes }) =>
-        response.data,
-      invalidatesTags: ["InventoryProgress", "SubSectorValue"],
-    }),
-    setSubCategoryValue: builder.mutation<
+    setInventoryValue: builder.mutation<
       InventoryValueAttributes,
-      SubCategoryValueUpdateQuery
+      InventoryValueUpdateQuery
     >({
       query: (data) => ({
-        url: `/inventory/${data.inventoryId}/subcategory/${data.subCategoryId}`,
+        url: `/inventory/${data.inventoryId}/value/${data.subCategoryId}`,
         method: "PATCH",
         body: data.data,
       }),
       transformResponse: (response: { data: InventoryValueAttributes }) =>
         response.data,
-      invalidatesTags: ["SubCategoryValue", "SubSectorValue"],
+      invalidatesTags: ["InventoryProgress", "InventoryValue"],
     }),
     connectDataSource: builder.mutation<
       ConnectDataSourceResponse,

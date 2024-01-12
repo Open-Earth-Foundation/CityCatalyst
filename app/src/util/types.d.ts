@@ -1,4 +1,4 @@
-import { SubCategoryValueData } from "@/app/[lng]/data/[step]/types";
+import type { InventoryValueData } from "@/app/[lng]/data/[step]/types";
 import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
@@ -9,6 +9,8 @@ import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
 import type { CityAttributes } from "@/models/City";
 import type { SubSector } from "@/util/types";
+import type { GasValueAttributes } from "@/models/GasValue";
+import type { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
 
 type InventoryResponse = InventoryAttributes & { city: CityAttributes };
 
@@ -41,17 +43,15 @@ type DataSource = DataSourceAttributes & {
   scopes: ScopeAttributes[];
   subSector?: SubSectorAttributes;
   subCategory?: SubCategoryAttributes;
-  subCategoryValues?: InventoryValueAttributes[];
-  subSectorValues?: SubSectorValueAttributes[];
+  inventoryValues?: InventoryValueAttributes[];
 };
 type DataSourceResponse = { source: DataSource; data: any }[];
 
-type SubCategoryValueWithSource = InventoryValueAttributes & {
+type InventoryValueResponse = InventoryValueAttributes & {
   dataSource: DataSourceAttributes;
-};
-
-type SubSectorValueResponse = SubSectorValueAttributes & {
-  subCategoryValues: SubCategoryValueWithSource[];
+  gasValues: GasValueAttributes & {
+    emissionsFactor: EmissionsFactorAttributes;
+  };
 };
 
 interface ConnectDataSourceQuery {
@@ -65,16 +65,19 @@ interface ConnectDataSourceResponse {
   invalid: string[];
 }
 
-interface SubSectorValueUpdateQuery {
-  subSectorId: string;
-  inventoryId: string;
-  data: Omit<SubSectorValueAttributes, "subsectorValueId">;
-}
+type GasValueData = Omit<GasValueAttributes, "id"> & {
+  emissionsFactor: Omit<EmissionsFactorAttributes, "id">;
+};
 
-interface SubCategoryValueUpdateQuery {
+type InventoryValueData = Omit<InventoryValueAttributes, "id"> & {
+  dataSource?: Omit<DataSourceAttributes, "datasourceId">;
+  gasValues?: GasValueData[];
+};
+
+interface InventoryValueUpdateQuery {
   subCategoryId: string;
   inventoryId: string;
-  data: SubCategoryValueData;
+  data: InventoryValueData;
 }
 
 type InventoryWithCity = InventoryAttributes & { city: CityAttributes };

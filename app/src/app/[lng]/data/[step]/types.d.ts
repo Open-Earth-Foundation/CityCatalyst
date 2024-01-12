@@ -1,4 +1,7 @@
 import { DataSourceAttributes } from "@/models/DataSource";
+import { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
+import { GasValueAttributes } from "@/models/GasValue";
+import { InventoryValueAttributes } from "@/models/InventoryValue";
 
 interface DataStep {
   title: string;
@@ -61,8 +64,3 @@ type SubcategoryData = {
   activity: ActivityData;
   direct: DirectMeasureData;
 };
-
-type SubCategoryValueData = Omit<
-  SubCategoryValueAttributes,
-  "subcategoryValueId"
-> & { dataSource?: Omit<DataSourceAttributes, "datasourceId"> };

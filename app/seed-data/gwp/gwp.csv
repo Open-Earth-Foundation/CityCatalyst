@@ -1,4 +1,4 @@
-gas,co2eqPerKg,co2eqYears
+gas,co2eq_per_kg,co2eq_years
 CO2,1,100
 CH4,28,100
 N20,265,100
@@ -13,4 +13,3 @@ CBrClF2,1750,100
 CCl4,1730,100
 CH3Br,2,100
 CH3CCl3,160,100
-

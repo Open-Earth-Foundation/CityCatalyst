@@ -7,8 +7,8 @@ import {
   resolvePromisesSequentially,
 } from "@/util/helpers";
 import type {
-  SubCategoryValueWithSource,
-  SubSectorValueResponse,
+  InventoryValueWithSource,
+  InventoryValueResponse,
 } from "@/util/types";
 import { ArrowBackIcon, CloseIcon, WarningIcon } from "@chakra-ui/icons";
 import {
@@ -54,11 +54,12 @@ import type {
   ActivityData,
   DirectMeasureData,
   SubCategory,
-  SubCategoryValueData,
+  InventoryValueData,
   SubSector,
   SubcategoryData,
 } from "./types";
 import { Trans } from "react-i18next/TransWithoutContext";
+import { GasValueAttributes } from "@/models/GasValue";
 
 type Inputs = {
   valueType: "scope-values" | "unavailable" | "";
@@ -107,7 +108,7 @@ const defaultValues: Inputs = {
 };
 
 // TODO create custom type that includes relations instead of using SubSectorValueAttributes?
-function extractFormValues(subSectorValue: SubSectorValueResponse): Inputs {
+function extractFormValues(subSectorValue: InventoryValueResponse): Inputs {
   logger.debug("Form input", subSectorValue);
   const inputs: Inputs = Object.assign({}, defaultValues);
   if (subSectorValue.unavailableReason) {
@@ -116,10 +117,10 @@ function extractFormValues(subSectorValue: SubSectorValueResponse): Inputs {
     inputs.unavailableExplanation = subSectorValue.unavailableExplanation || "";
   } else {
     inputs.valueType = "scope-values";
-    inputs.subcategoryData = subSectorValue.subCategoryValues.reduce(
+    inputs.subcategoryData = subSectorValue.inventoryValues.reduce(
       (
         record: Record<string, SubcategoryData>,
-        value: SubCategoryValueWithSource,
+        value: InventoryValueData,
       ) => {
         const methodology =
           value.activityValue != null ? "activity-data" : "direct-measure";
@@ -133,17 +134,21 @@ function extractFormValues(subSectorValue: SubSectorValueResponse): Inputs {
           data.activity.activityDataAmount = value.activityValue;
           data.activity.activityDataUnit = value.activityUnits;
           // TODO emission factor ID, manual emissions factor values for each gas
-          data.activity.dataQuality = value.dataSource.dataQuality || "";
-          data.activity.sourceReference = value.dataSource.notes || "";
+          data.activity.dataQuality = value.dataSource?.dataQuality || "";
+          data.activity.sourceReference = value.dataSource?.notes || "";
         } else if (methodology === "direct-measure") {
-          data.direct.co2Emissions = (value.co2EmissionsValue || 0) / 1000;
-          data.direct.ch4Emissions = (value.ch4EmissionsValue || 0) / 1000;
-          data.direct.n2oEmissions = (value.n2oEmissionsValue || 0) / 1000;
-          data.direct.dataQuality = value.dataSource.dataQuality || "";
-          data.direct.sourceReference = value.dataSource.notes || "";
+          const gasToEmissions = (value.gasValues || []).reduce((acc: Record<string, bigint>, value) => {
+            acc[value.gas!] = value.gasAmount || 0n;
+            return acc;
+          }, {});
+          data.direct.co2Emissions = (gasToEmissions.CO2 || 0n) / 1000n;
+          data.direct.ch4Emissions = (gasToEmissions.CH4 || 0n) / 1000n;
+          data.direct.n2oEmissions = (gasToEmissions.N2O || 0n) / 1000n;
+          data.direct.dataQuality = value.dataSource?.dataQuality || "";
+          data.direct.sourceReference = value.dataSource?.notes || "";
         }
 
-        record[value.subcategoryId!] = data;
+        record[value.subCategoryId!] = data;
         return record;
       },
       {},
@@ -178,12 +183,11 @@ export function SubsectorDrawer({
     data: subsectorValue,
     isLoading: isSubsectorValueLoading,
     error: subsectorValueError,
-  } = api.useGetSubsectorValueQuery(
-    { subSectorId: subsector?.subsectorId!, inventoryId: inventoryId! },
+  } = api.useGetInventoryValueQuery(
+    { subCategoryId: subsector?.subsectorId! TODO, inventoryId: inventoryId! },
     { skip: !subsector || !inventoryId },
   );
-  const [setSubsectorValue] = api.useSetSubsectorValueMutation();
-  const [setSubCategoryValue] = api.useSetSubCategoryValueMutation();
+  const [setInventoryValue] = api.useSetInventoryValueMutation();
 
   let noPreviousValue =
     (subsectorValueError as FetchBaseQueryError)?.status === 404;
@@ -243,16 +247,18 @@ export function SubsectorDrawer({
 
     // decide which data from the form to save
     if (data.valueType === "unavailable") {
-      await setSubsectorValue({
-        subSectorId: subsector.subsectorId,
+      await setInventoryValue({
+        subCategoryId,
         inventoryId: inventoryId!,
         data: {
-          unavailableReason: data.unavailableReason,
-          unavailableExplanation: data.unavailableExplanation,
+          dataSource: {
+            unavailableReason: data.unavailableReason,
+            unavailableExplanation: data.unavailableExplanation,
+          }
         },
       });
     } else if (data.valueType === "scope-values") {
-      await setSubsectorValue({
+      await setInventoryValue({
         subSectorId: subsector.subsectorId,
         inventoryId: inventoryId!,
         data: {
@@ -261,52 +267,56 @@ export function SubsectorDrawer({
         },
       });
       const results = await resolvePromisesSequentially(
-        Object.keys(data.subcategoryData).map((subcategoryId) => {
-          const value = data.subcategoryData[subcategoryId];
-          if (!isScopeCompleted(subcategoryId)) {
-            logger.error(`Data not completed for scope ${subcategoryId}!`);
+        Object.keys(data.subcategoryData).map((subCategoryId) => {
+          const value = data.subcategoryData[subCategoryId];
+          if (!isScopeCompleted(subCategoryId)) {
+            logger.error(`Data not completed for scope ${subCategoryId}!`);
             return Promise.resolve();
           }
 
-          let subCategoryValue: SubCategoryValueData = {
-            subcategoryId,
+          let inventoryValue: InventoryValueData = {
+            subCategoryId,
             inventoryId: inventoryId!,
           };
 
           if (value.methodology === "activity-data") {
-            subCategoryValue.activityValue =
+            inventoryValue.activityValue =
               +value.activity.activityDataAmount!;
-            subCategoryValue.activityUnits = value.activity.activityDataUnit;
+            inventoryValue.activityUnits = value.activity.activityDataUnit;
             // TODO emission factor ID, manual emissions factor values for each gas
 
-            subCategoryValue.dataSource = {
+            inventoryValue.dataSource = {
               sourceType: "user",
               dataQuality: value.activity.dataQuality,
               notes: value.activity.sourceReference,
             };
           } else if (value.methodology === "direct-measure") {
-            subCategoryValue.co2EmissionsValue =
-              +value.direct.co2Emissions * 1000;
-            subCategoryValue.ch4EmissionsValue =
-              +value.direct.ch4Emissions * 1000;
-            subCategoryValue.n2oEmissionsValue =
-              +value.direct.n2oEmissions * 1000;
-            subCategoryValue.dataSource = {
+            inventoryValue.gasValues = [{
+              gas: "CO2",
+              gasAmount: BigInt(value.direct.co2Emissions) * 1000n,
+            }, {
+              gas: "CH4",
+              gasAmount: BigInt(value.direct.ch4Emissions) * 1000n
+              }, {
+                gas: "N2O",
+                gasAmount: BigInt(value.direct.n2oEmissions) * 1000n
+              }];
+            inventoryValue.dataSource = {
               sourceType: "user",
               dataQuality: value.direct.dataQuality,
               notes: value.direct.sourceReference,
             };
           } else {
             logger.error(
-              `Methodology for subcategory ${subcategoryId} not selected!`,
+              `Methodology for subcategory ${subCategoryId} not selected!`,
             );
             return Promise.resolve();
           }
 
-          return setSubCategoryValue({
-            subCategoryId: subcategoryId,
+          return setInventoryValue({
+            subCategoryId: subCategoryId,
             inventoryId: inventoryId!,
-            data: subCategoryValue,
+            data: inventoryValue,
           });
         }),
       );

@@ -33,7 +33,7 @@ async function parseFile(folder, filename) {
   const records = [];
   const parser = fs
     .createReadStream(
-      `${__dirname}/../seed-data/${folder}/${filename}.csv`,
+      `${__dirname}/../../seed-data/${folder}/${filename}.csv`,
     )
     .pipe(parse({ delimiter: ",", columns: true }));
 

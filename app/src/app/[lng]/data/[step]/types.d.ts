@@ -52,9 +52,9 @@ type ActivityData = {
 };
 
 type DirectMeasureData = {
-  co2Emissions: number;
-  ch4Emissions: number;
-  n2oEmissions: number;
+  co2Emissions: bigint;
+  ch4Emissions: bigint;
+  n2oEmissions: bigint;
   dataQuality: string;
   sourceReference: string;
 };

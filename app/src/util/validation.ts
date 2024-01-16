@@ -68,6 +68,8 @@ export const createInventoryValue = z.object({
   co2eqYears: z.number().optional(),
   emissionFactorValue: z.number().optional(),
   totalEmissions: z.number().optional(),
+  unavailableReason: z.string().optional(),
+  unavailableExplanation: z.string().optional(),
   gasValues: z
     .array(
       z.object({

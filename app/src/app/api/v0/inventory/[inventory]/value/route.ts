@@ -13,7 +13,7 @@ export const GET = apiHandler(async (req: NextRequest, { params }) => {
   }
   const subCategoryIds = subCategoryIdsParam.split(",");
 
-  const inventoryValue = await db.models.InventoryValue.findOne({
+  const inventoryValue = await db.models.InventoryValue.findAll({
     where: {
       subCategoryId: { [Op.in]: subCategoryIds },
       inventoryId: params.inventory,

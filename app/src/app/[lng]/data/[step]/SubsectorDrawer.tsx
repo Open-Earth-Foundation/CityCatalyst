@@ -149,7 +149,6 @@ export function SubsectorDrawer({
   finalFocusRef?: RefObject<any>;
   t: TFunction;
 }) {
-  console.log("subsector", subsector);
   const subCategoryIds = subsector?.subCategories.map((c) => c.subcategoryId);
   const {
     data: inventoryValues,

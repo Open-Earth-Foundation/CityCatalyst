@@ -84,24 +84,43 @@ export default class DataSourceService {
     );
 
     const emissions = data.totals.emissions;
-    // TODO store values for co2, ch4, n2o separately for accounting and editing
     const totalEmissions = emissions.co2eq_100yr;
     const values: Partial<InventoryValueAttributes> = {
-      dataSourceId: source.datasourceId,
+      datasourceId: source.datasourceId,
       inventoryId: inventory.inventoryId,
       co2eq: totalEmissions,
       co2eqYears: 100,
     };
 
-    // TODO create gas value entries
-    // co2EmissionsValue: emissions.co2_mass,
-    // n2oEmissionsValue: emissions.n2o_mass,
-    // ch4EmissionsValue: emissions.ch4_mass,
-
+    // TODO what to do with existing InventoryValues and GasValues?
     const inventoryValue = await db.models.InventoryValue.create({
       ...values,
       id: randomUUID(),
       subCategoryId: source.subcategoryId,
+    });
+
+    // store values for co2, ch4, n2o separately for accounting and editing
+    // TODO what emissions factor should be used?
+    await db.models.GasValue.create({
+      id: randomUUID(),
+      inventoryValueId: inventoryValue.id,
+      gas: "CO2",
+      gasAmount: emissions.co2_mass,
+      // emissionsFactorId:
+    });
+    await db.models.GasValue.create({
+      id: randomUUID(),
+      inventoryValueId: inventoryValue.id,
+      gas: "N2O",
+      gasAmount: emissions.n2o_mass,
+      // emissionsFactorId:
+    });
+    await db.models.GasValue.create({
+      id: randomUUID(),
+      inventoryValueId: inventoryValue.id,
+      gas: "CH4",
+      gasAmount: emissions.ch4_mass,
+      // emissionsFactorId:
     });
 
     return true;

@@ -64,7 +64,7 @@ export const createInventoryValue = z.object({
   gpcReferenceNumber: z.string().optional(),
   activityValue: z.number().optional(),
   activityUnits: z.string().optional(),
-  co2eq: z.bigint().optional(),
+  co2eq: z.coerce.bigint().optional(),
   co2eqYears: z.number().optional(),
   emissionFactorValue: z.number().optional(),
   totalEmissions: z.number().optional(),
@@ -74,13 +74,16 @@ export const createInventoryValue = z.object({
     .array(
       z.object({
         gas: z.string(),
-        gasAmount: z.bigint().optional(), // if not present, use activityValue with emissionsFactor instead
+        // if not present, use activityValue with emissionsFactor instead
+        gasAmount: z.coerce.bigint().optional(),
         emissionsFactorId: z.string().uuid().optional(),
-        emissionsFactor: z.object({
-          emissionsPerActivity: z.number(),
-          gas: z.string(),
-          units: z.string(),
-        }).optional(),
+        emissionsFactor: z
+          .object({
+            emissionsPerActivity: z.number(),
+            gas: z.string(),
+            units: z.string(),
+          })
+          .optional(),
       }),
     )
     .optional(),

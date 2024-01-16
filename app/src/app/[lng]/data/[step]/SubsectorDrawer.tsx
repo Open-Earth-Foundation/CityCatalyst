@@ -1,11 +1,6 @@
-import { RadioButton } from "@/components/radio-button";
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
-import {
-  nameToI18NKey,
-  resolve,
-  resolvePromisesSequentially,
-} from "@/util/helpers";
+import { nameToI18NKey, resolvePromisesSequentially } from "@/util/helpers";
 import type { InventoryValueResponse } from "@/util/types";
 import { ArrowBackIcon, CloseIcon, WarningIcon } from "@chakra-ui/icons";
 import {
@@ -27,25 +22,19 @@ import {
   DrawerContent,
   DrawerOverlay,
   Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
   HStack,
   Heading,
   IconButton,
-  Select,
   Spinner,
   Tag,
   Text,
-  Textarea,
   useDisclosure,
-  useRadioGroup,
 } from "@chakra-ui/react";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import type { TFunction } from "i18next";
 import type { RefObject } from "react";
 import React, { useEffect } from "react";
-import { SubmitHandler, useController, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { EmissionsForm } from "./EmissionsForm";
 import type {
   ActivityData,
@@ -237,8 +226,8 @@ export function SubsectorDrawer({
             subCategoryId,
             inventoryId: inventoryId!,
             data: {
-              unavailableReason: data.unavailableReason,
-              unavailableExplanation: data.unavailableExplanation,
+              unavailableReason: value.unavailableReason,
+              unavailableExplanation: value.unavailableExplanation,
             },
           });
         } else {
@@ -393,136 +382,64 @@ export function SubsectorDrawer({
                     onSubmit={handleSubmit(onSubmit)}
                     className="space-y-6 grow flex flex-col"
                   >
-                    <FormControl>
-                      <FormLabel>
-                        {t("value-types")}{" "}
-                        {/* TODO content for this Tooltip?
-                        <Tooltip
-                          hasArrow
-                          label={t("value-types-tooltip")}
-                          placement="bottom-start"
-                        >
-                          <InfoOutlineIcon mt={-1} color="content.tertiary" />
-                        </Tooltip>
-                        */}
-                      </FormLabel>
-                    </FormControl>
-                    {/*** One value for the sub-sector ***/}
-                    {valueType === "unavailable" && (
-                      <>
-                        <FormControl
-                          isInvalid={!!resolve("unavailableReason", errors)}
-                          mb={12}
-                        >
-                          <FormLabel>{t("unavailable-reason")}</FormLabel>
-                          <Select
-                            bgColor="base.light"
-                            placeholder={t("unavailable-reason-placeholder")}
-                            {...register("unavailableReason", {
-                              required: t("option-required"),
-                            })}
-                          >
-                            <option value="no-occurrance">
-                              {t("no-occurrance")}
-                            </option>
-                            <option value="not-estimated">
-                              {t("not-estimated")}
-                            </option>
-                            <option value="confidential-information">
-                              {t("confidential-information")}
-                            </option>
-                            <option value="presented-elsewhere">
-                              {t("presented-elsewhere")}
-                            </option>
-                          </Select>
-                          <FormErrorMessage>
-                            {resolve("unavailableReason", errors)?.message}
-                          </FormErrorMessage>
-                        </FormControl>
-
-                        <FormControl
-                          isInvalid={
-                            !!resolve("unavailableExplanation", errors)
-                          }
-                        >
-                          <FormLabel>{t("unavailable-explanation")}</FormLabel>
-                          <Textarea
-                            placeholder={t(
-                              "unavailable-explanation-placeholder",
-                            )}
-                            bgColor="base.light"
-                            {...register("unavailableExplanation", {
-                              required: t("unavailable-explanation-required"),
-                            })}
-                          />
-                          <FormErrorMessage>
-                            {resolve("unavailableExplanation", errors)?.message}
-                          </FormErrorMessage>
-                        </FormControl>
-                      </>
-                    )}
-                    {/*** Values for each scope ***/}
-                    {valueType === "scope-values" && (
-                      <Accordion allowToggle className="space-y-6">
-                        {scopes?.map((scope) => (
-                          <AccordionItem key={scope.value} mb={0}>
-                            <h2>
-                              <AccordionButton>
-                                <HStack w="full">
-                                  <Box
-                                    as="span"
-                                    flex="1"
-                                    textAlign="left"
-                                    w="full"
+                    <Accordion allowToggle className="space-y-6">
+                      {scopes?.map((scope) => (
+                        <AccordionItem key={scope.value} mb={0}>
+                          <h2>
+                            <AccordionButton>
+                              <HStack w="full">
+                                <Box
+                                  as="span"
+                                  flex="1"
+                                  textAlign="left"
+                                  w="full"
+                                >
+                                  <Heading
+                                    size="sm"
+                                    color="content.alternative"
                                   >
-                                    <Heading
-                                      size="sm"
-                                      color="content.alternative"
-                                    >
-                                      {scope.label}
-                                    </Heading>
-                                    <Text color="content.tertiary">
-                                      {/* TODO: Get scope text body */}
-                                    </Text>
-                                  </Box>
-                                  {isScopeCompleted(scope.value) ? (
-                                    <Tag variant="success" mx={6}>
-                                      {t("completed")}
-                                    </Tag>
-                                  ) : (
-                                    <Tag variant="warning" mx={6}>
-                                      {t("incomplete")}
-                                    </Tag>
-                                  )}
-                                  <AccordionIcon
-                                    borderWidth={1}
-                                    boxSize={6}
-                                    borderRadius="full"
-                                    borderColor="border.overlay"
-                                  />
-                                </HStack>
-                              </AccordionButton>
-                            </h2>
-                            <AccordionPanel pt={4}>
-                              <EmissionsForm
-                                t={t}
-                                register={register}
-                                errors={errors}
-                                control={control}
-                                prefix={`subcategoryData.${scope.value}.`}
-                                watch={watch}
-                                sectorNumber={sectorNumber!}
-                              />
-                            </AccordionPanel>
-                          </AccordionItem>
-                        ))}
-                      </Accordion>
-                    )}
+                                    {scope.label}
+                                  </Heading>
+                                  <Text color="content.tertiary">
+                                    {/* TODO: Get scope text body */}
+                                  </Text>
+                                </Box>
+                                {isScopeCompleted(scope.value) ? (
+                                  <Tag variant="success" mx={6}>
+                                    {t("completed")}
+                                  </Tag>
+                                ) : (
+                                  <Tag variant="warning" mx={6}>
+                                    {t("incomplete")}
+                                  </Tag>
+                                )}
+                                <AccordionIcon
+                                  borderWidth={1}
+                                  boxSize={6}
+                                  borderRadius="full"
+                                  borderColor="border.overlay"
+                                />
+                              </HStack>
+                            </AccordionButton>
+                          </h2>
+                          <AccordionPanel pt={4}>
+                            <EmissionsForm
+                              t={t}
+                              register={register}
+                              errors={errors}
+                              control={control}
+                              prefix={`subcategoryData.${scope.value}.`}
+                              watch={watch}
+                              sectorNumber={sectorNumber!}
+                            />
+                          </AccordionPanel>
+                        </AccordionItem>
+                      ))}
+                    </Accordion>
                     <Box w="full" className="grow flex flex-col">
                       <Box className="grow" />
                       <Button
                         onClick={handleSubmit(onSubmit)}
-                        isDisabled={!isSubmitEnabled}
                         isLoading={isSubmitting}
                         type="submit"
                         formNoValidate

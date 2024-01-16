@@ -6,10 +6,7 @@ import {
   resolve,
   resolvePromisesSequentially,
 } from "@/util/helpers";
-import type {
-  InventoryValueWithSource,
-  InventoryValueResponse,
-} from "@/util/types";
+import type { InventoryValueResponse } from "@/util/types";
 import { ArrowBackIcon, CloseIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Accordion,
@@ -59,7 +56,6 @@ import type {
   SubcategoryData,
 } from "./types";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { GasValueAttributes } from "@/models/GasValue";
 
 type Inputs = {
   valueType: "scope-values" | "unavailable" | "";
@@ -89,9 +85,9 @@ const defaultActivityData: ActivityData = {
 };
 
 const defaultDirectMeasureData: DirectMeasureData = {
-  co2Emissions: 0,
-  ch4Emissions: 0,
-  n2oEmissions: 0,
+  co2Emissions: 0n,
+  ch4Emissions: 0n,
+  n2oEmissions: 0n,
   dataQuality: "",
   sourceReference: "",
 };
@@ -118,10 +114,7 @@ function extractFormValues(subSectorValue: InventoryValueResponse): Inputs {
   } else {
     inputs.valueType = "scope-values";
     inputs.subcategoryData = subSectorValue.inventoryValues.reduce(
-      (
-        record: Record<string, SubcategoryData>,
-        value: InventoryValueData,
-      ) => {
+      (record: Record<string, SubcategoryData>, value: InventoryValueData) => {
         const methodology =
           value.activityValue != null ? "activity-data" : "direct-measure";
         const data: SubcategoryData = {
@@ -137,10 +130,13 @@ function extractFormValues(subSectorValue: InventoryValueResponse): Inputs {
           data.activity.dataQuality = value.dataSource?.dataQuality || "";
           data.activity.sourceReference = value.dataSource?.notes || "";
         } else if (methodology === "direct-measure") {
-          const gasToEmissions = (value.gasValues || []).reduce((acc: Record<string, bigint>, value) => {
-            acc[value.gas!] = value.gasAmount || 0n;
-            return acc;
-          }, {});
+          const gasToEmissions = (value.gasValues || []).reduce(
+            (acc: Record<string, bigint>, value) => {
+              acc[value.gas!] = value.gasAmount || 0n;
+              return acc;
+            },
+            {},
+          );
           data.direct.co2Emissions = (gasToEmissions.CO2 || 0n) / 1000n;
           data.direct.ch4Emissions = (gasToEmissions.CH4 || 0n) / 1000n;
           data.direct.n2oEmissions = (gasToEmissions.N2O || 0n) / 1000n;
@@ -179,12 +175,13 @@ export function SubsectorDrawer({
   finalFocusRef?: RefObject<any>;
   t: TFunction;
 }) {
+  console.log("subsector", subsector);
   const {
     data: subsectorValue,
     isLoading: isSubsectorValueLoading,
     error: subsectorValueError,
   } = api.useGetInventoryValueQuery(
-    { subCategoryId: subsector?.subsectorId! TODO, inventoryId: inventoryId! },
+    { subCategoryId: subsector?.subsectorId!, inventoryId: inventoryId! }, // TODO!!!
     { skip: !subsector || !inventoryId },
   );
   const [setInventoryValue] = api.useSetInventoryValueMutation();
@@ -251,21 +248,11 @@ export function SubsectorDrawer({
         subCategoryId,
         inventoryId: inventoryId!,
         data: {
-          dataSource: {
-            unavailableReason: data.unavailableReason,
-            unavailableExplanation: data.unavailableExplanation,
-          }
+          unavailableReason: data.unavailableReason,
+          unavailableExplanation: data.unavailableExplanation,
         },
       });
     } else if (data.valueType === "scope-values") {
-      await setInventoryValue({
-        subSectorId: subsector.subsectorId,
-        inventoryId: inventoryId!,
-        data: {
-          unavailableReason: "",
-          unavailableExplanation: "",
-        },
-      });
       const results = await resolvePromisesSequentially(
         Object.keys(data.subcategoryData).map((subCategoryId) => {
           const value = data.subcategoryData[subCategoryId];
@@ -277,11 +264,12 @@ export function SubsectorDrawer({
           let inventoryValue: InventoryValueData = {
             subCategoryId,
             inventoryId: inventoryId!,
+            unavailableReason: "",
+            unavailableExplanation: "",
           };
 
           if (value.methodology === "activity-data") {
-            inventoryValue.activityValue =
-              +value.activity.activityDataAmount!;
+            inventoryValue.activityValue = +value.activity.activityDataAmount!;
             inventoryValue.activityUnits = value.activity.activityDataUnit;
             // TODO emission factor ID, manual emissions factor values for each gas
 
@@ -291,16 +279,20 @@ export function SubsectorDrawer({
               notes: value.activity.sourceReference,
             };
           } else if (value.methodology === "direct-measure") {
-            inventoryValue.gasValues = [{
-              gas: "CO2",
-              gasAmount: BigInt(value.direct.co2Emissions) * 1000n,
-            }, {
-              gas: "CH4",
-              gasAmount: BigInt(value.direct.ch4Emissions) * 1000n
-              }, {
+            inventoryValue.gasValues = [
+              {
+                gas: "CO2",
+                gasAmount: BigInt(value.direct.co2Emissions) * 1000n,
+              },
+              {
+                gas: "CH4",
+                gasAmount: BigInt(value.direct.ch4Emissions) * 1000n,
+              },
+              {
                 gas: "N2O",
-                gasAmount: BigInt(value.direct.n2oEmissions) * 1000n
-              }];
+                gasAmount: BigInt(value.direct.n2oEmissions) * 1000n,
+              },
+            ];
             inventoryValue.dataSource = {
               sourceType: "user",
               dataQuality: value.direct.dataQuality,
@@ -601,8 +593,14 @@ export function SubsectorDrawer({
             >
               <Flex justify="space-between">
                 <Box w={10} />
-              {t("unsaved-changes")}
-              <IconButton color="content.tertiary" icon={<CloseIcon />} onClick={onDialogClose} aria-label="Close" variant="ghost" />
+                {t("unsaved-changes")}
+                <IconButton
+                  color="content.tertiary"
+                  icon={<CloseIcon />}
+                  onClick={onDialogClose}
+                  aria-label="Close"
+                  variant="ghost"
+                />
               </Flex>
             </AlertDialogHeader>
             <hr />

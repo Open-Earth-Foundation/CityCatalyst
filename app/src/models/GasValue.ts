@@ -91,7 +91,7 @@ export class GasValue
         sequelize,
         tableName: "GasValue",
         schema: "public",
-        timestamps: true,
+        timestamps: false,
         indexes: [
           {
             name: "GasValue_pkey",

@@ -1,5 +1,12 @@
 import { RadioButton } from "@/components/radio-button";
-import { nameToI18NKey, resolve } from "@/util/helpers";
+import { api } from "@/services/api";
+import { logger } from "@/services/logger";
+import {
+  nameToI18NKey,
+  resolve,
+  resolvePromisesSequentially,
+} from "@/util/helpers";
+import type { InventoryValueResponse } from "@/util/types";
 import { ArrowBackIcon, CloseIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Accordion,
@@ -32,13 +39,120 @@ import {
   Text,
   Textarea,
   useDisclosure,
+  useRadioGroup,
 } from "@chakra-ui/react";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import type { TFunction } from "i18next";
 import type { RefObject } from "react";
 import React, { useEffect } from "react";
-import { Trans } from "react-i18next/TransWithoutContext";
+import { SubmitHandler, useController, useForm } from "react-hook-form";
 import { EmissionsForm } from "./EmissionsForm";
-import type { SubCategory, SubSector } from "./types";
+import type {
+  ActivityData,
+  DirectMeasureData,
+  SubCategory,
+  InventoryValueData,
+  SubSector,
+  SubcategoryData,
+} from "./types";
+import { Trans } from "react-i18next/TransWithoutContext";
+
+type Inputs = {
+  valueType: "scope-values" | "unavailable" | "";
+  methodology: "activity-data" | "direct-measure" | "";
+  energyType: "fuel-combustion" | "grid-supplied-energy";
+  unavailableReason:
+    | "no-occurrance"
+    | "not-estimated"
+    | "confidential-information"
+    | "presented-elsewhere"
+    | "";
+  unavailableExplanation: string;
+  activity: ActivityData;
+  direct: DirectMeasureData;
+  subcategoryData: Record<string, SubcategoryData>;
+};
+
+const defaultActivityData: ActivityData = {
+  activityDataAmount: undefined,
+  activityDataUnit: undefined,
+  emissionFactorType: "Local",
+  dataQuality: "",
+  co2EmissionFactor: 10,
+  n2oEmissionFactor: 10,
+  ch4EmissionFactor: 10,
+  sourceReference: "",
+};
+
+const defaultDirectMeasureData: DirectMeasureData = {
+  co2Emissions: 0n,
+  ch4Emissions: 0n,
+  n2oEmissions: 0n,
+  dataQuality: "",
+  sourceReference: "",
+};
+
+const defaultValues: Inputs = {
+  valueType: "scope-values",
+  methodology: "",
+  energyType: "fuel-combustion",
+  unavailableReason: "",
+  unavailableExplanation: "",
+  activity: defaultActivityData,
+  direct: defaultDirectMeasureData,
+  subcategoryData: {},
+};
+
+// TODO create custom type that includes relations instead of using SubSectorValueAttributes?
+function extractFormValues(subSectorValue: InventoryValueResponse): Inputs {
+  logger.debug("Form input", subSectorValue);
+  const inputs: Inputs = Object.assign({}, defaultValues);
+  if (subSectorValue.unavailableReason) {
+    inputs.valueType = "unavailable";
+    inputs.unavailableReason = (subSectorValue.unavailableReason as any) || "";
+    inputs.unavailableExplanation = subSectorValue.unavailableExplanation || "";
+  } else {
+    inputs.valueType = "scope-values";
+    inputs.subcategoryData = subSectorValue.inventoryValues.reduce(
+      (record: Record<string, SubcategoryData>, value: InventoryValueData) => {
+        const methodology =
+          value.activityValue != null ? "activity-data" : "direct-measure";
+        const data: SubcategoryData = {
+          methodology,
+          activity: { ...defaultActivityData },
+          direct: { ...defaultDirectMeasureData },
+        };
+
+        if (methodology === "activity-data") {
+          data.activity.activityDataAmount = value.activityValue;
+          data.activity.activityDataUnit = value.activityUnits;
+          // TODO emission factor ID, manual emissions factor values for each gas
+          data.activity.dataQuality = value.dataSource?.dataQuality || "";
+          data.activity.sourceReference = value.dataSource?.notes || "";
+        } else if (methodology === "direct-measure") {
+          const gasToEmissions = (value.gasValues || []).reduce(
+            (acc: Record<string, bigint>, value) => {
+              acc[value.gas!] = value.gasAmount || 0n;
+              return acc;
+            },
+            {},
+          );
+          data.direct.co2Emissions = (gasToEmissions.CO2 || 0n) / 1000n;
+          data.direct.ch4Emissions = (gasToEmissions.CH4 || 0n) / 1000n;
+          data.direct.n2oEmissions = (gasToEmissions.N2O || 0n) / 1000n;
+          data.direct.dataQuality = value.dataSource?.dataQuality || "";
+          data.direct.sourceReference = value.dataSource?.notes || "";
+        }
+
+        record[value.subCategoryId!] = data;
+        return record;
+      },
+      {},
+    );
+  }
+  logger.debug("Form values", inputs);
+  return inputs;
+}
 
 export function SubsectorDrawer({
   subsector,
@@ -48,6 +162,7 @@ export function SubsectorDrawer({
   isOpen,
   onClose,
   finalFocusRef,
+  onSave,
   t,
 }: {
   subsector?: SubSector;
@@ -56,10 +171,64 @@ export function SubsectorDrawer({
   inventoryId?: string;
   isOpen: boolean;
   onClose: () => void;
+  onSave: (subsector: SubSector, data: Inputs) => void;
   finalFocusRef?: RefObject<any>;
   t: TFunction;
 }) {
   console.log("subsector", subsector);
+  const {
+    data: subsectorValue,
+    isLoading: isSubsectorValueLoading,
+    error: subsectorValueError,
+  } = api.useGetInventoryValueQuery(
+    { subCategoryId: subsector?.subsectorId!, inventoryId: inventoryId! }, // TODO!!!
+    { skip: !subsector || !inventoryId },
+  );
+  const [setInventoryValue] = api.useSetInventoryValueMutation();
+
+  let noPreviousValue =
+    (subsectorValueError as FetchBaseQueryError)?.status === 404;
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting, isDirty },
+    watch,
+    reset,
+    control,
+  } = useForm<Inputs>();
+
+  const scopeData = watch("subcategoryData");
+  const isScopeCompleted = (scopeId: string) => {
+    const data = scopeData[scopeId];
+    if (data?.methodology === "activity-data") {
+      const activity = data.activity;
+      if (!activity) return false;
+      return (
+        activity.activityDataAmount != null &&
+        activity.activityDataUnit != null &&
+        activity.emissionFactorType !== "" &&
+        !(
+          activity.emissionFactorType === "Add custom" &&
+          +activity.co2EmissionFactor === 0 &&
+          +activity.n2oEmissionFactor === 0 &&
+          +activity.ch4EmissionFactor === 0
+        ) &&
+        activity.dataQuality !== "" &&
+        activity.sourceReference !== ""
+      );
+    } else if (data?.methodology === "direct-measure") {
+      if (!data.direct) return false;
+      return (
+        (data.direct.co2Emissions > 0 ||
+          data.direct.ch4Emissions > 0 ||
+          data.direct.n2oEmissions > 0) &&
+        data.direct.dataQuality !== "" &&
+        data.direct.sourceReference !== ""
+      );
+    }
+    return false;
+  };
 
   const onTryClose = () => {
     if (isDirty) {
@@ -68,6 +237,93 @@ export function SubsectorDrawer({
       onClose();
     }
   };
+
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    if (!subsector) return;
+    logger.debug("Subsector data", data);
+
+    // decide which data from the form to save
+    if (data.valueType === "unavailable") {
+      await setInventoryValue({
+        subCategoryId,
+        inventoryId: inventoryId!,
+        data: {
+          unavailableReason: data.unavailableReason,
+          unavailableExplanation: data.unavailableExplanation,
+        },
+      });
+    } else if (data.valueType === "scope-values") {
+      const results = await resolvePromisesSequentially(
+        Object.keys(data.subcategoryData).map((subCategoryId) => {
+          const value = data.subcategoryData[subCategoryId];
+          if (!isScopeCompleted(subCategoryId)) {
+            logger.error(`Data not completed for scope ${subCategoryId}!`);
+            return Promise.resolve();
+          }
+
+          let inventoryValue: InventoryValueData = {
+            subCategoryId,
+            inventoryId: inventoryId!,
+            unavailableReason: "",
+            unavailableExplanation: "",
+          };
+
+          if (value.methodology === "activity-data") {
+            inventoryValue.activityValue = +value.activity.activityDataAmount!;
+            inventoryValue.activityUnits = value.activity.activityDataUnit;
+            // TODO emission factor ID, manual emissions factor values for each gas
+
+            inventoryValue.dataSource = {
+              sourceType: "user",
+              dataQuality: value.activity.dataQuality,
+              notes: value.activity.sourceReference,
+            };
+          } else if (value.methodology === "direct-measure") {
+            inventoryValue.gasValues = [
+              {
+                gas: "CO2",
+                gasAmount: BigInt(value.direct.co2Emissions) * 1000n,
+              },
+              {
+                gas: "CH4",
+                gasAmount: BigInt(value.direct.ch4Emissions) * 1000n,
+              },
+              {
+                gas: "N2O",
+                gasAmount: BigInt(value.direct.n2oEmissions) * 1000n,
+              },
+            ];
+            inventoryValue.dataSource = {
+              sourceType: "user",
+              dataQuality: value.direct.dataQuality,
+              notes: value.direct.sourceReference,
+            };
+          } else {
+            logger.error(
+              `Methodology for subcategory ${subCategoryId} not selected!`,
+            );
+            return Promise.resolve();
+          }
+
+          return setInventoryValue({
+            subCategoryId: subCategoryId,
+            inventoryId: inventoryId!,
+            data: inventoryValue,
+          });
+        }),
+      );
+      logger.debug("Save results", results);
+    }
+    onSave(subsector, data);
+    onClose();
+  };
+
+  const { field } = useController({
+    name: "valueType",
+    control,
+    defaultValue: "",
+  });
+  const { getRootProps, getRadioProps } = useRadioGroup(field);
 
   // reset form values when choosing another subsector
   useEffect(() => {
@@ -286,7 +542,11 @@ export function SubsectorDrawer({
                             <AccordionPanel pt={4}>
                               <EmissionsForm
                                 t={t}
-                                subCategoryId={scope.value}
+                                register={register}
+                                errors={errors}
+                                control={control}
+                                prefix={`subcategoryData.${scope.value}.`}
+                                watch={watch}
                                 sectorNumber={sectorNumber!}
                               />
                             </AccordionPanel>

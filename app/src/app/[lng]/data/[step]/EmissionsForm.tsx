@@ -2,6 +2,7 @@ import { RadioButton } from "@/components/radio-button";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import {
   Box,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -52,14 +53,19 @@ export function EmissionsForm({
   return (
     <Box className="space-y-6">
       <FormControl>
-        <Switch size="lg" {...register(prefix + "isUnavailable")} />
-        <FormLabel>{t("unavailable-not-applicable")}</FormLabel>
+        <Flex alignItems="center" className="space-x-4">
+          <Switch size="lg" {...register(prefix + "isUnavailable")} />
+          <FormLabel sx={{ mb: "0 !important" }} mt={-1}>
+            {t("unavailable-not-applicable")}
+          </FormLabel>
+        </Flex>
       </FormControl>
       {isUnavailable ? (
         <>
           <FormControl
             isInvalid={!!resolve(prefix + "unavailableReason", errors)}
             mb={12}
+            mt={2}
           >
             <FormLabel>{t("unavailable-reason")}</FormLabel>
             <Select
@@ -83,7 +89,9 @@ export function EmissionsForm({
             </FormErrorMessage>
           </FormControl>
 
-          <FormControl isInvalid={!!resolve(prefix + "unavailableExplanation", errors)}>
+          <FormControl
+            isInvalid={!!resolve(prefix + "unavailableExplanation", errors)}
+          >
             <FormLabel>{t("unavailable-explanation")}</FormLabel>
             <Textarea
               placeholder={t("unavailable-explanation-placeholder")}

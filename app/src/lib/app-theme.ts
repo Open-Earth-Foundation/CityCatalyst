@@ -467,6 +467,9 @@ export const appTheme = extendTheme({
               bg: "content.link",
             },
           },
+          container: {
+            mb: "0 !important",
+          },
         },
       },
       defaultProps: {

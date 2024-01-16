@@ -232,7 +232,7 @@ export function SubsectorDrawer({
         const value = data.subcategoryData[subCategoryId];
 
         // decide which data from the form to save
-        if (value.valueType === "unavailable") {
+        if (value.isUnavailable) {
           return setInventoryValue({
             subCategoryId,
             inventoryId: inventoryId!,
@@ -241,7 +241,7 @@ export function SubsectorDrawer({
               unavailableExplanation: data.unavailableExplanation,
             },
           });
-        } else if (value.valueType === "scope-values") {
+        } else {
           if (!isScopeCompleted(subCategoryId)) {
             logger.error(`Data not completed for scope ${subCategoryId}!`);
             return Promise.resolve();
@@ -296,8 +296,6 @@ export function SubsectorDrawer({
             inventoryId: inventoryId!,
             data: inventoryValue,
           });
-        } else {
-          return Promise.resolve();
         }
       }),
     );
@@ -305,13 +303,6 @@ export function SubsectorDrawer({
     onSave(subsector, data);
     onClose();
   };
-
-  const { field } = useController({
-    name: "valueType",
-    control,
-    defaultValue: "",
-  });
-  const { getRootProps, getRadioProps } = useRadioGroup(field);
 
   // reset form values when choosing another subsector
   useEffect(() => {
@@ -335,9 +326,6 @@ export function SubsectorDrawer({
       value: subcategory.subcategoryId,
     };
   });
-
-  const valueType = watch("valueType");
-  const isSubmitEnabled = !!valueType;
 
   const {
     isOpen: isDialogOpen,
@@ -418,18 +406,6 @@ export function SubsectorDrawer({
                         </Tooltip>
                         */}
                       </FormLabel>
-                      <HStack spacing={4} {...getRootProps()}>
-                        <RadioButton
-                          {...getRadioProps({ value: "scope-values" })}
-                        >
-                          {t("scope-values")}
-                        </RadioButton>
-                        <RadioButton
-                          {...getRadioProps({ value: "unavailable" })}
-                        >
-                          {t("unavailable-not-applicable")}
-                        </RadioButton>
-                      </HStack>
                     </FormControl>
                     {/*** One value for the sub-sector ***/}
                     {valueType === "unavailable" && (

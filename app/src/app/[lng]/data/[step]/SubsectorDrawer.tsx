@@ -150,18 +150,19 @@ export function SubsectorDrawer({
   t: TFunction;
 }) {
   console.log("subsector", subsector);
+  const subCategoryIds = subsector?.subCategories.map((c) => c.subcategoryId);
   const {
-    data: subsectorValue,
+    data: inventoryValues,
     isLoading: isSubsectorValueLoading,
-    error: subsectorValueError,
-  } = api.useGetInventoryValueQuery(
-    { subCategoryId: subsector?.subsectorId!, inventoryId: inventoryId! }, // TODO!!!
+    error: inventoryValueError,
+  } = api.useGetInventoryValuesQuery(
+    { subCategoryIds: subCategoryIds!, inventoryId: inventoryId! },
     { skip: !subsector || !inventoryId },
   );
   const [setInventoryValue] = api.useSetInventoryValueMutation();
 
   let noPreviousValue =
-    (subsectorValueError as FetchBaseQueryError)?.status === 404;
+    (inventoryValueError as FetchBaseQueryError)?.status === 404;
 
   const {
     register,
@@ -295,14 +296,14 @@ export function SubsectorDrawer({
 
   // reset form values when choosing another subsector
   useEffect(() => {
-    if (subsectorValue) {
+    if (inventoryValues) {
       // TODO store previous form values if it's unsaved?
-      reset(extractFormValues(subsectorValue));
+      reset(extractFormValues(inventoryValues));
     } else {
       reset(defaultValues);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subsectorValue, subsector]);
+  }, [inventoryValues, subsector]);
 
   const subcategoryData: SubCategory[] | undefined = subsector?.subCategories;
   const scopes = subcategoryData?.map((subcategory: SubCategory) => {
@@ -366,7 +367,7 @@ export function SubsectorDrawer({
                 <Center>
                   <Spinner size="lg" />
                 </Center>
-              ) : subsectorValueError && !noPreviousValue ? (
+              ) : inventoryValueError && !noPreviousValue ? (
                 <Center>
                   <HStack mt={4}>
                     <WarningIcon boxSize={7} color="semantic.danger" />

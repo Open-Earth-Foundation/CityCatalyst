@@ -200,6 +200,8 @@ module.exports = {
               key: "id",
             },
           },
+          gas: { type: Sequelize.STRING, allowNull: true },
+          gas_amount: { type: Sequelize.BIGINT, allowNull: true },
         },
         { transaction },
       );

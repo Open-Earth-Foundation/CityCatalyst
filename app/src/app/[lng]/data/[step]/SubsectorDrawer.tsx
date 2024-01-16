@@ -81,6 +81,10 @@ const defaultValues: Inputs = {
   subcategoryData: {},
 };
 
+BigInt.prototype["toJSON"] = function () {
+  return this.toString();
+};
+
 // TODO create custom type that includes relations instead of using SubSectorValueAttributes?
 function extractFormValues(inventoryValues: InventoryValueResponse[]): Inputs {
   logger.debug("Form input", inventoryValues);
@@ -107,7 +111,7 @@ function extractFormValues(inventoryValues: InventoryValueResponse[]): Inputs {
       } else if (methodology === "direct-measure") {
         const gasToEmissions = (value.gasValues || []).reduce(
           (acc: Record<string, bigint>, value) => {
-            acc[value.gas!] = value.gasAmount || 0n;
+            acc[value.gas!] = BigInt(value.gasAmount || 0n);
             return acc;
           },
           {},

@@ -10,6 +10,10 @@ import { Op } from "sequelize";
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const inventoryValue = await db.models.InventoryValue.findOne({
     where: { subCategoryId: params.subcategory, inventoryId: params.inventory },
+    include: [
+      { model: db.models.DataSource, as: "dataSource" },
+      { model: db.models.GasValue, as: "gasValues" },
+    ],
   });
 
   if (!inventoryValue) {
@@ -23,7 +27,10 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   const body = createInventoryValue.parse(await req.json());
   let inventoryValue = await db.models.InventoryValue.findOne({
     where: { subCategoryId: params.subcategory, inventoryId: params.inventory },
-    include: [{ model: db.models.DataSource, as: "dataSource" }],
+    include: [
+      { model: db.models.DataSource, as: "dataSource" },
+      { model: db.models.GasValue, as: "gasValues" },
+    ],
   });
   const gasValuesData = body.gasValues;
   delete body.gasValues;

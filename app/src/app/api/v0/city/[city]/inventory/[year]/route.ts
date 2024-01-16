@@ -91,7 +91,7 @@ async function inventoryCSV(inventory: any): Promise<Buffer> {
       value.activityUnits,
       value.activityValue,
       // value.emissionsFactor,
-      value.dataSourceId,
+      value.datasourceId,
     ].join(",");
   });
   return Buffer.from(

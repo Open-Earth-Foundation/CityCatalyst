@@ -3,7 +3,6 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    
     await queryInterface.createTable('UserFile', { 
       id: {
         type: Sequelize.UUID,
@@ -25,6 +24,10 @@ module.exports = {
         type: Sequelize.BLOB,
         allowNull: true,
       },
+      status:{
+        type: Sequelize.STRING,
+        allowNull: true
+      },
       url: {
         type: Sequelize.STRING,
         allowNull: true
@@ -33,6 +36,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true
       },
+ 
       created: {
         type: Sequelize.DATE,
         allowNull: true,

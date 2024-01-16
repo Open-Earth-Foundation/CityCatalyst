@@ -4,10 +4,11 @@ import { User, UserId } from "./User";
 
 export interface UserFileAttributes {
   id: string;
-  user_id?: string;
+  userId?: string;
   file_reference?: string;
   data?: Buffer;
   status?: string;
+  url?: string;
   gpc_ref_no?: string;
   created?: Date;
   lastUpdated?: Date;
@@ -16,9 +17,10 @@ export interface UserFileAttributes {
 export type UserFilePk = "id";
 export type UserFileId = UserFile[UserFilePk];
 export type UserFileOptionalAttributes =
-  | "user_id"
+  | "userId"
   | "file_reference"
   | "data"
+  | "url"
   | "status"
   | "gpc_ref_no"
   | "created"
@@ -33,9 +35,10 @@ export class UserFile
   implements UserFileAttributes
 {
   id!: string;
-  user_id?: string | undefined;
+  userId?: string | undefined;
   file_reference?: string | undefined;
   data: Buffer | undefined;
+  url?: string | undefined;
   status: string | undefined;
   gpc_ref_no?: string | undefined;
   created?: Date | undefined;
@@ -56,7 +59,7 @@ export class UserFile
           primaryKey: true,
           field: "id",
         },
-        user_id: {
+        userId: {
           type: DataTypes.UUID,
           allowNull: true,
           references: {
@@ -71,6 +74,10 @@ export class UserFile
         },
         data: {
           type: DataTypes.BLOB,
+          allowNull: true,
+        },
+        url: {
+          type: DataTypes.STRING(255),
           allowNull: true,
         },
         status: {

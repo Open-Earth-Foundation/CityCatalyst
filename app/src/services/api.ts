@@ -116,6 +116,19 @@ export const api = createApi({
         response.data,
       providesTags: ["InventoryValue"],
     }),
+    getInventoryValues: builder.query<
+      InventoryValueResponse[],
+      { subCategoryIds: string[]; inventoryId: string }
+    >({
+      query: ({ subCategoryIds, inventoryId }) => ({
+        url: `/inventory/${inventoryId}/value`,
+        method: "GET",
+        params: { subCategoryIds: subCategoryIds.join(",") },
+      }),
+      transformResponse: (response: { data: InventoryValueResponse[] }) =>
+        response.data,
+      providesTags: ["InventoryValue"],
+    }),
     setInventoryValue: builder.mutation<
       InventoryValueAttributes,
       InventoryValueUpdateQuery

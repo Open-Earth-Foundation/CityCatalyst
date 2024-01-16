@@ -30,6 +30,7 @@ import {
   Text,
   Th,
   Thead,
+  useToast,
   Tr,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -40,9 +41,11 @@ import {
   AddIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  InfoOutlineIcon,
   SearchIcon,
 } from "@chakra-ui/icons";
 import {
+  MdCheckCircleOutline,
   MdDomain,
   MdMoreVert,
   MdOutlineFileDownload,
@@ -64,14 +67,28 @@ import DeleteUserModal from "@/components/Modals/delete-user-modal";
 
 import DeleteCityModal from "@/components/Modals/delete-city-modal";
 import { TFunction } from "i18next";
+import { UserAttributes } from "@/models/User";
+import { api, useSetCurrentUserDataMutation } from "@/services/api";
+import { CityAttributes } from "@/models/City";
 interface MyProfileTabProps {
   session: Session | null;
   status: "loading" | "authenticated" | "unauthenticated";
   t: TFunction;
   lng: string;
+  userInfo: UserAttributes | any;
+  cityUsers: UserAttributes[] | any;
+  cities: CityAttributes[] | any;
 }
 
-const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
+const MyProfileTab: FC<MyProfileTabProps> = ({
+  session,
+  status,
+  t,
+  lng,
+  userInfo,
+  cityUsers,
+  cities,
+}) => {
   const [inputValue, setInputValue] = useState<string>("");
   const {
     handleSubmit,
@@ -79,18 +96,61 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
     formState: { errors, isSubmitting },
     setValue,
   } = useForm<ProfileInputs>();
-  useEffect(() => {
-    if (session?.user && status === "authenticated") {
-      setValue("name", session.user?.name!);
-      setValue("city", "City");
-      setValue("email", session.user.email!);
-      setValue("role", "admin");
-    }
-  }, [setValue, session, status]);
 
+  useEffect(() => {
+    if (userInfo) {
+      setValue("name", userInfo.name);
+      setValue("city", "City");
+      setValue("email", userInfo.email!);
+      setValue("role", userInfo.role);
+    }
+  }, [setValue, session, status, userInfo]);
+
+  const [setCurrentUserData] = useSetCurrentUserDataMutation();
+  const toast = useToast();
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
-    // TODO
-    // Submit data via the api
+    await setCurrentUserData({
+      locode: userInfo.defaultCityLocode,
+      userId: userInfo.userId,
+      name: data.name,
+      email: data.email,
+      role: data.role,
+      isOrganization: userInfo.isOrganization ? true : false,
+    }).then(() =>
+      toast({
+        description: "User details updated!",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        render: () => (
+          <Box
+            display="flex"
+            gap="8px"
+            color="white"
+            alignItems="center"
+            justifyContent="space-between"
+            p={3}
+            bg="interactive.primary"
+            width="600px"
+            height="60px"
+            borderRadius="8px"
+          >
+            <Box display="flex" gap="8px" alignItems="center">
+              <MdCheckCircleOutline fontSize="24px" />
+
+              <Text
+                color="base.light"
+                fontWeight="bold"
+                lineHeight="52"
+                fontSize="label.lg"
+              >
+                User details updated
+              </Text>
+            </Box>
+          </Box>
+        ),
+      }),
+    );
   };
 
   const onInputChange = (e: any) => {
@@ -111,62 +171,38 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [role, setRole] = useState<string>("");
-  const [filteredUsers, setFilteredUsers] = useState<Array<UserDetails>>([]);
+  const [filteredUsers, setFilteredUsers] = useState<Array<UserAttributes>>([]);
   const [filteredUsersByRole, setFilteredUsersByRole] = useState<
-    Array<UserDetails>
+    Array<UserAttributes>
   >([]);
 
   useEffect(() => {
-    const users = [
-      { id: "1", name: "John Doe", email: "john@example.com", role: "admin" },
-      {
-        id: "2",
-        name: "Jane Smith",
-        email: "jane@example.com",
-        role: "contributor",
-      },
-    ];
+    if (cityUsers) {
+      const result = cityUsers.filter(
+        (users: any) =>
+          users.name
+            .toLocaleLowerCase()
+            .includes(searchTerm.toLocaleLowerCase()) ||
+          users.email
+            .toLocaleLowerCase()
+            .includes(searchTerm.toLocaleLowerCase()),
+      );
 
-    const result = users.filter(
-      (users) =>
-        users.name
-          .toLocaleLowerCase()
-          .includes(searchTerm.toLocaleLowerCase()) ||
-        users.email
-          .toLocaleLowerCase()
-          .includes(searchTerm.toLocaleLowerCase()),
-    );
-
-    setFilteredUsers(result);
-  }, [role, searchTerm]);
+      setFilteredUsers(result);
+    }
+  }, [role, searchTerm, cityUsers]);
 
   useEffect(() => {
-    const selectedUserByRole = filteredUsers.filter((users) =>
-      users.role.toLocaleLowerCase().includes(role.toLocaleLowerCase()),
+    const selectedUsersByRole = filteredUsers.filter(
+      (users) =>
+        users?.role?.toLocaleLowerCase().includes(role.toLocaleLowerCase()),
     );
     if (role !== "all") {
-      setFilteredUsersByRole(selectedUserByRole);
+      setFilteredUsersByRole(selectedUsersByRole);
     } else {
       setFilteredUsersByRole(filteredUsers);
     }
   }, [filteredUsers, role]);
-
-  const cities = [
-    {
-      id: "1",
-      name: "Test City 1",
-      state: "Test Region",
-      country: "Argentina",
-      lastUpdated: "2023-10-10T12:05:41.340Z",
-    },
-    {
-      id: "2",
-      name: "Test City 2",
-      state: "Test Region",
-      country: "Argentina",
-      lastUpdated: "2023-10-10T12:05:41.340Z",
-    },
-  ];
 
   const {
     isOpen: isUserModalOpen,
@@ -191,20 +227,67 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
     onClose: onCityDeleteModalClose,
   } = useDisclosure();
 
-  const [userData, setUserData] = useState<UserDetails>({
+  const [userData, setUserData] = useState<UserAttributes>({
     email: "",
-    id: "",
+    userId: "",
     name: "",
     role: "",
   });
 
-  const [cityData, setCityData] = useState<CityData>({
-    id: "",
+  const [cityData, setCityData] = useState<CityAttributes>({
+    cityId: "",
     name: "",
-    state: "",
+    region: "",
     country: "",
-    lastUpdated: "",
+    lastUpdated: undefined,
   });
+
+  const [removeUser] = api.useRemoveUserMutation();
+  const handleDeleteUsers = async () => {
+    selectedUsers.map(async (user: string) => {
+      await removeUser({
+        userId: user,
+        defaultCityLocode: userInfo.defaultCityLocode,
+      }).then((res: any) => {
+        if (res.data.deleted) {
+          toast({
+            description: "User details updated!",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+            render: () => (
+              <Box
+                display="flex"
+                gap="8px"
+                color="white"
+                alignItems="center"
+                justifyContent="space-between"
+                p={3}
+                bg="interactive.primary"
+                width="600px"
+                height="60px"
+                borderRadius="8px"
+              >
+                <Box display="flex" gap="8px" alignItems="center">
+                  <MdCheckCircleOutline fontSize="24px" />
+
+                  <Text
+                    color="base.light"
+                    fontWeight="bold"
+                    lineHeight="52"
+                    fontSize="label.lg"
+                  >
+                    User(s) details deleted from city
+                  </Text>
+                </Box>
+              </Box>
+            ),
+          });
+        }
+      });
+    });
+  };
+
   return (
     <>
       <TabPanel>
@@ -552,6 +635,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                           letterSpacing="wide"
                           leftIcon={<FiTrash2 size={24} />}
                           variant="ghost"
+                          onClick={handleDeleteUsers}
                         >
                           {t("remove-users")}
                         </Button>
@@ -575,16 +659,18 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                         </Thead>
                         <Tbody fontFamily="heading">
                           {filteredUsersByRole.map((user) => (
-                            <Tr key={user.id}>
+                            <Tr key={user.userId}>
                               <Td>
                                 <Checkbox
                                   onChange={(e) =>
                                     handleCheckboxChange(
-                                      user.id,
+                                      user.userId,
                                       e.target.checked,
                                     )
                                   }
-                                  isChecked={selectedUsers.includes(user.id)}
+                                  isChecked={selectedUsers.includes(
+                                    user.userId,
+                                  )}
                                 />
                               </Td>
                               <Td>{user.name}</Td>
@@ -764,11 +850,11 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                         fontWeight="semibold"
                         fontSize="button.md"
                       >
-                        {t("add-user")}
+                        {t("add-city")}
                       </Button>
                     </NextLink>
                   </Box>
-                  <Box>
+                  <Box maxHeight="500px" overflow="scroll">
                     <TableContainer
                       borderWidth="1px"
                       borderColor="border.overlay"
@@ -780,24 +866,37 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                             <Th>{t("city-name")}</Th>
                             <Th>{t("state-province")}</Th>
                             <Th>{t("country")}</Th>
-                            <Th>{t("last-updated")}</Th>
+                            <Th align="right">{t("last-updated")}</Th>
                           </Tr>
                         </Thead>
                         <Tbody fontFamily="heading">
-                          {cities.map((city) => (
-                            <Tr key={city.id}>
+                          {cities?.map((city: any) => (
+                            <Tr key={city.cityId}>
                               <Td>
-                                <Box color="interactive.secondary">
+                                <Box
+                                  color="interactive.secondary"
+                                  display="flex"
+                                  alignItems="center"
+                                  gap="10px"
+                                >
                                   <MdDomain size={24} />
+                                  <Text color="base.dark">{city.name}</Text>
                                 </Box>
                               </Td>
-                              <Td>
-                                <Text>{city.name}</Text>
-                              </Td>
-                              <Td>{city.state}</Td>
+
+                              <Td>{city.region}</Td>
                               <Td>{city.country}</Td>
-                              <Td display="flex" alignItems="center" gap="8px">
-                                <Text>{city.lastUpdated}</Text>
+                              <Td
+                                display="flex"
+                                alignItems="center"
+                                gap="8px"
+                                align="right"
+                              >
+                                <Text>
+                                  {new Date(
+                                    city.last_updated,
+                                  ).toLocaleDateString()}
+                                </Text>
                                 <Popover isLazy>
                                   <PopoverTrigger>
                                     <IconButton
@@ -839,7 +938,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
                                             color: "white",
                                           }}
                                           onClick={() => {
-                                            alert(city.id);
+                                            alert(city.cityId);
                                           }}
                                         >
                                           <MdOutlineFileDownload size={24} />
@@ -904,38 +1003,28 @@ const MyProfileTab: FC<MyProfileTabProps> = ({ session, status, t, lng }) => {
           </Box>
         </Box>
       </TabPanel>
-      <AddUserModal isOpen={isUserModalOpen} onClose={onUserModalClose} />
-      <UpdateUserModal
-        isOpen={isUserUpdateModalOpen}
-        onClose={onUserUpdateModalClose}
-        userData={userData}
-      />
-      <DeleteUserModal
-        isOpen={isUserDeleteModalOpen}
-        onClose={onUserDeleteModalClose}
-        userData={userData}
-      />
-      <DeleteCityModal
-        isOpen={isCityDeleteModalOpen}
-        onClose={onCityDeleteModalClose}
-        userData={userData}
-        tf={t}
-        lng={lng}
+      <AddUserModal
+        isOpen={isUserModalOpen}
+        onClose={onUserModalClose}
+        userInfo={userInfo}
       />
       <UpdateUserModal
         isOpen={isUserUpdateModalOpen}
         onClose={onUserUpdateModalClose}
         userData={userData}
+        userInfo={userInfo}
       />
       <DeleteUserModal
         isOpen={isUserDeleteModalOpen}
         onClose={onUserDeleteModalClose}
         userData={userData}
+        userInfo={userInfo}
       />
       <DeleteCityModal
         isOpen={isCityDeleteModalOpen}
         onClose={onCityDeleteModalClose}
         userData={userData}
+        cityData={cityData}
         tf={t}
         lng={lng}
       />

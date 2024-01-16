@@ -11,14 +11,32 @@ export const POST = apiHandler(async (_req: NextRequest, { params }) => {
     userId: randomUUID(),
     ...body,
   });
-  const cityId = params.city;
 
   const city = await db.models.City.findOne({ where: { locode: params.city } });
   if (!city) {
     throw new createHttpError.NotFound("City not found");
   }
 
-  user.addCity(cityId);
+  user.addCity(city.cityId);
 
   return NextResponse.json({ data: user });
+});
+
+export const GET = apiHandler(async (_req: NextRequest, { params }) => {
+  const users = await db.models.User.findAll({
+    include: [
+      {
+        model: db.models.City,
+        where: { locode: params.city },
+        as: "cities",
+        attributes: ["cityId"],
+      },
+    ],
+  });
+
+  if (!users) {
+    throw new createHttpError.NotFound("Users not found");
+  }
+
+  return NextResponse.json({ data: users });
 });

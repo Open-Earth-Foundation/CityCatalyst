@@ -175,7 +175,9 @@ export function SubsectorDrawer({
   const scopeData = watch("subcategoryData");
   const isScopeCompleted = (scopeId: string) => {
     const data = scopeData[scopeId];
-    if (data?.methodology === "activity-data") {
+    if (data?.isUnavailable) {
+      return !!data.unavailableExplanation && !!data.unavailableReason;
+    } else if (data?.methodology === "activity-data") {
       const activity = data.activity;
       if (!activity) return false;
       return (

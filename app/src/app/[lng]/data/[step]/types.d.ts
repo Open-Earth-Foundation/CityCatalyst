@@ -61,6 +61,14 @@ type DirectMeasureData = {
 
 type SubcategoryData = {
   methodology: "activity-data" | "direct-measure" | "";
+  isUnavailable: bool;
+  unavailableReason:
+    | "no-occurrance"
+    | "not-estimated"
+    | "confidential-information"
+    | "presented-elsewhere"
+    | "";
+  unavailableExplanation: string;
   activity: ActivityData;
   direct: DirectMeasureData;
 };

@@ -58,16 +58,8 @@ import type {
 import { Trans } from "react-i18next/TransWithoutContext";
 
 type Inputs = {
-  valueType: "scope-values" | "unavailable" | "";
   methodology: "activity-data" | "direct-measure" | "";
   energyType: "fuel-combustion" | "grid-supplied-energy";
-  unavailableReason:
-    | "no-occurrance"
-    | "not-estimated"
-    | "confidential-information"
-    | "presented-elsewhere"
-    | "";
-  unavailableExplanation: string;
   activity: ActivityData;
   direct: DirectMeasureData;
   subcategoryData: Record<string, SubcategoryData>;
@@ -93,63 +85,56 @@ const defaultDirectMeasureData: DirectMeasureData = {
 };
 
 const defaultValues: Inputs = {
-  valueType: "scope-values",
   methodology: "",
   energyType: "fuel-combustion",
-  unavailableReason: "",
-  unavailableExplanation: "",
   activity: defaultActivityData,
   direct: defaultDirectMeasureData,
   subcategoryData: {},
 };
 
 // TODO create custom type that includes relations instead of using SubSectorValueAttributes?
-function extractFormValues(subSectorValue: InventoryValueResponse): Inputs {
-  logger.debug("Form input", subSectorValue);
+function extractFormValues(inventoryValues: InventoryValueResponse[]): Inputs {
+  logger.debug("Form input", inventoryValues);
   const inputs: Inputs = Object.assign({}, defaultValues);
-  if (subSectorValue.unavailableReason) {
-    inputs.valueType = "unavailable";
-    inputs.unavailableReason = (subSectorValue.unavailableReason as any) || "";
-    inputs.unavailableExplanation = subSectorValue.unavailableExplanation || "";
-  } else {
-    inputs.valueType = "scope-values";
-    inputs.subcategoryData = subSectorValue.inventoryValues.reduce(
-      (record: Record<string, SubcategoryData>, value: InventoryValueData) => {
-        const methodology =
-          value.activityValue != null ? "activity-data" : "direct-measure";
-        const data: SubcategoryData = {
-          methodology,
-          activity: { ...defaultActivityData },
-          direct: { ...defaultDirectMeasureData },
-        };
+  inputs.subcategoryData = inventoryValues.reduce(
+    (record: Record<string, SubcategoryData>, value: InventoryValueData) => {
+      const methodology =
+        value.activityValue != null ? "activity-data" : "direct-measure";
+      const data: SubcategoryData = {
+        methodology,
+        isUnavailable: !!value.unavailableReason,
+        unavailableReason: (value.unavailableReason as any) || "",
+        unavailableExplanation: value.unavailableExplanation || "",
+        activity: { ...defaultActivityData },
+        direct: { ...defaultDirectMeasureData },
+      };
 
-        if (methodology === "activity-data") {
-          data.activity.activityDataAmount = value.activityValue;
-          data.activity.activityDataUnit = value.activityUnits;
-          // TODO emission factor ID, manual emissions factor values for each gas
-          data.activity.dataQuality = value.dataSource?.dataQuality || "";
-          data.activity.sourceReference = value.dataSource?.notes || "";
-        } else if (methodology === "direct-measure") {
-          const gasToEmissions = (value.gasValues || []).reduce(
-            (acc: Record<string, bigint>, value) => {
-              acc[value.gas!] = value.gasAmount || 0n;
-              return acc;
-            },
-            {},
-          );
-          data.direct.co2Emissions = (gasToEmissions.CO2 || 0n) / 1000n;
-          data.direct.ch4Emissions = (gasToEmissions.CH4 || 0n) / 1000n;
-          data.direct.n2oEmissions = (gasToEmissions.N2O || 0n) / 1000n;
-          data.direct.dataQuality = value.dataSource?.dataQuality || "";
-          data.direct.sourceReference = value.dataSource?.notes || "";
-        }
+      if (methodology === "activity-data") {
+        data.activity.activityDataAmount = value.activityValue;
+        data.activity.activityDataUnit = value.activityUnits;
+        // TODO emission factor ID, manual emissions factor values for each gas
+        data.activity.dataQuality = value.dataSource?.dataQuality || "";
+        data.activity.sourceReference = value.dataSource?.notes || "";
+      } else if (methodology === "direct-measure") {
+        const gasToEmissions = (value.gasValues || []).reduce(
+          (acc: Record<string, bigint>, value) => {
+            acc[value.gas!] = value.gasAmount || 0n;
+            return acc;
+          },
+          {},
+        );
+        data.direct.co2Emissions = (gasToEmissions.CO2 || 0n) / 1000n;
+        data.direct.ch4Emissions = (gasToEmissions.CH4 || 0n) / 1000n;
+        data.direct.n2oEmissions = (gasToEmissions.N2O || 0n) / 1000n;
+        data.direct.dataQuality = value.dataSource?.dataQuality || "";
+        data.direct.sourceReference = value.dataSource?.notes || "";
+      }
 
-        record[value.subCategoryId!] = data;
-        return record;
-      },
-      {},
-    );
-  }
+      record[value.subCategoryId!] = data;
+      return record;
+    },
+    {},
+  );
   logger.debug("Form values", inputs);
   return inputs;
 }
@@ -242,20 +227,21 @@ export function SubsectorDrawer({
     if (!subsector) return;
     logger.debug("Subsector data", data);
 
-    // decide which data from the form to save
-    if (data.valueType === "unavailable") {
-      await setInventoryValue({
-        subCategoryId,
-        inventoryId: inventoryId!,
-        data: {
-          unavailableReason: data.unavailableReason,
-          unavailableExplanation: data.unavailableExplanation,
-        },
-      });
-    } else if (data.valueType === "scope-values") {
-      const results = await resolvePromisesSequentially(
-        Object.keys(data.subcategoryData).map((subCategoryId) => {
-          const value = data.subcategoryData[subCategoryId];
+    const results = await resolvePromisesSequentially(
+      Object.keys(data.subcategoryData).map((subCategoryId) => {
+        const value = data.subcategoryData[subCategoryId];
+
+        // decide which data from the form to save
+        if (value.valueType === "unavailable") {
+          return setInventoryValue({
+            subCategoryId,
+            inventoryId: inventoryId!,
+            data: {
+              unavailableReason: data.unavailableReason,
+              unavailableExplanation: data.unavailableExplanation,
+            },
+          });
+        } else if (value.valueType === "scope-values") {
           if (!isScopeCompleted(subCategoryId)) {
             logger.error(`Data not completed for scope ${subCategoryId}!`);
             return Promise.resolve();
@@ -310,10 +296,12 @@ export function SubsectorDrawer({
             inventoryId: inventoryId!,
             data: inventoryValue,
           });
-        }),
-      );
-      logger.debug("Save results", results);
-    }
+        } else {
+          return Promise.resolve();
+        }
+      }),
+    );
+    logger.debug("Save results", results);
     onSave(subsector, data);
     onClose();
   };

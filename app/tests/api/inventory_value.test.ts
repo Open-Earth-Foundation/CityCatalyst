@@ -19,7 +19,7 @@ import { SubCategory } from "@/models/SubCategory";
 import { SubSector } from "@/models/SubSector";
 
 const locode = "XX_SUBCATEGORY_CITY";
-const co2eq = BigInt(44000);
+const co2eq = 44000n;
 const activityUnits = "UNITS";
 const activityValue = 1000;
 const emissionFactorValue = 12;
@@ -30,22 +30,19 @@ const subsectorName = "TEST_SUBCATEGORY_SUBSECTOR";
 const inventoryValue1: CreateInventoryValueRequest = {
   activityUnits,
   activityValue,
-  emissionFactorValue,
   co2eq,
 };
 
 const inventoryValue2: CreateInventoryValueRequest = {
   activityUnits,
   activityValue,
-  emissionFactorValue,
-  co2eq: BigInt(700000),
+  co2eq: 700000n,
 };
 
 const invalidInventoryValue = {
   activityUnits: 0,
   activityValue: "1000s",
-  emissionFactorValue: "va",
-  totalEmissions: "TOTAL_EMISSIONS",
+  co2eq: -1n,
 };
 
 describe("Sub Category API", () => {
@@ -138,7 +135,6 @@ describe("Sub Category API", () => {
     assert.equal(data.activityUnits, inventoryValue1.activityUnits);
     assert.equal(data.activityValue, inventoryValue1.activityValue);
     assert.equal(data.co2eq, inventoryValue1.co2eq);
-    assert.equal(data.emissionFactorValue, inventoryValue1.emissionFactorValue);
   });
 
   it("Should not create an inventory value with invalid data", async () => {
@@ -168,7 +164,7 @@ describe("Sub Category API", () => {
     const { data } = await res.json();
 
     assert.equal(res.status, 200);
-    assert.equal(data.totalEmissions, co2eq);
+    assert.equal(data.co2eq, co2eq);
     assert.equal(data.activityUnits, activityUnits);
     assert.equal(data.activityValue, activityValue);
     assert.equal(data.emissionFactorValue, emissionFactorValue);
@@ -195,10 +191,9 @@ describe("Sub Category API", () => {
     });
     const { data } = await res.json();
     assert.equal(res.status, 200);
-    assert.equal(data.totalEmissions, inventoryValue1.totalEmissions);
+    assert.equal(data.co2eq, inventoryValue1.co2eq);
     assert.equal(data.activityUnits, inventoryValue1.activityUnits);
     assert.equal(data.activityValue, inventoryValue1.activityValue);
-    assert.equal(data.emissionFactorValue, inventoryValue1.emissionFactorValue);
   });
 
   it("Should not update an inventory value with invalid data", async () => {
@@ -227,7 +222,7 @@ describe("Sub Category API", () => {
     assert.equal(res.status, 200);
     const { data, deleted } = await res.json();
     assert.equal(deleted, true);
-    assert.equal(data.totalEmissions, co2eq);
+    assert.equal(data.co2eq, co2eq);
     assert.equal(data.activityUnits, activityUnits);
     assert.equal(data.activityValue, activityValue);
     assert.equal(data.emissionFactorValue, emissionFactorValue);

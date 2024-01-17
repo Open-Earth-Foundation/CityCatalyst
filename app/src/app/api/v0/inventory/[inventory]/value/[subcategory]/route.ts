@@ -153,56 +153,61 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
 
   // calculate new co2eq value
   // load gas values again to take any modifications into account
-  const newGasValues = await db.models.GasValue.findAll({
-    where: { inventoryValueId: inventoryValue.id },
-    include: { model: db.models.EmissionsFactor, as: "emissionsFactor" },
-  });
-  const gases: string[] = newGasValues
-    .map((value) => value.gas!)
-    .filter((value) => !!value);
-  const gasesToCo2Eq =
-    gases.length === 0
-      ? []
-      : await db.models.GasToCO2Eq.findAll({
-          where: { gas: { [Op.any]: gases } },
-        });
-  inventoryValue.co2eqYears = gasesToCo2Eq.reduce(
-    (acc, gasToCO2Eq) => Math.max(acc, gasToCO2Eq.co2eqYears || 0),
-    0,
-  );
-  inventoryValue.co2eq = newGasValues.reduce((acc, gasValue) => {
-    const hasActivityValue = inventoryValue?.activityValue != null;
-    const gasToCo2Eq = gasesToCo2Eq.find((entry) => entry.gas === gasValue.gas);
-    if (gasToCo2Eq == null) {
-      logger.error(`Failed to find GasToCo2Eq entry for gas ${gasValue.gas}`);
-      return acc;
-    }
-    if (!hasActivityValue && gasValue.gasAmount == null) {
-      logger.error(
-        `Neither activityValue nor GasValue.gasAmount present for InventoryValue ${inventoryValue?.id}`,
+  if (body.co2eq == null) {
+    const newGasValues = await db.models.GasValue.findAll({
+      where: { inventoryValueId: inventoryValue.id },
+      include: { model: db.models.EmissionsFactor, as: "emissionsFactor" },
+    });
+    const gases: string[] = newGasValues
+      .map((value) => value.gas!)
+      .filter((value) => !!value);
+    const gasesToCo2Eq =
+      gases.length === 0
+        ? []
+        : await db.models.GasToCO2Eq.findAll({
+            where: { gas: { [Op.any]: gases } },
+          });
+    inventoryValue.co2eqYears = gasesToCo2Eq.reduce(
+      (acc, gasToCO2Eq) => Math.max(acc, gasToCO2Eq.co2eqYears || 0),
+      0,
+    );
+    inventoryValue.co2eq = newGasValues.reduce((acc, gasValue) => {
+      const hasActivityValue = inventoryValue?.activityValue != null;
+      const gasToCo2Eq = gasesToCo2Eq.find(
+        (entry) => entry.gas === gasValue.gas,
       );
-      return acc;
-    }
-    if (hasActivityValue && gasValue.emissionsFactor == null) {
-      logger.error(
-        `No emissions factor present for InventoryValue ${inventoryValue?.id} and gas ${gasValue.gas}`,
-      );
-      return acc;
-    }
+      if (gasToCo2Eq == null) {
+        logger.error(`Failed to find GasToCo2Eq entry for gas ${gasValue.gas}`);
+        return acc;
+      }
+      if (!hasActivityValue && gasValue.gasAmount == null) {
+        logger.error(
+          `Neither activityValue nor GasValue.gasAmount present for InventoryValue ${inventoryValue?.id}`,
+        );
+        return acc;
+      }
+      if (hasActivityValue && gasValue.emissionsFactor == null) {
+        logger.error(
+          `No emissions factor present for InventoryValue ${inventoryValue?.id} and gas ${gasValue.gas}`,
+        );
+        return acc;
+      }
 
-    let gasAmount: bigint;
-    if (hasActivityValue) {
-      gasAmount = BigInt(
-        inventoryValue!.activityValue! *
-          gasValue.emissionsFactor.emissionsPerActivity!,
-      );
-    } else {
-      gasAmount = gasValue.gasAmount!;
-    }
+      let gasAmount: bigint;
+      if (hasActivityValue) {
+        gasAmount = BigInt(
+          inventoryValue!.activityValue! *
+            gasValue.emissionsFactor.emissionsPerActivity!,
+        );
+      } else {
+        gasAmount = gasValue.gasAmount!;
+      }
 
-    // this assumes GWP values in the GasToCO2Eq table are always ints
-    return acc + gasAmount * BigInt(gasToCo2Eq.co2eqPerKg!);
-  }, 0n);
+      // this assumes GWP values in the GasToCO2Eq table are always ints
+      return acc + gasAmount * BigInt(gasToCo2Eq.co2eqPerKg!);
+    }, 0n);
+    await inventoryValue.save();
+  }
 
   return NextResponse.json({ data: inventoryValue });
 });

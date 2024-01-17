@@ -39,7 +39,7 @@ export const GET = apiHandler(
     body = userFile.data;
     headers = {
       "Content-Type": "application/vnd.ms-excel",
-      "Content-Disposition": `attachment; filename="${userFile.id}.csv"`,
+      "Content-Disposition": `attachment; filename="${userFile.id}.${userFile.file_type}"`,
     };
 
     return new NextResponse(body, { headers });

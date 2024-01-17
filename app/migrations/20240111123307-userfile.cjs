@@ -24,6 +24,14 @@ module.exports = {
         type: Sequelize.BLOB,
         allowNull: true,
       },
+      file_type: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+      sector: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
       status:{
         type: Sequelize.STRING,
         allowNull: true

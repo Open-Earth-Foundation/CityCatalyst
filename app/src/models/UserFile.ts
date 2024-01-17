@@ -7,6 +7,8 @@ export interface UserFileAttributes {
   userId?: string;
   file_reference?: string;
   data?: Buffer;
+  file_type?: string;
+  sector?: string;
   status?: string;
   url?: string;
   gpc_ref_no?: string;
@@ -20,6 +22,8 @@ export type UserFileOptionalAttributes =
   | "userId"
   | "file_reference"
   | "data"
+  | "file_type"
+  | "sector"
   | "url"
   | "status"
   | "gpc_ref_no"
@@ -38,6 +42,8 @@ export class UserFile
   userId?: string | undefined;
   file_reference?: string | undefined;
   data: Buffer | undefined;
+  file_type?: string | undefined;
+  sector?: string | undefined;
   url?: string | undefined;
   status: string | undefined;
   gpc_ref_no?: string | undefined;
@@ -74,6 +80,14 @@ export class UserFile
         },
         data: {
           type: DataTypes.BLOB,
+          allowNull: true,
+        },
+        file_type: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+        },
+        sector: {
+          type: DataTypes.STRING(255),
           allowNull: true,
         },
         url: {

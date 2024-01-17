@@ -15,6 +15,8 @@ export const createUserFileRequset = z.object({
   userId: z.string().uuid().optional(),
   file_reference: z.string().optional(),
   data: z.any(),
+  file_type: z.string().optional(),
+  sector: z.string().optional(),
   url: z.string().url().optional(),
   status: z.string().optional(),
   gpc_ref_no: z.string().optional(),
@@ -81,6 +83,12 @@ export const POST = apiHandler(
     const file = formData.get("data") as unknown as File;
     if (!file) throw new createHttpError.BadRequest("File not found");
 
+    const filename = file.name;
+
+    const fileType = file.name.slice(
+      ((filename.lastIndexOf(".") - 1) >>> 0) + 2,
+    );
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
@@ -89,9 +97,13 @@ export const POST = apiHandler(
       file_reference: formData.get("file_reference"),
       url: formData.get("url"),
       data: buffer,
+      file_type: fileType,
+      sector: formData.get("sector"),
       status: formData.get("status"),
       gpc_ref_no: formData.get("gpc_ref_no"),
     };
+
+    console.log(fileType);
 
     const body = createUserFileRequset.parse(fileData);
 

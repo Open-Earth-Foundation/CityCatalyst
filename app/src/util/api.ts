@@ -49,6 +49,11 @@ function errorHandler(err: unknown, req: NextRequest) {
       { error: { message: "Invalid request", issues: err.issues } },
       { status: 400 },
     );
+  } else if (err instanceof SyntaxError) {
+    return NextResponse.json(
+      { error: { message: "Invalid request - " + err.message } },
+      { status: 400 },
+    );
   } else if (
     err instanceof ValidationError &&
     err.name === "SequelizeUniqueConstraintError"

@@ -22,7 +22,6 @@ const locode = "XX_SUBCATEGORY_CITY";
 const co2eq = 44000n;
 const activityUnits = "UNITS";
 const activityValue = 1000;
-const emissionFactorValue = 12;
 const inventoryName = "TEST_SUBCATEGORY_INVENTORY";
 const subcategoryName = "TEST_SUBCATEGORY_SUBCATEGORY";
 const subsectorName = "TEST_SUBCATEGORY_SUBSECTOR";
@@ -45,7 +44,7 @@ const invalidInventoryValue = {
   co2eq: -1n,
 };
 
-describe("Sub Category API", () => {
+describe("Inventory Value API", () => {
   let inventory: Inventory;
   let subCategory: SubCategory;
   let subSector: SubSector;
@@ -101,7 +100,7 @@ describe("Sub Category API", () => {
 
   beforeEach(async () => {
     await db.models.InventoryValue.destroy({
-      where: { id: inventory.inventoryId },
+      where: { inventoryId: inventory.inventoryId },
     });
     inventoryValue = await db.models.InventoryValue.create({
       inventoryId: inventory.inventoryId,
@@ -152,7 +151,7 @@ describe("Sub Category API", () => {
   });
 
   it("Should find an inventory value", async () => {
-    const req = mockRequest(inventoryValue1);
+    const req = mockRequest();
     const res = await findInventoryValue(req, {
       params: {
         inventory: inventory.inventoryId,
@@ -166,6 +165,55 @@ describe("Sub Category API", () => {
     assert.equal(data.co2eq, co2eq);
     assert.equal(data.activityUnits, activityUnits);
     assert.equal(data.activityValue, activityValue);
+  });
+
+  it("Should find multiple inventory values", async () => {
+    // prepare data
+    const subCategory2 = await db.models.SubCategory.create({
+      subcategoryId: randomUUID(),
+      subsectorId: subSector.subsectorId,
+      subcategoryName: subcategoryName + "2",
+    });
+    await db.models.InventoryValue.create({
+      inventoryId: inventory.inventoryId,
+      id: randomUUID(),
+      subCategoryId: subCategory2.subcategoryId,
+      co2eq: inventoryValue2.co2eq,
+      activityUnits: inventoryValue2.activityUnits,
+      activityValue: inventoryValue2.activityValue,
+    });
+
+    const subCategoryIds = [
+      subCategory.subcategoryId,
+      subCategory2.subcategoryId,
+    ].join(",");
+    const req = mockRequest(null, { subCategoryIds });
+    const res = await batchFindInventoryValues(req, {
+      params: {
+        inventory: inventory.inventoryId,
+      },
+    });
+
+    const { data } = await res.json();
+
+    assert.equal(res.status, 200);
+    assert.equal(data.length, 2);
+
+    // database returns results in random order
+    data.sort((a: InventoryValue, b: InventoryValue) => {
+      if (a?.created && b?.created) {
+        return new Date(b.created).getTime() - new Date(a.created).getTime();
+      } else {
+        return 0;
+      }
+    });
+
+    assert.equal(data[1].co2eq, co2eq);
+    assert.equal(data[0].co2eq, inventoryValue2.co2eq);
+    assert.equal(data[1].activityUnits, activityUnits);
+    assert.equal(data[0].activityUnits, inventoryValue2.activityUnits);
+    assert.equal(data[1].activityValue, activityValue);
+    assert.equal(data[0].activityValue, inventoryValue2.activityValue);
   });
 
   it("Should not find a non-existing sub category", async () => {

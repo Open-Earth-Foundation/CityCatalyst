@@ -1,6 +1,5 @@
 import { db } from "@/models";
 import { Sector } from "@/models/Sector";
-import { SectorValue } from "@/models/SectorValue";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { Session } from "next-auth";
@@ -88,8 +87,7 @@ export const GET = apiHandler(
             const sourceType = subSectorValue.dataSource.sourceType;
             if (sourceType === "user") {
               acc.uploaded++;
-            } else if (sourceType === "third_party" || !sourceType) {
-              // TODO remove empty case (!sourceType condition) once data catalogue is updated
+            } else if (sourceType === "third_party") {
               acc.thirdParty++;
             } else {
               console.error(

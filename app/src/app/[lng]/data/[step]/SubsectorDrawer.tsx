@@ -1,39 +1,53 @@
 import { RadioButton } from "@/components/radio-button";
 import { api } from "@/services/api";
-import { resolve } from "@/util/helpers";
+import { logger } from "@/services/logger";
+import {
+  nameToI18NKey,
+  resolve,
+  resolvePromisesSequentially,
+} from "@/util/helpers";
 import type {
   SubCategoryValueWithSource,
   SubSectorValueResponse,
 } from "@/util/types";
-import { ArrowBackIcon, WarningIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, CloseIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Accordion,
   AccordionButton,
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Box,
   Button,
   Center,
   Drawer,
   DrawerContent,
   DrawerOverlay,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
   HStack,
   Heading,
+  IconButton,
   Select,
   Spinner,
   Tag,
   Text,
   Textarea,
+  useDisclosure,
   useRadioGroup,
 } from "@chakra-ui/react";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import type { TFunction } from "i18next";
 import type { RefObject } from "react";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { SubmitHandler, useController, useForm } from "react-hook-form";
 import { EmissionsForm } from "./EmissionsForm";
 import type {
@@ -44,6 +58,7 @@ import type {
   SubSector,
   SubcategoryData,
 } from "./types";
+import { Trans } from "react-i18next/TransWithoutContext";
 
 type Inputs = {
   valueType: "scope-values" | "unavailable" | "";
@@ -91,17 +106,13 @@ const defaultValues: Inputs = {
   subcategoryData: {},
 };
 
-function nameToI18NKey(name: string): string {
-  return name.replaceAll(" ", "-").toLowerCase();
-}
-
 // TODO create custom type that includes relations instead of using SubSectorValueAttributes?
 function extractFormValues(subSectorValue: SubSectorValueResponse): Inputs {
-  console.log("Form input", subSectorValue);
+  logger.debug("Form input", subSectorValue);
   const inputs: Inputs = Object.assign({}, defaultValues);
   if (subSectorValue.unavailableReason) {
     inputs.valueType = "unavailable";
-    inputs.unavailableReason = subSectorValue.unavailableReason as any || "";
+    inputs.unavailableReason = (subSectorValue.unavailableReason as any) || "";
     inputs.unavailableExplanation = subSectorValue.unavailableExplanation || "";
   } else {
     inputs.valueType = "scope-values";
@@ -114,8 +125,8 @@ function extractFormValues(subSectorValue: SubSectorValueResponse): Inputs {
           value.activityValue != null ? "activity-data" : "direct-measure";
         const data: SubcategoryData = {
           methodology,
-          activity: defaultActivityData,
-          direct: defaultDirectMeasureData,
+          activity: { ...defaultActivityData },
+          direct: { ...defaultDirectMeasureData },
         };
 
         if (methodology === "activity-data") {
@@ -138,7 +149,7 @@ function extractFormValues(subSectorValue: SubSectorValueResponse): Inputs {
       {},
     );
   }
-  console.log("Form values", inputs);
+  logger.debug("Form values", inputs);
   return inputs;
 }
 
@@ -180,15 +191,55 @@ export function SubsectorDrawer({
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
     watch,
     reset,
     control,
   } = useForm<Inputs>();
 
+  const scopeData = watch("subcategoryData");
+  const isScopeCompleted = (scopeId: string) => {
+    const data = scopeData[scopeId];
+    if (data?.methodology === "activity-data") {
+      const activity = data.activity;
+      if (!activity) return false;
+      return (
+        activity.activityDataAmount != null &&
+        activity.activityDataUnit != null &&
+        activity.emissionFactorType !== "" &&
+        !(
+          activity.emissionFactorType === "Add custom" &&
+          +activity.co2EmissionFactor === 0 &&
+          +activity.n2oEmissionFactor === 0 &&
+          +activity.ch4EmissionFactor === 0
+        ) &&
+        activity.dataQuality !== "" &&
+        activity.sourceReference !== ""
+      );
+    } else if (data?.methodology === "direct-measure") {
+      if (!data.direct) return false;
+      return (
+        (data.direct.co2Emissions > 0 ||
+          data.direct.ch4Emissions > 0 ||
+          data.direct.n2oEmissions > 0) &&
+        data.direct.dataQuality !== "" &&
+        data.direct.sourceReference !== ""
+      );
+    }
+    return false;
+  };
+
+  const onTryClose = () => {
+    if (isDirty) {
+      onDialogOpen();
+    } else {
+      onClose();
+    }
+  };
+
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (!subsector) return;
-    console.log("Subsector data", data);
+    logger.debug("Subsector data", data);
 
     // decide which data from the form to save
     if (data.valueType === "unavailable") {
@@ -209,9 +260,14 @@ export function SubsectorDrawer({
           unavailableExplanation: "",
         },
       });
-      const results = await Promise.all(
+      const results = await resolvePromisesSequentially(
         Object.keys(data.subcategoryData).map((subcategoryId) => {
           const value = data.subcategoryData[subcategoryId];
+          if (!isScopeCompleted(subcategoryId)) {
+            logger.error(`Data not completed for scope ${subcategoryId}!`);
+            return Promise.resolve();
+          }
+
           let subCategoryValue: SubCategoryValueData = {
             subcategoryId,
             inventoryId: inventoryId!,
@@ -241,9 +297,10 @@ export function SubsectorDrawer({
               notes: value.direct.sourceReference,
             };
           } else {
-            throw new Error(
+            logger.error(
               `Methodology for subcategory ${subcategoryId} not selected!`,
             );
+            return Promise.resolve();
           }
 
           return setSubCategoryValue({
@@ -253,7 +310,7 @@ export function SubsectorDrawer({
           });
         }),
       );
-      console.log("Save results", results);
+      logger.debug("Save results", results);
     }
     onSave(subsector, data);
     onClose();
@@ -289,46 +346,25 @@ export function SubsectorDrawer({
     };
   });
 
-  const scopeData = watch("subcategoryData");
-  const isScopeCompleted = (scopeId: string) => {
-    const data = scopeData[scopeId];
-    if (data?.methodology === "activity-data") {
-      const activity = data.activity;
-      if (!activity) return false;
-      return (
-        activity.activityDataAmount != null &&
-        activity.activityDataUnit != null &&
-        activity.emissionFactorType !== "" &&
-        !(
-          activity.emissionFactorType === "Add custom" &&
-          +activity.co2EmissionFactor === 0 &&
-          +activity.n2oEmissionFactor === 0 &&
-          +activity.ch4EmissionFactor === 0
-        ) &&
-        activity.dataQuality !== "" &&
-        activity.sourceReference !== ""
-      );
-    } else if (data?.methodology === "direct-measure") {
-      if (!data.direct) return false;
-      return (
-        (data.direct.co2Emissions > 0 ||
-          data.direct.ch4Emissions > 0 ||
-          data.direct.n2oEmissions > 0) &&
-        data.direct.dataQuality !== "" &&
-        data.direct.sourceReference !== ""
-      );
-    }
-    return false;
-  };
-
   const valueType = watch("valueType");
   const isSubmitEnabled = !!valueType;
+
+  const {
+    isOpen: isDialogOpen,
+    onOpen: onDialogOpen,
+    onClose: onDialogClose,
+  } = useDisclosure();
+  const cancelDialogRef = React.useRef<HTMLButtonElement>(null);
 
   return (
     <Drawer
       isOpen={isOpen}
       placement="right"
       onClose={onClose}
+      onEsc={onTryClose}
+      onOverlayClick={onTryClose}
+      closeOnEsc={false}
+      closeOnOverlayClick={false}
       size="xl"
       finalFocusRef={finalFocusRef}
     >
@@ -339,7 +375,7 @@ export function SubsectorDrawer({
             variant="ghost"
             leftIcon={<ArrowBackIcon boxSize={6} />}
             className="self-start"
-            onClick={onClose}
+            onClick={onTryClose}
             px={6}
             py={4}
             mb={6}
@@ -350,10 +386,12 @@ export function SubsectorDrawer({
             <>
               {sectorName && (
                 <Heading size="sm">
-                  {t("sector")} - {t(sectorName)}
+                  {t("sector")} - {t(nameToI18NKey(sectorName))}
                 </Heading>
               )}
-              <Heading size="lg">{t(subsector.subsectorName)}</Heading>
+              <Heading fontSize="32px" fontWeight="bold" lineHeight="40px">
+                {t(nameToI18NKey(subsector.subsectorName))}
+              </Heading>
               <Text color="content.tertiary">
                 {t(nameToI18NKey(subsector.subsectorName) + "-description")}
               </Text>
@@ -537,6 +575,62 @@ export function SubsectorDrawer({
           )}
         </Box>
       </DrawerContent>
+      <AlertDialog
+        isOpen={isDialogOpen}
+        onClose={onDialogClose}
+        leastDestructiveRef={cancelDialogRef}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent minWidth={568}>
+            <AlertDialogHeader
+              fontSize="24"
+              fontWeight="600"
+              textAlign="center"
+              fontFamily="heading"
+              my={2}
+            >
+              <Flex justify="space-between">
+                <Box w={10} />
+              {t("unsaved-changes")}
+              <IconButton color="content.tertiary" icon={<CloseIcon />} onClick={onDialogClose} aria-label="Close" variant="ghost" />
+              </Flex>
+            </AlertDialogHeader>
+            <hr />
+            <AlertDialogBody textAlign="center" py={6} px={10}>
+              <Trans i18nKey="unsaved-changes-description" t={t} />
+            </AlertDialogBody>
+            <hr />
+
+            <AlertDialogFooter my={2}>
+              <Flex justify="center" w="full">
+                <Button
+                  variant="outline"
+                  ref={cancelDialogRef}
+                  onClick={onDialogClose}
+                  px={6}
+                  width="230px"
+                  height={16}
+                >
+                  {t("keep-editing")}
+                </Button>
+                <Button
+                  variant="danger"
+                  onClick={() => {
+                    onClose();
+                    onDialogClose();
+                  }}
+                  ml={2}
+                  px={6}
+                  width="230px"
+                  height={16}
+                >
+                  {t("discard-changes")}
+                </Button>
+              </Flex>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Drawer>
   );
 }

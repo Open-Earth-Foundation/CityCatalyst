@@ -1,4 +1,4 @@
-import { filterSources } from "@/lib/filter-sources";
+import DataSourceService from "@/backend/DataSourceService";
 import { db } from "@/models";
 import { City } from "@/models/City";
 import { DataSource } from "@/models/DataSource";
@@ -33,6 +33,21 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
     throw new createHttpError.NotFound("Sector not found");
   }
 
-  const applicableSources = filterSources(inventory, sector.dataSources);
-  return NextResponse.json({ data: applicableSources });
+  const applicableSources = DataSourceService.filterSources(
+    inventory,
+    sector.dataSources,
+  );
+
+  // TODO add query parameter to make this optional?
+  const sourceData = await Promise.all(
+    applicableSources.map(async (source) => {
+      const data = await DataSourceService.retrieveGlobalAPISource(
+        source,
+        inventory,
+      );
+      return { source, data };
+    }),
+  );
+
+  return NextResponse.json({ data: sourceData });
 });

@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
+import { logger } from "@/services/logger";
 
 type Inputs = {
   name: string;
@@ -66,7 +67,7 @@ export default function Signup({
 
       if (!res.ok) {
         const data = await res.json();
-        console.log("Failed to sign up", data);
+        logger.error("Failed to sign up", data);
         setError(data.error.message);
         return;
       }
@@ -85,7 +86,7 @@ export default function Signup({
       // if (!loginResponse?.error) {
       //   router.push(callbackUrl);
       // } else {
-      //   console.log("Failed to login", loginResponse)
+      //   logger.error("Failed to login", loginResponse)
       //   setError(t("invalid-email-password"));
       // }
     } catch (error: any) {

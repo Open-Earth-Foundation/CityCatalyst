@@ -11,7 +11,7 @@ export default function DataLayout({
   params: { lng: string };
 }) {
   return (
-    <Box className="h-screen flex flex-col" bg="background.backgroundLight">
+    <Box className="h-full flex flex-col" bg="background.backgroundLight">
       <NavigationBar lng={lng} />
       <div className="w-full h-full">{children}</div>
     </Box>

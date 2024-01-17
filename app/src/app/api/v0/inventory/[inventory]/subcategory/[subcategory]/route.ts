@@ -39,6 +39,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
       {
         model: db.models.SubSector,
         as: "subsector",
+        required: true,
         include: [
           {
             model: db.models.SubCategory,
@@ -67,7 +68,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
       );
     }
     let sectorValue = await db.models.SectorValue.findOne({
-      where: { sectorId: subSector.sectorId },
+      where: { sectorId: subSector.sectorId, inventoryId: params.inventory },
     });
     if (!sectorValue) {
       sectorValue = await db.models.SectorValue.create({

@@ -27,6 +27,6 @@
 
   "done-heading": "Inventario creado con éxito<br />",
   "inventory-title": "Inventario Básico de Emisiones GPC - Año {{year}}",
-  "done-details": "Creaste tu perfil de ciudad para comenzar tu inventario de GEI con metodología GPC Básico.<br/>Además, encontramos para tu ciudad más de 10 conjuntos de datos externos que puedes conectar para completar tu inventario.",
+  "done-details": "Creaste tu perfil de ciudad para comenzar tu inventario de GEI con metodología GPC Básico.",
   "check-dashboard": "Ir al Inicio"
 }

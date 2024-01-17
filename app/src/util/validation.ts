@@ -75,11 +75,13 @@ export const createSubSectorRequest = z.object({
   emissionsFactorId: z.string().uuid().optional(),
   unavailableReason: z.string().optional(),
   unavailableExplanation: z.string().optional(),
-  dataSource: z.object({
-    sourceType: z.string(),
-    dataQuality: z.string(),
-    notes: z.string(),
-  }).optional(),
+  dataSource: z
+    .object({
+      sourceType: z.string(),
+      dataQuality: z.string(),
+      notes: z.string(),
+    })
+    .optional(),
 });
 
 export type CreateSubSectorRequest = z.infer<typeof createSubSectorRequest>;
@@ -93,11 +95,13 @@ export const createSubCategory = z.object({
   ch4EmissionsValue: z.number().optional(),
   totalEmissions: z.number().optional(),
   emissionsFactorId: z.string().uuid().optional(),
-  dataSource: z.object({
-    sourceType: z.string(),
-    dataQuality: z.string(),
-    notes: z.string(),
-  }).optional(),
+  dataSource: z
+    .object({
+      sourceType: z.string(),
+      dataQuality: z.string(),
+      notes: z.string(),
+    })
+    .optional(),
 });
 
 export type CreateSubCategoryRequest = z.infer<typeof createSubCategory>;
@@ -111,3 +115,12 @@ export const createUserRequest = z.object({
 });
 
 export type CreateUserRequest = z.infer<typeof createUserRequest>;
+
+export const createPopulationRequest = z.object({
+  cityId: z.string().uuid(),
+  population: z.number(),
+  year: z.number(),
+  datasourceId: z.string().optional(),
+});
+
+export type CreatePopulationRequest = z.infer<typeof createPopulationRequest>;

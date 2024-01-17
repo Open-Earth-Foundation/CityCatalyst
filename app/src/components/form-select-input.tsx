@@ -45,7 +45,7 @@ const FormSelectInput: FC<FormInputProps> = ({
         onChange={(e) => onInputChange(e)}
       >
         <option value="admin">Admin</option>
-        <option value="contributer">Contributer</option>
+        <option value="contributor">Contributor</option>
       </Select>
     </Box>
   );

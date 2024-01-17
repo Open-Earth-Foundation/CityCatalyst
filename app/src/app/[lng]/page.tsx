@@ -7,8 +7,12 @@ import { SegmentedProgress } from "@/components/SegmentedProgress";
 import { CircleIcon } from "@/components/icons";
 import { NavigationBar } from "@/components/navigation-bar";
 import { useTranslation } from "@/i18n/client";
-import { api } from "@/services/api";
-import { formatPercent } from "@/util/helpers";
+import { api, useGetCityPopulationQuery } from "@/services/api";
+import {
+  formatPercent,
+  getShortenNumberUnit,
+  shortenNumber,
+} from "@/util/helpers";
 import { SectorProgress } from "@/util/types";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import {
@@ -101,6 +105,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
     );
 
   const { data: city } = api.useGetCityQuery(locode!, { skip: !locode });
+
+  const { data: population } = useGetCityPopulationQuery(
+    { locode: locode!, year: year! },
+    { skip: !locode || !year },
+  );
 
   let totalProgress = 0,
     thirdPartyProgress = 0,
@@ -231,7 +240,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   lineHeight="32"
                   fontWeight="semibold"
                 >
-                  <Trans t={t}>welcome-back</Trans>,
+                  {inventory ? <>{t("welcome-back")},</> : <>{t("welcome")},</>}
                 </Text>
                 <Box className="flex items-center gap-4">
                   {inventory?.city ? (
@@ -280,7 +289,14 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                           fontWeight="semibold"
                           lineHeight="32"
                         >
-                          700<span className="text-[16px]">Mtco2e</span>
+                          {inventory?.totalEmissions ? (
+                            <>
+                              {inventory.totalEmissions}{" "}
+                              <span className="text-[16px]">Mtco2e</span>
+                            </>
+                          ) : (
+                            <>{t("in-progress")}</>
+                          )}
                         </Text>
                         <InfoOutlineIcon w={3} h={3} color="brandScheme.100" />
                       </Box>
@@ -292,7 +308,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         lineHeight="20px"
                         letterSpacing="wide"
                       >
-                        <Trans t={t}>total-emissions-in</Trans> {year}
+                        <Trans t={t}>total-emissions-in</Trans>{" "}
+                        {inventory?.year}
                       </Text>
                     </Box>
                   </Box>
@@ -300,14 +317,33 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     <Icon as={MdGroup} boxSize={6} fill="background.overlay" />
                     <Box>
                       <Box className="flex gap-1">
-                        <Text
-                          color="base.light"
-                          fontSize="headline.sm"
-                          fontWeight="semibold"
-                          lineHeight="32"
-                        >
-                          3,978.9<span className="text-[16px]">M</span>
-                        </Text>
+                        {population?.population ? (
+                          <Text
+                            fontFamily="heading"
+                            color="base.light"
+                            fontSize="headline.sm"
+                            fontWeight="semibold"
+                            lineHeight="32"
+                          >
+                            {shortenNumber(population.population)}
+                            <span className="text-[16px]">
+                              {population?.population
+                                ? getShortenNumberUnit(population.population)
+                                : ""}
+                            </span>
+                          </Text>
+                        ) : (
+                          <Text
+                            fontFamily="heading"
+                            color="border.neutral"
+                            fontSize="headline.sm"
+                            fontWeight="semibold"
+                            lineHeight="32"
+                          >
+                            N/A
+                          </Text>
+                        )}
+
                         <InfoOutlineIcon w={3} h={3} color="brandScheme.100" />
                       </Box>
                       <Text
@@ -330,16 +366,28 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     />
                     <Box>
                       <Box className="flex gap-1">
-                        <Text
-                          fontFamily="heading"
-                          color="base.light"
-                          fontSize="headline.sm"
-                          fontWeight="semibold"
-                          lineHeight="32"
-                        >
-                          {city?.area}
-                          <span className="text-[16px]">km2</span>
-                        </Text>
+                        {!city?.area ? (
+                          <Text
+                            fontFamily="heading"
+                            color="border.neutral"
+                            fontSize="headline.sm"
+                            fontWeight="semibold"
+                            lineHeight="32"
+                          >
+                            N/A
+                          </Text>
+                        ) : (
+                          <Text
+                            fontFamily="heading"
+                            color="base.light"
+                            fontSize="headline.sm"
+                            fontWeight="semibold"
+                            lineHeight="32"
+                          >
+                            {city?.area}
+                            <span className="text-[16px]">km2</span>
+                          </Text>
+                        )}
                         <InfoOutlineIcon w={3} h={3} color="brandScheme.100" />
                       </Box>
                       <Text

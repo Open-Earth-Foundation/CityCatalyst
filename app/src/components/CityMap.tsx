@@ -1,6 +1,7 @@
 "use client";
 
 import { api } from "@/services/api";
+import { logger } from "@/services/logger";
 import { geoJSONBoundingBox } from "@/util/geojson";
 import { Box, Center, Spinner } from "@chakra-ui/react";
 import type { GeoJsonObject } from "geojson";
@@ -26,7 +27,7 @@ function BoundingBoxFocus({ boundingBox }: { boundingBox?: number[] }) {
   const map = useMap();
   useEffect(() => {
     if (!boundingBox || boundingBox.some(isNaN) || boundingBox.length !== 4) {
-      console.error("Invalid bounding box:", boundingBox);
+      logger.error("Invalid bounding box:", boundingBox);
       return;
     }
     // GeoJSON is [lng, lat] and Leaflet is [lat, lng]
@@ -63,7 +64,7 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
               : boundingBox;
           }
         } else {
-          console.log("no data");
+          logger.warn("no data");
         }
       });
     }

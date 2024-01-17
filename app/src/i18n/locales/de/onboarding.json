@@ -27,6 +27,6 @@
 
   "done-heading": "Ihr Stadt-Inventar-Profil<br />wurde erfolgreich erstellt",
   "inventory-title": "GPC Basic Emissions-Inventar - Jahr {{year}}",
-  "done-details": "Sie haben ihr Stadt-Profile erstellt, um mit der Erstellung Ihres GPC Basic GHG Inventars zu beginnen.<br/>Wir haben ebenfalls 10+ externe Datenquellen gefunden, die Sie verbinden können, um Ihr Inventar zu vervollständigen.",
+  "done-details": "Sie haben ihr Stadt-Profile erstellt, um mit der Erstellung Ihres GPC Basic GHG Inventars zu beginnen.",
   "check-dashboard": "Dashboard überprüfen"
 }

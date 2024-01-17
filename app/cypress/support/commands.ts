@@ -1,5 +1,7 @@
 // https://on.cypress.io/custom-commands
 
+import { logger } from '../../src/services/logger';
+
 Cypress.Commands.add("signup", (email, password) => {
   cy.request({
     method: "POST",
@@ -25,7 +27,7 @@ Cypress.Commands.add("login", (email, password) => {
       email,
       password,
     }).then((res) => {
-      console.log(res.body);
+      logger.debug(res.body);
     });
   });
 });

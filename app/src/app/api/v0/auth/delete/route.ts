@@ -5,11 +5,12 @@ import createHttpError from "http-errors";
 import { getServerSession } from "next-auth";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "@/services/logger";
 
 export const POST = apiHandler(async (req: NextRequest) => {
-  console.log("Cookies", req.cookies);
+  logger.debug("Cookies", req.cookies);
   const token = await getToken({req});
-  console.log("Token", token);
+  logger.debug("Token", token);
   const session = await getServerSession(authOptions);
   if (!session) {
     throw new createHttpError.Unauthorized("Must be logged in!");

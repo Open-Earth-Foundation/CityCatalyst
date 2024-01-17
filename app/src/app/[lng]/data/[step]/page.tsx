@@ -7,7 +7,7 @@ import { useTranslation } from "@/i18n/client";
 import { ScopeAttributes } from "@/models/Scope";
 import { api } from "@/services/api";
 import type { DataSource, SectorProgress } from "@/util/types";
-import { ArrowBackIcon, WarningIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, SearchIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -45,13 +45,61 @@ import {
   MdOutlineHomeWork,
   MdOutlineSkipNext,
   MdPlaylistAddCheck,
+  MdRefresh,
 } from "react-icons/md";
 import { SourceDrawer } from "./SourceDrawer";
 import { SubsectorDrawer } from "./SubsectorDrawer";
 import type { DataStep, SubSector } from "./types";
+import { nameToI18NKey } from "@/util/helpers";
+import { logger } from "@/services/logger";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
-  return `mailto://info@openearth.org,greta@openearth.org?subject=Missing third party data sources&body=City: ${locode}%0ASector: ${sector}%0AYear: ${year}`;
+  const emails =
+    process.env.NEXT_PUBLIC_SUPPORT_EMAILS || "info@openearth.org,greta@openearth.org";
+  return `mailto://${emails}?subject=Missing third party data sources&body=City: ${locode}%0ASector: ${sector}%0AYear: ${year}`;
+}
+
+function SearchDataSourcesPrompt({
+  t,
+  isSearching,
+  isDisabled,
+  onSearchClicked,
+}: {
+  t: TFunction;
+  isSearching: boolean;
+  isDisabled: boolean;
+  onSearchClicked: () => void;
+}) {
+  return (
+    <Flex align="center" direction="column">
+      <Icon
+        as={WorldSearchIcon}
+        boxSize={20}
+        color="interactive.secondary"
+        borderRadius="full"
+        p={4}
+        bgColor="background.neutral"
+        mb={6}
+      />
+      <Button
+        variant="solid"
+        leftIcon={<SearchIcon boxSize={6} />}
+        isLoading={isSearching}
+        isDisabled={isDisabled}
+        loadingText={t("searching")}
+        onClick={onSearchClicked}
+        mb={2}
+        px={6}
+        h={16}
+        py={4}
+      >
+        {t("search-available-datasets")}
+      </Button>
+      <Text color="content.tertiary" align="center" size="sm" variant="spaced">
+        {t("wait-for-search")}
+      </Text>
+    </Flex>
+  );
 }
 
 function NoDataSourcesMessage({
@@ -121,14 +169,15 @@ export default function AddDataSteps({
   );
   const isInventoryLoading = isUserInfoLoading || isInventoryProgressLoading;
 
-  const {
-    data: allDataSources,
-    isLoading: areDataSourcesLoading,
-    error: dataSourcesError,
-  } = api.useGetAllDataSourcesQuery(
-    { inventoryId: inventoryProgress?.inventoryId! },
-    { skip: !inventoryProgress },
-  );
+  const [
+    loadDataSources,
+    {
+      data: allDataSources,
+      isLoading: areDataSourcesLoading,
+      isFetching: areDataSourcesFetching,
+      error: dataSourcesError,
+    },
+  ] = api.useLazyGetAllDataSourcesQuery();
 
   const [connectDataSource, { isLoading: isConnectDataSourceLoading }] =
     api.useConnectDataSourceMutation();
@@ -230,9 +279,10 @@ export default function AddDataSteps({
     Math.round(percentage * 1000) / 10;
 
   // only display data sources relevant to current sector
-  const dataSources = allDataSources?.filter((source) => {
+  const dataSources = allDataSources?.filter(({ source, data }) => {
     const referenceNumber =
       source.subCategory?.referenceNumber || source.subSector?.referenceNumber;
+    if (!data) return false;
     if (!referenceNumber) return false;
     const sectorReferenceNumber = referenceNumber.split(".")[0];
 
@@ -271,7 +321,7 @@ export default function AddDataSteps({
       );
       return;
     }
-    console.log("Connect source", source);
+    logger.debug("Connect source", source);
     setConnectingDataSourceId(source.datasourceId);
     try {
       const response = await connectDataSource({
@@ -297,23 +347,6 @@ export default function AddDataSteps({
         setNewlyConnectedDataSourceIds(
           newlyConnectedDataSourceIds.concat(response.successful),
         );
-        setSteps(
-          steps.map((step, i) => {
-            if (i !== activeStep) {
-              return step;
-            }
-            if (step.totalSubSectors === 0) {
-              console.error(
-                "Step has no totalSubSectors value, can't increase progress!",
-              );
-              return step;
-            }
-            const newProgress =
-              step.connectedProgress + 1.0 / step.totalSubSectors;
-            step.connectedProgress = Math.min(newProgress, 1.0);
-            return step;
-          }),
-        );
         onSourceDrawerClose();
       }
     } catch (error: any) {
@@ -337,6 +370,14 @@ export default function AddDataSteps({
     );
   }
 
+  function onSearchDataSourcesClicked() {
+    if (inventoryProgress) {
+      loadDataSources({ inventoryId: inventoryProgress.inventoryId });
+    } else {
+      console.error("Inventory progress is still loading!");
+    }
+  }
+
   const [selectedSubsector, setSelectedSubsector] = useState<SubSector>();
   const {
     isOpen: isSubsectorDrawerOpen,
@@ -344,12 +385,12 @@ export default function AddDataSteps({
     onOpen: onSubsectorDrawerOpen,
   } = useDisclosure();
   const onSubsectorClick = (subsector: SubSector) => {
-    console.log(subsector);
+    logger.debug(subsector);
     setSelectedSubsector(subsector);
     onSubsectorDrawerOpen();
   };
   const onSubsectorSave = (subsector: SubSector) => {
-    console.log("Save subsector", subsector);
+    logger.debug("Save subsector", subsector);
   };
 
   const [isConfirming, setConfirming] = useState(false);
@@ -458,32 +499,56 @@ export default function AddDataSteps({
       </Card>
       {/*** Third party data source section ***/}
       <Card mb={12}>
-        <Heading size="lg" mb={2}>
-          {t("check-data-heading")}
-        </Heading>
-        <Text color="content.tertiary" mb={12}>
-          {t("check-data-details")}
-        </Text>
-        <SimpleGrid minChildWidth="250px" spacing={4}>
-          {areDataSourcesLoading || !dataSources ? (
-            <Center>
-              <Spinner size="lg" />
-            </Center>
-          ) : dataSourcesError ? (
-            <Center>
-              <WarningIcon boxSize={8} color="semantic.danger" />
-            </Center>
-          ) : dataSources && dataSources.length === 0 ? (
-            <NoDataSourcesMessage
-              t={t}
-              sector={currentStep.referenceNumber}
-              locode={locode || undefined}
-              year={year || undefined}
+        <Flex
+          align="center"
+          verticalAlign="center"
+          justify="space-between"
+          mb={12}
+        >
+          <Stack>
+            <Heading size="lg" mb={2}>
+              {t("check-data-heading")}
+            </Heading>
+            <Text color="content.tertiary" variant="spaced">
+              {t("check-data-details")}
+            </Text>
+          </Stack>
+          {dataSources && (
+            <IconButton
+              variant="solidIcon"
+              icon={<Icon as={MdRefresh} boxSize={9} />}
+              aria-label="Refresh"
+              size="lg"
+              h={16}
+              w={16}
+              isLoading={areDataSourcesFetching}
+              onClick={onSearchDataSourcesClicked}
             />
-          ) : (
-            dataSources
+          )}
+        </Flex>
+        {!dataSources ? (
+          <SearchDataSourcesPrompt
+            t={t}
+            isSearching={areDataSourcesLoading}
+            isDisabled={!inventoryProgress}
+            onSearchClicked={onSearchDataSourcesClicked}
+          />
+        ) : dataSourcesError ? (
+          <Center>
+            <WarningIcon boxSize={8} color="semantic.danger" />
+          </Center>
+        ) : dataSources && dataSources.length === 0 ? (
+          <NoDataSourcesMessage
+            t={t}
+            sector={currentStep.referenceNumber}
+            locode={locode || undefined}
+            year={year || undefined}
+          />
+        ) : (
+          <SimpleGrid columns={3} spacing={4}>
+            {dataSources
               .slice(0, isDataSectionExpanded ? dataSources.length : 6)
-              .map((source) => (
+              .map(({ source, data }) => (
                 <Card
                   key={source.datasourceId}
                   variant="outline"
@@ -559,9 +624,9 @@ export default function AddDataSteps({
                     </Button>
                   )}
                 </Card>
-              ))
-          )}
-        </SimpleGrid>
+              ))}
+          </SimpleGrid>
+        )}
         {dataSources && dataSources.length > 6 && (
           <Button
             variant="ghost"
@@ -624,7 +689,7 @@ export default function AddDataSteps({
                   />
                   <Stack w="full">
                     <Heading size="xs" noOfLines={3} maxWidth="200px">
-                      {t(subSector.subsectorName)}
+                      {t(nameToI18NKey(subSector.subsectorName))}
                     </Heading>
                     {subSector.scope && (
                       <Text color="content.tertiary">

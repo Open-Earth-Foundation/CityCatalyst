@@ -19,9 +19,10 @@ export const GET = apiHandler(
         {
           model: db.models.User,
           as: "users",
-          // where: {
-          //   userId: session.user.id,
-          // },
+        },
+        {
+          model: db.models.Population,
+          as: "populations",
         },
       ],
     });
@@ -43,15 +44,6 @@ export const DELETE = apiHandler(
     if (!session) throw new createHttpError.Unauthorized("Unauthorized");
     const city = await db.models.City.findOne({
       where: { locode: params.city },
-      include: [
-        {
-          model: db.models.User,
-          as: "users",
-          // where: {
-          //   userId: session.user.id,
-          // },
-        },
-      ],
     });
     if (!city) {
       throw new createHttpError.NotFound("User is not part of this city");

@@ -27,6 +27,6 @@
 
   "done-heading": "Your City Inventory Profile<br />Was Successfully Created",
   "inventory-title": "GPC Basic Emission Inventory - Year {{year}}",
-  "done-details": "You created your city profile to start your GPC Basic GHG inventory.<br/>Also, we found for your city 10+ external datasets that you can connect to complete your inventory.",
+  "done-details": "You created your city profile to start your GPC Basic GHG inventory.",
   "check-dashboard": "Check Dashboard"
 }

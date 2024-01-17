@@ -67,15 +67,23 @@ import DeleteFileModal from "@/components/Modals/delete-file-modal";
 
 import DeleteCityModal from "@/components/Modals/delete-city-modal";
 import { TFunction } from "i18next";
+import { UserAttributes } from "@/models/User";
 
 interface MyFilesTabProps {
   session: Session | null;
   status: "loading" | "authenticated" | "unauthenticated";
   t: TFunction;
+  userInfo: UserAttributes | any;
   lng: string;
 }
 
-const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
+const MyFilesTab: FC<MyFilesTabProps> = ({
+  session,
+  status,
+  t,
+  lng,
+  userInfo,
+}) => {
   const [inputValue, setInputValue] = useState<string>("");
   const {
     handleSubmit,
@@ -127,7 +135,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
         id: "2",
         name: "Jane Smith",
         email: "jane@example.com",
-        role: "contributer",
+        role: "contributor",
       },
     ];
 
@@ -264,9 +272,9 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
     onClose: onFileDeleteModalClose,
   } = useDisclosure();
 
-  const [userData, setUserData] = useState<UserDetails>({
+  const [userData, setUserData] = useState<UserAttributes>({
     email: "",
-    id: "",
+    userId: "",
     name: "",
     role: "",
   });
@@ -681,41 +689,6 @@ const MyFilesTab: FC<MyFilesTabProps> = ({ session, status, t, lng }) => {
           </Box>
         </Box>
       </TabPanel>
-      <AddUserModal isOpen={isUserModalOpen} onClose={onUserModalClose} />
-      <UpdateUserModal
-        isOpen={isUserUpdateModalOpen}
-        onClose={onUserUpdateModalClose}
-        userData={userData}
-      />
-      <DeleteUserModal
-        isOpen={isUserDeleteModalOpen}
-        onClose={onUserDeleteModalClose}
-        userData={userData}
-      />
-      <DeleteCityModal
-        isOpen={isCityDeleteModalOpen}
-        onClose={onCityDeleteModalClose}
-        userData={userData}
-        tf={t}
-        lng={lng}
-      />
-      <UpdateUserModal
-        isOpen={isUserUpdateModalOpen}
-        onClose={onUserUpdateModalClose}
-        userData={userData}
-      />
-      <DeleteUserModal
-        isOpen={isUserDeleteModalOpen}
-        onClose={onUserDeleteModalClose}
-        userData={userData}
-      />
-      <DeleteCityModal
-        isOpen={isCityDeleteModalOpen}
-        onClose={onCityDeleteModalClose}
-        userData={userData}
-        tf={t}
-        lng={lng}
-      />
       <DeleteFileModal
         isOpen={isFileDeleteModalOpen}
         onClose={onFileDeleteModalClose}

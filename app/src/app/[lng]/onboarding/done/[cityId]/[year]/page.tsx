@@ -7,6 +7,7 @@ import { Button, Card, Flex, Heading, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import NextLink from "next/link";
 import { Trans } from "react-i18next/TransWithoutContext";
+import { logger } from "@/services/logger";
 
 export default function OnboardingDone({
   params: { lng, year },
@@ -16,7 +17,7 @@ export default function OnboardingDone({
   const data = useAppSelector((state) => state.openClimateCity.city);
   const { t } = useTranslation(lng, "onboarding");
 
-  console.log(data);
+  logger.debug(data);
 
   return (
     <div className="pt-[148px] w-[1024px] max-w-full mx-auto px-4 pb-12 flex flex-col items-center">

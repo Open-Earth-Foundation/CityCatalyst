@@ -1,3 +1,5 @@
+import "@/util/bigint";
+
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
 import { nameToI18NKey, resolvePromisesSequentially } from "@/util/helpers";
@@ -80,12 +82,6 @@ const defaultValues: Inputs = {
   direct: defaultDirectMeasureData,
   subcategoryData: {},
 };
-
-Object.defineProperty(BigInt.prototype, "toJSON", {
-  get() {
-    return () => this.toString();
-  },
-});
 
 // TODO create custom type that includes relations instead of using SubSectorValueAttributes?
 function extractFormValues(inventoryValues: InventoryValueResponse[]): Inputs {

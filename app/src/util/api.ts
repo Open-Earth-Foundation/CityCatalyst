@@ -1,3 +1,5 @@
+import "@/util/bigint";
+
 import { Auth } from "@/lib/auth";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";

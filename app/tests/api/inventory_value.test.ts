@@ -202,18 +202,18 @@ describe("Inventory Value API", () => {
     // database returns results in random order
     data.sort((a: InventoryValue, b: InventoryValue) => {
       if (a?.created && b?.created) {
-        return new Date(b.created).getTime() - new Date(a.created).getTime();
+        return new Date(a.created).getTime() - new Date(b.created).getTime();
       } else {
         return 0;
       }
     });
 
-    assert.equal(data[1].co2eq, co2eq);
-    assert.equal(data[0].co2eq, inventoryValue2.co2eq);
-    assert.equal(data[1].activityUnits, activityUnits);
-    assert.equal(data[0].activityUnits, inventoryValue2.activityUnits);
-    assert.equal(data[1].activityValue, activityValue);
-    assert.equal(data[0].activityValue, inventoryValue2.activityValue);
+    assert.equal(data[0].co2eq, co2eq);
+    assert.equal(data[1].co2eq, inventoryValue2.co2eq);
+    assert.equal(data[0].activityUnits, activityUnits);
+    assert.equal(data[1].activityUnits, inventoryValue2.activityUnits);
+    assert.equal(data[0].activityValue, activityValue);
+    assert.equal(data[1].activityValue, inventoryValue2.activityValue);
   });
 
   it("Should not find a non-existing sub category", async () => {

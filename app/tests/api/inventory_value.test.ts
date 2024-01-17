@@ -3,6 +3,7 @@ import {
   GET as findInventoryValue,
   PATCH as upsertInventoryValue,
 } from "@/app/api/v0/inventory/[inventory]/value/[subcategory]/route";
+import { GET as batchFindInventoryValues } from "@/app/api/v0/inventory/[inventory]/value/route";
 
 import { db } from "@/models";
 import { CreateInventoryValueRequest } from "@/util/validation";
@@ -119,7 +120,7 @@ describe("Sub Category API", () => {
     if (db.sequelize) await db.sequelize.close();
   });
 
-  it("Should create a sub category", async () => {
+  it("Should create an inventory value", async () => {
     await db.models.InventoryValue.destroy({
       where: { id: inventoryValue.id },
     });
@@ -137,13 +138,10 @@ describe("Sub Category API", () => {
     assert.equal(data.activityUnits, inventoryValue1.activityUnits);
     assert.equal(data.activityValue, inventoryValue1.activityValue);
     assert.equal(data.co2eq, inventoryValue1.co2eq);
-    assert.equal(
-      data.emissionFactorValue,
-      inventoryValue1.emissionFactorValue,
-    );
+    assert.equal(data.emissionFactorValue, inventoryValue1.emissionFactorValue);
   });
 
-  it("Should not create a sub category with invalid data", async () => {
+  it("Should not create an inventory value with invalid data", async () => {
     const req = mockRequest(invalidInventoryValue);
     const res = await upsertInventoryValue(req, {
       params: {
@@ -158,7 +156,7 @@ describe("Sub Category API", () => {
     assert.equal(issues.length, 4);
   });
 
-  it("Should find a sub category", async () => {
+  it("Should find an inventory value", async () => {
     const req = mockRequest(inventoryValue1);
     const res = await findInventoryValue(req, {
       params: {
@@ -187,7 +185,7 @@ describe("Sub Category API", () => {
     assert.equal(res.status, 404);
   });
 
-  it("Should update a sub category", async () => {
+  it("Should update an inventory value", async () => {
     const req = mockRequest(inventoryValue1);
     const res = await upsertInventoryValue(req, {
       params: {
@@ -200,13 +198,10 @@ describe("Sub Category API", () => {
     assert.equal(data.totalEmissions, inventoryValue1.totalEmissions);
     assert.equal(data.activityUnits, inventoryValue1.activityUnits);
     assert.equal(data.activityValue, inventoryValue1.activityValue);
-    assert.equal(
-      data.emissionFactorValue,
-      inventoryValue1.emissionFactorValue,
-    );
+    assert.equal(data.emissionFactorValue, inventoryValue1.emissionFactorValue);
   });
 
-  it("Should not update a sub category with invalid data", async () => {
+  it("Should not update an inventory value with invalid data", async () => {
     const req = mockRequest(invalidInventoryValue);
     const res = await upsertInventoryValue(req, {
       params: {
@@ -221,7 +216,7 @@ describe("Sub Category API", () => {
     assert.equal(issues.length, 4);
   });
 
-  it("Should delete a sub category", async () => {
+  it("Should delete an inventory value", async () => {
     const req = mockRequest(inventoryValue2);
     const res = await deleteInventoryValue(req, {
       params: {
@@ -238,7 +233,7 @@ describe("Sub Category API", () => {
     assert.equal(data.emissionFactorValue, emissionFactorValue);
   });
 
-  it("Should not delete a non-existing sub sector", async () => {
+  it("Should not delete a non-existing inventory value", async () => {
     const req = mockRequest(inventoryValue2);
     const res = await deleteInventoryValue(req, {
       params: {

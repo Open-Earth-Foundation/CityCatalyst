@@ -160,9 +160,12 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   const gases: string[] = newGasValues
     .map((value) => value.gas!)
     .filter((value) => !!value);
-  const gasesToCo2Eq = await db.models.GasToCO2Eq.findAll({
-    where: { gas: { [Op.any]: gases } },
-  });
+  const gasesToCo2Eq =
+    gases.length === 0
+      ? []
+      : await db.models.GasToCO2Eq.findAll({
+          where: { gas: { [Op.any]: gases } },
+        });
   inventoryValue.co2eqYears = gasesToCo2Eq.reduce(
     (acc, gasToCO2Eq) => Math.max(acc, gasToCO2Eq.co2eqYears || 0),
     0,

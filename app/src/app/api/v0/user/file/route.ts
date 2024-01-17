@@ -21,7 +21,6 @@ export const createUserFileRequset = z.object({
 });
 
 // Schema type definition
-
 export type CreateUserFileRequetData = z.infer<typeof createUserFileRequset>;
 
 export const GET = apiHandler(
@@ -75,12 +74,13 @@ export const POST = apiHandler(
     });
 
     if (!user) {
-      throw new createHttpError.NotFound("User not found");
+      throw new createHttpError.NotFound("User not allowed");
     }
 
     const formData = await req.formData();
     const file = formData.get("data") as unknown as File;
     if (!file) throw new createHttpError.BadRequest("File not found");
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 

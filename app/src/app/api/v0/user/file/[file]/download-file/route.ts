@@ -3,7 +3,6 @@ import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { Session } from "next-auth";
 import { NextResponse } from "next/server";
-import { NextApiResponse } from "next";
 
 export const GET = apiHandler(
   async (
@@ -21,7 +20,7 @@ export const GET = apiHandler(
       },
     });
     if (!user) {
-      throw new createHttpError.NotFound("User not found");
+      throw new createHttpError.NotFound("File does not belong to this user");
     }
 
     const userFile = await db.models.UserFile.findOne({

@@ -20,7 +20,7 @@ export const GET = apiHandler(
       },
     });
     if (!user) {
-      throw new createHttpError.NotFound("User not found");
+      throw new createHttpError.NotFound("File does not belong to this user");
     }
 
     const userFile = await db.models.UserFile.findOne({

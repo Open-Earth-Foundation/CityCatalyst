@@ -81,9 +81,11 @@ const defaultValues: Inputs = {
   subcategoryData: {},
 };
 
-BigInt.prototype["toJSON"] = function () {
-  return this.toString();
-};
+Object.defineProperty(BigInt.prototype, "toJSON", {
+  get() {
+    return () => this.toString();
+  },
+});
 
 // TODO create custom type that includes relations instead of using SubSectorValueAttributes?
 function extractFormValues(inventoryValues: InventoryValueResponse[]): Inputs {

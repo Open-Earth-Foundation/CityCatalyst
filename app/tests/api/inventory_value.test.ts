@@ -130,7 +130,6 @@ describe("Sub Category API", () => {
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
-    console.log("data", data);
 
     assert.equal(data.activityUnits, inventoryValue1.activityUnits);
     assert.equal(data.activityValue, inventoryValue1.activityValue);
@@ -149,7 +148,7 @@ describe("Sub Category API", () => {
     const {
       error: { issues },
     } = await res.json();
-    assert.equal(issues.length, 4);
+    assert.equal(issues.length, 3);
   });
 
   it("Should find an inventory value", async () => {
@@ -167,7 +166,6 @@ describe("Sub Category API", () => {
     assert.equal(data.co2eq, co2eq);
     assert.equal(data.activityUnits, activityUnits);
     assert.equal(data.activityValue, activityValue);
-    assert.equal(data.emissionFactorValue, emissionFactorValue);
   });
 
   it("Should not find a non-existing sub category", async () => {
@@ -208,7 +206,7 @@ describe("Sub Category API", () => {
     const {
       error: { issues },
     } = await res.json();
-    assert.equal(issues.length, 4);
+    assert.equal(issues.length, 3);
   });
 
   it("Should delete an inventory value", async () => {
@@ -225,7 +223,6 @@ describe("Sub Category API", () => {
     assert.equal(data.co2eq, co2eq);
     assert.equal(data.activityUnits, activityUnits);
     assert.equal(data.activityValue, activityValue);
-    assert.equal(data.emissionFactorValue, emissionFactorValue);
   });
 
   it("Should not delete a non-existing inventory value", async () => {

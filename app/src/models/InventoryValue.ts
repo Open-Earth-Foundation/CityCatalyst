@@ -122,6 +122,15 @@ export class InventoryValue
           allowNull: true,
           field: "activity_value",
         },
+        co2eq: {
+          type: DataTypes.BIGINT,
+          allowNull: true,
+        },
+        co2eqYears: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+          field: "co2eq_years",
+        },
         unavailableReason: {
           type: DataTypes.TEXT,
           allowNull: true,

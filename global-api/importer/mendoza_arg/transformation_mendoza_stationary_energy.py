@@ -237,4 +237,39 @@ final_df = pd.concat([result_df1, result_df], ignore_index=True)
 
 final_df = final_df[final_df != 0].dropna()
 
+val_to_replace = ['Tunuyan', 'General_Alvear', 'San_Rafael', 'Santa_Rosa', 'San_Carlos', 'Maipu', 'Las_Heras',
+       'Lujan de Cuyo', 'Gral San Martin', 'La_Paz', 'Malargue', 'Guaymallen', 'Godoy_Cruz', 'Junin']
+
+new_val = ['Tunuyán', 'Gral. Alvear', 'San Rafael', 'Santa Rosa', 'San Carlos', 'Maipú', 'Las Heras',
+       'Luján de Cuyo', 'Gral. San Martín', 'La Paz', 'Malargüe', 'Guaymallén', 'Godoy Cruz','Junín']
+
+final_df['city'] = final_df['city'].replace(val_to_replace, new_val)
+
+locode_dic = {
+    'Rivadavia':'AR RIV',
+    'Lavalle':'AR LAV', 
+    'Capital':'AR MDZ', 
+    'Tunuyán':'AR TUN', 
+    'Gral. Alvear':'AR GVA', 
+    'San Rafael':'AR AFA', 
+    'Santa Rosa':'AR STA', 
+    'San Carlos':'AR SCA',
+    'Maipú':'AR MPU', 
+    'Las Heras':'AR LHE',
+    'Luján de Cuyo':'AR LCU', 
+    'Gral. San Martín':'AR SMR', 
+    'La Paz':'AR LPM', 
+    'Junín':'AR NIN', 
+    'Malargüe':'AR LGS',
+    'Guaymallén':'AR GYM', 
+    'Godoy Cruz':'AR GCR'
+}
+
+# assigning city locode based on the city name
+for index, row in final_df.iterrows():
+    city_name = row['city']
+
+    if city_name in locode_dic.keys():
+        final_df.at[index, 'locode'] = locode_dic[city_name]
+
 final_df.to_csv('./stationary_energy_mendoza.csv')

@@ -13,6 +13,7 @@ from routes.city_locode_endpoint_edgar import api_router as edgar_city_locode_ro
 from routes.catalogue_endpoint import api_router as catalouge_route
 from routes.catalogue_last_update_endpoint import api_router as catalogue_last_update_endpoint
 from routes.city_locode_endpoint_ghgrp import api_router as ghgrp_city_locode_route
+from routes.city_locode_endpoint_mendoza_stationary_energy import api_router as mendoza_stationary_energy_city_locode_route
 
 """
 Logger instance initialized and configured
@@ -110,6 +111,11 @@ app.include_router(
 app.include_router(
     ghgrp_city_locode_route,
     tags=["GHGRP EPA"],
+)
+
+app.include_router(
+    mendoza_stationary_energy_city_locode_route,
+    tags=["Mendoza cities - Stationary Energy"],
 )
 
 """

@@ -244,6 +244,7 @@ new_val = ['Tunuyán', 'Gral. Alvear', 'San Rafael', 'Santa Rosa', 'San Carlos',
        'Luján de Cuyo', 'Gral. San Martín', 'La Paz', 'Malargüe', 'Guaymallén', 'Godoy Cruz','Junín']
 
 final_df['city'] = final_df['city'].replace(val_to_replace, new_val)
+final_df['source_name'] = 'deie_mendoza'
 
 locode_dic = {
     'Rivadavia':'AR RIV',

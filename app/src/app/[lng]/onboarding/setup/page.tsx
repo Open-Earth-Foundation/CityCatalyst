@@ -6,12 +6,10 @@ import { set } from "@/features/city/openclimateCitySlice";
 import { useTranslation } from "@/i18n/client";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { OCCityArributes } from "@/models/City";
-import { PopulationAttributes } from "@/models/Population";
 import {
   useAddCityMutation,
   useAddCityPopulationMutation,
   useAddInventoryMutation,
-  useGetActorPathQuery,
   useGetOCCityDataQuery,
   useGetOCCityQuery,
   useSetUserInfoMutation,
@@ -43,7 +41,6 @@ import {
   useSteps,
   useToast,
 } from "@chakra-ui/react";
-import { randomUUID } from "crypto";
 import { TFunction } from "i18next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
@@ -416,9 +413,9 @@ export default function OnboardingSetup({
   };
 
   const { data: cityData } = useGetOCCityDataQuery(data.locode, {
-    skip: !data.locode.length,
+    skip: !data.locode,
   });
-  const countryLocode = data.locode.length ? data.locode.split(" ")[0] : null;
+  const countryLocode = data.locode.length > 0 ? data.locode.split(" ")[0] : null;
   const { data: countryData } = useGetOCCityDataQuery(countryLocode!, {
     skip: !countryLocode,
   });

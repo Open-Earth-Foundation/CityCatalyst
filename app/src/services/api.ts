@@ -28,6 +28,7 @@ export const api = createApi({
     "UserInventories",
     "SubSectorValue",
     "SubCategoryValue",
+    "UserData",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
@@ -191,6 +192,120 @@ export const api = createApi({
       transformResponse: (response: { data: PopulationAttributes }) =>
         response.data,
     }),
+    getUser: builder.query<
+      UserAttributes,
+      {
+        userId: string;
+        locode: string;
+      }
+    >({
+      query: (data) => `/city/${data.locode}/user/${data.userId}`,
+      transformResponse: (response: { data: any }) => response.data,
+    }),
+
+    setCurrentUserData: builder.mutation<
+      UserAttributes,
+      {
+        name: string;
+        email: string;
+        role: string;
+        userId: string;
+        locode: string;
+        isOrganization: boolean;
+      }
+    >({
+      query: (data) => ({
+        url: `/city/${data.locode}/user/${data.userId}`,
+        method: "PATCH",
+        body: data,
+      }),
+    }),
+    addUser: builder.mutation<
+      UserAttributes,
+      {
+        name: string;
+        email: string;
+        role: string;
+        locode: string;
+        isOrganization: boolean;
+      }
+    >({
+      query: (data) => ({
+        url: `/city/${data.locode}/user/`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getCityUsers: builder.query<
+      UserAttributes,
+      {
+        locode: string;
+      }
+    >({
+      query: (data) => `/city/${data.locode}/user/`,
+      transformResponse: (response: { data: any }) => response.data,
+    }),
+    setUserData: builder.mutation<
+      UserAttributes,
+      Partial<UserAttributes> &
+        Pick<UserAttributes, "userId"> &
+        Pick<UserAttributes, "defaultCityLocode">
+    >({
+      query: ({ userId, defaultCityLocode, email, ...rest }) => ({
+        url: `/city/${defaultCityLocode}/user/${userId}`,
+        method: "PATCH",
+        body: rest,
+      }),
+      invalidatesTags: ["UserData"],
+    }),
+    removeUser: builder.mutation<
+      UserAttributes,
+      { userId: string; defaultCityLocode: string }
+    >({
+      query: ({ defaultCityLocode, userId }) => ({
+        url: `/city/${defaultCityLocode}/user/${userId}`,
+        method: "DELETE",
+      }),
+      transformResponse: (response: { data: any }) => response.data,
+    }),
+    getVerifcationToken: builder.query({
+      query: () => ({
+        url: "auth/verify",
+        method: "GET",
+      }),
+    }),
+
+    requestVerification: builder.mutation<
+      string,
+      { password: string; token: string }
+    >({
+      query: ({ password, token }) => ({
+        url: `/auth/verify`,
+        method: "POST",
+        body: { password, token },
+      }),
+    }),
+    getCities: builder.query({
+      query: () => ({
+        url: "/city",
+        method: "GET",
+      }),
+      transformResponse: (response: { data: any }) => response.data,
+    }),
+    removeCity: builder.mutation<string, { locode: string }>({
+      query: ({ locode }) => ({
+        url: `/city/${locode}`,
+        method: "DELETE",
+      }),
+      transformResponse: (response: { data: any }) => response.data,
+    }),
+    getInventories: builder.query<InventoryAttributes[], { locode: string }>({
+      query: ({ locode }) => ({
+        url: `/city/${locode}/inventory`,
+        method: "GET",
+      }),
+      transformResponse: (response: { data: any }) => response.data,
+    }),
   }),
 });
 
@@ -228,5 +343,14 @@ export const {
   useSetUserInfoMutation,
   useAddCityPopulationMutation,
   useGetCityPopulationQuery,
+  useGetUserQuery,
+  useSetCurrentUserDataMutation,
+  useGetCityUsersQuery,
+  useSetUserDataMutation,
+  useRemoveUserMutation,
+  useRequestVerificationMutation,
+  useGetVerifcationTokenQuery,
+  useGetCitiesQuery,
+  useGetInventoriesQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

@@ -12,20 +12,26 @@ import {
   Text,
   Box,
   Badge,
+  useToast,
 } from "@chakra-ui/react";
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 
 import { FiTrash2 } from "react-icons/fi";
 import PasswordInput from "../password-input";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { useTranslation } from "@/i18n/client";
 import { TFunction } from "i18next";
 import { InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
+import { UserAttributes } from "@/models/User";
+import { api } from "@/services/api";
+import { CityAttributes } from "@/models/City";
+import { MdCheckCircleOutline } from "react-icons/md";
 
 interface DeleteCityModalProps {
   isOpen: boolean;
   onClose: any;
-  userData: UserDetails;
+  userData: UserAttributes;
+  cityData: CityAttributes;
   tf: TFunction;
   lng: string;
 }
@@ -34,6 +40,7 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
   isOpen,
   onClose,
   userData,
+  cityData,
   lng,
   tf,
 }) => {
@@ -43,7 +50,67 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
     formState: { errors, isSubmitting },
     setValue,
   } = useForm<{ password: string }>();
+
   const { t } = useTranslation(lng, "dashboard");
+  const [requestPasswordConfirm] = api.useRequestVerificationMutation();
+  const { data: token } = api.useGetVerifcationTokenQuery({
+    skip: !userData,
+  });
+  const [removeCity] = api.useRemoveCityMutation();
+  const [isPasswordCorrect, setIsPasswordCorrect] = useState<boolean>(true);
+  const toast = useToast();
+
+  const onSubmit: SubmitHandler<{ password: string }> = async (data) => {
+    await requestPasswordConfirm({
+      password: data.password!,
+      token: token?.verificationToken!,
+    }).then(async (res: any) => {
+      if (res.data?.comparePassword) {
+        await removeCity({
+          locode: cityData.locode!,
+        }).then((res: any) => {
+          onClose();
+          setIsPasswordCorrect(true);
+          toast({
+            description: "User details updated!",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+            render: () => (
+              <Box
+                display="flex"
+                gap="8px"
+                color="white"
+                alignItems="center"
+                justifyContent="space-between"
+                p={3}
+                bg="interactive.primary"
+                width="600px"
+                height="60px"
+                borderRadius="8px"
+              >
+                <Box display="flex" gap="8px" alignItems="center">
+                  <MdCheckCircleOutline fontSize="24px" />
+
+                  <Text
+                    color="base.light"
+                    fontWeight="bold"
+                    lineHeight="52"
+                    fontSize="label.lg"
+                  >
+                    City deleted successfully
+                  </Text>
+                </Box>
+              </Box>
+            ),
+          });
+        });
+      } else {
+        setIsPasswordCorrect(false);
+      }
+    });
+  };
+
   return (
     <>
       <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
@@ -105,7 +172,7 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
                 </Text>
               </Box>
               <Box>
-                <form>
+                <form onSubmit={handleSubmit(onSubmit)}>
                   <Box
                     display="flex"
                     flexDirection="column"
@@ -134,17 +201,29 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
                         gap="6px"
                       >
                         <InfoOutlineIcon color="interactive.secondary" />
-                        <Text
-                          fontSize="body.md"
-                          fontStyle="normal"
-                          lineHeight="20px"
-                          fontFamily="heading"
-                          color="content.tertiary"
-                          letterSpacing="wide"
-                        >
-                          Enter your password to confirm the deletion of the
-                          cities information.
-                        </Text>
+                        {isPasswordCorrect ? (
+                          <Text
+                            fontSize="body.md"
+                            fontStyle="normal"
+                            lineHeight="20px"
+                            fontFamily="heading"
+                            color="content.tertiary"
+                            letterSpacing="wide"
+                          >
+                            {tf("enter-password-description")}
+                          </Text>
+                        ) : (
+                          <Text
+                            fontSize="body.md"
+                            fontStyle="normal"
+                            lineHeight="20px"
+                            fontFamily="heading"
+                            color="content.tertiary"
+                            letterSpacing="wide"
+                          >
+                            {tf("incorrect-password")}
+                          </Text>
+                        )}
                       </Box>
                     </Box>
                     <Button
@@ -158,8 +237,7 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
                       textTransform="uppercase"
                       fontWeight="semibold"
                       fontSize="button.md"
-                      type="button"
-                      onClick={() => alert(userData.id)}
+                      type="submit"
                     >
                       Remove City
                     </Button>

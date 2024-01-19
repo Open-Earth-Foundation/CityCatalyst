@@ -167,6 +167,7 @@ export const api = createApi({
       {
         cityId: string;
         population: number;
+        countryPopulation: number;
         year: number;
         locode: string;
       }

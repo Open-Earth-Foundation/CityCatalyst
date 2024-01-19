@@ -245,6 +245,7 @@ new_val = ['Tunuyán', 'Gral. Alvear', 'San Rafael', 'Santa Rosa', 'San Carlos',
 
 final_df['city'] = final_df['city'].replace(val_to_replace, new_val)
 final_df['source_name'] = 'deie_mendoza'
+final_df['temporal_granularity'] = 'annual'
 
 locode_dic = {
     'Rivadavia':'AR RIV',

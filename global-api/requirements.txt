@@ -19,4 +19,6 @@ tqdm==4.66.*
 uvicorn==0.25.0
 xarray==2023.*
 geojson==3.1.*
-openclimate==0.1.0
+openclimate==0.1.*
+nest_asyncio==1.5.*
+xlrd==2.0.*

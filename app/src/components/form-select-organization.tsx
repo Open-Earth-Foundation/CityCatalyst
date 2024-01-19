@@ -12,7 +12,7 @@ interface FormInputProps {
   onInputChange: Function;
 }
 
-const FormSelectInput: FC<FormInputProps> = ({
+const FormSelectOrganization: FC<FormInputProps> = ({
   label,
   isDisabled,
   value,
@@ -44,11 +44,11 @@ const FormSelectInput: FC<FormInputProps> = ({
         })}
         onChange={(e) => onInputChange(e)}
       >
-        <option value="admin">Admin</option>
-        <option value="contributor">Contributor</option>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
       </Select>
     </Box>
   );
 };
 
-export default FormSelectInput;
+export default FormSelectOrganization;

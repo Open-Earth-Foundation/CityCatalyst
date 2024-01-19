@@ -124,3 +124,18 @@ export const createPopulationRequest = z.object({
 });
 
 export type CreatePopulationRequest = z.infer<typeof createPopulationRequest>;
+
+// user file schema validation
+export const createUserFileRequset = z.object({
+  userId: z.string().uuid().optional(),
+  file_reference: z.string().optional(),
+  data: z.any(),
+  file_type: z.string().optional(),
+  sector: z.string().optional(),
+  url: z.string().url().optional(),
+  status: z.string().optional(),
+  gpc_ref_no: z.string().optional(),
+});
+
+// Schema type definition
+export type CreateUserFileRequetData = z.infer<typeof createUserFileRequset>;

@@ -30,6 +30,7 @@ export const GET = apiHandler(
     _req: Request,
     context: { session?: Session; params: Record<string, string> },
   ) => {
+    const userId = context.params.user;
     if (!context.session) {
       throw new createHttpError.Unauthorized("Unauthorized");
     }
@@ -37,7 +38,7 @@ export const GET = apiHandler(
     const user = await db.models.User.findOne({
       attributes: ["userId"],
       where: {
-        userId: context.session.user.id,
+        userId: userId,
       },
     });
     if (!user) {
@@ -63,7 +64,8 @@ export const POST = apiHandler(
     req: NextRequest,
     context: { session?: Session; params: Record<string, string> },
   ) => {
-    const authorizedUser = context.session?.user;
+    const userId = context.params.user;
+
     if (!context.session) {
       throw new createHttpError.Unauthorized("Unauthorized");
     }
@@ -71,7 +73,7 @@ export const POST = apiHandler(
     const user = await db.models.User.findOne({
       attributes: ["userId"],
       where: {
-        userId: authorizedUser?.id,
+        userId: userId,
       },
     });
 
@@ -102,8 +104,6 @@ export const POST = apiHandler(
       status: formData.get("status"),
       gpc_ref_no: formData.get("gpc_ref_no"),
     };
-
-    console.log(fileType);
 
     const body = createUserFileRequset.parse(fileData);
 

@@ -9,6 +9,7 @@ export const GET = apiHandler(
     _req: Request,
     context: { session?: Session; params: Record<string, string> },
   ) => {
+    const userId = context.params.user;
     if (!context.session) {
       throw new createHttpError.Unauthorized("Unauthorized");
     }
@@ -16,7 +17,7 @@ export const GET = apiHandler(
     const user = await db.models.User.findOne({
       attributes: ["userId"],
       where: {
-        userId: context.session.user.id,
+        userId: userId,
       },
     });
     if (!user) {
@@ -42,6 +43,7 @@ export const DELETE = apiHandler(
     _req: Request,
     context: { session?: Session; params: Record<string, string> },
   ) => {
+    const userId = context.params.user;
     if (!context.session) {
       throw new createHttpError.Unauthorized("Unauthorized");
     }
@@ -49,7 +51,7 @@ export const DELETE = apiHandler(
     const user = await db.models.User.findOne({
       attributes: ["userId"],
       where: {
-        userId: context.session.user.id,
+        userId: userId,
       },
     });
 

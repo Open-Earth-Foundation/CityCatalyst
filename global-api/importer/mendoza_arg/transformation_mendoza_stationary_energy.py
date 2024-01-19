@@ -88,7 +88,7 @@ for path in paths:
 
         # Production fuel mix factor (kgCO2e per kWh) 
         # source: https://www.carbonfootprint.com/docs/2023_02_emissions_factors_sources_for_2022_electricity_v10.pdf
-        df['gas'] = 'CO2e'
+        df['gas'] = 'CO2'
         df['ef_value'] = 0.2881 
         df['ef_unit'] = 'kgCO2e/kWh'
         df['activity_value'] = pd.to_numeric(df['activity_value'])

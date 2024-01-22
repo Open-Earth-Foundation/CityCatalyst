@@ -2,6 +2,7 @@ import { db } from "@/models";
 import { DataSource } from "@/models/DataSource";
 import { Inventory } from "@/models/Inventory";
 import { InventoryValueAttributes } from "@/models/InventoryValue";
+import { multiplyBigIntFloat } from "@/util/big_int";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 
@@ -77,6 +78,7 @@ export default class DataSourceService {
   public static async applyGlobalAPISource(
     source: DataSource,
     inventory: Inventory,
+    scaleFactor: number = 1.0,
   ): Promise<boolean> {
     const data = await DataSourceService.retrieveGlobalAPISource(
       source,
@@ -84,7 +86,21 @@ export default class DataSourceService {
     );
 
     const emissions = data.totals.emissions;
-    const totalEmissions = emissions.co2eq_100yr;
+    let totalEmissions: bigint;
+    let co2Amount, n2oAmount, ch4Amount: bigint;
+
+    if (scaleFactor !== 1.0) {
+      totalEmissions = multiplyBigIntFloat(BigInt(emissions.co2eq_100yr), scaleFactor);
+      co2Amount = multiplyBigIntFloat(BigInt(emissions.co2_mass), scaleFactor);
+      n2oAmount = multiplyBigIntFloat(BigInt(emissions.n2o_mass), scaleFactor);
+      ch4Amount = multiplyBigIntFloat(BigInt(emissions.ch4_mass), scaleFactor);
+    } else {
+      totalEmissions = BigInt(emissions.co2eq_100yr);
+      co2Amount = BigInt(emissions.co2_mass);
+      n2oAmount = BigInt(emissions.n2o_mass);
+      ch4Amount = BigInt(emissions.ch4_mass);
+    }
+
     const values: Partial<InventoryValueAttributes> = {
       datasourceId: source.datasourceId,
       inventoryId: inventory.inventoryId,
@@ -100,27 +116,22 @@ export default class DataSourceService {
     });
 
     // store values for co2, ch4, n2o separately for accounting and editing
-    // TODO what emissions factor should be used?
     await db.models.GasValue.create({
       id: randomUUID(),
       inventoryValueId: inventoryValue.id,
       gas: "CO2",
-      gasAmount: emissions.co2_mass,
-      // emissionsFactorId:
     });
     await db.models.GasValue.create({
       id: randomUUID(),
       inventoryValueId: inventoryValue.id,
       gas: "N2O",
-      gasAmount: emissions.n2o_mass,
-      // emissionsFactorId:
+      gasAmount: n2oAmount,
     });
     await db.models.GasValue.create({
       id: randomUUID(),
       inventoryValueId: inventoryValue.id,
       gas: "CH4",
-      gasAmount: emissions.ch4_mass,
-      // emissionsFactorId:
+      gasAmount: ch4Amount,
     });
 
     return true;

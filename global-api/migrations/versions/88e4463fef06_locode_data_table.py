@@ -21,7 +21,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.create_table(
-        "city_locode",
+        "citywide_emissions",
         sa.Column("id", sa.dialects.postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column("source_name", sa.String, nullable=False),
         sa.Column("GPC_refno", sa.String, nullable=False),
@@ -47,4 +47,4 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_table("city_locode")
+    op.drop_table("citywide_emissions")

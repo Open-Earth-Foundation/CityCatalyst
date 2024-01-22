@@ -134,3 +134,4 @@ __pycache__
 
 # react-email
 .react-email
+values-*.yml

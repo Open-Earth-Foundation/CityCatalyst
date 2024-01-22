@@ -139,5 +139,7 @@
   "unsaved-changes": "Unsaved Changes",
   "unsaved-changes-description": "You have unsaved changes to your sub-sector data.<br/>Are you sure you want to leave this page and <strong>discard the changes?</strong>",
   "keep-editing": "Keep editing",
-  "discard-changes": "Discard changes"
+  "discard-changes": "Discard changes",
+  "upload-your-data-heading": "Upload your data Files",
+  "upload-your-data-details": "Upload your files here and we will adjust your data structures to harmonize and integrate them to calculate your GPC Core Standard emissions inventory."
 }

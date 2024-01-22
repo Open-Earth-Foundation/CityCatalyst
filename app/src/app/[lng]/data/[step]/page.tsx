@@ -1,18 +1,29 @@
 "use client";
 
 import { SegmentedProgress } from "@/components/SegmentedProgress";
-import { CircleIcon, DataAlertIcon, WorldSearchIcon } from "@/components/icons";
+import {
+  CircleIcon,
+  DataAlertIcon,
+  ExcelFileIcon,
+  WorldSearchIcon,
+} from "@/components/icons";
 import WizardSteps from "@/components/wizard-steps";
 import { useTranslation } from "@/i18n/client";
 import { ScopeAttributes } from "@/models/Scope";
 import { api } from "@/services/api";
 import type { DataSource, SectorProgress } from "@/util/types";
-import { ArrowBackIcon, SearchIcon, WarningIcon } from "@chakra-ui/icons";
+import {
+  ArrowBackIcon,
+  ChevronRightIcon,
+  SearchIcon,
+  WarningIcon,
+} from "@chakra-ui/icons";
 import {
   Box,
   Button,
   Card,
   Center,
+  CircularProgress,
   Flex,
   Heading,
   Icon,
@@ -52,10 +63,13 @@ import { SubsectorDrawer } from "./SubsectorDrawer";
 import type { DataStep, SubSector } from "./types";
 import { nameToI18NKey } from "@/util/helpers";
 import { logger } from "@/services/logger";
+import FileInput from "@/components/file-input";
+import { FaFileExcel } from "react-icons/fa";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
-    process.env.NEXT_PUBLIC_SUPPORT_EMAILS || "info@openearth.org,greta@openearth.org";
+    process.env.NEXT_PUBLIC_SUPPORT_EMAILS ||
+    "info@openearth.org,greta@openearth.org";
   return `mailto://${emails}?subject=Missing third party data sources&body=City: ${locode}%0ASector: ${sector}%0AYear: ${year}`;
 }
 
@@ -417,6 +431,10 @@ export default function AddDataSteps({
 
   const [isDataSectionExpanded, setDataSectionExpanded] = useState(false);
 
+  const handleFileSelect = (file: File) => {
+    console.log(file); // Process the file as needed
+  };
+
   return (
     <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
       <Button
@@ -646,7 +664,7 @@ export default function AddDataSteps({
         )}
       </Card>
       {/*** Manual data entry section for subsectors ***/}
-      <Card mb={48}>
+      <Card mb={12}>
         <Heading size="lg" mb={2}>
           {t("add-data-heading")}
         </Heading>
@@ -712,6 +730,162 @@ export default function AddDataSteps({
             ))
           )}
         </SimpleGrid>
+      </Card>
+      <Card mb={48} shadow="none">
+        <Heading size="lg" mb={2}>
+          {t("upload-your-data-heading")}
+        </Heading>
+        <Text color="content.tertiary" mb={12}>
+          {t("upload-your-data-details")}
+        </Text>
+        <Box display="flex">
+          <Box
+            w="691px"
+            borderRightWidth="1px"
+            borderColor="border.overlay"
+            pr="16px"
+          >
+            <Box w="full">
+              <Box mb="24px">
+                <FileInput onFileSelect={handleFileSelect} />
+              </Box>
+              <Box mb="24px">
+                <Heading size="sm">Files uploaded</Heading>
+              </Box>
+              <Box display="flex" flexDirection="column" gap="8px">
+                <Card
+                  shadow="none"
+                  h="80px"
+                  w="full"
+                  borderWidth="1px"
+                  borderColor="border.overlay"
+                  borderRadius="8px"
+                  px="16px"
+                  py="16px"
+                >
+                  <Box display="flex" gap="16px">
+                    <Box>
+                      <ExcelFileIcon />
+                    </Box>
+                    <Box display="flex" flexDirection="column" gap="8px">
+                      <Heading
+                        fontSize="lable.lg"
+                        fontWeight="normal"
+                        letterSpacing="wide"
+                      >
+                        Your_data_file.csv
+                      </Heading>
+                      <Text
+                        fontSize="body.md"
+                        fontWeight="normal"
+                        color="interactive.control"
+                      >
+                        1.5MB
+                      </Text>
+                    </Box>
+                    <Box
+                      color="sentiment.negativeDefault"
+                      display="flex"
+                      justifyContent="right"
+                      alignItems="center"
+                      w="full"
+                    >
+                      <CircularProgress
+                        isIndeterminate
+                        color="content.link"
+                        size={5}
+                        thickness="15"
+                      />
+                    </Box>
+                  </Box>
+                </Card>
+                <Card
+                  shadow="none"
+                  h="80px"
+                  w="full"
+                  borderWidth="1px"
+                  borderColor="border.overlay"
+                  borderRadius="8px"
+                  px="16px"
+                  py="16px"
+                >
+                  <Box display="flex" gap="16px">
+                    <Box>
+                      <ExcelFileIcon />
+                    </Box>
+                    <Box display="flex" flexDirection="column" gap="8px">
+                      <Heading
+                        fontSize="lable.lg"
+                        fontWeight="normal"
+                        letterSpacing="wide"
+                      >
+                        Your_data_file.csv
+                      </Heading>
+                      <Text
+                        fontSize="body.md"
+                        fontWeight="normal"
+                        color="interactive.control"
+                      >
+                        1.5MB
+                      </Text>
+                    </Box>
+                    <Box
+                      color="sentiment.negativeDefault"
+                      display="flex"
+                      justifyContent="right"
+                      alignItems="center"
+                      w="full"
+                    >
+                      <FiTrash2 size="22px" />
+                    </Box>
+                  </Box>
+                </Card>
+              </Box>
+            </Box>
+          </Box>
+          <Box pl="16px">
+            <Card
+              shadow="none"
+              borderWidth="1px"
+              borderColor="border.overlay"
+              borderRadius="8px"
+              w="303px"
+              h="160px"
+              p="16px"
+            >
+              <Box display="flex" gap="16px">
+                <Box>
+                  <Heading
+                    fontSize="label.lg"
+                    fontWeight="semibold"
+                    letterSpacing="wide"
+                    lineHeight="20px"
+                  >
+                    Download template to upload data
+                  </Heading>
+                  <Text
+                    color="interactive.control"
+                    fontSize="body.md"
+                    fontWeight="normal"
+                    letterSpacing="wide"
+                    lineHeight="20px"
+                  >
+                    Follow the steps in our template and upload the data to
+                    calculate your inventory without waiting for
+                    CityCatlyst&apos;s data review.
+                  </Text>
+                </Box>
+                <Box display="flex" alignItems="center">
+                  <ChevronRightIcon
+                    h="24px"
+                    w="24px"
+                    color="interactive.control"
+                  />
+                </Box>
+              </Box>
+            </Card>
+          </Box>
+        </Box>
       </Card>
       {/*** Bottom bar ***/}
       <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand py-4 px-4 drop-shadow-2xl hover:drop-shadow-4xl transition-all">

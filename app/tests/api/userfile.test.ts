@@ -61,13 +61,15 @@ describe("UserFile API", () => {
     if (db.sequelize) await db.sequelize.close();
 
     // deletes the file once test are done
+    await fs.unlink(await filePath(), (err: any) => {
+      if (err) console.error(err);
+    });
   });
 
   it("should create a user file", async () => {
     // stream created file from path
     const path = await filePath();
     const fileStream = await getFileDataFromStream(path);
-
     const formData = new FormData();
     formData.append("id", randomUUID());
     formData.append("userId", fileData.userId);
@@ -96,7 +98,7 @@ describe("UserFile API", () => {
     formData.append("sector", invalidFileData.sector);
     formData.append("url", invalidFileData.url);
     formData.append("status", invalidFileData.status);
-    formData.append("file_reference", invalidFileData.file_reference);
+    formData.append("fileReference", invalidFileData.file_reference);
     formData.append("gpcRefNo", invalidFileData.gpc_ref_no);
     const req = mockRequestFormData(formData);
     const res = await createUserFile(req, { params: { user: testUserID } });

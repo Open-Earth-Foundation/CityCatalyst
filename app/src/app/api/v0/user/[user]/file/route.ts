@@ -48,7 +48,7 @@ export const POST = apiHandler(
 
     const formData = await req.formData();
     const file = formData?.get("data") as unknown as File;
-    console.log("file", file);
+
     if (!file)
       throw new createHttpError.BadRequest("File not found, Please add a file");
 
@@ -63,13 +63,13 @@ export const POST = apiHandler(
 
     const fileData = {
       userId: userId,
-      fileReference: formData.get("file_reference"),
+      fileReference: formData.get("fileReference"),
       url: formData.get("url"),
       data: buffer,
       fileType: fileType,
       sector: formData.get("sector"),
       status: formData.get("status"),
-      gpcRefNo: formData.get("gpc_ref_no"),
+      gpcRefNo: formData.get("gpcRefNo"),
     };
 
     const body = createUserFileRequset.parse(fileData);

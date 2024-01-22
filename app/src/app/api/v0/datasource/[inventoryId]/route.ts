@@ -126,13 +126,21 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
   // download source data and apply in database
   const sourceResults = await Promise.all(
     applicableSources.map(async (source) => {
-      const result = { id: source.datasourceId, success: true };
+      const result: { id: string; success: boolean; issue?: string } = {
+        id: source.datasourceId,
+        success: true,
+        issue: undefined,
+      };
 
       if (source.retrievalMethod === "global_api") {
-        result.success = await DataSourceService.applyGlobalAPISource(
+        const sourceStatus = await DataSourceService.applyGlobalAPISource(
           source,
           inventory,
         );
+        if (typeof sourceStatus === "string") {
+          result.issue = sourceStatus;
+          result.success = false;
+        }
       } else if (
         source.retrievalMethod === "global_api_downscaled_by_population"
       ) {
@@ -143,22 +151,25 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
           },
         });
         if (!population?.population || !population?.countryPopulation) {
-          // TODO return list of issues in response instead?
-          throw new createHttpError.BadRequest(
-            "City is missing population/ countryPopulation for the inventory year",
-          );
+          result.issue =
+            "City is missing population/ countryPopulation for the inventory year";
+          result.success = false;
+          return result;
         }
         const scaleFactor =
           population.population / population.countryPopulation;
-        result.success = await DataSourceService.applyGlobalAPISource(
+        const sourceStatus = await DataSourceService.applyGlobalAPISource(
           source,
           inventory,
           scaleFactor,
         );
+        if (typeof sourceStatus === "string") {
+          result.issue = sourceStatus;
+          result.success = false;
+        }
       } else {
-        logger.error(
-          `Unsupported retrieval method ${source.retrievalMethod} for data source ${source.datasourceId}`,
-        );
+        result.issue = `Unsupported retrieval method ${source.retrievalMethod} for data source ${source.datasourceId}`;
+        logger.error(result.issue);
         result.success = false;
       }
 
@@ -172,8 +183,14 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
   const failed = sourceResults
     .filter((result) => !result.success)
     .map((result) => result.id);
+  const issues = sourceResults
+    .filter((result) => !!result.issue)
+    .reduce((acc: Record<string, string>, result) => {
+      acc[result.id] = result.issue!;
+      return acc;
+    }, {});
 
   return NextResponse.json({
-    data: { successful, failed, invalid: invalidSourceIds },
+    data: { successful, failed, invalid: invalidSourceIds, issues },
   });
 });

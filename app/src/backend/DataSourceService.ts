@@ -37,7 +37,7 @@ export default class DataSourceService {
   public static async retrieveGlobalAPISource(
     source: DataSource,
     inventory: Inventory,
-  ): Promise<any | null> {
+  ): Promise<any | string> {
     const referenceNumber =
       source.subCategory?.referenceNumber || source.subSector?.referenceNumber;
     if (
@@ -47,7 +47,7 @@ export default class DataSourceService {
       !(source.subsectorId || source.subcategoryId) ||
       !referenceNumber
     ) {
-      return null;
+      return "Missing reference data in inventory";
     }
 
     const url = source.apiEndpoint
@@ -60,16 +60,15 @@ export default class DataSourceService {
       const response = await fetch(url);
       data = await response.json();
     } catch (err) {
-      console.error(
-        `Failed to query data source ${source.datasourceId} at URL ${url}:`,
-        err,
-      );
-      return null;
+      const message = `Failed to query data source ${source.datasourceId} at URL ${url}:`;
+      console.error(message, err);
+      return message;
     }
 
     if (typeof data.totals !== "object") {
-      console.error("Incorrect response from Global API for URL:", url, data);
-      return null;
+      const message = "Incorrect response from Global API for URL: " + url;
+      console.error(message, data);
+      return message;
     }
 
     return data;
@@ -79,23 +78,25 @@ export default class DataSourceService {
     source: DataSource,
     inventory: Inventory,
     scaleFactor: number = 1.0,
-  ): Promise<boolean> {
+  ): Promise<string | boolean> {
     const data = await DataSourceService.retrieveGlobalAPISource(
       source,
       inventory,
     );
+    if (typeof data === "string") {
+      return data;
+    }
 
     const emissions = data.totals.emissions;
-    let totalEmissions: bigint;
-    let co2Amount, n2oAmount, ch4Amount: bigint;
+    let co2eq, co2Amount, n2oAmount, ch4Amount: bigint;
 
     if (scaleFactor !== 1.0) {
-      totalEmissions = multiplyBigIntFloat(BigInt(emissions.co2eq_100yr), scaleFactor);
+      co2eq = multiplyBigIntFloat(BigInt(emissions.co2eq_100yr), scaleFactor);
       co2Amount = multiplyBigIntFloat(BigInt(emissions.co2_mass), scaleFactor);
       n2oAmount = multiplyBigIntFloat(BigInt(emissions.n2o_mass), scaleFactor);
       ch4Amount = multiplyBigIntFloat(BigInt(emissions.ch4_mass), scaleFactor);
     } else {
-      totalEmissions = BigInt(emissions.co2eq_100yr);
+      co2eq = BigInt(emissions.co2eq_100yr);
       co2Amount = BigInt(emissions.co2_mass);
       n2oAmount = BigInt(emissions.n2o_mass);
       ch4Amount = BigInt(emissions.ch4_mass);
@@ -104,7 +105,7 @@ export default class DataSourceService {
     const values: Partial<InventoryValueAttributes> = {
       datasourceId: source.datasourceId,
       inventoryId: inventory.inventoryId,
-      co2eq: totalEmissions,
+      co2eq,
       co2eqYears: 100,
     };
 

@@ -78,24 +78,24 @@ for path in paths:
                 inplace=True)
         df = reshape_df(df)
         df = replace_val(df)
-        df['activity_unit'] = 'MWh'
+        df['activity_units'] = 'MWh'
 
         # assigning gpc reference number based on the user
         for index, row in df.iterrows():
             activity_name = row['activity_name']
             if activity_name in sector_dic.keys():
-                df.at[index, 'GPC_ref_no'] = sector_dic[activity_name]
+                df.at[index, 'GPC_refno'] = sector_dic[activity_name]
 
         # Production fuel mix factor (kgCO2e per kWh) 
         # source: https://www.carbonfootprint.com/docs/2023_02_emissions_factors_sources_for_2022_electricity_v10.pdf
-        df['gas'] = 'CO2'
-        df['ef_value'] = 0.2881 
-        df['ef_unit'] = 'kgCO2e/kWh'
+        df['gas_name'] = 'CO2'
+        df['emission_factor_value'] = 0.2881 
+        df['emission_factor_units'] = 'kgCO2e/kWh'
         df['activity_value'] = pd.to_numeric(df['activity_value'])
-        df['emissions_value'] = (df['activity_value']*1000) * df['ef_value']
-        df['emissions_unit'] = 'kg'
+        df['emissions_value'] = (df['activity_value']*1000) * df['emission_factor_value']
+        df['emissions_units'] = 'kg'
         
-        df['city'] = path[49:-27]
+        df['city_name'] = path[49:-27]
 
         result_df1 = pd.concat([result_df1, df], ignore_index=True)
     except Exception as e:
@@ -107,7 +107,7 @@ for path in paths:
 # Cubic meters of gas distributed by type of user, according to year
 
 column_names2 = ['year',
-                'city',
+                'city_name',
                 'total',
                 'residential',
                 'industrial_commercial_services',
@@ -151,8 +151,8 @@ for path in paths:
     tmp1.columns = column_names2
     tmp1 = replace_val(tmp1)
     tmp1 = tmp1.reset_index(drop=True)
-    city_name = tmp1['city'].iloc[1]
-    tmp1 = tmp1[tmp1['city'] == city_name]
+    city_name = tmp1['city_name'].iloc[1]
+    tmp1 = tmp1[tmp1['city_name'] == city_name]
     tmp1['year'] = ['2018', '2019', '2020', '2021', '2022']
     
     #old years with more detail data
@@ -182,40 +182,40 @@ for path in paths:
     # Reshape the tmp1 DataFrame 
     tmp1 = pd.melt(
         tmp1,
-        id_vars=['year', 'city'],
+        id_vars=['year', 'city_name'],
         var_name='activity_name',
         value_name='activity_value'
     )
     
-    tmp1['city'] = city_name
+    tmp1['city_name'] = city_name
     result_df2 = pd.concat([result_df2, tmp1], ignore_index=True)
 
 # gas: 9300 kcal/m3
 # 1 kcal = 4.1858e-9 TJ
 result_df2['activity_value'] = result_df2['activity_value']*9300*4.1858*1e-9
-result_df2['activity_unit'] = 'TJ'
+result_df2['activity_units'] = 'TJ'
 
 ef_natural_gas = ef_df[(ef_df['Fuel 2006'] == 'Natural Gas')&(ef_df['IPCC 2006 Source/Sink Category'] == '1.A.4.b - Residential\n1.A.4.c.i - Stationary\n')]
 
 gases = ['CO2', 'CH4', 'N2O']
-ef_natural_gas['gas'] = gases
+ef_natural_gas['gas_name'] = gases
 
 result_df = pd.DataFrame()
 
-for gas in ef_natural_gas['gas']:
-    gas_value = pd.to_numeric(ef_natural_gas[ef_natural_gas['gas'] == gas]['Value'].iloc[0])
+for gas in ef_natural_gas['gas_name']:
+    gas_value = pd.to_numeric(ef_natural_gas[ef_natural_gas['gas_name'] == gas]['Value'].iloc[0])
     
     # Create a copy of result_df1 for each gas
     temp_df = result_df2.copy()
     
     # Multiply the 'activity_value' column by the gas_value
     temp_df['emissions_value'] = temp_df['activity_value'] * gas_value
-    temp_df['emissions_unit'] = 'kg'
+    temp_df['emissions_units'] = 'kg'
     
     # Set additional columns for this gas
-    temp_df['gas'] = gas
-    temp_df['ef_value'] = ef_natural_gas[ef_natural_gas['gas'] == gas]['Value'].iloc[0]
-    temp_df['ef_unit'] = ef_natural_gas[ef_natural_gas['gas'] == gas]['Unit'].iloc[0]
+    temp_df['gas_name'] = gas
+    temp_df['emission_factor_value'] = ef_natural_gas[ef_natural_gas['gas_name'] == gas]['Value'].iloc[0]
+    temp_df['emission_factor_units'] = ef_natural_gas[ef_natural_gas['gas_name'] == gas]['Unit'].iloc[0]
     
     # Concatenate the temporary DataFrame to the result_df
     result_df = pd.concat([result_df, temp_df], ignore_index=True)
@@ -231,7 +231,7 @@ for index, row in result_df.iterrows():
     activity_name = row['activity_name']
 
     if activity_name in sector_dic.keys():
-        result_df.at[index, 'GPC_ref_no'] = sector_dic[activity_name]
+        result_df.at[index, 'GPC_refno'] = sector_dic[activity_name]
 
 final_df = pd.concat([result_df1, result_df], ignore_index=True)
 
@@ -243,7 +243,7 @@ val_to_replace = ['Tunuyan', 'General_Alvear', 'San_Rafael', 'Santa_Rosa', 'San_
 new_val = ['Tunuyán', 'Gral. Alvear', 'San Rafael', 'Santa Rosa', 'San Carlos', 'Maipú', 'Las Heras',
        'Luján de Cuyo', 'Gral. San Martín', 'La Paz', 'Malargüe', 'Guaymallén', 'Godoy Cruz','Junín']
 
-final_df['city'] = final_df['city'].replace(val_to_replace, new_val)
+final_df['city_name'] = final_df['city_name'].replace(val_to_replace, new_val)
 final_df['source_name'] = 'deie_mendoza'
 final_df['temporal_granularity'] = 'annual'
 
@@ -269,9 +269,9 @@ locode_dic = {
 
 # assigning city locode based on the city name
 for index, row in final_df.iterrows():
-    city_name = row['city']
+    city_name = row['city_name']
 
     if city_name in locode_dic.keys():
         final_df.at[index, 'locode'] = locode_dic[city_name]
 
-final_df.to_csv('./stationary_energy_mendoza.csv')
+final_df.to_csv('./stationary_energy_mendoza.csv', index=False)

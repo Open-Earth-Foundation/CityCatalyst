@@ -1,3 +1,5 @@
+import "@/util/bigint";
+
 import { Auth } from "@/lib/auth";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
@@ -45,6 +47,11 @@ function errorHandler(err: unknown, req: NextRequest) {
   } else if (err instanceof ZodError) {
     return NextResponse.json(
       { error: { message: "Invalid request", issues: err.issues } },
+      { status: 400 },
+    );
+  } else if (err instanceof SyntaxError) {
+    return NextResponse.json(
+      { error: { message: "Invalid request - " + err.message } },
       { status: 400 },
     );
   } else if (

@@ -652,7 +652,7 @@ export function initModels(sequelize: Sequelize) {
   });
   User.belongsTo(User, { as: "organization", foreignKey: "organizationId" });
   User.hasMany(User, { as: "users", foreignKey: "organizationId" });
-  User.hasOne(UserFile, { foreignKey: "userId", as: "user" });
+  User.hasMany(UserFile, { foreignKey: "userId", as: "user" });
   UserFile.belongsTo(User, { as: "userFiles", foreignKey: "userId" });
 
   return {

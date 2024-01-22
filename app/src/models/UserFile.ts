@@ -5,13 +5,13 @@ import { User, UserId } from "./User";
 export interface UserFileAttributes {
   id: string;
   userId?: string;
-  file_reference?: string;
+  fileReference?: string;
   data?: Buffer;
-  file_type?: string;
+  fileType?: string;
   sector?: string;
   status?: string;
   url?: string;
-  gpc_ref_no?: string;
+  gpcRefNo?: string;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -20,13 +20,13 @@ export type UserFilePk = "id";
 export type UserFileId = UserFile[UserFilePk];
 export type UserFileOptionalAttributes =
   | "userId"
-  | "file_reference"
+  | "fileReference"
   | "data"
-  | "file_type"
+  | "fileType"
   | "sector"
   | "url"
   | "status"
-  | "gpc_ref_no"
+  | "gpcRefNo"
   | "created"
   | "lastUpdated";
 export type UserFileCreationAttributes = Optional<
@@ -40,13 +40,13 @@ export class UserFile
 {
   id!: string;
   userId?: string | undefined;
-  file_reference?: string | undefined;
+  fileReference?: string | undefined;
   data: Buffer | undefined;
-  file_type?: string | undefined;
+  fileType?: string | undefined;
   sector?: string | undefined;
   url?: string | undefined;
   status: string | undefined;
-  gpc_ref_no?: string | undefined;
+  gpcRefNo?: string | undefined;
   created?: Date | undefined;
   lastUpdated?: Date | undefined;
 
@@ -72,9 +72,9 @@ export class UserFile
             model: "User",
             key: "user_id",
           },
-          field: "user_id",
+          field: "userId",
         },
-        file_reference: {
+        fileReference: {
           type: DataTypes.STRING(255),
           allowNull: true,
         },
@@ -82,7 +82,7 @@ export class UserFile
           type: DataTypes.BLOB,
           allowNull: true,
         },
-        file_type: {
+        fileType: {
           type: DataTypes.STRING(255),
           allowNull: true,
         },
@@ -98,7 +98,7 @@ export class UserFile
           type: DataTypes.STRING(255),
           allowNull: true,
         },
-        gpc_ref_no: {
+        gpcRefNo: {
           type: DataTypes.STRING(255),
           allowNull: true,
         },
@@ -109,7 +109,7 @@ export class UserFile
         schema: "public",
         timestamps: true,
         createdAt: "created",
-        updatedAt: "last_updated",
+        updatedAt: "lastUpdated",
         indexes: [
           {
             name: "UserFile_pkey",

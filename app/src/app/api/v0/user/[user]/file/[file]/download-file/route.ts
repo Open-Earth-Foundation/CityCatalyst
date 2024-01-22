@@ -9,19 +9,8 @@ export const GET = apiHandler(
     _req: Request,
     context: { session?: Session; params: Record<string, string> },
   ) => {
-    const userId = context.params.user;
     if (!context.session) {
       throw new createHttpError.Unauthorized("Unauthorized");
-    }
-
-    const user = await db.models.User.findOne({
-      attributes: ["userId"],
-      where: {
-        userId: userId,
-      },
-    });
-    if (!user) {
-      throw new createHttpError.NotFound("File does not belong to this user");
     }
 
     const userFile = await db.models.UserFile.findOne({
@@ -34,13 +23,16 @@ export const GET = apiHandler(
       throw new createHttpError.NotFound("User file not found");
     }
 
+    if (!userFile.userId)
+      throw new createHttpError.NotFound("file does not belong to this user");
+
     let body: Buffer | undefined;
     let headers: Record<string, string> | null = null;
 
     body = userFile.data;
     headers = {
-      "Content-Type": "application/vnd.ms-excel",
-      "Content-Disposition": `attachment; filename="${userFile.id}.${userFile.file_type}"`,
+      "Content-Type": `application/${userFile.fileType}`,
+      "Content-Disposition": `attachment; filename="${userFile.id}.${userFile.fileType}"`,
     };
 
     return new NextResponse(body, { headers });

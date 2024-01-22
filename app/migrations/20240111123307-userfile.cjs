@@ -8,7 +8,7 @@ module.exports = {
         type: Sequelize.UUID,
         primaryKey: true,
       },
-      user_id: {
+      userId: {
         type: Sequelize.UUID,
         allowNull: true,
         references: {
@@ -16,7 +16,7 @@ module.exports = {
           key: 'user_id'
         }
       },
-      file_reference: {
+      fileReference: {
         type: Sequelize.STRING,
         allowNull: true
       },
@@ -24,7 +24,7 @@ module.exports = {
         type: Sequelize.BLOB,
         allowNull: true,
       },
-      file_type: {
+      fileType: {
         type: Sequelize.STRING,
         allowNull: true
       },
@@ -40,7 +40,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true
       },
-      gpc_ref_no: {
+      gpcRefNo: {
         type: Sequelize.STRING,
         allowNull: true
       },
@@ -50,7 +50,7 @@ module.exports = {
         allowNull: true,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
-      last_updated: {
+      lastUpdated: {
         type: Sequelize.DATE,
         allowNull: true,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),

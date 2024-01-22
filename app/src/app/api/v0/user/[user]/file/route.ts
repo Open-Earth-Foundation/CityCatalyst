@@ -21,19 +21,9 @@ export const GET = apiHandler(
       throw new createHttpError.Unauthorized("Unauthorized");
     }
 
-    const user = await db.models.User.findOne({
-      attributes: ["userId"],
-      where: {
-        userId: userId,
-      },
-    });
-    if (!user) {
-      throw new createHttpError.NotFound("User not found");
-    }
-
     const userFiles = await db.models.UserFile.findAll({
       where: {
-        userId: user.userId,
+        userId: userId,
       },
     });
 
@@ -56,20 +46,11 @@ export const POST = apiHandler(
       throw new createHttpError.Unauthorized("Unauthorized");
     }
 
-    const user = await db.models.User.findOne({
-      attributes: ["userId"],
-      where: {
-        userId: userId,
-      },
-    });
-
-    if (!user) {
-      throw new createHttpError.NotFound("User not allowed");
-    }
-
     const formData = await req.formData();
-    const file = formData.get("data") as unknown as File;
-    if (!file) throw new createHttpError.BadRequest("File not found");
+    const file = formData?.get("data") as unknown as File;
+    console.log("file", file);
+    if (!file)
+      throw new createHttpError.BadRequest("File not found, Please add a file");
 
     const filename = file.name;
 
@@ -81,14 +62,14 @@ export const POST = apiHandler(
     const buffer = Buffer.from(bytes);
 
     const fileData = {
-      userId: formData.get("userId"),
-      file_reference: formData.get("file_reference"),
+      userId: userId,
+      fileReference: formData.get("file_reference"),
       url: formData.get("url"),
       data: buffer,
-      file_type: fileType,
+      fileType: fileType,
       sector: formData.get("sector"),
       status: formData.get("status"),
-      gpc_ref_no: formData.get("gpc_ref_no"),
+      gpcRefNo: formData.get("gpc_ref_no"),
     };
 
     const body = createUserFileRequset.parse(fileData);

@@ -9,19 +9,8 @@ export const GET = apiHandler(
     _req: Request,
     context: { session?: Session; params: Record<string, string> },
   ) => {
-    const userId = context.params.user;
     if (!context.session) {
       throw new createHttpError.Unauthorized("Unauthorized");
-    }
-
-    const user = await db.models.User.findOne({
-      attributes: ["userId"],
-      where: {
-        userId: userId,
-      },
-    });
-    if (!user) {
-      throw new createHttpError.NotFound("File does not belong to this user");
     }
 
     const userFile = await db.models.UserFile.findOne({
@@ -33,6 +22,9 @@ export const GET = apiHandler(
     if (!userFile) {
       throw new createHttpError.NotFound("User file not found");
     }
+
+    if (!userFile.userId)
+      throw new createHttpError.NotFound("file does not belong to this user");
 
     return NextResponse.json({ data: userFile });
   },
@@ -43,20 +35,8 @@ export const DELETE = apiHandler(
     _req: Request,
     context: { session?: Session; params: Record<string, string> },
   ) => {
-    const userId = context.params.user;
     if (!context.session) {
       throw new createHttpError.Unauthorized("Unauthorized");
-    }
-
-    const user = await db.models.User.findOne({
-      attributes: ["userId"],
-      where: {
-        userId: userId,
-      },
-    });
-
-    if (!user) {
-      throw new createHttpError.NotFound("File does not belong to this user");
     }
 
     const userFile = await db.models.UserFile.findOne({
@@ -68,7 +48,8 @@ export const DELETE = apiHandler(
     if (!userFile) {
       throw new createHttpError.NotFound("User file not found");
     }
-
+    if (!userFile.userId)
+      throw new createHttpError.NotFound("file does not belong to this user");
     await userFile.destroy();
 
     return NextResponse.json({ data: userFile, deleted: true });

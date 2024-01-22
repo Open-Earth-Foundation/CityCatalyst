@@ -10,7 +10,7 @@ osmnx==1.8.0
 pandas==2.1.4
 psycopg2-binary==2.9.9
 pydantic-settings==2.*
-pytest==7.4.3
+pytest==7.4.4
 rioxarray==0.15.*
 scipy==1.12.*
 shapely==2.0.2

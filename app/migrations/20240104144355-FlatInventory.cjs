@@ -1,5 +1,7 @@
 "use strict";
 
+const { randomUUID } = require("node:crypto");
+
 async function removeColumns(
   tableName,
   columnNames,
@@ -32,6 +34,11 @@ module.exports = {
       await queryInterface.renameTable("SubCategoryValue", "InventoryValue", {
         transaction,
       });
+      const previousValues = await queryInterface.select(
+        null,
+        "InventoryValue",
+        { raw: true, transaction },
+      );
       await renameColumns(
         "InventoryValue",
         {
@@ -229,6 +236,53 @@ module.exports = {
         onUpdate: "SET NULL",
         transaction,
       });
+
+      // Restore gas and subsector/ sector data for previous InventoryValue entries
+      for (const value of previousValues) {
+        if (value.subcategory_id) {
+          const subCategory = await queryInterface.select(null, "SubCategory", {
+            raw: true,
+            transaction,
+            where: {
+              subcategory_id: value.subcategory_id,
+            },
+          });
+          const sub_sector_id = subCategory[0].subsector_id;
+          const subSector = await queryInterface.select(null, "SubSector", {
+            raw: true,
+            transaction,
+            where: {
+              subsector_id: sub_sector_id,
+            },
+          });
+          const sector_id = subSector[0].sector_id;
+          await queryInterface.bulkUpdate(
+            "InventoryValue",
+            { sub_sector_id, sector_id },
+            { id: value.subcategory_value_id },
+            { transaction },
+          );
+        }
+
+        const gasValues = [];
+        for (const gas of ["CO2", "CH4", "N2O"]) {
+          const gasAmount = value[gas.toLowerCase() + "_emissions_value"];
+          if (gasAmount) {
+            // there were no emissionsFactorId's assigned previously
+            gasValues.push({
+              id: randomUUID(),
+              gas,
+              inventory_value_id: value.id,
+              gas_amount: gasAmount,
+            });
+          }
+        }
+        if (gasValues.length > 0) {
+          await queryInterface.bulkInsert("GasValue", gasValues, {
+            transaction,
+          });
+        }
+      }
     });
   },
 

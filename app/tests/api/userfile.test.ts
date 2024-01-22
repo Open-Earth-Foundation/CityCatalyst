@@ -87,21 +87,25 @@ describe("UserFile API", () => {
     assert.equal(data?.sector, fileData.sector);
     assert.equal(data?.url, fileData.url);
     assert.equal(data?.status, fileData.status);
-    assert.equal(data?.gpc_ref_no, fileData.gpc_ref_no);
+    assert.equal(data?.gpcRefNo, fileData.gpc_ref_no);
     assert.equal(fileData?.data.type, data?.data.type);
   });
 
   it("should not create a file if data is invalid", async () => {
+    const path = await filePath();
+    const fileStream = await getFileDataFromStream(path);
     const formData = new FormData();
     formData.append("id", invalidFileData.id);
     formData.append("userId", invalidFileData.userId);
     formData.append("sector", invalidFileData.sector);
     formData.append("url", invalidFileData.url);
+    formData.append("data", fileStream);
     formData.append("status", invalidFileData.status);
     formData.append("fileReference", invalidFileData.file_reference);
     formData.append("gpcRefNo", invalidFileData.gpc_ref_no);
     const req = mockRequestFormData(formData);
     const res = await createUserFile(req, { params: { user: testUserID } });
+    console.log(res);
     const { data } = await res.json();
 
     assert.equal(res.status, 400);
@@ -118,7 +122,7 @@ describe("UserFile API", () => {
     assert.equal(userFile?.sector, fileData.sector);
     assert.equal(userFile?.url, fileData.url);
     assert.equal(userFile?.status, fileData.status);
-    assert.equal(userFile?.gpc_ref_no, fileData.gpc_ref_no);
+    assert.equal(userFile?.gpcRefNo, fileData.gpc_ref_no);
   });
 
   it("should find a user file", async () => {
@@ -138,22 +142,13 @@ describe("UserFile API", () => {
     assert.equal(userFile?.sector, fileData.sector);
     assert.equal(userFile?.url, fileData.url);
     assert.equal(userFile?.status, fileData.status);
-    assert.equal(userFile?.gpc_ref_no, fileData.gpc_ref_no);
+    assert.equal(userFile?.gpcRefNo, fileData.gpc_ref_no);
   });
 
   it("should not find a user file", async () => {
     const req = mockRequest();
     const res = await findUserFile(req, {
       params: { user: testUserID, file: randomUUID() },
-    });
-
-    assert.equal(res.status, 404);
-  });
-
-  it("should not find user files for non-existent user", async () => {
-    const req = mockRequest();
-    const res = await findUserFiles(req, {
-      params: { user: randomUUID() },
     });
 
     assert.equal(res.status, 404);

@@ -6,7 +6,7 @@ CREATE TEMP TABLE IF NOT EXISTS ghgrp_epa_staging (LIKE ghgrp_epa INCLUDING ALL)
 
 TRUNCATE ghgrp_epa_staging;
 
-/* Load the staging table from the downloaded file */
+/* Load the staging table from the transformed file */
 
 \copy ghgrp_epa_staging (id,facility_id,facility_name,city,state,county,latitude,longitude,locode,geometry,subpart_name,subparts,sectors,final_sector,"GPC_ref_no",gas,emissions_quantity,emissions_quantity_units,"GWP_ref",year) FROM 'epa.csv' WITH CSV HEADER;
 

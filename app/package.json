@@ -71,7 +71,7 @@
     "pino": "^8.16.2",
     "postcss": "8.4.31",
     "react": "18.2.0",
-    "react-circle-flags": "^0.0.19",
+    "react-circle-flags": "^0.0.20",
     "react-dom": "18.2.0",
     "react-email": "^1.9.5",
     "react-hook-form": "^7.49.2",

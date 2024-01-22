@@ -123,6 +123,7 @@ import { User as _User } from "./User";
 import type { UserAttributes, UserCreationAttributes } from "./User";
 import { Version as _Version } from "./Version";
 import type { VersionAttributes, VersionCreationAttributes } from "./Version";
+import { UserFile as _UserFile } from "./UserFile";
 
 export {
   _ActivityData as ActivityData,
@@ -154,6 +155,7 @@ export {
   _SubSectorValue as SubSectorValue,
   _User as User,
   _Version as Version,
+  _UserFile as UserFile,
 };
 
 export type {
@@ -249,6 +251,7 @@ export function initModels(sequelize: Sequelize) {
   const SubSectorValue = _SubSectorValue.initModel(sequelize);
   const User = _User.initModel(sequelize);
   const Version = _Version.initModel(sequelize);
+  const UserFile = _UserFile.initModel(sequelize);
 
   ActivityData.belongsToMany(DataSource, {
     as: "datasourceIdDataSources",
@@ -649,6 +652,8 @@ export function initModels(sequelize: Sequelize) {
   });
   User.belongsTo(User, { as: "organization", foreignKey: "organizationId" });
   User.hasMany(User, { as: "users", foreignKey: "organizationId" });
+  User.hasMany(UserFile, { foreignKey: "userId", as: "user" });
+  UserFile.belongsTo(User, { as: "userFiles", foreignKey: "userId" });
 
   return {
     ActivityData: ActivityData,
@@ -680,5 +685,6 @@ export function initModels(sequelize: Sequelize) {
     SubSectorValue: SubSectorValue,
     User: User,
     Version: Version,
+    UserFile: UserFile,
   };
 }

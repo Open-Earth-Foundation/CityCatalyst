@@ -105,9 +105,6 @@ describe("UserFile API", () => {
     formData.append("gpcRefNo", invalidFileData.gpc_ref_no);
     const req = mockRequestFormData(formData);
     const res = await createUserFile(req, { params: { user: testUserID } });
-    console.log(res);
-    const { data } = await res.json();
-
     assert.equal(res.status, 400);
   });
 

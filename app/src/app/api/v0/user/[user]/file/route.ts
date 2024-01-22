@@ -49,8 +49,6 @@ export const POST = apiHandler(
     const formData = await req.formData();
     const file = formData?.get("data") as unknown as File;
 
-    console.log("File", file);
-
     if (!file)
       throw new createHttpError.BadRequest("File not found, Please add a file");
 

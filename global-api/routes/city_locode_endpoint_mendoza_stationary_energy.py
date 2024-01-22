@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException
 from sqlalchemy import text
-import pandas as pd
 from db.database import SessionLocal
 
 api_router = APIRouter(prefix="/api/v0")
@@ -12,7 +11,7 @@ def db_query(source_name, locode, year, GPC_refno):
     with SessionLocal() as session:
         query = text(
             """
-            SELECT * FROM city_locode
+            SELECT * FROM citywide_emissions
             WHERE source_name = :source_name
             AND "GPC_refno" = :GPC_refno
             AND locode = :locode
@@ -33,18 +32,34 @@ def get_emissions_by_locode_and_year(source_name: str, locode: str, year: str, G
     if not records:
         raise HTTPException(status_code=404, detail="No data available")
 
-    df = pd.DataFrame(records)
+    masses = {'CO2': 0.0, 'CH4': 0.0, 'N2O': 0.0}
 
-    for _, row_data in df.iterrows():
-        row = row_data.to_frame().T
+    for record in records:
+        gas = record['gas_name']
+        mass = record['emissions_value']
+        masses[gas] = mass
 
-        gas = row["gas"].item()
-    
-        emissions = {
-            "gas": gas,
-            "value": row["emissions_value"].item(),
-            "units": row["emissions_unit"].item(),
-            "gpc_quality": str(gpc_quality_data),   
+    totals = {
+        "totals": {
+            "emissions": {
+                "co2_mass": str(masses["CO2"]),
+                "ch4_mass": str(masses["CH4"]),
+                "n2o_mass": str(masses["N2O"]),
+                "gpc_quality": str(gpc_quality_data),
             }
+        }
+    }
+    
+    locode_info = {
+        "city_emissions_details": {
+            "temporal_granularity": str(record["temporal_granularity"]),
+            "activity_name": str(record["activity_name"]),
+            "activity_value": str(record["activity_value"]),
+            "activity_units": str(record["activity_units"]),
+            "gas_name": str(record["gas_name"]),
+            "emission_factor_value": str(record["emission_factor_value"]),
+            "emission_factor_units": str(record["emission_factor_units"])
+        }
+    }
 
-    return {**emissions}
+    return {**totals, **locode_info}

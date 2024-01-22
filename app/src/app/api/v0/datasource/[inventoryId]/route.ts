@@ -11,6 +11,8 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { Op } from "sequelize";
 import { z } from "zod";
+import { Population } from "@/models/Population";
+import { logger } from "@/services/logger";
 
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const inventory = await db.models.Inventory.findOne({
@@ -131,8 +133,30 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
           source,
           inventory,
         );
+      } else if (
+        source.retrievalMethod === "global_api_downscaled_by_population"
+      ) {
+        const population = await db.models.Population.findOne({
+          where: {
+            cityId: inventory.cityId,
+            year: inventory.year,
+          },
+        });
+        if (!population?.population || !population?.countryPopulation) {
+          // TODO return list of issues in response instead?
+          throw new createHttpError.BadRequest(
+            "City is missing population/ countryPopulation for the inventory year",
+          );
+        }
+        const scaleFactor =
+          population.population / population.countryPopulation;
+        result.success = await DataSourceService.applyGlobalAPISource(
+          source,
+          inventory,
+          scaleFactor,
+        );
       } else {
-        console.error(
+        logger.error(
           `Unsupported retrieval method ${source.retrievalMethod} for data source ${source.datasourceId}`,
         );
         result.success = false;

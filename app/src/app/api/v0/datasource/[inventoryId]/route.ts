@@ -152,7 +152,7 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
         });
         if (!population?.population || !population?.countryPopulation) {
           result.issue =
-            "City is missing population/ countryPopulation for the inventory year";
+            "City is missing population/ country population for the inventory year";
           result.success = false;
           return result;
         }

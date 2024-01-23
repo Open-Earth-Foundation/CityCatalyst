@@ -1,7 +1,6 @@
 import { db } from "@/models";
 import { DataSource } from "@/models/DataSource";
 import { Inventory } from "@/models/Inventory";
-import { InventoryValueAttributes } from "@/models/InventoryValue";
 import { multiplyBigIntFloat } from "@/util/big_int";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
@@ -102,16 +101,12 @@ export default class DataSourceService {
       ch4Amount = BigInt(emissions.ch4_mass);
     }
 
-    const values: Partial<InventoryValueAttributes> = {
+    // TODO what to do with existing InventoryValues and GasValues?
+    const inventoryValue = await db.models.InventoryValue.create({
       datasourceId: source.datasourceId,
       inventoryId: inventory.inventoryId,
       co2eq,
       co2eqYears: 100,
-    };
-
-    // TODO what to do with existing InventoryValues and GasValues?
-    const inventoryValue = await db.models.InventoryValue.create({
-      ...values,
       id: randomUUID(),
       subCategoryId: source.subcategoryId,
     });
@@ -121,6 +116,7 @@ export default class DataSourceService {
       id: randomUUID(),
       inventoryValueId: inventoryValue.id,
       gas: "CO2",
+      gasAmount: co2Amount,
     });
     await db.models.GasValue.create({
       id: randomUUID(),

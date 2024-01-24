@@ -4,6 +4,7 @@ import {
   type InventoryAttributes,
   type InventoryValueAttributes,
   PopulationAttributes,
+  EmissionsFactorAttributes,
 } from "@/models/init-models";
 import type {
   ConnectDataSourceQuery,
@@ -303,6 +304,11 @@ export const api = createApi({
         method: "GET",
       }),
       transformResponse: (response: { data: any }) => response.data,
+    }),
+    getEmissionsFactors: builder.query<EmissionsFactorAttributes[], void>({
+      query: () => `/emissions-factors`,
+      transformResponse: (response: { data: EmissionsFactorAttributes[] }) =>
+        response.data,
     }),
   }),
 });

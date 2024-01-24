@@ -2,18 +2,19 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.addColumn(
+  async up(queryInterface) {
+    await queryInterface.renameColumn(
       "EmissionsFactor",
+      "gpc_refno",
       "gpc_reference_number",
-      Sequelize.STRING,
     );
   },
 
   async down(queryInterface) {
-    await queryInterface.removeColumn(
+    await queryInterface.renameColumn(
       "EmissionsFactor",
       "gpc_reference_number",
+      "gpc_refno"
     );
   },
 };

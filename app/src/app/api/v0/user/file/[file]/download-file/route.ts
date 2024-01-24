@@ -1,5 +1,6 @@
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
+import { fileEndingToMIMEType } from "@/util/helpers";
 import createHttpError from "http-errors";
 import { Session } from "next-auth";
 import { NextResponse } from "next/server";
@@ -30,7 +31,10 @@ export const GET = apiHandler(
 
     body = userFile.data;
     headers = {
-      "Content-Type": `application/${userFile.fileType}`,
+      "Content-Type": `${
+        fileEndingToMIMEType[userFile.fileType || "default"] ||
+        "application/x-binary"
+      }`,
       "Content-Disposition": `attachment; filename="${userFile.id}.${userFile.fileType}"`,
     };
 

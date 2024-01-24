@@ -68,6 +68,7 @@ import DeleteFileModal from "@/components/Modals/delete-file-modal";
 import DeleteCityModal from "@/components/Modals/delete-city-modal";
 import { TFunction } from "i18next";
 import { UserAttributes } from "@/models/User";
+import { UserFileAttributes } from "@/models/UserFile";
 
 interface MyFilesTabProps {
   session: Session | null;
@@ -75,6 +76,7 @@ interface MyFilesTabProps {
   t: TFunction;
   userInfo: UserAttributes | any;
   lng: string;
+  userFiles: UserFileAttributes[] | any;
 }
 
 const MyFilesTab: FC<MyFilesTabProps> = ({
@@ -83,6 +85,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
   t,
   lng,
   userInfo,
+  userFiles,
 }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const {
@@ -100,14 +103,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
     }
   }, [setValue, session, status]);
 
-  const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
-    //  Todo
-    // send data to api
-  };
-
-  const onInputChange = (e: any) => {
-    setInputValue(e.target.value);
-  };
+  console.log(userFiles);
 
   const [selectedUsers, setSelectedUsers] = useState<any>([]);
 
@@ -238,10 +234,29 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
     setCities(data);
   }, []);
 
-  const years = cities
-    .flatMap((city) => city.inventory.map((item: any) => item.year))
-    .filter((year, index, self) => self.indexOf(year) === index)
-    .sort();
+  const getYears = userFiles?.map((item: any) => {
+    const date = new Date(item.created);
+    return date.getFullYear();
+  });
+  const years = Array.from(new Set(getYears));
+
+  function getYearFromDate(dateString: string) {
+    return new Date(dateString).getFullYear();
+  }
+
+  function filterDataByYear(
+    data: any,
+    selectedYear: number | null | undefined,
+  ) {
+    return data?.filter(
+      (item: any) => getYearFromDate(item?.created) === selectedYear,
+    );
+  }
+  const [isYearSelected, setIsYearSelected] = useState<boolean>(false);
+  const [selectedYear, setselectedYear] = useState<number | null>();
+
+  const filteredData = filterDataByYear(userFiles, selectedYear);
+  console.log(filteredData);
 
   const {
     isOpen: isUserModalOpen,
@@ -286,8 +301,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
     country: "",
     lastUpdated: "",
   });
-  const [isYearSelected, setIsYearSelected] = useState<boolean>(false);
-  const [inventoryYear, setInventoryYear] = useState<number | null>();
+
   return (
     <>
       <TabPanel>
@@ -407,7 +421,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                         cursor="pointer"
                         onClick={() => {
                           setIsYearSelected(false);
-                          setInventoryYear(null);
+                          setselectedYear(null);
                         }}
                       >
                         {t("all-inventory-years")}{" "}
@@ -426,7 +440,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                         {isYearSelected && (
                           <>
                             <ChevronRightIcon color="content.tertiary" />{" "}
-                            <span>{inventoryYear}</span>
+                            <span>{selectedYear}</span>
                           </>
                         )}
                       </Text>
@@ -451,12 +465,12 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                               color="content.primary"
                               fontSize="body.md"
                             >
-                              {years.map((year) => (
+                              {years.map((year: any) => (
                                 <Tr key={year}>
                                   <Td
                                     onClick={() => {
                                       setIsYearSelected(true);
-                                      setInventoryYear(year);
+                                      setselectedYear(year);
                                     }}
                                     display="flex"
                                     gap="16px"
@@ -518,165 +532,155 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                               color="content.primary"
                               fontSize="body.md"
                             >
-                              {cities.map((city) => {
-                                const inventoryForSelectedYear =
-                                  city.inventory.find(
-                                    (item: any) => item.year === inventoryYear,
-                                  );
-                                if (!inventoryForSelectedYear) return null;
-
-                                return inventoryForSelectedYear.files.map(
-                                  (file: any) => (
-                                    <Tr key={`${city.id}-${file.fileName}`}>
-                                      <Td
-                                        display="flex"
-                                        gap="16px"
-                                        alignItems="center"
+                              {filteredData.map((file: any) => (
+                                <Tr key={`${city.id}-${file.id}`}>
+                                  <Td
+                                    display="flex"
+                                    gap="16px"
+                                    alignItems="center"
+                                  >
+                                    <Box color="interactive.primary">
+                                      <FaFileCsv size={24} />
+                                    </Box>
+                                    <span>{file.fileName}</span>
+                                  </Td>
+                                  <Td>{file.sector}</Td>
+                                  <Td>
+                                    <Badge
+                                      color="blue"
+                                      borderRadius="full"
+                                      px="16px"
+                                      paddingTop="4px"
+                                      paddingBottom="4px"
+                                      borderWidth="1px"
+                                      borderStyle="solid"
+                                      fontWeight="normal"
+                                      textTransform="capitalize"
+                                      letterSpacing="wide"
+                                      fontSize="body.md"
+                                      borderColor={
+                                        file.status === "pending"
+                                          ? "sentiment.warningDefault"
+                                          : "interactive.tertiary"
+                                      }
+                                      textColor={
+                                        file.status === "added to inventory"
+                                          ? "interactive.tertiary"
+                                          : "sentiment.warningDefault"
+                                      }
+                                      backgroundColor={
+                                        file.status === "pending"
+                                          ? "sentiment.warningOverlay"
+                                          : "sentiment.positiveOverlay"
+                                      }
+                                    >
+                                      {t(`${file.status}`)}
+                                    </Badge>
+                                  </Td>
+                                  <Td
+                                    isNumeric
+                                    display="flex"
+                                    gap="16px"
+                                    alignItems="center"
+                                    justifyContent="end"
+                                  >
+                                    <span>{file.lastUpdated}</span>
+                                    <Popover isLazy>
+                                      <PopoverTrigger>
+                                        <IconButton
+                                          aria-label="action-button"
+                                          variant="ghost"
+                                          color="interactive.control"
+                                          height="36px"
+                                          width="36px"
+                                          icon={<MdMoreVert size={24} />}
+                                        ></IconButton>
+                                      </PopoverTrigger>
+                                      <PopoverContent
+                                        h="128px"
+                                        w="239px"
+                                        borderRadius="8px"
+                                        shadow="2dp"
+                                        borderWidth="1px"
+                                        borderStyle="solid"
+                                        borderColor="border.neutral"
+                                        padding="10px"
+                                        px="0"
                                       >
-                                        <Box color="interactive.primary">
-                                          <FaFileCsv size={24} />
-                                        </Box>
-                                        <span>{file.fileName}</span>
-                                      </Td>
-                                      <Td>{file.sector}</Td>
-                                      <Td>
-                                        <Badge
-                                          color="blue"
-                                          borderRadius="full"
-                                          px="16px"
-                                          paddingTop="4px"
-                                          paddingBottom="4px"
-                                          borderWidth="1px"
-                                          borderStyle="solid"
-                                          fontWeight="normal"
-                                          textTransform="capitalize"
-                                          letterSpacing="wide"
-                                          fontSize="body.md"
-                                          borderColor={
-                                            file.status === "pending"
-                                              ? "sentiment.warningDefault"
-                                              : "interactive.tertiary"
-                                          }
-                                          textColor={
-                                            file.status === "added to inventory"
-                                              ? "interactive.tertiary"
-                                              : "sentiment.warningDefault"
-                                          }
-                                          backgroundColor={
-                                            file.status === "pending"
-                                              ? "sentiment.warningOverlay"
-                                              : "sentiment.positiveOverlay"
-                                          }
-                                        >
-                                          {t(`${file.status}`)}
-                                        </Badge>
-                                      </Td>
-                                      <Td
-                                        isNumeric
-                                        display="flex"
-                                        gap="16px"
-                                        alignItems="center"
-                                        justifyContent="end"
-                                      >
-                                        <span>{file.lastUpdated}</span>
-                                        <Popover isLazy>
-                                          <PopoverTrigger>
-                                            <IconButton
-                                              aria-label="action-button"
-                                              variant="ghost"
-                                              color="interactive.control"
-                                              height="36px"
-                                              width="36px"
-                                              icon={<MdMoreVert size={24} />}
-                                            ></IconButton>
-                                          </PopoverTrigger>
-                                          <PopoverContent
-                                            h="128px"
-                                            w="239px"
-                                            borderRadius="8px"
-                                            shadow="2dp"
-                                            borderWidth="1px"
-                                            borderStyle="solid"
-                                            borderColor="border.neutral"
-                                            padding="10px"
-                                            px="0"
-                                          >
-                                            <PopoverArrow />
-                                            <PopoverBody padding="0">
-                                              <List padding="0">
-                                                <ListItem
-                                                  className="group "
-                                                  display="flex"
-                                                  cursor="pointer"
-                                                  gap="16px"
-                                                  color="content.tertiary"
-                                                  alignItems="center"
-                                                  px="16px"
-                                                  paddingTop="12px"
-                                                  paddingBottom="12px"
-                                                  _hover={{
-                                                    background: "content.link",
-                                                    color: "white",
-                                                  }}
-                                                  onClick={() => {
-                                                    alert(city.id);
-                                                  }}
-                                                >
-                                                  <MdOutlineFileDownload
-                                                    size={24}
-                                                  />
+                                        <PopoverArrow />
+                                        <PopoverBody padding="0">
+                                          <List padding="0">
+                                            <ListItem
+                                              className="group "
+                                              display="flex"
+                                              cursor="pointer"
+                                              gap="16px"
+                                              color="content.tertiary"
+                                              alignItems="center"
+                                              px="16px"
+                                              paddingTop="12px"
+                                              paddingBottom="12px"
+                                              _hover={{
+                                                background: "content.link",
+                                                color: "white",
+                                              }}
+                                              onClick={() => {
+                                                alert(city.id);
+                                              }}
+                                            >
+                                              <MdOutlineFileDownload
+                                                size={24}
+                                              />
 
-                                                  <Text
-                                                    color="content.secondary"
-                                                    fontFamily="heading"
-                                                    letterSpacing="wide"
-                                                    fontWeight="normal"
-                                                    fontSize="body.lg"
-                                                    className="group group-hover:text-white"
-                                                  >
-                                                    {t("download-file")}
-                                                  </Text>
-                                                </ListItem>
-                                                <ListItem
-                                                  display="flex"
-                                                  cursor="pointer"
-                                                  gap="16px"
-                                                  className="group "
-                                                  color="sentiment.negativeDefault"
-                                                  alignItems="center"
-                                                  px="16px"
-                                                  paddingTop="12px"
-                                                  paddingBottom="12px"
-                                                  _hover={{
-                                                    background: "content.link",
-                                                    color: "white",
-                                                  }}
-                                                  onClick={() => {
-                                                    setCityData(city);
-                                                    onFileDeleteModalOpen();
-                                                  }}
-                                                >
-                                                  <FiTrash2 size={24} />
-                                                  <Text
-                                                    color="content.secondary"
-                                                    fontFamily="heading"
-                                                    letterSpacing="wide"
-                                                    fontWeight="normal"
-                                                    fontSize="body.lg"
-                                                    className="group group-hover:text-white"
-                                                  >
-                                                    {t("delete-file")}
-                                                  </Text>
-                                                </ListItem>
-                                              </List>
-                                            </PopoverBody>
-                                          </PopoverContent>
-                                        </Popover>
-                                      </Td>
-                                    </Tr>
-                                  ),
-                                );
-                              })}
+                                              <Text
+                                                color="content.secondary"
+                                                fontFamily="heading"
+                                                letterSpacing="wide"
+                                                fontWeight="normal"
+                                                fontSize="body.lg"
+                                                className="group group-hover:text-white"
+                                              >
+                                                {t("download-file")}
+                                              </Text>
+                                            </ListItem>
+                                            <ListItem
+                                              display="flex"
+                                              cursor="pointer"
+                                              gap="16px"
+                                              className="group "
+                                              color="sentiment.negativeDefault"
+                                              alignItems="center"
+                                              px="16px"
+                                              paddingTop="12px"
+                                              paddingBottom="12px"
+                                              _hover={{
+                                                background: "content.link",
+                                                color: "white",
+                                              }}
+                                              onClick={() => {
+                                                setCityData(city);
+                                                onFileDeleteModalOpen();
+                                              }}
+                                            >
+                                              <FiTrash2 size={24} />
+                                              <Text
+                                                color="content.secondary"
+                                                fontFamily="heading"
+                                                letterSpacing="wide"
+                                                fontWeight="normal"
+                                                fontSize="body.lg"
+                                                className="group group-hover:text-white"
+                                              >
+                                                {t("delete-file")}
+                                              </Text>
+                                            </ListItem>
+                                          </List>
+                                        </PopoverBody>
+                                      </PopoverContent>
+                                    </Popover>
+                                  </Td>
+                                </Tr>
+                              ))}
                             </Tbody>
                           </Table>
                         </TableContainer>

@@ -1,3 +1,4 @@
+import { UserFileAttributes } from "@/models/UserFile";
 import {
   type UserAttributes,
   type CityAttributes,
@@ -306,6 +307,25 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: any }) => response.data,
     }),
+    addUserFile: builder.mutation<UserFileAttributes, any>({
+      query: (formData) => {
+        const userId = formData.get("userId");
+
+        return {
+          method: "POST",
+          url: `/user/${userId}/file`,
+          body: formData,
+        };
+      },
+      transformResponse: (response: { data: any }) => response.data,
+    }),
+    getUserFiles: builder.query<UserFileAttributes, { userId: string }>({
+      query: ({ userId }) => ({
+        method: "GET",
+        url: `/user/${userId}/file`,
+      }),
+      transformResponse: (response: { data: any }) => response.data,
+    }),
   }),
 });
 
@@ -352,5 +372,7 @@ export const {
   useGetVerifcationTokenQuery,
   useGetCitiesQuery,
   useGetInventoriesQuery,
+  useAddUserFileMutation,
+  useGetUserFilesQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

@@ -430,10 +430,30 @@ export default function AddDataSteps({
   };
 
   const [isDataSectionExpanded, setDataSectionExpanded] = useState(false);
+  const [addUserFile] = api.useAddUserFileMutation();
+  const [files, setFiles] = useState<any>([]);
 
-  const handleFileSelect = (file: File) => {
-    console.log(file); // Process the file as needed
+  const handleFileSelect = async (file: File) => {
+    console.log(file);
+
+    const formData = new FormData();
+    formData.append("data", file!);
+
+    formData.append("userId", userInfo?.userId!); //
+    formData.append("sector", currentStep.title);
+    formData.append("url", "http://acme.com");
+    formData.append("gpcRefNo", "");
+    formData.append("fileReference", "Stationary Energy");
+    formData.append("status", "in progress");
+
+    await addUserFile(formData).then((res: any) => {
+      console.log(res);
+      setFiles([file, ...files]);
+    });
   };
+  function bytesToMB(bytes: number): string {
+    return (bytes / 1048576).toFixed(2) + " MB";
+  }
 
   return (
     <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
@@ -753,93 +773,57 @@ export default function AddDataSteps({
                 <Heading size="sm">Files uploaded</Heading>
               </Box>
               <Box display="flex" flexDirection="column" gap="8px">
-                <Card
-                  shadow="none"
-                  h="80px"
-                  w="full"
-                  borderWidth="1px"
-                  borderColor="border.overlay"
-                  borderRadius="8px"
-                  px="16px"
-                  py="16px"
-                >
-                  <Box display="flex" gap="16px">
-                    <Box>
-                      <ExcelFileIcon />
-                    </Box>
-                    <Box display="flex" flexDirection="column" gap="8px">
-                      <Heading
-                        fontSize="lable.lg"
-                        fontWeight="normal"
-                        letterSpacing="wide"
-                      >
-                        Your_data_file.csv
-                      </Heading>
-                      <Text
-                        fontSize="body.md"
-                        fontWeight="normal"
-                        color="interactive.control"
-                      >
-                        1.5MB
-                      </Text>
-                    </Box>
-                    <Box
-                      color="sentiment.negativeDefault"
-                      display="flex"
-                      justifyContent="right"
-                      alignItems="center"
+                {files &&
+                  files.map((file: File) => (
+                    <Card
+                      shadow="none"
+                      h="80px"
                       w="full"
+                      borderWidth="1px"
+                      borderColor="border.overlay"
+                      borderRadius="8px"
+                      px="16px"
+                      py="16px"
+                      key={file.name}
                     >
-                      <CircularProgress
-                        isIndeterminate
-                        color="content.link"
-                        size={5}
-                        thickness="15"
-                      />
-                    </Box>
-                  </Box>
-                </Card>
-                <Card
-                  shadow="none"
-                  h="80px"
-                  w="full"
-                  borderWidth="1px"
-                  borderColor="border.overlay"
-                  borderRadius="8px"
-                  px="16px"
-                  py="16px"
-                >
-                  <Box display="flex" gap="16px">
-                    <Box>
-                      <ExcelFileIcon />
-                    </Box>
-                    <Box display="flex" flexDirection="column" gap="8px">
-                      <Heading
-                        fontSize="lable.lg"
-                        fontWeight="normal"
-                        letterSpacing="wide"
-                      >
-                        Your_data_file.csv
-                      </Heading>
-                      <Text
-                        fontSize="body.md"
-                        fontWeight="normal"
-                        color="interactive.control"
-                      >
-                        1.5MB
-                      </Text>
-                    </Box>
-                    <Box
-                      color="sentiment.negativeDefault"
-                      display="flex"
-                      justifyContent="right"
-                      alignItems="center"
-                      w="full"
-                    >
-                      <FiTrash2 size="22px" />
-                    </Box>
-                  </Box>
-                </Card>
+                      <Box display="flex" gap="16px">
+                        <Box>
+                          <ExcelFileIcon />
+                        </Box>
+                        <Box
+                          display="flex"
+                          flexDirection="column"
+                          justifyContent="center"
+                          gap="8px"
+                        >
+                          <Heading
+                            fontSize="lable.lg"
+                            fontWeight="normal"
+                            letterSpacing="wide"
+                            isTruncated
+                          >
+                            {file.name}
+                          </Heading>
+                          <Text
+                            fontSize="body.md"
+                            fontWeight="normal"
+                            color="interactive.control"
+                          >
+                            {bytesToMB(file.size)}
+                          </Text>
+                        </Box>
+                        <Box
+                          color="sentiment.negativeDefault"
+                          display="flex"
+                          justifyContent="right"
+                          alignItems="center"
+                          w="full"
+                        >
+                          <FiTrash2 size={24} />
+                        </Box>
+                      </Box>
+                    </Card>
+                  ))}
               </Box>
             </Box>
           </Box>

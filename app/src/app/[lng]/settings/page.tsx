@@ -59,6 +59,15 @@ export default function Settings({
     },
   );
 
+  const { data: userFiles } = api.useGetUserFilesQuery(
+    { userId: userInfo?.userId! },
+    {
+      skip: !userInfo,
+    },
+  );
+
+  console.log(userFiles);
+
   return (
     <Box backgroundColor="background.backgroundLight" paddingBottom="125px">
       <NavigationBar lng={lng} />
@@ -134,6 +143,7 @@ export default function Settings({
                   status={status}
                   t={t}
                   userInfo={userInfo!}
+                  userFiles={userFiles!}
                 />
                 <MyInventoriesTab
                   lng={lng}

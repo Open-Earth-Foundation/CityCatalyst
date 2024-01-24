@@ -17,9 +17,12 @@ export function createRequest(url: string, body?: any) {
   return request;
 }
 
-export function mockRequest(body?: any) {
+export function mockRequest(body?: any, searchParams?: Record<string, string>): NextRequest {
   const request = new NextRequest(new URL(mockUrl));
   request.json = mock.fn(() => Promise.resolve(body));
+  for (const param in searchParams) {
+    request.nextUrl.searchParams.append(param, searchParams[param]);
+  }
   return request;
 }
 
@@ -62,17 +65,10 @@ export const filePath = async () => {
   return filePath;
 };
 
-export const testfileBuffer = {
-  type: "Buffer",
-  data: [
-    105, 100, 44, 115, 101, 99, 116, 111, 114, 44, 103, 112, 99, 95, 114, 101,
-    102, 95, 110, 111, 44, 108, 97, 115, 116, 95, 109, 111, 100, 105, 102, 105,
-    101, 100, 44, 99, 114, 101, 97, 116, 101, 100, 10, 49, 44, 69, 110, 101,
-    114, 103, 121, 32, 83, 101, 99, 116, 111, 114, 44, 32, 88, 88, 88, 84, 69,
-    83, 84, 88, 88, 88, 44, 49, 50, 47, 49, 50, 47, 50, 48, 50, 51, 10, 50, 44,
-    84, 114, 97, 110, 115, 112, 111, 114, 116, 44, 32, 88, 88, 88, 84, 69, 83,
-    84, 88, 88, 88, 44, 49, 50, 47, 49, 50, 47, 50, 48, 50, 51,
-  ],
+export const testFileFormat = {
+  fileName: "blob",
+  size: 116,
+  fileType: "",
 };
 
 export const testUserID = "beb9634a-b68c-4c1b-a20b-2ab0ced5e3c2";

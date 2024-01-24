@@ -1,15 +1,9 @@
-import { RadioButton } from "@/components/radio-button";
+import "@/util/bigint";
+
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
-import {
-  nameToI18NKey,
-  resolve,
-  resolvePromisesSequentially,
-} from "@/util/helpers";
-import type {
-  SubCategoryValueWithSource,
-  SubSectorValueResponse,
-} from "@/util/types";
+import { nameToI18NKey, resolvePromisesSequentially } from "@/util/helpers";
+import type { InventoryValueResponse } from "@/util/types";
 import { ArrowBackIcon, CloseIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Accordion,
@@ -30,47 +24,33 @@ import {
   DrawerContent,
   DrawerOverlay,
   Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
   HStack,
   Heading,
   IconButton,
-  Select,
   Spinner,
   Tag,
   Text,
-  Textarea,
   useDisclosure,
-  useRadioGroup,
 } from "@chakra-ui/react";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import type { TFunction } from "i18next";
 import type { RefObject } from "react";
 import React, { useEffect } from "react";
-import { SubmitHandler, useController, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { EmissionsForm } from "./EmissionsForm";
 import type {
   ActivityData,
   DirectMeasureData,
   SubCategory,
-  SubCategoryValueData,
+  InventoryValueData,
   SubSector,
   SubcategoryData,
 } from "./types";
 import { Trans } from "react-i18next/TransWithoutContext";
 
 type Inputs = {
-  valueType: "scope-values" | "unavailable" | "";
   methodology: "activity-data" | "direct-measure" | "";
   energyType: "fuel-combustion" | "grid-supplied-energy";
-  unavailableReason:
-    | "no-occurrance"
-    | "not-estimated"
-    | "confidential-information"
-    | "presented-elsewhere"
-    | "";
-  unavailableExplanation: string;
   activity: ActivityData;
   direct: DirectMeasureData;
   subcategoryData: Record<string, SubcategoryData>;
@@ -88,67 +68,64 @@ const defaultActivityData: ActivityData = {
 };
 
 const defaultDirectMeasureData: DirectMeasureData = {
-  co2Emissions: 0,
-  ch4Emissions: 0,
-  n2oEmissions: 0,
+  co2Emissions: 0n,
+  ch4Emissions: 0n,
+  n2oEmissions: 0n,
   dataQuality: "",
   sourceReference: "",
 };
 
 const defaultValues: Inputs = {
-  valueType: "scope-values",
   methodology: "",
   energyType: "fuel-combustion",
-  unavailableReason: "",
-  unavailableExplanation: "",
   activity: defaultActivityData,
   direct: defaultDirectMeasureData,
   subcategoryData: {},
 };
 
 // TODO create custom type that includes relations instead of using SubSectorValueAttributes?
-function extractFormValues(subSectorValue: SubSectorValueResponse): Inputs {
-  logger.debug("Form input", subSectorValue);
+function extractFormValues(inventoryValues: InventoryValueResponse[]): Inputs {
+  logger.debug("Form input", inventoryValues);
   const inputs: Inputs = Object.assign({}, defaultValues);
-  if (subSectorValue.unavailableReason) {
-    inputs.valueType = "unavailable";
-    inputs.unavailableReason = (subSectorValue.unavailableReason as any) || "";
-    inputs.unavailableExplanation = subSectorValue.unavailableExplanation || "";
-  } else {
-    inputs.valueType = "scope-values";
-    inputs.subcategoryData = subSectorValue.subCategoryValues.reduce(
-      (
-        record: Record<string, SubcategoryData>,
-        value: SubCategoryValueWithSource,
-      ) => {
-        const methodology =
-          value.activityValue != null ? "activity-data" : "direct-measure";
-        const data: SubcategoryData = {
-          methodology,
-          activity: { ...defaultActivityData },
-          direct: { ...defaultDirectMeasureData },
-        };
+  inputs.subcategoryData = inventoryValues.reduce(
+    (record: Record<string, SubcategoryData>, value: InventoryValueData) => {
+      const methodology =
+        value.activityValue != null ? "activity-data" : "direct-measure";
+      const data: SubcategoryData = {
+        methodology,
+        isUnavailable: !!value.unavailableReason,
+        unavailableReason: (value.unavailableReason as any) || "",
+        unavailableExplanation: value.unavailableExplanation || "",
+        activity: { ...defaultActivityData },
+        direct: { ...defaultDirectMeasureData },
+      };
 
-        if (methodology === "activity-data") {
-          data.activity.activityDataAmount = value.activityValue;
-          data.activity.activityDataUnit = value.activityUnits;
-          // TODO emission factor ID, manual emissions factor values for each gas
-          data.activity.dataQuality = value.dataSource.dataQuality || "";
-          data.activity.sourceReference = value.dataSource.notes || "";
-        } else if (methodology === "direct-measure") {
-          data.direct.co2Emissions = (value.co2EmissionsValue || 0) / 1000;
-          data.direct.ch4Emissions = (value.ch4EmissionsValue || 0) / 1000;
-          data.direct.n2oEmissions = (value.n2oEmissionsValue || 0) / 1000;
-          data.direct.dataQuality = value.dataSource.dataQuality || "";
-          data.direct.sourceReference = value.dataSource.notes || "";
-        }
+      if (methodology === "activity-data") {
+        data.activity.activityDataAmount = value.activityValue;
+        data.activity.activityDataUnit = value.activityUnits;
+        // TODO emission factor ID, manual emissions factor values for each gas
+        data.activity.dataQuality = value.dataSource?.dataQuality || "";
+        data.activity.sourceReference = value.dataSource?.notes || "";
+      } else if (methodology === "direct-measure") {
+        const gasToEmissions = (value.gasValues || []).reduce(
+          (acc: Record<string, bigint>, value) => {
+            acc[value.gas!] = BigInt(value.gasAmount || 0n);
+            return acc;
+          },
+          {},
+        );
+        data.direct.co2Emissions = (gasToEmissions.CO2 || 0n) / 1000n;
+        data.direct.ch4Emissions = (gasToEmissions.CH4 || 0n) / 1000n;
+        data.direct.n2oEmissions = (gasToEmissions.N2O || 0n) / 1000n;
+        data.direct.dataQuality = value.dataSource?.dataQuality || "";
+        data.direct.sourceReference = value.dataSource?.notes || "";
+      }
 
-        record[value.subcategoryId!] = data;
-        return record;
-      },
-      {},
-    );
-  }
+      record[value.subCategoryId!] = data;
+      return record;
+    },
+    {},
+  );
   logger.debug("Form values", inputs);
   return inputs;
 }
@@ -174,19 +151,19 @@ export function SubsectorDrawer({
   finalFocusRef?: RefObject<any>;
   t: TFunction;
 }) {
+  const subCategoryIds = subsector?.subCategories.map((c) => c.subcategoryId);
   const {
-    data: subsectorValue,
+    data: inventoryValues,
     isLoading: isSubsectorValueLoading,
-    error: subsectorValueError,
-  } = api.useGetSubsectorValueQuery(
-    { subSectorId: subsector?.subsectorId!, inventoryId: inventoryId! },
+    error: inventoryValueError,
+  } = api.useGetInventoryValuesQuery(
+    { subCategoryIds: subCategoryIds!, inventoryId: inventoryId! },
     { skip: !subsector || !inventoryId },
   );
-  const [setSubsectorValue] = api.useSetSubsectorValueMutation();
-  const [setSubCategoryValue] = api.useSetSubCategoryValueMutation();
+  const [setInventoryValue] = api.useSetInventoryValueMutation();
 
   let noPreviousValue =
-    (subsectorValueError as FetchBaseQueryError)?.status === 404;
+    (inventoryValueError as FetchBaseQueryError)?.status === 404;
 
   const {
     register,
@@ -200,7 +177,9 @@ export function SubsectorDrawer({
   const scopeData = watch("subcategoryData");
   const isScopeCompleted = (scopeId: string) => {
     const data = scopeData[scopeId];
-    if (data?.methodology === "activity-data") {
+    if (data?.isUnavailable) {
+      return !!data.unavailableExplanation && !!data.unavailableReason;
+    } else if (data?.methodology === "activity-data") {
       const activity = data.activity;
       if (!activity) return false;
       return (
@@ -241,98 +220,93 @@ export function SubsectorDrawer({
     if (!subsector) return;
     logger.debug("Subsector data", data);
 
-    // decide which data from the form to save
-    if (data.valueType === "unavailable") {
-      await setSubsectorValue({
-        subSectorId: subsector.subsectorId,
-        inventoryId: inventoryId!,
-        data: {
-          unavailableReason: data.unavailableReason,
-          unavailableExplanation: data.unavailableExplanation,
-        },
-      });
-    } else if (data.valueType === "scope-values") {
-      await setSubsectorValue({
-        subSectorId: subsector.subsectorId,
-        inventoryId: inventoryId!,
-        data: {
-          unavailableReason: "",
-          unavailableExplanation: "",
-        },
-      });
-      const results = await resolvePromisesSequentially(
-        Object.keys(data.subcategoryData).map((subcategoryId) => {
-          const value = data.subcategoryData[subcategoryId];
-          if (!isScopeCompleted(subcategoryId)) {
-            logger.error(`Data not completed for scope ${subcategoryId}!`);
+    const results = await resolvePromisesSequentially(
+      Object.keys(data.subcategoryData).map((subCategoryId) => {
+        const value = data.subcategoryData[subCategoryId];
+
+        // decide which data from the form to save
+        if (value.isUnavailable) {
+          return setInventoryValue({
+            subCategoryId,
+            inventoryId: inventoryId!,
+            data: {
+              unavailableReason: value.unavailableReason,
+              unavailableExplanation: value.unavailableExplanation,
+            },
+          });
+        } else {
+          if (!isScopeCompleted(subCategoryId)) {
+            logger.error(`Data not completed for scope ${subCategoryId}!`);
             return Promise.resolve();
           }
 
-          let subCategoryValue: SubCategoryValueData = {
-            subcategoryId,
+          let inventoryValue: InventoryValueData = {
+            subCategoryId,
             inventoryId: inventoryId!,
+            unavailableReason: "",
+            unavailableExplanation: "",
           };
 
           if (value.methodology === "activity-data") {
-            subCategoryValue.activityValue =
-              +value.activity.activityDataAmount!;
-            subCategoryValue.activityUnits = value.activity.activityDataUnit;
+            inventoryValue.activityValue = +value.activity.activityDataAmount!;
+            inventoryValue.activityUnits = value.activity.activityDataUnit;
             // TODO emission factor ID, manual emissions factor values for each gas
 
-            subCategoryValue.dataSource = {
+            inventoryValue.dataSource = {
               sourceType: "user",
               dataQuality: value.activity.dataQuality,
               notes: value.activity.sourceReference,
             };
           } else if (value.methodology === "direct-measure") {
-            subCategoryValue.co2EmissionsValue =
-              +value.direct.co2Emissions * 1000;
-            subCategoryValue.ch4EmissionsValue =
-              +value.direct.ch4Emissions * 1000;
-            subCategoryValue.n2oEmissionsValue =
-              +value.direct.n2oEmissions * 1000;
-            subCategoryValue.dataSource = {
+            inventoryValue.gasValues = [
+              {
+                gas: "CO2",
+                gasAmount: BigInt(value.direct.co2Emissions) * 1000n,
+              },
+              {
+                gas: "CH4",
+                gasAmount: BigInt(value.direct.ch4Emissions) * 1000n,
+              },
+              {
+                gas: "N2O",
+                gasAmount: BigInt(value.direct.n2oEmissions) * 1000n,
+              },
+            ];
+            inventoryValue.dataSource = {
               sourceType: "user",
               dataQuality: value.direct.dataQuality,
               notes: value.direct.sourceReference,
             };
           } else {
             logger.error(
-              `Methodology for subcategory ${subcategoryId} not selected!`,
+              `Methodology for subcategory ${subCategoryId} not selected!`,
             );
             return Promise.resolve();
           }
 
-          return setSubCategoryValue({
-            subCategoryId: subcategoryId,
+          return setInventoryValue({
+            subCategoryId: subCategoryId,
             inventoryId: inventoryId!,
-            data: subCategoryValue,
+            data: inventoryValue,
           });
-        }),
-      );
-      logger.debug("Save results", results);
-    }
+        }
+      }),
+    );
+    logger.debug("Save results", results);
     onSave(subsector, data);
     onClose();
   };
 
-  const { field } = useController({
-    name: "valueType",
-    control,
-    defaultValue: "",
-  });
-  const { getRootProps, getRadioProps } = useRadioGroup(field);
-
   // reset form values when choosing another subsector
   useEffect(() => {
-    if (subsectorValue) {
+    if (inventoryValues) {
       // TODO store previous form values if it's unsaved?
-      reset(extractFormValues(subsectorValue));
+      reset(extractFormValues(inventoryValues));
     } else {
       reset(defaultValues);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subsectorValue, subsector]);
+  }, [inventoryValues, subsector]);
 
   const subcategoryData: SubCategory[] | undefined = subsector?.subCategories;
   const scopes = subcategoryData?.map((subcategory: SubCategory) => {
@@ -345,9 +319,6 @@ export function SubsectorDrawer({
       value: subcategory.subcategoryId,
     };
   });
-
-  const valueType = watch("valueType");
-  const isSubmitEnabled = !!valueType;
 
   const {
     isOpen: isDialogOpen,
@@ -399,7 +370,7 @@ export function SubsectorDrawer({
                 <Center>
                   <Spinner size="lg" />
                 </Center>
-              ) : subsectorValueError && !noPreviousValue ? (
+              ) : inventoryValueError && !noPreviousValue ? (
                 <Center>
                   <HStack mt={4}>
                     <WarningIcon boxSize={7} color="semantic.danger" />
@@ -415,148 +386,64 @@ export function SubsectorDrawer({
                     onSubmit={handleSubmit(onSubmit)}
                     className="space-y-6 grow flex flex-col"
                   >
-                    <FormControl>
-                      <FormLabel>
-                        {t("value-types")}{" "}
-                        {/* TODO content for this Tooltip?
-                        <Tooltip
-                          hasArrow
-                          label={t("value-types-tooltip")}
-                          placement="bottom-start"
-                        >
-                          <InfoOutlineIcon mt={-1} color="content.tertiary" />
-                        </Tooltip>
-                        */}
-                      </FormLabel>
-                      <HStack spacing={4} {...getRootProps()}>
-                        <RadioButton
-                          {...getRadioProps({ value: "scope-values" })}
-                        >
-                          {t("scope-values")}
-                        </RadioButton>
-                        <RadioButton
-                          {...getRadioProps({ value: "unavailable" })}
-                        >
-                          {t("unavailable-not-applicable")}
-                        </RadioButton>
-                      </HStack>
-                    </FormControl>
-                    {/*** One value for the sub-sector ***/}
-                    {valueType === "unavailable" && (
-                      <>
-                        <FormControl
-                          isInvalid={!!resolve("unavailableReason", errors)}
-                          mb={12}
-                        >
-                          <FormLabel>{t("unavailable-reason")}</FormLabel>
-                          <Select
-                            bgColor="base.light"
-                            placeholder={t("unavailable-reason-placeholder")}
-                            {...register("unavailableReason", {
-                              required: t("option-required"),
-                            })}
-                          >
-                            <option value="no-occurrance">
-                              {t("no-occurrance")}
-                            </option>
-                            <option value="not-estimated">
-                              {t("not-estimated")}
-                            </option>
-                            <option value="confidential-information">
-                              {t("confidential-information")}
-                            </option>
-                            <option value="presented-elsewhere">
-                              {t("presented-elsewhere")}
-                            </option>
-                          </Select>
-                          <FormErrorMessage>
-                            {resolve("unavailableReason", errors)?.message}
-                          </FormErrorMessage>
-                        </FormControl>
-
-                        <FormControl
-                          isInvalid={
-                            !!resolve("unavailableExplanation", errors)
-                          }
-                        >
-                          <FormLabel>{t("unavailable-explanation")}</FormLabel>
-                          <Textarea
-                            placeholder={t(
-                              "unavailable-explanation-placeholder",
-                            )}
-                            bgColor="base.light"
-                            {...register("unavailableExplanation", {
-                              required: t("unavailable-explanation-required"),
-                            })}
-                          />
-                          <FormErrorMessage>
-                            {resolve("unavailableExplanation", errors)?.message}
-                          </FormErrorMessage>
-                        </FormControl>
-                      </>
-                    )}
-                    {/*** Values for each scope ***/}
-                    {valueType === "scope-values" && (
-                      <Accordion allowToggle className="space-y-6">
-                        {scopes?.map((scope) => (
-                          <AccordionItem key={scope.value} mb={0}>
-                            <h2>
-                              <AccordionButton>
-                                <HStack w="full">
-                                  <Box
-                                    as="span"
-                                    flex="1"
-                                    textAlign="left"
-                                    w="full"
+                    <Accordion allowToggle className="space-y-6">
+                      {scopes?.map((scope) => (
+                        <AccordionItem key={scope.value} mb={0}>
+                          <h2>
+                            <AccordionButton>
+                              <HStack w="full">
+                                <Box
+                                  as="span"
+                                  flex="1"
+                                  textAlign="left"
+                                  w="full"
+                                >
+                                  <Heading
+                                    size="sm"
+                                    color="content.alternative"
                                   >
-                                    <Heading
-                                      size="sm"
-                                      color="content.alternative"
-                                    >
-                                      {scope.label}
-                                    </Heading>
-                                    <Text color="content.tertiary">
-                                      {/* TODO: Get scope text body */}
-                                    </Text>
-                                  </Box>
-                                  {isScopeCompleted(scope.value) ? (
-                                    <Tag variant="success" mx={6}>
-                                      {t("completed")}
-                                    </Tag>
-                                  ) : (
-                                    <Tag variant="warning" mx={6}>
-                                      {t("incomplete")}
-                                    </Tag>
-                                  )}
-                                  <AccordionIcon
-                                    borderWidth={1}
-                                    boxSize={6}
-                                    borderRadius="full"
-                                    borderColor="border.overlay"
-                                  />
-                                </HStack>
-                              </AccordionButton>
-                            </h2>
-                            <AccordionPanel pt={4}>
-                              <EmissionsForm
-                                t={t}
-                                register={register}
-                                errors={errors}
-                                control={control}
-                                prefix={`subcategoryData.${scope.value}.`}
-                                watch={watch}
-                                sectorNumber={sectorNumber!}
-                              />
-                            </AccordionPanel>
-                          </AccordionItem>
-                        ))}
-                      </Accordion>
-                    )}
+                                    {scope.label}
+                                  </Heading>
+                                  <Text color="content.tertiary">
+                                    {/* TODO: Get scope text body */}
+                                  </Text>
+                                </Box>
+                                {isScopeCompleted(scope.value) ? (
+                                  <Tag variant="success" mx={6}>
+                                    {t("completed")}
+                                  </Tag>
+                                ) : (
+                                  <Tag variant="warning" mx={6}>
+                                    {t("incomplete")}
+                                  </Tag>
+                                )}
+                                <AccordionIcon
+                                  borderWidth={1}
+                                  boxSize={6}
+                                  borderRadius="full"
+                                  borderColor="border.overlay"
+                                />
+                              </HStack>
+                            </AccordionButton>
+                          </h2>
+                          <AccordionPanel pt={4}>
+                            <EmissionsForm
+                              t={t}
+                              register={register}
+                              errors={errors}
+                              control={control}
+                              prefix={`subcategoryData.${scope.value}.`}
+                              watch={watch}
+                              sectorNumber={sectorNumber!}
+                            />
+                          </AccordionPanel>
+                        </AccordionItem>
+                      ))}
+                    </Accordion>
                     <Box w="full" className="grow flex flex-col">
                       <Box className="grow" />
                       <Button
                         onClick={handleSubmit(onSubmit)}
-                        isDisabled={!isSubmitEnabled}
                         isLoading={isSubmitting}
                         type="submit"
                         formNoValidate
@@ -591,8 +478,14 @@ export function SubsectorDrawer({
             >
               <Flex justify="space-between">
                 <Box w={10} />
-              {t("unsaved-changes")}
-              <IconButton color="content.tertiary" icon={<CloseIcon />} onClick={onDialogClose} aria-label="Close" variant="ghost" />
+                {t("unsaved-changes")}
+                <IconButton
+                  color="content.tertiary"
+                  icon={<CloseIcon />}
+                  onClick={onDialogClose}
+                  aria-label="Close"
+                  variant="ghost"
+                />
               </Flex>
             </AlertDialogHeader>
             <hr />

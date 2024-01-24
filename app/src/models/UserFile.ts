@@ -72,11 +72,12 @@ export class UserFile
             model: "User",
             key: "user_id",
           },
-          field: "userId",
+          field: "user_id",
         },
         fileReference: {
           type: DataTypes.STRING(255),
           allowNull: true,
+          field: "file_reference",
         },
         data: {
           type: DataTypes.BLOB,
@@ -85,6 +86,7 @@ export class UserFile
         fileType: {
           type: DataTypes.STRING(255),
           allowNull: true,
+          field: "file_type",
         },
         sector: {
           type: DataTypes.STRING(255),
@@ -101,6 +103,7 @@ export class UserFile
         gpcRefNo: {
           type: DataTypes.STRING(255),
           allowNull: true,
+          field: "gpc_ref_no",
         },
       },
       {
@@ -109,7 +112,7 @@ export class UserFile
         schema: "public",
         timestamps: true,
         createdAt: "created",
-        updatedAt: "lastUpdated",
+        updatedAt: "last_updated",
         indexes: [
           {
             name: "UserFile_pkey",

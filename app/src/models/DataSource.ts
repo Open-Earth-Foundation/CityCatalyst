@@ -30,8 +30,7 @@ import type { Scope, ScopeId } from "./Scope";
 import type { Sector, SectorId } from "./Sector";
 import type { SubCategory, SubCategoryId } from "./SubCategory";
 import type { SubSector, SubSectorId } from "./SubSector";
-import { SubSectorValue, SubSectorValueId } from "./SubSectorValue";
-import { SubCategoryValue, SubCategoryValueId } from "./SubCategoryValue";
+import { InventoryValue, InventoryValueId } from "./InventoryValue";
 
 export interface DataSourceAttributes {
   datasourceId: string;
@@ -704,69 +703,37 @@ export class DataSource
   getPublisher!: Sequelize.BelongsToGetAssociationMixin<Publisher>;
   setPublisher!: Sequelize.BelongsToSetAssociationMixin<Publisher, PublisherId>;
   createPublisher!: Sequelize.BelongsToCreateAssociationMixin<Publisher>;
-  // DataSource hasMany SubSectorValue via datasourceId
-  SubSectorValues!: SubSectorValue[];
-  getSubSectorValues!: Sequelize.HasManyGetAssociationsMixin<SubSectorValue>;
-  setSubSectorValues!: Sequelize.HasManySetAssociationsMixin<
-    SubSectorValue,
-    SubSectorValueId
+  // DataSource hasMany InventoryValue via datasourceId
+  inventoryValues!: InventoryValue[];
+  getInventoryValues!: Sequelize.HasManyGetAssociationsMixin<InventoryValue>;
+  setInventoryValues!: Sequelize.HasManySetAssociationsMixin<
+    InventoryValue,
+    InventoryValueId
   >;
-  addSubSectorValue!: Sequelize.HasManyAddAssociationMixin<
-    SubSectorValue,
-    SubSectorValueId
+  addInventoryValue!: Sequelize.HasManyAddAssociationMixin<
+    InventoryValue,
+    InventoryValueId
   >;
-  addSubSectorValues!: Sequelize.HasManyAddAssociationsMixin<
-    SubSectorValue,
-    SubSectorValueId
+  addInventoryValues!: Sequelize.HasManyAddAssociationsMixin<
+    InventoryValue,
+    InventoryValueId
   >;
-  createSubSectorValue!: Sequelize.HasManyCreateAssociationMixin<SubSectorValue>;
-  removeSubSectorValue!: Sequelize.HasManyRemoveAssociationMixin<
-    SubSectorValue,
-    SubSectorValueId
+  createInventoryValue!: Sequelize.HasManyCreateAssociationMixin<InventoryValue>;
+  removeInventoryValue!: Sequelize.HasManyRemoveAssociationMixin<
+    InventoryValue,
+    InventoryValueId
   >;
-  removeSubSectorValues!: Sequelize.HasManyRemoveAssociationsMixin<
-    SubSectorValue,
-    SubSectorValueId
+  removeInventoryValues!: Sequelize.HasManyRemoveAssociationsMixin<
+    InventoryValue,
+    InventoryValueId
   >;
-  hasSubSectorValue!: Sequelize.HasManyHasAssociationMixin<
-    SubSectorValue,
-    SubSectorValueId
+  hasInventoryValue!: Sequelize.HasManyHasAssociationMixin<
+    InventoryValue,
+    InventoryValueId
   >;
-  hasSubSectorValues!: Sequelize.HasManyHasAssociationsMixin<
-    SubSectorValue,
-    SubSectorValueId
-  >;
-  // DataSource hasMany SubCategoryValue via datasourceId
-  SubCategoryValues!: SubCategoryValue[];
-  getSubCategoryValues!: Sequelize.HasManyGetAssociationsMixin<SubCategoryValue>;
-  setSubCategoryValues!: Sequelize.HasManySetAssociationsMixin<
-    SubCategoryValue,
-    SubCategoryValueId
-  >;
-  addSubCategoryValue!: Sequelize.HasManyAddAssociationMixin<
-    SubCategoryValue,
-    SubCategoryValueId
-  >;
-  addSubCategoryValues!: Sequelize.HasManyAddAssociationsMixin<
-    SubCategoryValue,
-    SubCategoryValueId
-  >;
-  createSubCategoryValue!: Sequelize.HasManyCreateAssociationMixin<SubCategoryValue>;
-  removeSubCategoryValue!: Sequelize.HasManyRemoveAssociationMixin<
-    SubCategoryValue,
-    SubCategoryValueId
-  >;
-  removeSubCategoryValues!: Sequelize.HasManyRemoveAssociationsMixin<
-    SubCategoryValue,
-    SubCategoryValueId
-  >;
-  hasSubCategoryValue!: Sequelize.HasManyHasAssociationMixin<
-    SubCategoryValue,
-    SubCategoryValueId
-  >;
-  hasSubCategoryValues!: Sequelize.HasManyHasAssociationsMixin<
-    SubCategoryValue,
-    SubCategoryValueId
+  hasInventoryValues!: Sequelize.HasManyHasAssociationsMixin<
+    InventoryValue,
+    InventoryValueId
   >;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof DataSource {

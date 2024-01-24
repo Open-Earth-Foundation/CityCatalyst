@@ -16,7 +16,7 @@ export const GET = apiHandler(
     _req: Request,
     context: { session?: Session; params: Record<string, string> },
   ) => {
-    const userId = context.params.user;
+    const userId = context.session?.user.id;
     if (!context.session) {
       throw new createHttpError.Unauthorized("Unauthorized");
     }
@@ -40,7 +40,7 @@ export const POST = apiHandler(
     req: NextRequest,
     context: { session?: Session; params: Record<string, string> },
   ) => {
-    const userId = context.params.user;
+    const userId = context.session?.user.id;
 
     if (!context.session) {
       throw new createHttpError.Unauthorized("Unauthorized");
@@ -83,6 +83,21 @@ export const POST = apiHandler(
       throw new createHttpError.NotFound("User files not found");
     }
 
-    return NextResponse.json({ data: userFile });
+    return NextResponse.json({
+      data: {
+        id: userFile.id,
+        userId: userFile.id,
+        fileReference: userFile.fileReference,
+        url: userFile.url,
+        sector: userFile.sector,
+        status: userFile.status,
+        gpcRefNo: userFile.gpcRefNo,
+        file: {
+          fileName: file.name,
+          size: file.size,
+          fileType: userFile.fileType,
+        },
+      },
+    });
   },
 );

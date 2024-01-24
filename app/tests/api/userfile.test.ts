@@ -1,18 +1,18 @@
 import {
   POST as createUserFile,
   GET as findUserFiles,
-} from "@/app/api/v0/user/[user]/file/route";
+} from "@/app/api/v0/user/file/route";
 
 import {
   DELETE as deleteUserfile,
   GET as findUserFile,
-} from "@/app/api/v0/user/[user]/file/[file]/route";
+} from "@/app/api/v0/user/file/[file]/route";
 
 import { db } from "@/models";
 import assert from "node:assert";
 import { after, before, describe, it } from "node:test";
 import {
-  testfileBuffer,
+  testFileFormat,
   filePath,
   getFileDataFromStream,
   mockRequest,
@@ -34,7 +34,7 @@ const fileData = {
   sector: "Energy Sector",
   url: "http://www.acme.com",
   status: STATUS.INPROGRESS,
-  data: testfileBuffer,
+  data: testFileFormat,
   gpc_ref_no: "XXXTESTXXX",
   file_reference: "XXXTESTXXX",
 };
@@ -70,6 +70,7 @@ describe("UserFile API", () => {
     // stream created file from path
     const path = await filePath();
     const fileStream = await getFileDataFromStream(path);
+
     const formData = new FormData();
     formData.append("id", randomUUID());
     formData.append("userId", fileData.userId);
@@ -88,7 +89,8 @@ describe("UserFile API", () => {
     assert.equal(data?.url, fileData.url);
     assert.equal(data?.status, fileData.status);
     assert.equal(data?.gpcRefNo, fileData.gpc_ref_no);
-    assert.equal(fileData?.data.type, data?.data.type);
+    assert.equal(fileData.data.fileName, data?.file.fileName);
+    assert.equal(fileData.data.size, data?.file.size);
   });
 
   it("should not create a file if data is invalid", async () => {

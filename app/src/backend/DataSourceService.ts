@@ -1,11 +1,7 @@
 import { db } from "@/models";
 import { DataSource } from "@/models/DataSource";
 import { Inventory } from "@/models/Inventory";
-import { SubCategoryValueAttributes } from "@/models/SubCategoryValue";
-import {
-  SubSectorValue,
-  SubSectorValueCreationAttributes,
-} from "@/models/SubSectorValue";
+import { InventoryValueAttributes } from "@/models/InventoryValue";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 
@@ -88,105 +84,45 @@ export default class DataSourceService {
     );
 
     const emissions = data.totals.emissions;
-    // TODO store values for co2, ch4, n2o separately for accounting and editing
     const totalEmissions = emissions.co2eq_100yr;
-    const values: Partial<SubCategoryValueAttributes> = {
+    const values: Partial<InventoryValueAttributes> = {
       datasourceId: source.datasourceId,
       inventoryId: inventory.inventoryId,
-      totalEmissions,
-      co2EmissionsValue: emissions.co2_mass,
-      n2oEmissionsValue: emissions.n2o_mass,
-      ch4EmissionsValue: emissions.ch4_mass,
+      co2eq: totalEmissions,
+      co2eqYears: 100,
     };
 
-    if (source.subsectorId) {
-      await DataSourceService.initSubSectorValue(
-        source,
-        inventory,
-        totalEmissions,
-        values,
-        source.subSector.sectorId!,
-        source.subsectorId,
-      );
-    } else if (source.subcategoryId) {
-      // add parent SubSectorValue if not present yet
-      let subSectorValue = await db.models.SubSectorValue.findOne({
-        where: {
-          subsectorId: source.subCategory?.subsectorId,
-          inventoryId: inventory.inventoryId,
-        },
-      });
-      if (!subSectorValue) {
-        subSectorValue = await DataSourceService.initSubSectorValue(
-          source,
-          inventory,
-          totalEmissions,
-          values,
-          source.subCategory?.subsector?.sectorId!,
-          source.subCategory?.subsectorId!,
-        );
-      } else {
-        await subSectorValue.update({
-          totalEmissions: (subSectorValue.totalEmissions || 0) + totalEmissions,
-        });
-      }
-      const subCategoryValue = await db.models.SubCategoryValue.create({
-        ...values,
-        subcategoryValueId: randomUUID(),
-        subcategoryId: source.subcategoryId,
-        subsectorValueId: subSectorValue.subsectorValueId,
-      });
-    } else {
-      return false;
-    }
+    // TODO what to do with existing InventoryValues and GasValues?
+    const inventoryValue = await db.models.InventoryValue.create({
+      ...values,
+      id: randomUUID(),
+      subCategoryId: source.subcategoryId,
+    });
+
+    // store values for co2, ch4, n2o separately for accounting and editing
+    // TODO what emissions factor should be used?
+    await db.models.GasValue.create({
+      id: randomUUID(),
+      inventoryValueId: inventoryValue.id,
+      gas: "CO2",
+      gasAmount: emissions.co2_mass,
+      // emissionsFactorId:
+    });
+    await db.models.GasValue.create({
+      id: randomUUID(),
+      inventoryValueId: inventoryValue.id,
+      gas: "N2O",
+      gasAmount: emissions.n2o_mass,
+      // emissionsFactorId:
+    });
+    await db.models.GasValue.create({
+      id: randomUUID(),
+      inventoryValueId: inventoryValue.id,
+      gas: "CH4",
+      gasAmount: emissions.ch4_mass,
+      // emissionsFactorId:
+    });
 
     return true;
-  }
-
-  private static async initSubSectorValue(
-    source: DataSource,
-    inventory: Inventory,
-    totalEmissions: number,
-    values: Partial<SubSectorValueCreationAttributes>,
-    sectorId: string,
-    subsectorId: string,
-  ): Promise<SubSectorValue> {
-    if (!sectorId) {
-      throw new createHttpError.InternalServerError(
-        "Failed to find sector ID for source " + source.datasourceId,
-      );
-    }
-    if (!subsectorId) {
-      throw new createHttpError.InternalServerError(
-        "Failed to find subsector ID for source " + source.datasourceId,
-      );
-    }
-
-    let sectorValue = await db.models.SectorValue.findOne({
-      where: {
-        sectorId,
-        inventoryId: inventory.inventoryId,
-      },
-    });
-    // TODO have to init/ update totalEmissions here?
-    if (!sectorValue) {
-      sectorValue = await db.models.SectorValue.create({
-        sectorValueId: randomUUID(),
-        sectorId,
-        inventoryId: inventory.inventoryId,
-        totalEmissions,
-      });
-    } else {
-      await sectorValue.update({
-        totalEmissions: (sectorValue.totalEmissions || 0) + totalEmissions,
-      });
-    }
-    const subSectorValue = await db.models.SubSectorValue.create({
-      ...values,
-      sectorValueId: sectorValue.sectorValueId,
-      subsectorId,
-      subsectorValueId: randomUUID(),
-    });
-    return subSectorValue;
   }
 }

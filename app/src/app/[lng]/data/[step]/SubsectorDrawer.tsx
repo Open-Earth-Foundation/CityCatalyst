@@ -195,6 +195,9 @@ export function SubsectorDrawer({
     { subCategoryIds: subCategoryIds!, inventoryId: inventoryId! },
     { skip: !subsector || !inventoryId },
   );
+  const { data: emissionsFactors, isLoading: areEmissionsFactorsLoading } =
+    api.useGetEmissionsFactorsQuery();
+  useEffect(() => console.log("EF", emissionsFactors), [emissionsFactors]);
   const [setInventoryValue] = api.useSetInventoryValueMutation();
 
   let noPreviousValue =
@@ -320,6 +323,7 @@ export function SubsectorDrawer({
     return {
       label,
       value: subcategory.subcategoryId,
+      gpcReferenceNumber: subcategory.referenceNumber,
     };
   });
 
@@ -369,7 +373,7 @@ export function SubsectorDrawer({
               <Text color="content.tertiary">
                 {t(nameToI18NKey(subsector.subsectorName) + "-description")}
               </Text>
-              {isSubsectorValueLoading ? (
+              {isSubsectorValueLoading || areEmissionsFactorsLoading ? (
                 <Center>
                   <Spinner size="lg" />
                 </Center>
@@ -437,7 +441,8 @@ export function SubsectorDrawer({
                               control={control}
                               prefix={`subcategoryData.${scope.value}.`}
                               watch={watch}
-                              sectorNumber={sectorNumber!}
+                              gpcReferenceNumber={scope.gpcReferenceNumber!}
+                              emissionsFactors={emissionsFactors!}
                             />
                           </AccordionPanel>
                         </AccordionItem>

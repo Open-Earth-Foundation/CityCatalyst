@@ -19,6 +19,7 @@ import { DirectMeasureForm } from "./DirectMeasureForm";
 import { TFunction } from "i18next";
 import { Control, useController } from "react-hook-form";
 import { resolve } from "@/util/helpers";
+import { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
 
 export function EmissionsForm({
   t,
@@ -27,7 +28,8 @@ export function EmissionsForm({
   control,
   prefix = "",
   watch,
-  sectorNumber,
+  gpcReferenceNumber,
+  emissionsFactors,
 }: {
   t: TFunction;
   register: Function;
@@ -35,7 +37,8 @@ export function EmissionsForm({
   control: Control<any, any>;
   prefix?: string;
   watch: Function;
-  sectorNumber: string;
+  gpcReferenceNumber: string;
+  emissionsFactors: EmissionsFactorAttributes[],
 }) {
   const { field } = useController({
     name: prefix + "methodology",
@@ -135,7 +138,8 @@ export function EmissionsForm({
               errors={errors}
               prefix={prefix + "activity."}
               watch={watch}
-              sectorNumber={sectorNumber}
+              gpcReferenceNumber={gpcReferenceNumber}
+              emissionsFactors={emissionsFactors}
             />
           )}
           {/*** Direct measure ***/}

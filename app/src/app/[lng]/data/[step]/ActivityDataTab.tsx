@@ -18,7 +18,8 @@ import {
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { resolve } from "@/util/helpers";
+import { resolve, groupBy } from "@/util/helpers";
+import type { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
 
 const activityDataUnits: Record<string, string[]> = {
   I: [
@@ -51,17 +52,29 @@ export function ActivityDataTab({
   errors,
   prefix,
   watch,
-  sectorNumber,
+  gpcReferenceNumber,
+  emissionsFactors,
 }: {
   t: TFunction;
   register: Function;
   errors: Record<string, any>;
   prefix: string;
   watch: Function;
-  sectorNumber: string; // I, II, III
+  gpcReferenceNumber: string;
+  emissionsFactors: EmissionsFactorAttributes[];
 }) {
   const selectedUnit = watch(prefix + "activityDataUnit");
   const selectedEmissionFactorType = watch(prefix + "emissionFactorType");
+  // TODO cache with useEffect and useState?
+  const scopeEmissionsFactors = emissionsFactors.filter(
+    (factor) => factor.gpcReferenceNumber === gpcReferenceNumber,
+  );
+  // const selectedEmissionsFactors = scopeEmissionsFactors.filter((factor) => factor.dataSources[0].datasourceId === selectedEmissionFactorType.datasourceId);
+  const factorsByUnit = groupBy(
+    scopeEmissionsFactors,
+    (factor) => factor.units || "Unknown",
+  );
+  const scopeUnits = Object.keys(factorsByUnit);
 
   return (
     <>
@@ -100,7 +113,7 @@ export function ActivityDataTab({
                 variant="unstyled"
                 {...register(prefix + "activityDataUnit")}
               >
-                {activityDataUnits[sectorNumber].map((unit) => (
+                {scopeUnits.map((unit) => (
                   <option key={unit} value={unit}>
                     {unit}
                   </option>
@@ -124,6 +137,9 @@ export function ActivityDataTab({
                 {type}
               </option>
             ))}
+            <option key="custom" value="custom">
+              Add custom
+            </option>
           </Select>
         </FormControl>
       </HStack>

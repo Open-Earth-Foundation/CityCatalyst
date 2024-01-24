@@ -10,6 +10,7 @@ import { Inventory, InventoryId } from "./Inventory";
 
 export interface EmissionsFactorAttributes {
   id: string;
+  gpcReferenceNumber?: string;
   emissionsPerActivity?: number;
   url?: string;
   gas?: string;
@@ -22,6 +23,7 @@ export interface EmissionsFactorAttributes {
 export type EmissionsFactorPk = "id";
 export type EmissionsFactorId = EmissionsFactor[EmissionsFactorPk];
 export type EmissionsFactorOptionalAttributes =
+  | "gpcReferenceNumber"
   | "emissionsPerActivity"
   | "url"
   | "gas"
@@ -39,6 +41,7 @@ export class EmissionsFactor
   implements EmissionsFactorAttributes
 {
   id!: string;
+  gpcReferenceNumber?: string;
   emissionsPerActivity?: number;
   url?: string;
   gas?: string;
@@ -159,7 +162,11 @@ export class EmissionsFactor
           type: DataTypes.UUID,
           allowNull: false,
           primaryKey: true,
-          field: "id",
+        },
+        gpcReferenceNumber: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: "gpc_reference_number",
         },
         emissionsPerActivity: {
           type: DataTypes.DECIMAL,

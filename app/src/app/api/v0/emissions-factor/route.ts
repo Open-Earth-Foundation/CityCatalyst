@@ -10,6 +10,7 @@ export const GET = apiHandler(async (_req: Request, _context: {}) => {
     where: {
       inventoryId: { [Op.is]: null },
     },
+    include: [{ model: db.models.DataSource, as: "dataSources" }],
   });
   if (emissionsFactors.length === 0) {
     throw new createHttpError.NotFound("Emissions factors not found");

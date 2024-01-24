@@ -19,7 +19,6 @@ import {
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { resolve, groupBy } from "@/util/helpers";
-import type { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
 import { EmissionsFactorWithDataSources } from "@/util/types";
 
 const activityDataUnits: Record<string, string[]> = {
@@ -65,20 +64,31 @@ export function ActivityDataTab({
   emissionsFactors: EmissionsFactorWithDataSources[];
 }) {
   const selectedUnit = watch(prefix + "activityDataUnit");
-  const selectedEmissionFactorType = watch(prefix + "emissionFactorType");
+  const selectedEmissionFactorType = watch(prefix + "emissionFactorType") || "custom";
   // TODO cache with useEffect and useState?
   const scopeEmissionsFactors = emissionsFactors.filter(
     (factor) => factor.gpcReferenceNumber === gpcReferenceNumber,
   );
   // const selectedEmissionsFactors = scopeEmissionsFactors.filter((factor) => factor.dataSources[0].datasourceId === selectedEmissionFactorType.datasourceId);
+  const factorsByType = groupBy(scopeEmissionsFactors, (factor) => {
+    const sourceName = factor.dataSources[0].name || "Unknown data source";
+    if (sourceName.includes("IPCC") && sourceName.includes("US")) {
+      return "National (US)";
+    } else if (sourceName.includes("IPCC")) {
+      return "IPCC";
+    }
+
+    return sourceName;
+  });
+  const emissionsFactorTypes = Object.keys(factorsByType);
+  const selectedEmissionsFactors = factorsByType[
+    selectedEmissionFactorType
+  ] || [{ units: "kg/?" }];
   const factorsByUnit = groupBy(
-    scopeEmissionsFactors,
-    (factor) => factor.units || "Unknown",
+    selectedEmissionsFactors,
+    (factor) => factor.units || "Unknown unit",
   );
   const scopeUnits = Object.keys(factorsByUnit);
-  const factorsByType = groupBy(scopeEmissionsFactors, (factor) => factor.dataSources[0].name || "Unknown data source");
-  const emissionsFactorTypes = Object.keys(factorsByType);
-  const selectedEmissionsFactors = factorsByType[selectedEmissionFactorType] || [];
 
   return (
     <>
@@ -119,7 +129,7 @@ export function ActivityDataTab({
               >
                 {scopeUnits.map((unit) => (
                   <option key={unit} value={unit}>
-                    {unit}
+                    {unit.includes("/") ? unit.split("/")[1] : unit}
                   </option>
                 ))}
               </Select>
@@ -167,7 +177,7 @@ export function ActivityDataTab({
             <NumberInput
               defaultValue={0}
               min={0}
-              isDisabled={selectedEmissionFactorType !== "Add custom"}
+              isDisabled={selectedEmissionFactorType !== "custom"}
             >
               <NumberInputField
                 borderRightRadius={0}
@@ -179,7 +189,7 @@ export function ActivityDataTab({
               bgColor="background.neutral"
               color="content.tertiary"
             >
-              CO2/{selectedUnit}
+              {selectedUnit}
             </InputRightAddon>
           </InputGroup>
           <FormHelperText>&nbsp;</FormHelperText>
@@ -192,7 +202,7 @@ export function ActivityDataTab({
             <NumberInput
               defaultValue={0}
               min={0}
-              isDisabled={selectedEmissionFactorType !== "Add custom"}
+              isDisabled={selectedEmissionFactorType !== "custom"}
             >
               <NumberInputField
                 borderRightRadius={0}
@@ -204,7 +214,7 @@ export function ActivityDataTab({
               bgColor="background.neutral"
               color="content.tertiary"
             >
-              N2O/{selectedUnit}
+              {selectedUnit}
             </InputRightAddon>
           </InputGroup>
           <FormHelperText color="content.tertiary">
@@ -219,7 +229,7 @@ export function ActivityDataTab({
             <NumberInput
               defaultValue={0}
               min={0}
-              isDisabled={selectedEmissionFactorType !== "Add custom"}
+              isDisabled={selectedEmissionFactorType !== "custom"}
             >
               <NumberInputField
                 borderRightRadius={0}
@@ -231,7 +241,7 @@ export function ActivityDataTab({
               bgColor="background.neutral"
               color="content.tertiary"
             >
-              CH4/{selectedUnit}
+              {selectedUnit}
             </InputRightAddon>
           </InputGroup>
           <FormHelperText color="content.tertiary">

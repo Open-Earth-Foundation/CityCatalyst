@@ -168,7 +168,6 @@ const isScopeCompleted = (
 export function SubsectorDrawer({
   subsector,
   sectorName,
-  sectorNumber,
   inventoryId,
   isOpen,
   onClose,
@@ -178,7 +177,6 @@ export function SubsectorDrawer({
 }: {
   subsector?: SubSector;
   sectorName?: string;
-  sectorNumber?: string; // I, II, III
   inventoryId?: string;
   isOpen: boolean;
   onClose: () => void;

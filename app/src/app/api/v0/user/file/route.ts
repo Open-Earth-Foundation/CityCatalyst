@@ -83,6 +83,21 @@ export const POST = apiHandler(
       throw new createHttpError.NotFound("User files not found");
     }
 
-    return NextResponse.json({ data: userFile });
+    return NextResponse.json({
+      data: {
+        id: userFile.id,
+        userId: userFile.id,
+        fileReference: userFile.fileReference,
+        url: userFile.url,
+        sector: userFile.sector,
+        status: userFile.status,
+        gpcRefNo: userFile.gpcRefNo,
+        file: {
+          fileName: file.name,
+          size: file.size,
+          fileType: userFile.fileType,
+        },
+      },
+    });
   },
 );

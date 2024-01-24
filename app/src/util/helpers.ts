@@ -56,6 +56,23 @@ export async function resolvePromisesSequentially(promises: Promise<any>[]) {
 
 export function nameToI18NKey(name: string): string {
   // remove all special characters and replace spaces with dashes
-  return name.replaceAll(/[^\w\s-]/gi, "").replaceAll(" ", "-").toLowerCase();
+  return name
+    .replaceAll(/[^\w\s-]/gi, "")
+    .replaceAll(" ", "-")
+    .toLowerCase();
 }
 
+export function groupBy<T>(
+  list: T[],
+  lambda: (elem: T) => string,
+): Record<string, T[]> {
+  return list.reduce(
+    (acc, elem) => {
+      const key = lambda(elem);
+      acc[key] = acc[key] || [];
+      acc[key].push(elem);
+      return acc;
+    },
+    {} as Record<string, T[]>,
+  );
+}

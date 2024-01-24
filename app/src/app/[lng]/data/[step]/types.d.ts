@@ -27,6 +27,7 @@ type SubSector = {
 type SubCategory = {
   subcategoryId: string;
   subcategoryName?: string;
+  referenceNumber?: string;
   activityName?: string;
   subsectorId?: string;
   scopeId?: string;

@@ -306,7 +306,7 @@ export const api = createApi({
       transformResponse: (response: { data: any }) => response.data,
     }),
     getEmissionsFactors: builder.query<EmissionsFactorAttributes[], void>({
-      query: () => `/emissions-factors`,
+      query: () => `/emissions-factor`,
       transformResponse: (response: { data: EmissionsFactorAttributes[] }) =>
         response.data,
     }),

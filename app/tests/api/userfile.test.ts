@@ -1,12 +1,12 @@
 import {
   POST as createUserFile,
   GET as findUserFiles,
-} from "@/app/api/v0/user/[user]/file/route";
+} from "@/app/api/v0/user/file/route";
 
 import {
   DELETE as deleteUserfile,
   GET as findUserFile,
-} from "@/app/api/v0/user/[user]/file/[file]/route";
+} from "@/app/api/v0/user/file/[file]/route";
 
 import { db } from "@/models";
 import assert from "node:assert";

@@ -16,7 +16,7 @@ export const GET = apiHandler(
     _req: Request,
     context: { session?: Session; params: Record<string, string> },
   ) => {
-    const userId = context.params.user;
+    const userId = context.session?.user.id;
     if (!context.session) {
       throw new createHttpError.Unauthorized("Unauthorized");
     }
@@ -40,7 +40,7 @@ export const POST = apiHandler(
     req: NextRequest,
     context: { session?: Session; params: Record<string, string> },
   ) => {
-    const userId = context.params.user;
+    const userId = context.session?.user.id;
 
     if (!context.session) {
       throw new createHttpError.Unauthorized("Unauthorized");

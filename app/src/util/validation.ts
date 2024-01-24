@@ -60,21 +60,31 @@ export const resetPasswordRequest = z.object({
   resetToken: z.string(),
 });
 
-export const createSectorRequest = z.object({
-  totalEmissions: z.number().optional(),
-  sectorId: z.string().uuid().optional(),
-});
-
-export type CreateSectorRequest = z.infer<typeof createSectorRequest>;
-
-export const createSubSectorRequest = z.object({
-  activityUnits: z.string().optional(),
+export const createInventoryValue = z.object({
+  gpcReferenceNumber: z.string().optional(),
   activityValue: z.number().optional(),
-  emissionFactorValue: z.number().optional(),
-  totalEmissions: z.number().optional(),
-  emissionsFactorId: z.string().uuid().optional(),
+  activityUnits: z.string().optional(),
+  co2eq: z.coerce.bigint().gte(0n).optional(),
+  co2eqYears: z.number().optional(),
   unavailableReason: z.string().optional(),
   unavailableExplanation: z.string().optional(),
+  gasValues: z
+    .array(
+      z.object({
+        gas: z.string(),
+        // if not present, use activityValue with emissionsFactor instead
+        gasAmount: z.coerce.bigint().gte(0n).optional(),
+        emissionsFactorId: z.string().uuid().optional(),
+        emissionsFactor: z
+          .object({
+            emissionsPerActivity: z.number().gte(0),
+            gas: z.string(),
+            units: z.string(),
+          })
+          .optional(),
+      }),
+    )
+    .optional(),
   dataSource: z
     .object({
       sourceType: z.string(),
@@ -84,27 +94,7 @@ export const createSubSectorRequest = z.object({
     .optional(),
 });
 
-export type CreateSubSectorRequest = z.infer<typeof createSubSectorRequest>;
-
-export const createSubCategory = z.object({
-  activityUnits: z.string().optional(),
-  activityValue: z.number().optional(),
-  emissionFactorValue: z.number().optional(),
-  co2EmissionsValue: z.number().optional(),
-  n2oEmissionsValue: z.number().optional(),
-  ch4EmissionsValue: z.number().optional(),
-  totalEmissions: z.number().optional(),
-  emissionsFactorId: z.string().uuid().optional(),
-  dataSource: z
-    .object({
-      sourceType: z.string(),
-      dataQuality: z.string(),
-      notes: z.string(),
-    })
-    .optional(),
-});
-
-export type CreateSubCategoryRequest = z.infer<typeof createSubCategory>;
+export type CreateInventoryValueRequest = z.infer<typeof createInventoryValue>;
 
 export const createUserRequest = z.object({
   name: z.string().min(1),

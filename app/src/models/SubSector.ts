@@ -9,7 +9,6 @@ import type {
   SubSectorReportingLevel,
   SubSectorReportingLevelId,
 } from "./SubSectorReportingLevel";
-import type { SubSectorValue, SubSectorValueId } from "./SubSectorValue";
 
 export interface SubSectorAttributes {
   subsectorId: string;
@@ -189,39 +188,6 @@ export class SubSector
     ScopeId
   >;
   createScope!: Sequelize.HasOneCreateAssociationMixin<Scope>;
-  // SubSector hasMany SubSectorValue via subsectorId
-  subSectorValues!: SubSectorValue[];
-  getSubSectorValues!: Sequelize.HasManyGetAssociationsMixin<SubSectorValue>;
-  setSubSectorValues!: Sequelize.HasManySetAssociationsMixin<
-    SubSectorValue,
-    SubSectorValueId
-  >;
-  addSubSectorValue!: Sequelize.HasManyAddAssociationMixin<
-    SubSectorValue,
-    SubSectorValueId
-  >;
-  addSubSectorValues!: Sequelize.HasManyAddAssociationsMixin<
-    SubSectorValue,
-    SubSectorValueId
-  >;
-  createSubSectorValue!: Sequelize.HasManyCreateAssociationMixin<SubSectorValue>;
-  removeSubSectorValue!: Sequelize.HasManyRemoveAssociationMixin<
-    SubSectorValue,
-    SubSectorValueId
-  >;
-  removeSubSectorValues!: Sequelize.HasManyRemoveAssociationsMixin<
-    SubSectorValue,
-    SubSectorValueId
-  >;
-  hasSubSectorValue!: Sequelize.HasManyHasAssociationMixin<
-    SubSectorValue,
-    SubSectorValueId
-  >;
-  hasSubSectorValues!: Sequelize.HasManyHasAssociationsMixin<
-    SubSectorValue,
-    SubSectorValueId
-  >;
-  countSubSectorValues!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof SubSector {
     return SubSector.init(

@@ -458,5 +458,23 @@ export const appTheme = extendTheme({
         },
       },
     },
+    Switch: {
+      variants: {
+        brand: {
+          track: {
+            bg: "background.overlay",
+            _checked: {
+              bg: "content.link",
+            },
+          },
+          container: {
+            mb: "0 !important",
+          },
+        },
+      },
+      defaultProps: {
+        variant: "brand",
+      },
+    },
   },
 });

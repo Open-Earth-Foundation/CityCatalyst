@@ -1,4 +1,7 @@
 import { DataSourceAttributes } from "@/models/DataSource";
+import { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
+import { GasValueAttributes } from "@/models/GasValue";
+import { InventoryValueAttributes } from "@/models/InventoryValue";
 
 interface DataStep {
   title: string;
@@ -49,20 +52,33 @@ type ActivityData = {
 };
 
 type DirectMeasureData = {
-  co2Emissions: number;
-  ch4Emissions: number;
-  n2oEmissions: number;
+  co2Emissions: bigint;
+  ch4Emissions: bigint;
+  n2oEmissions: bigint;
   dataQuality: string;
   sourceReference: string;
 };
 
 type SubcategoryData = {
   methodology: "activity-data" | "direct-measure" | "";
+  isUnavailable: bool;
+  unavailableReason:
+    | "no-occurrance"
+    | "not-estimated"
+    | "confidential-information"
+    | "presented-elsewhere"
+    | "";
+  unavailableExplanation: string;
   activity: ActivityData;
   direct: DirectMeasureData;
 };
 
-type SubCategoryValueData = Omit<
-  SubCategoryValueAttributes,
-  "subcategoryValueId"
-> & { dataSource?: Omit<DataSourceAttributes, "datasourceId"> };
+type GasValueData = Omit<GasValueAttributes, "id"> & {
+  emissionsFactor?: Omit<EmissionsFactorAttributes, "id">;
+};
+
+type InventoryValueData = Omit<InventoryValueAttributes, "id"> & {
+  dataSource?: Omit<DataSourceAttributes, "datasourceId">;
+  gasValues?: GasValueData[];
+};
+

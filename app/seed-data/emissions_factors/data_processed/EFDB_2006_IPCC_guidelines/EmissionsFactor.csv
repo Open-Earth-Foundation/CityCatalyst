@@ -1,4 +1,4 @@
-gpc_refno,emissions_factor,units,gas,region,reference,emissions_factor_id
+gpc_refno,emissions_per_activity,units,gas,region,reference,id
 I.1.1,0.8,kg/TJ Residual Fuel Oil,CH4,,"U.S. EPA (2005). Air CHIEF, Verson 12, EPA 454/C-05-001, U.S. Environmental Protection Agency, Office of Air Quality Planning and Standards, Washington, DC.",cbe2d629-b1d3-4817-a453-709646159e18
 I.2.1,0.8,kg/TJ Residual Fuel Oil,CH4,,"U.S. EPA (2005). Air CHIEF, Verson 12, EPA 454/C-05-001, U.S. Environmental Protection Agency, Office of Air Quality Planning and Standards, Washington, DC.",d8e48993-9334-4847-bcdb-4a311ddeb661
 I.3.1,0.8,kg/TJ Residual Fuel Oil,CH4,,"U.S. EPA (2005). Air CHIEF, Verson 12, EPA 454/C-05-001, U.S. Environmental Protection Agency, Office of Air Quality Planning and Standards, Washington, DC.",e8258735-cc6e-49af-9b12-5085c1938e83

@@ -5,24 +5,28 @@ import type {
   DataSourceEmissionsFactor,
   DataSourceEmissionsFactorId,
 } from "./DataSourceEmissionsFactor";
-import type { SubCategoryValue, SubCategoryValueId } from "./SubCategoryValue";
-import type { SubSectorValue, SubSectorValueId } from "./SubSectorValue";
+import type { GasValue, GasValueId } from "./GasValue";
+import { Inventory, InventoryId } from "./Inventory";
 
 export interface EmissionsFactorAttributes {
-  emissionsFactorId: string;
-  emissionsFactor?: number;
-  emissionsFactorUrl?: string;
+  id: string;
+  emissionsPerActivity?: number;
+  url?: string;
+  gas?: string;
   units?: string;
+  inventoryId?: string;
   created?: Date;
   lastUpdated?: Date;
 }
 
-export type EmissionsFactorPk = "emissionsFactorId";
+export type EmissionsFactorPk = "id";
 export type EmissionsFactorId = EmissionsFactor[EmissionsFactorPk];
 export type EmissionsFactorOptionalAttributes =
-  | "emissionsFactor"
-  | "emissionsFactorUrl"
+  | "emissionsPerActivity"
+  | "url"
+  | "gas"
   | "units"
+  | "inventoryId"
   | "created"
   | "lastUpdated";
 export type EmissionsFactorCreationAttributes = Optional<
@@ -34,13 +38,20 @@ export class EmissionsFactor
   extends Model<EmissionsFactorAttributes, EmissionsFactorCreationAttributes>
   implements EmissionsFactorAttributes
 {
-  emissionsFactorId!: string;
-  emissionsFactor?: number;
-  emissionsFactorUrl?: string;
+  id!: string;
+  emissionsPerActivity?: number;
+  url?: string;
+  gas?: string;
   units?: string;
+  inventoryId?: string;
   created?: Date;
   lastUpdated?: Date;
 
+  // EmissionsFactor belongsTo Inventory via inventoryId
+  inventory!: Inventory;
+  getInventory!: Sequelize.BelongsToGetAssociationMixin<Inventory>;
+  setInventory!: Sequelize.BelongsToSetAssociationMixin<Inventory, InventoryId>;
+  createInventory!: Sequelize.BelongsToCreateAssociationMixin<Inventory>;
   // EmissionsFactor belongsToMany DataSource via emissionsFactorId and datasourceId
   datasourceIdDataSourceDataSourceEmissionsFactors!: DataSource[];
   getDatasourceIdDataSourceDataSourceEmissionsFactors!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
@@ -107,95 +118,74 @@ export class EmissionsFactor
     DataSourceEmissionsFactorId
   >;
   countDataSourceEmissionsFactors!: Sequelize.HasManyCountAssociationsMixin;
-  // EmissionsFactor hasMany SubCategoryValue via emissionsFactorId
-  subCategoryValues!: SubCategoryValue[];
-  getSubCategoryValues!: Sequelize.HasManyGetAssociationsMixin<SubCategoryValue>;
-  setSubCategoryValues!: Sequelize.HasManySetAssociationsMixin<
-    SubCategoryValue,
-    SubCategoryValueId
+  // EmissionsFactor hasMany GasValue via emissionsFactorId
+  gasValues!: GasValue[];
+  getGasValues!: Sequelize.HasManyGetAssociationsMixin<GasValue>;
+  setGasValues!: Sequelize.HasManySetAssociationsMixin<
+    GasValue,
+    GasValueId
   >;
-  addSubCategoryValue!: Sequelize.HasManyAddAssociationMixin<
-    SubCategoryValue,
-    SubCategoryValueId
+  addGasValue!: Sequelize.HasManyAddAssociationMixin<
+    GasValue,
+    GasValueId
   >;
-  addSubCategoryValues!: Sequelize.HasManyAddAssociationsMixin<
-    SubCategoryValue,
-    SubCategoryValueId
+  addGasValues!: Sequelize.HasManyAddAssociationsMixin<
+    GasValue,
+    GasValueId
   >;
-  createSubCategoryValue!: Sequelize.HasManyCreateAssociationMixin<SubCategoryValue>;
-  removeSubCategoryValue!: Sequelize.HasManyRemoveAssociationMixin<
-    SubCategoryValue,
-    SubCategoryValueId
+  createGasValue!: Sequelize.HasManyCreateAssociationMixin<GasValue>;
+  removeGasValue!: Sequelize.HasManyRemoveAssociationMixin<
+    GasValue,
+    GasValueId
   >;
-  removeSubCategoryValues!: Sequelize.HasManyRemoveAssociationsMixin<
-    SubCategoryValue,
-    SubCategoryValueId
+  removeGasValues!: Sequelize.HasManyRemoveAssociationsMixin<
+    GasValue,
+    GasValueId
   >;
-  hasSubCategoryValue!: Sequelize.HasManyHasAssociationMixin<
-    SubCategoryValue,
-    SubCategoryValueId
+  hasGasValue!: Sequelize.HasManyHasAssociationMixin<
+    GasValue,
+    GasValueId
   >;
-  hasSubCategoryValues!: Sequelize.HasManyHasAssociationsMixin<
-    SubCategoryValue,
-    SubCategoryValueId
+  hasGasValues!: Sequelize.HasManyHasAssociationsMixin<
+    GasValue,
+    GasValueId
   >;
-  countSubCategoryValues!: Sequelize.HasManyCountAssociationsMixin;
-  // EmissionsFactor hasMany SubSectorValue via emissionsFactorId
-  subSectorValues!: SubSectorValue[];
-  getSubSectorValues!: Sequelize.HasManyGetAssociationsMixin<SubSectorValue>;
-  setSubSectorValues!: Sequelize.HasManySetAssociationsMixin<
-    SubSectorValue,
-    SubSectorValueId
-  >;
-  addSubSectorValue!: Sequelize.HasManyAddAssociationMixin<
-    SubSectorValue,
-    SubSectorValueId
-  >;
-  addSubSectorValues!: Sequelize.HasManyAddAssociationsMixin<
-    SubSectorValue,
-    SubSectorValueId
-  >;
-  createSubSectorValue!: Sequelize.HasManyCreateAssociationMixin<SubSectorValue>;
-  removeSubSectorValue!: Sequelize.HasManyRemoveAssociationMixin<
-    SubSectorValue,
-    SubSectorValueId
-  >;
-  removeSubSectorValues!: Sequelize.HasManyRemoveAssociationsMixin<
-    SubSectorValue,
-    SubSectorValueId
-  >;
-  hasSubSectorValue!: Sequelize.HasManyHasAssociationMixin<
-    SubSectorValue,
-    SubSectorValueId
-  >;
-  hasSubSectorValues!: Sequelize.HasManyHasAssociationsMixin<
-    SubSectorValue,
-    SubSectorValueId
-  >;
-  countSubSectorValues!: Sequelize.HasManyCountAssociationsMixin;
+  countGasValues!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof EmissionsFactor {
     return EmissionsFactor.init(
       {
-        emissionsFactorId: {
+        id: {
           type: DataTypes.UUID,
           allowNull: false,
           primaryKey: true,
-          field: "emissions_factor_id",
+          field: "id",
         },
-        emissionsFactor: {
+        emissionsPerActivity: {
           type: DataTypes.DECIMAL,
           allowNull: true,
-          field: "emissions_factor",
+          field: "emissions_per_activity",
         },
-        emissionsFactorUrl: {
+        url: {
           type: DataTypes.STRING(255),
           allowNull: true,
-          field: "emissions_factor_url",
+        },
+        gas: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
         },
         units: {
           type: DataTypes.STRING(255),
           allowNull: true,
+        },
+        inventoryId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: "Inventory",
+            key: "inventory_id",
+          },
+          field: "inventory_id",
         },
       },
       {

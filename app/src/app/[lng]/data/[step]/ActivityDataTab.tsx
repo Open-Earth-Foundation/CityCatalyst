@@ -20,6 +20,7 @@ import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { resolve, groupBy } from "@/util/helpers";
 import type { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
+import { EmissionsFactorWithDataSources } from "@/util/types";
 
 const activityDataUnits: Record<string, string[]> = {
   I: [
@@ -61,7 +62,7 @@ export function ActivityDataTab({
   prefix: string;
   watch: Function;
   gpcReferenceNumber: string;
-  emissionsFactors: EmissionsFactorAttributes[];
+  emissionsFactors: EmissionsFactorWithDataSources[];
 }) {
   const selectedUnit = watch(prefix + "activityDataUnit");
   const selectedEmissionFactorType = watch(prefix + "emissionFactorType");
@@ -75,6 +76,9 @@ export function ActivityDataTab({
     (factor) => factor.units || "Unknown",
   );
   const scopeUnits = Object.keys(factorsByUnit);
+  const factorsByType = groupBy(scopeEmissionsFactors, (factor) => factor.dataSources[0].name || "Unknown data source");
+  const emissionsFactorTypes = Object.keys(factorsByType);
+  const selectedEmissionsFactors = factorsByType[selectedEmissionFactorType] || [];
 
   return (
     <>
@@ -132,7 +136,7 @@ export function ActivityDataTab({
             bgColor="base.light"
           >
             {/* TODO translate values and use internal value for saving */}
-            {emissionFactorTypes.map((type) => (
+            {emissionsFactorTypes.map((type) => (
               <option key={type} value={type}>
                 {type}
               </option>

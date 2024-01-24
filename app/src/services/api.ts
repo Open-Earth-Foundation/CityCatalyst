@@ -16,6 +16,7 @@ import type {
   InventoryValueResponse,
   InventoryWithCity,
   UserInfoResponse,
+  EmissionsFactorResponse,
 } from "@/util/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
@@ -305,9 +306,9 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: any }) => response.data,
     }),
-    getEmissionsFactors: builder.query<EmissionsFactorAttributes[], void>({
+    getEmissionsFactors: builder.query<EmissionsFactorResponse, void>({
       query: () => `/emissions-factor`,
-      transformResponse: (response: { data: EmissionsFactorAttributes[] }) =>
+      transformResponse: (response: { data: EmissionsFactorResponse }) =>
         response.data,
     }),
   }),

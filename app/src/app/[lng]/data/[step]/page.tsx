@@ -55,7 +55,8 @@ import { logger } from "@/services/logger";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
-    process.env.NEXT_PUBLIC_SUPPORT_EMAILS || "info@openearth.org,greta@openearth.org";
+    process.env.NEXT_PUBLIC_SUPPORT_EMAILS ||
+    "info@openearth.org,greta@openearth.org";
   return `mailto://${emails}?subject=Missing third party data sources&body=City: ${locode}%0ASector: ${sector}%0AYear: ${year}`;
 }
 

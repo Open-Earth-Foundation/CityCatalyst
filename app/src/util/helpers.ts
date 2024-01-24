@@ -56,6 +56,16 @@ export async function resolvePromisesSequentially(promises: Promise<any>[]) {
 
 export function nameToI18NKey(name: string): string {
   // remove all special characters and replace spaces with dashes
-  return name.replaceAll(/[^\w\s-]/gi, "").replaceAll(" ", "-").toLowerCase();
+  return name
+    .replaceAll(/[^\w\s-]/gi, "")
+    .replaceAll(" ", "-")
+    .toLowerCase();
 }
 
+export const fileEndingToMIMEType: Record<string, string> = {
+  csv: "text/csv",
+  json: "application/json",
+  xls: "application/vnd.ms-excel",
+  xlsx: "application/vnd.ms-excel",
+  default: "application/x-binary",
+};

@@ -54,6 +54,7 @@
     "eslint": "8.52.0",
     "eslint-config-next": "13.4.16",
     "eslint-plugin-storybook": "^0.6.13",
+    "fetch-blob": "^4.0.0",
     "fetch-mock": "^9.11.0",
     "framer-motion": "^10.16.2",
     "http-errors": "^2.0.0",

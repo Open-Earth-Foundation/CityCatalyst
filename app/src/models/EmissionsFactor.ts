@@ -14,7 +14,7 @@ export interface EmissionsFactorAttributes {
   url?: string;
   gas?: string;
   units?: string;
-  inventoryId?: string;
+  inventoryId?: string | null;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -43,7 +43,7 @@ export class EmissionsFactor
   url?: string;
   gas?: string;
   units?: string;
-  inventoryId?: string;
+  inventoryId?: string | null;
   created?: Date;
   lastUpdated?: Date;
 

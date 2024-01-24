@@ -83,7 +83,6 @@ const defaultValues: Inputs = {
   subcategoryData: {},
 };
 
-// TODO create custom type that includes relations instead of using SubSectorValueAttributes?
 function extractFormValues(inventoryValues: InventoryValueResponse[]): Inputs {
   logger.debug("Form input", inventoryValues);
   const inputs: Inputs = Object.assign({}, defaultValues);
@@ -130,6 +129,42 @@ function extractFormValues(inventoryValues: InventoryValueResponse[]): Inputs {
   return inputs;
 }
 
+const isScopeCompleted = (
+  scopeId: string,
+  scopeData: Inputs["subcategoryData"],
+) => {
+  const data = scopeData[scopeId];
+  if (data?.isUnavailable) {
+    return !!data.unavailableExplanation && !!data.unavailableReason;
+  } else if (data?.methodology === "activity-data") {
+    const activity = data.activity;
+    if (!activity) return false;
+    return (
+      activity.activityDataAmount != null &&
+      activity.activityDataUnit != null &&
+      activity.emissionFactorType !== "" &&
+      !(
+        activity.emissionFactorType === "Add custom" &&
+        +activity.co2EmissionFactor === 0 &&
+        +activity.n2oEmissionFactor === 0 &&
+        +activity.ch4EmissionFactor === 0
+      ) &&
+      activity.dataQuality !== "" &&
+      activity.sourceReference !== ""
+    );
+  } else if (data?.methodology === "direct-measure") {
+    if (!data.direct) return false;
+    return (
+      (data.direct.co2Emissions > 0 ||
+        data.direct.ch4Emissions > 0 ||
+        data.direct.n2oEmissions > 0) &&
+      data.direct.dataQuality !== "" &&
+      data.direct.sourceReference !== ""
+    );
+  }
+  return false;
+};
+
 export function SubsectorDrawer({
   subsector,
   sectorName,
@@ -175,38 +210,6 @@ export function SubsectorDrawer({
   } = useForm<Inputs>();
 
   const scopeData = watch("subcategoryData");
-  const isScopeCompleted = (scopeId: string) => {
-    const data = scopeData[scopeId];
-    if (data?.isUnavailable) {
-      return !!data.unavailableExplanation && !!data.unavailableReason;
-    } else if (data?.methodology === "activity-data") {
-      const activity = data.activity;
-      if (!activity) return false;
-      return (
-        activity.activityDataAmount != null &&
-        activity.activityDataUnit != null &&
-        activity.emissionFactorType !== "" &&
-        !(
-          activity.emissionFactorType === "Add custom" &&
-          +activity.co2EmissionFactor === 0 &&
-          +activity.n2oEmissionFactor === 0 &&
-          +activity.ch4EmissionFactor === 0
-        ) &&
-        activity.dataQuality !== "" &&
-        activity.sourceReference !== ""
-      );
-    } else if (data?.methodology === "direct-measure") {
-      if (!data.direct) return false;
-      return (
-        (data.direct.co2Emissions > 0 ||
-          data.direct.ch4Emissions > 0 ||
-          data.direct.n2oEmissions > 0) &&
-        data.direct.dataQuality !== "" &&
-        data.direct.sourceReference !== ""
-      );
-    }
-    return false;
-  };
 
   const onTryClose = () => {
     if (isDirty) {
@@ -235,7 +238,7 @@ export function SubsectorDrawer({
             },
           });
         } else {
-          if (!isScopeCompleted(subCategoryId)) {
+          if (!isScopeCompleted(subCategoryId, scopeData)) {
             logger.error(`Data not completed for scope ${subCategoryId}!`);
             return Promise.resolve();
           }
@@ -408,7 +411,7 @@ export function SubsectorDrawer({
                                     {/* TODO: Get scope text body */}
                                   </Text>
                                 </Box>
-                                {isScopeCompleted(scope.value) ? (
+                                {isScopeCompleted(scope.value, scopeData) ? (
                                   <Tag variant="success" mx={6}>
                                     {t("completed")}
                                   </Tag>

@@ -72,3 +72,30 @@ export const ExcelFileIcon = (props: any) => (
     <path d="M39.504 26.1738H34.3301V28.4684H39.504V26.1738Z" fill="#104B2B" />
   </svg>
 );
+
+export const BuildingIcon = () => (
+  <svg
+    width="32"
+    height="32"
+    viewBox="0 0 32 32"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <mask
+      id="mask0_712_2784"
+      maskUnits="userSpaceOnUse"
+      x="0"
+      y="0"
+      width="32"
+      height="32"
+    >
+      <rect width="32" height="32" fill="#D9D9D9" />
+    </mask>
+    <g mask="url(#mask0_712_2784)">
+      <path
+        d="M22.6668 12H25.3335V9.33333H22.6668V12ZM22.6668 17.3333H25.3335V14.6667H22.6668V17.3333ZM22.6668 22.6667H25.3335V20H22.6668V22.6667ZM22.6668 28V25.3333H28.0002V6.66667H16.0002V8.53333L13.3335 6.6V4H30.6668V28H22.6668ZM1.3335 28V14.6667L10.6668 8L20.0002 14.6667V28H12.0002V21.3333H9.3335V28H1.3335ZM4.00016 25.3333H6.66683V18.6667H14.6668V25.3333H17.3335V16L10.6668 11.2667L4.00016 16V25.3333Z"
+        fill="#2351DC"
+      />
+    </g>
+  </svg>
+);

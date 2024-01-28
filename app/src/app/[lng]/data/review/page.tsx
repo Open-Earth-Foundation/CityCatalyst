@@ -7,10 +7,19 @@ import { BuildingIcon } from "@/components/icons";
 import Wrapper from "@/components/wrapper";
 import { useTranslation } from "@/i18n/client";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import { Box, Button, Card, Heading, IconButton, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Card,
+  Heading,
+  Icon,
+  IconButton,
+  Text,
+} from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { BsTrash2 } from "react-icons/bs";
 import { FaRegTrashAlt, FaTrash } from "react-icons/fa";
+import { FiTrash, FiTrash2 } from "react-icons/fi";
 import { MdOutlineEdit } from "react-icons/md";
 
 export default function ReviewPage({
@@ -22,9 +31,12 @@ export default function ReviewPage({
   const onBack = () => {
     router.push("/data/3");
   };
+  const onDiscard = () => {
+    router.push("/data");
+  };
   return (
     <Wrapper>
-      <Box display="flex" flexDirection="column" gap="48px">
+      <Box display="flex" flexDirection="column" gap="48px" pb="60px">
         <Box
           display="flex"
           flexDirection="column"
@@ -390,6 +402,39 @@ export default function ReviewPage({
               </Box>
             </Box>
           </Card>
+          <div className="bg-white w-full h-[128px] flex items-center fixed bottom-0 left-0 border-t-4 border-brand  drop-shadow-2xl hover:drop-shadow-4xl transition-all">
+            <Box className="w-[1090px] max-w-full mx-auto flex flex-row flex-wrap gap-y-2">
+              <Box className="grow w-full md:w-0">
+                <Text fontSize="sm">Review and add data</Text>
+                <Text fontSize="2xl" as="b">
+                  2023 Emissions Inventory
+                </Text>
+              </Box>
+              <Button
+                h={16}
+                variant="ghost"
+                onClick={onDiscard}
+                leftIcon={<Icon as={FiTrash2} boxSize={6} />}
+                size="sm"
+                px={8}
+                mr={4}
+                borderWidth="2px"
+                borderColor="sentiment.negativeDefault"
+                color="sentiment.negativeDefault"
+              >
+                discard all changes
+              </Button>
+              <Button
+                h={16}
+                // isLoading={isConfirming}
+                px={8}
+                // onClick={onConfirm}
+                size="sm"
+              >
+                confirm and add data
+              </Button>
+            </Box>
+          </div>
         </Box>
       </Box>
     </Wrapper>

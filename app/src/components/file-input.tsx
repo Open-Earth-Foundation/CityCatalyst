@@ -63,6 +63,7 @@ const FileInput: React.FC<FileUploadProps> = ({ onFileSelect }) => {
           justifyContent="center"
           flexDirection="column"
           alignItems="center"
+          gap=""
         >
           <Box
             color="base.light"
@@ -73,14 +74,27 @@ const FileInput: React.FC<FileUploadProps> = ({ onFileSelect }) => {
             display="flex"
             alignItems="center"
             justifyContent="center"
+            mb="12px"
           >
             <FiUpload size="20px" />
           </Box>
-          <Box>
-            <Heading size="title.md">
-              Drag and drop files here, or click to select files
-            </Heading>
+          <Box display="flex">
+            <Text
+              size="title.md"
+              fontFamily="heading"
+              color="content.link"
+              textDecoration="underline"
+              fontWeight="semibold"
+            >
+              Click to upload
+            </Text>{" "}
+            <Text size="title.md" fontWeight="semibold" fontFamily="heading">
+              &nbsp;or drag and drop file
+            </Text>
           </Box>
+          <Text fontSize="body.sm" mt="4px">
+            CSV or JSON (max 2MB)
+          </Text>
         </Box>
       </FormLabel>
     </VStack>

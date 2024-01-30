@@ -1,7 +1,11 @@
-import { DataSourceAttributes } from "@/models/DataSource";
-import { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
-import { GasValueAttributes } from "@/models/GasValue";
-import { InventoryValueAttributes } from "@/models/InventoryValue";
+import type { DataSourceAttributes } from "@/models/DataSource";
+import type {
+  EmissionsFactor,
+  EmissionsFactorAttributes,
+} from "@/models/EmissionsFactor";
+import type { GasValueAttributes } from "@/models/GasValue";
+import type { InventoryValueAttributes } from "@/models/InventoryValue";
+import type { EmissionsFactorWithDataSources } from "@/util/types";
 
 interface DataStep {
   title: string;
@@ -74,12 +78,14 @@ type SubcategoryData = {
   direct: DirectMeasureData;
 };
 
+type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
+
+type EmissionsFactorData = Optional<EmissionsFactorWithDataSources, "id">;
 type GasValueData = Omit<GasValueAttributes, "id"> & {
-  emissionsFactor?: Omit<EmissionsFactorAttributes, "id">;
+  emissionsFactor?: EmissionsFactorData;
 };
 
 type InventoryValueData = Omit<InventoryValueAttributes, "id"> & {
   dataSource?: Omit<DataSourceAttributes, "datasourceId">;
   gasValues?: GasValueData[];
 };
-

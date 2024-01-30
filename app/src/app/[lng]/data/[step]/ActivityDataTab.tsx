@@ -19,7 +19,8 @@ import {
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { resolve, groupBy } from "@/util/helpers";
-import { EmissionsFactorWithDataSources } from "@/util/types";
+import type { EmissionsFactorWithDataSources } from "@/util/types";
+import type { EmissionsFactorData } from "./types";
 
 const activityDataUnits: Record<string, string[]> = {
   I: [
@@ -46,6 +47,17 @@ const activityDataUnits: Record<string, string[]> = {
   "Add custom",
 ];*/
 
+export function determineEmissionsFactorType(factor: EmissionsFactorData) {
+  const sourceName = factor.dataSources[0].name || "Unknown data source";
+  if (sourceName.includes("IPCC") && sourceName.includes("US")) {
+    return "National (US)";
+  } else if (sourceName.includes("IPCC")) {
+    return "IPCC";
+  }
+
+  return sourceName;
+}
+
 export function ActivityDataTab({
   t,
   register,
@@ -71,16 +83,7 @@ export function ActivityDataTab({
     (factor) => factor.gpcReferenceNumber === gpcReferenceNumber,
   );
   // const selectedEmissionsFactors = scopeEmissionsFactors.filter((factor) => factor.dataSources[0].datasourceId === selectedEmissionFactorType.datasourceId);
-  const factorsByType = groupBy(scopeEmissionsFactors, (factor) => {
-    const sourceName = factor.dataSources[0].name || "Unknown data source";
-    if (sourceName.includes("IPCC") && sourceName.includes("US")) {
-      return "National (US)";
-    } else if (sourceName.includes("IPCC")) {
-      return "IPCC";
-    }
-
-    return sourceName;
-  });
+  const factorsByType = groupBy(scopeEmissionsFactors, determineEmissionsFactorType);
   const emissionsFactorTypes = Object.keys(factorsByType);
   const selectedEmissionsFactors =
     factorsByType[selectedEmissionFactorType] || [];

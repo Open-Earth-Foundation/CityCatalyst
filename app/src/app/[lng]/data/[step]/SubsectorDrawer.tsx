@@ -3,7 +3,10 @@ import "@/util/bigint";
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
 import { nameToI18NKey, resolvePromisesSequentially } from "@/util/helpers";
-import type { InventoryValueResponse } from "@/util/types";
+import type {
+  EmissionsFactorWithDataSources,
+  InventoryValueResponse,
+} from "@/util/types";
 import { ArrowBackIcon, CloseIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Accordion,
@@ -45,8 +48,10 @@ import type {
   InventoryValueData,
   SubSector,
   SubcategoryData,
+  EmissionsFactorData,
 } from "./types";
 import { Trans } from "react-i18next/TransWithoutContext";
+import { determineEmissionsFactorType } from "./ActivityDataTab";
 
 type Inputs = {
   methodology: "activity-data" | "direct-measure" | "";
@@ -105,6 +110,32 @@ function extractFormValues(inventoryValues: InventoryValueResponse[]): Inputs {
         // TODO emission factor ID, manual emissions factor values for each gas
         data.activity.dataQuality = value.dataSource?.dataQuality || "";
         data.activity.sourceReference = value.dataSource?.notes || "";
+
+        const emissionsFactorsByGas = (value.gasValues || []).reduce(
+          (acc, gasValue) => {
+            if (gasValue.gas != null && gasValue.emissionsFactor != null) {
+              acc[gasValue.gas] = gasValue.emissionsFactor;
+            }
+            return acc;
+          },
+          {} as Record<string, EmissionsFactorData>,
+        );
+        data.activity.co2EmissionFactor =
+          emissionsFactorsByGas.CO2?.emissionsPerActivity || 0;
+        data.activity.ch4EmissionFactor =
+          emissionsFactorsByGas.CH4?.emissionsPerActivity || 0;
+        data.activity.n2oEmissionFactor =
+          emissionsFactorsByGas.N2O?.emissionsPerActivity || 0;
+
+        // TODO validate if all of these have equal units and types
+        const emissionsFactors = Object.values(emissionsFactorsByGas);
+        const isCustom = emissionsFactors.every(
+          (factor) => factor.inventoryId != null,
+        );
+        data.activity.emissionFactorType = isCustom
+          ? "custom"
+          : determineEmissionsFactorType(emissionsFactors[0]);
+        data.activity.activityDataUnit = emissionsFactors[0].units;
       } else if (methodology === "direct-measure") {
         const gasToEmissions = (value.gasValues || []).reduce(
           (acc: Record<string, bigint>, value) => {

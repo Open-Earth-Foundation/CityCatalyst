@@ -39,8 +39,8 @@ export const ExcelFileIcon = (props: any) => (
       d="M42.2538 45.3335H10.623V3.15918H33.1102V12.6223H42.2538V45.3335Z"
       fill="#FCFCFC"
       stroke="#818181"
-      stroke-width="0.725921"
-      stroke-miterlimit="10"
+      strokeWidth="0.725921"
+      strokeMiterlimit="10"
     />
     <path
       d="M42.208 12.7758L33.0645 3.31917L33.5753 2.66699L42.7678 12.0953L42.208 12.7758Z"

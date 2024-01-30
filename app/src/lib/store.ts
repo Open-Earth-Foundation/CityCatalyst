@@ -6,7 +6,16 @@ import openclimateCityReducer from "@/features/city/openclimateCitySlice";
 import openclimateCityDataReducer from "@/features/city/openclimateCityDataSlice";
 import inventoryDataReducer from "@/features/city/inventoryDataSlice";
 
-import { persistStore, persistReducer } from "redux-persist";
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 const persistConfig = {
@@ -29,7 +38,11 @@ const persistedReducer = persistReducer(persistConfig, reducer);
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware()
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    })
       .concat(api.middleware)
       .concat(openclimateAPI.middleware),
 });

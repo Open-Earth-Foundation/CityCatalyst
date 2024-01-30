@@ -6,7 +6,7 @@ export interface UserFileAttributes {
   id: string;
   userId?: string;
   fileReference?: string;
-  data?: Buffer;
+  data?: Buffer | any;
   fileType?: string;
   sector?: string;
   status?: string;

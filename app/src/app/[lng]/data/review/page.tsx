@@ -6,6 +6,8 @@ import ThirdPartyDataCard from "@/components/Cards/third-party-data-card";
 import { BuildingIcon } from "@/components/icons";
 import Wrapper from "@/components/wrapper";
 import { useTranslation } from "@/i18n/client";
+import { RootState } from "@/lib/store";
+import { UserAttributes } from "@/models/User";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -21,6 +23,8 @@ import { BsTrash2 } from "react-icons/bs";
 import { FaRegTrashAlt, FaTrash } from "react-icons/fa";
 import { FiTrash, FiTrash2 } from "react-icons/fi";
 import { MdOutlineEdit } from "react-icons/md";
+import { useSelector, useDispatch } from "react-redux";
+import { clear, removeSectorData } from "@/features/city/inventoryDataSlice";
 
 export default function ReviewPage({
   params: { lng },
@@ -28,12 +32,34 @@ export default function ReviewPage({
   params: { lng: string };
 }) {
   const router = useRouter();
+  const dispatch = useDispatch();
+  const getAllSectorData = useSelector(
+    (state: RootState) => state.inventoryData.sectors,
+  );
   const onBack = () => {
     router.push("/data/3");
   };
   const onDiscard = () => {
-    router.push("/data");
+    dispatch(clear());
+    // router.push("/data");
   };
+
+  const stationaryEnergy = getAllSectorData.filter(
+    (sector) => sector.sectorName === "Stationary Energy",
+  );
+  const transportation = getAllSectorData.filter(
+    (sector) => sector.sectorName === "Transportation",
+  );
+  const waterAndWasteWater = getAllSectorData.filter(
+    (sector) => sector.sectorName === "Waste and wastewater",
+  );
+
+  const onDiscardSectorChanges = (sector: string) => {
+    dispatch(removeSectorData({ sectorName: sector }));
+  };
+
+  console.log(waterAndWasteWater, stationaryEnergy, transportation);
+
   return (
     <Wrapper>
       <Box display="flex" flexDirection="column" gap="48px" pb="60px">
@@ -111,6 +137,7 @@ export default function ReviewPage({
                   variant="ghost"
                   w="298px"
                   gap="8px"
+                  onClick={() => onDiscardSectorChanges("Stationary Energy")}
                 >
                   <FaRegTrashAlt size="24px" />
                   <Heading
@@ -129,6 +156,7 @@ export default function ReviewPage({
                   variant="ghost"
                   w="181px"
                   gap="8px"
+                  onClick={() => router.push("/data/1")}
                 >
                   <MdOutlineEdit size="24px" />
                   <Heading
@@ -153,17 +181,15 @@ export default function ReviewPage({
                 lineHeight="20px"
                 letterSpacing="wide"
               >
-                Third-party data connected (3)
+                Third-party data connected (0)
               </Text>
               <Box
                 display="grid"
                 gridTemplateColumns="auto auto auto"
                 gap="8px"
               >
-                <ThirdPartyDataCard />
-                <ThirdPartyDataCard />
-                <ThirdPartyDataCard />
-                <ThirdPartyDataCard />
+                {/* TODO: show connected third party data */}
+                {/* <ThirdPartyDataCard /> */}
               </Box>
             </Box>
             <Box display="flex" flexDirection="column" gap="24px">
@@ -175,41 +201,40 @@ export default function ReviewPage({
                 lineHeight="20px"
                 letterSpacing="wide"
               >
-                Data by subsector uploaded (2)
+                Data by subsector uploaded (0)
               </Text>
               <Box
                 display="grid"
                 gridTemplateColumns="auto auto auto"
                 gap="8px"
               >
-                <ThirdPartyDataCard />
-                <ThirdPartyDataCard />
-                <ThirdPartyDataCard />
-                <ThirdPartyDataCard />
+                {/* TODO: show sector data*/}
+                {/* <ThirdPartyDataCard /> */}
               </Box>
             </Box>
-            <Box display="flex" flexDirection="column" gap="24px">
-              <Text
-                fontSize="label.lg"
-                fontWeight="bold"
-                fontStyle="normal"
-                fontFamily="heading"
-                lineHeight="20px"
-                letterSpacing="wide"
-              >
-                Data files uploaded (3)
-              </Text>
-              <Box
-                display="grid"
-                gridTemplateColumns="auto auto auto"
-                gap="8px"
-              >
-                <FileDataCard />
-                <FileDataCard />
-                <FileDataCard />
-                <FileDataCard />
+            {stationaryEnergy[0]?.files.length && (
+              <Box display="flex" flexDirection="column" gap="24px">
+                <Text
+                  fontSize="label.lg"
+                  fontWeight="bold"
+                  fontStyle="normal"
+                  fontFamily="heading"
+                  lineHeight="20px"
+                  letterSpacing="wide"
+                >
+                  Data files uploaded ({stationaryEnergy[0].files.length})
+                </Text>
+                <Box
+                  display="grid"
+                  gridTemplateColumns="auto auto auto"
+                  gap="8px"
+                >
+                  {stationaryEnergy[0]?.files.map((file: any, i: number) => (
+                    <FileDataCard key={i} />
+                  ))}
+                </Box>
               </Box>
-            </Box>
+            )}
           </Card>
           <Card shadow="none" gap="24px" p="24px">
             <Box display="flex" justifyContent="space-between">
@@ -268,6 +293,7 @@ export default function ReviewPage({
                   variant="ghost"
                   w="181px"
                   gap="8px"
+                  onClick={() => router.push("/data/2")}
                 >
                   <MdOutlineEdit size="24px" />
                   <Heading
@@ -292,22 +318,40 @@ export default function ReviewPage({
                 lineHeight="20px"
                 letterSpacing="wide"
               >
-                Data by subsector (1)
+                Data by subsector (0)
               </Text>
               <Box
                 display="grid"
                 gridTemplateColumns="auto auto auto"
                 gap="8px"
               >
-                <SubSectorCard isCompleted scopes="1,2" title="on-road" />
-                <SubSectorCard isCompleted scopes="1,2" title="Railways" />
-                <SubSectorCard isCompleted scopes="1,2" title="off-road" />
-                <SubSectorCard
-                  isCompleted
-                  scopes="1,2"
-                  title="Waterbone navigation"
-                />
+                {/* TODO: show sector data*/}
+
+                {/* <SubSectorCard isCompleted scopes="1,2" title="on-road" /> */}
               </Box>
+              {transportation[0]?.files.length && (
+                <Box display="flex" flexDirection="column" gap="24px">
+                  <Text
+                    fontSize="label.lg"
+                    fontWeight="bold"
+                    fontStyle="normal"
+                    fontFamily="heading"
+                    lineHeight="20px"
+                    letterSpacing="wide"
+                  >
+                    Data files uploaded ({transportation[0].files.length})
+                  </Text>
+                  <Box
+                    display="grid"
+                    gridTemplateColumns="auto auto auto"
+                    gap="8px"
+                  >
+                    {transportation[0]?.files.map((file: any, i: number) => (
+                      <FileDataCard key={i} />
+                    ))}
+                  </Box>
+                </Box>
+              )}
             </Box>
           </Card>
           <Card shadow="none" gap="24px" p="24px">
@@ -349,6 +393,7 @@ export default function ReviewPage({
                   variant="ghost"
                   w="298px"
                   gap="8px"
+                  onClick={() => router.push("/data/3")}
                 >
                   <FaRegTrashAlt size="24px" />
                   <Heading
@@ -391,15 +436,58 @@ export default function ReviewPage({
                 lineHeight="20px"
                 letterSpacing="wide"
               >
-                Third party data connected (1)
+                Third party data connected (0)
               </Text>
               <Box
                 display="grid"
                 gridTemplateColumns="auto auto auto"
                 gap="8px"
               >
-                <ThirdPartyDataCard />
+                {/* TODO: show connected third party data */}
+                {/* <ThirdPartyDataCard /> */}
               </Box>
+              <Text
+                fontSize="label.lg"
+                fontWeight="bold"
+                fontStyle="normal"
+                fontFamily="heading"
+                lineHeight="20px"
+                letterSpacing="wide"
+              >
+                Data by subsector (0)
+              </Text>
+              <Box
+                display="grid"
+                gridTemplateColumns="auto auto auto"
+                gap="8px"
+              >
+                {/* TODO: show sector data*/}
+
+                {/* <SubSectorCard isCompleted scopes="1,2" title="on-road" /> */}
+              </Box>
+              {waterAndWasteWater[0]?.files.length && (
+                <Box display="flex" flexDirection="column" gap="24px">
+                  <Text
+                    fontSize="label.lg"
+                    fontWeight="bold"
+                    fontStyle="normal"
+                    fontFamily="heading"
+                    lineHeight="20px"
+                    letterSpacing="wide"
+                  >
+                    Data files uploaded ({waterAndWasteWater[0].files.length})
+                  </Text>
+                  <Box
+                    display="grid"
+                    gridTemplateColumns="auto auto auto"
+                    gap="8px"
+                  >
+                    {waterAndWasteWater[0]?.files.map(
+                      (file: any, i: number) => <FileDataCard key={i} />,
+                    )}
+                  </Box>
+                </Box>
+              )}
             </Box>
           </Card>
           <div className="bg-white w-full h-[128px] flex items-center fixed bottom-0 left-0 border-t-4 border-brand  drop-shadow-2xl hover:drop-shadow-4xl transition-all">

@@ -65,6 +65,11 @@ import { nameToI18NKey } from "@/util/helpers";
 import { logger } from "@/services/logger";
 import FileInput from "@/components/file-input";
 import { FaFileExcel } from "react-icons/fa";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/lib/store";
+import { append, clear } from "@/features/city/inventoryDataSlice";
+import { randomUUID } from "crypto";
+import { UserFileAttributes } from "@/models/UserFile";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -430,10 +435,36 @@ export default function AddDataSteps({
 
   const [isDataSectionExpanded, setDataSectionExpanded] = useState(false);
   const [addUserFile] = api.useAddUserFileMutation();
-  const [files, setFiles] = useState<any>([]);
 
+  const getInventoryData = useSelector(
+    (state: RootState) => state.inventoryData,
+  );
+  const dispatch = useDispatch();
+  function fileToBase64(file: File) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  }
   const handleFileSelect = async (file: File) => {
-    console.log(file);
+    const base64 = await fileToBase64(file);
+    const filename = file.name;
+    dispatch(
+      append({
+        sectorName: currentStep.title!,
+        fileData: {
+          id: "b3d34cd7-35d8-4240-b814-4784d8eeef53",
+          userId: "953ae93c-0411-4e97-b9fe-fe23fe8e726d",
+          data: base64,
+          fileType: file.name.slice(
+            ((filename.lastIndexOf(".") - 1) >>> 0) + 2,
+          ),
+        },
+      }),
+    );
 
     const formData = new FormData();
     formData.append("data", file!);
@@ -447,9 +478,15 @@ export default function AddDataSteps({
 
     await addUserFile(formData).then((res: any) => {
       console.log(res);
-      setFiles([file, ...files]);
     });
   };
+
+  console.log(currentStep.title);
+  const sectorData = getInventoryData.sectors.filter(
+    (sector) => sector.sectorName === currentStep.title,
+  );
+
+  console.log(sectorData);
   function bytesToMB(bytes: number): string {
     return (bytes / 1048576).toFixed(2) + " MB";
   }
@@ -772,8 +809,8 @@ export default function AddDataSteps({
                 <Heading size="sm">Files uploaded</Heading>
               </Box>
               <Box display="flex" flexDirection="column" gap="8px">
-                {files &&
-                  files.map((file: File) => (
+                {sectorData &&
+                  sectorData[0]?.files.map((file: UserFileAttributes) => (
                     <Card
                       shadow="none"
                       h="80px"
@@ -783,7 +820,7 @@ export default function AddDataSteps({
                       borderRadius="8px"
                       px="16px"
                       py="16px"
-                      key={file.name}
+                      key={file.id}
                     >
                       <Box display="flex" gap="16px">
                         <Box>
@@ -801,14 +838,14 @@ export default function AddDataSteps({
                             letterSpacing="wide"
                             isTruncated
                           >
-                            {file.name}
+                            {file.id}
                           </Heading>
                           <Text
                             fontSize="body.md"
                             fontWeight="normal"
                             color="interactive.control"
                           >
-                            {bytesToMB(file.size)}
+                            {bytesToMB(5000)}
                           </Text>
                         </Box>
                         <Box

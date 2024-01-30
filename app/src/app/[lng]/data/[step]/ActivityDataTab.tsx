@@ -21,6 +21,7 @@ import { Trans } from "react-i18next/TransWithoutContext";
 import { resolve, groupBy } from "@/util/helpers";
 import type { EmissionsFactorWithDataSources } from "@/util/types";
 import type { EmissionsFactorData } from "./types";
+import { useEffect } from "react";
 
 const activityDataUnits: Record<string, string[]> = {
   I: [
@@ -48,7 +49,9 @@ const activityDataUnits: Record<string, string[]> = {
 ];*/
 
 export function determineEmissionsFactorType(factor: EmissionsFactorData) {
-  const sourceName = factor.dataSources[0].name || "Unknown data source";
+  let sourceName = factor.dataSources
+    ? factor.dataSources[0].name || "Unknown data source"
+    : "Unknown data source";
   if (sourceName.includes("IPCC") && sourceName.includes("US")) {
     return "National (US)";
   } else if (sourceName.includes("IPCC")) {
@@ -64,6 +67,7 @@ export function ActivityDataTab({
   errors,
   prefix,
   watch,
+  setValue,
   gpcReferenceNumber,
   emissionsFactors,
 }: {
@@ -72,6 +76,7 @@ export function ActivityDataTab({
   errors: Record<string, any>;
   prefix: string;
   watch: Function;
+  setValue: Function;
   gpcReferenceNumber: string;
   emissionsFactors: EmissionsFactorWithDataSources[];
 }) {
@@ -83,7 +88,10 @@ export function ActivityDataTab({
     (factor) => factor.gpcReferenceNumber === gpcReferenceNumber,
   );
   // const selectedEmissionsFactors = scopeEmissionsFactors.filter((factor) => factor.dataSources[0].datasourceId === selectedEmissionFactorType.datasourceId);
-  const factorsByType = groupBy(scopeEmissionsFactors, determineEmissionsFactorType);
+  const factorsByType = groupBy(
+    scopeEmissionsFactors,
+    determineEmissionsFactorType,
+  );
   const emissionsFactorTypes = Object.keys(factorsByType);
   const selectedEmissionsFactors =
     factorsByType[selectedEmissionFactorType] || [];
@@ -99,6 +107,46 @@ export function ActivityDataTab({
     selectedEmissionFactorType === "custom"
       ? customUnits
       : Object.keys(factorsByUnit);
+
+  useEffect(() => {
+    if (selectedEmissionFactorType === "custom") {
+      return;
+    }
+
+    // TODO overwrite selectedUnit with first unit in list when it's null
+
+    const selectedFactorsByGas =
+      factorsByUnit[selectedUnit]?.reduce(
+        (acc, factor) => {
+          if (factor.gas) {
+            acc[factor.gas] = factor;
+          }
+          return acc;
+        },
+        {} as Record<string, EmissionsFactorWithDataSources>,
+      ) || {};
+    console.log("SFBG", selectedFactorsByGas, factorsByUnit, selectedUnit);
+    console.log(
+      "EFs",
+      selectedFactorsByGas.CO2?.emissionsPerActivity,
+      selectedFactorsByGas.CH4?.emissionsPerActivity,
+      selectedFactorsByGas.N2O?.emissionsPerActivity,
+    );
+    console.log("key", prefix + "co2EmissionFactor");
+    setValue(
+      prefix + "co2EmissionFactor",
+      selectedFactorsByGas.CO2?.emissionsPerActivity || 0,
+    );
+    setValue(
+      prefix + "ch4EmissionFactor",
+      selectedFactorsByGas.CH4?.emissionsPerActivity || 0,
+    );
+    setValue(
+      prefix + "n2oEmissionFactor",
+      selectedFactorsByGas.N2O?.emissionsPerActivity || 0,
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedUnit, selectedEmissionFactorType, setValue]);
 
   return (
     <>
@@ -187,7 +235,7 @@ export function ActivityDataTab({
             <NumberInput
               defaultValue={0}
               min={0}
-              isDisabled={selectedEmissionFactorType !== "custom"}
+              // isDisabled={selectedEmissionFactorType !== "custom"}
             >
               <NumberInputField
                 borderRightRadius={0}
@@ -212,7 +260,7 @@ export function ActivityDataTab({
             <NumberInput
               defaultValue={0}
               min={0}
-              isDisabled={selectedEmissionFactorType !== "custom"}
+              // isDisabled={selectedEmissionFactorType !== "custom"}
             >
               <NumberInputField
                 borderRightRadius={0}
@@ -239,7 +287,7 @@ export function ActivityDataTab({
             <NumberInput
               defaultValue={0}
               min={0}
-              isDisabled={selectedEmissionFactorType !== "custom"}
+              // isDisabled={selectedEmissionFactorType !== "custom"}
             >
               <NumberInputField
                 borderRightRadius={0}

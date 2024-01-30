@@ -226,7 +226,6 @@ export function SubsectorDrawer({
   );
   const { data: emissionsFactors, isLoading: areEmissionsFactorsLoading } =
     api.useGetEmissionsFactorsQuery();
-  useEffect(() => console.log("EF", emissionsFactors), [emissionsFactors]);
   const [setInventoryValue] = api.useSetInventoryValueMutation();
 
   let noPreviousValue =
@@ -239,6 +238,7 @@ export function SubsectorDrawer({
     watch,
     reset,
     control,
+    setValue,
   } = useForm<Inputs>();
 
   const scopeData = watch("subcategoryData");
@@ -292,6 +292,20 @@ export function SubsectorDrawer({
               dataQuality: value.activity.dataQuality,
               notes: value.activity.sourceReference,
             };
+
+            // save emissions factors
+            inventoryValue.gasValues = [
+              {
+                gas: "CO2",
+                gasAmount: undefined,
+                emissionsFactor: {
+                  emissionsPerActivity: value.activity.co2EmissionFactor,
+                  gas: "CO2",
+                  units: value.activity.activityDataUnit,
+                  inventoryId: inventoryId,
+                },
+              },
+            ];
           } else if (value.methodology === "direct-measure") {
             inventoryValue.gasValues = [
               {
@@ -470,6 +484,7 @@ export function SubsectorDrawer({
                               control={control}
                               prefix={`subcategoryData.${scope.value}.`}
                               watch={watch}
+                              setValue={setValue}
                               gpcReferenceNumber={scope.gpcReferenceNumber!}
                               emissionsFactors={emissionsFactors!}
                             />

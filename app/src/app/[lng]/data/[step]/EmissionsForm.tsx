@@ -28,6 +28,7 @@ export function EmissionsForm({
   control,
   prefix = "",
   watch,
+  setValue,
   gpcReferenceNumber,
   emissionsFactors,
 }: {
@@ -37,6 +38,7 @@ export function EmissionsForm({
   control: Control<any, any>;
   prefix?: string;
   watch: Function;
+  setValue: Function;
   gpcReferenceNumber: string;
   emissionsFactors: EmissionsFactorWithDataSources[];
 }) {
@@ -138,6 +140,7 @@ export function EmissionsForm({
               errors={errors}
               prefix={prefix + "activity."}
               watch={watch}
+              setValue={setValue}
               gpcReferenceNumber={gpcReferenceNumber}
               emissionsFactors={emissionsFactors}
             />

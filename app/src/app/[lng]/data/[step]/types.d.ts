@@ -80,7 +80,7 @@ type SubcategoryData = {
 
 type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 
-type EmissionsFactorData = Optional<EmissionsFactorWithDataSources, "id">;
+type EmissionsFactorData = Optional<EmissionsFactorWithDataSources, "id" | "dataSources">;
 type GasValueData = Omit<GasValueAttributes, "id"> & {
   emissionsFactor?: EmissionsFactorData;
 };

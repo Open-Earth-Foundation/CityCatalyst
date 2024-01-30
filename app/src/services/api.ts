@@ -307,11 +307,9 @@ export const api = createApi({
     }),
     addUserFile: builder.mutation<UserFileAttributes, any>({
       query: (formData) => {
-        const userId = formData.get("userId");
-
         return {
           method: "POST",
-          url: `/user/${userId}/file`,
+          url: `/user/file`,
           body: formData,
         };
       },

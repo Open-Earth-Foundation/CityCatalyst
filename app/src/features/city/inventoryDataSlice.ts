@@ -1,11 +1,12 @@
 import { RootState } from "@/lib/store";
-
 import { UserFileAttributes } from "@/models/UserFile";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
+type InventoryUserFileAttributes = Omit<UserFileAttributes, "id">;
+
 interface SectorFileData {
   sectorName: string;
-  files: UserFileAttributes[];
+  files: InventoryUserFileAttributes[];
 }
 
 interface inventoryDataState {
@@ -25,7 +26,7 @@ export const inventoryDataSlice = createSlice({
       state,
       action: PayloadAction<{
         sectorName: string;
-        fileData: UserFileAttributes;
+        fileData: InventoryUserFileAttributes;
       }>,
     ) => {
       const { sectorName, fileData } = action.payload;

@@ -434,7 +434,6 @@ export default function AddDataSteps({
   };
 
   const [isDataSectionExpanded, setDataSectionExpanded] = useState(false);
-  const [addUserFile] = api.useAddUserFileMutation();
 
   const getInventoryData = useSelector(
     (state: RootState) => state.inventoryData,
@@ -449,6 +448,7 @@ export default function AddDataSteps({
       reader.onerror = (error) => reject(error);
     });
   }
+  // Add file data to rudux state object
   const handleFileSelect = async (file: File) => {
     const base64 = await fileToBase64(file);
     const filename = file.name;
@@ -456,8 +456,9 @@ export default function AddDataSteps({
       append({
         sectorName: currentStep.title!,
         fileData: {
-          id: "b3d34cd7-35d8-4240-b814-4784d8eeef53",
-          userId: "953ae93c-0411-4e97-b9fe-fe23fe8e726d",
+          userId: userInfo?.userId,
+          sector: currentStep.title,
+          status: "pending",
           data: base64,
           fileType: file.name.slice(
             ((filename.lastIndexOf(".") - 1) >>> 0) + 2,
@@ -465,20 +466,6 @@ export default function AddDataSteps({
         },
       }),
     );
-
-    const formData = new FormData();
-    formData.append("data", file!);
-
-    formData.append("userId", userInfo?.userId!); //
-    formData.append("sector", currentStep.title);
-    formData.append("url", "http://acme.com");
-    formData.append("gpcRefNo", "");
-    formData.append("fileReference", "Stationary Energy");
-    formData.append("status", "in progress");
-
-    await addUserFile(formData).then((res: any) => {
-      console.log(res);
-    });
   };
 
   console.log(currentStep.title);
@@ -810,7 +797,7 @@ export default function AddDataSteps({
               </Box>
               <Box display="flex" flexDirection="column" gap="8px">
                 {sectorData &&
-                  sectorData[0]?.files.map((file: UserFileAttributes) => (
+                  sectorData[0]?.files.map((file: any, i: number) => (
                     <Card
                       shadow="none"
                       h="80px"
@@ -820,7 +807,7 @@ export default function AddDataSteps({
                       borderRadius="8px"
                       px="16px"
                       py="16px"
-                      key={file.id}
+                      key={i}
                     >
                       <Box display="flex" gap="16px">
                         <Box>

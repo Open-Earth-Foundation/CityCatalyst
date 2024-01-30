@@ -1,13 +1,12 @@
 "use client";
 
-import SubSectorCard from "@/components/Cards/SubSectorCard";
 import FileDataCard from "@/components/Cards/file-data-card";
-import ThirdPartyDataCard from "@/components/Cards/third-party-data-card";
+
 import { BuildingIcon } from "@/components/icons";
 import Wrapper from "@/components/wrapper";
 import { useTranslation } from "@/i18n/client";
 import { RootState } from "@/lib/store";
-import { UserAttributes } from "@/models/User";
+
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -19,12 +18,14 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { BsTrash2 } from "react-icons/bs";
+
 import { FaRegTrashAlt, FaTrash } from "react-icons/fa";
 import { FiTrash, FiTrash2 } from "react-icons/fi";
 import { MdOutlineEdit } from "react-icons/md";
 import { useSelector, useDispatch } from "react-redux";
 import { clear, removeSectorData } from "@/features/city/inventoryDataSlice";
+import { api } from "@/services/api";
+import { appendFileToFormData } from "@/util/helpers";
 
 export default function ReviewPage({
   params: { lng },
@@ -58,7 +59,32 @@ export default function ReviewPage({
     dispatch(removeSectorData({ sectorName: sector }));
   };
 
-  console.log(waterAndWasteWater, stationaryEnergy, transportation);
+  const [addUserFile] = api.useAddUserFileMutation();
+
+  const onConfirm = async () => {
+    for (const sector of getAllSectorData) {
+      const formData = new FormData();
+      for (const fileData of sector.files) {
+        const file = appendFileToFormData(
+          fileData.data,
+          `file_XXX.${fileData.fileType}`,
+        );
+
+        formData.append("userId", fileData.userId!);
+        formData.append("sector", fileData.sector!);
+        formData.append("status", fileData.status!);
+        formData.append("fileReference", fileData.fileReference!);
+        formData.append("url", "http://localhost");
+        formData.append("gpcRefNo", fileData.status!);
+        formData.append("data", file, file.name);
+      }
+
+      await addUserFile(formData).then(() => {
+        // TODO
+        // Trigger notification to user
+      });
+    }
+  };
 
   return (
     <Wrapper>
@@ -516,7 +542,7 @@ export default function ReviewPage({
                 h={16}
                 // isLoading={isConfirming}
                 px={8}
-                // onClick={onConfirm}
+                onClick={onConfirm}
                 size="sm"
               >
                 confirm and add data

@@ -38,13 +38,13 @@ const activityDataUnits: Record<string, string[]> = {
   II: ["l", "m3", "ft3", "bbl", "gal (US)", "gal (UK)", "km", "mi", "Other"],
   III: ["g", "kg", "t", "kt", "lt", "st", "lb", "Other"],
 };
-const emissionFactorTypes = [
+/*const emissionFactorTypes = [
   "Local",
   "Regional",
   "National",
   "IPCC",
   "Add custom",
-];
+];*/
 
 export function ActivityDataTab({
   t,
@@ -64,7 +64,8 @@ export function ActivityDataTab({
   emissionsFactors: EmissionsFactorWithDataSources[];
 }) {
   const selectedUnit = watch(prefix + "activityDataUnit");
-  const selectedEmissionFactorType = watch(prefix + "emissionFactorType") || "custom";
+  const selectedEmissionFactorType =
+    watch(prefix + "emissionFactorType") || "custom";
   // TODO cache with useEffect and useState?
   const scopeEmissionsFactors = emissionsFactors.filter(
     (factor) => factor.gpcReferenceNumber === gpcReferenceNumber,
@@ -81,14 +82,20 @@ export function ActivityDataTab({
     return sourceName;
   });
   const emissionsFactorTypes = Object.keys(factorsByType);
-  const selectedEmissionsFactors = factorsByType[
-    selectedEmissionFactorType
-  ] || [{ units: "kg/?" }];
+  const selectedEmissionsFactors =
+    factorsByType[selectedEmissionFactorType] || [];
   const factorsByUnit = groupBy(
     selectedEmissionsFactors,
     (factor) => factor.units || "Unknown unit",
   );
-  const scopeUnits = Object.keys(factorsByUnit);
+  const sectorReference = gpcReferenceNumber.split(".")[0];
+  const customUnits = activityDataUnits[sectorReference].map(
+    (unit) => "kg/" + unit,
+  );
+  const scopeUnits =
+    selectedEmissionFactorType === "custom"
+      ? customUnits
+      : Object.keys(factorsByUnit);
 
   return (
     <>

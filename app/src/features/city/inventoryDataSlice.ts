@@ -2,7 +2,10 @@ import { RootState } from "@/lib/store";
 import { UserFileAttributes } from "@/models/UserFile";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-type InventoryUserFileAttributes = Omit<UserFileAttributes, "id">;
+export type InventoryUserFileAttributes = Omit<UserFileAttributes, "id"> & {
+  // unique identifier to be used to access the files
+  uniqueFileId: string;
+};
 
 interface SectorFileData {
   sectorName: string;
@@ -52,13 +55,29 @@ export const inventoryDataSlice = createSlice({
         (sector) => sector.sectorName !== sectorNameToRemove,
       );
     },
+    removeFile: (
+      state,
+      action: PayloadAction<{ sectorName: string; uniqueFileId: string }>,
+    ) => {
+      const { sectorName, uniqueFileId } = action.payload;
+      console.log(sectorName, uniqueFileId);
+      const sectorIndex = state.sectors.findIndex(
+        (sector) => sector.sectorName === sectorName,
+      );
+      if (sectorIndex >= 0) {
+        state.sectors[sectorIndex].files = state.sectors[
+          sectorIndex
+        ].files.filter((file) => file.uniqueFileId !== uniqueFileId);
+      }
+    },
     clear: (state) => {
       state.sectors = [];
     },
   },
 });
 
-export const { clear, append, removeSectorData } = inventoryDataSlice.actions;
+export const { clear, append, removeSectorData, removeFile } =
+  inventoryDataSlice.actions;
 
 export const selectInventoryData = (state: RootState) => state.inventoryData;
 

@@ -73,15 +73,17 @@ export default function ReviewPage({
         formData.append("userId", fileData.userId!);
         formData.append("sector", fileData.sector!);
         formData.append("status", fileData.status!);
-        formData.append("fileReference", fileData.fileReference!);
-        formData.append("url", "http://localhost");
-        formData.append("gpcRefNo", fileData.status!);
+        formData.append("fileReference", "");
+        formData.append("url", fileData.url!);
+        formData.append("gpcRefNo", "");
         formData.append("data", file, file.name);
       }
 
       await addUserFile(formData).then(() => {
         // TODO
         // Trigger notification to user
+        dispatch(clear());
+        router.push("/");
       });
     }
   };
@@ -301,6 +303,7 @@ export default function ReviewPage({
                   variant="ghost"
                   w="298px"
                   gap="8px"
+                  onClick={() => onDiscardSectorChanges("Transportation")}
                 >
                   <FaRegTrashAlt size="24px" />
                   <Heading
@@ -419,7 +422,7 @@ export default function ReviewPage({
                   variant="ghost"
                   w="298px"
                   gap="8px"
-                  onClick={() => router.push("/data/3")}
+                  onClick={() => onDiscardSectorChanges("Waste and wastewater")}
                 >
                   <FaRegTrashAlt size="24px" />
                   <Heading
@@ -438,6 +441,7 @@ export default function ReviewPage({
                   variant="ghost"
                   w="181px"
                   gap="8px"
+                  onClick={() => router.push("/data/3")}
                 >
                   <MdOutlineEdit size="24px" />
                   <Heading

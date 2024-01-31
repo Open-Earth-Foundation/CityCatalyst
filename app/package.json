@@ -47,6 +47,7 @@
     "@types/react-dom": "18.2.13",
     "@types/react-leaflet": "^3.0.0",
     "@types/redux-persist": "^4.3.1",
+    "@types/uuid": "^9.0.8",
     "@types/wellknown": "^0.5.8",
     "accept-language": "^3.0.18",
     "autoprefixer": "10.4.16",

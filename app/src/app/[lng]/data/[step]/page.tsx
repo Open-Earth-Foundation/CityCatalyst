@@ -64,12 +64,16 @@ import type { DataStep, SubSector } from "./types";
 import { nameToI18NKey } from "@/util/helpers";
 import { logger } from "@/services/logger";
 import FileInput from "@/components/file-input";
-import { FaFileExcel } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/lib/store";
-import { append, clear } from "@/features/city/inventoryDataSlice";
-import { randomUUID } from "crypto";
-import { UserFileAttributes } from "@/models/UserFile";
+import {
+  InventoryUserFileAttributes,
+  append,
+  clear,
+  removeFile,
+} from "@/features/city/inventoryDataSlice";
+
+import { v4 as uuidv4 } from "uuid";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -435,6 +439,9 @@ export default function AddDataSteps({
 
   const [isDataSectionExpanded, setDataSectionExpanded] = useState(false);
 
+  const STATUS = "pending";
+  const URL = "http://localhost";
+
   const getInventoryData = useSelector(
     (state: RootState) => state.inventoryData,
   );
@@ -450,16 +457,17 @@ export default function AddDataSteps({
   }
   // Add file data to rudux state object
   const handleFileSelect = async (file: File) => {
-    const base64 = await fileToBase64(file);
+    const base64FileString = await fileToBase64(file);
     const filename = file.name;
     dispatch(
       append({
         sectorName: currentStep.title!,
         fileData: {
+          uniqueFileId: uuidv4(),
           userId: userInfo?.userId,
           sector: currentStep.title,
-          status: "pending",
-          data: base64,
+          data: base64FileString,
+          url: URL,
           fileType: file.name.slice(
             ((filename.lastIndexOf(".") - 1) >>> 0) + 2,
           ),
@@ -476,6 +484,16 @@ export default function AddDataSteps({
   console.log(sectorData);
   function bytesToMB(bytes: number): string {
     return (bytes / 1048576).toFixed(2) + " MB";
+  }
+
+  function removeSectorFile(uniqueFileId: string, sectorName: string) {
+    console.log(uniqueFileId, sectorName);
+    dispatch(
+      removeFile({
+        sectorName,
+        uniqueFileId,
+      }),
+    );
   }
 
   return (
@@ -825,7 +843,7 @@ export default function AddDataSteps({
                             letterSpacing="wide"
                             isTruncated
                           >
-                            {file.id}
+                            {file.uniqueFileId}
                           </Heading>
                           <Text
                             fontSize="body.md"
@@ -842,7 +860,18 @@ export default function AddDataSteps({
                           alignItems="center"
                           w="full"
                         >
-                          <FiTrash2 size={24} />
+                          <Button
+                            variant="ghost"
+                            color="sentiment.negativeDefault"
+                            onClick={() =>
+                              removeSectorFile(
+                                file.uniqueFileId,
+                                sectorData[0].sectorName,
+                              )
+                            }
+                          >
+                            <FiTrash2 size={24} />
+                          </Button>
                         </Box>
                       </Box>
                     </Card>

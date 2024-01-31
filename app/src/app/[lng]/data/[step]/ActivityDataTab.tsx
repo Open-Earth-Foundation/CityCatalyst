@@ -80,8 +80,6 @@ export function ActivityDataTab({
   gpcReferenceNumber: string;
   emissionsFactors: EmissionsFactorWithDataSources[];
 }) {
-  const selectedUnit = watch(prefix + "activityDataUnit");
-  const selectedUnitShort = selectedUnit.split(" ")[0];
   const selectedEmissionFactorType =
     watch(prefix + "emissionFactorType") || "custom";
   // TODO cache with useEffect and useState?
@@ -108,6 +106,9 @@ export function ActivityDataTab({
     selectedEmissionFactorType === "custom"
       ? customUnits
       : Object.keys(factorsByUnit);
+
+  const selectedUnit = watch(prefix + "activityDataUnit") ?? scopeUnits[0];
+  const selectedUnitShort = selectedUnit.split(" ")[0];
 
   useEffect(() => {
     if (selectedEmissionFactorType === "custom") {

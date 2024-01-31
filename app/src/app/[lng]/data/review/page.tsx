@@ -32,6 +32,7 @@ export default function ReviewPage({
 }: {
   params: { lng: string };
 }) {
+  const { t } = useTranslation(lng, "data");
   const router = useRouter();
   const dispatch = useDispatch();
   const getAllSectorData = useSelector(
@@ -108,7 +109,7 @@ export default function ReviewPage({
               lineHeight="16px"
               letterSpacing="1.25px"
             >
-              go back
+              {t("go-back")}
             </Heading>
           </Button>
           <Box>
@@ -121,7 +122,7 @@ export default function ReviewPage({
               lineHeight="40px"
               letterSpacing="1.25px"
             >
-              review the data you have just added
+              {t("review-your-data-heading")}
             </Heading>
           </Box>
         </Box>
@@ -143,7 +144,7 @@ export default function ReviewPage({
                     lineHeight="32px"
                     letterSpacing="wide"
                   >
-                    stationay energy
+                    {t("stationary-energy")}
                   </Text>
                   <Text
                     fontFamily="heading"
@@ -155,7 +156,7 @@ export default function ReviewPage({
                     lineHeight="20px"
                     letterSpacing="wide"
                   >
-                    Scope Required for GPC Basic Inventory: 1, 2
+                    {t("gpc-scope-required")}
                   </Text>
                 </Box>
               </Box>
@@ -176,7 +177,7 @@ export default function ReviewPage({
                     lineHeight="16px"
                     letterSpacing="1.25px"
                   >
-                    discard sector changes
+                    {t("discard-sector-changes")}
                   </Heading>
                 </Button>
                 <Button
@@ -195,7 +196,7 @@ export default function ReviewPage({
                     lineHeight="16px"
                     letterSpacing="1.25px"
                   >
-                    edit sector
+                    {t("edit-sector")}
                   </Heading>
                 </Button>
               </Box>
@@ -209,7 +210,7 @@ export default function ReviewPage({
                 lineHeight="20px"
                 letterSpacing="wide"
               >
-                Third-party data connected (0)
+                {t("third-party-data")} (0)
               </Text>
               <Box
                 display="grid"
@@ -229,7 +230,7 @@ export default function ReviewPage({
                 lineHeight="20px"
                 letterSpacing="wide"
               >
-                Data by subsector uploaded (0)
+                {t("data-by-subsector")} (0)
               </Text>
               <Box
                 display="grid"
@@ -250,7 +251,8 @@ export default function ReviewPage({
                   lineHeight="20px"
                   letterSpacing="wide"
                 >
-                  Data files uploaded ({stationaryEnergy[0].files.length})
+                  {t("data-files-uploaded")} ({stationaryEnergy[0].files.length}
+                  )
                 </Text>
                 <Box
                   display="grid"
@@ -281,7 +283,7 @@ export default function ReviewPage({
                     lineHeight="32px"
                     letterSpacing="wide"
                   >
-                    Transportation
+                    {t("transportation")}
                   </Text>
                   <Text
                     fontFamily="heading"
@@ -293,7 +295,7 @@ export default function ReviewPage({
                     lineHeight="20px"
                     letterSpacing="wide"
                   >
-                    Scope Required for GPC Basic Inventory: 1, 2
+                    {t("gpc-scope-required")}
                   </Text>
                 </Box>
               </Box>
@@ -314,7 +316,7 @@ export default function ReviewPage({
                     lineHeight="16px"
                     letterSpacing="1.25px"
                   >
-                    discard sector changes
+                    {t("discard-sector-changes")}
                   </Heading>
                 </Button>
                 <Button
@@ -333,7 +335,7 @@ export default function ReviewPage({
                     lineHeight="16px"
                     letterSpacing="1.25px"
                   >
-                    edit sector
+                    {t("edit-sector")}
                   </Heading>
                 </Button>
               </Box>
@@ -347,7 +349,7 @@ export default function ReviewPage({
                 lineHeight="20px"
                 letterSpacing="wide"
               >
-                Data by subsector (0)
+                {t("data-by-subsector")}
               </Text>
               <Box
                 display="grid"
@@ -368,7 +370,7 @@ export default function ReviewPage({
                     lineHeight="20px"
                     letterSpacing="wide"
                   >
-                    Data files uploaded ({transportation[0].files.length})
+                    {t("data-files-uploaded")}({transportation[0].files.length})
                   </Text>
                   <Box
                     display="grid"
@@ -400,7 +402,7 @@ export default function ReviewPage({
                     lineHeight="32px"
                     letterSpacing="wide"
                   >
-                    Waste And Wastewater
+                    {t("water-and-wastewater")}
                   </Text>
                   <Text
                     fontFamily="heading"
@@ -412,7 +414,7 @@ export default function ReviewPage({
                     lineHeight="20px"
                     letterSpacing="wide"
                   >
-                    Scope Required for GPC Basic Inventory: 1, 2
+                    {t("gpc-scope-required")}
                   </Text>
                 </Box>
               </Box>
@@ -433,7 +435,7 @@ export default function ReviewPage({
                     lineHeight="16px"
                     letterSpacing="1.25px"
                   >
-                    discard sector changes
+                    {t("discard-sector-changes")}
                   </Heading>
                 </Button>
                 <Button
@@ -452,7 +454,7 @@ export default function ReviewPage({
                     lineHeight="16px"
                     letterSpacing="1.25px"
                   >
-                    edit sector
+                    {t("edit-sector")}
                   </Heading>
                 </Button>
               </Box>
@@ -466,7 +468,8 @@ export default function ReviewPage({
                 lineHeight="20px"
                 letterSpacing="wide"
               >
-                Third party data connected (0)
+                {t("third-party-data")}
+                (0)
               </Text>
               <Box
                 display="grid"
@@ -484,7 +487,8 @@ export default function ReviewPage({
                 lineHeight="20px"
                 letterSpacing="wide"
               >
-                Data by subsector (0)
+                {t("data-by-subsector")}
+                (0)
               </Text>
               <Box
                 display="grid"
@@ -505,7 +509,8 @@ export default function ReviewPage({
                     lineHeight="20px"
                     letterSpacing="wide"
                   >
-                    Data files uploaded ({waterAndWasteWater[0].files.length})
+                    {t("data-files-uploaded")}(
+                    {waterAndWasteWater[0].files.length})
                   </Text>
                   <Box
                     display="grid"
@@ -523,9 +528,9 @@ export default function ReviewPage({
           <div className="bg-white w-full h-[128px] flex items-center fixed bottom-0 left-0 border-t-4 border-brand  drop-shadow-2xl hover:drop-shadow-4xl transition-all">
             <Box className="w-[1090px] max-w-full mx-auto flex flex-row flex-wrap gap-y-2">
               <Box className="grow w-full md:w-0">
-                <Text fontSize="sm">Review and add data</Text>
+                <Text fontSize="sm">{t("review-data-label")}</Text>
                 <Text fontSize="2xl" as="b">
-                  2023 Emissions Inventory
+                  2023 {t("emissions-inventory-title")}
                 </Text>
               </Box>
               <Button
@@ -540,7 +545,7 @@ export default function ReviewPage({
                 borderColor="sentiment.negativeDefault"
                 color="sentiment.negativeDefault"
               >
-                discard all changes
+                {t("discard-all-changes")}
               </Button>
               <Button
                 h={16}
@@ -549,7 +554,7 @@ export default function ReviewPage({
                 onClick={onConfirm}
                 size="sm"
               >
-                confirm and add data
+                {t("confirm-and-add-data")}
               </Button>
             </Box>
           </div>

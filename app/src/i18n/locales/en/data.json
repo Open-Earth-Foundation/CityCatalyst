@@ -139,5 +139,18 @@
   "keep-editing": "Keep editing",
   "discard-changes": "Discard changes",
   "upload-your-data-heading": "Upload your data Files",
-  "upload-your-data-details": "Upload your files here and we will adjust your data structures to harmonize and integrate them to calculate your GPC Core Standard emissions inventory."
+  "upload-your-data-details": "Upload your files here and we will adjust your data structures to harmonize and integrate them to calculate your GPC Core Standard emissions inventory.",
+  "review-your-data-heading": "review the data you have just added",
+  "gpc-scope-required": "Scope Required for GPC Basic Inventory: 1, 2",
+  "edit-sector": "edit sector",
+  "discard-sector-changes": "Discard Sector Changes",
+  "third-party-data": "Third-party data connected",
+  "data-by-subsector": "Data by subsector",
+  "data-files-uploaded": "Data files uploaded",
+  "water-and-wastewater": "Water and wastewater",
+  "confirm-and-add-data": "Confirm and add data",
+  "discard-all-changes": "Discard all changes",
+  "emissions-inventory-title": "Emissions Inventory",
+  "review-data-label": "Review and add data"
+
 }

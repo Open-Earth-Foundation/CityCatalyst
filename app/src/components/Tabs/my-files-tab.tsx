@@ -103,8 +103,6 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
     }
   }, [setValue, session, status]);
 
-  console.log(userFiles);
-
   const [selectedUsers, setSelectedUsers] = useState<any>([]);
 
   const handleCheckboxChange = (userId: string, isChecked: boolean) => {
@@ -256,7 +254,6 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
   const [selectedYear, setselectedYear] = useState<number | null>();
 
   const filteredData = filterDataByYear(userFiles, selectedYear);
-  console.log(filteredData);
 
   const {
     isOpen: isUserModalOpen,

@@ -60,7 +60,6 @@ export const inventoryDataSlice = createSlice({
       action: PayloadAction<{ sectorName: string; uniqueFileId: string }>,
     ) => {
       const { sectorName, uniqueFileId } = action.payload;
-      console.log(sectorName, uniqueFileId);
       const sectorIndex = state.sectors.findIndex(
         (sector) => sector.sectorName === sectorName,
       );

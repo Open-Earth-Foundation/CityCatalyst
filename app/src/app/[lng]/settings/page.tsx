@@ -66,8 +66,6 @@ export default function Settings({
     },
   );
 
-  console.log(userFiles);
-
   return (
     <Box backgroundColor="background.backgroundLight" paddingBottom="125px">
       <NavigationBar lng={lng} />

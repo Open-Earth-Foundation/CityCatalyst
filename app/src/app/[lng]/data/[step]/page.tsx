@@ -476,18 +476,15 @@ export default function AddDataSteps({
     );
   };
 
-  console.log(currentStep.title);
   const sectorData = getInventoryData.sectors.filter(
     (sector) => sector.sectorName === currentStep.title,
   );
 
-  console.log(sectorData);
   function bytesToMB(bytes: number): string {
     return (bytes / 1048576).toFixed(2) + " MB";
   }
 
   function removeSectorFile(uniqueFileId: string, sectorName: string) {
-    console.log(uniqueFileId, sectorName);
     dispatch(
       removeFile({
         sectorName,

@@ -81,6 +81,7 @@ export function ActivityDataTab({
   emissionsFactors: EmissionsFactorWithDataSources[];
 }) {
   const selectedUnit = watch(prefix + "activityDataUnit");
+  const selectedUnitShort = selectedUnit.split(" ")[0];
   const selectedEmissionFactorType =
     watch(prefix + "emissionFactorType") || "custom";
   // TODO cache with useEffect and useState?
@@ -237,7 +238,7 @@ export function ActivityDataTab({
             <NumberInput
               defaultValue={0}
               min={0}
-              // isDisabled={selectedEmissionFactorType !== "custom"}
+              isDisabled={selectedEmissionFactorType !== "custom"}
             >
               <NumberInputField
                 borderRightRadius={0}
@@ -249,7 +250,7 @@ export function ActivityDataTab({
               bgColor="background.neutral"
               color="content.tertiary"
             >
-              {selectedUnit}
+              {selectedUnitShort}
             </InputRightAddon>
           </InputGroup>
           <FormHelperText>&nbsp;</FormHelperText>
@@ -262,7 +263,7 @@ export function ActivityDataTab({
             <NumberInput
               defaultValue={0}
               min={0}
-              // isDisabled={selectedEmissionFactorType !== "custom"}
+              isDisabled={selectedEmissionFactorType !== "custom"}
             >
               <NumberInputField
                 borderRightRadius={0}
@@ -274,7 +275,7 @@ export function ActivityDataTab({
               bgColor="background.neutral"
               color="content.tertiary"
             >
-              {selectedUnit}
+              {selectedUnitShort}
             </InputRightAddon>
           </InputGroup>
           <FormHelperText color="content.tertiary">
@@ -289,7 +290,7 @@ export function ActivityDataTab({
             <NumberInput
               defaultValue={0}
               min={0}
-              // isDisabled={selectedEmissionFactorType !== "custom"}
+              isDisabled={selectedEmissionFactorType !== "custom"}
             >
               <NumberInputField
                 borderRightRadius={0}
@@ -301,7 +302,7 @@ export function ActivityDataTab({
               bgColor="background.neutral"
               color="content.tertiary"
             >
-              {selectedUnit}
+              {selectedUnitShort}
             </InputRightAddon>
           </InputGroup>
           <FormHelperText color="content.tertiary">

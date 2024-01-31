@@ -196,8 +196,10 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
       let gasAmount: bigint;
       if (hasActivityValue) {
         gasAmount = BigInt(
-          inventoryValue!.activityValue! *
-            gasValue.emissionsFactor.emissionsPerActivity!,
+          Math.floor(
+            inventoryValue!.activityValue! *
+              gasValue.emissionsFactor.emissionsPerActivity!,
+          ),
         );
       } else {
         gasAmount = gasValue.gasAmount!;

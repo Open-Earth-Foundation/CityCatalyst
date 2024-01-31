@@ -107,6 +107,7 @@ export function ActivityDataTab({
       ? customUnits
       : Object.keys(factorsByUnit);
 
+  // TODO this should happen in default form value, as the form still contains null/ undefined here
   const selectedUnit = watch(prefix + "activityDataUnit") ?? scopeUnits[0];
   const selectedUnitShort = selectedUnit.split(" ")[0];
 
@@ -115,7 +116,8 @@ export function ActivityDataTab({
       return;
     }
 
-    // TODO overwrite selectedUnit with first unit in list when it's null
+    // TODO overwrite selectedUnit / selectedEmissionFactorType
+    // with first unit in list when it's null
 
     const selectedFactorsByGas =
       factorsByUnit[selectedUnit]?.reduce(
@@ -127,14 +129,8 @@ export function ActivityDataTab({
         },
         {} as Record<string, EmissionsFactorWithDataSources>,
       ) || {};
-    console.log("SFBG", selectedFactorsByGas, factorsByUnit, selectedUnit);
-    console.log(
-      "EFs",
-      selectedFactorsByGas.CO2?.emissionsPerActivity,
-      selectedFactorsByGas.CH4?.emissionsPerActivity,
-      selectedFactorsByGas.N2O?.emissionsPerActivity,
-    );
-    console.log("key", prefix + "co2EmissionFactor");
+
+    // TODO these don't change the input values!
     setValue(
       prefix + "co2EmissionFactor",
       selectedFactorsByGas.CO2?.emissionsPerActivity || 0,

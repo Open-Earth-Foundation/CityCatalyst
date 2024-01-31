@@ -8,7 +8,7 @@ export interface GasValueAttributes {
   inventoryValueId?: string;
   emissionsFactorId?: string;
   gas?: string;
-  gasAmount?: bigint;
+  gasAmount?: bigint | null;
 }
 
 export type GasValuePk = "id";
@@ -31,7 +31,7 @@ export class GasValue
   inventoryValueId?: string;
   emissionsFactorId?: string;
   gas?: string;
-  gasAmount?: bigint;
+  gasAmount?: bigint | null;
 
   // GasValue belongsTo InventoryValue via inventoryValueId
   inventoryValue!: InventoryValue;

@@ -73,7 +73,7 @@ export const createInventoryValue = z.object({
       z.object({
         gas: z.string(),
         // if not present, use activityValue with emissionsFactor instead
-        gasAmount: z.coerce.bigint().gte(0n).optional(),
+        gasAmount: z.coerce.bigint().gte(0n).nullable().optional(),
         emissionsFactorId: z.string().uuid().optional(),
         emissionsFactor: z
           .object({

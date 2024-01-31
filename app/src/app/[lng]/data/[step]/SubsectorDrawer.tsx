@@ -383,8 +383,10 @@ export function SubsectorDrawer({
       }),
     );
     logger.debug("Save results", results);
+    let hadError = false;
     for (const [index, result] of results.entries()) {
       if (result?.error?.status > 200) {
+        hadError = true;
         const scopeId = Object.keys(data.subcategoryData)[index];
         const scopeName = scopes?.find((s) => s.value === scopeId)?.label || "";
         toast({
@@ -397,8 +399,10 @@ export function SubsectorDrawer({
         });
       }
     }
-    onSave(subsector, data);
-    onClose();
+    if (!hadError) {
+      onSave(subsector, data);
+      onClose();
+    }
   };
 
   // reset form values when choosing another subsector

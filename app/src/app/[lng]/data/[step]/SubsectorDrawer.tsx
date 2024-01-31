@@ -3,10 +3,7 @@ import "@/util/bigint";
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
 import { nameToI18NKey, resolvePromisesSequentially } from "@/util/helpers";
-import type {
-  EmissionsFactorWithDataSources,
-  InventoryValueResponse,
-} from "@/util/types";
+import type { InventoryValueResponse } from "@/util/types";
 import { ArrowBackIcon, CloseIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Accordion,
@@ -34,6 +31,7 @@ import {
   Tag,
   Text,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import type { TFunction } from "i18next";
@@ -49,6 +47,7 @@ import type {
   SubSector,
   SubcategoryData,
   EmissionsFactorData,
+  GasValueData,
 } from "./types";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { determineEmissionsFactorType } from "./ActivityDataTab";
@@ -135,7 +134,7 @@ function extractFormValues(inventoryValues: InventoryValueResponse[]): Inputs {
         data.activity.emissionFactorType = isCustom
           ? "custom"
           : determineEmissionsFactorType(emissionsFactors[0]);
-        data.activity.activityDataUnit = emissionsFactors[0].units;
+        data.activity.activityDataUnit = emissionsFactors[0]?.units;
       } else if (methodology === "direct-measure") {
         const gasToEmissions = (value.gasValues || []).reduce(
           (acc: Record<string, bigint>, value) => {
@@ -251,6 +250,8 @@ export function SubsectorDrawer({
     }
   };
 
+  const toast = useToast();
+
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (!subsector) return;
     logger.debug("Subsector data", data);
@@ -293,19 +294,59 @@ export function SubsectorDrawer({
               notes: value.activity.sourceReference,
             };
 
-            // save emissions factors
-            inventoryValue.gasValues = [
-              {
-                gas: "CO2",
-                gasAmount: undefined,
-                emissionsFactor: {
-                  emissionsPerActivity: value.activity.co2EmissionFactor,
-                  gas: "CO2",
+            // save emissions factors (either values for custom or the IDs for each gas for predefined)
+            const gases = ["CO2", "CH4", "N2O"];
+            inventoryValue.gasValues = gases.flatMap((gas) => {
+              let gasValue: GasValueData = {
+                gas,
+                gasAmount: undefined, // set this to null to remove previous data?
+              };
+              if (value.activity.emissionFactorType === "custom") {
+                const emissionsPerActivity = Number(
+                  (value.activity as unknown as Record<string, string>)[
+                    gas.toLowerCase() + "EmissionFactor"
+                  ],
+                );
+                gasValue.emissionsFactor = {
+                  emissionsPerActivity,
+                  gas,
                   units: value.activity.activityDataUnit,
                   inventoryId: inventoryId,
-                },
-              },
-            ];
+                };
+              } else {
+                if (!emissionsFactors || !scopes) {
+                  throw new Error(
+                    "Emissions factors or scopes not loaded at save time!",
+                  );
+                }
+                const subCategory = scopes?.find(
+                  (scope) => scope.value === subCategoryId,
+                );
+                const gpcReferenceNumber = subCategory?.gpcReferenceNumber;
+                const factors = emissionsFactors.filter((factor) => {
+                  return (
+                    factor.gas === gas &&
+                    factor.units === value.activity.activityDataUnit &&
+                    factor.gpcReferenceNumber === gpcReferenceNumber &&
+                    determineEmissionsFactorType(factor) ===
+                      value.activity.emissionFactorType
+                  );
+                });
+
+                if (factors.length === 0) {
+                  return [];
+                }
+                if (factors.length > 1) {
+                  logger.warn(
+                    `Multiple emissions factor candidates for scope ${gpcReferenceNumber}, units ${value.activity.activityDataUnit}, type ${value.activity.emissionFactorType}`,
+                    factors,
+                  );
+                }
+
+                gasValue.emissionsFactorId = factors[0].id;
+              }
+              return [gasValue];
+            });
           } else if (value.methodology === "direct-measure") {
             inventoryValue.gasValues = [
               {
@@ -342,6 +383,20 @@ export function SubsectorDrawer({
       }),
     );
     logger.debug("Save results", results);
+    for (const [index, result] of results.entries()) {
+      if (result?.error?.status > 200) {
+        const scopeId = Object.keys(data.subcategoryData)[index];
+        const scopeName = scopes?.find((s) => s.value === scopeId)?.label || "";
+        toast({
+          title: `Failed to save "${scopeName}"`,
+          description:
+            "There was an error during saving. Please notify the support about this.",
+          status: "error",
+          isClosable: true,
+          duration: null,
+        });
+      }
+    }
     onSave(subsector, data);
     onClose();
   };

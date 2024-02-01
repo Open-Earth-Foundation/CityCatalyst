@@ -1,10 +1,9 @@
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
-import { createCityRequest, createPopulationRequest } from "@/util/validation";
+import { createPopulationRequest } from "@/util/validation";
 import createHttpError from "http-errors";
 import { Session } from "next-auth";
 import { NextResponse } from "next/server";
-import { randomUUID } from "node:crypto";
 
 export const POST = apiHandler(
   async (

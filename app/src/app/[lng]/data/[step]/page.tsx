@@ -68,7 +68,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/lib/store";
 import {
   InventoryUserFileAttributes,
-  append,
+  addFile,
   clear,
   removeFile,
 } from "@/features/city/inventoryDataSlice";
@@ -460,10 +460,10 @@ export default function AddDataSteps({
     const base64FileString = await fileToBase64(file);
     const filename = file.name;
     dispatch(
-      append({
+      addFile({
         sectorName: currentStep.title!,
         fileData: {
-          uniqueFileId: uuidv4(),
+          fileId: uuidv4(),
           userId: userInfo?.userId,
           sector: currentStep.title,
           data: base64FileString,
@@ -805,10 +805,10 @@ export default function AddDataSteps({
           >
             <Box w="full">
               <Box mb="24px">
-                <FileInput onFileSelect={handleFileSelect} />
+                <FileInput onFileSelect={handleFileSelect} t={t} />
               </Box>
               <Box mb="24px">
-                <Heading size="sm">Files uploaded</Heading>
+                <Heading size="sm">{t("files-uploaded")}</Heading>
               </Box>
               <Box display="flex" flexDirection="column" gap="8px">
                 {sectorData &&
@@ -894,7 +894,7 @@ export default function AddDataSteps({
                     letterSpacing="wide"
                     lineHeight="20px"
                   >
-                    Download template to upload data
+                    {t("download-template")}
                   </Heading>
                   <Text
                     color="interactive.control"
@@ -903,9 +903,7 @@ export default function AddDataSteps({
                     letterSpacing="wide"
                     lineHeight="20px"
                   >
-                    Follow the steps in our template and upload the data to
-                    calculate your inventory without waiting for
-                    CityCatlyst&apos;s data review.
+                    {t("file-upload-steps")}
                   </Text>
                 </Box>
                 <Box display="flex" alignItems="center">

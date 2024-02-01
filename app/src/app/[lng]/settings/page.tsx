@@ -59,12 +59,9 @@ export default function Settings({
     },
   );
 
-  const { data: userFiles } = api.useGetUserFilesQuery(
-    { userId: userInfo?.userId! },
-    {
-      skip: !userInfo,
-    },
-  );
+  const { data: userFiles } = api.useGetUserFilesQuery({
+    skip: !userInfo,
+  });
 
   return (
     <Box backgroundColor="background.backgroundLight" paddingBottom="125px">

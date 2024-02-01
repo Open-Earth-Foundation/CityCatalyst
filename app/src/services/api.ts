@@ -16,6 +16,7 @@ import type {
   InventoryValueResponse,
   InventoryWithCity,
   UserInfoResponse,
+  UserFileResponse,
 } from "@/util/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
@@ -305,7 +306,7 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: any }) => response.data,
     }),
-    addUserFile: builder.mutation<UserFileAttributes, any>({
+    addUserFile: builder.mutation<UserFileResponse, any>({
       query: (formData) => {
         return {
           method: "POST",
@@ -313,14 +314,24 @@ export const api = createApi({
           body: formData,
         };
       },
-      transformResponse: (response: { data: any }) => response.data,
+      transformResponse: (response: { data: UserFileResponse }) =>
+        response.data,
     }),
-    getUserFiles: builder.query<UserFileAttributes, { userId: string }>({
-      query: ({ userId }) => ({
+    getUserFiles: builder.query({
+      query: () => ({
         method: "GET",
-        url: `/user/${userId}/file`,
+        url: `/user/file`,
       }),
-      transformResponse: (response: { data: any }) => response.data,
+      transformResponse: (response: { data: UserFileResponse }) =>
+        response.data,
+    }),
+    deleteUserFile: builder.mutation({
+      query: (params) => ({
+        method: "DELETE",
+        url: `/user/file/${params.fileId}`,
+      }),
+      transformResponse: (response: { data: UserFileResponse }) =>
+        response.data,
     }),
   }),
 });
@@ -370,5 +381,6 @@ export const {
   useGetInventoriesQuery,
   useAddUserFileMutation,
   useGetUserFilesQuery,
+  useDeleteUserFileMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

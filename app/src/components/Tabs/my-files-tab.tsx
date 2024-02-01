@@ -60,15 +60,15 @@ import {
 } from "@/app/[lng]/settings/page";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Session } from "next-auth";
-import AddUserModal from "@/components/Modals/add-user-modal";
-import UpdateUserModal from "@/components/Modals/update-user-modal";
-import DeleteUserModal from "@/components/Modals/delete-user-modal";
+
 import DeleteFileModal from "@/components/Modals/delete-file-modal";
 
-import DeleteCityModal from "@/components/Modals/delete-city-modal";
 import { TFunction } from "i18next";
 import { UserAttributes } from "@/models/User";
 import { UserFileAttributes } from "@/models/UserFile";
+import { api } from "@/services/api";
+import Link from "next/link";
+import { UserFileResponse } from "@/util/types";
 
 interface MyFilesTabProps {
   session: Session | null;
@@ -254,29 +254,11 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
   const [selectedYear, setselectedYear] = useState<number | null>();
 
   const filteredData = filterDataByYear(userFiles, selectedYear);
-
-  const {
-    isOpen: isUserModalOpen,
-    onOpen: onUserModalOpen,
-    onClose: onUserModalClose,
-  } = useDisclosure();
-  const {
-    isOpen: isUserUpdateModalOpen,
-    onOpen: onUserUpdateModalOpen,
-    onClose: onUserUpdateModalClose,
-  } = useDisclosure();
-
-  const {
-    isOpen: isUserDeleteModalOpen,
-    onOpen: onUserDeleteModalOpen,
-    onClose: onUserDeleteModalClose,
-  } = useDisclosure();
-
-  const {
-    isOpen: isCityDeleteModalOpen,
-    onOpen: onCityDeleteModalOpen,
-    onClose: onCityDeleteModalClose,
-  } = useDisclosure();
+  console.log(userFiles);
+  const [deleteUserFile] = api.useDeleteUserFileMutation();
+  const handleDeleteUserFile = async (id: string) => {
+    await deleteUserFile(id);
+  };
 
   const {
     isOpen: isFileDeleteModalOpen,
@@ -298,6 +280,8 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
     country: "",
     lastUpdated: "",
   });
+
+  const [fileData, setFileData] = useState<UserFileResponse>();
 
   return (
     <>
@@ -529,7 +513,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                               color="content.primary"
                               fontSize="body.md"
                             >
-                              {filteredData.map((file: any) => (
+                              {filteredData.map((file: UserFileResponse) => (
                                 <Tr key={`${city.id}-${file.id}`}>
                                   <Td
                                     display="flex"
@@ -539,7 +523,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                     <Box color="interactive.primary">
                                       <FaFileCsv size={24} />
                                     </Box>
-                                    <span>{file.fileName}</span>
+                                    <span>{file.file.fileName}</span>
                                   </Td>
                                   <Td>{file.sector}</Td>
                                   <Td>
@@ -609,7 +593,6 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                           <List padding="0">
                                             <ListItem
                                               className="group "
-                                              display="flex"
                                               cursor="pointer"
                                               gap="16px"
                                               color="content.tertiary"
@@ -621,24 +604,27 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                                 background: "content.link",
                                                 color: "white",
                                               }}
-                                              onClick={() => {
-                                                alert(city.id);
-                                              }}
                                             >
-                                              <MdOutlineFileDownload
-                                                size={24}
-                                              />
-
-                                              <Text
-                                                color="content.secondary"
-                                                fontFamily="heading"
-                                                letterSpacing="wide"
-                                                fontWeight="normal"
-                                                fontSize="body.lg"
-                                                className="group group-hover:text-white"
+                                              <Link
+                                                href={`/api/v0/user/file/${file.id}/download-file`}
+                                                download
+                                                className="flex gap-4"
                                               >
-                                                {t("download-file")}
-                                              </Text>
+                                                <MdOutlineFileDownload
+                                                  size={24}
+                                                />
+
+                                                <Text
+                                                  color="content.secondary"
+                                                  fontFamily="heading"
+                                                  letterSpacing="wide"
+                                                  fontWeight="normal"
+                                                  fontSize="body.lg"
+                                                  className="group group-hover:text-white"
+                                                >
+                                                  {t("download-file")}
+                                                </Text>
+                                              </Link>
                                             </ListItem>
                                             <ListItem
                                               display="flex"
@@ -655,7 +641,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                                 color: "white",
                                               }}
                                               onClick={() => {
-                                                setCityData(city);
+                                                setFileData(file);
                                                 onFileDeleteModalOpen();
                                               }}
                                             >

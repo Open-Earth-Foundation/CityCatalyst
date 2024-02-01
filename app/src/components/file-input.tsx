@@ -1,12 +1,14 @@
 import { Box, FormLabel, Heading, Input, Text, VStack } from "@chakra-ui/react";
+import { TFunction } from "i18next";
 import React, { useState, DragEvent, ChangeEvent } from "react";
 import { FiUpload } from "react-icons/fi";
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void; // Define a type for the onFileSelect prop
+  t: TFunction;
 }
 
-const FileInput: React.FC<FileUploadProps> = ({ onFileSelect }) => {
+const FileInput: React.FC<FileUploadProps> = ({ onFileSelect, t }) => {
   const [dragging, setDragging] = useState<boolean>(false);
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
@@ -86,14 +88,14 @@ const FileInput: React.FC<FileUploadProps> = ({ onFileSelect }) => {
               textDecoration="underline"
               fontWeight="semibold"
             >
-              Click to upload
+              {t("click-to-upload")}
             </Text>{" "}
             <Text size="title.md" fontWeight="semibold" fontFamily="heading">
-              &nbsp;or drag and drop file
+              &nbsp;{t("drag-and-drop")}
             </Text>
           </Box>
           <Text fontSize="body.sm" mt="4px">
-            CSV or JSON (max 2MB)
+            {t("csv-or-json")}
           </Text>
         </Box>
       </FormLabel>

@@ -1,4 +1,4 @@
-import "@/util/bigint";
+import "@/util/big_int_json";
 
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";

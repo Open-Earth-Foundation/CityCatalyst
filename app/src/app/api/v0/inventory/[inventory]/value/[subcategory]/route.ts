@@ -12,7 +12,11 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
     where: { subCategoryId: params.subcategory, inventoryId: params.inventory },
     include: [
       { model: db.models.DataSource, as: "dataSource" },
-      { model: db.models.GasValue, as: "gasValues" },
+      {
+        model: db.models.GasValue,
+        as: "gasValues",
+        include: [{ model: db.models.EmissionsFactor, as: "emissionsFactor" }],
+      },
     ],
   });
 

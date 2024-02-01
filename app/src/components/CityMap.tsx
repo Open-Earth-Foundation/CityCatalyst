@@ -46,7 +46,7 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
     } else {
       logger.warn("No map data present");
     }
-  }, [data, height, width]);
+  }, [locode, data, height, width]);
 
   return (
     <Box w={width} h={height} className="relative">

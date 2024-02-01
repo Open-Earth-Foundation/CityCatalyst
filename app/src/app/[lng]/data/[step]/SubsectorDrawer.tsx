@@ -238,7 +238,7 @@ export function SubsectorDrawer({
     reset,
     control,
     setValue,
-  } = useForm<Inputs>({ mode: "onBlur" });
+  } = useForm<Inputs>();
 
   const scopeData = watch("subcategoryData");
 

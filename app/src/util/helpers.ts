@@ -62,6 +62,14 @@ export function nameToI18NKey(name: string): string {
     .toLowerCase();
 }
 
+export const fileEndingToMIMEType: Record<string, string> = {
+  csv: "text/csv",
+  json: "application/json",
+  xls: "application/vnd.ms-excel",
+  xlsx: "application/vnd.ms-excel",
+  default: "application/x-binary",
+};
+
 export function groupBy<T>(
   list: T[],
   lambda: (elem: T) => string,

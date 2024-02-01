@@ -45,11 +45,7 @@ function getCoordinatesDump(
   } else if (geoJson.type == "MultiPolygon") {
     return geoJson.coordinates
       .reduce(function (dump, poly) {
-        return dump.concat(
-          poly.reduce(function (points, part) {
-            return points.concat(part);
-          }, []),
-        );
+        return dump.concat(poly);
       }, [])
       .flat();
   } else if (geoJson.type == "Feature") {

@@ -1,8 +1,7 @@
 "use client";
 
 import { api } from "@/services/api";
-import { logger } from "@/services/logger";
-import { geoJSONBoundingBox, getBoundsZoomLevel } from "@/util/geojson";
+import { getBoundsZoomLevel } from "@/util/geojson";
 import { Box, Center, Spinner } from "@chakra-ui/react";
 import { FC, useEffect, useState } from "react";
 import { Map, GeoJson, GeoJsonFeature } from "pigeon-maps";
@@ -32,8 +31,8 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
   };
 
   useEffect(() => {
-    if (data) {
-      const boundingBox = geoJSONBoundingBox(data);
+    if (data?.boundingBox) {
+      const boundingBox = data.boundingBox;
       if (boundingBox && !boundingBox.some(isNaN)) {
         const newZoom = getBoundsZoomLevel(boundingBox, { width, height });
         const newCenter: [number, number] = [
@@ -43,8 +42,6 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
         setCenter(newCenter);
         setZoom(newZoom);
       }
-    } else {
-      logger.warn("No map data present");
     }
   }, [locode, data, height, width]);
 
@@ -74,8 +71,8 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
             stroke: "#648bff",
           }}
         >
-          {data && (
-            <GeoJsonFeature feature={{ type: "Feature", geometry: data }} />
+          {data?.data && (
+            <GeoJsonFeature feature={{ type: "Feature", geometry: data.data }} />
           )}
         </GeoJson>
       </Map>

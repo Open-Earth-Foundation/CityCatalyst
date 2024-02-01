@@ -5,6 +5,7 @@ import {
   type InventoryValueAttributes,
   PopulationAttributes,
 } from "@/models/init-models";
+import type { BoundingBox } from "@/util/geojson";
 import type {
   ConnectDataSourceQuery,
   ConnectDataSourceResponse,
@@ -34,9 +35,15 @@ export const api = createApi({
       query: (locode) => `city/${locode}`,
       transformResponse: (response: { data: CityAttributes }) => response.data,
     }),
-    getCityBoundary: builder.query<GeoJSON.GeoJSON, string>({
+    getCityBoundary: builder.query<
+      { data: GeoJSON.GeoJSON; boundingBox: BoundingBox },
+      string
+    >({
       query: (locode) => `city/${locode}/boundary`,
-      transformResponse: (response: { data: GeoJSON.GeoJSON }) => response.data,
+      transformResponse: (response: {
+        data: GeoJSON.GeoJSON;
+        boundingBox: BoundingBox;
+      }) => response,
     }),
     getInventory: builder.query<
       InventoryResponse,

@@ -84,7 +84,7 @@ export function getBoundsZoomLevel(
   mapDimensions: { height: number; width: number },
 ): number {
   // GeoJSON has longitude first, then latitude
-  const [neLng, neLat, swLng, swLat] = bounds;
+  const [swLng, swLat, neLng, neLat] = bounds;
 
   const latFraction =
     (latitudeToRadians(neLat) - latitudeToRadians(swLat)) / Math.PI;

@@ -2,20 +2,10 @@
 
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
-import { geoJSONBoundingBox } from "@/util/geojson";
+import { geoJSONBoundingBox, getBoundsZoomLevel } from "@/util/geojson";
 import { Box, Center, Spinner } from "@chakra-ui/react";
-import type { GeoJsonObject } from "geojson";
-import { LatLngBoundsLiteral, LatLngExpression } from "leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-import { FC, useEffect, useRef, useState } from "react";
-import {
-  GeoJSON,
-  MapContainer,
-  Marker,
-  TileLayer,
-  useMap,
-} from "react-leaflet";
+import { FC, useEffect, useState } from "react";
+import { Map, GeoJson, GeoJsonFeature } from "pigeon-maps";
 
 export interface CityMapProps {
   locode: string | null;
@@ -23,52 +13,41 @@ export interface CityMapProps {
   height: number;
 }
 
-function BoundingBoxFocus({ boundingBox }: { boundingBox?: number[] }) {
-  const map = useMap();
-  useEffect(() => {
-    if (!boundingBox || boundingBox.some(isNaN) || boundingBox.length !== 4) {
-      logger.error("Invalid bounding box:", boundingBox);
-      return;
-    }
-    // GeoJSON is [lng, lat] and Leaflet is [lat, lng]
-    const bounds: LatLngBoundsLiteral = [
-      [boundingBox[1], boundingBox[0]],
-      [boundingBox[3], boundingBox[2]],
-    ];
-    map.fitBounds(bounds, { padding: [50, 50] });
-  }, [boundingBox, map]);
-
-  return null;
-}
-
 export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
   const { data, isLoading } = api.useGetCityBoundaryQuery(locode!, {
     skip: !locode,
   });
 
-  const mapRef = useRef<L.Map | null>(null);
-  let boundingBox: number[] | undefined;
-  let mapCenter: LatLngExpression | undefined = [34.0, -37.0];
+  const [center, setCenter] = useState<[number, number]>([34.0, -37.0]);
+  const [zoom, setZoom] = useState(11);
+  const onBoundsChanged = ({
+    center: newCenter,
+    zoom: newZoom,
+  }: {
+    center: [number, number];
+    zoom: number;
+  }) => {
+    setCenter(newCenter);
+    setZoom(newZoom);
+  };
+
   useEffect(() => {
-    if (mapRef.current) {
-      mapRef.current?.whenReady(() => {
-        if (data) {
-          const boundingBox = geoJSONBoundingBox(data);
-          if (boundingBox && !boundingBox.some(isNaN)) {
-            const bounds: LatLngBoundsLiteral = [
-              [boundingBox[1], boundingBox[0]],
-              [boundingBox[3], boundingBox[2]],
-            ];
-            mapRef.current
-              ? mapRef.current.fitBounds(bounds, { padding: [50, 50] })
-              : boundingBox;
-          }
-        } else {
-          logger.warn("no data");
-        }
-      });
+    if (data) {
+      const boundingBox = geoJSONBoundingBox(data);
+      if (boundingBox && !boundingBox.some(isNaN)) {
+        const newZoom = getBoundsZoomLevel(boundingBox, { width, height });
+        const newCenter: [number, number] = [
+          (boundingBox[1] + boundingBox[3]) / 2,
+          (boundingBox[0] + boundingBox[2]) / 2,
+        ];
+        setCenter(newCenter);
+        setZoom(newZoom);
+      }
+    } else {
+      logger.warn("No map data present");
     }
-  }, [data]);
+  }, [data, height, width]);
+
   return (
     <Box w={width} h={height} className="relative">
       {isLoading && (
@@ -82,30 +61,24 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
           </Center>
         </Box>
       )}
-      <MapContainer
-        center={mapCenter}
-        zoom={2}
-        scrollWheelZoom={true}
-        style={{ width, height }}
-        ref={mapRef}
+      <Map
+        height={height}
+        center={center}
+        zoom={zoom}
+        onBoundsChanged={onBoundsChanged}
       >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        {data && (
-          <GeoJSON
-            data={data as GeoJsonObject}
-            style={{
-              color: "#648bff",
-              weight: 5,
-              opacity: 0.65,
-              fillOpacity: 0.3,
-            }}
-          />
-        )}
-        <BoundingBoxFocus boundingBox={boundingBox} />
-      </MapContainer>
+        <GeoJson
+          svgAttributes={{
+            fill: "#648bff99",
+            strokeWidth: "3",
+            stroke: "#648bff",
+          }}
+        >
+          {data && (
+            <GeoJsonFeature feature={{ type: "Feature", geometry: data }} />
+          )}
+        </GeoJson>
+      </Map>
     </Box>
   );
 };

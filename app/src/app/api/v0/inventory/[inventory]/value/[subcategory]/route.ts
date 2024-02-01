@@ -15,7 +15,13 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
       {
         model: db.models.GasValue,
         as: "gasValues",
-        include: [{ model: db.models.EmissionsFactor, as: "emissionsFactor" }],
+        include: [
+          {
+            model: db.models.EmissionsFactor,
+            as: "emissionsFactor",
+            include: [{ model: db.models.DataSource, as: "dataSources" }],
+          },
+        ],
       },
     ],
   });

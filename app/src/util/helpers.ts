@@ -89,3 +89,7 @@ export function base64ToFile(base64String: any, filename: string) {
 export function appendFileToFormData(base64String: string, filename: string) {
   return base64ToFile(base64String, filename);
 }
+
+export function bytesToMB(bytes: number): string {
+  return (bytes / 1048576).toFixed(2) + " MB";
+}

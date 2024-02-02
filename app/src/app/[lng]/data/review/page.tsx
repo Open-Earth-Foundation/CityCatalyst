@@ -43,7 +43,6 @@ export default function ReviewPage({
   };
   const onDiscard = () => {
     dispatch(clear());
-    // router.push("/data");
   };
 
   const stationaryEnergy = getAllSectorData.filter(
@@ -62,30 +61,41 @@ export default function ReviewPage({
 
   const [addUserFile] = api.useAddUserFileMutation();
 
+  const defaultStatus = "pending";
+
+  console.log(getAllSectorData);
+
   const onConfirm = async () => {
-    for (const sector of getAllSectorData) {
-      const formData = new FormData();
-      for (const fileData of sector.files) {
-        const file = appendFileToFormData(
-          fileData.data,
-          `file_XXX.${fileData.fileType}`,
-        );
+    try {
+      for (const sector of getAllSectorData) {
+        const formData = new FormData();
+        for (const fileData of sector.files) {
+          const file = appendFileToFormData(
+            fileData.data,
+            `${fileData.fileName}.${fileData.fileType}`,
+          );
+          formData.append("userId", fileData.userId!);
+          formData.append("fileName", fileData.fileName!);
+          formData.append("sector", fileData.sector!);
+          formData.append("status", defaultStatus);
+          formData.append("fileReference", "");
+          formData.append("url", fileData.url!);
+          formData.append("gpcRefNo", "");
+          formData.append("data", file, file.name);
+        }
 
-        formData.append("userId", fileData.userId!);
-        formData.append("sector", fileData.sector!);
-        formData.append("status", fileData.status!);
-        formData.append("fileReference", "");
-        formData.append("url", fileData.url!);
-        formData.append("gpcRefNo", "");
-        formData.append("data", file, file.name);
+        await addUserFile(formData).then(() => {
+          // TODO
+          // Trigger notification to user
+        });
       }
-
-      await addUserFile(formData).then(() => {
-        // TODO
-        // Trigger notification to user
-        dispatch(clear());
-        router.push("/");
-      });
+    } catch (error) {
+      console.error(error);
+      // TODO
+      // Trigger notification to user
+    } finally {
+      router.push("/");
+      dispatch(clear());
     }
   };
 
@@ -260,7 +270,11 @@ export default function ReviewPage({
                   gap="8px"
                 >
                   {stationaryEnergy[0]?.files.map((file: any, i: number) => (
-                    <FileDataCard key={i} />
+                    <FileDataCard
+                      key={i}
+                      fileName={file.fileName}
+                      fileSize={file.size}
+                    />
                   ))}
                 </Box>
               </Box>
@@ -378,7 +392,11 @@ export default function ReviewPage({
                     gap="8px"
                   >
                     {transportation[0]?.files.map((file: any, i: number) => (
-                      <FileDataCard key={i} />
+                      <FileDataCard
+                        key={i}
+                        fileName={file.fileName}
+                        fileSize={file.size}
+                      />
                     ))}
                   </Box>
                 </Box>
@@ -518,7 +536,13 @@ export default function ReviewPage({
                     gap="8px"
                   >
                     {waterAndWasteWater[0]?.files.map(
-                      (file: any, i: number) => <FileDataCard key={i} />,
+                      (file: any, i: number) => (
+                        <FileDataCard
+                          key={i}
+                          fileName={file.fileName}
+                          fileSize={file.size}
+                        />
+                      ),
                     )}
                   </Box>
                 </Box>

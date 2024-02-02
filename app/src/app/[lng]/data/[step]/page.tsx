@@ -61,7 +61,7 @@ import {
 import { SourceDrawer } from "./SourceDrawer";
 import { SubsectorDrawer } from "./SubsectorDrawer";
 import type { DataStep, SubSector } from "./types";
-import { nameToI18NKey } from "@/util/helpers";
+import { bytesToMB, nameToI18NKey } from "@/util/helpers";
 import { logger } from "@/services/logger";
 import FileInput from "@/components/file-input";
 import { useSelector, useDispatch } from "react-redux";
@@ -464,10 +464,12 @@ export default function AddDataSteps({
         sectorName: currentStep.title!,
         fileData: {
           fileId: uuidv4(),
+          fileName: filename,
           userId: userInfo?.userId,
           sector: currentStep.title,
           data: base64FileString,
           url: URL,
+          size: file.size,
           fileType: file.name.slice(
             ((filename.lastIndexOf(".") - 1) >>> 0) + 2,
           ),
@@ -480,15 +482,11 @@ export default function AddDataSteps({
     (sector) => sector.sectorName === currentStep.title,
   );
 
-  function bytesToMB(bytes: number): string {
-    return (bytes / 1048576).toFixed(2) + " MB";
-  }
-
-  function removeSectorFile(uniqueFileId: string, sectorName: string) {
+  function removeSectorFile(fileId: string, sectorName: string) {
     dispatch(
       removeFile({
         sectorName,
-        uniqueFileId,
+        fileId,
       }),
     );
   }
@@ -840,14 +838,14 @@ export default function AddDataSteps({
                             letterSpacing="wide"
                             isTruncated
                           >
-                            {file.uniqueFileId}
+                            {file.fileName}
                           </Heading>
                           <Text
                             fontSize="body.md"
                             fontWeight="normal"
                             color="interactive.control"
                           >
-                            {bytesToMB(5000)}
+                            {bytesToMB(file.size)}
                           </Text>
                         </Box>
                         <Box
@@ -862,7 +860,7 @@ export default function AddDataSteps({
                             color="sentiment.negativeDefault"
                             onClick={() =>
                               removeSectorFile(
-                                file.uniqueFileId,
+                                file.fileId,
                                 sectorData[0].sectorName,
                               )
                             }

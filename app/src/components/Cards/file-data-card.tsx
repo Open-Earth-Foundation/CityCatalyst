@@ -1,10 +1,19 @@
+"use client";
+
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { Box, Card, Text } from "@chakra-ui/react";
 import { FcGoogle } from "react-icons/fc";
 import { MdCheckCircleOutline } from "react-icons/md";
 import { ExcelFileIcon } from "../icons";
+import { FC } from "react";
+import { bytesToMB } from "@/util/helpers";
 
-const FileDataCard = () => {
+interface FileCardDataProps {
+  fileName: string;
+  fileSize: number;
+}
+
+const FileDataCard: FC<FileCardDataProps> = ({ fileName, fileSize }) => {
   return (
     <Card
       w="331px"
@@ -28,8 +37,10 @@ const FileDataCard = () => {
             fontFamily="heading"
             lineHeight="20px"
             letterSpacing="wide"
+            isTruncated
+            maxW="200px"
           >
-            Your_data_file.csv
+            {fileName}
           </Text>
           <Text
             fontSize="body.md"
@@ -39,7 +50,7 @@ const FileDataCard = () => {
             letterSpacing="wide"
             color="interactive.control"
           >
-            1.5MB
+            {bytesToMB(fileSize)}
           </Text>
         </Box>
       </Box>

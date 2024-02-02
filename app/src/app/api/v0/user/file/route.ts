@@ -81,12 +81,10 @@ export const POST = apiHandler(
 
     const filename = file.name;
 
-    const fileType = file.name.slice(
-      ((filename.lastIndexOf(".") - 1) >>> 0) + 2,
-    );
-
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
+
+    const fileType = filename.split(".").pop();
 
     const fileData = {
       userId: userId,
@@ -94,6 +92,7 @@ export const POST = apiHandler(
       url: formData.get("url"),
       data: buffer,
       fileType: fileType,
+      fileName: formData.get("fileName"),
       sector: formData.get("sector"),
       status: formData.get("status"),
       gpcRefNo: formData.get("gpcRefNo"),

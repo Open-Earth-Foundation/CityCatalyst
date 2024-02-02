@@ -121,6 +121,7 @@ export const createUserFileRequset = z.object({
   fileReference: z.string().optional(),
   data: z.any(),
   fileType: z.string().optional(),
+  fileName: z.string().optional(),
   sector: z.string().optional(),
   url: z.string().url().optional(),
   status: z.string().optional(),

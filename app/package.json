@@ -87,6 +87,7 @@
     "sequelize-cli": "^6.6.1",
     "tailwindcss": "3.4.1",
     "typescript": "5.3.3",
+    "uuid": "^9.0.1",
     "wellknown": "^0.5.0",
     "zod": "^3.22.4"
   },

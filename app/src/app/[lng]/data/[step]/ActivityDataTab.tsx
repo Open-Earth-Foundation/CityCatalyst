@@ -252,11 +252,6 @@ export function ActivityDataTab({
         <FormLabel>{t("source-reference")}</FormLabel>
         <Textarea
           placeholder={t("source-reference-placeholder")}
-          bgColor={
-            resolve(prefix + "sourceReference", errors)
-              ? "sentiment.negativeOverlay"
-              : "base.light"
-          }
           {...register(prefix + "sourceReference", {
             required: t("source-reference-required"),
           })}

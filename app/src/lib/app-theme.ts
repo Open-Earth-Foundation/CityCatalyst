@@ -476,5 +476,23 @@ export const appTheme = extendTheme({
         variant: "brand",
       },
     },
+    Textarea: {
+      variants: {
+        brand: {
+          _invalid: {
+            background: "sentiment.negativeOverlay",
+            borderWidth: "2px",
+            borderColor: "sentiment.negativeDefault",
+          },
+          _focus: {
+            borderWidth: "2px",
+            borderColor: "#3182ce",
+          },
+        },
+      },
+      defaultProps: {
+        variant: "brand",
+      },
+    },
   },
 });

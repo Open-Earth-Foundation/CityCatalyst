@@ -212,7 +212,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
           ),
         );
       } else {
-        gasAmount = gasValue.gasAmount!;
+        gasAmount = BigInt(gasValue.gasAmount!);
       }
 
       // this assumes GWP values in the GasToCO2Eq table are always ints

@@ -46,8 +46,8 @@ type SubcategoryOption = {
 };
 
 type ActivityData = {
-  activityDataAmount?: number;
-  activityDataUnit?: string;
+  activityDataAmount?: number | null;
+  activityDataUnit?: string | null;
   emissionFactorType: string;
   co2EmissionFactor: number;
   n2oEmissionFactor: number;

@@ -62,8 +62,8 @@ export const resetPasswordRequest = z.object({
 
 export const createInventoryValue = z.object({
   gpcReferenceNumber: z.string().optional(),
-  activityValue: z.number().optional(),
-  activityUnits: z.string().optional(),
+  activityValue: z.number().nullable().optional(),
+  activityUnits: z.string().nullable().optional(),
   co2eq: z.coerce.bigint().gte(0n).optional(),
   co2eqYears: z.number().optional(),
   unavailableReason: z.string().optional(),

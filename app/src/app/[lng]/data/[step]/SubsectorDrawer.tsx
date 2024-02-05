@@ -310,7 +310,7 @@ export function SubsectorDrawer({
                 gasValue.emissionsFactor = {
                   emissionsPerActivity,
                   gas,
-                  units: value.activity.activityDataUnit,
+                  units: value.activity.activityDataUnit || undefined,
                   inventoryId: inventoryId,
                 };
               } else {
@@ -348,6 +348,8 @@ export function SubsectorDrawer({
               return [gasValue];
             });
           } else if (value.methodology === "direct-measure") {
+            inventoryValue.activityValue = null;
+            inventoryValue.activityUnits = null;
             inventoryValue.gasValues = [
               {
                 gas: "CO2",

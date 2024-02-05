@@ -108,7 +108,7 @@ export function ActivityDataTab({
       : Object.keys(factorsByUnit);
 
   // TODO this should happen in default form value, as the form still contains null/ undefined here
-  const selectedUnit = watch(prefix + "activityDataUnit") ?? scopeUnits[0];
+  const selectedUnit = watch(prefix + "activityDataUnit") ?? scopeUnits[0] ?? "";
   const selectedUnitShort = selectedUnit.split(" ")[0];
 
   useEffect(() => {

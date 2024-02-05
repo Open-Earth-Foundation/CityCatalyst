@@ -89,11 +89,13 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
     setCities(data);
   }, []);
 
-  const getYears = userFiles?.map((item: any) => {
+  const getYears = userFiles?.map((item: any): number => {
     const date = new Date(item.lastUpdated);
     return date.getFullYear();
   });
-  const years = Array.from(new Set(getYears));
+  const years: number[] = Array.from(new Set(getYears));
+
+  console.log(years);
 
   function getYearFromDate(dateString: string) {
     return new Date(dateString).getFullYear();
@@ -103,17 +105,17 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
     data: any,
     selectedYear: number | null | undefined,
   ) {
-    console.log(data);
     return data?.filter((item: any) => {
-      console.log(item.lastUpdated);
       return getYearFromDate(item?.lastUpdated) === selectedYear;
     });
   }
+
+  console.log(filterDataByYear(userFiles, 2024));
+
   const [isYearSelected, setIsYearSelected] = useState<boolean>(false);
   const [selectedYear, setselectedYear] = useState<number | null>();
 
   const filteredData = filterDataByYear(userFiles, selectedYear);
-  console.log(selectedYear);
 
   const {
     isOpen: isFileDeleteModalOpen,
@@ -130,6 +132,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
   });
 
   const [fileData, setFileData] = useState<UserFileAttributes>();
+  console.log(filteredData);
 
   return (
     <>
@@ -315,26 +318,15 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                     </Box>
                                     <Text>{year}</Text>
                                   </Td>
-                                  {cities.map((city) => {
-                                    const inventory = city.inventory.find(
-                                      (item: any) => item.year === year,
-                                    );
 
-                                    if (
-                                      inventory &&
-                                      inventory.files.length > 0
-                                    ) {
-                                      return (
-                                        <Td key={city.id}>
-                                          {inventory &&
-                                          inventory.files.length > 0
-                                            ? inventory.files.length
-                                            : "0"}{" "}
-                                          file(s)
-                                        </Td>
-                                      );
-                                    }
-                                  })}
+                                  <Td>
+                                    {filterDataByYear(userFiles, year).length}{" "}
+                                    {filterDataByYear(userFiles, year).length ==
+                                    0
+                                      ? "files"
+                                      : "file"}
+                                  </Td>
+
                                   <Td isNumeric>21 Sept, 2023</Td>
                                 </Tr>
                               ))}
@@ -363,11 +355,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                             >
                               {filteredData.map((file: any) => (
                                 <Tr key={`${city.id}-${file.id}`}>
-                                  <Td
-                                    display="flex"
-                                    gap="16px"
-                                    alignItems="center"
-                                  >
+                                  <Td gap="16px" alignItems="center">
                                     <Box color="interactive.primary">
                                       <FaFileCsv size={24} />
                                     </Box>

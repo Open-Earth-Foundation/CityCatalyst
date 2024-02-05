@@ -84,7 +84,6 @@ describe("UserFile API", () => {
     const res = await createUserFile(req, { params: { user: testUserID } });
     assert.equal(res.status, 200);
     const { data } = await res.json();
-    console.log(data);
     assert.equal(data?.sector, fileData.sector);
     assert.equal(data?.url, fileData.url);
     assert.equal(data?.status, fileData.status);

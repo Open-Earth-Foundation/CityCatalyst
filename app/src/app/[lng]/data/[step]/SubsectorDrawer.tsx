@@ -299,7 +299,7 @@ export function SubsectorDrawer({
             inventoryValue.gasValues = gases.flatMap((gas) => {
               let gasValue: GasValueData = {
                 gas,
-                gasAmount: undefined, // set this to null to remove previous data?
+                gasAmount: null, // remove previous data
               };
               if (value.activity.emissionFactorType === "custom") {
                 const emissionsPerActivity = Number(

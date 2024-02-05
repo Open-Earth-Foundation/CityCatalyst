@@ -63,6 +63,7 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
         center={center}
         zoom={zoom}
         onBoundsChanged={onBoundsChanged}
+        attributionPrefix={false}
       >
         <GeoJson
           svgAttributes={{

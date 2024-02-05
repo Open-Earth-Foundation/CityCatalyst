@@ -40,16 +40,56 @@ export const GET = apiHandler(
       throw new createHttpError.NotFound("Inventory not found");
     }
 
-    // TODO cache this
-    const sectors: Sector[] = await db.models.Sector.findAll({
+    // TODO cache this (including sorting)
+    let sectors: Sector[] = await db.models.Sector.findAll({
       include: [
         {
           model: db.models.SubSector,
           as: "subSectors",
-          include: [{ model: db.models.SubCategory, as: "subCategories" }],
+          include: [
+            {
+              model: db.models.SubCategory,
+              as: "subCategories",
+            },
+          ],
         },
       ],
     });
+
+    // sort whole inventory by GPC reference number
+    function romanNumeralComparison(sectorA: Sector, sectorB: Sector) {
+      const a = sectorA.referenceNumber || "";
+      const b = sectorB.referenceNumber || "";
+
+      const romanTable: Record<string, number> = {
+        I: 1,
+        II: 2,
+        III: 3,
+        IV: 4,
+        V: 5,
+        VI: 6,
+        VII: 7,
+        "": 1337,
+      };
+
+      return romanTable[a] - romanTable[b];
+    }
+    sectors = sectors.sort(romanNumeralComparison);
+    for (const sector of sectors) {
+      sector.subSectors = sector.subSectors.sort((a, b) => {
+        const ra = Number((a.referenceNumber ?? "X.9").split(".")[1]);
+        const rb = Number((b.referenceNumber ?? "X.9").split(".")[1]);
+        return ra - rb;
+      });
+      for (const subSector of sector.subSectors) {
+        subSector.subCategories = subSector.subCategories.sort((a, b) => {
+          const ra = Number((a.referenceNumber ?? "X.9.9").split(".")[2]);
+          const rb = Number((b.referenceNumber ?? "X.9.9").split(".")[2]);
+          return ra - rb;
+        });
+      }
+    }
+
     const sectorTotals: Record<string, number> = sectors.reduce(
       (acc, sector) => {
         const subCategoryCount = sector.subSectors

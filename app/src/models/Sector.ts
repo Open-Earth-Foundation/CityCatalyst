@@ -2,7 +2,6 @@ import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import type { DataSource, DataSourceId } from "./DataSource";
 import type { SubSector, SubSectorId } from "./SubSector";
-import { InventoryValue, InventoryValueId } from "./InventoryValue";
 
 export interface SectorAttributes {
   sectorId: string;

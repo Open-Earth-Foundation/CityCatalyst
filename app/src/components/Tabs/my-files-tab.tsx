@@ -451,7 +451,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                               color="content.primary"
                               fontSize="body.md"
                             >
-                              {filteredData.map((file: UserFileAttributes) => (
+                              {filteredData.map((file: any) => (
                                 <Tr key={`${city.id}-${file.id}`}>
                                   <Td
                                     display="flex"
@@ -461,7 +461,9 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                     <Box color="interactive.primary">
                                       <FaFileCsv size={24} />
                                     </Box>
-                                    <span>{file.fileName}</span>
+                                    <Text maxW="200px" isTruncated>
+                                      {file.file.fileName}
+                                    </Text>
                                   </Td>
                                   <Td>{file.sector}</Td>
                                   <Td>

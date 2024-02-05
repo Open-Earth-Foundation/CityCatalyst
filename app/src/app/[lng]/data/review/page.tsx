@@ -2,7 +2,7 @@
 
 import FileDataCard from "@/components/Cards/file-data-card";
 
-import { BuildingIcon } from "@/components/icons";
+import { BuildingIcon, TruckIcon, WasteIcon } from "@/components/icons";
 import Wrapper from "@/components/wrapper";
 import { useTranslation } from "@/i18n/client";
 import { RootState } from "@/lib/store";
@@ -18,6 +18,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { clear, removeSectorData } from "@/features/city/inventoryDataSlice";
 import { api } from "@/services/api";
 import { appendFileToFormData } from "@/util/helpers";
+import { useState } from "react";
 
 export default function ReviewPage({
   params: { lng },
@@ -31,10 +32,11 @@ export default function ReviewPage({
     (state: RootState) => state.inventoryData.sectors,
   );
   const onBack = () => {
-    router.push("/data/3");
+    router.back();
   };
   const onDiscard = () => {
     dispatch(clear());
+    router.push("/");
   };
 
   const stationaryEnergy = getAllSectorData.filter(
@@ -55,7 +57,10 @@ export default function ReviewPage({
 
   const defaultStatus = "pending";
 
+  const [isConfirming, setIsConfirming] = useState<boolean>(false);
+
   const onConfirm = async () => {
+    setIsConfirming(true);
     try {
       for (const sector of getAllSectorData) {
         const formData = new FormData();
@@ -86,6 +91,7 @@ export default function ReviewPage({
     } finally {
       router.push("/");
       dispatch(clear());
+      setIsConfirming(false);
     }
   };
 
@@ -274,7 +280,7 @@ export default function ReviewPage({
             <Box display="flex" justifyContent="space-between">
               <Box display="flex" gap="16px">
                 <Box>
-                  <BuildingIcon />
+                  <TruckIcon />
                 </Box>
                 <Box display="flex" flexDirection="column" gap="8px">
                   <Text
@@ -397,7 +403,7 @@ export default function ReviewPage({
             <Box display="flex" justifyContent="space-between">
               <Box display="flex" gap="16px">
                 <Box>
-                  <BuildingIcon />
+                  <WasteIcon />
                 </Box>
                 <Box display="flex" flexDirection="column" gap="8px">
                   <Text
@@ -563,7 +569,7 @@ export default function ReviewPage({
               </Button>
               <Button
                 h={16}
-                // isLoading={isConfirming}
+                isLoading={isConfirming}
                 px={8}
                 onClick={onConfirm}
                 size="sm"

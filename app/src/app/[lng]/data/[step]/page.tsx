@@ -421,7 +421,7 @@ export default function AddDataSteps({
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setConfirming(false);
     if (activeStep >= steps.length - 1) {
-      router.push("/data/review"); // go back to dashboard until there is a confirmation page
+      router.push("/data/review");
     } else {
       window.scrollTo({ top: 0, behavior: "smooth" });
       goToNext();
@@ -430,7 +430,7 @@ export default function AddDataSteps({
 
   const onSkip = () => {
     if (activeStep >= steps.length - 1) {
-      router.push("/data/review"); // go back to dashboard until there is a confirmation page
+      router.push("/data/review");
     } else {
       window.scrollTo({ top: 0, behavior: "smooth" });
       goToNext();
@@ -470,9 +470,7 @@ export default function AddDataSteps({
           data: base64FileString,
           url: URL,
           size: file.size,
-          fileType: file.name.slice(
-            ((filename.lastIndexOf(".") - 1) >>> 0) + 2,
-          ),
+          fileType: filename.split(".").pop(),
         },
       }),
     );

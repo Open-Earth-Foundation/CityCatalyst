@@ -16,8 +16,8 @@ interface FileCardDataProps {
 const FileDataCard: FC<FileCardDataProps> = ({ fileName, fileSize }) => {
   return (
     <Card
-      w="331px"
-      h="100px"
+      maxW="331px"
+      maxH="100px"
       shadow="none"
       borderRadius="8px"
       borderWidth="1px"

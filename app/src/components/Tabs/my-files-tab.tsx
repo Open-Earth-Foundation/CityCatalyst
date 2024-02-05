@@ -107,7 +107,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
   }
 
   const [isYearSelected, setIsYearSelected] = useState<boolean>(false);
-  const [selectedYear, setselectedYear] = useState<number | null>();
+  const [selectedYear, setSelectedYear] = useState<number | null>();
 
   const filteredData = filterDataByYear(userFiles, selectedYear);
 
@@ -246,7 +246,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                         cursor="pointer"
                         onClick={() => {
                           setIsYearSelected(false);
-                          setselectedYear(null);
+                          setSelectedYear(null);
                         }}
                       >
                         {t("all-inventory-years")}{" "}
@@ -295,7 +295,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                   <Td
                                     onClick={() => {
                                       setIsYearSelected(true);
-                                      setselectedYear(year);
+                                      setSelectedYear(year);
                                     }}
                                     display="flex"
                                     gap="16px"

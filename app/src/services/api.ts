@@ -4,7 +4,6 @@ import {
   type InventoryAttributes,
   type InventoryValueAttributes,
   PopulationAttributes,
-  EmissionsFactorAttributes,
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
 import type {
@@ -20,6 +19,7 @@ import type {
   UserFileResponse,
   EmissionsFactorResponse,
 } from "@/util/types";
+import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
@@ -40,12 +40,12 @@ export const api = createApi({
       transformResponse: (response: { data: CityAttributes }) => response.data,
     }),
     getCityBoundary: builder.query<
-      { data: GeoJSON.GeoJSON; boundingBox: BoundingBox },
+      { data: GeoJSON; boundingBox: BoundingBox },
       string
     >({
       query: (locode) => `city/${locode}/boundary`,
       transformResponse: (response: {
-        data: GeoJSON.GeoJSON;
+        data: GeoJSON;
         boundingBox: BoundingBox;
       }) => response,
     }),

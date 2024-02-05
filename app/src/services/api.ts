@@ -1,4 +1,3 @@
-import { UserFileAttributes } from "@/models/UserFile";
 import {
   type UserAttributes,
   type CityAttributes,
@@ -29,6 +28,7 @@ export const api = createApi({
     "SubSectorValue",
     "InventoryValue",
     "UserData",
+    "FileData",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
@@ -316,14 +316,19 @@ export const api = createApi({
       },
       transformResponse: (response: { data: UserFileResponse }) =>
         response.data,
+      invalidatesTags: ["FileData"],
     }),
     getUserFiles: builder.query({
       query: () => ({
         method: "GET",
         url: `/user/file`,
       }),
-      transformResponse: (response: { data: UserFileResponse }) =>
-        response.data,
+      transformResponse: (response: { data: UserFileResponse }) => {
+        console.log(response.data);
+        return response.data;
+      },
+
+      providesTags: ["FileData"],
     }),
     deleteUserFile: builder.mutation({
       query: (params) => ({
@@ -332,6 +337,7 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: UserFileResponse }) =>
         response.data,
+      invalidatesTags: ["FileData"],
     }),
   }),
 });

@@ -8,15 +8,7 @@ import { useTranslation } from "@/i18n/client";
 import { RootState } from "@/lib/store";
 
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import {
-  Box,
-  Button,
-  Card,
-  Heading,
-  Icon,
-  IconButton,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Button, Card, Heading, Icon, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 
 import { FaRegTrashAlt, FaTrash } from "react-icons/fa";

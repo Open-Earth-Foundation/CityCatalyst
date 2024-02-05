@@ -96,6 +96,7 @@ interface UserFileResponse {
   fileReference: string;
   url: string;
   sector: string;
+  fileName: string;
   status: string;
   gpcRefNo: string;
   file: fileContentValues;

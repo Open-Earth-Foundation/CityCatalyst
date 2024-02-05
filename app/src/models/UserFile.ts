@@ -113,9 +113,14 @@ export class UserFile
           allowNull: true,
           field: "gpc_ref_no",
         },
+        lastUpdated: {
+          type: DataTypes.DATE,
+          field: "last_updated",
+        },
       },
       {
         sequelize,
+        underscored: true,
         tableName: "UserFile",
         schema: "public",
         timestamps: true,

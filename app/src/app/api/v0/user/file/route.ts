@@ -49,7 +49,7 @@ export const GET = apiHandler(
         sector: userFile.sector,
         status: userFile.status,
         gpcRefNo: userFile.gpcRefNo,
-        updated: userFile.lastUpdated,
+        lastUpdated: userFile.lastUpdated,
         file: {
           fileName: file.name,
           size: file.size,
@@ -92,7 +92,7 @@ export const POST = apiHandler(
       url: formData.get("url"),
       data: buffer,
       fileType: fileType,
-      fileName: formData.get("fileName"),
+      fileName: filename,
       sector: formData.get("sector"),
       status: formData.get("status"),
       gpcRefNo: formData.get("gpcRefNo"),
@@ -109,14 +109,17 @@ export const POST = apiHandler(
       throw new createHttpError.NotFound("User files not found");
     }
 
+    console.log(userFile.lastUpdated);
+
     return NextResponse.json({
       data: {
         id: userFile.id,
-        userId: userFile.id,
+        userId: userFile.userId,
         fileReference: userFile.fileReference,
         url: userFile.url,
         sector: userFile.sector,
-        status: userFile.status,
+        fileName: userFile.fileName,
+        lastUpdated: userFile.lastUpdated,
         gpcRefNo: userFile.gpcRefNo,
         file: {
           fileName: file.name,

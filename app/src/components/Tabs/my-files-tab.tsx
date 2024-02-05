@@ -69,6 +69,7 @@ import { UserFileAttributes } from "@/models/UserFile";
 import { api } from "@/services/api";
 import Link from "next/link";
 import { UserFileResponse } from "@/util/types";
+import { persistor } from "@/lib/store";
 
 interface MyFilesTabProps {
   session: Session | null;
@@ -102,60 +103,6 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
       setValue("role", "admin");
     }
   }, [setValue, session, status]);
-
-  const [selectedUsers, setSelectedUsers] = useState<any>([]);
-
-  const handleCheckboxChange = (userId: string, isChecked: boolean) => {
-    if (isChecked) {
-      setSelectedUsers((prev: any) => [...prev, userId]);
-    } else {
-      setSelectedUsers((prev: []) =>
-        prev.filter((id: string) => id !== userId),
-      );
-    }
-  };
-
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [role, setRole] = useState<string>("");
-  const [filteredUsers, setFilteredUsers] = useState<Array<UserDetails>>([]);
-  const [filteredUsersByRole, setFilteredUsersByRole] = useState<
-    Array<UserDetails>
-  >([]);
-
-  useEffect(() => {
-    const users = [
-      { id: "1", name: "John Doe", email: "john@example.com", role: "admin" },
-      {
-        id: "2",
-        name: "Jane Smith",
-        email: "jane@example.com",
-        role: "contributor",
-      },
-    ];
-
-    const result = users.filter(
-      (users) =>
-        users.name
-          .toLocaleLowerCase()
-          .includes(searchTerm.toLocaleLowerCase()) ||
-        users.email
-          .toLocaleLowerCase()
-          .includes(searchTerm.toLocaleLowerCase()),
-    );
-
-    setFilteredUsers(result);
-  }, [role, searchTerm]);
-
-  useEffect(() => {
-    const selectedUserByRole = filteredUsers.filter((users) =>
-      users.role.toLocaleLowerCase().includes(role.toLocaleLowerCase()),
-    );
-    if (role !== "all") {
-      setFilteredUsersByRole(selectedUserByRole);
-    } else {
-      setFilteredUsersByRole(filteredUsers);
-    }
-  }, [filteredUsers, role]);
 
   const [cities, setCities] = useState<Array<any>>([]);
 
@@ -233,7 +180,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
   }, []);
 
   const getYears = userFiles?.map((item: any) => {
-    const date = new Date(item.created);
+    const date = new Date(item.lastUpdated);
     return date.getFullYear();
   });
   const years = Array.from(new Set(getYears));
@@ -246,32 +193,23 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
     data: any,
     selectedYear: number | null | undefined,
   ) {
-    return data?.filter(
-      (item: any) => getYearFromDate(item?.created) === selectedYear,
-    );
+    console.log(data);
+    return data?.filter((item: any) => {
+      console.log(item.lastUpdated);
+      return getYearFromDate(item?.lastUpdated) === selectedYear;
+    });
   }
   const [isYearSelected, setIsYearSelected] = useState<boolean>(false);
   const [selectedYear, setselectedYear] = useState<number | null>();
 
   const filteredData = filterDataByYear(userFiles, selectedYear);
-  console.log(userFiles);
-  const [deleteUserFile] = api.useDeleteUserFileMutation();
-  const handleDeleteUserFile = async (id: string) => {
-    await deleteUserFile(id);
-  };
+  console.log(selectedYear);
 
   const {
     isOpen: isFileDeleteModalOpen,
     onOpen: onFileDeleteModalOpen,
     onClose: onFileDeleteModalClose,
   } = useDisclosure();
-
-  const [userData, setUserData] = useState<UserAttributes>({
-    email: "",
-    userId: "",
-    name: "",
-    role: "",
-  });
 
   const [cityData, setCityData] = useState<CityData>({
     id: "",
@@ -281,7 +219,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
     lastUpdated: "",
   });
 
-  const [fileData, setFileData] = useState<UserFileResponse>();
+  const [fileData, setFileData] = useState<UserFileAttributes>();
 
   return (
     <>
@@ -513,7 +451,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                               color="content.primary"
                               fontSize="body.md"
                             >
-                              {filteredData.map((file: UserFileResponse) => (
+                              {filteredData.map((file: UserFileAttributes) => (
                                 <Tr key={`${city.id}-${file.id}`}>
                                   <Td
                                     display="flex"
@@ -523,7 +461,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                     <Box color="interactive.primary">
                                       <FaFileCsv size={24} />
                                     </Box>
-                                    <span>{file.file.fileName}</span>
+                                    <span>{file.fileName}</span>
                                   </Td>
                                   <Td>{file.sector}</Td>
                                   <Td>
@@ -565,7 +503,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                     alignItems="center"
                                     justifyContent="end"
                                   >
-                                    <span>{file.lastUpdated}</span>
+                                    <span>{file.lastUpdated as any}</span>
                                     <Popover isLazy>
                                       <PopoverTrigger>
                                         <IconButton
@@ -679,7 +617,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
       <DeleteFileModal
         isOpen={isFileDeleteModalOpen}
         onClose={onFileDeleteModalClose}
-        userData={userData}
+        fileData={fileData}
       />
     </>
   );

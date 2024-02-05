@@ -6,8 +6,9 @@ export interface UserFileAttributes {
   id: string;
   userId?: string;
   fileReference?: string;
-  data?: Buffer;
+  data?: Buffer | any;
   fileType?: string;
+  fileName?: string;
   sector?: string;
   status?: string;
   url?: string;
@@ -23,6 +24,7 @@ export type UserFileOptionalAttributes =
   | "fileReference"
   | "data"
   | "fileType"
+  | "fileName"
   | "sector"
   | "url"
   | "status"
@@ -43,6 +45,7 @@ export class UserFile
   fileReference?: string | undefined;
   data: Buffer | undefined;
   fileType?: string | undefined;
+  fileName?: string | undefined;
   sector?: string | undefined;
   url?: string | undefined;
   status: string | undefined;
@@ -88,6 +91,11 @@ export class UserFile
           allowNull: true,
           field: "file_type",
         },
+        fileName: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: "file_name",
+        },
         sector: {
           type: DataTypes.STRING(255),
           allowNull: true,
@@ -105,9 +113,14 @@ export class UserFile
           allowNull: true,
           field: "gpc_ref_no",
         },
+        lastUpdated: {
+          type: DataTypes.DATE,
+          field: "last_updated",
+        },
       },
       {
         sequelize,
+        underscored: true,
         tableName: "UserFile",
         schema: "public",
         timestamps: true,

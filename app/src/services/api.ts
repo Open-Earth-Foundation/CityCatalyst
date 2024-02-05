@@ -16,6 +16,7 @@ import type {
   InventoryValueResponse,
   InventoryWithCity,
   UserInfoResponse,
+  UserFileResponse,
   EmissionsFactorResponse,
 } from "@/util/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -29,6 +30,7 @@ export const api = createApi({
     "SubSectorValue",
     "InventoryValue",
     "UserData",
+    "FileData",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
@@ -307,6 +309,38 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: any }) => response.data,
     }),
+    addUserFile: builder.mutation<UserFileResponse, any>({
+      query: (formData) => {
+        return {
+          method: "POST",
+          url: `/user/file`,
+          body: formData,
+        };
+      },
+      transformResponse: (response: { data: UserFileResponse }) =>
+        response.data,
+      invalidatesTags: ["FileData"],
+    }),
+    getUserFiles: builder.query({
+      query: () => ({
+        method: "GET",
+        url: `/user/file`,
+      }),
+      transformResponse: (response: { data: UserFileResponse }) => {
+        return response.data;
+      },
+
+      providesTags: ["FileData"],
+    }),
+    deleteUserFile: builder.mutation({
+      query: (params) => ({
+        method: "DELETE",
+        url: `/user/file/${params.fileId}`,
+      }),
+      transformResponse: (response: { data: UserFileResponse }) =>
+        response.data,
+      invalidatesTags: ["FileData"],
+    }),
     getEmissionsFactors: builder.query<EmissionsFactorResponse, void>({
       query: () => `/emissions-factor`,
       transformResponse: (response: { data: EmissionsFactorResponse }) =>
@@ -358,5 +392,8 @@ export const {
   useGetVerifcationTokenQuery,
   useGetCitiesQuery,
   useGetInventoriesQuery,
+  useAddUserFileMutation,
+  useGetUserFilesQuery,
+  useDeleteUserFileMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

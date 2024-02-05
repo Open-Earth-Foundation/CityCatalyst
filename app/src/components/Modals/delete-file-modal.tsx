@@ -1,7 +1,7 @@
 "use client";
 
-import { UserDetails } from "@/app/[lng]/settings/page";
-import { UserAttributes } from "@/models/User";
+import { UserFileAttributes } from "@/models/UserFile";
+import { api } from "@/services/api";
 import {
   Modal,
   Button,
@@ -21,14 +21,24 @@ import { FiTrash2 } from "react-icons/fi";
 interface DeleteFileModalProps {
   isOpen: boolean;
   onClose: any;
-  userData: UserAttributes;
+  fileData: UserFileAttributes | undefined;
 }
 
 const DeleteFileModal: FC<DeleteFileModalProps> = ({
   isOpen,
   onClose,
-  userData,
+  fileData,
 }) => {
+  const [deleteUserFile] = api.useDeleteUserFileMutation();
+  const onDeleteFile = async () => {
+    try {
+      await deleteUserFile({ fileId: fileData?.id });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      onClose();
+    }
+  };
   return (
     <>
       <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
@@ -84,9 +94,8 @@ const DeleteFileModal: FC<DeleteFileModalProps> = ({
                 >
                   Are you sure you want to{" "}
                   <span style={{ fontWeight: "bold" }}>
-                    permanently remove {userData.name}
+                    permanently remove this file
                   </span>{" "}
-                  from your team?
                 </Text>
               </Box>
               <Button
@@ -101,7 +110,7 @@ const DeleteFileModal: FC<DeleteFileModalProps> = ({
                 fontWeight="semibold"
                 fontSize="button.md"
                 type="button"
-                onClick={() => alert(userData.userId)}
+                onClick={() => onDeleteFile()}
               >
                 save changes
               </Button>

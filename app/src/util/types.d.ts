@@ -87,3 +87,21 @@ declare module "next-auth" {
     };
   }
 }
+
+type fileContentValues = {
+  fileName: string;
+  size: number;
+  fileType: string;
+};
+interface UserFileResponse {
+  id: string;
+  userId: string;
+  fileReference: string;
+  url: string;
+  sector: string;
+  fileName: string;
+  status: string;
+  gpcRefNo: string;
+  file: fileContentValues;
+  lastUpdated: string;
+}

@@ -1,12 +1,13 @@
 "use client";
 
 import { appTheme } from "@/lib/app-theme";
-import { store } from "@/lib/store";
+import { persistor, store } from "@/lib/store";
 import { CacheProvider } from "@chakra-ui/next-js";
 import { ChakraProvider } from "@chakra-ui/react";
 import { SessionProvider } from "next-auth/react";
 import localFont from "next/font/local";
 import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 
 const openSans = localFont({
   src: [
@@ -56,7 +57,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <CacheProvider>
         <ChakraProvider theme={appTheme}>
           <SessionProvider>
-            <Provider store={store}>{children}</Provider>
+            <Provider store={store}>
+              <PersistGate loading={null} persistor={persistor}>
+                {children}
+              </PersistGate>
+            </Provider>
           </SessionProvider>
         </ChakraProvider>
       </CacheProvider>

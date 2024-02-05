@@ -13,20 +13,30 @@ export const GET = apiHandler(async (req: NextRequest, { params }) => {
   }
   const subCategoryIds = subCategoryIdsParam.split(",");
 
-  const inventoryValue = await db.models.InventoryValue.findAll({
+  const inventoryValues = await db.models.InventoryValue.findAll({
     where: {
       subCategoryId: { [Op.in]: subCategoryIds },
       inventoryId: params.inventory,
     },
     include: [
       { model: db.models.DataSource, as: "dataSource" },
-      { model: db.models.GasValue, as: "gasValues" },
+      {
+        model: db.models.GasValue,
+        as: "gasValues",
+        include: [
+          {
+            model: db.models.EmissionsFactor,
+            as: "emissionsFactor",
+            include: [{ model: db.models.DataSource, as: "dataSources" }],
+          },
+        ],
+      },
     ],
   });
 
-  if (!inventoryValue) {
-    throw new createHttpError.NotFound("Inventory value not found");
+  if (!inventoryValues) {
+    throw new createHttpError.NotFound("Inventory values not found");
   }
 
-  return NextResponse.json({ data: inventoryValue });
+  return NextResponse.json({ data: inventoryValues });
 });

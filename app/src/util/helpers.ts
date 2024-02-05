@@ -69,3 +69,18 @@ export const fileEndingToMIMEType: Record<string, string> = {
   xlsx: "application/vnd.ms-excel",
   default: "application/x-binary",
 };
+
+export function groupBy<T>(
+  list: T[],
+  lambda: (elem: T) => string,
+): Record<string, T[]> {
+  return list.reduce(
+    (acc, elem) => {
+      const key = lambda(elem);
+      acc[key] = acc[key] || [];
+      acc[key].push(elem);
+      return acc;
+    },
+    {} as Record<string, T[]>,
+  );
+}

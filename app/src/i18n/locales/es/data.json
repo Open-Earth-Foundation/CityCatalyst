@@ -96,5 +96,7 @@
   "highly-modeled-uncertain-emissions-data": "Datos de emisiones altamente modelados o inciertos",
   "select-subcategories": "Seleccionar las subcategorías a añadir",
   "completed": "Completado",
-  "incomplete": "Incompleto"
+  "incomplete": "Incompleto",
+
+  "add-custom": "Agregar personalizado"
 }

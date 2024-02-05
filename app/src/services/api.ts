@@ -340,6 +340,7 @@ export const api = createApi({
       transformResponse: (response: { data: UserFileResponse }) =>
         response.data,
       invalidatesTags: ["FileData"],
+    }),
     getEmissionsFactors: builder.query<EmissionsFactorResponse, void>({
       query: () => `/emissions-factor`,
       transformResponse: (response: { data: EmissionsFactorResponse }) =>

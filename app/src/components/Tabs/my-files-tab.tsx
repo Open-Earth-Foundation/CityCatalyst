@@ -74,8 +74,6 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
 }) => {
   const [cities, setCities] = useState<Array<any>>([]);
 
-  console.log(userInfo);
-
   useEffect(() => {
     const data = [
       {
@@ -95,8 +93,6 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
   });
   const years: number[] = Array.from(new Set(getYears));
 
-  console.log(years);
-
   function getYearFromDate(dateString: string) {
     return new Date(dateString).getFullYear();
   }
@@ -109,8 +105,6 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
       return getYearFromDate(item?.lastUpdated) === selectedYear;
     });
   }
-
-  console.log(filterDataByYear(userFiles, 2024));
 
   const [isYearSelected, setIsYearSelected] = useState<boolean>(false);
   const [selectedYear, setselectedYear] = useState<number | null>();
@@ -132,7 +126,6 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
   });
 
   const [fileData, setFileData] = useState<UserFileAttributes>();
-  console.log(filteredData);
 
   return (
     <>
@@ -356,12 +349,18 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                               {filteredData.map((file: any) => (
                                 <Tr key={`${city.id}-${file.id}`}>
                                   <Td gap="16px" alignItems="center">
-                                    <Box color="interactive.primary">
-                                      <FaFileCsv size={24} />
+                                    <Box
+                                      display="flex"
+                                      alignItems="center"
+                                      gap="8px"
+                                    >
+                                      <Box color="interactive.primary">
+                                        <FaFileCsv size={24} />
+                                      </Box>
+                                      <Text maxW="200px" isTruncated>
+                                        {file.file.fileName}
+                                      </Text>
                                     </Box>
-                                    <Text maxW="200px" isTruncated>
-                                      {file.file.fileName}
-                                    </Text>
                                   </Td>
                                   <Td>{file.sector}</Td>
                                   <Td>

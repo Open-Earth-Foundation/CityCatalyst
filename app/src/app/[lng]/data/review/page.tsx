@@ -55,8 +55,6 @@ export default function ReviewPage({
 
   const defaultStatus = "pending";
 
-  console.log(getAllSectorData);
-
   const onConfirm = async () => {
     try {
       for (const sector of getAllSectorData) {

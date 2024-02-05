@@ -109,8 +109,6 @@ export const POST = apiHandler(
       throw new createHttpError.NotFound("User files not found");
     }
 
-    console.log(userFile.lastUpdated);
-
     return NextResponse.json({
       data: {
         id: userFile.id,

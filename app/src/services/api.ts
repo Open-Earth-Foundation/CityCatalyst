@@ -324,7 +324,6 @@ export const api = createApi({
         url: `/user/file`,
       }),
       transformResponse: (response: { data: UserFileResponse }) => {
-        console.log(response.data);
         return response.data;
       },
 

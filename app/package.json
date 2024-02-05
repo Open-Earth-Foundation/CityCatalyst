@@ -33,6 +33,7 @@
     "@chakra-ui/react": "^2.8.1",
     "@react-email/components": "^0.0.11",
     "@reduxjs/toolkit": "^1.9.7",
+    "@storybook/cli": "^7.6.12",
     "@storybook/react": "^7.4.5",
     "@storybook/testing-library": "^0.2.2",
     "@types/bcrypt": "^5.0.1",
@@ -101,7 +102,7 @@
     "prettier": "3.0.3",
     "sequelize-auto": "^0.8.8",
     "start-server-and-test": "^2.0.3",
-    "storybook": "^7.4.5",
+    "storybook": "^7.6.12",
     "tsx": "^4.7.0"
   },
   "engines": {

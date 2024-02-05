@@ -158,4 +158,5 @@
   "csv-or-json": "CSV or JSON (max 2MB)",
   "download-template": "Download template to upload data",
   "file-upload-steps": "Follow the steps in our template and upload the data to calculate your inventory without waiting for CityCatlyst's data review."
+  "add-custom": "Add custom"
 }

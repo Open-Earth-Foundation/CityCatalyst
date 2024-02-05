@@ -71,6 +71,9 @@ interface InventoryValueUpdateQuery {
   data: InventoryValueData;
 }
 
+type EmissionsFactorWithDataSources = EmissionsFactorAttributes & { dataSources: DataSourceAttributes[] };
+type EmissionsFactorResponse = EmissionsFactorWithDataSources[];
+
 type InventoryWithCity = InventoryAttributes & { city: CityAttributes };
 
 declare module "next-auth" {

@@ -6,6 +6,7 @@ import type { DataSource, DataSourceId } from "./DataSource";
 export interface PopulationAttributes {
   cityId: string;
   population?: number;
+  countryPopulation?: number;
   year: number;
   created?: Date;
   lastUpdated?: Date;
@@ -16,6 +17,7 @@ export type PopulationPk = "cityId" | "year";
 export type PopulationId = Population[PopulationPk];
 export type PopulationOptionalAttributes =
   | "population"
+  | "countryPopulation"
   | "created"
   | "lastUpdated"
   | "datasourceId";
@@ -30,6 +32,7 @@ export class Population
 {
   cityId!: string;
   population?: number;
+  countryPopulation?: number;
   year!: number;
   created?: Date;
   lastUpdated?: Date;
@@ -65,6 +68,11 @@ export class Population
         population: {
           type: DataTypes.BIGINT,
           allowNull: true,
+        },
+        countryPopulation: {
+          type: DataTypes.BIGINT,
+          allowNull: true,
+          field: "country_population",
         },
         year: {
           type: DataTypes.INTEGER,

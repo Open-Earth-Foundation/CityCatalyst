@@ -1,4 +1,4 @@
-gpc_refno,emissions_per_activity,units,gas,region,reference,id
+gpc_reference_number,emissions_per_activity,units,gas,region,reference,id
 I.1.1,14.92,g/MJ Natural Gas,CO2,US,Data provided by Japan Natural Gas Association and The Federation of Electric Power Companies,52b1d5d9-ce74-49d8-8c7c-699b8bef6b33
 I.2.1,14.92,g/MJ Natural Gas,CO2,US,Data provided by Japan Natural Gas Association and The Federation of Electric Power Companies,4db10957-5949-4d20-81db-9e9047ca02e0
 I.3.1,14.92,g/MJ Natural Gas,CO2,US,Data provided by Japan Natural Gas Association and The Federation of Electric Power Companies,85464263-d494-4cf9-baad-b1fada9de461

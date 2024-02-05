@@ -4,6 +4,7 @@ import {
   type InventoryAttributes,
   type InventoryValueAttributes,
   PopulationAttributes,
+  EmissionsFactorAttributes,
 } from "@/models/init-models";
 import type {
   ConnectDataSourceQuery,
@@ -16,6 +17,7 @@ import type {
   InventoryWithCity,
   UserInfoResponse,
   UserFileResponse,
+  EmissionsFactorResponse,
 } from "@/util/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
@@ -169,6 +171,7 @@ export const api = createApi({
       {
         cityId: string;
         population: number;
+        countryPopulation: number;
         year: number;
         locode: string;
       }
@@ -337,6 +340,10 @@ export const api = createApi({
       transformResponse: (response: { data: UserFileResponse }) =>
         response.data,
       invalidatesTags: ["FileData"],
+    getEmissionsFactors: builder.query<EmissionsFactorResponse, void>({
+      query: () => `/emissions-factor`,
+      transformResponse: (response: { data: EmissionsFactorResponse }) =>
+        response.data,
     }),
   }),
 });

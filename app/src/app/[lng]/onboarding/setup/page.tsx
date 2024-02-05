@@ -6,7 +6,6 @@ import { set } from "@/features/city/openclimateCitySlice";
 import { useTranslation } from "@/i18n/client";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { OCCityArributes } from "@/models/City";
-import { PopulationAttributes } from "@/models/Population";
 import {
   useAddCityMutation,
   useAddCityPopulationMutation,
@@ -42,7 +41,6 @@ import {
   useSteps,
   useToast,
 } from "@chakra-ui/react";
-import { randomUUID } from "crypto";
 import { TFunction } from "i18next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
@@ -395,6 +393,7 @@ export default function OnboardingSetup({
     population: number;
     datasourceId: string;
   }>({ year: 0, population: 0, datasourceId: "" });
+  const [countryPopulation, setCountryPopulation] = useState<number>(0);
 
   const storedData = useAppSelector((state) => state.openClimateCity);
 
@@ -414,7 +413,11 @@ export default function OnboardingSetup({
   };
 
   const { data: cityData } = useGetOCCityDataQuery(data.locode, {
-    skip: data.locode.length ? false : true,
+    skip: !data.locode,
+  });
+  const countryLocode = data.locode.length > 0 ? data.locode.split(" ")[0] : null;
+  const { data: countryData } = useGetOCCityDataQuery(countryLocode!, {
+    skip: !countryLocode,
   });
 
   const makeErrorToast = (title: string, description?: string) => {
@@ -426,7 +429,7 @@ export default function OnboardingSetup({
     });
   };
 
-  const [ocCityData, setocCityData] = useState<{
+  const [ocCityData, setOcCityData] = useState<{
     area: number;
     region: string;
     country: string;
@@ -456,9 +459,18 @@ export default function OnboardingSetup({
           )[0]?.name ?? "",
       };
 
-      setocCityData(cityObject);
+      setOcCityData(cityObject);
     }
   }, [cityData, storedData.city?.root_path_geo, data.year]);
+
+  useEffect(() => {
+    if (countryData) {
+      const population = countryData?.data.population.filter(
+        (item: any) => item.year === data.year,
+      );
+      setCountryPopulation(population[0]?.population);
+    }
+  }, [countryData, data.year]);
 
   const onConfirm = async () => {
     // save data in backend
@@ -477,6 +489,7 @@ export default function OnboardingSetup({
             cityId: res.data.cityId,
             locode: res.data.locode!,
             population: populationData.population,
+            countryPopulation: countryPopulation,
             year: populationData.year,
           });
         });

@@ -312,7 +312,7 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "datasourceId",
   });
   EmissionsFactor.belongsToMany(DataSource, {
-    as: "datasourceIdDataSourceDataSourceEmissionsFactors",
+    as: "dataSources",
     through: DataSourceEmissionsFactor,
     foreignKey: "emissionsFactorId",
     otherKey: "datasourceId",

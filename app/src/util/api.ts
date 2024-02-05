@@ -1,4 +1,4 @@
-import "@/util/bigint";
+import "@/util/big_int_json";
 
 import { Auth } from "@/lib/auth";
 import createHttpError from "http-errors";

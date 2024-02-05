@@ -9,8 +9,8 @@ import { SubSector, SubSectorId } from "./SubSector";
 export interface InventoryValueAttributes {
   id: string;
   gpcReferenceNumber?: string;
-  activityValue?: number;
-  activityUnits?: string;
+  activityValue?: number | null;
+  activityUnits?: string | null;
   co2eq?: bigint;
   co2eqYears?: number;
   unavailableReason?: string;
@@ -52,8 +52,8 @@ export class InventoryValue
 {
   id!: string;
   gpcReferenceNumber?: string;
-  activityValue?: number;
-  activityUnits?: string;
+  activityValue?: number | null;
+  activityUnits?: string | null;
   co2eq?: bigint;
   co2eqYears?: number;
   unavailableReason?: string;

@@ -62,8 +62,8 @@ export const resetPasswordRequest = z.object({
 
 export const createInventoryValue = z.object({
   gpcReferenceNumber: z.string().optional(),
-  activityValue: z.number().optional(),
-  activityUnits: z.string().optional(),
+  activityValue: z.number().nullable().optional(),
+  activityUnits: z.string().nullable().optional(),
   co2eq: z.coerce.bigint().gte(0n).optional(),
   co2eqYears: z.number().optional(),
   unavailableReason: z.string().optional(),
@@ -73,7 +73,7 @@ export const createInventoryValue = z.object({
       z.object({
         gas: z.string(),
         // if not present, use activityValue with emissionsFactor instead
-        gasAmount: z.coerce.bigint().gte(0n).optional(),
+        gasAmount: z.coerce.bigint().gte(0n).nullable().optional(),
         emissionsFactorId: z.string().uuid().optional(),
         emissionsFactor: z
           .object({
@@ -122,6 +122,7 @@ export const createUserFileRequset = z.object({
   fileReference: z.string().optional(),
   data: z.any(),
   fileType: z.string().optional(),
+  fileName: z.string().optional(),
   sector: z.string().optional(),
   url: z.string().url().optional(),
   status: z.string().optional(),

@@ -16,9 +16,10 @@ import {
 } from "@chakra-ui/react";
 import { ActivityDataTab } from "./ActivityDataTab";
 import { DirectMeasureForm } from "./DirectMeasureForm";
-import { TFunction } from "i18next";
+import type { TFunction } from "i18next";
 import { Control, useController } from "react-hook-form";
 import { resolve } from "@/util/helpers";
+import type { EmissionsFactorWithDataSources } from "@/util/types";
 
 export function EmissionsForm({
   t,
@@ -27,7 +28,9 @@ export function EmissionsForm({
   control,
   prefix = "",
   watch,
-  sectorNumber,
+  setValue,
+  gpcReferenceNumber,
+  emissionsFactors,
 }: {
   t: TFunction;
   register: Function;
@@ -35,7 +38,9 @@ export function EmissionsForm({
   control: Control<any, any>;
   prefix?: string;
   watch: Function;
-  sectorNumber: string;
+  setValue: Function;
+  gpcReferenceNumber: string;
+  emissionsFactors: EmissionsFactorWithDataSources[];
 }) {
   const { field } = useController({
     name: prefix + "methodology",
@@ -135,7 +140,9 @@ export function EmissionsForm({
               errors={errors}
               prefix={prefix + "activity."}
               watch={watch}
-              sectorNumber={sectorNumber}
+              setValue={setValue}
+              gpcReferenceNumber={gpcReferenceNumber}
+              emissionsFactors={emissionsFactors}
             />
           )}
           {/*** Direct measure ***/}

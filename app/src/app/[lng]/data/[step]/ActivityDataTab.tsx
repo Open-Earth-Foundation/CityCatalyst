@@ -18,7 +18,10 @@ import {
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { resolve } from "@/util/helpers";
+import { resolve, groupBy } from "@/util/helpers";
+import type { EmissionsFactorWithDataSources } from "@/util/types";
+import type { EmissionsFactorData } from "./types";
+import { useEffect } from "react";
 
 const activityDataUnits: Record<string, string[]> = {
   I: [
@@ -37,13 +40,26 @@ const activityDataUnits: Record<string, string[]> = {
   II: ["l", "m3", "ft3", "bbl", "gal (US)", "gal (UK)", "km", "mi", "Other"],
   III: ["g", "kg", "t", "kt", "lt", "st", "lb", "Other"],
 };
-const emissionFactorTypes = [
+/*const emissionFactorTypes = [
   "Local",
   "Regional",
   "National",
   "IPCC",
   "Add custom",
-];
+];*/
+
+export function determineEmissionsFactorType(factor: EmissionsFactorData) {
+  let sourceName = factor.dataSources
+    ? factor.dataSources[0].name || "Unknown data source"
+    : "Unknown data source";
+  if (sourceName.includes("IPCC") && sourceName.includes("US")) {
+    return "National (US)";
+  } else if (sourceName.includes("IPCC")) {
+    return "IPCC";
+  }
+
+  return sourceName;
+}
 
 export function ActivityDataTab({
   t,
@@ -51,17 +67,84 @@ export function ActivityDataTab({
   errors,
   prefix,
   watch,
-  sectorNumber,
+  setValue,
+  gpcReferenceNumber,
+  emissionsFactors,
 }: {
   t: TFunction;
   register: Function;
   errors: Record<string, any>;
   prefix: string;
   watch: Function;
-  sectorNumber: string; // I, II, III
+  setValue: Function;
+  gpcReferenceNumber: string;
+  emissionsFactors: EmissionsFactorWithDataSources[];
 }) {
-  const selectedUnit = watch(prefix + "activityDataUnit");
-  const selectedEmissionFactorType = watch(prefix + "emissionFactorType");
+  const selectedEmissionFactorType =
+    watch(prefix + "emissionFactorType") || "custom";
+  // TODO cache with useEffect and useState?
+  const scopeEmissionsFactors = emissionsFactors.filter(
+    (factor) => factor.gpcReferenceNumber === gpcReferenceNumber,
+  );
+  // const selectedEmissionsFactors = scopeEmissionsFactors.filter((factor) => factor.dataSources[0].datasourceId === selectedEmissionFactorType.datasourceId);
+  const factorsByType = groupBy(
+    scopeEmissionsFactors,
+    determineEmissionsFactorType,
+  );
+  const emissionsFactorTypes = Object.keys(factorsByType);
+  const selectedEmissionsFactors =
+    factorsByType[selectedEmissionFactorType] || [];
+  const factorsByUnit = groupBy(
+    selectedEmissionsFactors,
+    (factor) => factor.units || "Unknown unit",
+  );
+  const sectorReference = gpcReferenceNumber.split(".")[0];
+  const customUnits = activityDataUnits[sectorReference].map(
+    (unit) => "kg/" + unit,
+  );
+  const scopeUnits =
+    selectedEmissionFactorType === "custom"
+      ? customUnits
+      : Object.keys(factorsByUnit);
+
+  // TODO this should happen in default form value, as the form still contains null/ undefined here
+  const selectedUnit = watch(prefix + "activityDataUnit") ?? scopeUnits[0] ?? "";
+  const selectedUnitShort = selectedUnit.split(" ")[0];
+
+  useEffect(() => {
+    if (selectedEmissionFactorType === "custom") {
+      return;
+    }
+
+    // TODO overwrite selectedUnit / selectedEmissionFactorType
+    // with first unit in list when it's null
+
+    const selectedFactorsByGas =
+      factorsByUnit[selectedUnit]?.reduce(
+        (acc, factor) => {
+          if (factor.gas) {
+            acc[factor.gas] = factor;
+          }
+          return acc;
+        },
+        {} as Record<string, EmissionsFactorWithDataSources>,
+      ) || {};
+
+    // TODO these don't change the input values!
+    setValue(
+      prefix + "co2EmissionFactor",
+      selectedFactorsByGas.CO2?.emissionsPerActivity || 0,
+    );
+    setValue(
+      prefix + "ch4EmissionFactor",
+      selectedFactorsByGas.CH4?.emissionsPerActivity || 0,
+    );
+    setValue(
+      prefix + "n2oEmissionFactor",
+      selectedFactorsByGas.N2O?.emissionsPerActivity || 0,
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedUnit, selectedEmissionFactorType, setValue]);
 
   return (
     <>
@@ -100,9 +183,11 @@ export function ActivityDataTab({
                 variant="unstyled"
                 {...register(prefix + "activityDataUnit")}
               >
-                {activityDataUnits[sectorNumber].map((unit) => (
+                {scopeUnits.map((unit) => (
                   <option key={unit} value={unit}>
-                    {unit}
+                    {unit.includes("/")
+                      ? unit.slice(unit.indexOf("/") + 1) // only remove first slash
+                      : unit}
                   </option>
                 ))}
               </Select>
@@ -119,11 +204,14 @@ export function ActivityDataTab({
             bgColor="base.light"
           >
             {/* TODO translate values and use internal value for saving */}
-            {emissionFactorTypes.map((type) => (
+            {emissionsFactorTypes.map((type) => (
               <option key={type} value={type}>
                 {type}
               </option>
             ))}
+            <option key="custom" value="custom">
+              {t("add-custom")}
+            </option>
           </Select>
         </FormControl>
       </HStack>
@@ -147,7 +235,7 @@ export function ActivityDataTab({
             <NumberInput
               defaultValue={0}
               min={0}
-              isDisabled={selectedEmissionFactorType !== "Add custom"}
+              isDisabled={selectedEmissionFactorType !== "custom"}
             >
               <NumberInputField
                 borderRightRadius={0}
@@ -159,7 +247,7 @@ export function ActivityDataTab({
               bgColor="background.neutral"
               color="content.tertiary"
             >
-              CO2/{selectedUnit}
+              {selectedUnitShort}
             </InputRightAddon>
           </InputGroup>
           <FormHelperText>&nbsp;</FormHelperText>
@@ -172,7 +260,7 @@ export function ActivityDataTab({
             <NumberInput
               defaultValue={0}
               min={0}
-              isDisabled={selectedEmissionFactorType !== "Add custom"}
+              isDisabled={selectedEmissionFactorType !== "custom"}
             >
               <NumberInputField
                 borderRightRadius={0}
@@ -184,7 +272,7 @@ export function ActivityDataTab({
               bgColor="background.neutral"
               color="content.tertiary"
             >
-              N2O/{selectedUnit}
+              {selectedUnitShort}
             </InputRightAddon>
           </InputGroup>
           <FormHelperText color="content.tertiary">
@@ -199,7 +287,7 @@ export function ActivityDataTab({
             <NumberInput
               defaultValue={0}
               min={0}
-              isDisabled={selectedEmissionFactorType !== "Add custom"}
+              isDisabled={selectedEmissionFactorType !== "custom"}
             >
               <NumberInputField
                 borderRightRadius={0}
@@ -211,7 +299,7 @@ export function ActivityDataTab({
               bgColor="background.neutral"
               color="content.tertiary"
             >
-              CH4/{selectedUnit}
+              {selectedUnitShort}
             </InputRightAddon>
           </InputGroup>
           <FormHelperText color="content.tertiary">

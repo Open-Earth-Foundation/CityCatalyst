@@ -71,6 +71,9 @@ interface InventoryValueUpdateQuery {
   data: InventoryValueData;
 }
 
+type EmissionsFactorWithDataSources = EmissionsFactorAttributes & { dataSources: DataSourceAttributes[] };
+type EmissionsFactorResponse = EmissionsFactorWithDataSources[];
+
 type InventoryWithCity = InventoryAttributes & { city: CityAttributes };
 
 declare module "next-auth" {
@@ -83,4 +86,22 @@ declare module "next-auth" {
       role: string;
     };
   }
+}
+
+type fileContentValues = {
+  fileName: string;
+  size: number;
+  fileType: string;
+};
+interface UserFileResponse {
+  id: string;
+  userId: string;
+  fileReference: string;
+  url: string;
+  sector: string;
+  fileName: string;
+  status: string;
+  gpcRefNo: string;
+  file: fileContentValues;
+  lastUpdated: string;
 }

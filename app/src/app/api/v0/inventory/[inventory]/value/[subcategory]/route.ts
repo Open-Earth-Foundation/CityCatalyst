@@ -12,7 +12,17 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
     where: { subCategoryId: params.subcategory, inventoryId: params.inventory },
     include: [
       { model: db.models.DataSource, as: "dataSource" },
-      { model: db.models.GasValue, as: "gasValues" },
+      {
+        model: db.models.GasValue,
+        as: "gasValues",
+        include: [
+          {
+            model: db.models.EmissionsFactor,
+            as: "emissionsFactor",
+            include: [{ model: db.models.DataSource, as: "dataSources" }],
+          },
+        ],
+      },
     ],
   });
 
@@ -196,11 +206,13 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
       let gasAmount: bigint;
       if (hasActivityValue) {
         gasAmount = BigInt(
-          inventoryValue!.activityValue! *
-            gasValue.emissionsFactor.emissionsPerActivity!,
+          Math.floor(
+            inventoryValue!.activityValue! *
+              gasValue.emissionsFactor.emissionsPerActivity!,
+          ),
         );
       } else {
-        gasAmount = gasValue.gasAmount!;
+        gasAmount = BigInt(gasValue.gasAmount!);
       }
 
       // this assumes GWP values in the GasToCO2Eq table are always ints

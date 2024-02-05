@@ -92,7 +92,7 @@ export function appendFileToFormData(base64String: string, filename: string) {
 
 export function bytesToMB(bytes: number): string {
   return (bytes / 1048576).toFixed(2) + " MB";
-  
+}
 export function groupBy<T>(
   list: T[],
   lambda: (elem: T) => string,

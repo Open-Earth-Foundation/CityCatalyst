@@ -118,6 +118,7 @@ export const POST = apiHandler(
         sector: userFile.sector,
         fileName: userFile.fileName,
         lastUpdated: userFile.lastUpdated,
+        status: userFile.status,
         gpcRefNo: userFile.gpcRefNo,
         file: {
           fileName: file.name,

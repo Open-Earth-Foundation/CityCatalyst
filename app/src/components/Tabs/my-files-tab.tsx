@@ -34,31 +34,17 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import React, { FC, useEffect, useMemo, useState } from "react";
-import FormInput from "../form-input";
-import FormSelectInput from "../form-select-input";
+
+import { ChevronRightIcon, SearchIcon } from "@chakra-ui/icons";
 import {
-  AddIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  SearchIcon,
-} from "@chakra-ui/icons";
-import {
-  MdFolder,
   MdMoreVert,
   MdOutlineFileDownload,
   MdOutlineFolder,
-  MdOutlineIndeterminateCheckBox,
-  MdOutlineModeEditOutline,
 } from "react-icons/md";
 import { FiTrash2 } from "react-icons/fi";
 import { FaFileCsv } from "react-icons/fa";
-import NextLink from "next/link";
-import {
-  CityData,
-  ProfileInputs,
-  UserDetails,
-} from "@/app/[lng]/settings/page";
-import { SubmitHandler, useForm } from "react-hook-form";
+
+import { CityData } from "@/app/[lng]/settings/page";
 import { Session } from "next-auth";
 
 import DeleteFileModal from "@/components/Modals/delete-file-modal";
@@ -66,10 +52,8 @@ import DeleteFileModal from "@/components/Modals/delete-file-modal";
 import { TFunction } from "i18next";
 import { UserAttributes } from "@/models/User";
 import { UserFileAttributes } from "@/models/UserFile";
-import { api } from "@/services/api";
+
 import Link from "next/link";
-import { UserFileResponse } from "@/util/types";
-import { persistor } from "@/lib/store";
 
 interface MyFilesTabProps {
   session: Session | null;
@@ -88,91 +72,17 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
   userInfo,
   userFiles,
 }) => {
-  const [inputValue, setInputValue] = useState<string>("");
-  const {
-    handleSubmit,
-    register,
-    formState: { errors, isSubmitting },
-    setValue,
-  } = useForm<ProfileInputs>();
-  useEffect(() => {
-    if (session?.user && status === "authenticated") {
-      setValue("name", session.user?.name!);
-      setValue("city", "City");
-      setValue("email", session.user.email!);
-      setValue("role", "admin");
-    }
-  }, [setValue, session, status]);
-
   const [cities, setCities] = useState<Array<any>>([]);
+
+  console.log(userInfo);
 
   useEffect(() => {
     const data = [
       {
         id: "1",
-        name: "Test City 1",
+        name: "CITY",
         state: "Test Region",
-        country: "Argentina",
-        inventory: [
-          {
-            year: 2020,
-            files: [
-              {
-                id: "1",
-                fileName: "your_nov_2020_data_file.csv",
-                sector: "Stationary Energy",
-                status: "pending",
-                lastUpdated: "22 November, 2022",
-              },
-              {
-                id: "2",
-                fileName: "your_dec_2020_data_file.csv",
-                sector: "Transportion",
-                status: "added to inventory",
-                lastUpdated: "1 December, 2022",
-              },
-            ],
-          },
-          {
-            year: 2021,
-            files: [
-              {
-                id: "1",
-                fileName: "your_nov_2020_data_file.csv",
-                sector: "Stationary Energy",
-                status: "pending",
-                lastUpdated: "22 November, 2022",
-              },
-              {
-                id: "2",
-                fileName: "your_dec_2020_data_file.csv",
-                sector: "Transportion",
-                status: "added to inventory",
-                lastUpdated: "1 December, 2022",
-              },
-            ],
-          },
-          {
-            year: 2022,
-            files: [
-              {
-                id: "1",
-                fileName: "your_nov_2020_data_file.csv",
-                sector: "Stationary Energy",
-                status: "pending",
-                lastUpdated: "22 November, 2022",
-              },
-              {
-                id: "2",
-                fileName: "your_dec_2020_data_file.csv",
-                sector: "Transportion",
-                status: "added to inventory",
-                lastUpdated: "1 December, 2022",
-              },
-            ],
-          },
-        ],
-
+        country: "TEST COUNTRY",
         lastUpdated: "2023-10-10T12:05:41.340Z",
       },
     ];

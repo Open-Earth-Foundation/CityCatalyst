@@ -9,8 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "npm run api:test & npm run cy:test",
-    "api:test": "glob -c \"node --loader tsx --no-warnings --test\" \"./tests/**/*.test.ts\"",
-    "test-single": "node --loader tsx --no-warnings --test",
+    "api:test": "glob -c \"tsx --no-warnings --test\" \"./tests/**/*.test.ts\"",
+    "test-single": "tsx --no-warnings --test",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "db:migrate": "sequelize-cli db:migrate",
@@ -100,7 +100,7 @@
     "sequelize-auto": "^0.8.8",
     "start-server-and-test": "^2.0.3",
     "storybook": "^7.4.5",
-    "tsx": "^3.12.7"
+    "tsx": "^4.7.0"
   },
   "engines": {
     "node": ">=20.5.0"

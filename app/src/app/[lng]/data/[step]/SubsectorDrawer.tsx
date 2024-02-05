@@ -196,7 +196,7 @@ const isScopeCompleted = (
 };
 
 export function SubsectorDrawer({
-  subsector,
+  subSector,
   sectorName,
   inventoryId,
   isOpen,
@@ -205,7 +205,7 @@ export function SubsectorDrawer({
   onSave,
   t,
 }: {
-  subsector?: SubSector;
+  subSector?: SubSector;
   sectorName?: string;
   inventoryId?: string;
   isOpen: boolean;
@@ -214,14 +214,14 @@ export function SubsectorDrawer({
   finalFocusRef?: RefObject<any>;
   t: TFunction;
 }) {
-  const subCategoryIds = subsector?.subCategories.map((c) => c.subcategoryId);
+  const subCategoryIds = subSector?.subCategories.map((c) => c.subcategoryId);
   const {
     data: inventoryValues,
     isLoading: isSubsectorValueLoading,
     error: inventoryValueError,
   } = api.useGetInventoryValuesQuery(
     { subCategoryIds: subCategoryIds!, inventoryId: inventoryId! },
-    { skip: !subsector || !inventoryId },
+    { skip: !subSector || !inventoryId },
   );
   const { data: emissionsFactors, isLoading: areEmissionsFactorsLoading } =
     api.useGetEmissionsFactorsQuery();
@@ -253,7 +253,7 @@ export function SubsectorDrawer({
   const toast = useToast();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    if (!subsector) return;
+    if (!subSector) return;
     logger.debug("Subsector data", data);
 
     const results = await resolvePromisesSequentially(
@@ -400,7 +400,7 @@ export function SubsectorDrawer({
       }
     }
     if (!hadError) {
-      onSave(subsector, data);
+      onSave(subSector, data);
       onClose();
     }
   };
@@ -414,9 +414,9 @@ export function SubsectorDrawer({
       reset(defaultValues);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inventoryValues, subsector]);
+  }, [inventoryValues, subSector]);
 
-  const subcategoryData: SubCategory[] | undefined = subsector?.subCategories;
+  const subcategoryData: SubCategory[] | undefined = subSector?.subCategories;
   const scopes = subcategoryData?.map((subcategory: SubCategory) => {
     const name =
       subcategory.subcategoryName?.replace("Emissions from ", "") ||
@@ -462,7 +462,7 @@ export function SubsectorDrawer({
           >
             {t("go-back")}
           </Button>
-          {subsector && (
+          {subSector && (
             <>
               {sectorName && (
                 <Heading size="sm">
@@ -470,10 +470,10 @@ export function SubsectorDrawer({
                 </Heading>
               )}
               <Heading fontSize="32px" fontWeight="bold" lineHeight="40px">
-                {t(nameToI18NKey(subsector.subsectorName))}
+                {t(nameToI18NKey(subSector.subsectorName))}
               </Heading>
               <Text color="content.tertiary">
-                {t(nameToI18NKey(subsector.subsectorName) + "-description")}
+                {t(nameToI18NKey(subSector.subsectorName) + "-description")}
               </Text>
               {isSubsectorValueLoading || areEmissionsFactorsLoading ? (
                 <Center>

@@ -210,7 +210,7 @@ export function ActivityDataTab({
               </option>
             ))}
             <option key="custom" value="custom">
-              Add custom
+              {t("add-custom")}
             </option>
           </Select>
         </FormControl>

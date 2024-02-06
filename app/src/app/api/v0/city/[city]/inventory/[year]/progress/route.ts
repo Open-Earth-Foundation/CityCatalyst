@@ -1,5 +1,6 @@
 import { db } from "@/models";
 import { Sector } from "@/models/Sector";
+import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { Session } from "next-auth";
@@ -23,24 +24,13 @@ export const GET = apiHandler(
       where: { cityId: city.cityId, year: params.year },
       include: [
         {
-          model: db.models.SectorValue,
-          as: "sectorValues",
+          model: db.models.InventoryValue,
+          as: "inventoryValues",
           include: [
             {
-              model: db.models.Sector,
-              as: "sector",
-            },
-            {
-              model: db.models.SubSectorValue,
-              as: "subSectorValues",
-              include: [
-                { model: db.models.SubSector, as: "subsector" },
-                {
-                  model: db.models.DataSource,
-                  attributes: ["datasourceId", "sourceType"],
-                  as: "dataSource",
-                },
-              ],
+              model: db.models.DataSource,
+              attributes: ["datasourceId", "sourceType"],
+              as: "dataSource",
             },
           ],
         },
@@ -50,22 +40,62 @@ export const GET = apiHandler(
       throw new createHttpError.NotFound("Inventory not found");
     }
 
-    // TODO cache this
-    const sectors: Sector[] = await db.models.Sector.findAll({
+    // TODO cache this (including sorting)
+    let sectors: Sector[] = await db.models.Sector.findAll({
       include: [
         {
           model: db.models.SubSector,
           as: "subSectors",
           include: [
-            { model: db.models.SubCategory, as: "subCategories" },
-            { model: db.models.Scope, as: "scope" },
+            {
+              model: db.models.SubCategory,
+              as: "subCategories",
+            },
           ],
         },
       ],
     });
+
+    // sort whole inventory by GPC reference number
+    function romanNumeralComparison(sectorA: Sector, sectorB: Sector) {
+      const a = sectorA.referenceNumber || "";
+      const b = sectorB.referenceNumber || "";
+
+      const romanTable: Record<string, number> = {
+        I: 1,
+        II: 2,
+        III: 3,
+        IV: 4,
+        V: 5,
+        VI: 6,
+        VII: 7,
+        "": 1337,
+      };
+
+      return romanTable[a] - romanTable[b];
+    }
+    sectors = sectors.sort(romanNumeralComparison);
+    for (const sector of sectors) {
+      sector.subSectors = sector.subSectors.sort((a, b) => {
+        const ra = Number((a.referenceNumber ?? "X.9").split(".")[1]);
+        const rb = Number((b.referenceNumber ?? "X.9").split(".")[1]);
+        return ra - rb;
+      });
+      for (const subSector of sector.subSectors) {
+        subSector.subCategories = subSector.subCategories.sort((a, b) => {
+          const ra = Number((a.referenceNumber ?? "X.9.9").split(".")[2]);
+          const rb = Number((b.referenceNumber ?? "X.9.9").split(".")[2]);
+          return ra - rb;
+        });
+      }
+    }
+
     const sectorTotals: Record<string, number> = sectors.reduce(
       (acc, sector) => {
-        acc[sector.sectorId] = sector.subSectors.length;
+        const subCategoryCount = sector.subSectors
+          .map((s) => s.subCategories.length)
+          .reduce((acc, count) => acc + count, 0);
+        acc[sector.sectorId] = subCategoryCount;
         return acc;
       },
       {} as Record<string, number>,
@@ -73,29 +103,33 @@ export const GET = apiHandler(
 
     // count SubSectorValues grouped by source type and sector
     const sectorProgress = sectors.map((sector: Sector) => {
-      const sectorValue = inventory.sectorValues.find(
-        (sectorVal) => sector.sectorId === sectorVal.sectorId,
+      const inventoryValues = inventory.inventoryValues.filter(
+        (inventoryValue) => sector.sectorId === inventoryValue.sectorId,
       );
       let sectorCounts = { thirdParty: 0, uploaded: 0 };
-      if (sectorValue) {
-        sectorCounts = sectorValue.subSectorValues.reduce(
-          (acc, subSectorValue) => {
-            if (!subSectorValue.dataSource) {
+      if (inventoryValues) {
+        sectorCounts = inventoryValues.reduce(
+          (acc, inventoryValue) => {
+            if (!inventoryValue.dataSource) {
+              logger.warn(
+                "Missing data source for inventory value",
+                inventoryValue.id,
+              );
               return acc;
             }
 
-            const sourceType = subSectorValue.dataSource.sourceType;
+            const sourceType = inventoryValue.dataSource.sourceType;
             if (sourceType === "user") {
               acc.uploaded++;
             } else if (sourceType === "third_party") {
               acc.thirdParty++;
             } else {
               console.error(
-                "Invalid value for SubSectorValue.dataSource.sourceType of subsector",
-                subSectorValue.subsector.subsectorName,
+                "Invalid value for InventoryValue.dataSource.sourceType of inventory value",
+                inventoryValue.id,
                 "in its data source",
-                subSectorValue.dataSource.datasourceId + ":",
-                subSectorValue.dataSource.sourceType,
+                inventoryValue.dataSource.datasourceId + ":",
+                inventoryValue.dataSource.sourceType,
               );
             }
             return acc;
@@ -107,14 +141,21 @@ export const GET = apiHandler(
       // add completed field to subsectors if there is a value for it
       const subSectors = sector.subSectors.map((subSector) => {
         let completed = false;
-        if (sectorValue) {
-          completed =
-            sectorValue.subSectorValues.find(
-              (subSectorValue) =>
-                subSectorValue.subsectorId === subSector.subsectorId,
-            ) != null;
+        let totalCount = subSector.subCategories.length;
+        let completedCount = 0;
+        if (inventoryValues?.length > 0) {
+          completedCount = inventoryValues.filter(
+            (inventoryValue) =>
+              inventoryValue.subSectorId === subSector.subsectorId,
+          ).length;
+          completed = completedCount === totalCount;
         }
-        return { completed, ...subSector.dataValues };
+        return {
+          completed,
+          completedCount,
+          totalCount,
+          ...subSector.dataValues,
+        };
       });
 
       return {

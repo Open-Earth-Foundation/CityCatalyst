@@ -2,22 +2,24 @@ import {
   type UserAttributes,
   type CityAttributes,
   type InventoryAttributes,
-  type SubSectorValueAttributes,
-  type SubCategoryValueAttributes,
+  type InventoryValueAttributes,
   PopulationAttributes,
 } from "@/models/init-models";
+import type { BoundingBox } from "@/util/geojson";
 import type {
   ConnectDataSourceQuery,
   ConnectDataSourceResponse,
   DataSourceResponse,
   InventoryProgressResponse,
   InventoryResponse,
-  SubCategoryValueUpdateQuery,
-  SubSectorValueResponse,
+  InventoryValueUpdateQuery,
+  InventoryValueResponse,
   InventoryWithCity,
   UserInfoResponse,
-  SubSectorValueUpdateQuery,
+  UserFileResponse,
+  EmissionsFactorResponse,
 } from "@/util/types";
+import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
@@ -27,8 +29,9 @@ export const api = createApi({
     "InventoryProgress",
     "UserInventories",
     "SubSectorValue",
-    "SubCategoryValue",
+    "InventoryValue",
     "UserData",
+    "FileData",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
@@ -36,9 +39,15 @@ export const api = createApi({
       query: (locode) => `city/${locode}`,
       transformResponse: (response: { data: CityAttributes }) => response.data,
     }),
-    getCityBoundary: builder.query<GeoJSON.GeoJSON, string>({
+    getCityBoundary: builder.query<
+      { data: GeoJSON; boundingBox: BoundingBox },
+      string
+    >({
       query: (locode) => `city/${locode}/boundary`,
-      transformResponse: (response: { data: GeoJSON.GeoJSON }) => response.data,
+      transformResponse: (response: {
+        data: GeoJSON;
+        boundingBox: BoundingBox;
+      }) => response,
     }),
     getInventory: builder.query<
       InventoryResponse,
@@ -109,41 +118,41 @@ export const api = createApi({
       transformResponse: (response: { data: DataSourceResponse }) =>
         response.data,
     }),
-    getSubsectorValue: builder.query<
-      SubSectorValueResponse,
-      { subSectorId: string; inventoryId: string }
+    getInventoryValue: builder.query<
+      InventoryValueResponse,
+      { subCategoryId: string; inventoryId: string }
     >({
-      query: ({ subSectorId, inventoryId }) =>
-        `/inventory/${inventoryId}/subsector/${subSectorId}`,
-      transformResponse: (response: { data: SubSectorValueResponse }) =>
+      query: ({ subCategoryId, inventoryId }) =>
+        `/inventory/${inventoryId}/value/${subCategoryId}`,
+      transformResponse: (response: { data: InventoryValueResponse }) =>
         response.data,
-      providesTags: ["SubSectorValue"],
+      providesTags: ["InventoryValue"],
     }),
-    setSubsectorValue: builder.mutation<
-      SubSectorValueAttributes,
-      SubSectorValueUpdateQuery
+    getInventoryValues: builder.query<
+      InventoryValueResponse[],
+      { subCategoryIds: string[]; inventoryId: string }
+    >({
+      query: ({ subCategoryIds, inventoryId }) => ({
+        url: `/inventory/${inventoryId}/value`,
+        method: "GET",
+        params: { subCategoryIds: subCategoryIds.join(",") },
+      }),
+      transformResponse: (response: { data: InventoryValueResponse[] }) =>
+        response.data,
+      providesTags: ["InventoryValue"],
+    }),
+    setInventoryValue: builder.mutation<
+      InventoryValueAttributes,
+      InventoryValueUpdateQuery
     >({
       query: (data) => ({
-        url: `/inventory/${data.inventoryId}/subsector/${data.subSectorId}`,
+        url: `/inventory/${data.inventoryId}/value/${data.subCategoryId}`,
         method: "PATCH",
         body: data.data,
       }),
-      transformResponse: (response: { data: SubSectorValueAttributes }) =>
+      transformResponse: (response: { data: InventoryValueAttributes }) =>
         response.data,
-      invalidatesTags: ["InventoryProgress", "SubSectorValue"],
-    }),
-    setSubCategoryValue: builder.mutation<
-      SubCategoryValueAttributes,
-      SubCategoryValueUpdateQuery
-    >({
-      query: (data) => ({
-        url: `/inventory/${data.inventoryId}/subcategory/${data.subCategoryId}`,
-        method: "PATCH",
-        body: data.data,
-      }),
-      transformResponse: (response: { data: SubCategoryValueAttributes }) =>
-        response.data,
-      invalidatesTags: ["SubCategoryValue", "SubSectorValue"],
+      invalidatesTags: ["InventoryProgress", "InventoryValue"],
     }),
     connectDataSource: builder.mutation<
       ConnectDataSourceResponse,
@@ -169,6 +178,7 @@ export const api = createApi({
       {
         cityId: string;
         population: number;
+        countryPopulation: number;
         year: number;
         locode: string;
       }
@@ -306,6 +316,43 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: any }) => response.data,
     }),
+    addUserFile: builder.mutation<UserFileResponse, any>({
+      query: (formData) => {
+        return {
+          method: "POST",
+          url: `/user/file`,
+          body: formData,
+        };
+      },
+      transformResponse: (response: { data: UserFileResponse }) =>
+        response.data,
+      invalidatesTags: ["FileData"],
+    }),
+    getUserFiles: builder.query({
+      query: () => ({
+        method: "GET",
+        url: `/user/file`,
+      }),
+      transformResponse: (response: { data: UserFileResponse }) => {
+        return response.data;
+      },
+
+      providesTags: ["FileData"],
+    }),
+    deleteUserFile: builder.mutation({
+      query: (params) => ({
+        method: "DELETE",
+        url: `/user/file/${params.fileId}`,
+      }),
+      transformResponse: (response: { data: UserFileResponse }) =>
+        response.data,
+      invalidatesTags: ["FileData"],
+    }),
+    getEmissionsFactors: builder.query<EmissionsFactorResponse, void>({
+      query: () => `/emissions-factor`,
+      transformResponse: (response: { data: EmissionsFactorResponse }) =>
+        response.data,
+    }),
   }),
 });
 
@@ -352,5 +399,8 @@ export const {
   useGetVerifcationTokenQuery,
   useGetCitiesQuery,
   useGetInventoriesQuery,
+  useAddUserFileMutation,
+  useGetUserFilesQuery,
+  useDeleteUserFileMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

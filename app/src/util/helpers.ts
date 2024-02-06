@@ -56,6 +56,54 @@ export async function resolvePromisesSequentially(promises: Promise<any>[]) {
 
 export function nameToI18NKey(name: string): string {
   // remove all special characters and replace spaces with dashes
-  return name.replaceAll(/[^\w\s-]/gi, "").replaceAll(" ", "-").toLowerCase();
+  return name
+    .replaceAll(/[^\w\s-]/gi, "")
+    .replaceAll(" ", "-")
+    .toLowerCase();
 }
 
+export const fileEndingToMIMEType: Record<string, string> = {
+  csv: "text/csv",
+  json: "application/json",
+  xls: "application/vnd.ms-excel",
+  xlsx: "application/vnd.ms-excel",
+  default: "application/x-binary",
+};
+
+export function base64ToFile(base64String: any, filename: string) {
+  const arr = base64String.split(",");
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+
+  const fileBlob = new Blob([u8arr], { type: mime });
+  const file = new File([fileBlob], filename, { type: mime });
+  return file;
+}
+
+export function appendFileToFormData(base64String: string, filename: string) {
+  return base64ToFile(base64String, filename);
+}
+
+export function bytesToMB(bytes: number): string {
+  return (bytes / 1048576).toFixed(2) + " MB";
+}
+export function groupBy<T>(
+  list: T[],
+  lambda: (elem: T) => string,
+): Record<string, T[]> {
+  return list.reduce(
+    (acc, elem) => {
+      const key = lambda(elem);
+      acc[key] = acc[key] || [];
+      acc[key].push(elem);
+      return acc;
+    },
+    {} as Record<string, T[]>,
+  );
+}

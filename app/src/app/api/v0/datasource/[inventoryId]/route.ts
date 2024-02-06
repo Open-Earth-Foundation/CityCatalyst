@@ -4,14 +4,15 @@ import { City } from "@/models/City";
 import { DataSource } from "@/models/DataSource";
 import { Scope } from "@/models/Scope";
 import { SubCategory } from "@/models/SubCategory";
-import { SubCategoryValue } from "@/models/SubCategoryValue";
+import { InventoryValue } from "@/models/InventoryValue";
 import { SubSector } from "@/models/SubSector";
-import { SubSectorValue } from "@/models/SubSectorValue";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { Op } from "sequelize";
 import { z } from "zod";
+import { Population } from "@/models/Population";
+import { logger } from "@/services/logger";
 
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const inventory = await db.models.Inventory.findOne({
@@ -33,14 +34,8 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
       include: [
         { model: Scope, as: "scopes" },
         {
-          model: SubSectorValue,
-          as: "subSectorValues",
-          required: false,
-          where: { inventoryId: params.inventoryId },
-        },
-        {
-          model: SubCategoryValue,
-          as: "subCategoryValues",
+          model: InventoryValue,
+          as: "inventoryValues",
           required: false,
           where: { inventoryId: params.inventoryId },
         },
@@ -131,17 +126,50 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
   // download source data and apply in database
   const sourceResults = await Promise.all(
     applicableSources.map(async (source) => {
-      const result = { id: source.datasourceId, success: true };
+      const result: { id: string; success: boolean; issue?: string } = {
+        id: source.datasourceId,
+        success: true,
+        issue: undefined,
+      };
 
       if (source.retrievalMethod === "global_api") {
-        result.success = await DataSourceService.applyGlobalAPISource(
+        const sourceStatus = await DataSourceService.applyGlobalAPISource(
           source,
           inventory,
         );
-      } else {
-        console.error(
-          `Unsupported retrieval method ${source.retrievalMethod} for data source ${source.datasourceId}`,
+        if (typeof sourceStatus === "string") {
+          result.issue = sourceStatus;
+          result.success = false;
+        }
+      } else if (
+        source.retrievalMethod === "global_api_downscaled_by_population"
+      ) {
+        const population = await db.models.Population.findOne({
+          where: {
+            cityId: inventory.cityId,
+            year: inventory.year,
+          },
+        });
+        if (!population?.population || !population?.countryPopulation) {
+          result.issue =
+            "City is missing population/ country population for the inventory year";
+          result.success = false;
+          return result;
+        }
+        const scaleFactor =
+          population.population / population.countryPopulation;
+        const sourceStatus = await DataSourceService.applyGlobalAPISource(
+          source,
+          inventory,
+          scaleFactor,
         );
+        if (typeof sourceStatus === "string") {
+          result.issue = sourceStatus;
+          result.success = false;
+        }
+      } else {
+        result.issue = `Unsupported retrieval method ${source.retrievalMethod} for data source ${source.datasourceId}`;
+        logger.error(result.issue);
         result.success = false;
       }
 
@@ -155,8 +183,14 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
   const failed = sourceResults
     .filter((result) => !result.success)
     .map((result) => result.id);
+  const issues = sourceResults
+    .filter((result) => !!result.issue)
+    .reduce((acc: Record<string, string>, result) => {
+      acc[result.id] = result.issue!;
+      return acc;
+    }, {});
 
   return NextResponse.json({
-    data: { successful, failed, invalid: invalidSourceIds },
+    data: { successful, failed, invalid: invalidSourceIds, issues },
   });
 });

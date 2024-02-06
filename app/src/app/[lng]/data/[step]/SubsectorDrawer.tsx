@@ -4,7 +4,14 @@ import { api } from "@/services/api";
 import { logger } from "@/services/logger";
 import { nameToI18NKey, resolvePromisesSequentially } from "@/util/helpers";
 import type { InventoryValueResponse } from "@/util/types";
-import { ArrowBackIcon, CloseIcon, WarningIcon } from "@chakra-ui/icons";
+import {
+  ArrowBackIcon,
+  CloseIcon,
+  InfoIcon,
+  InfoOutlineIcon,
+  WarningIcon,
+} from "@chakra-ui/icons";
+import { RiErrorWarningLine } from "react-icons/ri";
 import {
   Accordion,
   AccordionButton,
@@ -51,6 +58,7 @@ import type {
 } from "./types";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { determineEmissionsFactorType } from "./ActivityDataTab";
+import { BsCheckCircle } from "react-icons/bs";
 
 type Inputs = {
   methodology: "activity-data" | "direct-measure" | "";
@@ -493,51 +501,81 @@ export function SubsectorDrawer({
               ) : (
                 <>
                   <Heading size="md">{t("enter-subsector-data")}</Heading>
-                  <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="space-y-6 grow flex flex-col"
-                  >
-                    <Accordion allowToggle className="space-y-6">
-                      {scopes?.map((scope) => (
-                        <AccordionItem key={scope.value} mb={0}>
-                          <h2>
-                            <AccordionButton>
-                              <HStack w="full">
-                                <Box
-                                  as="span"
-                                  flex="1"
-                                  textAlign="left"
-                                  w="full"
+
+                  <Accordion allowToggle className="space-y-6">
+                    {scopes?.map((scope) => (
+                      <AccordionItem key={scope.value} mb={0} h="108px" p="0px">
+                        <h2>
+                          <AccordionButton px="16px">
+                            <HStack w="full" p={0} m={0}>
+                              {isScopeCompleted(scope.value, scopeData) ? (
+                                <Tag color="interactive.tertiary" border="none">
+                                  <BsCheckCircle
+                                    color="interactive.tertiary"
+                                    size="32px"
+                                  />
+                                </Tag>
+                              ) : (
+                                <Tag
+                                  color="sentiment.negativeDefault"
+                                  border="none"
                                 >
-                                  <Heading
-                                    size="sm"
-                                    color="content.alternative"
-                                  >
-                                    {scope.label}
-                                  </Heading>
-                                  <Text color="content.tertiary">
-                                    {/* TODO: Get scope text body */}
-                                  </Text>
-                                </Box>
+                                  <RiErrorWarningLine size="32px" />
+                                </Tag>
+                              )}
+                              <Box as="span" flex="1" textAlign="left" w="full">
+                                <Heading
+                                  size="title.md"
+                                  lineHeight="24px"
+                                  color="content.alternative"
+                                >
+                                  {t("scope")}{" "}
+                                  {scope.gpcReferenceNumber?.split(".").pop()}
+                                </Heading>
+                                <Text
+                                  color="content.tertiary"
+                                  fontSize="16px"
+                                  fontWeight="normal"
+                                  letterSpacing="wide"
+                                  fontStyle="normal"
+                                >
+                                  {scope.label}
+                                </Text>
                                 {isScopeCompleted(scope.value, scopeData) ? (
-                                  <Tag variant="success" mx={6}>
-                                    {t("completed")}
-                                  </Tag>
+                                  ""
                                 ) : (
-                                  <Tag variant="warning" mx={6}>
-                                    {t("incomplete")}
-                                  </Tag>
+                                  <Text
+                                    color="sentiment.negativeDefault"
+                                    size="body.md"
+                                    fontWeight="normal"
+                                    letterSpacing="wide"
+                                    lineHeight="20px"
+                                  >
+                                    {t("save-missing-scope-info")}
+                                  </Text>
                                 )}
-                                <AccordionIcon
-                                  borderWidth={1}
-                                  boxSize={6}
-                                  borderRadius="full"
-                                  borderColor="border.overlay"
-                                />
-                              </HStack>
-                            </AccordionButton>
-                          </h2>
-                          <AccordionPanel pt={4}>
+                              </Box>
+
+                              <AccordionIcon
+                                borderWidth={1}
+                                boxSize={6}
+                                borderRadius="full"
+                                borderColor="border.overlay"
+                              />
+                            </HStack>
+                          </AccordionButton>
+                        </h2>
+                        <AccordionPanel
+                          bg="background.backgroundGreyFlat"
+                          zIndex="9999"
+                          position="relative"
+                        >
+                          <form className="space-y-6 grow flex flex-col">
+                            <Box
+                              as="div"
+                              borderTopWidth="1px"
+                              borderColor="border.overlay"
+                            />
                             <EmissionsForm
                               t={t}
                               register={register}
@@ -549,26 +587,28 @@ export function SubsectorDrawer({
                               gpcReferenceNumber={scope.gpcReferenceNumber!}
                               emissionsFactors={emissionsFactors!}
                             />
-                          </AccordionPanel>
-                        </AccordionItem>
-                      ))}
-                    </Accordion>
-                    <Box w="full" className="grow flex flex-col">
-                      <Box className="grow" />
-                      <Button
-                        onClick={handleSubmit(onSubmit)}
-                        isLoading={isSubmitting}
-                        type="submit"
-                        formNoValidate
-                        w="full"
-                        h={16}
-                        mb={12}
-                        mt={6}
-                      >
-                        {t("add-data")}
-                      </Button>
-                    </Box>
-                  </form>
+                            <Box w="full" className="grow flex flex-col">
+                              <Box className="grow" />
+                              <Button
+                                onClick={handleSubmit(onSubmit)}
+                                isLoading={isSubmitting}
+                                type="submit"
+                                isDisabled={
+                                  !isScopeCompleted(scope.value, scopeData)
+                                }
+                                w="full"
+                                h={16}
+                                mb={12}
+                                mt={6}
+                              >
+                                {t("add-data")}
+                              </Button>
+                            </Box>
+                          </form>
+                        </AccordionPanel>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
                 </>
               )}
             </>

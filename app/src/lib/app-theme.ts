@@ -42,6 +42,7 @@ export const appTheme = extendTheme({
       overlay: "#C5CBF5",
       transparentGrey: "rgba(232, 234, 251, 0.20)",
       backgroundLight: "#FAFAFA",
+      backgroundGreyFlat: "#FAFBFE",
     },
 
     interactive: {

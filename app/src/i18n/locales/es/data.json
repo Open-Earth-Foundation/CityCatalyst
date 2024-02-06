@@ -112,5 +112,6 @@
   "emissions-inventory-title": "Inventario de Emisiones",
   "review-data-label": "Revisar y añadir datos",
   "files-uploaded": "Archivos subidos",
-  "add-custom": "Agregar personalizado"
+  "add-custom": "Agregar personalizado",
+  "save-missing-scope-info": "Guarde o complete la información faltante antes de continuar."
 }

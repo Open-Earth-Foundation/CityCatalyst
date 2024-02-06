@@ -1,5 +1,6 @@
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
+import { fileEndingToMIMEType } from "@/util/helpers";
 import { createUserFileRequset } from "@/util/validation";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
@@ -31,7 +32,33 @@ export const GET = apiHandler(
       throw new createHttpError.NotFound("User files not found");
     }
 
-    return NextResponse.json({ data: userFiles });
+    const userFilesTransformed = userFiles.map((userFile) => {
+      const byteValues = userFile?.data;
+      const uint8Array = new Uint8Array(byteValues!);
+      const blob = new Blob([uint8Array], {
+        type: fileEndingToMIMEType[userFile.fileType!],
+      });
+      const file = new File([blob], userFile.fileName!, {
+        type: fileEndingToMIMEType[userFile.fileType!],
+      });
+      return {
+        id: userFile.id,
+        userId: userFile.id,
+        fileReference: userFile.fileReference,
+        url: userFile.url,
+        sector: userFile.sector,
+        status: userFile.status,
+        gpcRefNo: userFile.gpcRefNo,
+        lastUpdated: userFile.lastUpdated,
+        file: {
+          fileName: file.name,
+          size: file.size,
+          fileType: userFile.fileType,
+        },
+      };
+    });
+
+    return NextResponse.json({ data: userFilesTransformed });
   },
 );
 
@@ -54,12 +81,10 @@ export const POST = apiHandler(
 
     const filename = file.name;
 
-    const fileType = file.name.slice(
-      ((filename.lastIndexOf(".") - 1) >>> 0) + 2,
-    );
-
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
+
+    const fileType = filename.split(".").pop();
 
     const fileData = {
       userId: userId,
@@ -67,6 +92,7 @@ export const POST = apiHandler(
       url: formData.get("url"),
       data: buffer,
       fileType: fileType,
+      fileName: filename,
       sector: formData.get("sector"),
       status: formData.get("status"),
       gpcRefNo: formData.get("gpcRefNo"),
@@ -86,10 +112,12 @@ export const POST = apiHandler(
     return NextResponse.json({
       data: {
         id: userFile.id,
-        userId: userFile.id,
+        userId: userFile.userId,
         fileReference: userFile.fileReference,
         url: userFile.url,
         sector: userFile.sector,
+        fileName: userFile.fileName,
+        lastUpdated: userFile.lastUpdated,
         status: userFile.status,
         gpcRefNo: userFile.gpcRefNo,
         file: {

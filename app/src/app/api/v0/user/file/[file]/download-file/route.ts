@@ -35,7 +35,7 @@ export const GET = apiHandler(
         fileEndingToMIMEType[userFile.fileType || "default"] ||
         "application/x-binary"
       }`,
-      "Content-Disposition": `attachment; filename="${userFile.id}.${userFile.fileType}"`,
+      "Content-Disposition": `attachment; filename="${userFile.fileName}"`,
     };
 
     return new NextResponse(body, { headers });

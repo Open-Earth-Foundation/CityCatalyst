@@ -31,6 +31,7 @@ import {
   Tag,
   Text,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import type { TFunction } from "i18next";
@@ -45,8 +46,11 @@ import type {
   InventoryValueData,
   SubSector,
   SubcategoryData,
+  EmissionsFactorData,
+  GasValueData,
 } from "./types";
 import { Trans } from "react-i18next/TransWithoutContext";
+import { determineEmissionsFactorType } from "./ActivityDataTab";
 
 type Inputs = {
   methodology: "activity-data" | "direct-measure" | "";
@@ -83,7 +87,6 @@ const defaultValues: Inputs = {
   subcategoryData: {},
 };
 
-// TODO create custom type that includes relations instead of using SubSectorValueAttributes?
 function extractFormValues(inventoryValues: InventoryValueResponse[]): Inputs {
   logger.debug("Form input", inventoryValues);
   const inputs: Inputs = Object.assign({}, defaultValues);
@@ -106,6 +109,32 @@ function extractFormValues(inventoryValues: InventoryValueResponse[]): Inputs {
         // TODO emission factor ID, manual emissions factor values for each gas
         data.activity.dataQuality = value.dataSource?.dataQuality || "";
         data.activity.sourceReference = value.dataSource?.notes || "";
+
+        const emissionsFactorsByGas = (value.gasValues || []).reduce(
+          (acc, gasValue) => {
+            if (gasValue.gas != null && gasValue.emissionsFactor != null) {
+              acc[gasValue.gas] = gasValue.emissionsFactor;
+            }
+            return acc;
+          },
+          {} as Record<string, EmissionsFactorData>,
+        );
+        data.activity.co2EmissionFactor =
+          emissionsFactorsByGas.CO2?.emissionsPerActivity || 0;
+        data.activity.ch4EmissionFactor =
+          emissionsFactorsByGas.CH4?.emissionsPerActivity || 0;
+        data.activity.n2oEmissionFactor =
+          emissionsFactorsByGas.N2O?.emissionsPerActivity || 0;
+
+        // TODO validate if all of these have equal units and types
+        const emissionsFactors = Object.values(emissionsFactorsByGas);
+        const isCustom = emissionsFactors.every(
+          (factor) => factor.inventoryId != null,
+        );
+        data.activity.emissionFactorType = isCustom
+          ? "custom"
+          : determineEmissionsFactorType(emissionsFactors[0]);
+        data.activity.activityDataUnit = emissionsFactors[0]?.units;
       } else if (methodology === "direct-measure") {
         const gasToEmissions = (value.gasValues || []).reduce(
           (acc: Record<string, bigint>, value) => {
@@ -130,10 +159,45 @@ function extractFormValues(inventoryValues: InventoryValueResponse[]): Inputs {
   return inputs;
 }
 
+const isScopeCompleted = (
+  scopeId: string,
+  scopeData: Inputs["subcategoryData"],
+) => {
+  const data = scopeData[scopeId];
+  if (data?.isUnavailable) {
+    return !!data.unavailableExplanation && !!data.unavailableReason;
+  } else if (data?.methodology === "activity-data") {
+    const activity = data.activity;
+    if (!activity) return false;
+    return (
+      activity.activityDataAmount != null &&
+      activity.activityDataUnit != null &&
+      activity.emissionFactorType !== "" &&
+      !(
+        activity.emissionFactorType === "Add custom" &&
+        +activity.co2EmissionFactor === 0 &&
+        +activity.n2oEmissionFactor === 0 &&
+        +activity.ch4EmissionFactor === 0
+      ) &&
+      activity.dataQuality !== "" &&
+      activity.sourceReference !== ""
+    );
+  } else if (data?.methodology === "direct-measure") {
+    if (!data.direct) return false;
+    return (
+      (data.direct.co2Emissions > 0 ||
+        data.direct.ch4Emissions > 0 ||
+        data.direct.n2oEmissions > 0) &&
+      data.direct.dataQuality !== "" &&
+      data.direct.sourceReference !== ""
+    );
+  }
+  return false;
+};
+
 export function SubsectorDrawer({
-  subsector,
+  subSector,
   sectorName,
-  sectorNumber,
   inventoryId,
   isOpen,
   onClose,
@@ -141,9 +205,8 @@ export function SubsectorDrawer({
   onSave,
   t,
 }: {
-  subsector?: SubSector;
+  subSector?: SubSector;
   sectorName?: string;
-  sectorNumber?: string; // I, II, III
   inventoryId?: string;
   isOpen: boolean;
   onClose: () => void;
@@ -151,15 +214,17 @@ export function SubsectorDrawer({
   finalFocusRef?: RefObject<any>;
   t: TFunction;
 }) {
-  const subCategoryIds = subsector?.subCategories.map((c) => c.subcategoryId);
+  const subCategoryIds = subSector?.subCategories.map((c) => c.subcategoryId);
   const {
     data: inventoryValues,
     isLoading: isSubsectorValueLoading,
     error: inventoryValueError,
   } = api.useGetInventoryValuesQuery(
     { subCategoryIds: subCategoryIds!, inventoryId: inventoryId! },
-    { skip: !subsector || !inventoryId },
+    { skip: !subSector || !inventoryId },
   );
+  const { data: emissionsFactors, isLoading: areEmissionsFactorsLoading } =
+    api.useGetEmissionsFactorsQuery();
   const [setInventoryValue] = api.useSetInventoryValueMutation();
 
   let noPreviousValue =
@@ -172,41 +237,10 @@ export function SubsectorDrawer({
     watch,
     reset,
     control,
+    setValue,
   } = useForm<Inputs>();
 
   const scopeData = watch("subcategoryData");
-  const isScopeCompleted = (scopeId: string) => {
-    const data = scopeData[scopeId];
-    if (data?.isUnavailable) {
-      return !!data.unavailableExplanation && !!data.unavailableReason;
-    } else if (data?.methodology === "activity-data") {
-      const activity = data.activity;
-      if (!activity) return false;
-      return (
-        activity.activityDataAmount != null &&
-        activity.activityDataUnit != null &&
-        activity.emissionFactorType !== "" &&
-        !(
-          activity.emissionFactorType === "Add custom" &&
-          +activity.co2EmissionFactor === 0 &&
-          +activity.n2oEmissionFactor === 0 &&
-          +activity.ch4EmissionFactor === 0
-        ) &&
-        activity.dataQuality !== "" &&
-        activity.sourceReference !== ""
-      );
-    } else if (data?.methodology === "direct-measure") {
-      if (!data.direct) return false;
-      return (
-        (data.direct.co2Emissions > 0 ||
-          data.direct.ch4Emissions > 0 ||
-          data.direct.n2oEmissions > 0) &&
-        data.direct.dataQuality !== "" &&
-        data.direct.sourceReference !== ""
-      );
-    }
-    return false;
-  };
 
   const onTryClose = () => {
     if (isDirty) {
@@ -216,8 +250,10 @@ export function SubsectorDrawer({
     }
   };
 
+  const toast = useToast();
+
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    if (!subsector) return;
+    if (!subSector) return;
     logger.debug("Subsector data", data);
 
     const results = await resolvePromisesSequentially(
@@ -235,7 +271,7 @@ export function SubsectorDrawer({
             },
           });
         } else {
-          if (!isScopeCompleted(subCategoryId)) {
+          if (!isScopeCompleted(subCategoryId, scopeData)) {
             logger.error(`Data not completed for scope ${subCategoryId}!`);
             return Promise.resolve();
           }
@@ -257,7 +293,63 @@ export function SubsectorDrawer({
               dataQuality: value.activity.dataQuality,
               notes: value.activity.sourceReference,
             };
+
+            // save emissions factors (either values for custom or the IDs for each gas for predefined)
+            const gases = ["CO2", "CH4", "N2O"];
+            inventoryValue.gasValues = gases.flatMap((gas) => {
+              let gasValue: GasValueData = {
+                gas,
+                gasAmount: null, // remove previous data
+              };
+              if (value.activity.emissionFactorType === "custom") {
+                const emissionsPerActivity = Number(
+                  (value.activity as unknown as Record<string, string>)[
+                    gas.toLowerCase() + "EmissionFactor"
+                  ],
+                );
+                gasValue.emissionsFactor = {
+                  emissionsPerActivity,
+                  gas,
+                  units: value.activity.activityDataUnit || undefined,
+                  inventoryId: inventoryId,
+                };
+              } else {
+                if (!emissionsFactors || !scopes) {
+                  throw new Error(
+                    "Emissions factors or scopes not loaded at save time!",
+                  );
+                }
+                const subCategory = scopes?.find(
+                  (scope) => scope.value === subCategoryId,
+                );
+                const gpcReferenceNumber = subCategory?.gpcReferenceNumber;
+                const factors = emissionsFactors.filter((factor) => {
+                  return (
+                    factor.gas === gas &&
+                    factor.units === value.activity.activityDataUnit &&
+                    factor.gpcReferenceNumber === gpcReferenceNumber &&
+                    determineEmissionsFactorType(factor) ===
+                      value.activity.emissionFactorType
+                  );
+                });
+
+                if (factors.length === 0) {
+                  return [];
+                }
+                if (factors.length > 1) {
+                  logger.warn(
+                    `Multiple emissions factor candidates for scope ${gpcReferenceNumber}, units ${value.activity.activityDataUnit}, type ${value.activity.emissionFactorType}`,
+                    factors,
+                  );
+                }
+
+                gasValue.emissionsFactorId = factors[0].id;
+              }
+              return [gasValue];
+            });
           } else if (value.methodology === "direct-measure") {
+            inventoryValue.activityValue = null;
+            inventoryValue.activityUnits = null;
             inventoryValue.gasValues = [
               {
                 gas: "CO2",
@@ -293,8 +385,26 @@ export function SubsectorDrawer({
       }),
     );
     logger.debug("Save results", results);
-    onSave(subsector, data);
-    onClose();
+    let hadError = false;
+    for (const [index, result] of results.entries()) {
+      if (result?.error?.status > 200) {
+        hadError = true;
+        const scopeId = Object.keys(data.subcategoryData)[index];
+        const scopeName = scopes?.find((s) => s.value === scopeId)?.label || "";
+        toast({
+          title: `Failed to save "${scopeName}"`,
+          description:
+            "There was an error during saving. Please notify the support about this.",
+          status: "error",
+          isClosable: true,
+          duration: null,
+        });
+      }
+    }
+    if (!hadError) {
+      onSave(subSector, data);
+      onClose();
+    }
   };
 
   // reset form values when choosing another subsector
@@ -306,9 +416,9 @@ export function SubsectorDrawer({
       reset(defaultValues);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inventoryValues, subsector]);
+  }, [inventoryValues, subSector]);
 
-  const subcategoryData: SubCategory[] | undefined = subsector?.subCategories;
+  const subcategoryData: SubCategory[] | undefined = subSector?.subCategories;
   const scopes = subcategoryData?.map((subcategory: SubCategory) => {
     const name =
       subcategory.subcategoryName?.replace("Emissions from ", "") ||
@@ -317,6 +427,7 @@ export function SubsectorDrawer({
     return {
       label,
       value: subcategory.subcategoryId,
+      gpcReferenceNumber: subcategory.referenceNumber,
     };
   });
 
@@ -353,7 +464,7 @@ export function SubsectorDrawer({
           >
             {t("go-back")}
           </Button>
-          {subsector && (
+          {subSector && (
             <>
               {sectorName && (
                 <Heading size="sm">
@@ -361,12 +472,12 @@ export function SubsectorDrawer({
                 </Heading>
               )}
               <Heading fontSize="32px" fontWeight="bold" lineHeight="40px">
-                {t(nameToI18NKey(subsector.subsectorName))}
+                {t(nameToI18NKey(subSector.subsectorName))}
               </Heading>
               <Text color="content.tertiary">
-                {t(nameToI18NKey(subsector.subsectorName) + "-description")}
+                {t(nameToI18NKey(subSector.subsectorName) + "-description")}
               </Text>
-              {isSubsectorValueLoading ? (
+              {isSubsectorValueLoading || areEmissionsFactorsLoading ? (
                 <Center>
                   <Spinner size="lg" />
                 </Center>
@@ -408,7 +519,7 @@ export function SubsectorDrawer({
                                     {/* TODO: Get scope text body */}
                                   </Text>
                                 </Box>
-                                {isScopeCompleted(scope.value) ? (
+                                {isScopeCompleted(scope.value, scopeData) ? (
                                   <Tag variant="success" mx={6}>
                                     {t("completed")}
                                   </Tag>
@@ -434,7 +545,9 @@ export function SubsectorDrawer({
                               control={control}
                               prefix={`subcategoryData.${scope.value}.`}
                               watch={watch}
-                              sectorNumber={sectorNumber!}
+                              setValue={setValue}
+                              gpcReferenceNumber={scope.gpcReferenceNumber!}
+                              emissionsFactors={emissionsFactors!}
                             />
                           </AccordionPanel>
                         </AccordionItem>

@@ -5,6 +5,7 @@ import {
   type InventoryValueAttributes,
   PopulationAttributes,
 } from "@/models/init-models";
+import type { BoundingBox } from "@/util/geojson";
 import type {
   ConnectDataSourceQuery,
   ConnectDataSourceResponse,
@@ -15,7 +16,10 @@ import type {
   InventoryValueResponse,
   InventoryWithCity,
   UserInfoResponse,
+  UserFileResponse,
+  EmissionsFactorResponse,
 } from "@/util/types";
+import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
@@ -27,6 +31,7 @@ export const api = createApi({
     "SubSectorValue",
     "InventoryValue",
     "UserData",
+    "FileData",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
@@ -34,9 +39,15 @@ export const api = createApi({
       query: (locode) => `city/${locode}`,
       transformResponse: (response: { data: CityAttributes }) => response.data,
     }),
-    getCityBoundary: builder.query<GeoJSON.GeoJSON, string>({
+    getCityBoundary: builder.query<
+      { data: GeoJSON; boundingBox: BoundingBox },
+      string
+    >({
       query: (locode) => `city/${locode}/boundary`,
-      transformResponse: (response: { data: GeoJSON.GeoJSON }) => response.data,
+      transformResponse: (response: {
+        data: GeoJSON;
+        boundingBox: BoundingBox;
+      }) => response,
     }),
     getInventory: builder.query<
       InventoryResponse,
@@ -305,6 +316,43 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: any }) => response.data,
     }),
+    addUserFile: builder.mutation<UserFileResponse, any>({
+      query: (formData) => {
+        return {
+          method: "POST",
+          url: `/user/file`,
+          body: formData,
+        };
+      },
+      transformResponse: (response: { data: UserFileResponse }) =>
+        response.data,
+      invalidatesTags: ["FileData"],
+    }),
+    getUserFiles: builder.query({
+      query: () => ({
+        method: "GET",
+        url: `/user/file`,
+      }),
+      transformResponse: (response: { data: UserFileResponse }) => {
+        return response.data;
+      },
+
+      providesTags: ["FileData"],
+    }),
+    deleteUserFile: builder.mutation({
+      query: (params) => ({
+        method: "DELETE",
+        url: `/user/file/${params.fileId}`,
+      }),
+      transformResponse: (response: { data: UserFileResponse }) =>
+        response.data,
+      invalidatesTags: ["FileData"],
+    }),
+    getEmissionsFactors: builder.query<EmissionsFactorResponse, void>({
+      query: () => `/emissions-factor`,
+      transformResponse: (response: { data: EmissionsFactorResponse }) =>
+        response.data,
+    }),
   }),
 });
 
@@ -351,5 +399,8 @@ export const {
   useGetVerifcationTokenQuery,
   useGetCitiesQuery,
   useGetInventoriesQuery,
+  useAddUserFileMutation,
+  useGetUserFilesQuery,
+  useDeleteUserFileMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

@@ -263,6 +263,7 @@ export function SubsectorDrawer({
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (!subSector) return;
     logger.debug("Subsector data", data);
+    console.log(data);
 
     const results = await resolvePromisesSequentially(
       Object.keys(data.subcategoryData).map((subCategoryId) => {
@@ -572,7 +573,6 @@ export function SubsectorDrawer({
                         >
                           <form className="space-y-6 grow flex flex-col">
                             <Box
-                              as="div"
                               borderTopWidth="1px"
                               borderColor="border.overlay"
                             />

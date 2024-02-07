@@ -43,7 +43,6 @@ export class User
   userId!: string;
   name?: string;
   pictureUrl?: string;
-  isOrganization?: boolean;
   email?: string;
   passwordHash?: string;
   role?: string;
@@ -51,7 +50,6 @@ export class User
   defaultInventoryYear?: number;
   created?: Date;
   lastUpdated?: Date;
-  organizationId?: string;
 
   // City BelongsToMany City via CityId
   cities!: City[];
@@ -95,12 +93,6 @@ export class User
           allowNull: true,
           field: "picture_url",
         },
-        isOrganization: {
-          type: DataTypes.BOOLEAN,
-          allowNull: true,
-          defaultValue: false,
-          field: "is_organization",
-        },
         email: {
           type: DataTypes.STRING(255),
           allowNull: true,
@@ -124,15 +116,6 @@ export class User
           type: DataTypes.INTEGER,
           allowNull: true,
           field: "default_inventory_year",
-        },
-        organizationId: {
-          type: DataTypes.UUID,
-          allowNull: true,
-          references: {
-            model: "User",
-            key: "user_id",
-          },
-          field: "organization_id",
         },
       },
       {

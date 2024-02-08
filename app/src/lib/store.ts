@@ -17,6 +17,7 @@ import {
   REGISTER,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import { ToolkitStore } from "@reduxjs/toolkit/dist/configureStore";
 
 const persistConfig = {
   key: "root",
@@ -46,6 +47,8 @@ export const store = configureStore({
       .concat(api.middleware)
       .concat(openclimateAPI.middleware),
 });
+
+console.log(store);
 
 export const persistor = persistStore(store);
 

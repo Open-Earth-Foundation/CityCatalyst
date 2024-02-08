@@ -58,6 +58,7 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
       isOrganization:
         (data.isOrganization as unknown) === "true" ? true : false,
     }).then((res: any) => {
+      console.log(res);
       if (res.error) {
         return toast({
           description: "Something went wrong",

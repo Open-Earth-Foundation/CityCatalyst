@@ -21,17 +21,6 @@ import type {
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { Action } from "@reduxjs/toolkit";
-import { REHYDRATE } from "redux-persist";
-import { RootState } from "@/lib/store";
-
-function isHydrateAction(action: Action): action is Action<typeof REHYDRATE> & {
-  key: string;
-  payload: RootState;
-  err: unknown;
-} {
-  return action.type === REHYDRATE;
-}
 
 export const api = createApi({
   reducerPath: "api",
@@ -43,18 +32,9 @@ export const api = createApi({
     "InventoryValue",
     "UserData",
     "FileData",
+    "CityData",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
-  extractRehydrationInfo(action, {}): any {
-    if (isHydrateAction(action)) {
-      // when persisting the api reducer
-      if (action.key === "root") {
-        return action.payload;
-      }
-
-      return;
-    }
-  },
   endpoints: (builder) => ({
     getCity: builder.query<CityAttributes, string>({
       query: (locode) => `city/${locode}`,
@@ -102,6 +82,7 @@ export const api = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["CityData"],
     }),
     addInventory: builder.mutation<
       InventoryAttributes,
@@ -232,7 +213,7 @@ export const api = createApi({
     >({
       query: (data) => `/city/${data.locode}/user/${data.userId}`,
       transformResponse: (response: { data: any }) => response.data,
-      // providesTags: ["UserData"],
+      providesTags: ["UserData"],
     }),
 
     setCurrentUserData: builder.mutation<
@@ -267,7 +248,7 @@ export const api = createApi({
         method: "POST",
         body: data,
       }),
-      // invalidatesTags: ["UserData"],
+      invalidatesTags: ["UserData"],
     }),
     getCityUsers: builder.query<
       UserAttributes,
@@ -277,7 +258,7 @@ export const api = createApi({
     >({
       query: (data) => `/city/${data.locode}/user/`,
       transformResponse: (response: { data: any }) => response.data,
-      // providesTags: ["UserData"],
+      providesTags: ["UserData"],
     }),
     setUserData: builder.mutation<
       UserAttributes,
@@ -301,7 +282,7 @@ export const api = createApi({
         method: "DELETE",
       }),
       transformResponse: (response: { data: any }) => response.data,
-      // invalidatesTags: ["UserData"],
+      invalidatesTags: ["UserData"],
     }),
     getVerifcationToken: builder.query({
       query: () => ({
@@ -326,6 +307,7 @@ export const api = createApi({
         method: "GET",
       }),
       transformResponse: (response: { data: any }) => response.data,
+      providesTags: ["CityData"],
     }),
     removeCity: builder.mutation<string, { locode: string }>({
       query: ({ locode }) => ({
@@ -333,6 +315,7 @@ export const api = createApi({
         method: "DELETE",
       }),
       transformResponse: (response: { data: any }) => response.data,
+      invalidatesTags: ["CityData"],
     }),
     getInventories: builder.query<InventoryAttributes[], { locode: string }>({
       query: ({ locode }) => ({

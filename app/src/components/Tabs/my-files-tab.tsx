@@ -518,6 +518,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
         isOpen={isFileDeleteModalOpen}
         onClose={onFileDeleteModalClose}
         fileData={fileData}
+        t={t}
       />
     </>
   );

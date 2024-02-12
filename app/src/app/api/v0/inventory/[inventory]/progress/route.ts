@@ -1,5 +1,6 @@
 import { db } from "@/models";
 import { Sector } from "@/models/Sector";
+import { User } from "@/models/User";
 import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
@@ -12,17 +13,16 @@ export const GET = apiHandler(
     context: { session?: Session; params: Record<string, string> },
   ) => {
     const { params, session } = context;
-    const city = await db.models.City.findOne({
-      where: { locode: params.city },
-    });
     if (!session) throw new createHttpError.Unauthorized("Unauthorized");
-    if (!city) {
-      throw new createHttpError.NotFound("City not found");
-    }
 
     const inventory = await db.models.Inventory.findOne({
-      where: { cityId: city.cityId, year: params.year },
+      where: { inventoryId: params.inventory },
       include: [
+        {
+          model: db.models.City,
+          as: "city",
+          include: [{ model: db.models.User, as: "users" }],
+        },
         {
           model: db.models.InventoryValue,
           as: "inventoryValues",
@@ -38,6 +38,12 @@ export const GET = apiHandler(
     });
     if (!inventory) {
       throw new createHttpError.NotFound("Inventory not found");
+    }
+    const canUserAccess = inventory.city.users.some(
+      (user: User) => user.userId === session.user.id,
+    );
+    if (!canUserAccess) {
+      throw new createHttpError.Unauthorized("Unauthorized");
     }
 
     // TODO cache this (including sorting)

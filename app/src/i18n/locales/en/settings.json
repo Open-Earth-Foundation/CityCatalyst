@@ -51,5 +51,8 @@
     "download-csv": "Download in CSV",
     "delete-inventory": "Delete Inventory",
     "delete-inventory-prompt": "Are you sure you want to <2>permanently delete</2> this city's inventory?",
-    "enter-password-info": "Enter your password to confirm the deletion of the cities information."
+    "enter-password-info": "Enter your password to confirm the deletion of the cities information.",
+    "user-details-updated": "User details updatedf",
+    "something-went-wrong": "Something went wrong",
+    "is-organization": "Is organization"
 }

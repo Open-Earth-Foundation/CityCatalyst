@@ -1010,6 +1010,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
         isOpen={isUserModalOpen}
         onClose={onUserModalClose}
         userInfo={userInfo}
+        t={t}
       />
       <UpdateUserModal
         isOpen={isUserUpdateModalOpen}

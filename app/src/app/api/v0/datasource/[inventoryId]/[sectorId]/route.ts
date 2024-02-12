@@ -26,6 +26,10 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
           startYear: { [Op.lte]: inventory.year },
           endYear: { [Op.gte]: inventory.year },
         },
+        include: [
+          { model: db.models.SubCategory, as: "subCategory" },
+          { model: db.models.SubSector, as: "subSector" },
+        ],
       },
     ],
   });
@@ -39,18 +43,20 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   );
 
   // TODO add query parameter to make this optional?
-  const sourceData = (await Promise.all(
-    applicableSources.map(async (source) => {
-      const data = await DataSourceService.retrieveGlobalAPISource(
-        source,
-        inventory,
-      );
-      if (data instanceof String || typeof data === "string") {
-        return null;
-      }
-      return { source, data };
-    }),
-  )).filter(source => !!source);
+  const sourceData = (
+    await Promise.all(
+      applicableSources.map(async (source) => {
+        const data = await DataSourceService.retrieveGlobalAPISource(
+          source,
+          inventory,
+        );
+        if (data instanceof String || typeof data === "string") {
+          return null;
+        }
+        return { source, data };
+      }),
+    )
+  ).filter((source) => !!source);
 
   return NextResponse.json({ data: sourceData });
 });

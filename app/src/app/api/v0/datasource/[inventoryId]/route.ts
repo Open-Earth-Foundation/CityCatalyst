@@ -11,7 +11,6 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { Op } from "sequelize";
 import { z } from "zod";
-import { Population } from "@/models/Population";
 import { logger } from "@/services/logger";
 
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
@@ -63,18 +62,20 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const applicableSources = DataSourceService.filterSources(inventory, sources);
 
   // TODO add query parameter to make this optional?
-  const sourceData = (await Promise.all(
-    applicableSources.map(async (source) => {
-      const data = await DataSourceService.retrieveGlobalAPISource(
-        source,
-        inventory,
-      );
-      if (data instanceof String || typeof data === "string") {
-        return null;
-      }
-      return { source, data };
-    }),
-  )).filter(source => !!source);
+  const sourceData = (
+    await Promise.all(
+      applicableSources.map(async (source) => {
+        const data = await DataSourceService.retrieveGlobalAPISource(
+          source,
+          inventory,
+        );
+        if (data instanceof String || typeof data === "string") {
+          return null;
+        }
+        return { source, data };
+      }),
+    )
+  ).filter((source) => !!source);
 
   return NextResponse.json({ data: sourceData });
 });

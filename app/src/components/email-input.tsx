@@ -22,7 +22,7 @@ export default function EmailInput({
   t: Function;
   name?: String;
   id?: String;
-  disabled: boolean;
+  disabled?: boolean;
 }) {
   return (
     <FormControl isInvalid={!!error}>

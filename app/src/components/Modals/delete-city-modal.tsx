@@ -13,6 +13,7 @@ import {
   Box,
   Badge,
   useToast,
+  ModalFooter,
 } from "@chakra-ui/react";
 import React, { FC, useState } from "react";
 
@@ -32,7 +33,7 @@ interface DeleteCityModalProps {
   onClose: any;
   userData: UserAttributes;
   cityData: CityAttributes;
-  tf: TFunction;
+  t: TFunction;
   lng: string;
 }
 
@@ -42,7 +43,7 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
   userData,
   cityData,
   lng,
-  tf,
+  t,
 }) => {
   const {
     handleSubmit,
@@ -51,7 +52,6 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
     setValue,
   } = useForm<{ password: string }>();
 
-  const { t } = useTranslation(lng, "dashboard");
   const [requestPasswordConfirm] = api.useRequestVerificationMutation();
   const { data: token } = api.useGetVerifcationTokenQuery({
     skip: !userData,
@@ -72,7 +72,7 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
           onClose();
           setIsPasswordCorrect(true);
           toast({
-            description: "User details updated!",
+            description: t("city-deleted"),
             status: "success",
             duration: 5000,
             isClosable: true,
@@ -98,7 +98,7 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
                     lineHeight="52"
                     fontSize="label.lg"
                   >
-                    City deleted successfully
+                    {t("city-deleted")}
                   </Text>
                 </Box>
               </Box>
@@ -123,11 +123,12 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
             fontSize="headline.sm"
             lineHeight="32"
             padding="24px"
+            fontFamily="heading"
             borderBottomWidth="1px"
             borderStyle="solid"
             borderColor="border.neutral"
           >
-            Remove City
+            {t("remove-city")}
           </ModalHeader>
           <ModalCloseButton marginTop="10px" />
           <ModalBody paddingTop="24px">
@@ -158,7 +159,6 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
                 </Badge>
                 <Text
                   textAlign="center"
-                  fontFamily="heading"
                   w="408px"
                   fontSize="body.large"
                   letterSpacing="wide"
@@ -172,7 +172,7 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
                 </Text>
               </Box>
               <Box>
-                <form onSubmit={handleSubmit(onSubmit)}>
+                <form>
                   <Box
                     display="flex"
                     flexDirection="column"
@@ -191,7 +191,7 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
                         w="365px"
                         error={errors.password}
                         register={register}
-                        t={tf}
+                        t={t}
                         name="Password"
                       />
                       <Box
@@ -210,7 +210,7 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
                             color="content.tertiary"
                             letterSpacing="wide"
                           >
-                            {tf("enter-password-description")}
+                            {t("enter-password-description")}
                           </Text>
                         ) : (
                           <Text
@@ -221,31 +221,45 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
                             color="content.tertiary"
                             letterSpacing="wide"
                           >
-                            {tf("incorrect-password")}
+                            {t("incorrect-password")}
                           </Text>
                         )}
                       </Box>
                     </Box>
-                    <Button
-                      h="56px"
-                      w="472px"
-                      background="sentiment.negativeDefault"
-                      paddingTop="16px"
-                      paddingBottom="16px"
-                      px="24px"
-                      letterSpacing="widest"
-                      textTransform="uppercase"
-                      fontWeight="semibold"
-                      fontSize="button.md"
-                      type="submit"
-                    >
-                      Remove City
-                    </Button>
                   </Box>
                 </form>
               </Box>
             </Box>
           </ModalBody>
+          <ModalFooter
+            borderTopWidth="1px"
+            borderStyle="solid"
+            borderColor="border.neutral"
+            w="full"
+            display="flex"
+            alignItems="center"
+            p="24px"
+            justifyContent="center"
+          >
+            <Button
+              h="56px"
+              w="472px"
+              paddingTop="16px"
+              paddingBottom="16px"
+              px="24px"
+              bg="sentiment.negativeDefault"
+              letterSpacing="widest"
+              textTransform="uppercase"
+              fontWeight="semibold"
+              fontSize="button.md"
+              type="submit"
+              onClick={handleSubmit(onSubmit)}
+              p={0}
+              m={0}
+            >
+              {t("remove-city")}
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

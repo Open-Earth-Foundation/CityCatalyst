@@ -1,6 +1,5 @@
 "use client";
 
-import { UserDetails } from "@/app/[lng]/settings/page";
 import { UserAttributes } from "@/models/User";
 import { api } from "@/services/api";
 import {
@@ -15,17 +14,20 @@ import {
   Box,
   Badge,
   useToast,
+  ModalFooter,
 } from "@chakra-ui/react";
+import { TFunction } from "i18next";
 import React, { FC } from "react";
+import { Trans } from "react-i18next";
 
 import { FiTrash2 } from "react-icons/fi";
-import { MdCheckCircleOutline } from "react-icons/md";
 
 interface DeleteUserModalProps {
   isOpen: boolean;
   onClose: any;
   userData: UserAttributes;
   userInfo: UserAttributes;
+  t: TFunction;
 }
 
 const DeleteUserModal: FC<DeleteUserModalProps> = ({
@@ -33,6 +35,7 @@ const DeleteUserModal: FC<DeleteUserModalProps> = ({
   onClose,
   userData,
   userInfo,
+  t,
 }) => {
   const toast = useToast();
   const [removeUser] = api.useRemoveUserMutation();
@@ -59,8 +62,9 @@ const DeleteUserModal: FC<DeleteUserModalProps> = ({
             borderBottomWidth="1px"
             borderStyle="solid"
             borderColor="border.neutral"
+            fontFamily="heading"
           >
-            Remove User
+            {t("remove-user")}
           </ModalHeader>
           <ModalCloseButton marginTop="10px" />
           <ModalBody paddingTop="24px">
@@ -97,35 +101,48 @@ const DeleteUserModal: FC<DeleteUserModalProps> = ({
                   letterSpacing="wide"
                   fontStyle="normal"
                 >
-                  Are you sure you want to{" "}
-                  <span style={{ fontWeight: "bold" }}>
-                    permanently remove {userData.name}
-                  </span>{" "}
-                  from your team?
+                  <Trans t={t} i18nKey="remove-user-prompt">
+                    Are you sure you want to{" "}
+                    <span style={{ fontWeight: "bold" }}>
+                      permanently remove this user
+                    </span>{" "}
+                    from your team?
+                  </Trans>
                 </Text>
               </Box>
-              <Button
-                h="56px"
-                w="472px"
-                background="sentiment.negativeDefault"
-                py="16px"
-                px="24px"
-                letterSpacing="widest"
-                textTransform="uppercase"
-                fontWeight="semibold"
-                fontSize="button.md"
-                type="button"
-                onClick={() =>
-                  handleDeleteUser(
-                    userData.userId,
-                    userInfo?.defaultCityLocode!,
-                  )
-                }
-              >
-                save changes
-              </Button>
             </Box>
           </ModalBody>
+          <ModalFooter
+            borderTopWidth="1px"
+            borderStyle="solid"
+            borderColor="border.neutral"
+            w="full"
+            display="flex"
+            alignItems="center"
+            p="24px"
+            justifyContent="center"
+          >
+            <Button
+              h="56px"
+              w="472px"
+              paddingTop="16px"
+              paddingBottom="16px"
+              px="24px"
+              bg="sentiment.negativeDefault"
+              letterSpacing="widest"
+              textTransform="uppercase"
+              fontWeight="semibold"
+              fontSize="button.md"
+              type="submit"
+              onClick={() =>
+                handleDeleteUser(userData.userId, userInfo?.defaultCityLocode!)
+              }
+              p={0}
+              m={0}
+            >
+              {t("remove-user")}
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

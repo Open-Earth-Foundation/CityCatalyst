@@ -54,5 +54,9 @@
     "enter-password-info": "Enter your password to confirm the deletion of the cities information.",
     "user-details-updated": "User details updatedf",
     "something-went-wrong": "Something went wrong",
-    "is-organization": "Is organization"
+    "is-organization": "Is organization",
+    "user-deleted-from-city": "User(s) details deleted from city",
+    "email-address": "Email",
+    "remove-user-prompt": " Are you sure you want to <2> permanently remove this user </2> from your team?",
+    "city-deleted": "City deleted successfully"
 }

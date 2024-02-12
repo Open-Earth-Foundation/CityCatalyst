@@ -278,7 +278,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                     lineHeight="52"
                     fontSize="label.lg"
                   >
-                    User(s) details deleted from city
+                    {t("users-deleted-from-city")}
                   </Text>
                 </Box>
               </Box>
@@ -416,7 +416,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                       fontWeight="semibold"
                       lineHeight="24"
                       fontSize="title.md"
-                      fontFamily="body"
+                      fontFamily="heading"
                       fontStyle="normal"
                     >
                       {t("account-details")}
@@ -425,7 +425,6 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                       color="content.tertiary"
                       fontWeight="normal"
                       lineHeight="24"
-                      fontFamily="heading"
                       fontSize="body.lg"
                       letterSpacing="wide"
                       marginTop="8px"
@@ -1017,19 +1016,21 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
         onClose={onUserUpdateModalClose}
         userData={userData}
         userInfo={userInfo}
+        t={t}
       />
       <DeleteUserModal
         isOpen={isUserDeleteModalOpen}
         onClose={onUserDeleteModalClose}
         userData={userData}
         userInfo={userInfo}
+        t={t}
       />
       <DeleteCityModal
         isOpen={isCityDeleteModalOpen}
         onClose={onCityDeleteModalClose}
         userData={userData}
         cityData={cityData}
-        tf={t}
+        t={t}
         lng={lng}
       />
     </>

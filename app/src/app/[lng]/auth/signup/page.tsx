@@ -116,7 +116,12 @@ export default function Signup({
             {errors.name && errors.name.message}
           </FormErrorMessage>
         </FormControl>
-        <EmailInput register={register} error={errors.email} t={t} />
+        <EmailInput
+          disabled={false}
+          register={register}
+          error={errors.email}
+          t={t}
+        />
         <PasswordInput register={register} error={errors.password} t={t}>
           <FormHelperText>
             <InfoOutlineIcon

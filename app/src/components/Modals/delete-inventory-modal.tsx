@@ -12,13 +12,14 @@ import {
   Text,
   Box,
   Badge,
+  ModalFooter,
 } from "@chakra-ui/react";
 import React, { FC } from "react";
 
 import { FiTrash2 } from "react-icons/fi";
 import PasswordInput from "../password-input";
 import { useForm } from "react-hook-form";
-import { useTranslation } from "@/i18n/client";
+import { Trans } from "react-i18next/TransWithoutContext";
 import { TFunction } from "i18next";
 import { InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import { UserAttributes } from "@/models/User";
@@ -27,7 +28,7 @@ interface DeleteInventoryModalProps {
   isOpen: boolean;
   onClose: any;
   userData: UserAttributes;
-  tf: TFunction;
+  t: TFunction;
   lng: string;
 }
 
@@ -36,7 +37,7 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
   onClose,
   userData,
   lng,
-  tf,
+  t,
 }) => {
   const {
     handleSubmit,
@@ -44,7 +45,7 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
     formState: { errors, isSubmitting },
     setValue,
   } = useForm<{ password: string }>();
-  const { t } = useTranslation(lng, "dashboard");
+
   return (
     <>
       <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
@@ -60,8 +61,9 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
             borderBottomWidth="1px"
             borderStyle="solid"
             borderColor="border.neutral"
+            fontFamily="heading"
           >
-            Delete Inventory
+            {t("delete-inventory")}
           </ModalHeader>
           <ModalCloseButton marginTop="10px" />
           <ModalBody paddingTop="24px">
@@ -92,15 +94,16 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
                 </Badge>
                 <Text
                   textAlign="center"
-                  fontFamily="heading"
                   w="408px"
                   fontSize="body.large"
                   letterSpacing="wide"
                   fontStyle="normal"
                 >
-                  Are you sure you want to{" "}
-                  <span style={{ fontWeight: "bold" }}>permanently delete</span>{" "}
-                  this city&pos;s from CityCatalyst?
+                  <Trans t={t} i18nKey="delete-inventory-prompt">
+                    Are you sure you want to{" "}
+                    <span className="font-bold">permanently delete</span> this
+                    city&nbsp;s inventory?
+                  </Trans>
                 </Text>
               </Box>
               <Box>
@@ -123,7 +126,7 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
                         w="365px"
                         error={errors.password}
                         register={register}
-                        t={tf}
+                        t={t}
                         name="Password"
                       />
                       <Box
@@ -141,32 +144,43 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
                           color="content.tertiary"
                           letterSpacing="wide"
                         >
-                          Enter your password to confirm the deletion of the
-                          cities information.
+                          {t("enter-password-info")}
                         </Text>
                       </Box>
                     </Box>
-                    <Button
-                      h="56px"
-                      w="472px"
-                      background="sentiment.negativeDefault"
-                      paddingTop="16px"
-                      paddingBottom="16px"
-                      px="24px"
-                      letterSpacing="widest"
-                      textTransform="uppercase"
-                      fontWeight="semibold"
-                      fontSize="button.md"
-                      type="button"
-                      onClick={() => alert(userData.userId)}
-                    >
-                      Remove City
-                    </Button>
                   </Box>
                 </form>
               </Box>
             </Box>
           </ModalBody>
+          <ModalFooter
+            borderTopWidth="1px"
+            borderStyle="solid"
+            borderColor="border.neutral"
+            w="full"
+            display="flex"
+            alignItems="center"
+            p="24px"
+            justifyContent="center"
+          >
+            <Button
+              h="56px"
+              w="472px"
+              background="sentiment.negativeDefault"
+              paddingTop="16px"
+              paddingBottom="16px"
+              px="24px"
+              letterSpacing="widest"
+              textTransform="uppercase"
+              fontWeight="semibold"
+              fontSize="button.md"
+              type="button"
+              p={0}
+              m={0}
+            >
+              {t("delete-inventory")}
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

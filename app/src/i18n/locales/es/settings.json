@@ -49,5 +49,7 @@
     "delete-file": "Eliminar archivo",
     "status": "Estado",
     "download-csv": "Descargar en CSV",
-    "delete-inventory": "Eliminar inventario"
+    "delete-inventory": "Eliminar inventario",
+    "delete-inventory-prompt": "¿Estás seguro de que quieres <2>eliminar permanentemente</2> el inventario de esta ciudad?",
+    "enter-password-info": "Ingresa tu contraseña para confirmar la eliminación de la información de las ciudades."
 }

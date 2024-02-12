@@ -70,6 +70,7 @@ import { TFunction } from "i18next";
 import { UserAttributes } from "@/models/User";
 import { api, useSetCurrentUserDataMutation } from "@/services/api";
 import { CityAttributes } from "@/models/City";
+import EmailInput from "../email-input";
 interface MyProfileTabProps {
   session: Session | null;
   status: "loading" | "authenticated" | "unauthenticated";
@@ -298,7 +299,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
               fontWeight="bold"
               lineHeight="32"
               fontSize="headline.sm"
-              fontFamily="body"
+              fontFamily="heading"
               fontStyle="normal"
             >
               {t("my-profile")}
@@ -307,7 +308,6 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
               color="content.tertiary"
               fontWeight="normal"
               lineHeight="24"
-              fontFamily="heading"
               fontSize="body.lg"
               letterSpacing="wide"
               marginTop="8px"
@@ -334,6 +334,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                     fontStyle: "normal",
                     fontSize: "label.lg",
                     fontWeight: "medium",
+                    fontFamily: "heading",
                   }}
                   _selected={{
                     color: "content.link",
@@ -359,6 +360,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                     fontStyle: "normal",
                     fontSize: "label.lg",
                     fontWeight: "medium",
+                    fontFamily: "heading",
                   }}
                   _selected={{
                     color: "content.link",
@@ -384,6 +386,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                     fontStyle: "normal",
                     fontSize: "label.lg",
                     fontWeight: "medium",
+                    fontFamily: "heading",
                   }}
                   _selected={{
                     color: "content.link",
@@ -441,9 +444,9 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                         error={errors.name}
                         id="name"
                       />
-                      <FormInput
-                        label={t("email")}
-                        isDisabled
+                      <EmailInput
+                        disabled
+                        t={t}
                         register={register}
                         error={errors.email}
                         id="email"

@@ -112,28 +112,28 @@ export const TruckIcon = () => {
       <path
         d="M21.3335 4H1.3335V21.3333H21.3335V4Z"
         stroke="#2351DC"
-        stroke-width="2"
+        strokeWidth="2"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
       <path
         d="M21.3335 10.667H26.6668L30.6668 14.667V21.3337H21.3335V10.667Z"
         stroke="#2351DC"
-        stroke-width="2"
+        strokeWidth="2"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
       <path
         d="M7.33333 27.9997C9.17428 27.9997 10.6667 26.5073 10.6667 24.6663C10.6667 22.8254 9.17428 21.333 7.33333 21.333C5.49238 21.333 4 22.8254 4 24.6663C4 26.5073 5.49238 27.9997 7.33333 27.9997Z"
         stroke="#2351DC"
-        stroke-width="2"
+        strokeWidth="2"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
       <path
         d="M24.6668 27.9997C26.5078 27.9997 28.0002 26.5073 28.0002 24.6663C28.0002 22.8254 26.5078 21.333 24.6668 21.333C22.8259 21.333 21.3335 22.8254 21.3335 24.6663C21.3335 26.5073 22.8259 27.9997 24.6668 27.9997Z"
         stroke="#2351DC"
-        stroke-width="2"
+        strokeWidth="2"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
@@ -153,28 +153,28 @@ export const WasteIcon = () => {
       <path
         d="M4 8H6.66667H28"
         stroke="#2351DC"
-        stroke-width="2"
+        strokeWidth="2"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
       <path
         d="M10.6665 8.00033V5.33366C10.6665 4.62641 10.9475 3.94814 11.4476 3.44804C11.9477 2.94794 12.6259 2.66699 13.3332 2.66699H18.6665C19.3737 2.66699 20.052 2.94794 20.5521 3.44804C21.0522 3.94814 21.3332 4.62641 21.3332 5.33366V8.00033M25.3332 8.00033V26.667C25.3332 27.3742 25.0522 28.0525 24.5521 28.5526C24.052 29.0527 23.3737 29.3337 22.6665 29.3337H9.33317C8.62593 29.3337 7.94765 29.0527 7.44755 28.5526C6.94746 28.0525 6.6665 27.3742 6.6665 26.667V8.00033H25.3332Z"
         stroke="#2351DC"
-        stroke-width="2"
+        strokeWidth="2"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
       <path
         d="M13.3335 14.667V22.667"
         stroke="#2351DC"
-        stroke-width="2"
+        strokeWidth="2"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
       <path
         d="M18.6665 14.667V22.667"
         stroke="#2351DC"
-        stroke-width="2"
+        strokeWidth="2"
         stroke-linecap="round"
         stroke-linejoin="round"
       />

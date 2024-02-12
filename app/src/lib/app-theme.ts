@@ -42,6 +42,7 @@ export const appTheme = extendTheme({
       overlay: "#C5CBF5",
       transparentGrey: "rgba(232, 234, 251, 0.20)",
       backgroundLight: "#FAFAFA",
+      backgroundGreyFlat: "#FAFBFE",
     },
 
     interactive: {
@@ -469,6 +470,24 @@ export const appTheme = extendTheme({
           },
           container: {
             mb: "0 !important",
+          },
+        },
+      },
+      defaultProps: {
+        variant: "brand",
+      },
+    },
+    Textarea: {
+      variants: {
+        brand: {
+          _invalid: {
+            background: "sentiment.negativeOverlay",
+            borderWidth: "2px",
+            borderColor: "sentiment.negativeDefault",
+          },
+          _focus: {
+            borderWidth: "2px",
+            borderColor: "#3182ce",
           },
         },
       },

@@ -1,7 +1,7 @@
 aiohttp==3.9.*
 alembic==1.13.1
 black==24.1.1
-fastapi==0.109.0
+fastapi==0.109.1
 flake8==7.0.0
 fsspec==2023.*
 geopandas==0.14.2
@@ -22,3 +22,4 @@ geojson==3.1.*
 openclimate==0.1.*
 nest_asyncio==1.5.*
 xlrd==2.0.*
+dns-cache==0.3.*

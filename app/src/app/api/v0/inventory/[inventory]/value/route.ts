@@ -1,10 +1,11 @@
+import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { Op } from "sequelize";
 
-export const GET = apiHandler(async (req: NextRequest, { params }) => {
+export const GET = apiHandler(async (req, { params, session }) => {
   const subCategoryIdsParam = req.nextUrl.searchParams.get("subCategoryIds");
   if (!subCategoryIdsParam || subCategoryIdsParam.length === 0) {
     throw new createHttpError.BadRequest(
@@ -12,6 +13,8 @@ export const GET = apiHandler(async (req: NextRequest, { params }) => {
     );
   }
   const subCategoryIds = subCategoryIdsParam.split(",");
+
+  const inventory = await UserService.findUserInventory(params.inventory, session);
 
   const inventoryValues = await db.models.InventoryValue.findAll({
     where: {

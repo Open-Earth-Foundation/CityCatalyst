@@ -1,20 +1,16 @@
-import CityService from "@/backend/CityService";
+import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { createInventoryRequest } from "@/util/validation";
 import createHttpError from "http-errors";
-import { Session } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 
 export const POST = apiHandler(
-  async (
-    req: NextRequest,
-    { session, params }: { session?: Session; params: Record<string, string> },
-  ) => {
+  async (req: NextRequest, { session, params }) => {
     const body = createInventoryRequest.parse(await req.json());
 
-    const city = await CityService.findUserCity(params.city, session);
+    const city = await UserService.findUserCity(params.city, session);
     const inventory = await db.models.Inventory.create({
       ...body,
       inventoryId: randomUUID(),
@@ -25,11 +21,8 @@ export const POST = apiHandler(
 );
 
 export const GET = apiHandler(
-  async (
-    _req: NextRequest,
-    { session, params }: { session?: Session; params: Record<string, string> },
-  ) => {
-    const city = await CityService.findUserCity(params.city, session);
+  async (_req: NextRequest, { session, params }) => {
+    const city = await UserService.findUserCity(params.city, session);
     const inventory = await db.models.Inventory.findAll({
       where: { cityId: city?.cityId },
     });

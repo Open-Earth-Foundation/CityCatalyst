@@ -1,16 +1,17 @@
 import "@/util/big_int_json";
 
-import { Auth } from "@/lib/auth";
+import { AppSession, Auth } from "@/lib/auth";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 
 import { db } from "@/models";
 import { ValidationError } from "sequelize";
+import { logger } from "@/services/logger";
 
 export type NextHandler = (
   req: NextRequest,
-  props: { params: Record<string, string> },
+  props: { params: Record<string, string>; session: AppSession | null },
 ) => Promise<NextResponse>;
 
 export function apiHandler(handler: NextHandler) {
@@ -38,7 +39,7 @@ export function apiHandler(handler: NextHandler) {
 
 function errorHandler(err: unknown, req: NextRequest) {
   // TODO log structured request info like route here
-  console.error(err);
+  logger.error(err);
   if (createHttpError.isHttpError(err) && err.expose) {
     return NextResponse.json(
       { error: { message: err.message } },

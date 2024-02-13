@@ -19,7 +19,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
   const inventoryValues = await db.models.InventoryValue.findAll({
     where: {
       subCategoryId: { [Op.in]: subCategoryIds },
-      inventoryId: params.inventory,
+      inventoryId: inventory.inventoryId,
     },
     include: [
       { model: db.models.DataSource, as: "dataSource" },

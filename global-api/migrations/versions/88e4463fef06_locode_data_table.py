@@ -33,8 +33,8 @@ def upgrade() -> None:
         sa.Column("activity_value", sa.Float, nullable=True),
         sa.Column("activity_units", sa.String, nullable=True),
         sa.Column("gas_name", sa.String, nullable=False),
-        sa.Column("emission_factor_value", sa.Float, nullable=False),
-        sa.Column("emission_factor_units", sa.String, nullable=False),
+        sa.Column("emission_factor_value", sa.Float, nullable=True),
+        sa.Column("emission_factor_units", sa.String, nullable=True),
         sa.Column("emissions_value", sa.Float, nullable=False),
         sa.Column("emissions_units", sa.String, nullable=False),
         sa.Column(

@@ -1,22 +1,21 @@
+import CityService from "@/backend/CityService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { createPopulationRequest } from "@/util/validation";
-import createHttpError from "http-errors";
 import { Session } from "next-auth";
 import { NextResponse } from "next/server";
 
 export const POST = apiHandler(
   async (
     req: Request,
-    context: { session?: Session; params: Record<string, string> },
+    { session, params }: { session?: Session; params: Record<string, string> },
   ) => {
     const body = createPopulationRequest.parse(await req.json());
-    if (!context.session) {
-      throw new createHttpError.Unauthorized("Unauthorized");
-    }
+    const city = await CityService.findUserCity(params.city, session);
 
     const population = await db.models.Population.create({
       ...body,
+      cityId: city.cityId,
     });
     return NextResponse.json({ data: population });
   },

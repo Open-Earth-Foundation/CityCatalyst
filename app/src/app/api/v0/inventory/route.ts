@@ -12,28 +12,27 @@ export const POST = apiHandler(
     context: { session?: Session; params: Record<string, string> },
   ) => {
     const body = createInventoryRequest.parse(await req.json());
-    const { params, session } = context;
+    const { session } = context;
     if (!session) throw new createHttpError.Unauthorized("Unauthorized");
     const city = await db.models.City.findOne({
-      where: { locode: params.city },
+      where: {
+        cityId: body.cityId,
+      },
       include: [
         {
           model: db.models.User,
           as: "users",
-          // where: {
-          //   userId: session?.user.id,
-          // },
+          where: {
+            userId: session.user.id,
+          },
         },
       ],
     });
-
-    if (!city) {
-      throw new createHttpError.NotFound("User is not part of this city");
+    if (!city || city.users.length === 0) {
+      throw new createHttpError.Unauthorized("Unauthorized");
     }
-
     const inventory = await db.models.Inventory.create({
       inventoryId: randomUUID(),
-      cityId: city.cityId,
       ...body,
     });
     return NextResponse.json({ data: inventory });

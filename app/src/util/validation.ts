@@ -27,6 +27,7 @@ export const createCityRequest = z.object({
 export type CreateCityRequest = z.infer<typeof createCityRequest>;
 
 export const createInventoryRequest = z.object({
+  cityId: z.string().uuid(),
   inventoryName: z.string().min(1),
   year: z.number().int().min(2000),
   totalEmissions: z.number().int().optional(),

@@ -5,9 +5,8 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.createTable('CityInvite', {
       id: {
-        allowNull:false,
+        type: Sequelize.UUID,
         primaryKey:true,
-        type: Sequelize.UUIDV
       },
       user_id: {
         type: Sequelize.UUID,

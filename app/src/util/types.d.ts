@@ -23,7 +23,7 @@ interface SectorProgress {
 }
 
 interface InventoryProgressResponse {
-  inventoryId: string;
+  inventory: InventoryResponse;
   totalProgress: {
     total: number;
     thirdParty: number;

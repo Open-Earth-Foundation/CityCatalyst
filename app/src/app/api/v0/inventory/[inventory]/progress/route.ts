@@ -164,7 +164,7 @@ export const GET = apiHandler(async (_req, { session, params }) => {
 
   return NextResponse.json({
     data: {
-      inventoryId: inventory.inventoryId,
+      inventory,
       totalProgress,
       sectorProgress,
     },

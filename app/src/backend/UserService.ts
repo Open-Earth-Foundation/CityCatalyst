@@ -73,6 +73,7 @@ export default class UserService {
         {
           model: db.models.City,
           as: "city",
+          required: true,
           include: [
             {
               model: db.models.User,

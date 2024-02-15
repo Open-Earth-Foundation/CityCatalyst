@@ -11,12 +11,23 @@ export const POST = apiHandler(
     const body = createInventoryRequest.parse(await req.json());
 
     const city = await UserService.findUserCity(params.city, session);
-    const inventory = await db.models.Inventory.create({
-      ...body,
-      inventoryId: randomUUID(),
-      cityId: city.cityId,
+    let didExistAlready = true;
+    let inventory = await db.models.Inventory.findOne({
+      where: {
+        cityId: city.cityId,
+        year: body.year,
+      },
     });
-    return NextResponse.json({ data: inventory });
+
+    if (!inventory) {
+      inventory = await db.models.Inventory.create({
+        ...body,
+        inventoryId: randomUUID(),
+        cityId: city.cityId,
+      });
+      didExistAlready = false;
+    }
+    return NextResponse.json({ data: inventory, didExistAlready });
   },
 );
 

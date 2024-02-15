@@ -30,8 +30,7 @@ export const GET = apiHandler(async (_req: Request, context) => {
 });
 
 const updateUserRequest = z.object({
-  defaultCityLocode: z.string().min(2),
-  defaultInventoryYear: z.number().gt(0),
+  defaultInventoryId: z.string().uuid(),
 });
 
 export const PATCH = apiHandler(async (req: Request, context) => {

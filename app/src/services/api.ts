@@ -86,6 +86,7 @@ export const api = createApi({
         method: "POST",
         body: data,
       }),
+      transformResponse: (response: { data: InventoryAttributes }) => response.data,
       invalidatesTags: ["UserInventories"],
     }),
     setUserInfo: builder.mutation<

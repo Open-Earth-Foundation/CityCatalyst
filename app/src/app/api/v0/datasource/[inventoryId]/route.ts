@@ -11,7 +11,6 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { Op } from "sequelize";
 import { z } from "zod";
-import { Population } from "@/models/Population";
 import { logger } from "@/services/logger";
 
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {

@@ -142,10 +142,9 @@ describe("Inventory API", () => {
     await db.models.Inventory.destroy({
       where: { inventoryName },
     });
-    const url = "http://localhost:3000/api/v0/city" + locode;
-    const req = createRequest(url, inventoryData);
+    const req = mockRequest(inventoryData);
     const res = await createInventory(req, {
-      params: { city: locode },
+      params: { city: city.cityId },
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
@@ -155,8 +154,7 @@ describe("Inventory API", () => {
   });
 
   it("should not create an inventory with invalid data", async () => {
-    const url = "http://localhost:3000/api/v0/city/" + locode;
-    const req = createRequest(url, invalidInventory);
+    const req = mockRequest(invalidInventory);
     const res = await createInventory(req, {
       params: { city: locode },
     });
@@ -168,10 +166,9 @@ describe("Inventory API", () => {
   });
 
   it("should find an inventory", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
-    const req = createRequest(url);
+    const req = mockRequest();
     const res = await findInventory(req, {
-      params: { city: locode, year: inventory.year!.toString() },
+      params: { inventory: inventory.inventoryId },
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
@@ -181,10 +178,10 @@ describe("Inventory API", () => {
   });
 
   it("should download an inventory in csv format", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}?format=csv`;
+    const url = `http://localhost:3000/api/v0/inventory/${inventory.inventoryId}?format=csv`;
     const req = createRequest(url);
     const res = await findInventory(req, {
-      params: { city: locode, year: inventory.year!.toString() },
+      params: { inventory: inventory.inventoryId },
     });
     assert.equal(res.status, 200);
     assert.equal(res.headers.get("content-type"), "text/csv");
@@ -209,10 +206,10 @@ describe("Inventory API", () => {
   });
 
   it("should download an inventory in xls format", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}?format=xls`;
+    const url = `http://localhost:3000/api/v0/inventory/${inventory.inventoryId}?format=xls`;
     const req = createRequest(url);
     const res = await findInventory(req, {
-      params: { city: locode, year: inventory.year!.toString() },
+      params: { inventory: inventory.inventoryId },
     });
     assert.equal(res.status, 200);
     assert.equal(res.headers.get("content-type"), "application/vnd.ms-excel");
@@ -221,19 +218,17 @@ describe("Inventory API", () => {
   });
 
   it("should not find non-existing inventories", async () => {
-    const url = "http://localhost:3000/api/v0/city/XX_INVALID/inventory/0";
-    const req = createRequest(url, invalidInventory);
+    const req = mockRequest(invalidInventory);
     const res = await findInventory(req, {
-      params: { city: "XX_INVALID", year: "0" },
+      params: { inventory: randomUUID() },
     });
     assert.equal(res.status, 404);
   });
 
   it("should update an inventory", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
-    const req = createRequest(url, inventoryData2);
+    const req = mockRequest(inventoryData2);
     const res = await updateInventory(req, {
-      params: { city: locode, year: inventory.year!.toString() },
+      params: { inventory: inventory.inventoryId },
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
@@ -243,10 +238,9 @@ describe("Inventory API", () => {
   });
 
   it("should not update an inventory with invalid data", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
-    const req = createRequest(url, invalidInventory);
+    const req = mockRequest(invalidInventory);
     const res = await updateInventory(req, {
-      params: { city: locode, year: inventory.year!.toString() },
+      params: { inventory: inventory.inventoryId },
     });
     assert.equal(res.status, 400);
     const {
@@ -256,10 +250,9 @@ describe("Inventory API", () => {
   });
 
   it("should delete an inventory", async () => {
-    const url = `http://localhost:3000/api/v0/city/${locode}/inventory/${inventory.year}`;
-    const req = createRequest(url);
+    const req = mockRequest();
     const res = await deleteInventory(req, {
-      params: { city: locode, year: inventory.year!.toString() },
+      params: { inventory: inventory.inventoryId },
     });
     assert.equal(res.status, 200);
     const { data, deleted } = await res.json();
@@ -270,10 +263,9 @@ describe("Inventory API", () => {
   });
 
   it("should not delete a non-existing inventory", async () => {
-    const url = `http://localhost:3000/api/v0/city/XX_INVALID/inventory/0`;
-    const req = createRequest(url);
+    const req = mockRequest();
     const res = await deleteInventory(req, {
-      params: { city: "XX_INVALID", year: "0" },
+      params: { inventory: randomUUID() },
     });
     assert.equal(res.status, 404);
   });
@@ -333,7 +325,7 @@ describe("Inventory API", () => {
 
     const req = mockRequest();
     const res = await calculateProgress(req, {
-      params: { city: locode, year: inventory.year!.toString() },
+      params: { inventory: inventory.inventoryId },
     });
 
     assert.equal(res.status, 200);

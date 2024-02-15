@@ -49,18 +49,12 @@ export const api = createApi({
         boundingBox: BoundingBox;
       }) => response,
     }),
-    getInventory: builder.query<
-      InventoryResponse,
-      string
-    >({
+    getInventory: builder.query<InventoryResponse, string>({
       query: (inventoryId) => `inventory/${inventoryId}`,
       transformResponse: (response: { data: InventoryResponse }) =>
         response.data,
     }),
-    getInventoryProgress: builder.query<
-      InventoryProgressResponse,
-      string
-    >({
+    getInventoryProgress: builder.query<InventoryProgressResponse, string>({
       query: (inventoryId) => `inventory/${inventoryId}/progress`,
       transformResponse: (response: { data: InventoryProgressResponse }) =>
         response.data,
@@ -95,7 +89,7 @@ export const api = createApi({
     }),
     setUserInfo: builder.mutation<
       UserAttributes,
-      { cityId: string; defaultInventoryYear: number }
+      { cityId: string; defaultInventoryId: string }
     >({
       query: (data) => ({
         url: "/user",

@@ -35,8 +35,7 @@ interface InventoryProgressResponse {
 interface UserInfoResponse {
   userId: string;
   name: string;
-  defaultCityLocode: string | null;
-  defaultInventoryYear: number | null;
+  defaultInventoryId: string | null;
 }
 
 type DataSource = DataSourceAttributes & {

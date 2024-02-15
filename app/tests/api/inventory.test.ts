@@ -2,8 +2,8 @@ import {
   DELETE as deleteInventory,
   GET as findInventory,
   PATCH as updateInventory,
-} from "@/app/api/v0/city/[city]/inventory/[year]/route";
-import { GET as calculateProgress } from "@/app/api/v0/city/[city]/inventory/[year]/progress/route";
+} from "@/app/api/v0/inventory/[inventory]/route";
+import { GET as calculateProgress } from "@/app/api/v0/inventory/[inventory]/progress/route";
 import { POST as createInventory } from "@/app/api/v0/city/[city]/inventory/route";
 import { db } from "@/models";
 import { CreateInventoryRequest } from "@/util/validation";

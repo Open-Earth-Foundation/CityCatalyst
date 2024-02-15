@@ -11,11 +11,30 @@ export const POST = apiHandler(async (req, { session }) => {
     throw new createHttpError.Unauthorized("Unauthorized");
   }
 
-  const city = await db.models.City.create({
-    cityId: randomUUID(),
-    ...body,
+  let city = await db.models.City.findOne({
+    where: {
+      locode: body.locode,
+    },
+    include: [
+      {
+        model: db.models.User,
+        as: "users",
+        required: true,
+        where: {
+          userId: session.user.id,
+        },
+      },
+    ],
   });
-  await city.addUser(session.user.id);
+
+  if (!city) {
+    city = await db.models.City.create({
+      cityId: randomUUID(),
+      ...body,
+    });
+    await city.addUser(session.user.id);
+  }
+
   return NextResponse.json({ data: city });
 });
 

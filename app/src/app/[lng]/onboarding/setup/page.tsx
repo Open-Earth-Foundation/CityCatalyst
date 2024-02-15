@@ -490,7 +490,7 @@ export default function OnboardingSetup({
         population: populationData.population,
         countryPopulation: countryPopulation,
         year: populationData.year,
-      });
+      }).unwrap();
     } catch (err: any) {
       makeErrorToast("Failed to add city!", err.data?.error?.message);
       setConfirming(false);

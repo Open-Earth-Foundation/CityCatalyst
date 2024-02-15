@@ -1,11 +1,20 @@
 "use client";
 
+import { ProfileInputs } from "@/app/[lng]/settings/page";
+import AddUserModal from "@/components/Modals/add-user-modal";
+import DeleteUserModal from "@/components/Modals/delete-user-modal";
+import UpdateUserModal from "@/components/Modals/update-user-modal";
+import {
+  AddIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  SearchIcon,
+} from "@chakra-ui/icons";
 import {
   Badge,
   Box,
   Button,
   Checkbox,
-  Icon,
   IconButton,
   Input,
   InputGroup,
@@ -30,20 +39,15 @@ import {
   Text,
   Th,
   Thead,
-  useToast,
   Tr,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
-import React, { FC, useEffect, useState } from "react";
-import FormInput from "../form-input";
-import FormSelectInput from "../form-select-input";
-import {
-  AddIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  InfoOutlineIcon,
-  SearchIcon,
-} from "@chakra-ui/icons";
+import { Session } from "next-auth";
+import NextLink from "next/link";
+import { FC, useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { FiTrash2 } from "react-icons/fi";
 import {
   MdCheckCircleOutline,
   MdDomain,
@@ -52,24 +56,14 @@ import {
   MdOutlineIndeterminateCheckBox,
   MdOutlineModeEditOutline,
 } from "react-icons/md";
-import { FiTrash2 } from "react-icons/fi";
-import NextLink from "next/link";
-import {
-  CityData,
-  ProfileInputs,
-  UserDetails,
-} from "@/app/[lng]/settings/page";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { Session } from "next-auth";
-import AddUserModal from "@/components/Modals/add-user-modal";
-import UpdateUserModal from "@/components/Modals/update-user-modal";
-import DeleteUserModal from "@/components/Modals/delete-user-modal";
+import FormInput from "../form-input";
+import FormSelectInput from "../form-select-input";
 
 import DeleteCityModal from "@/components/Modals/delete-city-modal";
-import { TFunction } from "i18next";
+import { CityAttributes } from "@/models/City";
 import { UserAttributes } from "@/models/User";
 import { api, useSetCurrentUserDataMutation } from "@/services/api";
-import { CityAttributes } from "@/models/City";
+import { TFunction } from "i18next";
 interface MyProfileTabProps {
   session: Session | null;
   status: "loading" | "authenticated" | "unauthenticated";
@@ -246,7 +240,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
     selectedUsers.map(async (user: string) => {
       await removeUser({
         userId: user,
-        defaultCityLocode: userInfo.defaultCityLocode,
+        cityId: "", // TODO pass currently selected city ID into this component
       }).then((res: any) => {
         if (res.data.deleted) {
           toast({
@@ -464,6 +458,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                       >
                         <Button
                           type="submit"
+                          isLoading={isSubmitting}
                           h="48px"
                           w="auto"
                           paddingTop="16px"

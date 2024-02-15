@@ -1,31 +1,25 @@
 "use client";
 
 import { ProfileInputs } from "@/app/[lng]/settings/page";
+import { UserAttributes } from "@/models/User";
+import { api } from "@/services/api";
 import {
-  Modal,
+  Box,
   Button,
+  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Text,
-  ModalProps,
-  Input,
-  FormControl,
-  FormLabel,
-  Box,
   useToast,
 } from "@chakra-ui/react";
-import React, { FC, useState } from "react";
+import { FC, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { MdCheckCircleOutline } from "react-icons/md";
 import FormInput from "../form-input";
 import FormSelectInput from "../form-select-input";
-import { MdCheckCircleOutline } from "react-icons/md";
-import { api } from "@/services/api";
-import { UserAttributes } from "@/models/User";
-import FormSelectOrganization from "../form-select-organization";
 
 interface AddUserModalProps {
   isOpen: boolean;
@@ -37,8 +31,7 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting },
-    setValue,
+    formState: { errors },
   } = useForm<ProfileInputs>();
   const [addUser] = api.useAddUserMutation();
   const [inputValue, setInputValue] = useState<string>("");
@@ -54,8 +47,7 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
       name: data.name!,
       email: data.email!,
       role: data.role!,
-      cityId: userInfo
-      // defaultInventoryId: userInfo.defaultInventoryId!,
+      cityId: "", // TODO pass currently selected city ID into this component
     }).then((res: any) => {
       if (res.error) {
         return toast({

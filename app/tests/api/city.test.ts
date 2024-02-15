@@ -7,10 +7,14 @@ import { POST as createCity } from "@/app/api/v0/city/route";
 import { db } from "@/models";
 import { CreateCityRequest } from "@/util/validation";
 import assert from "node:assert";
-import { after, before, describe, it } from "node:test";
+import { after, before, beforeEach, describe, it, mock } from "node:test";
 import { mockRequest, setupTests, testUserID } from "../helpers";
+import { City } from "@/models/City";
+import { randomUUID } from "node:crypto";
+import { AppSession, Auth } from "@/lib/auth";
+import { User } from "@/models/User";
 
-const city: CreateCityRequest = {
+const cityData: CreateCityRequest = {
   locode: "XX_CITY",
   name: "Test City",
   country: "Test Country",
@@ -34,28 +38,50 @@ const invalidCity = {
   area: "",
 };
 
+const mockSession: AppSession = {
+  user: { id: testUserID, role: "user" },
+  expires: "1h",
+};
+
 describe("City API", () => {
+  let city: City;
+  let user: User;
+  let prevGetServerSession = Auth.getServerSession;
+
   before(async () => {
     setupTests();
     await db.initialize();
-    await db.models.City.destroy({ where: { locode: city.locode } });
-    await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
+    [user] = await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
+
+    Auth.getServerSession = mock.fn(() => Promise.resolve(mockSession));
+  });
+
+  beforeEach(async () => {
+    await db.models.City.destroy({ where: { locode: cityData.locode } });
+    city = await db.models.City.create({
+      ...cityData,
+      cityId: randomUUID(),
+    });
+    await city.addUser(user);
   });
 
   after(async () => {
+    Auth.getServerSession = prevGetServerSession;
     if (db.sequelize) await db.sequelize.close();
   });
 
   it("should create a city", async () => {
-    const req = mockRequest(city);
+    await db.models.City.destroy({ where: { locode: cityData.locode } });
+
+    const req = mockRequest(cityData);
     const res = await createCity(req, { params: {} });
     assert.equal(res.status, 200);
     const { data } = await res.json();
-    assert.equal(data.locode, city.locode);
-    assert.equal(data.name, city.name);
-    assert.equal(data.country, city.country);
-    assert.equal(data.region, city.region);
-    assert.equal(data.area, city.area);
+    assert.equal(data.locode, cityData.locode);
+    assert.equal(data.name, cityData.name);
+    assert.equal(data.country, cityData.country);
+    assert.equal(data.region, cityData.region);
+    assert.equal(data.area, cityData.area);
   });
 
   it("should not create a city with invalid data", async () => {
@@ -70,25 +96,25 @@ describe("City API", () => {
 
   it("should find a city", async () => {
     const req = mockRequest();
-    const res = await findCity(req, { params: { city: city.locode } });
+    const res = await findCity(req, { params: { city: city.cityId } });
     assert.equal(res.status, 200);
     const { data } = await res.json();
-    assert.equal(data.locode, city.locode);
-    assert.equal(data.name, city.name);
-    assert.equal(data.country, city.country);
-    assert.equal(data.region, city.region);
-    assert.equal(data.area, city.area);
+    assert.equal(data.locode, cityData.locode);
+    assert.equal(data.name, cityData.name);
+    assert.equal(data.country, cityData.country);
+    assert.equal(data.region, cityData.region);
+    assert.equal(data.area, cityData.area);
   });
 
   it("should not find a non-existing city", async () => {
     const req = mockRequest();
-    const res = await findCity(req, { params: { city: "XX_INVALID" } });
+    const res = await findCity(req, { params: { city: randomUUID() } });
     assert.equal(res.status, 404);
   });
 
   it("should update a city", async () => {
     const req = mockRequest(city2);
-    const res = await updateCity(req, { params: { city: city.locode } });
+    const res = await updateCity(req, { params: { city: city.cityId } });
     assert.equal(res.status, 200);
     const { data } = await res.json();
     assert.equal(data.locode, city2.locode);
@@ -100,7 +126,7 @@ describe("City API", () => {
 
   it("should not update a city with invalid values", async () => {
     const req = mockRequest(invalidCity);
-    const res = await updateCity(req, { params: { city: city.locode } });
+    const res = await updateCity(req, { params: { city: city.cityId } });
     assert.equal(res.status, 400);
     const {
       error: { issues },
@@ -110,20 +136,20 @@ describe("City API", () => {
 
   it("should delete a city", async () => {
     const req = mockRequest();
-    const res = await deleteCity(req, { params: { city: city.locode } });
+    const res = await deleteCity(req, { params: { city: city.cityId } });
     assert.equal(res.status, 200);
     const { data, deleted } = await res.json();
     assert.equal(deleted, true);
-    assert.equal(data.locode, city2.locode);
-    assert.equal(data.name, city2.name);
-    assert.equal(data.country, city2.country);
-    assert.equal(data.region, city2.region);
-    assert.equal(data.area, city2.area);
+    assert.equal(data.locode, cityData.locode);
+    assert.equal(data.name, cityData.name);
+    assert.equal(data.country, cityData.country);
+    assert.equal(data.region, cityData.region);
+    assert.equal(data.area, cityData.area);
   });
 
   it("should not delete a non-existing city", async () => {
     const req = mockRequest();
-    const res = await deleteCity(req, { params: { city: "XX_INVALID" } });
+    const res = await deleteCity(req, { params: { city: randomUUID() } });
     assert.equal(res.status, 404);
   });
 });

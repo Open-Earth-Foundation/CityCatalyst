@@ -16,13 +16,9 @@ module.exports = {
           key: 'user_id'
         }
       },
-      city_id: {
-        type: Sequelize.UUID,
+      locode: {
+        type: Sequelize.STRING,
         allowNull: true,
-        references: {
-          model:'City',
-          key: 'city_id'
-        }
       },
       invitation_code: {
         type: Sequelize.STRING,

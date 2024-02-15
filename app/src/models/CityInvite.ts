@@ -7,7 +7,7 @@ import { UserFileCreationAttributes } from "./UserFile";
 export interface CityInviteAttributes {
   id: string;
   userId?: string;
-  cityId?: string;
+  locode?: string;
   invitationCode?: string;
   status?: string;
   created?: Date;
@@ -22,7 +22,7 @@ export type CityInviteCreationAttributes = Optional<
 >;
 export type CityInviteOptionalAttributes =
   | "userId"
-  | "cityId"
+  | "locode"
   | "invitationCode"
   | "status"
   | "created"
@@ -34,7 +34,7 @@ export class CityInvite
 {
   id!: string;
   userId?: string | undefined;
-  cityId?: string | undefined;
+  locode?: string | undefined;
   invitationCode?: string | undefined;
   status?: string | undefined;
   created?: Date | undefined;
@@ -70,14 +70,9 @@ export class CityInvite
           },
           field: "user_id",
         },
-        cityId: {
+        locode: {
           type: DataTypes.UUID,
           allowNull: true,
-          references: {
-            model: "City",
-            key: "city_id",
-          },
-          field: "city_id",
         },
         invitationCode: {
           type: DataTypes.STRING(255),

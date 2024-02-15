@@ -64,7 +64,7 @@ export const api = createApi({
       CityAttributes,
       {
         name: string;
-        cityId: string;
+        locode: string;
         area: number;
         region: string;
         country: string;
@@ -75,6 +75,7 @@ export const api = createApi({
         method: "POST",
         body: data,
       }),
+      transformResponse: (response: { data: CityAttributes }) => response.data,
     }),
     addInventory: builder.mutation<
       InventoryAttributes,
@@ -171,6 +172,7 @@ export const api = createApi({
       PopulationAttributes,
       {
         cityId: string;
+        locode: string;
         population: number;
         countryPopulation: number;
         year: number;

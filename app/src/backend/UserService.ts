@@ -63,11 +63,13 @@ export default class UserService {
   public static async findUserInventory(
     inventoryId: string,
     session: AppSession | null,
+    include: Includeable[] = [],
   ): Promise<Inventory> {
     if (!session) throw new createHttpError.Unauthorized("Unauthorized");
     const inventory = await db.models.Inventory.findOne({
       where: { inventoryId },
       include: [
+        ...include,
         {
           model: db.models.City,
           as: "city",

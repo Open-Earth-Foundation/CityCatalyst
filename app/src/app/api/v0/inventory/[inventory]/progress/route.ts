@@ -29,6 +29,19 @@ export const GET = apiHandler(async (_req, { session, params }) => {
   const inventory = await UserService.findUserInventory(
     params.inventory,
     session,
+    [
+      {
+        model: db.models.InventoryValue,
+        as: "inventoryValues",
+        include: [
+          {
+            model: db.models.DataSource,
+            attributes: ["datasourceId", "sourceType"],
+            as: "dataSource",
+          },
+        ],
+      },
+    ],
   );
 
   // TODO cache this (including sorting)

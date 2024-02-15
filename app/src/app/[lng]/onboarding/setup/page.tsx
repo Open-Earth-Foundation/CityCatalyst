@@ -5,7 +5,7 @@ import WizardSteps from "@/components/wizard-steps";
 import { set } from "@/features/city/openclimateCitySlice";
 import { useTranslation } from "@/i18n/client";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { OCCityArributes } from "@/models/City";
+import type { CityAttributes, OCCityArributes } from "@/models/City";
 import {
   useAddCityMutation,
   useAddCityPopulationMutation,
@@ -41,16 +41,16 @@ import {
   useSteps,
   useToast,
 } from "@chakra-ui/react";
-import { TFunction } from "i18next";
+import type { TFunction } from "i18next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
+import type {
   FieldErrors,
   SubmitHandler,
   UseFormRegister,
-  useForm,
 } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { MdOutlineAspectRatio, MdOutlinePeopleAlt } from "react-icons/md";
 
@@ -121,7 +121,6 @@ function SetupStep({
     data: cities,
     isLoading,
     isSuccess,
-    isError,
   } = useGetOCCityQuery(cityInputQuery, {
     skip: cityInputQuery.length <= 2 ? true : false,
   });
@@ -415,7 +414,8 @@ export default function OnboardingSetup({
   const { data: cityData } = useGetOCCityDataQuery(data.locode, {
     skip: !data.locode,
   });
-  const countryLocode = data.locode.length > 0 ? data.locode.split(" ")[0] : null;
+  const countryLocode =
+    data.locode.length > 0 ? data.locode.split(" ")[0] : null;
   const { data: countryData } = useGetOCCityDataQuery(countryLocode!, {
     skip: !countryLocode,
   });
@@ -475,42 +475,37 @@ export default function OnboardingSetup({
   const onConfirm = async () => {
     // save data in backend
     setConfirming(true);
+    let city: CityAttributes | null = null;
     try {
-      await addCity({
+      city = await addCity({
         name: data.name,
         locode: data.locode,
         area: ocCityData?.area!,
         region: ocCityData?.region!,
         country: ocCityData?.country!,
-      })
-        .unwrap()
-        .then(async (res: any) => {
-          await addCityPopulation({
-            cityId: res.data.cityId,
-            locode: res.data.locode!,
-            population: populationData.population,
-            countryPopulation: countryPopulation,
-            year: populationData.year,
-          });
-        });
+      }).unwrap();
+      await addCityPopulation({
+        cityId: city.cityId,
+        locode: city.locode!,
+        population: populationData.population,
+        countryPopulation: countryPopulation,
+        year: populationData.year,
+      });
     } catch (err: any) {
-      // if the city exists, continue (can still add new inventory year)
-      if (err.data?.error?.message !== "Entity exists already.") {
-        makeErrorToast("Failed to add city!", err.data?.error?.message);
-        setConfirming(false);
-        return;
-      }
+      makeErrorToast("Failed to add city!", err.data?.error?.message);
+      setConfirming(false);
+      return;
     }
 
     try {
-      await addInventory({
-        locode: data.locode,
+      const inventory = await addInventory({
+        cityId: city?.cityId!,
         year: data.year,
         inventoryName: `${data.name} - ${data.year}`,
       }).unwrap();
       await setUserInfo({
-        defaultCityLocode: data.locode,
-        defaultInventoryYear: data.year,
+        cityId: city?.cityId!,
+        defaultInventoryId: inventory.inventoryId,
       }).unwrap();
       setConfirming(false);
       router.push("/onboarding/done/" + data.locode + "/" + data.year);

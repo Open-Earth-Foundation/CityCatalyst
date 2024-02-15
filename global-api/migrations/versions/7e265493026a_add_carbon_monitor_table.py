@@ -9,6 +9,7 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.sql import text
 
 
 # revision identifiers, used by Alembic.
@@ -21,14 +22,20 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade():
     op.create_table(
         'CarbonMonitor',
-        sa.Column('id', sa.Integer, primary_key=True),
-        sa.Column('actor_id', sa.Integer),
+        sa.Column('id', sa.dialects.postgresql.UUID(as_uuid=True), primary_key=True),
+        sa.Column('actor_id', sa.String),
         sa.Column('year', sa.Integer),
         sa.Column('sector', sa.String),
         sa.Column('gpc_refno', sa.String),
         sa.Column('gas', sa.String),
-        sa.Column('emissions_quantity', sa.Float),
+        sa.Column('emissions_quantity', sa.BigInteger),
         sa.Column('units', sa.String),
+        sa.Column(
+            "created_date", sa.DateTime(), server_default=text("CURRENT_TIMESTAMP")
+        ),
+        sa.Column(
+            "modified_date", sa.DateTime(), server_default=text("CURRENT_TIMESTAMP")
+        ),
     )
 
 def downgrade():

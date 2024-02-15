@@ -51,17 +51,17 @@ export const api = createApi({
     }),
     getInventory: builder.query<
       InventoryResponse,
-      { cityId: string; year: number }
+      string
     >({
-      query: ({ cityId, year }) => `city/${cityId}/inventory/${year}`,
+      query: (inventoryId) => `inventory/${inventoryId}`,
       transformResponse: (response: { data: InventoryResponse }) =>
         response.data,
     }),
     getInventoryProgress: builder.query<
       InventoryProgressResponse,
-      { cityId: string; year: number }
+      string
     >({
-      query: ({ cityId, year }) => `city/${cityId}/inventory/${year}/progress`,
+      query: (inventoryId) => `inventory/${inventoryId}/progress`,
       transformResponse: (response: { data: InventoryProgressResponse }) =>
         response.data,
       providesTags: ["InventoryProgress"],

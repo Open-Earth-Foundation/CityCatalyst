@@ -51,12 +51,11 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
     // Submit data via the api
 
     await addUser({
-      locode: userInfo.defaultCityLocode!,
       name: data.name!,
       email: data.email!,
       role: data.role!,
-      isOrganization:
-        (data.isOrganization as unknown) === "true" ? true : false,
+      cityId: userInfo
+      // defaultInventoryId: userInfo.defaultInventoryId!,
     }).then((res: any) => {
       if (res.error) {
         return toast({
@@ -169,14 +168,6 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
                   register={register}
                   error={errors.role}
                   id="role"
-                  onInputChange={onInputChange}
-                />
-                <FormSelectOrganization
-                  label="Is organization"
-                  value={inputValue}
-                  register={register}
-                  error={errors.role}
-                  id="isOrganization"
                   onInputChange={onInputChange}
                 />
                 <Button

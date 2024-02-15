@@ -13,8 +13,7 @@ export const GET = apiHandler(async (_req: Request, context) => {
     attributes: [
       "userId",
       "name",
-      "defaultCityLocode",
-      "defaultInventoryYear",
+      "defaultInventoryId",
       "role",
       "email",
     ],

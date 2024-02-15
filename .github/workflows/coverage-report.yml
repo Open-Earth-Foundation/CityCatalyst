@@ -1,0 +1,15 @@
+name: Coverage report
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: artiomtr/jest-coverage-report-action@v1.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          #   threshold: 80 # optional parameter

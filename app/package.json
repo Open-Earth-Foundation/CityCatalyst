@@ -24,6 +24,7 @@
     "cy:open": "cypress open",
     "cy:run": "cypress run",
     "cy:test": "start-server-and-test start http://localhost:3000/en/auth/login cy:run",
+    "ci:test": "node --test --experimental-test-coverage src/**/*.test.ts",
     "prettier": "npx prettier . --write",
     "email": "email dev --dir src/lib/emails"
   },

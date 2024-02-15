@@ -7,7 +7,6 @@ import { ZodError } from "zod";
 
 import { db } from "@/models";
 import { ValidationError } from "sequelize";
-import { logger } from "@/services/logger";
 
 export type NextHandler = (
   req: NextRequest,
@@ -39,7 +38,7 @@ export function apiHandler(handler: NextHandler) {
 
 function errorHandler(err: unknown, req: NextRequest) {
   // TODO log structured request info like route here
-  logger.error(err);
+  console.error(err);
   if (createHttpError.isHttpError(err) && err.expose) {
     return NextResponse.json(
       { error: { message: err.message } },

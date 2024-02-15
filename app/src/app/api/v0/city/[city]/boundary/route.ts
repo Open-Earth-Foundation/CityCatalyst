@@ -1,4 +1,3 @@
-import UserService from "@/backend/UserService";
 import { GLOBAL_API_URL } from "@/services/api";
 import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
@@ -6,22 +5,12 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import wellknown from "wellknown";
 
-export const GET = apiHandler(async (_req, { session, params }) => {
-  const city = await UserService.findUserCity(params.city, session);
-
-  if (!city.locode) {
-    throw new createHttpError.BadRequest(
-      "City does not have a locode associated",
-    );
-  }
-
-  const url = `${GLOBAL_API_URL}/api/v0/cityboundary/city/${city.locode}`;
+export const GET = apiHandler(async (_req, { params }) => {
+  const url = `${GLOBAL_API_URL}/api/v0/cityboundary/city/${params.city}`;
   logger.info(`Fetching ${url}`);
 
   try {
-    const boundary = await fetch(
-      `${GLOBAL_API_URL}/api/v0/cityboundary/city/${city.locode}`,
-    );
+    const boundary = await fetch(url);
 
     const data = await boundary.json();
 

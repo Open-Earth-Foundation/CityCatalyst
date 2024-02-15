@@ -1,17 +1,16 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import type { City, CityId } from "./City";
+import type { Inventory, InventoryId } from "./Inventory";
 
 export interface UserAttributes {
   userId: string;
   name?: string;
   pictureUrl?: string;
-  isOrganization?: boolean;
   email?: string;
   passwordHash?: string;
   role?: string;
-  defaultCityLocode?: string;
-  defaultInventoryYear?: number;
+  defaultInventoryId?: string;
   created?: Date;
   lastUpdated?: Date;
   organizationId?: string;
@@ -22,12 +21,10 @@ export type UserId = User[UserPk];
 export type UserOptionalAttributes =
   | "name"
   | "pictureUrl"
-  | "isOrganization"
   | "email"
   | "passwordHash"
   | "role"
-  | "defaultCityLocode"
-  | "defaultInventoryYear"
+  | "defaultInventoryId"
   | "created"
   | "lastUpdated"
   | "organizationId";
@@ -46,12 +43,11 @@ export class User
   email?: string;
   passwordHash?: string;
   role?: string;
-  defaultCityLocode?: string;
-  defaultInventoryYear?: number;
+  defaultInventoryId?: string;
   created?: Date;
   lastUpdated?: Date;
 
-  // City BelongsToMany City via CityId
+  // User belongsToMany City via CityId
   cities!: City[];
   getCities!: Sequelize.BelongsToManyGetAssociationsMixin<City>;
   setCities!: Sequelize.BelongsToManySetAssociationsMixin<City, CityId>;
@@ -69,11 +65,11 @@ export class User
   hasCity!: Sequelize.BelongsToManyHasAssociationMixin<City, CityId>;
   hasCities!: Sequelize.BelongsToManyHasAssociationsMixin<City, CityId>;
   countCities!: Sequelize.BelongsToManyCountAssociationsMixin;
-  // User belongsTo User via organizationId
-  organization!: User;
-  getOrganization!: Sequelize.BelongsToGetAssociationMixin<User>;
-  setOrganization!: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
-  createOrganization!: Sequelize.BelongsToCreateAssociationMixin<User>;
+  // User belongsTo Inventory via defaultInventoryId
+  defaultInventory!: Inventory;
+  getDefaultInventory!: Sequelize.BelongsToGetAssociationMixin<Inventory>;
+  setDefaultInventory!: Sequelize.BelongsToSetAssociationMixin<Inventory, InventoryId>;
+  createDefaultInventory!: Sequelize.BelongsToCreateAssociationMixin<Inventory>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof User {
     return User.init(
@@ -107,15 +103,10 @@ export class User
           type: DataTypes.TEXT,
           allowNull: true,
         },
-        defaultCityLocode: {
-          type: DataTypes.STRING(255),
+        defaultInventoryId: {
+          type: DataTypes.UUID,
           allowNull: true,
-          field: "default_city_locode",
-        },
-        defaultInventoryYear: {
-          type: DataTypes.INTEGER,
-          allowNull: true,
-          field: "default_inventory_year",
+          field: "default_inventory_id",
         },
       },
       {

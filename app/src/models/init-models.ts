@@ -383,6 +383,10 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "userId",
     otherKey: "cityId",
   });
+  User.belongsTo(Inventory, {
+    as: "defaultInventory",
+    foreignKey: "defaultInventoryId",
+  });
   City.belongsToMany(User, {
     through: CityUser,
     as: "users",

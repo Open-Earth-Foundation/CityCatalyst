@@ -41,6 +41,8 @@ def db_query(locode, year, reference_number):
 
     return result
 
+def cvt(value):
+    return str(int(round(value)))
 
 @api_router.get("/edgar/city/{locode}/{year}/{gpcReferenceNumber}")
 def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: str):
@@ -54,22 +56,22 @@ def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: s
     for record in records:
         gas = record[0]
         mass = record[1]
-        masses[gas] = mass
+        masses[gas] += mass
 
     totals = {
         "totals": {
             "emissions": {
-                "co2_mass": str(masses["CO2"]),
-                "co2_co2eq": str(masses["CO2"]),
-                "ch4_mass": str(masses["CH4"]),
-                "ch4_co2eq_100yr": str(masses["CH4"] * ch4_GWP_100yr),
-                "ch4_co2eq_20yr": str(masses["CH4"] * ch4_GWP_20yr),
-                "n2o_mass": str(masses["N2O"]),
-                "n2o_co2eq_100yr": str(masses["N2O"] * n2o_GWP_100yr),
-                "n2o_co2eq_20yr": str(masses["N2O"] * n2o_GWP_20yr),
-                "gpc_quality": str(gpc_quality_data),
-                "co2eq_100yr": str(masses["CO2"] + int(round(masses["CH4"] * ch4_GWP_100yr)) + int(round(masses["N2O"] * n2o_GWP_100yr))),
-                "co2eq_20yr": str(masses["CO2"] + int(round(masses["CH4"] * ch4_GWP_20yr)) + int(round(masses["N2O"] * n2o_GWP_20yr))),
+                "co2_mass": cvt(masses["CO2"]),
+                "co2_co2eq": cvt(masses["CO2"]),
+                "ch4_mass": cvt(masses["CH4"]),
+                "ch4_co2eq_100yr": cvt(masses["CH4"] * ch4_GWP_100yr),
+                "ch4_co2eq_20yr": cvt(masses["CH4"] * ch4_GWP_20yr),
+                "n2o_mass": cvt(masses["N2O"]),
+                "n2o_co2eq_100yr": cvt(masses["N2O"] * n2o_GWP_100yr),
+                "n2o_co2eq_20yr": cvt(masses["N2O"] * n2o_GWP_20yr),
+                "gpc_quality": cvt(gpc_quality_data),
+                "co2eq_100yr": cvt(masses["CO2"] + masses["CH4"] * ch4_GWP_100yr + masses["N2O"] * n2o_GWP_100yr),
+                "co2eq_20yr": cvt(masses["CO2"] + masses["CH4"] * ch4_GWP_20yr + masses["N2O"] * n2o_GWP_20yr)
             }
         }
     }

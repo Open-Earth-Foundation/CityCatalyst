@@ -42,7 +42,7 @@ def db_query(locode, year, reference_number):
     return result
 
 def cvt(value):
-    return str(int(round(value)))
+    return str(int(round(float(value))))
 
 @api_router.get("/edgar/city/{locode}/{year}/{gpcReferenceNumber}")
 def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: str):
@@ -56,7 +56,7 @@ def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: s
     for record in records:
         gas = record[0]
         mass = record[1]
-        masses[gas] += mass
+        masses[gas] += float(mass)
 
     totals = {
         "totals": {

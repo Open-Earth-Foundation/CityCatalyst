@@ -135,3 +135,6 @@ __pycache__
 # react-email
 .react-email
 values-*.yml
+
+# Data coverage output
+global-api/data-coverage/*.csv

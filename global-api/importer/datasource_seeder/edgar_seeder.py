@@ -68,7 +68,7 @@ if __name__ == "__main__":
         units="kg",
         methodology_url="https://edgar.jrc.ec.europa.eu/dataset_ghg70#intro",
         retrieval_method="global_api",
-        api_endpoint=f"{base_url}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
+        api_endpoint=f"{base_url}/api/v0/edgar/city/:locode/:year/:gpcReferenceNumber",
         gpc_reference_number="I.3.1",
     )
 
@@ -100,7 +100,7 @@ if __name__ == "__main__":
         units="kg",
         methodology_url="https://edgar.jrc.ec.europa.eu/dataset_ghg70#intro",
         retrieval_method="global_api",
-        api_endpoint=f"{base_url}/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber",
+        api_endpoint=f"{base_url}/api/v0/edgar/city/:locode/:year/:gpcReferenceNumber",
         gpc_reference_number="II.1.1",
     )
 

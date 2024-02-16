@@ -116,5 +116,6 @@
   "emissions-inventory-title": "Emissionsinventar",
   "review-data-label": "Daten überprüfen und hinzufügen",
   "files-uploaded": "Dateien hochgeladen",
-  "add-custom": "Benutzerdefiniert"
+  "add-custom": "Benutzerdefiniert",
+  "save-missing-scope-info": "Speichern oder fehlende Informationen ausfüllen, bevor Sie fortfahren."
 }

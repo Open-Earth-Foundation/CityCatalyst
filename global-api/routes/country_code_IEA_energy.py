@@ -4,12 +4,14 @@
 from fastapi import APIRouter, HTTPException
 import math
 from sqlalchemy import text
-import pandas as pd
 from db.database import SessionLocal
 
 api_router = APIRouter(prefix="/api/v0")
 
 gpc_quality_data = "low"
+
+gas_to_gwp100 = {"co2": 1, "ch4": 29.8, "n2o": 273}
+gas_to_gwp20 = {"co2": 1, "ch4": 82.5, "n2o": 273}
 
 def not_nan_or_none(value):
     """return true if value is not nan, none, or empty"""
@@ -20,6 +22,7 @@ def not_nan_or_none(value):
 
 # Extract the data by locode, year and sector/subsector
 def db_query(source_name, country_code, year, GPC_refno):
+    rows = []
     with SessionLocal() as session:
         query = text(
             """
@@ -31,9 +34,10 @@ def db_query(source_name, country_code, year, GPC_refno):
             """
         )
         params = {"source_name": source_name, "country_code": country_code, "year": year, "GPC_refno": GPC_refno}
-        result = session.execute(query, params).fetchall()
+        result = session.execute(query, params)
+        rows = [row._asdict() for row in result]
 
-    return result
+    return rows
 
 
 @api_router.get("/source/{source_name}/country/{country_code}/{year}/{GPC_refno}")
@@ -44,15 +48,48 @@ def get_emissions_by_country_and_year(source_name: str, country_code: str, year:
     if not records:
         raise HTTPException(status_code=404, detail="No data available")
 
-    df = pd.DataFrame(records)
-
     totals = {
-        "emissions": {
-            "gas_name": df["gas_name"],
-            "emissions_value": df["emissions_value"],
-            "emissions_untis": df["emissions_untis"],
-            "gpc_quality": str(gpc_quality_data),
+        "totals": {
+            "emissions": {
+                "co2_mass": "0",
+                "co2_co2eq": "0",
+                "ch4_mass": "0",
+                "ch4_co2eq_100yr": "0",
+                "ch4_co2eq_20yr": "0",
+                "n2o_mass": "0",
+                "n2o_co2eq_100yr": "0",
+                "n2o_co2eq_20yr": "0",
+                "gpc_quality": str(gpc_quality_data),
+            }
         }
     }
+
+    emissions = totals["totals"]["emissions"]
+
+    co2e = list(filter(lambda x: x["gas_name"] == "co2e", records))
+
+    if (len(co2e) > 0):
+        emissions["co2eq_100yr"] = str(co2e[0]["emissions_value"])
+        emissions["co2eq_20yr"] = str(co2e[0]["emissions_value"])
+
+    co2 = list(filter(lambda x: x["gas_name"] == "co2", records))
+
+    if (len(co2) > 0):
+        emissions["co2_mass"] = str(co2[0]["emissions_value"])
+        emissions["co2_co2eq"] = str(co2[0]["emissions_value"])
+
+    ch4 = list(filter(lambda x: x["gas_name"] == "ch4", records))
+
+    if (len(ch4) > 0):
+        emissions["ch4_mass"] = str(ch4[0]["emissions_value"])
+        emissions["ch4_co2eq_100yr"] = str(ch4[0]["emissions_value"] * gas_to_gwp100["ch4"])
+        emissions["ch4_co2eq_20yr"] = str(ch4[0]["emissions_value"] * gas_to_gwp20["ch4"])
+
+    n2o = list(filter(lambda x: x["gas_name"] == "n2o", records))
+
+    if (len(n2o) > 0):
+        emissions["n2o_mass"] = str(n2o[0]["emissions_value"])
+        emissions["n2o_co2eq_100yr"] = str(n2o[0]["emissions_value"] * gas_to_gwp100["n2o"])
+        emissions["n2o_co2eq_20yr"] = str(n2o[0]["emissions_value"] * gas_to_gwp20["n2o"])
 
     return {**totals}

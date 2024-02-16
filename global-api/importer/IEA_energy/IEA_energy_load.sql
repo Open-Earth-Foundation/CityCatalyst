@@ -12,8 +12,8 @@ TRUNCATE country_code_staging;
 
 /* Update the main table with the staging table */
 
-INSERT INTO country_code (year,activity_name,emissions_value,country_code,gas_name,emissions_units,source_name,temporal_granularity,"GPC_refno", id)
-    SELECT year,activity_name,emissions_value,country_code,gas_name,emissions_units,source_name,temporal_granularity,"GPC_refno", id
+INSERT INTO country_code (country_name,year,activity_name,emissions_value,country_code,gas_name,emissions_units,source_name,temporal_granularity,"GPC_refno",id)
+    SELECT country_name,year,activity_name,emissions_value,country_code,gas_name,emissions_units,source_name,temporal_granularity,"GPC_refno",id
     FROM country_code_staging
     ON CONFLICT ON CONSTRAINT country_code_pkey DO NOTHING;
 

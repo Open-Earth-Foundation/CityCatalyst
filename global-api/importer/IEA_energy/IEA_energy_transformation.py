@@ -210,21 +210,27 @@ new = [
 
 df["Region_Country_Economy"] = df["Region_Country_Economy"].replace(to_change, new)
 
+name_to_code = dict()
+
 # assigning country_code based on the country name
 for index, row in df.iterrows():
     country_name = row["Region_Country_Economy"]
 
-    try:
-        tmp = client.search(query=country_name)
+    if country_name in name_to_code:
+        df.at[index, "country_code"] = name_to_code[country_name]
+    else:
+        try:
+            tmp = client.search(query=country_name)
 
-        if not tmp.empty and "type" in tmp.columns and "actor_id" in tmp.columns:
-            country_code = tmp[tmp["type"] == "country"]["actor_id"].iloc[0]
-            df.at[index, "country_code"] = country_code
-        else:
-            continue
+            if not tmp.empty and "type" in tmp.columns and "actor_id" in tmp.columns:
+                country_code = tmp[tmp["type"] == "country"]["actor_id"].iloc[0]
+                df.at[index, "country_code"] = country_code
+                name_to_code[country_name] = country_code
+            else:
+                continue
 
-    except Exception as e:
-        print(f"An error occurred for country: {country_name}. Error: {str(e)}")
+        except Exception as e:
+            print(f"An error occurred for country: {country_name}. Error: {str(e)}")
 
 # fixing a problem with Curaçao
 tmp = client.search(query="Curaçao")

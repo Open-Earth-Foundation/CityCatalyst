@@ -16,13 +16,21 @@ def main(inputfile, outputfile, concurrency, origin):
   q = queue.Queue()
   lock = threading.Lock()
 
+  popcache = {}
+
   def get_population(actor_id, year):
+    if actor_id in popcache:
+      if year in popcache[actor_id]:
+        return popcache[actor_id][year]
     url = f'https://openclimate.openearth.dev/api/v1/actor/{actor_id}'
     response = http.request('GET', url)
     if response.status == 200:
       result = json.loads(response.data.decode('utf-8'))
       population = next(filter(lambda x: x['year'] == year, result['data']['population']), None)
       if population is not None:
+        if actor_id not in popcache:
+          popcache[actor_id] = {}
+        popcache[actor_id][year] = population['population']
         return population['population']
     return None
 

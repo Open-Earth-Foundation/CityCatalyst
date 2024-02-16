@@ -22,6 +22,7 @@ def not_nan_or_none(value):
 
 # Extract the data by locode, year and sector/subsector
 def db_query(source_name, country_code, year, GPC_refno):
+    rows = []
     with SessionLocal() as session:
         query = text(
             """
@@ -33,9 +34,10 @@ def db_query(source_name, country_code, year, GPC_refno):
             """
         )
         params = {"source_name": source_name, "country_code": country_code, "year": year, "GPC_refno": GPC_refno}
-        result = session.execute(query, params).fetchall()
+        result = session.execute(query, params)
+        rows = [dict(row) for row in result]
 
-    return result
+    return rows
 
 
 @api_router.get("/source/{source_name}/country/{country_code}/{year}/{GPC_refno}")

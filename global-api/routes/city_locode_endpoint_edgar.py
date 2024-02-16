@@ -12,7 +12,7 @@ n2o_GWP_100yr = 273
 n2o_GWP_20yr = 273
 
 # GPC quality classification
-gpc_quality_data = "TBD"
+gpc_quality_data = "medium"
 gpc_quality_EF = "TBD"
 
 
@@ -69,7 +69,7 @@ def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: s
                 "n2o_mass": cvt(masses["N2O"]),
                 "n2o_co2eq_100yr": cvt(masses["N2O"] * n2o_GWP_100yr),
                 "n2o_co2eq_20yr": cvt(masses["N2O"] * n2o_GWP_20yr),
-                "gpc_quality": cvt(gpc_quality_data),
+                "gpc_quality": gpc_quality_data,
                 "co2eq_100yr": cvt(masses["CO2"] + masses["CH4"] * ch4_GWP_100yr + masses["N2O"] * n2o_GWP_100yr),
                 "co2eq_20yr": cvt(masses["CO2"] + masses["CH4"] * ch4_GWP_20yr + masses["N2O"] * n2o_GWP_20yr)
             }

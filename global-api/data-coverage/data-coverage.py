@@ -16,16 +16,58 @@ def main(inputfile, outputfile, concurrency, origin):
   q = queue.Queue()
   lock = threading.Lock()
 
+  def get_population(actor_id, year):
+    url = f'https://openclimate.openearth.dev/api/v1/actor/{actor_id}'
+    response = http.request('GET', url)
+    if response.status == 200:
+      result = json.loads(response.data.decode('utf-8'))
+      population = next(filter(lambda x: x['year'] == year, result['data']['population']), None)
+      if population is not None:
+        return population['population']
+    return None
+
+  def global_api(locode, year, gpc_reference_number, urlFormat):
+    url = urlFormat.replace(':locode', locode) \
+        .replace(':year', str(year)) \
+        .replace(':gpcReferenceNumber', gpc_reference_number)
+    response = http.request('GET', url)
+    if response.status == 200:
+      result = json.loads(response.data.decode('utf-8'))
+      total = result['totals']['emissions']['co2eq_100yr']
+    else:
+      total = None
+    return total
+
+  def global_api_downscaled_by_population(locode, year, gpc_reference_number, urlFormat):
+    pop_city = get_population(locode, year)
+    if pop_city is None:
+      return None
+    pop_country = get_population(locode[:2], year)
+    if pop_city is None:
+      return None
+    pop_ratio = float(pop_city) / float(pop_country)
+    url = urlFormat.replace(':locode', locode) \
+        .replace(':year', str(year)) \
+        .replace(':gpcReferenceNumber', gpc_reference_number) \
+        .replace(':country', locode[:2])
+    response = http.request('GET', url)
+    if response.status == 200:
+      result = json.loads(response.data.decode('utf-8'))
+      total = result['totals']['emissions']['co2eq_100yr']
+    else:
+      total = None
+    if total is not None:
+      total = int(float(total) * float(pop_city) / float(pop_country))
+    return total
+
   def worker():
       while True:
-          (locode, year, gpc_reference_number, publisher_id, urlFormat) = q.get()
-          url = urlFormat.replace(':locode', locode) \
-              .replace(':year', str(year)) \
-              .replace(':gpcReferenceNumber', gpc_reference_number)
-          response = http.request('GET', url)
-          if response.status == 200:
-            result = json.loads(response.data.decode('utf-8'))
-            total = result['totals']['emissions']['co2eq_20yr']
+          (method, locode, year, gpc_reference_number, publisher_id, urlFormat) = q.get()
+          if method == 'global_api':
+            total = global_api(locode, year, gpc_reference_number, urlFormat)
+          elif method == 'global_api_downscaled_by_population':
+            total = global_api_downscaled_by_population(locode, year, gpc_reference_number, urlFormat)
+          if total is not None:
             lock.acquire()
             with open(outputfile, 'a') as file:
               # write text to data
@@ -37,7 +79,6 @@ def main(inputfile, outputfile, concurrency, origin):
   for _ in range(concurrency):
     threading.Thread(target=worker, daemon=True).start()
 
-
   r = http.request('GET', f'{origin}/api/v0/catalogue')
   catalogue = json.loads(r.data.decode('utf-8'))
 
@@ -45,15 +86,13 @@ def main(inputfile, outputfile, concurrency, origin):
     for line in file:
       locode = line.strip()
       for datasource in catalogue['datasources']:
-        if datasource['access_type'] == 'globalapi':
+        if datasource['retrieval_method'] in ['global_api', 'global_api_downscaled_by_population']:
+          method =  datasource['retrieval_method']
           publisher_id = datasource['publisher_id']
           gpc_reference_number = datasource['gpc_reference_number']
           urlFormat = datasource['api_endpoint']
           for year in range(datasource['start_year'], datasource['end_year'] + 1):
-            url = urlFormat.replace(':locode', locode) \
-              .replace(':year', str(year)) \
-              .replace(':gpcReferenceNumber', gpc_reference_number)
-            q.put((locode, year, gpc_reference_number, publisher_id, urlFormat))
+            q.put((method, locode, year, gpc_reference_number, publisher_id, urlFormat))
 
   # Block until all tasks are done.
   q.join()

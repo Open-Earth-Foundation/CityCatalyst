@@ -68,6 +68,8 @@ def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: s
                 "n2o_co2eq_100yr": str(masses["N2O"] * n2o_GWP_100yr),
                 "n2o_co2eq_20yr": str(masses["N2O"] * n2o_GWP_20yr),
                 "gpc_quality": str(gpc_quality_data),
+                "co2eq_100yr": str(masses["CO2"] + int(round(masses["CH4"] * ch4_GWP_100yr)) + int(round(masses["N2O"] * n2o_GWP_100yr))),
+                "co2eq_20yr": str(masses["CO2"] + int(round(masses["CH4"] * ch4_GWP_20yr)) + int(round(masses["N2O"] * n2o_GWP_20yr))),
             }
         }
     }

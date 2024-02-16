@@ -50,7 +50,7 @@ def get_emissions_by_country_and_year(source_name: str, country_code: str, year:
         "emissions": {
             "gas_name": df["gas_name"],
             "emissions_value": df["emissions_value"],
-            "emissions_untis": df["emissions_untis"],
+            "emissions_units": df["emissions_units"],
             "gpc_quality": str(gpc_quality_data),
         }
     }

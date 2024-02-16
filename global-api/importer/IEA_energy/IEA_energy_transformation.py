@@ -4,7 +4,11 @@
 import pandas as pd
 import numpy as np
 from openclimate import Client
+import uuid
+from csv import DictReader, DictWriter
+import os
 
+NS_IEA_ENERGY_TRANSFORMATION = uuid.UUID('1e3b70f3-585e-40a1-90f1-0932bc4b1bd7')
 
 client = Client()
 # if using jupyter or iPython
@@ -206,7 +210,7 @@ new = [
 
 df["Region_Country_Economy"] = df["Region_Country_Economy"].replace(to_change, new)
 
-# assigning country_id based on the country name
+# assigning country_code based on the country name
 for index, row in df.iterrows():
     country_name = row["Region_Country_Economy"]
 
@@ -214,8 +218,8 @@ for index, row in df.iterrows():
         tmp = client.search(query=country_name)
 
         if not tmp.empty and "type" in tmp.columns and "actor_id" in tmp.columns:
-            country_id = tmp[tmp["type"] == "country"]["actor_id"].iloc[0]
-            df.at[index, "country_id"] = country_id
+            country_code = tmp[tmp["type"] == "country"]["actor_id"].iloc[0]
+            df.at[index, "country_code"] = country_code
         else:
             continue
 
@@ -225,8 +229,8 @@ for index, row in df.iterrows():
 # fixing a problem with Curaçao
 tmp = client.search(query="Curaçao")
 filtered_rows = df[df["Region_Country_Economy"] == "Curaçao"]
-country_id = tmp["actor_id"][0]
-filtered_rows.loc[:, "country_id"] = country_id
+country_code = tmp["actor_id"][0]
+filtered_rows.loc[:, "country_code"] = country_code
 df.update(filtered_rows)
 
 # rename the 'Region_Country_Economy' column into country_name
@@ -258,5 +262,26 @@ for index, row in df.iterrows():
     if subsector in subsector_dic.keys():
         df.at[index, "GPC_refno"] = subsector_dic[subsector]
 
-# save the final dataframe
-df.to_csv("./IEA_energy.csv")
+# save the initial dataframe
+df.to_csv("./IEA_energy_initial.csv")
+
+# EP couldn't figure out how to get rid of this stupid column in pandas
+# so I'm doing it here like a complete lunatic
+
+seen = set()
+with open("./IEA_energy_initial.csv", 'r') as f:
+    reader = DictReader(f)
+    fixed = list(filter(lambda x: x != '', reader.fieldnames))
+    fixed.append('id')
+    with open("./IEA_energy.csv", 'w') as out:
+        writer = DictWriter(out, fieldnames=fixed)
+        writer.writeheader()
+        for row in reader:
+            del row['']
+            id_string = '|'.join([row['country_code'], row['GPC_refno'], str(row['year'])])
+            row['id'] = uuid.uuid3(NS_IEA_ENERGY_TRANSFORMATION, id_string)
+            if row['id'] not in seen:
+                seen.add(row['id'])
+                writer.writerow(row)
+
+os.unlink("./IEA_energy_initial.csv")

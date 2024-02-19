@@ -18,7 +18,7 @@ import {
   Box,
   useToast,
 } from "@chakra-ui/react";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import FormInput from "../form-input";
 import FormSelectInput from "../form-select-input";
@@ -59,7 +59,7 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
       role: data.role!,
       isOrganization:
         (data.isOrganization as unknown) === "true" ? true : false,
-    }).then((res: any) => {
+    }).then(async (res: any) => {
       if (res.error) {
         return toast({
           description: "Something went wrong",
@@ -95,54 +95,49 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
           ),
         });
       } else {
-        onClose();
-        console.log(res.data.data.userId);
-        setUserId(res.data.data.userId);
-      }
-    });
-    // Todo send invite to user
-
-    await inviteUser({
-      userId: userId,
-      locode: userInfo.defaultCityLocode!,
-    }).then((res: any) => {
-      return toast({
-        description: "User invite sent",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        render: () => (
-          <Box
-            display="flex"
-            gap="8px"
-            color="white"
-            alignItems="center"
-            justifyContent="space-between"
-            p={3}
-            bg="interactive.primary"
-            width="600px"
-            height="60px"
-            borderRadius="8px"
-          >
-            <Box display="flex" gap="8px" alignItems="center">
-              <MdCheckCircleOutline fontSize="24px" />
-
-              <Text
-                color="base.light"
-                fontWeight="bold"
-                lineHeight="52"
-                fontSize="label.lg"
+        await inviteUser({
+          userId: res && res.data.data.userId!,
+          locode: userInfo.defaultCityLocode!,
+        }).then((res: any) => {
+          onClose();
+          return toast({
+            description: "User invite sent",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+            render: () => (
+              <Box
+                display="flex"
+                gap="8px"
+                color="white"
+                alignItems="center"
+                justifyContent="space-between"
+                p={3}
+                bg="interactive.primary"
+                width="600px"
+                height="60px"
+                borderRadius="8px"
               >
-                User invite sent
-              </Text>
-            </Box>
-          </Box>
-        ),
-      });
+                <Box display="flex" gap="8px" alignItems="center">
+                  <MdCheckCircleOutline fontSize="24px" />
+
+                  <Text
+                    color="base.light"
+                    fontWeight="bold"
+                    lineHeight="52"
+                    fontSize="label.lg"
+                  >
+                    User invite sent
+                  </Text>
+                </Box>
+              </Box>
+            ),
+          });
+        });
+      }
     });
   };
 
-  console.log(userId);
   return (
     <>
       <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>

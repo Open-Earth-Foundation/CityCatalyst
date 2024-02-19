@@ -98,39 +98,6 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
         onClose();
         console.log(res.data.data.userId);
         setUserId(res.data.data.userId);
-        return toast({
-          description: "User add successfully!",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-          render: () => (
-            <Box
-              display="flex"
-              gap="8px"
-              color="white"
-              alignItems="center"
-              justifyContent="space-between"
-              p={3}
-              bg="interactive.primary"
-              width="600px"
-              height="60px"
-              borderRadius="8px"
-            >
-              <Box display="flex" gap="8px" alignItems="center">
-                <MdCheckCircleOutline fontSize="24px" />
-
-                <Text
-                  color="base.light"
-                  fontWeight="bold"
-                  lineHeight="52"
-                  fontSize="label.lg"
-                >
-                  User details updated
-                </Text>
-              </Box>
-            </Box>
-          ),
-        });
       }
     });
     // Todo send invite to user
@@ -139,7 +106,39 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
       userId: userId,
       locode: userInfo.defaultCityLocode!,
     }).then((res: any) => {
-      console.log(res);
+      return toast({
+        description: "User invite sent",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        render: () => (
+          <Box
+            display="flex"
+            gap="8px"
+            color="white"
+            alignItems="center"
+            justifyContent="space-between"
+            p={3}
+            bg="interactive.primary"
+            width="600px"
+            height="60px"
+            borderRadius="8px"
+          >
+            <Box display="flex" gap="8px" alignItems="center">
+              <MdCheckCircleOutline fontSize="24px" />
+
+              <Text
+                color="base.light"
+                fontWeight="bold"
+                lineHeight="52"
+                fontSize="label.lg"
+              >
+                User invite sent
+              </Text>
+            </Box>
+          </Box>
+        ),
+      });
     });
   };
 

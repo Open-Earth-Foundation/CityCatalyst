@@ -18,6 +18,7 @@ import type {
   UserInfoResponse,
   UserFileResponse,
   EmissionsFactorResponse,
+  UserInviteResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -353,6 +354,22 @@ export const api = createApi({
       transformResponse: (response: { data: EmissionsFactorResponse }) =>
         response.data,
     }),
+    // User invitation to city
+    inviteUser: builder.mutation<
+      UserInviteResponse,
+      { userId: string; locode: string }
+    >({
+      query: (data) => {
+        return {
+          method: "POST",
+          url: `/city/invite`,
+          body: data,
+        };
+      },
+
+      transformResponse: (response: { data: UserInviteResponse }) =>
+        response.data,
+    }),
   }),
 });
 
@@ -402,5 +419,6 @@ export const {
   useAddUserFileMutation,
   useGetUserFilesQuery,
   useDeleteUserFileMutation,
+  useInviteUserMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

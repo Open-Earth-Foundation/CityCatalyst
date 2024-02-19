@@ -41,7 +41,9 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
     setValue,
   } = useForm<ProfileInputs>();
   const [addUser] = api.useAddUserMutation();
+  const [inviteUser] = api.useInviteUserMutation();
   const [inputValue, setInputValue] = useState<string>("");
+  const [userId, setUserId] = useState<string>("");
   const toast = useToast();
   const onInputChange = (e: any) => {
     setInputValue(e.target.value);
@@ -94,6 +96,8 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
         });
       } else {
         onClose();
+        console.log(res.data.data.userId);
+        setUserId(res.data.data.userId);
         return toast({
           description: "User add successfully!",
           status: "success",
@@ -129,7 +133,17 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
         });
       }
     });
+    // Todo send invite to user
+
+    await inviteUser({
+      userId: userId,
+      locode: userInfo.defaultCityLocode!,
+    }).then((res: any) => {
+      console.log(res);
+    });
   };
+
+  console.log(userId);
   return (
     <>
       <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>

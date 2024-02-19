@@ -1,6 +1,6 @@
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
-import { createCityRequest } from "@/util/validation";
+import { createCityRequest, createUserInvite } from "@/util/validation";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 import { Session } from "next-auth";
@@ -17,9 +17,7 @@ export const POST = apiHandler(
   ) => {
     const { params, session } = context;
 
-    const body = await _req.json();
-
-    console.log(body);
+    const body = createUserInvite.parse(await _req.json());
 
     if (!session) throw new createHttpError.Unauthorized("Unauthorized");
     const user = await db.models.User.findOne({
@@ -52,7 +50,6 @@ export const POST = apiHandler(
 
     const invite = await db.models.CityInvite.create({
       id: randomUUID(),
-      invitationCode,
       ...body,
     });
 
@@ -73,7 +70,8 @@ export const POST = apiHandler(
       ),
     });
 
-    if (sendInvite) console.log(sendInvite);
+    if (!sendInvite)
+      throw new createHttpError.BadRequest("Email could not be sent");
 
     return NextResponse.json({ data: invite });
   },

@@ -7,6 +7,17 @@ import { randomUUID } from "node:crypto";
 
 export const POST = apiHandler(async (_req: NextRequest, { params }) => {
   const body = createUserRequest.parse(await _req.json());
+
+  // check if the user exists
+
+  const getUser = await db.models.User.findOne({
+    where: { email: body.email },
+  });
+
+  if (getUser) {
+    return NextResponse.json({ data: getUser });
+  }
+
   const user = await db.models.User.create({
     userId: randomUUID(),
     ...body,
@@ -16,8 +27,6 @@ export const POST = apiHandler(async (_req: NextRequest, { params }) => {
   if (!city) {
     throw new createHttpError.NotFound("City not found");
   }
-
-  user.addCity(city.cityId);
 
   return NextResponse.json({ data: user });
 });

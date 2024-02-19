@@ -8,7 +8,6 @@ export interface CityInviteAttributes {
   id: string;
   userId?: string;
   locode?: string;
-  invitationCode?: string;
   status?: string;
   created?: Date;
   lastUpdated?: Date;
@@ -23,7 +22,6 @@ export type CityInviteCreationAttributes = Optional<
 export type CityInviteOptionalAttributes =
   | "userId"
   | "locode"
-  | "invitationCode"
   | "status"
   | "created"
   | "lastUpdated";
@@ -35,7 +33,6 @@ export class CityInvite
   id!: string;
   userId?: string | undefined;
   locode?: string | undefined;
-  invitationCode?: string | undefined;
   status?: string | undefined;
   created?: Date | undefined;
   lastUpdated?: Date | undefined;
@@ -74,18 +71,9 @@ export class CityInvite
           type: DataTypes.UUID,
           allowNull: true,
         },
-        invitationCode: {
-          type: DataTypes.STRING(255),
-          allowNull: true,
-          field: "invitation_code",
-        },
         status: {
           type: DataTypes.STRING(255),
           allowNull: true,
-        },
-        lastUpdated: {
-          type: DataTypes.DATE,
-          field: "last_updated",
         },
       },
       {

@@ -71,7 +71,9 @@ interface InventoryValueUpdateQuery {
   data: InventoryValueData;
 }
 
-type EmissionsFactorWithDataSources = EmissionsFactorAttributes & { dataSources: DataSourceAttributes[] };
+type EmissionsFactorWithDataSources = EmissionsFactorAttributes & {
+  dataSources: DataSourceAttributes[];
+};
 type EmissionsFactorResponse = EmissionsFactorWithDataSources[];
 
 type InventoryWithCity = InventoryAttributes & { city: CityAttributes };
@@ -103,5 +105,14 @@ interface UserFileResponse {
   status: string;
   gpcRefNo: string;
   file: fileContentValues;
+  lastUpdated: string;
+}
+
+interface UserInviteResponse {
+  id: string;
+  userId: string;
+  locode: string;
+  status: string;
+  created: string;
   lastUpdated: string;
 }

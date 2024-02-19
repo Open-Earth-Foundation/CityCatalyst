@@ -51,16 +51,15 @@ export const GET = apiHandler(
 
     const cities = await user?.getCities();
     const isCityExits = cities?.find((c) => c.cityId === city?.cityId);
+    const host = process.env.HOST ?? "http://localhost:3000";
 
     if (isCityExits) {
-      throw new createHttpError.BadRequest("User already exists in the city");
+      // route the user back to dashboard
+      return NextResponse.redirect(host);
     }
 
-    user?.addCity(city?.cityId);
+    await user?.addCity(city?.cityId);
 
-    // return NextResponse.redirect("http://localhost:3000");
-    return NextResponse.json({
-      cities,
-    });
+    return NextResponse.redirect(host);
   },
 );

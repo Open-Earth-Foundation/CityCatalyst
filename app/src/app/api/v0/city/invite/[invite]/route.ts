@@ -49,8 +49,18 @@ export const GET = apiHandler(
       where: { locode: invite.locode },
     });
 
+    const cities = await user?.getCities();
+    const isCityExits = cities?.find((c) => c.cityId === city?.cityId);
+
+    if (isCityExits) {
+      throw new createHttpError.BadRequest("User already exists in the city");
+    }
+
     user?.addCity(city?.cityId);
 
-    return NextResponse.redirect("http://localhost:3000");
+    // return NextResponse.redirect("http://localhost:3000");
+    return NextResponse.json({
+      cities,
+    });
   },
 );

@@ -67,7 +67,7 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
     }).then(async (res: any) => {
       if (res.data?.comparePassword) {
         await removeCity({
-          locode: cityData.locode!,
+          cityId: cityData.locode!,
         }).then((res: any) => {
           onClose();
           setIsPasswordCorrect(true);

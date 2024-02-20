@@ -1,7 +1,6 @@
 "use client";
 
-import { UserDetails } from "@/app/[lng]/settings/page";
-import { UserAttributes } from "@/models/User";
+import type { UserAttributes } from "@/models/User";
 import { api } from "@/services/api";
 import {
   Modal,
@@ -14,33 +13,27 @@ import {
   Text,
   Box,
   Badge,
-  useToast,
 } from "@chakra-ui/react";
 import React, { FC } from "react";
 
 import { FiTrash2 } from "react-icons/fi";
-import { MdCheckCircleOutline } from "react-icons/md";
 
 interface DeleteUserModalProps {
   isOpen: boolean;
   onClose: any;
   userData: UserAttributes;
-  userInfo: UserAttributes;
+  cityId: string;
 }
 
 const DeleteUserModal: FC<DeleteUserModalProps> = ({
   isOpen,
   onClose,
   userData,
-  userInfo,
+  cityId,
 }) => {
-  const toast = useToast();
   const [removeUser] = api.useRemoveUserMutation();
-  const handleDeleteUser = async (userId: string, locode: string) => {
-    await removeUser({
-      userId: userId,
-      defaultCityLocode: locode,
-    }).then(() => {
+  const handleDeleteUser = async (userId: string, cityId: string) => {
+    await removeUser({ userId, cityId }).then(() => {
       onClose();
     });
   };
@@ -115,12 +108,7 @@ const DeleteUserModal: FC<DeleteUserModalProps> = ({
                 fontWeight="semibold"
                 fontSize="button.md"
                 type="button"
-                onClick={() =>
-                  handleDeleteUser(
-                    userData.userId,
-                    userInfo?.defaultCityLocode!,
-                  )
-                }
+                onClick={() => handleDeleteUser(userData.userId, cityId)}
               >
                 save changes
               </Button>

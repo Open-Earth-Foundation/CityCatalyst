@@ -1012,7 +1012,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
         isOpen={isUserDeleteModalOpen}
         onClose={onUserDeleteModalClose}
         userData={userData}
-        userInfo={userInfo}
+        cityId={cityData.cityId}
       />
       <DeleteCityModal
         isOpen={isCityDeleteModalOpen}

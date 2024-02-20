@@ -424,8 +424,10 @@ export default function OnboardingSetup({
     toast({
       title,
       description,
+      position: "top",
       status: "error",
       isClosable: true,
+      duration: 10000,
     });
   };
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { ProfileInputs } from "@/app/[lng]/settings/page";
-import { UserAttributes } from "@/models/User";
+import type { UserAttributes } from "@/models/User";
 import { api } from "@/services/api";
 import {
   Box,
@@ -10,6 +10,7 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Text,
@@ -20,14 +21,22 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { MdCheckCircleOutline } from "react-icons/md";
 import FormInput from "../form-input";
 import FormSelectInput from "../form-select-input";
+import FormSelectOrganization from "../form-select-organization";
+import { TFunction } from "i18next";
 
 interface AddUserModalProps {
   isOpen: boolean;
-  onClose: any;
-  userInfo: UserAttributes;
+  onClose: () => void;
+  cityId: string | undefined;
+  t: TFunction;
 }
 
-const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
+const AddUserModal: FC<AddUserModalProps> = ({
+  isOpen,
+  onClose,
+  t,
+  cityId,
+}) => {
   const {
     handleSubmit,
     register,
@@ -40,18 +49,16 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
     setInputValue(e.target.value);
   };
   const onSubmit: SubmitHandler<UserAttributes> = async (data) => {
-    // TODO
-    // Submit data via the api
-
     await addUser({
       name: data.name!,
       email: data.email!,
       role: data.role!,
-      cityId: "", // TODO pass currently selected city ID into this component
+      cityId: cityId!,
     }).then((res: any) => {
+      console.log(res);
       if (res.error) {
         return toast({
-          description: "Something went wrong",
+          description: t("something-went-wrong"),
           status: "error",
           duration: 5000,
           isClosable: true,
@@ -77,7 +84,7 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
                   lineHeight="52"
                   fontSize="label.lg"
                 >
-                  Something went wrong
+                  {t("something-went-wrong")}
                 </Text>
               </Box>
             </Box>
@@ -86,7 +93,7 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
       } else {
         onClose();
         return toast({
-          description: "User add successfully!",
+          description: t("user-details-updated"),
           status: "success",
           duration: 5000,
           isClosable: true,
@@ -112,7 +119,7 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
                   lineHeight="52"
                   fontSize="label.lg"
                 >
-                  User details updated
+                  {t("user-details-updated")}
                 </Text>
               </Box>
             </Box>
@@ -131,54 +138,79 @@ const AddUserModal: FC<AddUserModalProps> = ({ isOpen, onClose, userInfo }) => {
             justifyContent="center"
             fontWeight="semibold"
             fontSize="headline.sm"
+            fontFamily="heading"
             lineHeight="32"
             padding="24px"
-            borderBottom={"1px solid #fafafa"}
+            borderBottomWidth="1px"
+            borderStyle="solid"
+            borderColor="border.neutral"
           >
-            Add User
+            {t("add-user")}
           </ModalHeader>
           <ModalCloseButton marginTop="10px" />
-          <ModalBody>
+          <ModalBody p={6} px={12}>
             <form onSubmit={handleSubmit(onSubmit)}>
               <Box display="flex" flexDirection="column" gap="24px">
                 <FormInput
                   id="name"
                   error={errors.name}
-                  label="Full Name"
+                  label={t("full-name")}
                   register={register}
                 />
                 <FormInput
                   id="email"
                   error={errors.email}
-                  label="Email"
+                  label={t("email")}
                   register={register}
                 />
 
                 <FormSelectInput
-                  label="Role"
+                  label={t("role")}
                   value={inputValue}
                   register={register}
                   error={errors.role}
                   id="role"
                   onInputChange={onInputChange}
                 />
-                <Button
-                  h="56px"
-                  paddingTop="16px"
-                  paddingBottom="16px"
-                  px="24px"
-                  letterSpacing="widest"
-                  textTransform="uppercase"
-                  fontWeight="semibold"
-                  fontSize="button.md"
-                  w="100%"
-                  type="submit"
-                >
-                  Add user
-                </Button>
+                <FormSelectOrganization
+                  label={t("is-organization")}
+                  value={inputValue}
+                  register={register}
+                  error={errors.role}
+                  id="isOrganization"
+                  onInputChange={onInputChange}
+                />
               </Box>
             </form>
           </ModalBody>
+          <ModalFooter
+            borderTopWidth="1px"
+            borderStyle="solid"
+            borderColor="border.neutral"
+            w="full"
+            display="flex"
+            alignItems="center"
+            p="24px"
+            justifyContent="center"
+          >
+            <Button
+              h="56px"
+              w="472px"
+              paddingTop="16px"
+              paddingBottom="16px"
+              px="24px"
+              letterSpacing="widest"
+              textTransform="uppercase"
+              fontWeight="semibold"
+              fontSize="button.md"
+              type="submit"
+              onClick={handleSubmit(onSubmit)}
+              p={0}
+              m={0}
+            >
+              {t("add-user")}
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

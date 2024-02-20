@@ -1,6 +1,5 @@
 "use client";
 
-import { ProfileInputs, UserDetails } from "@/app/[lng]/settings/page";
 import {
   Modal,
   Button,
@@ -22,17 +21,17 @@ import React, { FC, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import FormInput from "../form-input";
 import FormSelectInput from "../form-select-input";
-import { useSession } from "next-auth/react";
-import { Session } from "next-auth";
 import { UserAttributes } from "@/models/User";
 import { MdCheckCircleOutline } from "react-icons/md";
 import { api } from "@/services/api";
+import { TFunction } from "i18next";
 
 interface UpdateUserModalProps {
   isOpen: boolean;
   onClose: any;
   userData: UserAttributes;
   userInfo: UserAttributes;
+  t: TFunction;
 }
 
 const UpdateUserModal: FC<UpdateUserModalProps> = ({
@@ -40,6 +39,7 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
   onClose,
   userData,
   userInfo,
+  t,
 }) => {
   const {
     handleSubmit,
@@ -66,7 +66,7 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
     }).then(() => {
       onClose();
       toast({
-        description: "User details updated!",
+        description: t("user-details-updated"),
         status: "success",
         duration: 5000,
         isClosable: true,
@@ -92,7 +92,7 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
                 lineHeight="52"
                 fontSize="label.lg"
               >
-                User details updated
+                {t("user-details-updated")}
               </Text>
             </Box>
           </Box>
@@ -120,14 +120,15 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
             lineHeight="32"
             padding="24px"
             borderBottomWidth="1px"
+            fontFamily="heading"
             borderStyle="solid"
             borderColor="border.neutral"
           >
-            Update User
+            {t("edit-user")}
           </ModalHeader>
           <ModalCloseButton marginTop="10px" />
-          <ModalBody paddingTop="24px">
-            <form onSubmit={handleSubmit(onSubmit)}>
+          <ModalBody paddingTop="24px" px="48px">
+            <form>
               <Box display="flex" flexDirection="column" gap="24px">
                 <FormInput
                   id="name"
@@ -150,23 +151,37 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
                   id="role"
                   onInputChange={(e: any) => setInputValue(e.target.value)}
                 />
-                <Button
-                  h="56px"
-                  paddingTop="16px"
-                  paddingBottom="16px"
-                  px="24px"
-                  letterSpacing="widest"
-                  textTransform="uppercase"
-                  fontWeight="semibold"
-                  fontSize="button.md"
-                  w="100%"
-                  type="submit"
-                >
-                  save changes
-                </Button>
               </Box>
             </form>
           </ModalBody>
+          <ModalFooter
+            borderTopWidth="1px"
+            borderStyle="solid"
+            borderColor="border.neutral"
+            w="full"
+            display="flex"
+            alignItems="center"
+            p="24px"
+            justifyContent="center"
+          >
+            <Button
+              h="56px"
+              w="472px"
+              paddingTop="16px"
+              paddingBottom="16px"
+              px="24px"
+              letterSpacing="widest"
+              textTransform="uppercase"
+              fontWeight="semibold"
+              fontSize="button.md"
+              type="submit"
+              onClick={handleSubmit(onSubmit)}
+              p={0}
+              m={0}
+            >
+              {t("save-changes")}
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

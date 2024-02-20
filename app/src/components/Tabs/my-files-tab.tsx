@@ -137,8 +137,8 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
               fontWeight="bold"
               lineHeight="32"
               fontSize="headline.sm"
-              fontFamily="body"
               fontStyle="normal"
+              fontFamily="heading"
             >
               {t("my-files")}
             </Text>
@@ -146,7 +146,6 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
               color="content.tertiary"
               fontWeight="normal"
               lineHeight="24"
-              fontFamily="heading"
               fontSize="body.lg"
               letterSpacing="wide"
               marginTop="8px"
@@ -163,6 +162,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
               fontSize="title.md"
               letterSpacing="wide"
               marginTop="8px"
+              fontFamily="heading"
             >
               {t("city")}
             </Text>
@@ -189,6 +189,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                       fontStyle: "normal",
                       fontSize: "label.lg",
                       fontWeight: "medium",
+                      fontFamily: "heading",
                     }}
                     _selected={{
                       color: "content.link",
@@ -223,11 +224,11 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                           src="https://upload.wikimedia.org/wikipedia/commons/1/1a/Flag_of_Argentina.svg"
                         />
                         <Text
-                          color="content.primary"
+                          color="content.secondary"
                           fontWeight="semibold"
                           lineHeight="24"
                           fontSize="title.md"
-                          fontFamily="body"
+                          fontFamily="heading"
                           fontStyle="normal"
                         >
                           {cityData.name}
@@ -517,6 +518,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
         isOpen={isFileDeleteModalOpen}
         onClose={onFileDeleteModalClose}
         fileData={fileData}
+        t={t}
       />
     </>
   );

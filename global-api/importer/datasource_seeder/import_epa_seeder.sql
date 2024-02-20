@@ -1,1 +1,0 @@
-\copy datasource (datasource_id,publisher_id,name,description,source_type,access_type,url,geographical_location,start_year,end_year,latest_accounting_year,frequency_of_update,spatial_resolution,language,accessibility,data_quality,notes,units,methodology_url,retrieval_method,api_endpoint,gpc_reference_number) from 'epa_seeder.csv' with CSV HEADER;

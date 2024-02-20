@@ -32,6 +32,7 @@ export const api = createApi({
     "InventoryValue",
     "UserData",
     "FileData",
+    "CityData",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
@@ -76,6 +77,7 @@ export const api = createApi({
         body: data,
       }),
       transformResponse: (response: { data: CityAttributes }) => response.data,
+      invalidatesTags: ["CityData"],
     }),
     addInventory: builder.mutation<
       InventoryAttributes,
@@ -207,6 +209,7 @@ export const api = createApi({
     >({
       query: (data) => `/city/${data.cityId}/user/${data.userId}`,
       transformResponse: (response: { data: any }) => response.data,
+      providesTags: ["UserData"],
     }),
 
     setCurrentUserData: builder.mutation<
@@ -239,6 +242,7 @@ export const api = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["UserData"],
     }),
     getCityUsers: builder.query<
       UserAttributes,
@@ -248,6 +252,7 @@ export const api = createApi({
     >({
       query: (data) => `/city/${data.cityId}/user/`,
       transformResponse: (response: { data: any }) => response.data,
+      providesTags: ["UserData"],
     }),
     setUserData: builder.mutation<
       UserAttributes,
@@ -270,6 +275,7 @@ export const api = createApi({
         method: "DELETE",
       }),
       transformResponse: (response: { data: any }) => response.data,
+      invalidatesTags: ["UserData"],
     }),
     getVerifcationToken: builder.query({
       query: () => ({
@@ -294,6 +300,7 @@ export const api = createApi({
         method: "GET",
       }),
       transformResponse: (response: { data: any }) => response.data,
+      providesTags: ["CityData"],
     }),
     removeCity: builder.mutation<string, { cityId: string }>({
       query: ({ cityId }) => ({
@@ -301,6 +308,7 @@ export const api = createApi({
         method: "DELETE",
       }),
       transformResponse: (response: { data: any }) => response.data,
+      invalidatesTags: ["CityData"],
     }),
     getInventories: builder.query<InventoryAttributes[], { cityId: string }>({
       query: ({ cityId }) => ({

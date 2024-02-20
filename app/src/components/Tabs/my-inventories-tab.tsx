@@ -96,7 +96,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
               fontWeight="bold"
               lineHeight="32"
               fontSize="headline.sm"
-              fontFamily="body"
+              fontFamily="heading"
               fontStyle="normal"
             >
               {t("my-inventories")}
@@ -105,7 +105,6 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
               color="content.tertiary"
               fontWeight="normal"
               lineHeight="24"
-              fontFamily="heading"
               fontSize="body.lg"
               letterSpacing="wide"
               marginTop="8px"
@@ -122,6 +121,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
               fontSize="title.md"
               letterSpacing="wide"
               marginTop="8px"
+              fontFamily="heading"
             >
               {t("city")}
             </Text>
@@ -148,6 +148,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                       fontStyle: "normal",
                       fontSize: "label.lg",
                       fontWeight: "medium",
+                      fontFamily: "heading",
                     }}
                     _selected={{
                       color: "content.link",
@@ -183,11 +184,11 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                           src="https://upload.wikimedia.org/wikipedia/commons/1/1a/Flag_of_Argentina.svg"
                         />
                         <Text
-                          color="content.primary"
+                          color="content.secondary"
                           fontWeight="semibold"
                           lineHeight="24"
                           fontSize="title.md"
-                          fontFamily="body"
+                          fontFamily="heading"
                           fontStyle="normal"
                         >
                           {city.name}
@@ -365,7 +366,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
         onClose={onInventoryDeleteModalClose}
         userData={userData}
         lng={lng}
-        tf={t}
+        t={t}
       />
     </>
   );

@@ -158,7 +158,7 @@ const AddUserModal: FC<AddUserModalProps> = ({
             {t("add-user")}
           </ModalHeader>
           <ModalCloseButton marginTop="10px" />
-          <ModalBody p="24px" px="48px">
+          <ModalBody p={6} px={12}>
             <form onSubmit={handleSubmit(onSubmit)}>
               <Box display="flex" flexDirection="column" gap="24px">
                 <FormInput

@@ -14,7 +14,7 @@ export default function EmailInput({
   t,
   name = t("email-address"),
   id = "email",
-  disabled,
+  disabled = false,
 }: {
   children?: React.ReactNode;
   error: FieldError | undefined;

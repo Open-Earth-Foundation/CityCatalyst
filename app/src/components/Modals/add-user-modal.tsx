@@ -66,12 +66,7 @@ const AddUserModal: FC<AddUserModalProps> = ({
       role: data.role!,
       isOrganization:
         (data.isOrganization as unknown) === "true" ? true : false,
-<<<<<<< HEAD
     }).then(async (res: any) => {
-=======
-    }).then((res: any) => {
-      console.log(res);
->>>>>>> develop
       if (res.error) {
         return toast({
           description: t("something-went-wrong"),

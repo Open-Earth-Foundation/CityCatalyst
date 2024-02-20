@@ -1,9 +1,12 @@
 "use client";
 
 import { ProfileInputs } from "@/app/[lng]/settings/page";
+import type { UserAttributes } from "@/models/User";
+import { api } from "@/services/api";
 import {
-  Modal,
+  Box,
   Button,
+  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
@@ -11,41 +14,33 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  ModalProps,
-  Input,
-  FormControl,
-  FormLabel,
-  Box,
   useToast,
 } from "@chakra-ui/react";
-import React, { FC, useState } from "react";
+import { FC, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { MdCheckCircleOutline } from "react-icons/md";
 import FormInput from "../form-input";
 import FormSelectInput from "../form-select-input";
-import { MdCheckCircleOutline } from "react-icons/md";
-import { api } from "@/services/api";
-import { UserAttributes } from "@/models/User";
 import FormSelectOrganization from "../form-select-organization";
 import { TFunction } from "i18next";
 
 interface AddUserModalProps {
   isOpen: boolean;
-  onClose: any;
-  userInfo: UserAttributes;
+  onClose: () => void;
+  cityId: string | undefined;
   t: TFunction;
 }
 
 const AddUserModal: FC<AddUserModalProps> = ({
   isOpen,
   onClose,
-  userInfo,
   t,
+  cityId,
 }) => {
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting },
-    setValue,
+    formState: { errors },
   } = useForm<ProfileInputs>();
   const [addUser] = api.useAddUserMutation();
   const [inputValue, setInputValue] = useState<string>("");
@@ -54,16 +49,11 @@ const AddUserModal: FC<AddUserModalProps> = ({
     setInputValue(e.target.value);
   };
   const onSubmit: SubmitHandler<UserAttributes> = async (data) => {
-    // TODO
-    // Submit data via the api
-
     await addUser({
-      locode: userInfo.defaultCityLocode!,
       name: data.name!,
       email: data.email!,
       role: data.role!,
-      isOrganization:
-        (data.isOrganization as unknown) === "true" ? true : false,
+      cityId: cityId!,
     }).then((res: any) => {
       console.log(res);
       if (res.error) {

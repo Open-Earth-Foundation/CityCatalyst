@@ -51,6 +51,7 @@ export default class DataSourceService {
 
     const url = source.apiEndpoint
       .replace(":locode", inventory.city.locode.replace("-", " "))
+      .replace(":country", inventory.city.locode.slice(0, 2))
       .replace(":year", inventory.year.toString())
       .replace(":gpcReferenceNumber", referenceNumber);
 

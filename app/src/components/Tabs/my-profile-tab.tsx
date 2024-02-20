@@ -1003,7 +1003,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
       <AddUserModal
         isOpen={isUserModalOpen}
         onClose={onUserModalClose}
-        userInfo={userInfo}
+        cityId={cityData.cityId}
         t={t}
       />
       <UpdateUserModal

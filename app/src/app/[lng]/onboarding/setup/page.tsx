@@ -491,7 +491,7 @@ export default function OnboardingSetup({
         locode: city.locode!,
         population: populationData.population,
         countryPopulation: countryPopulation,
-        year: populationData.year,
+        year: data.year,
       }).unwrap();
     } catch (err: any) {
       makeErrorToast("Failed to add city!", err.data?.error?.message);

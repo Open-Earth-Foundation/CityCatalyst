@@ -70,6 +70,7 @@ import { TFunction } from "i18next";
 import { UserAttributes } from "@/models/User";
 import { api, useSetCurrentUserDataMutation } from "@/services/api";
 import { CityAttributes } from "@/models/City";
+import EmailInput from "../email-input";
 interface MyProfileTabProps {
   session: Session | null;
   status: "loading" | "authenticated" | "unauthenticated";
@@ -277,7 +278,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                     lineHeight="52"
                     fontSize="label.lg"
                   >
-                    User(s) details deleted from city
+                    {t("users-deleted-from-city")}
                   </Text>
                 </Box>
               </Box>
@@ -298,7 +299,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
               fontWeight="bold"
               lineHeight="32"
               fontSize="headline.sm"
-              fontFamily="body"
+              fontFamily="heading"
               fontStyle="normal"
             >
               {t("my-profile")}
@@ -307,7 +308,6 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
               color="content.tertiary"
               fontWeight="normal"
               lineHeight="24"
-              fontFamily="heading"
               fontSize="body.lg"
               letterSpacing="wide"
               marginTop="8px"
@@ -334,6 +334,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                     fontStyle: "normal",
                     fontSize: "label.lg",
                     fontWeight: "medium",
+                    fontFamily: "heading",
                   }}
                   _selected={{
                     color: "content.link",
@@ -359,6 +360,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                     fontStyle: "normal",
                     fontSize: "label.lg",
                     fontWeight: "medium",
+                    fontFamily: "heading",
                   }}
                   _selected={{
                     color: "content.link",
@@ -384,6 +386,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                     fontStyle: "normal",
                     fontSize: "label.lg",
                     fontWeight: "medium",
+                    fontFamily: "heading",
                   }}
                   _selected={{
                     color: "content.link",
@@ -413,7 +416,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                       fontWeight="semibold"
                       lineHeight="24"
                       fontSize="title.md"
-                      fontFamily="body"
+                      fontFamily="heading"
                       fontStyle="normal"
                     >
                       {t("account-details")}
@@ -422,7 +425,6 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                       color="content.tertiary"
                       fontWeight="normal"
                       lineHeight="24"
-                      fontFamily="heading"
                       fontSize="body.lg"
                       letterSpacing="wide"
                       marginTop="8px"
@@ -441,9 +443,9 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                         error={errors.name}
                         id="name"
                       />
-                      <FormInput
-                        label={t("email")}
-                        isDisabled
+                      <EmailInput
+                        disabled
+                        t={t}
                         register={register}
                         error={errors.email}
                         id="email"
@@ -1007,25 +1009,28 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
         isOpen={isUserModalOpen}
         onClose={onUserModalClose}
         userInfo={userInfo}
+        t={t}
       />
       <UpdateUserModal
         isOpen={isUserUpdateModalOpen}
         onClose={onUserUpdateModalClose}
         userData={userData}
         userInfo={userInfo}
+        t={t}
       />
       <DeleteUserModal
         isOpen={isUserDeleteModalOpen}
         onClose={onUserDeleteModalClose}
         userData={userData}
         userInfo={userInfo}
+        t={t}
       />
       <DeleteCityModal
         isOpen={isCityDeleteModalOpen}
         onClose={onCityDeleteModalClose}
         userData={userData}
         cityData={cityData}
-        tf={t}
+        t={t}
         lng={lng}
       />
     </>

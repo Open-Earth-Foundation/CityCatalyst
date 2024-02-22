@@ -15,6 +15,7 @@ import { TFunction } from "i18next";
 import { useEffect, useRef } from "react";
 import { BsStars } from "react-icons/bs";
 import { MdOutlineSend } from "react-icons/md";
+import { ScrollAnchor } from "./scroll-anchor";
 
 export default function ChatBot({
   inputRef,
@@ -38,15 +39,6 @@ export default function ChatBot({
     ],
   });
   const messageWrapperRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (messageWrapperRef.current) {
-      messageWrapperRef.current?.addEventListener("DOMNodeInserted", (event) => {
-        const { currentTarget: target } = event;
-        target.scroll({ top: target.scrollHeight, behavior: "smooth" });
-      });
-    }
-  });
-
   const userStyles = "rounded-br-none align-end";
   const botStyles = "rounded-bl-none";
   const suggestions = [
@@ -97,6 +89,7 @@ export default function ChatBot({
             </HStack>
           );
         })}
+        <ScrollAnchor trackVisibility={isLoading} />
       </div>
 
       <Divider my={6} borderColor="border.neutral" />

@@ -115,6 +115,9 @@ export default function ChatBot({
                 <Text
                   className="whitespace-pre-wrap"
                   color={isUser ? "base.light" : "content.tertiary"}
+                  letterSpacing="0.5px"
+                  lineHeight="24px"
+                  fontSize="16px"
                 >
                   {m.content}
                 </Text>

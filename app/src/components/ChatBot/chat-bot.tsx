@@ -7,6 +7,7 @@ import {
   HStack,
   Icon,
   IconButton,
+  Spacer,
   Text,
   Textarea,
 } from "@chakra-ui/react";
@@ -39,7 +40,7 @@ export default function ChatBot({
     ],
   });
   const messageWrapperRef = useRef<HTMLDivElement>(null);
-  const userStyles = "rounded-br-none align-end";
+  const userStyles = "rounded-br-none";
   const botStyles = "rounded-bl-none";
   const suggestions = [
     {
@@ -72,9 +73,11 @@ export default function ChatBot({
                 p={2}
                 borderRadius="full"
                 bg="content.alternative"
+                visibility={isUser ? "hidden" : "visible"}
               >
                 <Icon as={BsStars} boxSize={5} color="base.light" />
               </Box>
+              <Spacer />
               <Box
                 className={`rounded-2xl border-r-t px-6 py-4 ${isUser ? userStyles : botStyles}`}
                 bg={isUser ? "content.link" : "base.light"}

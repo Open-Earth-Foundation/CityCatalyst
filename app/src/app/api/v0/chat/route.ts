@@ -32,7 +32,7 @@ type Messages = z.infer<typeof messagesSchema>;
 async function streamToString(stream: any) {
   const reader = stream.getReader();
   const textDecoder = new TextDecoder();
-  let result = '';
+  let result = "";
 
   async function read() {
     const { done, value } = await reader.read();
@@ -82,6 +82,13 @@ async function handleOpenAIChat(
 
 export const POST = apiHandler(async (req: Request) => {
   const { messages } = chatRequest.parse(await req.json());
+  if (!messages[0].content.startsWith("Your are a")) {
+    messages.unshift({
+      role: process.env.CHAT_PROVIDER == "huggingface" ? "user" : "system",
+      content:
+        'You are a climate assistant for creating GPC climate inventories. You try to be as helpful as possible when answering the user\'s questions about their inventory or any climate science or data science related questions. Try to be as scientific as possible. Finish every response with the sentence "Have a wonderful day!".',
+    });
+  }
 
   if (process.env.CHAT_PROVIDER === "openai") {
     return handleOpenAIChat(messages);

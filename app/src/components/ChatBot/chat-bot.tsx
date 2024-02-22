@@ -95,7 +95,7 @@ export default function ChatBot({
         <ScrollAnchor trackVisibility={isLoading} />
       </div>
 
-      <Divider my={6} borderColor="border.neutral" />
+      <Divider mt={2} mb={6} borderColor="border.neutral" />
 
       <div className="overflow-x-auto space-x-2 whitespace-nowrap pb-3">
         {suggestions.map((suggestion, i) => (

@@ -1,11 +1,20 @@
 "use client";
 
+import { ProfileInputs } from "@/app/[lng]/settings/page";
+import AddUserModal from "@/components/Modals/add-user-modal";
+import DeleteUserModal from "@/components/Modals/delete-user-modal";
+import UpdateUserModal from "@/components/Modals/update-user-modal";
+import {
+  AddIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  SearchIcon,
+} from "@chakra-ui/icons";
 import {
   Badge,
   Box,
   Button,
   Checkbox,
-  Icon,
   IconButton,
   Input,
   InputGroup,
@@ -30,20 +39,15 @@ import {
   Text,
   Th,
   Thead,
-  useToast,
   Tr,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
-import React, { FC, useEffect, useState } from "react";
-import FormInput from "../form-input";
-import FormSelectInput from "../form-select-input";
-import {
-  AddIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  InfoOutlineIcon,
-  SearchIcon,
-} from "@chakra-ui/icons";
+import { Session } from "next-auth";
+import NextLink from "next/link";
+import { FC, useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { FiTrash2 } from "react-icons/fi";
 import {
   MdCheckCircleOutline,
   MdDomain,
@@ -52,24 +56,16 @@ import {
   MdOutlineIndeterminateCheckBox,
   MdOutlineModeEditOutline,
 } from "react-icons/md";
-import { FiTrash2 } from "react-icons/fi";
-import NextLink from "next/link";
-import {
-  CityData,
-  ProfileInputs,
-  UserDetails,
-} from "@/app/[lng]/settings/page";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { Session } from "next-auth";
-import AddUserModal from "@/components/Modals/add-user-modal";
-import UpdateUserModal from "@/components/Modals/update-user-modal";
-import DeleteUserModal from "@/components/Modals/delete-user-modal";
+import FormInput from "../form-input";
+import FormSelectInput from "../form-select-input";
 
 import DeleteCityModal from "@/components/Modals/delete-city-modal";
-import { TFunction } from "i18next";
+import { CityAttributes } from "@/models/City";
 import { UserAttributes } from "@/models/User";
 import { api, useSetCurrentUserDataMutation } from "@/services/api";
-import { CityAttributes } from "@/models/City";
+import { TFunction } from "i18next";
+import EmailInput from "../email-input";
+
 interface MyProfileTabProps {
   session: Session | null;
   status: "loading" | "authenticated" | "unauthenticated";
@@ -110,12 +106,11 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
   const toast = useToast();
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
     await setCurrentUserData({
-      locode: userInfo.defaultCityLocode,
+      cityId: "", // TODO pass currently selected city's ID in here!
       userId: userInfo.userId,
       name: data.name,
       email: data.email,
       role: data.role,
-      isOrganization: userInfo.isOrganization ? true : false,
     }).then(() =>
       toast({
         description: "User details updated!",
@@ -247,7 +242,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
     selectedUsers.map(async (user: string) => {
       await removeUser({
         userId: user,
-        defaultCityLocode: userInfo.defaultCityLocode,
+        cityId: "", // TODO pass currently selected city ID into this component
       }).then((res: any) => {
         if (res.data.deleted) {
           toast({
@@ -277,7 +272,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                     lineHeight="52"
                     fontSize="label.lg"
                   >
-                    User(s) details deleted from city
+                    {t("users-deleted-from-city")}
                   </Text>
                 </Box>
               </Box>
@@ -298,7 +293,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
               fontWeight="bold"
               lineHeight="32"
               fontSize="headline.sm"
-              fontFamily="body"
+              fontFamily="heading"
               fontStyle="normal"
             >
               {t("my-profile")}
@@ -307,7 +302,6 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
               color="content.tertiary"
               fontWeight="normal"
               lineHeight="24"
-              fontFamily="heading"
               fontSize="body.lg"
               letterSpacing="wide"
               marginTop="8px"
@@ -334,6 +328,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                     fontStyle: "normal",
                     fontSize: "label.lg",
                     fontWeight: "medium",
+                    fontFamily: "heading",
                   }}
                   _selected={{
                     color: "content.link",
@@ -359,6 +354,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                     fontStyle: "normal",
                     fontSize: "label.lg",
                     fontWeight: "medium",
+                    fontFamily: "heading",
                   }}
                   _selected={{
                     color: "content.link",
@@ -384,6 +380,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                     fontStyle: "normal",
                     fontSize: "label.lg",
                     fontWeight: "medium",
+                    fontFamily: "heading",
                   }}
                   _selected={{
                     color: "content.link",
@@ -413,7 +410,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                       fontWeight="semibold"
                       lineHeight="24"
                       fontSize="title.md"
-                      fontFamily="body"
+                      fontFamily="heading"
                       fontStyle="normal"
                     >
                       {t("account-details")}
@@ -422,7 +419,6 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                       color="content.tertiary"
                       fontWeight="normal"
                       lineHeight="24"
-                      fontFamily="heading"
                       fontSize="body.lg"
                       letterSpacing="wide"
                       marginTop="8px"
@@ -441,9 +437,9 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                         error={errors.name}
                         id="name"
                       />
-                      <FormInput
-                        label={t("email")}
-                        isDisabled
+                      <EmailInput
+                        disabled
+                        t={t}
                         register={register}
                         error={errors.email}
                         id="email"
@@ -465,6 +461,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                       >
                         <Button
                           type="submit"
+                          isLoading={isSubmitting}
                           h="48px"
                           w="auto"
                           paddingTop="16px"
@@ -1006,26 +1003,29 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
       <AddUserModal
         isOpen={isUserModalOpen}
         onClose={onUserModalClose}
-        userInfo={userInfo}
+        cityId={cityData.cityId}
+        t={t}
       />
       <UpdateUserModal
         isOpen={isUserUpdateModalOpen}
         onClose={onUserUpdateModalClose}
         userData={userData}
         userInfo={userInfo}
+        t={t}
       />
       <DeleteUserModal
         isOpen={isUserDeleteModalOpen}
         onClose={onUserDeleteModalClose}
         userData={userData}
-        userInfo={userInfo}
+        cityId={cityData.cityId}
+        t={t}
       />
       <DeleteCityModal
         isOpen={isCityDeleteModalOpen}
         onClose={onCityDeleteModalClose}
         userData={userData}
         cityData={cityData}
-        tf={t}
+        t={t}
         lng={lng}
       />
     </>

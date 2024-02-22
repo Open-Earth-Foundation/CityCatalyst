@@ -1,15 +1,23 @@
+import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
 import { createInventoryValue } from "@/util/validation";
 import createHttpError from "http-errors";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { Op } from "sequelize";
 
-export const GET = apiHandler(async (_req: NextRequest, { params }) => {
+export const GET = apiHandler(async (_req, { params, session }) => {
+  const inventory = await UserService.findUserInventory(
+    params.inventory,
+    session,
+  );
   const inventoryValue = await db.models.InventoryValue.findOne({
-    where: { subCategoryId: params.subcategory, inventoryId: params.inventory },
+    where: {
+      subCategoryId: params.subcategory,
+      inventoryId: inventory.inventoryId,
+    },
     include: [
       { model: db.models.DataSource, as: "dataSource" },
       {
@@ -33,10 +41,19 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   return NextResponse.json({ data: inventoryValue });
 });
 
-export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
+export const PATCH = apiHandler(async (req, { params, session }) => {
   const body = createInventoryValue.parse(await req.json());
+
+  const inventory = await UserService.findUserInventory(
+    params.inventory,
+    session,
+  );
+
   let inventoryValue = await db.models.InventoryValue.findOne({
-    where: { subCategoryId: params.subcategory, inventoryId: params.inventory },
+    where: {
+      subCategoryId: params.subcategory,
+      inventoryId: inventory.inventoryId,
+    },
     include: [
       { model: db.models.DataSource, as: "dataSource" },
       { model: db.models.GasValue, as: "gasValues" },
@@ -224,9 +241,17 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
   return NextResponse.json({ data: inventoryValue });
 });
 
-export const DELETE = apiHandler(async (_req: NextRequest, { params }) => {
+export const DELETE = apiHandler(async (_req, { params, session }) => {
+  const inventory = await UserService.findUserInventory(
+    params.inventory,
+    session,
+  );
+
   const subcategoryValue = await db.models.InventoryValue.findOne({
-    where: { subCategoryId: params.subcategory, inventoryId: params.inventory },
+    where: {
+      subCategoryId: params.subcategory,
+      inventoryId: inventory.inventoryId,
+    },
   });
   if (!subcategoryValue) {
     throw new createHttpError.NotFound("Inventory value not found");

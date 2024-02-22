@@ -44,9 +44,6 @@ export class City
   extends Model<CityAttributes, CityCreationAttributes>
   implements CityAttributes
 {
-  users(users: any) {
-    throw new Error("Method not implemented.");
-  }
   cityId!: string;
   locode?: string;
   name?: string;
@@ -58,7 +55,7 @@ export class City
   lastUpdated?: Date;
 
   // City belongsToMany User via CityUser.cityId
-  Users!: User[];
+  users!: User[];
   getUsers!: Sequelize.BelongsToManyGetAssociationsMixin<User>;
   setUsers!: Sequelize.BelongsToManySetAssociationsMixin<User, UserId>;
   addUser!: Sequelize.BelongsToManyAddAssociationMixin<User, UserId>;

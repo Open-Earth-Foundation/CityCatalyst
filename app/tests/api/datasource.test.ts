@@ -79,9 +79,9 @@ describe("DataSource API", () => {
     await db.models.Sector.destroy({ where: { sectorName } });
 
     inventory = await db.models.Inventory.create({
+      ...inventoryData,
       inventoryId: randomUUID(),
       cityId: city.cityId,
-      ...inventoryData,
     });
     sector = await db.models.Sector.create({
       sectorId: randomUUID(),

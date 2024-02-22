@@ -1,6 +1,6 @@
 import "@/util/big_int_json";
 
-import { Auth } from "@/lib/auth";
+import { AppSession, Auth } from "@/lib/auth";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
@@ -10,7 +10,7 @@ import { ValidationError } from "sequelize";
 
 export type NextHandler = (
   req: NextRequest,
-  props: { params: Record<string, string> },
+  props: { params: Record<string, string>; session: AppSession | null },
 ) => Promise<NextResponse>;
 
 export function apiHandler(handler: NextHandler) {

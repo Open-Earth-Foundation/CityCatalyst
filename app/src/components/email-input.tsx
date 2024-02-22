@@ -14,6 +14,7 @@ export default function EmailInput({
   t,
   name = t("email-address"),
   id = "email",
+  disabled = false,
 }: {
   children?: React.ReactNode;
   error: FieldError | undefined;
@@ -21,14 +22,17 @@ export default function EmailInput({
   t: Function;
   name?: String;
   id?: String;
+  disabled?: boolean;
 }) {
   return (
     <FormControl isInvalid={!!error}>
       <FormLabel>{name}</FormLabel>
       <Input
+        readOnly={disabled}
         type="email"
         placeholder={t("email-placeholder")}
         size="lg"
+        background={disabled ? "background.neutral" : "background.default"}
         {...register(id, {
           required: t("email-required"),
           pattern: {

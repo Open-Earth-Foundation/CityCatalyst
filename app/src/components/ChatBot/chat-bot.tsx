@@ -12,8 +12,6 @@ import {
 } from "@chakra-ui/react";
 import { useChat } from "ai/react";
 import { TFunction } from "i18next";
-import { useRef } from "react";
-import { ChangeEvent } from "react";
 import { BsStars } from "react-icons/bs";
 import { MdOutlineSend } from "react-icons/md";
 
@@ -38,8 +36,6 @@ export default function ChatBot({
       { id: "-1", content: t("initial-message"), role: "assistant" },
     ],
   });
-  const formRef = useRef<HTMLFormElement>(null);
-
   const userStyles = "rounded-br-none align-end";
   const botStyles = "rounded-bl-none";
   const suggestions = [
@@ -47,8 +43,14 @@ export default function ChatBot({
       preview: "What is GPC?",
       message: "What is the GHG Protocol for Cities?",
     },
-    { preview: "How can I collect data?", message: "How can I add new data sources to CityCatalyst?" },
-    { preview: "What is IPCC?", message: "What is the Intergovernmental Panel on Climate Change?" },
+    {
+      preview: "How can I collect data?",
+      message: "How can I add new data sources to CityCatalyst?",
+    },
+    {
+      preview: "What is IPCC?",
+      message: "What is the Intergovernmental Panel on Climate Change?",
+    },
   ];
 
   return (
@@ -94,10 +96,6 @@ export default function ChatBot({
                 content: suggestion.message,
                 role: "user",
               });
-              // handleInputChange({
-              //   target: { value: suggestion },
-              // } as any as ChangeEvent<HTMLTextAreaElement>);
-              // formRef.current?.dispatchEvent(new Event("submit"));
             }}
             bg="background.overlay"
             color="content.alternative"
@@ -117,7 +115,7 @@ export default function ChatBot({
         ))}
       </div>
 
-      <form onSubmit={handleSubmit} ref={formRef}>
+      <form onSubmit={handleSubmit}>
         <HStack mt={1}>
           {/*<IconButton
             variant="ghost"

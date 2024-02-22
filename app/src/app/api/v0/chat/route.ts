@@ -4,6 +4,7 @@ import { HuggingFaceStream, OpenAIStream, StreamingTextResponse } from "ai";
 import { experimental_buildOpenAssistantPrompt } from "ai/prompts";
 import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import { apiHandler } from "@/util/api";
 
 const Hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
 const openai = new OpenAI({
@@ -27,7 +28,6 @@ const chatRequest = z.object({
   messages: messagesSchema,
 });
 type Messages = z.infer<typeof messagesSchema>;
-type ChatRequest = z.infer<typeof chatRequest>;
 
 async function handleHuggingFaceChat(
   messages: Messages,
@@ -61,7 +61,7 @@ async function handleOpenAIChat(
   return new StreamingTextResponse(stream);
 }
 
-export async function POST(req: Request) {
+export const POST = apiHandler(async (req: Request) => {
   const { messages } = chatRequest.parse(await req.json());
 
   if (process.env.CHAT_PROVIDER === "openai") {
@@ -69,4 +69,4 @@ export async function POST(req: Request) {
   } else {
     return handleHuggingFaceChat(messages);
   }
-}
+});

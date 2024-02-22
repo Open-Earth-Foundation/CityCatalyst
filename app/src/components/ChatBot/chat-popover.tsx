@@ -59,12 +59,13 @@ export default function ChatPopover({
             fontFamily="heading"
             textTransform="capitalize"
             lineHeight="36px"
+            borderTopRadius={4}
             p={6}
           >
             {t("ask-ai-expert")}
             <PopoverCloseButton color="content.secondary" w={8} h={8} mr={6} mt={6} />
           </PopoverHeader>
-          <PopoverBody maxH={500} w="full" p={6}>
+          <PopoverBody maxH={650} w="full" p={6} borderRadius={4}>
             <ChatBot inputRef={inputRef} t={t} />
           </PopoverBody>
         </PopoverContent>

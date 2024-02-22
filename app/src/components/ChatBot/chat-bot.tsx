@@ -1,6 +1,9 @@
 "use client";
 
+import { Box, HStack, IconButton, Input } from "@chakra-ui/react";
 import { useChat } from "ai/react";
+import { BsPaperclip } from "react-icons/bs";
+import { MdOutlineSend } from "react-icons/md";
 
 export default function ChatBot({
   userName = "User",
@@ -13,7 +16,8 @@ export default function ChatBot({
     api: "/api/v0/chat",
   });
   return (
-    <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">
+    <div className="flex flex-col w-full stretch">
+      <Box className="overflow-y-auto max-h-96">
       {messages.map((m) => (
         <div key={m.id} className="whitespace-pre-wrap">
           <span
@@ -24,15 +28,31 @@ export default function ChatBot({
           {m.content}
         </div>
       ))}
+      </Box>
 
       <form onSubmit={handleSubmit}>
-        <input
-          className="fixed bottom-0 w-full max-w-md p-2 mb-8 border border-gray-300 rounded shadow-xl"
-          ref={inputRef}
-          value={input}
-          placeholder="Ask your climate assistant something..."
-          onChange={handleInputChange}
-        />
+        <HStack mt={4}>
+          {/*<IconButton
+            variant="ghost"
+            icon={<BsPaperclip size={24} />}
+            color="content-tertiary"
+            aria-label="Attach file"
+          />*/}
+          <Input
+            // className="fixed bottom-0 w-full max-w-md p-2 mb-8 border border-gray-300 rounded shadow-xl"
+            ref={inputRef}
+            className="flex-grow w-full"
+            value={input}
+            placeholder="Ask your climate assistant something..."
+            onChange={handleInputChange}
+          />
+          <IconButton
+            variant="ghost"
+            icon={<MdOutlineSend size={24} />}
+            color="content-tertiary"
+            aria-label="Send message"
+          />
+        </HStack>
       </form>
     </div>
   );

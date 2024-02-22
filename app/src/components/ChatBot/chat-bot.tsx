@@ -13,10 +13,19 @@ import {
 } from "@chakra-ui/react";
 import { useChat } from "ai/react";
 import { TFunction } from "i18next";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { BsStars } from "react-icons/bs";
-import { MdOutlineSend } from "react-icons/md";
+import {
+    MdCheckCircle,
+  MdContentCopy,
+  MdOutlineCopyAll,
+  MdOutlineSend,
+  MdOutlineThumbDown,
+  MdOutlineThumbUp,
+  MdRefresh,
+} from "react-icons/md";
 import { ScrollAnchor } from "./scroll-anchor";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
 export default function ChatBot({
   inputRef,
@@ -33,13 +42,15 @@ export default function ChatBot({
     handleSubmit,
     isLoading,
     append,
+    reload,
   } = useChat({
     api: "/api/v0/chat",
     initialMessages: [
       { id: "-1", content: t("initial-message"), role: "assistant" },
     ],
   });
-  const messageWrapperRef = useRef<HTMLDivElement>(null);
+  const { copyToClipboard, isCopied } = useCopyToClipboard({});
+
   const userStyles = "rounded-br-none";
   const botStyles = "rounded-bl-none";
   const suggestions = [
@@ -59,11 +70,8 @@ export default function ChatBot({
 
   return (
     <div className="flex flex-col w-full stretch">
-      <div
-        className="overflow-y-auto max-h-96 space-y-4"
-        ref={messageWrapperRef}
-      >
-        {messages.map((m) => {
+      <div className="overflow-y-auto max-h-96 space-y-4">
+        {messages.map((m, i) => {
           const isUser = m.role === "user";
           return (
             <HStack key={m.id} align="top">
@@ -88,6 +96,49 @@ export default function ChatBot({
                 >
                   {m.content}
                 </Text>
+                {!isUser &&
+                  i === messages.length - 1 &&
+                  messages.length > 1 && (
+                    <>
+                      <Divider borderColor="border.overlay" my={3} />
+                      <HStack>
+                        <IconButton
+                          variant="ghost"
+                          icon={<Icon as={MdOutlineThumbUp} boxSize={5} />}
+                          aria-label="Vote good"
+                          color="content.tertiary"
+                        />
+                        <IconButton
+                          variant="ghost"
+                          icon={<Icon as={MdOutlineThumbDown} boxSize={5} />}
+                          aria-label="Vote bad"
+                          color="content.tertiary"
+                        />
+                        <IconButton
+                          onClick={() => copyToClipboard(m.content)}
+                          variant="ghost"
+                          icon={<Icon as={isCopied ? MdCheckCircle : MdContentCopy} boxSize={5} />}
+                          aria-label="Copy text"
+                          color={isCopied ? "sentiment.positiveDefault" : "content.tertiary"}
+                        />
+                        <Spacer />
+                        <Button
+                          onClick={() => reload()}
+                          leftIcon={<Icon as={MdRefresh} boxSize={5} />}
+                          variant="outline"
+                          textTransform="none"
+                          fontFamily="body"
+                          color="content.tertiary"
+                          borderColor="border.neutral"
+                          fontWeight="400"
+                          lineHeight="16px"
+                          letterSpacing="0.5px"
+                        >
+                          {t("regenerate")}
+                        </Button>
+                      </HStack>
+                    </>
+                  )}
               </Box>
             </HStack>
           );

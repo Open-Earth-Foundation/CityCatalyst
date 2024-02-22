@@ -2,7 +2,7 @@
 
 import { useChat } from "ai/react";
 
-export default function ChatBot() {
+export default function ChatBot({ userName = "User" }: { userName?: string }) {
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     api: "/api/v0/chat",
   });
@@ -10,7 +10,11 @@ export default function ChatBot() {
     <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">
       {messages.map((m) => (
         <div key={m.id} className="whitespace-pre-wrap">
-          {m.role === "user" ? "User: " : "Climate Assistant: "}
+          <span
+            className={`font-bold ${m.role === "user" ? "text-green-500" : "text-blue-500"}`}
+          >
+            {m.role === "user" ? `${userName}: ` : "Climate Assistant: "}
+          </span>
           {m.content}
         </div>
       ))}

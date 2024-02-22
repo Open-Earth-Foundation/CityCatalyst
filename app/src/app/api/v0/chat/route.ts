@@ -1,9 +1,14 @@
 import { HfInference } from "@huggingface/inference";
 import { z } from "zod";
-import { HuggingFaceStream, StreamingTextResponse } from "ai";
+import { HuggingFaceStream, OpenAIStream, StreamingTextResponse } from "ai";
 import { experimental_buildOpenAssistantPrompt } from "ai/prompts";
+import OpenAI from "openai";
+import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 const Hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export const runtime = "edge";
 
@@ -15,13 +20,18 @@ const roleSchema = z.enum([
   "assistant",
   "tool",
 ]);
+const messagesSchema = z.array(
+  z.object({ content: z.string(), role: roleSchema }),
+);
 const chatRequest = z.object({
-  messages: z.array(z.object({ content: z.string(), role: roleSchema })),
+  messages: messagesSchema,
 });
+type Messages = z.infer<typeof messagesSchema>;
+type ChatRequest = z.infer<typeof chatRequest>;
 
-export async function POST(req: Request) {
-  const { messages } = chatRequest.parse(await req.json());
-
+async function handleHuggingFaceChat(
+  messages: Messages,
+): Promise<StreamingTextResponse> {
   const response = Hf.textGenerationStream({
     model: "OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5",
     inputs: experimental_buildOpenAssistantPrompt(messages),
@@ -37,4 +47,26 @@ export async function POST(req: Request) {
 
   const stream = HuggingFaceStream(response);
   return new StreamingTextResponse(stream);
+}
+
+async function handleOpenAIChat(
+  messages: Messages,
+): Promise<StreamingTextResponse> {
+  const response = await openai.chat.completions.create({
+    model: "gpt-3.5-turbo",
+    stream: true,
+    messages: messages as any as ChatCompletionMessageParam[],
+  });
+  const stream = OpenAIStream(response);
+  return new StreamingTextResponse(stream);
+}
+
+export async function POST(req: Request) {
+  const { messages } = chatRequest.parse(await req.json());
+
+  if (process.env.CHAT_PROVIDER === "openai") {
+    return handleOpenAIChat(messages);
+  } else {
+    return handleHuggingFaceChat(messages);
+  }
 }

@@ -65,7 +65,7 @@ export default function ChatPopover({
             <PopoverCloseButton color="content.secondary" w={8} h={8} mr={6} mt={6} />
           </PopoverHeader>
           <PopoverBody maxH={500} w="full" p={6}>
-            <ChatBot inputRef={inputRef} />
+            <ChatBot inputRef={inputRef} t={t} />
           </PopoverBody>
         </PopoverContent>
       </Popover>

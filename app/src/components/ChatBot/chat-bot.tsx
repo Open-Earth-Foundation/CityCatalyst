@@ -2,13 +2,16 @@
 
 import { Box, HStack, IconButton, Text, Textarea } from "@chakra-ui/react";
 import { useChat } from "ai/react";
+import { TFunction } from "i18next";
 import { MdOutlineSend } from "react-icons/md";
 
 export default function ChatBot({
   inputRef,
+  t,
 }: {
   userName?: string;
   inputRef?: React.Ref<HTMLTextAreaElement>;
+  t: TFunction;
 }) {
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     api: "/api/v0/chat",
@@ -49,7 +52,7 @@ export default function ChatBot({
             ref={inputRef}
             className="flex-grow w-full p-4"
             value={input}
-            placeholder="Ask your climate assistant something..."
+            placeholder={t("ask-assistant")}
             onChange={handleInputChange}
           />
           <IconButton

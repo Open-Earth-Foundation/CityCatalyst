@@ -63,7 +63,7 @@ export default function ChatPopover({
             p={6}
           >
             {t("ask-ai-expert")}
-            <PopoverCloseButton color="content.secondary" w={8} h={8} mr={6} mt={6} />
+            <PopoverCloseButton color="content.secondary" w={8} h={8} mr={4} mt={6} />
           </PopoverHeader>
           <PopoverBody maxH={650} w="full" p={6} borderRadius={4}>
             <ChatBot inputRef={inputRef} t={t} />

@@ -40,7 +40,8 @@ export function ScrollAnchor({
   useEffect(() => {
     if (isAtBottom && trackVisibility && !inView) {
       entry?.target.scrollIntoView({
-        block: "start",
+        block: "nearest",
+        inline: "start",
         // behavior: "smooth",
       });
     }

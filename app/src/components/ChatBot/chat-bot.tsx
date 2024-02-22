@@ -1,8 +1,7 @@
 "use client";
 
-import { Box, HStack, IconButton, Text, Input, Textarea } from "@chakra-ui/react";
+import { Box, HStack, IconButton, Text, Textarea } from "@chakra-ui/react";
 import { useChat } from "ai/react";
-import { BsPaperclip } from "react-icons/bs";
 import { MdOutlineSend } from "react-icons/md";
 
 export default function ChatBot({
@@ -14,17 +13,26 @@ export default function ChatBot({
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     api: "/api/v0/chat",
   });
+  const userStyles = "rounded-br-none bg-blue-500";
+  const botStyles = "rounded-bl-none bg-white";
   return (
     <div className="flex flex-col w-full stretch">
-      <Box className="overflow-y-auto max-h-96">
-      {messages.map((m) => (
-        <div key={m.id} className="whitespace-pre-wrap">
-          <Text>
-          {m.content}
-          </Text>
-        </div>
-      ))}
-      </Box>
+      <div className="overflow-y-auto max-h-96 space-y-4">
+        {messages.map((m) => (
+          <Box
+            key={m.id}
+            className={`rounded-2xl border-r-t px-6 py-4 ${m.role === "user" ? userStyles : botStyles}`}
+            bg={m.role === "user" ? "content.link" : "base.light"}
+          >
+            <Text
+              className="whitespace-pre-wrap"
+              color={m.role === "user" ? "base.light" : "content.tertiary"}
+            >
+              {m.content}
+            </Text>
+          </Box>
+        ))}
+      </div>
 
       <hr className="my-6" />
 
@@ -45,6 +53,7 @@ export default function ChatBot({
             onChange={handleInputChange}
           />
           <IconButton
+            type="submit"
             variant="ghost"
             icon={<MdOutlineSend size={24} />}
             color="content.tertiary"

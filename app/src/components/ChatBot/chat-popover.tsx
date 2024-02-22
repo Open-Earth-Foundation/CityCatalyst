@@ -45,15 +45,28 @@ export default function ChatPopover({
             aria-label={t("ai-expert")}
           />
         </PopoverTrigger>
-        <PopoverContent p={2} w={533} bg="content/tertiary">
-          <PopoverHeader fontWeight="semibold">{t("ask-ai-expert")}</PopoverHeader>
-          {/* <FocusLock returnFocus persistentFocus={false}> */}
-          <PopoverArrow />
-          <PopoverCloseButton />
-          <PopoverBody maxH={500} w="full">
+        <PopoverContent
+          p={0}
+          w={533}
+          bg="background.neutral"
+          className="drop-shadow-md"
+        >
+          <PopoverHeader
+            bg="background.overlay"
+            textColor="content.alternative"
+            fontWeight="600"
+            fontSize="28px"
+            fontFamily="heading"
+            textTransform="capitalize"
+            lineHeight="36px"
+            p={6}
+          >
+            {t("ask-ai-expert")}
+            <PopoverCloseButton color="content.secondary" w={8} h={8} mr={6} mt={6} />
+          </PopoverHeader>
+          <PopoverBody maxH={500} w="full" p={6}>
             <ChatBot inputRef={inputRef} />
           </PopoverBody>
-          {/* </FocusLock> */}
         </PopoverContent>
       </Popover>
     </>

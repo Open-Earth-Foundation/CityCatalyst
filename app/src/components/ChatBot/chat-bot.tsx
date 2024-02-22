@@ -1,5 +1,6 @@
 "use client";
 
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import {
   Box,
   Button,
@@ -13,19 +14,39 @@ import {
 } from "@chakra-ui/react";
 import { useChat } from "ai/react";
 import { TFunction } from "i18next";
-import { useRef } from "react";
 import { BsStars } from "react-icons/bs";
 import {
-    MdCheckCircle,
+  MdCheckCircle,
   MdContentCopy,
-  MdOutlineCopyAll,
   MdOutlineSend,
   MdOutlineThumbDown,
   MdOutlineThumbUp,
   MdRefresh,
 } from "react-icons/md";
 import { ScrollAnchor } from "./scroll-anchor";
-import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+import { RefObject, useRef } from "react";
+
+function useEnterSubmit(): {
+  formRef: RefObject<HTMLFormElement>;
+  onKeyDown: (event: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+} {
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLTextAreaElement>,
+  ): void => {
+    if (
+      event.key === "Enter" &&
+      !event.shiftKey &&
+      !event.nativeEvent.isComposing
+    ) {
+      formRef.current?.requestSubmit();
+      event.preventDefault();
+    }
+  };
+
+  return { formRef, onKeyDown: handleKeyDown };
+}
 
 export default function ChatBot({
   inputRef,
@@ -50,6 +71,7 @@ export default function ChatBot({
     ],
   });
   const { copyToClipboard, isCopied } = useCopyToClipboard({});
+  const { formRef, onKeyDown } = useEnterSubmit();
 
   const userStyles = "rounded-br-none";
   const botStyles = "rounded-bl-none";
@@ -117,9 +139,18 @@ export default function ChatBot({
                         <IconButton
                           onClick={() => copyToClipboard(m.content)}
                           variant="ghost"
-                          icon={<Icon as={isCopied ? MdCheckCircle : MdContentCopy} boxSize={5} />}
+                          icon={
+                            <Icon
+                              as={isCopied ? MdCheckCircle : MdContentCopy}
+                              boxSize={5}
+                            />
+                          }
                           aria-label="Copy text"
-                          color={isCopied ? "sentiment.positiveDefault" : "content.tertiary"}
+                          color={
+                            isCopied
+                              ? "sentiment.positiveDefault"
+                              : "content.tertiary"
+                          }
                         />
                         <Spacer />
                         <Button
@@ -176,7 +207,7 @@ export default function ChatBot({
         ))}
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} ref={formRef}>
         <HStack mt={1}>
           {/*<IconButton
             variant="ghost"
@@ -191,6 +222,7 @@ export default function ChatBot({
             value={input}
             placeholder={t("ask-assistant")}
             onChange={handleInputChange}
+            onKeyDown={onKeyDown}
           />
           <IconButton
             type="submit"

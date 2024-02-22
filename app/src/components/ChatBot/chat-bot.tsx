@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { useChat } from "ai/react";
 import { TFunction } from "i18next";
+import { useEffect, useRef } from "react";
 import { BsStars } from "react-icons/bs";
 import { MdOutlineSend } from "react-icons/md";
 
@@ -36,6 +37,16 @@ export default function ChatBot({
       { id: "-1", content: t("initial-message"), role: "assistant" },
     ],
   });
+  const messageWrapperRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (messageWrapperRef.current) {
+      messageWrapperRef.current?.addEventListener("DOMNodeInserted", (event) => {
+        const { currentTarget: target } = event;
+        target.scroll({ top: target.scrollHeight, behavior: "smooth" });
+      });
+    }
+  });
+
   const userStyles = "rounded-br-none align-end";
   const botStyles = "rounded-bl-none";
   const suggestions = [
@@ -55,7 +66,10 @@ export default function ChatBot({
 
   return (
     <div className="flex flex-col w-full stretch">
-      <div className="overflow-y-auto max-h-96 space-y-4">
+      <div
+        className="overflow-y-auto max-h-96 space-y-4"
+        ref={messageWrapperRef}
+      >
         {messages.map((m) => {
           const isUser = m.role === "user";
           return (

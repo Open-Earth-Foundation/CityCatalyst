@@ -17,7 +17,6 @@ import ChatBot from "./chat-bot";
 import { useTranslation } from "@/i18n/client";
 
 export default function ChatPopover({
-  userName = "User",
   lng = "en",
 }: {
   userName?: string;
@@ -52,7 +51,7 @@ export default function ChatPopover({
           <PopoverArrow />
           <PopoverCloseButton />
           <PopoverBody maxH={500} w="full">
-            <ChatBot userName={userName} inputRef={inputRef} />
+            <ChatBot inputRef={inputRef} />
           </PopoverBody>
           {/* </FocusLock> */}
         </PopoverContent>

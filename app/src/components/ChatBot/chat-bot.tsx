@@ -1,16 +1,15 @@
 "use client";
 
-import { Box, HStack, IconButton, Input } from "@chakra-ui/react";
+import { Box, HStack, IconButton, Text, Input, Textarea } from "@chakra-ui/react";
 import { useChat } from "ai/react";
 import { BsPaperclip } from "react-icons/bs";
 import { MdOutlineSend } from "react-icons/md";
 
 export default function ChatBot({
-  userName = "User",
   inputRef,
 }: {
   userName?: string;
-  inputRef?: React.Ref<HTMLInputElement>;
+  inputRef?: React.Ref<HTMLTextAreaElement>;
 }) {
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     api: "/api/v0/chat",
@@ -20,28 +19,27 @@ export default function ChatBot({
       <Box className="overflow-y-auto max-h-96">
       {messages.map((m) => (
         <div key={m.id} className="whitespace-pre-wrap">
-          <span
-            className={`font-bold ${m.role === "user" ? "text-green-500" : "text-blue-500"}`}
-          >
-            {m.role === "user" ? `${userName}: ` : "Climate Assistant: "}
-          </span>
+          <Text>
           {m.content}
+          </Text>
         </div>
       ))}
       </Box>
+
+      <hr className="my-6" />
 
       <form onSubmit={handleSubmit}>
         <HStack mt={4}>
           {/*<IconButton
             variant="ghost"
             icon={<BsPaperclip size={24} />}
-            color="content-tertiary"
+            color="content.tertiary"
             aria-label="Attach file"
           />*/}
-          <Input
-            // className="fixed bottom-0 w-full max-w-md p-2 mb-8 border border-gray-300 rounded shadow-xl"
+          <Textarea
+            h="80px"
             ref={inputRef}
-            className="flex-grow w-full"
+            className="flex-grow w-full p-4"
             value={input}
             placeholder="Ask your climate assistant something..."
             onChange={handleInputChange}
@@ -49,7 +47,7 @@ export default function ChatBot({
           <IconButton
             variant="ghost"
             icon={<MdOutlineSend size={24} />}
-            color="content-tertiary"
+            color="content.tertiary"
             aria-label="Send message"
           />
         </HStack>

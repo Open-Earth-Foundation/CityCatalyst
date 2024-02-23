@@ -7,39 +7,19 @@ import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 
 export const POST = apiHandler(async (_req, { params, session }) => {
-  const body = createUserRequest.parse(await _req.json());
+  const body = await _req.json();
 
-<<<<<<< HEAD
   // check if the user exists
 
   const getUser = await db.models.User.findOne({
-    where: { email: body.email },
+    where: { email: body.email! },
   });
 
-  if (getUser) {
-    return NextResponse.json({ data: getUser });
+  if (!getUser) {
+    return NextResponse.json({ message: "user not found" });
   }
 
-=======
-  const city = await UserService.findUserCity(params.city, session);
-
-  // TODO shouldn't the users sign up themselves? This will probably prevent signup
->>>>>>> develop
-  const user = await db.models.User.create({
-    userId: randomUUID(),
-    ...body,
-  });
-<<<<<<< HEAD
-
-  const city = await db.models.City.findOne({ where: { locode: params.city } });
-  if (!city) {
-    throw new createHttpError.NotFound("City not found");
-  }
-=======
-  user.addCity(city.cityId);
->>>>>>> develop
-
-  return NextResponse.json({ data: user });
+  return NextResponse.json({ data: getUser });
 });
 
 export const GET = apiHandler(async (_req, { params, session }) => {

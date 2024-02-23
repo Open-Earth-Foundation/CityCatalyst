@@ -1,13 +1,11 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
-import { User, UserAttributes, UserId } from "./User";
 import { City, CityId } from "./City";
 import { UserFileCreationAttributes } from "./UserFile";
 
 export interface CityInviteAttributes {
   id: string;
-  userId?: string;
-  locode?: string;
+  cityId?: string;
   status?: string;
   created?: Date;
   lastUpdated?: Date;
@@ -20,8 +18,7 @@ export type CityInviteCreationAttributes = Optional<
   CityInviteOptionalAttributes
 >;
 export type CityInviteOptionalAttributes =
-  | "userId"
-  | "locode"
+  | "cityId"
   | "status"
   | "created"
   | "lastUpdated";
@@ -31,17 +28,10 @@ export class CityInvite
   implements CityInviteAttributes
 {
   id!: string;
-  userId?: string | undefined;
-  locode?: string | undefined;
+  cityId?: string | undefined;
   status?: string | undefined;
   created?: Date | undefined;
   lastUpdated?: Date | undefined;
-
-  //   CityInvite belongs to User via id
-  user!: User;
-  getUser!: Sequelize.BelongsToGetAssociationMixin<User>;
-  setUser!: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
-  createUser!: Sequelize.BelongsToCreateAssociationMixin<User>;
 
   //   CityInvite belongs to City via cityId
   city!: City;
@@ -58,18 +48,14 @@ export class CityInvite
           primaryKey: true,
           field: "id",
         },
-        userId: {
+        cityId: {
           type: DataTypes.UUID,
           allowNull: true,
           references: {
-            model: "User",
-            key: "user_id",
+            model: "City",
+            key: "city_id",
           },
-          field: "user_id",
-        },
-        locode: {
-          type: DataTypes.UUID,
-          allowNull: true,
+          field: "city_id",
         },
         status: {
           type: DataTypes.STRING(255),

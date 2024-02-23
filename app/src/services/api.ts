@@ -89,7 +89,8 @@ export const api = createApi({
         method: "POST",
         body: data,
       }),
-      transformResponse: (response: { data: InventoryAttributes }) => response.data,
+      transformResponse: (response: { data: InventoryAttributes }) =>
+        response.data,
       invalidatesTags: ["UserInventories"],
     }),
     setUserInfo: builder.mutation<
@@ -229,12 +230,10 @@ export const api = createApi({
         body: data,
       }),
     }),
-    addUser: builder.mutation<
+    checkUser: builder.mutation<
       UserAttributes,
       {
-        name: string;
         email: string;
-        role: string;
         cityId: string;
       }
     >({
@@ -358,7 +357,7 @@ export const api = createApi({
     // User invitation to city
     inviteUser: builder.mutation<
       UserInviteResponse,
-      { userId: string; locode: string }
+      { cityId: string; name?: string; email: string }
     >({
       query: (data) => {
         return {
@@ -421,5 +420,6 @@ export const {
   useGetUserFilesQuery,
   useDeleteUserFileMutation,
   useInviteUserMutation,
+  useCheckUserMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

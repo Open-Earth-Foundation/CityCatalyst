@@ -5,61 +5,47 @@ import { Session } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 
-export const GET = apiHandler(
-  async (
-    req: NextRequest,
-    context: { session?: Session; params: Record<string, string> },
-  ) => {
-    const { params, session } = context;
+export const GET = apiHandler(async (_req, { params, session }) => {
+  const invite = await db.models.CityInvite.findOne({
+    where: {
+      id: params.invite,
+    },
+  });
 
-    if (!session) throw new createHttpError.Unauthorized("Unauthorized");
+  if (!invite) {
+    throw new createHttpError.NotFound("Not found");
+  }
 
-    const invite = await db.models.CityInvite.findOne({
-      where: {
-        id: params.invite,
-      },
-    });
+  const token = _req.nextUrl.searchParams.get("token");
+  const email = _req.nextUrl.searchParams.get("email");
 
-    if (!invite) {
-      throw new createHttpError.NotFound("Not found");
-    }
+  const isVerified = jwt.verify(token!, process.env.VERIFICATION_TOKEN_SECRET!);
 
-    const token = req.nextUrl.searchParams.get("token");
+  if (!isVerified) {
+    throw new createHttpError.BadRequest("Inalid token");
+  }
 
-    const isVerified = jwt.verify(
-      token!,
-      process.env.VERIFICATION_TOKEN_SECRET!,
-    );
+  await invite.update({
+    status: "accepted",
+  });
 
-    if (!isVerified) {
-      throw new createHttpError.BadRequest("Inalid token");
-    }
+  const user = await db.models.User.findOne({
+    where: {
+      email: email!,
+    },
+  });
 
-    await await invite.update({
-      status: "accepted",
-    });
+  const host = process.env.HOST ?? "http://localhost:3000";
 
-    const user = await db.models.User.findOne({
-      where: {
-        userId: invite?.userId,
-      },
-    });
-
-    const city = await db.models.City.findOne({
-      where: { locode: invite.locode },
-    });
-
-    const cities = await user?.getCities();
-    const isCityExits = cities?.find((c) => c.cityId === city?.cityId);
-    const host = process.env.HOST ?? "http://localhost:3000";
-
-    if (isCityExits) {
-      // route the user back to dashboard
-      return NextResponse.redirect(host);
-    }
-
-    await user?.addCity(city?.cityId);
-
+  if (!user) {
     return NextResponse.redirect(host);
-  },
-);
+  }
+
+  const city = await db.models.City.findOne({
+    where: { cityId: invite.cityId },
+  });
+
+  await user?.addCity(city?.cityId);
+
+  return NextResponse.redirect(host);
+});

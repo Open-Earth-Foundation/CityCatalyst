@@ -8,17 +8,13 @@ module.exports = {
         type: Sequelize.UUID,
         primaryKey:true,
       },
-      user_id: {
+      city_id: {
         type: Sequelize.UUID,
         allowNull: true,
         references: {
-          model:'User',
-          key: 'user_id'
+          model:'City',
+          key: 'city_id'
         }
-      },
-      locode: {
-        type: Sequelize.STRING,
-        allowNull: true,
       },
       status: {
         type: Sequelize.STRING,

@@ -131,8 +131,9 @@ export const createUserFileRequset = z.object({
 export type CreateUserFileRequetData = z.infer<typeof createUserFileRequset>;
 
 export const createUserInvite = z.object({
-  userId: z.string().uuid(),
-  locode: z.string(),
+  email: z.string().email(),
+  name: z.string(),
+  cityId: z.string(),
 });
 
 export type CreateUserInvite = z.infer<typeof createUserInvite>;

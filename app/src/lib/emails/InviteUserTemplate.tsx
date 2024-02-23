@@ -19,11 +19,13 @@ export default function InviteUserTemplate({
   user,
   city,
   invitee,
+  members,
 }: {
   url?: string;
-  user?: UserAttributes;
+  user?: { name: string; email: string; cityId?: string };
   city?: CityAttributes;
   invitee?: { name: string; email: string };
+  members: UserAttributes[];
 }) {
   const countryCode = city?.locode?.split(" ")!;
 
@@ -74,7 +76,7 @@ export default function InviteUserTemplate({
                   fontSize: "14px",
                   fontStyle: "normal",
                   fontWeight: "500",
-                  lineHeight: "20px" /* 142.857% */,
+                  lineHeight: "20px",
                   letterSpacing: "0.5px",
                 }}
               >
@@ -89,7 +91,7 @@ export default function InviteUserTemplate({
                   color: "#7A7B9A",
                 }}
               >
-                25 members
+                {members.length} member(s)
               </Text>
             </div>
           </div>

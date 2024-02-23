@@ -27,24 +27,24 @@ import { TFunction } from "i18next";
 interface AddUserModalProps {
   isOpen: boolean;
   onClose: () => void;
-  cityId: string | undefined;
   t: TFunction;
   userInfo: UserAttributes;
+  defaultCityId: string | undefined;
 }
 
 const AddUserModal: FC<AddUserModalProps> = ({
   isOpen,
   onClose,
   t,
-  cityId,
   userInfo,
+  defaultCityId,
 }) => {
   const {
     handleSubmit,
     register,
     formState: { errors },
   } = useForm<ProfileInputs>();
-  const [addUser] = api.useAddUserMutation();
+  const [checkUser] = api.useCheckUserMutation();
   const [inviteUser] = api.useInviteUserMutation();
   const [inputValue, setInputValue] = useState<string>("");
   const [userId, setUserId] = useState<string>("");
@@ -52,14 +52,14 @@ const AddUserModal: FC<AddUserModalProps> = ({
   const onInputChange = (e: any) => {
     setInputValue(e.target.value);
   };
-  const onSubmit: SubmitHandler<UserAttributes> = async (data) => {
-    await addUser({
-      name: data.name!,
+  const onSubmit: SubmitHandler<{ name: string; email: string }> = async (
+    data,
+  ) => {
+    await checkUser({
       email: data.email!,
-      role: data.role!,
-      cityId: cityId!,
+      cityId: defaultCityId!,
     }).then(async (res: any) => {
-      console.log(res);
+      console.log(data);
       if (res.error) {
         return toast({
           description: t("something-went-wrong"),
@@ -95,10 +95,13 @@ const AddUserModal: FC<AddUserModalProps> = ({
           ),
         });
       } else {
+        console.log(data);
         await inviteUser({
-          userId: res && res.data.data.userId!,
-          locode: userInfo.defaultInventoryId!,
+          name: res.data.data ? res.data.data.name! : data.name,
+          cityId: defaultCityId!,
+          email: data.email!,
         }).then((res: any) => {
+          console.log(res);
           onClose();
           return toast({
             description: "User invite sent",
@@ -120,7 +123,6 @@ const AddUserModal: FC<AddUserModalProps> = ({
               >
                 <Box display="flex" gap="8px" alignItems="center">
                   <MdCheckCircleOutline fontSize="24px" />
-
                   <Text
                     color="base.light"
                     fontWeight="bold"
@@ -142,7 +144,7 @@ const AddUserModal: FC<AddUserModalProps> = ({
     <>
       <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent minH="600px" minW="568px" marginTop="10%">
+        <ModalContent minH="300px" minW="568px" marginTop="10%">
           <ModalHeader
             display="flex"
             justifyContent="center"
@@ -172,23 +174,6 @@ const AddUserModal: FC<AddUserModalProps> = ({
                   error={errors.email}
                   label={t("email")}
                   register={register}
-                />
-
-                <FormSelectInput
-                  label={t("role")}
-                  value={inputValue}
-                  register={register}
-                  error={errors.role}
-                  id="role"
-                  onInputChange={onInputChange}
-                />
-                <FormSelectOrganization
-                  label={t("is-organization")}
-                  value={inputValue}
-                  register={register}
-                  error={errors.role}
-                  id="isOrganization"
-                  onInputChange={onInputChange}
                 />
               </Box>
             </form>

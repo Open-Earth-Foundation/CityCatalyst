@@ -1,51 +1,52 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 
-export function useAtBottom(offset = 0) {
+export function useAtBottom(rootRef?: RefObject<HTMLDivElement>, offset = 0) {
   const [isAtBottom, setIsAtBottom] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsAtBottom(
-        window.innerHeight + window.scrollY >=
-          document.body.offsetHeight - offset,
-      );
+      if (rootRef?.current) {
+        setIsAtBottom(
+          rootRef.current.scrollTop < rootRef.current.scrollHeight - offset,
+        );
+      }
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    const element = rootRef?.current;
+    element?.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      element?.removeEventListener("scroll", handleScroll);
     };
-  }, [offset]);
+  }, [offset, rootRef]);
 
   return isAtBottom;
 }
 
 export function ScrollAnchor({
   trackVisibility,
+  rootRef,
 }: {
   trackVisibility?: boolean;
+  rootRef?: RefObject<HTMLDivElement>;
 }) {
-  const isAtBottom = useAtBottom();
-  const { ref, entry, inView } = useInView({
+  // const isAtBottom = useAtBottom(rootRef);
+  const { ref, inView } = useInView({
     trackVisibility,
-    delay: 100,
+    delay: 500,
+    root: rootRef?.current,
     rootMargin: "0px 0px 0px 0px",
   });
 
   useEffect(() => {
-    if (isAtBottom && trackVisibility && !inView) {
-      entry?.target.scrollIntoView({
-        block: "nearest",
-        inline: "start",
-        // behavior: "smooth",
-      });
+    if (trackVisibility && rootRef?.current && !inView) {
+      rootRef.current.scrollTop = rootRef.current.scrollHeight;
     }
-  }, [inView, entry, isAtBottom, trackVisibility]);
+  }, [inView, trackVisibility, rootRef]);
 
   return <div ref={ref} className="h-px w-full" />;
 }

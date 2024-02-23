@@ -72,6 +72,7 @@ export default function ChatBot({
   });
   const { copyToClipboard, isCopied } = useCopyToClipboard({});
   const { formRef, onKeyDown } = useEnterSubmit();
+  const messagesWrapperRef = useRef<HTMLDivElement>(null);
 
   const userStyles = "rounded-br-none";
   const botStyles = "rounded-bl-none";
@@ -92,7 +93,7 @@ export default function ChatBot({
 
   return (
     <div className="flex flex-col w-full stretch">
-      <div className="overflow-y-auto max-h-96 space-y-4">
+      <div className="overflow-y-auto max-h-96 space-y-4" ref={messagesWrapperRef}>
         {messages.map((m, i) => {
           const isUser = m.role === "user";
           return (
@@ -177,7 +178,7 @@ export default function ChatBot({
             </HStack>
           );
         })}
-        <ScrollAnchor trackVisibility={isLoading} />
+        <ScrollAnchor trackVisibility={isLoading} rootRef={messagesWrapperRef} />
       </div>
 
       <Divider mt={2} mb={6} borderColor="border.neutral" />

@@ -35,6 +35,7 @@ export default function ChatPopover({
         onClose={onClose}
         placement="top-end"
         closeOnBlur={false}
+        strategy="fixed"
       >
         <PopoverTrigger>
           <IconButton

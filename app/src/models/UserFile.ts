@@ -41,17 +41,17 @@ export class UserFile
   implements UserFileAttributes
 {
   id!: string;
-  userId?: string | undefined;
-  fileReference?: string | undefined;
-  data: Buffer | undefined;
-  fileType?: string | undefined;
-  fileName?: string | undefined;
-  sector?: string | undefined;
-  url?: string | undefined;
-  status: string | undefined;
-  gpcRefNo?: string | undefined;
-  created?: Date | undefined;
-  lastUpdated?: Date | undefined;
+  userId?: string;
+  fileReference?: string;
+  data?: Buffer;
+  fileType?: string;
+  fileName?: string;
+  sector?: string;
+  url?: string;
+  status?: string;
+  gpcRefNo?: string;
+  created?: Date;
+  lastUpdated?: Date;
 
   //UserFile belongs to User via id
   user!: User;

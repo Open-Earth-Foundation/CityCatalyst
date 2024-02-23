@@ -11,15 +11,15 @@ export const POST = apiHandler(async (_req, { params, session }) => {
 
   // check if the user exists
 
-  const getUser = await db.models.User.findOne({
+  const existingUser = await db.models.User.findOne({
     where: { email: body.email! },
   });
 
-  if (!getUser) {
+  if (!existingUser) {
     return NextResponse.json({ message: "user not found" });
   }
 
-  return NextResponse.json({ data: getUser });
+  return NextResponse.json({ data: existingUser });
 });
 
 export const GET = apiHandler(async (_req, { params, session }) => {

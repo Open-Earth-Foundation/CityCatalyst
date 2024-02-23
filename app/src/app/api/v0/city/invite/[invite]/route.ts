@@ -22,7 +22,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
   const isVerified = jwt.verify(token!, process.env.VERIFICATION_TOKEN_SECRET!);
 
   if (!isVerified) {
-    throw new createHttpError.BadRequest("Inalid token");
+    throw new createHttpError.BadRequest("Invalid token");
   }
 
   await invite.update({

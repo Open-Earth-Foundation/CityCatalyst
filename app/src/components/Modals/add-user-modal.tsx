@@ -59,7 +59,6 @@ const AddUserModal: FC<AddUserModalProps> = ({
       email: data.email!,
       cityId: defaultCityId!,
     }).then(async (res: any) => {
-      console.log(data);
       if (res.error) {
         return toast({
           description: t("something-went-wrong"),
@@ -95,13 +94,11 @@ const AddUserModal: FC<AddUserModalProps> = ({
           ),
         });
       } else {
-        console.log(data);
         await inviteUser({
           name: res.data.data ? res.data.data.name! : data.name,
           cityId: defaultCityId!,
           email: data.email!,
         }).then((res: any) => {
-          console.log(res);
           onClose();
           return toast({
             description: "User invite sent",

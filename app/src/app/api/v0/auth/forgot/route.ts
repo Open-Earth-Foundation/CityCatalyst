@@ -7,7 +7,7 @@ import createHttpError from "http-errors";
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
 
-export const POST = apiHandler(async (req: Request) => {
+export const POST = apiHandler(async (req) => {
   const body = forgotRequest.parse(await req.json());
 
   if (!process.env.RESET_TOKEN_SECRET) {

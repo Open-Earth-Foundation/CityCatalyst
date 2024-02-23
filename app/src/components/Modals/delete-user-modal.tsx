@@ -1,6 +1,6 @@
 "use client";
 
-import { UserAttributes } from "@/models/User";
+import type { UserAttributes } from "@/models/User";
 import { api } from "@/services/api";
 import {
   Modal,
@@ -13,7 +13,6 @@ import {
   Text,
   Box,
   Badge,
-  useToast,
   ModalFooter,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
@@ -26,7 +25,7 @@ interface DeleteUserModalProps {
   isOpen: boolean;
   onClose: any;
   userData: UserAttributes;
-  userInfo: UserAttributes;
+  cityId: string;
   t: TFunction;
 }
 
@@ -34,16 +33,12 @@ const DeleteUserModal: FC<DeleteUserModalProps> = ({
   isOpen,
   onClose,
   userData,
-  userInfo,
+  cityId,
   t,
 }) => {
-  const toast = useToast();
   const [removeUser] = api.useRemoveUserMutation();
-  const handleDeleteUser = async (userId: string, locode: string) => {
-    await removeUser({
-      userId: userId,
-      defaultCityLocode: locode,
-    }).then(() => {
+  const handleDeleteUser = async (userId: string, cityId: string) => {
+    await removeUser({ userId, cityId }).then(() => {
       onClose();
     });
   };
@@ -134,9 +129,7 @@ const DeleteUserModal: FC<DeleteUserModalProps> = ({
               fontWeight="semibold"
               fontSize="button.md"
               type="submit"
-              onClick={() =>
-                handleDeleteUser(userData.userId, userInfo?.defaultCityLocode!)
-              }
+              onClick={() => handleDeleteUser(userData.userId, cityId)}
               p={0}
               m={0}
             >

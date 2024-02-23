@@ -58,13 +58,11 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
     // TODO
     // Submit data via the api
     await setUserData({
-      defaultCityLocode: userInfo.defaultCityLocode!,
+      cityId: "", // TODO pass currently selected city's ID in here!
       userId: userData.userId,
       name: data.name,
       email: data.email,
       role: data.role,
-      isOrganization:
-        (data.isOrganization as unknown) === "true" ? true : false,
     }).then(() => {
       onClose();
       toast({

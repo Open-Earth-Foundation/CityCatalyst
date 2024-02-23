@@ -386,6 +386,10 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "userId",
     otherKey: "cityId",
   });
+  User.belongsTo(Inventory, {
+    as: "defaultInventory",
+    foreignKey: "defaultInventoryId",
+  });
   City.belongsToMany(User, {
     through: CityUser,
     as: "users",
@@ -595,8 +599,6 @@ export function initModels(sequelize: Sequelize) {
     as: "subSectorReportingLevels",
     foreignKey: "subsectorId",
   });
-  User.belongsTo(User, { as: "organization", foreignKey: "organizationId" });
-  User.hasMany(User, { as: "users", foreignKey: "organizationId" });
   User.hasMany(UserFile, { foreignKey: "userId", as: "user" });
   UserFile.belongsTo(User, { as: "userFiles", foreignKey: "userId" });
   User.hasMany(CityInvite, { as: "cityInvite", foreignKey: "userId" });

@@ -1,6 +1,7 @@
 "use client";
 
 import { SegmentedProgress } from "@/components/SegmentedProgress";
+import FileInput from "@/components/file-input";
 import {
   CircleIcon,
   DataAlertIcon,
@@ -8,9 +9,13 @@ import {
   WorldSearchIcon,
 } from "@/components/icons";
 import WizardSteps from "@/components/wizard-steps";
+import { addFile, removeFile } from "@/features/city/inventoryDataSlice";
 import { useTranslation } from "@/i18n/client";
+import { RootState } from "@/lib/store";
 import { ScopeAttributes } from "@/models/Scope";
 import { api } from "@/services/api";
+import { logger } from "@/services/logger";
+import { bytesToMB, nameToI18NKey } from "@/util/helpers";
 import type { DataSource, SectorProgress } from "@/util/types";
 import {
   ArrowBackIcon,
@@ -23,7 +28,6 @@ import {
   Button,
   Card,
   Center,
-  CircularProgress,
   Flex,
   Heading,
   Icon,
@@ -58,20 +62,10 @@ import {
   MdPlaylistAddCheck,
   MdRefresh,
 } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
 import { SourceDrawer } from "./SourceDrawer";
 import { SubsectorDrawer } from "./SubsectorDrawer";
 import type { DataStep, SubSector } from "./types";
-import { bytesToMB, nameToI18NKey } from "@/util/helpers";
-import { logger } from "@/services/logger";
-import FileInput from "@/components/file-input";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "@/lib/store";
-import {
-  InventoryUserFileAttributes,
-  addFile,
-  clear,
-  removeFile,
-} from "@/features/city/inventoryDataSlice";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -179,18 +173,18 @@ export default function AddDataSteps({
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
-  const locode = userInfo?.defaultCityLocode;
-  const year = userInfo?.defaultInventoryYear;
+  const defaultInventoryId = userInfo?.defaultInventoryId;
 
   const {
     data: inventoryProgress,
     isLoading: isInventoryProgressLoading,
     error: inventoryProgressError,
-  } = api.useGetInventoryProgressQuery(
-    { locode: locode!, year: year! },
-    { skip: !locode || !year },
-  );
+  } = api.useGetInventoryProgressQuery(defaultInventoryId!, {
+    skip: !defaultInventoryId,
+  });
   const isInventoryLoading = isUserInfoLoading || isInventoryProgressLoading;
+  const locode = inventoryProgress?.inventory.city.locode || undefined;
+  const year = inventoryProgress?.inventory.year || undefined;
 
   const [
     loadDataSources,
@@ -348,7 +342,7 @@ export default function AddDataSteps({
     setConnectingDataSourceId(source.datasourceId);
     try {
       const response = await connectDataSource({
-        inventoryId: inventoryProgress.inventoryId,
+        inventoryId: inventoryProgress?.inventory.inventoryId,
         dataSourceIds: [source.datasourceId],
       }).unwrap();
 
@@ -394,7 +388,7 @@ export default function AddDataSteps({
 
   function onSearchDataSourcesClicked() {
     if (inventoryProgress) {
-      loadDataSources({ inventoryId: inventoryProgress.inventoryId });
+      loadDataSources({ inventoryId: inventoryProgress.inventory.inventoryId });
     } else {
       console.error("Inventory progress is still loading!");
     }
@@ -439,9 +433,6 @@ export default function AddDataSteps({
 
   const [isDataSectionExpanded, setDataSectionExpanded] = useState(false);
 
-  const STATUS = "pending";
-  const URL = "http://localhost";
-
   const getInventoryData = useSelector(
     (state: RootState) => state.inventoryData,
   );
@@ -468,7 +459,8 @@ export default function AddDataSteps({
           userId: userInfo?.userId,
           sector: currentStep.title,
           data: base64FileString,
-          url: URL,
+          // TODO this should not be passed in but rather set on the server (only necessary for AWS S3 or external hosting)
+          url: "http://localhost",
           size: file.size,
           fileType: filename.split(".").pop(),
         },
@@ -613,8 +605,8 @@ export default function AddDataSteps({
           <NoDataSourcesMessage
             t={t}
             sector={currentStep.referenceNumber}
-            locode={locode || undefined}
-            year={year || undefined}
+            locode={locode}
+            year={year}
           />
         ) : (
           <SimpleGrid columns={3} spacing={4}>
@@ -957,7 +949,7 @@ export default function AddDataSteps({
       <SubsectorDrawer
         subSector={selectedSubsector}
         sectorName={currentStep.title}
-        inventoryId={inventoryProgress?.inventoryId}
+        inventoryId={inventoryProgress?.inventory.inventoryId}
         isOpen={isSubsectorDrawerOpen}
         onClose={onSubsectorDrawerClose}
         onSave={onSubsectorSave}

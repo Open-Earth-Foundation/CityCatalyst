@@ -74,8 +74,11 @@ def create_ipcc_to_gpc_mapping():
     mapping = {
         '1.A - Fuel Combustion Activities':[
             'I.1.1',
+            'I.1.3',
             'I.2.1',
+            'I.2.3',
             'I.3.1',
+            'I.3.3',
             'I.4.1',
             'I.5.1',
             'I.6.1'

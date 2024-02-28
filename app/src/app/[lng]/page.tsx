@@ -22,9 +22,11 @@ import {
   CardBody,
   CardHeader,
   Center,
+  CloseButton,
   Heading,
   Icon,
   Link,
+  Spacer,
   Spinner,
   Tag,
   TagLabel,
@@ -123,7 +125,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
     title: string,
     description: string,
     status: any,
-    duration: number,
+    duration: number | null,
     bgColor: string,
   ) => {
     toast({
@@ -131,13 +133,12 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
       status: status,
       duration: duration,
       isClosable: true,
-      render: () => (
+      render: ({ onClose }) => (
         <Box
           display="flex"
           gap="8px"
           color="white"
           alignItems="center"
-          justifyContent="space-between"
           p={3}
           bg={bgColor}
           width="600px"
@@ -159,33 +160,34 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               {title}
             </Text>
           </Box>
-          {status === "error" ? (
+          <Spacer />
+          {status === "error" && (
             <Button
+              variant="lightGhost"
               onClick={handleDownload}
               fontWeight="600"
               fontSize="16px"
               letterSpacing="1.25px"
-              variant="unstyled"
-              bgColor="none"
             >
               Try again
             </Button>
-          ) : (
-            ""
           )}
+          <CloseButton onClick={onClose} />
         </Box>
       ),
     });
   };
+
   const handleDownload = () => {
     showToast(
       "Preparing your dataset for download",
       "Please wait while we fetch your data",
       STATUS.INFO,
-      2000,
+      null,
       "semantic.info",
     );
-    fetch(`/api/v0/inventory/${defaultInventoryId}?format=csv`)
+    const format = "xls";
+    fetch(`/api/v0/inventory/${defaultInventoryId}?format=${format}`)
       .then((res) => {
         if (!res.ok) {
           throw new Error("Network response was not ok");
@@ -194,18 +196,21 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
         const contentDisposition = res.headers.get("Content-Disposition");
         if (contentDisposition) {
           const match = contentDisposition.match(/filename="(.+)"/);
-          const filename = match ? match[1] : `${city?.locode}_${inventory?.year}.csv`;
+          const filename = match
+            ? match[1]
+            : `${city?.locode}_${inventory?.year}.${format}`;
           return res.blob().then((blob) => {
             const downloadLink = document.createElement("a");
             downloadLink.href = URL.createObjectURL(blob);
             downloadLink.download = filename;
 
             downloadLink.click();
+            downloadLink.remove();
             showToast(
               "Inventory report download completed!",
               "Downloading your data",
               STATUS.SUCCESS,
-              2000,
+              null,
               "interactive.primary",
             );
             URL.revokeObjectURL(downloadLink.href);
@@ -218,7 +223,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
           "Download failed",
           "There was an error during download",
           STATUS.ERROR,
-          2000,
+          null,
           "semantic.danger",
         );
       });
@@ -402,7 +407,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                 </Box>
               </Box>
               <Box mt={-25}>
-                <CityMap locode={inventory?.city?.locode ?? null} width={422} height={317} />
+                <CityMap
+                  locode={inventory?.city?.locode ?? null}
+                  width={422}
+                  height={317}
+                />
               </Box>
             </Box>
             <Box className="flex gap-[24px] relative justify-between top-[100px]">
@@ -523,10 +532,13 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               color="interactive.control"
               letterSpacing="wide"
             >
-              <Trans i18nKey="dashboard:gpc-inventory-description" year={inventory?.year}>
+              <Trans
+                i18nKey="dashboard:gpc-inventory-description"
+                year={inventory?.year}
+              >
                 The data you have submitted is now officially incorporated into
-                your city&apos;s { inventory?.year } GHG Emissions Inventory, compiled
-                according to the GPC Basic methodology.{" "}
+                your city&apos;s {inventory?.year} GHG Emissions Inventory,
+                compiled according to the GPC Basic methodology.{" "}
                 <Link
                   href="https://ghgprotocol.org/ghg-protocol-cities"
                   target="_blank"

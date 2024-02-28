@@ -40,7 +40,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
         include: [
           {
             model: db.models.GasValue,
-            as: "gasValue",
+            as: "gasValues",
             include: [
               { model: db.models.EmissionsFactor, as: "emissionsFactor" },
             ],

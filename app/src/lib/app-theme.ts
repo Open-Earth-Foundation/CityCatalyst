@@ -278,6 +278,13 @@ export const appTheme = extendTheme({
         ghost: {
           color: "content.link",
         },
+        lightGhost: {
+          color: "base.light",
+          _hover: {
+            bg: "background.transparentGrey",
+            color: "base.light",
+          },
+        },
         solidIcon: {
           bgColor: "background.neutral",
           color: "interactive.secondary",

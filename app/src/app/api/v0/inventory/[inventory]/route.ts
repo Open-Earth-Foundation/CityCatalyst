@@ -156,6 +156,11 @@ async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
     }
 
     for (const inventoryValue of values) {
+      if (!inventoryValue.gpcReferenceNumber) {
+        throw new createHttpError.BadRequest(
+          `GPC reference number missing for inventory value ${inventoryValue.id}`,
+        );
+      }
       const refNoColumn = sheet.getColumn("B");
       const rowIndex = refNoColumn.values.findIndex(
         (sheetValue) => sheetValue === inventoryValue.gpcReferenceNumber,

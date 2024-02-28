@@ -205,7 +205,6 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
             downloadLink.download = filename;
 
             downloadLink.click();
-            downloadLink.remove();
             showToast(
               "Inventory report download completed!",
               "Downloading your data",
@@ -214,6 +213,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               "interactive.primary",
             );
             URL.revokeObjectURL(downloadLink.href);
+            downloadLink.remove();
           });
         }
       })
@@ -533,8 +533,9 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               letterSpacing="wide"
             >
               <Trans
-                i18nKey="dashboard:gpc-inventory-description"
-                year={inventory?.year}
+                i18nKey="gpc-inventory-description"
+                values={{year: inventory?.year}}
+                t={t}
               >
                 The data you have submitted is now officially incorporated into
                 your city&apos;s {inventory?.year} GHG Emissions Inventory,

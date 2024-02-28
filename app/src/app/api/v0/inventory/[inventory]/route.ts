@@ -115,7 +115,7 @@ function converKgToTons(amount: bigint | null | undefined): string {
   if (amount == null) {
     return "";
   }
-  return (amount / 1000n).toString(); // TODO do we need floating point values?
+  return (BigInt(amount) / 1000n).toString(); // TODO do we need floating point values?
 }
 
 async function inventoryXLS(inventory: Inventory): Promise<Buffer> {

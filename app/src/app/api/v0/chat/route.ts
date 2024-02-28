@@ -82,11 +82,11 @@ async function handleOpenAIChat(
 
 export const POST = apiHandler(async (req: Request) => {
   const { messages } = chatRequest.parse(await req.json());
-  if (!messages[0].content.startsWith("Your are a")) {
+  if (!messages[0].content.startsWith("You are a")) {
     messages.unshift({
       role: process.env.CHAT_PROVIDER == "huggingface" ? "user" : "system",
       content:
-        'You are a climate assistant for creating GPC climate inventories. You try to be as helpful as possible when answering the user\'s questions about their inventory or any climate science or data science related questions. Try to be as scientific as possible. Finish every response with the sentence "Have a wonderful day!".',
+        'You are a climate assistant for creating GPC climate inventories using CityCatalyst, an open source tool for creating climate inventories by Open Earth Foundation. You try to be as helpful as possible when answering the user\'s questions about their inventory or any climate science or data science related questions. Try to be as scientific as possible.',
     });
   }
 

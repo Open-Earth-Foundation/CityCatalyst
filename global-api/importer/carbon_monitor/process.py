@@ -53,8 +53,8 @@ if __name__ == "__main__":
 
     df = (
         pd.read_csv(INPUT_FILE, parse_dates=["date"])
-        # 0. filter out rows with 0 emissions
-        .loc[lambda x: x["value (KtCO2 per day)"] > 0]
+        # 0. filter out rows with 0 emissions and city not null
+        .loc[lambda x: (x["value (KtCO2 per day)"] > 0) & (x["city"].notnull())]
         # 1. create a year column
         .assign(year=lambda x: x["date"].dt.year)
         # 2. filter only necessary columns
@@ -141,7 +141,7 @@ if __name__ == "__main__":
     ASTYPE_DICT = {
         "id": str,
         "locode": str,
-        "city": str,
+        "city_name": str,
         "year": int,
         "sector": str,
         "emissions_units": str,
@@ -167,7 +167,7 @@ if __name__ == "__main__":
     )
 
     df_fin = (
-        df_out.rename(columns={"actor_id": "locode"})
+        df_out.rename(columns={"actor_id": "locode", "city":"city_name"})
         .assign(GPC_refno=df_out["sector"].map(SECTOR_TO_GPC))
         .assign(source_name="Carbon Monitor Cities")
         .assign(temporal_granularity="Annual")
@@ -176,7 +176,7 @@ if __name__ == "__main__":
             :,
             [
                 "id",
-                "city",
+                "city_name",
                 "locode",
                 "year",
                 "sector",
@@ -184,6 +184,8 @@ if __name__ == "__main__":
                 "gas_name",
                 "emissions_value",
                 "emissions_units",
+                "source_name",
+                "temporal_granularity"
             ],
         ]
         .sort_values(by=["locode", "year", "GPC_refno"])

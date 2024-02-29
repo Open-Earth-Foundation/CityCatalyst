@@ -7,6 +7,7 @@ import openclimate
 
 client = openclimate.Client()
 
+
 def get_parts_of_iso(client, iso):
     df_parts = client.parts(actor_id=iso, part_type="adm1").get("actor_id")
     return list(df_parts) + [iso]
@@ -14,11 +15,14 @@ def get_parts_of_iso(client, iso):
 
 def get_cities_from_part(client, part):
     try:
-        df_tmp = client.parts(actor_id=part, part_type="city").loc[:, ["actor_id", "name"]]
+        df_tmp = client.parts(actor_id=part, part_type="city").loc[
+            :, ["actor_id", "name"]
+        ]
         df_tmp["is_part_of"] = part
         return df_tmp
     except:
         pass
+
 
 def uuid_generate_v3(name, namespace=uuid.NAMESPACE_OID):
     """generate a version 3 UUID from namespace and name"""
@@ -28,10 +32,10 @@ def uuid_generate_v3(name, namespace=uuid.NAMESPACE_OID):
 
 
 if __name__ == "__main__":
-    INPUT_FILE = './raw/carbon-monitor-cities-all-cities-FUA-v0325.csv'
+    INPUT_FILE = "./raw/carbon-monitor-cities-all-cities-FUA-v0325.csv"
     INPUT_FILE = os.path.abspath(INPUT_FILE)
 
-    OUTPUT_FILE = './processed/carbon-monitor-cities-all-cities-FUA-v0325_processed.csv'
+    OUTPUT_FILE = "./processed/carbon-monitor-cities-all-cities-FUA-v0325_processed.csv"
     OUTPUT_FILE = os.path.abspath(OUTPUT_FILE)
 
     KT_TO_KG = 1_000_000
@@ -50,9 +54,9 @@ if __name__ == "__main__":
     df = (
         pd.read_csv(INPUT_FILE, parse_dates=["date"])
         # 0. filter out rows with 0 emissions
-        .loc[lambda x: x['value (KtCO2 per day)']>0]
+        .loc[lambda x: x["value (KtCO2 per day)"] > 0]
         # 1. create a year column
-        .assign(year = lambda x: x["date"].dt.year)
+        .assign(year=lambda x: x["date"].dt.year)
         # 2. filter only necessary columns
         .loc[:, ["city", "country", "sector", "year", "value (KtCO2 per day)"]]
         # 3. sum over the year for each city and sector
@@ -60,10 +64,21 @@ if __name__ == "__main__":
         .sum(numeric_only=True)
         .reset_index()
         # 4. convert from ktCO2 to kg CO2
-        .assign(emissions_quantity = lambda x: x["value (KtCO2 per day)"] * KT_TO_KG)
-        .assign(units = 'kg')
-        .assign(gas = 'co2')
-        .loc[:, ["city", "country", "year", "sector", "emissions_quantity", 'units', 'gas']]
+        .assign(emissions_value=lambda x: x["value (KtCO2 per day)"] * KT_TO_KG)
+        .assign(emissions_units="kg")
+        .assign(gas_name="CO2")
+        .loc[
+            :,
+            [
+                "city",
+                "country",
+                "year",
+                "sector",
+                "emissions_value",
+                "emissions_units",
+                "gas_name",
+            ],
+        ]
         # 5. replace some country names with those used by OpenClimate
         .replace(COUNTRY_REPLACE_DICT)
     )
@@ -90,14 +105,14 @@ if __name__ == "__main__":
         parts = get_parts_of_iso(client, iso)
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            results = [executor.submit(get_cities_from_part, client, part) for part in parts]
+            results = [
+                executor.submit(get_cities_from_part, client, part) for part in parts
+            ]
             data = [f.result() for f in concurrent.futures.as_completed(results)]
 
         # merge name with locode
         df_city = pd.concat(data)
-        cities_frame = (
-            df.loc[df["iso"] == iso, "city"].drop_duplicates().to_frame()
-        )
+        cities_frame = df.loc[df["iso"] == iso, "city"].drop_duplicates().to_frame()
         df_ = cities_frame.merge(df_city, left_on="city", right_on="name")
 
         # filter the DataFrame to only include rows with city counts of 1
@@ -108,43 +123,70 @@ if __name__ == "__main__":
         # merge actor_id into df, this is a tmp dataframe
         df_tmp = df.loc[df["iso"] == iso].merge(df_filtered, on=["city", "iso"])
         df_tmp = df_tmp.loc[
-            :, ["actor_id", "year", "sector", 'units', 'gas', "emissions_quantity"]
+            :,
+            [
+                "actor_id",
+                "city",
+                "year",
+                "sector",
+                "emissions_units",
+                "gas_name",
+                "emissions_value",
+            ],
         ]
         df_list.append(df_tmp)
 
     df_concat = pd.concat(df_list)
 
     ASTYPE_DICT = {
-        'id': str,
-        'actor_id': str,
-        'year': int,
-        'sector': str,
-        'units': str,
-        'gas': str,
-        'emissions_quantity': int
+        "id": str,
+        "locode": str,
+        "city": str,
+        "year": int,
+        "sector": str,
+        "emissions_units": str,
+        "gas_name": str,
+        "emissions_value": int,
     }
 
     SECTOR_TO_GPC = {
-        'Aviation': "II.4.1", # domestic flights only
-        'Ground Transport': "II.1.1",
-        'Industry': 'IV.1', # not sure if this is correct
-        'Power': 'I.4.1',   # sounds like these are emissions from power plants
-        'Residential': "I.1.1",
+        "Aviation": "II.4.1",  # domestic flights only
+        "Ground Transport": "II.1.1",
+        "Industry": "IV.1",  # not sure if this is correct
+        "Power": "I.4.1",  # sounds like these are emissions from power plants
+        "Residential": "I.1.1",
     }
 
     df_out = df_concat.assign(
-        id = lambda x: x.apply(
-            lambda row: uuid_generate_v3(name=f"{row['actor_id']}{row['year']}{row['sector']}{row['gas']}"),
-            axis=1
+        id=lambda x: x.apply(
+            lambda row: uuid_generate_v3(
+                name=f"{row['actor_id']}{row['year']}{row['sector']}{row['gas_name']}"
+            ),
+            axis=1,
         )
     )
 
-
     df_fin = (
-        df_out.assign(gpc_refno=df_out['sector'].map(SECTOR_TO_GPC))
+        df_out.rename(columns={"actor_id": "locode"})
+        .assign(GPC_refno=df_out["sector"].map(SECTOR_TO_GPC))
+        .assign(source_name="Carbon Monitor Cities")
+        .assign(temporal_granularity="Annual")
         .astype(ASTYPE_DICT)
-        .loc[:, ['id', 'actor_id', 'year', 'sector', 'gpc_refno', 'gas', 'emissions_quantity', 'units']]
-        .sort_values(by=["actor_id", "year", "gpc_refno"])
+        .loc[
+            :,
+            [
+                "id",
+                "city",
+                "locode",
+                "year",
+                "sector",
+                "GPC_refno",
+                "gas_name",
+                "emissions_value",
+                "emissions_units",
+            ],
+        ]
+        .sort_values(by=["locode", "year", "GPC_refno"])
     )
 
     df_fin.to_csv(OUTPUT_FILE, index=False)

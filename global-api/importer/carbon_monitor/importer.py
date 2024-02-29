@@ -73,7 +73,7 @@ if __name__ == "__main__":
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    table = Table("CarbonMonitor", metadata_obj, autoload_with=engine)
+    table = Table("citywide_emissions", metadata_obj, autoload_with=engine)
     fields = [col.name for col in table.columns]
 
     df = pd.read_csv(args.file)
@@ -82,7 +82,7 @@ if __name__ == "__main__":
         record = row.to_dict()
 
         conditions = [
-            not_zero(record["emissions_quantity"]),
+            not_zero(record["emissions_value"]),
             can_map_sector_to_gpc(record["sector"]),
         ]
 

@@ -8,7 +8,7 @@ import type { Inventory } from "@/models/Inventory";
 import type { InventoryValue } from "@/models/InventoryValue";
 import createHttpError from "http-errors";
 import { db } from "@/models";
-import { groupBy } from "@/util/helpers";
+import { keyBy } from "@/util/helpers";
 
 const CIRIS_TEMPLATE_PATH = "./templates/CIRIS_template.xlsm";
 
@@ -132,9 +132,12 @@ async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
     .filter(({ values }) => values.length > 0);
 
   let workbook = new Excel.Workbook();
+  console.time("load_ciris");
   workbook = await workbook.xlsx.readFile(CIRIS_TEMPLATE_PATH); // TODO load once and keep in memory?
-  workbook.eachSheet((sheet, i) => console.log(sheet.name, i));
+  console.timeEnd("load_ciris");
+  // workbook.eachSheet((sheet, i) => console.log(sheet.name, i));
 
+  console.time("edit_ciris");
   for (const { sector, values } of inventorySectors) {
     if (!sector.referenceNumber) {
       throw new createHttpError.BadRequest(
@@ -171,6 +174,7 @@ async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
         );
       }
       // + 2 because it's one based and we want one below the summary row
+      // TODO start storing multiple rows for each activity/ fuel type etc.
       const row = sheet.getRow(rowIndex + 2);
       if (!row) {
         throw createHttpError.BadRequest(
@@ -199,30 +203,30 @@ async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
       row.getCell("S").value = "CO2, CH4, N2O"; // gases for emissions factor
 
       // TODO add emissions factor to Emissions factors sheet (ID 19)
-      const groupedGases = groupBy(
+      const groupedGases = keyBy(
         inventoryValue.gasValues,
         (value) => value.gas!,
       );
       row.getCell("V").value =
-        groupedGases.CO2[0].emissionsFactor?.emissionsPerActivity;
+        groupedGases.CO2?.emissionsFactor?.emissionsPerActivity;
       row.getCell("W").value =
-        groupedGases.CH4[0].emissionsFactor?.emissionsPerActivity;
+        groupedGases.CH4?.emissionsFactor?.emissionsPerActivity;
       row.getCell("X").value =
-        groupedGases.N2O[0].emissionsFactor?.emissionsPerActivity;
+        groupedGases.N2O?.emissionsFactor?.emissionsPerActivity;
       row.getCell("Y").value = converKgToTons(inventoryValue.co2eq);
 
       if (
         inventoryValue.gasValues.some((gasValue) => gasValue.gasAmount != null)
       ) {
         row.getCell("AA").value = "✓";
-        row.getCell("AB").value = converKgToTons(groupedGases.CO2[0].gasAmount);
-        row.getCell("AJ").value = converKgToTons(groupedGases.CO2[0].gasAmount);
+        row.getCell("AB").value = converKgToTons(groupedGases.CO2?.gasAmount);
+        row.getCell("AJ").value = converKgToTons(groupedGases.CO2?.gasAmount);
 
-        row.getCell("AC").value = converKgToTons(groupedGases.CH4[0].gasAmount);
-        row.getCell("AH").value = converKgToTons(groupedGases.CH4[0].gasAmount);
+        row.getCell("AC").value = converKgToTons(groupedGases.CH4?.gasAmount);
+        row.getCell("AH").value = converKgToTons(groupedGases.CH4?.gasAmount);
 
-        row.getCell("AD").value = converKgToTons(groupedGases.N2O[0].gasAmount);
-        row.getCell("AI").value = converKgToTons(groupedGases.N2O[0].gasAmount);
+        row.getCell("AD").value = converKgToTons(groupedGases.N2O?.gasAmount);
+        row.getCell("AI").value = converKgToTons(groupedGases.N2O?.gasAmount);
 
         row.getCell("AE").value = converKgToTons(inventoryValue.co2eq);
         row.getCell("AJ").value = converKgToTons(inventoryValue.co2eq);
@@ -239,9 +243,13 @@ async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
       row.commit();
     }
   }
+  console.timeEnd("edit_ciris");
 
   // await workbook.xlsx.writeFile("test.xlsx");
-  return Buffer.from(await workbook.xlsx.writeBuffer());
+  console.time("save_ciris");
+  const buffer = Buffer.from(await workbook.xlsx.writeBuffer());
+  console.timeEnd("save_ciris");
+  return buffer;
   // return Buffer.from("Not implemented");
 }
 

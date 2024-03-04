@@ -936,7 +936,6 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                                             background: "content.link",
                                             color: "white",
                                           }}
-                                          onClick={() => {}}
                                         >
                                           <MdOutlineFileDownload size={24} />
 

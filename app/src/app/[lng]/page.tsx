@@ -35,6 +35,7 @@ import {
   Text,
   Tooltip,
   useToast,
+  useToken,
 } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 import NextLink from "next/link";
@@ -122,17 +123,36 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
     uploadedProgress = uploaded / total;
   }
 
+  const toastColors = ["interactive.primary", "semantic.info", "semantic.danger"];
+  const colorValues = useToken("colors", toastColors);
+  const toastColorMapping = Object.fromEntries(toastColors.map((c, i) => [c, colorValues[i]]));
+  console.log("Toast color mapping", toastColorMapping)
   const showToast = (
     title: string,
     description: string,
     status: any,
     duration: number | null,
     bgColor: string,
+    showAnimatedGradient: boolean = false,
   ) => {
     // Replace previous toast notifications
     if (duration == null) {
       toast.closeAll();
     }
+
+    let animatedGradientClass = "";
+    if (showAnimatedGradient) {
+      let color: string;
+      if (!(bgColor in toastColorMapping)) {
+        console.error(`Color ${bgColor} not part of toast color mapping!`);
+        color = "#FF0000";
+      } else {
+        color = toastColorMapping[bgColor];
+        console.log("Toast color", color);
+        animatedGradientClass = `bg-gradient-to-r from-brand via-white via-70% to-brand bg-[length:200%_auto] animate-gradient`;
+      }
+    }
+
     toast({
       description: description,
       status: status,
@@ -145,7 +165,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
           color="white"
           alignItems="center"
           p={3}
-          bg={bgColor}
+          bg={showAnimatedGradient ? undefined : bgColor}
+          className={showAnimatedGradient ? animatedGradientClass : undefined}
           width="600px"
           height="60px"
           borderRadius="8px"
@@ -178,7 +199,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
             </Button>
           )}
           <CloseButton onClick={onClose} />
-        </Box>
+        </Box >
       ),
     });
   };
@@ -190,6 +211,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
       STATUS.INFO,
       null,
       "semantic.info",
+      true // animated gradient
     );
     const format = "xls";
     fetch(`/api/v0/inventory/${defaultInventoryId}?format=${format}`)

@@ -35,10 +35,8 @@ export const GET = apiHandler(async (_req, { params, session }) => {
     },
   });
 
-  const host = process.env.HOST ?? "http://localhost:3000";
-
   if (!user) {
-    return NextResponse.redirect(host);
+    return NextResponse.redirect("/");
   }
 
   const city = await db.models.City.findOne({
@@ -47,5 +45,5 @@ export const GET = apiHandler(async (_req, { params, session }) => {
 
   await user?.addCity(city?.cityId);
 
-  return NextResponse.redirect(host);
+  return NextResponse.redirect("/");
 });

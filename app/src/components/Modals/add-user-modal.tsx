@@ -28,8 +28,8 @@ interface AddUserModalProps {
   isOpen: boolean;
   onClose: () => void;
   t: TFunction;
-  userInfo: UserAttributes;
-  defaultCityId: string | undefined;
+  userInfo: UserAttributes | null;
+  defaultCityId?: string;
 }
 
 const AddUserModal: FC<AddUserModalProps> = ({

@@ -11,8 +11,6 @@ export const GET = apiHandler(async (req, { params, session }) => {
     session,
   );
 
-  console.log(inventoryValue);
-
   return NextResponse.json({ data: inventoryValue });
 });
 

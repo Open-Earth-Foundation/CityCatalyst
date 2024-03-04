@@ -68,6 +68,7 @@ import { SubsectorDrawer } from "./SubsectorDrawer";
 import type { DataStep, SubSector } from "./types";
 
 import { v4 as uuidv4 } from "uuid";
+import { InventoryValueAttributes } from "@/models/InventoryValue";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -305,7 +306,6 @@ export default function AddDataSteps({
 
     return sectorReferenceNumber === currentStep.referenceNumber;
   });
-  console.log(dataSources);
   const [selectedSource, setSelectedSource] = useState<DataSource>();
   const {
     isOpen: isSourceDrawerOpen,
@@ -378,6 +378,7 @@ export default function AddDataSteps({
       });
     } finally {
       setConnectingDataSourceId(null);
+      onSearchDataSourcesClicked();
     }
   };
 
@@ -488,14 +489,63 @@ export default function AddDataSteps({
     {},
   );
 
-  const onButtonHover = (sourceId: string) => {
-    setHoverStates((prev) => ({ ...prev, [sourceId]: true }));
+  const [disconnectThirdPartyData, { isLoading: isDisconnectLoading }] =
+    api.useDisconnectThirdPartyDataMutation();
+
+  const onDisconnectThirdPartyData = async (source: DataSource) => {
+    if (isSourceConnected(source)) {
+      source.inventoryValues!.forEach(
+        async (inventoryValue: InventoryValueAttributes) => {
+          await disconnectThirdPartyData({
+            inventoryId: inventoryValue.inventoryId,
+            inventoryValueId: inventoryValue.id,
+          }).then((res: any) => {
+            // Todo show alert
+            onSearchDataSourcesClicked();
+          });
+        },
+      );
+    } else {
+      console.log("Something went wrong");
+    }
+  };
+
+  const onButtonHover = (source: DataSource) => {
+    setHoverStates((prev) => ({ ...prev, [source.datasourceId]: true }));
     setButtonText(t("disconnect-data"));
   };
 
-  const onMouseLeave = (sourceId: string) => {
-    setHoverStates((prev) => ({ ...prev, [sourceId]: false }));
+  const onMouseLeave = (source: DataSource) => {
+    setHoverStates((prev) => ({ ...prev, [source.datasourceId]: false }));
     setButtonText(t("data-connected"));
+  };
+
+  const DEFAULT_CONNECTED_BUTTON_PROPS = {
+    variant: "solidPrimary",
+    text: t("data-connected"),
+  };
+
+  const DEFAULT_DISCONNECTED_BUTTON_PROPS = {
+    variant: "outline",
+    text: t("connect-data"),
+  };
+
+  const getButtonProps = (source: DataSource, isHovered: boolean) => {
+    if (isSourceConnected(source)) {
+      return {
+        variant: isHovered ? "danger" : DEFAULT_CONNECTED_BUTTON_PROPS.variant,
+        text: isHovered
+          ? t("disconnect-data")
+          : DEFAULT_CONNECTED_BUTTON_PROPS.text,
+        icon: <Icon as={MdCheckCircle} />,
+      };
+    } else {
+      return {
+        variant: DEFAULT_DISCONNECTED_BUTTON_PROPS.variant,
+        text: DEFAULT_DISCONNECTED_BUTTON_PROPS.text,
+        // Add more properties as needed
+      };
+    }
   };
 
   return (
@@ -631,13 +681,19 @@ export default function AddDataSteps({
               .slice(0, isDataSectionExpanded ? dataSources.length : 6)
               .map(({ source, data }) => {
                 const isHovered = hoverStates[source.datasourceId];
+                const { variant, text, icon } = getButtonProps(
+                  source,
+                  isHovered,
+                );
                 return (
                   <Card
                     key={source.datasourceId}
                     variant="outline"
                     borderColor={
-                      (isSourceConnected(source) && "interactive.tertiary") ||
-                      undefined
+                      isSourceConnected(source) &&
+                      source.inventoryValues?.length
+                        ? "interactive.tertiary"
+                        : ""
                     }
                     borderWidth={2}
                     className="shadow-none hover:drop-shadow-xl transition-shadow"
@@ -688,16 +744,19 @@ export default function AddDataSteps({
                     >
                       {t("see-more-details")}
                     </Link>
-                    {isSourceConnected(source) ? (
+                    {isSourceConnected(source) &&
+                    source.inventoryValues?.length ? (
                       <Button
-                        variant={isHovered ? "danger" : "solidPrimary"}
+                        variant={variant}
                         px={6}
                         py={4}
-                        onMouseEnter={() => onButtonHover(source.datasourceId)}
-                        onMouseLeave={() => onMouseLeave(source.datasourceId)}
+                        onClick={() => onDisconnectThirdPartyData(source)}
+                        isLoading={isDisconnectLoading}
+                        onMouseEnter={() => onButtonHover(source)}
+                        onMouseLeave={() => onMouseLeave(source)}
                         leftIcon={<Icon as={MdCheckCircle} />}
                       >
-                        {isHovered ? t("disconnect-data") : t("data-connected")}
+                        {text}
                       </Button>
                     ) : (
                       <Button

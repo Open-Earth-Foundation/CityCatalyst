@@ -9,7 +9,7 @@ on:
       - k8s/cc-web-deploy.yml
       - k8s/cc-web.yml
       - .github/workflows/web-actions.yml
-    branches: [ "develop" ]
+    branches: ["develop"]
   pull_request:
 
 jobs:
@@ -28,7 +28,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: app/package-lock.json
 
       - name: Install dependencies
@@ -46,11 +46,30 @@ jobs:
       - name: Run NextJS build
         run: npm run build
 
-      - name: Run API tests
-        run: npm run api:test
-
       # - name: Run Cypress tests
       #   run: npm run cy:test
+
+      # ... Generate LCOV files or download it from a different job
+      - name: Run tests and generate coverage file
+        run: npm run ci:test
+
+      - name: Setup LCOV
+        uses: hrishikesh-kadam/setup-lcov@v1
+      - name: Report code coverage
+        uses: zgosalvez/github-actions-report-lcov@v3
+        with:
+          coverage-files: ./app/lcov*.info
+          minimum-coverage: 40
+          artifact-name: code-coverage-report
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: ./app
+          update-comment: true
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: Open-Earth-Foundation/CityCatalyst
 
       - name: Shut down database
         run: docker stop github_action_postgresql
@@ -60,25 +79,24 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop'
     steps:
+      - uses: actions/checkout@v4
 
-    - uses: actions/checkout@v4
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Log in to the Container registry
-      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Pushing CC Web to GHCR
-      env:
-        VERSION: ${{ github.sha }}
-        IMAGE: ghcr.io/open-earth-foundation/citycatalyst
-      run: |
-        docker build -t $IMAGE:$VERSION app
-        docker tag $IMAGE:$VERSION $IMAGE:latest
-        docker push $IMAGE:$VERSION
-        docker push $IMAGE:latest
+      - name: Pushing CC Web to GHCR
+        env:
+          VERSION: ${{ github.sha }}
+          IMAGE: ghcr.io/open-earth-foundation/citycatalyst
+        run: |
+          docker build -t $IMAGE:$VERSION app
+          docker tag $IMAGE:$VERSION $IMAGE:latest
+          docker push $IMAGE:$VERSION
+          docker push $IMAGE:latest
 
   deployToEKS:
     needs: pushToGHCR
@@ -89,27 +107,27 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
       EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
     steps:
+      - uses: actions/checkout@v4
 
-    - uses: actions/checkout@v4
+      - name: Creating kubeconfig file
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region us-east-1
 
-    - name: Creating kubeconfig file
-      run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region us-east-1
+      - name: Testing connection to EKS
+        run: kubectl get pods -n default
 
-    - name: Testing connection to EKS
-      run: kubectl get pods -n default
+      - name: Deploying service
+        run: |
+          kubectl create -f k8s/cc-migrate.yml -n default
+          kubectl create -f k8s/cc-seed.yml -n default
+          kubectl apply -f k8s/cc-sync-catalogue.yml -n default
+          # kubectl create job --from=cronjob/cc-sync-catalogue cc-sync-catalogue-manual -n default
+          kubectl apply -f k8s/cc-web-deploy.yml -n default
+          kubectl set env deployment/cc-web-deploy SMTP_USER=${{secrets.SMTP_USER}}
+          kubectl set env deployment/cc-web-deploy SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}}
+          kubectl set env deployment/cc-web-deploy NEXTAUTH_SECRET=${{secrets.NEXTAUTH_SECRET}}
+          kubectl set env deployment/cc-web-deploy RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}}
+          kubectl set env deployment/cc-web-deploy CHAT_PROVIDER=huggingface
+          kubectl set env deployment/cc-web-deploy OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}}
+          kubectl set env deployment/cc-web-deploy HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}}
+          kubectl rollout restart deployment cc-web-deploy -n default
 
-    - name: Deploying service
-      run: |
-        kubectl create -f k8s/cc-migrate.yml -n default
-        kubectl create -f k8s/cc-seed.yml -n default
-        kubectl apply -f k8s/cc-sync-catalogue.yml -n default
-        # kubectl create job --from=cronjob/cc-sync-catalogue cc-sync-catalogue-manual -n default
-        kubectl apply -f k8s/cc-web-deploy.yml -n default
-        kubectl set env deployment/cc-web-deploy SMTP_USER=${{secrets.SMTP_USER}}
-        kubectl set env deployment/cc-web-deploy SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}}
-        kubectl set env deployment/cc-web-deploy NEXTAUTH_SECRET=${{secrets.NEXTAUTH_SECRET}}
-        kubectl set env deployment/cc-web-deploy RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}}
-        kubectl set env deployment/cc-web-deploy CHAT_PROVIDER=huggingface
-        kubectl set env deployment/cc-web-deploy OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}}
-        kubectl set env deployment/cc-web-deploy HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}}
-        kubectl rollout restart deployment cc-web-deploy -n default

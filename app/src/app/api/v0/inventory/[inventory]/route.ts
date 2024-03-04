@@ -191,15 +191,22 @@ async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
       );
 
       if (inventoryValue.unavailableReason) {
-        row.getCell("AO").value =
+        row.getCell("AM").value =
           notationKeyMapping[inventoryValue.unavailableReason];
         row.getCell("AQ").value = inventoryValue.unavailableExplanation;
       } else {
         row.getCell("AO").value = inventoryValue.dataSource?.notes;
       }
 
+      // TODO get these as separate values from emissions factor seeder
+      const activityUnit = inventoryValue.activityUnits?.split("/")[0];
+      const emissionsFactorUnit = inventoryValue.activityUnits?.split(" ")[0].split("/")[1];
+      const activityType = inventoryValue.activityUnits?.split(" ")[1];
+
+      row.getCell("G").value = activityType;
       row.getCell("N").value = inventoryValue.activityValue;
-      row.getCell("O").value = inventoryValue.activityUnits;
+      row.getCell("O").value = activityUnit;
+      row.getCell("P").value = emissionsFactorUnit;
       row.getCell("S").value = "CO2, CH4, N2O"; // gases for emissions factor
 
       // TODO add emissions factor to Emissions factors sheet (ID 19)

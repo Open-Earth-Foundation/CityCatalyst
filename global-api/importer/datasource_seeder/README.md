@@ -14,7 +14,7 @@ psql -U ccglobal -d ccglobal -f import_datasource_seeder.sql
 - `publisher_id`: abbreviation of the original name of the datasource (eg: EPA)
 - `name`: complete name of the datasource (eg: Environmental Protection Agency)
 - `description`: brief description of the dataset from the datasource
-- `source_type`: [?]
+- `source_type`: should always be set to `third_party` for the global API. This is set to `user` for user-supplied data.
 - `access_type`: the type of access the data (eg: free, paid, etc)
 - `URL`: the link where the data was accessed
 - `geographical_location`: it contains the geographical coverage of the data (eg: AR for Argentina data, EARTH for international datasources with global coverage)
@@ -24,7 +24,7 @@ psql -U ccglobal -d ccglobal -f import_datasource_seeder.sql
 - `frequency_of_update`: how often the data is updated (eg: annually, monthly, etc)
 - `spatial_resolution`: how the data is spatially represented (eg: point source, city, country, 0.1 degree, etc)
 - `language`: original language of the dataset
-- `accessibility`: [?]
+- `accessibility`: if this data source can be publicly accessed or requires special access privileges (e.g. `public`, `private`, `paid`)
 - `data_quality`: quality of the data based on the GPC classification (low, medium, high)
 - `notes`: extra information about the dataset (eg: brief description of the methodology applied to obtain emission values when the raw data is activity data)
 - `units`: units of the emissions

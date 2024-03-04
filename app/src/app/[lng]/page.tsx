@@ -129,6 +129,10 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
     duration: number | null,
     bgColor: string,
   ) => {
+    // Replace previous toast notifications
+    if (duration == null) {
+      toast.closeAll();
+    }
     toast({
       description: description,
       status: status,
@@ -535,7 +539,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
             >
               <Trans
                 i18nKey="gpc-inventory-description"
-                values={{year: inventory?.year}}
+                values={{ year: inventory?.year }}
                 t={t}
               >
                 The data you have submitted is now officially incorporated into

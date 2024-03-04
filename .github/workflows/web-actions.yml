@@ -65,6 +65,12 @@ jobs:
           working-directory: ./app
           update-comment: true
 
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: Open-Earth-Foundation/CityCatalyst
+
       - name: Shut down database
         run: docker stop github_action_postgresql
 

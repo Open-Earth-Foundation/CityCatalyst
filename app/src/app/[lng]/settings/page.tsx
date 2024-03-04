@@ -52,11 +52,15 @@ export default function Settings({
     skip: !userInfo,
   });
 
+  // TODO cache current city ID or select it differently / create custom route
+  const { data: inventory } = api.useGetInventoryQuery(
+    userInfo?.defaultInventoryId!,
+    { skip: !userInfo },
+  );
+  const cityId = inventory?.city.cityId;
   const { data: cityUsers } = api.useGetCityUsersQuery(
-    { locode: userInfo?.defaultCityLocode! },
-    {
-      skip: !userInfo,
-    },
+    { cityId: cityId! },
+    { skip: !cityId },
   );
 
   const { data: userFiles } = api.useGetUserFilesQuery({
@@ -145,8 +149,8 @@ export default function Settings({
                   session={session}
                   status={status}
                   cities={cities}
-                  userInfo={userInfo!}
                   t={t}
+                  defaultCityId={cityId}
                 />
               </TabPanels>
             </Tabs>

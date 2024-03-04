@@ -34,12 +34,7 @@ const FormInput: FC<FormInputProps> = ({
   };
 
   return (
-    <FormControl
-      display="flex"
-      flexDirection="column"
-      gap="8px"
-      isInvalid={!!error}
-    >
+    <FormControl display="flex" flexDirection="column" isInvalid={!!error}>
       <FormLabel
         variant="label"
         fontSize="label.lg"

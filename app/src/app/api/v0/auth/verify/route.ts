@@ -1,11 +1,10 @@
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
-import { passwordRegex, resetPasswordRequest } from "@/util/validation";
+import { passwordRegex } from "@/util/validation";
 import bcrypt from "bcrypt";
 import createHttpError from "http-errors";
 import jwt from "jsonwebtoken";
-import { Session } from "next-auth";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 
 const requestVerification = z.object({
@@ -13,36 +12,37 @@ const requestVerification = z.object({
   token: z.string(),
 });
 
-export const GET = apiHandler(
-  async (
-    _req: NextRequest,
-    context: { session?: Session; params: Record<string, string> },
-  ) => {
-    const email = context.session?.user.email;
-    const user = await db.models.User.findOne({ where: { email } });
-
-    if (!user) {
-      throw createHttpError.NotFound("User not found!");
-    }
-
-    if (!process.env.VERIFICATION_TOKEN_SECRET) {
-      console.error("Need to assign RESET_TOKEN_SECRET in env!");
-      throw createHttpError.InternalServerError("Configuration error");
-    }
-
-    const verificationToken = jwt.sign(
-      { email: email },
-      process.env.VERIFICATION_TOKEN_SECRET,
-      {
-        expiresIn: "1h",
-      },
+export const GET = apiHandler(async (_req, { session }) => {
+  const email = session?.user.email;
+  if (!email) {
+    throw new createHttpError.BadRequest(
+      "User doesn't have an email assigned!",
     );
+  }
 
-    return NextResponse.json({
-      verificationToken,
-    });
-  },
-);
+  const user = await db.models.User.findOne({ where: { email } });
+
+  if (!user) {
+    throw createHttpError.NotFound("User not found!");
+  }
+
+  if (!process.env.VERIFICATION_TOKEN_SECRET) {
+    console.error("Need to assign RESET_TOKEN_SECRET in env!");
+    throw createHttpError.InternalServerError("Configuration error");
+  }
+
+  const verificationToken = jwt.sign(
+    { email: email },
+    process.env.VERIFICATION_TOKEN_SECRET,
+    {
+      expiresIn: "1h",
+    },
+  );
+
+  return NextResponse.json({
+    verificationToken,
+  });
+});
 
 export const POST = apiHandler(async (req: Request) => {
   const body = requestVerification.parse(await req.json());

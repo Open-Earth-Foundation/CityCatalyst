@@ -29,6 +29,7 @@ const FormSelectInput: FC<FormInputProps> = ({
         fontStyle="normal"
         fontWeight="medium"
         letterSpacing="wide"
+        fontFamily="heading"
       >
         {label}
       </Text>

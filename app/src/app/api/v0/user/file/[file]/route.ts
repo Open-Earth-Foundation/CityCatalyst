@@ -1,13 +1,12 @@
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
-import { Session } from "next-auth";
 import { NextResponse } from "next/server";
 
 export const GET = apiHandler(
   async (
     _req: Request,
-    context: { session?: Session; params: Record<string, string> },
+    context,
   ) => {
     const userId = context.session?.user.id;
     if (!context.session) {
@@ -32,7 +31,7 @@ export const GET = apiHandler(
 export const DELETE = apiHandler(
   async (
     _req: Request,
-    context: { session?: Session; params: Record<string, string> },
+    context,
   ) => {
     const userId = context.session?.user.id;
     if (!context.session) {

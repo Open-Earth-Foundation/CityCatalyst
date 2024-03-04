@@ -20,12 +20,9 @@ import {
 } from "react-icons/md";
 
 export const InventorySelect = ({
-  currentLocode,
-  currentYear,
+  currentInventoryId,
 }: {
-  inventories?: InventoryWithCity[];
-  currentLocode?: string | null;
-  currentYear?: number | null;
+  currentInventoryId?: string | null;
 }) => {
   const router = useRouter();
   const goToOnboarding = () => router.push("/onboarding/setup");
@@ -34,8 +31,8 @@ export const InventorySelect = ({
   const [setUserInfo] = api.useSetUserInfoMutation();
   const onSelect = async (inventory: InventoryWithCity) => {
     await setUserInfo({
-      defaultCityLocode: inventory.city.locode!,
-      defaultInventoryYear: inventory.year!,
+      cityId: inventory.cityId!,
+      defaultInventoryId: inventory.inventoryId,
     }).unwrap();
   };
 
@@ -51,9 +48,7 @@ export const InventorySelect = ({
           </MenuItem>
         )}
         {inventories?.map((inventory) => {
-          const isCurrent =
-            inventory.city.locode === currentLocode &&
-            inventory.year === currentYear;
+          const isCurrent = inventory.inventoryId === currentInventoryId;
           // const color = isCurrent ? "interactive.secondary" : "base.light";
           return (
             <MenuItem

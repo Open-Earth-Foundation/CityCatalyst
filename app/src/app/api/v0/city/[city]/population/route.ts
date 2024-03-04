@@ -1,23 +1,26 @@
+import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { createPopulationRequest } from "@/util/validation";
-import createHttpError from "http-errors";
-import { Session } from "next-auth";
 import { NextResponse } from "next/server";
 
-export const POST = apiHandler(
-  async (
-    req: Request,
-    context: { session?: Session; params: Record<string, string> },
-  ) => {
-    const body = createPopulationRequest.parse(await req.json());
-    if (!context.session) {
-      throw new createHttpError.Unauthorized("Unauthorized");
-    }
+export const POST = apiHandler(async (req, { session, params }) => {
+  const body = createPopulationRequest.parse(await req.json());
+  const city = await UserService.findUserCity(params.city, session);
 
-    const population = await db.models.Population.create({
+  let population = await db.models.Population.findOne({
+    where: {
+      cityId: city.cityId,
+      year: body.year,
+    },
+  });
+
+  if (!population) {
+    population = await db.models.Population.create({
       ...body,
+      cityId: city.cityId,
     });
-    return NextResponse.json({ data: population });
-  },
-);
+  }
+
+  return NextResponse.json({ data: population });
+});

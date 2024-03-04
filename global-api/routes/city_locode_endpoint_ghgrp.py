@@ -47,9 +47,20 @@ def get_emissions_by_city_and_year(locode: str, year: str, gpcReferenceNumber: s
     df = pd.DataFrame(records)
 
     totals = {
-        "emissions": {
-            "co2_e": df["emissions_quantity"].sum(),
-            "gpc_quality": str(gpc_quality_data),
+        "totals": {
+            "emissions": {
+                "co2_mass": "0",
+                "co2_co2eq": "0",
+                "ch4_mass": "0",
+                "ch4_co2eq_100yr": "0",
+                "ch4_co2eq_20yr": "0",
+                "n2o_mass": "0",
+                "n2o_co2eq_100yr": "0",
+                "n2o_co2eq_20yr": "0",
+                "co2eq_100yr": str(int(round(df["emissions_quantity"].sum()))),
+                "co2eq_20yr": "0",
+                "gpc_quality": str(gpc_quality_data),
+            }
         }
     }
 

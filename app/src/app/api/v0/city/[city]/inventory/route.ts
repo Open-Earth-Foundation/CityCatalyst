@@ -1,57 +1,39 @@
+import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { createInventoryRequest } from "@/util/validation";
 import createHttpError from "http-errors";
-import { Session } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 
 export const POST = apiHandler(
-  async (
-    req: NextRequest,
-    context: { session?: Session; params: Record<string, string> },
-  ) => {
+  async (req: NextRequest, { session, params }) => {
     const body = createInventoryRequest.parse(await req.json());
-    const { params, session } = context;
-    if (!session) throw new createHttpError.Unauthorized("Unauthorized");
-    const city = await db.models.City.findOne({
-      where: { locode: params.city },
-      include: [
-        {
-          model: db.models.User,
-          as: "users",
-          // where: {
-          //   userId: session?.user.id,
-          // },
-        },
-      ],
+
+    const city = await UserService.findUserCity(params.city, session);
+    let didExistAlready = true;
+    let inventory = await db.models.Inventory.findOne({
+      where: {
+        cityId: city.cityId,
+        year: body.year,
+      },
     });
 
-    if (!city) {
-      throw new createHttpError.NotFound("User is not part of this city");
+    if (!inventory) {
+      inventory = await db.models.Inventory.create({
+        ...body,
+        inventoryId: randomUUID(),
+        cityId: city.cityId,
+      });
+      didExistAlready = false;
     }
-
-    const inventory = await db.models.Inventory.create({
-      inventoryId: randomUUID(),
-      cityId: city.cityId,
-      ...body,
-    });
-    return NextResponse.json({ data: inventory });
+    return NextResponse.json({ data: inventory, didExistAlready });
   },
 );
 
 export const GET = apiHandler(
-  async (
-    req: NextRequest,
-    context: { session?: Session; params: Record<string, string> },
-  ) => {
-    const { params, session } = context;
-    if (!session) throw new createHttpError.Unauthorized("Unauthorized");
-    const city = await db.models.City.findOne({
-      where: {
-        locode: params.city,
-      },
-    });
+  async (_req: NextRequest, { session, params }) => {
+    const city = await UserService.findUserCity(params.city, session);
     const inventory = await db.models.Inventory.findAll({
       where: { cityId: city?.cityId },
     });

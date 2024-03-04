@@ -11,8 +11,8 @@ import { render } from "@react-email/components";
 import InviteUserTemplate from "@/lib/emails/InviteUserTemplate";
 import UserService from "@/backend/UserService";
 
-export const POST = apiHandler(async (_req, { params, session }) => {
-  const body = createUserInvite.parse(await _req.json());
+export const POST = apiHandler(async (req, { params, session }) => {
+  const body = createUserInvite.parse(await req.json());
   const city = await UserService.findUserCity(body.cityId, session);
 
   const cityData = await db.models.City.findOne({

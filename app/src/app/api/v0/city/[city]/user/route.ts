@@ -6,8 +6,8 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 
-export const POST = apiHandler(async (_req, { params, session }) => {
-  const body = await _req.json();
+export const POST = apiHandler(async (req, { params, session }) => {
+  const body = await req.json();
 
   // check if the user exists
 
@@ -16,13 +16,13 @@ export const POST = apiHandler(async (_req, { params, session }) => {
   });
 
   if (!existingUser) {
-    return NextResponse.json({ message: "user not found" });
+    return NextResponse.json({ message: "User not found" });
   }
 
   return NextResponse.json({ data: existingUser });
 });
 
-export const GET = apiHandler(async (_req, { params, session }) => {
+export const GET = apiHandler(async (req, { params, session }) => {
   const city = await UserService.findUserCity(params.city, session);
 
   const users = await db.models.User.findAll({

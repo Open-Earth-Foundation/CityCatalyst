@@ -242,6 +242,7 @@ export const api = createApi({
         method: "POST",
         body: data,
       }),
+      transformResponse: (response: { data: any }) => response.data,
       invalidatesTags: ["UserData"],
     }),
     getCityUsers: builder.query<

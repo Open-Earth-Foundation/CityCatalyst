@@ -95,7 +95,7 @@ const AddUserModal: FC<AddUserModalProps> = ({
         });
       } else {
         await inviteUser({
-          name: res.data.data ? res.data.data.name! : data.name,
+          name: res.data ? res.data.name! : data.name,
           cityId: defaultCityId!,
           email: data.email!,
         }).then((res: any) => {

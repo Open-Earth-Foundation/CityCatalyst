@@ -1,6 +1,7 @@
 "use client";
 
 import { SectorCard } from "@/components/Cards/SectorCard";
+import ChatPopover from "@/components/ChatBot/chat-popover";
 import { InventorySelect } from "@/components/InventorySelect";
 import Footer from "@/components/Sections/Footer";
 import { SegmentedProgress } from "@/components/SegmentedProgress";
@@ -624,6 +625,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
         </Box>
       </Box>
       <Footer lng={lng} />
+      <ChatPopover />
     </>
   );
 }

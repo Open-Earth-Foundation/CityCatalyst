@@ -487,6 +487,10 @@ export const appTheme = extendTheme({
     Textarea: {
       variants: {
         brand: {
+          borderWidth: "1px",
+          borderRadius: "16px",
+          resize: "none",
+          borderColor: "border.neutral",
           _invalid: {
             background: "sentiment.negativeOverlay",
             borderWidth: "2px",

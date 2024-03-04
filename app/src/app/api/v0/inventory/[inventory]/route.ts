@@ -228,16 +228,16 @@ async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
       ) {
         row.getCell("AC").value = "✓";
         row.getCell("AD").value = converKgToTons(groupedGases.CO2?.gasAmount);
-        row.getCell("AI").value = converKgToTons(groupedGases.CO2?.gasAmount);
+        // row.getCell("AI").value = converKgToTons(groupedGases.CO2?.gasAmount);
 
         row.getCell("AE").value = converKgToTons(groupedGases.CH4?.gasAmount);
-        row.getCell("AJ").value = converKgToTons(groupedGases.CH4?.gasAmount);
+        // row.getCell("AJ").value = converKgToTons(groupedGases.CH4?.gasAmount);
 
         row.getCell("AF").value = converKgToTons(groupedGases.N2O?.gasAmount);
-        row.getCell("AK").value = converKgToTons(groupedGases.N2O?.gasAmount);
+        // row.getCell("AK").value = converKgToTons(groupedGases.N2O?.gasAmount);
 
         row.getCell("AG").value = converKgToTons(inventoryValue.co2eq);
-        row.getCell("AL").value = converKgToTons(inventoryValue.co2eq);
+        // row.getCell("AL").value = converKgToTons(inventoryValue.co2eq);
         // CO2(b) is biogeneric CO2 - CO2 not from burning fossil fuel
         // applies to columns Z, AF, AK
       } else {
@@ -245,7 +245,7 @@ async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
       }
 
       // TODO calculate
-      row.getCell("AL").value = converKgToTons(inventoryValue.co2eq);
+      // row.getCell("AL").value = converKgToTons(inventoryValue.co2eq);
       row.getCell("AD").value = inventoryValue.dataSource.dataQuality
         ?.slice(0, 1)
         .toUpperCase();

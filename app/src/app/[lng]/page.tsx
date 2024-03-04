@@ -549,7 +549,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                 t={t}
               >
                 The data you have submitted is now officially incorporated into
-                your city&apos;s {inventory?.year} GHG Emissions Inventory,
+                your city&apos;s {{ year: inventory?.year }} GHG Emissions Inventory,
                 compiled according to the GPC Basic methodology.{" "}
                 <Link
                   href="https://ghgprotocol.org/ghg-protocol-cities"

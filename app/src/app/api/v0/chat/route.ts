@@ -6,7 +6,7 @@ import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { apiHandler } from "@/util/api";
 
-let Hf, openai;
+let Hf: HfInference, openai: OpenAI;
 
 function setupModels() {
   if (!Hf) {

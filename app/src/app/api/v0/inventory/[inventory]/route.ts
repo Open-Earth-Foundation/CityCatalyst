@@ -173,12 +173,12 @@ async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
           `Row for ref no ${inventoryValue.gpcReferenceNumber} not found`,
         );
       }
-      // + 2 because it's one based and we want one below the summary row
+      // + 1 because it's one based and we want one below the summary row
       // TODO start storing multiple rows for each activity/ fuel type etc.
-      const row = sheet.getRow(rowIndex + 2);
+      const row = sheet.getRow(rowIndex + 1);
       if (!row) {
         throw createHttpError.BadRequest(
-          `Couldn't find row ${rowIndex + 2} on sheet ${sheetIndex}`,
+          `Couldn't find row ${rowIndex + 1} on sheet ${sheetIndex}`,
         );
       }
 
@@ -191,11 +191,11 @@ async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
       );
 
       if (inventoryValue.unavailableReason) {
-        row.getCell("M").value =
+        row.getCell("AO").value =
           notationKeyMapping[inventoryValue.unavailableReason];
-        row.getCell("AM").value = inventoryValue.unavailableExplanation;
+        row.getCell("AQ").value = inventoryValue.unavailableExplanation;
       } else {
-        row.getCell("AM").value = inventoryValue.dataSource?.notes;
+        row.getCell("AO").value = inventoryValue.dataSource?.notes;
       }
 
       row.getCell("N").value = inventoryValue.activityValue;
@@ -213,32 +213,36 @@ async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
         groupedGases.CH4?.emissionsFactor?.emissionsPerActivity;
       row.getCell("X").value =
         groupedGases.N2O?.emissionsFactor?.emissionsPerActivity;
+      // TODO is this correct? Or what's the tCO2e of an emissions factor?
       row.getCell("Y").value = converKgToTons(inventoryValue.co2eq);
 
       if (
         inventoryValue.gasValues.some((gasValue) => gasValue.gasAmount != null)
       ) {
-        row.getCell("AA").value = "✓";
-        row.getCell("AB").value = converKgToTons(groupedGases.CO2?.gasAmount);
-        row.getCell("AJ").value = converKgToTons(groupedGases.CO2?.gasAmount);
+        row.getCell("AC").value = "✓";
+        row.getCell("AD").value = converKgToTons(groupedGases.CO2?.gasAmount);
+        row.getCell("AI").value = converKgToTons(groupedGases.CO2?.gasAmount);
 
-        row.getCell("AC").value = converKgToTons(groupedGases.CH4?.gasAmount);
-        row.getCell("AH").value = converKgToTons(groupedGases.CH4?.gasAmount);
+        row.getCell("AE").value = converKgToTons(groupedGases.CH4?.gasAmount);
+        row.getCell("AJ").value = converKgToTons(groupedGases.CH4?.gasAmount);
 
-        row.getCell("AD").value = converKgToTons(groupedGases.N2O?.gasAmount);
-        row.getCell("AI").value = converKgToTons(groupedGases.N2O?.gasAmount);
+        row.getCell("AF").value = converKgToTons(groupedGases.N2O?.gasAmount);
+        row.getCell("AK").value = converKgToTons(groupedGases.N2O?.gasAmount);
 
-        row.getCell("AE").value = converKgToTons(inventoryValue.co2eq);
-        row.getCell("AJ").value = converKgToTons(inventoryValue.co2eq);
+        row.getCell("AG").value = converKgToTons(inventoryValue.co2eq);
+        row.getCell("AL").value = converKgToTons(inventoryValue.co2eq);
         // CO2(b) is biogeneric CO2 - CO2 not from burning fossil fuel
         // applies to columns Z, AF, AK
+      } else {
+        // TODO calculate total gas amounts from activity
       }
 
-      row.getCell("AJ").value = converKgToTons(inventoryValue.co2eq);
-      row.getCell("AL").value = inventoryValue.dataSource.dataQuality
+      // TODO calculate
+      row.getCell("AL").value = converKgToTons(inventoryValue.co2eq);
+      row.getCell("AD").value = inventoryValue.dataSource.dataQuality
         ?.slice(0, 1)
         .toUpperCase();
-      row.getCell("AN").value = inventoryValue.dataSource.name; // TODO add source to Data sources sheet (ID 20)
+      row.getCell("AP").value = inventoryValue.dataSource.name; // TODO add source to Data sources sheet (ID 20)
 
       row.commit();
     }

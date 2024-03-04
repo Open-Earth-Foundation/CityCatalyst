@@ -35,7 +35,6 @@ import {
   Text,
   Tooltip,
   useToast,
-  useToken,
 } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 import NextLink from "next/link";
@@ -123,10 +122,6 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
     uploadedProgress = uploaded / total;
   }
 
-  const toastColors = ["interactive.primary", "semantic.info", "semantic.danger"];
-  const colorValues = useToken("colors", toastColors);
-  const toastColorMapping = Object.fromEntries(toastColors.map((c, i) => [c, colorValues[i]]));
-  console.log("Toast color mapping", toastColorMapping)
   const showToast = (
     title: string,
     description: string,
@@ -140,18 +135,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
       toast.closeAll();
     }
 
-    let animatedGradientClass = "";
-    if (showAnimatedGradient) {
-      let color: string;
-      if (!(bgColor in toastColorMapping)) {
-        console.error(`Color ${bgColor} not part of toast color mapping!`);
-        color = "#FF0000";
-      } else {
-        color = toastColorMapping[bgColor];
-        console.log("Toast color", color);
-        animatedGradientClass = `bg-gradient-to-r from-brand via-white via-70% to-brand bg-[length:200%_auto] animate-gradient`;
-      }
-    }
+    const animatedGradientClass = `bg-gradient-to-r from-brand via-white via-70% to-brand bg-[length:200%_auto] animate-gradient`;
 
     toast({
       description: description,

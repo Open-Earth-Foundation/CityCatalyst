@@ -47,7 +47,7 @@ export const POST = apiHandler(async (_req, { params, session }) => {
   const host = process.env.HOST ?? "http://localhost:3000";
   const sendInvite = await sendEmail({
     to: body.email!,
-    subject: "Test Invite",
+    subject: "City Catalyst - City Invitation",
     html: render(
       InviteUserTemplate({
         url: `${host}/api/v0/city/invite/${invite.id}?token=${invitationCode}&email=${body.email}`,
@@ -62,5 +62,5 @@ export const POST = apiHandler(async (_req, { params, session }) => {
   if (!sendInvite)
     throw new createHttpError.BadRequest("Email could not be sent");
 
-  return NextResponse.json({ data: invite, members: city.users });
+  return NextResponse.json({ data: invite });
 });

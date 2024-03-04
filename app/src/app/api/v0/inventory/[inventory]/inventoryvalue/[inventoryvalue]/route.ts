@@ -10,9 +10,6 @@ export const GET = apiHandler(async (req, { params, session }) => {
     params.inventory,
     session,
   );
-
-  console.log(inventoryValue);
-
   return NextResponse.json({ data: inventoryValue });
 });
 

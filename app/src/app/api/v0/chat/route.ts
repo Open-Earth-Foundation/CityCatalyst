@@ -6,10 +6,18 @@ import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { apiHandler } from "@/util/api";
 
-const Hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let Hf, openai;
+
+function setupModels() {
+  if (!Hf) {
+    Hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
+  }
+  if (!openai) {
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+  }
+}
 
 // export const runtime = "edge";
 
@@ -90,6 +98,7 @@ export const POST = apiHandler(async (req: Request) => {
     });
   }
 
+  setupModels();
   if (process.env.CHAT_PROVIDER === "openai") {
     return handleOpenAIChat(messages);
   } else {

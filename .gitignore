@@ -138,3 +138,7 @@ values-*.yml
 
 # Data coverage output
 global-api/data-coverage/*.csv
+
+# Test coverage output from ci:test
+lcov.info
+

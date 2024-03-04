@@ -45,7 +45,8 @@ const AddUserModal: FC<AddUserModalProps> = ({
     formState: { errors },
   } = useForm<ProfileInputs>();
   const [checkUser] = api.useCheckUserMutation();
-  const [inviteUser] = api.useInviteUserMutation();
+  const [inviteUser, { isLoading: isInviteLoading }] =
+    api.useInviteUserMutation();
   const [inputValue, setInputValue] = useState<string>("");
   const [userId, setUserId] = useState<string>("");
   const toast = useToast();
@@ -196,6 +197,7 @@ const AddUserModal: FC<AddUserModalProps> = ({
               fontWeight="semibold"
               fontSize="button.md"
               type="submit"
+              isLoading={isInviteLoading}
               onClick={handleSubmit(onSubmit)}
               p={0}
               m={0}

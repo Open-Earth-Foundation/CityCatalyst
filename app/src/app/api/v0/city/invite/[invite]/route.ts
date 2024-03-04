@@ -5,7 +5,7 @@ import { Session } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 
-export const GET = apiHandler(async (_req, { params, session }) => {
+export const GET = apiHandler(async (req, { params, session }) => {
   const invite = await db.models.CityInvite.findOne({
     where: {
       id: params.invite,
@@ -16,8 +16,8 @@ export const GET = apiHandler(async (_req, { params, session }) => {
     throw new createHttpError.NotFound("Not found");
   }
 
-  const token = _req.nextUrl.searchParams.get("token");
-  const email = _req.nextUrl.searchParams.get("email");
+  const token = req.nextUrl.searchParams.get("token");
+  const email = req.nextUrl.searchParams.get("email");
 
   const isVerified = jwt.verify(token!, process.env.VERIFICATION_TOKEN_SECRET!);
 
@@ -34,9 +34,9 @@ export const GET = apiHandler(async (_req, { params, session }) => {
       email: email!,
     },
   });
-
+  const host = process.env.HOST ?? "http://localhost:3000";
   if (!user) {
-    return NextResponse.redirect("/");
+    return NextResponse.redirect(host);
   }
 
   const city = await db.models.City.findOne({
@@ -45,5 +45,5 @@ export const GET = apiHandler(async (_req, { params, session }) => {
 
   await user?.addCity(city?.cityId);
 
-  return NextResponse.redirect("/");
+  return NextResponse.redirect(host);
 });

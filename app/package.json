@@ -37,7 +37,7 @@
     "@storybook/cli": "^7.6.12",
     "@storybook/react": "^7.4.5",
     "@storybook/testing-library": "^0.2.2",
-    "@types/bcrypt": "^5.0.1",
+    "@types/bcrypt": "^5.0.2",
     "@types/geojson": "^7946.0.14",
     "@types/http-errors": "^2.0.4",
     "@types/js-cookie": "^3.0.6",

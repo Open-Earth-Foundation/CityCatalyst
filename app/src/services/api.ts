@@ -22,6 +22,7 @@ import type {
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { patch } from "fetch-mock";
 
 export const api = createApi({
   reducerPath: "api",
@@ -371,6 +372,15 @@ export const api = createApi({
       transformResponse: (response: { data: UserInviteResponse }) =>
         response.data,
     }),
+    disconnectThirdPartyData: builder.mutation({
+      query: ({ inventoryId, inventoryValueId }) => ({
+        method: "DELETE",
+        url: `/inventory/${inventoryId}/inventoryvalue/${inventoryValueId}`,
+      }),
+      invalidatesTags: ["InventoryValue", "InventoryProgress"],
+      transformResponse: (response: { data: EmissionsFactorResponse }) =>
+        response.data,
+    }),
   }),
 });
 
@@ -422,5 +432,6 @@ export const {
   useDeleteUserFileMutation,
   useInviteUserMutation,
   useCheckUserMutation,
+  useDisconnectThirdPartyDataMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

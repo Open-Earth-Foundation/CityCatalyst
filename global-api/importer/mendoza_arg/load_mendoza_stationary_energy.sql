@@ -8,7 +8,7 @@ TRUNCATE mendoza_stationary_energy_staging;
 COPY mendoza_stationary_energy_staging (year, activity_name, activity_value, activity_units, "GPC_refno", gas_name, emission_factor_value, emission_factor_units, emissions_value, emissions_units, city_name, source_name, temporal_granularity, locode, id)
 
 -- FROM '/opt/airflow/data/stationary_energy_mendoza.csv';
-FROM '/Users/maureenfonseca/Desktop/airflow-docker/scripts/stationary_energy_mendoza.csv' DELIMITER ';' CSV HEADER;
+FROM :file_path DELIMITER ';' CSV HEADER;
 
 -- Update the main table with the staging table
 INSERT INTO citywide_emissions (year, activity_name, activity_value, activity_units, "GPC_refno", gas_name, emission_factor_value, emission_factor_units, emissions_value, emissions_units, city_name, source_name, temporal_granularity, locode, id)

@@ -306,7 +306,7 @@ export default function AddDataSteps({
 
     return sectorReferenceNumber === currentStep.referenceNumber;
   });
-  console.log(dataSources);
+
   const [selectedSource, setSelectedSource] = useState<DataSource>();
   const {
     isOpen: isSourceDrawerOpen,

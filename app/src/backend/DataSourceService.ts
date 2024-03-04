@@ -102,6 +102,17 @@ export default class DataSourceService {
       ch4Amount = BigInt(emissions.ch4_mass);
     }
 
+    const subCategory = await db.models.SubCategory.findOne({
+      where: { subcategoryId: source.subcategoryId },
+      include: [{ model: db.models.SubSector, as: "subsector" }],
+    });
+
+    if (!subCategory) {
+      throw new createHttpError.InternalServerError(
+        "Sub-category for source not found",
+      );
+    }
+
     // TODO what to do with existing InventoryValues and GasValues?
     const inventoryValue = await db.models.InventoryValue.create({
       datasourceId: source.datasourceId,
@@ -110,6 +121,9 @@ export default class DataSourceService {
       co2eqYears: 100,
       id: randomUUID(),
       subCategoryId: source.subcategoryId,
+      subSectorId: subCategory.subsectorId,
+      sectorId: subCategory.subsector.sectorId,
+      gpcReferenceNumber: subCategory.referenceNumber,
     });
 
     // store values for co2, ch4, n2o separately for accounting and editing

@@ -5,13 +5,16 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 
+import { StreamingTextResponse } from "ai";
+import OpenAI from "openai";
+
 import { db } from "@/models";
 import { ValidationError } from "sequelize";
 
 export type NextHandler = (
   req: NextRequest,
   props: { params: Record<string, string>; session: AppSession | null },
-) => Promise<NextResponse>;
+) => Promise<NextResponse | StreamingTextResponse>;
 
 export function apiHandler(handler: NextHandler) {
   return async (
@@ -36,7 +39,7 @@ export function apiHandler(handler: NextHandler) {
   };
 }
 
-function errorHandler(err: unknown, req: NextRequest) {
+function errorHandler(err: unknown, _req: NextRequest) {
   // TODO log structured request info like route here
   console.error(err);
   if (createHttpError.isHttpError(err) && err.expose) {
@@ -62,6 +65,9 @@ function errorHandler(err: unknown, req: NextRequest) {
       { error: { message: "Entity exists already.", issues: err.errors } },
       { status: 400 },
     );
+  } else if (err instanceof OpenAI.APIError) {
+    const { name, status, headers, message } = err;
+    return NextResponse.json({ name, status, headers, message }, { status });
   } else {
     return NextResponse.json(
       { error: { message: "Internal server error", error: err } },

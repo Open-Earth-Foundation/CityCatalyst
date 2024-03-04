@@ -305,7 +305,7 @@ export default function AddDataSteps({
 
     return sectorReferenceNumber === currentStep.referenceNumber;
   });
-
+  console.log(dataSources);
   const [selectedSource, setSelectedSource] = useState<DataSource>();
   const {
     isOpen: isSourceDrawerOpen,
@@ -345,6 +345,8 @@ export default function AddDataSteps({
         inventoryId: inventoryProgress?.inventory.inventoryId,
         dataSourceIds: [source.datasourceId],
       }).unwrap();
+
+      console.log(response);
 
       if (response.failed.length > 0) {
         showError(
@@ -481,6 +483,21 @@ export default function AddDataSteps({
     );
   }
 
+  const [buttonText, setButtonText] = useState<string>(t("data-connected"));
+  const [hoverStates, setHoverStates] = useState<{ [key: string]: boolean }>(
+    {},
+  );
+
+  const onButtonHover = (sourceId: string) => {
+    setHoverStates((prev) => ({ ...prev, [sourceId]: true }));
+    setButtonText(t("disconnect-data"));
+  };
+
+  const onMouseLeave = (sourceId: string) => {
+    setHoverStates((prev) => ({ ...prev, [sourceId]: false }));
+    setButtonText(t("data-connected"));
+  };
+
   return (
     <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
       <Button
@@ -612,83 +629,92 @@ export default function AddDataSteps({
           <SimpleGrid columns={3} spacing={4}>
             {dataSources
               .slice(0, isDataSectionExpanded ? dataSources.length : 6)
-              .map(({ source, data }) => (
-                <Card
-                  key={source.datasourceId}
-                  variant="outline"
-                  borderColor={
-                    (isSourceConnected(source) && "interactive.tertiary") ||
-                    undefined
-                  }
-                  borderWidth={2}
-                  className="shadow-none hover:drop-shadow-xl transition-shadow"
-                >
-                  {/* TODO add icon to DataSource */}
-                  <Icon as={MdHomeWork} boxSize={9} mb={6} />
-                  <Heading size="sm" noOfLines={2} minHeight={10}>
-                    {source.name}
-                  </Heading>
-                  <Flex direction="row" my={4}>
-                    <Tag mr={1}>
-                      <TagLeftIcon
-                        as={MdPlaylistAddCheck}
-                        boxSize={4}
-                        color="content.tertiary"
-                      />
-                      <TagLabel fontSize={12}>
-                        {t("data-quality")}:{" "}
-                        {t("quality-" + source.dataQuality)}
-                      </TagLabel>
-                    </Tag>
-                    <Tag>
-                      <TagLeftIcon
-                        as={FiTarget}
-                        boxSize={4}
-                        color="content.tertiary"
-                      />
-                      <TagLabel fontSize={12}>
-                        {t("scope")}:{" "}
-                        {source.scopes
-                          .map((s: ScopeAttributes) => s.scopeName)
-                          .join(", ")}
-                      </TagLabel>
-                    </Tag>
-                  </Flex>
-                  <Text color="content.tertiary" noOfLines={5} minHeight={120}>
-                    {source.description}
-                  </Text>
-                  <Link
-                    className="underline"
-                    mt={4}
-                    mb={6}
-                    onClick={() => onSourceClick(source)}
+              .map(({ source, data }) => {
+                const isHovered = hoverStates[source.datasourceId];
+                return (
+                  <Card
+                    key={source.datasourceId}
+                    variant="outline"
+                    borderColor={
+                      (isSourceConnected(source) && "interactive.tertiary") ||
+                      undefined
+                    }
+                    borderWidth={2}
+                    className="shadow-none hover:drop-shadow-xl transition-shadow"
                   >
-                    {t("see-more-details")}
-                  </Link>
-                  {isSourceConnected(source) ? (
-                    <Button
-                      variant="solidPrimary"
-                      px={6}
-                      py={4}
-                      leftIcon={<Icon as={MdCheckCircle} />}
+                    {/* TODO add icon to DataSource */}
+                    <Icon as={MdHomeWork} boxSize={9} mb={6} />
+                    <Heading size="sm" noOfLines={2} minHeight={10}>
+                      {source.name}
+                    </Heading>
+                    <Flex direction="row" my={4}>
+                      <Tag mr={1}>
+                        <TagLeftIcon
+                          as={MdPlaylistAddCheck}
+                          boxSize={4}
+                          color="content.tertiary"
+                        />
+                        <TagLabel fontSize={12}>
+                          {t("data-quality")}:{" "}
+                          {t("quality-" + source.dataQuality)}
+                        </TagLabel>
+                      </Tag>
+                      <Tag>
+                        <TagLeftIcon
+                          as={FiTarget}
+                          boxSize={4}
+                          color="content.tertiary"
+                        />
+                        <TagLabel fontSize={12}>
+                          {t("scope")}:{" "}
+                          {source.scopes
+                            .map((s: ScopeAttributes) => s.scopeName)
+                            .join(", ")}
+                        </TagLabel>
+                      </Tag>
+                    </Flex>
+                    <Text
+                      color="content.tertiary"
+                      noOfLines={5}
+                      minHeight={120}
                     >
-                      {t("data-connected")}
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      bgColor="background.neutral"
-                      onClick={() => onConnectClick(source)}
-                      isLoading={
-                        isConnectDataSourceLoading &&
-                        source.datasourceId === connectingDataSourceId
-                      }
+                      {source.description}
+                    </Text>
+                    <Link
+                      className="underline"
+                      mt={4}
+                      mb={6}
+                      onClick={() => onSourceClick(source)}
                     >
-                      {t("connect-data")}
-                    </Button>
-                  )}
-                </Card>
-              ))}
+                      {t("see-more-details")}
+                    </Link>
+                    {isSourceConnected(source) ? (
+                      <Button
+                        variant={isHovered ? "danger" : "solidPrimary"}
+                        px={6}
+                        py={4}
+                        onMouseEnter={() => onButtonHover(source.datasourceId)}
+                        onMouseLeave={() => onMouseLeave(source.datasourceId)}
+                        leftIcon={<Icon as={MdCheckCircle} />}
+                      >
+                        {isHovered ? t("disconnect-data") : t("data-connected")}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        bgColor="background.neutral"
+                        onClick={() => onConnectClick(source)}
+                        isLoading={
+                          isConnectDataSourceLoading &&
+                          source.datasourceId === connectingDataSourceId
+                        }
+                      >
+                        {t("connect-data")}
+                      </Button>
+                    )}
+                  </Card>
+                );
+              })}
           </SimpleGrid>
         )}
         {dataSources && dataSources.length > 6 && (

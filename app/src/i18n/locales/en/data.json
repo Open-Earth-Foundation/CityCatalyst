@@ -159,5 +159,6 @@
   "download-template": "Download template to upload data",
   "file-upload-steps": "Follow the steps in our template and upload the data to calculate your inventory without waiting for CityCatlyst's data review.",
   "add-custom": "Add custom",
-  "save-missing-scope-info": "Save or fill in missing information before proceeding."
+  "save-missing-scope-info": "Save or fill in missing information before proceeding.",
+  "disconnect-data": "Disconnect Data"
 }

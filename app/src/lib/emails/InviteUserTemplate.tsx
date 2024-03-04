@@ -18,13 +18,13 @@ export default function InviteUserTemplate({
   url,
   user,
   city,
-  invitee,
+  invitingUser,
   members,
 }: {
   url?: string;
   user?: { name: string; email: string; cityId?: string };
   city?: CityAttributes;
-  invitee?: { name: string; email: string };
+  invitingUser?: { name: string; email: string };
   members: UserAttributes[];
 }) {
   const countryCode = city?.locode?.split(" ")!;
@@ -54,7 +54,7 @@ export default function InviteUserTemplate({
           <Text style={greeting}>Hi {user?.name},</Text>
           <Text style={paragraph}>
             {" "}
-            {invitee?.name} ({invitee?.email}) has invited you to join
+            {invitingUser?.name} ({invitingUser?.email}) has invited you to join
             CityCatalyst and contribute to the emission inventory for the city.
           </Text>
           <div style={cityBox}>

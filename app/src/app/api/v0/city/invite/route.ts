@@ -1,10 +1,9 @@
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
-import { createCityRequest, createUserInvite } from "@/util/validation";
+import { createUserInvite } from "@/util/validation";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
-import { Session } from "next-auth";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "@/lib/email";
 import { render } from "@react-email/components";
@@ -29,7 +28,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
   }
 
   const invitationCode = jwt.sign(
-    { email: session?.user.email },
+    { email: body.email, reason: "invite", city: body.cityId },
     process.env.VERIFICATION_TOKEN_SECRET,
     {
       expiresIn: "1h",
@@ -53,7 +52,10 @@ export const POST = apiHandler(async (req, { params, session }) => {
         url: `${host}/api/v0/city/invite/${invite.id}?token=${invitationCode}&email=${body.email}`,
         user: { email: body.email, name: body.name },
         city,
-        invitee: { name: session?.user.name!, email: session?.user.email! },
+        invitingUser: {
+          name: session?.user.name!,
+          email: session?.user.email!,
+        },
         members: city.users,
       }),
     ),

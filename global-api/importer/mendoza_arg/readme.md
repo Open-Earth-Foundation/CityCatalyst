@@ -14,8 +14,10 @@ psql -U ccglobal -d ccglobal -f ./importer/mendoza_arg/load_mendoza_stationary_e
 ```
 
 ### Directory tree
+```sh
 .
 ├── README.md                                     # top level readme
 ├── extraction_mendoza_stationary_energy.py       # extraction script
 ├── transformation_mendoza_stationary_energy.py   # transformation script
-└── load_mendoza_stationary_energy.py             # loading script                 
+└── load_mendoza_stationary_energy.py             # loading script    
+```

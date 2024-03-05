@@ -182,14 +182,6 @@ async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
         );
       }
 
-      console.log(
-        "InventoryValue",
-        inventoryValue.id,
-        inventoryValue.gpcReferenceNumber,
-        rowIndex,
-        sheetIndex,
-      );
-
       if (inventoryValue.unavailableReason) {
         row.getCell("AM").value =
           notationKeyMapping[inventoryValue.unavailableReason];

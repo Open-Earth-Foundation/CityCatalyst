@@ -135,7 +135,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
       toast.closeAll();
     }
 
-    const animatedGradientClass = `bg-gradient-to-r from-brand via-brand_light via-70% to-brand bg-[length:200%_auto] animate-gradient`;
+    const animatedGradientClass = `bg-gradient-to-l from-brand via-brand_light to-brand bg-[length:200%_auto] animate-gradient`;
 
     toast({
       description: t(description),

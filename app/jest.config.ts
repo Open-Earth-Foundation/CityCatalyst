@@ -3,9 +3,6 @@
  * https://jestjs.io/docs/configuration
  */
 
-import type { Config } from "jest";
-import { compilerOptions } from "./tsconfig.json";
-import { pathsToModuleNameMapper } from "ts-jest";
 import type { JestConfigWithTsJest } from "ts-jest";
 import preset from "ts-jest/presets/index.js";
 
@@ -20,16 +17,11 @@ const config: JestConfigWithTsJest = {
       },
     ],
   },
-  // preset: "ts-jest/presets/default-esm",
   roots: ["<rootDir>"],
   modulePaths: ["<rootDir>"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
-  // moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths),
-  // moduleNameMapper: {
-  //   '^@/(.*)$': '<rootDir>/src/app/$1',
-  // },
 
   // All imported modules in your tests should be mocked automatically
   // automock: false,

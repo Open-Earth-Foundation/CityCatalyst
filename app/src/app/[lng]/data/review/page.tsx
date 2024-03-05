@@ -23,6 +23,7 @@ import {
   UserFileAttributes,
   UserFileCreationAttributes,
 } from "@/models/UserFile";
+import { data } from "autoprefixer";
 
 export default function ReviewPage({
   params: { lng },
@@ -42,6 +43,17 @@ export default function ReviewPage({
     dispatch(clear());
     router.push("/");
   };
+
+  const { data: userInfo } = api.useGetUserInfoQuery();
+  const defaultInventoryId = userInfo?.defaultInventoryId;
+
+  const { data: inventoryProgress } = api.useGetInventoryProgressQuery(
+    defaultInventoryId!,
+    {
+      skip: !defaultInventoryId,
+    },
+  );
+  const cityData = inventoryProgress?.inventory.city;
 
   const stationaryEnergy = getAllSectorData.filter(
     (sector) => sector.sectorName === "Stationary Energy",
@@ -101,9 +113,13 @@ export default function ReviewPage({
       router.push("/");
       dispatch(clear());
       setIsConfirming(false);
-      console.log(uploadFilesDetail);
-      sendEmailNotification(uploadFilesDetail).then((res) => {
-        console.log(res);
+
+      sendEmailNotification({
+        cityName: cityData?.name,
+        files: uploadFilesDetail,
+      }).then((res) => {
+        //  TODO
+        // trigger notification to user
       });
     }
   };

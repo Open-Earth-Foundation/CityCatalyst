@@ -21,10 +21,10 @@ import { FaFileExcel } from "react-icons/fa";
 
 export default function AdminNotificationTemplate({
   user,
-  adminNames,
   files,
+  adminNames,
 }: {
-  user: { name: string; email: string };
+  user: { name: string; email: string; cityName: string };
   files: UserFileResponse[];
   adminNames: string;
 }) {
@@ -49,7 +49,7 @@ export default function AdminNotificationTemplate({
           </svg>
           <Text style={brandHeading}>CityCatalyst</Text>
           <Text style={heading}>
-            {user.name} From Chicago Uploaded New Files For Review
+            {user.name} From {user.cityName} Uploaded New Files For Review
           </Text>
           <Text style={greeting}>Hi {adminNames},</Text>
           <Text style={paragraph}>

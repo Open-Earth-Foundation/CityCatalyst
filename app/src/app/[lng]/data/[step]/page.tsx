@@ -305,7 +305,7 @@ export default function AddDataSteps({
 
     return sectorReferenceNumber === currentStep.referenceNumber;
   });
-  console.log(dataSources);
+
   const [selectedSource, setSelectedSource] = useState<DataSource>();
   const {
     isOpen: isSourceDrawerOpen,
@@ -345,8 +345,6 @@ export default function AddDataSteps({
         inventoryId: inventoryProgress?.inventory.inventoryId,
         dataSourceIds: [source.datasourceId],
       }).unwrap();
-
-      console.log(response);
 
       if (response.failed.length > 0) {
         showError(

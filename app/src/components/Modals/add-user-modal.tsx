@@ -55,7 +55,6 @@ const AddUserModal: FC<AddUserModalProps> = ({
       role: data.role!,
       cityId: cityId!,
     }).then((res: any) => {
-      console.log(res);
       if (res.error) {
         return toast({
           description: t("something-went-wrong"),

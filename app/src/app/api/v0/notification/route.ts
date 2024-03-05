@@ -9,15 +9,19 @@ import { NextRequest, NextResponse } from "next/server";
 export const POST = apiHandler(
   async (req: NextRequest, { params, session }) => {
     const body = await req.json();
-    console.log(body);
+
     const sendNotification = await sendEmail({
       to: process.env.ADMIN_EMAILS!,
       subject: "CityCatalyst - New(s) File Uploaded",
       html: render(
         AdminNotificationTemplate({
-          user: { name: session?.user.name!, email: session?.user.email! },
+          user: {
+            name: session?.user.name!,
+            email: session?.user.email!,
+            cityName: body.cityName!,
+          },
           adminNames: process.env.ADMIN_NAMES!,
-          files: body,
+          files: body.files,
         }),
       ),
     });

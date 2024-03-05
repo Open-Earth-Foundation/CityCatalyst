@@ -19,6 +19,10 @@ import { clear, removeSectorData } from "@/features/city/inventoryDataSlice";
 import { api } from "@/services/api";
 import { appendFileToFormData } from "@/util/helpers";
 import { useState } from "react";
+import {
+  UserFileAttributes,
+  UserFileCreationAttributes,
+} from "@/models/UserFile";
 
 export default function ReviewPage({
   params: { lng },
@@ -61,6 +65,7 @@ export default function ReviewPage({
 
   const onConfirm = async () => {
     setIsConfirming(true);
+    let uploadFilesDetail: UserFileAttributes[] = [];
     try {
       for (const sector of getAllSectorData) {
         const formData = new FormData();
@@ -79,9 +84,11 @@ export default function ReviewPage({
           formData.append("data", file, file.name);
         }
 
-        await addUserFile(formData).then(() => {
+        await addUserFile(formData).then((res: any) => {
           // TODO
           // Trigger notification to user
+
+          uploadFilesDetail.push(res.data);
         });
       }
     } catch (error) {
@@ -92,6 +99,7 @@ export default function ReviewPage({
       router.push("/");
       dispatch(clear());
       setIsConfirming(false);
+      console.log(uploadFilesDetail);
     }
   };
 

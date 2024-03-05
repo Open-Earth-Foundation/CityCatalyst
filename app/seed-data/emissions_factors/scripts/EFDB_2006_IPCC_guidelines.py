@@ -57,6 +57,10 @@ def gas_name_to_formula(value, replace_dict=None):
             "CARBON DIOXIDE": "CO2",
             "METHANE": "CH4",
             "NITROUS OXIDE": "N2O",
+            "Sulphur Hexafluoride": "SF6",
+            "CARBON MONOXIDE": "CO",
+            "Nitrogen Trifluoride": "NF3",
+            "AMMONIA": "NH3"
         }
     else:
         replace_dict = {key.upper(): value for key, value in replace_dict.items()}
@@ -72,411 +76,217 @@ def gas_name_to_formula(value, replace_dict=None):
 def create_ipcc_to_gpc_mapping():
     """maps IPCC 2006 sectors to GPC reference numbers"""
     mapping = {
-        '1.A - Fuel Combustion Activities':[
-            'I.1.1',
-            'I.1.3',
-            'I.2.1',
-            'I.2.3',
-            'I.3.1',
-            'I.3.3',
-            'I.4.1',
-            'I.5.1',
-            'I.6.1'
-        ],
-        '1.A.1 - Energy Industries':[
-            '1.4.1'
-        ],
-        '1.A.2 - Manufacturing Industries and Construction':[
-            'I.3.1'
-        ],
-        '1.A.3.a - Civil Aviation':[
-            'II.4.1'
-        ],
-        '1.A.3.b - Road Transportation':[
-            'II.1.1',
-            'II.2.1',
-            'II.3.1',
-            'II.5.1'
-        ],
-        '1.A.3.b.i - Cars':[
-            'II.1.1',
-            'II.5.1'
-        ],
-        '1.A.3.b.ii - Light-duty trucks':[
-            'II.1.1',
-            'II.5.1'
-        ],
-        '1.A.3.b.iii - Heavy-duty trucks and buses':[
-            'II.1.1',
-            'II.5.1'
-        ],
-        '1.A.3.b.iv - Motorcycles':[
-            'II.1.1',
-            'II.5.1'
-        ],
-        '1.A.3.c - Railways':[
-            'II.2.1',
-            'II.5.1'
-        ],
-        '1.A.3.d - Water-borne Navigation':[
-            'II.3.1'
-        ],
-        '1.A.3.e.ii - Off-road':[
-            'II.1.1',
-            'II.2.1',
-            'II.3.1',
-            'II.5.1'
-        ],
-        '1.A.4.a - Commercial/Institutional':[
-            'I.2.1'
-        ],
-        '1.A.4.b - Residential':[
-            'I.1.1'
-        ],
-        '1.A.4.c.i - Stationary':[
-            'I.1.1',
-            'I.2.1',
-            'I.3.1',
-            'I.4.1',
-            'I.5.1',
-            'I.6.1',
-            'I.7.1',
-            'I.8.1'
-        ],
-        '1.A.4.c.ii - Off-road Vehicles and Other Machinery':[
-            'II.5.1'
-        ],
-        '1.B.1.a.i.1 - Mining':[
-            '1.7.1'
-        ],
-        '1.B.1.a.i.2 - Post-mining seam gas emissions':[
-            '1.7.1'
-        ],
-        '1.B.1.a.i.3 - Abandoned underground mines':[
-            '1.7.1'
-        ],
-        '1.B.1.a.ii.1 - Mining':[
-            '1.7.1'
-        ],
-        '1.B.1.a.ii.2 - Post-mining seam gas emissions':[
-            '1.7.1'
-        ],
-        '1.B.2.a.i - Venting':[
-            '1.8.1'
-        ],
-        '1.B.2.a.iii.2 - Production and Upgrading':[
-            '1.8.1'
-        ],
-        '1.B.2.a.iii.3 - Transport':[
-            '1.8.1'
-        ],
-        '1.B.2.a.iii.4 - Refining':[
-            '1.8.1'
-        ],
-        '1.B.2.a.iii.5 - Distribution of oil products':[
-            '1.8.1'
-        ],
-        '1.B.2.b.i - Venting':[
-            '1.8.1'
-        ],
-        '1.B.2.b.ii - Flaring':[
-            '1.8.1'
-        ],
-        '1.B.2.b.iii.2 - Production':[
-            '1.8.1'
-        ],
-        '1.B.2.b.iii.3 - Processing':[
-            '1.8.1'
-        ],
-        '1.B.2.b.iii.4 - Transmission and Storage':[
-            '1.8.1'
-        ],
-        '1.B.2.b.iii.5 - Distribution':[
-            '1.8.1'
-        ],
-        '2.A - Mineral Industry':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.A.1 - Cement production':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.A.2 - Lime production':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.A.3 - Glass Production':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.A.4 - Other Process Uses of Carbonates':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.A.4.a - Ceramics':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.A.4.b - Other Uses of Soda Ash':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.A.4.c - Non Metallurgical Magnesia Production':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.A.4.d - Other (please specify)':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.A.5 - Other (please specify)':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.B.1 - Ammonia Production':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.B.2 - Nitric Acid Production':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.B.3 - Adipic Acid Production':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.B.4 - Caprolactam, Glyoxal and Glyoxylic Acid Production':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.B.5 - Carbide Production':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.B.6 - Titanium Dioxide Production':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.B.7 - Soda Ash Production':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.B.8.a - Methanol':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.B.8.b - Ethylene':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.B.8.c - Ethylene Dichloride and Vinyl Chloride Monomer':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.B.8.d - Ethylene Oxide':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.B.8.e - Acrylonitrile':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.B.8.f - Carbon Black':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.B.9.a - By-product emissions':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.B.9.b - Fugitive Emissions':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.C.1 - Iron and Steel Production':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.C.2 - Ferroalloys Production':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.C.3 - Aluminium production':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.C.4 - Magnesium production':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.C.5 - Lead Production':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.C.6 - Zinc Production':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.D.1 - Lubricant Use':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.D.2 - Paraffin Wax Use':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.E.1 - Integrated Circuit or Semiconductor':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.E.2 - TFT Flat Panel Display':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.E.3 - Photovoltaics':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.E.4 - Heat Transfer Fluid':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.F.1.a - Refrigeration and Stationary Air Conditioning':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.F.1.b - Mobile Air Conditioning':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.F.2 - Foam Blowing Agents':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.F.4 - Aerosols':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.F.5 - Solvents':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.G.1.a - Manufacture of Electrical Equipment':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.G.1.b - Use of Electrical Equipment':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.G.1.c - Disposal of Electrical Equipment':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.G.2.a - Military Applications':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.G.2.b - Accelerators':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.G.2.c - Other (please specify)':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.G.3.a - Medical Applications':[
-            'IV.1',
-            'IV.2'
-        ],
-        '2.G.3.b - Propellant for pressure and aerosol products':[
-            'IV.1',
-            'IV.2'
-        ],
-        '3.A.1 - Enteric Fermentation':[
-            'V.1'
-        ],
-        '3.A.2 - Manure Management':[
-            'V.1'
-        ],
-        '3.B.1 - Forest land':[
-            'V.2'
-        ],
-        '3.B.2 - Cropland':[
-            'V.2'
-        ],
-        '3.B.2.b - Land Converted to Cropland':[
-            'V.2'
-        ],
-        '3.B.3 - Grassland':[
-            'V.2'
-        ],
-        '3.B.3.b - Land Converted to Grassland':[
-            'V.2'
-        ],
-        '3.B.4 - Wetlands':[
-            'V.2'
-        ],
-        '3.B.4.b.ii - Land converted to flooded land':[
-            'V.2'
-        ],
-        '3.B.4.a.ii - Flooded land remaining flooded land':[
-            'V.2'
-        ],
-        '3.B.5 - Settlements':[
-            'V.2'
-        ],
-        '3.C.1.a - Burning in Forest Land':[
-            'V.2'
-        ],
-        '3.C.1.b - Burning in Cropland':[
-            'V.2',
-            'V.3'
-        ],
-        '3.C.1.c - Burning in Grassland':[
-            'V.2',
-            'V.3'
-        ],
-        '3.C.4 - Direct N2O Emissions from managed soils':[
-            'V.3'
-        ],
-        '3.C.5 - Indirect N2O Emissions from managed soils':[
-            'V.3'
-        ],
-        '3.C.7 - Rice cultivations':[
-            'V.2',
-            'V.3'
-        ],
-        '3.D.1 - Harvested Wood Products':[
-            'V.2',
-            'V.3'
-        ],
-        '4.A - Solid Waste Disposal':[
-            'III.1.1',
-            'III.1.2',
-            'III.1.3'
-        ],
-        '4.B - Biological Treatment of Solid Waste':[
-            'III.2.1',
-            'III.2.2',
-            'III.2.3'
-        ],
-        '4.C - Incineration and Open Burning of Waste':[
-            'III.3.1',
-            'III.3.2',
-            'III.3.3'
-        ],
-        '4.C.1 - Waste Incineration':[
-            'III.3.1',
-            'III.3.2',
-            'III.3.3'
-        ],
-        '4.C.2 - Open Burning of Waste':[
-            'III.3.1',
-            'III.3.2',
-            'III.3.3'
-        ]
+        '1.A - Fuel Combustion Activities':['I.1.1', 'I.2.1', 'I.3.1', 'I.4.1', 'I.5.1', 'I.6.1'],
+        '1.A - Fuel Combustion Activities\n1.A.1.b - Petroleum Refining':['I.7.1'],
+        '1.A - Fuel Combustion Activities\n1.A.3.b - Road Transportation':['II.1.1', 'II.5.1'],
+        '1.A - Fuel Combustion Activities\n1.A.3.b - Road Transportation\n1.A.3.c - Railways\n1.A.3.d - Water-borne Navigation\n1.A.3.e.ii - Off-road':['II.1.1', 'II.2.1', 'II.3.1', 'II.5.1'],
+        '1.A - Fuel Combustion Activities\n1.A.3.d - Water-borne Navigation':['II.3.1'],
+        '1.A.1 - Energy Industries':['I.4.1', 'I.4.4'],
+        '1.A.1 - Energy Industries\n1.A.1.a - Main Activity Electricity and Heat Production\n1.A.1.a.i - Electricity Generation\n1.A.1.a.ii - Combined Heat and Power Generation (CHP)\n1.A.1.a.iii - Heat Plants':['I.4.4'],
+        '1.A.1 - Energy Industries\n1.A.2 - Manufacturing Industries and Construction':['I.4.4'],
+        '1.A.1 - Energy Industries\n1.A.4.a - Commercial/Institutional\n1.A.4.b - Residential\n1.A.4.c - Agriculture/Forestry/Fishing/Fish Farms\n1.A.4.c.i - Stationary':['I.4.4'],
+        '1.A.1.a - Main Activity Electricity and Heat Production':['I.4.4'],
+        '1.A.1.a - Main Activity Electricity and Heat Production\n1.A.1.a.i - Electricity Generation\n1.A.1.a.ii - Combined Heat and Power Generation (CHP)\n1.A.1.a.iii - Heat Plants':['I.4.4'],
+        '1.A.1.a.i - Electricity Generation':['I.4.4'],
+        '1.A.1.a.ii - Combined Heat and Power Generation (CHP)':['I.4.4'],
+        '1.A.1.a.iii - Heat Plants':['I.4.4'],
+        '1.A.1.b - Petroleum Refining':['I.4.4'],
+        '1.A.1.c.i - Manufacture of Solid Fuels':['I.4.4', 'I.7.1', 'I.8.1'],
+        '1.A.1.c.ii - Other Energy Industries':['I.4.4'],
+        '1.A.2 - Manufacturing Industries and Construction':['I.3.1'],
+        '1.A.2.a - Iron and Steel':['I.3.1'],
+        '1.A.2.b - Non-Ferrous Metals':['I.3.1'],
+        '1.A.2.c - Chemicals':['I.3.1'],
+        '1.A.2.d - Pulp, Paper and Print':['I.3.1'],
+        '1.A.2.e - Food Processing, Beverages and Tobacco':['I.3.1'],
+        '1.A.2.f - Non-Metallic Minerals':['I.3.1'],
+        '1.A.2.g - Transport Equipment':['I.3.1'],
+        '1.A.2.h - Machinery':['I.3.1'],
+        '1.A.2.j - Wood and wood products':['I.3.1'],
+        '1.A.2.l - Textile and Leather':['I.3.1'],
+        '1.A.3 - Transport':['II.1.1', 'II.2.1', 'II.3.1', 'II.4.1', 'II.5.1'],
+        '1.A.3.a - Civil Aviation':['II.4.1'],
+        '1.A.3.a - Civil Aviation\n1.A.3.a.i - International Aviation (International Bunkers)\n1.A.3.a.ii - Domestic Aviation':['II.4.1'],
+        '1.A.3.a - Civil Aviation\n1.A.3.a.ii - Domestic Aviation':['II.4.1'],
+        '1.A.3.a.i - International Aviation (International Bunkers)':['II.4.1'],
+        '1.A.3.a.ii - Domestic Aviation':['II.4.1'],
+        '1.A.3.b - Road Transportation':['II.1.1', 'II.2.1', 'II.5.1'],
+        '1.A.3.b - Road Transportation\n1.A.3.b.ii - Light-duty trucks\n1.A.3.b.iii - Heavy-duty trucks and buses':['II.1.1', 'II.2.1', 'II.5.1'],
+        '1.A.3.b.i - Cars':['II.1.1', 'II.5.1'],
+        '1.A.3.b.i.1 - Passenger cars with 3-way catalysts':['II.1.1', 'II.5.1'],
+        '1.A.3.b.ii - Light-duty trucks':['II.1.1', 'II.5.1'],
+        '1.A.3.b.iii - Heavy-duty trucks and buses':['II.1.1', 'II.5.1'],
+        '1.A.3.b.iv - Motorcycles':['II.1.1', 'II.5.1'],
+        '1.A.3.c - Railways':['II.2.1'],
+        '1.A.3.d - Water-borne Navigation':['II.3.1'],
+        '1.A.3.e.ii - Off-road':['II.5.1'],
+        '1.A.4.a - Commercial/Institutional':['I.2.1'],
+        '1.A.4.b - Residential':['I.1.1'],
+        '1.A.4.b - Residential\n1.A.4.c.i - Stationary':['I.1.1'],
+        '1.A.4.c.i - Stationary':['I.1.1', 'I.2.1', 'I.3.1', 'I.4.1', 'I.5.1', 'I.6.1'],
+        '1.A.4.c.ii - Off-road Vehicles and Other Machinery':['II.5.1'],
+        '1.A.4.c.ii - Off-road Vehicles and Other Machinery\n1.A.4.c.iii - Fishing (mobile combustion)':['II.5.1'],
+        '1.A.5.b - Mobile':['II.5.1'],
+        '1.B.1.a - Coal mining and handling':['I.7.1'],
+        '1.B.1.a.i - Underground mines':['I.7.1'],
+        '1.B.1.a.i.1 - Mining':['I.7.1'],
+        '1.B.1.a.i.2 - Post-mining seam gas emissions':['I.7.1'],
+        '1.B.1.a.i.3 - Abandoned underground mines':['I.7.1'],
+        '1.B.1.a.ii.1 - Mining':['I.7.1'],
+        '1.B.1.a.ii.2 - Post-mining seam gas emissions':['I.7.1'],
+        '1.B.2 - Oil and Natural Gas':['I.8.1'],
+        '1.B.2.a - Oil':['I.8.1'],
+        '1.B.2.a.i - Venting':['I.8.1'],
+        '1.B.2.a.ii - Flaring':['I.8.1'],
+        '1.B.2.a.ii - Flaring\n1.B.2.b.ii - Flaring':['I.8.1'],
+        '1.B.2.b - Natural Gas':['I.8.1'],
+        '1.B.2.b.i - Venting':['I.8.1'],
+        '1.B.2.b.ii - Flaring':['I.8.1'],
+        '2.A - Mineral Industry\n2.A.1 - Cement production\n2.A.2 - Lime production\n2.A.3 - Glass Production\n2.A.4 - Other Process Uses of Carbonates\n2.A.4.a - Ceramics\n2.A.4.b - Other Uses of Soda Ash\n2.A.4.c - Non Metallurgical Magnesia Production\n2.A.4.d - Other (please specify)\n2.A.5 - Other (please specify)':['IV.1','IV.2'],
+        '2.A - Mineral Industry\n2.A.3 - Glass Production\n2.A.4 - Other Process Uses of Carbonates\n2.A.4.b - Other Uses of Soda Ash\n2.A.5 - Other (please specify)':['IV.1','IV.2'],
+        '2.A - Mineral Industry\n2.A.5 - Other (please specify)':['IV.1','IV.2'],
+        '2.A.1 - Cement production':['IV.1','IV.2'],
+        '2.A.2 - Lime production':['IV.1','IV.2'],
+        '2.A.3 - Glass Production':['IV.1','IV.2'],
+        '2.A.4 - Other Process Uses of Carbonates':['IV.1','IV.2'],
+        '2.A.4.a - Ceramics':['IV.1','IV.2'],
+        '2.A.4.b - Other Uses of Soda Ash':['IV.1','IV.2'],
+        '2.A.4.d - Other (please specify)':['IV.1','IV.2'],
+        '2.A.5 - Other (please specify)':['IV.1','IV.2'],
+        '2.B.1 - Ammonia Production':['IV.1'],
+        '2.B.2 - Nitric Acid Production':['IV.1'],
+        '2.B.3 - Adipic Acid Production':['IV.1'],
+        '2.B.4 - Caprolactam, Glyoxal and Glyoxylic Acid Production':['IV.1'],
+        '2.B.5 - Carbide Production':['IV.1'],
+        '2.B.6 - Titanium Dioxide Production':['IV.1'],
+        '2.B.7 - Soda Ash Production':['IV.1'],
+        '2.B.8.a - Methanol':['IV.1'],
+        '2.B.8.b - Ethylene':['IV.1'],
+        '2.B.8.c - Ethylene Dichloride and Vinyl Chloride Monomer':['IV.1'],
+        '2.B.8.d - Ethylene Oxide':['IV.1'],
+        '2.B.8.e - Acrylonitrile':['IV.1'],
+        '2.B.8.f - Carbon Black':['IV.1'],
+        '2.B.9.a - By-product emissions':['I.7.1', 'I.8.1'],
+        '2.B.9.b - Fugitive Emissions':['I.7.1', 'I.8.1'],
+        '2.C.1 - Iron and Steel Production':['IV.1'],
+        '2.C.2 - Ferroalloys Production':['IV.1'],
+        '2.C.3 - Aluminium production':['IV.1'],
+        '2.C.4 - Magnesium production':['IV.1'],
+        '2.C.5 - Lead Production':['IV.1'],
+        '2.C.6 - Zinc Production':['IV.1'],
+        '2.E.1 - Integrated Circuit or Semiconductor':['VI.1'],
+        '2.E.2 - TFT Flat Panel Display':['VI.1'],
+        '2.E.3 - Photovoltaics':['VI.1'],
+        '2.E.4 - Heat Transfer Fluid':['VI.1'],
+        '2.F.1 - Refrigeration and Air Conditioning':['VI.1'],
+        '2.F.1 - Refrigeration and Air Conditioning\n2.F.1.a - Refrigeration and Stationary Air Conditioning\n2.F.1.b - Mobile Air Conditioning\n2.F.6 - Other Applications (please specify)':['VI.1'],
+        '2.F.1.a - Refrigeration and Stationary Air Conditioning':['VI.1'],
+        '2.F.1.b - Mobile Air Conditioning':['VI.1'],
+        '2.F.2 - Foam Blowing Agents':['VI.1'],
+        '2.F.3 - Fire Protection':['VI.2'],
+        '2.F.4 - Aerosols':['VI.2'],
+        '2.F.5 - Solvents':['VI.2'],
+        '2.F.6 - Other Applications (please specify)':['VI.2'],
+        '2.G.1.a - Manufacture of Electrical Equipment':['VI.1'],
+        '2.G.1.b - Use of Electrical Equipment':['VI.2'],
+        '2.G.1.c - Disposal of Electrical Equipment':['VI.2'],
+        '2.G.2.a - Military Applications':['VI.2'],
+        '2.G.2.b - Accelerators':['VI.2'],
+        '2.G.3.a - Medical Applications':['VI.2'],
+        '2.G.3.b - Propellant for pressure and aerosol products':['VI.1'],
+        '2.G.4 - Other (Please specify)':['VI.1', 'IV.2'],
+        '3 - Agriculture, Forestry, and Other Land Use':['V.1','V.2','V.3'],
+        '3 - Agriculture, Forestry, and Other Land Use\n3.A - Livestock\n3.A.2 - Manure Management':['V.1'],
+        '3 - Agriculture, Forestry, and Other Land Use\n3.C.4 - Direct N2O Emissions from managed soils':['V.3'],
+        '3 - Agriculture, Forestry, and Other Land Use\n3.C.5 - Indirect N2O Emissions from managed soils':['V.3'],
+        '3 - Agriculture, Forestry, and Other Land Use\n3.C.7 - Rice cultivations':['V.3'],
+        '3.A.1 - Enteric Fermentation':['V.1','V.3'],
+        '3.A.1.a - Cattle':['V.1','V.3'],
+        '3.A.1.a.i - Dairy Cows':['V.1','V.3'],
+        '3.A.1.a.ii - Other Cattle':['V.1','V.3'],
+        '3.A.1.b - Buffalo':['V.1','V.3'],
+        '3.A.1.b - Buffalo\n3 - Agriculture, Forestry, and Other Land Use\n3.A - Livestock\n3.A.1 - Enteric Fermentation':['V.1','V.3'],
+        '3.A.1.c - Sheep':['V.1','V.3'],
+        '3.A.1.c - Sheep\n3.A.1.d - Goats':['V.1','V.3'],
+        '3.A.1.d - Goats':['V.1','V.3'],
+        '3.A.1.e - Camels':['V.1','V.3'],
+        '3.A.1.f - Horses':['V.1','V.3'],
+        '3.A.1.g - Mules and Asses':['V.1','V.3'],
+        '3.A.1.h - Swine':['V.1','V.3'],
+        '3.A.1.j - Other (please specify)':['V.1','V.3'],
+        '3.A.2 - Manure Management':['V.1','V.3'],
+        '3.A.2 - Manure Management\n3.A.2.j - Other (please specify)\n3 - Agriculture, Forestry, and Other Land Use\n3.A - Livestock':['V.1','V.3'],
+        '3.A.2.a - Cattle':['V.1','V.3'],
+        '3.A.2.a - Cattle\n3.A.2.j - Other (please specify)\n3 - Agriculture, Forestry, and Other Land Use\n3.A - Livestock\n3.A.2 - Manure Management':['V.1','V.3'],
+        '3.A.2.a.i - Dairy cows':['V.1','V.3'],
+        '3.A.2.a.i - Dairy cows\n3 - Agriculture, Forestry, and Other Land Use\n3.A - Livestock\n3.A.2 - Manure Management':['V.1','V.3'],
+        '3.A.2.a.i - Dairy cows\n3.A.2.a.ii - Other cattle':['V.1','V.3'],
+        '3.A.2.a.ii - Other cattle':['V.1','V.3'],
+        '3.A.2.a.ii - Other cattle\n3 - Agriculture, Forestry, and Other Land Use\n3.A - Livestock\n3.A.1 - Enteric Fermentation\n3.A.1.a.ii - Other Cattle\n3.A.2 - Manure Management':['V.1','V.3'],
+        '3.A.2.a.ii - Other cattle\n3 - Agriculture, Forestry, and Other Land Use\n3.A - Livestock\n3.A.2 - Manure Management':['V.1','V.3'],
+        '3.A.2.b - Buffalo':['V.1','V.3'],
+        '3.A.2.b - Buffalo\n3 - Agriculture, Forestry, and Other Land Use\n3.A - Livestock\n3.A.1 - Enteric Fermentation\n3.A.1.b - Buffalo\n3.A.2 - Manure Management':['V.1','V.3'],
+        '3.A.2.c - Sheep':['V.1','V.3'],
+        '3.A.2.c - Sheep\n3 - Agriculture, Forestry, and Other Land Use\n3.A - Livestock\n3.A.2 - Manure Management':['V.1','V.3'],
+        '3.A.2.c - Sheep\n3 - Agriculture, Forestry, and Other Land Use\n3.A - Livestock\n3.A.2 - Manure Management\n3.A.2.a - Cattle':['V.1','V.3'],
+        '3.A.2.d - Goats':['V.1','V.3'],
+        '3.A.2.d - Goats\n3 - Agriculture, Forestry, and Other Land Use\n3.A - Livestock\n3.A.2 - Manure Management':['V.1','V.3'],
+        '3.A.2.e - Camels':['V.1','V.3'],
+        '3.A.2.e - Camels\n3 - Agriculture, Forestry, and Other Land Use\n3.A - Livestock\n3.A.2 - Manure Management':['V.1','V.3'],
+        '3.A.2.f - Horses':['V.1','V.3'],
+        '3.A.2.f - Horses\n3 - Agriculture, Forestry, and Other Land Use\n3.A - Livestock\n3.A.2 - Manure Management':['V.1','V.3'],
+        '3.A.2.g - Mules and Asses':['V.1','V.3'],
+        '3.A.2.g - Mules and Asses\n3 - Agriculture, Forestry, and Other Land Use\n3.A - Livestock\n3.A.2 - Manure Management':['V.1','V.3'],
+        '3.A.2.h - Swine':['V.1','V.3'],
+        '3.A.2.h - Swine\n3 - Agriculture, Forestry, and Other Land Use\n3.A - Livestock\n3.A.2 - Manure Management':['V.1','V.3'],
+        '3.A.2.i - Poultry':['V.1','V.3'],
+        '3.A.2.i - Poultry\n3 - Agriculture, Forestry, and Other Land Use\n3.A - Livestock\n3.A.2 - Manure Management':['V.1','V.3'],
+        '3.A.2.i - Poultry\n3.A.2.j - Other (please specify)\n3 - Agriculture, Forestry, and Other Land Use\n3.A - Livestock\n3.A.2 - Manure Management\n3.A.2.a - Cattle\n3.A.2.b - Buffalo\n3.A.2.c - Sheep\n3.A.2.d - Goats\n3.A.2.e - Camels\n3.A.2.f - Horses\n3.A.2.g - Mules and Asses\n3.A.2.h - Swine':['V.1','V.3'],
+        '3.A.2.j - Other (please specify)':['V.1','V.3'],
+        '3.B - Land':['V.2','V.3'],
+        '3.B.1 - Forest land':['V.2','V.3'],
+        '3.B.1.a - Forest land Remaining Forest land':['V.2','V.3'],
+        '3.B.1.a - Forest land Remaining Forest land\n3.B.1.b.iii - Wetlands converted to Forest Land\n3.B.4.a - Wetlands Remaining Wetlands\n3.B.4.b.iii - Land converted to other wetlands':['V.2','V.3'],
+        '3.B.2 - Cropland':['V.2','V.3'],
+        '3.B.2.a - Cropland Remaining Cropland':['V.2','V.3'],
+        '3.B.2.b.i - Forest Land converted to Cropland\n3.B.1.a - Forest land Remaining Forest land\n3.B.2.b.ii - Grassland converted to Cropland\n3.B.3.a - Grassland Remaining Grassland':['V.2','V.3'],
+        '3.B.2.b.i - Forest Land converted to Cropland\n3.B.1.a - Forest land Remaining Forest land\n3.B.5.b.i - Forest Land converted to Settlements':['V.2','V.3'],
+        '3.B.2.b.i - Forest Land converted to Cropland\n3.B.1.a - Forest land Remaining Forest land\n3.B.5.b.i - Forest Land converted to Settlements\n3.B.2.b.ii - Grassland converted to Cropland\n3.B.3.a - Grassland Remaining Grassland\n3.B.5.b.iii - Grassland converted to Settlements':['V.2','V.3'],
+        '3.B.2.b.ii - Grassland converted to Cropland\n3.B.3.a - Grassland Remaining Grassland\n3.B.5.b.iii - Grassland converted to Settlements':['V.2','V.3'],
+        '3.B.2.b.iii - Wetlands converted to Cropland\n3.B.5.b.iv - Wetlands converted to Settlements\n3.B.4.a - Wetlands Remaining Wetlands':['V.2','V.3'],
+        '3.B.3 - Grassland':['V.2','V.3'],
+        '3.B.3.a - Grassland Remaining Grassland':['V.2','V.3'],
+        '3.B.3.b - Land Converted to Grassland':['V.2','V.3'],
+        '3.B.4 - Wetlands':['V.2','V.3'],
+        '3.B.4.a - Wetlands Remaining Wetlands':['V.2','V.3'],
+        '3.B.4.a - Wetlands Remaining Wetlands\n3.B.4.b.iii - Land converted to other wetlands':['V.2','V.3'],
+        '3.B.4.a.i - Peat Extraction remaining Peat Extraction':['V.2','V.3'],
+        '3.B.4.a.ii - Flooded land remaining flooded land\n3.B - Land\n3.B.4 - Wetlands':['V.2','V.3'],
+        '3.B.4.b - Land Converted to Wetlands':['V.2','V.3'],
+        '3.B.4.b.ii - Land converted to flooded land\n3.B - Land\n3.B.4 - Wetlands':['V.2','V.3'],
+        '3.B.4.b.iii - Land converted to other wetlands':['V.2','V.3'],
+        '3.C.1.a - Burning in Forest Land':['V.2','V.3'],
+        '3.C.1.b - Burning in Cropland':['V.2','V.3'],
+        '3.C.1.c - Burning in Grassland':['V.2','V.3'],
+        '3.C.10 - CH4 from Rewetting of Organic Soils':['V.2','V.3'],
+        '3.C.11 - CH4 Emissions from Rewetting of Mangroves and Tidal Marshes':['V.2','V.3'],
+        '3.C.3 - Urea application':['V.3'],
+        '3.C.4 - Direct N2O Emissions from managed soils':['V.3'],
+        '3.C.5 - Indirect N2O Emissions from managed soils':['V.3'],
+        '3.C.7 - Rice cultivations':['V.3'],
+        '3.C.8 - CH4 from Drained Organic Soils':['V.3'],
+        '4.A - Solid Waste Disposal':['III.1.1', 'III.1.2', 'III.1.3'],
+        '4.A.1 - Managed Waste Disposal Sites':['III.1.1', 'III.1.2', 'III.1.3'],
+        '4.B - Biological Treatment of Solid Waste':['III.2.1', 'III.2.2', 'III.2.3'],
+        '4.C - Incineration and Open Burning of Waste':['III.3.1', 'III.3.2', 'III.3.3'],
+        '4.C.1 - Waste Incineration':['III.3.1', 'III.3.2', 'III.3.3'],
+        '4.C.2 - Open Burning of Waste':['III.3.1', 'III.3.2', 'III.3.3'],
+        '4.D - Wastewater Treatment and Discharge':['III.4.1', 'III.4.2', 'III.4.3'],
+        '4.D.1 - Domestic Wastewaster Treatment and Discharge':['III.4.1', 'III.4.2', 'III.4.3'],
+        '4.D.1 - Domestic Wastewaster Treatment and Discharge\n4.D.2 - Industrial Wastewater Treatment and Discharge':['III.4.1', 'III.4.2', 'III.4.3'],
+        '4.D.2 - Industrial Wastewater Treatment and Discharge':['III.4.1', 'III.4.2', 'III.4.3'],
+        '4.E - Other (please specify)':['III.2.1', 'III.2.2', 'III.2.3', 'III.4.1', 'III.4.2', 'III.4.3'],
+        'nan':['NA']
     }
 
     lst = []
@@ -520,7 +330,8 @@ if __name__ == "__main__":
     make_dir(path=Path(output_dir).as_posix())
 
     # raw data file path
-    input_fl = "../data_raw/EFDB_2006_IPCC_guidelines/EFDB_2006_IPCC_guidelines.csv"
+    input_fl = "../data_raw/EFDB_2006_IPCC_guidelines/EFDB_2006_IPCC_guidelines.xlsx"
+    #input_fl = "../data_raw/EFDB_2006_IPCC_guidelines/EFDB_2006_IPCC_guidelines.csv"
     input_fl = os.path.abspath(input_fl)
 
     # =================================================================
@@ -550,7 +361,8 @@ if __name__ == "__main__":
     # EmissionsFactor
     # =================================================================
     # read raw dataset
-    df = pd.read_csv(input_fl)
+    df = pd.read_excel(input_fl)
+    #df = pd.read_csv(input_fl)
     filt_desc = df["Description"].str.contains("emission factor", case=False, na=False)
     df_filt = df.loc[filt_desc].reset_index(drop=True)
 
@@ -597,10 +409,13 @@ if __name__ == "__main__":
         output_list.append(output_dic)
 
     # sort list by ipcc sector
-    output_list = sorted(output_list, key=lambda x: x["ipcc_2006_category"])
+    # output_list = sorted(output_list, key=lambda x: x["ipcc_2006_category"])
 
     # create dataframe
     df = pd.DataFrame(output_list)
+
+    # sort list by ipcc sector
+    df = df.sort_values(by='ipcc_2006_category')
 
     # create mapping for ipcc to gpc sectors
     df_tmp = create_ipcc_to_gpc_mapping()
@@ -610,7 +425,7 @@ if __name__ == "__main__":
 
     df_out["value"] = df_out["value"].round(3)
 
-    COLUMNS = ["gpc_sector", "value", "units_merged", "gas", "region", "reference"]
+    COLUMNS = ["gpc_sector", "value", "units_merged", "gas", "description", "region", "reference"]
     df_emissions_factor = df_out.loc[:, COLUMNS].rename(
         columns={
             "units_merged": "units",

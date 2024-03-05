@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest",
+    "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" npx jest",
     "api:test": "glob -c \"tsx --no-warnings --test\" \"./tests/**/*.test.ts\"",
     "test-single": "tsx --no-warnings --test",
     "storybook": "storybook dev -p 6006",

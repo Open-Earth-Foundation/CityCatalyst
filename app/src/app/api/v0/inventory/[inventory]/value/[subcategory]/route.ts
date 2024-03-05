@@ -114,6 +114,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
       sectorId: subCategory.subsector.sectorId,
       inventoryId: params.inventory,
       datasourceId: source.datasourceId,
+      gpcReferenceNumber: subCategory.referenceNumber,
     });
   }
 

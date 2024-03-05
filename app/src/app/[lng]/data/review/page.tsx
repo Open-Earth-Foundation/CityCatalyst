@@ -58,6 +58,8 @@ export default function ReviewPage({
   };
 
   const [addUserFile] = api.useAddUserFileMutation();
+  const [sendEmailNotification, { isLoading: isSendingLoading }] =
+    api.useSendEmailNotificationMutation();
 
   const defaultStatus = "pending";
 
@@ -100,6 +102,9 @@ export default function ReviewPage({
       dispatch(clear());
       setIsConfirming(false);
       console.log(uploadFilesDetail);
+      sendEmailNotification(uploadFilesDetail).then((res) => {
+        console.log(res);
+      });
     }
   };
 

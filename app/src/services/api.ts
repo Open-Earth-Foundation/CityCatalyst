@@ -88,7 +88,8 @@ export const api = createApi({
         method: "POST",
         body: data,
       }),
-      transformResponse: (response: { data: InventoryAttributes }) => response.data,
+      transformResponse: (response: { data: InventoryAttributes }) =>
+        response.data,
       invalidatesTags: ["UserInventories"],
     }),
     setUserInfo: builder.mutation<
@@ -354,6 +355,15 @@ export const api = createApi({
       transformResponse: (response: { data: EmissionsFactorResponse }) =>
         response.data,
     }),
+    sendEmailNotification: builder.mutation({
+      query: (data) => ({
+        url: "/notification",
+        method: "POST",
+        body: data,
+      }),
+      transformResponse: (response: { data: EmissionsFactorResponse }) =>
+        response.data,
+    }),
   }),
 });
 
@@ -403,5 +413,6 @@ export const {
   useAddUserFileMutation,
   useGetUserFilesQuery,
   useDeleteUserFileMutation,
+  useSendEmailNotificationMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

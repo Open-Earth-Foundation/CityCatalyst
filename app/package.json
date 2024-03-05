@@ -10,6 +10,7 @@
     "lint": "next lint",
     "test": "npm run api:test & npm run e2e:test",
     "jest": "jest",
+    "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" npx jest",
     "api:test": "glob -c \"tsx --no-warnings --test\" \"./tests/**/*.test.ts\"",
     "e2e:test": "npx playwright test",
     "e2e:debug": "playwright test --debug",

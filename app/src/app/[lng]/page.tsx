@@ -138,7 +138,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
     const animatedGradientClass = `bg-gradient-to-r from-brand via-white via-70% to-brand bg-[length:200%_auto] animate-gradient`;
 
     toast({
-      description: description,
+      description: t(description),
       status: status,
       duration: duration,
       isClosable: true,
@@ -167,7 +167,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               lineHeight="52"
               fontSize="label.lg"
             >
-              {title}
+              {t(title)}
             </Text>
           </Box>
           <Spacer />
@@ -179,7 +179,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               fontSize="16px"
               letterSpacing="1.25px"
             >
-              Try again
+              {t("try-again")}
             </Button>
           )}
           <CloseButton onClick={onClose} />
@@ -190,8 +190,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
 
   const handleDownload = () => {
     showToast(
-      "Preparing your dataset for download",
-      "Please wait while we fetch your data",
+      "preparing-dataset",
+      "wait-fetch-data",
       STATUS.INFO,
       null,
       "semantic.info",
@@ -217,8 +217,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
 
             downloadLink.click();
             showToast(
-              "Inventory report download completed!",
-              "Downloading your data",
+              "download-complete",
+              "downloading-data",
               STATUS.SUCCESS,
               null,
               "interactive.primary",
@@ -231,8 +231,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
       .catch((error) => {
         console.error("Download error:", error);
         showToast(
-          "Download failed",
-          "There was an error during download",
+          "download-failed",
+          "download-error",
           STATUS.ERROR,
           null,
           "semantic.danger",

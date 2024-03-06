@@ -16,7 +16,7 @@ import { ScopeAttributes } from "@/models/Scope";
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
 import { bytesToMB, nameToI18NKey } from "@/util/helpers";
-import type { DataSource, SectorProgress } from "@/util/types";
+import type { SectorProgress } from "@/util/types";
 import {
   ArrowBackIcon,
   ChevronRightIcon,
@@ -65,7 +65,11 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { SourceDrawer } from "./SourceDrawer";
 import { SubsectorDrawer } from "./SubsectorDrawer";
-import type { DataStep, SubSector } from "./types";
+import type {
+  DataSourceWithRelations,
+  DataStep,
+  SubSectorWithRelations,
+} from "./types";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -306,13 +310,14 @@ export default function AddDataSteps({
     return sectorReferenceNumber === currentStep.referenceNumber;
   });
 
-  const [selectedSource, setSelectedSource] = useState<DataSource>();
+  const [selectedSource, setSelectedSource] =
+    useState<DataSourceWithRelations>();
   const {
     isOpen: isSourceDrawerOpen,
     onClose: onSourceDrawerClose,
     onOpen: onSourceDrawerOpen,
   } = useDisclosure();
-  const onSourceClick = (source: DataSource) => {
+  const onSourceClick = (source: DataSourceWithRelations) => {
     setSelectedSource(source);
     onSourceDrawerOpen();
   };
@@ -331,7 +336,7 @@ export default function AddDataSteps({
   >(null);
   const [newlyConnectedDataSourceIds, setNewlyConnectedDataSourceIds] =
     useState<string[]>([]);
-  const onConnectClick = async (source: DataSource) => {
+  const onConnectClick = async (source: DataSourceWithRelations) => {
     if (!inventoryProgress) {
       console.error(
         "Tried to assign data source while inventory progress was not yet loaded!",
@@ -379,7 +384,7 @@ export default function AddDataSteps({
     }
   };
 
-  function isSourceConnected(source: DataSource): boolean {
+  function isSourceConnected(source: DataSourceWithRelations): boolean {
     return (
       (source.inventoryValues && source.inventoryValues.length > 0) ||
       newlyConnectedDataSourceIds.indexOf(source.datasourceId) > -1
@@ -394,18 +399,19 @@ export default function AddDataSteps({
     }
   }
 
-  const [selectedSubsector, setSelectedSubsector] = useState<SubSector>();
+  const [selectedSubsector, setSelectedSubsector] =
+    useState<SubSectorWithRelations>();
   const {
     isOpen: isSubsectorDrawerOpen,
     onClose: onSubsectorDrawerClose,
     onOpen: onSubsectorDrawerOpen,
   } = useDisclosure();
-  const onSubsectorClick = (subsector: SubSector) => {
+  const onSubsectorClick = (subsector: SubSectorWithRelations) => {
     logger.debug(subsector);
     setSelectedSubsector(subsector);
     onSubsectorDrawerOpen();
   };
-  const onSubsectorSave = (subsector: SubSector) => {
+  const onSubsectorSave = (subsector: SubSectorWithRelations) => {
     logger.debug("Save subsector", subsector);
   };
 
@@ -730,7 +736,7 @@ export default function AddDataSteps({
               <WarningIcon boxSize={8} color="semantic.danger" />
             </Center>
           ) : (
-            currentStep.subSectors.map((subSector: SubSector) => (
+            currentStep.subSectors.map((subSector: SubSectorWithRelations) => (
               <Card
                 maxHeight="120px"
                 height="120px"
@@ -753,7 +759,7 @@ export default function AddDataSteps({
                   />
                   <Stack w="full">
                     <Heading size="xs" noOfLines={3} maxWidth="200px">
-                      {t(nameToI18NKey(subSector.subsectorName))}
+                      {t(nameToI18NKey(subSector.subsectorName!))}
                     </Heading>
                     {subSector.scope && (
                       <Text color="content.tertiary">
@@ -940,6 +946,7 @@ export default function AddDataSteps({
       {/*** Drawers ***/}
       <SourceDrawer
         source={selectedSource}
+        sector={currentStep.sector}
         isOpen={isSourceDrawerOpen}
         onClose={onSourceDrawerClose}
         onConnectClick={() => onConnectClick(selectedSource!)}

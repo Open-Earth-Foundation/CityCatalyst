@@ -1,4 +1,3 @@
-import { DataSourceAttributes } from "@/models/DataSource";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -23,9 +22,12 @@ import {
   MdHomeWork,
   MdPlaylistAddCheck,
 } from "react-icons/md";
+import type { DataSourceWithRelations } from "./types";
+import { SectorAttributes } from "@/models/Sector";
 
 export function SourceDrawer({
   source,
+  sector,
   isOpen,
   onClose,
   onConnectClick,
@@ -33,7 +35,8 @@ export function SourceDrawer({
   isConnectLoading,
   t,
 }: {
-  source?: DataSourceAttributes;
+  source?: DataSourceWithRelations;
+  sector?: SectorAttributes;
   isOpen: boolean;
   onClose: () => void;
   onConnectClick: () => void;
@@ -65,6 +68,19 @@ export function SourceDrawer({
           {source && (
             <DrawerBody className="space-y-6">
               <Icon as={MdHomeWork} boxSize={9} />
+              <Heading size="sm" color="content.link" textTransform="uppercase">
+                {source.subcategoryId ? "Scope Data" : "Sub-sector Data"}
+              </Heading>
+              <Heading
+                size="sm"
+                color="content.tertiary"
+                textTransform="uppercase"
+              >
+                {sector?.sectorName} /{" "}
+                {source.subSector?.subsectorName ||
+                  source.subCategory?.subSector?.subsectorName}
+              </Heading>
+
               <Heading size="lg">{source.name}</Heading>
               <Flex direction="row" my={4}>
                 <Tag mr={1}>

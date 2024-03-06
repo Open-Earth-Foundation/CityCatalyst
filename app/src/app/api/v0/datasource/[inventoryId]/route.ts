@@ -45,10 +45,8 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
           model: SubCategory,
           as: "subCategory",
           include: [
-            {
-              model: SubSector,
-              as: "subsector",
-            },
+            { model: SubSector, as: "subsector" },
+            { model: Scope, as: "scope" },
           ],
         },
       ],

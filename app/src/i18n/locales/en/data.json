@@ -42,7 +42,7 @@
   "residential-buildings": "Residential buildings",
   "residential-buildings-description": "Includes high rise buildings, landed buildings, workers’ quarters in industrial establishments, residential in agricultural farms.",
   "commercial-and-institutional-buildings-and-facilities": "Commercial and institutional buildings and facilities",
-  "commercial-and-institutional-buildings-and-facilities-description":"This sub-sector includes all emissions from energy use in commercial buildings and their facilities; and in institutional public buildings such as schools, hospitals, government offices, highway street lighting, and other public facilities.",
+  "commercial-and-institutional-buildings-and-facilities-description": "This sub-sector includes all emissions from energy use in commercial buildings and their facilities; and in institutional public buildings such as schools, hospitals, government offices, highway street lighting, and other public facilities.",
   "manufacturing-industries-and-construction": "Manufacturing industries and construction",
   "manufacturing-industries-and-construction-description": "This sub-sector includes all emissions from energy use in industrial facilities and construction activities, except those included in energy industries sub-sector. This also includes combustion for the generation of electricity and heat for own use in these industries.",
   "energy-industries": "Energy industries",
@@ -159,5 +159,8 @@
   "download-template": "Download template to upload data",
   "file-upload-steps": "Follow the steps in our template and upload the data to calculate your inventory without waiting for CityCatlyst's data review.",
   "add-custom": "Add custom",
-  "save-missing-scope-info": "Save or fill in missing information before proceeding."
+  "save-missing-scope-info": "Save or fill in missing information before proceeding.",
+
+  "total-emissions-included": "Total emissions that will be included",
+  "total-emissions-tooltip": "This is the total and final number that will be added to your GHG inventory"
 }

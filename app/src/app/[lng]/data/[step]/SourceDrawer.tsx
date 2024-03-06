@@ -25,12 +25,14 @@ import { RefObject } from "react";
 import {
   MdCalendarToday,
   MdHomeWork,
+  MdOutlineLocationOn,
   MdOutlineTimer,
   MdPlaylistAddCheck,
   MdToday,
 } from "react-icons/md";
 import type { DataSourceWithRelations } from "./types";
-import { DataCheckIcon } from "@/components/icons";
+import { DataCheckIcon, ScaleIcon } from "@/components/icons";
+import { FiTarget } from "react-icons/fi";
 
 export function SourceDrawer({
   source,
@@ -158,8 +160,52 @@ export function SourceDrawer({
 
               <Flex
                 direction="row"
-                my={4}
-                className="gap-3 flex-wrap"
+                mt={4}
+                className="gap-4 flex-wrap"
+                alignItems="start"
+              >
+                <Tag>
+                  <TagLeftIcon
+                    as={MdOutlineLocationOn}
+                    boxSize={6}
+                    mr={2}
+                    color="content.tertiary"
+                  />
+                  <TagLabel textTransform="capitalize">
+                    {t("Location")}:{" "}
+                    {source.geographicalLocation?.toLowerCase()}
+                  </TagLabel>
+                </Tag>
+                <Tag>
+                  <TagLeftIcon
+                    as={FiTarget}
+                    boxSize={6}
+                    color="content.tertiary"
+                  />
+                  <TagLabel>
+                    {t("scope")}:{" "}
+                    {source.scopes.map((scope) => scope.scopeName).join(", ")}
+                  </TagLabel>
+                </Tag>
+                <Tag>
+                  <TagLeftIcon
+                    as={ScaleIcon}
+                    boxSize={6}
+                    color="content.tertiary"
+                  />
+                  <TagLabel>
+                    {t("scale")}:{" "}
+                    {source.accessType === "global-api"
+                      ? t("city")
+                      : t("country")}
+                  </TagLabel>
+                </Tag>
+              </Flex>
+
+              <Flex
+                direction="row"
+                mb={4}
+                className="gap-4 flex-wrap"
                 alignItems="start"
               >
                 <Tag>
@@ -197,6 +243,7 @@ export function SourceDrawer({
                   </TagLabel>
                 </Tag>
               </Flex>
+
               <Stack className="space-y-4">
                 <Heading size="sm">{t("sources")}</Heading>
                 <Text color="content.tertiary">{source.description}</Text>

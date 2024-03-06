@@ -25,6 +25,7 @@ import { RefObject } from "react";
 import {
   MdCalendarToday,
   MdHomeWork,
+  MdOpenInNew,
   MdOutlineLocationOn,
   MdOutlineTimer,
   MdPlaylistAddCheck,
@@ -160,54 +161,40 @@ export function SourceDrawer({
 
               <Flex
                 direction="row"
-                mt={4}
+                my={4}
                 className="gap-4 flex-wrap"
                 alignItems="start"
               >
-                <Tag>
+                <Tag bgColor="brand.secondary" border={0}>
                   <TagLeftIcon
                     as={MdOutlineLocationOn}
                     boxSize={6}
                     mr={2}
-                    color="content.tertiary"
+                    color="base.light"
                   />
-                  <TagLabel textTransform="capitalize">
+                  <TagLabel textTransform="capitalize" color="base.light">
                     {t("Location")}:{" "}
                     {source.geographicalLocation?.toLowerCase()}
                   </TagLabel>
                 </Tag>
-                <Tag>
-                  <TagLeftIcon
-                    as={FiTarget}
-                    boxSize={6}
-                    color="content.tertiary"
-                  />
-                  <TagLabel>
-                    {t("scope")}:{" "}
-                    {source.scopes.map((scope) => scope.scopeName).join(", ")}
-                  </TagLabel>
-                </Tag>
-                <Tag>
-                  <TagLeftIcon
-                    as={ScaleIcon}
-                    boxSize={6}
-                    color="content.tertiary"
-                  />
-                  <TagLabel>
+                {source.subCategory?.scope && (
+                  <Tag bgColor="brand.secondary" border={0}>
+                    <TagLeftIcon as={FiTarget} boxSize={6} color="base.light" />
+                    <TagLabel color="base.light">
+                      {t("scope")}: {source.subCategory.scope.scopeName}
+                    </TagLabel>
+                  </Tag>
+                )}
+                <Tag bgColor="brand.secondary" border={0}>
+                  <TagLeftIcon as={ScaleIcon} boxSize={6} color="base.light" />
+                  <TagLabel color="base.light">
                     {t("scale")}:{" "}
                     {source.accessType === "global-api"
                       ? t("city")
                       : t("country")}
                   </TagLabel>
                 </Tag>
-              </Flex>
 
-              <Flex
-                direction="row"
-                mb={4}
-                className="gap-4 flex-wrap"
-                alignItems="start"
-              >
                 <Tag>
                   <TagLeftIcon
                     as={DataCheckIcon}
@@ -245,26 +232,31 @@ export function SourceDrawer({
               </Flex>
 
               <Stack className="space-y-4">
-                <Heading size="sm">{t("sources")}</Heading>
+                <Heading size="sm">{t("inside-dataset")}</Heading>
                 <Text color="content.tertiary">{source.description}</Text>
-                {/*
-                <Text color="content.tertiary" ml={6}>
-                  <ul>
-                    {source.sources.map((source) => (
-                      <li key={source}>{source}</li>
-                    ))}
-                  </ul>
-                </Text>
-                */}
-                <Heading size="sm">{t("methodology")}</Heading>
-                <Text color="content.tertiary">
+                <Heading
+                  size="sm"
+                  verticalAlign="baseline"
+                  lineHeight="24px"
+                  fontSize="16px"
+                >
+                  {t("methodology")}
                   <Link
                     href={source.methodologyUrl}
                     target="_blank"
                     rel="noreferrer noopener"
                   >
-                    {source.methodologyUrl}
+                    <Icon
+                      as={MdOpenInNew}
+                      boxSize={6}
+                      color="content.link"
+                      mb="-5px"
+                      ml={2}
+                    />
                   </Link>
+                </Heading>
+                <Text color="content.tertiary">
+                  {/* TODO add methodology description to data source model/ data catalog */}
                 </Text>
               </Stack>
             </DrawerBody>

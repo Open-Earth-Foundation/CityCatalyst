@@ -162,5 +162,9 @@
   "save-missing-scope-info": "Save or fill in missing information before proceeding.",
 
   "total-emissions-included": "Total emissions that will be included",
-  "total-emissions-tooltip": "This is the total and final number that will be added to your GHG inventory"
+  "total-emissions-tooltip": "This is the total and final number that will be added to your GHG inventory",
+  "scale": "Scale",
+  "country": "Country",
+  "city": "City",
+  "inside-dataset": "What's inside this dataset"
 }

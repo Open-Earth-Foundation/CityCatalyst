@@ -68,9 +68,10 @@ export function SourceDrawer({
     >
       <DrawerOverlay />
       <DrawerContent px={0} py={0} overflowY="auto">
-        <Stack h="full" px={[4, 4, 16]} py={12}>
+        <Stack h="full" px={[4, 4, 16]} pt={12}>
           <Button
             variant="ghost"
+            alignSelf="flex-start"
             leftIcon={<ArrowBackIcon boxSize={6} />}
             onClick={onClose}
             px={6}
@@ -295,7 +296,7 @@ export function SourceDrawer({
           )}
           <Stack
             w="full"
-            className="drop-shadow-top border-t-2 left-0 flex justify-center items-center"
+            className="drop-shadow-top border-t-2 justify-center items-center"
           >
             <Button
               onClick={onConnectClick}

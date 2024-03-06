@@ -99,9 +99,10 @@ type InventoryValueData = Omit<InventoryValueAttributes, "id"> & {
 
 type DataSourceWithRelations = DataSourceAttributes & {
   subCategory:
-    | (SubCategoryAttributes & { subSector: SubSectorAttributes })
+    | (SubCategoryAttributes & { subsector: SubSectorAttributes })
     | null;
   subSector: SubSectorAttributes | null;
+  publisher: Publisher | null;
   inventoryValues: InventoryValueAttributes[];
   scopes: Scope[];
 };

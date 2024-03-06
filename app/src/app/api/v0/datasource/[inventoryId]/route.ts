@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Op } from "sequelize";
 import { z } from "zod";
 import { logger } from "@/services/logger";
+import { Publisher } from "@/models/Publisher";
 
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const inventory = await db.models.Inventory.findOne({
@@ -32,6 +33,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
       },
       include: [
         { model: Scope, as: "scopes" },
+        { model: Publisher, as: "publisher" },
         {
           model: InventoryValue,
           as: "inventoryValues",

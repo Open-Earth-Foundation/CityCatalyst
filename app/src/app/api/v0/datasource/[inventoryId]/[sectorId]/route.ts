@@ -27,6 +27,8 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
           endYear: { [Op.gte]: inventory.year },
         },
         include: [
+          { model: db.models.Scope, as: "scopes" },
+          { model: db.models.Publisher, as: "publisher" },
           {
             model: db.models.SubCategory,
             as: "subCategory",

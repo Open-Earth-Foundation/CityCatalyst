@@ -12,6 +12,7 @@ import {
   Heading,
   Icon,
   Link,
+  Spacer,
   Stack,
   Tag,
   TagLabel,
@@ -65,7 +66,7 @@ export function SourceDrawer({
     >
       <DrawerOverlay />
       <DrawerContent px={0} py={0} overflowY="auto">
-        <chakra.div h="full" px={[4, 4, 16]} py={12}>
+        <Stack h="full" px={[4, 4, 16]} py={12}>
           <Button
             variant="ghost"
             leftIcon={<ArrowBackIcon boxSize={6} />}
@@ -77,7 +78,7 @@ export function SourceDrawer({
             {t("go-back")}
           </Button>
           {source && (
-            <DrawerBody className="space-y-6" px={0}>
+            <DrawerBody className="space-y-6 overflow-auto" px={0}>
               <Icon as={MdHomeWork} boxSize={9} />
               <Heading
                 size="sm"
@@ -234,6 +235,7 @@ export function SourceDrawer({
               <Stack className="space-y-4">
                 <Heading size="sm">{t("inside-dataset")}</Heading>
                 <Text color="content.tertiary">{source.description}</Text>
+                <chakra.hr borderColor="border.neutral" />
                 <Heading
                   size="sm"
                   verticalAlign="baseline"
@@ -258,12 +260,36 @@ export function SourceDrawer({
                 <Text color="content.tertiary">
                   {/* TODO add methodology description to data source model/ data catalog */}
                 </Text>
+                <Heading
+                  size="sm"
+                  verticalAlign="baseline"
+                  lineHeight="24px"
+                  fontSize="16px"
+                >
+                  {t("transform-data-heading")}
+                  <Link
+                    href="https://citycatalyst.openearth.org"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    <Icon
+                      as={MdOpenInNew}
+                      boxSize={6}
+                      color="content.link"
+                      mb="-5px"
+                      ml={2}
+                    />
+                  </Link>
+                </Heading>
+                <Text color="content.tertiary">
+                  {t("transform-data-description")}
+                </Text>
               </Stack>
             </DrawerBody>
           )}
           <Stack
             w="full"
-            className="drop-shadow-top border-t-2 absolute left-0 flex justify-center items-center"
+            className="drop-shadow-top border-t-2 left-0 flex justify-center items-center"
           >
             <Button
               onClick={onConnectClick}
@@ -275,7 +301,7 @@ export function SourceDrawer({
               {t("connect-data")}
             </Button>
           </Stack>
-        </chakra.div>
+        </Stack>
       </DrawerContent>
     </Drawer>
   );

@@ -5,6 +5,7 @@ import FileInput from "@/components/file-input";
 import {
   CircleIcon,
   DataAlertIcon,
+  DataCheckIcon,
   ExcelFileIcon,
   WorldSearchIcon,
 } from "@/components/icons";
@@ -634,31 +635,30 @@ export default function AddDataSteps({
                   <Heading size="sm" noOfLines={2} minHeight={10}>
                     {source.name}
                   </Heading>
-                  <Flex direction="row" my={4}>
-                    <Tag mr={1}>
+                  <Flex direction="row" my={4} wrap="wrap" gap={2}>
+                    <Tag>
                       <TagLeftIcon
-                        as={MdPlaylistAddCheck}
-                        boxSize={4}
+                        as={DataCheckIcon}
+                        boxSize={5}
                         color="content.tertiary"
                       />
-                      <TagLabel fontSize={12}>
+                      <TagLabel fontSize={11}>
                         {t("data-quality")}:{" "}
                         {t("quality-" + source.dataQuality)}
                       </TagLabel>
                     </Tag>
-                    <Tag>
-                      <TagLeftIcon
-                        as={FiTarget}
-                        boxSize={4}
-                        color="content.tertiary"
-                      />
-                      <TagLabel fontSize={12}>
-                        {t("scope")}:{" "}
-                        {source.scopes
-                          .map((s: ScopeAttributes) => s.scopeName)
-                          .join(", ")}
-                      </TagLabel>
-                    </Tag>
+                    {source.subCategory?.scope && (
+                      <Tag>
+                        <TagLeftIcon
+                          as={FiTarget}
+                          boxSize={4}
+                          color="content.tertiary"
+                        />
+                        <TagLabel fontSize={11}>
+                          {t("scope")}: {source.subCategory.scope.scopeName}
+                        </TagLabel>
+                      </Tag>
+                    )}
                   </Flex>
                   <Text color="content.tertiary" noOfLines={5} minHeight={120}>
                     {source.description}

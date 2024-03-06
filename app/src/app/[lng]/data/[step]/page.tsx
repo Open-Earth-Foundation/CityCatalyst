@@ -313,13 +313,15 @@ export default function AddDataSteps({
 
   const [selectedSource, setSelectedSource] =
     useState<DataSourceWithRelations>();
+  const [selectedSourceData, setSelectedSourceData] = useState<any>();
   const {
     isOpen: isSourceDrawerOpen,
     onClose: onSourceDrawerClose,
     onOpen: onSourceDrawerOpen,
   } = useDisclosure();
-  const onSourceClick = (source: DataSourceWithRelations) => {
+  const onSourceClick = (source: DataSourceWithRelations, data: any) => {
     setSelectedSource(source);
+    setSelectedSourceData(data);
     onSourceDrawerOpen();
   };
 
@@ -667,7 +669,7 @@ export default function AddDataSteps({
                     className="underline"
                     mt={4}
                     mb={6}
-                    onClick={() => onSourceClick(source)}
+                    onClick={() => onSourceClick(source, data)}
                   >
                     {t("see-more-details")}
                   </Link>
@@ -946,6 +948,7 @@ export default function AddDataSteps({
       {/*** Drawers ***/}
       <SourceDrawer
         source={selectedSource}
+        sourceData={selectedSourceData}
         sector={currentStep.sector}
         isOpen={isSourceDrawerOpen}
         onClose={onSourceDrawerClose}

@@ -1,7 +1,6 @@
 import type { SectorAttributes } from "@/models/Sector";
 import { ArrowBackIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import {
-  Box,
   Button,
   Drawer,
   DrawerBody,
@@ -12,7 +11,6 @@ import {
   Heading,
   Icon,
   Link,
-  Spacer,
   Stack,
   Tag,
   TagLabel,
@@ -24,12 +22,10 @@ import {
 import type { TFunction } from "i18next";
 import { RefObject } from "react";
 import {
-  MdCalendarToday,
   MdHomeWork,
   MdOpenInNew,
   MdOutlineLocationOn,
   MdOutlineTimer,
-  MdPlaylistAddCheck,
   MdToday,
 } from "react-icons/md";
 import type { DataSourceWithRelations } from "./types";
@@ -38,6 +34,7 @@ import { FiTarget } from "react-icons/fi";
 
 export function SourceDrawer({
   source,
+  sourceData,
   sector,
   isOpen,
   onClose,
@@ -47,6 +44,7 @@ export function SourceDrawer({
   t,
 }: {
   source?: DataSourceWithRelations;
+  sourceData?: any;
   sector?: SectorAttributes;
   isOpen: boolean;
   onClose: () => void;
@@ -55,7 +53,11 @@ export function SourceDrawer({
   isConnectLoading: boolean;
   t: TFunction;
 }) {
-  console.dir(source);
+  const emissionsData = sourceData?.totals?.emissions?.co2eq_100yr;
+  // TODO scale this down for country data sources
+  const totalEmissions = emissionsData
+    ? (Number(emissionsData) / 1000).toFixed(2)
+    : "?";
   return (
     <Drawer
       isOpen={isOpen}
@@ -147,7 +149,7 @@ export function SourceDrawer({
 
               <HStack align="baseline">
                 <Heading fontSize="57px" lineHeight="64px">
-                  999.99
+                  {totalEmissions}
                 </Heading>
                 <Text
                   color="content.tertiary"

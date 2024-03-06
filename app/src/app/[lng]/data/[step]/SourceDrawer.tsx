@@ -28,7 +28,7 @@ import {
   MdOutlineTimer,
   MdToday,
 } from "react-icons/md";
-import type { DataSourceWithRelations } from "./types";
+import type { DataSourceData, DataSourceWithRelations } from "./types";
 import { DataCheckIcon, ScaleIcon } from "@/components/icons";
 import { FiTarget } from "react-icons/fi";
 
@@ -44,7 +44,7 @@ export function SourceDrawer({
   t,
 }: {
   source?: DataSourceWithRelations;
-  sourceData?: any;
+  sourceData?: DataSourceData;
   sector?: SectorAttributes;
   isOpen: boolean;
   onClose: () => void;
@@ -56,7 +56,7 @@ export function SourceDrawer({
   const emissionsData = sourceData?.totals?.emissions?.co2eq_100yr;
   // TODO scale this down for country data sources
   const totalEmissions = emissionsData
-    ? (Number(emissionsData) / 1000).toFixed(2)
+    ? ((Number(emissionsData) * sourceData?.scaleFactor) / 1000).toFixed(2)
     : "?";
   return (
     <Drawer
@@ -140,7 +140,11 @@ export function SourceDrawer({
                 {t("total-emissions-included")}{" "}
                 <Tooltip
                   hasArrow
-                  label={t("total-emissions-tooltip")}
+                  label={
+                    t("total-emissions-tooltip") +
+                    ".\nScale factor: " +
+                    sourceData?.scaleFactor.toFixed(4)
+                  }
                   placement="bottom-end"
                 >
                   <InfoOutlineIcon color="interactive.control" boxSize={4} />

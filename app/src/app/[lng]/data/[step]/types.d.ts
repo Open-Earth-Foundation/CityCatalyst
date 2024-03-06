@@ -110,6 +110,13 @@ type DataSourceWithRelations = DataSourceAttributes & {
   scopes: Scope[];
 };
 
+type DataSourceData = {
+  totals: { emissions: { co2eq_100yr } };
+  points?: any;
+  scaleFactor: number;
+  issue: string | null;
+};
+
 type SubSectorWithRelations = SubSectorAttributes & {
   completed: boolean;
   scope: ScopeAttributes;

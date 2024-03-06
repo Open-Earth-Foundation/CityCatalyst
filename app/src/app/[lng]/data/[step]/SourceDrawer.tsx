@@ -264,9 +264,9 @@ export function SourceDrawer({
                     />
                   </Link>
                 </Heading>
-                <Text color="content.tertiary">
-                  {/* TODO add methodology description to data source model/ data catalog */}
-                </Text>
+                {/*<Text color="content.tertiary">
+                  // TODO add methodology description to data source model/ data catalog
+                </Text>*/}
                 <Heading
                   size="sm"
                   verticalAlign="baseline"

@@ -12,11 +12,13 @@ module.exports = {
     extend: {
       colors: {
         brand: "#2351DC",
+        brand_light: "#7e99ed",
         tertiary: "#7A7B9A",
         light: "#FFFFFF",
         content_tertiary: "#7A7B9A",
         content_secondary: "#232640",
-        sentiment_negative_default: "#F23D33"
+        sentiment_negative_default: "#F23D33",
+        interactive_primary: "#008600",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
@@ -36,6 +38,15 @@ module.exports = {
           "0px -1px 3px 0px rgba(0, 0, 31, 0.10)",
         ],
       },
+      animation: {
+        gradient: "gradient 3s linear infinite",
+      },
+      keyframes: {
+        gradient: {
+          "0%": { "background-position": "200% center" },
+          "100%": { "background-position": "0% center" },
+        }
+      }
     },
   },
   plugins: [],

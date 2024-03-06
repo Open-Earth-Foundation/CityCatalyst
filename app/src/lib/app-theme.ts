@@ -278,6 +278,13 @@ export const appTheme = extendTheme({
         ghost: {
           color: "content.link",
         },
+        lightGhost: {
+          color: "base.light",
+          _hover: {
+            bg: "background.transparentGrey",
+            color: "base.light",
+          },
+        },
         solidIcon: {
           bgColor: "background.neutral",
           color: "interactive.secondary",
@@ -480,6 +487,10 @@ export const appTheme = extendTheme({
     Textarea: {
       variants: {
         brand: {
+          borderWidth: "1px",
+          borderRadius: "16px",
+          resize: "none",
+          borderColor: "border.neutral",
           _invalid: {
             background: "sentiment.negativeOverlay",
             borderWidth: "2px",

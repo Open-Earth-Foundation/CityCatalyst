@@ -39,7 +39,16 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
           where: { inventoryId: params.inventoryId },
         },
         { model: SubSector, as: "subSector" },
-        { model: SubCategory, as: "subCategory" },
+        {
+          model: SubCategory,
+          as: "subCategory",
+          include: [
+            {
+              model: SubSector,
+              as: "subsector",
+            },
+          ],
+        },
       ],
     },
   ];

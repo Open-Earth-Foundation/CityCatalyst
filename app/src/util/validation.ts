@@ -60,21 +60,30 @@ export const resetPasswordRequest = z.object({
   resetToken: z.string(),
 });
 
-export const createSectorRequest = z.object({
-  totalEmissions: z.number().optional(),
-  sectorId: z.string().uuid().optional(),
-});
-
-export type CreateSectorRequest = z.infer<typeof createSectorRequest>;
-
-export const createSubSectorRequest = z.object({
-  activityUnits: z.string().optional(),
-  activityValue: z.number().optional(),
-  emissionFactorValue: z.number().optional(),
-  totalEmissions: z.number().optional(),
-  emissionsFactorId: z.string().uuid().optional(),
+export const createInventoryValue = z.object({
+  activityValue: z.number().nullable().optional(),
+  activityUnits: z.string().nullable().optional(),
+  co2eq: z.coerce.bigint().gte(0n).optional(),
+  co2eqYears: z.number().optional(),
   unavailableReason: z.string().optional(),
   unavailableExplanation: z.string().optional(),
+  gasValues: z
+    .array(
+      z.object({
+        gas: z.string(),
+        // if not present, use activityValue with emissionsFactor instead
+        gasAmount: z.coerce.bigint().gte(0n).nullable().optional(),
+        emissionsFactorId: z.string().uuid().optional(),
+        emissionsFactor: z
+          .object({
+            emissionsPerActivity: z.number().gte(0),
+            gas: z.string(),
+            units: z.string(),
+          })
+          .optional(),
+      }),
+    )
+    .optional(),
   dataSource: z
     .object({
       sourceType: z.string(),
@@ -84,43 +93,38 @@ export const createSubSectorRequest = z.object({
     .optional(),
 });
 
-export type CreateSubSectorRequest = z.infer<typeof createSubSectorRequest>;
-
-export const createSubCategory = z.object({
-  activityUnits: z.string().optional(),
-  activityValue: z.number().optional(),
-  emissionFactorValue: z.number().optional(),
-  co2EmissionsValue: z.number().optional(),
-  n2oEmissionsValue: z.number().optional(),
-  ch4EmissionsValue: z.number().optional(),
-  totalEmissions: z.number().optional(),
-  emissionsFactorId: z.string().uuid().optional(),
-  dataSource: z
-    .object({
-      sourceType: z.string(),
-      dataQuality: z.string(),
-      notes: z.string(),
-    })
-    .optional(),
-});
-
-export type CreateSubCategoryRequest = z.infer<typeof createSubCategory>;
+export type CreateInventoryValueRequest = z.infer<typeof createInventoryValue>;
 
 export const createUserRequest = z.object({
   name: z.string().min(1),
-  isOrganization: z.boolean(),
   email: z.string().email(),
   role: z.string(),
-  organizationId: z.string().optional(),
 });
 
 export type CreateUserRequest = z.infer<typeof createUserRequest>;
 
 export const createPopulationRequest = z.object({
   cityId: z.string().uuid(),
-  population: z.number(),
+  population: z.number().optional(),
+  countryPopulation: z.number().optional(),
   year: z.number(),
   datasourceId: z.string().optional(),
 });
 
 export type CreatePopulationRequest = z.infer<typeof createPopulationRequest>;
+
+// user file schema validation
+export const createUserFileRequset = z.object({
+  userId: z.string().uuid().optional(),
+  fileReference: z.string().optional(),
+  data: z.any(),
+  fileType: z.string().optional(),
+  fileName: z.string().optional(),
+  sector: z.string().optional(),
+  url: z.string().url().optional(),
+  status: z.string().optional(),
+  gpcRefNo: z.string().optional(),
+});
+
+// Schema type definition
+export type CreateUserFileRequetData = z.infer<typeof createUserFileRequset>;

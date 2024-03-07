@@ -1,32 +1,15 @@
+import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
-import { createCityRequest, createUserRequest } from "@/util/validation";
 import createHttpError from "http-errors";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 
-export const GET = apiHandler(async (_req: NextRequest, { params }) => {
-  const locode = params.city;
-  const city = await db.models.City.findOne({ where: { locode } });
-  if (!city) {
-    throw new createHttpError.NotFound("City not found");
-  }
-  const user = await db.models.User.findOne({
-    where: {
-      userId: params.user,
-    },
-    include: [
-      {
-        model: db.models.City,
-        as: "cities",
-      },
-    ],
+export const GET = apiHandler(async (_req, { params, session }) => {
+  const user = await UserService.findUser(params.user, session, {
+    model: db.models.City,
+    as: "cities",
   });
-
-  if (!user) {
-    throw new createHttpError.NotFound("User not found");
-  }
-
   return NextResponse.json({ data: user });
 });
 
@@ -35,7 +18,7 @@ const updateUserRequest = z.object({
   role: z.string(),
 });
 
-export const PATCH = apiHandler(async (_req: NextRequest, { params }) => {
+export const PATCH = apiHandler(async (_req, { params, session }) => {
   const body = updateUserRequest.parse(await _req.json());
   let user = await db.models.User.findOne({ where: { userId: params.user } });
 
@@ -48,13 +31,8 @@ export const PATCH = apiHandler(async (_req: NextRequest, { params }) => {
   return NextResponse.json({ data: user });
 });
 
-export const DELETE = apiHandler(async (_req: NextRequest, { params }) => {
-  let user = await db.models.User.findOne({ where: { userId: params.user } });
-
-  if (!user) {
-    throw new createHttpError.NotFound("User not found");
-  }
-
+export const DELETE = apiHandler(async (_req, { params, session }) => {
+  const user = await UserService.findUser(params.user, session);
   await user.destroy();
 
   return NextResponse.json({ data: user, deleted: true });

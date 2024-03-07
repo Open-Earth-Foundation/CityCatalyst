@@ -18,6 +18,8 @@ import fetchMock from "fetch-mock";
 
 const locode = "XX_DATASOURCE_CITY";
 const sectorName = "XX_DATASOURCE_TEST_1";
+const subsectorName = "XX_DATASOURCE_TEST_1";
+const subcategoryName = "XX_DATASOURCE_TEST_1";
 
 const inventoryData: CreateInventoryRequest = {
   inventoryName: "Test Inventory",
@@ -72,15 +74,31 @@ describe("DataSource API", () => {
       locode,
       name: "CC_",
     });
+    await db.models.SubCategory.destroy({ where: { subcategoryName } });
+    await db.models.SubSector.destroy({ where: { subsectorName } });
     await db.models.Sector.destroy({ where: { sectorName } });
+
     inventory = await db.models.Inventory.create({
+      ...inventoryData,
       inventoryId: randomUUID(),
       cityId: city.cityId,
-      ...inventoryData,
     });
     sector = await db.models.Sector.create({
       sectorId: randomUUID(),
+      referenceNumber: "X",
       sectorName,
+    });
+    const subSector = await db.models.SubSector.create({
+      subsectorId: randomUUID(),
+      sectorId: sector.sectorId,
+      referenceNumber: "X.9",
+      subsectorName,
+    });
+    const subCategory = await db.models.SubCategory.create({
+      subcategoryId: randomUUID(),
+      subsectorId: subSector.subsectorId,
+      referenceNumber: "X.9.9",
+      subcategoryName,
     });
 
     fetchMock.config.overwriteRoutes = true;
@@ -93,11 +111,12 @@ describe("DataSource API", () => {
         startYear: 4000 + i,
         endYear: 4010 + i,
         geographicalLocation: sourceLocations[i],
+        subcategoryId: subCategory.subcategoryId,
       });
       const url = source
         .apiEndpoint!.replace(":locode", locode)
         .replace(":year", inventory.year!.toString())
-        .replace(":gpcReferenceNumber", sector.referenceNumber!);
+        .replace(":gpcReferenceNumber", subCategory.referenceNumber!);
       fetchMock.mock(url, mockGlobalApiResponses[i]);
     }
   });
@@ -130,7 +149,7 @@ describe("DataSource API", () => {
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
-    assert.equal(data.length, 1);
+    assert.equal(data.length, 2);
   });
 
   it.todo("should apply data sources");

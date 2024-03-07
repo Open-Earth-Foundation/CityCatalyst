@@ -52,7 +52,7 @@ module.exports = {
           queryInterface,
           "EmissionsFactor",
           emissionsFactors,
-          "emissions_factor_id",
+          "id",
           transaction,
         );
         await bulkUpsert(

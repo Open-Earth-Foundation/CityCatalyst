@@ -1,0 +1,53 @@
+Lists 5
+CIRIS 64
+TranslateTable 112
+Home 34
+GPC 1
+Notation keys 39
+GWP 37
+Conversion factors 38
+REF_Fuel_UnitConversionFactors 78
+City information 17
+Data sources 20
+Emission factors 19
+F-Gases 36
+CIRIS Import 120
+CRF Input 123
+Inventory 40
+I - Stationary 106
+II - Transport 11
+III - Waste 107
+IV - IPPU 6
+V - AFOLU 10
+VI - Other scope 3 13
+Calculators 42
+Fugitive gas 28
+Solid waste disposal 55
+Biological treatment 53
+Incineration 56
+Wastewater 52
+Results 51
+Results_Summary 41
+Results_Graphs 35
+Results_Graphs_2 108
+Results_Overview 23
+Results_Analysis 71
+Results_Net emissions 43
+Report 2
+GCoM - CRF 109
+CIRIS Light Export 125
+Light_eCRF_1 150
+Light_eCRF_2 151
+Light_eCRF_3 152
+eCRF_1 118
+eCRF_2 117
+eCRF_3 116
+Notes_1 163
+Notes_2 164
+Notes_3 165
+Notes_4 166
+Notes_5 167
+Notes_6 168
+Developer mode 159
+Results_Analysis_Data 72
+Results_Analysis_Data_2 73

@@ -2,22 +2,24 @@ import {
   type UserAttributes,
   type CityAttributes,
   type InventoryAttributes,
-  type SubSectorValueAttributes,
-  type SubCategoryValueAttributes,
+  type InventoryValueAttributes,
   PopulationAttributes,
 } from "@/models/init-models";
+import type { BoundingBox } from "@/util/geojson";
 import type {
   ConnectDataSourceQuery,
   ConnectDataSourceResponse,
   DataSourceResponse,
   InventoryProgressResponse,
   InventoryResponse,
-  SubCategoryValueUpdateQuery,
-  SubSectorValueResponse,
+  InventoryValueUpdateQuery,
+  InventoryValueResponse,
   InventoryWithCity,
   UserInfoResponse,
-  SubSectorValueUpdateQuery,
+  UserFileResponse,
+  EmissionsFactorResponse,
 } from "@/util/types";
+import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
@@ -27,32 +29,34 @@ export const api = createApi({
     "InventoryProgress",
     "UserInventories",
     "SubSectorValue",
-    "SubCategoryValue",
+    "InventoryValue",
     "UserData",
+    "FileData",
+    "CityData",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
     getCity: builder.query<CityAttributes, string>({
-      query: (locode) => `city/${locode}`,
+      query: (cityId) => `city/${cityId}`,
       transformResponse: (response: { data: CityAttributes }) => response.data,
     }),
-    getCityBoundary: builder.query<GeoJSON.GeoJSON, string>({
-      query: (locode) => `city/${locode}/boundary`,
-      transformResponse: (response: { data: GeoJSON.GeoJSON }) => response.data,
-    }),
-    getInventory: builder.query<
-      InventoryResponse,
-      { locode: string; year: number }
+    getCityBoundary: builder.query<
+      { data: GeoJSON; boundingBox: BoundingBox },
+      string
     >({
-      query: ({ locode, year }) => `city/${locode}/inventory/${year}`,
+      query: (cityId) => `city/${cityId}/boundary`,
+      transformResponse: (response: {
+        data: GeoJSON;
+        boundingBox: BoundingBox;
+      }) => response,
+    }),
+    getInventory: builder.query<InventoryResponse, string>({
+      query: (inventoryId) => `inventory/${inventoryId}`,
       transformResponse: (response: { data: InventoryResponse }) =>
         response.data,
     }),
-    getInventoryProgress: builder.query<
-      InventoryProgressResponse,
-      { locode: string; year: number }
-    >({
-      query: ({ locode, year }) => `city/${locode}/inventory/${year}/progress`,
+    getInventoryProgress: builder.query<InventoryProgressResponse, string>({
+      query: (inventoryId) => `inventory/${inventoryId}/progress`,
       transformResponse: (response: { data: InventoryProgressResponse }) =>
         response.data,
       providesTags: ["InventoryProgress"],
@@ -72,21 +76,24 @@ export const api = createApi({
         method: "POST",
         body: data,
       }),
+      transformResponse: (response: { data: CityAttributes }) => response.data,
+      invalidatesTags: ["CityData"],
     }),
     addInventory: builder.mutation<
       InventoryAttributes,
-      { locode: string; year: number; inventoryName: string }
+      { cityId: string; year: number; inventoryName: string }
     >({
       query: (data) => ({
-        url: `/city/${data.locode}/inventory`,
+        url: `/city/${data.cityId}/inventory`,
         method: "POST",
         body: data,
       }),
+      transformResponse: (response: { data: InventoryAttributes }) => response.data,
       invalidatesTags: ["UserInventories"],
     }),
     setUserInfo: builder.mutation<
       UserAttributes,
-      { defaultCityLocode: string; defaultInventoryYear: number }
+      { cityId: string; defaultInventoryId: string }
     >({
       query: (data) => ({
         url: "/user",
@@ -109,41 +116,41 @@ export const api = createApi({
       transformResponse: (response: { data: DataSourceResponse }) =>
         response.data,
     }),
-    getSubsectorValue: builder.query<
-      SubSectorValueResponse,
-      { subSectorId: string; inventoryId: string }
+    getInventoryValue: builder.query<
+      InventoryValueResponse,
+      { subCategoryId: string; inventoryId: string }
     >({
-      query: ({ subSectorId, inventoryId }) =>
-        `/inventory/${inventoryId}/subsector/${subSectorId}`,
-      transformResponse: (response: { data: SubSectorValueResponse }) =>
+      query: ({ subCategoryId, inventoryId }) =>
+        `/inventory/${inventoryId}/value/${subCategoryId}`,
+      transformResponse: (response: { data: InventoryValueResponse }) =>
         response.data,
-      providesTags: ["SubSectorValue"],
+      providesTags: ["InventoryValue"],
     }),
-    setSubsectorValue: builder.mutation<
-      SubSectorValueAttributes,
-      SubSectorValueUpdateQuery
+    getInventoryValues: builder.query<
+      InventoryValueResponse[],
+      { subCategoryIds: string[]; inventoryId: string }
+    >({
+      query: ({ subCategoryIds, inventoryId }) => ({
+        url: `/inventory/${inventoryId}/value`,
+        method: "GET",
+        params: { subCategoryIds: subCategoryIds.join(",") },
+      }),
+      transformResponse: (response: { data: InventoryValueResponse[] }) =>
+        response.data,
+      providesTags: ["InventoryValue"],
+    }),
+    setInventoryValue: builder.mutation<
+      InventoryValueAttributes,
+      InventoryValueUpdateQuery
     >({
       query: (data) => ({
-        url: `/inventory/${data.inventoryId}/subsector/${data.subSectorId}`,
+        url: `/inventory/${data.inventoryId}/value/${data.subCategoryId}`,
         method: "PATCH",
         body: data.data,
       }),
-      transformResponse: (response: { data: SubSectorValueAttributes }) =>
+      transformResponse: (response: { data: InventoryValueAttributes }) =>
         response.data,
-      invalidatesTags: ["InventoryProgress", "SubSectorValue"],
-    }),
-    setSubCategoryValue: builder.mutation<
-      SubCategoryValueAttributes,
-      SubCategoryValueUpdateQuery
-    >({
-      query: (data) => ({
-        url: `/inventory/${data.inventoryId}/subcategory/${data.subCategoryId}`,
-        method: "PATCH",
-        body: data.data,
-      }),
-      transformResponse: (response: { data: SubCategoryValueAttributes }) =>
-        response.data,
-      invalidatesTags: ["SubCategoryValue", "SubSectorValue"],
+      invalidatesTags: ["InventoryProgress", "InventoryValue"],
     }),
     connectDataSource: builder.mutation<
       ConnectDataSourceResponse,
@@ -168,14 +175,15 @@ export const api = createApi({
       PopulationAttributes,
       {
         cityId: string;
-        population: number;
-        year: number;
         locode: string;
+        population: number;
+        countryPopulation: number;
+        year: number;
       }
     >({
       query: (data) => {
         return {
-          url: `/city/${data.locode}/population`,
+          url: `/city/${data.cityId}/population`,
           method: `POST`,
           body: data,
         };
@@ -185,10 +193,10 @@ export const api = createApi({
       PopulationAttributes,
       {
         year: number;
-        locode: string;
+        cityId: string;
       }
     >({
-      query: (data) => `/city/${data.locode}/population/${data.year}`,
+      query: (data) => `/city/${data.cityId}/population/${data.year}`,
       transformResponse: (response: { data: PopulationAttributes }) =>
         response.data,
     }),
@@ -196,11 +204,12 @@ export const api = createApi({
       UserAttributes,
       {
         userId: string;
-        locode: string;
+        cityId: string;
       }
     >({
-      query: (data) => `/city/${data.locode}/user/${data.userId}`,
+      query: (data) => `/city/${data.cityId}/user/${data.userId}`,
       transformResponse: (response: { data: any }) => response.data,
+      providesTags: ["UserData"],
     }),
 
     setCurrentUserData: builder.mutation<
@@ -210,12 +219,11 @@ export const api = createApi({
         email: string;
         role: string;
         userId: string;
-        locode: string;
-        isOrganization: boolean;
+        cityId: string;
       }
     >({
       query: (data) => ({
-        url: `/city/${data.locode}/user/${data.userId}`,
+        url: `/city/${data.cityId}/user/${data.userId}`,
         method: "PATCH",
         body: data,
       }),
@@ -226,33 +234,33 @@ export const api = createApi({
         name: string;
         email: string;
         role: string;
-        locode: string;
-        isOrganization: boolean;
+        cityId: string;
       }
     >({
       query: (data) => ({
-        url: `/city/${data.locode}/user/`,
+        url: `/city/${data.cityId}/user/`,
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["UserData"],
     }),
     getCityUsers: builder.query<
       UserAttributes,
       {
-        locode: string;
+        cityId: string;
       }
     >({
-      query: (data) => `/city/${data.locode}/user/`,
+      query: (data) => `/city/${data.cityId}/user/`,
       transformResponse: (response: { data: any }) => response.data,
+      providesTags: ["UserData"],
     }),
     setUserData: builder.mutation<
       UserAttributes,
       Partial<UserAttributes> &
-        Pick<UserAttributes, "userId"> &
-        Pick<UserAttributes, "defaultCityLocode">
+        Pick<UserAttributes, "userId"> & { cityId: string }
     >({
-      query: ({ userId, defaultCityLocode, email, ...rest }) => ({
-        url: `/city/${defaultCityLocode}/user/${userId}`,
+      query: ({ userId, cityId, email, ...rest }) => ({
+        url: `/city/${cityId}/user/${userId}`,
         method: "PATCH",
         body: rest,
       }),
@@ -260,13 +268,14 @@ export const api = createApi({
     }),
     removeUser: builder.mutation<
       UserAttributes,
-      { userId: string; defaultCityLocode: string }
+      { userId: string; cityId: string }
     >({
-      query: ({ defaultCityLocode, userId }) => ({
-        url: `/city/${defaultCityLocode}/user/${userId}`,
+      query: ({ cityId, userId }) => ({
+        url: `/city/${cityId}/user/${userId}`,
         method: "DELETE",
       }),
       transformResponse: (response: { data: any }) => response.data,
+      invalidatesTags: ["UserData"],
     }),
     getVerifcationToken: builder.query({
       query: () => ({
@@ -291,20 +300,59 @@ export const api = createApi({
         method: "GET",
       }),
       transformResponse: (response: { data: any }) => response.data,
+      providesTags: ["CityData"],
     }),
-    removeCity: builder.mutation<string, { locode: string }>({
-      query: ({ locode }) => ({
-        url: `/city/${locode}`,
+    removeCity: builder.mutation<string, { cityId: string }>({
+      query: ({ cityId }) => ({
+        url: `/city/${cityId}`,
         method: "DELETE",
       }),
       transformResponse: (response: { data: any }) => response.data,
+      invalidatesTags: ["CityData"],
     }),
-    getInventories: builder.query<InventoryAttributes[], { locode: string }>({
-      query: ({ locode }) => ({
-        url: `/city/${locode}/inventory`,
+    getInventories: builder.query<InventoryAttributes[], { cityId: string }>({
+      query: ({ cityId }) => ({
+        url: `/city/${cityId}/inventory`,
         method: "GET",
       }),
       transformResponse: (response: { data: any }) => response.data,
+    }),
+    addUserFile: builder.mutation<UserFileResponse, any>({
+      query: (formData) => {
+        return {
+          method: "POST",
+          url: `/user/file`,
+          body: formData,
+        };
+      },
+      transformResponse: (response: { data: UserFileResponse }) =>
+        response.data,
+      invalidatesTags: ["FileData"],
+    }),
+    getUserFiles: builder.query({
+      query: () => ({
+        method: "GET",
+        url: `/user/file`,
+      }),
+      transformResponse: (response: { data: UserFileResponse }) => {
+        return response.data;
+      },
+
+      providesTags: ["FileData"],
+    }),
+    deleteUserFile: builder.mutation({
+      query: (params) => ({
+        method: "DELETE",
+        url: `/user/file/${params.fileId}`,
+      }),
+      transformResponse: (response: { data: UserFileResponse }) =>
+        response.data,
+      invalidatesTags: ["FileData"],
+    }),
+    getEmissionsFactors: builder.query<EmissionsFactorResponse, void>({
+      query: () => `/emissions-factor`,
+      transformResponse: (response: { data: EmissionsFactorResponse }) =>
+        response.data,
     }),
   }),
 });
@@ -352,5 +400,8 @@ export const {
   useGetVerifcationTokenQuery,
   useGetCitiesQuery,
   useGetInventoriesQuery,
+  useAddUserFileMutation,
+  useGetUserFilesQuery,
+  useDeleteUserFileMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

@@ -1,11 +1,7 @@
 import { db } from "@/models";
 import { DataSource } from "@/models/DataSource";
 import { Inventory } from "@/models/Inventory";
-import { SubCategoryValueAttributes } from "@/models/SubCategoryValue";
-import {
-  SubSectorValue,
-  SubSectorValueCreationAttributes,
-} from "@/models/SubSectorValue";
+import { multiplyBigIntFloat } from "@/util/big_int";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 
@@ -40,7 +36,7 @@ export default class DataSourceService {
   public static async retrieveGlobalAPISource(
     source: DataSource,
     inventory: Inventory,
-  ): Promise<any | null> {
+  ): Promise<any | string> {
     const referenceNumber =
       source.subCategory?.referenceNumber || source.subSector?.referenceNumber;
     if (
@@ -50,11 +46,12 @@ export default class DataSourceService {
       !(source.subsectorId || source.subcategoryId) ||
       !referenceNumber
     ) {
-      return null;
+      return "Missing reference data in inventory";
     }
 
     const url = source.apiEndpoint
       .replace(":locode", inventory.city.locode.replace("-", " "))
+      .replace(":country", inventory.city.locode.slice(0, 2))
       .replace(":year", inventory.year.toString())
       .replace(":gpcReferenceNumber", referenceNumber);
 
@@ -63,16 +60,15 @@ export default class DataSourceService {
       const response = await fetch(url);
       data = await response.json();
     } catch (err) {
-      console.error(
-        `Failed to query data source ${source.datasourceId} at URL ${url}:`,
-        err,
-      );
-      return null;
+      const message = `Failed to query data source ${source.datasourceId} at URL ${url}:`;
+      console.error(message, err);
+      return message;
     }
 
     if (typeof data.totals !== "object") {
-      console.error("Incorrect response from Global API for URL:", url, data);
-      return null;
+      const message = "Incorrect response from Global API for URL: " + url;
+      console.error(message, data);
+      return message;
     }
 
     return data;
@@ -81,112 +77,73 @@ export default class DataSourceService {
   public static async applyGlobalAPISource(
     source: DataSource,
     inventory: Inventory,
-  ): Promise<boolean> {
+    scaleFactor: number = 1.0,
+  ): Promise<string | boolean> {
     const data = await DataSourceService.retrieveGlobalAPISource(
       source,
       inventory,
     );
+    if (typeof data === "string") {
+      return data;
+    }
 
     const emissions = data.totals.emissions;
-    // TODO store values for co2, ch4, n2o separately for accounting and editing
-    const totalEmissions = emissions.co2eq_100yr;
-    const values: Partial<SubCategoryValueAttributes> = {
+    let co2eq, co2Amount, n2oAmount, ch4Amount: bigint;
+
+    if (scaleFactor !== 1.0) {
+      co2eq = multiplyBigIntFloat(BigInt(emissions.co2eq_100yr), scaleFactor);
+      co2Amount = multiplyBigIntFloat(BigInt(emissions.co2_mass), scaleFactor);
+      n2oAmount = multiplyBigIntFloat(BigInt(emissions.n2o_mass), scaleFactor);
+      ch4Amount = multiplyBigIntFloat(BigInt(emissions.ch4_mass), scaleFactor);
+    } else {
+      co2eq = BigInt(emissions.co2eq_100yr);
+      co2Amount = BigInt(emissions.co2_mass);
+      n2oAmount = BigInt(emissions.n2o_mass);
+      ch4Amount = BigInt(emissions.ch4_mass);
+    }
+
+    const subCategory = await db.models.SubCategory.findOne({
+      where: { subcategoryId: source.subcategoryId },
+      include: [{ model: db.models.SubSector, as: "subsector" }],
+    });
+
+    if (!subCategory) {
+      throw new createHttpError.InternalServerError("Sub-category for source not found");
+    }
+
+    // TODO what to do with existing InventoryValues and GasValues?
+    const inventoryValue = await db.models.InventoryValue.create({
       datasourceId: source.datasourceId,
       inventoryId: inventory.inventoryId,
-      totalEmissions,
-      co2EmissionsValue: emissions.co2_mass,
-      n2oEmissionsValue: emissions.n2o_mass,
-      ch4EmissionsValue: emissions.ch4_mass,
-    };
+      co2eq,
+      co2eqYears: 100,
+      id: randomUUID(),
+      subCategoryId: source.subcategoryId,
+      subSectorId: subCategory.subsectorId,
+      sectorId: subCategory.subsector.sectorId,
+      gpcReferenceNumber: subCategory.referenceNumber,
+    });
 
-    if (source.subsectorId) {
-      await DataSourceService.initSubSectorValue(
-        source,
-        inventory,
-        totalEmissions,
-        values,
-        source.subSector.sectorId!,
-        source.subsectorId,
-      );
-    } else if (source.subcategoryId) {
-      // add parent SubSectorValue if not present yet
-      let subSectorValue = await db.models.SubSectorValue.findOne({
-        where: {
-          subsectorId: source.subCategory?.subsectorId,
-          inventoryId: inventory.inventoryId,
-        },
-      });
-      if (!subSectorValue) {
-        subSectorValue = await DataSourceService.initSubSectorValue(
-          source,
-          inventory,
-          totalEmissions,
-          values,
-          source.subCategory?.subsector?.sectorId!,
-          source.subCategory?.subsectorId!,
-        );
-      } else {
-        await subSectorValue.update({
-          totalEmissions: (subSectorValue.totalEmissions || 0) + totalEmissions,
-        });
-      }
-      const subCategoryValue = await db.models.SubCategoryValue.create({
-        ...values,
-        subcategoryValueId: randomUUID(),
-        subcategoryId: source.subcategoryId,
-        subsectorValueId: subSectorValue.subsectorValueId,
-      });
-    } else {
-      return false;
-    }
+    // store values for co2, ch4, n2o separately for accounting and editing
+    await db.models.GasValue.create({
+      id: randomUUID(),
+      inventoryValueId: inventoryValue.id,
+      gas: "CO2",
+      gasAmount: co2Amount,
+    });
+    await db.models.GasValue.create({
+      id: randomUUID(),
+      inventoryValueId: inventoryValue.id,
+      gas: "N2O",
+      gasAmount: n2oAmount,
+    });
+    await db.models.GasValue.create({
+      id: randomUUID(),
+      inventoryValueId: inventoryValue.id,
+      gas: "CH4",
+      gasAmount: ch4Amount,
+    });
 
     return true;
-  }
-
-  private static async initSubSectorValue(
-    source: DataSource,
-    inventory: Inventory,
-    totalEmissions: number,
-    values: Partial<SubSectorValueCreationAttributes>,
-    sectorId: string,
-    subsectorId: string,
-  ): Promise<SubSectorValue> {
-    if (!sectorId) {
-      throw new createHttpError.InternalServerError(
-        "Failed to find sector ID for source " + source.datasourceId,
-      );
-    }
-    if (!subsectorId) {
-      throw new createHttpError.InternalServerError(
-        "Failed to find subsector ID for source " + source.datasourceId,
-      );
-    }
-
-    let sectorValue = await db.models.SectorValue.findOne({
-      where: {
-        sectorId,
-        inventoryId: inventory.inventoryId,
-      },
-    });
-    // TODO have to init/ update totalEmissions here?
-    if (!sectorValue) {
-      sectorValue = await db.models.SectorValue.create({
-        sectorValueId: randomUUID(),
-        sectorId,
-        inventoryId: inventory.inventoryId,
-        totalEmissions,
-      });
-    } else {
-      await sectorValue.update({
-        totalEmissions: (sectorValue.totalEmissions || 0) + totalEmissions,
-      });
-    }
-    const subSectorValue = await db.models.SubSectorValue.create({
-      ...values,
-      sectorValueId: sectorValue.sectorValueId,
-      subsectorId,
-      subsectorValueId: randomUUID(),
-    });
-    return subSectorValue;
   }
 }

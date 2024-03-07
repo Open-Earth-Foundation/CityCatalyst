@@ -52,12 +52,20 @@ export default function Settings({
     skip: !userInfo,
   });
 
-  const { data: cityUsers } = api.useGetCityUsersQuery(
-    { locode: userInfo?.defaultCityLocode! },
-    {
-      skip: !userInfo,
-    },
+  // TODO cache current city ID or select it differently / create custom route
+  const { data: inventory } = api.useGetInventoryQuery(
+    userInfo?.defaultInventoryId!,
+    { skip: !userInfo },
   );
+  const cityId = inventory?.city.cityId;
+  const { data: cityUsers } = api.useGetCityUsersQuery(
+    { cityId: cityId! },
+    { skip: !cityId },
+  );
+
+  const { data: userFiles } = api.useGetUserFilesQuery({
+    skip: !userInfo,
+  });
 
   return (
     <Box backgroundColor="background.backgroundLight" paddingBottom="125px">
@@ -134,14 +142,15 @@ export default function Settings({
                   status={status}
                   t={t}
                   userInfo={userInfo!}
+                  userFiles={userFiles!}
                 />
                 <MyInventoriesTab
                   lng={lng}
                   session={session}
                   status={status}
                   cities={cities}
-                  userInfo={userInfo!}
                   t={t}
+                  defaultCityId={cityId}
                 />
               </TabPanels>
             </Tabs>

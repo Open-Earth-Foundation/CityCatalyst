@@ -100,5 +100,22 @@
   "highly-modeled-uncertain-emissions-data": "Hochmodellierte oder unsichere Emissionsdaten",
   "select-subcategories": "Wählen Sie die Unterkategorien aus, die hinzugefügt werden sollen",
   "completed": "Abgeschlossen",
-  "incomplete": "Unvollständig"
+  "incomplete": "Unvollständig",
+  "upload-your-data-details": "Laden Sie hier Ihre Dateien hoch und wir passen Ihre Datenstrukturen an, um sie zu harmonisieren und zu integrieren, um Ihr GPC Core Standard-Emissionsinventar zu berechnen.",
+  "review-your-data-heading": "Uberprüfen Sie die Daten, die Sie gerade hinzugefügt haben",
+  "gpc-scope-required": "Erforderlicher Umfang für das GPC-Basisinventar:",
+  "edit-sector": "Sektor bearbeiten",
+  "discard-sector-changes": "Sektoränderungen verwerfen",
+  "third-party-data": "Verbundene Daten von Drittanbietern",
+  "data-by-subsector": "Daten nach Untersektor",
+  "data-files-uploaded": "Hochgeladene Dateien",
+  "water-and-wastewater": "Wasser und Abwasser",
+  "upload-your-data-heading": "Laden Sie Ihre Dateien hoch",
+  "confirm-and-add-data": "Bestätigen und Daten hinzufügen",
+  "discard-all-changes": "Alle Änderungen verwerfen",
+  "emissions-inventory-title": "Emissionsinventar",
+  "review-data-label": "Daten überprüfen und hinzufügen",
+  "files-uploaded": "Dateien hochgeladen",
+  "add-custom": "Benutzerdefiniert",
+  "save-missing-scope-info": "Speichern oder fehlende Informationen ausfüllen, bevor Sie fortfahren."
 }

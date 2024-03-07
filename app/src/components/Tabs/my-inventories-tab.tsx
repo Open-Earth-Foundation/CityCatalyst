@@ -36,16 +36,14 @@ import {
 } from "react-icons/md";
 import { FiTrash2 } from "react-icons/fi";
 
-import { CityData } from "@/app/[lng]/settings/page";
+import type { Session } from "next-auth";
 
-import { Session } from "next-auth";
-
-import { TFunction } from "i18next";
+import type { TFunction } from "i18next";
 import DeleteInventoryModal from "../Modals/delete-inventory-modal";
-import { UserAttributes } from "@/models/User";
-import { CityAttributes } from "@/models/City";
+import type { UserAttributes } from "@/models/User";
+import type { CityAttributes } from "@/models/City";
 import { api } from "@/services/api";
-import { InventoryAttributes } from "@/models/Inventory";
+import type { InventoryAttributes } from "@/models/Inventory";
 
 interface MyInventoriesTabProps {
   session: Session | null;
@@ -53,7 +51,7 @@ interface MyInventoriesTabProps {
   t: TFunction;
   lng: string;
   cities: CityAttributes[] | any;
-  userInfo: UserAttributes | any;
+  defaultCityId?: string;
 }
 
 const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
@@ -62,12 +60,18 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
   t,
   lng,
   cities,
-  userInfo,
+  defaultCityId,
 }) => {
   const [tabIndex, setTabIndex] = useState(0);
-  const [locode, setLocode] = useState<string>(userInfo?.defaultCityLocode);
+  const [cityId, setCityId] = useState<string | undefined>(defaultCityId);
+  useEffect(() => {
+    if (!cityId && defaultCityId && defaultCityId !== cityId) {
+      setCityId(defaultCityId);
+    }
+  }, [defaultCityId, cityId]);
+
   const { data: inventories, isLoading: isInventoriesLoading } =
-    api.useGetInventoriesQuery({ locode }, { skip: !locode });
+    api.useGetInventoriesQuery({ cityId: cityId! }, { skip: !cityId });
 
   const {
     isOpen: isInventoryDeleteModalOpen,
@@ -82,8 +86,6 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
     role: "",
   });
 
-  const [cityData, setCityData] = useState<string>("");
-
   return (
     <>
       <TabPanel>
@@ -94,7 +96,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
               fontWeight="bold"
               lineHeight="32"
               fontSize="headline.sm"
-              fontFamily="body"
+              fontFamily="heading"
               fontStyle="normal"
             >
               {t("my-inventories")}
@@ -103,7 +105,6 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
               color="content.tertiary"
               fontWeight="normal"
               lineHeight="24"
-              fontFamily="heading"
               fontSize="body.lg"
               letterSpacing="wide"
               marginTop="8px"
@@ -120,6 +121,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
               fontSize="title.md"
               letterSpacing="wide"
               marginTop="8px"
+              fontFamily="heading"
             >
               {t("city")}
             </Text>
@@ -135,7 +137,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                 {cities?.map((city: CityAttributes) => (
                   <Tab
                     key={city.cityId}
-                    onClick={() => setLocode(city?.locode!)}
+                    onClick={() => setCityId(city?.cityId!)}
                     sx={{
                       w: "223px",
                       justifyContent: "left",
@@ -146,6 +148,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                       fontStyle: "normal",
                       fontSize: "label.lg",
                       fontWeight: "medium",
+                      fontFamily: "heading",
                     }}
                     _selected={{
                       color: "content.link",
@@ -166,7 +169,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
               <TabPanels backgroundColor="background.default">
                 {cities?.map((city: CityAttributes) => (
                   <TabPanel
-                    onClick={() => setCityData(city.cityId)}
+                    onClick={() => setCityId(city.cityId)}
                     key={city.cityId}
                     display="flex"
                     flexDirection="column"
@@ -181,11 +184,11 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                           src="https://upload.wikimedia.org/wikipedia/commons/1/1a/Flag_of_Argentina.svg"
                         />
                         <Text
-                          color="content.primary"
+                          color="content.secondary"
                           fontWeight="semibold"
                           lineHeight="24"
                           fontSize="title.md"
-                          fontFamily="body"
+                          fontFamily="heading"
                           fontStyle="normal"
                         >
                           {city.name}
@@ -363,7 +366,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
         onClose={onInventoryDeleteModalClose}
         userData={userData}
         lng={lng}
-        tf={t}
+        t={t}
       />
     </>
   );

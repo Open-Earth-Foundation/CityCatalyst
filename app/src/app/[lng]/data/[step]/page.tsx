@@ -1,13 +1,28 @@
 "use client";
 
 import { SegmentedProgress } from "@/components/SegmentedProgress";
-import { CircleIcon, DataAlertIcon, WorldSearchIcon } from "@/components/icons";
+import FileInput from "@/components/file-input";
+import {
+  CircleIcon,
+  DataAlertIcon,
+  ExcelFileIcon,
+  WorldSearchIcon,
+} from "@/components/icons";
 import WizardSteps from "@/components/wizard-steps";
+import { addFile, removeFile } from "@/features/city/inventoryDataSlice";
 import { useTranslation } from "@/i18n/client";
+import { RootState } from "@/lib/store";
 import { ScopeAttributes } from "@/models/Scope";
 import { api } from "@/services/api";
+import { logger } from "@/services/logger";
+import { bytesToMB, nameToI18NKey } from "@/util/helpers";
 import type { DataSource, SectorProgress } from "@/util/types";
-import { ArrowBackIcon, SearchIcon, WarningIcon } from "@chakra-ui/icons";
+import {
+  ArrowBackIcon,
+  ChevronRightIcon,
+  SearchIcon,
+  WarningIcon,
+} from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -47,15 +62,17 @@ import {
   MdPlaylistAddCheck,
   MdRefresh,
 } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
 import { SourceDrawer } from "./SourceDrawer";
 import { SubsectorDrawer } from "./SubsectorDrawer";
 import type { DataStep, SubSector } from "./types";
-import { nameToI18NKey } from "@/util/helpers";
-import { logger } from "@/services/logger";
+
+import { v4 as uuidv4 } from "uuid";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
-    process.env.NEXT_PUBLIC_SUPPORT_EMAILS || "info@openearth.org,greta@openearth.org";
+    process.env.NEXT_PUBLIC_SUPPORT_EMAILS ||
+    "info@openearth.org,greta@openearth.org";
   return `mailto://${emails}?subject=Missing third party data sources&body=City: ${locode}%0ASector: ${sector}%0AYear: ${year}`;
 }
 
@@ -156,18 +173,18 @@ export default function AddDataSteps({
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
-  const locode = userInfo?.defaultCityLocode;
-  const year = userInfo?.defaultInventoryYear;
+  const defaultInventoryId = userInfo?.defaultInventoryId;
 
   const {
     data: inventoryProgress,
     isLoading: isInventoryProgressLoading,
     error: inventoryProgressError,
-  } = api.useGetInventoryProgressQuery(
-    { locode: locode!, year: year! },
-    { skip: !locode || !year },
-  );
+  } = api.useGetInventoryProgressQuery(defaultInventoryId!, {
+    skip: !defaultInventoryId,
+  });
   const isInventoryLoading = isUserInfoLoading || isInventoryProgressLoading;
+  const locode = inventoryProgress?.inventory.city.locode || undefined;
+  const year = inventoryProgress?.inventory.year || undefined;
 
   const [
     loadDataSources,
@@ -325,7 +342,7 @@ export default function AddDataSteps({
     setConnectingDataSourceId(source.datasourceId);
     try {
       const response = await connectDataSource({
-        inventoryId: inventoryProgress.inventoryId,
+        inventoryId: inventoryProgress?.inventory.inventoryId,
         dataSourceIds: [source.datasourceId],
       }).unwrap();
 
@@ -364,15 +381,14 @@ export default function AddDataSteps({
 
   function isSourceConnected(source: DataSource): boolean {
     return (
-      (source.subSectorValues && source.subSectorValues.length > 0) ||
-      (source.subCategoryValues && source.subCategoryValues.length > 0) ||
+      (source.inventoryValues && source.inventoryValues.length > 0) ||
       newlyConnectedDataSourceIds.indexOf(source.datasourceId) > -1
     );
   }
 
   function onSearchDataSourcesClicked() {
     if (inventoryProgress) {
-      loadDataSources({ inventoryId: inventoryProgress.inventoryId });
+      loadDataSources({ inventoryId: inventoryProgress.inventory.inventoryId });
     } else {
       console.error("Inventory progress is still loading!");
     }
@@ -399,7 +415,7 @@ export default function AddDataSteps({
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setConfirming(false);
     if (activeStep >= steps.length - 1) {
-      router.push("/"); // go back to dashboard until there is a confirmation page
+      router.push("/data/review");
     } else {
       window.scrollTo({ top: 0, behavior: "smooth" });
       goToNext();
@@ -408,7 +424,7 @@ export default function AddDataSteps({
 
   const onSkip = () => {
     if (activeStep >= steps.length - 1) {
-      router.push("/"); // go back to dashboard until there is a confirmation page
+      router.push("/data/review");
     } else {
       window.scrollTo({ top: 0, behavior: "smooth" });
       goToNext();
@@ -416,6 +432,54 @@ export default function AddDataSteps({
   };
 
   const [isDataSectionExpanded, setDataSectionExpanded] = useState(false);
+
+  const getInventoryData = useSelector(
+    (state: RootState) => state.inventoryData,
+  );
+  const dispatch = useDispatch();
+  function fileToBase64(file: File) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  }
+  // Add file data to rudux state object
+  const handleFileSelect = async (file: File) => {
+    const base64FileString = await fileToBase64(file);
+    const filename = file.name;
+    dispatch(
+      addFile({
+        sectorName: currentStep.title!,
+        fileData: {
+          fileId: uuidv4(),
+          fileName: filename,
+          userId: userInfo?.userId,
+          sector: currentStep.title,
+          data: base64FileString,
+          // TODO this should not be passed in but rather set on the server (only necessary for AWS S3 or external hosting)
+          url: "http://localhost",
+          size: file.size,
+          fileType: filename.split(".").pop(),
+        },
+      }),
+    );
+  };
+
+  const sectorData = getInventoryData.sectors.filter(
+    (sector) => sector.sectorName === currentStep.title,
+  );
+
+  function removeSectorFile(fileId: string, sectorName: string) {
+    dispatch(
+      removeFile({
+        sectorName,
+        fileId,
+      }),
+    );
+  }
 
   return (
     <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
@@ -541,8 +605,8 @@ export default function AddDataSteps({
           <NoDataSourcesMessage
             t={t}
             sector={currentStep.referenceNumber}
-            locode={locode || undefined}
-            year={year || undefined}
+            locode={locode}
+            year={year}
           />
         ) : (
           <SimpleGrid columns={3} spacing={4}>
@@ -646,7 +710,7 @@ export default function AddDataSteps({
         )}
       </Card>
       {/*** Manual data entry section for subsectors ***/}
-      <Card mb={48}>
+      <Card mb={12}>
         <Heading size="lg" mb={2}>
           {t("add-data-heading")}
         </Heading>
@@ -713,6 +777,135 @@ export default function AddDataSteps({
           )}
         </SimpleGrid>
       </Card>
+      <Card mb={48} shadow="none">
+        <Heading size="lg" mb={2}>
+          {t("upload-your-data-heading")}
+        </Heading>
+        <Text color="content.tertiary" mb={12}>
+          {t("upload-your-data-details")}
+        </Text>
+        <Box display="flex">
+          <Box
+            w="691px"
+            borderRightWidth="1px"
+            borderColor="border.overlay"
+            pr="16px"
+          >
+            <Box w="full">
+              <Box mb="24px">
+                <FileInput onFileSelect={handleFileSelect} t={t} />
+              </Box>
+              <Box mb="24px">
+                <Heading size="sm">{t("files-uploaded")}</Heading>
+              </Box>
+              <Box display="flex" flexDirection="column" gap="8px">
+                {sectorData &&
+                  sectorData[0]?.files.map((file: any, i: number) => (
+                    <Card
+                      shadow="none"
+                      h="80px"
+                      w="full"
+                      borderWidth="1px"
+                      borderColor="border.overlay"
+                      borderRadius="8px"
+                      px="16px"
+                      py="16px"
+                      key={i}
+                    >
+                      <Box display="flex" gap="16px">
+                        <Box>
+                          <ExcelFileIcon />
+                        </Box>
+                        <Box
+                          display="flex"
+                          flexDirection="column"
+                          justifyContent="center"
+                          gap="8px"
+                        >
+                          <Heading
+                            fontSize="lable.lg"
+                            fontWeight="normal"
+                            letterSpacing="wide"
+                            isTruncated
+                          >
+                            {file.fileName}
+                          </Heading>
+                          <Text
+                            fontSize="body.md"
+                            fontWeight="normal"
+                            color="interactive.control"
+                          >
+                            {bytesToMB(file.size)}
+                          </Text>
+                        </Box>
+                        <Box
+                          color="sentiment.negativeDefault"
+                          display="flex"
+                          justifyContent="right"
+                          alignItems="center"
+                          w="full"
+                        >
+                          <Button
+                            variant="ghost"
+                            color="sentiment.negativeDefault"
+                            onClick={() =>
+                              removeSectorFile(
+                                file.fileId,
+                                sectorData[0].sectorName,
+                              )
+                            }
+                          >
+                            <FiTrash2 size={24} />
+                          </Button>
+                        </Box>
+                      </Box>
+                    </Card>
+                  ))}
+              </Box>
+            </Box>
+          </Box>
+          <Box pl="16px">
+            <Card
+              shadow="none"
+              borderWidth="1px"
+              borderColor="border.overlay"
+              borderRadius="8px"
+              w="303px"
+              h="160px"
+              p="16px"
+            >
+              <Box display="flex" gap="16px">
+                <Box>
+                  <Heading
+                    fontSize="label.lg"
+                    fontWeight="semibold"
+                    letterSpacing="wide"
+                    lineHeight="20px"
+                  >
+                    {t("download-template")}
+                  </Heading>
+                  <Text
+                    color="interactive.control"
+                    fontSize="body.md"
+                    fontWeight="normal"
+                    letterSpacing="wide"
+                    lineHeight="20px"
+                  >
+                    {t("file-upload-steps")}
+                  </Text>
+                </Box>
+                <Box display="flex" alignItems="center">
+                  <ChevronRightIcon
+                    h="24px"
+                    w="24px"
+                    color="interactive.control"
+                  />
+                </Box>
+              </Box>
+            </Card>
+          </Box>
+        </Box>
+      </Card>
       {/*** Bottom bar ***/}
       <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand py-4 px-4 drop-shadow-2xl hover:drop-shadow-4xl transition-all">
         <Box className="w-[1090px] max-w-full mx-auto flex flex-row flex-wrap gap-y-2">
@@ -754,10 +947,9 @@ export default function AddDataSteps({
         t={t}
       />
       <SubsectorDrawer
-        subsector={selectedSubsector}
+        subSector={selectedSubsector}
         sectorName={currentStep.title}
-        sectorNumber={currentStep.referenceNumber}
-        inventoryId={inventoryProgress?.inventoryId}
+        inventoryId={inventoryProgress?.inventory.inventoryId}
         isOpen={isSubsectorDrawerOpen}
         onClose={onSubsectorDrawerClose}
         onSave={onSubsectorSave}

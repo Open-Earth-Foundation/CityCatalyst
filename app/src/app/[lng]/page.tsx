@@ -1,6 +1,7 @@
 "use client";
 
 import { SectorCard } from "@/components/Cards/SectorCard";
+import ChatPopover from "@/components/ChatBot/chat-popover";
 import { InventorySelect } from "@/components/InventorySelect";
 import Footer from "@/components/Sections/Footer";
 import { SegmentedProgress } from "@/components/SegmentedProgress";
@@ -22,9 +23,11 @@ import {
   CardBody,
   CardHeader,
   Center,
+  CloseButton,
   Heading,
   Icon,
   Link,
+  Spacer,
   Spinner,
   Tag,
   TagLabel,
@@ -77,38 +80,36 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
   // query API data
   // TODO maybe rework this logic into one RTK query:
   // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#performing-multiple-requests-with-a-single-query
-  let locode: string | null = null;
-  let year: number | null = null;
+  let defaultInventoryId: string | null = null;
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
   if (!isUserInfoLoading && userInfo) {
-    locode = userInfo.defaultCityLocode;
-    year = userInfo.defaultInventoryYear;
+    defaultInventoryId = userInfo.defaultInventoryId;
 
     // TODO also add this to login logic or after email verification to prevent extra redirect?
-    // if the user doesn't have a default city/ year, redirect to onboarding page
-    if (!locode || !year) {
+    // if the user doesn't have a default inventory, redirect to onboarding page
+    if (!defaultInventoryId) {
       // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
       setTimeout(() => router.push("/onboarding"), 0);
     }
   }
   const { data: inventory, isLoading: isInventoryLoading } =
-    api.useGetInventoryQuery(
-      { locode: locode!, year: year! },
-      { skip: !locode || !year },
-    );
+    api.useGetInventoryQuery(defaultInventoryId!, {
+      skip: !defaultInventoryId,
+    });
 
   const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
-    api.useGetInventoryProgressQuery(
-      { locode: locode!, year: year! },
-      { skip: !locode || !year },
-    );
+    api.useGetInventoryProgressQuery(defaultInventoryId!, {
+      skip: !defaultInventoryId,
+    });
 
-  const { data: city } = api.useGetCityQuery(locode!, { skip: !locode });
+  const { data: city } = api.useGetCityQuery(inventory?.cityId!, {
+    skip: !inventory?.cityId,
+  });
 
   const { data: population } = useGetCityPopulationQuery(
-    { locode: locode!, year: year! },
-    { skip: !locode || !year },
+    { cityId: inventory?.cityId!, year: inventory?.year! },
+    { skip: !inventory?.cityId || !inventory?.year },
   );
 
   let totalProgress = 0,
@@ -125,23 +126,31 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
     title: string,
     description: string,
     status: any,
-    duration: number,
+    duration: number | null,
     bgColor: string,
+    showAnimatedGradient: boolean = false,
   ) => {
+    // Replace previous toast notifications
+    if (duration == null) {
+      toast.closeAll();
+    }
+
+    const animatedGradientClass = `bg-gradient-to-l from-brand via-brand_light to-brand bg-[length:200%_auto] animate-gradient`;
+
     toast({
-      description: description,
+      description: t(description),
       status: status,
       duration: duration,
       isClosable: true,
-      render: () => (
+      render: ({ onClose }) => (
         <Box
           display="flex"
           gap="8px"
           color="white"
           alignItems="center"
-          justifyContent="space-between"
           p={3}
-          bg={bgColor}
+          bg={showAnimatedGradient ? undefined : bgColor}
+          className={showAnimatedGradient ? animatedGradientClass : undefined}
           width="600px"
           height="60px"
           borderRadius="8px"
@@ -158,36 +167,38 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               lineHeight="52"
               fontSize="label.lg"
             >
-              {title}
+              {t(title)}
             </Text>
           </Box>
-          {status === "error" ? (
+          <Spacer />
+          {status === "error" && (
             <Button
+              variant="lightGhost"
               onClick={handleDownload}
               fontWeight="600"
               fontSize="16px"
               letterSpacing="1.25px"
-              variant="unstyled"
-              bgColor="none"
             >
-              Try again
+              {t("try-again")}
             </Button>
-          ) : (
-            ""
           )}
-        </Box>
+          <CloseButton onClick={onClose} />
+        </Box >
       ),
     });
   };
+
   const handleDownload = () => {
     showToast(
-      "Preparing your dataset for download",
-      "Please wait while we fetch your data",
+      "preparing-dataset",
+      "wait-fetch-data",
       STATUS.INFO,
-      2000,
+      null,
       "semantic.info",
+      true // animated gradient
     );
-    fetch(`/api/v0/city/${locode}/inventory/${year}?format=csv`)
+    const format = "xls";
+    fetch(`/api/v0/inventory/${defaultInventoryId}?format=${format}`)
       .then((res) => {
         if (!res.ok) {
           throw new Error("Network response was not ok");
@@ -196,7 +207,9 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
         const contentDisposition = res.headers.get("Content-Disposition");
         if (contentDisposition) {
           const match = contentDisposition.match(/filename="(.+)"/);
-          const filename = match ? match[1] : `${locode}_${year}.csv`;
+          const filename = match
+            ? match[1]
+            : `${city?.locode}_${inventory?.year}.${format}`;
           return res.blob().then((blob) => {
             const downloadLink = document.createElement("a");
             downloadLink.href = URL.createObjectURL(blob);
@@ -204,23 +217,24 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
 
             downloadLink.click();
             showToast(
-              "Inventory report download completed!",
-              "Downloading your data",
+              "download-complete",
+              "downloading-data",
               STATUS.SUCCESS,
-              2000,
+              null,
               "interactive.primary",
             );
             URL.revokeObjectURL(downloadLink.href);
+            downloadLink.remove();
           });
         }
       })
       .catch((error) => {
         console.error("Download error:", error);
         showToast(
-          "Download failed",
-          "There was an error during download",
+          "download-failed",
+          "download-error",
           STATUS.ERROR,
-          2000,
+          null,
           "semantic.danger",
         );
       });
@@ -263,8 +277,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                         {inventory?.city?.name}
                       </Heading>
                       <InventorySelect
-                        currentLocode={locode}
-                        currentYear={year}
+                        currentInventoryId={defaultInventoryId}
                       />
                     </>
                   ) : (
@@ -405,7 +418,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                 </Box>
               </Box>
               <Box mt={-25}>
-                <CityMap locode={locode} width={422} height={317} />
+                <CityMap
+                  locode={inventory?.city?.locode ?? null}
+                  width={422}
+                  height={317}
+                />
               </Box>
             </Box>
             <Box className="flex gap-[24px] relative justify-between top-[100px]">
@@ -510,7 +527,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                 <Trans t={t}>
                   gpc-basic-emissions-inventory-calculations-year
                 </Trans>{" "}
-                {year}
+                {inventory?.year}
               </Heading>
               <Tooltip
                 hasArrow
@@ -526,10 +543,14 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               color="interactive.control"
               letterSpacing="wide"
             >
-              <Trans i18nKey="dashboard:gpc-inventory-description" year={year}>
+              <Trans
+                i18nKey="gpc-inventory-description"
+                values={{ year: inventory?.year }}
+                t={t}
+              >
                 The data you have submitted is now officially incorporated into
-                your city&apos;s {{ year }} GHG Emissions Inventory, compiled
-                according to the GPC Basic methodology.{" "}
+                your city&apos;s {{ year: inventory?.year }} GHG Emissions Inventory,
+                compiled according to the GPC Basic methodology.{" "}
                 <Link
                   href="https://ghgprotocol.org/ghg-protocol-cities"
                   target="_blank"
@@ -614,6 +635,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
         </Box>
       </Box>
       <Footer lng={lng} />
+      <ChatPopover />
     </>
   );
 }

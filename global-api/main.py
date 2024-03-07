@@ -2,6 +2,7 @@ import logging
 import uvicorn
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
+from fastapi.middleware.cors import CORSMiddleware
 
 from settings import settings
 from utils.helpers import get_or_create_log_file
@@ -14,6 +15,7 @@ from routes.catalogue_endpoint import api_router as catalouge_route
 from routes.catalogue_last_update_endpoint import api_router as catalogue_last_update_endpoint
 from routes.city_locode_endpoint_ghgrp import api_router as ghgrp_city_locode_route
 from routes.city_locode_endpoint_mendoza_stationary_energy import api_router as mendoza_stationary_energy_city_locode_route
+from routes.country_code_IEA_energy import api_router as country_code_IEA_energy_route
 
 """
 Logger instance initialized and configured
@@ -41,9 +43,19 @@ FastApi application instance intialized with `title` and `debug mode`
 app = FastAPI(title=settings.PROJECT_NAME, debug=True)
 
 """
+Middleware to allow CORS for all routes, methods and origins
+"""
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+"""
 Function to generate custom OpenAPI documentation
 """
-
 
 def custom_openapi():
     # check if the OpenApI schema has already been generated
@@ -112,6 +124,12 @@ app.include_router(
     ghgrp_city_locode_route,
     tags=["GHGRP EPA"],
 )
+
+app.include_router(
+    country_code_IEA_energy_route,
+    tags=["IEA energy"],
+)
+
 
 app.include_router(
     mendoza_stationary_energy_city_locode_route,

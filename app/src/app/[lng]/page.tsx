@@ -183,7 +183,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
             </Button>
           )}
           <CloseButton onClick={onClose} />
-        </Box >
+        </Box>
       ),
     });
   };
@@ -195,9 +195,9 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
       STATUS.INFO,
       null,
       "semantic.info",
-      true // animated gradient
+      true, // animated gradient
     );
-    const format = "xls";
+    const format = "csv";
     fetch(`/api/v0/inventory/${defaultInventoryId}?format=${format}`)
       .then((res) => {
         if (!res.ok) {
@@ -549,8 +549,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                 t={t}
               >
                 The data you have submitted is now officially incorporated into
-                your city&apos;s {{ year: inventory?.year }} GHG Emissions Inventory,
-                compiled according to the GPC Basic methodology.{" "}
+                your city&apos;s {{ year: inventory?.year }} GHG Emissions
+                Inventory, compiled according to the GPC Basic methodology.{" "}
                 <Link
                   href="https://ghgprotocol.org/ghg-protocol-cities"
                   target="_blank"

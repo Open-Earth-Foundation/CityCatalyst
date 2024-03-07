@@ -16,9 +16,9 @@ module.exports = {
           key: 'city_id'
         }
       },
-      email: {
+      user_id: {
         type: Sequelize.STRING,
-        allowNull:false,
+        allowNull:true,
       },
       status: {
         type: Sequelize.STRING,
@@ -40,7 +40,6 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-
     await queryInterface.dropTable('CityInvite');
   }
 };

@@ -99,40 +99,76 @@ const AddUserModal: FC<AddUserModalProps> = ({
           name: res.data ? res.data.name! : data.name,
           cityId: defaultCityId!,
           email: data.email!,
+          userId: res?.data?.userId,
         }).then((res: any) => {
           onClose();
-          return toast({
-            description: "User invite sent",
-            status: "success",
-            duration: 5000,
-            isClosable: true,
-            render: () => (
-              <Box
-                display="flex"
-                gap="8px"
-                color="white"
-                alignItems="center"
-                justifyContent="space-between"
-                p={3}
-                bg="interactive.primary"
-                width="600px"
-                height="60px"
-                borderRadius="8px"
-              >
-                <Box display="flex" gap="8px" alignItems="center">
-                  <MdCheckCircleOutline fontSize="24px" />
-                  <Text
-                    color="base.light"
-                    fontWeight="bold"
-                    lineHeight="52"
-                    fontSize="label.lg"
-                  >
-                    User invite sent
-                  </Text>
+          if (res?.error?.status == 400) {
+            return toast({
+              description: "Something went wrong",
+              status: "error",
+              duration: 5000,
+              isClosable: true,
+              render: () => (
+                <Box
+                  display="flex"
+                  gap="8px"
+                  color="white"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  p={3}
+                  bg="sentiment.negativeDefault"
+                  width="600px"
+                  height="60px"
+                  borderRadius="8px"
+                >
+                  <Box display="flex" gap="8px" alignItems="center">
+                    <MdCheckCircleOutline fontSize="24px" />
+                    <Text
+                      color="base.light"
+                      fontWeight="bold"
+                      lineHeight="52"
+                      fontSize="label.lg"
+                    >
+                      Something went wrong!
+                    </Text>
+                  </Box>
                 </Box>
-              </Box>
-            ),
-          });
+              ),
+            });
+          } else {
+            return toast({
+              description: "User invite sent",
+              status: "success",
+              duration: 5000,
+              isClosable: true,
+              render: () => (
+                <Box
+                  display="flex"
+                  gap="8px"
+                  color="white"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  p={3}
+                  bg="interactive.primary"
+                  width="600px"
+                  height="60px"
+                  borderRadius="8px"
+                >
+                  <Box display="flex" gap="8px" alignItems="center">
+                    <MdCheckCircleOutline fontSize="24px" />
+                    <Text
+                      color="base.light"
+                      fontWeight="bold"
+                      lineHeight="52"
+                      fontSize="label.lg"
+                    >
+                      User invite sent
+                    </Text>
+                  </Box>
+                </Box>
+              ),
+            });
+          }
         });
       }
     });
@@ -173,6 +209,14 @@ const AddUserModal: FC<AddUserModalProps> = ({
                   label={t("email")}
                   register={register}
                 />
+                {/* <FormSelectInput
+                  label={t("role")}
+                  value={inputValue}
+                  register={register}
+                  error={errors.role}
+                  id="role"
+                  onInputChange={onInputChange}
+                /> */}
               </Box>
             </form>
           </ModalBody>

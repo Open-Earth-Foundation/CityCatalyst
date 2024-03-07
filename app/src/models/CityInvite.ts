@@ -6,7 +6,7 @@ import { UserFileCreationAttributes } from "./UserFile";
 export interface CityInviteAttributes {
   id: string;
   cityId?: string;
-  email?: string;
+  userId?: string;
   status?: string;
   created?: Date;
   lastUpdated?: Date;
@@ -20,7 +20,7 @@ export type CityInviteCreationAttributes = Optional<
 >;
 export type CityInviteOptionalAttributes =
   | "cityId"
-  | "email"
+  | "userId"
   | "status"
   | "created"
   | "lastUpdated";
@@ -31,7 +31,7 @@ export class CityInvite
 {
   id!: string;
   cityId?: string | undefined;
-  email?: string | undefined;
+  userId?: string | undefined;
   status?: string | undefined;
   created?: Date | undefined;
   lastUpdated?: Date | undefined;
@@ -60,7 +60,7 @@ export class CityInvite
           },
           field: "city_id",
         },
-        email: {
+        userId: {
           type: DataTypes.STRING(255),
           allowNull: true,
         },

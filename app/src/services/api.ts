@@ -358,7 +358,7 @@ export const api = createApi({
     // User invitation to city
     inviteUser: builder.mutation<
       UserInviteResponse,
-      { cityId: string; name?: string; email: string }
+      { cityId: string; name?: string; email: string; userId: string }
     >({
       query: (data) => {
         return {

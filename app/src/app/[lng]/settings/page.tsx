@@ -135,6 +135,7 @@ export default function Settings({
                   userInfo={userInfo}
                   cities={cities}
                   cityUsers={cityUsers}
+                  defaultCityId={cityId}
                 />
                 <MyFilesTab
                   lng={lng}

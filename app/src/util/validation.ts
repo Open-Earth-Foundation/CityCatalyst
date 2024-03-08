@@ -128,3 +128,13 @@ export const createUserFileRequset = z.object({
 
 // Schema type definition
 export type CreateUserFileRequetData = z.infer<typeof createUserFileRequset>;
+
+export const createUserInvite = z.object({
+  userId: z.string().optional(),
+  invitingUserId: z.string().uuid(),
+  email: z.string().email(),
+  name: z.string(),
+  cityId: z.string(),
+});
+
+export type CreateUserInvite = z.infer<typeof createUserInvite>;

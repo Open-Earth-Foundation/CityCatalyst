@@ -64,7 +64,6 @@ export default function InviteUserTemplate({
                 backgroundSize: "cover",
                 height: "32px",
                 width: "32px",
-                borderRadius: "50px",
                 backgroundOrigin: "content-box",
                 marginTop: "28px",
                 marginRight: "16px",

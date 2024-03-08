@@ -100,6 +100,7 @@ const AddUserModal: FC<AddUserModalProps> = ({
           cityId: defaultCityId!,
           email: data.email!,
           userId: res?.data?.userId,
+          invitingUserId: userInfo! && userInfo?.userId!,
         }).then((res: any) => {
           onClose();
           if (res?.error?.status == 400) {

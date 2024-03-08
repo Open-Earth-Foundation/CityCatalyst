@@ -7,6 +7,7 @@ export interface CityInviteAttributes {
   id: string;
   cityId?: string;
   userId?: string;
+  invitingUserId?: string;
   status?: string;
   created?: Date;
   lastUpdated?: Date;
@@ -21,6 +22,7 @@ export type CityInviteCreationAttributes = Optional<
 export type CityInviteOptionalAttributes =
   | "cityId"
   | "userId"
+  | "invitingUserId"
   | "status"
   | "created"
   | "lastUpdated";
@@ -32,6 +34,7 @@ export class CityInvite
   id!: string;
   cityId?: string | undefined;
   userId?: string | undefined;
+  invitingUserId?: string | undefined;
   status?: string | undefined;
   created?: Date | undefined;
   lastUpdated?: Date | undefined;
@@ -63,6 +66,15 @@ export class CityInvite
         userId: {
           type: DataTypes.STRING(255),
           allowNull: true,
+        },
+        invitingUserId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: "User",
+            key: "user_id",
+          },
+          field: "inviting_user_id",
         },
         status: {
           type: DataTypes.STRING(255),

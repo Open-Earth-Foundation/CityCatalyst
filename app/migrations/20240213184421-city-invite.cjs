@@ -20,6 +20,14 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull:true,
       },
+      inviting_user_id: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        references: {
+          model:'User',
+          key: 'user_id'
+        }
+      },
       status: {
         type: Sequelize.STRING,
         allowNull:false,

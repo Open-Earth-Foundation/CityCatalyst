@@ -16,6 +16,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
   });
 
   if (!existingUser) {
+    // return a message to ui for the flow to continue and not break
     return NextResponse.json({ message: "User not found" });
   }
 

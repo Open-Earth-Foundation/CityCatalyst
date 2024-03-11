@@ -344,7 +344,7 @@ export const api = createApi({
     deleteUserFile: builder.mutation({
       query: (params) => ({
         method: "DELETE",
-        url: `/user/file/${params.fileId}`,
+        url: `/city/${params.cityId}/file/${params.fileId}`,
       }),
       transformResponse: (response: { data: UserFileResponse }) =>
         response.data,

@@ -32,7 +32,12 @@ async function createAdmin() {
     role: Roles.Admin,
   });
 
-  logger.info("Created admin user", user.userId);
+  logger.info(
+    "Created admin user with email %s and ID %s",
+    user.email,
+    user.userId,
+  );
+  await db.sequelize?.close();
 }
 
 createAdmin();

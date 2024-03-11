@@ -111,6 +111,10 @@ export function SourceDrawer({
                 lineHeight="40px"
                 textTransform="capitalize"
               >
+                {source.name}
+              </Heading>
+
+              <Heading size="sm">
                 {source.subCategory?.referenceNumber ||
                   source.subSector?.referenceNumber}{" "}
                 {source.subCategory?.subcategoryName ||
@@ -137,7 +141,7 @@ export function SourceDrawer({
                 </Link>
               </Text>
 
-              <Heading fontSize="16px" lineHeight="24px">
+              <Heading size="sm">
                 {t("total-emissions-included")}{" "}
                 <Tooltip
                   hasArrow

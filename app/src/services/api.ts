@@ -319,10 +319,10 @@ export const api = createApi({
       transformResponse: (response: { data: any }) => response.data,
     }),
     addUserFile: builder.mutation<UserFileResponse, any>({
-      query: (formData) => {
+      query: ({ formData, cityId }) => {
         return {
           method: "POST",
-          url: `/user/file`,
+          url: `city/${cityId}/file`,
           body: formData,
         };
       },

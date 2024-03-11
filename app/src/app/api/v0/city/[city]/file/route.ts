@@ -78,7 +78,7 @@ export const POST = apiHandler(async (req: NextRequest, context) => {
 
   const fileData = {
     userId: userId,
-    cityId: formData.get("cityId"),
+    cityId: context.params.city,
     fileReference: formData.get("fileReference"),
     url: formData.get("url"),
     data: buffer,

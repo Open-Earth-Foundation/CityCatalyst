@@ -125,8 +125,6 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
     lastUpdated: "",
   });
 
-  console.log(cityData);
-
   const [fileData, setFileData] = useState<UserFileAttributes>();
 
   return (

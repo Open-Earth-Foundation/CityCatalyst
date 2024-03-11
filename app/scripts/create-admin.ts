@@ -14,9 +14,10 @@ async function createAdmin() {
   }
 
   if (!process.env.DEFAULT_ADMIN_EMAIL || !process.env.DEFAULT_ADMIN_PASSWORD) {
-    throw new Error(
-      "Missing default admin credentials DEFAULT_ADMIN_EMAIL and DEFAULT_ADMIN_PASSWORD in env!",
+    logger.error(
+      "create-admin.ts: Missing default admin credentials DEFAULT_ADMIN_EMAIL and DEFAULT_ADMIN_PASSWORD in env!",
     );
+    return;
   }
 
   const passwordHash = await bcrypt.hash(

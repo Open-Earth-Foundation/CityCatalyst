@@ -331,9 +331,9 @@ export const api = createApi({
       invalidatesTags: ["FileData"],
     }),
     getUserFiles: builder.query({
-      query: () => ({
+      query: (cityId: string) => ({
         method: "GET",
-        url: `/user/file`,
+        url: `/city/${cityId}/file`,
       }),
       transformResponse: (response: { data: UserFileResponse }) => {
         return response.data;

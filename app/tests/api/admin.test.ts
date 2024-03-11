@@ -62,6 +62,16 @@ describe("Admin API", () => {
     assert.equal(user?.role, Roles.User);
   });
 
+  it("should return a 404 error when user does not exist", async () => {
+    const req = mockRequest({
+      email: "not-existing@example.com",
+      role: Roles.Admin,
+    });
+    Auth.getServerSession = mock.fn(() => Promise.resolve(mockAdminSession));
+    const res = await changeRole(req, { params: {} });
+    assert.equal(res.status, 404);
+  });
+
   it("should validate the request", async () => {
     Auth.getServerSession = mock.fn(() => Promise.resolve(mockAdminSession));
     const req = mockRequest({ email: testUserData.email, role: "invalid" });

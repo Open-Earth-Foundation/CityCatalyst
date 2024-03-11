@@ -74,13 +74,15 @@ describe("Admin API", () => {
 
   it("should validate the request", async () => {
     Auth.getServerSession = mock.fn(() => Promise.resolve(mockAdminSession));
+
     const req = mockRequest({ email: testUserData.email, role: "invalid" });
     const res = await changeRole(req, { params: {} });
     assert.equal(res.status, 400);
-    console.log(await res.text());
+
     const req2 = mockRequest({ email: "not-an-email", role: "Admin" });
     const res2 = await changeRole(req2, { params: {} });
     assert.equal(res2.status, 400);
+
     const req3 = mockRequest({});
     const res3 = await changeRole(req3, { params: {} });
     assert.equal(res3.status, 400);

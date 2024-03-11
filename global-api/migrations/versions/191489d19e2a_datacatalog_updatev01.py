@@ -25,6 +25,7 @@ def upgrade():
     op.add_column('datasource', sa.Column("scope", sa.String(), nullable=True))
     op.alter_column("datasource", "url", new_column_name="dataset_url")
     op.drop_column("datasource", "name")
+    op.drop_column("datasource", "description")
 
 def downgrade():
     op.drop_column('datasource', 'datasource_name')
@@ -34,4 +35,5 @@ def downgrade():
     op.drop_column('datasource', 'scope')
     op.alter_column("datasource", "dataset_url", new_column_name="url")
     op.add_column("datasource", sa.Column("name", sa.String(), nullable=True))
+    op.add_column("datasource", sa.Column("description", sa.TEXT(), nullable=True))
 

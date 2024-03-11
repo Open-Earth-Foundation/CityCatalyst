@@ -5,7 +5,7 @@ fastapi==0.110.0
 flake8==7.0.0
 fsspec==2024.*
 geopandas==0.14.3
-mypy==1.8.0
+mypy==1.9.0
 osmnx==1.9.1
 pandas==2.2.1
 psycopg2-binary==2.9.9

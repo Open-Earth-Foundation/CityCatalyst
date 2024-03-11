@@ -122,6 +122,8 @@ jobs:
           kubectl apply -f k8s/cc-sync-catalogue.yml -n default
           # kubectl create job --from=cronjob/cc-sync-catalogue cc-sync-catalogue-manual -n default
           kubectl apply -f k8s/cc-web-deploy.yml -n default
+          kubectl set env deployment/cc-web-deploy DEFAULT_ADMIN_EMAIL=${{secrets.DEFAULT_ADMIN_EMAIL}}
+          kubectl set env deployment/cc-web-deploy DEFAULT_ADMIN_PASSWORD=${{secrets.DEFAULT_ADMIN_PASSWORD}}
           kubectl set env deployment/cc-web-deploy SMTP_USER=${{secrets.SMTP_USER}}
           kubectl set env deployment/cc-web-deploy SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}}
           kubectl set env deployment/cc-web-deploy NEXTAUTH_SECRET=${{secrets.NEXTAUTH_SECRET}}

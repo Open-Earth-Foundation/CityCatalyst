@@ -1,6 +1,5 @@
 # ENARGAS
 Gas consumption data for argentinian provinces
-data accesed: March, 12th 2023
 
 1. Extract the activity data from the source (ENARGAS)[https://dod.enargas.gob.ar/] (manually):
   - variable: consumo de gas
@@ -9,6 +8,8 @@ data accesed: March, 12th 2023
   - desagregación espacial: provincia
   - desagregación temporal: anual
   - año: 2018 al 2022 (para tener años completos)
+
+    **data accesed: March, 12th 2023**
 
 2. Transform activity data into emissions data aligned with the global API schema:
 ```bash

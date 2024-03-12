@@ -26,7 +26,7 @@ if __name__ == "__main__":
                 response = requests.get(link)
                 # Check if the request was successful (status code 200)
                 if response.status_code == 200:
-                    file_name = f"{year}_raw_energy_balances_AR.csv"
+                    file_name = f"{year}_raw_energy_balances_AR.xlsx"
                     # Construct the complete file path
                     file_path = os.path.join(full_download_path, file_name)
                     # Save the file

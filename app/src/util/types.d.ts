@@ -1,4 +1,7 @@
-import type { InventoryValueData } from "@/app/[lng]/data/[step]/types";
+import type {
+  DataSourceWithRelations,
+  InventoryValueData,
+} from "@/app/[lng]/data/[step]/types";
 import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
@@ -44,7 +47,7 @@ type DataSource = DataSourceAttributes & {
   subCategory?: SubCategoryAttributes;
   inventoryValues?: InventoryValueAttributes[];
 };
-type DataSourceResponse = { source: DataSource; data: any }[];
+type DataSourceResponse = { source: DataSourceWithRelations; data: any }[];
 
 type InventoryValueResponse = InventoryValueAttributes & {
   dataSource: DataSourceAttributes;

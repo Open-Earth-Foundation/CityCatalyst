@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Op } from "sequelize";
 import { z } from "zod";
 import { logger } from "@/services/logger";
+import { Publisher } from "@/models/Publisher";
 
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const inventory = await db.models.Inventory.findOne({
@@ -32,6 +33,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
       },
       include: [
         { model: Scope, as: "scopes" },
+        { model: Publisher, as: "publisher" },
         {
           model: InventoryValue,
           as: "inventoryValues",
@@ -39,7 +41,14 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
           where: { inventoryId: params.inventoryId },
         },
         { model: SubSector, as: "subSector" },
-        { model: SubCategory, as: "subCategory" },
+        {
+          model: SubCategory,
+          as: "subCategory",
+          include: [
+            { model: SubSector, as: "subsector" },
+            { model: Scope, as: "scope" },
+          ],
+        },
       ],
     },
   ];
@@ -61,6 +70,30 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
     .concat(subCategorySources);
   const applicableSources = DataSourceService.filterSources(inventory, sources);
 
+  // determine scaling factor for downscaled sources
+  let populationScaleFactor = 1;
+  let populationIssue: string | null = null;
+  if (
+    sources.some(
+      (source) =>
+        source.retrievalMethod === "global_api_downscaled_by_population",
+    )
+  ) {
+    const population = await db.models.Population.findOne({
+      where: {
+        cityId: inventory.cityId,
+        year: inventory.year,
+      },
+    });
+    if (!population?.population || !population?.countryPopulation) {
+      populationIssue =
+        "City is missing population/ country population for the inventory year";
+    } else {
+      populationScaleFactor =
+        population.population / population.countryPopulation;
+    }
+  }
+
   // TODO add query parameter to make this optional?
   const sourceData = (
     await Promise.all(
@@ -72,7 +105,13 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
         if (data instanceof String || typeof data === "string") {
           return null;
         }
-        return { source, data };
+        let scaleFactor = 1.0;
+        let issue: string | null = null;
+        if (source.retrievalMethod === "global_api_downscaled_by_population") {
+          scaleFactor = populationScaleFactor;
+          issue = populationIssue;
+        }
+        return { source, data: { ...data, scaleFactor, issue } };
       }),
     )
   ).filter((source) => !!source);

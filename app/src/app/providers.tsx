@@ -1,7 +1,7 @@
 "use client";
 
 import { appTheme } from "@/lib/app-theme";
-import { persistor, store } from "@/lib/store";
+import { store } from "@/lib/store";
 import { CacheProvider } from "@chakra-ui/next-js";
 import { ChakraProvider } from "@chakra-ui/react";
 import { SessionProvider } from "next-auth/react";
@@ -57,11 +57,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <CacheProvider>
         <ChakraProvider theme={appTheme}>
           <SessionProvider>
-            <Provider store={store}>
-              <PersistGate loading={null} persistor={persistor}>
-                {children}
-              </PersistGate>
-            </Provider>
+            <Provider store={store}>{children}</Provider>
           </SessionProvider>
         </ChakraProvider>
       </CacheProvider>

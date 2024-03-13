@@ -6,6 +6,16 @@ import openclimateCityReducer from "@/features/city/openclimateCitySlice";
 import openclimateCityDataReducer from "@/features/city/openclimateCityDataSlice";
 import inventoryDataReducer from "@/features/city/inventoryDataSlice";
 
+const reducer = combineReducers({
+  inventoryData: inventoryDataReducer,
+  [api.reducerPath]: api.reducer,
+  [openclimateAPI.reducerPath]: openclimateAPI.reducer,
+  city: cityReducer,
+  openClimateCity: openclimateCityReducer,
+  openClimateCityData: openclimateCityDataReducer,
+});
+
+/* Redux Persist Setup - Currently disabled
 import {
   persistStore,
   persistReducer,
@@ -24,15 +34,6 @@ const persistConfig = {
   storage,
 };
 
-const reducer = combineReducers({
-  inventoryData: inventoryDataReducer,
-  [api.reducerPath]: api.reducer,
-  [openclimateAPI.reducerPath]: openclimateAPI.reducer,
-  city: cityReducer,
-  openClimateCity: openclimateCityReducer,
-  openClimateCityData: openclimateCityDataReducer,
-});
-
 const persistedReducer = persistReducer(persistConfig, reducer);
 
 export const store = configureStore({
@@ -48,6 +49,15 @@ export const store = configureStore({
 });
 
 export const persistor = persistStore(store);
+*/
+
+export const store = configureStore({
+  reducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware()
+      .concat(api.middleware)
+      .concat(openclimateAPI.middleware),
+});
 
 // required for refetchOnFocus/refetchOnReconnect behaviors
 setupListeners(store.dispatch);

@@ -7,7 +7,6 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { SessionProvider } from "next-auth/react";
 import localFont from "next/font/local";
 import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
 
 const openSans = localFont({
   src: [

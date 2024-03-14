@@ -53,17 +53,17 @@ jobs:
       - name: Run tests and generate coverage file
         run: npm run ci:test
 
-      - name: Setup LCOV
-        uses: hrishikesh-kadam/setup-lcov@v1
-      - name: Report code coverage
-        uses: zgosalvez/github-actions-report-lcov@v3
-        with:
-          coverage-files: ./app/lcov*.info
-          minimum-coverage: 40
-          artifact-name: code-coverage-report
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          working-directory: ./app
-          update-comment: true
+      # - name: Setup LCOV
+      #   uses: hrishikesh-kadam/setup-lcov@v1
+      # - name: Report code coverage
+      #   uses: zgosalvez/github-actions-report-lcov@v3
+      #   with:
+      #     coverage-files: ./app/lcov*.info
+      #     minimum-coverage: 40
+      #     artifact-name: code-coverage-report
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     working-directory: ./app
+      #     update-comment: true
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1

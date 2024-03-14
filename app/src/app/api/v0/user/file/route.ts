@@ -42,6 +42,8 @@ export const GET = apiHandler(async (_req: Request, context) => {
       fileReference: userFile.fileReference,
       url: userFile.url,
       sector: userFile.sector,
+      subsectors: userFile.subsectors,
+      scopes: userFile.scopes,
       status: userFile.status,
       gpcRefNo: userFile.gpcRefNo,
       lastUpdated: userFile.lastUpdated,
@@ -84,6 +86,8 @@ export const POST = apiHandler(async (req: NextRequest, context) => {
     fileType: fileType,
     fileName: filename,
     sector: formData.get("sector"),
+    subsectors: formData.get("subsectors"),
+    scopes: formData.get("scopes"),
     status: formData.get("status"),
     gpcRefNo: formData.get("gpcRefNo"),
   };
@@ -109,6 +113,8 @@ export const POST = apiHandler(async (req: NextRequest, context) => {
       fileName: userFile.fileName,
       lastUpdated: userFile.lastUpdated,
       status: userFile.status,
+      subsectors: userFile.subsectors,
+      scopes: userFile.scopes,
       gpcRefNo: userFile.gpcRefNo,
       file: {
         fileName: file.name,

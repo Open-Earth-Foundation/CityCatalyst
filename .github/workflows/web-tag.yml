@@ -8,9 +8,9 @@ on:
       - k8s/cc-migrate.yml
       - k8s/cc-web-deploy.yml
       - k8s/cc-web.yml
-      - .github/workflows/web-actions.yml
+      - .github/workflows/web-tag.yml
     tags:
-    - 'v*'
+      - "v*"
 
 jobs:
   runTests:
@@ -28,7 +28,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: app/package-lock.json
 
       - name: Install dependencies
@@ -59,34 +59,33 @@ jobs:
     needs: runTests
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
 
-    - uses: actions/checkout@v4
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Log in to the Container registry
-      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Pushing citycatalyst to GHCR
+        env:
+          SHA: ${{ github.sha }}
+          REF: ${{ github.ref }}
+          IMAGE: ghcr.io/open-earth-foundation/citycatalyst
 
-    - name: Pushing citycatalyst to GHCR
-      env:
-        SHA: ${{ github.sha }}
-        REF: ${{ github.ref }}
-        IMAGE: ghcr.io/open-earth-foundation/citycatalyst
-
-      run: |
-        export VERSION=${REF#refs/tags/v}
-        export MAJOR=${VERSION%.*.*}
-        export MINOR=${VERSION%.*}
-        echo Version: ${VERSION} Major: ${MAJOR} Minor: ${MINOR}
-        docker build -t $IMAGE:$SHA app
-        docker tag $IMAGE:$SHA $IMAGE:$VERSION
-        docker tag $IMAGE:$SHA $IMAGE:$MAJOR
-        docker tag $IMAGE:$SHA $IMAGE:$MINOR
-        docker tag $IMAGE:$SHA $IMAGE:stable
-        docker push $IMAGE:$SHA
-        docker push $IMAGE:$VERSION
-        docker push $IMAGE:$MAJOR
-        docker push $IMAGE:$MINOR
-        docker push $IMAGE:stable
+        run: |
+          export VERSION=${REF#refs/tags/v}
+          export MAJOR=${VERSION%.*.*}
+          export MINOR=${VERSION%.*}
+          echo Version: ${VERSION} Major: ${MAJOR} Minor: ${MINOR}
+          docker build -t $IMAGE:$SHA app
+          docker tag $IMAGE:$SHA $IMAGE:$VERSION
+          docker tag $IMAGE:$SHA $IMAGE:$MAJOR
+          docker tag $IMAGE:$SHA $IMAGE:$MINOR
+          docker tag $IMAGE:$SHA $IMAGE:stable
+          docker push $IMAGE:$SHA
+          docker push $IMAGE:$VERSION
+          docker push $IMAGE:$MAJOR
+          docker push $IMAGE:$MINOR
+          docker push $IMAGE:stable

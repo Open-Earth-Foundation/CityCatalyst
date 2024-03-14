@@ -14,6 +14,7 @@ import { z } from "zod";
 import { logger } from "@/services/logger";
 import { Publisher } from "@/models/Publisher";
 
+const maxPopulationYearDifference = 5;
 const downscaledByCountryPopulation = "global_api_downscaled_by_population";
 const downscaledByRegionPopulation =
   "global_api_downscaled_by_region_population";
@@ -90,16 +91,24 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
     const population = await db.models.Population.findOne({
       where: {
         cityId: inventory.cityId,
-        year: inventory.year,
+        year: {
+          [Op.between]: [
+            inventory.year! - maxPopulationYearDifference,
+            inventory.year! + maxPopulationYearDifference,
+          ],
+        },
       },
+      order: [["year", "DESC"]], // favor more recent population entries
     });
+    // TODO allow country downscaling to work if there is no region population?
     if (
-      !population?.population ||
-      !population?.countryPopulation ||
-      !population?.regionPopulation
+      !population ||
+      !population.population ||
+      !population.countryPopulation ||
+      !population.regionPopulation
     ) {
-      populationIssue =
-        "City is missing population/ region population/ country population for the inventory year";
+      // City is missing population/ region population/ country population for the inventory year
+      populationIssue = "missing_population";
     } else {
       countryPopulationScaleFactor =
         population.population / population.countryPopulation;

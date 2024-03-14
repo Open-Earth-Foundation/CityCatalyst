@@ -14,6 +14,14 @@ import { z } from "zod";
 import { logger } from "@/services/logger";
 import { Publisher } from "@/models/Publisher";
 
+const downscaledByCountryPopulation = "global_api_downscaled_by_population";
+const downscaledByRegionPopulation =
+  "global_api_downscaled_by_region_population";
+const populationScalingRetrievalMethods = [
+  downscaledByCountryPopulation,
+  downscaledByRegionPopulation,
+];
+
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const inventory = await db.models.Inventory.findOne({
     where: { inventoryId: params.inventoryId },
@@ -71,12 +79,12 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const applicableSources = DataSourceService.filterSources(inventory, sources);
 
   // determine scaling factor for downscaled sources
-  let populationScaleFactor = 1;
+  let countryPopulationScaleFactor = 1;
+  let regionPopulationScaleFactor = 1;
   let populationIssue: string | null = null;
   if (
-    sources.some(
-      (source) =>
-        source.retrievalMethod === "global_api_downscaled_by_population",
+    sources.some((source) =>
+      populationScalingRetrievalMethods.includes(source.retrievalMethod ?? ""),
     )
   ) {
     const population = await db.models.Population.findOne({
@@ -85,12 +93,18 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
         year: inventory.year,
       },
     });
-    if (!population?.population || !population?.countryPopulation) {
+    if (
+      !population?.population ||
+      !population?.countryPopulation ||
+      !population?.regionPopulation
+    ) {
       populationIssue =
-        "City is missing population/ country population for the inventory year";
+        "City is missing population/ region population/ country population for the inventory year";
     } else {
-      populationScaleFactor =
+      countryPopulationScaleFactor =
         population.population / population.countryPopulation;
+      regionPopulationScaleFactor =
+        population.population / population.regionPopulation;
     }
   }
 
@@ -107,8 +121,11 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
         }
         let scaleFactor = 1.0;
         let issue: string | null = null;
-        if (source.retrievalMethod === "global_api_downscaled_by_population") {
-          scaleFactor = populationScaleFactor;
+        if (source.retrievalMethod === downscaledByCountryPopulation) {
+          scaleFactor = countryPopulationScaleFactor;
+          issue = populationIssue;
+        } else if (source.retrievalMethod === downscaledByRegionPopulation) {
+          scaleFactor = regionPopulationScaleFactor;
           issue = populationIssue;
         }
         return { source, data: { ...data, scaleFactor, issue } };

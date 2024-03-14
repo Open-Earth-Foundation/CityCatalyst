@@ -28,5 +28,17 @@
   "done-heading": "Your City Inventory Profile<br />Was Successfully Created",
   "inventory-title": "GPC Basic Emission Inventory - Year {{year}}",
   "done-details": "You created your city profile to start your GPC Basic GHG inventory.",
-  "check-dashboard": "Check Dashboard"
+  "check-dashboard": "Check Dashboard",
+
+  "information-required": "This information is required and affects your GHG inventory accuracy.\nPlease use data from the year closest to your selected inventory year.",
+  "year-placeholder": "Year",
+  "required": "Required",
+  "population-required": "Please enter value & year for population",
+  "city-population-title": "City population",
+  "city-population-placeholder": "City population number",
+  "population-year": "Population year",
+  "region-population-title": "Region population",
+  "region-population-placeholder": "Region population number",
+  "country-population-title": "Country population",
+  "country-population-placeholder": "Country population number"
 }

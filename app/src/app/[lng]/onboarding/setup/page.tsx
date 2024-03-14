@@ -18,6 +18,7 @@ import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
 import {
   ArrowBackIcon,
   CheckIcon,
+  InfoIcon,
   InfoOutlineIcon,
   SearchIcon,
 } from "@chakra-ui/icons";
@@ -28,8 +29,10 @@ import {
   Card,
   Flex,
   FormControl,
+  FormErrorIcon,
   FormErrorMessage,
   FormLabel,
+  HStack,
   Heading,
   Icon,
   Input,
@@ -59,6 +62,12 @@ const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 type Inputs = {
   city: string;
   year: number;
+  cityPopulation: number;
+  cityPopulationYear: number;
+  regionPopulation: number;
+  regionPopulationYear: number;
+  countryPopulation: number;
+  countryPopulationYear: number;
 };
 
 function SetupStep({
@@ -66,40 +75,42 @@ function SetupStep({
   register,
   t,
   setValue,
+  watch,
 }: {
   errors: FieldErrors<Inputs>;
   register: UseFormRegister<Inputs>;
   t: TFunction;
   setValue: any;
+  watch: Function;
 }) {
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 7 }, (_x, i) => currentYear - i);
+  const dispatch = useAppDispatch();
 
   const [onInputClicked, setOnInputClicked] = useState<boolean>(false);
   const [cityInputQuery, setCityInputQuery] = useState<string>("");
   const [isCityNew, setIsCityNew] = useState<boolean>(false);
-  const [isYearSelected, setIsYearSelected] = useState<boolean>(false);
-  const [yearValue, setYearValue] = useState<number>();
-  const dispatch = useAppDispatch();
+
+  const yearValue = watch("year");
+  const cityPopulationYear = watch("cityPopulationYear");
+  const regionPopulationYear = watch("regionPopulationYear");
+  const countryPopulationYear = watch("countryPopulationYear");
 
   const handleInputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setCityInputQuery(e.target.value);
     setOnInputClicked(true);
+    setValue("city", e.target.value);
   };
 
   const handleSetCity = (city: OCCityArributes) => {
     setCityInputQuery(city.name);
     setOnInputClicked(false);
     dispatch(set(city));
+    setValue("city", city.name);
 
     // TODO: chech whether city exists or not
     setIsCityNew(true);
-  };
-
-  const handleYear = (e: any) => {
-    setIsYearSelected(true);
-    setYearValue(e.target.value);
   };
 
   useEffect(() => {
@@ -111,10 +122,7 @@ function SetupStep({
       setOnInputClicked(false);
       setIsCityNew(false);
     }
-    if (!yearValue) {
-      setIsYearSelected(false);
-    }
-  }, [cityInputQuery, yearValue]);
+  }, [cityInputQuery]);
 
   // import custom redux hooks
   const {
@@ -144,16 +152,16 @@ function SetupStep({
 
   return (
     <>
-      <div>
+      <Box minW={400}>
         <Heading size="xl">{t("setup-heading")}</Heading>
         <Text className="my-4" color="tertiary">
           {t("setup-details")}
         </Text>
-      </div>
-      <div>
+      </Box>
+      <Box w="full">
         <Card p={6}>
-          <form>
-            <FormControl isInvalid={!!errors.city} mb={12}>
+          <form className="space-y-8">
+            <FormControl isInvalid={!!errors.city}>
               <FormLabel>{t("select-city")}</FormLabel>
               <InputGroup>
                 <InputLeftElement pointerEvents="none">
@@ -162,7 +170,6 @@ function SetupStep({
                 <Input
                   type="text"
                   placeholder={t("select-city-placeholder")}
-                  w={441}
                   size="lg"
                   {...register("city", {
                     required: t("select-city-required"),
@@ -175,8 +182,8 @@ function SetupStep({
                     <CheckIcon
                       color="semantic.success"
                       boxSize={4}
+                      mr={4}
                       mt={2}
-                      mr={10}
                     />
                   )}
                 </InputRightElement>
@@ -237,7 +244,6 @@ function SetupStep({
                   {...register("year", {
                     required: t("inventory-year-required"),
                   })}
-                  onChange={handleYear}
                 >
                   {years.map((year: number, i: number) => (
                     <option value={year} key={i}>
@@ -246,7 +252,7 @@ function SetupStep({
                   ))}
                 </Select>
                 <InputRightElement>
-                  {isYearSelected && (
+                  {yearValue && (
                     <CheckIcon
                       color="semantic.success"
                       boxSize={4}
@@ -260,12 +266,191 @@ function SetupStep({
                 {errors.year && errors.year.message}
               </FormErrorMessage>
             </FormControl>
+            <HStack spacing={1.5} align="start">
+              <InfoOutlineIcon color="interactive.secondary" mt={1} />
+              <Text
+                color="content.tertiary"
+                fontSize="sm"
+                whiteSpace="pre-line"
+              >
+                {t("information-required")}
+              </Text>
+            </HStack>
+            <HStack spacing={6} align="start">
+              <FormControl isInvalid={!!errors.cityPopulation}>
+                <FormLabel>{t("city-population-title")}</FormLabel>
+                <Input
+                  type="text"
+                  placeholder={t("city-population-placeholder")}
+                  size="lg"
+                  {...register("cityPopulation", {
+                    required: t("population-required"),
+                  })}
+                />
+                <FormErrorMessage
+                  color="content.tertiary"
+                  letterSpacing="0.5px"
+                >
+                  <FormErrorIcon />
+                  {errors.cityPopulation && errors.cityPopulation.message}
+                </FormErrorMessage>
+              </FormControl>
+
+              <FormControl isInvalid={!!errors.cityPopulationYear} w={60}>
+                <FormLabel>{t("population-year")}</FormLabel>
+                <InputGroup>
+                  <Select
+                    placeholder={t("year-placeholder")}
+                    size="lg"
+                    {...register("cityPopulationYear", {
+                      required: t("required"),
+                    })}
+                  >
+                    {years.map((year: number, i: number) => (
+                      <option value={year} key={i}>
+                        {year}
+                      </option>
+                    ))}
+                  </Select>
+                  <InputRightElement>
+                    {cityPopulationYear && (
+                      <CheckIcon
+                        color="semantic.success"
+                        boxSize={4}
+                        mt={2}
+                        mr={10}
+                      />
+                    )}
+                  </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage
+                  color="content.tertiary"
+                  letterSpacing="0.5px"
+                >
+                  <FormErrorIcon />
+                  {errors.cityPopulationYear &&
+                    errors.cityPopulationYear.message}
+                </FormErrorMessage>
+              </FormControl>
+            </HStack>
+            <HStack spacing={6} align="start">
+              <FormControl isInvalid={!!errors.regionPopulation}>
+                <FormLabel>{t("region-population-title")}</FormLabel>
+                <Input
+                  type="text"
+                  placeholder={t("region-population-placeholder")}
+                  size="lg"
+                  {...register("regionPopulation", {
+                    required: t("population-required"),
+                  })}
+                />
+                <FormErrorMessage
+                  color="content.tertiary"
+                  letterSpacing="0.5px"
+                >
+                  <FormErrorIcon />
+                  {errors.regionPopulation && errors.regionPopulation.message}
+                </FormErrorMessage>
+              </FormControl>
+              <FormControl isInvalid={!!errors.regionPopulationYear} w={60}>
+                <FormLabel>{t("population-year")}</FormLabel>
+                <InputGroup>
+                  <Select
+                    placeholder={t("year-placeholder")}
+                    size="lg"
+                    {...register("regionPopulationYear", {
+                      required: t("required"),
+                    })}
+                  >
+                    {years.map((year: number, i: number) => (
+                      <option value={year} key={i}>
+                        {year}
+                      </option>
+                    ))}
+                  </Select>
+                  <InputRightElement>
+                    {regionPopulationYear && (
+                      <CheckIcon
+                        color="semantic.success"
+                        boxSize={4}
+                        mt={2}
+                        mr={10}
+                      />
+                    )}
+                  </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage
+                  color="content.tertiary"
+                  letterSpacing="0.5px"
+                >
+                  <FormErrorIcon />
+                  {errors.regionPopulationYear &&
+                    errors.regionPopulationYear.message}
+                </FormErrorMessage>
+              </FormControl>
+            </HStack>
+            <HStack spacing={6} align="start">
+              <FormControl isInvalid={!!errors.countryPopulation}>
+                <FormLabel>{t("country-population-title")}</FormLabel>
+                <Input
+                  type="text"
+                  placeholder={t("country-population-placeholder")}
+                  size="lg"
+                  {...register("countryPopulation", {
+                    required: t("population-required"),
+                  })}
+                />
+                <FormErrorMessage
+                  color="content.tertiary"
+                  letterSpacing="0.5px"
+                >
+                  <FormErrorIcon />
+                  {errors.countryPopulation && errors.countryPopulation.message}
+                </FormErrorMessage>
+              </FormControl>
+              <FormControl isInvalid={!!errors.countryPopulationYear} w={60}>
+                <FormLabel>{t("population-year")}</FormLabel>
+                <InputGroup>
+                  <Select
+                    placeholder={t("year-placeholder")}
+                    size="lg"
+                    {...register("countryPopulationYear", {
+                      required: t("required"),
+                    })}
+                  >
+                    {years.map((year: number, i: number) => (
+                      <option value={year} key={i}>
+                        {year}
+                      </option>
+                    ))}
+                  </Select>
+                  <InputRightElement>
+                    {countryPopulationYear && (
+                      <CheckIcon
+                        color="semantic.success"
+                        boxSize={4}
+                        mt={2}
+                        mr={10}
+                      />
+                    )}
+                  </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage
+                  color="content.tertiary"
+                  letterSpacing="0.5px"
+                >
+                  <FormErrorIcon />
+                  {errors.countryPopulationYear &&
+                    errors.countryPopulationYear.message}
+                </FormErrorMessage>
+              </FormControl>
+            </HStack>
           </form>
         </Card>
         <Text color="tertiary" mt={6} fontSize="sm">
           {t("gpc-basic-message")}
         </Text>
-      </div>
+      </Box>
     </>
   );
 }
@@ -366,6 +551,7 @@ export default function OnboardingSetup({
     register,
     getValues,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<Inputs>();
 
@@ -539,6 +725,7 @@ export default function OnboardingSetup({
               errors={errors}
               setValue={setValue}
               register={register}
+              watch={watch}
               t={t}
             />
           )}

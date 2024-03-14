@@ -10,7 +10,7 @@ on:
       - k8s/cc-web.yml
       - .github/workflows/web-tag.yml
     tags:
-      - "v*"
+      - '^v\d+\.\d+\.\d+$'
 
 jobs:
   runTests:

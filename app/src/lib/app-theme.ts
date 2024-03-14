@@ -329,7 +329,10 @@ export const appTheme = extendTheme({
           },
           label: {
             color: "content.secondary",
-            fontSize: "14",
+            fontFamily: "heading",
+            fontSize: "14px",
+            lineHeight: "20px",
+            letterSpacing: "0.5px",
             borderWidth: 0,
             mt: -0.5,
           },

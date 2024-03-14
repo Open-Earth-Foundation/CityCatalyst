@@ -5,6 +5,7 @@ import FileInput from "@/components/file-input";
 import {
   CircleIcon,
   DataAlertIcon,
+  DataCheckIcon,
   ExcelFileIcon,
   WorldSearchIcon,
 } from "@/components/icons";
@@ -16,7 +17,7 @@ import { ScopeAttributes } from "@/models/Scope";
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
 import { bytesToMB, nameToI18NKey } from "@/util/helpers";
-import type { DataSource, SectorProgress } from "@/util/types";
+import type { SectorProgress } from "@/util/types";
 import {
   ArrowBackIcon,
   ChevronRightIcon,
@@ -65,7 +66,11 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { SourceDrawer } from "./SourceDrawer";
 import { SubsectorDrawer } from "./SubsectorDrawer";
-import type { DataStep, SubSector } from "./types";
+import type {
+  DataSourceWithRelations,
+  DataStep,
+  SubSectorWithRelations,
+} from "./types";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -306,14 +311,17 @@ export default function AddDataSteps({
     return sectorReferenceNumber === currentStep.referenceNumber;
   });
 
-  const [selectedSource, setSelectedSource] = useState<DataSource>();
+  const [selectedSource, setSelectedSource] =
+    useState<DataSourceWithRelations>();
+  const [selectedSourceData, setSelectedSourceData] = useState<any>();
   const {
     isOpen: isSourceDrawerOpen,
     onClose: onSourceDrawerClose,
     onOpen: onSourceDrawerOpen,
   } = useDisclosure();
-  const onSourceClick = (source: DataSource) => {
+  const onSourceClick = (source: DataSourceWithRelations, data: any) => {
     setSelectedSource(source);
+    setSelectedSourceData(data);
     onSourceDrawerOpen();
   };
 
@@ -331,7 +339,7 @@ export default function AddDataSteps({
   >(null);
   const [newlyConnectedDataSourceIds, setNewlyConnectedDataSourceIds] =
     useState<string[]>([]);
-  const onConnectClick = async (source: DataSource) => {
+  const onConnectClick = async (source: DataSourceWithRelations) => {
     if (!inventoryProgress) {
       console.error(
         "Tried to assign data source while inventory progress was not yet loaded!",
@@ -379,7 +387,7 @@ export default function AddDataSteps({
     }
   };
 
-  function isSourceConnected(source: DataSource): boolean {
+  function isSourceConnected(source: DataSourceWithRelations): boolean {
     return (
       (source.inventoryValues && source.inventoryValues.length > 0) ||
       newlyConnectedDataSourceIds.indexOf(source.datasourceId) > -1
@@ -394,18 +402,19 @@ export default function AddDataSteps({
     }
   }
 
-  const [selectedSubsector, setSelectedSubsector] = useState<SubSector>();
+  const [selectedSubsector, setSelectedSubsector] =
+    useState<SubSectorWithRelations>();
   const {
     isOpen: isSubsectorDrawerOpen,
     onClose: onSubsectorDrawerClose,
     onOpen: onSubsectorDrawerOpen,
   } = useDisclosure();
-  const onSubsectorClick = (subsector: SubSector) => {
+  const onSubsectorClick = (subsector: SubSectorWithRelations) => {
     logger.debug(subsector);
     setSelectedSubsector(subsector);
     onSubsectorDrawerOpen();
   };
-  const onSubsectorSave = (subsector: SubSector) => {
+  const onSubsectorSave = (subsector: SubSectorWithRelations) => {
     logger.debug("Save subsector", subsector);
   };
 
@@ -628,31 +637,30 @@ export default function AddDataSteps({
                   <Heading size="sm" noOfLines={2} minHeight={10}>
                     {source.name}
                   </Heading>
-                  <Flex direction="row" my={4}>
-                    <Tag mr={1}>
+                  <Flex direction="row" my={4} wrap="wrap" gap={2}>
+                    <Tag>
                       <TagLeftIcon
-                        as={MdPlaylistAddCheck}
-                        boxSize={4}
+                        as={DataCheckIcon}
+                        boxSize={5}
                         color="content.tertiary"
                       />
-                      <TagLabel fontSize={12}>
+                      <TagLabel fontSize={11}>
                         {t("data-quality")}:{" "}
                         {t("quality-" + source.dataQuality)}
                       </TagLabel>
                     </Tag>
-                    <Tag>
-                      <TagLeftIcon
-                        as={FiTarget}
-                        boxSize={4}
-                        color="content.tertiary"
-                      />
-                      <TagLabel fontSize={12}>
-                        {t("scope")}:{" "}
-                        {source.scopes
-                          .map((s: ScopeAttributes) => s.scopeName)
-                          .join(", ")}
-                      </TagLabel>
-                    </Tag>
+                    {source.subCategory?.scope && (
+                      <Tag>
+                        <TagLeftIcon
+                          as={FiTarget}
+                          boxSize={4}
+                          color="content.tertiary"
+                        />
+                        <TagLabel fontSize={11}>
+                          {t("scope")}: {source.subCategory.scope.scopeName}
+                        </TagLabel>
+                      </Tag>
+                    )}
                   </Flex>
                   <Text color="content.tertiary" noOfLines={5} minHeight={120}>
                     {source.description}
@@ -661,7 +669,7 @@ export default function AddDataSteps({
                     className="underline"
                     mt={4}
                     mb={6}
-                    onClick={() => onSourceClick(source)}
+                    onClick={() => onSourceClick(source, data)}
                   >
                     {t("see-more-details")}
                   </Link>
@@ -730,7 +738,7 @@ export default function AddDataSteps({
               <WarningIcon boxSize={8} color="semantic.danger" />
             </Center>
           ) : (
-            currentStep.subSectors.map((subSector: SubSector) => (
+            currentStep.subSectors.map((subSector: SubSectorWithRelations) => (
               <Card
                 maxHeight="120px"
                 height="120px"
@@ -753,7 +761,7 @@ export default function AddDataSteps({
                   />
                   <Stack w="full">
                     <Heading size="xs" noOfLines={3} maxWidth="200px">
-                      {t(nameToI18NKey(subSector.subsectorName))}
+                      {t(nameToI18NKey(subSector.subsectorName!))}
                     </Heading>
                     {subSector.scope && (
                       <Text color="content.tertiary">
@@ -940,6 +948,8 @@ export default function AddDataSteps({
       {/*** Drawers ***/}
       <SourceDrawer
         source={selectedSource}
+        sourceData={selectedSourceData}
+        sector={currentStep.sector}
         isOpen={isSourceDrawerOpen}
         onClose={onSourceDrawerClose}
         onConnectClick={() => onConnectClick(selectedSource!)}

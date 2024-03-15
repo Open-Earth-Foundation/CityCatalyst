@@ -73,6 +73,7 @@ import type {
 } from "./types";
 
 import { v4 as uuidv4 } from "uuid";
+import AddFileDataModal from "@/components/Modals/add-file-data-modal";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -456,9 +457,24 @@ export default function AddDataSteps({
     });
   }
   // Add file data to rudux state object
+  const hasUserAddedRequiredData = (
+    scopes: string,
+    subsectors: string,
+  ): boolean => {
+    const hasValues = scopes.length && subsectors.length ? true : false;
+    return hasValues;
+  };
+
+  const {
+    isOpen: isfileDataModalOpen,
+    onOpen: onfileDataModalOpen,
+    onClose: onfileDataModalClose,
+  } = useDisclosure();
+
   const handleFileSelect = async (file: File) => {
     const base64FileString = await fileToBase64(file);
     const filename = file.name;
+    onfileDataModalOpen();
     dispatch(
       addFile({
         sectorName: currentStep.title!,
@@ -808,6 +824,7 @@ export default function AddDataSteps({
               </Box>
               <Box display="flex" flexDirection="column" gap="8px">
                 {sectorData &&
+                  hasUserAddedRequiredData("", "") &&
                   sectorData[0]?.files.map((file: any, i: number) => (
                     <Card
                       shadow="none"
@@ -914,6 +931,12 @@ export default function AddDataSteps({
           </Box>
         </Box>
       </Card>
+      {/* Add fole data modal */}
+      <AddFileDataModal
+        isOpen={isfileDataModalOpen}
+        onClose={onfileDataModalClose}
+        subsectors={currentStep.subSectors}
+      />
       {/*** Bottom bar ***/}
       <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand py-4 px-4 drop-shadow-2xl hover:drop-shadow-4xl transition-all">
         <Box className="w-[1090px] max-w-full mx-auto flex flex-row flex-wrap gap-y-2">

@@ -35,9 +35,10 @@ import {
 } from "@chakra-ui/react";
 import React, { FC, useEffect, useMemo, useState } from "react";
 
-import { ChevronRightIcon, SearchIcon } from "@chakra-ui/icons";
+import { CheckIcon, ChevronRightIcon, SearchIcon } from "@chakra-ui/icons";
 import {
   MdMoreVert,
+  MdOutlineCheck,
   MdOutlineFileDownload,
   MdOutlineFolder,
 } from "react-icons/md";
@@ -54,6 +55,7 @@ import { UserAttributes } from "@/models/User";
 import { UserFileAttributes } from "@/models/UserFile";
 
 import Link from "next/link";
+import { PiCheckFatLight } from "react-icons/pi";
 
 interface MyFilesTabProps {
   session: Session | null;
@@ -416,7 +418,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                         ></IconButton>
                                       </PopoverTrigger>
                                       <PopoverContent
-                                        h="128px"
+                                        h="176px"
                                         w="239px"
                                         borderRadius="8px"
                                         shadow="2dp"
@@ -493,6 +495,33 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                                 className="group group-hover:text-white"
                                               >
                                                 {t("delete-file")}
+                                              </Text>
+                                            </ListItem>
+                                            <ListItem
+                                              display="flex"
+                                              cursor="pointer"
+                                              gap="16px"
+                                              className="group "
+                                              color="interactive.tertiary"
+                                              alignItems="center"
+                                              px="16px"
+                                              paddingTop="12px"
+                                              paddingBottom="12px"
+                                              _hover={{
+                                                background: "content.link",
+                                                color: "white",
+                                              }}
+                                            >
+                                              <MdOutlineCheck size={24} />
+                                              <Text
+                                                color="content.secondary"
+                                                fontFamily="heading"
+                                                letterSpacing="wide"
+                                                fontWeight="normal"
+                                                fontSize="body.lg"
+                                                className="group group-hover:text-white"
+                                              >
+                                                {t("mark-as-completed")}
                                               </Text>
                                             </ListItem>
                                           </List>

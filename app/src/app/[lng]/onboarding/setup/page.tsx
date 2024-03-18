@@ -465,7 +465,7 @@ function ConfirmStep({
   t: TFunction;
   locode: string;
   area: number;
-  population: number;
+  population?: number;
 }) {
   return (
     <>
@@ -537,6 +537,32 @@ function ConfirmStep({
   );
 }
 
+type PopulationEntry = {
+  year: number;
+  population: number;
+  datasource_id: string;
+};
+
+type PopulationData = {
+  year?: number;
+  population?: number;
+  regionPopulation?: number;
+  regionYear?: number;
+  countryPopulation?: number;
+  countryYear?: number;
+  datasourceId?: string;
+};
+
+function findClosestYear(
+  populationData: PopulationEntry[] | undefined,
+  year: number,
+): PopulationEntry | undefined {
+  const sortedEntries = populationData?.sort((a, b) => {
+    return Math.abs(year - a.year) - Math.abs(year - b.year);
+  });
+  return sortedEntries?.[0];
+}
+
 export default function OnboardingSetup({
   params: { lng },
 }: {
@@ -551,7 +577,7 @@ export default function OnboardingSetup({
     getValues,
     setValue,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid },
   } = useForm<Inputs>();
 
   const steps = [{ title: t("setup-step") }, { title: t("confirm-step") }];
@@ -572,12 +598,7 @@ export default function OnboardingSetup({
   }>({ name: "", locode: "", year: -1 });
 
   const [isConfirming, setConfirming] = useState(false);
-  const [populationData, setPopulationData] = useState<{
-    year: number;
-    population: number;
-    datasourceId: string;
-  }>({ year: 0, population: 0, datasourceId: "" });
-  const [countryPopulation, setCountryPopulation] = useState<number>(0);
+  const [populationData, setPopulationData] = useState<PopulationData>({});
 
   const storedData = useAppSelector((state) => state.openClimateCity);
 
@@ -601,8 +622,13 @@ export default function OnboardingSetup({
   });
   const countryLocode =
     data.locode.length > 0 ? data.locode.split(" ")[0] : null;
+  const regionLocode = cityData?.data.region;
+  console.log("Region locode", regionLocode);
   const { data: countryData } = useGetOCCityDataQuery(countryLocode!, {
     skip: !countryLocode,
+  });
+  const { data: regionData } = useGetOCCityDataQuery(regionLocode!, {
+    skip: !regionLocode,
   });
 
   const makeErrorToast = (title: string, description?: string) => {
@@ -624,13 +650,11 @@ export default function OnboardingSetup({
 
   useEffect(() => {
     if (cityData) {
-      const population = cityData?.data.population.filter(
-        (item: any) => item.year === data.year,
-      );
+      const population = findClosestYear(cityData?.data.population, data.year);
       const populationObject = {
-        year: population[0]?.year,
-        population: population[0]?.population,
-        datasourceId: population[0]?.datasource_id,
+        year: population?.year,
+        population: population?.population,
+        datasourceId: population?.datasource_id,
       };
       setPopulationData(populationObject);
 
@@ -652,12 +676,35 @@ export default function OnboardingSetup({
 
   useEffect(() => {
     if (countryData) {
-      const population = countryData?.data.population.filter(
-        (item: any) => item.year === data.year,
+      const population = findClosestYear(
+        countryData?.data.population,
+        data.year,
       );
-      setCountryPopulation(population[0]?.population);
+      const newPopulation = {
+        ...populationData,
+        countryPopulation: population?.population,
+      };
+      setPopulationData(newPopulation);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countryData, data.year]);
+
+  useEffect(() => {
+    if (regionData) {
+      const population = findClosestYear(regionData.data.population, data.year);
+      const newPopulation = {
+        ...populationData,
+        regionPopulation: population?.population,
+      };
+      setPopulationData(newPopulation);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [regionData, data.year]);
+
+  // TODO update form with population values from API
+  const cityPopulation = watch("cityPopulation");
+  const regionPopulation = watch("regionPopulation");
+  const countryPopulation = watch("countryPopulation");
 
   const onConfirm = async () => {
     // save data in backend
@@ -674,8 +721,9 @@ export default function OnboardingSetup({
       await addCityPopulation({
         cityId: city.cityId,
         locode: city.locode!,
-        population: populationData.population,
-        countryPopulation: countryPopulation,
+        population: cityPopulation!,
+        regionPopulation: regionPopulation!,
+        countryPopulation: countryPopulation!,
         year: data.year,
       }).unwrap();
     } catch (err: any) {
@@ -749,6 +797,7 @@ export default function OnboardingSetup({
             <Button
               h={16}
               isLoading={isSubmitting}
+              isDisabled={!isValid}
               onClick={() => handleSubmit(onSubmit)()}
               px={12}
               size="sm"

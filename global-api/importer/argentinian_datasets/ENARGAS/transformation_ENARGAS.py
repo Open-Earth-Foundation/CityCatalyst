@@ -112,7 +112,7 @@ if __name__ == "__main__":
             result_df = pd.concat([result_df, temp_df], ignore_index=True)
 
     result_df['emissions_value'] = result_df['activity_value']*result_df['emission_factor_value']
-    result_df['emissions_untis'] = 'kg'
+    result_df['emissions_units'] = 'kg'
 
     #--------------------------------------------------------------------------
     # Final details

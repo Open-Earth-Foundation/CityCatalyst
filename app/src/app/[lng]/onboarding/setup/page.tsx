@@ -121,27 +121,19 @@ function SetupStep({
   const dispatch = useAppDispatch();
 
   const [onInputClicked, setOnInputClicked] = useState<boolean>(false);
-  const [cityInputQuery, setCityInputQuery] = useState<string>("");
   const [isCityNew, setIsCityNew] = useState<boolean>(false);
   const [locode, setLocode] = useState<string | null>(null);
 
   const year = watch("year");
+  const cityInputQuery = watch("city");
   const cityPopulationYear = watch("cityPopulationYear");
   const regionPopulationYear = watch("regionPopulationYear");
   const countryPopulationYear = watch("countryPopulationYear");
 
-  const handleInputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    setCityInputQuery(e.target.value);
-    setOnInputClicked(true);
-    setValue("city", e.target.value);
-  };
-
   const handleSetCity = (city: OCCityAttributes) => {
-    setCityInputQuery(city.name);
+    setValue("city", city.name);
     setOnInputClicked(false);
     dispatch(set(city));
-    setValue("city", city.name);
     setLocode(city.actor_id);
 
     // TODO: chech whether city exists or not
@@ -149,11 +141,7 @@ function SetupStep({
   };
 
   useEffect(() => {
-    setValue("city", cityInputQuery);
-  }, [cityInputQuery, setValue]);
-
-  useEffect(() => {
-    if (cityInputQuery.length === 0) {
+    if (!cityInputQuery || cityInputQuery.length === 0) {
       setOnInputClicked(false);
       setIsCityNew(false);
     }
@@ -181,13 +169,14 @@ function SetupStep({
   useEffect(() => {
     if (cityData) {
       const population = findClosestYear(cityData?.data.population, year);
-      const populationObject = {
+      const newPopulation = {
         ...populationData,
         year: population?.year,
         population: population?.population,
         datasourceId: population?.datasource_id,
       };
-      setPopulationData(populationObject);
+      console.log("year", population?.year);
+      setPopulationData(newPopulation);
 
       setOcCityData(cityData);
     }
@@ -202,6 +191,7 @@ function SetupStep({
         countryPopulation: population?.population,
         countryYear: population?.year,
       };
+      console.log("country year", population?.year);
       setPopulationData(newPopulation);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -215,6 +205,7 @@ function SetupStep({
         regionPopulation: population?.population,
         regionYear: population?.year,
       };
+      console.log("region year", population?.year);
       setPopulationData(newPopulation);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -237,7 +228,7 @@ function SetupStep({
     isLoading,
     isSuccess,
   } = useGetOCCityQuery(cityInputQuery, {
-    skip: cityInputQuery.length <= 2 ? true : false,
+    skip: cityInputQuery?.length <= 2 ? true : false,
   });
 
   const renderParentPath = (path: []) => {
@@ -281,8 +272,8 @@ function SetupStep({
                   {...register("city", {
                     required: t("select-city-required"),
                   })}
-                  onChange={handleInputOnChange}
-                  value={cityInputQuery}
+                  onFocus={() => setOnInputClicked(true)}
+                  onBlur={() => setOnInputClicked(false)}
                 />
                 <InputRightElement>
                   {isCityNew && (

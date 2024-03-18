@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     # change spanish column names to english 
     column_names = [
-        'province_name',
+        'region_name',
         'user_type',
         'year',
         'activity_value'
@@ -117,7 +117,7 @@ if __name__ == "__main__":
     #--------------------------------------------------------------------------
     # Final details
     #--------------------------------------------------------------------------
-    # assigning province CODE based on the province name
+    # assigning region CODE based on the region name
     locode_dic = {
         'BUENOS AIRES':'AR-B', 
         'CAPITAL FEDERAL':'AR-C', 
@@ -142,10 +142,10 @@ if __name__ == "__main__":
         'TUCUMAN':'AR-T'
     }
     for index, row in result_df.iterrows():
-        province_name = row['province_name']
+        region_name = row['region_name']
 
-        if province_name in locode_dic.keys():
-            result_df.at[index, 'province_code'] = locode_dic[province_name]
+        if region_name in locode_dic.keys():
+            result_df.at[index, 'region_code'] = locode_dic[region_name]
 
     # adding new columns
     result_df['activity_units'] = 'TJ'
@@ -154,13 +154,13 @@ if __name__ == "__main__":
 
     # assigning a unique ID to each row
     for index, row in result_df.iterrows():
-        province_code = str(row['province_code'])
+        region_code = str(row['region_code'])
         emissions_value = str(row['emissions_value'])
         year = str(row['year'])
         gas = str(row['gas_name'])
         GPC_refno = str(row['GPC_refno'])
 
-        id_string = province_code + emissions_value + year + gas + GPC_refno
+        id_string = region_code + emissions_value + year + gas + GPC_refno
         result_df.at[index, 'id'] = uuid_generate_v3(id_string)
     
     result_df = result_df[sorted(result_df.columns)]

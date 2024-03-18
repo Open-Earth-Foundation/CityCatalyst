@@ -13,10 +13,10 @@ Gas consumption data for argentinian provinces
 
 2. Transform activity data into emissions data aligned with the global API schema:
 ```bash
-python ./importer/argentinian_datasets/ENARGAS/transformation_ENARGAS.py --path [path where the transformed data will be saved]
+python ./importer/argentinian_datasets/ENARGAS/transformation_ENARGAS.py --filepath [path where the transformed data will be saved]
 ```
 
 3. Extract the activity row from the source:
 ```bash
-psql -U ccglobal -d ccglobal -f ./importer/argentinian_datasets/ENARGAS/load_ENARGAS.py -v file_path=[path where the transformed data was saved]
+psql -U ccglobal -d ccglobal -f ./importer/argentinian_datasets/ENARGAS/load_ENARGAS.sql
 ```

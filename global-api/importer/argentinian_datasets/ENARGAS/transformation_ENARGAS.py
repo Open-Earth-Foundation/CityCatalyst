@@ -11,12 +11,12 @@ def uuid_generate_v3(name, namespace=uuid.NAMESPACE_OID):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--path", help="path to save the processed data", required=True)
+    parser.add_argument("--filepath", help="path to the files location", required=True)
     args = parser.parse_args()
-    absolute_path = os.path.abspath(args.path)
+    absolute_path = os.path.abspath(args.filepath)
     
     # read the raw data
-    raw_data = './raw_enargas_gas_consumption_AR.csv'
+    raw_data = f'{absolute_path}/raw_enargas_gas_consumption_AR.csv'
     df = pd.read_csv(raw_data, sep=';')
 
     #--------------------------------------------------------------------------
@@ -26,38 +26,48 @@ if __name__ == "__main__":
 
     # change spanish column names to english 
     column_names = [
-        'province',
+        'province_name',
         'user_type',
         'year',
         'activity_value'
     ]
     df.columns = column_names
 
-    # assign activity name based on the user type
+    # delete the subsectors that don't apply for this transformation
+    subsectors_uncovered = ['CENTRALES ELECTRICAS', 'SDB']
+    df = df[~df['user_type'].isin(subsectors_uncovered)]
+
+    # assign activity name and GPC_refno based on the user type
     subsector_dic = {
-        'CENTRALES ELECTRICAS':'gas consumption by power plants',
-        'COMERCIALES': 'gas consumption by commercial buildings',
-        'RESIDENCIALES': 'gas consumption by residential buildings',
-        'ENTES OFICIALES': 'gas consumption by oficial entities',
-        'INDUSTRIALES': 'gas consumption by industrial buildings',
-        'GNC': 'gas consumption by GNC',
-        'SDB': 'gas consumption by SDB',
-    }
-    df['activity_name'] = df['user_type'].apply(lambda x: subsector_dic.get(x, x))
-    df = df.drop(columns='user_type', axis=1)
-
-    # assigning gpc reference number based on the activity name
-    gpc_refno_dic = {
-        'gas consumption by residential buildings': 'I.1.1',
-        'gas consumption by commercial buildings': 'I.2.1',
-        'gas consumption by oficial entities': 'I.2.1',
-        'gas consumption by industrial buildings': 'I.3.1'
+        'COMERCIALES': {
+            'description': 'natural gas consumption by commercial buildings',
+            'GPC_refno': 'I.2.1'
+        },
+        'RESIDENCIALES': {
+            'description': 'natural gas consumption by residential buildings',
+            'GPC_refno': 'I.1.1'
+        },
+        'ENTES OFICIALES': {
+            'description': 'natural gas consumption by official entities',
+            'GPC_refno': 'I.2.1' 
+        },
+        'INDUSTRIALES': {
+            'description': 'natural gas consumption by industrial buildings',
+            'GPC_refno': 'I.3.1'
+        },
+        'GNC': {
+            'description': 'GNC consumption by on road transportation',
+            'GPC_refno': 'II.1.1'
         }
+    }
     for index, row in df.iterrows():
-        activity_name = row['activity_name']
+        user_type = row['user_type']
 
-        if activity_name in gpc_refno_dic.keys():
-            df.at[index, 'GPC_refno'] = gpc_refno_dic[activity_name]
+        if user_type in subsector_dic.keys():
+            df.at[index, 'activity_name'] = subsector_dic[user_type]['description']
+            df.at[index, 'GPC_refno'] = subsector_dic[user_type]['GPC_refno']
+        
+    df = df.drop(columns='user_type', axis=1)
 
     #--------------------------------------------------------------------------
     # Emissions Calculation
@@ -76,24 +86,33 @@ if __name__ == "__main__":
 
     # Emision Factors source: 2006 IPCC Guidelines for National Greenhouse Gas Inventories
     ef_df = pd.DataFrame()
-    ef_df['gas_name'] = ['CO2', 'CH4', 'N2O']
-    ef_df['emission_factor_value'] = [56100, 5, 0.1]
+    ef_df['gas_name'] = ['CO2', 'CH4', 'N2O', 'CO2', 'CH4', 'N2O']
+    ef_df['emission_factor_value'] = [56100, 5, 0.1, 1466.7, 50, 0.1]
     ef_df['emission_factor_units'] = 'kg/TJ'
+    ef_df['sector'] = ['I','I','I', 'II','II','II']
 
-    # applying each EF for each gas
-    for gas in ef_df['gas_name']:
-        gas_filt = ef_df[ef_df['gas_name'] == gas]
-        gas_value = gas_filt['emission_factor_value'].iloc[0]
-        gas_units = gas_filt['emission_factor_units'].iloc[0]
-        
-        # multiply the 'activity_value' column by the gas_value
-        df['emissions_value'] = df['activity_value'] * gas_value
-        df['emissions_units'] = 'kg'
-        
-        # set additional columns for this gas
-        df['gas_name'] = gas
-        df['emission_factor_value'] = gas_value
-        df['emission_factor_units'] = gas_units
+    result_df = pd.DataFrame()
+
+    for gas in ef_df['gas_name'].unique():
+        for sector in ['I', 'II']:
+            ef = ef_df[ef_df['sector'] == sector]
+            gas_value = ef[(ef['gas_name'] == gas)]['emission_factor_value'].iloc[0]
+
+            temp_df = df.copy()
+            if sector == 'I':
+                temp_df = temp_df[temp_df['GPC_refno'] != 'II.1.1']
+            else:
+                temp_df = temp_df[temp_df['GPC_refno'] == 'II.1.1']
+
+            temp_df['gas_name'] = gas
+            temp_df['emission_factor_value'] = gas_value
+            temp_df['emission_factor_units'] = ef[ef['gas_name'] == gas]['emission_factor_units'].iloc[0]
+
+            # Concatenate the temporary DataFrame to the result_df
+            result_df = pd.concat([result_df, temp_df], ignore_index=True)
+
+    result_df['emissions_value'] = result_df['activity_value']*result_df['emission_factor_value']
+    result_df['emissions_untis'] = 'kg'
 
     #--------------------------------------------------------------------------
     # Final details
@@ -122,19 +141,19 @@ if __name__ == "__main__":
         'TIERRA DEL FUEGO':'AR-V', 
         'TUCUMAN':'AR-T'
     }
-    for index, row in df.iterrows():
-        province_name = row['province']
+    for index, row in result_df.iterrows():
+        province_name = row['province_name']
 
         if province_name in locode_dic.keys():
-            df.at[index, 'province_code'] = locode_dic[province_name]
+            result_df.at[index, 'province_code'] = locode_dic[province_name]
 
     # adding new columns
-    df['activity_units'] = 'TJ'
-    df['temporal_granularity'] = 'annual'
-    df['source_name'] = 'ENARGAS'
+    result_df['activity_units'] = 'TJ'
+    result_df['temporal_granularity'] = 'annual'
+    result_df['source_name'] = 'ENARGAS'
 
     # assigning a unique ID to each row
-    for index, row in df.iterrows():
+    for index, row in result_df.iterrows():
         province_code = str(row['province_code'])
         emissions_value = str(row['emissions_value'])
         year = str(row['year'])
@@ -142,8 +161,8 @@ if __name__ == "__main__":
         GPC_refno = str(row['GPC_refno'])
 
         id_string = province_code + emissions_value + year + gas + GPC_refno
-        df.at[index, 'id'] = uuid_generate_v3(id_string)
+        result_df.at[index, 'id'] = uuid_generate_v3(id_string)
     
-    df = df[sorted(df.columns)]
+    result_df = result_df[sorted(result_df.columns)]
 
-    df.to_csv(f'{absolute_path}/processed_enargas_gas_consumption_AR.csv', sep=";", decimal=".", index=False)
+    result_df.to_csv(f'{absolute_path}/processed_enargas_gas_consumption_AR.csv', sep=",", decimal=".", index=False)

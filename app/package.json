@@ -61,7 +61,7 @@
     "exceljs": "^4.4.0",
     "fetch-blob": "^4.0.0",
     "fetch-mock": "^9.11.0",
-    "framer-motion": "^11.0.3",
+    "framer-motion": "^11.0.14",
     "geojson": "^0.5.0",
     "http-errors": "^2.0.0",
     "i18next": "^23.4.2",

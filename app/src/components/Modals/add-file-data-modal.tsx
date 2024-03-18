@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -35,7 +35,7 @@ interface AddFileDataModalProps {
 
 export interface FileData {
   subsectors: string;
-  scope: string;
+  scopes: string;
 }
 
 const AddFileDataModal: FC<AddFileDataModalProps> = ({
@@ -154,6 +154,7 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
                   <DropdownSelectInput
                     subsectors={subsectors}
                     setValue={setValue}
+                    watch={watch}
                     t={t}
                   />
                 </FormControl>
@@ -172,7 +173,7 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
                         <Checkbox
                           value={scope.value}
                           borderColor="interactive.secondary"
-                          {...register("scope")}
+                          {...register("scopes")}
                           onChange={(e) =>
                             handleSelectedScopes(scope.value, e.target.checked)
                           }

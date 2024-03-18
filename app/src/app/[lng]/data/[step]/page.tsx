@@ -458,14 +458,6 @@ export default function AddDataSteps({
     });
   }
   // Add file data to rudux state object
-  const hasUserAddedRequiredData = (
-    scopes: string,
-    subsectors: string,
-  ): boolean => {
-    const hasValues = scopes.length && subsectors.length ? true : false;
-    return hasValues;
-  };
-
   const {
     isOpen: isfileDataModalOpen,
     onOpen: onfileDataModalOpen,
@@ -477,7 +469,7 @@ export default function AddDataSteps({
     const base64FileString = await fileToBase64(file);
     const filename = file.name;
     onfileDataModalOpen();
-    console.log(formData);
+
     dispatch(
       addFile({
         sectorName: currentStep.title!,
@@ -496,13 +488,12 @@ export default function AddDataSteps({
         },
       }),
     );
+    dispatch(clear());
   };
 
   const sectorData = getInventoryData.sectors.filter(
     (sector) => sector.sectorName === currentStep.title,
   );
-
-  console.log(sectorData);
 
   function removeSectorFile(fileId: string, sectorName: string) {
     dispatch(
@@ -835,7 +826,7 @@ export default function AddDataSteps({
                     return (
                       <Card
                         shadow="none"
-                        h="124px"
+                        h="84px"
                         w="full"
                         borderWidth="1px"
                         borderColor="border.overlay"

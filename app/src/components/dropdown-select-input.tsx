@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Tag,
@@ -12,7 +12,12 @@ import {
 } from "@chakra-ui/react";
 import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md";
 import { SubSectorWithRelations } from "@/app/[lng]/data/[step]/types";
-import { UseFormRegister, UseFormSetValue, useForm } from "react-hook-form";
+import {
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormWatch,
+  useForm,
+} from "react-hook-form";
 import { FileData } from "./Modals/add-file-data-modal";
 import { TFunction } from "i18next";
 
@@ -20,12 +25,14 @@ interface DropdownSelectProps {
   subsectors: SubSectorWithRelations[] | null;
   setValue: UseFormSetValue<FileData>;
   t: TFunction;
+  watch: UseFormWatch<FileData>;
 }
 
 const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
   subsectors,
   setValue,
   t,
+  watch,
 }) => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
@@ -35,6 +42,7 @@ const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
   ) => {
     if (event.target.checked) {
       setSelectedItems([...selectedItems, value]);
+      setValue("subsectors", subsectorValues.length ? subsectorValues : "");
     } else {
       setSelectedItems(selectedItems.filter((item) => item !== value));
     }
@@ -52,7 +60,6 @@ const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
   };
 
   const subsectorValues = selectedItems.slice().join(",");
-  setValue("subsectors", subsectorValues.length ? subsectorValues : "");
 
   return (
     <Box className="w-full">

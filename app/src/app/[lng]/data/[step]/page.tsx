@@ -944,6 +944,7 @@ export default function AddDataSteps({
         isOpen={isfileDataModalOpen}
         onClose={onfileDataModalClose}
         subsectors={currentStep.subSectors}
+        t={t}
       />
       {/*** Bottom bar ***/}
       <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand py-4 px-4 drop-shadow-2xl hover:drop-shadow-4xl transition-all">

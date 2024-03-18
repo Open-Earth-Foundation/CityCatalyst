@@ -24,11 +24,13 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { addFileData, clear } from "@/features/city/fileDataSlice";
 import { RootState } from "@/lib/store";
+import { TFunction } from "i18next";
 
 interface AddFileDataModalProps {
   isOpen: boolean;
   onClose: () => void;
   subsectors: SubSectorWithRelations[] | null;
+  t: TFunction;
 }
 
 export interface FileData {
@@ -40,6 +42,7 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
   isOpen,
   onClose,
   subsectors,
+  t,
 }) => {
   const scopes = [
     {
@@ -99,7 +102,7 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
           borderStyle="solid"
           borderColor="border.neutral"
         >
-          Tell Us More About This File
+          {t("file-context")}
         </ModalHeader>
         <ModalCloseButton marginTop="10px" />
         <ModalBody p={6} px={12}>
@@ -128,7 +131,7 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
               color="interactive.secondary"
               fontWeight="bold"
             >
-              What type of data is contained in it?
+              {t("file-data-subtitle")}
             </Text>
 
             <Text
@@ -138,25 +141,25 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
               lineHeight="24px"
               letterSpacing="wide"
             >
-              Choose from the options below. This will help us to better
-              identify and include this information in your inventory.
+              {t("file-data-description")}
             </Text>
             <Divider borderColor="divider.grey03" borderWidth="2px" />
             <Box w="100%">
               <form className="w-full flex flex-col gap-[36px]">
                 <FormControl>
                   <FormLabel display="flex" alignItems="center" gap="8px">
-                    <Text>Select Sub-sectors</Text>
+                    <Text>{t("select-subsector-label")}</Text>
                     <InfoOutlineIcon color="interactive.control" />
                   </FormLabel>
                   <DropdownSelectInput
                     subsectors={subsectors}
                     setValue={setValue}
+                    t={t}
                   />
                 </FormControl>
                 <FormControl>
                   <FormLabel>
-                    <Text>Scopes</Text>
+                    <Text>{t("scopes")}</Text>
                   </FormLabel>
                   <Box display="flex" gap="16px">
                     {scopes.map((scope) => (
@@ -175,7 +178,9 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
                           }
                           checked={selectedScopes.includes(scope.value)}
                         />
-                        <Text fontWeight="bold">Scope {scope.value}</Text>
+                        <Text fontWeight="bold">
+                          {t("scope")} {scope.value}
+                        </Text>
                       </Box>
                     ))}
                   </Box>
@@ -199,7 +204,7 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
             w="316px"
             onClick={onClose}
           >
-            cancel
+            {t("cancel")}
           </Button>
           <Button
             variant="ghost"
@@ -209,7 +214,7 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
             w="316px"
             onClick={handleSubmit(onSubmit)}
           >
-            upload
+            {t("upload")}
           </Button>
         </ModalFooter>
       </ModalContent>

@@ -14,15 +14,18 @@ import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md";
 import { SubSectorWithRelations } from "@/app/[lng]/data/[step]/types";
 import { UseFormRegister, UseFormSetValue, useForm } from "react-hook-form";
 import { FileData } from "./Modals/add-file-data-modal";
+import { TFunction } from "i18next";
 
 interface DropdownSelectProps {
   subsectors: SubSectorWithRelations[] | null;
   setValue: UseFormSetValue<FileData>;
+  t: TFunction;
 }
 
 const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
   subsectors,
   setValue,
+  t,
 }) => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
@@ -77,7 +80,7 @@ const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
               color="content.tertiary"
               letterSpacing="wide"
             >
-              Select the sub-sectors included in this file
+              {t("select-placeholder")}
             </Text>
           )}
           {selectedItems.map((item) => (

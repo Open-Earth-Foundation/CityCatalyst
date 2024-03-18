@@ -75,12 +75,14 @@ function SetupStep({
   t,
   setValue,
   watch,
+  populationData,
 }: {
   errors: FieldErrors<Inputs>;
   register: UseFormRegister<Inputs>;
   t: TFunction;
   setValue: any;
   watch: Function;
+  populationData: PopulationData;
 }) {
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 7 }, (_x, i) => currentYear - i);
@@ -122,6 +124,23 @@ function SetupStep({
       setIsCityNew(false);
     }
   }, [cityInputQuery]);
+
+  useEffect(() => {
+    if (populationData) {
+      console.log(
+        "years",
+        populationData.year,
+        populationData.regionYear,
+        populationData.countryYear,
+      );
+      setValue("cityPopulation", populationData.population);
+      setValue("cityPopulationYear", populationData.year);
+      setValue("regionPopulation", populationData.regionPopulation);
+      setValue("regionPopulationYear", populationData.regionYear);
+      setValue("countryPopulation", populationData.countryPopulation);
+      setValue("countryPopulationYear", populationData.countryYear);
+    }
+  }, [populationData, setValue]);
 
   // import custom redux hooks
   const {
@@ -563,7 +582,7 @@ function findClosestYear(
   return populationData?.reduce((prev, curr) => {
     let prevDelta = Math.abs(year - prev.year);
     let currDelta = Math.abs(year - curr.year);
-    return prevDelta < currDelta ? prev : curr;
+    return prevDelta > currDelta ? prev : curr;
   });
 }
 
@@ -581,7 +600,7 @@ export default function OnboardingSetup({
     getValues,
     setValue,
     watch,
-    formState: { errors, isSubmitting, isValid },
+    formState: { errors, isSubmitting },
   } = useForm<Inputs>();
 
   const steps = [{ title: t("setup-step") }, { title: t("confirm-step") }];
@@ -605,27 +624,35 @@ export default function OnboardingSetup({
   const [populationData, setPopulationData] = useState<PopulationData>({});
 
   const storedData = useAppSelector((state) => state.openClimateCity);
+  const locode = storedData.city?.actor_id;
+
+  useEffect(() => {
+    // reset population data when locode changes to prevent keeping data from previous city
+    setPopulationData({});
+  }, [locode]);
 
   const onSubmit: SubmitHandler<Inputs> = async (newData) => {
     const year = Number(newData.year);
-    if (!newData.city || !storedData.city?.actor_id || year < 0) {
+
+    if (!newData.city || !storedData.city?.actor_id || year < 0 || !locode) {
+      // TODO show user toast? These should be caught by validation logic
       return;
     }
 
     setData({
       name: newData.city,
-      locode: storedData.city?.actor_id,
+      locode: locode!,
       year,
     });
 
     goToNext();
   };
 
-  const { data: cityData } = useGetOCCityDataQuery(data.locode, {
-    skip: !data.locode,
+  const { data: cityData } = useGetOCCityDataQuery(locode!, {
+    skip: !locode,
   });
   const countryLocode =
-    data.locode.length > 0 ? data.locode.split(" ")[0] : null;
+    locode && locode.length > 0 ? locode.split(" ")[0] : null;
   const { data: countryData } = useGetOCCityDataQuery(countryLocode!, {
     skip: !countryLocode,
   });
@@ -655,6 +682,7 @@ export default function OnboardingSetup({
     if (cityData) {
       const population = findClosestYear(cityData?.data.population, data.year);
       const populationObject = {
+        ...populationData,
         year: population?.year,
         population: population?.population,
         datasourceId: population?.datasource_id,
@@ -675,6 +703,7 @@ export default function OnboardingSetup({
 
       setOcCityData(cityObject);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cityData, storedData.city?.root_path_geo, data.year]);
 
   useEffect(() => {
@@ -686,6 +715,7 @@ export default function OnboardingSetup({
       const newPopulation = {
         ...populationData,
         countryPopulation: population?.population,
+        countryYear: population?.year,
       };
       setPopulationData(newPopulation);
     }
@@ -698,6 +728,7 @@ export default function OnboardingSetup({
       const newPopulation = {
         ...populationData,
         regionPopulation: population?.population,
+        regionYear: population?.year,
       };
       setPopulationData(newPopulation);
     }
@@ -716,7 +747,7 @@ export default function OnboardingSetup({
     try {
       city = await addCity({
         name: data.name,
-        locode: data.locode,
+        locode: locode!,
         area: ocCityData?.area!,
         region: ocCityData?.region!,
         country: ocCityData?.country!,
@@ -727,6 +758,7 @@ export default function OnboardingSetup({
         population: cityPopulation!,
         regionPopulation: regionPopulation!,
         countryPopulation: countryPopulation!,
+        // TODO add years for all 3 population entries
         year: data.year,
       }).unwrap();
     } catch (err: any) {
@@ -776,6 +808,7 @@ export default function OnboardingSetup({
               setValue={setValue}
               register={register}
               watch={watch}
+              populationData={populationData}
               t={t}
             />
           )}
@@ -800,7 +833,6 @@ export default function OnboardingSetup({
             <Button
               h={16}
               isLoading={isSubmitting}
-              isDisabled={!isValid}
               onClick={() => handleSubmit(onSubmit)()}
               px={12}
               size="sm"

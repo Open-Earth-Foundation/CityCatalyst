@@ -86,6 +86,7 @@ type PopulationData = {
   datasourceId?: string;
 };
 
+/// Finds entry which has the year closest to the selected inventory year
 function findClosestYear(
   populationData: PopulationEntry[] | undefined,
   year: number,
@@ -96,7 +97,7 @@ function findClosestYear(
   return populationData?.reduce((prev, curr) => {
     let prevDelta = Math.abs(year - prev.year);
     let currDelta = Math.abs(year - curr.year);
-    return prevDelta > currDelta ? prev : curr;
+    return prevDelta < currDelta ? prev : curr;
   });
 }
 

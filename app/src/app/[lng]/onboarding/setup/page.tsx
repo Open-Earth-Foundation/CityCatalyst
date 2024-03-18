@@ -557,10 +557,14 @@ function findClosestYear(
   populationData: PopulationEntry[] | undefined,
   year: number,
 ): PopulationEntry | undefined {
-  const sortedEntries = populationData?.sort((a, b) => {
-    return Math.abs(year - a.year) - Math.abs(year - b.year);
+  if (populationData?.length === 0) {
+    return undefined;
+  }
+  return populationData?.reduce((prev, curr) => {
+    let prevDelta = Math.abs(year - prev.year);
+    let currDelta = Math.abs(year - curr.year);
+    return prevDelta < currDelta ? prev : curr;
   });
-  return sortedEntries?.[0];
 }
 
 export default function OnboardingSetup({
@@ -622,11 +626,10 @@ export default function OnboardingSetup({
   });
   const countryLocode =
     data.locode.length > 0 ? data.locode.split(" ")[0] : null;
-  const regionLocode = cityData?.data.region;
-  console.log("Region locode", regionLocode);
   const { data: countryData } = useGetOCCityDataQuery(countryLocode!, {
     skip: !countryLocode,
   });
+  const regionLocode = cityData?.data.is_part_of;
   const { data: regionData } = useGetOCCityDataQuery(regionLocode!, {
     skip: !regionLocode,
   });

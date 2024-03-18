@@ -5,7 +5,7 @@ import WizardSteps from "@/components/wizard-steps";
 import { set } from "@/features/city/openclimateCitySlice";
 import { useTranslation } from "@/i18n/client";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import type { CityAttributes, OCCityArributes } from "@/models/City";
+import type { CityAttributes } from "@/models/City";
 import {
   useAddCityMutation,
   useAddCityPopulationMutation,
@@ -15,6 +15,7 @@ import {
   useSetUserInfoMutation,
 } from "@/services/api";
 import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
+import { OCCityAttributes } from "@/util/types";
 import {
   ArrowBackIcon,
   CheckIcon,
@@ -69,20 +70,50 @@ type Inputs = {
   countryPopulationYear: number;
 };
 
+type PopulationEntry = {
+  year: number;
+  population: number;
+  datasource_id: string;
+};
+
+type PopulationData = {
+  year?: number;
+  population?: number;
+  regionPopulation?: number;
+  regionYear?: number;
+  countryPopulation?: number;
+  countryYear?: number;
+  datasourceId?: string;
+};
+
+function findClosestYear(
+  populationData: PopulationEntry[] | undefined,
+  year: number,
+): PopulationEntry | undefined {
+  if (populationData?.length === 0) {
+    return undefined;
+  }
+  return populationData?.reduce((prev, curr) => {
+    let prevDelta = Math.abs(year - prev.year);
+    let currDelta = Math.abs(year - curr.year);
+    return prevDelta > currDelta ? prev : curr;
+  });
+}
+
 function SetupStep({
   errors,
   register,
   t,
   setValue,
   watch,
-  populationData,
+  setOcCityData,
 }: {
   errors: FieldErrors<Inputs>;
   register: UseFormRegister<Inputs>;
   t: TFunction;
   setValue: any;
   watch: Function;
-  populationData: PopulationData;
+  setOcCityData: Function;
 }) {
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 7 }, (_x, i) => currentYear - i);
@@ -91,8 +122,9 @@ function SetupStep({
   const [onInputClicked, setOnInputClicked] = useState<boolean>(false);
   const [cityInputQuery, setCityInputQuery] = useState<string>("");
   const [isCityNew, setIsCityNew] = useState<boolean>(false);
+  const [locode, setLocode] = useState<string | null>(null);
 
-  const yearValue = watch("year");
+  const year = watch("year");
   const cityPopulationYear = watch("cityPopulationYear");
   const regionPopulationYear = watch("regionPopulationYear");
   const countryPopulationYear = watch("countryPopulationYear");
@@ -104,11 +136,12 @@ function SetupStep({
     setValue("city", e.target.value);
   };
 
-  const handleSetCity = (city: OCCityArributes) => {
+  const handleSetCity = (city: OCCityAttributes) => {
     setCityInputQuery(city.name);
     setOnInputClicked(false);
     dispatch(set(city));
     setValue("city", city.name);
+    setLocode(city.actor_id);
 
     // TODO: chech whether city exists or not
     setIsCityNew(true);
@@ -125,14 +158,69 @@ function SetupStep({
     }
   }, [cityInputQuery]);
 
+  const [populationData, setPopulationData] = useState<PopulationData>({});
+  useEffect(() => {
+    // reset population data when locode changes to prevent keeping data from previous city
+    setPopulationData({});
+  }, [locode]);
+
+  const { data: cityData } = useGetOCCityDataQuery(locode!, {
+    skip: !locode,
+  });
+  const countryLocode =
+    locode && locode.length > 0 ? locode.split(" ")[0] : null;
+  const { data: countryData } = useGetOCCityDataQuery(countryLocode!, {
+    skip: !countryLocode,
+  });
+  const regionLocode = cityData?.data.is_part_of;
+  const { data: regionData } = useGetOCCityDataQuery(regionLocode!, {
+    skip: !regionLocode,
+  });
+
+  useEffect(() => {
+    if (cityData) {
+      const population = findClosestYear(cityData?.data.population, year);
+      const populationObject = {
+        ...populationData,
+        year: population?.year,
+        population: population?.population,
+        datasourceId: population?.datasource_id,
+      };
+      setPopulationData(populationObject);
+
+      setOcCityData(cityData);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cityData, year]);
+
+  useEffect(() => {
+    if (countryData) {
+      const population = findClosestYear(countryData?.data.population, year);
+      const newPopulation = {
+        ...populationData,
+        countryPopulation: population?.population,
+        countryYear: population?.year,
+      };
+      setPopulationData(newPopulation);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countryData, year]);
+
+  useEffect(() => {
+    if (regionData) {
+      const population = findClosestYear(regionData.data.population, year);
+      const newPopulation = {
+        ...populationData,
+        regionPopulation: population?.population,
+        regionYear: population?.year,
+      };
+      setPopulationData(newPopulation);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [regionData, year]);
+
   useEffect(() => {
     if (populationData) {
-      console.log(
-        "years",
-        populationData.year,
-        populationData.regionYear,
-        populationData.countryYear,
-      );
       setValue("cityPopulation", populationData.population);
       setValue("cityPopulationYear", populationData.year);
       setValue("regionPopulation", populationData.regionPopulation);
@@ -270,7 +358,7 @@ function SetupStep({
                   ))}
                 </Select>
                 <InputRightElement>
-                  {yearValue && (
+                  {year && (
                     <CheckIcon
                       color="semantic.success"
                       boxSize={4}
@@ -556,36 +644,6 @@ function ConfirmStep({
   );
 }
 
-type PopulationEntry = {
-  year: number;
-  population: number;
-  datasource_id: string;
-};
-
-type PopulationData = {
-  year?: number;
-  population?: number;
-  regionPopulation?: number;
-  regionYear?: number;
-  countryPopulation?: number;
-  countryYear?: number;
-  datasourceId?: string;
-};
-
-function findClosestYear(
-  populationData: PopulationEntry[] | undefined,
-  year: number,
-): PopulationEntry | undefined {
-  if (populationData?.length === 0) {
-    return undefined;
-  }
-  return populationData?.reduce((prev, curr) => {
-    let prevDelta = Math.abs(year - prev.year);
-    let currDelta = Math.abs(year - curr.year);
-    return prevDelta > currDelta ? prev : curr;
-  });
-}
-
 export default function OnboardingSetup({
   params: { lng },
 }: {
@@ -619,47 +677,8 @@ export default function OnboardingSetup({
     locode: string;
     year: number;
   }>({ name: "", locode: "", year: -1 });
-
+  const [ocCityData, setOcCityData] = useState<OCCityAttributes>();
   const [isConfirming, setConfirming] = useState(false);
-  const [populationData, setPopulationData] = useState<PopulationData>({});
-
-  const storedData = useAppSelector((state) => state.openClimateCity);
-  const locode = storedData.city?.actor_id;
-
-  useEffect(() => {
-    // reset population data when locode changes to prevent keeping data from previous city
-    setPopulationData({});
-  }, [locode]);
-
-  const onSubmit: SubmitHandler<Inputs> = async (newData) => {
-    const year = Number(newData.year);
-
-    if (!newData.city || !storedData.city?.actor_id || year < 0 || !locode) {
-      // TODO show user toast? These should be caught by validation logic
-      return;
-    }
-
-    setData({
-      name: newData.city,
-      locode: locode!,
-      year,
-    });
-
-    goToNext();
-  };
-
-  const { data: cityData } = useGetOCCityDataQuery(locode!, {
-    skip: !locode,
-  });
-  const countryLocode =
-    locode && locode.length > 0 ? locode.split(" ")[0] : null;
-  const { data: countryData } = useGetOCCityDataQuery(countryLocode!, {
-    skip: !countryLocode,
-  });
-  const regionLocode = cityData?.data.is_part_of;
-  const { data: regionData } = useGetOCCityDataQuery(regionLocode!, {
-    skip: !regionLocode,
-  });
 
   const makeErrorToast = (title: string, description?: string) => {
     toast({
@@ -672,69 +691,6 @@ export default function OnboardingSetup({
     });
   };
 
-  const [ocCityData, setOcCityData] = useState<{
-    area: number;
-    region: string;
-    country: string;
-  }>();
-
-  useEffect(() => {
-    if (cityData) {
-      const population = findClosestYear(cityData?.data.population, data.year);
-      const populationObject = {
-        ...populationData,
-        year: population?.year,
-        population: population?.population,
-        datasourceId: population?.datasource_id,
-      };
-      setPopulationData(populationObject);
-
-      const cityObject = {
-        area: cityData.data?.territory?.area ?? 0,
-        region:
-          storedData.city?.root_path_geo.filter(
-            (item: any) => item.type === "adm1",
-          )[0]?.name ?? "",
-        country:
-          storedData.city?.root_path_geo.filter(
-            (item: any) => item.type === "country",
-          )[0]?.name ?? "",
-      };
-
-      setOcCityData(cityObject);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cityData, storedData.city?.root_path_geo, data.year]);
-
-  useEffect(() => {
-    if (countryData) {
-      const population = findClosestYear(
-        countryData?.data.population,
-        data.year,
-      );
-      const newPopulation = {
-        ...populationData,
-        countryPopulation: population?.population,
-        countryYear: population?.year,
-      };
-      setPopulationData(newPopulation);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [countryData, data.year]);
-
-  useEffect(() => {
-    if (regionData) {
-      const population = findClosestYear(regionData.data.population, data.year);
-      const newPopulation = {
-        ...populationData,
-        regionPopulation: population?.population,
-        regionYear: population?.year,
-      };
-      setPopulationData(newPopulation);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [regionData, data.year]);
-
   // TODO update form with population values from API
   const cityPopulation = watch("cityPopulation");
   const regionPopulation = watch("regionPopulation");
@@ -744,13 +700,23 @@ export default function OnboardingSetup({
     // save data in backend
     setConfirming(true);
     let city: CityAttributes | null = null;
+
+    let area = ocCityData?.area ?? 0;
+    let region =
+      ocCityData?.root_path_geo.filter((item: any) => item.type === "adm1")[0]
+        ?.name ?? "";
+    let country =
+      ocCityData?.root_path_geo.filter(
+        (item: any) => item.type === "country",
+      )[0]?.name ?? "";
+
     try {
       city = await addCity({
         name: data.name,
-        locode: locode!,
-        area: ocCityData?.area!,
-        region: ocCityData?.region!,
-        country: ocCityData?.country!,
+        locode: data.locode!,
+        area,
+        region,
+        country,
       }).unwrap();
       await addCityPopulation({
         cityId: city.cityId,
@@ -786,6 +752,23 @@ export default function OnboardingSetup({
     }
   };
 
+  const onSubmit: SubmitHandler<Inputs> = async (newData) => {
+    const year = Number(newData.year);
+
+    if (!newData.city || !ocCityData?.actor_id || year < 0 || !data.locode) {
+      // TODO show user toast? These should be caught by validation logic
+      return;
+    }
+
+    setData({
+      name: newData.city,
+      locode: data.locode!,
+      year,
+    });
+
+    goToNext();
+  };
+
   return (
     <>
       <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto">
@@ -808,7 +791,7 @@ export default function OnboardingSetup({
               setValue={setValue}
               register={register}
               watch={watch}
-              populationData={populationData}
+              setOcCityData={setOcCityData}
               t={t}
             />
           )}
@@ -818,7 +801,7 @@ export default function OnboardingSetup({
               t={t}
               locode={data.locode}
               area={ocCityData?.area!}
-              population={populationData.population}
+              population={cityPopulation}
             />
           )}
         </div>

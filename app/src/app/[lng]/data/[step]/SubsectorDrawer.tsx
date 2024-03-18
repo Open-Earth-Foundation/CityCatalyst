@@ -55,6 +55,7 @@ import type {
   SubcategoryData,
   EmissionsFactorData,
   GasValueData,
+  SubSectorWithRelations,
 } from "./types";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { determineEmissionsFactorType } from "./ActivityDataTab";
@@ -213,12 +214,12 @@ export function SubsectorDrawer({
   onSave,
   t,
 }: {
-  subSector?: SubSector;
+  subSector?: SubSectorWithRelations;
   sectorName?: string;
   inventoryId?: string;
   isOpen: boolean;
   onClose: () => void;
-  onSave: (subsector: SubSector, data: Inputs) => void;
+  onSave: (subsector: SubSectorWithRelations, data: Inputs) => void;
   finalFocusRef?: RefObject<any>;
   t: TFunction;
 }) {

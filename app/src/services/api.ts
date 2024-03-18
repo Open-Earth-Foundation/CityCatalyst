@@ -18,6 +18,7 @@ import type {
   UserInfoResponse,
   UserFileResponse,
   EmissionsFactorResponse,
+  UserInviteResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -229,12 +230,10 @@ export const api = createApi({
         body: data,
       }),
     }),
-    addUser: builder.mutation<
+    checkUser: builder.mutation<
       UserAttributes,
       {
-        name: string;
         email: string;
-        role: string;
         cityId: string;
       }
     >({
@@ -243,6 +242,7 @@ export const api = createApi({
         method: "POST",
         body: data,
       }),
+      transformResponse: (response: { data: any }) => response.data,
       invalidatesTags: ["UserData"],
     }),
     getCityUsers: builder.query<
@@ -414,5 +414,6 @@ export const {
   useGetUserFilesQuery,
   useDeleteUserFileMutation,
   useSendEmailNotificationMutation,
+  useCheckUserMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

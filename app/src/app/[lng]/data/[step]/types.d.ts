@@ -5,6 +5,9 @@ import type {
 } from "@/models/EmissionsFactor";
 import type { GasValueAttributes } from "@/models/GasValue";
 import type { InventoryValueAttributes } from "@/models/InventoryValue";
+import { ScopeAttributes } from "@/models/Scope";
+import { SubCategoryAttributes } from "@/models/SubCategory";
+import { SubSectorAttributes } from "@/models/SubSector";
 import type { EmissionsFactorWithDataSources } from "@/util/types";
 
 interface DataStep {
@@ -16,7 +19,7 @@ interface DataStep {
   totalSubSectors: number;
   referenceNumber: string;
   sector: Sector | null;
-  subSectors: Array<SubSectorAttributes & { completed: boolean }> | null;
+  subSectors: SubSectorWithRelations[] | null;
 }
 
 type SubSector = {
@@ -80,7 +83,10 @@ type SubcategoryData = {
 
 type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 
-type EmissionsFactorData = Optional<EmissionsFactorWithDataSources, "id" | "dataSources">;
+type EmissionsFactorData = Optional<
+  EmissionsFactorWithDataSources,
+  "id" | "dataSources"
+>;
 type GasValueData = Omit<GasValueAttributes, "id" | "gasAmount"> & {
   emissionsFactor?: EmissionsFactorData;
   gasAmount?: bigint | null;
@@ -89,4 +95,30 @@ type GasValueData = Omit<GasValueAttributes, "id" | "gasAmount"> & {
 type InventoryValueData = Omit<InventoryValueAttributes, "id"> & {
   dataSource?: Omit<DataSourceAttributes, "datasourceId">;
   gasValues?: GasValueData[];
+};
+
+type DataSourceWithRelations = DataSourceAttributes & {
+  subCategory:
+    | (SubCategoryAttributes & {
+        subsector: SubSectorAttributes;
+        scope: ScopeAttributes;
+      })
+    | null;
+  subSector: SubSectorAttributes | null;
+  publisher: Publisher | null;
+  inventoryValues: InventoryValueAttributes[];
+  scopes: Scope[];
+};
+
+type DataSourceData = {
+  totals: { emissions: { co2eq_100yr } };
+  points?: any;
+  scaleFactor: number;
+  issue: string | null;
+};
+
+type SubSectorWithRelations = SubSectorAttributes & {
+  completed: boolean;
+  scope: ScopeAttributes;
+  subCategories: SubCategoryAttributes[];
 };

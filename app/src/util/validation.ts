@@ -61,7 +61,6 @@ export const resetPasswordRequest = z.object({
 });
 
 export const createInventoryValue = z.object({
-  gpcReferenceNumber: z.string().optional(),
   activityValue: z.number().nullable().optional(),
   activityUnits: z.string().nullable().optional(),
   co2eq: z.coerce.bigint().gte(0n).optional(),
@@ -129,3 +128,13 @@ export const createUserFileRequset = z.object({
 
 // Schema type definition
 export type CreateUserFileRequetData = z.infer<typeof createUserFileRequset>;
+
+export const createUserInvite = z.object({
+  userId: z.string().optional(),
+  invitingUserId: z.string().uuid(),
+  email: z.string().email(),
+  name: z.string(),
+  cityId: z.string(),
+});
+
+export type CreateUserInvite = z.infer<typeof createUserInvite>;

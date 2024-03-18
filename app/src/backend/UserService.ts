@@ -6,7 +6,6 @@ import type { City } from "@/models/City";
 import type { Inventory } from "@/models/Inventory";
 import type { User } from "@/models/User";
 import type { Includeable } from "sequelize";
-import { InventoryValue } from "@/models/InventoryValue";
 
 export default class UserService {
   public static async findUser(
@@ -97,48 +96,5 @@ export default class UserService {
     }
 
     return inventory;
-  }
-
-  public static async findUserInventoryValue(
-    inventoryValueId: string,
-    inventoryId: string,
-    session: AppSession | null,
-  ): Promise<InventoryValue> {
-    if (!session) throw new createHttpError.Unauthorized("Unauthorized");
-    const inventoryValue = await db.models.InventoryValue.findOne({
-      where: { id: inventoryValueId },
-      include: [
-        {
-          model: db.models.Inventory,
-          as: "inventory",
-          where: {
-            inventoryId,
-          },
-          include: [
-            {
-              model: db.models.City,
-              as: "city",
-              required: true,
-              include: [
-                {
-                  model: db.models.User,
-                  as: "users",
-                  where: {
-                    userId: session?.user.id,
-                  },
-                  attributes: [],
-                },
-              ],
-            },
-          ],
-          attributes: [],
-        },
-      ],
-    });
-    if (!inventoryValue) {
-      throw new createHttpError.NotFound("Inventory value not found");
-    }
-
-    return inventoryValue;
   }
 }

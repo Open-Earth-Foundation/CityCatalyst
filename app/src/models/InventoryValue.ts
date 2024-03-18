@@ -1,10 +1,12 @@
 import * as Sequelize from "sequelize";
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model } from "sequelize";
+import type { Optional } from "sequelize";
 import type { Inventory, InventoryId } from "./Inventory";
 import type { SubCategory, SubCategoryId } from "./SubCategory";
 import type { DataSource, DataSourceId } from "./DataSource";
-import { Sector, SectorId } from "./Sector";
-import { SubSector, SubSectorId } from "./SubSector";
+import type { Sector, SectorId } from "./Sector";
+import type { SubSector, SubSectorId } from "./SubSector";
+import type { GasValue, GasValueId } from "./GasValue";
 
 export interface InventoryValueAttributes {
   id: string;
@@ -97,6 +99,39 @@ export class InventoryValue
     DataSourceId
   >;
   createDataSource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
+  // InventoryValue hasMany GasValue via inventoryValueId
+  gasValues!: GasValue[];
+  getGasValues!: Sequelize.HasManyGetAssociationsMixin<GasValue>;
+  setGasValues!: Sequelize.HasManySetAssociationsMixin<
+    GasValue,
+    GasValueId
+  >;
+  addGasValue!: Sequelize.HasManyAddAssociationMixin<
+    GasValue,
+    GasValueId
+  >;
+  addGasValues!: Sequelize.HasManyAddAssociationsMixin<
+    GasValue,
+    GasValueId
+  >;
+  createGasValue!: Sequelize.HasManyCreateAssociationMixin<GasValue>;
+  removeGasValue!: Sequelize.HasManyRemoveAssociationMixin<
+    GasValue,
+    GasValueId
+  >;
+  removeGasValues!: Sequelize.HasManyRemoveAssociationsMixin<
+    GasValue,
+    GasValueId
+  >;
+  hasGasValue!: Sequelize.HasManyHasAssociationMixin<
+    GasValue,
+    GasValueId
+  >;
+  hasGasValues!: Sequelize.HasManyHasAssociationsMixin<
+    GasValue,
+    GasValueId
+  >;
+  countGasValues!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof InventoryValue {
     return InventoryValue.init(

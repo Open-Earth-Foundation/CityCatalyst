@@ -14,10 +14,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
   }
   const subCategoryIds = subCategoryIdsParam.split(",");
 
-  const inventory = await UserService.findUserInventory(
-    params.inventory,
-    session,
-  );
+  const inventory = await UserService.findUserInventory(params.inventory, session);
 
   const inventoryValues = await db.models.InventoryValue.findAll({
     where: {

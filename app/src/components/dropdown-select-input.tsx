@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   Box,
-  Select,
   Tag,
   TagLabel,
   TagCloseButton,
@@ -9,20 +8,24 @@ import {
   List,
   ListItem,
   Text,
+  Input,
 } from "@chakra-ui/react";
 import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md";
 import { SubSectorWithRelations } from "@/app/[lng]/data/[step]/types";
-interface Option {
-  value: string;
-  label: string;
-}
+import { UseFormRegister, UseFormSetValue, useForm } from "react-hook-form";
+import { FileData } from "./Modals/add-file-data-modal";
 
 interface DropdownSelectProps {
   subsectors: SubSectorWithRelations[] | null;
+  setValue: UseFormSetValue<FileData>;
 }
 
-const DropdownSelectInput: React.FC<DropdownSelectProps> = ({ subsectors }) => {
+const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
+  subsectors,
+  setValue,
+}) => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
   const handleCheckboxChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     value: string,
@@ -46,12 +49,13 @@ const DropdownSelectInput: React.FC<DropdownSelectProps> = ({ subsectors }) => {
   };
 
   const subsectorValues = selectedItems.slice().join(",");
-  console.log(subsectorValues);
+  setValue("subsectors", subsectorValues.length ? subsectorValues : "");
+
   return (
     <Box className="w-full">
       <Box
         borderWidth="1px"
-        borderColor="border.neutral"
+        borderColor={showDropdown ? "interactive.secondary" : "border.neutral"}
         borderRadius="4px"
         w="full"
         minH="48px"
@@ -59,15 +63,15 @@ const DropdownSelectInput: React.FC<DropdownSelectProps> = ({ subsectors }) => {
         alignItems="center"
         px="16px"
         onClick={handleShowdropDown}
+        py={selectedItems.length > 2 ? "12px" : "0px"}
       >
         <Box w="full">
-          <input value={subsectorValues.length ? subsectorValues : ""} hidden />
-          {selectedItems ? (
+          {selectedItems.length ? (
             ""
           ) : (
             <Text
               w="full"
-              pos="absolute"
+              pos="relative"
               lineHeight="24px"
               fontWeight="400"
               color="content.tertiary"
@@ -84,12 +88,15 @@ const DropdownSelectInput: React.FC<DropdownSelectProps> = ({ subsectors }) => {
               size="md"
               borderRadius="full"
               variant="solid"
-              color="content.link"
+              color="content.alternative"
               bg="background.neutral"
               maxW="150px"
             >
               <TagLabel>{item}</TagLabel>
-              <TagCloseButton onClick={() => handleRemoveItem(item)} />
+              <TagCloseButton
+                onClick={() => handleRemoveItem(item)}
+                color="content.alternative"
+              />
             </Tag>
           ))}
           <Box w="full"></Box>
@@ -112,6 +119,7 @@ const DropdownSelectInput: React.FC<DropdownSelectProps> = ({ subsectors }) => {
           borderRadius="8px"
           shadow="2dp"
           py="16px"
+          zIndex="50"
         >
           <List>
             {subsectors?.map((subsector) => (

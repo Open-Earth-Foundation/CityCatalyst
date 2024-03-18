@@ -72,6 +72,8 @@ export default function ReviewPage({
           formData.append("userId", fileData.userId!);
           formData.append("fileName", fileData.fileName!);
           formData.append("sector", fileData.sector!);
+          formData.append("subsectors", fileData.subsectors!);
+          formData.append("scopes", fileData.scopes!);
           formData.append("status", defaultStatus);
           formData.append("fileReference", "");
           formData.append("url", fileData.url!);
@@ -270,6 +272,7 @@ export default function ReviewPage({
                       key={i}
                       fileName={file.fileName}
                       fileSize={file.size}
+                      subsectors={file.subsectors}
                     />
                   ))}
                 </Box>
@@ -392,6 +395,7 @@ export default function ReviewPage({
                         key={i}
                         fileName={file.fileName}
                         fileSize={file.size}
+                        subsectors={file.subsectors}
                       />
                     ))}
                   </Box>
@@ -537,6 +541,7 @@ export default function ReviewPage({
                           key={i}
                           fileName={file.fileName}
                           fileSize={file.size}
+                          subsectors={file.subsectors}
                         />
                       ),
                     )}

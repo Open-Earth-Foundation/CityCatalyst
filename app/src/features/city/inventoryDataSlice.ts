@@ -7,6 +7,8 @@ export type InventoryUserFileAttributes = Omit<UserFileAttributes, "id"> & {
   fileId: string;
   fileName: string;
   size: number;
+  subsectors: string;
+  scopes: string;
 };
 
 interface SectorFileData {
@@ -43,7 +45,10 @@ export const inventoryDataSlice = createSlice({
         state.sectors[sectorIndex].files.push(fileData);
       } else {
         // Sector does not exist, create a new sector entry
-        state.sectors.push({ sectorName, files: [fileData] });
+        state.sectors.push({
+          sectorName,
+          files: [fileData],
+        });
       }
     },
     removeSectorData: (

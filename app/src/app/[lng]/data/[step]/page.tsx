@@ -74,6 +74,7 @@ import type {
 
 import { v4 as uuidv4 } from "uuid";
 import AddFileDataModal from "@/components/Modals/add-file-data-modal";
+import { clear } from "@/features/city/fileDataSlice";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -471,16 +472,20 @@ export default function AddDataSteps({
     onClose: onfileDataModalClose,
   } = useDisclosure();
 
+  const formData = useSelector((state: RootState) => state.fileData);
   const handleFileSelect = async (file: File) => {
     const base64FileString = await fileToBase64(file);
     const filename = file.name;
     onfileDataModalOpen();
+    console.log(formData);
     dispatch(
       addFile({
         sectorName: currentStep.title!,
         fileData: {
           fileId: uuidv4(),
           fileName: filename,
+          subsectors: formData?.subsectors,
+          scopes: formData?.scopes,
           userId: userInfo?.userId,
           sector: currentStep.title,
           data: base64FileString,
@@ -496,6 +501,8 @@ export default function AddDataSteps({
   const sectorData = getInventoryData.sectors.filter(
     (sector) => sector.sectorName === currentStep.title,
   );
+
+  console.log(sectorData);
 
   function removeSectorFile(fileId: string, sectorName: string) {
     dispatch(
@@ -824,68 +831,69 @@ export default function AddDataSteps({
               </Box>
               <Box display="flex" flexDirection="column" gap="8px">
                 {sectorData &&
-                  hasUserAddedRequiredData("", "") &&
-                  sectorData[0]?.files.map((file: any, i: number) => (
-                    <Card
-                      shadow="none"
-                      h="80px"
-                      w="full"
-                      borderWidth="1px"
-                      borderColor="border.overlay"
-                      borderRadius="8px"
-                      px="16px"
-                      py="16px"
-                      key={i}
-                    >
-                      <Box display="flex" gap="16px">
-                        <Box>
-                          <ExcelFileIcon />
-                        </Box>
-                        <Box
-                          display="flex"
-                          flexDirection="column"
-                          justifyContent="center"
-                          gap="8px"
-                        >
-                          <Heading
-                            fontSize="lable.lg"
-                            fontWeight="normal"
-                            letterSpacing="wide"
-                            isTruncated
+                  sectorData[0]?.files.map((file: any, i: number) => {
+                    return (
+                      <Card
+                        shadow="none"
+                        h="124px"
+                        w="full"
+                        borderWidth="1px"
+                        borderColor="border.overlay"
+                        borderRadius="8px"
+                        px="16px"
+                        py="16px"
+                        key={i}
+                      >
+                        <Box display="flex" gap="16px">
+                          <Box>
+                            <ExcelFileIcon />
+                          </Box>
+                          <Box
+                            display="flex"
+                            flexDirection="column"
+                            justifyContent="center"
+                            gap="8px"
                           >
-                            {file.fileName}
-                          </Heading>
-                          <Text
-                            fontSize="body.md"
-                            fontWeight="normal"
-                            color="interactive.control"
-                          >
-                            {bytesToMB(file.size)}
-                          </Text>
-                        </Box>
-                        <Box
-                          color="sentiment.negativeDefault"
-                          display="flex"
-                          justifyContent="right"
-                          alignItems="center"
-                          w="full"
-                        >
-                          <Button
-                            variant="ghost"
+                            <Heading
+                              fontSize="lable.lg"
+                              fontWeight="normal"
+                              letterSpacing="wide"
+                              isTruncated
+                            >
+                              {file.fileName}
+                            </Heading>
+                            <Text
+                              fontSize="body.md"
+                              fontWeight="normal"
+                              color="interactive.control"
+                            >
+                              {bytesToMB(file.size)}
+                            </Text>
+                          </Box>
+                          <Box
                             color="sentiment.negativeDefault"
-                            onClick={() =>
-                              removeSectorFile(
-                                file.fileId,
-                                sectorData[0].sectorName,
-                              )
-                            }
+                            display="flex"
+                            justifyContent="right"
+                            alignItems="center"
+                            w="full"
                           >
-                            <FiTrash2 size={24} />
-                          </Button>
+                            <Button
+                              variant="ghost"
+                              color="sentiment.negativeDefault"
+                              onClick={() =>
+                                removeSectorFile(
+                                  file.fileId,
+                                  sectorData[0].sectorName,
+                                )
+                              }
+                            >
+                              <FiTrash2 size={24} />
+                            </Button>
+                          </Box>
                         </Box>
-                      </Box>
-                    </Card>
-                  ))}
+                      </Card>
+                    );
+                  })}
               </Box>
             </Box>
           </Box>

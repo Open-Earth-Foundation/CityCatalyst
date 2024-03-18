@@ -5,9 +5,9 @@ CREATE TEMP TABLE IF NOT EXISTS mendoza_stationary_energy_staging (LIKE citywide
 TRUNCATE mendoza_stationary_energy_staging;
 
 -- Load the staging table from the downloaded file
-COPY mendoza_stationary_energy_staging (year, activity_name, activity_value, activity_units, "GPC_refno", gas_name, emission_factor_value, emission_factor_units, emissions_value, emissions_units, city_name, source_name, temporal_granularity, locode, id)
+\copy mendoza_stationary_energy_staging (year, activity_name, activity_value, activity_units, "GPC_refno", gas_name, emission_factor_value, emission_factor_units, emissions_value, emissions_units, city_name, source_name, temporal_granularity, locode, id) FROM './importer/mendoza_arg/stationary_energy_mendoza.csv' WITH (FORMAT CSV, HEADER);
 
-FROM './stationary_energy_mendoza.csv' DELIMITER ',' CSV HEADER;
+-- FROM './stationary_energy_mendoza.csv' DELIMITER ',' CSV HEADER;
 
 -- Update the main table with the staging table
 INSERT INTO citywide_emissions (year, activity_name, activity_value, activity_units, "GPC_refno", gas_name, emission_factor_value, emission_factor_units, emissions_value, emissions_units, city_name, source_name, temporal_granularity, locode, id)

@@ -18,7 +18,6 @@ import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
 import {
   ArrowBackIcon,
   CheckIcon,
-  InfoIcon,
   InfoOutlineIcon,
   SearchIcon,
 } from "@chakra-ui/icons";
@@ -266,16 +265,6 @@ function SetupStep({
                 {errors.year && errors.year.message}
               </FormErrorMessage>
             </FormControl>
-            <HStack spacing={1.5} align="start">
-              <InfoOutlineIcon color="interactive.secondary" mt={1} />
-              <Text
-                color="content.tertiary"
-                fontSize="sm"
-                whiteSpace="pre-line"
-              >
-                {t("information-required")}
-              </Text>
-            </HStack>
             <HStack spacing={6} align="start">
               <FormControl isInvalid={!!errors.cityPopulation}>
                 <FormLabel>{t("city-population-title")}</FormLabel>
@@ -444,6 +433,16 @@ function SetupStep({
                     errors.countryPopulationYear.message}
                 </FormErrorMessage>
               </FormControl>
+            </HStack>
+            <HStack spacing={1.5} align="start">
+              <InfoOutlineIcon color="interactive.secondary" mt={1} />
+              <Text
+                color="content.tertiary"
+                fontSize="sm"
+                whiteSpace="pre-line"
+              >
+                {t("information-required")}
+              </Text>
             </HStack>
           </form>
         </Card>

@@ -14,7 +14,7 @@
   "inventory-year": "Inventory year",
   "inventory-year-placeholder": "Select year",
   "inventory-year-required": "Year is required",
-  "gpc-basic-message": "Only GPC Basic Inventories are supported momentarily",
+  "gpc-basic-message": "Only GPC Basic Inventories are supported momentarily. For population values the closest year to the city inventory is recommended, as it will be used for calculations and included in your GPC report.",
   "save-button": "Save and Continue",
   "search-city-button": "Search for another City",
   "confirm-button": "Confirm and Continue",
@@ -30,7 +30,7 @@
   "done-details": "You created your city profile to start your GPC Basic GHG inventory.",
   "check-dashboard": "Check Dashboard",
 
-  "information-required": "This information is required and affects your GHG inventory accuracy.\nPlease use data from the year closest to your selected inventory year.",
+  "information-required": "This information is required and affects your GHG inventory accuracy.",
   "year-placeholder": "Year",
   "required": "Required",
   "population-required": "Please enter value & year for population",

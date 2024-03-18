@@ -131,4 +131,5 @@ jobs:
           kubectl set env deployment/cc-web-deploy CHAT_PROVIDER=huggingface
           kubectl set env deployment/cc-web-deploy OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}}
           kubectl set env deployment/cc-web-deploy HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}}
+          kubectl set env deployment/cc-web-deploy ADMIN_EMAILS="greta@openearth.org,ayinawu@openearth.org,amanda@openarth.org"
           kubectl rollout restart deployment cc-web-deploy -n default

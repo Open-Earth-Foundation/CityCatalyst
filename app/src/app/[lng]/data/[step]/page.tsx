@@ -509,7 +509,7 @@ export default function AddDataSteps({
         async (inventoryValue: InventoryValueAttributes) => {
           await disconnectThirdPartyData({
             inventoryId: inventoryValue.inventoryId,
-            inventoryValueId: inventoryValue.id,
+            subCategoryId: inventoryValue.subCategoryId,
           }).then((res: any) => {
             // Todo show alert
             onSearchDataSourcesClicked();

@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cc-web-deploy
+  name: cc-test-web-deploy
   labels:
-    app: cc-web
+    app: cc-test-web
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: cc-web
+      app: cc-test-web
   template:
     metadata:
       labels:
-        app: cc-web
+        app: cc-test-web
     spec:
       containers:
-        - name: cc-web
+        - name: cc-test-web
           image: ghcr.io/open-earth-foundation/citycatalyst:latest
           # Set to Never for local
           imagePullPolicy: Always
@@ -29,15 +29,15 @@ spec:
             - name: DATABASE_HOST
               value: "cc-db"
             - name: DATABASE_NAME
-              value: "citycatalyst"
+              value: "cctest"
             - name: DATABASE_USER
-              value: "citycatalyst"
+              value: "cctest"
             - name: DATABASE_PASSWORD
-              value: "development"
+              value: "cctest"
             - name: NEXTAUTH_URL
-              value: "https://citycatalyst.openearth.dev"
+              value: "https://citycatalyst-test.openearth.dev"
             - name: HOST
-              value: "https://citycatalyst.openearth.dev"
+              value: "https://citycatalyst-test.openearth.dev"
             - name: SMTP_FROM_EMAIL
               value: "citycatalyst@openearth.dev"
             - name: SMTP_HOST
@@ -45,7 +45,7 @@ spec:
             - name: SMTP_PORT
               value: "587"
             - name: GLOBAL_API_URL
-              value: "https://ccglobal.openearth.dev"
+              value: "https://ccglobal-test.openearth.dev"
             - name: OPENCLIMATE_API_URL
               value: "https://openclimate.openearth.dev"
           resources:

@@ -21,7 +21,10 @@ export const POST = apiHandler(async (req, { session, params }) => {
       year: body.cityPopulationYear,
     },
   });
-  if (!cityPopulation) {
+  if (cityPopulation) {
+    cityPopulation.population = body.cityPopulation;
+    await cityPopulation.save();
+  } else {
     await db.models.Population.create({
       cityId,
       population: body.cityPopulation,
@@ -35,7 +38,10 @@ export const POST = apiHandler(async (req, { session, params }) => {
       year: body.regionPopulationYear,
     },
   });
-  if (!regionPopulation) {
+  if (regionPopulation) {
+    regionPopulation.regionPopulation = body.regionPopulation;
+    await regionPopulation.save();
+  } else {
     await db.models.Population.create({
       cityId,
       regionPopulation: body.regionPopulation,
@@ -49,7 +55,10 @@ export const POST = apiHandler(async (req, { session, params }) => {
       year: body.countryPopulationYear,
     },
   });
-  if (!countryPopulation) {
+  if (countryPopulation) {
+    countryPopulation.countryPopulation = body.countryPopulation;
+    await countryPopulation.save();
+  } else {
     countryPopulation = await db.models.Population.create({
       cityId,
       countryPopulation: body.countryPopulation,

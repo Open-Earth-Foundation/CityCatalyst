@@ -41,6 +41,7 @@ import {
   InputRightElement,
   Select,
   Text,
+  useOutsideClick,
   useSteps,
   useToast,
 } from "@chakra-ui/react";
@@ -253,6 +254,14 @@ function SetupStep({
     return pathString;
   };
 
+  // using useOutsideClick instead of onBlur input attribute
+  // to fix clicking city dropdown entries not working
+  const cityInputRef = useRef<HTMLDivElement>(null);
+  useOutsideClick({
+    ref: cityInputRef,
+    handler: () => setTimeout(() => setOnInputClicked(false), 0),
+  });
+
   return (
     <>
       <Box minW={400}>
@@ -266,7 +275,7 @@ function SetupStep({
           <form className="space-y-8">
             <FormControl isInvalid={!!errors.city}>
               <FormLabel>{t("select-city")}</FormLabel>
-              <InputGroup>
+              <InputGroup ref={cityInputRef}>
                 <InputLeftElement pointerEvents="none">
                   <SearchIcon color="tertiary" boxSize={4} mt={2} ml={4} />
                 </InputLeftElement>
@@ -278,7 +287,6 @@ function SetupStep({
                     required: t("select-city-required"),
                   })}
                   onFocus={() => setOnInputClicked(true)}
-                  onBlur={() => setOnInputClicked(false)}
                 />
                 <InputRightElement>
                   {isCityNew && (

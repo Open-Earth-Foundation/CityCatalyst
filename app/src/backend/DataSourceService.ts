@@ -108,9 +108,7 @@ export default class DataSourceService {
     });
 
     if (!subCategory) {
-      throw new createHttpError.InternalServerError(
-        "Sub-category for source not found",
-      );
+      throw new createHttpError.InternalServerError("Sub-category for source not found");
     }
 
     // TODO what to do with existing InventoryValues and GasValues?

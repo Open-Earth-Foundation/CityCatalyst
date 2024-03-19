@@ -127,8 +127,7 @@ jobs:
           kubectl set env deployment/cc-web-deploy NEXTAUTH_SECRET=${{secrets.NEXTAUTH_SECRET}}
           kubectl set env deployment/cc-web-deploy RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}}
           kubectl set env deployment/cc-web-deploy VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}}
-          kubectl rollout restart deployment cc-web-deploy -n default
-          kubectl set env deployment/cc-web-deploy CHAT_PROVIDER=huggingface
+          kubectl set env deployment/cc-web-deploy CHAT_PROVIDER=openai
           kubectl set env deployment/cc-web-deploy OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}}
           kubectl set env deployment/cc-web-deploy HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}}
           kubectl rollout restart deployment cc-web-deploy -n default

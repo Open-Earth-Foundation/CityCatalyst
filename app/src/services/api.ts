@@ -18,6 +18,7 @@ import type {
   UserInfoResponse,
   UserFileResponse,
   EmissionsFactorResponse,
+  UserInviteResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -229,12 +230,10 @@ export const api = createApi({
         body: data,
       }),
     }),
-    addUser: builder.mutation<
+    checkUser: builder.mutation<
       UserAttributes,
       {
-        name: string;
         email: string;
-        role: string;
         cityId: string;
       }
     >({
@@ -243,6 +242,7 @@ export const api = createApi({
         method: "POST",
         body: data,
       }),
+      transformResponse: (response: { data: any }) => response.data,
       invalidatesTags: ["UserData"],
     }),
     getCityUsers: builder.query<
@@ -356,12 +356,34 @@ export const api = createApi({
         response.data,
     }),
     disconnectThirdPartyData: builder.mutation({
-      query: ({ inventoryId, inventoryValueId }) => ({
+      query: ({ inventoryId, subCategoryId }) => ({
         method: "DELETE",
-        url: `/inventory/${inventoryId}/inventoryvalue/${inventoryValueId}`,
+        url: `inventory/${inventoryId}/value/${subCategoryId}`,
       }),
       invalidatesTags: ["InventoryValue", "InventoryProgress"],
       transformResponse: (response: { data: EmissionsFactorResponse }) =>
+        response.data,
+    }),
+    // User invitation to city
+    inviteUser: builder.mutation<
+      UserInviteResponse,
+      {
+        cityId: string;
+        name?: string;
+        email: string;
+        userId: string;
+        invitingUserId: string;
+      }
+    >({
+      query: (data) => {
+        return {
+          method: "POST",
+          url: `/city/invite`,
+          body: data,
+        };
+      },
+
+      transformResponse: (response: { data: UserInviteResponse }) =>
         response.data,
     }),
   }),
@@ -414,5 +436,7 @@ export const {
   useGetUserFilesQuery,
   useDeleteUserFileMutation,
   useDisconnectThirdPartyDataMutation,
+  useInviteUserMutation,
+  useCheckUserMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

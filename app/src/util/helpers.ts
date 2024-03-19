@@ -54,7 +54,10 @@ export async function resolvePromisesSequentially(promises: Promise<any>[]) {
   return results;
 }
 
-export function nameToI18NKey(name: string): string {
+export function nameToI18NKey(name?: string): string {
+  if (!name) {
+    return "";
+  }
   // remove all special characters and replace spaces with dashes
   return name
     .replaceAll(/[^\w\s-]/gi, "")
@@ -93,6 +96,7 @@ export function appendFileToFormData(base64String: string, filename: string) {
 export function bytesToMB(bytes: number): string {
   return (bytes / 1048576).toFixed(2) + " MB";
 }
+
 export function groupBy<T>(
   list: T[],
   lambda: (elem: T) => string,
@@ -105,5 +109,19 @@ export function groupBy<T>(
       return acc;
     },
     {} as Record<string, T[]>,
+  );
+}
+
+export function keyBy<T>(
+  list: T[],
+  lambda: (elem: T) => string,
+): Record<string, T> {
+  return list.reduce(
+    (acc, elem) => {
+      const key = lambda(elem);
+      acc[key] = elem;
+      return acc;
+    },
+    {} as Record<string, T>,
   );
 }

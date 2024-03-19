@@ -74,6 +74,7 @@ interface MyProfileTabProps {
   userInfo: UserAttributes | any;
   cityUsers: UserAttributes[] | any;
   cities: CityAttributes[] | any;
+  defaultCityId: string | undefined;
 }
 
 const MyProfileTab: FC<MyProfileTabProps> = ({
@@ -84,6 +85,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
   userInfo,
   cityUsers,
   cities,
+  defaultCityId,
 }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const {
@@ -106,7 +108,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
   const toast = useToast();
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
     await setCurrentUserData({
-      cityId: "", // TODO pass currently selected city's ID in here!
+      cityId: defaultCityId!,
       userId: userInfo.userId,
       name: data.name,
       email: data.email,
@@ -242,7 +244,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
     selectedUsers.map(async (user: string) => {
       await removeUser({
         userId: user,
-        cityId: "", // TODO pass currently selected city ID into this component
+        cityId: defaultCityId!,
       }).then((res: any) => {
         if (res.data.deleted) {
           toast({
@@ -934,9 +936,6 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                                             background: "content.link",
                                             color: "white",
                                           }}
-                                          onClick={() => {
-                                            alert(city.cityId);
-                                          }}
                                         >
                                           <MdOutlineFileDownload size={24} />
 
@@ -1003,7 +1002,8 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
       <AddUserModal
         isOpen={isUserModalOpen}
         onClose={onUserModalClose}
-        cityId={cityData.cityId}
+        defaultCityId={defaultCityId}
+        userInfo={userInfo}
         t={t}
       />
       <UpdateUserModal

@@ -278,6 +278,13 @@ export const appTheme = extendTheme({
         ghost: {
           color: "content.link",
         },
+        lightGhost: {
+          color: "base.light",
+          _hover: {
+            bg: "background.transparentGrey",
+            color: "base.light",
+          },
+        },
         solidIcon: {
           bgColor: "background.neutral",
           color: "interactive.secondary",
@@ -322,7 +329,10 @@ export const appTheme = extendTheme({
           },
           label: {
             color: "content.secondary",
-            fontSize: "14",
+            fontFamily: "heading",
+            fontSize: "14px",
+            lineHeight: "20px",
+            letterSpacing: "0.5px",
             borderWidth: 0,
             mt: -0.5,
           },

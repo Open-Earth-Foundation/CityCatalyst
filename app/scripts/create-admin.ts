@@ -17,6 +17,16 @@ async function createAdmin() {
     logger.error(
       "create-admin.ts: Missing default admin credentials DEFAULT_ADMIN_EMAIL and DEFAULT_ADMIN_PASSWORD in env!",
     );
+    await db.sequelize?.close();
+    return;
+  }
+
+  const email = process.env.DEFAULT_ADMIN_EMAIL.toLowerCase();
+  const user = await db.models.User.findOne({ where: { email } });
+
+  if (user) {
+    logger.info("Admin user already exists. Exiting.");
+    await db.sequelize?.close();
     return;
   }
 
@@ -24,18 +34,18 @@ async function createAdmin() {
     process.env.DEFAULT_ADMIN_PASSWORD,
     12,
   );
-  const user = await db.models.User.create({
+  const newUser = await db.models.User.create({
     userId: randomUUID(),
     name: "Admin",
-    email: process.env.DEFAULT_ADMIN_EMAIL.toLowerCase(),
+    email: email,
     passwordHash,
     role: Roles.Admin,
   });
 
   logger.info(
     "Created admin user with email %s and ID %s",
-    user.email,
-    user.userId,
+    newUser.email,
+    newUser.userId,
   );
   await db.sequelize?.close();
 }

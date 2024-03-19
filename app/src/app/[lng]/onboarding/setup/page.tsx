@@ -77,6 +77,8 @@ type PopulationEntry = {
   datasource_id: string;
 };
 
+const numberOfYearsDisplayed = 10;
+
 /// Finds entry which has the year closest to the selected inventory year
 function findClosestYear(
   populationData: PopulationEntry[] | undefined,
@@ -87,6 +89,10 @@ function findClosestYear(
   }
   return populationData.reduce(
     (prev, curr) => {
+      // don't allow years outside of dropdown range
+      if (curr.year < year - numberOfYearsDisplayed + 1) {
+        return prev;
+      }
       if (!prev) {
         return curr;
       }
@@ -114,7 +120,10 @@ function SetupStep({
   setOcCityData: Function;
 }) {
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 10 }, (_x, i) => currentYear - i);
+  const years = Array.from(
+    { length: numberOfYearsDisplayed },
+    (_x, i) => currentYear - i,
+  );
   const dispatch = useAppDispatch();
 
   const [onInputClicked, setOnInputClicked] = useState<boolean>(false);

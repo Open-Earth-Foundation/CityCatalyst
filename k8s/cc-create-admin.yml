@@ -8,7 +8,7 @@ spec:
     spec:
       restartPolicy: OnFailure
       containers:
-        - name: cc-migrate
+        - name: cc-create-admin
           image: ghcr.io/open-earth-foundation/citycatalyst:latest
           imagePullPolicy: Always
           env:

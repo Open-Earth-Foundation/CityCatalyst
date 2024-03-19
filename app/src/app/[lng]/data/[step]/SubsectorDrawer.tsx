@@ -264,7 +264,6 @@ export function SubsectorDrawer({
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (!subSector) return;
     logger.debug("Subsector data", data);
-    console.log(data);
 
     const results = await resolvePromisesSequentially(
       Object.keys(data.subcategoryData).map((subCategoryId) => {

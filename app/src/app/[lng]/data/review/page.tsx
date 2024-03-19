@@ -19,6 +19,11 @@ import { clear, removeSectorData } from "@/features/city/inventoryDataSlice";
 import { api } from "@/services/api";
 import { appendFileToFormData } from "@/util/helpers";
 import { useState } from "react";
+import {
+  UserFileAttributes,
+  UserFileCreationAttributes,
+} from "@/models/UserFile";
+import { data } from "autoprefixer";
 
 export default function ReviewPage({
   params: { lng },
@@ -39,6 +44,17 @@ export default function ReviewPage({
     router.push("/");
   };
 
+  const { data: userInfo } = api.useGetUserInfoQuery();
+  const defaultInventoryId = userInfo?.defaultInventoryId;
+
+  const { data: inventoryProgress } = api.useGetInventoryProgressQuery(
+    defaultInventoryId!,
+    {
+      skip: !defaultInventoryId,
+    },
+  );
+  const cityData = inventoryProgress?.inventory.city;
+
   const stationaryEnergy = getAllSectorData.filter(
     (sector) => sector.sectorName === "Stationary Energy",
   );
@@ -54,6 +70,8 @@ export default function ReviewPage({
   };
 
   const [addUserFile] = api.useAddUserFileMutation();
+  const [sendEmailNotification, { isLoading: isSendingLoading }] =
+    api.useSendEmailNotificationMutation();
 
   const defaultStatus = "pending";
 
@@ -61,6 +79,7 @@ export default function ReviewPage({
 
   const onConfirm = async () => {
     setIsConfirming(true);
+    let uploadFilesDetail: UserFileAttributes[] = [];
     try {
       for (const sector of getAllSectorData) {
         const formData = new FormData();
@@ -79,9 +98,11 @@ export default function ReviewPage({
           formData.append("data", file, file.name);
         }
 
-        await addUserFile(formData).then(() => {
+        await addUserFile(formData).then((res: any) => {
           // TODO
           // Trigger notification to user
+
+          uploadFilesDetail.push(res.data);
         });
       }
     } catch (error) {
@@ -92,6 +113,14 @@ export default function ReviewPage({
       router.push("/");
       dispatch(clear());
       setIsConfirming(false);
+
+      sendEmailNotification({
+        cityName: cityData?.name,
+        files: uploadFilesDetail,
+      }).then((res) => {
+        //  TODO
+        // trigger notification to user
+      });
     }
   };
 

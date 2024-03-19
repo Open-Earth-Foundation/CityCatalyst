@@ -70,7 +70,7 @@ jobs:
         uses: codecov/codecov-action@v4.0.1
         with:
           fail_ci_if_error: false
-          flag: unittests
+          flags: unittests
           name: citycatalyst-backend
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: Open-Earth-Foundation/CityCatalyst

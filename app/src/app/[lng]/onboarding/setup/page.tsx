@@ -686,10 +686,12 @@ export default function OnboardingSetup({
     });
   };
 
-  // TODO update form with population values from API
   const cityPopulation = watch("cityPopulation");
   const regionPopulation = watch("regionPopulation");
   const countryPopulation = watch("countryPopulation");
+  const cityPopulationYear = watch("cityPopulationYear");
+  const regionPopulationYear = watch("regionPopulationYear");
+  const countryPopulationYear = watch("countryPopulationYear");
 
   const onConfirm = async () => {
     // save data in backend
@@ -716,11 +718,12 @@ export default function OnboardingSetup({
       await addCityPopulation({
         cityId: city.cityId,
         locode: city.locode!,
-        population: cityPopulation!,
+        cityPopulation: cityPopulation!,
+        cityPopulationYear: cityPopulationYear!,
         regionPopulation: regionPopulation!,
+        regionPopulationYear: regionPopulationYear!,
         countryPopulation: countryPopulation!,
-        // TODO add years for all 3 population entries
-        year: data.year,
+        countryPopulationYear: countryPopulationYear!,
       }).unwrap();
     } catch (err: any) {
       makeErrorToast("Failed to add city!", err.data?.error?.message);

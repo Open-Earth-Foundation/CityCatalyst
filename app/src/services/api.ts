@@ -178,10 +178,12 @@ export const api = createApi({
       {
         cityId: string;
         locode: string;
-        population: number;
+        cityPopulation: number;
         regionPopulation: number;
         countryPopulation: number;
-        year: number;
+        cityPopulationYear: number;
+        regionPopulationYear: number;
+        countryPopulationYear: number;
       }
     >({
       query: (data) => {

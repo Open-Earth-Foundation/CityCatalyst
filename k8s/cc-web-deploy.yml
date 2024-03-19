@@ -46,7 +46,7 @@ spec:
               value: "587"
             - name: GLOBAL_API_URL
               value: "https://ccglobal.openearth.dev"
-            - name: OPENCLIMATE_API_URL
+            - name: NEXT_PUBLIC_OPENCLIMATE_API_URL
               value: "https://openclimate.openearth.dev"
           resources:
             limits:

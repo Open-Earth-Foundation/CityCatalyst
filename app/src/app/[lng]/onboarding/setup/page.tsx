@@ -48,7 +48,7 @@ import {
 import type { TFunction } from "i18next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type {
   FieldErrors,
   SubmitHandler,
@@ -77,29 +77,25 @@ type PopulationEntry = {
   datasource_id: string;
 };
 
-type PopulationData = {
-  year?: number;
-  population?: number;
-  regionPopulation?: number;
-  regionYear?: number;
-  countryPopulation?: number;
-  countryYear?: number;
-  datasourceId?: string;
-};
-
 /// Finds entry which has the year closest to the selected inventory year
 function findClosestYear(
   populationData: PopulationEntry[] | undefined,
   year: number,
-): PopulationEntry | undefined {
-  if (populationData?.length === 0) {
-    return undefined;
+): PopulationEntry | null {
+  if (!populationData || populationData?.length === 0) {
+    return null;
   }
-  return populationData?.reduce((prev, curr) => {
-    let prevDelta = Math.abs(year - prev.year);
-    let currDelta = Math.abs(year - curr.year);
-    return prevDelta < currDelta ? prev : curr;
-  });
+  return populationData.reduce(
+    (prev, curr) => {
+      if (!prev) {
+        return curr;
+      }
+      let prevDelta = Math.abs(year - prev.year);
+      let currDelta = Math.abs(year - curr.year);
+      return prevDelta < currDelta ? prev : curr;
+    },
+    null as PopulationEntry | null,
+  );
 }
 
 function SetupStep({
@@ -118,14 +114,15 @@ function SetupStep({
   setOcCityData: Function;
 }) {
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 7 }, (_x, i) => currentYear - i);
+  const years = Array.from({ length: 10 }, (_x, i) => currentYear - i);
   const dispatch = useAppDispatch();
 
   const [onInputClicked, setOnInputClicked] = useState<boolean>(false);
   const [isCityNew, setIsCityNew] = useState<boolean>(false);
   const [locode, setLocode] = useState<string | null>(null);
 
-  const year = watch("year");
+  const yearInput = watch("year");
+  const year: number | null = yearInput ? parseInt(yearInput) : null;
   const cityInputQuery = watch("city");
   const cityPopulationYear = watch("cityPopulationYear");
   const regionPopulationYear = watch("regionPopulationYear");
@@ -148,11 +145,15 @@ function SetupStep({
     }
   }, [cityInputQuery]);
 
-  const [populationData, setPopulationData] = useState<PopulationData>({});
   useEffect(() => {
     // reset population data when locode changes to prevent keeping data from previous city
-    setPopulationData({});
-  }, [locode]);
+    setValue("cityPopulationYear", null);
+    setValue("cityPopulation", null);
+    setValue("regionPopulation", null);
+    setValue("regionYear", null);
+    setValue("countryPopulation", null);
+    setValue("countryYear", null);
+  }, [locode, setValue]);
 
   const { data: cityData } = useGetOCCityDataQuery(locode!, {
     skip: !locode,
@@ -167,66 +168,45 @@ function SetupStep({
     skip: !regionLocode,
   });
 
+  // react to API data changes and different year selections
   useEffect(() => {
-    if (cityData) {
+    if (cityData && year) {
+      setOcCityData(cityData);
+
       const population = findClosestYear(cityData?.data.population, year);
       if (!population) {
         console.error("Failed to find population data for city");
-        console.log("pop data", cityData?.data.population);
         return;
       }
-      const newPopulation = {
-        ...populationData,
-        year: population?.year,
-        population: population?.population,
-        datasourceId: population?.datasource_id,
-      };
-      console.log("year", population?.year);
-      setPopulationData(newPopulation);
-
-      setOcCityData(cityData);
+      setValue("cityPopulation", population?.population);
+      setValue("cityPopulationYear", population?.year);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cityData, year]);
+  }, [cityData, year, setValue]);
 
   useEffect(() => {
-    if (countryData) {
-      const population = findClosestYear(countryData?.data.population, year);
-      const newPopulation = {
-        ...populationData,
-        countryPopulation: population?.population,
-        countryYear: population?.year,
-      };
-      console.log("country year", population?.year);
-      setPopulationData(newPopulation);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [countryData, year]);
-
-  useEffect(() => {
-    if (regionData) {
+    if (regionData && year) {
       const population = findClosestYear(regionData.data.population, year);
-      const newPopulation = {
-        ...populationData,
-        regionPopulation: population?.population,
-        regionYear: population?.year,
-      };
-      console.log("region year", population?.year);
-      setPopulationData(newPopulation);
+      if (!population) {
+        console.error("Failed to find population data for region");
+        return;
+      }
+      setValue("regionPopulation", population?.population);
+      setValue("regionPopulationYear", population?.year);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [regionData, year]);
+  }, [regionData, year, setValue]);
 
   useEffect(() => {
-    if (populationData) {
-      setValue("cityPopulation", populationData.population);
-      setValue("cityPopulationYear", populationData.year);
-      setValue("regionPopulation", populationData.regionPopulation);
-      setValue("regionPopulationYear", populationData.regionYear);
-      setValue("countryPopulation", populationData.countryPopulation);
-      setValue("countryPopulationYear", populationData.countryYear);
+    if (countryData && year) {
+      const population = findClosestYear(countryData.data.population, year);
+      if (!population) {
+        console.error("Failed to find population data for region");
+        return;
+      }
+      setValue("countryPopulation", population?.population);
+      setValue("countryPopulationYear", population?.year);
     }
-  }, [populationData, setValue]);
+  }, [countryData, year, setValue]);
 
   // import custom redux hooks
   const {

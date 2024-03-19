@@ -17,7 +17,10 @@ export function createRequest(url: string, body?: any) {
   return request;
 }
 
-export function mockRequest(body?: any, searchParams?: Record<string, string>): NextRequest {
+export function mockRequest(
+  body?: any,
+  searchParams?: Record<string, string>,
+): NextRequest {
   const request = new NextRequest(new URL(mockUrl));
   request.json = mock.fn(() => Promise.resolve(body));
   for (const param in searchParams) {
@@ -72,6 +75,7 @@ export const testFileFormat = {
 };
 
 export const testUserID = "beb9634a-b68c-4c1b-a20b-2ab0ced5e3c2";
+export const testCityID = "ceb9634a-b68c-4c1b-a20b-2ab0ced5e3cc";
 
 export function setupTests() {
   const projectDir = process.cwd();

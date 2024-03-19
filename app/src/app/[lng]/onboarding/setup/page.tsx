@@ -169,6 +169,11 @@ function SetupStep({
   useEffect(() => {
     if (cityData) {
       const population = findClosestYear(cityData?.data.population, year);
+      if (!population) {
+        console.error("Failed to find population data for city");
+        console.log("pop data", cityData?.data.population);
+        return;
+      }
       const newPopulation = {
         ...populationData,
         year: population?.year,
@@ -295,7 +300,7 @@ function SetupStep({
                   {isLoading && <p className="px-4">Fetching Cities...</p>}
                   {isSuccess &&
                     cities &&
-                    cities.map((city: any) => {
+                    cities.map((city: OCCityAttributes) => {
                       return (
                         <Box
                           onClick={() => handleSetCity(city)}

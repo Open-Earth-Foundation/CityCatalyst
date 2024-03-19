@@ -355,6 +355,15 @@ export const api = createApi({
       transformResponse: (response: { data: EmissionsFactorResponse }) =>
         response.data,
     }),
+    disconnectThirdPartyData: builder.mutation({
+      query: ({ inventoryId, subCategoryId }) => ({
+        method: "DELETE",
+        url: `inventory/${inventoryId}/value/${subCategoryId}`,
+      }),
+      invalidatesTags: ["InventoryValue", "InventoryProgress"],
+      transformResponse: (response: { data: EmissionsFactorResponse }) =>
+        response.data,
+    }),
     // User invitation to city
     inviteUser: builder.mutation<
       UserInviteResponse,
@@ -423,6 +432,7 @@ export const {
   useAddUserFileMutation,
   useGetUserFilesQuery,
   useDeleteUserFileMutation,
+  useDisconnectThirdPartyDataMutation,
   useInviteUserMutation,
   useCheckUserMutation,
 } = api;

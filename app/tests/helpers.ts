@@ -17,7 +17,10 @@ export function createRequest(url: string, body?: any) {
   return request;
 }
 
-export function mockRequest(body?: any, searchParams?: Record<string, string>): NextRequest {
+export function mockRequest(
+  body?: any,
+  searchParams?: Record<string, string>,
+): NextRequest {
   const request = new NextRequest(new URL(mockUrl));
   request.json = mock.fn(() => Promise.resolve(body));
   for (const param in searchParams) {

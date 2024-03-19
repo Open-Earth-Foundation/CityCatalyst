@@ -35,6 +35,8 @@ const fileData = {
   url: "http://www.acme.com",
   status: STATUS.INPROGRESS,
   data: testFileFormat,
+  subsectors: "test1, test2, test3",
+  scopes: "1,2,3",
   gpc_ref_no: "XXXTESTXXX",
   file_reference: "XXXTESTXXX",
 };
@@ -75,6 +77,8 @@ describe("UserFile API", () => {
     formData.append("id", randomUUID());
     formData.append("userId", fileData.userId);
     formData.append("sector", fileData.sector);
+    formData.append("subsectors", fileData.subsectors);
+    formData.append("scopes", fileData.scopes);
     formData.append("url", fileData.url);
     formData.append("data", fileStream);
     formData.append("status", fileData.status);
@@ -158,6 +162,8 @@ describe("UserFile API", () => {
     formData.append("id", randomUUID());
     formData.append("userId", fileData.userId);
     formData.append("sector", fileData.sector);
+    formData.append("subsectors", fileData.subsectors);
+    formData.append("scopes", fileData.scopes);
     formData.append("url", fileData.url);
     formData.append("data", fileStream);
     formData.append("status", fileData.status);

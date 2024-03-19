@@ -77,6 +77,12 @@ type PopulationEntry = {
   datasource_id: string;
 };
 
+type OnboardingData = {
+  name: string;
+  locode: string;
+  year: number;
+};
+
 const numberOfYearsDisplayed = 10;
 
 /// Finds entry which has the year closest to the selected inventory year
@@ -110,14 +116,18 @@ function SetupStep({
   t,
   setValue,
   watch,
+  ocCityData,
   setOcCityData,
+  setData,
 }: {
   errors: FieldErrors<Inputs>;
   register: UseFormRegister<Inputs>;
   t: TFunction;
   setValue: any;
   watch: Function;
-  setOcCityData: Function;
+  ocCityData?: OCCityAttributes;
+  setOcCityData: (cityData: OCCityAttributes) => void;
+  setData: (data: OnboardingData) => void;
 }) {
   const currentYear = new Date().getFullYear();
   const years = Array.from(
@@ -142,10 +152,28 @@ function SetupStep({
     setOnInputClicked(false);
     dispatch(set(city));
     setLocode(city.actor_id);
+    setOcCityData(city);
 
-    // TODO: chech whether city exists or not
+    if (year) {
+      setData({
+        name: city.name,
+        locode: city.actor_id,
+        year: year!,
+      });
+    }
+
     setIsCityNew(true);
   };
+
+  useEffect(() => {
+    if (year && ocCityData) {
+      setData({
+        name: ocCityData.name,
+        locode: ocCityData.actor_id,
+        year: year!,
+      });
+    }
+  }, [year, ocCityData, setData]);
 
   useEffect(() => {
     if (!cityInputQuery || cityInputQuery.length === 0) {
@@ -172,7 +200,7 @@ function SetupStep({
   const { data: countryData } = useGetOCCityDataQuery(countryLocode!, {
     skip: !countryLocode,
   });
-  const regionLocode = cityData?.data.is_part_of;
+  const regionLocode = cityData?.is_part_of;
   const { data: regionData } = useGetOCCityDataQuery(regionLocode!, {
     skip: !regionLocode,
   });
@@ -180,9 +208,7 @@ function SetupStep({
   // react to API data changes and different year selections
   useEffect(() => {
     if (cityData && year) {
-      setOcCityData(cityData);
-
-      const population = findClosestYear(cityData?.data.population, year);
+      const population = findClosestYear(cityData.population, year);
       if (!population) {
         console.error("Failed to find population data for city");
         return;
@@ -195,7 +221,7 @@ function SetupStep({
 
   useEffect(() => {
     if (regionData && year) {
-      const population = findClosestYear(regionData.data.population, year);
+      const population = findClosestYear(regionData.population, year);
       if (!population) {
         console.error("Failed to find population data for region");
         return;
@@ -207,7 +233,7 @@ function SetupStep({
 
   useEffect(() => {
     if (countryData && year) {
-      const population = findClosestYear(countryData.data.population, year);
+      const population = findClosestYear(countryData.population, year);
       if (!population) {
         console.error("Failed to find population data for region");
         return;
@@ -667,11 +693,11 @@ export default function OnboardingSetup({
   const [addInventory] = useAddInventoryMutation();
   const [setUserInfo] = useSetUserInfoMutation();
 
-  const [data, setData] = useState<{
-    name: string;
-    locode: string;
-    year: number;
-  }>({ name: "", locode: "", year: -1 });
+  const [data, setData] = useState<OnboardingData>({
+    name: "",
+    locode: "",
+    year: -1,
+  });
   const [ocCityData, setOcCityData] = useState<OCCityAttributes>();
   const [isConfirming, setConfirming] = useState(false);
 
@@ -753,16 +779,17 @@ export default function OnboardingSetup({
   const onSubmit: SubmitHandler<Inputs> = async (newData) => {
     const year = Number(newData.year);
 
-    if (!newData.city || !ocCityData?.actor_id || year < 0 || !data.locode) {
-      // TODO show user toast? These should be caught by validation logic
-      return;
-    }
-
     setData({
       name: newData.city,
       locode: data.locode!,
       year,
     });
+
+    if (!newData.city || !ocCityData?.actor_id || year < 0 || !data.locode) {
+      // TODO show user toast? These should normally be caught by validation logic
+      console.error("Missing data, can't go to next step!");
+      return;
+    }
 
     goToNext();
   };
@@ -789,7 +816,9 @@ export default function OnboardingSetup({
               setValue={setValue}
               register={register}
               watch={watch}
+              ocCityData={ocCityData}
               setOcCityData={setOcCityData}
+              setData={setData}
               t={t}
             />
           )}

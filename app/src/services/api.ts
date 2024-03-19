@@ -397,6 +397,9 @@ export const openclimateAPI = createApi({
     }),
     getOCCityData: builder.query<any, string>({
       query: (locode) => `/api/v1/actor/${locode}`,
+      transformResponse: (response: any) => {
+        return response.data;
+      },
     }),
   }),
 });

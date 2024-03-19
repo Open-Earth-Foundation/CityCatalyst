@@ -355,6 +355,28 @@ export const api = createApi({
       transformResponse: (response: { data: EmissionsFactorResponse }) =>
         response.data,
     }),
+    // User invitation to city
+    inviteUser: builder.mutation<
+      UserInviteResponse,
+      {
+        cityId: string;
+        name?: string;
+        email: string;
+        userId: string;
+        invitingUserId: string;
+      }
+    >({
+      query: (data) => {
+        return {
+          method: "POST",
+          url: `/city/invite`,
+          body: data,
+        };
+      },
+
+      transformResponse: (response: { data: UserInviteResponse }) =>
+        response.data,
+    }),
     sendEmailNotification: builder.mutation({
       query: (data) => ({
         url: "/notification",
@@ -412,5 +434,6 @@ export const {
   useDeleteUserFileMutation,
   useSendEmailNotificationMutation,
   useCheckUserMutation,
+  useInviteUserMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

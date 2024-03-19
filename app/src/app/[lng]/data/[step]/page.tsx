@@ -293,7 +293,7 @@ export default function AddDataSteps({
       /\/[0-9]+$/,
       `/${activeStep + 1}`,
     );
-    history.replaceState("", "", newPath);
+    history.replaceState(null, "", newPath);
   }, [activeStep]);
 
   const totalStepCompletion = currentStep

@@ -181,3 +181,72 @@ export const WasteIcon = () => {
     </svg>
   );
 };
+
+export const DataCheckIcon = (props: any) => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <mask
+        id="mask0_2694_7146"
+        style={{ maskType: "alpha" }}
+        maskUnits="userSpaceOnUse"
+        x="0"
+        y="0"
+        width="24"
+        height="24"
+      >
+        <rect width="24" height="24" fill="currentColor" />
+      </mask>
+      <g mask="url(#mask0_2694_7146)">
+        <path
+          d="M15.3 10.25L18.825 6.7L18.125 6L15.3 8.825L13.875 7.4L13.175 8.125L15.3 10.25ZM3 20V18H15V20H3ZM16 13C14.6167 13 13.4375 12.5125 12.4625 11.5375C11.4875 10.5625 11 9.38333 11 8C11 6.61667 11.4875 5.4375 12.4625 4.4625C13.4375 3.4875 14.6167 3 16 3C17.3833 3 18.5625 3.4875 19.5375 4.4625C20.5125 5.4375 21 6.61667 21 8C21 9.38333 20.5125 10.5625 19.5375 11.5375C18.5625 12.5125 17.3833 13 16 13ZM3 12V10H9.3C9.41667 10.3667 9.55 10.7167 9.7 11.05C9.85 11.3833 10.0333 11.7 10.25 12H3ZM3 16V14H12.4C12.7833 14.2333 13.1917 14.4292 13.625 14.5875C14.0583 14.7458 14.5167 14.8583 15 14.925V16H3Z"
+          fill="currentColor"
+        />
+      </g>
+    </svg>
+  );
+};
+
+export const ScaleIcon = (props: any) => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <g clip-path="url(#clip0_2694_7142)">
+        <mask
+          id="mask0_2694_7142"
+          style={{ maskType: "alpha" }}
+          maskUnits="userSpaceOnUse"
+          x="0"
+          y="0"
+          width="24"
+          height="24"
+        >
+          <rect width="24" height="24" fill="currentColor" />
+        </mask>
+        <g mask="url(#mask0_2694_7142)">
+          <path
+            d="M14 17H19V12H17V15H14V17ZM5 12H7V9H10V7H5V12ZM4 20C3.45 20 2.97917 19.8042 2.5875 19.4125C2.19583 19.0208 2 18.55 2 18V6C2 5.45 2.19583 4.97917 2.5875 4.5875C2.97917 4.19583 3.45 4 4 4H20C20.55 4 21.0208 4.19583 21.4125 4.5875C21.8042 4.97917 22 5.45 22 6V18C22 18.55 21.8042 19.0208 21.4125 19.4125C21.0208 19.8042 20.55 20 20 20H4ZM4 18H20V6H4V18Z"
+            fill="currentColor"
+          />
+        </g>
+      </g>
+      <defs>
+        <clipPath id="clip0_2694_7142">
+          <rect width="24" height="24" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};

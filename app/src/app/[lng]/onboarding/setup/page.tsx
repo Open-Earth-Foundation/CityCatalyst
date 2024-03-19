@@ -275,6 +275,7 @@ function SetupStep({
                   {...register("city", {
                     required: t("select-city-required"),
                   })}
+                  autoComplete="off"
                   onFocus={() => setOnInputClicked(true)}
                 />
                 <InputRightElement>

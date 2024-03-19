@@ -75,6 +75,8 @@ export const testFileFormat = {
 };
 
 export const testUserID = "beb9634a-b68c-4c1b-a20b-2ab0ced5e3c2";
+export const testCityID = "ceb9634a-b68c-4c1b-a20b-2ab0ced5e3cc";
+
 export const testUserData = {
   id: testUserID,
   name: "Test User",

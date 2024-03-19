@@ -319,10 +319,10 @@ export const api = createApi({
       transformResponse: (response: { data: any }) => response.data,
     }),
     addUserFile: builder.mutation<UserFileResponse, any>({
-      query: (formData) => {
+      query: ({ formData, cityId }) => {
         return {
           method: "POST",
-          url: `/user/file`,
+          url: `city/${cityId}/file`,
           body: formData,
         };
       },
@@ -331,9 +331,9 @@ export const api = createApi({
       invalidatesTags: ["FileData"],
     }),
     getUserFiles: builder.query({
-      query: () => ({
+      query: (cityId: string) => ({
         method: "GET",
-        url: `/user/file`,
+        url: `/city/${cityId}/file`,
       }),
       transformResponse: (response: { data: UserFileResponse }) => {
         return response.data;
@@ -344,7 +344,7 @@ export const api = createApi({
     deleteUserFile: builder.mutation({
       query: (params) => ({
         method: "DELETE",
-        url: `/user/file/${params.fileId}`,
+        url: `/city/${params.cityId}/file/${params.fileId}`,
       }),
       transformResponse: (response: { data: UserFileResponse }) =>
         response.data,

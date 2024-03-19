@@ -522,8 +522,6 @@ export default function AddDataSteps({
   };
 
   const onButtonHover = (source: DataSourceWithRelations) => {
-    console.log(source);
-    console.log(isSourceConnected(source));
     setHoverStates((prev) => ({ ...prev, [source.datasourceId]: true }));
     setButtonText(t("disconnect-data"));
   };

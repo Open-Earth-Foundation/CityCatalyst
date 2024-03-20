@@ -62,9 +62,32 @@ describe("Population API", () => {
     const res = await savePopulations(req, { params: { city: cityId } });
     assert.equal(res.status, 200);
     const data = await res.json();
-    assert.notEqual(data.data.cityPopulation, null);
-    assert.notEqual(data.data.regionPopulation, null);
-    assert.notEqual(data.data.countryPopulation, null);
+
+    assert.equal(
+      data.data.cityPopulation.population,
+      validPopulationUpdate.cityPopulation,
+    );
+    assert.equal(
+      data.data.cityPopulation.year,
+      validPopulationUpdate.cityPopulationYear,
+    );
+    assert.equal(
+      data.data.regionPopulation.regionPopulation,
+      validPopulationUpdate.regionPopulation,
+    );
+    assert.equal(
+      data.data.regionPopulation.year,
+      validPopulationUpdate.regionPopulationYear,
+    );
+    assert.equal(
+      data.data.countryPopulation.countryPopulation,
+      validPopulationUpdate.countryPopulation,
+    );
+    assert.equal(
+      data.data.countryPopulation.year,
+      validPopulationUpdate.countryPopulationYear,
+    );
+
     const populations = await db.models.Population.findAll({
       where: { cityId, year: { [Op.in]: [1337, 1338, 1339] } },
     });
@@ -80,10 +103,32 @@ describe("Population API", () => {
     const res = await savePopulations(req, { params: { city: cityId } });
     assert.equal(res.status, 200);
     const data = await res.json();
-    console.log("datalol", data);
-    assert.notEqual(data.data.cityPopulation, null);
-    assert.notEqual(data.data.regionPopulation, null);
-    assert.notEqual(data.data.countryPopulation, null);
+
+    assert.equal(
+      data.data.cityPopulation.population,
+      overlappingPopulationUpdate.cityPopulation,
+    );
+    assert.equal(
+      data.data.cityPopulation.year,
+      overlappingPopulationUpdate.cityPopulationYear,
+    );
+    assert.equal(
+      data.data.regionPopulation.regionPopulation,
+      overlappingPopulationUpdate.regionPopulation,
+    );
+    assert.equal(
+      data.data.regionPopulation.year,
+      overlappingPopulationUpdate.regionPopulationYear,
+    );
+    assert.equal(
+      data.data.countryPopulation.countryPopulation,
+      overlappingPopulationUpdate.countryPopulation,
+    );
+    assert.equal(
+      data.data.countryPopulation.year,
+      overlappingPopulationUpdate.countryPopulationYear,
+    );
+
     const populations = await db.models.Population.findAll({
       where: { cityId, year: 1340 },
     });

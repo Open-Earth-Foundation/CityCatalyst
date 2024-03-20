@@ -105,9 +105,12 @@ export type CreateUserRequest = z.infer<typeof createUserRequest>;
 
 export const createPopulationRequest = z.object({
   cityId: z.string().uuid(),
-  population: z.number().optional(),
-  countryPopulation: z.number().optional(),
-  year: z.number(),
+  cityPopulation: z.number().gte(0),
+  regionPopulation: z.number().gte(0),
+  countryPopulation: z.number().gte(0),
+  cityPopulationYear: z.number().gte(0),
+  regionPopulationYear: z.number().gte(0),
+  countryPopulationYear: z.number().gte(0),
   datasourceId: z.string().optional(),
 });
 

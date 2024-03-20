@@ -25,7 +25,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
     cityPopulation.population = body.cityPopulation;
     await cityPopulation.save();
   } else {
-    await db.models.Population.create({
+    cityPopulation = await db.models.Population.create({
       cityId,
       population: body.cityPopulation,
       year: body.cityPopulationYear,
@@ -42,7 +42,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
     regionPopulation.regionPopulation = body.regionPopulation;
     await regionPopulation.save();
   } else {
-    await db.models.Population.create({
+    regionPopulation = await db.models.Population.create({
       cityId,
       regionPopulation: body.regionPopulation,
       year: body.regionPopulationYear,

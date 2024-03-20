@@ -392,7 +392,7 @@ export const api = createApi({
 export const openclimateAPI = createApi({
   reducerPath: "openclimateapi",
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_OPENCLIMATE_API_URL,
+    baseUrl: process.env.NEXT_PUBLIC_OPENCLIMATE_API_URL || "https://openclimate.network",
   }),
   endpoints: (builder) => ({
     getOCCity: builder.query<any, string>({

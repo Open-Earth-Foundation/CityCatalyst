@@ -66,5 +66,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
     });
   }
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({
+    data: { cityPopulation, regionPopulation, countryPopulation },
+  });
 });

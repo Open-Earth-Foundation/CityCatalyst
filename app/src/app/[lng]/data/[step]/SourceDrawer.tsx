@@ -54,10 +54,13 @@ export function SourceDrawer({
   t: TFunction;
 }) {
   const emissionsData = sourceData?.totals?.emissions?.co2eq_100yr;
-  // TODO scale this down for country data sources
-  const totalEmissions = emissionsData
+  let totalEmissions = emissionsData
     ? ((Number(emissionsData) * sourceData?.scaleFactor) / 1000).toFixed(2)
     : "?";
+  if (sourceData?.issue) {
+    totalEmissions = "?";
+  }
+
   return (
     <Drawer
       isOpen={isOpen}
@@ -170,6 +173,12 @@ export function SourceDrawer({
                   TCO2e
                 </Text>
               </HStack>
+
+              {sourceData?.issue && (
+                <Text color="semantic.danger" size="sm" mt={-4}>
+                  Error: {sourceData?.issue}
+                </Text>
+              )}
 
               <Flex
                 direction="row"

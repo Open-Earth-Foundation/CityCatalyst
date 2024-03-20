@@ -114,5 +114,8 @@
   "files-uploaded": "Archivos subidos",
   "add-custom": "Agregar personalizado",
   "save-missing-scope-info": "Guarde o complete la información faltante antes de continuar.",
-  "disconnect-data": "Desconectar fuente de datos"
+  "disconnect-data": "Desconectar fuente de datos",
+
+  "error": "Error",
+  "missing-population": "A la ciudad le falta población/población de región/población de país para un año cercano al año del inventario"
 }

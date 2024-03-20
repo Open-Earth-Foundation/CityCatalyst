@@ -176,7 +176,7 @@ export function SourceDrawer({
 
               {sourceData?.issue && (
                 <Text color="semantic.danger" size="sm" mt={-4}>
-                  Error: {sourceData?.issue}
+                  {t("error")}: {t(sourceData?.issue)}
                 </Text>
               )}
 

@@ -1,12 +1,11 @@
 import { POST as savePopulations } from "@/app/api/v0/city/[city]/population/route";
 import { db } from "@/models";
 import assert from "node:assert";
-import { after, before, describe, it, mock } from "node:test";
+import { after, before, describe, it } from "node:test";
 import { mockRequest, setupTests, testUserID } from "../helpers";
 import { CreatePopulationRequest } from "@/util/validation";
 import { Op } from "sequelize";
 import { keyBy } from "@/util/helpers";
-import { Auth } from "@/lib/auth";
 
 const cityId = "76bb1ab7-5177-45a1-a61f-cfdee9c448e8";
 
@@ -63,7 +62,9 @@ describe("Population API", () => {
     const res = await savePopulations(req, { params: { city: cityId } });
     assert.equal(res.status, 200);
     const data = await res.json();
-    assert.ok(data.success);
+    assert.notEqual(data.data.cityPopulation, null);
+    assert.notEqual(data.data.regionPopulation, null);
+    assert.notEqual(data.data.countryPopulation, null);
     const populations = await db.models.Population.findAll({
       where: { cityId, year: { [Op.in]: [1337, 1338, 1339] } },
     });
@@ -79,7 +80,10 @@ describe("Population API", () => {
     const res = await savePopulations(req, { params: { city: cityId } });
     assert.equal(res.status, 200);
     const data = await res.json();
-    assert.ok(data.success);
+    console.log("datalol", data);
+    assert.notEqual(data.data.cityPopulation, null);
+    assert.notEqual(data.data.regionPopulation, null);
+    assert.notEqual(data.data.countryPopulation, null);
     const populations = await db.models.Population.findAll({
       where: { cityId, year: 1340 },
     });

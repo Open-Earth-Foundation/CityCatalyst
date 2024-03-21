@@ -178,9 +178,12 @@ export const api = createApi({
       {
         cityId: string;
         locode: string;
-        population: number;
+        cityPopulation: number;
+        regionPopulation: number;
         countryPopulation: number;
-        year: number;
+        cityPopulationYear: number;
+        regionPopulationYear: number;
+        countryPopulationYear: number;
       }
     >({
       query: (data) => {
@@ -403,6 +406,9 @@ export const openclimateAPI = createApi({
     }),
     getOCCityData: builder.query<any, string>({
       query: (locode) => `/api/v1/actor/${locode}`,
+      transformResponse: (response: any) => {
+        return response.data;
+      },
     }),
   }),
 });

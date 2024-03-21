@@ -9,14 +9,15 @@ import preset from "ts-jest/presets/index.js";
 const config: JestConfigWithTsJest = {
   ...preset.defaultsESM,
   transform: {
-    '^.+\\.tsx?$': [
-      'ts-jest',
+    "^.+\\.tsx?$": [
+      "ts-jest",
       {
-        tsconfig: 'tsconfig.json',
+        tsconfig: "tsconfig.json",
         useESM: true,
       },
     ],
   },
+  testEnvironment: "node",
   roots: ["<rootDir>"],
   modulePaths: ["<rootDir>"],
   moduleNameMapper: {

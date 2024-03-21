@@ -16,6 +16,8 @@
     "e2e:debug": "playwright test --debug",
     "e2e:test:head": "npx playwright test -- --headed",
     "test-single": "tsx --no-warnings --test",
+    "api:test": "jest",
+    "test-single": "jest",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "db:migrate": "sequelize-cli db:migrate",

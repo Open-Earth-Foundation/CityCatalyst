@@ -8,7 +8,6 @@ import { POST as createInventory } from "@/app/api/v0/city/[city]/inventory/rout
 import { POST as submitInventory } from "@/app/api/v0/inventory/[inventory]/cdp/route";
 import { db } from "@/models";
 import { CreateInventoryRequest } from "@/util/validation";
-import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, beforeEach, describe, it } from "node:test";
 import { literal, Op } from "sequelize";
@@ -18,6 +17,18 @@ import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
 import { Sector } from "@/models/Sector";
 import { SubCategory } from "@/models/SubCategory";
+import {
+  expect,
+  jest,
+  describe,
+  beforeAll,
+  afterAll,
+  beforeEach,
+  afterEach,
+  it,
+} from "@jest/globals";
+
+jest.useFakeTimers();
 
 const locode = "XX_INVENTORY_CITY";
 // Matches name given by CDP for API testing
@@ -64,7 +75,7 @@ describe("Inventory API", () => {
   let subSector: SubSector;
   let subSector2: SubSector;
 
-  before(async () => {
+  beforeAll(async () => {
     setupTests();
     await db.initialize();
     // this also deletes all Sector/SubSectorValue instances associated with it (cascade)
@@ -136,7 +147,7 @@ describe("Inventory API", () => {
     });
   });
 
-  after(async () => {
+  afterAll(async () => {
     await db.models.SubCategory.destroy({
       where: { subcategoryId: subCategory.subcategoryId },
     });
@@ -166,9 +177,9 @@ describe("Inventory API", () => {
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
-    assert.equal(data.inventoryName, inventory.inventoryName);
-    assert.equal(data.year, inventory.year);
-    assert.equal(data.totalEmissions, inventory.totalEmissions);
+    expect(data.inventoryName).toEqual(inventory.inventoryName);
+    expect(data.year).toEqual(inventory.year);
+    expect(data.totalEmissions).toEqual(inventory.totalEmissions);
   });
 
   it("should not create an inventory with invalid data", async () => {
@@ -176,11 +187,11 @@ describe("Inventory API", () => {
     const res = await createInventory(req, {
       params: { city: locode },
     });
-    assert.equal(res.status, 400);
+    expect(res.status).toEqual(400);
     const {
       error: { issues },
     } = await res.json();
-    assert.equal(issues.length, 3);
+    expect(issues.length).toEqual(3);
   });
 
   it("should find an inventory", async () => {
@@ -188,11 +199,11 @@ describe("Inventory API", () => {
     const res = await findInventory(req, {
       params: { inventory: inventory.inventoryId },
     });
-    assert.equal(res.status, 200);
+    expect(res.status).toEqual(200);
     const { data } = await res.json();
-    assert.equal(data.inventoryName, inventory.inventoryName);
-    assert.equal(data.year, inventory.year);
-    assert.equal(data.totalEmissions, inventory.totalEmissions);
+    expect(data.inventoryName).toEqual(inventory.inventoryName);
+    expect(data.year).toEqual(inventory.year);
+    expect(data.totalEmissions).toEqual(inventory.totalEmissions);
   });
 
   it.skip("should download an inventory in csv format", async () => {
@@ -201,15 +212,17 @@ describe("Inventory API", () => {
     const res = await findInventory(req, {
       params: { inventory: inventory.inventoryId },
     });
-    assert.equal(res.status, 200);
-    assert.equal(res.headers.get("content-type"), "text/csv");
-    assert.ok(res.headers.get("content-disposition")?.startsWith("attachment"));
+    expect(res.status).toEqual(200);
+    expect(res.headers.get("content-type")).toEqual("text/csv");
+    expect(
+      res.headers.get("content-disposition")?.startsWith("attachment"),
+    ).toBeTruthy();
     const csv = await res.text();
     const lines = csv.split("\n");
-    assert.ok(lines.length > 0);
+    expect(lines.length > 0).toBeTruthy();
     const headers = lines[0].split(",");
-    assert.equal(headers.length, 7);
-    assert.deepEqual(headers, [
+    expect(headers.length).toEqual(7);
+    expect(headers).toEqual([
       "Inventory Reference",
       "GPC Reference Number",
       "Total Emissions",
@@ -218,9 +231,11 @@ describe("Inventory API", () => {
       "Emission Factor Value",
       "Datasource ID",
     ]);
-    assert.ok(lines.length > 1, csv);
-    assert.strictEqual(lines.length, 2);
-    assert.ok(lines.slice(1).every((line) => line.split(",").length == 6));
+    expect(lines.length > 1).toBeTruthy();
+    expect(lines.length).toStrictEqual(2);
+    expect(
+      lines.slice(1).every((line) => line.split(",").length == 6),
+    ).toBeTruthy();
   });
 
   // TODO this test is very slow. use "CIRIS Light" spreadsheet instead (for download as well anyways)
@@ -230,9 +245,11 @@ describe("Inventory API", () => {
     const res = await findInventory(req, {
       params: { inventory: inventory.inventoryId },
     });
-    assert.equal(res.status, 200);
-    assert.equal(res.headers.get("content-type"), "application/vnd.ms-excel");
-    assert.ok(res.headers.get("content-disposition")?.startsWith("attachment"));
+    expect(res.status).toEqual(200);
+    expect(res.headers.get("content-type")).toEqual("application/vnd.ms-excel");
+    expect(
+      res.headers.get("content-disposition")?.startsWith("attachment"),
+    ).toBeTruthy();
     const body = await res.blob();
   });
 
@@ -241,7 +258,7 @@ describe("Inventory API", () => {
     const res = await findInventory(req, {
       params: { inventory: randomUUID() },
     });
-    assert.equal(res.status, 404);
+    expect(res.status).toEqual(404);
   });
 
   it("should update an inventory", async () => {
@@ -249,11 +266,11 @@ describe("Inventory API", () => {
     const res = await updateInventory(req, {
       params: { inventory: inventory.inventoryId },
     });
-    assert.equal(res.status, 200);
+    expect(res.status).toEqual(200);
     const { data } = await res.json();
-    assert.equal(data.inventoryName, inventoryData2.inventoryName);
-    assert.equal(data.year, inventoryData2.year);
-    assert.equal(data.totalEmissions, inventoryData2.totalEmissions);
+    expect(data.inventoryName).toEqual(inventoryData2.inventoryName);
+    expect(data.year).toEqual(inventoryData2.year);
+    expect(data.totalEmissions).toEqual(inventoryData2.totalEmissions);
   });
 
   it("should not update an inventory with invalid data", async () => {
@@ -261,11 +278,11 @@ describe("Inventory API", () => {
     const res = await updateInventory(req, {
       params: { inventory: inventory.inventoryId },
     });
-    assert.equal(res.status, 400);
+    expect(res.status).toEqual(400);
     const {
       error: { issues },
     } = await res.json();
-    assert.equal(issues.length, 3);
+    expect(issues.length).toEqual(3);
   });
 
   it("should delete an inventory", async () => {
@@ -273,12 +290,12 @@ describe("Inventory API", () => {
     const res = await deleteInventory(req, {
       params: { inventory: inventory.inventoryId },
     });
-    assert.equal(res.status, 200);
+    expect(res.status).toEqual(200);
     const { data, deleted } = await res.json();
-    assert.equal(deleted, true);
-    assert.equal(data.inventoryName, inventory.inventoryName);
-    assert.equal(data.year, inventory.year);
-    assert.equal(data.totalEmissions, inventory.totalEmissions);
+    expect(deleted).toEqual(true);
+    expect(data.inventoryName).toEqual(inventory.inventoryName);
+    expect(data.year).toEqual(inventory.year);
+    expect(data.totalEmissions).toEqual(inventory.totalEmissions);
   });
 
   it("should not delete a non-existing inventory", async () => {
@@ -286,7 +303,7 @@ describe("Inventory API", () => {
     const res = await deleteInventory(req, {
       params: { inventory: randomUUID() },
     });
-    assert.equal(res.status, 404);
+    expect(res.status).toEqual(404);
   });
 
   it("should calculate progress for an inventory", async () => {
@@ -294,7 +311,7 @@ describe("Inventory API", () => {
     const existingInventory = await db.models.Inventory.findOne({
       where: { inventoryName },
     });
-    assert.notEqual(existingInventory, null);
+    expect(existingInventory).not.toEqual(null);
     const sectorNames = ["PROGRESS_TEST1", "PROGRESS_TEST2", "PROGRESS_TEST3"];
     const userSource = await db.models.DataSource.create({
       datasourceId: randomUUID(),
@@ -349,7 +366,7 @@ describe("Inventory API", () => {
       params: { inventory: inventory.inventoryId },
     });
 
-    assert.equal(res.status, 200);
+    expect(res.status).toEqual(200);
     const { totalProgress, sectorProgress } = (await res.json()).data;
     const cleanedSectorProgress = sectorProgress
       .filter(({ sector: checkSector }: { sector: { sectorName: string } }) => {
@@ -364,28 +381,27 @@ describe("Inventory API", () => {
           sector: { sectorName: string; sectorId: string; completed: boolean };
           subSectors: Array<SubSectorAttributes & { completed: boolean }>;
         }) => {
-          assert.notEqual(sector.sectorId, null);
-          assert.equal(subSectors.length, 3, sector.sectorName);
+          expect(sector.sectorId).not.toEqual(null);
+          expect(subSectors.length).toEqual(3);
           for (const subSector of subSectors) {
-            assert.notEqual(subSector.completed, null);
+            expect(subSector.completed).not.toEqual(null);
           }
           return { sector: { sectorName: sector.sectorName }, ...progress };
         },
       );
-    assert.equal(cleanedSectorProgress.length, 3);
+    expect(cleanedSectorProgress.length).toEqual(3);
     for (const sector of cleanedSectorProgress) {
-      assert.equal(sector.total, 9);
-      assert.equal(sector.thirdParty, 3);
-      assert.equal(sector.uploaded, 3);
-      assert.ok(
+      expect(sector.total).toEqual(9);
+      expect(sector.thirdParty).toEqual(3);
+      expect(sector.uploaded).toEqual(3);
+      expect(
         sector.sector.sectorName.startsWith("XX_INVENTORY_PROGRESS_TEST"),
-        "Wrong sector name: " + sector.sector.sectorName,
-      );
+      ).toBeTruthy();
     }
-    assert.equal(totalProgress.thirdParty, 9);
-    assert.equal(totalProgress.uploaded, 9);
+    expect(totalProgress.thirdParty).toEqual(9);
+    expect(totalProgress.uploaded).toEqual(9);
     // TODO the route counts subsectors created by other tests/ seeders
-    // assert.equal(totalProgress.total, 27);
+    // expect(totalProgress.total).toEqual(27);
   });
 
   it(

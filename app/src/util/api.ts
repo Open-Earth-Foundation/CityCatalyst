@@ -12,10 +12,12 @@ import { db } from "@/models";
 import { ValidationError } from "sequelize";
 import { ManualInputValidationError } from "@/lib/custom-errors/manual-input-error";
 
+export type ApiResponse = NextResponse | StreamingTextResponse;
+
 export type NextHandler = (
   req: NextRequest,
   props: { params: Record<string, string>; session: AppSession | null },
-) => Promise<NextResponse | StreamingTextResponse>;
+) => Promise<ApiResponse>;
 
 export function apiHandler(handler: NextHandler) {
   return async (

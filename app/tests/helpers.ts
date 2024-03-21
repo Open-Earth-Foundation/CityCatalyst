@@ -55,8 +55,7 @@ const createTestCsvFile = async (
   fileName: string,
   data: string,
 ): Promise<string> => {
-  const __dirname = __filename.replace(path.basename(__filename), "");
-  // const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
   const filePath = path.join(__dirname, fileName);
 
   await fs.promises.writeFile(filePath, data, "utf8");

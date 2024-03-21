@@ -20,6 +20,7 @@ import {
   setupTests,
   testUserID,
   testCityID,
+  expectStatusCode,
 } from "../helpers";
 import { randomUUID } from "node:crypto";
 import fs from "fs";
@@ -89,7 +90,7 @@ describe("UserFile API", () => {
     const res = await createUserFile(req, {
       params: { user: testUserID, city: testCityID },
     });
-    assert.equal(res.status, 200);
+    await expectStatusCode(res, 200);
     const { data } = await res.json();
     assert.equal(data?.sector, fileData?.sector);
     assert.equal(data?.url, fileData.url);

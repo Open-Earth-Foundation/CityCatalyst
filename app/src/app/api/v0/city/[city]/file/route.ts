@@ -12,14 +12,13 @@ const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_FILE_FORMATS = []; // file formats types to be parsed and refined later
 
 export const GET = apiHandler(async (_req: Request, context) => {
-  const userId = context.session?.user.id;
   if (!context.session) {
     throw new createHttpError.Unauthorized("Unauthorized");
   }
 
   const userFiles = await db.models.UserFile.findAll({
     where: {
-      userId: userId,
+      cityId: context.params.city,
     },
   });
 
@@ -38,7 +37,8 @@ export const GET = apiHandler(async (_req: Request, context) => {
     });
     return {
       id: userFile.id,
-      userId: userFile.id,
+      userId: userFile.userId,
+      cityId: userFile.cityId,
       fileReference: userFile.fileReference,
       url: userFile.url,
       sector: userFile.sector,
@@ -78,6 +78,7 @@ export const POST = apiHandler(async (req: NextRequest, context) => {
 
   const fileData = {
     userId: userId,
+    cityId: context.params.city,
     fileReference: formData.get("fileReference"),
     url: formData.get("url"),
     data: buffer,
@@ -103,6 +104,7 @@ export const POST = apiHandler(async (req: NextRequest, context) => {
     data: {
       id: userFile.id,
       userId: userFile.userId,
+      cityId: userFile.cityId,
       fileReference: userFile.fileReference,
       url: userFile.url,
       sector: userFile.sector,

@@ -14,13 +14,13 @@
   "inventory-year": "Año del inventario",
   "inventory-year-placeholder": "Seleccionar año",
   "inventory-year-required": "El año es requerido",
-  "gpc-basic-message": "Solo los inventarios básicos de GPC son compatibles momentáneamente",
+  "gpc-basic-message": "Solo los inventarios básicos de GPC son compatibles momentáneamente. Utilice datos del año más cercano al año de inventario seleccionado.",
   "save-button": "Guardar y Continuar",
   "search-city-button": "Buscar otra Ciudad",
   "confirm-button": "Confirmar y Continuar",
 
   "confirm-heading": "Confirmar Información de la Ciudad",
-  "confirm-details": "Revisa y confirma esta información sobre tu ciudad. Si hay un error, por favor envíanos un correo electrónico para editarlo.<br /><br />Utilizamos <2>fuentes de datos abiertos</2> para completar previamente el perfil de la ciudad.", 
+  "confirm-details": "Revisa y confirma esta información sobre tu ciudad. Si hay un error, por favor envíanos un correo electrónico para editarlo.<br /><br />Utilizamos <2>fuentes de datos abiertos</2> para completar previamente el perfil de la ciudad.",
   "total-population": "Población total",
   "total-land-area": "Superficie total del terreno",
   "geographical-boundaries": "Límites geográficos",
@@ -28,5 +28,17 @@
   "done-heading": "Inventario creado con éxito<br />",
   "inventory-title": "Inventario Básico de Emisiones GPC - Año {{year}}",
   "done-details": "Creaste tu perfil de ciudad para comenzar tu inventario de GEI con metodología GPC Básico.",
-  "check-dashboard": "Ir al Inicio"
+  "check-dashboard": "Ir al Inicio",
+
+  "information-required": "Esta información es obligatoria y afecta la precisión de su inventario de GEI.",
+  "year-placeholder": "Año",
+  "required": "Necesario",
+  "population-required": "Por favor ingrese el valor y el año de la población",
+  "city-population-title": "Población de la ciudad",
+  "city-population-placeholder": "Número de población de la ciudad",
+  "population-year": "Año de población",
+  "region-population-title": "Población de la región",
+  "region-population-placeholder": "Número de población de la región",
+  "country-population-title": "Población del país",
+  "country-population-placeholder": "Número de población del país"
 }

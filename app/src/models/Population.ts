@@ -7,6 +7,7 @@ export interface PopulationAttributes {
   cityId: string;
   population?: number;
   countryPopulation?: number;
+  regionPopulation?: number;
   year: number;
   created?: Date;
   lastUpdated?: Date;
@@ -18,6 +19,7 @@ export type PopulationId = Population[PopulationPk];
 export type PopulationOptionalAttributes =
   | "population"
   | "countryPopulation"
+  | "regionPopulation"
   | "created"
   | "lastUpdated"
   | "datasourceId";
@@ -33,6 +35,7 @@ export class Population
   cityId!: string;
   population?: number;
   countryPopulation?: number;
+  regionPopulation?: number;
   year!: number;
   created?: Date;
   lastUpdated?: Date;
@@ -73,6 +76,11 @@ export class Population
           type: DataTypes.BIGINT,
           allowNull: true,
           field: "country_population",
+        },
+        regionPopulation: {
+          type: DataTypes.BIGINT,
+          allowNull: true,
+          field: "region_population",
         },
         year: {
           type: DataTypes.INTEGER,

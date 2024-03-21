@@ -1,5 +1,4 @@
 import { RootState } from "@/lib/store";
-import { OCCityArributes } from "@/models/City";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export interface CityDataAttributes {

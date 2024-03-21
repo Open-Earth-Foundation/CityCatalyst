@@ -18,12 +18,6 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
-const persistConfig = {
-  key: "root",
-  version: 1,
-  storage,
-};
-
 const reducer = combineReducers({
   inventoryData: inventoryDataReducer,
   [api.reducerPath]: api.reducer,
@@ -32,6 +26,13 @@ const reducer = combineReducers({
   openClimateCity: openclimateCityReducer,
   openClimateCityData: openclimateCityDataReducer,
 });
+
+const persistConfig = {
+  key: "root",
+  version: 1,
+  storage,
+  blacklist: ["api"],
+};
 
 const persistedReducer = persistReducer(persistConfig, reducer);
 

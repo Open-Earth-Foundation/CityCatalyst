@@ -4,7 +4,8 @@ from db.database import SessionLocal
 
 api_router = APIRouter(prefix="/api/v0")
 
-gpc_quality_data = "high"
+# this is a placeholder for now
+gpc_quality_data = "NA"
 
 # Extract the data by locode, year and sector/subsector
 def db_query(source_name, locode, year, GPC_refno):
@@ -35,9 +36,10 @@ def get_emissions_by_locode_and_year(source_name: str, locode: str, year: str, G
     masses = {'CO2': 0.0, 'CH4': 0.0, 'N2O': 0.0}
 
     for record in records:
+        record = record._mapping
         gas = record['gas_name']
         mass = record['emissions_value']
-        masses[gas] = mass
+        masses[gas] += mass
 
     totals = {
         "totals": {
@@ -49,7 +51,7 @@ def get_emissions_by_locode_and_year(source_name: str, locode: str, year: str, G
             }
         }
     }
-    
+
     locode_info = {
         "city_emissions_details": {
             "temporal_granularity": str(record["temporal_granularity"]),

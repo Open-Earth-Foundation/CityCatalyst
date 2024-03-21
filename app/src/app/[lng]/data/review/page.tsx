@@ -59,6 +59,15 @@ export default function ReviewPage({
 
   const [isConfirming, setIsConfirming] = useState<boolean>(false);
 
+  const { data: userInfo, isLoading: isUserInfoLoading } =
+    api.useGetUserInfoQuery();
+
+  const { data: inventory } = api.useGetInventoryQuery(
+    userInfo?.defaultInventoryId!,
+    { skip: !userInfo },
+  );
+  const cityId = inventory?.city.cityId;
+
   const onConfirm = async () => {
     setIsConfirming(true);
     try {
@@ -79,7 +88,7 @@ export default function ReviewPage({
           formData.append("data", file, file.name);
         }
 
-        await addUserFile(formData).then(() => {
+        await addUserFile({ formData, cityId }).then(() => {
           // TODO
           // Trigger notification to user
         });

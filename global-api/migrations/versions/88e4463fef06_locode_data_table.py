@@ -13,8 +13,8 @@ from sqlalchemy.sql import text
 
 
 # revision identifiers, used by Alembic.
-revision: str = '88e4463fef06'
-down_revision: Union[str, None] = 'cc8d00d4372e'
+revision: str = "88e4463fef06"
+down_revision: Union[str, None] = "cc8d00d4372e"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -33,8 +33,8 @@ def upgrade() -> None:
         sa.Column("activity_value", sa.Float, nullable=True),
         sa.Column("activity_units", sa.String, nullable=True),
         sa.Column("gas_name", sa.String, nullable=False),
-        sa.Column("emission_factor_value", sa.Float, nullable=False),
-        sa.Column("emission_factor_units", sa.String, nullable=False),
+        sa.Column("emission_factor_value", sa.Float, nullable=True),
+        sa.Column("emission_factor_units", sa.String, nullable=True),
         sa.Column("emissions_value", sa.Float, nullable=False),
         sa.Column("emissions_units", sa.String, nullable=False),
         sa.Column(

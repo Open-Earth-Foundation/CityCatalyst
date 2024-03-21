@@ -5,7 +5,6 @@ Revises: 36933af0ca3a, dc1837707630
 Create Date: 2024-01-04 14:45:48.849799
 
 """
-
 from typing import Sequence, Union
 
 from alembic import op
@@ -19,6 +18,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     pass
+
 
 def downgrade() -> None:
     pass

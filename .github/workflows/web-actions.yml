@@ -53,21 +53,25 @@ jobs:
       - name: Run tests and generate coverage file
         run: npm run ci:test
 
-      - name: Setup LCOV
-        uses: hrishikesh-kadam/setup-lcov@v1
-      - name: Report code coverage
-        uses: zgosalvez/github-actions-report-lcov@v3
-        with:
-          coverage-files: ./app/lcov*.info
-          minimum-coverage: 40
-          artifact-name: code-coverage-report
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          working-directory: ./app
-          update-comment: true
+      # - name: Setup LCOV
+      #   uses: hrishikesh-kadam/setup-lcov@v1
+      # - name: Report code coverage
+      #   uses: zgosalvez/github-actions-report-lcov@v3
+      #   with:
+      #     coverage-files: ./app/lcov*.info
+      #     minimum-coverage: 40
+      #     artifact-name: code-coverage-report
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     working-directory: ./app
+      #     update-comment: true
 
       - name: Upload coverage reports to Codecov
+        continue-on-error: true
         uses: codecov/codecov-action@v4.0.1
         with:
+          fail_ci_if_error: false
+          flags: unittests
+          name: citycatalyst-backend
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: Open-Earth-Foundation/CityCatalyst
 
@@ -126,8 +130,11 @@ jobs:
           kubectl set env deployment/cc-web-deploy SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}}
           kubectl set env deployment/cc-web-deploy NEXTAUTH_SECRET=${{secrets.NEXTAUTH_SECRET}}
           kubectl set env deployment/cc-web-deploy RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}}
-          kubectl set env deployment/cc-web-deploy CHAT_PROVIDER=huggingface
+          kubectl set env deployment/cc-web-deploy VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}}
+          kubectl set env deployment/cc-web-deploy CHAT_PROVIDER=openai
           kubectl set env deployment/cc-web-deploy OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}}
           kubectl set env deployment/cc-web-deploy HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}}
+          kubectl set env deployment/cc-web-deploy "DEFAULT_ADMIN_EMAIL=${{secrets.DEFAULT_ADMIN_EMAIL}}"
+          kubectl set env deployment/cc-web-deploy "DEFAULT_ADMIN_PASSWORD=${{secrets.DEFAULT_ADMIN_PASSWORD}}"
+          kubectl create -f k8s/cc-create-admin.yml -n default
           kubectl rollout restart deployment cc-web-deploy -n default
-

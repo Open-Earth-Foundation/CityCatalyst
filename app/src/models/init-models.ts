@@ -124,6 +124,7 @@ import type { UserAttributes, UserCreationAttributes } from "./User";
 import { Version as _Version } from "./Version";
 import type { VersionAttributes, VersionCreationAttributes } from "./Version";
 import { UserFile as _UserFile } from "./UserFile";
+import { CityInvite as _CityInvite } from "./CityInvite";
 
 export {
   _ActivityData as ActivityData,
@@ -156,6 +157,7 @@ export {
   _User as User,
   _Version as Version,
   _UserFile as UserFile,
+  _CityInvite as CityInvite,
 };
 
 export type {
@@ -252,6 +254,7 @@ export function initModels(sequelize: Sequelize) {
   const User = _User.initModel(sequelize);
   const Version = _Version.initModel(sequelize);
   const UserFile = _UserFile.initModel(sequelize);
+  const CityInvite = _CityInvite.initModel(sequelize);
 
   ActivityData.belongsToMany(DataSource, {
     as: "datasourceIdDataSources",
@@ -598,6 +601,10 @@ export function initModels(sequelize: Sequelize) {
   });
   User.hasMany(UserFile, { foreignKey: "userId", as: "user" });
   UserFile.belongsTo(User, { as: "userFiles", foreignKey: "userId" });
+  UserFile.belongsTo(City, { foreignKey: "cityId", as: "city" });
+  City.hasMany(UserFile, { foreignKey: "cityId", as: "userFiles" });
+  City.hasMany(CityInvite, { as: "cityInvite", foreignKey: "cityId" });
+  CityInvite.belongsTo(City, { as: "cityInvites", foreignKey: "cityId" });
   GasValue.belongsTo(InventoryValue, {
     as: "inventoryValue",
     foreignKey: "inventoryValueId",
@@ -654,5 +661,6 @@ export function initModels(sequelize: Sequelize) {
     User: User,
     Version: Version,
     UserFile: UserFile,
+    CityInvite: CityInvite,
   };
 }

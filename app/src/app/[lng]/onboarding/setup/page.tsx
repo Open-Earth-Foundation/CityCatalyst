@@ -5,7 +5,7 @@ import WizardSteps from "@/components/wizard-steps";
 import { set } from "@/features/city/openclimateCitySlice";
 import { useTranslation } from "@/i18n/client";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import type { CityAttributes, OCCityArributes } from "@/models/City";
+import type { CityAttributes } from "@/models/City";
 import {
   useAddCityMutation,
   useAddCityPopulationMutation,
@@ -15,6 +15,7 @@ import {
   useSetUserInfoMutation,
 } from "@/services/api";
 import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
+import { OCCityAttributes } from "@/util/types";
 import {
   ArrowBackIcon,
   CheckIcon,
@@ -28,8 +29,10 @@ import {
   Card,
   Flex,
   FormControl,
+  FormErrorIcon,
   FormErrorMessage,
   FormLabel,
+  HStack,
   Heading,
   Icon,
   Input,
@@ -38,13 +41,14 @@ import {
   InputRightElement,
   Select,
   Text,
+  useOutsideClick,
   useSteps,
   useToast,
 } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type {
   FieldErrors,
   SubmitHandler,
@@ -59,62 +63,185 @@ const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 type Inputs = {
   city: string;
   year: number;
+  cityPopulation: number;
+  cityPopulationYear: number;
+  regionPopulation: number;
+  regionPopulationYear: number;
+  countryPopulation: number;
+  countryPopulationYear: number;
 };
+
+type PopulationEntry = {
+  year: number;
+  population: number;
+  datasource_id: string;
+};
+
+type OnboardingData = {
+  name: string;
+  locode: string;
+  year: number;
+};
+
+const numberOfYearsDisplayed = 10;
+
+/// Finds entry which has the year closest to the selected inventory year
+function findClosestYear(
+  populationData: PopulationEntry[] | undefined,
+  year: number,
+): PopulationEntry | null {
+  if (!populationData || populationData?.length === 0) {
+    return null;
+  }
+  return populationData.reduce(
+    (prev, curr) => {
+      // don't allow years outside of dropdown range
+      if (curr.year < year - numberOfYearsDisplayed + 1) {
+        return prev;
+      }
+      if (!prev) {
+        return curr;
+      }
+      let prevDelta = Math.abs(year - prev.year);
+      let currDelta = Math.abs(year - curr.year);
+      return prevDelta < currDelta ? prev : curr;
+    },
+    null as PopulationEntry | null,
+  );
+}
 
 function SetupStep({
   errors,
   register,
   t,
   setValue,
+  watch,
+  ocCityData,
+  setOcCityData,
+  setData,
 }: {
   errors: FieldErrors<Inputs>;
   register: UseFormRegister<Inputs>;
   t: TFunction;
   setValue: any;
+  watch: Function;
+  ocCityData?: OCCityAttributes;
+  setOcCityData: (cityData: OCCityAttributes) => void;
+  setData: (data: OnboardingData) => void;
 }) {
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 7 }, (_x, i) => currentYear - i);
-
-  const [onInputClicked, setOnInputClicked] = useState<boolean>(false);
-  const [cityInputQuery, setCityInputQuery] = useState<string>("");
-  const [isCityNew, setIsCityNew] = useState<boolean>(false);
-  const [isYearSelected, setIsYearSelected] = useState<boolean>(false);
-  const [yearValue, setYearValue] = useState<number>();
+  const years = Array.from(
+    { length: numberOfYearsDisplayed },
+    (_x, i) => currentYear - i,
+  );
   const dispatch = useAppDispatch();
 
-  const handleInputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    setCityInputQuery(e.target.value);
-    setOnInputClicked(true);
-  };
+  const [onInputClicked, setOnInputClicked] = useState<boolean>(false);
+  const [isCityNew, setIsCityNew] = useState<boolean>(false);
+  const [locode, setLocode] = useState<string | null>(null);
 
-  const handleSetCity = (city: OCCityArributes) => {
-    setCityInputQuery(city.name);
+  const yearInput = watch("year");
+  const year: number | null = yearInput ? parseInt(yearInput) : null;
+  const cityInputQuery = watch("city");
+  const cityPopulationYear = watch("cityPopulationYear");
+  const regionPopulationYear = watch("regionPopulationYear");
+  const countryPopulationYear = watch("countryPopulationYear");
+
+  const handleSetCity = (city: OCCityAttributes) => {
+    setValue("city", city.name);
     setOnInputClicked(false);
     dispatch(set(city));
+    setLocode(city.actor_id);
+    setOcCityData(city);
 
-    // TODO: chech whether city exists or not
+    if (year) {
+      setData({
+        name: city.name,
+        locode: city.actor_id,
+        year: year!,
+      });
+    }
+
     setIsCityNew(true);
   };
 
-  const handleYear = (e: any) => {
-    setIsYearSelected(true);
-    setYearValue(e.target.value);
-  };
+  useEffect(() => {
+    if (year && ocCityData) {
+      setData({
+        name: ocCityData.name,
+        locode: ocCityData.actor_id,
+        year: year!,
+      });
+    }
+  }, [year, ocCityData, setData]);
 
   useEffect(() => {
-    setValue("city", cityInputQuery);
-  }, [cityInputQuery, setValue]);
-
-  useEffect(() => {
-    if (cityInputQuery.length === 0) {
+    if (!cityInputQuery || cityInputQuery.length === 0) {
       setOnInputClicked(false);
       setIsCityNew(false);
     }
-    if (!yearValue) {
-      setIsYearSelected(false);
+  }, [cityInputQuery]);
+
+  useEffect(() => {
+    // reset population data when locode changes to prevent keeping data from previous city
+    setValue("cityPopulationYear", null);
+    setValue("cityPopulation", null);
+    setValue("regionPopulation", null);
+    setValue("regionYear", null);
+    setValue("countryPopulation", null);
+    setValue("countryYear", null);
+  }, [locode, setValue]);
+
+  const { data: cityData } = useGetOCCityDataQuery(locode!, {
+    skip: !locode,
+  });
+  const countryLocode =
+    locode && locode.length > 0 ? locode.split(" ")[0] : null;
+  const { data: countryData } = useGetOCCityDataQuery(countryLocode!, {
+    skip: !countryLocode,
+  });
+  const regionLocode = cityData?.is_part_of;
+  const { data: regionData } = useGetOCCityDataQuery(regionLocode!, {
+    skip: !regionLocode,
+  });
+
+  // react to API data changes and different year selections
+  useEffect(() => {
+    if (cityData && year) {
+      const population = findClosestYear(cityData.population, year);
+      if (!population) {
+        console.error("Failed to find population data for city");
+        return;
+      }
+      setValue("cityPopulation", population?.population);
+      setValue("cityPopulationYear", population?.year);
     }
-  }, [cityInputQuery, yearValue]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cityData, year, setValue]);
+
+  useEffect(() => {
+    if (regionData && year) {
+      const population = findClosestYear(regionData.population, year);
+      if (!population) {
+        console.error("Failed to find population data for region");
+        return;
+      }
+      setValue("regionPopulation", population?.population);
+      setValue("regionPopulationYear", population?.year);
+    }
+  }, [regionData, year, setValue]);
+
+  useEffect(() => {
+    if (countryData && year) {
+      const population = findClosestYear(countryData.population, year);
+      if (!population) {
+        console.error("Failed to find population data for region");
+        return;
+      }
+      setValue("countryPopulation", population?.population);
+      setValue("countryPopulationYear", population?.year);
+    }
+  }, [countryData, year, setValue]);
 
   // import custom redux hooks
   const {
@@ -122,7 +249,7 @@ function SetupStep({
     isLoading,
     isSuccess,
   } = useGetOCCityQuery(cityInputQuery, {
-    skip: cityInputQuery.length <= 2 ? true : false,
+    skip: cityInputQuery?.length <= 2 ? true : false,
   });
 
   const renderParentPath = (path: []) => {
@@ -142,41 +269,48 @@ function SetupStep({
     return pathString;
   };
 
+  // using useOutsideClick instead of onBlur input attribute
+  // to fix clicking city dropdown entries not working
+  const cityInputRef = useRef<HTMLDivElement>(null);
+  useOutsideClick({
+    ref: cityInputRef,
+    handler: () => setTimeout(() => setOnInputClicked(false), 0),
+  });
+
   return (
     <>
-      <div>
+      <Box minW={400}>
         <Heading size="xl">{t("setup-heading")}</Heading>
         <Text className="my-4" color="tertiary">
           {t("setup-details")}
         </Text>
-      </div>
-      <div>
+      </Box>
+      <Box w="full">
         <Card p={6}>
-          <form>
-            <FormControl isInvalid={!!errors.city} mb={12}>
+          <form className="space-y-8">
+            <FormControl isInvalid={!!errors.city}>
               <FormLabel>{t("select-city")}</FormLabel>
-              <InputGroup>
+              <InputGroup ref={cityInputRef}>
                 <InputLeftElement pointerEvents="none">
                   <SearchIcon color="tertiary" boxSize={4} mt={2} ml={4} />
                 </InputLeftElement>
                 <Input
                   type="text"
                   placeholder={t("select-city-placeholder")}
-                  w={441}
                   size="lg"
                   {...register("city", {
                     required: t("select-city-required"),
                   })}
-                  onChange={handleInputOnChange}
-                  value={cityInputQuery}
+                  autoComplete="off"
+                  onFocus={() => setOnInputClicked(true)}
                 />
                 <InputRightElement>
                   {isCityNew && (
                     <CheckIcon
                       color="semantic.success"
                       boxSize={4}
+                      mr={4}
                       mt={2}
-                      mr={10}
                     />
                   )}
                 </InputRightElement>
@@ -190,7 +324,7 @@ function SetupStep({
                   {isLoading && <p className="px-4">Fetching Cities...</p>}
                   {isSuccess &&
                     cities &&
-                    cities.map((city: any) => {
+                    cities.map((city: OCCityAttributes) => {
                       return (
                         <Box
                           onClick={() => handleSetCity(city)}
@@ -237,7 +371,6 @@ function SetupStep({
                   {...register("year", {
                     required: t("inventory-year-required"),
                   })}
-                  onChange={handleYear}
                 >
                   {years.map((year: number, i: number) => (
                     <option value={year} key={i}>
@@ -246,7 +379,7 @@ function SetupStep({
                   ))}
                 </Select>
                 <InputRightElement>
-                  {isYearSelected && (
+                  {year && (
                     <CheckIcon
                       color="semantic.success"
                       boxSize={4}
@@ -260,12 +393,191 @@ function SetupStep({
                 {errors.year && errors.year.message}
               </FormErrorMessage>
             </FormControl>
+            <HStack spacing={6} align="start">
+              <FormControl isInvalid={!!errors.cityPopulation}>
+                <FormLabel>{t("city-population-title")}</FormLabel>
+                <Input
+                  type="text"
+                  placeholder={t("city-population-placeholder")}
+                  size="lg"
+                  {...register("cityPopulation", {
+                    required: t("population-required"),
+                  })}
+                />
+                <FormErrorMessage
+                  color="content.tertiary"
+                  letterSpacing="0.5px"
+                >
+                  <FormErrorIcon />
+                  {errors.cityPopulation && errors.cityPopulation.message}
+                </FormErrorMessage>
+              </FormControl>
+
+              <FormControl isInvalid={!!errors.cityPopulationYear} w={60}>
+                <FormLabel>{t("population-year")}</FormLabel>
+                <InputGroup>
+                  <Select
+                    placeholder={t("year-placeholder")}
+                    size="lg"
+                    {...register("cityPopulationYear", {
+                      required: t("required"),
+                    })}
+                  >
+                    {years.map((year: number, i: number) => (
+                      <option value={year} key={i}>
+                        {year}
+                      </option>
+                    ))}
+                  </Select>
+                  <InputRightElement>
+                    {cityPopulationYear && (
+                      <CheckIcon
+                        color="semantic.success"
+                        boxSize={4}
+                        mt={2}
+                        mr={10}
+                      />
+                    )}
+                  </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage
+                  color="content.tertiary"
+                  letterSpacing="0.5px"
+                >
+                  <FormErrorIcon />
+                  {errors.cityPopulationYear &&
+                    errors.cityPopulationYear.message}
+                </FormErrorMessage>
+              </FormControl>
+            </HStack>
+            <HStack spacing={6} align="start">
+              <FormControl isInvalid={!!errors.regionPopulation}>
+                <FormLabel>{t("region-population-title")}</FormLabel>
+                <Input
+                  type="text"
+                  placeholder={t("region-population-placeholder")}
+                  size="lg"
+                  {...register("regionPopulation", {
+                    required: t("population-required"),
+                  })}
+                />
+                <FormErrorMessage
+                  color="content.tertiary"
+                  letterSpacing="0.5px"
+                >
+                  <FormErrorIcon />
+                  {errors.regionPopulation && errors.regionPopulation.message}
+                </FormErrorMessage>
+              </FormControl>
+              <FormControl isInvalid={!!errors.regionPopulationYear} w={60}>
+                <FormLabel>{t("population-year")}</FormLabel>
+                <InputGroup>
+                  <Select
+                    placeholder={t("year-placeholder")}
+                    size="lg"
+                    {...register("regionPopulationYear", {
+                      required: t("required"),
+                    })}
+                  >
+                    {years.map((year: number, i: number) => (
+                      <option value={year} key={i}>
+                        {year}
+                      </option>
+                    ))}
+                  </Select>
+                  <InputRightElement>
+                    {regionPopulationYear && (
+                      <CheckIcon
+                        color="semantic.success"
+                        boxSize={4}
+                        mt={2}
+                        mr={10}
+                      />
+                    )}
+                  </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage
+                  color="content.tertiary"
+                  letterSpacing="0.5px"
+                >
+                  <FormErrorIcon />
+                  {errors.regionPopulationYear &&
+                    errors.regionPopulationYear.message}
+                </FormErrorMessage>
+              </FormControl>
+            </HStack>
+            <HStack spacing={6} align="start">
+              <FormControl isInvalid={!!errors.countryPopulation}>
+                <FormLabel>{t("country-population-title")}</FormLabel>
+                <Input
+                  type="text"
+                  placeholder={t("country-population-placeholder")}
+                  size="lg"
+                  {...register("countryPopulation", {
+                    required: t("population-required"),
+                  })}
+                />
+                <FormErrorMessage
+                  color="content.tertiary"
+                  letterSpacing="0.5px"
+                >
+                  <FormErrorIcon />
+                  {errors.countryPopulation && errors.countryPopulation.message}
+                </FormErrorMessage>
+              </FormControl>
+              <FormControl isInvalid={!!errors.countryPopulationYear} w={60}>
+                <FormLabel>{t("population-year")}</FormLabel>
+                <InputGroup>
+                  <Select
+                    placeholder={t("year-placeholder")}
+                    size="lg"
+                    {...register("countryPopulationYear", {
+                      required: t("required"),
+                    })}
+                  >
+                    {years.map((year: number, i: number) => (
+                      <option value={year} key={i}>
+                        {year}
+                      </option>
+                    ))}
+                  </Select>
+                  <InputRightElement>
+                    {countryPopulationYear && (
+                      <CheckIcon
+                        color="semantic.success"
+                        boxSize={4}
+                        mt={2}
+                        mr={10}
+                      />
+                    )}
+                  </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage
+                  color="content.tertiary"
+                  letterSpacing="0.5px"
+                >
+                  <FormErrorIcon />
+                  {errors.countryPopulationYear &&
+                    errors.countryPopulationYear.message}
+                </FormErrorMessage>
+              </FormControl>
+            </HStack>
+            <HStack spacing={1.5} align="start">
+              <InfoOutlineIcon color="interactive.secondary" mt={1} />
+              <Text
+                color="content.tertiary"
+                fontSize="sm"
+                whiteSpace="pre-line"
+              >
+                {t("information-required")}
+              </Text>
+            </HStack>
           </form>
         </Card>
         <Text color="tertiary" mt={6} fontSize="sm">
           {t("gpc-basic-message")}
         </Text>
-      </div>
+      </Box>
     </>
   );
 }
@@ -281,7 +593,7 @@ function ConfirmStep({
   t: TFunction;
   locode: string;
   area: number;
-  population: number;
+  population?: number;
 }) {
   return (
     <>
@@ -366,6 +678,7 @@ export default function OnboardingSetup({
     register,
     getValues,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<Inputs>();
 
@@ -380,45 +693,13 @@ export default function OnboardingSetup({
   const [addInventory] = useAddInventoryMutation();
   const [setUserInfo] = useSetUserInfoMutation();
 
-  const [data, setData] = useState<{
-    name: string;
-    locode: string;
-    year: number;
-  }>({ name: "", locode: "", year: -1 });
-
+  const [data, setData] = useState<OnboardingData>({
+    name: "",
+    locode: "",
+    year: -1,
+  });
+  const [ocCityData, setOcCityData] = useState<OCCityAttributes>();
   const [isConfirming, setConfirming] = useState(false);
-  const [populationData, setPopulationData] = useState<{
-    year: number;
-    population: number;
-    datasourceId: string;
-  }>({ year: 0, population: 0, datasourceId: "" });
-  const [countryPopulation, setCountryPopulation] = useState<number>(0);
-
-  const storedData = useAppSelector((state) => state.openClimateCity);
-
-  const onSubmit: SubmitHandler<Inputs> = async (newData) => {
-    const year = Number(newData.year);
-    if (!newData.city || !storedData.city?.actor_id || year < 0) {
-      return;
-    }
-
-    setData({
-      name: newData.city,
-      locode: storedData.city?.actor_id,
-      year,
-    });
-
-    goToNext();
-  };
-
-  const { data: cityData } = useGetOCCityDataQuery(data.locode, {
-    skip: !data.locode,
-  });
-  const countryLocode =
-    data.locode.length > 0 ? data.locode.split(" ")[0] : null;
-  const { data: countryData } = useGetOCCityDataQuery(countryLocode!, {
-    skip: !countryLocode,
-  });
 
   const makeErrorToast = (title: string, description?: string) => {
     toast({
@@ -431,67 +712,44 @@ export default function OnboardingSetup({
     });
   };
 
-  const [ocCityData, setOcCityData] = useState<{
-    area: number;
-    region: string;
-    country: string;
-  }>();
-
-  useEffect(() => {
-    if (cityData) {
-      const population = cityData?.data.population.filter(
-        (item: any) => item.year === data.year,
-      );
-      const populationObject = {
-        year: population[0]?.year,
-        population: population[0]?.population,
-        datasourceId: population[0]?.datasource_id,
-      };
-      setPopulationData(populationObject);
-
-      const cityObject = {
-        area: cityData.data?.territory?.area ?? 0,
-        region:
-          storedData.city?.root_path_geo.filter(
-            (item: any) => item.type === "adm1",
-          )[0]?.name ?? "",
-        country:
-          storedData.city?.root_path_geo.filter(
-            (item: any) => item.type === "country",
-          )[0]?.name ?? "",
-      };
-
-      setOcCityData(cityObject);
-    }
-  }, [cityData, storedData.city?.root_path_geo, data.year]);
-
-  useEffect(() => {
-    if (countryData) {
-      const population = countryData?.data.population.filter(
-        (item: any) => item.year === data.year,
-      );
-      setCountryPopulation(population[0]?.population);
-    }
-  }, [countryData, data.year]);
+  const cityPopulation = watch("cityPopulation");
+  const regionPopulation = watch("regionPopulation");
+  const countryPopulation = watch("countryPopulation");
+  const cityPopulationYear = watch("cityPopulationYear");
+  const regionPopulationYear = watch("regionPopulationYear");
+  const countryPopulationYear = watch("countryPopulationYear");
 
   const onConfirm = async () => {
     // save data in backend
     setConfirming(true);
     let city: CityAttributes | null = null;
+
+    let area = ocCityData?.area ?? 0;
+    let region =
+      ocCityData?.root_path_geo.filter((item: any) => item.type === "adm1")[0]
+        ?.name ?? "";
+    let country =
+      ocCityData?.root_path_geo.filter(
+        (item: any) => item.type === "country",
+      )[0]?.name ?? "";
+
     try {
       city = await addCity({
         name: data.name,
-        locode: data.locode,
-        area: ocCityData?.area!,
-        region: ocCityData?.region!,
-        country: ocCityData?.country!,
+        locode: data.locode!,
+        area,
+        region,
+        country,
       }).unwrap();
       await addCityPopulation({
         cityId: city.cityId,
         locode: city.locode!,
-        population: populationData.population,
-        countryPopulation: countryPopulation,
-        year: data.year,
+        cityPopulation: cityPopulation!,
+        cityPopulationYear: cityPopulationYear!,
+        regionPopulation: regionPopulation!,
+        regionPopulationYear: regionPopulationYear!,
+        countryPopulation: countryPopulation!,
+        countryPopulationYear: countryPopulationYear!,
       }).unwrap();
     } catch (err: any) {
       makeErrorToast("Failed to add city!", err.data?.error?.message);
@@ -518,6 +776,24 @@ export default function OnboardingSetup({
     }
   };
 
+  const onSubmit: SubmitHandler<Inputs> = async (newData) => {
+    const year = Number(newData.year);
+
+    setData({
+      name: newData.city,
+      locode: data.locode!,
+      year,
+    });
+
+    if (!newData.city || !ocCityData?.actor_id || year < 0 || !data.locode) {
+      // TODO show user toast? These should normally be caught by validation logic
+      console.error("Missing data, can't go to next step!");
+      return;
+    }
+
+    goToNext();
+  };
+
   return (
     <>
       <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto">
@@ -539,6 +815,10 @@ export default function OnboardingSetup({
               errors={errors}
               setValue={setValue}
               register={register}
+              watch={watch}
+              ocCityData={ocCityData}
+              setOcCityData={setOcCityData}
+              setData={setData}
               t={t}
             />
           )}
@@ -548,7 +828,7 @@ export default function OnboardingSetup({
               t={t}
               locode={data.locode}
               area={ocCityData?.area!}
-              population={populationData.population}
+              population={cityPopulation}
             />
           )}
         </div>

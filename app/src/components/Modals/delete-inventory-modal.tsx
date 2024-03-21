@@ -21,7 +21,7 @@ import PasswordInput from "../password-input";
 import { useForm } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { TFunction } from "i18next";
-import { InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
+import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { UserAttributes } from "@/models/User";
 
 interface DeleteInventoryModalProps {

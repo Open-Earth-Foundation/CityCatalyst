@@ -19,7 +19,7 @@ const RecentSearches = () => {
       path: "Argentina {" > "} Capital Federal",
     },
   ];
-  const hasRecentSearches = true;
+  const hasRecentSearches = false;
   return (
     <Box>
       <Box className="px-4">

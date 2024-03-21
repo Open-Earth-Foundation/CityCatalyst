@@ -51,7 +51,10 @@ describe("City API", () => {
   beforeAll(async () => {
     setupTests();
     await db.initialize();
-    [user] = await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
+    [user] = await db.models.User.upsert({
+      userId: testUserID,
+      name: "TEST_USER",
+    });
 
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockSession));
   });

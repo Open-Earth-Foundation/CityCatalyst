@@ -17,13 +17,6 @@ export interface CityAttributes {
   lastUpdated?: Date;
 }
 
-export interface OCCityArributes {
-  actor_id: string;
-  name: string;
-  is_part_of: string;
-  root_path_geo: any;
-}
-
 export type CityPk = "cityId";
 export type CityId = City[CityPk];
 export type CityOptionalAttributes =

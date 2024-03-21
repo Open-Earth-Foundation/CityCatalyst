@@ -1,4 +1,12 @@
-import { jest, expect, describe, beforeAll, beforeEach, afterAll, it } from "@jest/globals";
+import {
+  jest,
+  expect,
+  describe,
+  beforeAll,
+  beforeEach,
+  afterAll,
+  it,
+} from "@jest/globals";
 import {
   DELETE as deleteCity,
   GET as findCity,

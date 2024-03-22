@@ -24,9 +24,7 @@ import {
   SubSectorWithRelations,
 } from "@/app/[lng]/data/[step]/types";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
-import { addFileData, clear } from "@/features/city/fileDataSlice";
-import { RootState } from "@/lib/store";
+import { useDispatch } from "react-redux";
 import { TFunction } from "i18next";
 import { addFile } from "@/features/city/inventoryDataSlice";
 import { v4 as uuidv4 } from "uuid";
@@ -47,6 +45,18 @@ export interface FileData {
   scopes: string;
 }
 
+const scopes = [
+  {
+    value: 1,
+  },
+  {
+    value: 2,
+  },
+  {
+    value: 3,
+  },
+];
+
 const AddFileDataModal: FC<AddFileDataModalProps> = ({
   isOpen,
   onClose,
@@ -56,18 +66,6 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
   currentStep,
   userInfo,
 }) => {
-  const scopes = [
-    {
-      value: 1,
-    },
-    {
-      value: 2,
-    },
-    {
-      value: 3,
-    },
-  ];
-
   const [selectedScopes, setSelectedScopes] = useState<number[]>([]);
 
   const handleSelectedScopes = (value: number, checked: boolean) => {
@@ -83,10 +81,9 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
     handleSubmit,
     watch,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<FileData>();
-
-  console.log(uploadedFile);
 
   function fileToBase64(file: File) {
     return new Promise((resolve, reject) => {
@@ -98,11 +95,12 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
     });
   }
 
+  console.log(getValues("subsectors"));
+
   const onSubmit: SubmitHandler<FileData> = async (data) => {
-    const scopeValues = selectedScopes.slice().join(",");
+    console.log(data);
     const base64FileString = await fileToBase64(uploadedFile);
     const filename = uploadedFile.name;
-
     dispatch(
       addFile({
         sectorName: currentStep.title!,
@@ -194,7 +192,15 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
                     setValue={setValue}
                     watch={watch}
                     t={t}
+                    register={register}
                   />
+                  <Box>
+                    {errors.subsectors && (
+                      <Text color="sentiment.negativeDefault">
+                        A scope required for each sub-sector
+                      </Text>
+                    )}
+                  </Box>
                 </FormControl>
                 <FormControl>
                   <FormLabel>
@@ -211,7 +217,7 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
                         <Checkbox
                           value={scope.value}
                           borderColor="interactive.secondary"
-                          {...register("scopes")}
+                          {...register("scopes", { required: true })}
                           onChange={(e) =>
                             handleSelectedScopes(scope.value, e.target.checked)
                           }
@@ -222,6 +228,13 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
                         </Text>
                       </Box>
                     ))}
+                  </Box>
+                  <Box>
+                    {errors.scopes && (
+                      <Text color="sentiment.negativeDefault">
+                        A scope required for each sub-sector
+                      </Text>
+                    )}
                   </Box>
                 </FormControl>
               </form>

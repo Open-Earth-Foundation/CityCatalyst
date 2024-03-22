@@ -72,9 +72,7 @@ import type {
   SubSectorWithRelations,
 } from "./types";
 
-import { v4 as uuidv4 } from "uuid";
 import AddFileDataModal from "@/components/Modals/add-file-data-modal";
-import { clear } from "@/features/city/fileDataSlice";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -458,7 +456,6 @@ export default function AddDataSteps({
 
   const [uploadedFile, setUploadedFile] = useState<File>();
 
-  const formData = useSelector((state: RootState) => state.fileData);
   const handleFileSelect = async (file: File) => {
     onfileDataModalOpen();
   };
@@ -802,7 +799,7 @@ export default function AddDataSteps({
                     return (
                       <Card
                         shadow="none"
-                        h="84px"
+                        minH="120px"
                         w="full"
                         borderWidth="1px"
                         borderColor="border.overlay"
@@ -857,6 +854,23 @@ export default function AddDataSteps({
                               <FiTrash2 size={24} />
                             </Button>
                           </Box>
+                        </Box>
+                        <Box w="full" className="relative pl-[63px]">
+                          {file.subsectors.split(",").map((item: any) => (
+                            <Tag
+                              key={item}
+                              mt={2}
+                              mr={2}
+                              size="md"
+                              borderRadius="full"
+                              variant="solid"
+                              color="content.alternative"
+                              bg="background.neutral"
+                              maxW="150px"
+                            >
+                              <TagLabel>{item}</TagLabel>
+                            </Tag>
+                          ))}
                         </Box>
                       </Card>
                     );

@@ -9,6 +9,7 @@ import {
   ListItem,
   Text,
   Input,
+  FormLabel,
 } from "@chakra-ui/react";
 import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md";
 import { SubSectorWithRelations } from "@/app/[lng]/data/[step]/types";
@@ -26,6 +27,7 @@ interface DropdownSelectProps {
   setValue: UseFormSetValue<FileData>;
   t: TFunction;
   watch: UseFormWatch<FileData>;
+  register: UseFormRegister<FileData>;
 }
 
 const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
@@ -33,6 +35,7 @@ const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
   setValue,
   t,
   watch,
+  register,
 }) => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
@@ -42,11 +45,16 @@ const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
   ) => {
     if (event.target.checked) {
       setSelectedItems([...selectedItems, value]);
-      setValue("subsectors", subsectorValues.length ? subsectorValues : "");
     } else {
       setSelectedItems(selectedItems.filter((item) => item !== value));
     }
   };
+
+  useEffect(() => {
+    const subsectorValues = selectedItems.slice().join(",");
+    console.log(subsectorValues);
+    setValue("subsectors", subsectorValues);
+  }, [setValue, selectedItems]);
 
   const handleRemoveItem = (item: string) => {
     setSelectedItems(
@@ -58,8 +66,6 @@ const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
   const handleShowdropDown = () => {
     setShowDropdown((prev) => !prev);
   };
-
-  const subsectorValues = selectedItems.slice().join(",");
 
   return (
     <Box className="w-full">
@@ -139,6 +145,7 @@ const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
                 p="16px"
                 alignItems="center"
                 gap="16px"
+                h="full"
                 _hover={{
                   color: "white",
                   bg: "content.link",
@@ -148,11 +155,20 @@ const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
                 <Checkbox
                   top={2}
                   pos="relative"
+                  id={subsector.subsectorName}
                   onChange={(e) =>
                     handleCheckboxChange(e, subsector.subsectorName!)
                   }
                 />
-                <Text>{subsector.subsectorName}</Text>
+                <FormLabel
+                  htmlFor={subsector.subsectorName}
+                  pos="relative"
+                  top="8px"
+                  h="full"
+                  w="full"
+                >
+                  <Text fontWeight="200">{subsector.subsectorName}</Text>
+                </FormLabel>
               </ListItem>
             ))}
           </List>

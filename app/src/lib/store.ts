@@ -5,7 +5,6 @@ import cityReducer from "@/features/city/citySlice";
 import openclimateCityReducer from "@/features/city/openclimateCitySlice";
 import openclimateCityDataReducer from "@/features/city/openclimateCityDataSlice";
 import inventoryDataReducer from "@/features/city/inventoryDataSlice";
-import fileDataReducer from "@/features/city/fileDataSlice";
 
 import {
   persistStore,
@@ -21,7 +20,6 @@ import storage from "redux-persist/lib/storage";
 
 const reducer = combineReducers({
   inventoryData: inventoryDataReducer,
-  fileData: fileDataReducer,
   [api.reducerPath]: api.reducer,
   [openclimateAPI.reducerPath]: openclimateAPI.reducer,
   city: cityReducer,

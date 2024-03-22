@@ -60,7 +60,7 @@ const FileDataCard: FC<FileCardDataProps> = ({
           </Text>
         </Box>
       </Box>
-      <Box w="full" className="relative pl-[50px] bg-red">
+      <Box w="full" className="relative pl-[50px]">
         {tags?.map((item: any) => (
           <Tag
             key={item}

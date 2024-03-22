@@ -4,11 +4,11 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.addColumn('UserFile', 'scopes', {
-      type: Sequelize.STRING,
+      type: Sequelize.ARRAY(Sequelize.STRING),
       allowNull: true
     })
     await queryInterface.addColumn('UserFile', 'subsectors', {
-      type: Sequelize.STRING,
+      type: Sequelize.ARRAY(Sequelize.STRING),
       allowNull: true
     })
   },

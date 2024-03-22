@@ -4,7 +4,6 @@ import { fileEndingToMIMEType } from "@/util/helpers";
 import { createUserFileRequset } from "@/util/validation";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
-import { Session } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 // TODO: use these variables to configure file size and format
@@ -78,6 +77,9 @@ export const POST = apiHandler(async (req: NextRequest, context) => {
 
   const fileType = filename.split(".").pop();
 
+  const subsectors = formData.get("subsectors") as string;
+  const scopes = formData.get("scopes") as string;
+
   const fileData = {
     userId: userId,
     fileReference: formData.get("fileReference"),
@@ -86,8 +88,8 @@ export const POST = apiHandler(async (req: NextRequest, context) => {
     fileType: fileType,
     fileName: filename,
     sector: formData.get("sector"),
-    subsectors: formData.get("subsectors"),
-    scopes: formData.get("scopes"),
+    subsectors: subsectors?.split(","),
+    scopes: scopes.split(","),
     status: formData.get("status"),
     gpcRefNo: formData.get("gpcRefNo"),
   };

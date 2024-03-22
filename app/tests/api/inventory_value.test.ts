@@ -7,11 +7,22 @@ import { GET as batchFindInventoryValues } from "@/app/api/v0/inventory/[invento
 
 import { db } from "@/models";
 import { CreateInventoryValueRequest } from "@/util/validation";
-import assert from "node:assert";
 import { randomUUID } from "node:crypto";
-import { after, before, beforeEach, describe, it } from "node:test";
+import {
+  describe,
+  expect,
+  beforeAll,
+  beforeEach,
+  afterAll,
+  it,
+} from "@jest/globals";
 
-import { mockRequest, setupTests, testUserID } from "../helpers";
+import {
+  await expectStatusCode,
+  mockRequest,
+  setupTests,
+  testUserID,
+} from "../helpers";
 
 import { Inventory } from "@/models/Inventory";
 import { InventoryValue } from "@/models/InventoryValue";
@@ -50,7 +61,7 @@ describe("Inventory Value API", () => {
   let subSector: SubSector;
   let inventoryValue: InventoryValue;
 
-  before(async () => {
+  beforeAll(async () => {
     setupTests();
     await db.initialize();
 
@@ -112,7 +123,7 @@ describe("Inventory Value API", () => {
     });
   });
 
-  after(async () => {
+  afterAll(async () => {
     if (db.sequelize) await db.sequelize.close();
   });
 
@@ -127,12 +138,12 @@ describe("Inventory Value API", () => {
         subcategory: subCategory.subcategoryId,
       },
     });
-    assert.equal(res.status, 200);
+    await expectStatusCode(res, 200);
     const { data } = await res.json();
 
-    assert.equal(data.activityUnits, inventoryValue1.activityUnits);
-    assert.equal(data.activityValue, inventoryValue1.activityValue);
-    assert.equal(data.co2eq, inventoryValue1.co2eq);
+    expect(data.activityUnits).toEqual(inventoryValue1.activityUnits);
+    expect(data.activityValue).toEqual(inventoryValue1.activityValue);
+    expect(data.co2eq).toEqual(inventoryValue1.co2eq);
   });
 
   it("Should not create an inventory value with invalid data", async () => {
@@ -143,11 +154,11 @@ describe("Inventory Value API", () => {
         subcategory: subCategory.subcategoryId,
       },
     });
-    assert.equal(res.status, 400);
+    await expectStatusCode(res, 400);
     const {
       error: { issues },
     } = await res.json();
-    assert.equal(issues.length, 3);
+    expect(issues.length).toEqual(3);
   });
 
   it("Should find an inventory value", async () => {
@@ -161,10 +172,10 @@ describe("Inventory Value API", () => {
 
     const { data } = await res.json();
 
-    assert.equal(res.status, 200);
-    assert.equal(data.co2eq, co2eq);
-    assert.equal(data.activityUnits, activityUnits);
-    assert.equal(data.activityValue, activityValue);
+    await expectStatusCode(res, 200);
+    expect(data.co2eq).toEqual(co2eq);
+    expect(data.activityUnits).toEqual(activityUnits);
+    expect(data.activityValue).toEqual(activityValue);
   });
 
   it("Should find multiple inventory values", async () => {
@@ -196,8 +207,8 @@ describe("Inventory Value API", () => {
 
     const { data } = await res.json();
 
-    assert.equal(res.status, 200);
-    assert.equal(data.length, 2);
+    await expectStatusCode(res, 200);
+    expect(data.length).toEqual(2);
 
     // database returns results in random order
     data.sort((a: InventoryValue, b: InventoryValue) => {
@@ -208,12 +219,12 @@ describe("Inventory Value API", () => {
       }
     });
 
-    assert.equal(data[0].co2eq, co2eq);
-    assert.equal(data[1].co2eq, inventoryValue2.co2eq);
-    assert.equal(data[0].activityUnits, activityUnits);
-    assert.equal(data[1].activityUnits, inventoryValue2.activityUnits);
-    assert.equal(data[0].activityValue, activityValue);
-    assert.equal(data[1].activityValue, inventoryValue2.activityValue);
+    expect(data[0].co2eq).toEqual(co2eq);
+    expect(data[1].co2eq).toEqual(inventoryValue2.co2eq);
+    expect(data[0].activityUnits).toEqual(activityUnits);
+    expect(data[1].activityUnits).toEqual(inventoryValue2.activityUnits);
+    expect(data[0].activityValue).toEqual(activityValue);
+    expect(data[1].activityValue).toEqual(inventoryValue2.activityValue);
   });
 
   it("Should not find a non-existing sub category", async () => {
@@ -224,7 +235,7 @@ describe("Inventory Value API", () => {
         subcategory: randomUUID(),
       },
     });
-    assert.equal(res.status, 404);
+    await expectStatusCode(res, 404);
   });
 
   it("Should update an inventory value", async () => {
@@ -236,10 +247,10 @@ describe("Inventory Value API", () => {
       },
     });
     const { data } = await res.json();
-    assert.equal(res.status, 200);
-    assert.equal(data.co2eq, inventoryValue1.co2eq);
-    assert.equal(data.activityUnits, inventoryValue1.activityUnits);
-    assert.equal(data.activityValue, inventoryValue1.activityValue);
+    await expectStatusCode(res, 200);
+    expect(data.co2eq).toEqual(inventoryValue1.co2eq);
+    expect(data.activityUnits).toEqual(inventoryValue1.activityUnits);
+    expect(data.activityValue).toEqual(inventoryValue1.activityValue);
   });
 
   it("Should not update an inventory value with invalid data", async () => {
@@ -250,11 +261,11 @@ describe("Inventory Value API", () => {
         subcategory: subCategory.subcategoryId,
       },
     });
-    assert.equal(res.status, 400);
+    await expectStatusCode(res, 400);
     const {
       error: { issues },
     } = await res.json();
-    assert.equal(issues.length, 3);
+    expect(issues.length).toEqual(3);
   });
 
   it("Should delete an inventory value", async () => {
@@ -265,12 +276,12 @@ describe("Inventory Value API", () => {
         subcategory: subCategory.subcategoryId,
       },
     });
-    assert.equal(res.status, 200);
+    await expectStatusCode(res, 200);
     const { data, deleted } = await res.json();
-    assert.equal(deleted, true);
-    assert.equal(data.co2eq, co2eq);
-    assert.equal(data.activityUnits, activityUnits);
-    assert.equal(data.activityValue, activityValue);
+    expect(deleted).toEqual(true);
+    expect(data.co2eq).toEqual(co2eq);
+    expect(data.activityUnits).toEqual(activityUnits);
+    expect(data.activityValue).toEqual(activityValue);
   });
 
   it("Should not delete a non-existing inventory value", async () => {
@@ -281,6 +292,6 @@ describe("Inventory Value API", () => {
         subcategory: randomUUID(),
       },
     });
-    assert.equal(res.status, 404);
+    await expectStatusCode(res, 404);
   });
 });

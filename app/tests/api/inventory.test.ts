@@ -24,7 +24,6 @@ import {
   beforeAll,
   afterAll,
   beforeEach,
-  afterEach,
   it,
 } from "@jest/globals";
 

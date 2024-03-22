@@ -12,6 +12,8 @@ import { db } from "@/models";
 import { ValidationError } from "sequelize";
 import { ManualInputValidationError } from "@/lib/custom-errors/manual-input-error";
 
+import "@/util/big_int_json.ts";
+
 export type ApiResponse = NextResponse | StreamingTextResponse;
 
 export type NextHandler = (
@@ -83,8 +85,14 @@ function errorHandler(err: unknown, _req: NextRequest) {
     const { name, status, headers, message } = err;
     return NextResponse.json({ name, status, headers, message }, { status });
   } else {
+    let errorMessage = "Unknown error";
+    if ((err as Object).hasOwnProperty("message")) {
+      errorMessage = (err as Error).message;
+    } else if (err instanceof Error) {
+      errorMessage = (err as Object).toString();
+    }
     return NextResponse.json(
-      { error: { message: "Internal server error", error: err } },
+      { error: { message: "Internal server error", error: errorMessage } },
       { status: 500 },
     );
   }

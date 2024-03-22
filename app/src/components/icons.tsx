@@ -223,7 +223,7 @@ export const ScaleIcon = (props: any) => {
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <g clip-path="url(#clip0_2694_7142)">
+      <g clipPath="url(#clip0_2694_7142)">
         <mask
           id="mask0_2694_7142"
           style={{ maskType: "alpha" }}
@@ -260,7 +260,7 @@ export const AddFileIcon = () => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g clip-path="url(#clip0_6630_19806)">
+      <g clipPath="url(#clip0_6630_19806)">
         <path
           d="M21.5 3H9.5C7.85 3 6.515 4.35 6.515 6L6.5 30C6.5 31.65 7.835 33 9.485 33H27.5C29.15 33 30.5 31.65 30.5 30V12L21.5 3ZM9.5 30V6H20V13.5H27.5V30H9.5Z"
           fill="#2351DC"

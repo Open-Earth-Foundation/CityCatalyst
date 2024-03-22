@@ -448,15 +448,7 @@ export default function AddDataSteps({
     (state: RootState) => state.inventoryData,
   );
   const dispatch = useDispatch();
-  function fileToBase64(file: File) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
 
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
-  }
   // Add file data to rudux state object
   const {
     isOpen: isfileDataModalOpen,
@@ -464,31 +456,11 @@ export default function AddDataSteps({
     onClose: onfileDataModalClose,
   } = useDisclosure();
 
+  const [uploadedFile, setUploadedFile] = useState<File>();
+
   const formData = useSelector((state: RootState) => state.fileData);
   const handleFileSelect = async (file: File) => {
-    const base64FileString = await fileToBase64(file);
-    const filename = file.name;
     onfileDataModalOpen();
-
-    dispatch(
-      addFile({
-        sectorName: currentStep.title!,
-        fileData: {
-          fileId: uuidv4(),
-          fileName: filename,
-          subsectors: formData?.subsectors,
-          scopes: formData?.scopes,
-          userId: userInfo?.userId,
-          sector: currentStep.title,
-          data: base64FileString,
-          // TODO this should not be passed in but rather set on the server (only necessary for AWS S3 or external hosting)
-          url: "http://localhost",
-          size: file.size,
-          fileType: filename.split(".").pop(),
-        },
-      }),
-    );
-    dispatch(clear());
   };
 
   const sectorData = getInventoryData.sectors.filter(
@@ -815,7 +787,11 @@ export default function AddDataSteps({
           >
             <Box w="full">
               <Box mb="24px">
-                <FileInput onFileSelect={handleFileSelect} t={t} />
+                <FileInput
+                  onFileSelect={handleFileSelect}
+                  setUploadedFile={setUploadedFile}
+                  t={t}
+                />
               </Box>
               <Box mb="24px">
                 <Heading size="sm">{t("files-uploaded")}</Heading>
@@ -936,6 +912,9 @@ export default function AddDataSteps({
         onClose={onfileDataModalClose}
         subsectors={currentStep.subSectors}
         t={t}
+        uploadedFile={uploadedFile!}
+        currentStep={currentStep}
+        userInfo={userInfo}
       />
       {/*** Bottom bar ***/}
       <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand py-4 px-4 drop-shadow-2xl hover:drop-shadow-4xl transition-all">

@@ -19,18 +19,27 @@ import {
 import { AddFileIcon } from "../icons";
 import DropdownSelectInput from "../dropdown-select-input";
 import { InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
-import { SubSectorWithRelations } from "@/app/[lng]/data/[step]/types";
+import {
+  DataStep,
+  SubSectorWithRelations,
+} from "@/app/[lng]/data/[step]/types";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { addFileData, clear } from "@/features/city/fileDataSlice";
 import { RootState } from "@/lib/store";
 import { TFunction } from "i18next";
+import { addFile } from "@/features/city/inventoryDataSlice";
+import { v4 as uuidv4 } from "uuid";
+import { UserInfoResponse } from "@/util/types";
 
 interface AddFileDataModalProps {
   isOpen: boolean;
   onClose: () => void;
   subsectors: SubSectorWithRelations[] | null;
   t: TFunction;
+  uploadedFile: File;
+  currentStep: DataStep;
+  userInfo: UserInfoResponse | undefined;
 }
 
 export interface FileData {
@@ -43,6 +52,9 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
   onClose,
   subsectors,
   t,
+  uploadedFile,
+  currentStep,
+  userInfo,
 }) => {
   const scopes = [
     {
@@ -74,15 +86,41 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
     formState: { errors },
   } = useForm<FileData>();
 
-  const onSubmit: SubmitHandler<FileData> = (data) => {
+  console.log(uploadedFile);
+
+  function fileToBase64(file: File) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  }
+
+  const onSubmit: SubmitHandler<FileData> = async (data) => {
     const scopeValues = selectedScopes.slice().join(",");
+    const base64FileString = await fileToBase64(uploadedFile);
+    const filename = uploadedFile.name;
+
     dispatch(
-      addFileData({
-        subsectors: data.subsectors!,
-        scopes: scopeValues!,
+      addFile({
+        sectorName: currentStep.title!,
+        fileData: {
+          fileId: uuidv4(),
+          fileName: filename,
+          subsectors: data.subsectors,
+          scopes: data.scopes,
+          userId: userInfo?.userId,
+          sector: currentStep.title,
+          data: base64FileString,
+          // TODO this should not be passed in but rather set on the server (only necessary for AWS S3 or external hosting)
+          url: "http://localhost",
+          size: uploadedFile.size,
+          fileType: filename.split(".").pop(),
+        },
       }),
     );
-
     onClose();
   };
 

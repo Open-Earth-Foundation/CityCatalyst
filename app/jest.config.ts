@@ -23,6 +23,10 @@ const config: JestConfigWithTsJest = {
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
+  setupFiles: ["<rootDir>/jest.setup.ts"],
+
+  // enable worker threads feature to fix BigInt serialization issue
+  workerThreads: true,
 
   // All imported modules in your tests should be mocked automatically
   // automock: false,

@@ -95,10 +95,7 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
     });
   }
 
-  console.log(getValues("subsectors"));
-
   const onSubmit: SubmitHandler<FileData> = async (data) => {
-    console.log(data);
     const base64FileString = await fileToBase64(uploadedFile);
     const filename = uploadedFile.name;
     dispatch(

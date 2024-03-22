@@ -52,7 +52,6 @@ const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
 
   useEffect(() => {
     const subsectorValues = selectedItems.slice().join(",");
-    console.log(subsectorValues);
     setValue("subsectors", subsectorValues);
   }, [setValue, selectedItems]);
 

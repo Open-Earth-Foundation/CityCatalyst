@@ -1,5 +1,4 @@
-import { before, after, describe, it } from "node:test";
-import assert from "node:assert/strict";
+import { expect, describe, beforeAll, afterAll, it } from "@jest/globals";
 import { randomUUID } from "node:crypto";
 import "dotenv/config";
 
@@ -8,22 +7,22 @@ import { db } from "@/models";
 const email = "test@openearth.org";
 
 describe("Models", () => {
-  before(async () => {
+  beforeAll(async () => {
     await db.initialize();
     await db.models.User.destroy({ where: { email } });
   });
 
-  after(async () => {
+  afterAll(async () => {
     if (db.sequelize) await db.sequelize.close();
   });
 
   describe("User model", () => {
     it("should have unique emails", async () => {
       const user = await db.models.User.create({ userId: randomUUID(), email });
-      assert.equal(user.email, email);
-      await assert.rejects(() => {
+      expect(user.email).toEqual(email);
+      await expect(() => {
         return db.models.User.create({ userId: randomUUID(), email });
-      });
+      }).rejects.toThrowError();
     });
   });
 });

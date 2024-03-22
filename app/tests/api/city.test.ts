@@ -1,4 +1,13 @@
 import {
+  jest,
+  expect,
+  describe,
+  beforeAll,
+  beforeEach,
+  afterAll,
+  it,
+} from "@jest/globals";
+import {
   DELETE as deleteCity,
   GET as findCity,
   PATCH as updateCity,
@@ -7,7 +16,6 @@ import { POST as createCity } from "@/app/api/v0/city/route";
 import { db } from "@/models";
 import { CreateCityRequest } from "@/util/validation";
 import assert from "node:assert";
-import { after, before, beforeEach, describe, it, mock } from "node:test";
 import { mockRequest, setupTests, testUserID } from "../helpers";
 import { City } from "@/models/City";
 import { randomUUID } from "node:crypto";
@@ -48,7 +56,7 @@ describe("City API", () => {
   let user: User;
   let prevGetServerSession = Auth.getServerSession;
 
-  before(async () => {
+  beforeAll(async () => {
     setupTests();
     await db.initialize();
     [user] = await db.models.User.upsert({
@@ -56,7 +64,7 @@ describe("City API", () => {
       name: "TEST_USER",
     });
 
-    Auth.getServerSession = mock.fn(() => Promise.resolve(mockSession));
+    Auth.getServerSession = jest.fn(() => Promise.resolve(mockSession));
   });
 
   beforeEach(async () => {
@@ -68,7 +76,7 @@ describe("City API", () => {
     await city.addUser(user);
   });
 
-  after(async () => {
+  afterAll(async () => {
     Auth.getServerSession = prevGetServerSession;
     if (db.sequelize) await db.sequelize.close();
   });

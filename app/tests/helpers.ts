@@ -7,7 +7,8 @@ import { Blob } from "fetch-blob";
 import { promisify } from "node:util";
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
+import { ApiResponse } from "@/util/api";
+import { expect } from "@jest/globals";
 
 const mockUrl = "http://localhost:3000/api/v0";
 
@@ -55,7 +56,6 @@ const createTestCsvFile = async (
   fileName: string,
   data: string,
 ): Promise<string> => {
-  const __dirname = path.dirname(fileURLToPath(import.meta.url));
   const filePath = path.join(__dirname, fileName);
 
   await fs.promises.writeFile(filePath, data, "utf8");
@@ -98,4 +98,18 @@ export function setupTests() {
       expires: expires.toISOString(),
     };
   });
+}
+
+export async function expectStatusCode(
+  response: ApiResponse,
+  statusCode: number,
+) {
+  try {
+    expect(response.status).toBe(statusCode);
+  } catch (err: unknown) {
+    const apiError = await response.text();
+    (err as Error).message =
+      `Expected status code ${statusCode}, got ${response.status}.\nAPI error: ${apiError}`;
+    throw err;
+  }
 }

@@ -1,11 +1,10 @@
 import { POST as savePopulations } from "@/app/api/v0/city/[city]/population/route";
 import { db } from "@/models";
-import assert from "node:assert";
-import { after, before, describe, it } from "node:test";
 import { mockRequest, setupTests, testUserID } from "../helpers";
 import { CreatePopulationRequest } from "@/util/validation";
 import { Op } from "sequelize";
 import { keyBy } from "@/util/helpers";
+import { describe, expect, beforeAll, afterAll, it } from "@jest/globals";
 
 const cityId = "76bb1ab7-5177-45a1-a61f-cfdee9c448e8";
 
@@ -40,7 +39,7 @@ const invalidPopulationUpdate: CreatePopulationRequest = {
 };
 
 describe("Population API", () => {
-  before(async () => {
+  beforeAll(async () => {
     setupTests();
     await db.initialize();
     await db.models.Population.destroy({ where: { cityId } });
@@ -53,99 +52,86 @@ describe("Population API", () => {
     await city.addUser(testUserID);
   });
 
-  after(async () => {
+  afterAll(async () => {
     if (db.sequelize) await db.sequelize.close();
   });
 
   it("should save correct population information", async () => {
     const req = mockRequest(validPopulationUpdate);
     const res = await savePopulations(req, { params: { city: cityId } });
-    assert.equal(res.status, 200);
+    expect(res.status).toEqual(200);
     const data = await res.json();
 
-    assert.equal(
-      data.data.cityPopulation.population,
+    expect(data.data.cityPopulation.population).toEqual(
       validPopulationUpdate.cityPopulation,
     );
-    assert.equal(
-      data.data.cityPopulation.year,
+    expect(data.data.cityPopulation.year).toEqual(
       validPopulationUpdate.cityPopulationYear,
     );
-    assert.equal(
-      data.data.regionPopulation.regionPopulation,
+    expect(data.data.regionPopulation.regionPopulation).toEqual(
       validPopulationUpdate.regionPopulation,
     );
-    assert.equal(
-      data.data.regionPopulation.year,
+    expect(data.data.regionPopulation.year).toEqual(
       validPopulationUpdate.regionPopulationYear,
     );
-    assert.equal(
-      data.data.countryPopulation.countryPopulation,
+    expect(data.data.countryPopulation.countryPopulation).toEqual(
       validPopulationUpdate.countryPopulation,
     );
-    assert.equal(
-      data.data.countryPopulation.year,
+    expect(data.data.countryPopulation.year).toEqual(
       validPopulationUpdate.countryPopulationYear,
     );
 
     const populations = await db.models.Population.findAll({
       where: { cityId, year: { [Op.in]: [1337, 1338, 1339] } },
     });
-    assert.equal(populations.length, 3);
+    expect(populations.length).toEqual(3);
     const populationByYear = keyBy(populations, (p) => p.year.toString());
-    assert.equal(populationByYear["1337"].population, 1);
-    assert.equal(populationByYear["1338"].regionPopulation, 2);
-    assert.equal(populationByYear["1339"].countryPopulation, 3);
+    expect(populationByYear["1337"].population).toEqual(1);
+    expect(populationByYear["1338"].regionPopulation).toEqual(2);
+    expect(populationByYear["1339"].countryPopulation).toEqual(3);
   });
 
   it("should correctly save population information for the same year", async () => {
     const req = mockRequest(overlappingPopulationUpdate);
     const res = await savePopulations(req, { params: { city: cityId } });
-    assert.equal(res.status, 200);
+    expect(res.status).toEqual(200);
     const data = await res.json();
 
-    assert.equal(
-      data.data.cityPopulation.population,
+    expect(data.data.cityPopulation.population).toEqual(
       overlappingPopulationUpdate.cityPopulation,
     );
-    assert.equal(
-      data.data.cityPopulation.year,
+    expect(data.data.cityPopulation.year).toEqual(
       overlappingPopulationUpdate.cityPopulationYear,
     );
-    assert.equal(
-      data.data.regionPopulation.regionPopulation,
+    expect(data.data.regionPopulation.regionPopulation).toEqual(
       overlappingPopulationUpdate.regionPopulation,
     );
-    assert.equal(
-      data.data.regionPopulation.year,
+    expect(data.data.regionPopulation.year).toEqual(
       overlappingPopulationUpdate.regionPopulationYear,
     );
-    assert.equal(
-      data.data.countryPopulation.countryPopulation,
+    expect(data.data.countryPopulation.countryPopulation).toEqual(
       overlappingPopulationUpdate.countryPopulation,
     );
-    assert.equal(
-      data.data.countryPopulation.year,
+    expect(data.data.countryPopulation.year).toEqual(
       overlappingPopulationUpdate.countryPopulationYear,
     );
 
     const populations = await db.models.Population.findAll({
       where: { cityId, year: 1340 },
     });
-    assert.equal(populations.length, 1);
-    console.dir(populations[0].dataValues);
-    assert.equal(populations[0].population, 4);
-    assert.equal(populations[0].regionPopulation, 5);
-    assert.equal(populations[0].countryPopulation, 6);
+    expect(populations.length).toEqual(1);
+    expect(populations[0].population).toEqual(4);
+    expect(populations[0].regionPopulation).toEqual(5);
+    expect(populations[0].countryPopulation).toEqual(6);
   });
 
   it("should not save invalid population information", async () => {
     const req = mockRequest(invalidPopulationUpdate);
     const res = await savePopulations(req, { params: { city: cityId } });
-    assert.equal(res.status, 400);
+    expect(res.status).toEqual(400);
     const populations = await db.models.Population.findAll({
       where: { cityId, year: -1340 },
     });
-    assert.equal(populations.length, 0);
+    expect(populations.length).toEqual(0);
   });
 });

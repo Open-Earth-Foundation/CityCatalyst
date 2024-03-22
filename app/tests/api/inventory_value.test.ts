@@ -246,8 +246,8 @@ describe("Inventory Value API", () => {
         subcategory: subCategory.subcategoryId,
       },
     });
-    const { data } = await res.json();
     await expectStatusCode(res, 200);
+    const { data } = await res.json();
     expect(data.co2eq).toEqual(inventoryValue1.co2eq);
     expect(data.activityUnits).toEqual(inventoryValue1.activityUnits);
     expect(data.activityValue).toEqual(inventoryValue1.activityValue);

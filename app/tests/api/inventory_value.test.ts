@@ -18,7 +18,7 @@ import {
 } from "@jest/globals";
 
 import {
-  await expectStatusCode,
+  expectStatusCode,
   mockRequest,
   setupTests,
   testUserID,

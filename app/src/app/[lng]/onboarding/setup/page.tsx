@@ -397,11 +397,12 @@ function SetupStep({
               <FormControl isInvalid={!!errors.cityPopulation}>
                 <FormLabel>{t("city-population-title")}</FormLabel>
                 <Input
-                  type="text"
+                  type="number"
                   placeholder={t("city-population-placeholder")}
                   size="lg"
                   {...register("cityPopulation", {
                     required: t("population-required"),
+                    valueAsNumber: true,
                   })}
                 />
                 <FormErrorMessage
@@ -421,6 +422,7 @@ function SetupStep({
                     size="lg"
                     {...register("cityPopulationYear", {
                       required: t("required"),
+                      valueAsNumber: true,
                     })}
                   >
                     {years.map((year: number, i: number) => (
@@ -454,11 +456,12 @@ function SetupStep({
               <FormControl isInvalid={!!errors.regionPopulation}>
                 <FormLabel>{t("region-population-title")}</FormLabel>
                 <Input
-                  type="text"
+                  type="number"
                   placeholder={t("region-population-placeholder")}
                   size="lg"
                   {...register("regionPopulation", {
                     required: t("population-required"),
+                    valueAsNumber: true,
                   })}
                 />
                 <FormErrorMessage
@@ -477,6 +480,7 @@ function SetupStep({
                     size="lg"
                     {...register("regionPopulationYear", {
                       required: t("required"),
+                      valueAsNumber: true,
                     })}
                   >
                     {years.map((year: number, i: number) => (
@@ -510,11 +514,12 @@ function SetupStep({
               <FormControl isInvalid={!!errors.countryPopulation}>
                 <FormLabel>{t("country-population-title")}</FormLabel>
                 <Input
-                  type="text"
+                  type="number"
                   placeholder={t("country-population-placeholder")}
                   size="lg"
                   {...register("countryPopulation", {
                     required: t("population-required"),
+                    valueAsNumber: true,
                   })}
                 />
                 <FormErrorMessage
@@ -533,6 +538,7 @@ function SetupStep({
                     size="lg"
                     {...register("countryPopulationYear", {
                       required: t("required"),
+                      valueAsNumber: true,
                     })}
                   >
                     {years.map((year: number, i: number) => (

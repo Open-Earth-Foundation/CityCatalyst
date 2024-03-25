@@ -5,6 +5,7 @@ import { User, UserId } from "./User";
 export interface UserFileAttributes {
   id: string;
   userId?: string;
+  cityId?: string;
   fileReference?: string;
   data?: Buffer | any;
   fileType?: string;
@@ -23,6 +24,7 @@ export type UserFilePk = "id";
 export type UserFileId = UserFile[UserFilePk];
 export type UserFileOptionalAttributes =
   | "userId"
+  | "cityId"
   | "fileReference"
   | "data"
   | "fileType"
@@ -46,6 +48,7 @@ export class UserFile
 {
   id!: string;
   userId?: string;
+  cityId?: string;
   fileReference?: string;
   data?: Buffer;
   fileType?: string;
@@ -82,6 +85,15 @@ export class UserFile
             key: "user_id",
           },
           field: "user_id",
+        },
+        cityId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: "City",
+            key: "city_id",
+          },
+          field: "city_id",
         },
         fileReference: {
           type: DataTypes.STRING(255),

@@ -73,6 +73,9 @@ import type {
 } from "./types";
 
 import AddFileDataModal from "@/components/Modals/add-file-data-modal";
+import { v4 as uuidv4 } from "uuid";
+import { InventoryValueAttributes } from "@/models/InventoryValue";
+import { DataSource } from "@/models/DataSource";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -291,7 +294,7 @@ export default function AddDataSteps({
       /\/[0-9]+$/,
       `/${activeStep + 1}`,
     );
-    history.replaceState("", "", newPath);
+    history.replaceState(null, "", newPath);
   }, [activeStep]);
 
   const totalStepCompletion = currentStep
@@ -384,6 +387,7 @@ export default function AddDataSteps({
       });
     } finally {
       setConnectingDataSourceId(null);
+      onSearchDataSourcesClicked();
     }
   };
 
@@ -472,6 +476,75 @@ export default function AddDataSteps({
       }),
     );
   }
+
+  const [buttonText, setButtonText] = useState<string>(t("data-connected"));
+  const [hoverStates, setHoverStates] = useState<{ [key: string]: boolean }>(
+    {},
+  );
+
+  const [disconnectThirdPartyData, { isLoading: isDisconnectLoading }] =
+    api.useDisconnectThirdPartyDataMutation();
+
+  const onDisconnectThirdPartyData = async (
+    source: DataSourceWithRelations,
+  ) => {
+    if (isSourceConnected(source)) {
+      source.inventoryValues!.forEach(
+        async (inventoryValue: InventoryValueAttributes) => {
+          await disconnectThirdPartyData({
+            inventoryId: inventoryValue.inventoryId,
+            subCategoryId: inventoryValue.subCategoryId,
+          }).then((res: any) => {
+            // Todo show alert
+            onSearchDataSourcesClicked();
+          });
+        },
+      );
+    } else {
+      console.log("Something went wrong");
+    }
+  };
+
+  const onButtonHover = (source: DataSourceWithRelations) => {
+    setHoverStates((prev) => ({ ...prev, [source.datasourceId]: true }));
+    setButtonText(t("disconnect-data"));
+  };
+
+  const onMouseLeave = (source: DataSourceWithRelations) => {
+    setHoverStates((prev) => ({ ...prev, [source.datasourceId]: false }));
+    setButtonText(t("data-connected"));
+  };
+
+  const DEFAULT_CONNECTED_BUTTON_PROPS = {
+    variant: "solidPrimary",
+    text: t("data-connected"),
+  };
+
+  const DEFAULT_DISCONNECTED_BUTTON_PROPS = {
+    variant: "outline",
+    text: t("connect-data"),
+  };
+
+  const getButtonProps = (
+    source: DataSourceWithRelations,
+    isHovered: boolean,
+  ) => {
+    if (isSourceConnected(source)) {
+      return {
+        variant: isHovered ? "danger" : DEFAULT_CONNECTED_BUTTON_PROPS.variant,
+        text: isHovered
+          ? t("disconnect-data")
+          : DEFAULT_CONNECTED_BUTTON_PROPS.text,
+        icon: <Icon as={MdCheckCircle} />,
+      };
+    } else {
+      return {
+        variant: DEFAULT_DISCONNECTED_BUTTON_PROPS.variant,
+        text: DEFAULT_DISCONNECTED_BUTTON_PROPS.text,
+        // Add more properties as needed
+      };
+    }
+  };
 
   return (
     <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
@@ -604,82 +677,101 @@ export default function AddDataSteps({
           <SimpleGrid columns={3} spacing={4}>
             {dataSources
               .slice(0, isDataSectionExpanded ? dataSources.length : 6)
-              .map(({ source, data }) => (
-                <Card
-                  key={source.datasourceId}
-                  variant="outline"
-                  borderColor={
-                    (isSourceConnected(source) && "interactive.tertiary") ||
-                    undefined
-                  }
-                  borderWidth={2}
-                  className="shadow-none hover:drop-shadow-xl transition-shadow"
-                >
-                  {/* TODO add icon to DataSource */}
-                  <Icon as={MdHomeWork} boxSize={9} mb={6} />
-                  <Heading size="sm" noOfLines={2} minHeight={10}>
-                    {source.name}
-                  </Heading>
-                  <Flex direction="row" my={4} wrap="wrap" gap={2}>
-                    <Tag>
-                      <TagLeftIcon
-                        as={DataCheckIcon}
-                        boxSize={5}
-                        color="content.tertiary"
-                      />
-                      <TagLabel fontSize={11}>
-                        {t("data-quality")}:{" "}
-                        {t("quality-" + source.dataQuality)}
-                      </TagLabel>
-                    </Tag>
-                    {source.subCategory?.scope && (
+              .map(({ source, data }) => {
+                const isHovered = hoverStates[source.datasourceId];
+                const { variant, text, icon } = getButtonProps(
+                  source,
+                  isHovered,
+                );
+
+                return (
+                  <Card
+                    key={source.datasourceId}
+                    variant="outline"
+                    borderColor={
+                      isSourceConnected(source) &&
+                      source.inventoryValues?.length
+                        ? "interactive.tertiary"
+                        : ""
+                    }
+                    borderWidth={2}
+                    className="shadow-none hover:drop-shadow-xl transition-shadow"
+                  >
+                    {/* TODO add icon to DataSource */}
+                    <Icon as={MdHomeWork} boxSize={9} mb={6} />
+                    <Heading size="sm" noOfLines={2} minHeight={10}>
+                      {source.name}
+                    </Heading>
+                    <Flex direction="row" my={4} wrap="wrap" gap={2}>
                       <Tag>
                         <TagLeftIcon
-                          as={FiTarget}
-                          boxSize={4}
+                          as={DataCheckIcon}
+                          boxSize={5}
                           color="content.tertiary"
                         />
                         <TagLabel fontSize={11}>
-                          {t("scope")}: {source.subCategory.scope.scopeName}
+                          {t("data-quality")}:{" "}
+                          {t("quality-" + source.dataQuality)}
                         </TagLabel>
                       </Tag>
+                      {source.subCategory?.scope && (
+                        <Tag>
+                          <TagLeftIcon
+                            as={FiTarget}
+                            boxSize={4}
+                            color="content.tertiary"
+                          />
+                          <TagLabel fontSize={11}>
+                            {t("scope")}: {source.subCategory.scope.scopeName}
+                          </TagLabel>
+                        </Tag>
+                      )}
+                    </Flex>
+                    <Text
+                      color="content.tertiary"
+                      noOfLines={5}
+                      minHeight={120}
+                    >
+                      {source.description}
+                    </Text>
+                    <Link
+                      className="underline"
+                      mt={4}
+                      mb={6}
+                      onClick={() => onSourceClick(source, data)}
+                    >
+                      {t("see-more-details")}
+                    </Link>
+                    {isSourceConnected(source) &&
+                    source.inventoryValues?.length ? (
+                      <Button
+                        variant={variant}
+                        px={6}
+                        py={4}
+                        onClick={() => onDisconnectThirdPartyData(source)}
+                        isLoading={isDisconnectLoading}
+                        onMouseEnter={() => onButtonHover(source)}
+                        onMouseLeave={() => onMouseLeave(source)}
+                        leftIcon={<Icon as={MdCheckCircle} />}
+                      >
+                        {text}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        bgColor="background.neutral"
+                        onClick={() => onConnectClick(source)}
+                        isLoading={
+                          isConnectDataSourceLoading &&
+                          source.datasourceId === connectingDataSourceId
+                        }
+                      >
+                        {t("connect-data")}
+                      </Button>
                     )}
-                  </Flex>
-                  <Text color="content.tertiary" noOfLines={5} minHeight={120}>
-                    {source.description}
-                  </Text>
-                  <Link
-                    className="underline"
-                    mt={4}
-                    mb={6}
-                    onClick={() => onSourceClick(source, data)}
-                  >
-                    {t("see-more-details")}
-                  </Link>
-                  {isSourceConnected(source) ? (
-                    <Button
-                      variant="solidPrimary"
-                      px={6}
-                      py={4}
-                      leftIcon={<Icon as={MdCheckCircle} />}
-                    >
-                      {t("data-connected")}
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      bgColor="background.neutral"
-                      onClick={() => onConnectClick(source)}
-                      isLoading={
-                        isConnectDataSourceLoading &&
-                        source.datasourceId === connectingDataSourceId
-                      }
-                    >
-                      {t("connect-data")}
-                    </Button>
-                  )}
-                </Card>
-              ))}
+                  </Card>
+                );
+              })}
           </SimpleGrid>
         )}
         {dataSources && dataSources.length > 6 && (

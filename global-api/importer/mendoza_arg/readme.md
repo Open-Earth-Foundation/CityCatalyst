@@ -10,7 +10,7 @@ python ./importer/mendoza_arg/transformation_mendoza_stationary_energy.py --file
 ```
 3. Extract the activity row from the source:
 ```bash
-psql -U ccglobal -d ccglobal -f ./importer/mendoza_arg/load_mendoza_stationary_energy.py -v file_path=[path where the transformed data was saved]
+psql -U ccglobal -d ccglobal -f ./importer/mendoza_arg/load_mendoza_stationary_energy.sql
 ```
 
 ### Directory tree

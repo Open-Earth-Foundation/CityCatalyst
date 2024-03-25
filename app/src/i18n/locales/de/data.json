@@ -126,5 +126,6 @@
     "scopes": "Bereiche",
     "cancel": "Abbrechen",
     "upload": "Hochladen",
-    "select-placeholder": "Wählen Sie die Untersektoren aus, die in dieser Datei enthalten sind"
+    "select-placeholder": "Wählen Sie die Untersektoren aus, die in dieser Datei enthalten sind",
+  "disconnect-data": "Datenquelle trennen"
 }

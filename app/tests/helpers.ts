@@ -75,6 +75,15 @@ export const testFileFormat = {
 };
 
 export const testUserID = "beb9634a-b68c-4c1b-a20b-2ab0ced5e3c2";
+export const testCityID = "ceb9634a-b68c-4c1b-a20b-2ab0ced5e3cc";
+
+export const testUserData = {
+  id: testUserID,
+  name: "Test User",
+  email: "test@example.com",
+  image: null,
+  role: "user",
+};
 
 export function setupTests() {
   const projectDir = process.cwd();
@@ -85,13 +94,7 @@ export function setupTests() {
     const expires = new Date();
     expires.setDate(expires.getDate() + 1);
     return {
-      user: {
-        id: testUserID,
-        name: "Test User",
-        email: "test@example.com",
-        image: null,
-        role: "user",
-      },
+      user: testUserData,
       expires: expires.toISOString(),
     };
   });

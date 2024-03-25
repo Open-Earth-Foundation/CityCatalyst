@@ -176,5 +176,6 @@
   "scopes": "Scopes",
   "cancel": "Cancel",
   "upload": "Upload",
-  "select-placeholder": "Select the sub-sectors included in this file"
+  "select-placeholder": "Select the sub-sectors included in this file",
+  "disconnect-data": "Disconnect Data"
 }

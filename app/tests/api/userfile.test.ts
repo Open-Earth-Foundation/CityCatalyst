@@ -1,12 +1,12 @@
 import {
   POST as createUserFile,
   GET as findUserFiles,
-} from "@/app/api/v0/user/file/route";
+} from "@/app/api/v0/city/[city]/file/route";
 
 import {
   DELETE as deleteUserfile,
   GET as findUserFile,
-} from "@/app/api/v0/user/file/[file]/route";
+} from "@/app/api/v0/city/[city]/file/[file]/route";
 
 import { db } from "@/models";
 import assert from "node:assert";
@@ -19,6 +19,7 @@ import {
   mockRequestFormData,
   setupTests,
   testUserID,
+  testCityID,
 } from "../helpers";
 import { randomUUID } from "node:crypto";
 import fs from "fs";
@@ -31,6 +32,7 @@ enum STATUS {
 const fileData = {
   id: randomUUID(),
   userId: testUserID,
+  cityId: testCityID,
   sector: "Energy Sector",
   url: "http://www.acme.com",
   status: STATUS.INPROGRESS,
@@ -48,6 +50,7 @@ const invalidFileData = {
   subsectors: "INVALID_SUBSECTOR",
   scopes: "INVALID_SCOPE",
   url: "invalid.com",
+  cityId: "XXINVALID_ID",
   status: "7",
   data: "",
   gpc_ref_no: "43",
@@ -60,6 +63,7 @@ describe("UserFile API", () => {
     await db.initialize();
     await db.models.UserFile.destroy({ where: { userId: testUserID } });
     await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
+    await db.models.City.upsert({ cityId: testCityID, name: "TEST_CITY" });
   });
   after(async () => {
     if (db.sequelize) await db.sequelize.close();
@@ -76,8 +80,9 @@ describe("UserFile API", () => {
     const fileStream = await getFileDataFromStream(path);
 
     const formData = new FormData();
-    formData.append("id", randomUUID());
+    formData.append("id", "9218f7d2-383c-43ab-8c05-867bc783e672");
     formData.append("userId", fileData.userId);
+    formData.append("cityId", fileData.cityId);
     formData.append("sector", fileData.sector);
     formData.append("subsectors", fileData.subsectors);
     formData.append("scopes", fileData.scopes);
@@ -87,10 +92,12 @@ describe("UserFile API", () => {
     formData.append("fileReference", fileData.file_reference);
     formData.append("gpcRefNo", fileData.gpc_ref_no);
     const req = mockRequestFormData(formData);
-    const res = await createUserFile(req, { params: { user: testUserID } });
+    const res = await createUserFile(req, {
+      params: { user: testUserID, city: testCityID },
+    });
     assert.equal(res.status, 200);
     const { data } = await res.json();
-    assert.equal(data?.sector, fileData.sector);
+    assert.equal(data?.sector, fileData?.sector);
     assert.equal(data?.url, fileData.url);
     assert.equal(data?.status, fileData.status);
     assert.equal(data?.gpcRefNo, fileData.gpc_ref_no);
@@ -104,6 +111,7 @@ describe("UserFile API", () => {
     const formData = new FormData();
     formData.append("id", invalidFileData.id);
     formData.append("userId", invalidFileData.userId);
+    formData.append("cityId", invalidFileData.cityId);
     formData.append("sector", invalidFileData.sector);
     formData.append("url", invalidFileData.url);
     formData.append("data", fileStream);
@@ -120,7 +128,7 @@ describe("UserFile API", () => {
   it("should find all user files", async () => {
     const req = mockRequest();
     const res = await findUserFiles(req, {
-      params: { user: testUserID },
+      params: { user: testUserID, city: testCityID },
     });
     const { data } = await res.json();
 
@@ -134,17 +142,16 @@ describe("UserFile API", () => {
   it("should find a user file", async () => {
     const getFilesReq = mockRequest();
     const getFilesRes = await findUserFiles(getFilesReq, {
-      params: { user: testUserID },
+      params: { user: testUserID, file: randomUUID(), city: testCityID },
     });
     const { data: userFilesData } = await getFilesRes.json();
 
     const userFiles = userFilesData[0];
     const req = mockRequest();
     const res = await findUserFile(req, {
-      params: { user: testUserID, file: userFiles.id },
+      params: { user: testUserID, file: userFiles.id, city: testCityID },
     });
     const { data: userFile } = await res.json();
-
     assert.equal(userFile?.sector, fileData.sector);
     assert.equal(userFile?.url, fileData.url);
     assert.equal(userFile?.status, fileData.status);
@@ -154,7 +161,7 @@ describe("UserFile API", () => {
   it("should not find a user file", async () => {
     const req = mockRequest();
     const res = await findUserFile(req, {
-      params: { user: testUserID, file: randomUUID() },
+      params: { user: testUserID, file: randomUUID(), city: testCityID },
     });
 
     assert.equal(res.status, 404);
@@ -169,17 +176,20 @@ describe("UserFile API", () => {
     formData.append("subsectors", fileData.subsectors);
     formData.append("scopes", fileData.scopes);
     formData.append("url", fileData.url);
+    formData.append("cityId", fileData.cityId);
     formData.append("data", fileStream);
     formData.append("status", fileData.status);
     formData.append("fileReference", fileData.file_reference);
     formData.append("gpcRefNo", fileData.gpc_ref_no);
     const req = mockRequestFormData(formData);
-    const res = await createUserFile(req, { params: { user: testUserID } });
+    const res = await createUserFile(req, {
+      params: { user: testUserID, city: testCityID },
+    });
     assert.equal(res.status, 200);
     const { data } = await res.json();
     const deletRequest = mockRequest();
     const deleteResponse = await deleteUserfile(deletRequest, {
-      params: { user: testUserID, file: data.id },
+      params: { user: testUserID, file: data.id, city: testCityID },
     });
 
     const { deleted } = await deleteResponse.json();
@@ -190,7 +200,7 @@ describe("UserFile API", () => {
   it("should not delete a non-existent user file", async () => {
     const deletRequest = mockRequest();
     const deleteResponse = await deleteUserfile(deletRequest, {
-      params: { user: testUserID, file: randomUUID() },
+      params: { user: testUserID, file: randomUUID(), city: testCityID },
     });
 
     assert.equal(deleteResponse.status, 404);

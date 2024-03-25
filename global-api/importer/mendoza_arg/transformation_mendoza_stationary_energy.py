@@ -30,8 +30,9 @@ if __name__ == "__main__":
     absolute_path = os.path.abspath(args.filepath)
     paths = glob.glob(f'{absolute_path}/*')
 
+    #------------------------------------------------------------------------
     ### Electricity consumption
-
+    #------------------------------------------------------------------------
     def reshape_df(df):
         # Reshape a DataFrame 
         tmp = pd.melt(
@@ -75,6 +76,7 @@ if __name__ == "__main__":
         try:
             df = read_excel(path)
 
+            # selection of the rows based on the file structure
             if "Maipu" in path:
                 df = df.loc[32:41,]
             else:
@@ -82,6 +84,8 @@ if __name__ == "__main__":
 
             df.columns = column_names
             df = df.reset_index(drop=True)
+
+            # adding up the commercial and public energy consumption
             df['commercial'] = df['general'] + df['street_lighting']
             df.drop(columns=['total_provincial', 'total', 'residential_provincial', 'general_provincial', 
                             'street_lighting_provincial', 'agricultural_irrigation_provincial', 
@@ -97,26 +101,31 @@ if __name__ == "__main__":
                 if activity_name in sector_dic.keys():
                     df.at[index, 'GPC_refno'] = sector_dic[activity_name]
 
-            # Production fuel mix factor (kgCO2e per kWh) 
+            # Production fuel mix factor (kgCO2 per kWh) 
             # source: https://www.carbonfootprint.com/docs/2023_02_emissions_factors_sources_for_2022_electricity_v10.pdf
             df['gas_name'] = 'CO2'
             df['emission_factor_value'] = 0.2881 
-            df['emission_factor_units'] = 'kgCO2e/kWh'
+            df['emission_factor_units'] = 'kgCO2/kWh'
             df['activity_value'] = pd.to_numeric(df['activity_value'])
-            df['emissions_value'] = (df['activity_value']*1000) * df['emission_factor_value']
+
+            # changing activity values from MWh to kWh
+            df['emissions_value'] = df['activity_value']*1000
+            # applying EF
+            df['emissions_value'] =  df['emissions_value']* df['emission_factor_value']
             df['emissions_units'] = 'kg'
             
+            # extract city name
             df['city_name'] = path.split("/")[-1][:-27]
 
             result_df1 = pd.concat([result_df1, df], ignore_index=True)
+
         except Exception as e:
             print(f"Error processing {path}: {e}")
 
-
+    #------------------------------------------------------------------------
     ### Gas consumption
-
-    # Cubic meters of gas distributed by type of user, according to year
-
+    ### Cubic meters of gas distributed by type of user, according to year
+    #------------------------------------------------------------------------
     column_names2 = ['year',
                     'city_name',
                     'total',
@@ -206,6 +215,7 @@ if __name__ == "__main__":
 
     # gas: 9300 kcal/m3
     # 1 kcal = 4.1858e-9 TJ
+    # changing activity value from m3 to TJ
     result_df2['activity_value'] = result_df2['activity_value']*9300*4.1858*1e-9
     result_df2['activity_units'] = 'TJ'
 
@@ -216,6 +226,7 @@ if __name__ == "__main__":
     ef_natural_gas['gas_units'] = ['kg/TJ', 'kg/TJ', 'kg/TJ']
     ef_natural_gas['EF_ID'] = ['118128', '118182', '118236']
 
+    # applying emission factors
     result_df = pd.DataFrame()
 
     for gas in ef_natural_gas['gas_name']:
@@ -236,13 +247,12 @@ if __name__ == "__main__":
         # Concatenate the temporary DataFrame to the result_df
         result_df = pd.concat([result_df, temp_df], ignore_index=True)
 
+    # assigning gpc reference number based on the user
     sector_dic = {
         'residential': 'I.1.1',
         'commercial': 'I.2.1',
         'industrial': 'I.3.1'
         }
-        
-    # assigning gpc reference number based on the user
     for index, row in result_df.iterrows():
         activity_name = row['activity_name']
 
@@ -251,8 +261,19 @@ if __name__ == "__main__":
 
     final_df = pd.concat([result_df1, result_df], ignore_index=True)
 
+    # delete rows without data
     final_df = final_df[final_df != 0].dropna()
 
+    # delete decimals
+    columns_to_round = ['activity_value', 'emissions_value']
+
+    # convert the specified columns to numeric type
+    final_df[columns_to_round] = final_df[columns_to_round].apply(pd.to_numeric, errors='coerce')
+
+    # round the values in the specified columns to the specified number of decimals
+    final_df[columns_to_round] = final_df[columns_to_round].round(0)
+
+    # change city names
     val_to_replace = ['Tunuyan', 'General_Alvear', 'San_Rafael', 'Santa_Rosa', 'San_Carlos', 'Maipu', 'Las_Heras',
         'Lujan de Cuyo', 'Gral San Martin', 'La_Paz', 'Malargue', 'Guaymallen', 'Godoy_Cruz', 'Junin']
 
@@ -263,6 +284,7 @@ if __name__ == "__main__":
     final_df['source_name'] = 'deie_mendoza'
     final_df['temporal_granularity'] = 'annual'
 
+    # assigning city locode based on the city name
     locode_dic = {
         'Rivadavia':'AR RIV',
         'Lavalle':'AR LAV', 
@@ -283,8 +305,6 @@ if __name__ == "__main__":
         'Guaymallén':'AR GYM', 
         'Godoy Cruz':'AR GCR'
     }
-
-    # assigning city locode based on the city name
     for index, row in final_df.iterrows():
         city_name = row['city_name']
 
@@ -303,4 +323,4 @@ if __name__ == "__main__":
 
         final_df.at[index, 'id'] = uuid_generate_v3(id_string)
 
-    final_df.to_csv(f'{absolute_path}/stationary_energy_mendoza.csv', sep=";", decimal=".", index=False)
+    final_df.to_csv(f'{absolute_path}/stationary_energy_mendoza.csv', sep=",", decimal=".", index=False)

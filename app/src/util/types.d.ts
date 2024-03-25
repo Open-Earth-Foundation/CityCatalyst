@@ -80,6 +80,14 @@ type EmissionsFactorResponse = EmissionsFactorWithDataSources[];
 
 type InventoryWithCity = InventoryAttributes & { city: CityAttributes };
 
+interface OCCityAttributes {
+  actor_id: string;
+  name: string;
+  is_part_of: string;
+  root_path_geo: any;
+  area: number;
+}
+
 declare module "next-auth" {
   interface Session {
     user: {

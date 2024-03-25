@@ -123,5 +123,6 @@
     "cancel": "Cancelar",
     "upload": "Subir",
     "select-placeholder": "Seleccione los subsectores incluidos en este archivo",
-    "mark-as-completed": "Marcar como completado"
+    "mark-as-completed": "Marcar como completado",
+  "disconnect-data": "Desconectar fuente de datos"
 }

@@ -54,6 +54,6 @@ jobs:
 
       - name: Deploying service
         run: |
-          kubectl create -f k8s/cc-test-global-api-migrate.yml -n default
-          kubectl apply -f k8s/cc-test-global-api-deploy.yml -n default
+          kubectl create -f k8s/test/cc-test-global-api-migrate.yml -n default
+          kubectl apply -f k8s/test/cc-test-global-api-deploy.yml -n default
           kubectl rollout restart deployment cc-test-global-api-deploy -n default

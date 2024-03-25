@@ -45,6 +45,8 @@ const invalidFileData = {
   id: "1",
   userId: "2",
   sector: "333",
+  subsectors: "INVALID_SUBSECTOR",
+  scopes: "INVALID_SCOPE",
   url: "invalid.com",
   status: "7",
   data: "",
@@ -106,6 +108,8 @@ describe("UserFile API", () => {
     formData.append("url", invalidFileData.url);
     formData.append("data", fileStream);
     formData.append("status", invalidFileData.status);
+    formData.append("subsectors", invalidFileData.subsectors);
+    formData.append("scopes", invalidFileData.scopes);
     formData.append("fileReference", invalidFileData.file_reference);
     formData.append("gpcRefNo", invalidFileData.gpc_ref_no);
     const req = mockRequestFormData(formData);

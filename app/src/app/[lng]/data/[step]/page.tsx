@@ -454,14 +454,14 @@ export default function AddDataSteps({
   // Add file data to rudux state object
   const {
     isOpen: isfileDataModalOpen,
-    onOpen: onfileDataModalOpen,
+    onOpen: onFileDataModalOpen,
     onClose: onfileDataModalClose,
   } = useDisclosure();
 
   const [uploadedFile, setUploadedFile] = useState<File>();
 
   const handleFileSelect = async (file: File) => {
-    onfileDataModalOpen();
+    onFileDataModalOpen();
   };
 
   const sectorData = getInventoryData.sectors.filter(

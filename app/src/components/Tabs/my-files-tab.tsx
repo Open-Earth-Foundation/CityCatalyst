@@ -418,8 +418,8 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                         ></IconButton>
                                       </PopoverTrigger>
                                       <PopoverContent
-                                        h="176px"
-                                        w="239px"
+                                        h="auto"
+                                        w="auto"
                                         borderRadius="8px"
                                         shadow="2dp"
                                         borderWidth="1px"

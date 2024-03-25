@@ -16,7 +16,6 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { AddFileIcon } from "../icons";
 import DropdownSelectInput from "../dropdown-select-input";
 import { InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import {
@@ -29,6 +28,7 @@ import { TFunction } from "i18next";
 import { addFile } from "@/features/city/inventoryDataSlice";
 import { v4 as uuidv4 } from "uuid";
 import { UserInfoResponse } from "@/util/types";
+import { MdOutlineInsertDriveFile } from "react-icons/md";
 
 interface AddFileDataModalProps {
   isOpen: boolean;
@@ -155,8 +155,9 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
               bg="background.neutral"
               borderRadius="50px"
               marginBottom="24px"
+              color="interactive.secondary"
             >
-              <AddFileIcon />
+              <MdOutlineInsertDriveFile size={32} />
             </Box>
             <Text
               fontFamily="heading"
@@ -176,7 +177,7 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
             >
               {t("file-data-description")}
             </Text>
-            <Divider borderColor="divider.grey03" borderWidth="2px" />
+            <Divider borderColor="divider.neutral" borderWidth="2px" />
             <Box w="100%">
               <form className="w-full flex flex-col gap-[36px]">
                 <FormControl>
@@ -240,7 +241,7 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
         </ModalBody>
         <ModalFooter
           borderTopWidth="2px"
-          color="divider.grey03"
+          color="divider.neutral"
           gap="10px"
           px="48px"
           justifyContent="space-around"

@@ -35,7 +35,7 @@ export const appTheme = extendTheme({
       overlay: "#E6E7FF",
     },
     divider: {
-      grey03: "#F0F0F0",
+      neutral: "#F0F0F0",
     },
 
     background: {

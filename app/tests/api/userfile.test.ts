@@ -29,8 +29,10 @@ enum STATUS {
   PENDING = "pending",
 }
 
+const fileId = "9218f7d2-383c-43ab-8c05-867bc783e672";
+
 const fileData = {
-  id: randomUUID(),
+  id: fileId,
   userId: testUserID,
   cityId: testCityID,
   sector: "Energy Sector",
@@ -80,7 +82,7 @@ describe("UserFile API", () => {
     const fileStream = await getFileDataFromStream(path);
 
     const formData = new FormData();
-    formData.append("id", "9218f7d2-383c-43ab-8c05-867bc783e672");
+    formData.append("id", fileData.id);
     formData.append("userId", fileData.userId);
     formData.append("cityId", fileData.cityId);
     formData.append("sector", fileData.sector);
@@ -93,7 +95,7 @@ describe("UserFile API", () => {
     formData.append("gpcRefNo", fileData.gpc_ref_no);
     const req = mockRequestFormData(formData);
     const res = await createUserFile(req, {
-      params: { user: testUserID, city: testCityID },
+      params: { city: testCityID },
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();

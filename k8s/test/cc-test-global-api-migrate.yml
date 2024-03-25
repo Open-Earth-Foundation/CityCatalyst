@@ -9,7 +9,7 @@ spec:
       restartPolicy: OnFailure
       containers:
       - name: cc-test-global-api
-        image: ghcr.io/open-earth-foundation/citycatalyst-global-api:latest
+        image: ghcr.io/open-earth-foundation/citycatalyst-global-api:main
         env:
         - name: ALEMBIC_URL
           value: "postgresql://ccglobaltest:ccglobaltest@cc-global-api-db/ccglobaltest"

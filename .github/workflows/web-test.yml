@@ -9,7 +9,7 @@ on:
       - k8s/test/cc-test-web-deploy.yml
       - k8s/test/cc-test/web.yml
       - .github/workflows/web-test.yml
-    branches: ["develop"]
+    branches: ["main"]
   pull_request:
 
 jobs:

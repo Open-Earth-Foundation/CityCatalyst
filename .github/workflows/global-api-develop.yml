@@ -1,0 +1,58 @@
+name: Push Global API to latest and deploy to EKS
+
+on:
+  workflow_dispatch:
+
+  push:
+    paths:
+      - global-api/**
+      - k8s/cc-global-api-deploy.yml
+      - k8s/cc-global-api.yml
+      - k8s/cc-global-api-migrate.yml
+    branches: ["develop"]
+
+jobs:
+
+  pushToGHCR:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pushing Global API to GHCR
+        env:
+          VERSION: ${{ github.sha }}
+          IMAGE: ghcr.io/open-earth-foundation/citycatalyst-global-api
+        run: |
+          docker build -t $IMAGE:$VERSION global-api
+          docker tag $IMAGE:$VERSION $IMAGE:latest
+          docker push $IMAGE:$VERSION
+          docker push $IMAGE:latest
+
+  deployToEKS:
+    needs: pushToGHCR
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
+      EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Creating kubeconfig file
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region us-east-1
+
+      - name: Testing connection to EKS
+        run: kubectl get pods -n default
+
+      - name: Deploying service
+        run: |
+          kubectl create -f k8s/cc-global-api-migrate.yml -n default
+          kubectl apply -f k8s/cc-global-api-deploy.yml -n default
+          kubectl rollout restart deployment cc-global-api-deploy -n default

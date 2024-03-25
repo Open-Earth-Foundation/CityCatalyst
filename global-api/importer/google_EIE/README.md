@@ -10,5 +10,5 @@ python ./importer/google_EIE//transformation_transportation_Mendoza.py --filepat
 
 3. Extract the activity row from the source:
 ```bash
-psql -U ccglobal -d ccglobal -f ./importer/argentinian_datasets/ENARGAS/load_ENARGAS.sql
+psql -U ccglobal -d ccglobal -f ./importer/google_EIE/load_transportation_Mendoza.sql
 ```

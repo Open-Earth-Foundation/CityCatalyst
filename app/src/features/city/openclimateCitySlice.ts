@@ -1,9 +1,9 @@
 import { RootState } from "@/lib/store";
-import { OCCityArributes } from "@/models/City";
+import { OCCityAttributes } from "@/util/types";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 interface CityState {
-  city?: OCCityArributes;
+  city?: OCCityAttributes;
 }
 
 const initialState = {
@@ -15,7 +15,7 @@ export const openclimateCitySlice = createSlice({
   // state type is inferred from the initial state
   initialState,
   reducers: {
-    set: (state, action: PayloadAction<OCCityArributes>) => {
+    set: (state, action: PayloadAction<OCCityAttributes>) => {
       state.city = action.payload;
     },
     clear: (state) => {

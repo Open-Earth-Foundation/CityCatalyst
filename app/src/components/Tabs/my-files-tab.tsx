@@ -444,7 +444,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                               }}
                                             >
                                               <Link
-                                                href={`/api/v0/user/file/${file.id}/download-file`}
+                                                href={`/api/v0/city/${file.cityId}/file/${file.id}/download-file`}
                                                 download
                                                 className="flex gap-4"
                                               >

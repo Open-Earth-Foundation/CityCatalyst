@@ -168,5 +168,6 @@
   "city": "City",
   "inside-dataset": "What's inside this dataset",
   "transform-data-heading": "How do we transform this data?",
-  "transform-data-description": "Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat."
+  "transform-data-description": "Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.",
+  "disconnect-data": "Disconnect Data"
 }

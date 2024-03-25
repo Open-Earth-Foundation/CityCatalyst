@@ -77,6 +77,12 @@ export default function ReviewPage({
 
   const [isConfirming, setIsConfirming] = useState<boolean>(false);
 
+  const { data: inventory } = api.useGetInventoryQuery(
+    userInfo?.defaultInventoryId!,
+    { skip: !userInfo },
+  );
+  const cityId = inventory?.city.cityId;
+
   const onConfirm = async () => {
     setIsConfirming(true);
     let uploadFilesDetail: UserFileAttributes[] = [];
@@ -98,7 +104,7 @@ export default function ReviewPage({
           formData.append("data", file, file.name);
         }
 
-        await addUserFile(formData).then((res: any) => {
+        await addUserFile({ formData, cityId }).then((res) => {
           // TODO
           // Trigger notification to user
 

@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import argparse
 import uuid
 import os
@@ -43,7 +44,12 @@ if __name__ == "__main__":
     df.loc[:, 'source_name'] = 'Google EIE'
     df.loc[:, 'city_name'] = 'Mendoza'
     df.loc[:, 'locode'] = 'AR MDZ'
-    df.loc[:, 'temporal_granularity'] = 'AR MDZ'
+    df.loc[:, 'temporal_granularity'] = 'annual'
+    df.loc[:, 'emission_factor_value'] = np.nan
+    df.loc[:, 'emission_factor_units'] = np.nan
+
+    df['activity_value'] = df['activity_value'].astype(int)
+    df['emissions_value'] = df['emissions_value'].astype(int)
 
     # assigning a unique ID to each row
     for index, row in df.iterrows():
@@ -55,5 +61,9 @@ if __name__ == "__main__":
 
         id_string = locode + emissions_value + year + gas + GPC_refno
         df.at[index, 'id'] = uuid_generate_v3(id_string)
+
+    col_order = ['id', 'source_name', 'GPC_refno', 'city_name', 'locode', 'temporal_granularity', 'year', 'activity_name', 'activity_value', 
+             'activity_units', 'gas_name', 'emission_factor_value', 'emission_factor_units', 'emissions_value', 'emissions_units']
+    df = df.reindex(columns=col_order)
 
     df.to_csv(f'{absolute_path}/processed_mendoza_transportation_EIE.csv', sep=",", decimal=".", index=False)

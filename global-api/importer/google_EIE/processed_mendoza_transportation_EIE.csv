@@ -1,46 +1,46 @@
-activity_value,emissions_value,year,activity_name,activity_units,emissions_units,GPC_refno,gas_name,source_name,city_name,locode,temporal_granularity,id
-140649795.0,35535978.300000004,2022,emissions from VKT by AUTOMOBILE transportation mode in IN-BOUNDARY trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,cff4ecfc-e0f2-329e-99f2-048dc46fed3b
-127940950.0,32325015.599999998,2021,emissions from VKT by AUTOMOBILE transportation mode in IN-BOUNDARY trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,e8f77729-f47c-3491-ac89-814e11a3f99c
-76677722.0,19373066.7,2020,emissions from VKT by AUTOMOBILE transportation mode in IN-BOUNDARY trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,8451726b-75ad-3e9c-92eb-fa13bc60303c
-158206538.0,39971790.2,2019,emissions from VKT by AUTOMOBILE transportation mode in IN-BOUNDARY trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,9fb18148-acb2-3349-abf1-f2a1f02c9de2
-196857658.0,49737215.300000004,2018,emissions from VKT by AUTOMOBILE transportation mode in IN-BOUNDARY trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,17408915-ee21-36ce-8bb0-b5577a610cb1
-351472595.5,88801569.3,2022,emissions from VKT by AUTOMOBILE transportation mode in INBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,8edf9885-20b4-3e61-bf13-0296fdadf3ff
-277304371.5,70062541.7,2021,emissions from VKT by AUTOMOBILE transportation mode in INBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,0f633c4d-671d-3433-9084-62cd4b574924
-153647743.0,38819984.5,2020,emissions from VKT by AUTOMOBILE transportation mode in INBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,438f9444-b65b-3cd5-9f4f-bd1bd7601219
-302879145.0,76524155.10000001,2019,emissions from VKT by AUTOMOBILE transportation mode in INBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,69c72614-b78b-3e44-934c-731cd73650d0
-336064343.0,84908581.9,2018,emissions from VKT by AUTOMOBILE transportation mode in INBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,afbff760-4f1e-3aa1-9add-0d776743f136
-323951085.0,81848101.7,2022,emissions from VKT by AUTOMOBILE transportation mode in OUTBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,b815ca2a-e454-3b66-bd0b-541088d5e25d
-255256742.0,64492081.5,2021,emissions from VKT by AUTOMOBILE transportation mode in OUTBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,230f4731-6691-3099-bc6f-09a8c26fece5
-146807871.0,37091851.6,2020,emissions from VKT by AUTOMOBILE transportation mode in OUTBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,7f17baf1-1cf9-3428-99af-3861b60b161d
-292873598.0,73996196.2,2019,emissions from VKT by AUTOMOBILE transportation mode in OUTBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,3ec31d05-d734-309b-a018-c707221f676d
-321700573.0,81279493.10000001,2018,emissions from VKT by AUTOMOBILE transportation mode in OUTBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,97674179-0a63-368b-a091-b712e076ec2f
-25084327.0,11842731.2,2022,emissions from VKT by BUS transportation mode in IN-BOUNDARY trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,29d1ac75-a074-3747-ae70-3b60e80ed1d8
-14452240.0,6823144.8,2021,emissions from VKT by BUS transportation mode in IN-BOUNDARY trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,83b551a1-6257-3dd1-b50b-05c7eb1a473c
-8717767.0,4115803.9,2020,emissions from VKT by BUS transportation mode in IN-BOUNDARY trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,31d50de0-bc86-3438-8d0e-e383d911d677
-15886845.0,7500445.800000001,2019,emissions from VKT by BUS transportation mode in IN-BOUNDARY trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,fa30fba2-ca1e-39c6-8612-705de9931b0d
-18305913.0,8642527.700000001,2018,emissions from VKT by BUS transportation mode in IN-BOUNDARY trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,056821e4-60ea-3e87-a107-4c4dd9627d56
-80666417.5,38083967.8,2022,emissions from VKT by BUS transportation mode in INBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,3f22ab01-fbb3-3742-bf90-d1929f932ce2
-50722728.5,23947050.3,2021,emissions from VKT by BUS transportation mode in INBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,d8197d78-9469-3b0c-9579-3ce39712d8d6
-28369734.5,13393827.2,2020,emissions from VKT by BUS transportation mode in INBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,3a1e594b-82e3-3476-be28-c7c3a73f54eb
-45158119.5,21319905.2,2019,emissions from VKT by BUS transportation mode in INBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,9c644168-8c9f-3c47-8a9c-30668673c3c2
-41861316.0,19763427.3,2018,emissions from VKT by BUS transportation mode in INBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,1459916c-232a-35ca-a29d-9f26ba357a52
-76038124.0,35898872.9,2022,emissions from VKT by BUS transportation mode in OUTBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,87e45263-8057-3b82-8303-bc698351cc0b
-48166948.5,22740423.8,2021,emissions from VKT by BUS transportation mode in OUTBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,af59f65f-00ad-38d6-9439-b211e2483218
-26798036.0,12651802.0,2020,emissions from VKT by BUS transportation mode in OUTBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,9580cd60-562b-3bfd-b016-13b5d1c0cafd
-39225819.5,18519166.9,2019,emissions from VKT by BUS transportation mode in OUTBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,5f0dfad7-671e-3763-a9f4-3daae7f8f3a9
-39844456.5,18811234.2,2018,emissions from VKT by BUS transportation mode in OUTBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,ba490149-e59b-387f-9ce0-30c6cdbe36b0
-16658158.0,1214612.8,2022,emissions from VKT by MOTORCYCLE transportation mode in IN-BOUNDARY trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,20be0a42-4971-30a7-8c57-06945cb58430
-17186655.0,1253147.6,2021,emissions from VKT by MOTORCYCLE transportation mode in IN-BOUNDARY trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,c03ef82f-cab6-3b67-a8bb-00bff5a02a35
-11493965.0,838070.9,2020,emissions from VKT by MOTORCYCLE transportation mode in IN-BOUNDARY trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,9b4e6352-d10b-3602-922a-b4b25d008faa
-17298449.0,1261299.0,2019,emissions from VKT by MOTORCYCLE transportation mode in IN-BOUNDARY trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,71e530af-4f02-38de-bf70-7903c1b2d8f8
-4887671.0,356380.0,2018,emissions from VKT by MOTORCYCLE transportation mode in IN-BOUNDARY trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,c898173b-343e-3cd3-81dc-ebf46f4cc4b6
-19774234.0,1441818.2999999998,2022,emissions from VKT by MOTORCYCLE transportation mode in INBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,fee8ff41-9c32-3220-9bfa-c03d267394bd
-18610991.0,1357001.7,2021,emissions from VKT by MOTORCYCLE transportation mode in INBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,5310772c-beb4-3723-9ae5-c83d01eb568d
-12350015.5,900488.8999999999,2020,emissions from VKT by MOTORCYCLE transportation mode in INBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,e12d4a35-0316-3fe2-9dbb-38652ad02695
-35028620.0,2554076.5,2019,emissions from VKT by MOTORCYCLE transportation mode in INBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,a6250b97-36ca-3ffb-b5c5-e4fe2ddb4387
-23734070.5,1730545.9000000001,2018,emissions from VKT by MOTORCYCLE transportation mode in INBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,32acdf1b-9173-3d64-8518-ab8bebd2a94e
-19301670.5,1407361.9000000001,2022,emissions from VKT by MOTORCYCLE transportation mode in OUTBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,510dbcc7-52fe-33e7-8148-3c71761eb553
-18032920.5,1314852.2,2021,emissions from VKT by MOTORCYCLE transportation mode in OUTBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,c391ec88-ed3e-3453-a692-2afe4cd1988d
-12088568.0,881425.7999999999,2020,emissions from VKT by MOTORCYCLE transportation mode in OUTBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,1328be27-d208-3d83-9fbd-8aa6cfc69e5d
-33535375.5,2445198.1,2019,emissions from VKT by MOTORCYCLE transportation mode in OUTBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,6692c2dc-f415-37db-a19e-a993672b7b16
-21005278.5,1531578.5,2018,emissions from VKT by MOTORCYCLE transportation mode in OUTBOUND trips,km,kg,I.1.1,CO2e,Google EIE,Mendoza,AR MDZ,AR MDZ,cc4db5dc-7c95-3ef7-adf8-75947aa6f329
+id,source_name,GPC_refno,city_name,locode,temporal_granularity,year,activity_name,activity_value,activity_units,gas_name,emission_factor_value,emission_factor_units,emissions_value,emissions_units
+531becbf-9dda-3059-8f76-46402af85bb7,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2022,emissions from VKT by AUTOMOBILE transportation mode in IN-BOUNDARY trips,140649795,km,CO2e,,,35535978,kg
+1e896282-8411-39e2-ac8a-a5bf68eeceb1,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2021,emissions from VKT by AUTOMOBILE transportation mode in IN-BOUNDARY trips,127940950,km,CO2e,,,32325015,kg
+0ae1abfc-ac34-3e36-bdd2-a42a770ff103,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2020,emissions from VKT by AUTOMOBILE transportation mode in IN-BOUNDARY trips,76677722,km,CO2e,,,19373066,kg
+9bd876ba-40da-3b5c-8e8d-03d0e8c2b969,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2019,emissions from VKT by AUTOMOBILE transportation mode in IN-BOUNDARY trips,158206538,km,CO2e,,,39971790,kg
+76da8ed5-58eb-331d-b809-fc85bf006cb8,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2018,emissions from VKT by AUTOMOBILE transportation mode in IN-BOUNDARY trips,196857658,km,CO2e,,,49737215,kg
+94c65366-b642-3362-b2d2-284b0cc60144,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2022,emissions from VKT by AUTOMOBILE transportation mode in INBOUND trips,351472595,km,CO2e,,,88801569,kg
+3746245b-508e-3b84-a89d-66e349958f0e,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2021,emissions from VKT by AUTOMOBILE transportation mode in INBOUND trips,277304371,km,CO2e,,,70062541,kg
+617c412b-353a-3290-a764-0b30146c0ca7,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2020,emissions from VKT by AUTOMOBILE transportation mode in INBOUND trips,153647743,km,CO2e,,,38819984,kg
+63822750-d39f-39b7-8dbd-a6ae45e52971,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2019,emissions from VKT by AUTOMOBILE transportation mode in INBOUND trips,302879145,km,CO2e,,,76524155,kg
+b884aaba-98ea-39cf-881a-fa4ac48401dd,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2018,emissions from VKT by AUTOMOBILE transportation mode in INBOUND trips,336064343,km,CO2e,,,84908581,kg
+4173990f-d698-3ef3-a9ca-05a351903118,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2022,emissions from VKT by AUTOMOBILE transportation mode in OUTBOUND trips,323951085,km,CO2e,,,81848101,kg
+91a1fbe1-73ef-3295-a78f-f9da08b8c250,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2021,emissions from VKT by AUTOMOBILE transportation mode in OUTBOUND trips,255256742,km,CO2e,,,64492081,kg
+81122091-9072-3f30-9dbb-e061953d2e50,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2020,emissions from VKT by AUTOMOBILE transportation mode in OUTBOUND trips,146807871,km,CO2e,,,37091851,kg
+6b3accda-8b6a-3750-950f-631988bc413c,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2019,emissions from VKT by AUTOMOBILE transportation mode in OUTBOUND trips,292873598,km,CO2e,,,73996196,kg
+49cab9c1-b3c8-34a3-9bff-84e0fcd572da,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2018,emissions from VKT by AUTOMOBILE transportation mode in OUTBOUND trips,321700573,km,CO2e,,,81279493,kg
+947dfa6c-babe-37a8-87c5-4286b3d6fea7,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2022,emissions from VKT by BUS transportation mode in IN-BOUNDARY trips,25084327,km,CO2e,,,11842731,kg
+7ce71b7d-7beb-352e-bfde-5634e1e3d8b0,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2021,emissions from VKT by BUS transportation mode in IN-BOUNDARY trips,14452240,km,CO2e,,,6823144,kg
+36f45bbf-dd1a-3519-981f-69960807fd39,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2020,emissions from VKT by BUS transportation mode in IN-BOUNDARY trips,8717767,km,CO2e,,,4115803,kg
+1e039941-446c-3b4b-bc63-13eccf2ecec6,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2019,emissions from VKT by BUS transportation mode in IN-BOUNDARY trips,15886845,km,CO2e,,,7500445,kg
+1db6eedb-dd89-3b79-a311-e22436e69b45,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2018,emissions from VKT by BUS transportation mode in IN-BOUNDARY trips,18305913,km,CO2e,,,8642527,kg
+65f3388b-3bb7-30f3-be99-0c8c4517e8df,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2022,emissions from VKT by BUS transportation mode in INBOUND trips,80666417,km,CO2e,,,38083967,kg
+2f367a89-1d3c-320c-b2d6-36191d6eb1e6,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2021,emissions from VKT by BUS transportation mode in INBOUND trips,50722728,km,CO2e,,,23947050,kg
+b5e41bc7-16a8-3c19-8819-e19c3bb89aac,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2020,emissions from VKT by BUS transportation mode in INBOUND trips,28369734,km,CO2e,,,13393827,kg
+bc2659fe-8dae-3ece-85ee-6110c60110f9,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2019,emissions from VKT by BUS transportation mode in INBOUND trips,45158119,km,CO2e,,,21319905,kg
+6def24fd-ef5d-3817-9ff7-9c17196f6ca9,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2018,emissions from VKT by BUS transportation mode in INBOUND trips,41861316,km,CO2e,,,19763427,kg
+c8c777ff-2870-3a6c-bda0-38237b4a9e14,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2022,emissions from VKT by BUS transportation mode in OUTBOUND trips,76038124,km,CO2e,,,35898872,kg
+33ea6b8d-a8cc-378b-bab4-ee7754fadc99,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2021,emissions from VKT by BUS transportation mode in OUTBOUND trips,48166948,km,CO2e,,,22740423,kg
+8134379a-f208-3312-be66-c7ad64d05d94,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2020,emissions from VKT by BUS transportation mode in OUTBOUND trips,26798036,km,CO2e,,,12651802,kg
+9f17e793-e192-3faf-83c9-4ebafe66391a,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2019,emissions from VKT by BUS transportation mode in OUTBOUND trips,39225819,km,CO2e,,,18519166,kg
+97ee59d8-903a-3333-9f51-327aa8f824e3,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2018,emissions from VKT by BUS transportation mode in OUTBOUND trips,39844456,km,CO2e,,,18811234,kg
+286ef894-43e8-3fd6-8deb-13506d7ad053,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2022,emissions from VKT by MOTORCYCLE transportation mode in IN-BOUNDARY trips,16658158,km,CO2e,,,1214612,kg
+34f47d9f-0592-3ceb-ace7-f0f130297420,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2021,emissions from VKT by MOTORCYCLE transportation mode in IN-BOUNDARY trips,17186655,km,CO2e,,,1253147,kg
+2fe08597-df55-3e3d-a074-c1c6554153cf,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2020,emissions from VKT by MOTORCYCLE transportation mode in IN-BOUNDARY trips,11493965,km,CO2e,,,838070,kg
+62482999-42fe-3920-a48c-0e7f34edf879,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2019,emissions from VKT by MOTORCYCLE transportation mode in IN-BOUNDARY trips,17298449,km,CO2e,,,1261299,kg
+48a286b9-1b85-3156-9155-d7cb836f4ed1,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2018,emissions from VKT by MOTORCYCLE transportation mode in IN-BOUNDARY trips,4887671,km,CO2e,,,356380,kg
+b93b85a0-265d-3a72-87a8-e5bd7d4156a3,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2022,emissions from VKT by MOTORCYCLE transportation mode in INBOUND trips,19774234,km,CO2e,,,1441818,kg
+57a5dcb3-34e8-3a3b-80e6-5f213ae4d230,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2021,emissions from VKT by MOTORCYCLE transportation mode in INBOUND trips,18610991,km,CO2e,,,1357001,kg
+a1119cc7-cd22-3229-aa6c-2d7ed7d63ce7,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2020,emissions from VKT by MOTORCYCLE transportation mode in INBOUND trips,12350015,km,CO2e,,,900488,kg
+c7ebea66-670e-3bbe-a610-6c02694a64b3,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2019,emissions from VKT by MOTORCYCLE transportation mode in INBOUND trips,35028620,km,CO2e,,,2554076,kg
+639a70e6-a2ef-34ad-a065-6ad2977a6fa9,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2018,emissions from VKT by MOTORCYCLE transportation mode in INBOUND trips,23734070,km,CO2e,,,1730545,kg
+41d90b02-3eff-3264-bd86-e7ac9746d8de,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2022,emissions from VKT by MOTORCYCLE transportation mode in OUTBOUND trips,19301670,km,CO2e,,,1407361,kg
+2787e926-9e57-34c8-bd2c-f800d4eed15d,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2021,emissions from VKT by MOTORCYCLE transportation mode in OUTBOUND trips,18032920,km,CO2e,,,1314852,kg
+78f24ce8-6342-399a-a5bd-eb37c3b913c7,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2020,emissions from VKT by MOTORCYCLE transportation mode in OUTBOUND trips,12088568,km,CO2e,,,881425,kg
+cdb85b1e-4b4d-3217-82b4-7cdb0236389b,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2019,emissions from VKT by MOTORCYCLE transportation mode in OUTBOUND trips,33535375,km,CO2e,,,2445198,kg
+8635bd7e-1a8e-3bd4-b9da-94daccea2946,Google EIE,I.1.1,Mendoza,AR MDZ,annual,2018,emissions from VKT by MOTORCYCLE transportation mode in OUTBOUND trips,21005278,km,CO2e,,,1531578,kg

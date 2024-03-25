@@ -601,6 +601,8 @@ export function initModels(sequelize: Sequelize) {
   });
   User.hasMany(UserFile, { foreignKey: "userId", as: "user" });
   UserFile.belongsTo(User, { as: "userFiles", foreignKey: "userId" });
+  UserFile.belongsTo(City, { foreignKey: "cityId", as: "city" });
+  City.hasMany(UserFile, { foreignKey: "cityId", as: "userFiles" });
   City.hasMany(CityInvite, { as: "cityInvite", foreignKey: "cityId" });
   CityInvite.belongsTo(City, { as: "cityInvites", foreignKey: "cityId" });
   GasValue.belongsTo(InventoryValue, {

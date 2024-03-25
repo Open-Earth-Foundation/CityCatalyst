@@ -178,9 +178,12 @@ export const api = createApi({
       {
         cityId: string;
         locode: string;
-        population: number;
+        cityPopulation: number;
+        regionPopulation: number;
         countryPopulation: number;
-        year: number;
+        cityPopulationYear: number;
+        regionPopulationYear: number;
+        countryPopulationYear: number;
       }
     >({
       query: (data) => {
@@ -319,10 +322,10 @@ export const api = createApi({
       transformResponse: (response: { data: any }) => response.data,
     }),
     addUserFile: builder.mutation<UserFileResponse, any>({
-      query: (formData) => {
+      query: ({ formData, cityId }) => {
         return {
           method: "POST",
-          url: `/user/file`,
+          url: `city/${cityId}/file`,
           body: formData,
         };
       },
@@ -331,9 +334,9 @@ export const api = createApi({
       invalidatesTags: ["FileData"],
     }),
     getUserFiles: builder.query({
-      query: () => ({
+      query: (cityId: string) => ({
         method: "GET",
-        url: `/user/file`,
+        url: `/city/${cityId}/file`,
       }),
       transformResponse: (response: { data: UserFileResponse }) => {
         return response.data;
@@ -344,7 +347,7 @@ export const api = createApi({
     deleteUserFile: builder.mutation({
       query: (params) => ({
         method: "DELETE",
-        url: `/user/file/${params.fileId}`,
+        url: `/city/${params.cityId}/file/${params.fileId}`,
       }),
       transformResponse: (response: { data: UserFileResponse }) =>
         response.data,
@@ -352,6 +355,15 @@ export const api = createApi({
     }),
     getEmissionsFactors: builder.query<EmissionsFactorResponse, void>({
       query: () => `/emissions-factor`,
+      transformResponse: (response: { data: EmissionsFactorResponse }) =>
+        response.data,
+    }),
+    disconnectThirdPartyData: builder.mutation({
+      query: ({ inventoryId, subCategoryId }) => ({
+        method: "DELETE",
+        url: `inventory/${inventoryId}/value/${subCategoryId}`,
+      }),
+      invalidatesTags: ["InventoryValue", "InventoryProgress"],
       transformResponse: (response: { data: EmissionsFactorResponse }) =>
         response.data,
     }),
@@ -383,7 +395,7 @@ export const api = createApi({
 export const openclimateAPI = createApi({
   reducerPath: "openclimateapi",
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_OPENCLIMATE_API_URL,
+    baseUrl: process.env.NEXT_PUBLIC_OPENCLIMATE_API_URL || "https://app.openclimate.network",
   }),
   endpoints: (builder) => ({
     getOCCity: builder.query<any, string>({
@@ -394,6 +406,9 @@ export const openclimateAPI = createApi({
     }),
     getOCCityData: builder.query<any, string>({
       query: (locode) => `/api/v1/actor/${locode}`,
+      transformResponse: (response: any) => {
+        return response.data;
+      },
     }),
   }),
 });
@@ -423,6 +438,7 @@ export const {
   useAddUserFileMutation,
   useGetUserFilesQuery,
   useDeleteUserFileMutation,
+  useDisconnectThirdPartyDataMutation,
   useInviteUserMutation,
   useCheckUserMutation,
 } = api;

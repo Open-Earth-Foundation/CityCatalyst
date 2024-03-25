@@ -37,7 +37,7 @@ const DeleteFileModal: FC<DeleteFileModalProps> = ({
   const [deleteUserFile] = api.useDeleteUserFileMutation();
   const onDeleteFile = async () => {
     try {
-      await deleteUserFile({ fileId: fileData?.id });
+      await deleteUserFile({ fileId: fileData?.id, cityId: fileData?.cityId });
     } catch (error) {
       console.error(error);
     } finally {

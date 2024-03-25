@@ -5,7 +5,6 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 
 export const GET = apiHandler(async (_req, context) => {
-  const userId = context.session?.user.id;
   if (!context.session) {
     throw new createHttpError.Unauthorized("Unauthorized");
   }
@@ -13,7 +12,7 @@ export const GET = apiHandler(async (_req, context) => {
   const userFile = await db.models.UserFile.findOne({
     where: {
       id: context.params.file,
-      userId,
+      cityId: context.params.city,
     },
   });
 

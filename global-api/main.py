@@ -126,8 +126,8 @@ app.include_router(
 )
 
 app.include_router(
-    country_code_IEA_energy_route,
-    tags=["IEA energy"],
+    country_code_endpoint,
+    tags=["Country Code"],
 )
 
 app.include_router(

@@ -39,11 +39,13 @@ export const GET = apiHandler(async (req, { params, session }) => {
     return NextResponse.redirect(host);
   }
 
+  const cityId = invite.cityId;
+
   const city = await db.models.City.findOne({
     where: { cityId: invite.cityId },
   });
 
   await user?.addCity(city?.cityId);
 
-  return NextResponse.redirect(host);
+  return NextResponse.redirect(`${host}/en/${cityId}`);
 });

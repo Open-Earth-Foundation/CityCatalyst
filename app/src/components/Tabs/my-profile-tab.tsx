@@ -1,6 +1,6 @@
 "use client";
 
-import { ProfileInputs } from "@/app/[lng]/settings/page";
+import { ProfileInputs } from "@/app/[lng]/[city]/settings/page";
 import AddUserModal from "@/components/Modals/add-user-modal";
 import DeleteUserModal from "@/components/Modals/delete-user-modal";
 import UpdateUserModal from "@/components/Modals/update-user-modal";
@@ -190,9 +190,8 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
   }, [role, searchTerm, cityUsers]);
 
   useEffect(() => {
-    const selectedUsersByRole = filteredUsers.filter(
-      (users) =>
-        users?.role?.toLocaleLowerCase().includes(role.toLocaleLowerCase()),
+    const selectedUsersByRole = filteredUsers.filter((users) =>
+      users?.role?.toLocaleLowerCase().includes(role.toLocaleLowerCase()),
     );
     if (role !== "all") {
       setFilteredUsersByRole(selectedUsersByRole);

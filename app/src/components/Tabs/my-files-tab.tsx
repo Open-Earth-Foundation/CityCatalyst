@@ -44,7 +44,7 @@ import {
 import { FiTrash2 } from "react-icons/fi";
 import { FaFileCsv } from "react-icons/fa";
 
-import { CityData } from "@/app/[lng]/settings/page";
+import { CityData } from "@/app/[lng]/[city]/settings/page";
 import { Session } from "next-auth";
 
 import DeleteFileModal from "@/components/Modals/delete-file-modal";

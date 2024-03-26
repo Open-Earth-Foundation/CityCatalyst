@@ -1,6 +1,6 @@
 "use client";
 
-import { UserDetails } from "@/app/[lng]/settings/page";
+import { UserDetails } from "@/app/[lng]/[city]/settings/page";
 import {
   Modal,
   Button,

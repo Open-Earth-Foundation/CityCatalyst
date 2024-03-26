@@ -1,6 +1,6 @@
 "use client";
 
-import { ProfileInputs } from "@/app/[lng]/settings/page";
+import { ProfileInputs } from "@/app/[lng]/[city]/settings/page";
 import type { UserAttributes } from "@/models/User";
 import { api } from "@/services/api";
 import {

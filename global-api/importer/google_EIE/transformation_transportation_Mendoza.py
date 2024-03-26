@@ -41,7 +41,7 @@ if __name__ == "__main__":
     df.loc[:, 'emissions_units'] = 'kg'
     df.loc[:, 'GPC_refno'] = 'I.1.1'
     df.loc[:, 'gas_name'] = 'CO2'
-    df.loc[:, 'source_name'] = 'Google_EIE'
+    df.loc[:, 'source_name'] = 'Google EIE'
     df.loc[:, 'city_name'] = 'Mendoza'
     df.loc[:, 'locode'] = 'AR MDZ'
     df.loc[:, 'temporal_granularity'] = 'annual'

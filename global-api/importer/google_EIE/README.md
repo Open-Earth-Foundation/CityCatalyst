@@ -5,7 +5,7 @@ Emissions from transportation modes in Mendoza city, Argentina
 
 2. Transform raw data aligned with the global API schema:
 ```bash
-python ./importer/google_EIE//transformation_transportation_Mendoza.py --filepath [path where the raw data is stored]
+python ./importer/google_EIE/transformation_transportation_Mendoza.py --filepath [path where the raw data is stored]
 ```
 
 3. Extract the activity row from the source:

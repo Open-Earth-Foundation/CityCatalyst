@@ -1,0 +1,33 @@
+name: Import everything to development
+
+on:
+  workflow_dispatch:
+
+  push:
+    paths:
+      - global-api/import/**
+      - global-api/import_everything.sh
+      - k8s/cc-global-api-import-everything.yml
+      - .github/workflows/data-develop.yml
+    branches: ["develop"]
+
+jobs:
+
+  runImportEverything:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
+      EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Creating kubeconfig file
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region us-east-1
+
+      - name: Testing connection to EKS
+        run: kubectl get pods -n default
+
+      - name: Import everything in development
+        run: |
+          kubectl create -f k8s/cc-global-api-import-everything.yml -n default

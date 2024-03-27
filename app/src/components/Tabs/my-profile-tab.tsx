@@ -1,6 +1,6 @@
 "use client";
 
-import { ProfileInputs } from "@/app/[lng]/[city]/settings/page";
+import { ProfileInputs } from "@/app/[lng]/[inventory]/settings/page";
 import AddUserModal from "@/components/Modals/add-user-modal";
 import DeleteUserModal from "@/components/Modals/delete-user-modal";
 import UpdateUserModal from "@/components/Modals/update-user-modal";

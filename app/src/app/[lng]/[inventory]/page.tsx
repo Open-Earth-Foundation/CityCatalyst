@@ -38,7 +38,7 @@ import {
 } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 import NextLink from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { CircleFlag } from "react-circle-flags";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { FiDownload } from "react-icons/fi";
@@ -76,31 +76,37 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const { t } = useTranslation(lng, "dashboard");
   const toast = useToast();
   const router = useRouter();
+  const { inventory: cityParam } = useParams();
+  const inventoryId = cityParam as string;
 
   // query API data
   // TODO maybe rework this logic into one RTK query:
   // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#performing-multiple-requests-with-a-single-query
-  let defaultInventoryId: string | null = null;
+
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
+
+  let defaultInventoryId: string | null = null;
   if (!isUserInfoLoading && userInfo) {
     defaultInventoryId = userInfo.defaultInventoryId;
 
     // TODO also add this to login logic or after email verification to prevent extra redirect?
     // if the user doesn't have a default inventory, redirect to onboarding page
-    if (!defaultInventoryId) {
+    if (!inventoryId) {
       // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
-      setTimeout(() => router.push("/onboarding"), 0);
+      setTimeout(() => router.push(`/en/${defaultInventoryId}`), 0);
     }
   }
   const { data: inventory, isLoading: isInventoryLoading } =
-    api.useGetInventoryQuery(defaultInventoryId!, {
-      skip: !defaultInventoryId,
+    api.useGetInventoryQuery(inventoryId!, {
+      skip: !inventoryId,
     });
 
+  console.log(inventory?.year);
+
   const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
-    api.useGetInventoryProgressQuery(defaultInventoryId!, {
-      skip: !defaultInventoryId,
+    api.useGetInventoryProgressQuery(inventoryId!, {
+      skip: !inventoryId,
     });
 
   const { data: city } = api.useGetCityQuery(inventory?.cityId!, {
@@ -198,7 +204,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
       true, // animated gradient
     );
     const format = "csv";
-    fetch(`/api/v0/inventory/${defaultInventoryId}?format=${format}`)
+    fetch(`/api/v0/inventory/${inventoryId}?format=${format}`)
       .then((res) => {
         if (!res.ok) {
           throw new Error("Network response was not ok");
@@ -276,9 +282,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                       >
                         {inventory?.city?.name}
                       </Heading>
-                      <InventorySelect
-                        currentInventoryId={defaultInventoryId}
-                      />
+                      <InventorySelect currentInventoryId={inventoryId} />
                     </>
                   ) : (
                     (isUserInfoLoading || isInventoryLoading) && (

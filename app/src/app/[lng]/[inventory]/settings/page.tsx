@@ -11,6 +11,7 @@ import MyProfileTab from "@/components/Tabs/my-profile-tab";
 import MyFilesTab from "@/components/Tabs/my-files-tab";
 import MyInventoriesTab from "@/components/Tabs/my-inventories-tab";
 import { api } from "@/services/api";
+import { useParams } from "next/navigation";
 
 export type ProfileInputs = {
   name: string;
@@ -52,11 +53,13 @@ export default function Settings({
     skip: !userInfo,
   });
 
+  const { inventory: cityParam } = useParams();
+  const inventoryId = cityParam as string;
+
   // TODO cache current city ID or select it differently / create custom route
-  const { data: inventory } = api.useGetInventoryQuery(
-    userInfo?.defaultInventoryId!,
-    { skip: !userInfo },
-  );
+  const { data: inventory } = api.useGetInventoryQuery(inventoryId, {
+    skip: !userInfo,
+  });
   const cityId = inventory?.city.cityId;
   const { data: cityUsers } = api.useGetCityUsersQuery(
     { cityId: cityId! },
@@ -66,6 +69,8 @@ export default function Settings({
   const { data: userFiles } = api.useGetUserFilesQuery(cityId!, {
     skip: !userInfo,
   });
+
+  console.log(inventory?.year);
 
   return (
     <Box backgroundColor="background.backgroundLight" paddingBottom="125px">

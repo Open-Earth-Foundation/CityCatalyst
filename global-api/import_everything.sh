@@ -15,7 +15,7 @@ export DB_URI="postgresql://$CC_GLOBAL_API_DB_USER:$CC_GLOBAL_API_DB_PASSWORD@$C
 
 # Import Carbon Monitor
 
-pushd carbon_monitor
+pushd importer/carbon_monitor
 $python_cmd importer.py \
   --database_uri $DB_URI \
   --file ./processed/carbon-monitor-cities-all-cities-FUA-v0325_processed.csv
@@ -23,7 +23,7 @@ popd
 
 # Import Climate Trace
 
-pushd climatetrace
+pushd importer/climatetrace
 $python_cmd climatetrace_importer.py \
   --database_uri $DB_URI \
   --file ./climatetrace_data.tar.gz
@@ -38,7 +38,7 @@ popd
 
 # Import EPA
 
-pushd ghgrp_epa
+pushd importer/ghgrp_epa
 $python_cmd ./ghgrp_importer.py \
   --file ./2022_data_summary_spreadsheets_0.zip \
   --output ./epa.csv \
@@ -51,7 +51,7 @@ popd
 
 # Import IEA
 
-pushd IEA_energy
+pushd importer/IEA_energy
 $python_cmd ./IEA_energy_transformation.py
 psql -h $CC_GLOBAL_API_DB_HOST \
    -U $CC_GLOBAL_API_DB_USER \
@@ -61,12 +61,12 @@ popd
 
 # Import Mendoza
 
-pushd mendoza_arg
+pushd importer/mendoza_arg
 mkdir -p data
 $python_cmd ./extraction_mendoza_stationary_energy.py --filepath data
 $python_cmd ./transformation_mendoza_stationary_energy.py --filepath data
 popd
-pushd ..
+pushd importer/..
 psql -h $CC_GLOBAL_API_DB_HOST \
    -U $CC_GLOBAL_API_DB_USER \
    -d $CC_GLOBAL_API_DB_NAME \
@@ -75,7 +75,7 @@ popd
 
 # Import datasources
 
-pushd datasource_seeder
+pushd importer/datasource_seeder
 psql -h $CC_GLOBAL_API_DB_HOST \
    -U $CC_GLOBAL_API_DB_USER \
    -d $CC_GLOBAL_API_DB_NAME \

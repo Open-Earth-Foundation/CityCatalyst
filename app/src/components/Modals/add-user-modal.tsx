@@ -23,6 +23,7 @@ import FormInput from "../form-input";
 import FormSelectInput from "../form-select-input";
 import FormSelectOrganization from "../form-select-organization";
 import { TFunction } from "i18next";
+import { useParams } from "next/navigation";
 
 interface AddUserModalProps {
   isOpen: boolean;
@@ -47,12 +48,11 @@ const AddUserModal: FC<AddUserModalProps> = ({
   const [checkUser] = api.useCheckUserMutation();
   const [inviteUser, { isLoading: isInviteLoading }] =
     api.useInviteUserMutation();
-  const [inputValue, setInputValue] = useState<string>("");
-  const [userId, setUserId] = useState<string>("");
+
   const toast = useToast();
-  const onInputChange = (e: any) => {
-    setInputValue(e.target.value);
-  };
+
+  const { inventory: cityParam } = useParams();
+  const inventoryId = cityParam as string;
   const onSubmit: SubmitHandler<{ name: string; email: string }> = async (
     data,
   ) => {
@@ -101,6 +101,7 @@ const AddUserModal: FC<AddUserModalProps> = ({
           email: data.email!,
           userId: res?.data?.userId,
           invitingUserId: userInfo! && userInfo?.userId!,
+          inventoryId,
         }).then((res: any) => {
           onClose();
           if (res?.error?.status == 400) {

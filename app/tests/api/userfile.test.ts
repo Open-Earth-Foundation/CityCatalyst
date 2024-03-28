@@ -29,14 +29,18 @@ enum STATUS {
   PENDING = "pending",
 }
 
+const fileId = "9218f7d2-383c-43ab-8c05-867bc783e672";
+
 const fileData = {
-  id: randomUUID(),
+  id: fileId,
   userId: testUserID,
   cityId: testCityID,
   sector: "Energy Sector",
   url: "http://www.acme.com",
   status: STATUS.INPROGRESS,
   data: testFileFormat,
+  subsectors: "test1, test2, test3",
+  scopes: "1,2,3",
   gpc_ref_no: "XXXTESTXXX",
   file_reference: "XXXTESTXXX",
 };
@@ -45,6 +49,8 @@ const invalidFileData = {
   id: "1",
   userId: "2",
   sector: "333",
+  subsectors: "INVALID_SUBSECTOR",
+  scopes: "INVALID_SCOPE",
   url: "invalid.com",
   cityId: "XXINVALID_ID",
   status: "7",
@@ -76,10 +82,12 @@ describe("UserFile API", () => {
     const fileStream = await getFileDataFromStream(path);
 
     const formData = new FormData();
-    formData.append("id", "9218f7d2-383c-43ab-8c05-867bc783e672");
+    formData.append("id", fileData.id);
     formData.append("userId", fileData.userId);
     formData.append("cityId", fileData.cityId);
     formData.append("sector", fileData.sector);
+    formData.append("subsectors", fileData.subsectors);
+    formData.append("scopes", fileData.scopes);
     formData.append("url", fileData.url);
     formData.append("data", fileStream);
     formData.append("status", fileData.status);
@@ -87,7 +95,7 @@ describe("UserFile API", () => {
     formData.append("gpcRefNo", fileData.gpc_ref_no);
     const req = mockRequestFormData(formData);
     const res = await createUserFile(req, {
-      params: { user: testUserID, city: testCityID },
+      params: { city: testCityID },
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
@@ -110,6 +118,8 @@ describe("UserFile API", () => {
     formData.append("url", invalidFileData.url);
     formData.append("data", fileStream);
     formData.append("status", invalidFileData.status);
+    formData.append("subsectors", invalidFileData.subsectors);
+    formData.append("scopes", invalidFileData.scopes);
     formData.append("fileReference", invalidFileData.file_reference);
     formData.append("gpcRefNo", invalidFileData.gpc_ref_no);
     const req = mockRequestFormData(formData);
@@ -165,6 +175,8 @@ describe("UserFile API", () => {
     formData.append("id", randomUUID());
     formData.append("userId", fileData.userId);
     formData.append("sector", fileData.sector);
+    formData.append("subsectors", fileData.subsectors);
+    formData.append("scopes", fileData.scopes);
     formData.append("url", fileData.url);
     formData.append("cityId", fileData.cityId);
     formData.append("data", fileStream);

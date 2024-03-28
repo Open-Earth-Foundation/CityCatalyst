@@ -169,5 +169,13 @@
   "inside-dataset": "What's inside this dataset",
   "transform-data-heading": "How do we transform this data?",
   "transform-data-description": "Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.",
+  "file-context": "Tell Us More About This File",
+  "file-data-subtitle": "What type of data is contained in it?",
+  "file-data-description": " Choose from the options below. This will help us to better identify and include this information in your inventory.",
+  "select-subsector-label": "Select Sub-sectors",
+  "scopes": "Scopes",
+  "cancel": "Cancel",
+  "upload": "Upload",
+  "select-placeholder": "Select the sub-sectors included in this file",
   "disconnect-data": "Disconnect Data"
 }

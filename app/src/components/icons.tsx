@@ -223,7 +223,7 @@ export const ScaleIcon = (props: any) => {
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <g clip-path="url(#clip0_2694_7142)">
+      <g clipPath="url(#clip0_2694_7142)">
         <mask
           id="mask0_2694_7142"
           style={{ maskType: "alpha" }}

@@ -11,6 +11,8 @@ export interface UserFileAttributes {
   fileType?: string;
   fileName?: string;
   sector?: string;
+  subsectors?: string[];
+  scopes?: string[];
   status?: string;
   url?: string;
   gpcRefNo?: string;
@@ -28,6 +30,8 @@ export type UserFileOptionalAttributes =
   | "fileType"
   | "fileName"
   | "sector"
+  | "subsectors"
+  | "scopes"
   | "url"
   | "status"
   | "gpcRefNo"
@@ -50,6 +54,8 @@ export class UserFile
   fileType?: string;
   fileName?: string;
   sector?: string;
+  subsectors?: string[];
+  scopes?: string[];
   url?: string;
   status?: string;
   gpcRefNo?: string;
@@ -110,6 +116,14 @@ export class UserFile
         },
         sector: {
           type: DataTypes.STRING(255),
+          allowNull: true,
+        },
+        subsectors: {
+          type: DataTypes.ARRAY(DataTypes.STRING(255)),
+          allowNull: true,
+        },
+        scopes: {
+          type: DataTypes.ARRAY(DataTypes.NUMBER),
           allowNull: true,
         },
         url: {

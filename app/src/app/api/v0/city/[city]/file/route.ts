@@ -75,6 +75,8 @@ export const POST = apiHandler(async (req: NextRequest, context) => {
   const buffer = Buffer.from(bytes);
 
   const fileType = filename.split(".").pop();
+  const subsectors = formData.get("subsectors") as string;
+  const scopes = formData.get("scopes") as string;
 
   const fileData = {
     userId: userId,
@@ -85,6 +87,8 @@ export const POST = apiHandler(async (req: NextRequest, context) => {
     fileType: fileType,
     fileName: filename,
     sector: formData.get("sector"),
+    subsectors: subsectors.split(","),
+    scopes: scopes.split(","),
     status: formData.get("status"),
     gpcRefNo: formData.get("gpcRefNo"),
   };

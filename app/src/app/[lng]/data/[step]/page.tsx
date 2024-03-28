@@ -72,6 +72,7 @@ import type {
   SubSectorWithRelations,
 } from "./types";
 
+import AddFileDataModal from "@/components/Modals/add-file-data-modal";
 import { v4 as uuidv4 } from "uuid";
 import { InventoryValueAttributes } from "@/models/InventoryValue";
 import { DataSource } from "@/models/DataSource";
@@ -449,35 +450,18 @@ export default function AddDataSteps({
     (state: RootState) => state.inventoryData,
   );
   const dispatch = useDispatch();
-  function fileToBase64(file: File) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
 
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
-  }
   // Add file data to rudux state object
+  const {
+    isOpen: isfileDataModalOpen,
+    onOpen: onFileDataModalOpen,
+    onClose: onfileDataModalClose,
+  } = useDisclosure();
+
+  const [uploadedFile, setUploadedFile] = useState<File>();
+
   const handleFileSelect = async (file: File) => {
-    const base64FileString = await fileToBase64(file);
-    const filename = file.name;
-    dispatch(
-      addFile({
-        sectorName: currentStep.title!,
-        fileData: {
-          fileId: uuidv4(),
-          fileName: filename,
-          userId: userInfo?.userId,
-          sector: currentStep.title,
-          data: base64FileString,
-          // TODO this should not be passed in but rather set on the server (only necessary for AWS S3 or external hosting)
-          url: "http://localhost",
-          size: file.size,
-          fileType: filename.split(".").pop(),
-        },
-      }),
-    );
+    onFileDataModalOpen();
   };
 
   const sectorData = getInventoryData.sectors.filter(
@@ -892,74 +876,97 @@ export default function AddDataSteps({
           >
             <Box w="full">
               <Box mb="24px">
-                <FileInput onFileSelect={handleFileSelect} t={t} />
+                <FileInput
+                  onFileSelect={handleFileSelect}
+                  setUploadedFile={setUploadedFile}
+                  t={t}
+                />
               </Box>
               <Box mb="24px">
                 <Heading size="sm">{t("files-uploaded")}</Heading>
               </Box>
               <Box display="flex" flexDirection="column" gap="8px">
                 {sectorData &&
-                  sectorData[0]?.files.map((file: any, i: number) => (
-                    <Card
-                      shadow="none"
-                      h="80px"
-                      w="full"
-                      borderWidth="1px"
-                      borderColor="border.overlay"
-                      borderRadius="8px"
-                      px="16px"
-                      py="16px"
-                      key={i}
-                    >
-                      <Box display="flex" gap="16px">
-                        <Box>
-                          <ExcelFileIcon />
-                        </Box>
-                        <Box
-                          display="flex"
-                          flexDirection="column"
-                          justifyContent="center"
-                          gap="8px"
-                        >
-                          <Heading
-                            fontSize="lable.lg"
-                            fontWeight="normal"
-                            letterSpacing="wide"
-                            isTruncated
+                  sectorData[0]?.files.map((file: any, i: number) => {
+                    return (
+                      <Card
+                        shadow="none"
+                        minH="120px"
+                        w="full"
+                        borderWidth="1px"
+                        borderColor="border.overlay"
+                        borderRadius="8px"
+                        px="16px"
+                        py="16px"
+                        key={i}
+                      >
+                        <Box display="flex" gap="16px">
+                          <Box>
+                            <ExcelFileIcon />
+                          </Box>
+                          <Box
+                            display="flex"
+                            flexDirection="column"
+                            justifyContent="center"
+                            gap="8px"
                           >
-                            {file.fileName}
-                          </Heading>
-                          <Text
-                            fontSize="body.md"
-                            fontWeight="normal"
-                            color="interactive.control"
-                          >
-                            {bytesToMB(file.size)}
-                          </Text>
-                        </Box>
-                        <Box
-                          color="sentiment.negativeDefault"
-                          display="flex"
-                          justifyContent="right"
-                          alignItems="center"
-                          w="full"
-                        >
-                          <Button
-                            variant="ghost"
+                            <Heading
+                              fontSize="lable.lg"
+                              fontWeight="normal"
+                              letterSpacing="wide"
+                              isTruncated
+                            >
+                              {file.fileName}
+                            </Heading>
+                            <Text
+                              fontSize="body.md"
+                              fontWeight="normal"
+                              color="interactive.control"
+                            >
+                              {bytesToMB(file.size)}
+                            </Text>
+                          </Box>
+                          <Box
                             color="sentiment.negativeDefault"
-                            onClick={() =>
-                              removeSectorFile(
-                                file.fileId,
-                                sectorData[0].sectorName,
-                              )
-                            }
+                            display="flex"
+                            justifyContent="right"
+                            alignItems="center"
+                            w="full"
                           >
-                            <FiTrash2 size={24} />
-                          </Button>
+                            <Button
+                              variant="ghost"
+                              color="sentiment.negativeDefault"
+                              onClick={() =>
+                                removeSectorFile(
+                                  file.fileId,
+                                  sectorData[0].sectorName,
+                                )
+                              }
+                            >
+                              <FiTrash2 size={24} />
+                            </Button>
+                          </Box>
                         </Box>
-                      </Box>
-                    </Card>
-                  ))}
+                        <Box w="full" className="relative pl-[63px]">
+                          {file.subsectors.split(",").map((item: any) => (
+                            <Tag
+                              key={item}
+                              mt={2}
+                              mr={2}
+                              size="md"
+                              borderRadius="full"
+                              variant="solid"
+                              color="content.alternative"
+                              bg="background.neutral"
+                              maxW="150px"
+                            >
+                              <TagLabel>{item}</TagLabel>
+                            </Tag>
+                          ))}
+                        </Box>
+                      </Card>
+                    );
+                  })}
               </Box>
             </Box>
           </Box>
@@ -1005,6 +1012,16 @@ export default function AddDataSteps({
           </Box>
         </Box>
       </Card>
+      {/* Add fole data modal */}
+      <AddFileDataModal
+        isOpen={isfileDataModalOpen}
+        onClose={onfileDataModalClose}
+        subsectors={currentStep.subSectors}
+        t={t}
+        uploadedFile={uploadedFile!}
+        currentStep={currentStep}
+        userInfo={userInfo}
+      />
       {/*** Bottom bar ***/}
       <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand py-4 px-4 drop-shadow-2xl hover:drop-shadow-4xl transition-all">
         <Box className="w-[1090px] max-w-full mx-auto flex flex-row flex-wrap gap-y-2">

@@ -22,3 +22,11 @@ spec:
         - name: CC_GLOBAL_API_BASE
           value: "https://openclimate.openearth.dev"
         command: ["/usr/bin/bash", "./import_everything.sh"]
+        volumeMounts:
+        - name: cc-global-api-input-data
+          mountPath: /var/local/input-data
+          readOnly: true
+      volumes:
+      - name: cc-global-api-input-data
+        persistentVolumeClaim:
+          claimName: cc-global-api-input-data-pvc

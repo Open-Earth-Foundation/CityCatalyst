@@ -13,6 +13,13 @@ export DB_URI="postgresql://$CC_GLOBAL_API_DB_USER:$CC_GLOBAL_API_DB_PASSWORD@$C
 
 # Import OSM
 
+pushd importer/osm
+psql -h $CC_GLOBAL_API_DB_HOST \
+   -U $CC_GLOBAL_API_DB_USER \
+   -d $CC_GLOBAL_API_DB_NAME \
+   -f ./osm_geometry_import.sql
+popd
+
 # Import Carbon Monitor
 
 pushd importer/carbon_monitor

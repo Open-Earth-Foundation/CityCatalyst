@@ -43,6 +43,11 @@ popd
 
 # Import EDGAR
 
+pushd importer/edgar
+$python_cmd citycelloverlapedgar_importer.py --database_uri $DB_URI
+$python_cmd gridcellemissionsedgar_importer.py --database_uri $DB_URI
+popd
+
 # Import EPA
 
 pushd importer/ghgrp_epa

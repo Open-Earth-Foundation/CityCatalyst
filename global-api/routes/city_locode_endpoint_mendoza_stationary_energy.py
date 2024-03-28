@@ -4,6 +4,14 @@ from db.database import SessionLocal
 
 api_router = APIRouter(prefix="/api/v0")
 
+# TODO: establish best-practice values for these numbers
+
+CO2_EF_CH4_100yr = 30
+CO2_EF_N2O_100yr = 298
+
+CO2_EF_CH4_20yr = 84
+CO2_EF_N2O_20yr = 264
+
 # this is a placeholder for now
 gpc_quality_data = "NA"
 
@@ -33,7 +41,7 @@ def get_emissions_by_locode_and_year(source_name: str, locode: str, year: str, G
     if not records:
         raise HTTPException(status_code=404, detail="No data available")
 
-    masses = {'CO2': 0.0, 'CH4': 0.0, 'N2O': 0.0}
+    masses = {'CO2': 0, 'CH4': 0, 'N2O': 0}
 
     for record in records:
         record = record._mapping
@@ -44,9 +52,11 @@ def get_emissions_by_locode_and_year(source_name: str, locode: str, year: str, G
     totals = {
         "totals": {
             "emissions": {
-                "co2_mass": str(masses["CO2"]),
-                "ch4_mass": str(masses["CH4"]),
-                "n2o_mass": str(masses["N2O"]),
+                "co2eq_100yr": str(round(masses["CO2"] + CO2_EF_CH4_100yr * masses["CH4"] + CO2_EF_N2O_100yr * masses["N2O"])),
+                "co2eq_20yr": str(round(masses["CO2"] + CO2_EF_CH4_20yr * masses["CH4"] + CO2_EF_N2O_20yr * masses["N2O"])),
+                "co2_mass": str(round(masses["CO2"])),
+                "ch4_mass": str(round(masses["CH4"])),
+                "n2o_mass": str(round(masses["N2O"])),
                 "gpc_quality": str(gpc_quality_data),
             }
         }

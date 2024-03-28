@@ -105,9 +105,12 @@ export type CreateUserRequest = z.infer<typeof createUserRequest>;
 
 export const createPopulationRequest = z.object({
   cityId: z.string().uuid(),
-  population: z.number().optional(),
-  countryPopulation: z.number().optional(),
-  year: z.number(),
+  cityPopulation: z.number().gte(0),
+  regionPopulation: z.number().gte(0),
+  countryPopulation: z.number().gte(0),
+  cityPopulationYear: z.number().gte(0),
+  regionPopulationYear: z.number().gte(0),
+  countryPopulationYear: z.number().gte(0),
   datasourceId: z.string().optional(),
 });
 
@@ -115,7 +118,8 @@ export type CreatePopulationRequest = z.infer<typeof createPopulationRequest>;
 
 // user file schema validation
 export const createUserFileRequset = z.object({
-  userId: z.string().uuid().optional(),
+  userId: z.string().uuid(),
+  cityId: z.string().uuid(),
   fileReference: z.string().optional(),
   data: z.any(),
   fileType: z.string().optional(),
@@ -128,3 +132,13 @@ export const createUserFileRequset = z.object({
 
 // Schema type definition
 export type CreateUserFileRequetData = z.infer<typeof createUserFileRequset>;
+
+export const createUserInvite = z.object({
+  userId: z.string().optional(),
+  invitingUserId: z.string().uuid(),
+  email: z.string().email(),
+  name: z.string(),
+  cityId: z.string(),
+});
+
+export type CreateUserInvite = z.infer<typeof createUserInvite>;

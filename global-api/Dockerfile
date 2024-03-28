@@ -1,5 +1,9 @@
 FROM python:3.11
 
+RUN apt-get update && \
+    apt-get install -y postgresql-client gdal-bin libgdal-dev && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /opt/app
 
 COPY ./requirements.txt /opt/app/requirements.txt

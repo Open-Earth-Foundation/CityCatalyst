@@ -16,8 +16,8 @@ import {
   Input,
   Text,
 } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { logger } from "@/services/logger";
@@ -29,6 +29,7 @@ type Inputs = {
   confirmPassword: string;
   inviteCode: string;
   acceptTerms: boolean;
+  inventory: string;
 };
 
 export default function Signup({
@@ -42,10 +43,19 @@ export default function Signup({
     handleSubmit,
     register,
     setError: setFormError,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<Inputs>();
 
   const [error, setError] = useState("");
+
+  const searchParams = useSearchParams();
+  const params = searchParams.get("callbackUrl");
+  const inventory = params?.split("/").pop();
+
+  useEffect(() => {
+    setValue("inventory", inventory!);
+  }, [setValue, inventory]);
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (data.password !== data.confirmPassword) {
@@ -72,7 +82,7 @@ export default function Signup({
         return;
       }
 
-      const callbackUrl = `/auth/check-email?email=${data.email}`;
+      const callbackUrl = `/auth/check-email?email=${data.email}&callbackUrl=${params}`;
       router.push(callbackUrl);
 
       // TODO automatic login required?

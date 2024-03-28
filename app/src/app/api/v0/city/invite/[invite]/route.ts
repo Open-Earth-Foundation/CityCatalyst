@@ -36,9 +36,6 @@ export const GET = apiHandler(async (req, { params, session }) => {
     },
   });
   const host = process.env.HOST ?? "http://localhost:3000";
-  if (!user) {
-    return NextResponse.redirect(host);
-  }
 
   const city = await db.models.City.findOne({
     where: { cityId: invite.cityId },

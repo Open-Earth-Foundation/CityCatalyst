@@ -44,6 +44,7 @@ export const signupRequest = z
     confirmPassword: z.string().min(4),
     inviteCode: z.string().min(6).max(6),
     acceptTerms: z.literal<boolean>(true),
+    inventory: z.string().uuid(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",

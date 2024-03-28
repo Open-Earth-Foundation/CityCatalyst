@@ -86,6 +86,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
 
+  console.log(inventoryId);
+
   let defaultInventoryId: string | null = null;
   if (!isUserInfoLoading && userInfo) {
     defaultInventoryId = userInfo.defaultInventoryId;
@@ -94,7 +96,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
     // if the user doesn't have a default inventory, redirect to onboarding page
     if (!inventoryId) {
       // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
-      setTimeout(() => router.push(`/en/${defaultInventoryId}`), 0);
+      setTimeout(() => router.push(`/${defaultInventoryId}`), 0);
     }
   }
   const { data: inventory, isLoading: isInventoryLoading } =

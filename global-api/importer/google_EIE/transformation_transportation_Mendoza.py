@@ -39,7 +39,7 @@ if __name__ == "__main__":
     df.loc[:, 'activity_units'] = 'km'
     df.loc[:, 'emissions_value'] *= 1000
     df.loc[:, 'emissions_units'] = 'kg'
-    df.loc[:, 'GPC_refno'] = 'I.1.1'
+    df.loc[:, 'GPC_refno'] = 'II.1.1'
     df.loc[:, 'gas_name'] = 'CO2'
     df.loc[:, 'source_name'] = 'Google EIE'
     df.loc[:, 'city_name'] = 'Mendoza'

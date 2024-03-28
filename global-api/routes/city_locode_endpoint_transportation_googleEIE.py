@@ -47,7 +47,7 @@ def get_emissions_by_locode_and_year(source_name: str, locode: str, year: str, G
             "activity_units": str(record["activity_units"]),
             "gas_name": str(record["gas_name"]),
             "emissions_value": str(record["emissions_value"]),
-            "emissions_units": str(record["emissions_units"])
+            "emissions_units": str(record["emissions_units"]),
             "emission_factor_value": str(record["emission_factor_value"]),
             "emission_factor_units": str(record["emission_factor_units"])
         })

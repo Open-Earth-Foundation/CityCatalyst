@@ -71,7 +71,7 @@ psql -h $CC_GLOBAL_API_DB_HOST \
    -f ./IEA_energy_load.sql
 popd
 
-# Import Mendoza
+# Import Mendoza stationary energy
 
 pushd importer/mendoza_arg
 mkdir -p data
@@ -83,6 +83,15 @@ psql -h $CC_GLOBAL_API_DB_HOST \
    -U $CC_GLOBAL_API_DB_USER \
    -d $CC_GLOBAL_API_DB_NAME \
    -f ./importer/mendoza_arg/load_mendoza_stationary_energy.sql
+popd
+
+# Import Google EIE
+
+pushd importer/google_EIE
+psql -h $CC_GLOBAL_API_DB_HOST \
+   -U $CC_GLOBAL_API_DB_USER \
+   -d $CC_GLOBAL_API_DB_NAME \
+   -f ./load_transportation_Mendoza.sql
 popd
 
 # Import datasources

@@ -4,6 +4,17 @@ from db.database import SessionLocal
 
 api_router = APIRouter(prefix="/api/v0")
 
+# TODO: establish best-practice values for these numbers
+
+CO2_EF_CH4_100yr = 30
+CO2_EF_N2O_100yr = 298
+
+CO2_EF_CH4_20yr = 84
+CO2_EF_N2O_20yr = 264
+
+# this is a placeholder for now
+gpc_quality_data = "NA"
+
 # Extract the data by locode, year and sector/subsector
 def db_query(source_name, locode, year, GPC_refno):
     with SessionLocal() as session:
@@ -30,36 +41,37 @@ def get_emissions_by_locode_and_year(source_name: str, locode: str, year: str, G
     if not records:
         raise HTTPException(status_code=404, detail="No data available")
 
-    masses = {'CO2': 0.0, 'CH4': 0.0, 'N2O': 0.0}
-    city_emissions_details = []
+    masses = {'CO2': 0, 'CH4': 0, 'N2O': 0}
 
     for record in records:
-        record = dict(record) 
+        record = record._mapping
         gas = record['gas_name']
         mass = record['emissions_value']
         masses[gas] += mass
 
-        # Add each record to the locode_info_list
-        city_emissions_details.append({
+    totals = {
+        "totals": {
+            "emissions": {
+                "co2eq_100yr": str(round(masses["CO2"] + CO2_EF_CH4_100yr * masses["CH4"] + CO2_EF_N2O_100yr * masses["N2O"])),
+                "co2eq_20yr": str(round(masses["CO2"] + CO2_EF_CH4_20yr * masses["CH4"] + CO2_EF_N2O_20yr * masses["N2O"])),
+                "co2_mass": str(round(masses["CO2"])),
+                "ch4_mass": str(round(masses["CH4"])),
+                "n2o_mass": str(round(masses["N2O"])),
+                "gpc_quality": str(gpc_quality_data),
+            }
+        }
+    }
+
+    locode_info = {
+        "city_emissions_details": {
             "temporal_granularity": str(record["temporal_granularity"]),
             "activity_name": str(record["activity_name"]),
             "activity_value": str(record["activity_value"]),
             "activity_units": str(record["activity_units"]),
             "gas_name": str(record["gas_name"]),
-            "emissions_value": str(record["emissions_value"]),
-            "emissions_units": str(record["emissions_units"]),
             "emission_factor_value": str(record["emission_factor_value"]),
             "emission_factor_units": str(record["emission_factor_units"])
-        })
-
-    totals = {
-        "totals": {
-            "emissions": {
-                "co2_mass": str(masses["CO2"]),
-                "ch4_mass": str(masses["CH4"]),
-                "n2o_mass": str(masses["N2O"])
-            }
         }
     }
 
-    return {**totals, "city_emissions_details": city_emissions_details}
+    return {**totals, **locode_info}

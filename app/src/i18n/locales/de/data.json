@@ -118,5 +118,8 @@
   "files-uploaded": "Dateien hochgeladen",
   "add-custom": "Benutzerdefiniert",
   "save-missing-scope-info": "Speichern oder fehlende Informationen ausfüllen, bevor Sie fortfahren.",
-  "disconnect-data": "Datenquelle trennen"
+  "disconnect-data": "Datenquelle trennen",
+
+  "error": "Fehler",
+  "missing-population": "Der Stadt fehlt die Bevölkerungszahl/ Regionsbevölkerungszahl/ Landesbevölkerungszahl für ein Jahr nahe dem Inventarjahr"
 }

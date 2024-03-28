@@ -107,8 +107,8 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
       !population.countryPopulation ||
       !population.regionPopulation
     ) {
-      // City is missing population/ region population/ country population for the inventory year
-      populationIssue = "missing_population";
+      // City is missing population/ region population/ country population for a year close to the inventory year
+      populationIssue = "missing-population"; // translation key
     } else {
       countryPopulationScaleFactor =
         population.population / population.countryPopulation;

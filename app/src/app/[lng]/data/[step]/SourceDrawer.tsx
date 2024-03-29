@@ -111,7 +111,7 @@ export function SourceDrawer({
                 lineHeight="40px"
                 textTransform="capitalize"
               >
-                {source.name}
+                {source.datasetName}
               </Heading>
 
               <Heading size="sm">
@@ -268,9 +268,9 @@ export function SourceDrawer({
                     />
                   </Link>
                 </Heading>
-                {/*<Text color="content.tertiary">
-                  // TODO add methodology description to data source model/ data catalog
-                </Text>*/}
+                <Text color="content.tertiary">
+                  {source.methodologyDescription}
+                </Text>
                 <Heading
                   size="sm"
                   verticalAlign="baseline"
@@ -293,7 +293,7 @@ export function SourceDrawer({
                   </Link>
                 </Heading>
                 <Text color="content.tertiary">
-                  {t("transform-data-description")}
+                  {source.transformationDescription}
                 </Text>
               </Stack>
             </DrawerBody>

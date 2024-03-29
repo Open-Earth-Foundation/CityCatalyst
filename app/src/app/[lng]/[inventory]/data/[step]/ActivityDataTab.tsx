@@ -50,7 +50,7 @@ const activityDataUnits: Record<string, string[]> = {
 
 export function determineEmissionsFactorType(factor: EmissionsFactorData) {
   let sourceName = factor.dataSources
-    ? factor.dataSources[0].name || "Unknown data source"
+    ? factor.dataSources[0].datasetName || "Unknown data source"
     : "Unknown data source";
   if (sourceName.includes("IPCC") && sourceName.includes("US")) {
     return "National (US)";
@@ -108,7 +108,8 @@ export function ActivityDataTab({
       : Object.keys(factorsByUnit);
 
   // TODO this should happen in default form value, as the form still contains null/ undefined here
-  const selectedUnit = watch(prefix + "activityDataUnit") ?? scopeUnits[0] ?? "";
+  const selectedUnit =
+    watch(prefix + "activityDataUnit") ?? scopeUnits[0] ?? "";
   const selectedUnitShort = selectedUnit.split(" ")[0];
 
   useEffect(() => {

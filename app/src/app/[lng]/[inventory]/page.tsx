@@ -86,8 +86,6 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
 
-  console.log(inventoryId);
-
   let defaultInventoryId: string | null = null;
   if (!isUserInfoLoading && userInfo) {
     defaultInventoryId = userInfo.defaultInventoryId;
@@ -103,8 +101,6 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
     api.useGetInventoryQuery(inventoryId!, {
       skip: !inventoryId,
     });
-
-  console.log(inventory?.year);
 
   const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
     api.useGetInventoryProgressQuery(inventoryId!, {

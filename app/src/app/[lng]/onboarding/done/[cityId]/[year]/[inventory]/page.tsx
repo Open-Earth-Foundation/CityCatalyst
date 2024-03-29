@@ -16,7 +16,6 @@ export default function OnboardingDone({
 }) {
   const data = useAppSelector((state) => state.openClimateCity.city);
   const { t } = useTranslation(lng, "onboarding");
-  console.log(inventory);
 
   logger.debug(data);
 

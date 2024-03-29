@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cc-global-api-data-shell
+spec:
+  containers:
+  - name: cc-global-api-data-shell
+    image: busybox
+    command: ["sh", "-c", "sleep infinity"]
+    volumeMounts:
+    - name: cc-global-api-input-data
+      mountPath: /var/local/input-data
+    resources:
+      limits:
+        memory: "1024Mi"
+        cpu: "1000m"
+  volumes:
+  - name: cc-global-api-input-data
+    persistentVolumeClaim:
+      claimName: cc-global-api-input-data-pvc

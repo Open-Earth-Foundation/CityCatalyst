@@ -9,7 +9,7 @@ spec:
       restartPolicy: OnFailure
       containers:
       - name: cc-test-migrate
-        image: ghcr.io/open-earth-foundation/citycatalyst:latest
+        image: ghcr.io/open-earth-foundation/citycatalyst:main
         imagePullPolicy: Always
         env:
         - name: NODE_ENV

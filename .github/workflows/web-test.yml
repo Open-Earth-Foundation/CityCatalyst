@@ -5,12 +5,11 @@ on:
   push:
     paths:
       - app/**
-      - k8s/cc-migrate.yml
-      - k8s/cc-web-deploy.yml
-      - k8s/cc-web.yml
-      - .github/workflows/web-actions.yml
-    branches: ["develop"]
-  pull_request:
+      - k8s/test/cc-test-migrate.yml
+      - k8s/test/cc-test-web-deploy.yml
+      - k8s/test/cc-test/web.yml
+      - .github/workflows/web-test.yml
+    branches: ["main"]
 
 jobs:
   runTests:
@@ -81,7 +80,6 @@ jobs:
   pushToGHCR:
     needs: runTests
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v4
 
@@ -98,14 +96,13 @@ jobs:
           IMAGE: ghcr.io/open-earth-foundation/citycatalyst
         run: |
           docker build -t $IMAGE:$VERSION app
-          docker tag $IMAGE:$VERSION $IMAGE:latest
+          docker tag $IMAGE:$VERSION $IMAGE:main
           docker push $IMAGE:$VERSION
-          docker push $IMAGE:latest
+          docker push $IMAGE:main
 
   deployToEKS:
     needs: pushToGHCR
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
@@ -121,20 +118,19 @@ jobs:
 
       - name: Deploying service
         run: |
-          kubectl create -f k8s/cc-migrate.yml -n default
-          kubectl create -f k8s/cc-seed.yml -n default
-          kubectl apply -f k8s/cc-sync-catalogue.yml -n default
-          # kubectl create job --from=cronjob/cc-sync-catalogue cc-sync-catalogue-manual -n default
-          kubectl apply -f k8s/cc-web-deploy.yml -n default
-          kubectl set env deployment/cc-web-deploy SMTP_USER=${{secrets.SMTP_USER}}
-          kubectl set env deployment/cc-web-deploy SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}}
-          kubectl set env deployment/cc-web-deploy NEXTAUTH_SECRET=${{secrets.NEXTAUTH_SECRET}}
-          kubectl set env deployment/cc-web-deploy RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}}
-          kubectl set env deployment/cc-web-deploy VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}}
-          kubectl set env deployment/cc-web-deploy CHAT_PROVIDER=openai
-          kubectl set env deployment/cc-web-deploy OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}}
-          kubectl set env deployment/cc-web-deploy HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}}
-          kubectl set env deployment/cc-web-deploy "DEFAULT_ADMIN_EMAIL=${{secrets.DEFAULT_ADMIN_EMAIL}}"
-          kubectl set env deployment/cc-web-deploy "DEFAULT_ADMIN_PASSWORD=${{secrets.DEFAULT_ADMIN_PASSWORD}}"
-          kubectl create -f k8s/cc-create-admin.yml -n default
-          kubectl rollout restart deployment cc-web-deploy -n default
+          kubectl create -f k8s/test/cc-test-migrate.yml -n default
+          kubectl create -f k8s/test/cc-test-seed.yml -n default
+          kubectl apply -f k8s/test/cc-test-sync-catalogue.yml -n default
+          kubectl apply -f k8s/test/cc-test-web-deploy.yml -n default
+          kubectl set env deployment/cc-test-web-deploy SMTP_USER=${{secrets.SMTP_USER}}
+          kubectl set env deployment/cc-test-web-deploy SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}}
+          kubectl set env deployment/cc-test-web-deploy NEXTAUTH_SECRET=${{secrets.NEXTAUTH_SECRET}}
+          kubectl set env deployment/cc-test-web-deploy RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}}
+          kubectl set env deployment/cc-test-web-deploy VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}}
+          kubectl set env deployment/cc-test-web-deploy CHAT_PROVIDER=openai
+          kubectl set env deployment/cc-test-web-deploy OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}}
+          kubectl set env deployment/cc-test-web-deploy HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}}
+          kubectl set env deployment/cc-test-web-deploy "DEFAULT_ADMIN_EMAIL=${{secrets.DEFAULT_ADMIN_EMAIL}}"
+          kubectl set env deployment/cc-test-web-deploy "DEFAULT_ADMIN_PASSWORD=${{secrets.DEFAULT_ADMIN_PASSWORD}}"
+          kubectl create -f k8s/test/cc-test-create-admin.yml -n default
+          kubectl rollout restart deployment cc-test-web-deploy -n default

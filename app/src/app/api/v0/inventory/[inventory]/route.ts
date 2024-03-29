@@ -192,7 +192,9 @@ async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
 
       // TODO get these as separate values from emissions factor seeder
       const activityUnit = inventoryValue.activityUnits?.split("/")[0];
-      const emissionsFactorUnit = inventoryValue.activityUnits?.split(" ")[0].split("/")[1];
+      const emissionsFactorUnit = inventoryValue.activityUnits
+        ?.split(" ")[0]
+        .split("/")[1];
       const activityType = inventoryValue.activityUnits?.split(" ")[1];
 
       row.getCell("G").value = activityType;
@@ -241,7 +243,7 @@ async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
       row.getCell("AD").value = inventoryValue.dataSource.dataQuality
         ?.slice(0, 1)
         .toUpperCase();
-      row.getCell("AP").value = inventoryValue.dataSource.name; // TODO add source to Data sources sheet (ID 20)
+      row.getCell("AP").value = inventoryValue.dataSource.datasetName; // TODO add source to Data sources sheet (ID 20)
 
       row.commit();
     }

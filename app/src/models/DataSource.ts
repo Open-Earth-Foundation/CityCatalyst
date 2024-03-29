@@ -756,6 +756,7 @@ export class DataSource
         datasetDescription: {
           type: DataTypes.TEXT,
           allowNull: true,
+          field: "dataset_description",
         },
         accessType: {
           type: DataTypes.STRING(255),

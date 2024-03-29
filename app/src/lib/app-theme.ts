@@ -82,6 +82,7 @@ export const appTheme = extendTheme({
 
   fontSizes: {
     display: {
+      xl: "140px",
       lg: "57px",
       md: "45px",
       sm: "36px",

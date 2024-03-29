@@ -25,6 +25,7 @@ import { FiSettings } from "react-icons/fi";
 import { MdLogout } from "react-icons/md";
 import Cookies from "js-cookie";
 import { useParams } from "next/navigation";
+import { api } from "@/services/api";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -52,13 +53,17 @@ export function NavigationBar({
     history.replaceState("", "", newPath);
   };
   const { data: session, status } = useSession();
+  const { data: userInfo, isLoading: isUserInfoLoading } =
+    api.useGetUserInfoQuery();
 
   return (
     <Box
       className="flex flex-row px-8 py-4 align-middle space-x-12 items-center"
       bgColor="content.alternative"
     >
-      <NextLink href={`/${inventory}`}>
+      <NextLink
+        href={`/${inventory ? inventory : userInfo?.defaultInventoryId}`}
+      >
         <Image
           src="/assets/logo.svg"
           width={36}
@@ -67,7 +72,9 @@ export function NavigationBar({
           className="mr-[56px]"
         />
       </NextLink>
-      <NextLink href={`/${inventory}`}>
+      <NextLink
+        href={`/${inventory ? inventory : userInfo?.defaultInventoryId}`}
+      >
         <Heading size="18" color="base.light">
           {t("title")}
         </Heading>

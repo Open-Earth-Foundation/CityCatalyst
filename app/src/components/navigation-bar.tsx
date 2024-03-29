@@ -29,6 +29,10 @@ function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
 }
 
+function logOut() {
+  signOut({ callbackUrl: "/auth/login", redirect: true });
+}
+
 export function NavigationBar({
   lng,
   showNav = true,
@@ -47,7 +51,7 @@ export function NavigationBar({
 
     // change language in URL without reloading page
     const newPath = location.pathname.replace(/^\/[A-Za-z]+/, `/${language}`);
-    history.replaceState("", "", newPath);
+    history.replaceState(null, "", newPath);
   };
   const { data: session, status } = useSession();
 
@@ -191,7 +195,7 @@ export function NavigationBar({
                   paddingTop="12px"
                   paddingBottom="12px"
                   px="16px"
-                  onClick={() => signOut()}
+                  onClick={() => logOut()}
                 >
                   <Icon
                     as={MdLogout}

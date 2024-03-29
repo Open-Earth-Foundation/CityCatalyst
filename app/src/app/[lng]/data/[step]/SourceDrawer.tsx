@@ -87,7 +87,7 @@ export function SourceDrawer({
             <DrawerBody className="space-y-6 overflow-auto" px={0}>
               <Icon as={MdHomeWork} boxSize={9} />
               <Heading
-                size="sm"
+                size="title.sm"
                 color="content.link"
                 textTransform="uppercase"
                 letterSpacing="1.25px"
@@ -97,7 +97,7 @@ export function SourceDrawer({
                 {source.subcategoryId ? "Scope Data" : "Sub-sector Data"}
               </Heading>
               <Heading
-                size="sm"
+                size="title.sm"
                 color="content.tertiary"
                 textTransform="uppercase"
                 letterSpacing="1.25px"
@@ -117,7 +117,7 @@ export function SourceDrawer({
                 {source.name}
               </Heading>
 
-              <Heading size="sm">
+              <Heading size="title.sm">
                 {source.subCategory?.referenceNumber ||
                   source.subSector?.referenceNumber}{" "}
                 {source.subCategory?.subcategoryName ||
@@ -144,7 +144,7 @@ export function SourceDrawer({
                 </Link>
               </Text>
 
-              <Heading size="sm">
+              <Heading size="title.sm">
                 {t("total-emissions-included")}{" "}
                 <Tooltip
                   hasArrow
@@ -175,7 +175,7 @@ export function SourceDrawer({
               </HStack>
 
               {sourceData?.issue && (
-                <Text color="semantic.danger" size="sm" mt={-4}>
+                <Text color="semantic.danger" size="body.sm" mt={-4}>
                   {t("error")}: {t(sourceData?.issue)}
                 </Text>
               )}
@@ -253,11 +253,11 @@ export function SourceDrawer({
               </Flex>
 
               <Stack className="space-y-4">
-                <Heading size="sm">{t("inside-dataset")}</Heading>
+                <Heading size="title.sm">{t("inside-dataset")}</Heading>
                 <Text color="content.tertiary">{source.description}</Text>
                 <chakra.hr borderColor="border.neutral" />
                 <Heading
-                  size="sm"
+                  size="title.sm"
                   verticalAlign="baseline"
                   lineHeight="24px"
                   fontSize="16px"
@@ -281,7 +281,7 @@ export function SourceDrawer({
                   // TODO add methodology description to data source model/ data catalog
                 </Text>*/}
                 <Heading
-                  size="sm"
+                  size="title.sm"
                   verticalAlign="baseline"
                   lineHeight="24px"
                   fontSize="16px"

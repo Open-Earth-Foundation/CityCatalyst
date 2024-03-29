@@ -72,7 +72,9 @@ jobs:
         run: docker stop github_action_postgresql
 
   pushToGHCR:
+    needs: runTests
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v4
 

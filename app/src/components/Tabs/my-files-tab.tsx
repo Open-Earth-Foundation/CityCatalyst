@@ -35,16 +35,17 @@ import {
 } from "@chakra-ui/react";
 import React, { FC, useEffect, useMemo, useState } from "react";
 
-import { ChevronRightIcon, SearchIcon } from "@chakra-ui/icons";
+import { CheckIcon, ChevronRightIcon, SearchIcon } from "@chakra-ui/icons";
 import {
   MdMoreVert,
+  MdOutlineCheck,
   MdOutlineFileDownload,
   MdOutlineFolder,
 } from "react-icons/md";
 import { FiTrash2 } from "react-icons/fi";
 import { FaFileCsv } from "react-icons/fa";
 
-import { CityData } from "@/app/[lng]/settings/page";
+import { CityData } from "@/app/[lng]/[inventory]/settings/page";
 import { Session } from "next-auth";
 
 import DeleteFileModal from "@/components/Modals/delete-file-modal";
@@ -54,6 +55,7 @@ import { UserAttributes } from "@/models/User";
 import { UserFileAttributes } from "@/models/UserFile";
 
 import Link from "next/link";
+import { PiCheckFatLight } from "react-icons/pi";
 
 interface MyFilesTabProps {
   session: Session | null;
@@ -416,8 +418,8 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                         ></IconButton>
                                       </PopoverTrigger>
                                       <PopoverContent
-                                        h="128px"
-                                        w="239px"
+                                        h="auto"
+                                        w="auto"
                                         borderRadius="8px"
                                         shadow="2dp"
                                         borderWidth="1px"
@@ -444,7 +446,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                               }}
                                             >
                                               <Link
-                                                href={`/api/v0/user/file/${file.id}/download-file`}
+                                                href={`/api/v0/city/${file.cityId}/file/${file.id}/download-file`}
                                                 download
                                                 className="flex gap-4"
                                               >
@@ -493,6 +495,33 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                                 className="group group-hover:text-white"
                                               >
                                                 {t("delete-file")}
+                                              </Text>
+                                            </ListItem>
+                                            <ListItem
+                                              display="flex"
+                                              cursor="pointer"
+                                              gap="16px"
+                                              className="group "
+                                              color="interactive.tertiary"
+                                              alignItems="center"
+                                              px="16px"
+                                              paddingTop="12px"
+                                              paddingBottom="12px"
+                                              _hover={{
+                                                background: "content.link",
+                                                color: "white",
+                                              }}
+                                            >
+                                              <MdOutlineCheck size={24} />
+                                              <Text
+                                                color="content.secondary"
+                                                fontFamily="heading"
+                                                letterSpacing="wide"
+                                                fontWeight="normal"
+                                                fontSize="body.lg"
+                                                className="group group-hover:text-white"
+                                              >
+                                                {t("mark-as-completed")}
                                               </Text>
                                             </ListItem>
                                           </List>

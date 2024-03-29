@@ -24,9 +24,15 @@ import { CircleFlag } from "react-circle-flags";
 import { FiSettings } from "react-icons/fi";
 import { MdLogout } from "react-icons/md";
 import Cookies from "js-cookie";
+import { useParams } from "next/navigation";
+import { api } from "@/services/api";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
+}
+
+function logOut() {
+  signOut({ callbackUrl: "/auth/login", redirect: true });
 }
 
 export function NavigationBar({
@@ -37,6 +43,7 @@ export function NavigationBar({
   showNav?: boolean;
 }) {
   const { t } = useTranslation(lng, "navigation");
+  const { inventory } = useParams();
   const onChangeLanguage = (language: string) => {
     Cookies.set("i18next", language);
     const cookieLanguage = Cookies.get("i18next");
@@ -47,16 +54,18 @@ export function NavigationBar({
 
     // change language in URL without reloading page
     const newPath = location.pathname.replace(/^\/[A-Za-z]+/, `/${language}`);
-    history.replaceState("", "", newPath);
+    history.replaceState(null, "", newPath);
   };
   const { data: session, status } = useSession();
-
+  const { data: userInfo, isLoading: isUserInfoLoading } =
+    api.useGetUserInfoQuery();
+  const currentInventoryId = userInfo?.defaultInventoryId;
   return (
     <Box
       className="flex flex-row px-8 py-4 align-middle space-x-12 items-center"
       bgColor="content.alternative"
     >
-      <NextLink href="/">
+      <NextLink href={`/${inventory ? inventory : currentInventoryId}`}>
         <Image
           src="/assets/logo.svg"
           width={36}
@@ -65,7 +74,7 @@ export function NavigationBar({
           className="mr-[56px]"
         />
       </NextLink>
-      <NextLink href="/">
+      <NextLink href={`/${inventory ? inventory : currentInventoryId}`}>
         <Heading size="18" color="base.light">
           {t("title")}
         </Heading>
@@ -176,7 +185,7 @@ export function NavigationBar({
                 height="128px"
                 zIndex={2000}
               >
-                <NextLink href="/settings">
+                <NextLink href={`/${inventory}/settings`}>
                   <MenuItem paddingTop="12px" paddingBottom="12px" px="16px">
                     <Icon
                       as={FiSettings}
@@ -191,7 +200,7 @@ export function NavigationBar({
                   paddingTop="12px"
                   paddingBottom="12px"
                   px="16px"
-                  onClick={() => signOut()}
+                  onClick={() => logOut()}
                 >
                   <Icon
                     as={MdLogout}

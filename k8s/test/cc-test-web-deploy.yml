@@ -46,8 +46,8 @@ spec:
               value: "587"
             - name: GLOBAL_API_URL
               value: "https://ccglobal-test.openearth.dev"
-            - name: OPENCLIMATE_API_URL
-              value: "https://openclimate.openearth.dev"
+            - name: NEXT_PUBLIC_OPENCLIMATE_API_URL
+              value: "https://app.openclimate.network"
           resources:
             limits:
               memory: "1024Mi"

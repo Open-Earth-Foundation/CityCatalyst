@@ -44,6 +44,7 @@ export const signupRequest = z
     confirmPassword: z.string().min(4),
     inviteCode: z.string().min(6).max(6),
     acceptTerms: z.literal<boolean>(true),
+    inventory: z.string().uuid().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -105,9 +106,12 @@ export type CreateUserRequest = z.infer<typeof createUserRequest>;
 
 export const createPopulationRequest = z.object({
   cityId: z.string().uuid(),
-  population: z.number().optional(),
-  countryPopulation: z.number().optional(),
-  year: z.number(),
+  cityPopulation: z.number().gte(0),
+  regionPopulation: z.number().gte(0),
+  countryPopulation: z.number().gte(0),
+  cityPopulationYear: z.number().gte(0),
+  regionPopulationYear: z.number().gte(0),
+  countryPopulationYear: z.number().gte(0),
   datasourceId: z.string().optional(),
 });
 
@@ -115,12 +119,15 @@ export type CreatePopulationRequest = z.infer<typeof createPopulationRequest>;
 
 // user file schema validation
 export const createUserFileRequset = z.object({
-  userId: z.string().uuid().optional(),
+  userId: z.string().uuid(),
+  cityId: z.string().uuid(),
   fileReference: z.string().optional(),
   data: z.any(),
   fileType: z.string().optional(),
   fileName: z.string().optional(),
-  sector: z.string().optional(),
+  sector: z.string(),
+  subsectors: z.string().array(),
+  scopes: z.string().array(),
   url: z.string().url().optional(),
   status: z.string().optional(),
   gpcRefNo: z.string().optional(),
@@ -132,6 +139,7 @@ export type CreateUserFileRequetData = z.infer<typeof createUserFileRequset>;
 export const createUserInvite = z.object({
   userId: z.string().optional(),
   invitingUserId: z.string().uuid(),
+  inventoryId: z.string().uuid(),
   email: z.string().email(),
   name: z.string(),
   cityId: z.string(),

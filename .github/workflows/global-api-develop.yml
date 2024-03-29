@@ -9,9 +9,59 @@ on:
       - k8s/cc-global-api-deploy.yml
       - k8s/cc-global-api.yml
       - k8s/cc-global-api-migrate.yml
+      - .github/workflows/global-api-develop.yml
     branches: ["develop"]
 
 jobs:
+  runTests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./global-api
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 pytest pytest-cov
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Set up database
+        run: |
+          docker run --name github_action_postgresql -d -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_PASSWORD="" postgres
+          sleep 10
+          createuser -w -h localhost -p 5432 -U postgres citycatalyst
+          createdb -w -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst
+          cp env.example .env
+
+      - name: Build coverage file
+        run: |
+          pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=app tests/ | tee pytest-coverage.txt
+
+      - name: Pytest coverage comment
+        uses: MishaKav/pytest-coverage-comment@main
+        with:
+          pytest-coverage-path: ./pytest-coverage.txt
+          junitxml-path: ./pytest.xml
+
+      - name: Upload coverage reports to Codecov
+        continue-on-error: true
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          fail_ci_if_error: false
+          flags: unittests
+          name: citycatalyst-global-api
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: Open-Earth-Foundation/CityCatalyst
+
+      - name: Shut down database
+        run: docker stop github_action_postgresql
 
   pushToGHCR:
     runs-on: ubuntu-latest

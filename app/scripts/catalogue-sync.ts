@@ -6,10 +6,11 @@ import { logger } from "@/services/logger";
 
 interface Source {
   datasource_id: string;
-  name: string;
+  datasource_name: string;
+  dataset_name: string;
   source_type: string;
   url: string;
-  description: string;
+  dataset_description: string;
   access_type: string;
   geographical_location: string;
   start_year: number;
@@ -23,6 +24,8 @@ interface Source {
   notes: string;
   units: string;
   methodology_url: string;
+  methodology_description: string;
+  transformation_description: string;
   publisher_id: string;
   retrieval_method: string;
   api_endpoint: string;
@@ -116,7 +119,7 @@ async function syncDataCatalogue() {
 
     if (!source.notes) {
       // publisher_id is still a name at this stage
-      source.notes = `${source.name} by ${source.publisher_id}. For more details see ${source.url}`;
+      source.notes = `${source.datasource_name} by ${source.publisher_id}. For more details see ${source.url}`;
     }
 
     if (source.geographical_location === "global") {
@@ -171,47 +174,14 @@ async function syncDataCatalogue() {
   console.dir(sources);
   logger.debug("Saving sources...");
 
+  /*
+   * TODO switch to single query when this issue is fixed:
+   * https://github.com/sequelize/sequelize/issues/15221
+   * https://github.com/sequelize/sequelize/issues/13545
+   */
   for (const source of sources) {
     await db.models.DataSource.upsert(source);
   }
-
-  /* TODO switch to single query when this issue is fixed:
-  // https://github.com/sequelize/sequelize/issues/15221
-  // https://github.com/sequelize/sequelize/issues/13545
-  await db.models.DataSource.bulkCreate(
-    sources,
-    {
-      updateOnDuplicate: [
-        "name",
-        "sourceType",
-        "url",
-        "description",
-        "accessType",
-        "geographicalLocation",
-        "startYear",
-        "endYear",
-        "latestAccountingYear",
-        "frequencyOfUpdate",
-        "spatialResolution",
-        "language",
-        "accessibility",
-        "dataQuality",
-        "notes",
-        "units",
-        "methodologyUrl",
-        "publisherId",
-        "retrievalMethod",
-        "apiEndpoint",
-        "sectorId",
-        "subsectorId",
-        "subcategoryId",
-        "created",
-        "lastUpdated",
-      ],
-      // ignoreDuplicates: true,
-    },
-  );
-  */
 
   await catalogue.update({ lastUpdate: new Date(lastUpdate) });
   logger.debug("Updated Catalogue, done!");

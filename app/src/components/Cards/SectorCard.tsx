@@ -28,10 +28,12 @@ export function SectorCard({
   sectorProgress,
   stepNumber,
   t,
+  inventory,
 }: {
   sectorProgress: SectorProgress;
   stepNumber: number;
   t: TFunction;
+  inventory: string;
 }) {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const toggleAccordion = () => setAccordionOpen(!isAccordionOpen);
@@ -105,7 +107,11 @@ export function SectorCard({
               </Heading>
             </Box>
             <Box>
-              <NextLink href={`/data/${stepNumber}`} passHref legacyBehavior>
+              <NextLink
+                href={`/${inventory}/data/${stepNumber}`}
+                passHref
+                legacyBehavior
+              >
                 <Button
                   as="a"
                   variant="outline"

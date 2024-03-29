@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: cc-global-api-coverage-
+spec:
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: cc-global-api
+          image: ghcr.io/open-earth-foundation/citycatalyst-global-api:latest
+          imagePullPolicy: Always
+          command: ["python", "data-coverage/data-coverage.py", "--outputfile", "/var/local/input-data/data-coverage.csv", "--inputfile", "data-coverage/locodes.txt", "--concurrency", "128", "--origin", "https://ccglobal.openearth.dev"]
+          resources:
+            limits:
+              memory: "4096Mi"
+              cpu: "1000m"
+          volumeMounts:
+          - name: cc-global-api-input-data
+            mountPath: /var/local/input-data
+      volumes:
+      - name: cc-global-api-input-data
+        persistentVolumeClaim:
+          claimName: cc-global-api-input-data-pvc

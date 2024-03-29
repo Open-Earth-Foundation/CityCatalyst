@@ -1,7 +1,7 @@
 import type {
   DataSourceWithRelations,
   InventoryValueData,
-} from "@/app/[lng]/data/[step]/types";
+} from "@/app/[lng]/[inventory]/data/[step]/types";
 import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
@@ -79,6 +79,14 @@ type EmissionsFactorWithDataSources = EmissionsFactorAttributes & {
 type EmissionsFactorResponse = EmissionsFactorWithDataSources[];
 
 type InventoryWithCity = InventoryAttributes & { city: CityAttributes };
+
+interface OCCityAttributes {
+  actor_id: string;
+  name: string;
+  is_part_of: string;
+  root_path_geo: any;
+  area: number;
+}
 
 declare module "next-auth" {
   interface Session {

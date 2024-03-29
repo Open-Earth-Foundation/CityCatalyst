@@ -12,7 +12,7 @@ import {
   FormLabel,
 } from "@chakra-ui/react";
 import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md";
-import { SubSectorWithRelations } from "@/app/[lng]/data/[step]/types";
+import { SubSectorWithRelations } from "@/app/[lng]/[inventory]/data/[step]/types";
 import {
   UseFormRegister,
   UseFormSetValue,

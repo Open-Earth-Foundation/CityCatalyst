@@ -21,9 +21,9 @@ import { appendFileToFormData } from "@/util/helpers";
 import { useState } from "react";
 
 export default function ReviewPage({
-  params: { lng },
+  params: { lng, inventoryId },
 }: {
-  params: { lng: string };
+  params: { lng: string; inventoryId: string };
 }) {
   const { t } = useTranslation(lng, "data");
   const router = useRouter();
@@ -36,7 +36,7 @@ export default function ReviewPage({
   };
   const onDiscard = () => {
     dispatch(clear());
-    router.push("/");
+    router.push(`/${inventoryId}`);
   };
 
   const stationaryEnergy = getAllSectorData.filter(
@@ -100,7 +100,7 @@ export default function ReviewPage({
       // TODO
       // Trigger notification to user
     } finally {
-      router.push("/");
+      router.push(`/${inventoryId}`);
       dispatch(clear());
       setIsConfirming(false);
     }
@@ -202,7 +202,7 @@ export default function ReviewPage({
                   variant="ghost"
                   w="181px"
                   gap="8px"
-                  onClick={() => router.push("/data/1")}
+                  onClick={() => router.push(`/${inventoryId}/data/1`)}
                 >
                   <MdOutlineEdit size="24px" />
                   <Heading
@@ -346,7 +346,7 @@ export default function ReviewPage({
                   variant="ghost"
                   w="181px"
                   gap="8px"
-                  onClick={() => router.push("/data/2")}
+                  onClick={() => router.push(`/${inventoryId}/data/2`)}
                 >
                   <MdOutlineEdit size="24px" />
                   <Heading
@@ -470,7 +470,7 @@ export default function ReviewPage({
                   variant="ghost"
                   w="181px"
                   gap="8px"
-                  onClick={() => router.push("/data/3")}
+                  onClick={() => router.push(`/${inventoryId}/data/3`)}
                 >
                   <MdOutlineEdit size="24px" />
                   <Heading

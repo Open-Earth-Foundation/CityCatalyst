@@ -60,7 +60,6 @@ import {
   MdOutlineEdit,
   MdOutlineHomeWork,
   MdOutlineSkipNext,
-  MdPlaylistAddCheck,
   MdRefresh,
 } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
@@ -73,9 +72,7 @@ import type {
 } from "./types";
 
 import AddFileDataModal from "@/components/Modals/add-file-data-modal";
-import { v4 as uuidv4 } from "uuid";
 import { InventoryValueAttributes } from "@/models/InventoryValue";
-import { DataSource } from "@/models/DataSource";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -171,9 +168,9 @@ function NoDataSourcesMessage({
 }
 
 export default function AddDataSteps({
-  params: { lng, step },
+  params: { lng, step, inventory },
 }: {
-  params: { lng: string; step: string };
+  params: { lng: string; step: string; inventory: string };
 }) {
   const { t } = useTranslation(lng, "data");
   const router = useRouter();
@@ -428,7 +425,7 @@ export default function AddDataSteps({
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setConfirming(false);
     if (activeStep >= steps.length - 1) {
-      router.push("/data/review");
+      router.push(`/${inventory}/data/review`);
     } else {
       window.scrollTo({ top: 0, behavior: "smooth" });
       goToNext();
@@ -437,7 +434,7 @@ export default function AddDataSteps({
 
   const onSkip = () => {
     if (activeStep >= steps.length - 1) {
-      router.push("/data/review");
+      router.push(`/${inventory}/data/review`);
     } else {
       window.scrollTo({ top: 0, behavior: "smooth" });
       goToNext();
@@ -700,7 +697,7 @@ export default function AddDataSteps({
                     {/* TODO add icon to DataSource */}
                     <Icon as={MdHomeWork} boxSize={9} mb={6} />
                     <Heading size="sm" noOfLines={2} minHeight={10}>
-                      {source.name}
+                      {source.datasetName}
                     </Heading>
                     <Flex direction="row" my={4} wrap="wrap" gap={2}>
                       <Tag>
@@ -732,7 +729,8 @@ export default function AddDataSteps({
                       noOfLines={5}
                       minHeight={120}
                     >
-                      {source.description}
+                      {source.datasetDescription ||
+                        source.methodologyDescription}
                     </Text>
                     <Link
                       className="underline"

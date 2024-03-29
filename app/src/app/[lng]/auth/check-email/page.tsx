@@ -44,14 +44,19 @@ export default function CheckEmail({
   params: { lng: string };
 }) {
   const { t } = useTranslation(lng, "auth");
-
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
   return (
     <>
       <Heading size="xl">{t("check-email-heading")}</Heading>
       <Suspense>
         <DynamicContent t={t} />
       </Suspense>
-      <NextLink href="/auth/login" passHref legacyBehavior>
+      <NextLink
+        href={`/auth/login?callbackUrl=${callbackUrl}`}
+        passHref
+        legacyBehavior
+      >
         <Button as="a" h={16} width="full" mt={4}>
           {t("back-to-login")}
         </Button>

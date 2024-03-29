@@ -66,7 +66,7 @@ describe("Inventory API", () => {
       where: { inventoryName },
     });
     await db.models.DataSource.destroy({
-      where: { name: { [Op.like]: "XX_INVENTORY_TEST_%" } },
+      where: { datasetName: { [Op.like]: "XX_INVENTORY_TEST_%" } },
     });
     await db.models.Sector.destroy({
       where: { sectorName: { [Op.like]: "XX_INVENTORY_TEST%" } },
@@ -280,12 +280,12 @@ describe("Inventory API", () => {
     const userSource = await db.models.DataSource.create({
       datasourceId: randomUUID(),
       sourceType: "user",
-      name: "XX_INVENTORY_TEST_USER",
+      datasetName: "XX_INVENTORY_TEST_USER",
     });
     const thirdPartySource = await db.models.DataSource.create({
       datasourceId: randomUUID(),
       sourceType: "third_party",
-      name: "XX_INVENTORY_TEST_THIRD_PARTY",
+      datasetName: "XX_INVENTORY_TEST_THIRD_PARTY",
     });
     const sources = [userSource, thirdPartySource, null];
 

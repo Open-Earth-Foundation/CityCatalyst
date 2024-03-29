@@ -10,9 +10,9 @@ import { Trans } from "react-i18next/TransWithoutContext";
 import { logger } from "@/services/logger";
 
 export default function OnboardingDone({
-  params: { lng, year },
+  params: { lng, year, inventory },
 }: {
-  params: { lng: string; year: number };
+  params: { lng: string; year: number; inventory: string };
 }) {
   const data = useAppSelector((state) => state.openClimateCity.city);
   const { t } = useTranslation(lng, "onboarding");
@@ -43,7 +43,7 @@ export default function OnboardingDone({
         </Flex>
       </Card>
       <div className="self-end">
-        <NextLink href="/" passHref legacyBehavior>
+        <NextLink href={`/${inventory}`} passHref legacyBehavior>
           <Button
             as="a"
             h={16}

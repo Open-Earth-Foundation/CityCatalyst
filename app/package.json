@@ -46,7 +46,7 @@
     "@types/jsonwebtoken": "^9.0.4",
     "@types/node": "20.11.5",
     "@types/nodemailer": "^6.4.14",
-    "@types/pg": "^8.11.2",
+    "@types/pg": "^8.11.4",
     "@types/react": "18.2.61",
     "@types/react-dom": "18.2.19",
     "@types/uuid": "^9.0.8",
@@ -72,7 +72,7 @@
     "jsonwebtoken": "^9.0.2",
     "next": "14.1.3",
     "next-auth": "^4.24.5",
-    "nodemailer": "^6.9.9",
+    "nodemailer": "^6.9.13",
     "openai": "^4.28.0",
     "pg": "^8.11.3",
     "pg-hstore": "^2.3.4",
@@ -102,7 +102,7 @@
     "@storybook/addon-essentials": "^7.6.16",
     "@storybook/addon-interactions": "^7.4.5",
     "@storybook/addon-links": "^7.6.17",
-    "@storybook/blocks": "^7.6.14",
+    "@storybook/blocks": "^8.0.4",
     "@storybook/nextjs": "^7.6.16",
     "@types/glob": "^8.1.0",
     "cypress": "^13.6.4",
@@ -110,7 +110,7 @@
     "prettier": "3.2.5",
     "sequelize-auto": "^0.8.8",
     "start-server-and-test": "^2.0.3",
-    "storybook": "^7.6.17"
+    "storybook": "^8.0.4"
   },
   "engines": {
     "node": ">=20.5.0"

@@ -67,7 +67,7 @@ export function NavigationBar({
           className="mr-[56px]"
         />
       </NextLink>
-      <NextLink href="/">
+      <NextLink href={`/${inventory}`}>
         <Heading size="18" color="base.light">
           {t("title")}
         </Heading>

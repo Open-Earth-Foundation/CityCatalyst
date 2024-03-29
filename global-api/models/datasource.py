@@ -33,6 +33,7 @@ class Datasource(Base):
     methodology_description = Column(Text)
     transformation_description = Column(Text)
     scope = Column(String)
+    dataset_description = Column(Text)
 
     def to_dict(self):
         return {column.name: getattr(self, column.name) for column in self.__table__.columns}

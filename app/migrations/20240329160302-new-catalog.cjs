@@ -28,6 +28,14 @@ module.exports = {
           transaction,
         },
       );
+      await queryInterface.renameColumn(
+        "DataSource",
+        "description",
+        "dataset_description",
+        {
+          transaction,
+        },
+      );
     });
   },
 
@@ -54,6 +62,14 @@ module.exports = {
         "DataSource",
         "datasource_name",
         "name",
+        {
+          transaction,
+        },
+      );
+      await queryInterface.renameColumn(
+        "DataSource",
+        "dataset_description",
+        "description",
         {
           transaction,
         },

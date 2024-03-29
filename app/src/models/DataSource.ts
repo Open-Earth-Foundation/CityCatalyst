@@ -38,7 +38,7 @@ export interface DataSourceAttributes {
   datasourceName?: string;
   sourceType?: string;
   url?: string;
-  description?: string;
+  datasetDescription?: string;
   accessType?: string;
   geographicalLocation?: string; // comma separated list of locodes for either EARTH, country, region or city
   startYear?: number; // inclusive
@@ -71,7 +71,7 @@ export type DataSourceOptionalAttributes =
   | "datasourceName"
   | "sourceType"
   | "url"
-  | "description"
+  | "datasetDescription"
   | "accessType"
   | "geographicalLocation"
   | "startYear"
@@ -109,7 +109,7 @@ export class DataSource
   datasourceName?: string;
   sourceType?: string;
   url?: string;
-  description?: string;
+  datasetDescription?: string;
   accessType?: string;
   geographicalLocation?: string;
   startYear?: number; // inclusive
@@ -753,7 +753,7 @@ export class DataSource
           allowNull: true,
           field: "URL",
         },
-        description: {
+        datasetDescription: {
           type: DataTypes.TEXT,
           allowNull: true,
         },

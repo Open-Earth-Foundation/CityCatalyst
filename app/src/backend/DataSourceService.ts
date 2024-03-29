@@ -25,7 +25,9 @@ export default class DataSourceService {
         return true;
       }
 
-      const isCountry = city.country && locations?.includes(city.country);
+      // TODO store locode for country and region as separate columns in City
+      const countryLocode = city.locode?.split(" ")[0];
+      const isCountry = countryLocode && locations?.includes(countryLocode);
       const isRegion = city.region && locations?.includes(city.region);
       const isCity = city.locode && locations?.includes(city.locode);
 
@@ -108,7 +110,9 @@ export default class DataSourceService {
     });
 
     if (!subCategory) {
-      throw new createHttpError.InternalServerError("Sub-category for source not found");
+      throw new createHttpError.InternalServerError(
+        "Sub-category for source not found",
+      );
     }
 
     // TODO what to do with existing InventoryValues and GasValues?

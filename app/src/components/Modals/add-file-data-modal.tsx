@@ -21,7 +21,7 @@ import { InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import {
   DataStep,
   SubSectorWithRelations,
-} from "@/app/[lng]/data/[step]/types";
+} from "@/app/[lng]/[inventory]/data/[step]/types";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { TFunction } from "i18next";

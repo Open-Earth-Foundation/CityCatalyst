@@ -54,10 +54,13 @@ export function SourceDrawer({
   t: TFunction;
 }) {
   const emissionsData = sourceData?.totals?.emissions?.co2eq_100yr;
-  // TODO scale this down for country data sources
-  const totalEmissions = emissionsData
+  let totalEmissions = emissionsData
     ? ((Number(emissionsData) * sourceData?.scaleFactor) / 1000).toFixed(2)
     : "?";
+  if (sourceData?.issue) {
+    totalEmissions = "?";
+  }
+
   return (
     <Drawer
       isOpen={isOpen}
@@ -84,7 +87,7 @@ export function SourceDrawer({
             <DrawerBody className="space-y-6 overflow-auto" px={0}>
               <Icon as={MdHomeWork} boxSize={9} />
               <Heading
-                size="sm"
+                size="title.sm"
                 color="content.link"
                 textTransform="uppercase"
                 letterSpacing="1.25px"
@@ -94,7 +97,7 @@ export function SourceDrawer({
                 {source.subcategoryId ? "Scope Data" : "Sub-sector Data"}
               </Heading>
               <Heading
-                size="sm"
+                size="title.sm"
                 color="content.tertiary"
                 textTransform="uppercase"
                 letterSpacing="1.25px"
@@ -114,7 +117,7 @@ export function SourceDrawer({
                 {source.datasetName}
               </Heading>
 
-              <Heading size="sm">
+              <Heading size="title.sm">
                 {source.subCategory?.referenceNumber ||
                   source.subSector?.referenceNumber}{" "}
                 {source.subCategory?.subcategoryName ||
@@ -141,7 +144,7 @@ export function SourceDrawer({
                 </Link>
               </Text>
 
-              <Heading size="sm">
+              <Heading size="title.sm">
                 {t("total-emissions-included")}{" "}
                 <Tooltip
                   hasArrow
@@ -170,6 +173,12 @@ export function SourceDrawer({
                   TCO2e
                 </Text>
               </HStack>
+
+              {sourceData?.issue && (
+                <Text color="semantic.danger" size="body.sm" mt={-4}>
+                  {t("error")}: {t(sourceData?.issue)}
+                </Text>
+              )}
 
               <Flex
                 direction="row"
@@ -244,13 +253,13 @@ export function SourceDrawer({
               </Flex>
 
               <Stack className="space-y-4">
-                <Heading size="sm">{t("inside-dataset")}</Heading>
+                <Heading size="title.sm">{t("inside-dataset")}</Heading>
                 <Text color="content.tertiary">
                   {source.datasetDescription}
                 </Text>
                 <chakra.hr borderColor="border.neutral" />
                 <Heading
-                  size="sm"
+                  size="title.sm"
                   verticalAlign="baseline"
                   lineHeight="24px"
                   fontSize="16px"
@@ -274,7 +283,7 @@ export function SourceDrawer({
                   {source.methodologyDescription}
                 </Text>
                 <Heading
-                  size="sm"
+                  size="title.sm"
                   verticalAlign="baseline"
                   lineHeight="24px"
                   fontSize="16px"

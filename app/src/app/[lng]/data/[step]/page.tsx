@@ -729,7 +729,8 @@ export default function AddDataSteps({
                       noOfLines={5}
                       minHeight={120}
                     >
-                      {source.description || source.methodologyDescription}
+                      {source.datasetDescription ||
+                        source.methodologyDescription}
                     </Text>
                     <Link
                       className="underline"

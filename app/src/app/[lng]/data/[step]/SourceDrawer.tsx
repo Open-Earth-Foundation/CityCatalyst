@@ -245,7 +245,9 @@ export function SourceDrawer({
 
               <Stack className="space-y-4">
                 <Heading size="sm">{t("inside-dataset")}</Heading>
-                <Text color="content.tertiary">{source.description}</Text>
+                <Text color="content.tertiary">
+                  {source.datasetDescription}
+                </Text>
                 <chakra.hr borderColor="border.neutral" />
                 <Heading
                   size="sm"

@@ -8,10 +8,8 @@ class Datasource(Base):
 
     datasource_id = Column(String, primary_key=True)
     publisher_id = Column(String)
-    name = Column(String)
     source_type = Column(String)
-    url = Column(Text)
-    description = Column(Text)
+    dataset_url = Column(Text)
     access_type = Column(String)
     geographical_location = Column(String)
     start_year = Column(Integer)
@@ -30,6 +28,11 @@ class Datasource(Base):
     gpc_reference_number = Column(String)
     created_date = Column(DateTime)
     modified_date = Column(DateTime)
+    datasource_name = Column(String)
+    dataset_name = Column(Text)
+    methodology_description = Column(Text)
+    transformation_description = Column(Text)
+    scope = Column(String)
 
     def to_dict(self):
         return {column.name: getattr(self, column.name) for column in self.__table__.columns}

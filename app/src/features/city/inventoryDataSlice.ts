@@ -2,11 +2,16 @@ import { RootState } from "@/lib/store";
 import { UserFileAttributes } from "@/models/UserFile";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-export type InventoryUserFileAttributes = Omit<UserFileAttributes, "id"> & {
+export type InventoryUserFileAttributes = Omit<
+  UserFileAttributes,
+  "id" | "subsectors" | "scopes"
+> & {
   // unique identifier to be used to access the files
   fileId: string;
   fileName: string;
   size: number;
+  subsectors: string;
+  scopes: string;
 };
 
 interface SectorFileData {
@@ -43,7 +48,10 @@ export const inventoryDataSlice = createSlice({
         state.sectors[sectorIndex].files.push(fileData);
       } else {
         // Sector does not exist, create a new sector entry
-        state.sectors.push({ sectorName, files: [fileData] });
+        state.sectors.push({
+          sectorName,
+          files: [fileData],
+        });
       }
     },
     removeSectorData: (

@@ -1,14 +1,25 @@
 import { Box, FormLabel, Heading, Input, Text, VStack } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import React, { useState, DragEvent, ChangeEvent } from "react";
+import React, {
+  useState,
+  DragEvent,
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { FiUpload } from "react-icons/fi";
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void; // Define a type for the onFileSelect prop
   t: TFunction;
+  setUploadedFile: Dispatch<SetStateAction<File | undefined>>;
 }
 
-const FileInput: React.FC<FileUploadProps> = ({ onFileSelect, t }) => {
+const FileInput: React.FC<FileUploadProps> = ({
+  onFileSelect,
+  t,
+  setUploadedFile,
+}) => {
   const [dragging, setDragging] = useState<boolean>(false);
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
@@ -27,12 +38,14 @@ const FileInput: React.FC<FileUploadProps> = ({ onFileSelect, t }) => {
     setDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       onFileSelect(e.dataTransfer.files[0]);
+      setUploadedFile(e.dataTransfer.files[0]);
     }
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       onFileSelect(e.target.files[0]);
+      setUploadedFile(e.target.files[0]);
     }
   };
 

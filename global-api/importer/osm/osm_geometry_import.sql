@@ -8,7 +8,7 @@ TRUNCATE osm_staging;
 
 /* Load the staging table from the transformed file */
 
-\copy osm_staging (geometry,bbox_north,bbox_south,bbox_east,bbox_west,place_id,osm_type,osm_id,lat,lon,class,type,place_rank,importance,addresstype,name,display_name,locode) FROM 'osm_geometry.csv' WITH CSV HEADER;
+\copy osm_staging (geometry,bbox_north,bbox_south,bbox_east,bbox_west,place_id,osm_type,osm_id,lat,lon,class,type,place_rank,importance,addresstype,name,display_name,locode) FROM '/var/local/input-data/osm_geometry.csv' WITH CSV HEADER;
 
 /* Delete conflicts */
 

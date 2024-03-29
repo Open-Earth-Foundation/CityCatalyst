@@ -91,10 +91,10 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
     defaultInventoryId = userInfo.defaultInventoryId;
 
     // TODO also add this to login logic or after email verification to prevent extra redirect?
-    // if the user doesn't have a default inventory, redirect to onboarding page
-    if (!inventoryId) {
+    // if the user doesn't have a default inventory or if path has a null inventory id, redirect to onboarding page
+    if (!inventoryId && !defaultInventoryId) {
       // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
-      setTimeout(() => router.push(`/${defaultInventoryId}`), 0);
+      setTimeout(() => router.push(`/onboarding`), 0);
     }
   }
   const { data: inventory, isLoading: isInventoryLoading } =

@@ -33,9 +33,8 @@ export const InventorySelect = ({
     await setUserInfo({
       cityId: inventory.cityId!,
       defaultInventoryId: inventory.inventoryId,
-    }).then(() => {
-      router.push(`/${inventory.inventoryId}`);
-    });
+    }).unwrap();
+    router.push(`/${inventory.inventoryId}`);
   };
 
   return (

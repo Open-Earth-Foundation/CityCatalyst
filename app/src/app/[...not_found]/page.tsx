@@ -1,4 +1,5 @@
 "use client";
+import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { Box, Text } from "@chakra-ui/layout";
@@ -7,10 +8,11 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-const NotFound = () => {
+const NotFound = ({ params: { lng } }: { params: { lng: string } }) => {
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
   const router = useRouter();
+  const { t } = useTranslation(lng, "not-found");
 
   return (
     <Box className="flex w-full justify-start relative h-[100vh] z-20">
@@ -48,18 +50,18 @@ const NotFound = () => {
           lineHeight="32px"
           letterSpacing="wide"
         >
-          Seems like we&apos;ve wandered into the emission mist. Please go back
-          to the dashboard
+          {t("not-found-description")}
         </Text>
         <Button
           onClick={() => router.push(`/${userInfo?.defaultInventoryId}`)}
           gap="8px"
           h="48px"
           px="24px"
+          fontSize="body.md"
           isLoading={isUserInfoLoading}
+          rightIcon={<ArrowForwardIcon />}
         >
-          <Text fontSize="body.md">go to dashboard</Text>
-          <ArrowForwardIcon />
+          {t("goto-dashboard")}
         </Button>
       </Box>
     </Box>

@@ -49,8 +49,9 @@ export default function Signup({
 
   const [error, setError] = useState("");
 
-  const searchParams = useSearchParams();
-  const params = searchParams.get("callbackUrl");
+  const fullUrl = window.location.href;
+  const urlParams = new URL(fullUrl);
+  const params = urlParams.searchParams.get("callbackUrl");
   const inventory = params?.split("/").pop();
 
   useEffect(() => {

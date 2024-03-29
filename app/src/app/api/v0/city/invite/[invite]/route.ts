@@ -43,5 +43,5 @@ export const GET = apiHandler(async (req, { params, session }) => {
 
   await user?.addCity(city?.cityId);
 
-  return NextResponse.redirect(`${host}/en/${inventory}`);
+  return NextResponse.redirect(`${host}/${inventory}`);
 });

@@ -55,15 +55,13 @@ export function NavigationBar({
   const { data: session, status } = useSession();
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
-
+  const currentInventoryId = userInfo?.defaultInventoryId;
   return (
     <Box
       className="flex flex-row px-8 py-4 align-middle space-x-12 items-center"
       bgColor="content.alternative"
     >
-      <NextLink
-        href={`/${inventory ? inventory : userInfo?.defaultInventoryId}`}
-      >
+      <NextLink href={`/${inventory ? inventory : currentInventoryId}`}>
         <Image
           src="/assets/logo.svg"
           width={36}
@@ -72,9 +70,7 @@ export function NavigationBar({
           className="mr-[56px]"
         />
       </NextLink>
-      <NextLink
-        href={`/${inventory ? inventory : userInfo?.defaultInventoryId}`}
-      >
+      <NextLink href={`/${inventory ? inventory : currentInventoryId}`}>
         <Heading size="18" color="base.light">
           {t("title")}
         </Heading>

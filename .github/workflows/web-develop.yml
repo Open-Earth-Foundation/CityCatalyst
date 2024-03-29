@@ -8,7 +8,7 @@ on:
       - k8s/cc-migrate.yml
       - k8s/cc-web-deploy.yml
       - k8s/cc-web.yml
-      - .github/workflows/web-actions.yml
+      - .github/workflows/web-develop.yml
     branches: ["develop"]
   pull_request:
 

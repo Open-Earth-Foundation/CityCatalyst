@@ -10,7 +10,7 @@ interface Source {
   dataset_name: string;
   source_type: string;
   url: string;
-  description: string;
+  dataset_description: string;
   access_type: string;
   geographical_location: string;
   start_year: number;

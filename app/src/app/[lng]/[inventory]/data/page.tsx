@@ -14,7 +14,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { MdOutlineHomeWork } from "react-icons/md";
 import { FiTrash2, FiTruck } from "react-icons/fi";
@@ -26,6 +26,7 @@ export default function AddDataIntro({
 }) {
   const { t } = useTranslation(lng, "data");
   const router = useRouter();
+  const { inventory } = useParams();
 
   return (
     <Box className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
@@ -129,7 +130,7 @@ export default function AddDataIntro({
         </Flex>
       </Card>
       <div className="w-full text-right my-12">
-        <NextLink href="/data/1" passHref legacyBehavior>
+        <NextLink href={`/${inventory}/data/1`} passHref legacyBehavior>
           <Button
             as="a"
             h={16}

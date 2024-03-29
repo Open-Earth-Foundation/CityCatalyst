@@ -428,7 +428,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
               </Box>
             </Box>
             <Box className="flex gap-[24px] relative justify-between top-[100px]">
-              <NextLink href="/data">
+              <NextLink href={`/${inventoryId}/data`}>
                 <Card
                   shadow="2dp"
                   backgroundColor="base.light"
@@ -629,6 +629,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                       sectorProgress={sectorProgress}
                       stepNumber={i + 1}
                       t={t}
+                      inventory={inventoryId}
                     />
                   ))
               )}

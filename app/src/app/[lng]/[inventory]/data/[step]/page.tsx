@@ -170,9 +170,9 @@ function NoDataSourcesMessage({
 }
 
 export default function AddDataSteps({
-  params: { lng, step },
+  params: { lng, step, inventory },
 }: {
-  params: { lng: string; step: string };
+  params: { lng: string; step: string; inventory: string };
 }) {
   const { t } = useTranslation(lng, "data");
   const router = useRouter();
@@ -427,7 +427,7 @@ export default function AddDataSteps({
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setConfirming(false);
     if (activeStep >= steps.length - 1) {
-      router.push("/data/review");
+      router.push(`/${inventory}/data/review`);
     } else {
       window.scrollTo({ top: 0, behavior: "smooth" });
       goToNext();
@@ -436,7 +436,7 @@ export default function AddDataSteps({
 
   const onSkip = () => {
     if (activeStep >= steps.length - 1) {
-      router.push("/data/review");
+      router.push(`/${inventory}/data/review`);
     } else {
       window.scrollTo({ top: 0, behavior: "smooth" });
       goToNext();

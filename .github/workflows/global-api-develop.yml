@@ -38,7 +38,7 @@ jobs:
           sleep 10
           createuser -w -h localhost -p 5432 -U postgres citycatalyst
           createdb -w -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst
-          cp env.sample .env
+          cp sample.env .env
 
       - name: Build coverage file
         run: |

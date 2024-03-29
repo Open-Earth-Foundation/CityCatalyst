@@ -66,7 +66,7 @@ describe("DataSource API", () => {
       where: { year: inventoryData.year },
     });
     await db.models.DataSource.destroy({
-      where: { name: { [Op.like]: "XX_DATASOURCE_TEST%" } },
+      where: { datasetName: { [Op.like]: "XX_DATASOURCE_TEST%" } },
     });
     await db.models.City.destroy({ where: { locode } });
     city = await db.models.City.create({
@@ -105,7 +105,7 @@ describe("DataSource API", () => {
     for (let i = 0; i < 3; i++) {
       const source = await db.models.DataSource.create({
         datasourceId: randomUUID(),
-        name: "XX_DATASOURCE_TEST_" + i,
+        datasetName: "XX_DATASOURCE_TEST_" + i,
         sectorId: sector.sectorId,
         apiEndpoint,
         startYear: 4000 + i,
@@ -134,7 +134,7 @@ describe("DataSource API", () => {
     const { data } = await res.json();
     assert.equal(data.length, 1);
     const { source } = data[0];
-    assert.equal(source.name, "XX_DATASOURCE_TEST_0");
+    assert.equal(source.datasetName, "XX_DATASOURCE_TEST_0");
     assert.equal(source.sectorId, sector.sectorId);
     assert.equal(source.apiEndpoint, apiEndpoint);
     assert.equal(source.geographicalLocation, "EARTH");

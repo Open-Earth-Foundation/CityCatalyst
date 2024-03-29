@@ -18,6 +18,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
 
   const token = req.nextUrl.searchParams.get("token");
   const email = req.nextUrl.searchParams.get("email");
+  const inventory = req.nextUrl.searchParams.get("inventoryId");
 
   const isVerified = jwt.verify(token!, process.env.VERIFICATION_TOKEN_SECRET!);
 
@@ -35,9 +36,6 @@ export const GET = apiHandler(async (req, { params, session }) => {
     },
   });
   const host = process.env.HOST ?? "http://localhost:3000";
-  if (!user) {
-    return NextResponse.redirect(host);
-  }
 
   const city = await db.models.City.findOne({
     where: { cityId: invite.cityId },
@@ -45,5 +43,5 @@ export const GET = apiHandler(async (req, { params, session }) => {
 
   await user?.addCity(city?.cityId);
 
-  return NextResponse.redirect(host);
+  return NextResponse.redirect(`${host}/${inventory}`);
 });

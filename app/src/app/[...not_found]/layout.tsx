@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Providers } from "../providers";
 import { dir } from "i18next";
 import { languages } from "@/i18n/settings";
+import { NavigationBar } from "@/components/navigation-bar";
 
 export const metadata: Metadata = {
   title: "CityCatalyst",
@@ -21,13 +22,16 @@ export default function RootLayout({
   params: { lng: string };
 }) {
   return (
-    <html lang={lng} dir={dir(lng)}>
+    <html lang="">
       <head>
         <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
         <link rel="icon" type="image/png" href="/assets/icon.png" />
       </head>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <NavigationBar lng="" />
+          {children}
+        </Providers>
       </body>
     </html>
   );

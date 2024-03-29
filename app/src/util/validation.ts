@@ -44,6 +44,7 @@ export const signupRequest = z
     confirmPassword: z.string().min(4),
     inviteCode: z.string().min(6).max(6),
     acceptTerms: z.literal<boolean>(true),
+    inventory: z.string().uuid().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -138,6 +139,7 @@ export type CreateUserFileRequetData = z.infer<typeof createUserFileRequset>;
 export const createUserInvite = z.object({
   userId: z.string().optional(),
   invitingUserId: z.string().uuid(),
+  inventoryId: z.string().uuid(),
   email: z.string().email(),
   name: z.string(),
   cityId: z.string(),

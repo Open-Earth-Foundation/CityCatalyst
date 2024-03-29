@@ -34,6 +34,7 @@ export const InventorySelect = ({
       cityId: inventory.cityId!,
       defaultInventoryId: inventory.inventoryId,
     }).unwrap();
+    router.push(`/${inventory.inventoryId}`);
   };
 
   return (

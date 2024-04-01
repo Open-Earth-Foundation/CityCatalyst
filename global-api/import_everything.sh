@@ -11,6 +11,24 @@ export DB_URI="postgresql://$CC_GLOBAL_API_DB_USER:$CC_GLOBAL_API_DB_PASSWORD@$C
 
 # A script to import all of our data into the Global API database
 
+# Import geography
+
+pushd importer/geography
+psql -h $CC_GLOBAL_API_DB_HOST \
+   -U $CC_GLOBAL_API_DB_USER \
+   -d $CC_GLOBAL_API_DB_NAME \
+   -f ./load_geography.sql
+popd
+
+# Import population
+
+pushd importer/population
+psql -h $CC_GLOBAL_API_DB_HOST \
+   -U $CC_GLOBAL_API_DB_USER \
+   -d $CC_GLOBAL_API_DB_NAME \
+   -f ./load_population.sql
+popd
+
 # Import OSM
 
 pushd importer/osm

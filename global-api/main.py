@@ -14,7 +14,7 @@ from routes.city_locode_endpoint_edgar import api_router as edgar_city_locode_ro
 from routes.catalogue_endpoint import api_router as catalouge_route
 from routes.catalogue_last_update_endpoint import api_router as catalogue_last_update_endpoint
 from routes.city_locode_endpoint_ghgrp import api_router as ghgrp_city_locode_route
-from routes.country_code_endpoint import api_router as country_code_route
+from routes.country_code_IEA_energy import api_router as country_code_IEA_energy_route
 from routes.citywide_emission_endpoint import api_router as citywide_route
 
 """
@@ -126,8 +126,8 @@ app.include_router(
 )
 
 app.include_router(
-    country_code_route,
-    tags=["Country Code"],
+    country_code_IEA_energy_route,
+    tags=["IEA energy"],
 )
 
 app.include_router(

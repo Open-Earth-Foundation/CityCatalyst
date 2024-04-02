@@ -38,6 +38,14 @@ psql -h $CC_GLOBAL_API_DB_HOST \
    -f ./osm_geometry_import.sql
 popd
 
+# import custom polygons
+pushd importer/custom_polygons
+$python_cmd custom_polygon_importer.py \
+  --database_uri $DB_URI \
+  --zip_file_path "./Limites Ciudad-001.zip" \
+  --extract_to_path "./processed"
+popd
+
 # Import Carbon Monitor
 
 pushd importer/carbon_monitor
@@ -119,12 +127,4 @@ psql -h $CC_GLOBAL_API_DB_HOST \
    -U $CC_GLOBAL_API_DB_USER \
    -d $CC_GLOBAL_API_DB_NAME \
    -f ./import_datasource_seeder.sql
-popd
-
-# import custom polygons
-pushd importer/custom_polygons
-$python_cmd custom_polygon_importer.py \
-  --database_uri $DB_URI \
-  --zip_file_path "./Limites Ciudad-001.zip" \
-  --extract_to_path "./processed"
 popd

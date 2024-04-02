@@ -209,10 +209,7 @@ export function SourceDrawer({
                 <Tag bgColor="brand.secondary" border={0}>
                   <TagLeftIcon as={ScaleIcon} boxSize={6} color="base.light" />
                   <TagLabel color="base.light">
-                    {t("scale")}:{" "}
-                    {source.accessType === "global-api"
-                      ? t("city")
-                      : t("country")}
+                    {t("scale")}: {t(source.spatialResolution || "unknown")}
                   </TagLabel>
                 </Tag>
 

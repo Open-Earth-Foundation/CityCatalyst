@@ -4,6 +4,7 @@ import { UserAttributes } from "@/models/User";
 import { UserFileAttributes } from "@/models/UserFile";
 import { bytesToMB } from "@/util/helpers";
 import { UserFileResponse } from "@/util/types";
+import { Tag, TagLabel } from "@chakra-ui/react";
 import {
   Body,
   Button,
@@ -88,6 +89,13 @@ export default function AdminNotificationTemplate({
                 >
                   {bytesToMB(file.file.size)}
                 </Text>
+                <div style={tagBox}>
+                  {file.subsectors?.map((item: string) => (
+                    <div key={item} style={tag}>
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </Link>
@@ -115,6 +123,24 @@ export default function AdminNotificationTemplate({
 }
 
 // Styles for the email template
+
+const tag = {
+  padding: "6px",
+  paddingLeft: "8px",
+  display: "flex",
+  alignItems: "center",
+  width: "150px",
+  overflow: "ellipsis",
+  borderRadius: "30px",
+  background: "#e8eafb",
+  color: "#2351dc",
+  marginRight: "8px",
+};
+
+const tagBox = {
+  display: "flex",
+};
+
 const main = {
   backgroundColor: "#ffffff",
   fontFamily:
@@ -159,7 +185,7 @@ const cityBox = {
   paddingLeft: "16px",
   alignItems: "center",
   gap: "16px",
-  height: "100px",
+  height: "150px",
   borderRadius: "8px",
   border: "1px solid #E6E7FF",
   marginTop: "36px",

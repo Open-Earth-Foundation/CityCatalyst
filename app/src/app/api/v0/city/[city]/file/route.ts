@@ -128,6 +128,8 @@ export const POST = apiHandler(async (req: NextRequest, context) => {
     fileReference: userFile.fileReference!,
     url: userFile.url!,
     sector: userFile.sector!,
+    subsectors: userFile.subsectors!,
+    scopes: userFile.scopes!,
     fileName: userFile.fileName!,
     lastUpdated: userFile.lastUpdated!,
     status: userFile.status!,
@@ -138,6 +140,8 @@ export const POST = apiHandler(async (req: NextRequest, context) => {
       fileType: userFile.fileType!,
     },
   };
+
+  console.log(newFileData.subsectors);
 
   const result = await service.sendEmail({
     to: "cephaschapa@gmail.com",

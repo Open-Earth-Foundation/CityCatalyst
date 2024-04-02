@@ -112,6 +112,8 @@ interface UserFileResponse {
   fileReference: string;
   url: string;
   sector: string;
+  subsectors: string[];
+  scopes: string[];
   fileName: string;
   status: string;
   gpcRefNo: string;

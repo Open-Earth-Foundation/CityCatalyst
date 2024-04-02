@@ -108,6 +108,7 @@ type fileContentValues = {
 interface UserFileResponse {
   id: string;
   userId: string;
+  cityId: string;
   fileReference: string;
   url: string;
   sector: string;
@@ -115,7 +116,7 @@ interface UserFileResponse {
   status: string;
   gpcRefNo: string;
   file: fileContentValues;
-  lastUpdated: string;
+  lastUpdated: Date;
 }
 
 interface UserInviteResponse {

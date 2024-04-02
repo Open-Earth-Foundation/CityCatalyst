@@ -17,15 +17,14 @@ import {
   Font,
   Hr,
 } from "@react-email/components";
-import { FaFileExcel } from "react-icons/fa";
 
 export default function AdminNotificationTemplate({
   user,
-  files,
+  file,
   adminNames,
 }: {
   user: { name: string; email: string; cityName: string };
-  files: UserFileResponse[];
+  file: UserFileResponse;
   adminNames: string;
 }) {
   const host = process.env.HOST ?? "http://localhost:3000";
@@ -57,42 +56,42 @@ export default function AdminNotificationTemplate({
             {user.name} ({user.email}) has uploaded files in CityCatalyst for
             revision and to upload to their inventories.
           </Text>
-          {files.map((file) => (
-            <Link
-              href={`${host}/api/v0/user/file/${file.id}/download-file`}
-              key={file.id}
-              download
-            >
-              <div style={cityBox}>
-                <ExcelFileIcon />
-                <div>
-                  <Text
-                    style={{
-                      fontSize: "14px",
-                      fontStyle: "normal",
-                      fontWeight: "500",
-                      letterSpacing: "0.5px",
-                      color: "black",
-                      marginBottom: "-15px",
-                    }}
-                  >
-                    {file.fileName}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: "14px",
-                      fontStyle: "normal",
 
-                      letterSpacing: "0.5px",
-                      color: "#7A7B9A",
-                    }}
-                  >
-                    {bytesToMB(file.file.size)}
-                  </Text>
-                </div>
+          <Link
+            href={`${host}/api/v0/user/file/${file.id}/download-file`}
+            key={file.id}
+            download
+          >
+            <div style={cityBox}>
+              <ExcelFileIcon />
+              <div>
+                <Text
+                  style={{
+                    fontSize: "14px",
+                    fontStyle: "normal",
+                    fontWeight: "500",
+                    letterSpacing: "0.5px",
+                    color: "black",
+                    marginBottom: "-15px",
+                  }}
+                >
+                  {file.fileName}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: "14px",
+                    fontStyle: "normal",
+
+                    letterSpacing: "0.5px",
+                    color: "#7A7B9A",
+                  }}
+                >
+                  {bytesToMB(file.file.size)}
+                </Text>
               </div>
-            </Link>
-          ))}
+            </div>
+          </Link>
+
           <div
             style={{
               marginTop: "36px",

@@ -1,11 +1,15 @@
+import NotificationService from "@/backend/NotificationService";
+import AdminNotificationTemplate from "@/lib/emails/AdminNotificationTemplate";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { fileEndingToMIMEType } from "@/util/helpers";
 import { createUserFileRequset } from "@/util/validation";
+import { render } from "@react-email/components";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 import { Session } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import session from "redux-persist/lib/storage/session";
 
 // TODO: use these variables to configure file size and format
 const MAX_FILE_SIZE = 5000000;
@@ -58,6 +62,19 @@ export const GET = apiHandler(async (_req: Request, context) => {
 
 export const POST = apiHandler(async (req: NextRequest, context) => {
   const userId = context.session?.user.id;
+  const service = new NotificationService();
+  const user = context.session?.user;
+  const cityId = context.params.city;
+
+  const city = await db.models.City.findOne({
+    where: {
+      cityId,
+    },
+  });
+
+  if (!city) {
+    throw new createHttpError.Unauthorized("Unauthorized");
+  }
 
   if (!context.session) {
     throw new createHttpError.Unauthorized("Unauthorized");
@@ -104,23 +121,40 @@ export const POST = apiHandler(async (req: NextRequest, context) => {
     throw new createHttpError.NotFound("User files not found");
   }
 
-  return NextResponse.json({
-    data: {
-      id: userFile.id,
-      userId: userFile.userId,
-      cityId: userFile.cityId,
-      fileReference: userFile.fileReference,
-      url: userFile.url,
-      sector: userFile.sector,
-      fileName: userFile.fileName,
-      lastUpdated: userFile.lastUpdated,
-      status: userFile.status,
-      gpcRefNo: userFile.gpcRefNo,
-      file: {
-        fileName: file.name,
-        size: file.size,
-        fileType: userFile.fileType,
-      },
+  const newFileData = {
+    id: userFile.id,
+    userId: userFile.userId!,
+    cityId: userFile.cityId!,
+    fileReference: userFile.fileReference!,
+    url: userFile.url!,
+    sector: userFile.sector!,
+    fileName: userFile.fileName!,
+    lastUpdated: userFile.lastUpdated!,
+    status: userFile.status!,
+    gpcRefNo: userFile.gpcRefNo!,
+    file: {
+      fileName: file.name,
+      size: file.size,
+      fileType: userFile.fileType!,
     },
+  };
+
+  const result = await service.sendEmail({
+    to: "cephaschapa@gmail.com",
+    subject: "Hello",
+    text: "Hello",
+    html: render(
+      AdminNotificationTemplate({
+        user: { name: user?.name!, email: user?.email!, cityName: city?.name! },
+        adminNames: process.env.ADMIN_NAMES!,
+        file: newFileData,
+      }),
+    ),
+  });
+
+  console.log(result);
+
+  return NextResponse.json({
+    data: newFileData,
   });
 });

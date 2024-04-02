@@ -49,9 +49,6 @@ jobs:
       - name: Run API tests
         run: npm run api:test
 
-      # - name: Run Cypress tests
-      #   run: npm run cy:test
-
       - name: Shut down database
         run: docker stop github_action_postgresql
 
@@ -89,3 +86,38 @@ jobs:
           docker push $IMAGE:$MAJOR
           docker push $IMAGE:$MINOR
           docker push $IMAGE:stable
+
+  deployToEKS:
+    needs: pushToGHCR
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_PROD_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_PROD_USER }}
+      EKS_PROD_NAME: ${{ secrets.EKS_PROD_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Creating kubeconfig file
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_PROD_NAME}} --region us-east-1
+
+      - name: Testing connection to EKS
+        run: kubectl get pods -n default
+
+      - name: Deploying service
+        run: |
+          kubectl create -f k8s/cc-migrate.yml -n default
+          kubectl create -f k8s/cc-seed.yml -n default
+          kubectl apply -f k8s/cc-sync-catalogue.yml -n default
+          kubectl apply -f k8s/cc-web-deploy.yml -n default
+          kubectl set env deployment/cc-web-deploy SMTP_USER=${{secrets.SMTP_USER}}
+          kubectl set env deployment/cc-web-deploy SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}}
+          kubectl set env deployment/cc-web-deploy NEXTAUTH_SECRET=${{secrets.NEXTAUTH_SECRET}}
+          kubectl set env deployment/cc-web-deploy RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}}
+          kubectl set env deployment/cc-web-deploy VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}}
+          kubectl set env deployment/cc-web-deploy CHAT_PROVIDER=openai
+          kubectl set env deployment/cc-web-deploy OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}}
+          kubectl set env deployment/cc-web-deploy HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}}
+          kubectl set env deployment/cc-web-deploy "DEFAULT_ADMIN_EMAIL=${{secrets.DEFAULT_ADMIN_EMAIL}}"
+          kubectl set env deployment/cc-web-deploy "DEFAULT_ADMIN_PASSWORD=${{secrets.DEFAULT_ADMIN_PASSWORD}}"
+          kubectl create -f k8s/cc-create-admin.yml -n default
+          kubectl rollout restart deployment cc-web-deploy -n default

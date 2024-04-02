@@ -18,7 +18,6 @@ on:
       - k8s/cc-global-api.yml
       - k8s/cc-global-api-migrate.yml
       - .github/workflows/global-api-develop.yml
-    branches: ["develop"]
 
 jobs:
   runTests:

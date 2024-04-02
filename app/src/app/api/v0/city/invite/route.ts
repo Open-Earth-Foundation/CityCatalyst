@@ -49,7 +49,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
     subject: "City Catalyst - City Invitation",
     html: render(
       InviteUserTemplate({
-        url: `${host}/api/v0/city/invite/${invite.id}?token=${invitationCode}&email=${body.email}`,
+        url: `${host}/api/v0/city/invite/${invite.id}?inventoryId=${body.inventoryId}&token=${invitationCode}&email=${body.email}`,
         user: { email: body.email, name: body.name },
         city,
         invitingUser: {

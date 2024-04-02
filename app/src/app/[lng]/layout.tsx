@@ -23,11 +23,7 @@ export default function RootLayout({
   return (
     <html lang={lng} dir={dir(lng)}>
       <head>
-        <link
-          rel="icon"
-          type="image/svg+xml"
-          href="/assets/icon.svg"
-        />
+        <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
         <link rel="icon" type="image/png" href="/assets/icon.png" />
       </head>
       <body>

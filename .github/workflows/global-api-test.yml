@@ -6,10 +6,11 @@ on:
   push:
     paths:
       - global-api/**
-      - k8s/cc-global-api-deploy.yml
-      - k8s/cc-global-api.yml
-      - k8s/cc-global-api-migrate.yml
-    branches: ["develop"]
+      - k8s/test/cc-test-global-api-deploy.yml
+      - k8s/test/cc-test-global-api.yml
+      - k8s/test/cc-test-global-api-migrate.yml
+      - .github/workflows/global-api-test.yml
+    branches: ["main"]
 
 jobs:
 
@@ -31,9 +32,9 @@ jobs:
           IMAGE: ghcr.io/open-earth-foundation/citycatalyst-global-api
         run: |
           docker build -t $IMAGE:$VERSION global-api
-          docker tag $IMAGE:$VERSION $IMAGE:latest
+          docker tag $IMAGE:$VERSION $IMAGE:main
           docker push $IMAGE:$VERSION
-          docker push $IMAGE:latest
+          docker push $IMAGE:main
 
   deployToEKS:
     needs: pushToGHCR
@@ -53,6 +54,6 @@ jobs:
 
       - name: Deploying service
         run: |
-          kubectl create -f k8s/cc-global-api-migrate.yml -n default
-          kubectl apply -f k8s/cc-global-api-deploy.yml -n default
-          kubectl rollout restart deployment cc-global-api-deploy -n default
+          kubectl create -f k8s/test/cc-test-global-api-migrate.yml -n default
+          kubectl apply -f k8s/test/cc-test-global-api-deploy.yml -n default
+          kubectl rollout restart deployment cc-test-global-api-deploy -n default

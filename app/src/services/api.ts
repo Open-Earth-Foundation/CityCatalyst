@@ -376,6 +376,7 @@ export const api = createApi({
         email: string;
         userId: string;
         invitingUserId: string;
+        inventoryId: string;
       }
     >({
       query: (data) => {

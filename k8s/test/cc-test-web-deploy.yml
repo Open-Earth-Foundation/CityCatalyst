@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: cc-test-web
-          image: ghcr.io/open-earth-foundation/citycatalyst:latest
+          image: ghcr.io/open-earth-foundation/citycatalyst:main
           # Set to Never for local
           imagePullPolicy: Always
           ports:

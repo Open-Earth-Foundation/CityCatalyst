@@ -12,11 +12,12 @@ psql -U ccglobal -d ccglobal -f import_datasource_seeder.sql
 
 - `datasource_id`: unique UUID for the datasource
 - `publisher_id`: abbreviation of the original name of the datasource (eg: EPA)
-- `name`: complete name of the datasource (eg: Environmental Protection Agency)
-- `description`: brief description of the dataset from the datasource
+- `datasource_name`: complete name of the datasource (eg: Environmental Protection Agency)
+- `dataset_name`: dataset name assign after transformation phase (eg. Manufacturing Industries and Construction Direct Emitters reported in the Greenhouse Gas Reporting Program)
+- `dataset_description`: brief description of the dataset from the datasource
 - `source_type`: should always be set to `third_party` for the global API. This is set to `user` for user-supplied data.
 - `access_type`: the type of access the data (eg: free, paid, etc)
-- `URL`: the link where the data was accessed
+- `dataset_url`: the link where the data was accessed
 - `geographical_location`: it contains the geographical coverage of the data (eg: AR for Argentina data, EARTH for international datasources with global coverage)
 - `start_year`: data start date
 - `end_year`: data end date
@@ -26,9 +27,12 @@ psql -U ccglobal -d ccglobal -f import_datasource_seeder.sql
 - `language`: original language of the dataset
 - `accessibility`: if this data source can be publicly accessed or requires special access privileges (e.g. `public`, `private`, `paid`)
 - `data_quality`: quality of the data based on the GPC classification (low, medium, high)
-- `notes`: extra information about the dataset (eg: brief description of the methodology applied to obtain emission values when the raw data is activity data)
+- `notes`: extra information about the dataset
 - `units`: units of the emissions
-- `methodology_url`: link to the methodology on how the data was obtained by the source
+- `methodology_description`: description of the methodology on how the data was obtained by the source
+- `methodology_url`: link to the methodology on how the data was obtained by the source (when it is available)
+- `transformation_description`: the type of transformation that has been done to the raw data, the assumptions that were made, emission factors that were applied, etc 
 - `retrieval_method`: method used by CityCatalyst to access the data from the database
 - `api_endpoint`: Global API endpoint to access the data
-- `gpc_reference_number`: Sub-sector reference number from the Global Protocol for Community-Scale Greenhouse Gas Emission Inventories (GPC)
+- `gpc_reference_number`: sub-sector reference number from the Global Protocol for Community-Scale Greenhouse Gas Emission Inventories (GPC)
+- `scope`: the scope for which it includes data within the subsector 

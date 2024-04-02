@@ -34,6 +34,9 @@ export const appTheme = extendTheme({
       neutral: "#D7D8FA",
       overlay: "#E6E7FF",
     },
+    divider: {
+      neutral: "#F0F0F0",
+    },
 
     background: {
       default: "#FFFFFF",
@@ -82,6 +85,7 @@ export const appTheme = extendTheme({
 
   fontSizes: {
     display: {
+      xl: "140px",
       lg: "57px",
       md: "45px",
       sm: "36px",

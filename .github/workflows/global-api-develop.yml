@@ -11,6 +11,14 @@ on:
       - k8s/cc-global-api-migrate.yml
       - .github/workflows/global-api-develop.yml
     branches: ["develop"]
+  pull_request:
+    paths:
+      - global-api/**
+      - k8s/cc-global-api-deploy.yml
+      - k8s/cc-global-api.yml
+      - k8s/cc-global-api-migrate.yml
+      - .github/workflows/global-api-develop.yml
+    branches: ["develop"]
 
 jobs:
   runTests:
@@ -38,7 +46,7 @@ jobs:
           sleep 10
           createuser -w -h localhost -p 5432 -U postgres citycatalyst
           createdb -w -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst
-          cp env.example .env
+          cp sample.env .env
 
       - name: Build coverage file
         run: |
@@ -64,7 +72,9 @@ jobs:
         run: docker stop github_action_postgresql
 
   pushToGHCR:
+    needs: runTests
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v4
 

@@ -17,15 +17,15 @@ export const POST = apiHandler(async (req: Request) => {
     role: Roles.User,
   });
 
-  const inventory = await db.models.Inventory.findOne({
-    where: {
-      inventoryId: body.inventory,
-    },
-  });
+  if (body.inventory) {
+    const inventory = await db.models.Inventory.findOne({
+      where: {
+        inventoryId: body.inventory,
+      },
+    });
 
-  const cityId = inventory?.cityId;
-
-  user.addCity(cityId);
+    await user.addCity(inventory?.cityId);
+  }
 
   return NextResponse.json({
     user: {

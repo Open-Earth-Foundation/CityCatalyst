@@ -479,6 +479,9 @@ export default function AddDataSteps({
     {},
   );
 
+  const [disconnectingDataSourceId, setDisconnectingDataSourceId] = useState<
+    string | null
+  >(null);
   const [disconnectThirdPartyData, { isLoading: isDisconnectLoading }] =
     api.useDisconnectThirdPartyDataMutation();
 
@@ -486,17 +489,20 @@ export default function AddDataSteps({
     source: DataSourceWithRelations,
   ) => {
     if (isSourceConnected(source)) {
-      source.inventoryValues!.forEach(
-        async (inventoryValue: InventoryValueAttributes) => {
-          await disconnectThirdPartyData({
-            inventoryId: inventoryValue.inventoryId,
-            subCategoryId: inventoryValue.subCategoryId,
-          }).then((res: any) => {
-            // Todo show alert
-            onSearchDataSourcesClicked();
-          });
-        },
+      setDisconnectingDataSourceId(source.datasourceId);
+      await Promise.all(
+        source.inventoryValues!.map(
+          async (inventoryValue: InventoryValueAttributes) => {
+            return await disconnectThirdPartyData({
+              inventoryId: inventoryValue.inventoryId,
+              subCategoryId: inventoryValue.subCategoryId,
+            });
+          },
+        ),
       );
+      // TODO show alert
+      setDisconnectingDataSourceId(null);
+      onSearchDataSourcesClicked();
     } else {
       console.log("Something went wrong");
     }
@@ -747,7 +753,10 @@ export default function AddDataSteps({
                         px={6}
                         py={4}
                         onClick={() => onDisconnectThirdPartyData(source)}
-                        isLoading={isDisconnectLoading}
+                        isLoading={
+                          isDisconnectLoading &&
+                          source.datasourceId === disconnectingDataSourceId
+                        }
                         onMouseEnter={() => onButtonHover(source)}
                         onMouseLeave={() => onMouseLeave(source)}
                         leftIcon={<Icon as={MdCheckCircle} />}

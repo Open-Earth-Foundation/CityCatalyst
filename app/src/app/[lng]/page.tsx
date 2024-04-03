@@ -10,7 +10,7 @@ export default function HomePage({
 }: {
   params: { lng: string };
 }) {
-  const { t } = useTranslation(lng, "dashboard");
+  const { t } = useTranslation(lng, "root-page");
   const router = useRouter();
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();

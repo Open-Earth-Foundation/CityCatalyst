@@ -23,6 +23,7 @@ import {
 } from "../helpers";
 import { randomUUID } from "node:crypto";
 import fs from "fs";
+import NotificationService from "@/backend/NotificationService";
 
 enum STATUS {
   INPROGRESS = "in progress",
@@ -66,6 +67,10 @@ describe("UserFile API", () => {
     await db.models.UserFile.destroy({ where: { userId: testUserID } });
     await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
     await db.models.City.upsert({ cityId: testCityID, name: "TEST_CITY" });
+    const service = new NotificationService();
+    service.sendEmail = async () => {
+      return { success: true, messageId: "send" };
+    };
   });
   after(async () => {
     if (db.sequelize) await db.sequelize.close();
@@ -123,7 +128,7 @@ describe("UserFile API", () => {
     formData.append("fileReference", invalidFileData.file_reference);
     formData.append("gpcRefNo", invalidFileData.gpc_ref_no);
     const req = mockRequestFormData(formData);
-    const res = await createUserFile(req, { params: { user: testUserID } });
+    const res = await createUserFile(req, { params: { city: testCityID } });
     assert.equal(res.status, 400);
   });
 

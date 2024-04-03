@@ -3,8 +3,14 @@ import { api } from "@/services/api";
 import { Box, Spinner, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { useTranslation } from "@/i18n/client";
 
-export default function HomePage() {
+export default function HomePage({
+  params: { lng },
+}: {
+  params: { lng: string };
+}) {
+  const { t } = useTranslation(lng, "dashboard");
   const router = useRouter();
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
@@ -31,7 +37,7 @@ export default function HomePage() {
     >
       <Spinner />
       {/* TODO: add right loading format */}
-      <Text>Loading dashboard ...</Text>
+      <Text>{t("loading-dashboard")}</Text>
     </Box>
   );
 }

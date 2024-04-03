@@ -11,14 +11,14 @@ python ./importer/argentinian_datasets/Energy_Balances/transformation_BEN_AR.py 
 ```
 3. Extract the activity row from the source:
 ```bash
-psql -U ccglobal -d ccglobal -f ./importer/argentinian_datasets/Energy_Balances/loading_BEN_AR.sql -v file_path=[path where the transformed data was saved]
+psql -U ccglobal -d ccglobal -f ./importer/argentinian_datasets/Energy_Balances/loading_BEN_AR.sql
 ```
 
 ### Directory tree
 ```sh
 .
-├── README.md                           # top level readme
-├── extraction_energy_balances.py       # extraction script
-├── transformation_energy_balances.py   # transformation script
-└── load__energy_balances.py            # loading script    
+├── README.md                  # top level readme
+├── extraction_BEN_AR.py       # extraction script
+├── transformation_BEN_AR.py   # transformation script
+└── loading_BEN_AR.py          # loading script    
 ```

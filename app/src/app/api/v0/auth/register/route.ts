@@ -24,7 +24,7 @@ export const POST = apiHandler(async (req: Request) => {
       },
     });
 
-    user.addCity(inventory?.cityId);
+    await user.addCity(inventory?.cityId);
   }
 
   return NextResponse.json({

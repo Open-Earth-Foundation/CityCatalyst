@@ -16,9 +16,7 @@ export default function HomePage({
     api.useGetUserInfoQuery();
 
   useEffect(() => {
-    const defaultInventoryAvailable = userInfo?.defaultInventoryId
-      ? true
-      : false;
+    const defaultInventoryAvailable = !!userInfo?.defaultInventoryId;
     const defaultInventoryPath = `/${userInfo?.defaultInventoryId}`;
     if (defaultInventoryAvailable) {
       router.push(defaultInventoryPath);

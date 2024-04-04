@@ -60,14 +60,16 @@ export default function Settings({
   const { data: inventory } = api.useGetInventoryQuery(inventoryId, {
     skip: !userInfo,
   });
+
   const cityId = inventory?.city.cityId;
+
   const { data: cityUsers } = api.useGetCityUsersQuery(
     { cityId: cityId! },
     { skip: !cityId },
   );
 
   const { data: userFiles } = api.useGetUserFilesQuery(cityId!, {
-    skip: !userInfo,
+    skip: !cityId,
   });
 
   return (

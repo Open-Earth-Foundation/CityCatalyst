@@ -61,7 +61,7 @@ export default function Settings({
     skip: !userInfo,
   });
 
-  const cityId = inventory && inventory?.city.cityId;
+  const cityId = inventory?.city.cityId;
 
   const { data: cityUsers } = api.useGetCityUsersQuery(
     { cityId: cityId! },

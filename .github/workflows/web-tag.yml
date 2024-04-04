@@ -10,7 +10,9 @@ on:
       - k8s/cc-web.yml
       - .github/workflows/web-tag.yml
     tags:
-      - '^v\d+\.\d+\.\d+$'
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+    tags-ignore:
+      - '-*'
 
 jobs:
   runTests:

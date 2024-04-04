@@ -9,10 +9,10 @@ import { RootState } from "@/lib/store";
 
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { Box, Button, Card, Heading, Icon, Text } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
-import { FaRegTrashAlt, FaTrash } from "react-icons/fa";
-import { FiTrash, FiTrash2 } from "react-icons/fi";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { FiTrash2 } from "react-icons/fi";
 import { MdOutlineEdit } from "react-icons/md";
 import { useSelector, useDispatch } from "react-redux";
 import { clear, removeSectorData } from "@/features/city/inventoryDataSlice";
@@ -21,11 +21,17 @@ import { appendFileToFormData } from "@/util/helpers";
 import { useState } from "react";
 
 export default function ReviewPage({
-  params: { lng, inventoryId },
+  params: { lng },
 }: {
-  params: { lng: string; inventoryId: string };
+  params: { lng: string };
 }) {
   const { t } = useTranslation(lng, "data");
+  const { inventory: inventoryParam } = useParams();
+  let inventoryId = inventoryParam as string | null;
+  if (inventoryId === "null" || inventoryId === "undefined") {
+    inventoryId = null;
+  }
+
   const router = useRouter();
   const dispatch = useDispatch();
   const getAllSectorData = useSelector(

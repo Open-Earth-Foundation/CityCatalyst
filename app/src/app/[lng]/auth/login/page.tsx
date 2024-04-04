@@ -53,8 +53,16 @@ export default function Login({
   const searchParams = useSearchParams();
 
   const [error, setError] = useState("");
-  const defaultUrl = `https://${document.location.host}/${lng}`;
-  const callbackUrl = searchParams.get("callbackUrl") || defaultUrl;
+  const defaultUrl = `/${lng}`;
+  const callbackParam = searchParams.get("callbackUrl");
+  let callbackUrl = defaultUrl;
+  if (
+    callbackParam &&
+    callbackParam !== "null" &&
+    callbackParam !== "undefined"
+  ) {
+    callbackUrl = callbackParam;
+  }
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
       const res = await signIn("credentials", {

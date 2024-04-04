@@ -52,10 +52,12 @@ export default function Signup({
   const fullUrl = window.location.href;
   const urlParams = new URL(fullUrl);
   const callbackUrl = urlParams.searchParams.get("callbackUrl");
-  if (callbackUrl) {
+  if (callbackUrl && callbackUrl != "null" && callbackUrl != "undefined") {
     try {
-      const url = new URL(callbackUrl);
-      const callbackUrlSegments = url.pathname.split("/");
+      const path = callbackUrl.startsWith("/")
+        ? callbackUrl
+        : new URL(callbackUrl).pathname;
+      const callbackUrlSegments = path.split("/");
       if (callbackUrlSegments.length > 2) {
         inventoryId = callbackUrlSegments.pop();
       }

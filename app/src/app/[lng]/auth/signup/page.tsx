@@ -16,7 +16,7 @@ import {
   Input,
   Text,
 } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
@@ -48,11 +48,14 @@ export default function Signup({
   const [error, setError] = useState("");
 
   // extract inventory id from callbackUrl search parameter
+  const searchParams = useSearchParams();
+  let callbackUrl = searchParams.get("callbackUrl");
+  if (!callbackUrl || callbackUrl === "null" || callbackUrl === "undefined") {
+    callbackUrl = null;
+  }
+
   let inventoryId: string | undefined = undefined;
-  const fullUrl = window.location.href;
-  const urlParams = new URL(fullUrl);
-  const callbackUrl = urlParams.searchParams.get("callbackUrl");
-  if (callbackUrl && callbackUrl != "null" && callbackUrl != "undefined") {
+  if (callbackUrl) {
     try {
       const path = callbackUrl.startsWith("/")
         ? callbackUrl
@@ -91,7 +94,8 @@ export default function Signup({
         return;
       }
 
-      const nextCallbackUrl = `/auth/check-email?email=${data.email}&callbackUrl=${callbackUrl}`;
+      const callbackParam = callbackUrl ? `&callbackUrl=${callbackUrl}` : "";
+      const nextCallbackUrl = `/auth/check-email?email=${data.email}${callbackParam}`;
       router.push(nextCallbackUrl);
 
       // TODO automatic login required?

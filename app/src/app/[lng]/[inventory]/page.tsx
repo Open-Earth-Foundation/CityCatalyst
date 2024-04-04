@@ -76,8 +76,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const { t } = useTranslation(lng, "dashboard");
   const toast = useToast();
   const router = useRouter();
-  const { inventory: cityParam } = useParams();
-  const inventoryId = cityParam as string;
+  const { inventory: inventoryParam } = useParams();
+  let inventoryId = inventoryParam as string | null;
+  if (inventoryId === "null" || inventoryId === "undefined") {
+    inventoryId = null;
+  }
 
   // query API data
   // TODO maybe rework this logic into one RTK query:

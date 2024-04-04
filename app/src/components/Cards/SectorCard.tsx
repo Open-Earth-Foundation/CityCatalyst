@@ -33,7 +33,7 @@ export function SectorCard({
   sectorProgress: SectorProgress;
   stepNumber: number;
   t: TFunction;
-  inventory: string;
+  inventory: string | null;
 }) {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const toggleAccordion = () => setAccordionOpen(!isAccordionOpen);

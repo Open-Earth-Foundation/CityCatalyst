@@ -69,7 +69,7 @@ export default function Settings({
   );
 
   const { data: userFiles } = api.useGetUserFilesQuery(cityId!, {
-    skip: !inventory,
+    skip: !cityId,
   });
 
   return (

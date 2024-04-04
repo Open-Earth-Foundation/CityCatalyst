@@ -21,9 +21,9 @@ import { appendFileToFormData } from "@/util/helpers";
 import { useState } from "react";
 
 export default function ReviewPage({
-  params: { lng, inventory: inventoryId },
+  params: { lng },
 }: {
-  params: { lng: string; inventory: string };
+  params: { lng: string };
 }) {
   const { t } = useTranslation(lng, "data");
   const { inventory: inventoryParam } = useParams();

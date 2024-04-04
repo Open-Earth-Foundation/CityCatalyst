@@ -11,12 +11,11 @@ on:
       - .github/workflows/web-tag.yml
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
-    tags-ignore:
-      - '-*'
 
 jobs:
   runTests:
     runs-on: ubuntu-latest
+    if: ${{ !contains(github.ref, '-') }}
     env:
       NODE_ENV: test
       NEXTAUTH_SECRET: "diTMz/XLX4edSmmfzwJtmzKjCJGRt81Gf0PdjO3IPs8="
@@ -56,6 +55,7 @@ jobs:
 
   pushToGHCR:
     needs: runTests
+    if: ${{ !contains(github.ref, '-') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -91,6 +91,7 @@ jobs:
 
   deployToEKS:
     needs: pushToGHCR
+    if: ${{ !contains(github.ref, '-') }}
     runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_PROD_USER }}

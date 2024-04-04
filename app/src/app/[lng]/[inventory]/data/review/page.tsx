@@ -11,8 +11,8 @@ import { ArrowBackIcon } from "@chakra-ui/icons";
 import { Box, Button, Card, Heading, Icon, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 
-import { FaRegTrashAlt, FaTrash } from "react-icons/fa";
-import { FiTrash, FiTrash2 } from "react-icons/fi";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { FiTrash2 } from "react-icons/fi";
 import { MdOutlineEdit } from "react-icons/md";
 import { useSelector, useDispatch } from "react-redux";
 import { clear, removeSectorData } from "@/features/city/inventoryDataSlice";

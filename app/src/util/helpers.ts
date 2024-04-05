@@ -125,3 +125,34 @@ export function keyBy<T>(
     {} as Record<string, T>,
   );
 }
+
+interface PopulationEntry {
+  year: number;
+  population: number;
+}
+
+/// Finds entry which has the year closest to the selected inventory year
+export function findClosestYear(
+  populationData: PopulationEntry[] | undefined,
+  year: number,
+  maxYearDifference: number = 10,
+): PopulationEntry | null {
+  if (!populationData || populationData?.length === 0) {
+    return null;
+  }
+  return populationData.reduce(
+    (prev, curr) => {
+      // don't allow years outside of range
+      if (Math.abs(curr.year - year) > maxYearDifference) {
+        return prev;
+      }
+      if (!prev) {
+        return curr;
+      }
+      let prevDelta = Math.abs(year - prev.year);
+      let currDelta = Math.abs(year - curr.year);
+      return prevDelta < currDelta ? prev : curr;
+    },
+    null as PopulationEntry | null,
+  );
+}

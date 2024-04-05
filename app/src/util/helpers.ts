@@ -126,7 +126,7 @@ export function keyBy<T>(
   );
 }
 
-interface PopulationEntry {
+export interface PopulationEntry {
   year: number;
   population: number;
 }

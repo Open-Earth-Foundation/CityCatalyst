@@ -13,6 +13,9 @@ import { Op } from "sequelize";
 import { z } from "zod";
 import { logger } from "@/services/logger";
 import { Publisher } from "@/models/Publisher";
+import { PopulationEntry, findClosestYear } from "@/util/helpers";
+import { PopulationAttributes } from "@/models/Population";
+import { Inventory } from "@/models/Inventory";
 
 const maxPopulationYearDifference = 5;
 const downscaledByCountryPopulation = "global_api_downscaled_by_population";
@@ -22,6 +25,68 @@ const populationScalingRetrievalMethods = [
   downscaledByCountryPopulation,
   downscaledByRegionPopulation,
 ];
+
+async function findPopulationScaleFactors(
+  inventory: Inventory,
+  sources: DataSource[],
+) {
+  let countryPopulationScaleFactor = 1;
+  let regionPopulationScaleFactor = 1;
+  let populationIssue: string | null = null;
+  if (
+    sources.some((source) =>
+      populationScalingRetrievalMethods.includes(source.retrievalMethod ?? ""),
+    )
+  ) {
+    const populations = await db.models.Population.findAll({
+      where: {
+        cityId: inventory.cityId,
+        year: {
+          [Op.between]: [
+            inventory.year! - maxPopulationYearDifference,
+            inventory.year! + maxPopulationYearDifference,
+          ],
+        },
+      },
+      order: [["year", "DESC"]], // favor more recent population entries
+    });
+    const cityPopulations = populations.filter((pop) => !!pop.population);
+    const cityPopulation = findClosestYear(
+      cityPopulations as PopulationEntry[],
+      inventory.year!,
+    );
+    const countryPopulations = populations.filter(
+      (pop) => !!pop.countryPopulation,
+    );
+    const countryPopulation = findClosestYear(
+      countryPopulations as PopulationEntry[],
+      inventory.year!,
+    ) as PopulationAttributes;
+    const regionPopulations = populations.filter(
+      (pop) => !!pop.regionPopulation,
+    );
+    const regionPopulation = findClosestYear(
+      regionPopulations as PopulationEntry[],
+      inventory.year!,
+    ) as PopulationAttributes;
+    // TODO allow country downscaling to work if there is no region population?
+    if (!cityPopulation || !countryPopulation || !regionPopulation) {
+      // City is missing population/ region population/ country population for a year close to the inventory year
+      populationIssue = "missing-population"; // translation key
+    } else {
+      countryPopulationScaleFactor =
+        cityPopulation.population / countryPopulation.countryPopulation!;
+      regionPopulationScaleFactor =
+        cityPopulation.population / regionPopulation.regionPopulation!;
+    }
+  }
+
+  return {
+    countryPopulationScaleFactor,
+    regionPopulationScaleFactor,
+    populationIssue,
+  };
+}
 
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const inventory = await db.models.Inventory.findOne({
@@ -80,42 +145,11 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const applicableSources = DataSourceService.filterSources(inventory, sources);
 
   // determine scaling factor for downscaled sources
-  let countryPopulationScaleFactor = 1;
-  let regionPopulationScaleFactor = 1;
-  let populationIssue: string | null = null;
-  if (
-    sources.some((source) =>
-      populationScalingRetrievalMethods.includes(source.retrievalMethod ?? ""),
-    )
-  ) {
-    const population = await db.models.Population.findOne({
-      where: {
-        cityId: inventory.cityId,
-        year: {
-          [Op.between]: [
-            inventory.year! - maxPopulationYearDifference,
-            inventory.year! + maxPopulationYearDifference,
-          ],
-        },
-      },
-      order: [["year", "DESC"]], // favor more recent population entries
-    });
-    // TODO allow country downscaling to work if there is no region population?
-    if (
-      !population ||
-      !population.population ||
-      !population.countryPopulation ||
-      !population.regionPopulation
-    ) {
-      // City is missing population/ region population/ country population for a year close to the inventory year
-      populationIssue = "missing-population"; // translation key
-    } else {
-      countryPopulationScaleFactor =
-        population.population / population.countryPopulation;
-      regionPopulationScaleFactor =
-        population.population / population.regionPopulation;
-    }
-  }
+  const {
+    countryPopulationScaleFactor,
+    regionPopulationScaleFactor,
+    populationIssue,
+  } = await findPopulationScaleFactors(inventory, applicableSources);
 
   // TODO add query parameter to make this optional?
   const sourceData = (
@@ -192,6 +226,12 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
   // TODO check if the user has made manual edits that would be overwritten
   // TODO create new versioning record
 
+  const {
+    countryPopulationScaleFactor,
+    regionPopulationScaleFactor,
+    populationIssue,
+  } = await findPopulationScaleFactors(inventory, applicableSources);
+
   // download source data and apply in database
   const sourceResults = await Promise.all(
     applicableSources.map(async (source) => {
@@ -211,22 +251,19 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
           result.success = false;
         }
       } else if (
-        source.retrievalMethod === "global_api_downscaled_by_population"
+        populationScalingRetrievalMethods.includes(source.retrievalMethod ?? "")
       ) {
-        const population = await db.models.Population.findOne({
-          where: {
-            cityId: inventory.cityId,
-            year: inventory.year,
-          },
-        });
-        if (!population?.population || !population?.countryPopulation) {
-          result.issue =
-            "City is missing population/ country population for the inventory year";
+        if (populationIssue) {
+          result.issue = populationIssue;
           result.success = false;
           return result;
         }
-        const scaleFactor =
-          population.population / population.countryPopulation;
+        let scaleFactor = 1.0;
+        if (source.retrievalMethod === downscaledByCountryPopulation) {
+          scaleFactor = countryPopulationScaleFactor;
+        } else if (source.retrievalMethod === downscaledByRegionPopulation) {
+          scaleFactor = regionPopulationScaleFactor;
+        }
         const sourceStatus = await DataSourceService.applyGlobalAPISource(
           source,
           inventory,

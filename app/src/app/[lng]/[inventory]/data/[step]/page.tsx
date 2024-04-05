@@ -10,7 +10,11 @@ import {
   WorldSearchIcon,
 } from "@/components/icons";
 import WizardSteps from "@/components/wizard-steps";
-import { addFile, removeFile } from "@/features/city/inventoryDataSlice";
+import {
+  InventoryUserFileAttributes,
+  addFile,
+  removeFile,
+} from "@/features/city/inventoryDataSlice";
 import { useTranslation } from "@/i18n/client";
 import { RootState } from "@/lib/store";
 import { ScopeAttributes } from "@/models/Scope";
@@ -73,6 +77,7 @@ import type {
 
 import AddFileDataModal from "@/components/Modals/add-file-data-modal";
 import { InventoryValueAttributes } from "@/models/InventoryValue";
+import { UserFileAttributes } from "@/models/UserFile";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -884,86 +889,88 @@ export default function AddDataSteps({
               </Box>
               <Box display="flex" flexDirection="column" gap="8px">
                 {sectorData &&
-                  sectorData[0]?.files.map((file: any, i: number) => {
-                    return (
-                      <Card
-                        shadow="none"
-                        minH="120px"
-                        w="full"
-                        borderWidth="1px"
-                        borderColor="border.overlay"
-                        borderRadius="8px"
-                        px="16px"
-                        py="16px"
-                        key={i}
-                      >
-                        <Box display="flex" gap="16px">
-                          <Box>
-                            <ExcelFileIcon />
-                          </Box>
-                          <Box
-                            display="flex"
-                            flexDirection="column"
-                            justifyContent="center"
-                            gap="8px"
-                          >
-                            <Heading
-                              fontSize="lable.lg"
-                              fontWeight="normal"
-                              letterSpacing="wide"
-                              isTruncated
+                  sectorData[0]?.files.map(
+                    (file: InventoryUserFileAttributes, i: number) => {
+                      return (
+                        <Card
+                          shadow="none"
+                          minH="120px"
+                          w="full"
+                          borderWidth="1px"
+                          borderColor="border.overlay"
+                          borderRadius="8px"
+                          px="16px"
+                          py="16px"
+                          key={i}
+                        >
+                          <Box display="flex" gap="16px">
+                            <Box>
+                              <ExcelFileIcon />
+                            </Box>
+                            <Box
+                              display="flex"
+                              flexDirection="column"
+                              justifyContent="center"
+                              gap="8px"
                             >
-                              {file.fileName}
-                            </Heading>
-                            <Text
-                              fontSize="body.md"
-                              fontWeight="normal"
-                              color="interactive.control"
-                            >
-                              {bytesToMB(file.size)}
-                            </Text>
-                          </Box>
-                          <Box
-                            color="sentiment.negativeDefault"
-                            display="flex"
-                            justifyContent="right"
-                            alignItems="center"
-                            w="full"
-                          >
-                            <Button
-                              variant="ghost"
+                              <Heading
+                                fontSize="lable.lg"
+                                fontWeight="normal"
+                                letterSpacing="wide"
+                                isTruncated
+                              >
+                                {file.fileName}
+                              </Heading>
+                              <Text
+                                fontSize="body.md"
+                                fontWeight="normal"
+                                color="interactive.control"
+                              >
+                                {bytesToMB(file.size ?? 0)}
+                              </Text>
+                            </Box>
+                            <Box
                               color="sentiment.negativeDefault"
-                              onClick={() =>
-                                removeSectorFile(
-                                  file.fileId,
-                                  sectorData[0].sectorName,
-                                )
-                              }
+                              display="flex"
+                              justifyContent="right"
+                              alignItems="center"
+                              w="full"
                             >
-                              <FiTrash2 size={24} />
-                            </Button>
+                              <Button
+                                variant="ghost"
+                                color="sentiment.negativeDefault"
+                                onClick={() =>
+                                  removeSectorFile(
+                                    file.fileId,
+                                    sectorData[0].sectorName,
+                                  )
+                                }
+                              >
+                                <FiTrash2 size={24} />
+                              </Button>
+                            </Box>
                           </Box>
-                        </Box>
-                        <Box w="full" className="relative pl-[63px]">
-                          {file.subsectors?.split(",").map((item: any) => (
-                            <Tag
-                              key={item}
-                              mt={2}
-                              mr={2}
-                              size="md"
-                              borderRadius="full"
-                              variant="solid"
-                              color="content.alternative"
-                              bg="background.neutral"
-                              maxW="150px"
-                            >
-                              <TagLabel>{item}</TagLabel>
-                            </Tag>
-                          ))}
-                        </Box>
-                      </Card>
-                    );
-                  })}
+                          <Box w="full" className="relative pl-[63px]">
+                            {file.subsectors?.split(",").map((item: any) => (
+                              <Tag
+                                key={item}
+                                mt={2}
+                                mr={2}
+                                size="md"
+                                borderRadius="full"
+                                variant="solid"
+                                color="content.alternative"
+                                bg="background.neutral"
+                                maxW="150px"
+                              >
+                                <TagLabel>{item}</TagLabel>
+                              </Tag>
+                            ))}
+                          </Box>
+                        </Card>
+                      );
+                    },
+                  )}
               </Box>
             </Box>
           </Box>

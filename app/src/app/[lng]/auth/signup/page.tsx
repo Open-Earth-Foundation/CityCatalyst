@@ -85,7 +85,11 @@ export default function Signup({
       if (!res.ok) {
         const data = await res.json();
         logger.error("Failed to sign up", data);
-        setError(data.error.message);
+        let message = data.error.message;
+        if (message === "Entity exists already.") {
+          message = t("user-exists-already");
+        }
+        setError(message);
         return;
       }
 
@@ -134,7 +138,12 @@ export default function Signup({
           </FormErrorMessage>
         </FormControl>
         <EmailInput register={register} error={errors.email} t={t} />
-        <PasswordInput register={register} error={errors.password} t={t}>
+        <PasswordInput
+          register={register}
+          error={errors.password}
+          shouldValidate={true}
+          t={t}
+        >
           <FormHelperText>
             <InfoOutlineIcon
               color="interactive.secondary"

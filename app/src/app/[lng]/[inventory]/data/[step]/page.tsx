@@ -304,8 +304,7 @@ export default function AddDataSteps({
   const dataSources = allDataSources?.filter(({ source, data }) => {
     const referenceNumber =
       source.subCategory?.referenceNumber || source.subSector?.referenceNumber;
-    if (!data) return false;
-    if (!referenceNumber) return false;
+    if (!data || !referenceNumber) return false;
     const sectorReferenceNumber = referenceNumber.split(".")[0];
 
     return sectorReferenceNumber === currentStep.referenceNumber;
@@ -946,7 +945,7 @@ export default function AddDataSteps({
                           </Box>
                         </Box>
                         <Box w="full" className="relative pl-[63px]">
-                          {file.subsectors.split(",").map((item: any) => (
+                          {file.subsectors?.split(",").map((item: any) => (
                             <Tag
                               key={item}
                               mt={2}

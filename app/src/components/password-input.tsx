@@ -1,3 +1,4 @@
+import { passwordRegex } from "@/util/validation";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -19,6 +20,7 @@ export default function PasswordInput({
   name = t("password"),
   id = "password",
   w,
+  shouldValidate = false,
 }: {
   children?: React.ReactNode;
   error: FieldError | undefined;
@@ -27,6 +29,7 @@ export default function PasswordInput({
   name?: String;
   id?: String;
   w?: string;
+  shouldValidate?: boolean;
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const handlePasswordVisibility = () => setShowPassword(!showPassword);
@@ -42,6 +45,12 @@ export default function PasswordInput({
           {...register(id, {
             required: t("password-required"),
             minLength: { value: 4, message: t("min-length", { length: 4 }) },
+            pattern: shouldValidate
+              ? {
+                  value: passwordRegex,
+                  message: t("password-invalid"),
+                }
+              : undefined,
           })}
         />
         <InputRightElement width="3rem" mr={2}>

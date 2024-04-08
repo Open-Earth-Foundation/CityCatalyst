@@ -119,6 +119,8 @@ type DataSourceData = {
 
 type SubSectorWithRelations = SubSectorAttributes & {
   completed: boolean;
+  completedCount: number;
+  totalCount: number;
   scope: ScopeAttributes;
   subCategories: SubCategoryAttributes[];
 };

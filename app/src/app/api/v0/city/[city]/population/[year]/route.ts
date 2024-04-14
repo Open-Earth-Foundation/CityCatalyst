@@ -1,7 +1,7 @@
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
-import { PopulationEntry, findClosestYear } from "@/util/helpers";
+import { PopulationEntry, findClosestYearToInventory } from "@/util/helpers";
 import { NextResponse } from "next/server";
 
 export const GET = apiHandler(async (_req: Request, { session, params }) => {
@@ -15,7 +15,7 @@ export const GET = apiHandler(async (_req: Request, { session, params }) => {
       population: population!
     }
   })
-
-  const allPopulationData = findClosestYear(populationEntry, parseInt(params.year))
+ 
+  const allPopulationData = findClosestYearToInventory(populationEntry, parseInt(params.year))
   return NextResponse.json({ data: allPopulationData });
 });

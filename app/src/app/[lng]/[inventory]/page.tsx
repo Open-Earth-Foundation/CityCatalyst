@@ -8,8 +8,9 @@ import { SegmentedProgress } from "@/components/SegmentedProgress";
 import { CircleIcon } from "@/components/icons";
 import { NavigationBar } from "@/components/navigation-bar";
 import { useTranslation } from "@/i18n/client";
-import { api, useGetCityPopulationQuery } from "@/services/api";
+import { api, useGetCityPopulationQuery, useGetOCCityDataQuery } from "@/services/api";
 import {
+  findClosestYear,
   formatPercent,
   getShortenNumberUnit,
   shortenNumber,
@@ -113,6 +114,14 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const { data: city } = api.useGetCityQuery(inventory?.cityId!, {
     skip: !inventory?.cityId,
   });
+
+  const numberOfYearsDisplayed = 20;
+
+  const { data: cityData } = useGetOCCityDataQuery(inventory?.city.locode!, {
+    skip: !inventory?.city.locode,
+  });
+
+  const cityPopulation = findClosestYear(cityData?.population, inventory?.year!, numberOfYearsDisplayed);
 
   const { data: population } = useGetCityPopulationQuery(
     { cityId: inventory?.cityId!, year: inventory?.year! },
@@ -335,7 +344,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     <Icon as={MdGroup} boxSize={6} fill="background.overlay" />
                     <Box>
                       <Box className="flex gap-1">
-                        {population?.population ? (
+                        {cityPopulation?.population ? (
                           <Text
                             fontFamily="heading"
                             color="base.light"
@@ -343,10 +352,10 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                             fontWeight="semibold"
                             lineHeight="32"
                           >
-                            {shortenNumber(population.population)}
+                            {shortenNumber(cityPopulation.population)}
                             <span className="text-[16px]">
-                              {population?.population
-                                ? getShortenNumberUnit(population.population)
+                              {cityPopulation?.population
+                                ? getShortenNumberUnit(cityPopulation.population)
                                 : ""}
                             </span>
                           </Text>

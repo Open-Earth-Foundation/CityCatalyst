@@ -14,7 +14,11 @@ import {
   useGetOCCityQuery,
   useSetUserInfoMutation,
 } from "@/services/api";
-import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
+import {
+  findClosestYear,
+  getShortenNumberUnit,
+  shortenNumber,
+} from "@/util/helpers";
 import { OCCityAttributes } from "@/util/types";
 import {
   ArrowBackIcon,
@@ -84,31 +88,6 @@ type OnboardingData = {
 };
 
 const numberOfYearsDisplayed = 10;
-
-/// Finds entry which has the year closest to the selected inventory year
-function findClosestYear(
-  populationData: PopulationEntry[] | undefined,
-  year: number,
-): PopulationEntry | null {
-  if (!populationData || populationData?.length === 0) {
-    return null;
-  }
-  return populationData.reduce(
-    (prev, curr) => {
-      // don't allow years outside of dropdown range
-      if (curr.year < year - numberOfYearsDisplayed + 1) {
-        return prev;
-      }
-      if (!prev) {
-        return curr;
-      }
-      let prevDelta = Math.abs(year - prev.year);
-      let currDelta = Math.abs(year - curr.year);
-      return prevDelta < currDelta ? prev : curr;
-    },
-    null as PopulationEntry | null,
-  );
-}
 
 function SetupStep({
   errors,
@@ -208,38 +187,50 @@ function SetupStep({
   // react to API data changes and different year selections
   useEffect(() => {
     if (cityData && year) {
-      const population = findClosestYear(cityData.population, year);
+      const population = findClosestYear(
+        cityData.population,
+        year,
+        numberOfYearsDisplayed,
+      );
       if (!population) {
         console.error("Failed to find population data for city");
         return;
       }
-      setValue("cityPopulation", population?.population);
-      setValue("cityPopulationYear", population?.year);
+      setValue("cityPopulation", population.population);
+      setValue("cityPopulationYear", population.year);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cityData, year, setValue]);
 
   useEffect(() => {
     if (regionData && year) {
-      const population = findClosestYear(regionData.population, year);
+      const population = findClosestYear(
+        regionData.population,
+        year,
+        numberOfYearsDisplayed,
+      );
       if (!population) {
         console.error("Failed to find population data for region");
         return;
       }
-      setValue("regionPopulation", population?.population);
-      setValue("regionPopulationYear", population?.year);
+      setValue("regionPopulation", population.population);
+      setValue("regionPopulationYear", population.year);
     }
   }, [regionData, year, setValue]);
 
   useEffect(() => {
     if (countryData && year) {
-      const population = findClosestYear(countryData.population, year);
+      const population = findClosestYear(
+        countryData.population,
+        year,
+        numberOfYearsDisplayed,
+      );
       if (!population) {
         console.error("Failed to find population data for region");
         return;
       }
-      setValue("countryPopulation", population?.population);
-      setValue("countryPopulationYear", population?.year);
+      setValue("countryPopulation", population.population);
+      setValue("countryPopulationYear", population.year);
     }
   }, [countryData, year, setValue]);
 

@@ -130,6 +130,8 @@ jobs:
           kubectl set env deployment/cc-test-web-deploy CHAT_PROVIDER=openai
           kubectl set env deployment/cc-test-web-deploy OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}}
           kubectl set env deployment/cc-test-web-deploy HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}}
+          kubectl set env deployment/cc-web-deploy "ADMIN_EMAILS=${{secrets.ADMIN_EMAILS}}"
+          kubectl set env deployment/cc-web-deploy "ADMIN_NAMES=${{secrets.ADMIN_NAMES}}"
           kubectl set env deployment/cc-test-web-deploy "DEFAULT_ADMIN_EMAIL=${{secrets.DEFAULT_ADMIN_EMAIL}}"
           kubectl set env deployment/cc-test-web-deploy "DEFAULT_ADMIN_PASSWORD=${{secrets.DEFAULT_ADMIN_PASSWORD}}"
           kubectl create -f k8s/test/cc-test-create-admin.yml -n default

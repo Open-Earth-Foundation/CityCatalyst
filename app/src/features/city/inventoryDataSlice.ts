@@ -8,10 +8,10 @@ export type InventoryUserFileAttributes = Omit<
 > & {
   // unique identifier to be used to access the files
   fileId: string;
-  fileName: string;
-  size: number;
-  subsectors: string;
-  scopes: string;
+  fileName: string | null;
+  size: number | null;
+  subsectors: string | null;
+  scopes: string | null;
 };
 
 interface SectorFileData {

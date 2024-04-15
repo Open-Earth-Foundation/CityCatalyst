@@ -118,7 +118,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
     { cityId: inventory?.cityId!, year: inventory?.year! },
     { skip: !inventory?.cityId || !inventory?.year },
   );
-
+  
   let totalProgress = 0,
     thirdPartyProgress = 0,
     uploadedProgress = 0;

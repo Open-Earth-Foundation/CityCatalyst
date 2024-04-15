@@ -156,3 +156,38 @@ export function findClosestYear(
     null as PopulationEntry | null,
   );
 }
+
+export function findClosestYearToInventory(
+  populationData: PopulationEntry[] | undefined,
+  year: number,
+  maxYearDifference: number = 10
+): PopulationEntry | null {
+  if (!populationData || populationData.length === 0) {
+    return null;
+  }
+
+  let closestEntry = null;
+  let closestDistance = Infinity; // Initialize with a large number
+
+  populationData.forEach(entry => {
+    // Ensure the entry has a valid population value
+    if (entry.population !== null && entry.population !== undefined) {
+      const currentDistance = Math.abs(entry.year - year);
+      // Update closestEntry if the current entry is closer than the previously stored one
+      if (currentDistance < closestDistance) {
+        closestEntry = entry;
+        closestDistance = currentDistance;
+      }
+    }
+  });
+
+  // After identifying the closest entry, check if it's within the allowable range
+  if (closestEntry && closestDistance <= maxYearDifference) {
+    return closestEntry;
+  } else if (closestEntry) {
+    // If no entry is within the maxYearDifference, return the closest available entry
+    return closestEntry;
+  }
+  
+  return null; // In case all entries are outside the maxYearDifference and no closest entry was found
+}

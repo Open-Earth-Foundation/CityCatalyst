@@ -103,7 +103,7 @@
     "@storybook/addon-interactions": "^7.4.5",
     "@storybook/addon-links": "^7.6.17",
     "@storybook/blocks": "^8.0.4",
-    "@storybook/nextjs": "^7.6.16",
+    "@storybook/nextjs": "^8.0.8",
     "@types/glob": "^8.1.0",
     "cypress": "^13.6.4",
     "glob": "^10.3.10",

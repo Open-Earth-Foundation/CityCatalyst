@@ -6,6 +6,7 @@ import type { City } from "@/models/City";
 import type { Inventory } from "@/models/Inventory";
 import type { User } from "@/models/User";
 import type { Includeable } from "sequelize";
+import { UserFile } from "@/models/UserFile";
 
 export default class UserService {
   public static async findUser(
@@ -102,5 +103,46 @@ export default class UserService {
     }
 
     return inventory;
+  }
+
+  /**
+   * Load inventory information and perform access control
+   */
+  public static async findUserFile(
+    fileId: string,
+    cityId: string,
+    session: AppSession | null,
+    include: Includeable[] = [],
+  ): Promise<UserFile> {
+    if (!session) throw new createHttpError.Unauthorized("Unauthorized");
+    const isAdmin = session.user.role === Roles.Admin;
+    const userFile = await db.models.UserFile.findOne({
+      include: [
+        ...include,
+        {
+          model: db.models.City,
+          as: "city",
+          required: true,
+          include: [
+            {
+              model: db.models.User,
+              as: "users",
+              where: { userId: isAdmin ? undefined : session?.user.id },
+            },
+          ],
+        },
+      ],
+      where: { id: fileId, cityId },
+    });
+
+    if (!userFile) {
+      throw new createHttpError.NotFound("User file not found");
+    }
+    if (userFile.city.users.length === 0) {
+      throw new createHttpError.Unauthorized(
+        "User is not part of this inventory's city",
+      );
+    }
+    return userFile;
   }
 }

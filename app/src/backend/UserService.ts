@@ -1,7 +1,7 @@
 import { db } from "@/models";
 import createHttpError from "http-errors";
 
-import type { AppSession } from "@/lib/auth";
+import { Roles, type AppSession } from "@/lib/auth";
 import type { City } from "@/models/City";
 import type { Inventory } from "@/models/Inventory";
 import type { User } from "@/models/User";
@@ -13,7 +13,10 @@ export default class UserService {
     session: AppSession | null,
     include?: Includeable | Includeable[],
   ): Promise<User> {
-    if (!session || userId !== session.user.id) {
+    if (
+      !session ||
+      (session.user.role !== Roles.Admin && userId !== session.user.id)
+    ) {
       throw new createHttpError.Unauthorized(
         "Not signed in as the requested user",
       );
@@ -33,7 +36,9 @@ export default class UserService {
     cityId: string,
     session: AppSession | null,
   ): Promise<City> {
-    if (!session) throw new createHttpError.Unauthorized("Unauthorized");
+    if (!session) throw new createHttpError.Unauthorized("Not signed in");
+    const isAdmin = session.user.role === Roles.Admin;
+
     const city = await db.models.City.findOne({
       where: { cityId },
       include: [
@@ -41,7 +46,7 @@ export default class UserService {
           model: db.models.User,
           as: "users",
           where: {
-            userId: session?.user.id,
+            userId: isAdmin ? undefined : session?.user.id,
           },
         },
       ],
@@ -50,7 +55,7 @@ export default class UserService {
     if (!city) {
       throw new createHttpError.NotFound("City not found");
     }
-    if (city.users.length === 0) {
+    if (city.users.length === 0 && !isAdmin) {
       throw new createHttpError.Unauthorized("User is not part of this city");
     }
 
@@ -66,6 +71,7 @@ export default class UserService {
     include: Includeable[] = [],
   ): Promise<Inventory> {
     if (!session) throw new createHttpError.Unauthorized("Unauthorized");
+    const isAdmin = session.user.role === Roles.Admin;
     const inventory = await db.models.Inventory.findOne({
       where: { inventoryId },
       include: [
@@ -79,7 +85,7 @@ export default class UserService {
               model: db.models.User,
               as: "users",
               where: {
-                userId: session?.user.id,
+                userId: isAdmin ? undefined : session?.user.id,
               },
             },
           ],

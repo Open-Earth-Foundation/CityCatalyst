@@ -65,8 +65,16 @@ describe("UserFile API", () => {
     setupTests();
     await db.initialize();
     await db.models.UserFile.destroy({ where: { userId: testUserID } });
-    await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
-    await db.models.City.upsert({ cityId: testCityID, name: "TEST_CITY" });
+    const [user] = await db.models.User.upsert({
+      userId: testUserID,
+      name: "TEST_USER",
+    });
+    const [city] = await db.models.City.upsert({
+      cityId: testCityID,
+      name: "TEST_CITY",
+    });
+    await user.addCity(city);
+
     const service = new NotificationService();
     service.sendEmail = async () => {
       return { success: true, messageId: "send" };

@@ -42,13 +42,14 @@ export const api = createApi({
       transformResponse: (response: { data: CityAttributes }) => response.data,
     }),
     getCityBoundary: builder.query<
-      { data: GeoJSON; boundingBox: BoundingBox },
+      { data: GeoJSON; boundingBox: BoundingBox; area: number },
       string
     >({
       query: (cityId) => `city/${cityId}/boundary`,
       transformResponse: (response: {
         data: GeoJSON;
         boundingBox: BoundingBox;
+        area: number
       }) => response,
     }),
     getInventory: builder.query<InventoryResponse, string>({

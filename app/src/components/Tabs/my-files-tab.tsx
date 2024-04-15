@@ -326,7 +326,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                               fontSize="body.md"
                             >
                               {filteredData.map((file: any) => (
-                                <Tr key={`${city.id}-${file.id}`}>
+                                <Tr key={`${file.id}`}>
                                   <Td gap="16px" alignItems="center">
                                     <Box
                                       display="flex"
@@ -513,7 +513,6 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                       )}
                     </Box>
                   </TabPanel>
-                ))}
               </TabPanels>
             </Tabs>
           </Box>

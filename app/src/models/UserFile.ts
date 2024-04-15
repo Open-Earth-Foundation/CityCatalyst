@@ -1,6 +1,7 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import { User, UserId } from "./User";
+import { City, CityId } from "./City";
 
 export interface UserFileAttributes {
   id: string;
@@ -67,6 +68,12 @@ export class UserFile
   getUser!: Sequelize.BelongsToGetAssociationMixin<User>;
   setUser!: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
   createUser!: Sequelize.BelongsToCreateAssociationMixin<User>;
+
+  //UserFile belongs to City via cityId
+  city!: City;
+  getCity!: Sequelize.BelongsToGetAssociationMixin<City>;
+  setCity!: Sequelize.BelongsToSetAssociationMixin<City, CityId>;
+  createCity!: Sequelize.BelongsToCreateAssociationMixin<City>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof UserFile {
     return UserFile.init(

@@ -9,13 +9,13 @@ export const GET = apiHandler(async (_req: Request, { session, params }) => {
   const population = await db.models.Population.findAll({
     where: { cityId: city?.cityId },
   });
-  const populationEntry: PopulationEntry[] = population.map(({population, year})=>{
+  const populations: PopulationEntry[] = population.map(({population, year})=>{
     return {
       year,
       population: population!
     }
   })
  
-  const allPopulationData = findClosestYearToInventory(populationEntry, parseInt(params.year))
-  return NextResponse.json({ data: allPopulationData });
+  const closestYearPopulationData = findClosestYearToInventory(populations, parseInt(params.year))
+  return NextResponse.json({ data: closestYearPopulationData });
 });

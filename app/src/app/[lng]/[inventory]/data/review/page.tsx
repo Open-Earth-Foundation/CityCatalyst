@@ -19,7 +19,6 @@ import { clear, removeSectorData } from "@/features/city/inventoryDataSlice";
 import { api } from "@/services/api";
 import { appendFileToFormData } from "@/util/helpers";
 import { useState } from "react";
-import { configureStore } from "@reduxjs/toolkit";
 
 export default function ReviewPage({
   params: { lng },

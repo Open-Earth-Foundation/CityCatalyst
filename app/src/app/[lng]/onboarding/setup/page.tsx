@@ -7,6 +7,7 @@ import { useTranslation } from "@/i18n/client";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import type { CityAttributes } from "@/models/City";
 import {
+  api,
   useAddCityMutation,
   useAddCityPopulationMutation,
   useAddInventoryMutation,
@@ -641,7 +642,7 @@ function ConfirmStep({
                   {area > 0 ? (
                     <>
                       {" "}
-                      {area}km<sup>2</sup>
+                      {Math.round(area)}km<sup>2</sup>
                     </>
                   ) : (
                     "N/A"
@@ -715,6 +716,10 @@ export default function OnboardingSetup({
   const cityPopulationYear = watch("cityPopulationYear");
   const regionPopulationYear = watch("regionPopulationYear");
   const countryPopulationYear = watch("countryPopulationYear");
+
+  const { data: cityArea, isLoading: isCityAreaLoading } = api.useGetCityBoundaryQuery(data.locode!, {
+    skip: !data.locode,
+  });
 
   const onConfirm = async () => {
     // save data in backend
@@ -831,7 +836,7 @@ export default function OnboardingSetup({
               cityName={getValues("city")}
               t={t}
               locode={data.locode}
-              area={ocCityData?.area!}
+              area={cityArea?.area!}
               population={cityPopulation}
             />
           )}

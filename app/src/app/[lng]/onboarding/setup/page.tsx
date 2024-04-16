@@ -7,6 +7,7 @@ import { useTranslation } from "@/i18n/client";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import type { CityAttributes } from "@/models/City";
 import {
+  api,
   useAddCityMutation,
   useAddCityPopulationMutation,
   useAddInventoryMutation,
@@ -638,10 +639,10 @@ function ConfirmStep({
               <Icon as={MdOutlineAspectRatio} boxSize={6} mt={1} mr={2} />
               <Box>
                 <Text fontSize="xl">
-                  {area > 0 ? (
+                  {area && area > 0 ? (
                     <>
                       {" "}
-                      {area}km<sup>2</sup>
+                      {Math.round(area)}km<sup>2</sup>
                     </>
                   ) : (
                     "N/A"
@@ -716,6 +717,10 @@ export default function OnboardingSetup({
   const regionPopulationYear = watch("regionPopulationYear");
   const countryPopulationYear = watch("countryPopulationYear");
 
+  const { data: cityArea, isLoading: isCityAreaLoading } = api.useGetCityBoundaryQuery(data.locode!, {
+    skip: !data.locode,
+  });
+
   const onConfirm = async () => {
     // save data in backend
     setConfirming(true);
@@ -734,7 +739,7 @@ export default function OnboardingSetup({
       city = await addCity({
         name: data.name,
         locode: data.locode!,
-        area,
+        area: Math.round(cityArea?.area!),
         region,
         country,
       }).unwrap();
@@ -831,7 +836,7 @@ export default function OnboardingSetup({
               cityName={getValues("city")}
               t={t}
               locode={data.locode}
-              area={ocCityData?.area!}
+              area={cityArea?.area!}
               population={cityPopulation}
             />
           )}

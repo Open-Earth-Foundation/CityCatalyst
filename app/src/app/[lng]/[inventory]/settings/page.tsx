@@ -149,6 +149,7 @@ export default function Settings({
                   t={t}
                   userInfo={userInfo!}
                   userFiles={userFiles!}
+                  inventory={inventory!}
                 />
                 <MyInventoriesTab
                   lng={lng}

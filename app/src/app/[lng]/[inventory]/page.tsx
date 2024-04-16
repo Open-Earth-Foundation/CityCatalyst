@@ -119,10 +119,6 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
     { skip: !inventory?.cityId || !inventory?.year },
   );
 
-  const { data: cityArea, isLoading: isCityAreaLoading } = api.useGetCityBoundaryQuery(inventory?.city.locode!, {
-    skip: !inventory?.city.locode,
-  });
-
   let totalProgress = 0,
     thirdPartyProgress = 0,
     uploadedProgress = 0;
@@ -388,28 +384,27 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     />
                     <Box>
                       <Box className="flex gap-1">
-                        {cityArea?.area ? (
-                          <Text
-                          fontFamily="heading"
-                          color="base.light"
-                          fontSize="headline.sm"
-                          fontWeight="semibold"
-                          lineHeight="32"
-                        >
-                          {Math.round(cityArea?.area)}
-                          <span className="text-[16px]">km2</span>
-                        </Text>
+                        {inventory?.city.area! == 0 || inventory?.city.area === null ? (
+                           <Text
+                           fontFamily="heading"
+                           color="border.neutral"
+                           fontSize="headline.sm"
+                           fontWeight="semibold"
+                           lineHeight="32"
+                         >
+                           N/A
+                         </Text>
                         ) : (
-                          
                           <Text
-                          fontFamily="heading"
-                          color="border.neutral"
-                          fontSize="headline.sm"
-                          fontWeight="semibold"
-                          lineHeight="32"
-                        >
-                          N/A
-                        </Text>
+                            fontFamily="heading"
+                            color="base.light"
+                            fontSize="headline.sm"
+                            fontWeight="semibold"
+                            lineHeight="32"
+                            >
+                            {Math.round(inventory?.city.area!)}
+                            <span className="text-[16px]">km2</span>
+                          </Text>
                         )}
                         <InfoOutlineIcon w={3} h={3} color="brandScheme.100" />
                       </Box>

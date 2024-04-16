@@ -1,4 +1,4 @@
-year,province_name,GPC_refno,activity_value,activity_units,gas_name,emission_factor_value,emission_factor_units,emissions_value,activity_name,province_code,source_name,temporal_granularity,emissions_units,id
+year,region_name,GPC_refno,activity_value,activity_units,gas_name,emission_factor_value,emission_factor_units,emissions_value,activity_name,region_code,source_name,temporal_granularity,emissions_units,id
 2010,Buenos Aires,I.3.1,12.85872,TJ,CO2,74100.0,kg/TJ,952831.152,Gas Oil combustion consumption by petrochemical industries,AR-B,SESCO,annual,kg,307e8111-cc48-3b1e-9826-ba331db99535
 2010,Buenos Aires,I.3.1,12.85872,TJ,CH4,3.0,kg/TJ,38.57616,Gas Oil combustion consumption by petrochemical industries,AR-B,SESCO,annual,kg,2b1ff6a0-81b5-3c30-9644-274f8d90d1b3
 2010,Buenos Aires,I.3.1,12.85872,TJ,N2O,0.6,kg/TJ,7.715231999999999,Gas Oil combustion consumption by petrochemical industries,AR-B,SESCO,annual,kg,b938ed42-ab66-3e03-8064-06cf80d6e962

@@ -320,7 +320,7 @@ if __name__ == "__main__":
     final_df = final_df.drop(columns=columns_to_drop)
 
     # assigning province CODE based on the province name
-    province_code_dic = {
+    region_code_dic = {
         'Buenos Aires':'AR-B', 
         'Capital Federal':'AR-C', 
         'Catamarca':'AR-K', 
@@ -347,16 +347,16 @@ if __name__ == "__main__":
         'Formosa':'AR-P'
     }
     for index, row in final_df.iterrows():
-        province_name = row['provincia']
-        if province_name in province_code_dic.keys():
-            final_df.at[index, 'province_code'] = province_code_dic[province_name]
+        region_name = row['provincia']
+        if region_name in region_code_dic.keys():
+            final_df.at[index, 'region_code'] = region_code_dic[region_name]
 
     # this year is not complete ( we're in 2024 :) )
     final_df = final_df[final_df['anio'] != 2024]
     # rename columns
     columns_to_rename = {
         'anio': 'year',
-        'provincia': 'province_name'
+        'provincia': 'region_name'
     }
     final_df.rename(columns=columns_to_rename, inplace=True)
     # adding extra columns
@@ -366,12 +366,12 @@ if __name__ == "__main__":
 
     # Define a function to generate UUID for each row
     def generate_uuid(row):
-        id_string = str(row['province_code']) + str(row['emissions_value']) + str(row['GPC_refno'])
+        id_string = str(row['region_code']) + str(row['emissions_value']) + str(row['GPC_refno'])
         return uuid_generate_v3(id_string)
     # Apply the function to each row and assign the result to a new column 'id'
     final_df['id'] = final_df.apply(generate_uuid, axis=1)
 
-    col_order = ['id', 'source_name', 'GPC_refno', 'province_name', 'province_code', 'temporal_granularity', 'year', 'activity_name', 'activity_value', 
+    col_order = ['id', 'source_name', 'GPC_refno', 'region_name', 'region_code', 'temporal_granularity', 'year', 'activity_name', 'activity_value', 
                  'activity_units', 'gas_name', 'emission_factor_value', 'emission_factor_units', 'emissions_value', 'emissions_units']
     final_df = final_df.reindex(columns=col_order)
     

@@ -570,7 +570,7 @@ export default function ReviewPage({
               <Box className="grow w-full md:w-0">
                 <Text fontSize="sm">{t("review-data-label")}</Text>
                 <Text fontSize="2xl" as="b">
-                  2023 {t("emissions-inventory-title")}
+                  {inventory?.year} {t("emissions-inventory-title")}
                 </Text>
               </Box>
               <Button

@@ -44,6 +44,9 @@ $python_cmd custom_polygon_importer.py \
   --database_uri $DB_URI \
   --zip_file_path "./Limites Ciudad-001.zip" \
   --extract_to_path "./processed"
+
+$python_cmd custom_polygon_subsaharan.py \
+  --database_uri $DB_URI \
 popd
 
 # Import Carbon Monitor

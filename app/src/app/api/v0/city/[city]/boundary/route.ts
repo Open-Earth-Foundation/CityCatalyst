@@ -29,7 +29,7 @@ export const GET = apiHandler(async (_req, { params }) => {
       data.bbox_north,
     ];
 
-    return NextResponse.json({ data: geoJson, boundingBox });
+    return NextResponse.json({ data: geoJson, boundingBox, area: data.area });
   } catch (error: any) {
     logger.error(error);
     return NextResponse.json({ error: error.message });

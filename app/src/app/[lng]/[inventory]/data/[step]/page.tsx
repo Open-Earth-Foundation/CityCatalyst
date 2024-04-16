@@ -33,7 +33,9 @@ import {
   Button,
   Card,
   Center,
+  CircularProgress,
   Flex,
+  HStack,
   Heading,
   Icon,
   IconButton,
@@ -483,6 +485,9 @@ export default function AddDataSteps({
     {},
   );
 
+  const [disconnectingDataSourceId, setDisconnectingDataSourceId] = useState<
+    string | null
+  >(null);
   const [disconnectThirdPartyData, { isLoading: isDisconnectLoading }] =
     api.useDisconnectThirdPartyDataMutation();
 
@@ -490,17 +495,20 @@ export default function AddDataSteps({
     source: DataSourceWithRelations,
   ) => {
     if (isSourceConnected(source)) {
-      source.inventoryValues!.forEach(
-        async (inventoryValue: InventoryValueAttributes) => {
-          await disconnectThirdPartyData({
-            inventoryId: inventoryValue.inventoryId,
-            subCategoryId: inventoryValue.subCategoryId,
-          }).then((res: any) => {
-            // Todo show alert
-            onSearchDataSourcesClicked();
-          });
-        },
+      setDisconnectingDataSourceId(source.datasourceId);
+      await Promise.all(
+        source.inventoryValues!.map(
+          async (inventoryValue: InventoryValueAttributes) => {
+            return await disconnectThirdPartyData({
+              inventoryId: inventoryValue.inventoryId,
+              subCategoryId: inventoryValue.subCategoryId,
+            });
+          },
+        ),
       );
+      // TODO show alert
+      setDisconnectingDataSourceId(null);
+      onSearchDataSourcesClicked();
     } else {
       console.log("Something went wrong");
     }
@@ -751,7 +759,10 @@ export default function AddDataSteps({
                         px={6}
                         py={4}
                         onClick={() => onDisconnectThirdPartyData(source)}
-                        isLoading={isDisconnectLoading}
+                        isLoading={
+                          isDisconnectLoading &&
+                          source.datasourceId === disconnectingDataSourceId
+                        }
                         onMouseEnter={() => onButtonHover(source)}
                         onMouseLeave={() => onMouseLeave(source)}
                         leftIcon={<Icon as={MdCheckCircle} />}
@@ -824,18 +835,34 @@ export default function AddDataSteps({
                 onClick={() => onSubsectorClick(subSector)}
                 key={subSector.subsectorId}
               >
-                <Flex direction="row" className="space-x-4 items-center h-full">
-                  <Icon
-                    as={
-                      subSector.completed ? MdOutlineCheckCircle : DataAlertIcon
-                    }
-                    boxSize={8}
-                    color={
-                      subSector.completed
-                        ? "interactive.tertiary"
-                        : "sentiment.warningDefault"
-                    }
-                  />
+                <HStack align="center" height="120px" justify="space-between">
+                  {subSector.completedCount > 0 &&
+                  subSector.completedCount < subSector.totalCount ? (
+                    <CircularProgress
+                      size="36px"
+                      thickness="12px"
+                      mr="4"
+                      color="interactive.secondary"
+                      trackColor="background.neutral"
+                      value={
+                        (subSector.completedCount / subSector.totalCount) * 100
+                      }
+                    />
+                  ) : (
+                    <Icon
+                      as={
+                        subSector.completed
+                          ? MdOutlineCheckCircle
+                          : DataAlertIcon
+                      }
+                      boxSize={9}
+                      color={
+                        subSector.completed
+                          ? "interactive.tertiary"
+                          : "sentiment.warningDefault"
+                      }
+                    />
+                  )}
                   <Stack w="full">
                     <Heading size="xs" noOfLines={3} maxWidth="200px">
                       {t(nameToI18NKey(subSector.subsectorName!))}
@@ -856,7 +883,7 @@ export default function AddDataSteps({
                       />
                     }
                   />
-                </Flex>
+                </HStack>
               </Card>
             ))
           )}

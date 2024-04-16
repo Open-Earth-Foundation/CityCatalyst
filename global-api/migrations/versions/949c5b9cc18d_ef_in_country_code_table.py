@@ -19,10 +19,12 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.alter_column("country_code", "emission_factor_value", nullable=True, type_=sa.Float)
-    op.alter_column("country_code", "emission_factor_units", nullable=True, type_=sa.String)
+    op.add_column("country_code",
+                  sa.Column("emission_factor_value", sa.Float, nullable=True))
+    op.add_column("country_code",
+                  sa.Column("emission_factor_units",sa.String, nullable=True))
 
 
 def downgrade() -> None:
-    op.drop_column("country_code", "emission_factor_value", nullable=False, type_=sa.Float)
-    op.drop_column("country_code", "emission_factor_units", nullable=False, type_=sa.String)
+    op.drop_column("country_code", "emission_factor_value")
+    op.drop_column("country_code", "emission_factor_units")

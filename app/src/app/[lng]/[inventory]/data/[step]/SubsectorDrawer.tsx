@@ -44,7 +44,7 @@ import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import type { TFunction } from "i18next";
 import type { RefObject } from "react";
 import React, { useEffect } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { EmissionsForm } from "./EmissionsForm";
 import type {
   ActivityData,
@@ -242,12 +242,14 @@ export function SubsectorDrawer({
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting, isDirty },
+    formState: { errors, isSubmitting, isDirty, isValid },
     watch,
     reset,
     control,
     setValue,
   } = useForm<Inputs>();
+
+  const methods = useForm()
 
   const scopeData = watch("subcategoryData");
 
@@ -506,25 +508,28 @@ export function SubsectorDrawer({
 
                   <Accordion allowToggle className="space-y-6">
                     {scopes?.map((scope) => (
+                    <FormProvider {...methods}>
                       <AccordionItem key={scope.value} mb={0} h="108px" p="0px">
                         <h2>
                           <AccordionButton px="16px">
                             <HStack w="full" p={0} m={0}>
-                              {isScopeCompleted(scope.value, scopeData) ? (
-                                <Tag color="interactive.tertiary" border="none">
-                                  <BsCheckCircle
-                                    color="interactive.tertiary"
-                                    size="32px"
-                                  />
-                                </Tag>
-                              ) : (
-                                <Tag
-                                  color="sentiment.negativeDefault"
-                                  border="none"
-                                >
-                                  <RiErrorWarningLine size="32px" />
-                                </Tag>
-                              )}
+                              {
+                                !isDirty && !isScopeCompleted(scope.value, scopeData) ? "": isScopeCompleted(scope.value, scopeData) && isValid && !isDirty? (
+                                  <Tag color="interactive.tertiary" border="none">
+                                    <BsCheckCircle
+                                      color="interactive.tertiary"
+                                      size="32px"
+                                    />
+                                  </Tag>
+                                ) : (
+                                  <Tag
+                                    color="sentiment.negativeDefault"
+                                    border="none"
+                                  >
+                                    <RiErrorWarningLine size="32px" />
+                                  </Tag>
+                                )
+                              }
                               <Box as="span" flex="1" textAlign="left" w="full">
                                 <Heading
                                   size="title.md"
@@ -543,9 +548,7 @@ export function SubsectorDrawer({
                                 >
                                   {scope.label}
                                 </Text>
-                                {isScopeCompleted(scope.value, scopeData) ? (
-                                  ""
-                                ) : (
+                                {!isDirty && isScopeCompleted(scope.value, scopeData) ? null : isScopeCompleted(scope.value, scopeData) && isValid && !isDirty? (
                                   <Text
                                     color="sentiment.negativeDefault"
                                     size="body.md"
@@ -555,7 +558,7 @@ export function SubsectorDrawer({
                                   >
                                     {t("save-missing-scope-info")}
                                   </Text>
-                                )}
+                                ): ""}
                               </Box>
 
                               <AccordionIcon
@@ -608,6 +611,7 @@ export function SubsectorDrawer({
                           </form>
                         </AccordionPanel>
                       </AccordionItem>
+                      </FormProvider>
                     ))}
                   </Accordion>
                 </>

@@ -639,7 +639,7 @@ function ConfirmStep({
               <Icon as={MdOutlineAspectRatio} boxSize={6} mt={1} mr={2} />
               <Box>
                 <Text fontSize="xl">
-                  {area > 0 ? (
+                  {area && area > 0 ? (
                     <>
                       {" "}
                       {Math.round(area)}km<sup>2</sup>

@@ -44,7 +44,7 @@ import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import type { TFunction } from "i18next";
 import type { RefObject } from "react";
 import React, { useEffect } from "react";
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { EmissionsForm } from "./EmissionsForm";
 import type {
   ActivityData,
@@ -248,8 +248,6 @@ export function SubsectorDrawer({
     control,
     setValue,
   } = useForm<Inputs>();
-
-  const methods = useForm()
 
   const scopeData = watch("subcategoryData");
 
@@ -508,7 +506,6 @@ export function SubsectorDrawer({
 
                   <Accordion allowToggle className="space-y-6">
                     {scopes?.map((scope) => (
-                    <FormProvider {...methods}>
                       <AccordionItem key={scope.value} mb={0} h="108px" p="0px">
                         <h2>
                           <AccordionButton px="16px">
@@ -611,7 +608,6 @@ export function SubsectorDrawer({
                           </form>
                         </AccordionPanel>
                       </AccordionItem>
-                      </FormProvider>
                     ))}
                   </Accordion>
                 </>

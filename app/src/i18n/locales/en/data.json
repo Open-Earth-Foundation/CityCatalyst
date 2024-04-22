@@ -181,5 +181,11 @@
   "scopes": "Scopes",
   "cancel": "Cancel",
   "upload": "Upload",
-  "select-placeholder": "Select the sub-sectors included in this file"
+  "select-placeholder": "Select the sub-sectors included in this file",
+  "file-upload-error": "File upload error!",
+  "file-upload-error-description": "Something went wrong during file upload",
+  "file-upload-success": "File upload success",
+  "file-deletion-error": "File deletetion error!",
+  "file-deletion-error-description": "Something went wrong during file deletion",
+  "file-deletion-success": "file deleted successfully"
 }

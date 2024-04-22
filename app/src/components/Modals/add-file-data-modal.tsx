@@ -138,15 +138,15 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
       // show toast
       if (res.error) {
         toast({
-          title: "File upload error!",
-          description: "Something went wrong during file upload",
+          title: t("file-upload-error"),
+          description: t("file-upload-error-description"),
           status: "error",
           duration: 2000,
         });
       } else {
         toast({
-          title: "File upload success",
-          description: "File upload success",
+          title: t("file-upload-success"),
+          description: t("file-upload-success"),
           status: "success",
           duration: 2000,
         });

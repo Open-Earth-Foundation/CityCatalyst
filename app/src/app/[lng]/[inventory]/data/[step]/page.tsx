@@ -477,15 +477,15 @@ export default function AddDataSteps({
     deleteUserFile({fileId, cityId}).then((res:any)=> {
       if(res.error){
         toast({
-          title: "File deletion error!",
-          description: "Something went wrong during file upload",
+          title: t("file-deletion-error"),
+          description: t("file-deletion-error-description"),
           status: "error",
           duration: 2000,
         });
       }else {
         toast({
-          title: "File deleted successfully",
-          description: "File upload success",
+          title: t("file-deletion-success"),
+          description: t("file-deletion-success"),
           status: "success",
           duration: 2000,
         });

@@ -13,6 +13,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
+      - name: Switch into app directory
+        run: cd app/
       - name: Install dependencies
         run: npm ci
       - name: Install Playwright Browsers

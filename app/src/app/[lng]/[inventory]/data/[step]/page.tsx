@@ -471,13 +471,35 @@ export default function AddDataSteps({
     (sector) => sector.sectorName === currentStep.title,
   );
 
-  function removeSectorFile(fileId: string, sectorName: string) {
-    dispatch(
-      removeFile({
-        sectorName,
-        fileId,
-      }),
-    );
+  const [deleteUserFile, {isLoading}] = api.useDeleteUserFileMutation()
+
+  function removeSectorFile(fileId: string, sectorName: string, cityId: string) {
+    deleteUserFile({fileId, cityId}).then((res:any)=> {
+      if(res.error){
+        toast({
+          title: "File deletion error!",
+          description: "Something went wrong during file upload",
+          status: "error",
+          duration: 2000,
+        });
+      }else {
+        toast({
+          title: "File deleted successfully",
+          description: "File upload success",
+          status: "success",
+          duration: 2000,
+        });
+
+        dispatch(
+          removeFile({
+            sectorName,
+            fileId,
+          }),
+        );
+      }
+    })
+
+    
   }
 
   const [buttonText, setButtonText] = useState<string>(t("data-connected"));
@@ -970,6 +992,7 @@ export default function AddDataSteps({
                                   removeSectorFile(
                                     file.fileId,
                                     sectorData[0].sectorName,
+                                    file.cityId
                                   )
                                 }
                               >
@@ -1052,6 +1075,7 @@ export default function AddDataSteps({
         uploadedFile={uploadedFile!}
         currentStep={currentStep}
         userInfo={userInfo}
+        inventory={inventory}
       />
       {/*** Bottom bar ***/}
       <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand py-4 px-4 drop-shadow-2xl hover:drop-shadow-4xl transition-all">

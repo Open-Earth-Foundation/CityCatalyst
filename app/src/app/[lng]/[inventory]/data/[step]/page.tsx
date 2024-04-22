@@ -13,6 +13,7 @@ import WizardSteps from "@/components/wizard-steps";
 import {
   InventoryUserFileAttributes,
   addFile,
+  clear,
   removeFile,
 } from "@/features/city/inventoryDataSlice";
 import { useTranslation } from "@/i18n/client";
@@ -432,6 +433,7 @@ export default function AddDataSteps({
     setConfirming(false);
     if (activeStep >= steps.length - 1) {
       router.push(`/${inventory}`);
+      dispatch(clear());
     } else {
       window.scrollTo({ top: 0, behavior: "smooth" });
       goToNext();

@@ -36,7 +36,9 @@ test.describe("Signup", () => {
       .click();
     await page.getByRole("button", { name: "Create Account" }).click();
 
-    await expect(page).toHaveURL(`/en/auth/check-email?email=${email}`);
+    await expect(page).toHaveURL(
+      `/en/auth/check-email?email=${encodeURIComponent(email)}`,
+    );
   });
 
   test.skip("should correctly handle and pass callbackUrl", () => {});

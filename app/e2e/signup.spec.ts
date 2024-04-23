@@ -24,12 +24,12 @@ test.describe("Signup", () => {
       page.getByRole("heading", { name: "Sign Up to City Catalyst" }),
     ).toBeVisible();
 
+    const email = `e2e-test+${randomUUID()}@example.com`;
+
     await page.getByPlaceholder("Your full name").click();
     await page.getByPlaceholder("Your full name").fill("Test User");
     await page.getByPlaceholder("e.g. youremail@domain.com").click();
-    await page
-      .getByPlaceholder("e.g. youremail@domain.com")
-      .fill(`e2e-test+${randomUUID()}@example.com`);
+    await page.getByPlaceholder("e.g. youremail@domain.com").fill(email);
     await page.getByPlaceholder("e.g. youremail@domain.com").press("Tab");
     await page.getByLabel("Password", { exact: true }).fill("Test123");
     await page.getByLabel("Confirm Password").click();
@@ -40,7 +40,7 @@ test.describe("Signup", () => {
       .click();
     await page.getByRole("button", { name: "Create Account" }).click();
 
-    await expect(page).toHaveURL("/en/onboarding");
+    await expect(page).toHaveURL(`/en/auth/check-email?email=${email}`);
   });
 
   test.skip("should correctly handle and pass callbackUrl", () => {});

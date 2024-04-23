@@ -135,7 +135,7 @@ const DeleteFileModal: FC<DeleteFileModalProps> = ({
               p={0}
               m={0}
             >
-              {t("delete-inventory")}
+              {t("delete-file")}
             </Button>
           </ModalFooter>
         </ModalContent>

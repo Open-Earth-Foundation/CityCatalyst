@@ -26,13 +26,9 @@ test.describe("Signup", () => {
 
     const email = `e2e-test+${randomUUID()}@example.com`;
 
-    await page.getByPlaceholder("Your full name").click();
     await page.getByPlaceholder("Your full name").fill("Test User");
-    await page.getByPlaceholder("e.g. youremail@domain.com").click();
     await page.getByPlaceholder("e.g. youremail@domain.com").fill(email);
-    await page.getByPlaceholder("e.g. youremail@domain.com").press("Tab");
     await page.getByLabel("Password", { exact: true }).fill("Test123");
-    await page.getByLabel("Confirm Password").click();
     await page.getByLabel("Confirm Password").fill("Test123");
     await page.getByPlaceholder("Enter the code you received").fill("123456");
     await page

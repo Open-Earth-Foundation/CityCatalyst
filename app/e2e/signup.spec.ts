@@ -37,7 +37,7 @@ test.describe("Signup", () => {
     await page.getByRole("button", { name: "Create Account" }).click();
 
     await expect(page).toHaveURL(
-      `/en/auth/check-email?email=${encodeURIComponent(email)}`,
+      `/en/auth/check-email?email=${email.replace("@", "%40")}`,
     );
   });
 

@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { randomUUID } from "node:crypto";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/en/auth/signup");
@@ -28,7 +29,7 @@ test.describe("Signup", () => {
     await page.getByPlaceholder("e.g. youremail@domain.com").click();
     await page
       .getByPlaceholder("e.g. youremail@domain.com")
-      .fill("e2e-test@example.com");
+      .fill(`e2e-test+${randomUUID()}@example.com`);
     await page.getByPlaceholder("e.g. youremail@domain.com").press("Tab");
     await page.getByLabel("Password", { exact: true }).fill("Test123");
     await page.getByLabel("Confirm Password").click();

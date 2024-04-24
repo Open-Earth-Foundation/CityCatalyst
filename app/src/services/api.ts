@@ -49,7 +49,7 @@ export const api = createApi({
       transformResponse: (response: {
         data: GeoJSON;
         boundingBox: BoundingBox;
-        area: number
+        area: number;
       }) => response,
     }),
     getInventory: builder.query<InventoryResponse, string>({
@@ -71,6 +71,8 @@ export const api = createApi({
         area: number;
         region: string;
         country: string;
+        regionLocode: string;
+        countryLocode: string;
       }
     >({
       query: (data) => ({

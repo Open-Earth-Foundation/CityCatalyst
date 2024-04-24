@@ -95,3 +95,15 @@ Then, you can run the app in a container:
 ```bash
 docker run -p 3000:3000 ghcr.io/open-earth-foundation/citycatalyst
 ```
+
+### End to end testing
+
+We use Playwright to run automated E2E tests.
+
+Setup: `npx playwright install --with-deps`
+
+Run: `npm run e2e:test`
+
+### API unit tests
+
+Run: `npm run api:test`

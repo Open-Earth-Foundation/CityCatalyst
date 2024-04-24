@@ -371,7 +371,7 @@ function SetupStep({
                   ))}
                 </Select>
                 <InputRightElement>
-                  {year && (
+                  {!!year && (
                     <CheckIcon
                       color="semantic.success"
                       boxSize={4}
@@ -424,14 +424,14 @@ function SetupStep({
                     ))}
                   </Select>
                   <InputRightElement>
-                    {cityPopulationYear && (
+                    {cityPopulationYear ? (
                       <CheckIcon
                         color="semantic.success"
                         boxSize={4}
                         mt={2}
                         mr={10}
                       />
-                    )}
+                    ) : null}
                   </InputRightElement>
                 </InputGroup>
                 <FormErrorMessage
@@ -482,14 +482,14 @@ function SetupStep({
                     ))}
                   </Select>
                   <InputRightElement>
-                    {regionPopulationYear && (
+                    {regionPopulationYear ? (
                       <CheckIcon
                         color="semantic.success"
                         boxSize={4}
                         mt={2}
                         mr={10}
                       />
-                    )}
+                    ) : null}
                   </InputRightElement>
                 </InputGroup>
                 <FormErrorMessage
@@ -540,14 +540,14 @@ function SetupStep({
                     ))}
                   </Select>
                   <InputRightElement>
-                    {countryPopulationYear && (
+                    {countryPopulationYear ? (
                       <CheckIcon
                         color="semantic.success"
                         boxSize={4}
                         mt={2}
                         mr={10}
                       />
-                    )}
+                    ) : null}
                   </InputRightElement>
                 </InputGroup>
                 <FormErrorMessage

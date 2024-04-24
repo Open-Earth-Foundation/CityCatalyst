@@ -16,7 +16,7 @@ from routes.catalogue_last_update_endpoint import api_router as catalogue_last_u
 from routes.city_locode_endpoint_ghgrp import api_router as ghgrp_city_locode_route
 from routes.city_locode_endpoint_mendoza_stationary_energy import api_router as mendoza_stationary_energy_city_locode_route
 from routes.country_code_IEA_energy import api_router as country_code_IEA_energy_route
-from routes.region_code_endpoint import api_router as region_code_endpoint
+from routes.region_code_endpoint import api_router as region_code_endpoint_route
 
 """
 Logger instance initialized and configured
@@ -138,7 +138,7 @@ app.include_router(
 )
 
 app.include_router(
-    region_code_endpoint,
+    region_code_endpoint_route,
     tags=["Region"],
 )
 

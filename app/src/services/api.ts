@@ -68,7 +68,7 @@ export const api = createApi({
       {
         name: string;
         locode: string;
-        area: number;
+        area: number | undefined;
         region: string;
         country: string;
         regionLocode: string;

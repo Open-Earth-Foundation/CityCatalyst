@@ -423,16 +423,16 @@ function SetupStep({
                       </option>
                     ))}
                   </Select>
-                  <InputRightElement>
-                    {cityPopulationYear ? (
+                  {cityPopulationYear ? (
+                    <InputRightElement>
                       <CheckIcon
                         color="semantic.success"
                         boxSize={4}
                         mt={2}
                         mr={10}
                       />
-                    ) : null}
-                  </InputRightElement>
+                    </InputRightElement>
+                  ) : null}
                 </InputGroup>
                 <FormErrorMessage
                   color="content.tertiary"
@@ -481,16 +481,16 @@ function SetupStep({
                       </option>
                     ))}
                   </Select>
-                  <InputRightElement>
-                    {regionPopulationYear ? (
+                  {regionPopulationYear ? (
+                    <InputRightElement>
                       <CheckIcon
                         color="semantic.success"
                         boxSize={4}
                         mt={2}
                         mr={10}
                       />
-                    ) : null}
-                  </InputRightElement>
+                    </InputRightElement>
+                  ) : null}
                 </InputGroup>
                 <FormErrorMessage
                   color="content.tertiary"
@@ -539,16 +539,16 @@ function SetupStep({
                       </option>
                     ))}
                   </Select>
-                  <InputRightElement>
-                    {countryPopulationYear ? (
+                  {countryPopulationYear ? (
+                    <InputRightElement>
                       <CheckIcon
                         color="semantic.success"
                         boxSize={4}
                         mt={2}
                         mr={10}
                       />
-                    ) : null}
-                  </InputRightElement>
+                    </InputRightElement>
+                  ) : null}
                 </InputGroup>
                 <FormErrorMessage
                   color="content.tertiary"

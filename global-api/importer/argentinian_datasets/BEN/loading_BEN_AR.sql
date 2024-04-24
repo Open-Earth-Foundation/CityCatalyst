@@ -1,5 +1,7 @@
+DROP TABLE IF EXISTS country_code_staging;
+
 -- Create a staging table
-CREATE TEMP TABLE IF NOT EXISTS country_code_staging (LIKE country_code INCLUDING ALL);
+CREATE TABLE country_code_staging (LIKE country_code INCLUDING ALL);
 
 -- Clear the staging table
 TRUNCATE country_code_staging;

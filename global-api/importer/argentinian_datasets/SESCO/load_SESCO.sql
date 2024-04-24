@@ -7,7 +7,7 @@ TRUNCATE region_code_staging;
 -- Load the staging table from the downloaded file
 \copy region_code_staging (id,source_name,"GPC_refno",region_name,region_code,temporal_granularity,year,activity_name,activity_value,activity_units,gas_name,emission_factor_value,emission_factor_units,emissions_value,emissions_units) FROM 'processed_SESCO_AR.csv' WITH (FORMAT CSV, HEADER);
 
--- Update the main table with the staging table
+-- -- Update the main table with the staging table
 INSERT INTO regionwide_emissions (id,source_name,"GPC_refno",region_name,region_code,temporal_granularity,year,activity_name,activity_value,activity_units,gas_name,emission_factor_value,emission_factor_units,emissions_value,emissions_units)
     SELECT id,source_name,"GPC_refno",region_name,region_code,temporal_granularity,year,activity_name,activity_value,activity_units,gas_name,emission_factor_value,emission_factor_units,emissions_value,emissions_units
     FROM region_code_staging
@@ -29,5 +29,5 @@ INSERT INTO regionwide_emissions (id,source_name,"GPC_refno",region_name,region_
         emissions_value = excluded.emissions_value,
         emissions_units = excluded.emissions_units;
 
--- Drop the staging table
+-- -- Drop the staging table
 DROP TABLE region_code_staging;

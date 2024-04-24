@@ -1,6 +1,10 @@
 import { test, expect, type Page } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 
+async function expectText(page: Page, text: string) {
+  await expect(page.getByText(text)).toBeVisible();
+}
+
 test.beforeEach(async ({ page }) => {
   await page.goto("/en/auth/signup");
 });
@@ -19,7 +23,6 @@ test.describe("Signup", () => {
   test("should redirect to dashboard after entering correct data", async ({
     page,
   }) => {
-    // await page.goto("http://localhost:3000/en/auth/signup");
     await expect(
       page.getByRole("heading", { name: "Sign Up to City Catalyst" }),
     ).toBeVisible();
@@ -39,6 +42,46 @@ test.describe("Signup", () => {
     await expect(page).toHaveURL(
       `/en/auth/check-email?email=${email.replace("@", "%40")}`,
     );
+  });
+
+  test("should show errors when entering invalid data", async ({ page }) => {
+    await expect(
+      page.getByRole("heading", { name: "Sign Up to City Catalyst" }),
+    ).toBeVisible();
+
+    await page.getByPlaceholder("Your full name").fill("asd");
+    await page
+      .getByPlaceholder("e.g. youremail@domain.com")
+      .fill("testopenearthorg");
+    await page.getByLabel("Password", { exact: true }).fill("Pas");
+    await page.getByLabel("Confirm Password").fill("Pa1");
+    await page.getByPlaceholder("Enter the code you received").fill("12345");
+    await page.getByRole("button", { name: "Create Account" }).click();
+
+    await expect(page).toHaveURL(`/en/auth/signup`);
+    await expectText(page, "valid email address");
+    await expectText(page, "Minimum length");
+    await expectText(page, "Invalid invite code");
+    await expectText(page, "Please accept the terms");
+    await expectText(page, "Passwords don't match");
+  });
+
+  test("should require matching passwords", async ({ page }) => {
+    await expect(
+      page.getByRole("heading", { name: "Sign Up to City Catalyst" }),
+    ).toBeVisible();
+
+    await page.getByPlaceholder("Your full name").fill("Test Account");
+    await page
+      .getByPlaceholder("e.g. youremail@domain.com")
+      .fill("testopenearthorg");
+    await page.getByLabel("Password", { exact: true }).fill("Password1");
+    await page.getByLabel("Confirm Password").fill("Password2");
+    await page.getByPlaceholder("Enter the code you received").fill("123456");
+    await page.getByRole("button", { name: "Create Account" }).click();
+
+    await expect(page).toHaveURL(`/en/auth/signup`);
+    await expectText(page, "Passwords don't match");
   });
 
   test.skip("should correctly handle and pass callbackUrl", () => {});

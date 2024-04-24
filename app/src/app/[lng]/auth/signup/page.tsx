@@ -16,7 +16,7 @@ import {
   Input,
   Text,
 } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
@@ -47,6 +47,28 @@ export default function Signup({
 
   const [error, setError] = useState("");
 
+  // extract inventory id from callbackUrl search parameter
+  const searchParams = useSearchParams();
+  let callbackUrl = searchParams.get("callbackUrl");
+  if (!callbackUrl || callbackUrl === "null" || callbackUrl === "undefined") {
+    callbackUrl = null;
+  }
+
+  let inventoryId: string | undefined = undefined;
+  if (callbackUrl) {
+    try {
+      const path = callbackUrl.startsWith("/")
+        ? callbackUrl
+        : new URL(callbackUrl).pathname;
+      const callbackUrlSegments = path.split("/");
+      if (callbackUrlSegments.length > 2) {
+        inventoryId = callbackUrlSegments.pop();
+      }
+    } catch (err) {
+      console.error("Invalid callback url", callbackUrl);
+    }
+  }
+
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (data.password !== data.confirmPassword) {
       setFormError("confirmPassword", {
@@ -59,7 +81,7 @@ export default function Signup({
     try {
       const res = await fetch("/api/v0/auth/register", {
         method: "POST",
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, inventory: inventoryId }),
         headers: {
           "Content-Type": "application/json",
         },
@@ -68,12 +90,17 @@ export default function Signup({
       if (!res.ok) {
         const data = await res.json();
         logger.error("Failed to sign up", data);
-        setError(data.error.message);
+        let message = data.error.message;
+        if (message === "Entity exists already.") {
+          message = t("user-exists-already");
+        }
+        setError(message);
         return;
       }
 
-      const callbackUrl = `/auth/check-email?email=${data.email}`;
-      router.push(callbackUrl);
+      const callbackParam = callbackUrl ? `&callbackUrl=${callbackUrl}` : "";
+      const nextCallbackUrl = `/auth/check-email?email=${data.email}${callbackParam}`;
+      router.push(nextCallbackUrl);
 
       // TODO automatic login required?
       // const loginResponse = await signIn("credentials", {
@@ -117,7 +144,12 @@ export default function Signup({
           </FormErrorMessage>
         </FormControl>
         <EmailInput register={register} error={errors.email} t={t} />
-        <PasswordInput register={register} error={errors.password} t={t}>
+        <PasswordInput
+          register={register}
+          error={errors.password}
+          shouldValidate={true}
+          t={t}
+        >
           <FormHelperText>
             <InfoOutlineIcon
               color="interactive.secondary"

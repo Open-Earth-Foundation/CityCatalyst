@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cc-test-web-deploy
+  labels:
+    app: cc-test-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cc-test-web
+  template:
+    metadata:
+      labels:
+        app: cc-test-web
+    spec:
+      containers:
+        - name: cc-test-web
+          image: ghcr.io/open-earth-foundation/citycatalyst:main
+          # Set to Never for local
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "3000"
+            - name: DATABASE_HOST
+              value: "cc-db"
+            - name: DATABASE_NAME
+              value: "cctest"
+            - name: DATABASE_USER
+              value: "cctest"
+            - name: DATABASE_PASSWORD
+              value: "cctest"
+            - name: NEXTAUTH_URL
+              value: "https://citycatalyst-test.openearth.dev"
+            - name: HOST
+              value: "https://citycatalyst-test.openearth.dev"
+            - name: SMTP_FROM_EMAIL
+              value: "citycatalyst@openearth.dev"
+            - name: SMTP_HOST
+              value: "email-smtp.us-east-1.amazonaws.com"
+            - name: SMTP_PORT
+              value: "587"
+            - name: GLOBAL_API_URL
+              value: "https://ccglobal-test.openearth.dev"
+            - name: NEXT_PUBLIC_OPENCLIMATE_API_URL
+              value: "https://app.openclimate.network"
+          resources:
+            limits:
+              memory: "1024Mi"
+              cpu: "1000m"

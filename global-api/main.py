@@ -14,9 +14,9 @@ from routes.city_locode_endpoint_edgar import api_router as edgar_city_locode_ro
 from routes.catalogue_endpoint import api_router as catalouge_route
 from routes.catalogue_last_update_endpoint import api_router as catalogue_last_update_endpoint
 from routes.city_locode_endpoint_ghgrp import api_router as ghgrp_city_locode_route
-from routes.city_locode_endpoint_mendoza_stationary_energy import api_router as mendoza_stationary_energy_city_locode_route
-from routes.country_code_IEA_energy import api_router as country_code_IEA_energy_route
 from routes.region_code_endpoint import api_router as region_code_endpoint_route
+from routes.country_code_endpoint import api_router as country_code_endpoint_route
+from routes.citywide_emission_endpoint import api_router as citywide_route
 
 """
 Logger instance initialized and configured
@@ -127,14 +127,13 @@ app.include_router(
 )
 
 app.include_router(
-    country_code_IEA_energy_route,
-    tags=["IEA energy"],
+    country_code_endpoint_route,
+    tags=["Countrywide emissions"],
 )
 
-
 app.include_router(
-    mendoza_stationary_energy_city_locode_route,
-    tags=["Mendoza cities - Stationary Energy"],
+    citywide_route,
+    tags=["Citywide emissions"],
 )
 
 app.include_router(

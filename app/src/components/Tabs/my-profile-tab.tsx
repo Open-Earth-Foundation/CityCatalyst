@@ -1,6 +1,6 @@
 "use client";
 
-import { ProfileInputs } from "@/app/[lng]/settings/page";
+import { ProfileInputs } from "@/app/[lng]/[inventory]/settings/page";
 import AddUserModal from "@/components/Modals/add-user-modal";
 import DeleteUserModal from "@/components/Modals/delete-user-modal";
 import UpdateUserModal from "@/components/Modals/update-user-modal";
@@ -74,6 +74,7 @@ interface MyProfileTabProps {
   userInfo: UserAttributes | any;
   cityUsers: UserAttributes[] | any;
   cities: CityAttributes[] | any;
+  defaultCityId: string | undefined;
 }
 
 const MyProfileTab: FC<MyProfileTabProps> = ({
@@ -84,6 +85,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
   userInfo,
   cityUsers,
   cities,
+  defaultCityId,
 }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const {
@@ -106,7 +108,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
   const toast = useToast();
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
     await setCurrentUserData({
-      cityId: "", // TODO pass currently selected city's ID in here!
+      cityId: defaultCityId!,
       userId: userInfo.userId,
       name: data.name,
       email: data.email,
@@ -188,9 +190,8 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
   }, [role, searchTerm, cityUsers]);
 
   useEffect(() => {
-    const selectedUsersByRole = filteredUsers.filter(
-      (users) =>
-        users?.role?.toLocaleLowerCase().includes(role.toLocaleLowerCase()),
+    const selectedUsersByRole = filteredUsers.filter((users) =>
+      users?.role?.toLocaleLowerCase().includes(role.toLocaleLowerCase()),
     );
     if (role !== "all") {
       setFilteredUsersByRole(selectedUsersByRole);
@@ -242,7 +243,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
     selectedUsers.map(async (user: string) => {
       await removeUser({
         userId: user,
-        cityId: "", // TODO pass currently selected city ID into this component
+        cityId: defaultCityId!,
       }).then((res: any) => {
         if (res.data.deleted) {
           toast({
@@ -934,9 +935,6 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                                             background: "content.link",
                                             color: "white",
                                           }}
-                                          onClick={() => {
-                                            alert(city.cityId);
-                                          }}
                                         >
                                           <MdOutlineFileDownload size={24} />
 
@@ -1003,7 +1001,8 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
       <AddUserModal
         isOpen={isUserModalOpen}
         onClose={onUserModalClose}
-        cityId={cityData.cityId}
+        defaultCityId={defaultCityId}
+        userInfo={userInfo}
         t={t}
       />
       <UpdateUserModal

@@ -37,7 +37,7 @@ const DeleteFileModal: FC<DeleteFileModalProps> = ({
   const [deleteUserFile] = api.useDeleteUserFileMutation();
   const onDeleteFile = async () => {
     try {
-      await deleteUserFile({ fileId: fileData?.id });
+      await deleteUserFile({ fileId: fileData?.id, cityId: fileData?.cityId });
     } catch (error) {
       console.error(error);
     } finally {
@@ -135,7 +135,7 @@ const DeleteFileModal: FC<DeleteFileModalProps> = ({
               p={0}
               m={0}
             >
-              {t("delete-inventory")}
+              {t("delete-file")}
             </Button>
           </ModalFooter>
         </ModalContent>

@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: cc-test-global-api-migrate-
+spec:
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: cc-test-global-api
+        image: ghcr.io/open-earth-foundation/citycatalyst-global-api:main
+        env:
+        - name: ALEMBIC_URL
+          value: "postgresql://ccglobaltest:ccglobaltest@cc-global-api-db/ccglobaltest"
+        command: ["alembic", "upgrade", "heads"]

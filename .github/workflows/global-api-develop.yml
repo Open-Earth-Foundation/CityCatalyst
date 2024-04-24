@@ -1,0 +1,118 @@
+name: Push Global API to latest and deploy to EKS
+
+on:
+  workflow_dispatch:
+
+  push:
+    paths:
+      - global-api/**
+      - k8s/cc-global-api-deploy.yml
+      - k8s/cc-global-api.yml
+      - k8s/cc-global-api-migrate.yml
+      - .github/workflows/global-api-develop.yml
+    branches: ["develop"]
+  pull_request:
+    paths:
+      - global-api/**
+      - k8s/cc-global-api-deploy.yml
+      - k8s/cc-global-api.yml
+      - k8s/cc-global-api-migrate.yml
+      - .github/workflows/global-api-develop.yml
+
+jobs:
+  runTests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./global-api
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 pytest pytest-cov
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Set up database
+        run: |
+          docker run --name github_action_postgresql -d -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_PASSWORD="" postgres
+          sleep 10
+          createuser -w -h localhost -p 5432 -U postgres citycatalyst
+          createdb -w -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst
+          ALEMBIC_URL=postgresql://citycatalyst:@localhost/citycatalyst alembic upgrade head
+          cp sample.env .env
+
+      - name: Build coverage file
+        run: |
+          pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=app tests/ | tee pytest-coverage.txt
+
+      - name: Pytest coverage comment
+        uses: MishaKav/pytest-coverage-comment@main
+        with:
+          pytest-coverage-path: ./pytest-coverage.txt
+          junitxml-path: ./pytest.xml
+
+      - name: Upload coverage reports to Codecov
+        continue-on-error: true
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          fail_ci_if_error: false
+          flags: unittests
+          name: citycatalyst-global-api
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: Open-Earth-Foundation/CityCatalyst
+
+      - name: Shut down database
+        run: docker stop github_action_postgresql
+
+  pushToGHCR:
+    needs: runTests
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pushing Global API to GHCR
+        env:
+          VERSION: ${{ github.sha }}
+          IMAGE: ghcr.io/open-earth-foundation/citycatalyst-global-api
+        run: |
+          docker build -t $IMAGE:$VERSION global-api
+          docker tag $IMAGE:$VERSION $IMAGE:latest
+          docker push $IMAGE:$VERSION
+          docker push $IMAGE:latest
+
+  deployToEKS:
+    needs: pushToGHCR
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
+      EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Creating kubeconfig file
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region us-east-1
+
+      - name: Testing connection to EKS
+        run: kubectl get pods -n default
+
+      - name: Deploying service
+        run: |
+          kubectl create -f k8s/cc-global-api-migrate.yml -n default
+          kubectl apply -f k8s/cc-global-api-deploy.yml -n default
+          kubectl rollout restart deployment cc-global-api-deploy -n default

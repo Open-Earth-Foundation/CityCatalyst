@@ -1,15 +1,19 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import { User, UserId } from "./User";
+import { City, CityId } from "./City";
 
 export interface UserFileAttributes {
   id: string;
   userId?: string;
+  cityId?: string;
   fileReference?: string;
   data?: Buffer | any;
   fileType?: string;
   fileName?: string;
   sector?: string;
+  subsectors?: string[];
+  scopes?: string[];
   status?: string;
   url?: string;
   gpcRefNo?: string;
@@ -21,11 +25,14 @@ export type UserFilePk = "id";
 export type UserFileId = UserFile[UserFilePk];
 export type UserFileOptionalAttributes =
   | "userId"
+  | "cityId"
   | "fileReference"
   | "data"
   | "fileType"
   | "fileName"
   | "sector"
+  | "subsectors"
+  | "scopes"
   | "url"
   | "status"
   | "gpcRefNo"
@@ -42,11 +49,14 @@ export class UserFile
 {
   id!: string;
   userId?: string;
+  cityId?: string;
   fileReference?: string;
   data?: Buffer;
   fileType?: string;
   fileName?: string;
   sector?: string;
+  subsectors?: string[];
+  scopes?: string[];
   url?: string;
   status?: string;
   gpcRefNo?: string;
@@ -58,6 +68,12 @@ export class UserFile
   getUser!: Sequelize.BelongsToGetAssociationMixin<User>;
   setUser!: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
   createUser!: Sequelize.BelongsToCreateAssociationMixin<User>;
+
+  //UserFile belongs to City via cityId
+  city!: City;
+  getCity!: Sequelize.BelongsToGetAssociationMixin<City>;
+  setCity!: Sequelize.BelongsToSetAssociationMixin<City, CityId>;
+  createCity!: Sequelize.BelongsToCreateAssociationMixin<City>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof UserFile {
     return UserFile.init(
@@ -76,6 +92,15 @@ export class UserFile
             key: "user_id",
           },
           field: "user_id",
+        },
+        cityId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: "City",
+            key: "city_id",
+          },
+          field: "city_id",
         },
         fileReference: {
           type: DataTypes.STRING(255),
@@ -98,6 +123,14 @@ export class UserFile
         },
         sector: {
           type: DataTypes.STRING(255),
+          allowNull: true,
+        },
+        subsectors: {
+          type: DataTypes.ARRAY(DataTypes.STRING(255)),
+          allowNull: true,
+        },
+        scopes: {
+          type: DataTypes.ARRAY(DataTypes.NUMBER),
           allowNull: true,
         },
         url: {

@@ -35,16 +35,17 @@ import {
 } from "@chakra-ui/react";
 import React, { FC, useEffect, useMemo, useState } from "react";
 
-import { ChevronRightIcon, SearchIcon } from "@chakra-ui/icons";
+import { CheckIcon, ChevronRightIcon, SearchIcon } from "@chakra-ui/icons";
 import {
   MdMoreVert,
+  MdOutlineCheck,
   MdOutlineFileDownload,
   MdOutlineFolder,
 } from "react-icons/md";
 import { FiTrash2 } from "react-icons/fi";
 import { FaFileCsv } from "react-icons/fa";
 
-import { CityData } from "@/app/[lng]/settings/page";
+import { CityData } from "@/app/[lng]/[inventory]/settings/page";
 import { Session } from "next-auth";
 
 import DeleteFileModal from "@/components/Modals/delete-file-modal";
@@ -54,6 +55,8 @@ import { UserAttributes } from "@/models/User";
 import { UserFileAttributes } from "@/models/UserFile";
 
 import Link from "next/link";
+import { InventoryResponse } from "@/util/types";
+import { CircleFlag } from "react-circle-flags";
 
 interface MyFilesTabProps {
   session: Session | null;
@@ -62,6 +65,7 @@ interface MyFilesTabProps {
   userInfo: UserAttributes | any;
   lng: string;
   userFiles: UserFileAttributes[] | any;
+  inventory: InventoryResponse
 }
 
 const MyFilesTab: FC<MyFilesTabProps> = ({
@@ -71,22 +75,9 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
   lng,
   userInfo,
   userFiles,
+  inventory
 }) => {
-  const [cities, setCities] = useState<Array<any>>([]);
-
-  useEffect(() => {
-    const data = [
-      {
-        id: "1",
-        name: "CITY",
-        state: "Test Region",
-        country: "TEST COUNTRY",
-        lastUpdated: "2023-10-10T12:05:41.340Z",
-      },
-    ];
-    setCities(data);
-  }, []);
-
+  
   const getYears = userFiles?.map((item: any): number => {
     const date = new Date(item.lastUpdated);
     return date.getFullYear();
@@ -116,14 +107,6 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
     onOpen: onFileDeleteModalOpen,
     onClose: onFileDeleteModalClose,
   } = useDisclosure();
-
-  const [cityData, setCityData] = useState<CityData>({
-    id: "",
-    name: "",
-    state: "",
-    country: "",
-    lastUpdated: "",
-  });
 
   const [fileData, setFileData] = useState<UserFileAttributes>();
 
@@ -173,12 +156,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
               gap="36px"
             >
               <TabList display="flex" flexDirection="column" gap="12px">
-                {cities.map(({ name, id, country, lastUpdated, state }) => (
                   <Tab
-                    onClick={() =>
-                      setCityData({ name, country, id, lastUpdated, state })
-                    }
-                    key={id}
                     sx={{
                       w: "223px",
                       justifyContent: "left",
@@ -202,15 +180,12 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                       borderColor: "content.link",
                     }}
                   >
-                    {name}
+                    {inventory?.city.name}
                   </Tab>
-                ))}
               </TabList>
 
               <TabPanels backgroundColor="background.default">
-                {cities.map((city) => (
                   <TabPanel
-                    key={city.id}
                     display="flex"
                     flexDirection="column"
                     gap="24px"
@@ -218,11 +193,14 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                   >
                     <Box>
                       <Box display="flex" gap="8px" alignItems="center">
-                        <Avatar
-                          className="h-[32px] w-[32px]"
-                          name="Argentina"
-                          src="https://upload.wikimedia.org/wikipedia/commons/1/1a/Flag_of_Argentina.svg"
-                        />
+                      <CircleFlag
+                        countryCode={
+                          inventory?.city.locode
+                            ?.substring(0, 2)
+                            .toLowerCase() || ""
+                        }
+                        width={32}
+                      />
                         <Text
                           color="content.secondary"
                           fontWeight="semibold"
@@ -231,7 +209,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                           fontFamily="heading"
                           fontStyle="normal"
                         >
-                          {cityData.name}
+                          {inventory?.city.name}
                         </Text>
                       </Box>
                     </Box>
@@ -348,7 +326,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                               fontSize="body.md"
                             >
                               {filteredData.map((file: any) => (
-                                <Tr key={`${city.id}-${file.id}`}>
+                                <Tr key={`${file.id}`}>
                                   <Td gap="16px" alignItems="center">
                                     <Box
                                       display="flex"
@@ -416,8 +394,8 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                         ></IconButton>
                                       </PopoverTrigger>
                                       <PopoverContent
-                                        h="128px"
-                                        w="239px"
+                                        h="auto"
+                                        w="auto"
                                         borderRadius="8px"
                                         shadow="2dp"
                                         borderWidth="1px"
@@ -444,7 +422,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                               }}
                                             >
                                               <Link
-                                                href={`/api/v0/user/file/${file.id}/download-file`}
+                                                href={`/api/v0/city/${file.cityId}/file/${file.id}/download-file`}
                                                 download
                                                 className="flex gap-4"
                                               >
@@ -495,6 +473,33 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                                 {t("delete-file")}
                                               </Text>
                                             </ListItem>
+                                            <ListItem
+                                              display="flex"
+                                              cursor="pointer"
+                                              gap="16px"
+                                              className="group "
+                                              color="interactive.tertiary"
+                                              alignItems="center"
+                                              px="16px"
+                                              paddingTop="12px"
+                                              paddingBottom="12px"
+                                              _hover={{
+                                                background: "content.link",
+                                                color: "white",
+                                              }}
+                                            >
+                                              <MdOutlineCheck size={24} />
+                                              <Text
+                                                color="content.secondary"
+                                                fontFamily="heading"
+                                                letterSpacing="wide"
+                                                fontWeight="normal"
+                                                fontSize="body.lg"
+                                                className="group group-hover:text-white"
+                                              >
+                                                {t("mark-as-completed")}
+                                              </Text>
+                                            </ListItem>
                                           </List>
                                         </PopoverBody>
                                       </PopoverContent>
@@ -508,7 +513,6 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                       )}
                     </Box>
                   </TabPanel>
-                ))}
               </TabPanels>
             </Tabs>
           </Box>

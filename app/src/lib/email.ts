@@ -6,7 +6,7 @@ type EmailPayload = {
   html: string;
 };
 
-const smtpOptions = {
+export const smtpOptions = {
   host: process.env.SMTP_HOST || "localhost",
   port: parseInt(process.env.SMTP_PORT || "2525"),
   secure: false,

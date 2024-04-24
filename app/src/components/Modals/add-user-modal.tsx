@@ -1,6 +1,6 @@
 "use client";
 
-import { ProfileInputs } from "@/app/[lng]/settings/page";
+import { ProfileInputs } from "@/app/[lng]/[inventory]/settings/page";
 import type { UserAttributes } from "@/models/User";
 import { api } from "@/services/api";
 import {
@@ -23,39 +23,43 @@ import FormInput from "../form-input";
 import FormSelectInput from "../form-select-input";
 import FormSelectOrganization from "../form-select-organization";
 import { TFunction } from "i18next";
+import { useParams } from "next/navigation";
 
 interface AddUserModalProps {
   isOpen: boolean;
   onClose: () => void;
-  cityId: string | undefined;
   t: TFunction;
+  userInfo: UserAttributes | null;
+  defaultCityId?: string;
 }
 
 const AddUserModal: FC<AddUserModalProps> = ({
   isOpen,
   onClose,
   t,
-  cityId,
+  userInfo,
+  defaultCityId,
 }) => {
   const {
     handleSubmit,
     register,
     formState: { errors },
   } = useForm<ProfileInputs>();
-  const [addUser] = api.useAddUserMutation();
-  const [inputValue, setInputValue] = useState<string>("");
+  const [checkUser] = api.useCheckUserMutation();
+  const [inviteUser, { isLoading: isInviteLoading }] =
+    api.useInviteUserMutation();
+
   const toast = useToast();
-  const onInputChange = (e: any) => {
-    setInputValue(e.target.value);
-  };
-  const onSubmit: SubmitHandler<UserAttributes> = async (data) => {
-    await addUser({
-      name: data.name!,
+
+  const { inventory: cityParam } = useParams();
+  const inventoryId = cityParam as string;
+  const onSubmit: SubmitHandler<{ name: string; email: string }> = async (
+    data,
+  ) => {
+    await checkUser({
       email: data.email!,
-      role: data.role!,
-      cityId: cityId!,
-    }).then((res: any) => {
-      console.log(res);
+      cityId: defaultCityId!,
+    }).then(async (res: any) => {
       if (res.error) {
         return toast({
           description: t("something-went-wrong"),
@@ -91,48 +95,92 @@ const AddUserModal: FC<AddUserModalProps> = ({
           ),
         });
       } else {
-        onClose();
-        return toast({
-          description: t("user-details-updated"),
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-          render: () => (
-            <Box
-              display="flex"
-              gap="8px"
-              color="white"
-              alignItems="center"
-              justifyContent="space-between"
-              p={3}
-              bg="interactive.primary"
-              width="600px"
-              height="60px"
-              borderRadius="8px"
-            >
-              <Box display="flex" gap="8px" alignItems="center">
-                <MdCheckCircleOutline fontSize="24px" />
-
-                <Text
-                  color="base.light"
-                  fontWeight="bold"
-                  lineHeight="52"
-                  fontSize="label.lg"
+        await inviteUser({
+          name: res.data ? res.data.name! : data.name,
+          cityId: defaultCityId!,
+          email: data.email!,
+          userId: res?.data?.userId,
+          invitingUserId: userInfo! && userInfo?.userId!,
+          inventoryId,
+        }).then((res: any) => {
+          onClose();
+          if (res?.error?.status == 400) {
+            return toast({
+              description: "Something went wrong",
+              status: "error",
+              duration: 5000,
+              isClosable: true,
+              render: () => (
+                <Box
+                  display="flex"
+                  gap="8px"
+                  color="white"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  p={3}
+                  bg="sentiment.negativeDefault"
+                  width="600px"
+                  height="60px"
+                  borderRadius="8px"
                 >
-                  {t("user-details-updated")}
-                </Text>
-              </Box>
-            </Box>
-          ),
+                  <Box display="flex" gap="8px" alignItems="center">
+                    <MdCheckCircleOutline fontSize="24px" />
+                    <Text
+                      color="base.light"
+                      fontWeight="bold"
+                      lineHeight="52"
+                      fontSize="label.lg"
+                    >
+                      Something went wrong!
+                    </Text>
+                  </Box>
+                </Box>
+              ),
+            });
+          } else {
+            return toast({
+              description: "User invite sent",
+              status: "success",
+              duration: 5000,
+              isClosable: true,
+              render: () => (
+                <Box
+                  display="flex"
+                  gap="8px"
+                  color="white"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  p={3}
+                  bg="interactive.primary"
+                  width="600px"
+                  height="60px"
+                  borderRadius="8px"
+                >
+                  <Box display="flex" gap="8px" alignItems="center">
+                    <MdCheckCircleOutline fontSize="24px" />
+                    <Text
+                      color="base.light"
+                      fontWeight="bold"
+                      lineHeight="52"
+                      fontSize="label.lg"
+                    >
+                      User invite sent
+                    </Text>
+                  </Box>
+                </Box>
+              ),
+            });
+          }
         });
       }
     });
   };
+
   return (
     <>
       <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent minH="600px" minW="568px" marginTop="10%">
+        <ModalContent minH="300px" minW="568px" marginTop="10%">
           <ModalHeader
             display="flex"
             justifyContent="center"
@@ -163,23 +211,14 @@ const AddUserModal: FC<AddUserModalProps> = ({
                   label={t("email")}
                   register={register}
                 />
-
-                <FormSelectInput
+                {/* <FormSelectInput
                   label={t("role")}
                   value={inputValue}
                   register={register}
                   error={errors.role}
                   id="role"
                   onInputChange={onInputChange}
-                />
-                <FormSelectOrganization
-                  label={t("is-organization")}
-                  value={inputValue}
-                  register={register}
-                  error={errors.role}
-                  id="isOrganization"
-                  onInputChange={onInputChange}
-                />
+                /> */}
               </Box>
             </form>
           </ModalBody>
@@ -204,6 +243,7 @@ const AddUserModal: FC<AddUserModalProps> = ({
               fontWeight="semibold"
               fontSize="button.md"
               type="submit"
+              isLoading={isInviteLoading}
               onClick={handleSubmit(onSubmit)}
               p={0}
               m={0}

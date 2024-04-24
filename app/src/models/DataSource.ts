@@ -34,10 +34,11 @@ import { InventoryValue, InventoryValueId } from "./InventoryValue";
 
 export interface DataSourceAttributes {
   datasourceId: string;
-  name?: string;
+  datasetName?: string;
+  datasourceName?: string;
   sourceType?: string;
   url?: string;
-  description?: string;
+  datasetDescription?: string;
   accessType?: string;
   geographicalLocation?: string; // comma separated list of locodes for either EARTH, country, region or city
   startYear?: number; // inclusive
@@ -51,6 +52,8 @@ export interface DataSourceAttributes {
   notes?: string;
   units?: string;
   methodologyUrl?: string;
+  methodologyDescription?: string;
+  transformationDescription?: string;
   publisherId?: string;
   retrievalMethod?: string;
   apiEndpoint?: string;
@@ -64,10 +67,11 @@ export interface DataSourceAttributes {
 export type DataSourcePk = "datasourceId";
 export type DataSourceId = DataSource[DataSourcePk];
 export type DataSourceOptionalAttributes =
-  | "name"
+  | "datasetName"
+  | "datasourceName"
   | "sourceType"
   | "url"
-  | "description"
+  | "datasetDescription"
   | "accessType"
   | "geographicalLocation"
   | "startYear"
@@ -81,6 +85,8 @@ export type DataSourceOptionalAttributes =
   | "notes"
   | "units"
   | "methodologyUrl"
+  | "methodologyDescription"
+  | "transformationDescription"
   | "publisherId"
   | "retrievalMethod"
   | "apiEndpoint"
@@ -99,10 +105,11 @@ export class DataSource
   implements DataSourceAttributes
 {
   datasourceId!: string;
-  name?: string;
+  datasetName?: string;
+  datasourceName?: string;
   sourceType?: string;
   url?: string;
-  description?: string;
+  datasetDescription?: string;
   accessType?: string;
   geographicalLocation?: string;
   startYear?: number; // inclusive
@@ -116,6 +123,8 @@ export class DataSource
   notes?: string;
   units?: string;
   methodologyUrl?: string;
+  methodologyDescription?: string;
+  transformationDescription?: string;
   publisherId?: string;
   retrievalMethod?: string;
   apiEndpoint?: string;
@@ -359,10 +368,7 @@ export class DataSource
   // DataSource hasOne Sector via sectorId
   sector!: Sector;
   getSector!: Sequelize.HasOneGetAssociationMixin<Sector>;
-  setSector!: Sequelize.HasOneSetAssociationMixin<
-    Sector,
-    SectorId
-  >;
+  setSector!: Sequelize.HasOneSetAssociationMixin<Sector, SectorId>;
   createSector!: Sequelize.HasOneCreateAssociationMixin<Sector>;
   // DataSource hasOne SubCategory via subCategoryId
   subCategory!: SubCategory;
@@ -375,10 +381,7 @@ export class DataSource
   // DataSource hasOneSubSector via subSectorId
   subSector!: SubSector;
   getSubSector!: Sequelize.HasOneGetAssociationMixin<SubSector>;
-  setSubSector!: Sequelize.HasOneSetAssociationMixin<
-    SubSector,
-    SubSectorId
-  >;
+  setSubSector!: Sequelize.HasOneSetAssociationMixin<SubSector, SubSectorId>;
   createSubSector!: Sequelize.HasOneCreateAssociationMixin<SubSector>;
   // DataSource belongsToMany EmissionsFactor via datasourceId and emissionsFactorId
   emissionsFactorIdEmissionsFactors!: EmissionsFactor[];
@@ -575,29 +578,14 @@ export class DataSource
   // DataSource belongsToMany Scope via datasourceId and scopeId
   scopes!: Scope[];
   getScopes!: Sequelize.BelongsToManyGetAssociationsMixin<Scope>;
-  setScopes!: Sequelize.BelongsToManySetAssociationsMixin<
-    Scope,
-    ScopeId
-  >;
+  setScopes!: Sequelize.BelongsToManySetAssociationsMixin<Scope, ScopeId>;
   addScope!: Sequelize.BelongsToManyAddAssociationMixin<Scope, ScopeId>;
-  addScopes!: Sequelize.BelongsToManyAddAssociationsMixin<
-    Scope,
-    ScopeId
-  >;
+  addScopes!: Sequelize.BelongsToManyAddAssociationsMixin<Scope, ScopeId>;
   createScope!: Sequelize.BelongsToManyCreateAssociationMixin<Scope>;
-  removeScope!: Sequelize.BelongsToManyRemoveAssociationMixin<
-    Scope,
-    ScopeId
-  >;
-  removeScopes!: Sequelize.BelongsToManyRemoveAssociationsMixin<
-    Scope,
-    ScopeId
-  >;
+  removeScope!: Sequelize.BelongsToManyRemoveAssociationMixin<Scope, ScopeId>;
+  removeScopes!: Sequelize.BelongsToManyRemoveAssociationsMixin<Scope, ScopeId>;
   hasScope!: Sequelize.BelongsToManyHasAssociationMixin<Scope, ScopeId>;
-  hasScopes!: Sequelize.BelongsToManyHasAssociationsMixin<
-    Scope,
-    ScopeId
-  >;
+  hasScopes!: Sequelize.BelongsToManyHasAssociationsMixin<Scope, ScopeId>;
   countScopes!: Sequelize.BelongsToManyCountAssociationsMixin;
   // DataSource belongsToMany Sector via datasourceId and sectorId
   sectorIdSectors!: Sector[];
@@ -745,9 +733,15 @@ export class DataSource
           primaryKey: true,
           field: "datasource_id",
         },
-        name: {
+        datasetName: {
           type: DataTypes.STRING(255),
           allowNull: true,
+          field: "dataset_name",
+        },
+        datasourceName: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: "datasource_name",
         },
         sourceType: {
           type: DataTypes.STRING(255),
@@ -759,9 +753,10 @@ export class DataSource
           allowNull: true,
           field: "URL",
         },
-        description: {
+        datasetDescription: {
           type: DataTypes.TEXT,
           allowNull: true,
+          field: "dataset_description",
         },
         accessType: {
           type: DataTypes.STRING(255),
@@ -823,6 +818,16 @@ export class DataSource
           type: DataTypes.STRING(255),
           allowNull: true,
           field: "methodology_url",
+        },
+        methodologyDescription: {
+          type: DataTypes.TEXT,
+          allowNull: true,
+          field: "methodology_description",
+        },
+        transformationDescription: {
+          type: DataTypes.TEXT,
+          allowNull: true,
+          field: "transformation_description",
         },
         publisherId: {
           type: DataTypes.UUID,

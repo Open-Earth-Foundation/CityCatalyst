@@ -8,13 +8,14 @@ on:
       - k8s/cc-migrate.yml
       - k8s/cc-web-deploy.yml
       - k8s/cc-web.yml
-      - .github/workflows/web-actions.yml
+      - .github/workflows/web-tag.yml
     tags:
-    - 'v*'
+      - "v[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
   runTests:
     runs-on: ubuntu-latest
+    if: ${{ !contains(github.ref, '-') }}
     env:
       NODE_ENV: test
       NEXTAUTH_SECRET: "diTMz/XLX4edSmmfzwJtmzKjCJGRt81Gf0PdjO3IPs8="
@@ -28,7 +29,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: app/package-lock.json
 
       - name: Install dependencies
@@ -49,44 +50,79 @@ jobs:
       - name: Run API tests
         run: npm run api:test
 
-      # - name: Run Cypress tests
-      #   run: npm run cy:test
-
       - name: Shut down database
         run: docker stop github_action_postgresql
 
   pushToGHCR:
     needs: runTests
+    if: ${{ !contains(github.ref, '-') }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
 
-    - uses: actions/checkout@v4
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Log in to the Container registry
-      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Pushing citycatalyst to GHCR
+        env:
+          SHA: ${{ github.sha }}
+          REF: ${{ github.ref }}
+          IMAGE: ghcr.io/open-earth-foundation/citycatalyst
 
-    - name: Pushing citycatalyst to GHCR
-      env:
-        SHA: ${{ github.sha }}
-        REF: ${{ github.ref }}
-        IMAGE: ghcr.io/open-earth-foundation/citycatalyst
+        run: |
+          export VERSION=${REF#refs/tags/v}
+          export MAJOR=${VERSION%.*.*}
+          export MINOR=${VERSION%.*}
+          echo Version: ${VERSION} Major: ${MAJOR} Minor: ${MINOR}
+          docker build -t $IMAGE:$SHA app
+          docker tag $IMAGE:$SHA $IMAGE:$VERSION
+          docker tag $IMAGE:$SHA $IMAGE:$MAJOR
+          docker tag $IMAGE:$SHA $IMAGE:$MINOR
+          docker tag $IMAGE:$SHA $IMAGE:stable
+          docker push $IMAGE:$SHA
+          docker push $IMAGE:$VERSION
+          docker push $IMAGE:$MAJOR
+          docker push $IMAGE:$MINOR
+          docker push $IMAGE:stable
 
-      run: |
-        export VERSION=${REF#refs/tags/v}
-        export MAJOR=${VERSION%.*.*}
-        export MINOR=${VERSION%.*}
-        echo Version: ${VERSION} Major: ${MAJOR} Minor: ${MINOR}
-        docker build -t $IMAGE:$SHA app
-        docker tag $IMAGE:$SHA $IMAGE:$VERSION
-        docker tag $IMAGE:$SHA $IMAGE:$MAJOR
-        docker tag $IMAGE:$SHA $IMAGE:$MINOR
-        docker tag $IMAGE:$SHA $IMAGE:stable
-        docker push $IMAGE:$SHA
-        docker push $IMAGE:$VERSION
-        docker push $IMAGE:$MAJOR
-        docker push $IMAGE:$MINOR
-        docker push $IMAGE:stable
+  deployToEKS:
+    needs: pushToGHCR
+    if: ${{ !contains(github.ref, '-') }}
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_PROD_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_PROD_USER }}
+      EKS_PROD_NAME: ${{ secrets.EKS_PROD_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Creating kubeconfig file
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_PROD_NAME}} --region us-east-1
+
+      - name: Testing connection to EKS
+        run: kubectl get pods -n default
+
+      - name: Deploying service
+        run: |
+          kubectl create -f k8s/cc-migrate.yml -n default
+          kubectl create -f k8s/cc-seed.yml -n default
+          kubectl apply -f k8s/cc-sync-catalogue.yml -n default
+          kubectl apply -f k8s/cc-web-deploy.yml -n default
+          kubectl set env deployment/cc-web-deploy SMTP_USER=${{secrets.SMTP_USER}}
+          kubectl set env deployment/cc-web-deploy SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}}
+          kubectl set env deployment/cc-web-deploy NEXTAUTH_SECRET=${{secrets.NEXTAUTH_SECRET}}
+          kubectl set env deployment/cc-web-deploy RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}}
+          kubectl set env deployment/cc-web-deploy VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}}
+          kubectl set env deployment/cc-web-deploy CHAT_PROVIDER=openai
+          kubectl set env deployment/cc-web-deploy OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}}
+          kubectl set env deployment/cc-web-deploy HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}}
+          kubectl set env deployment/cc-web-deploy "ADMIN_EMAILS=${{secrets.ADMIN_EMAILS}}"
+          kubectl set env deployment/cc-web-deploy "ADMIN_NAMES=${{secrets.ADMIN_NAMES}}"
+          kubectl set env deployment/cc-web-deploy "DEFAULT_ADMIN_EMAIL=${{secrets.DEFAULT_ADMIN_EMAIL}}"
+          kubectl set env deployment/cc-web-deploy "DEFAULT_ADMIN_PASSWORD=${{secrets.DEFAULT_ADMIN_PASSWORD}}"
+          kubectl create -f k8s/cc-create-admin.yml -n default
+          kubectl rollout restart deployment cc-web-deploy -n default

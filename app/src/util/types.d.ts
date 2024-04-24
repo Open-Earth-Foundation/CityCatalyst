@@ -1,4 +1,7 @@
-import type { InventoryValueData } from "@/app/[lng]/data/[step]/types";
+import type {
+  DataSourceWithRelations,
+  InventoryValueData,
+} from "@/app/[lng]/[inventory]/data/[step]/types";
 import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
@@ -44,7 +47,7 @@ type DataSource = DataSourceAttributes & {
   subCategory?: SubCategoryAttributes;
   inventoryValues?: InventoryValueAttributes[];
 };
-type DataSourceResponse = { source: DataSource; data: any }[];
+type DataSourceResponse = { source: DataSourceWithRelations; data: any }[];
 
 type InventoryValueResponse = InventoryValueAttributes & {
   dataSource: DataSourceAttributes;
@@ -70,10 +73,20 @@ interface InventoryValueUpdateQuery {
   data: InventoryValueData;
 }
 
-type EmissionsFactorWithDataSources = EmissionsFactorAttributes & { dataSources: DataSourceAttributes[] };
+type EmissionsFactorWithDataSources = EmissionsFactorAttributes & {
+  dataSources: DataSourceAttributes[];
+};
 type EmissionsFactorResponse = EmissionsFactorWithDataSources[];
 
 type InventoryWithCity = InventoryAttributes & { city: CityAttributes };
+
+interface OCCityAttributes {
+  actor_id: string;
+  name: string;
+  is_part_of: string;
+  root_path_geo: any;
+  area: number;
+}
 
 declare module "next-auth" {
   interface Session {
@@ -95,12 +108,24 @@ type fileContentValues = {
 interface UserFileResponse {
   id: string;
   userId: string;
+  cityId: string;
   fileReference: string;
   url: string;
   sector: string;
+  subsectors: string[];
+  scopes: string[];
   fileName: string;
   status: string;
   gpcRefNo: string;
   file: fileContentValues;
+  lastUpdated: Date;
+}
+
+interface UserInviteResponse {
+  id: string;
+  userId: string;
+  locode: string;
+  status: string;
+  created: string;
   lastUpdated: string;
 }

@@ -18,6 +18,7 @@ import type {
   UserInfoResponse,
   UserFileResponse,
   EmissionsFactorResponse,
+  UserInviteResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -41,13 +42,14 @@ export const api = createApi({
       transformResponse: (response: { data: CityAttributes }) => response.data,
     }),
     getCityBoundary: builder.query<
-      { data: GeoJSON; boundingBox: BoundingBox },
+      { data: GeoJSON; boundingBox: BoundingBox; area: number },
       string
     >({
       query: (cityId) => `city/${cityId}/boundary`,
       transformResponse: (response: {
         data: GeoJSON;
         boundingBox: BoundingBox;
+        area: number
       }) => response,
     }),
     getInventory: builder.query<InventoryResponse, string>({
@@ -88,7 +90,8 @@ export const api = createApi({
         method: "POST",
         body: data,
       }),
-      transformResponse: (response: { data: InventoryAttributes }) => response.data,
+      transformResponse: (response: { data: InventoryAttributes }) =>
+        response.data,
       invalidatesTags: ["UserInventories"],
     }),
     setUserInfo: builder.mutation<
@@ -176,9 +179,12 @@ export const api = createApi({
       {
         cityId: string;
         locode: string;
-        population: number;
+        cityPopulation: number;
+        regionPopulation: number;
         countryPopulation: number;
-        year: number;
+        cityPopulationYear: number;
+        regionPopulationYear: number;
+        countryPopulationYear: number;
       }
     >({
       query: (data) => {
@@ -228,12 +234,10 @@ export const api = createApi({
         body: data,
       }),
     }),
-    addUser: builder.mutation<
+    checkUser: builder.mutation<
       UserAttributes,
       {
-        name: string;
         email: string;
-        role: string;
         cityId: string;
       }
     >({
@@ -242,6 +246,7 @@ export const api = createApi({
         method: "POST",
         body: data,
       }),
+      transformResponse: (response: { data: any }) => response.data,
       invalidatesTags: ["UserData"],
     }),
     getCityUsers: builder.query<
@@ -318,10 +323,10 @@ export const api = createApi({
       transformResponse: (response: { data: any }) => response.data,
     }),
     addUserFile: builder.mutation<UserFileResponse, any>({
-      query: (formData) => {
+      query: ({ formData, cityId }) => {
         return {
           method: "POST",
-          url: `/user/file`,
+          url: `city/${cityId}/file`,
           body: formData,
         };
       },
@@ -330,9 +335,9 @@ export const api = createApi({
       invalidatesTags: ["FileData"],
     }),
     getUserFiles: builder.query({
-      query: () => ({
+      query: (cityId: string) => ({
         method: "GET",
-        url: `/user/file`,
+        url: `/city/${cityId}/file`,
       }),
       transformResponse: (response: { data: UserFileResponse }) => {
         return response.data;
@@ -343,7 +348,7 @@ export const api = createApi({
     deleteUserFile: builder.mutation({
       query: (params) => ({
         method: "DELETE",
-        url: `/user/file/${params.fileId}`,
+        url: `/city/${params.cityId}/file/${params.fileId}`,
       }),
       transformResponse: (response: { data: UserFileResponse }) =>
         response.data,
@@ -354,6 +359,38 @@ export const api = createApi({
       transformResponse: (response: { data: EmissionsFactorResponse }) =>
         response.data,
     }),
+    disconnectThirdPartyData: builder.mutation({
+      query: ({ inventoryId, subCategoryId }) => ({
+        method: "DELETE",
+        url: `inventory/${inventoryId}/value/${subCategoryId}`,
+      }),
+      invalidatesTags: ["InventoryValue", "InventoryProgress"],
+      transformResponse: (response: { data: EmissionsFactorResponse }) =>
+        response.data,
+    }),
+    // User invitation to city
+    inviteUser: builder.mutation<
+      UserInviteResponse,
+      {
+        cityId: string;
+        name?: string;
+        email: string;
+        userId: string;
+        invitingUserId: string;
+        inventoryId: string;
+      }
+    >({
+      query: (data) => {
+        return {
+          method: "POST",
+          url: `/city/invite`,
+          body: data,
+        };
+      },
+
+      transformResponse: (response: { data: UserInviteResponse }) =>
+        response.data,
+    }),
   }),
 });
 
@@ -361,9 +398,8 @@ export const openclimateAPI = createApi({
   reducerPath: "openclimateapi",
   baseQuery: fetchBaseQuery({
     baseUrl:
-      process.env.NODE_ENV === "production"
-        ? "https://app.openclimate.network"
-        : "https://openclimate.openearth.dev",
+      process.env.NEXT_PUBLIC_OPENCLIMATE_API_URL ||
+      "https://app.openclimate.network",
   }),
   endpoints: (builder) => ({
     getOCCity: builder.query<any, string>({
@@ -374,6 +410,9 @@ export const openclimateAPI = createApi({
     }),
     getOCCityData: builder.query<any, string>({
       query: (locode) => `/api/v1/actor/${locode}`,
+      transformResponse: (response: any) => {
+        return response.data;
+      },
     }),
   }),
 });
@@ -403,5 +442,8 @@ export const {
   useAddUserFileMutation,
   useGetUserFilesQuery,
   useDeleteUserFileMutation,
+  useDisconnectThirdPartyDataMutation,
+  useInviteUserMutation,
+  useCheckUserMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

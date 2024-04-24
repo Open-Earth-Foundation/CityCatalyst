@@ -78,7 +78,7 @@ test.describe("Signup", () => {
     await page.getByLabel("Confirm Password").fill("Password2");
     await page.getByPlaceholder("Enter the code you received").fill("123456");
     await page
-      .locator('input[name="acceptTerms"] + .chakra-checkbox__control')
+      .locator('input[name="acceptTerms"] + .chakra-checkbox__control') // sibling
       .click();
     await page.getByRole("button", { name: "Create Account" }).click();
 

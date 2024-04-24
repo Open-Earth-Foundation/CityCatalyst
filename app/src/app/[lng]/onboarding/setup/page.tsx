@@ -717,31 +717,35 @@ export default function OnboardingSetup({
   const regionPopulationYear = watch("regionPopulationYear");
   const countryPopulationYear = watch("countryPopulationYear");
 
-  const { data: cityArea, isLoading: isCityAreaLoading } = api.useGetCityBoundaryQuery(data.locode!, {
-    skip: !data.locode,
-  });
+  const { data: cityArea, isLoading: isCityAreaLoading } =
+    api.useGetCityBoundaryQuery(data.locode!, {
+      skip: !data.locode,
+    });
 
   const onConfirm = async () => {
     // save data in backend
     setConfirming(true);
     let city: CityAttributes | null = null;
 
-    let area = ocCityData?.area ?? 0;
-    let region =
-      ocCityData?.root_path_geo.filter((item: any) => item.type === "adm1")[0]
-        ?.name ?? "";
-    let country =
-      ocCityData?.root_path_geo.filter(
-        (item: any) => item.type === "country",
-      )[0]?.name ?? "";
+    const area = cityArea?.area ?? ocCityData?.area ?? undefined;
+    const region = ocCityData?.root_path_geo.filter(
+      (item: any) => item.type === "adm1",
+    )[0];
+    const regionName = region?.name ?? "";
+    const country = ocCityData?.root_path_geo.filter(
+      (item: any) => item.type === "country",
+    )[0];
+    const countryName = country?.name ?? "";
 
     try {
       city = await addCity({
         name: data.name,
         locode: data.locode!,
-        area: Math.round(cityArea?.area!),
-        region,
-        country,
+        area,
+        region: regionName,
+        country: countryName,
+        regionLocode: region?.actor_id ?? undefined,
+        countryLocode: country?.actor_id ?? undefined,
       }).unwrap();
       await addCityPopulation({
         cityId: city.cityId,

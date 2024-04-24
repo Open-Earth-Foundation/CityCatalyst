@@ -1,4 +1,214 @@
 GPC_refno,activity_name,activity_units,activity_value,emission_factor_units,emission_factor_value,emissions_units,emissions_value,gas_name,id,region_code,region_name,source_name,temporal_granularity,year
+I.8.1,fugitive emissions from natural gas distribution,m3,12779299223.30907,kg/m3,0.0031,kg,39615827.59225812,CO2,109004ea-ce40-3a7f-a866-eb1db75073d0,AR-B,BUENOS AIRES,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,12722758982.0,kg/m3,0.0031,kg,39440552.8442,CO2,09c151ef-6008-3396-83b0-662d0cf08c37,AR-B,BUENOS AIRES,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,12652871103.0,kg/m3,0.0031,kg,39223900.4193,CO2,f037b884-e3e7-3a83-a109-048d74ffb5eb,AR-B,BUENOS AIRES,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,12361596490.0,kg/m3,0.0031,kg,38320949.118999995,CO2,879071a4-b482-3ec5-9f23-61ae9d4d3a79,AR-B,BUENOS AIRES,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,12663416420.0,kg/m3,0.0031,kg,39256590.901999995,CO2,7f33b276-9238-3cfd-b6b9-2e4bc3219097,AR-B,BUENOS AIRES,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,4164667000.0,kg/m3,0.0031,kg,12910467.7,CO2,5b375fb2-0ec1-317d-992b-529960c29916,AR-C,CAPITAL FEDERAL,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,4101290000.0,kg/m3,0.0031,kg,12713999.0,CO2,9df983c5-9793-344c-a502-c712802034c8,AR-C,CAPITAL FEDERAL,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,3610580000.0,kg/m3,0.0031,kg,11192798.0,CO2,44626219-e739-3ff6-898d-815009bc4a97,AR-C,CAPITAL FEDERAL,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,3295466000.0,kg/m3,0.0031,kg,10215944.6,CO2,0e1a3e74-8043-3f9f-bda7-b49fdcd25997,AR-C,CAPITAL FEDERAL,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,3429099000.0,kg/m3,0.0031,kg,10630206.9,CO2,468ba106-6480-38a8-a678-a50b41c0e354,AR-C,CAPITAL FEDERAL,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,117903000.0,kg/m3,0.0031,kg,365499.3,CO2,80ca3500-6889-3c82-a09c-a14c20394162,AR-K,CATAMARCA,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,109019000.0,kg/m3,0.0031,kg,337958.89999999997,CO2,81f074b5-5c3e-3bec-b0b1-f809f2d2e597,AR-K,CATAMARCA,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,108706000.0,kg/m3,0.0031,kg,336988.6,CO2,67541561-1cb0-3ed2-b8fb-6a3059921245,AR-K,CATAMARCA,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,114937000.0,kg/m3,0.0031,kg,356304.7,CO2,c372b044-ccf1-3ddf-926f-95bde49ed7ab,AR-K,CATAMARCA,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,133455000.0,kg/m3,0.0031,kg,413710.5,CO2,8177436e-338f-3a25-ad0c-573624f06f31,AR-K,CATAMARCA,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,1519440000.0,kg/m3,0.0031,kg,4710264.0,CO2,b8bed5a1-ef8a-38d7-acff-24bb864feb47,AR-U,CHUBUT,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,1575875000.0,kg/m3,0.0031,kg,4885212.5,CO2,3ab6fc3b-585a-3504-849f-316a0af7b9dc,AR-U,CHUBUT,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,1595652000.0,kg/m3,0.0031,kg,4946521.2,CO2,f8a45c27-a76c-3c76-bd07-2133835ef9c4,AR-U,CHUBUT,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,1453111000.0,kg/m3,0.0031,kg,4504644.1,CO2,6754cef9-c7a4-37be-9b19-1140fa71ae3b,AR-U,CHUBUT,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,1349716550.0,kg/m3,0.0031,kg,4184121.3049999997,CO2,329e2223-ebdc-3461-8091-c1cbcedc0ae0,AR-U,CHUBUT,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,2297329000.0,kg/m3,0.0031,kg,7121719.899999999,CO2,40effc5e-f6fb-3871-9990-2cb3024fdc6a,AR-X,CORDOBA,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,2043539000.0,kg/m3,0.0031,kg,6334970.899999999,CO2,1f7bfb6c-81b9-386d-9cd9-f0dc0f2a0b3b,AR-X,CORDOBA,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,1876255000.0,kg/m3,0.0031,kg,5816390.5,CO2,8555af18-cfe2-3f45-9992-aec9ba3a4c40,AR-X,CORDOBA,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,1971507000.0,kg/m3,0.0031,kg,6111671.7,CO2,c57c20ff-04bb-3f03-b68a-63c2e6fa66d4,AR-X,CORDOBA,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,2025445000.0,kg/m3,0.0031,kg,6278879.5,CO2,d434c2f3-456f-36c9-a1d6-77e35394fea9,AR-X,CORDOBA,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,443350.0,kg/m3,0.0031,kg,1374.385,CO2,df4e6f23-eaa1-35f3-86a4-c4ae1dce43ce,AR-W,CORRIENTES,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,566000.0,kg/m3,0.0031,kg,1754.6,CO2,54f78634-13d8-3ca9-be21-0b199a4908a5,AR-W,CORRIENTES,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,1201000.0,kg/m3,0.0031,kg,3723.1,CO2,b8476696-7704-3832-83a7-0684834e8215,AR-W,CORRIENTES,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,3628000.0,kg/m3,0.0031,kg,11246.8,CO2,c225ed85-a834-366d-8fa3-26e10ec640df,AR-W,CORRIENTES,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,4705000.0,kg/m3,0.0031,kg,14585.5,CO2,611f2b0e-c98e-3422-b72f-cb58b43be6f1,AR-W,CORRIENTES,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,272814000.0,kg/m3,0.0031,kg,845723.4,CO2,fbbaafec-fa5d-396f-82a2-69e60d5192b2,AR-E,ENTRE RIOS,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,264763000.0,kg/m3,0.0031,kg,820765.2999999999,CO2,dd2df635-d8f0-347b-8bb4-325524236957,AR-E,ENTRE RIOS,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,247678000.0,kg/m3,0.0031,kg,767801.7999999999,CO2,d6d03203-df5a-3777-addf-2af0abac2e28,AR-E,ENTRE RIOS,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,276881000.0,kg/m3,0.0031,kg,858331.1,CO2,a038d770-f173-33b7-ae44-f3b16e0fff3d,AR-E,ENTRE RIOS,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,289026000.0,kg/m3,0.0031,kg,895980.6,CO2,5671a26e-edb4-3103-a7d1-b264eba7b435,AR-E,ENTRE RIOS,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,335727678.0,kg/m3,0.0031,kg,1040755.8018,CO2,cba5bcd9-3b46-3545-814d-243ed2fb2799,AR-Y,JUJUY,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,272565174.0,kg/m3,0.0031,kg,844952.0394,CO2,d8dda8d6-315a-3c64-807b-a09639588d6d,AR-Y,JUJUY,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,238192000.0,kg/m3,0.0031,kg,738395.2,CO2,6b6dbe81-5813-3686-a4a3-9546cf11707c,AR-Y,JUJUY,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,254375768.84,kg/m3,0.0031,kg,788564.883404,CO2,0377b044-b729-38fe-8940-f05cfc059c68,AR-Y,JUJUY,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,255760593.99,kg/m3,0.0031,kg,792857.841369,CO2,a7736382-56d4-3933-8b60-a06f0654499c,AR-Y,JUJUY,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,306359000.0,kg/m3,0.0031,kg,949712.9,CO2,e710a71b-fa16-3d59-a827-e46795541693,AR-L,LA PAMPA,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,302094000.0,kg/m3,0.0031,kg,936491.4,CO2,05b4b7b1-4996-35e6-903b-9068be3fb239,AR-L,LA PAMPA,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,313766000.0,kg/m3,0.0031,kg,972674.6,CO2,6d83b033-8462-34a7-a57f-e269f8f1ea4a,AR-L,LA PAMPA,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,322930000.0,kg/m3,0.0031,kg,1001083.0,CO2,93d77d37-2d5c-3cd9-9880-d29399b65605,AR-L,LA PAMPA,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,345258100.0,kg/m3,0.0031,kg,1070300.1099999999,CO2,7ee728a4-01a1-3bb7-b08f-69add443a6cc,AR-L,LA PAMPA,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,39869000.0,kg/m3,0.0031,kg,123593.9,CO2,9f51bd1b-984c-3d9e-8250-a64535cb5f1a,AR-F,LA RIOJA,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,46601000.0,kg/m3,0.0031,kg,144463.1,CO2,8173d76f-ef1d-37af-931d-83c8eea3342e,AR-F,LA RIOJA,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,33851000.0,kg/m3,0.0031,kg,104938.09999999999,CO2,6263ad37-bf99-3be4-91f9-cb5c3d6e3ab4,AR-F,LA RIOJA,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,31539000.0,kg/m3,0.0031,kg,97770.9,CO2,4437bd56-0ecd-3740-bb6c-bbb72ffc906d,AR-F,LA RIOJA,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,34148000.0,kg/m3,0.0031,kg,105858.8,CO2,72c628d1-90e0-328b-985c-139b4bfb811e,AR-F,LA RIOJA,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,1822117000.0,kg/m3,0.0031,kg,5648562.7,CO2,3d0fb388-1dd3-36d5-a6e1-473e49976b3c,AR-M,MENDOZA,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,1803196000.0,kg/m3,0.0031,kg,5589907.6,CO2,d7ac9139-2776-3aff-bc72-88c09ddc8121,AR-M,MENDOZA,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,1656968000.0,kg/m3,0.0031,kg,5136600.8,CO2,22ca1c03-fddd-3bcf-ae0c-92d9c0e49ad4,AR-M,MENDOZA,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,1848327000.0,kg/m3,0.0031,kg,5729813.7,CO2,8fd2654f-6379-3df2-9849-fff187dd1716,AR-M,MENDOZA,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,1852687000.0,kg/m3,0.0031,kg,5743329.7,CO2,30fa8741-e747-3672-bb81-7be24654031f,AR-M,MENDOZA,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,786657000.0,kg/m3,0.0031,kg,2438636.6999999997,CO2,adf17328-f51a-3207-b5e2-c14aca75028b,AR-Q,NEUQUEN,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,940225000.0,kg/m3,0.0031,kg,2914697.5,CO2,615f7cfd-313c-3405-86cf-bdedbf407be5,AR-Q,NEUQUEN,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,935532000.0,kg/m3,0.0031,kg,2900149.1999999997,CO2,e8df5ffb-87a7-3418-ad0f-a0ed68b7a9bf,AR-Q,NEUQUEN,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,908115000.0,kg/m3,0.0031,kg,2815156.5,CO2,23a20153-e031-3c0c-9862-51210155533d,AR-Q,NEUQUEN,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,885949030.0,kg/m3,0.0031,kg,2746441.993,CO2,dc2156eb-a527-3f54-92d6-e0f6b09b9a23,AR-Q,NEUQUEN,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,955088000.0,kg/m3,0.0031,kg,2960772.8,CO2,371348e1-7026-3f3a-a58d-4184937e5ee4,AR-R,RIO NEGRO,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,917647000.0,kg/m3,0.0031,kg,2844705.6999999997,CO2,279d5b9a-34b6-3070-b84c-e10d3e18b1cb,AR-R,RIO NEGRO,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,925287000.0,kg/m3,0.0031,kg,2868389.6999999997,CO2,1c7f4a8d-e85f-384b-9426-96b08b3f021c,AR-R,RIO NEGRO,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,953438000.0,kg/m3,0.0031,kg,2955657.8,CO2,941abd6f-60ef-369e-94b0-223e42eb4d3f,AR-R,RIO NEGRO,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,974251520.0,kg/m3,0.0031,kg,3020179.712,CO2,719a55ee-54df-38d6-8e4f-ec73e21b20d8,AR-R,RIO NEGRO,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,784663726.0,kg/m3,0.0031,kg,2432457.5505999997,CO2,34aa449f-830d-3f06-8003-e564a8b08710,AR-A,SALTA,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,530568631.0,kg/m3,0.0031,kg,1644762.7560999999,CO2,45624b65-4430-3259-9188-42e84fb7d5f0,AR-A,SALTA,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,413491000.0,kg/m3,0.0031,kg,1281822.0999999999,CO2,b2aa7f37-bfa8-389b-8492-ac05f3d5ddb4,AR-A,SALTA,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,464156489.15999997,kg/m3,0.0031,kg,1438885.116396,CO2,b5bf5cf7-5185-35d7-a952-a90c19969b83,AR-A,SALTA,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,447942240.0,kg/m3,0.0031,kg,1388620.944,CO2,4a20bb50-4abe-326c-984c-9aeccb63163b,AR-A,SALTA,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,329072000.0,kg/m3,0.0031,kg,1020123.2,CO2,c6d9f6a8-777a-3516-a670-e48048617cb6,AR-J,SAN JUAN,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,332687000.0,kg/m3,0.0031,kg,1031329.7,CO2,a407da27-2c1b-3aef-a3fd-0daa264f6ffd,AR-J,SAN JUAN,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,297125000.0,kg/m3,0.0031,kg,921087.5,CO2,00d87a1d-1cc0-3cb7-81ab-500c90eea3b1,AR-J,SAN JUAN,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,307443000.0,kg/m3,0.0031,kg,953073.2999999999,CO2,450df754-5b34-306c-8273-daf2d4049963,AR-J,SAN JUAN,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,352869000.0,kg/m3,0.0031,kg,1093893.9,CO2,3a3f95ca-86cc-3294-b83f-0ab223f39f37,AR-J,SAN JUAN,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,283235000.0,kg/m3,0.0031,kg,878028.5,CO2,843dbbc8-ee87-36aa-858b-2133bb9fb346,AR-D,SAN LUIS,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,268056000.0,kg/m3,0.0031,kg,830973.6,CO2,5dba813f-51be-38e1-b71a-3b258dce3600,AR-D,SAN LUIS,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,240668000.0,kg/m3,0.0031,kg,746070.7999999999,CO2,94bbc00b-14f4-37c4-8eaa-5ac5f0db05aa,AR-D,SAN LUIS,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,281194000.0,kg/m3,0.0031,kg,871701.4,CO2,3164e656-6b18-3a1a-9b16-da0bcb2a4eef,AR-D,SAN LUIS,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,288237000.0,kg/m3,0.0031,kg,893534.7,CO2,d7441876-7859-3e9b-86e0-4097a2e00118,AR-D,SAN LUIS,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,578418000.0,kg/m3,0.0031,kg,1793095.8,CO2,aae7d535-4da0-36e6-a43e-6d9f4378016e,AR-Z,SANTA CRUZ,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,553561000.0,kg/m3,0.0031,kg,1716039.0999999999,CO2,5690ef22-4c9b-38bd-935c-09a173ec6720,AR-Z,SANTA CRUZ,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,563988000.0,kg/m3,0.0031,kg,1748362.8,CO2,58a781ba-e24b-3ec0-81ed-e8c5313b7910,AR-Z,SANTA CRUZ,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,552555000.0,kg/m3,0.0031,kg,1712920.5,CO2,31ab4833-fc72-3ba1-96db-6a29b689d258,AR-Z,SANTA CRUZ,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,576469910.0,kg/m3,0.0031,kg,1787056.721,CO2,2d468e83-abf3-301e-91dd-2a6990a0e3d4,AR-Z,SANTA CRUZ,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,2703024496.9725533,kg/m3,0.0031,kg,8379375.9406149145,CO2,3ffa123d-fcee-3e48-aaa2-734f46c4530a,AR-S,SANTA FE,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,2482166844.0,kg/m3,0.0031,kg,7694717.216399999,CO2,7d19ad8b-2dec-3ff5-991e-3ce58b4db956,AR-S,SANTA FE,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,2173486145.0,kg/m3,0.0031,kg,6737807.0495,CO2,33cfca58-3352-3a93-8a90-1750b98f0c3f,AR-S,SANTA FE,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,2552566030.0,kg/m3,0.0031,kg,7912954.693,CO2,315f79bd-d0fe-3cf7-90b1-44a113387e45,AR-S,SANTA FE,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,2484660910.0,kg/m3,0.0031,kg,7702448.8209999995,CO2,5af7b91d-63be-3282-ad95-8135db4e249f,AR-S,SANTA FE,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,156922353.0,kg/m3,0.0031,kg,486459.2943,CO2,d1ea2dea-dbfc-36b0-bb21-6f9eb6acf911,AR-G,SANTIAGO DEL ESTERO,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,117421551.0,kg/m3,0.0031,kg,364006.80809999997,CO2,47a8a3e8-69e0-3000-9f51-7120b9c12b74,AR-G,SANTIAGO DEL ESTERO,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,82903000.0,kg/m3,0.0031,kg,256999.3,CO2,c7cb48c4-98ec-3cbf-a901-53b7c635a919,AR-G,SANTIAGO DEL ESTERO,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,94194647.0,kg/m3,0.0031,kg,292003.4057,CO2,cbb68953-6c65-346c-9dee-f49afe2e4741,AR-G,SANTIAGO DEL ESTERO,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,95420433.0,kg/m3,0.0031,kg,295803.3423,CO2,e402b2c6-ac44-324e-ada6-7c574fadfdac,AR-G,SANTIAGO DEL ESTERO,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,609907000.0,kg/m3,0.0031,kg,1890711.7,CO2,910af95b-3afb-3f85-b512-1b13a5f0c3cf,AR-V,TIERRA DEL FUEGO,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,672793000.0,kg/m3,0.0031,kg,2085658.2999999998,CO2,0ffed631-29cb-31d5-a03f-00d111b596fe,AR-V,TIERRA DEL FUEGO,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,672872000.0,kg/m3,0.0031,kg,2085903.2,CO2,e77e71eb-cf3b-3a74-a4c7-9a9a7b05d1f8,AR-V,TIERRA DEL FUEGO,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,726069000.0,kg/m3,0.0031,kg,2250813.9,CO2,140eb1dd-c14c-3604-aa6d-b9e5341ef3b3,AR-V,TIERRA DEL FUEGO,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,766720460.0,kg/m3,0.0031,kg,2376833.426,CO2,dd6f8543-ef88-38f3-a0e0-f5f5d2d611cc,AR-V,TIERRA DEL FUEGO,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,789097418.0,kg/m3,0.0031,kg,2446201.9957999997,CO2,eb90851a-7237-3c13-9e29-e8e8bf49baf9,AR-T,TUCUMAN,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,617010133.0,kg/m3,0.0031,kg,1912731.4123,CO2,6b424534-d97f-3676-8f96-e9277d4af0c9,AR-T,TUCUMAN,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,630329000.0,kg/m3,0.0031,kg,1954019.9,CO2,f0233bec-f04b-37f2-881d-7864253c8d0e,AR-T,TUCUMAN,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,1636651485.2,kg/m3,0.0031,kg,5073619.60412,CO2,ce6ebfa5-ef08-30e0-8000-b7906262f40c,AR-T,TUCUMAN,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,1371805505.45,kg/m3,0.0031,kg,4252597.066895,CO2,37969b66-6c7a-3d25-8e8f-bb0bacf8a4d6,AR-T,TUCUMAN,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,12779299223.30907,kg/m3,0.2,kg,2555859844.661814,CH4,faf15c69-3a7d-3fe5-851a-961c0c646e4b,AR-B,BUENOS AIRES,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,12722758982.0,kg/m3,0.2,kg,2544551796.4,CH4,6a1a1a15-52e3-33c1-a47b-69d0532eb716,AR-B,BUENOS AIRES,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,12652871103.0,kg/m3,0.2,kg,2530574220.6,CH4,899a83bf-0fed-3a84-b689-c811439aa7e7,AR-B,BUENOS AIRES,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,12361596490.0,kg/m3,0.2,kg,2472319298.0,CH4,02d6f0cd-1f17-3559-b573-cecc5dc9e971,AR-B,BUENOS AIRES,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,12663416420.0,kg/m3,0.2,kg,2532683284.0,CH4,3fbaf17f-1147-3c27-b08d-7f3f02cef59a,AR-B,BUENOS AIRES,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,4164667000.0,kg/m3,0.2,kg,832933400.0,CH4,851e970d-5c5c-3883-acae-e8816c206efe,AR-C,CAPITAL FEDERAL,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,4101290000.0,kg/m3,0.2,kg,820258000.0,CH4,4594f94b-6547-3034-b698-78046b414b97,AR-C,CAPITAL FEDERAL,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,3610580000.0,kg/m3,0.2,kg,722116000.0,CH4,40c76371-0753-3565-b25e-41cab179f5af,AR-C,CAPITAL FEDERAL,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,3295466000.0,kg/m3,0.2,kg,659093200.0,CH4,8be39d17-a0c4-309e-8f63-9763871e5f66,AR-C,CAPITAL FEDERAL,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,3429099000.0,kg/m3,0.2,kg,685819800.0,CH4,179bf72f-ed1c-36ef-a97c-03fb3b3fabaa,AR-C,CAPITAL FEDERAL,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,117903000.0,kg/m3,0.2,kg,23580600.0,CH4,c40c67d1-2c66-39f6-be62-832f522f3f85,AR-K,CATAMARCA,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,109019000.0,kg/m3,0.2,kg,21803800.0,CH4,db1c9ba1-23ed-3024-ad11-156d30c3414a,AR-K,CATAMARCA,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,108706000.0,kg/m3,0.2,kg,21741200.0,CH4,370bbc6b-2c31-3918-b3d7-f7564d4fcbfb,AR-K,CATAMARCA,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,114937000.0,kg/m3,0.2,kg,22987400.0,CH4,f36cb251-6cb2-3290-9262-6ccd2a5cc69e,AR-K,CATAMARCA,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,133455000.0,kg/m3,0.2,kg,26691000.0,CH4,b0a8d719-9c53-36bd-a5d6-ddb66132539b,AR-K,CATAMARCA,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,1519440000.0,kg/m3,0.2,kg,303888000.0,CH4,0eeaa2f6-550c-3d8c-b65d-7541b568fa22,AR-U,CHUBUT,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,1575875000.0,kg/m3,0.2,kg,315175000.0,CH4,90936f8d-617f-3d12-8644-09ac0d4c508f,AR-U,CHUBUT,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,1595652000.0,kg/m3,0.2,kg,319130400.0,CH4,39bb232f-6bc0-3d52-a08e-465364290f75,AR-U,CHUBUT,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,1453111000.0,kg/m3,0.2,kg,290622200.0,CH4,85d646d2-2e39-3ffb-85b6-ef1abd51dbcb,AR-U,CHUBUT,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,1349716550.0,kg/m3,0.2,kg,269943310.0,CH4,55202f2a-ddb6-33b2-9d53-302b06d51dac,AR-U,CHUBUT,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,2297329000.0,kg/m3,0.2,kg,459465800.0,CH4,89691e39-2e34-3cf8-a0b0-b2882882a3b9,AR-X,CORDOBA,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,2043539000.0,kg/m3,0.2,kg,408707800.0,CH4,ff0a86a5-2cf8-3948-81d8-ed05323a8a95,AR-X,CORDOBA,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,1876255000.0,kg/m3,0.2,kg,375251000.0,CH4,374eefd9-44d4-3705-ad01-649530b6d6f6,AR-X,CORDOBA,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,1971507000.0,kg/m3,0.2,kg,394301400.0,CH4,5e81c352-ba60-30d7-8212-d58963b6a6e7,AR-X,CORDOBA,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,2025445000.0,kg/m3,0.2,kg,405089000.0,CH4,fcf5ab4b-5f97-3e4f-924d-ae8a49cc0051,AR-X,CORDOBA,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,443350.0,kg/m3,0.2,kg,88670.0,CH4,fd25973d-5d03-344f-98c3-915f58411a5b,AR-W,CORRIENTES,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,566000.0,kg/m3,0.2,kg,113200.0,CH4,f293081c-c857-3e85-bfa3-bffd9498db88,AR-W,CORRIENTES,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,1201000.0,kg/m3,0.2,kg,240200.0,CH4,ba26e62e-b2fb-3b47-b122-333675102244,AR-W,CORRIENTES,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,3628000.0,kg/m3,0.2,kg,725600.0,CH4,cfd69162-fbb2-3141-8c79-a0c50278c9d6,AR-W,CORRIENTES,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,4705000.0,kg/m3,0.2,kg,941000.0,CH4,506301cf-05e0-3adc-820d-7031bbbe038a,AR-W,CORRIENTES,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,272814000.0,kg/m3,0.2,kg,54562800.0,CH4,266c6ab6-2221-3e75-968c-db805b1bec0f,AR-E,ENTRE RIOS,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,264763000.0,kg/m3,0.2,kg,52952600.0,CH4,b0602c29-f619-3e96-a9a3-cd9decb15df3,AR-E,ENTRE RIOS,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,247678000.0,kg/m3,0.2,kg,49535600.0,CH4,c1f49cde-8c8a-3417-a1a9-92039ba41f28,AR-E,ENTRE RIOS,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,276881000.0,kg/m3,0.2,kg,55376200.0,CH4,936fb158-f6e9-3432-b314-2ca28be9f72a,AR-E,ENTRE RIOS,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,289026000.0,kg/m3,0.2,kg,57805200.0,CH4,805e5d34-505b-3b1f-b670-6744fd609b6b,AR-E,ENTRE RIOS,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,335727678.0,kg/m3,0.2,kg,67145535.60000001,CH4,cc1fccb9-9231-3d31-8c88-b9e7e2e68cf9,AR-Y,JUJUY,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,272565174.0,kg/m3,0.2,kg,54513034.800000004,CH4,28525627-3bff-3401-848e-2b2b390006d3,AR-Y,JUJUY,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,238192000.0,kg/m3,0.2,kg,47638400.0,CH4,a79dcc7e-bf0d-3236-91dc-6488f2d05637,AR-Y,JUJUY,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,254375768.84,kg/m3,0.2,kg,50875153.76800001,CH4,ade39f27-c56d-3ada-9c71-33a5dd073a78,AR-Y,JUJUY,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,255760593.99,kg/m3,0.2,kg,51152118.79800001,CH4,f70820ab-6dd7-3674-a955-1ca1f4f6a2d6,AR-Y,JUJUY,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,306359000.0,kg/m3,0.2,kg,61271800.0,CH4,b5260aa7-37c7-3e89-91a5-0f0e7c3f0c1f,AR-L,LA PAMPA,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,302094000.0,kg/m3,0.2,kg,60418800.0,CH4,a0de5fa5-17f0-3196-be6e-1d91f19aa77e,AR-L,LA PAMPA,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,313766000.0,kg/m3,0.2,kg,62753200.0,CH4,faf31f99-0c96-33fc-911a-060a0d6abbae,AR-L,LA PAMPA,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,322930000.0,kg/m3,0.2,kg,64586000.0,CH4,f7cbdb1c-4cab-3e47-acd2-c6da1b3a97c1,AR-L,LA PAMPA,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,345258100.0,kg/m3,0.2,kg,69051620.0,CH4,8d70d710-ae63-3bab-8828-33157e48ac75,AR-L,LA PAMPA,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,39869000.0,kg/m3,0.2,kg,7973800.0,CH4,d29f1059-7da3-3e01-a99b-19be2abf3dc8,AR-F,LA RIOJA,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,46601000.0,kg/m3,0.2,kg,9320200.0,CH4,b1044874-8e0c-34f2-889c-b8160aa0696d,AR-F,LA RIOJA,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,33851000.0,kg/m3,0.2,kg,6770200.0,CH4,d6a0da02-1685-3db5-8e62-d72033c9f548,AR-F,LA RIOJA,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,31539000.0,kg/m3,0.2,kg,6307800.0,CH4,0be252f2-15e1-367f-aca7-8adc5262a81a,AR-F,LA RIOJA,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,34148000.0,kg/m3,0.2,kg,6829600.0,CH4,1fdcc518-6054-34ad-aaa5-e872acf9e7b9,AR-F,LA RIOJA,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,1822117000.0,kg/m3,0.2,kg,364423400.0,CH4,cd7d32cc-1963-3e98-8ed5-7b6aeeeb2d8a,AR-M,MENDOZA,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,1803196000.0,kg/m3,0.2,kg,360639200.0,CH4,d50802bc-83bc-31b4-a39b-0f949800da12,AR-M,MENDOZA,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,1656968000.0,kg/m3,0.2,kg,331393600.0,CH4,c2cae84e-8628-371b-a16f-1d4d51baead1,AR-M,MENDOZA,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,1848327000.0,kg/m3,0.2,kg,369665400.0,CH4,5dab0755-f776-3e8d-ac99-418ee25b62a6,AR-M,MENDOZA,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,1852687000.0,kg/m3,0.2,kg,370537400.0,CH4,78c9acb8-6549-3873-991a-d8248f9bbf5b,AR-M,MENDOZA,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,786657000.0,kg/m3,0.2,kg,157331400.0,CH4,31d2db72-7b92-3cd4-a27d-ca6dd569c22a,AR-Q,NEUQUEN,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,940225000.0,kg/m3,0.2,kg,188045000.0,CH4,c2ad073d-d3de-3b82-91e7-d49b338cf466,AR-Q,NEUQUEN,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,935532000.0,kg/m3,0.2,kg,187106400.0,CH4,49d627a1-5a4d-3c33-b4e1-99efe22364fb,AR-Q,NEUQUEN,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,908115000.0,kg/m3,0.2,kg,181623000.0,CH4,12fb0fa4-b813-31e8-9268-a5875ebe75a0,AR-Q,NEUQUEN,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,885949030.0,kg/m3,0.2,kg,177189806.0,CH4,ffb2b35e-0ec1-3586-a37a-04d446d5b3af,AR-Q,NEUQUEN,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,955088000.0,kg/m3,0.2,kg,191017600.0,CH4,919fc376-260d-340f-8c7e-e7233838a522,AR-R,RIO NEGRO,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,917647000.0,kg/m3,0.2,kg,183529400.0,CH4,97653fa1-55af-3972-86cb-4baef3fe282d,AR-R,RIO NEGRO,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,925287000.0,kg/m3,0.2,kg,185057400.0,CH4,681493bb-a06a-3166-b102-42179ea51128,AR-R,RIO NEGRO,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,953438000.0,kg/m3,0.2,kg,190687600.0,CH4,ce647edb-a40c-39fc-ae2f-35c587e42439,AR-R,RIO NEGRO,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,974251520.0,kg/m3,0.2,kg,194850304.0,CH4,6253a4d6-6527-3b91-a670-6cbb4269ad61,AR-R,RIO NEGRO,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,784663726.0,kg/m3,0.2,kg,156932745.20000002,CH4,6abe948c-1bfb-3a58-a6ee-c12e34292151,AR-A,SALTA,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,530568631.0,kg/m3,0.2,kg,106113726.2,CH4,fee5dcf3-5c3a-3778-99a7-a9eade96ada0,AR-A,SALTA,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,413491000.0,kg/m3,0.2,kg,82698200.0,CH4,440c5cbd-bd9c-3108-a07c-1efdcdf20678,AR-A,SALTA,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,464156489.15999997,kg/m3,0.2,kg,92831297.832,CH4,aa9ff707-52aa-33da-adbd-7c725d41db4a,AR-A,SALTA,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,447942240.0,kg/m3,0.2,kg,89588448.0,CH4,74069f4e-192e-3b79-b3fb-af2bb98acae6,AR-A,SALTA,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,329072000.0,kg/m3,0.2,kg,65814400.0,CH4,72e8e604-d836-3733-9556-0160a4440c2c,AR-J,SAN JUAN,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,332687000.0,kg/m3,0.2,kg,66537400.0,CH4,97277f04-d2e1-3427-9bca-5f3fc4df47fe,AR-J,SAN JUAN,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,297125000.0,kg/m3,0.2,kg,59425000.0,CH4,7149b93f-ac4a-30c4-be32-b287d97146a8,AR-J,SAN JUAN,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,307443000.0,kg/m3,0.2,kg,61488600.0,CH4,718aaafa-f7b1-380b-9f35-d02dcb5499ed,AR-J,SAN JUAN,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,352869000.0,kg/m3,0.2,kg,70573800.0,CH4,8e0b21a6-2712-38a1-85c2-0fb8e7133114,AR-J,SAN JUAN,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,283235000.0,kg/m3,0.2,kg,56647000.0,CH4,7b913ff0-ab74-3958-9a72-80bd190f4ecd,AR-D,SAN LUIS,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,268056000.0,kg/m3,0.2,kg,53611200.0,CH4,3b92dd93-c988-309c-92ff-030ae4285425,AR-D,SAN LUIS,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,240668000.0,kg/m3,0.2,kg,48133600.0,CH4,a56dc9eb-8e97-382c-9825-62b70fd32985,AR-D,SAN LUIS,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,281194000.0,kg/m3,0.2,kg,56238800.0,CH4,1e01b3ff-9ec8-33ac-b10b-a6e46be6e70c,AR-D,SAN LUIS,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,288237000.0,kg/m3,0.2,kg,57647400.0,CH4,c2cfd378-98b1-3d2a-81e2-49d9e31398f9,AR-D,SAN LUIS,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,578418000.0,kg/m3,0.2,kg,115683600.0,CH4,6733ceb7-6c5f-3ef8-ada5-f017dfde8ff9,AR-Z,SANTA CRUZ,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,553561000.0,kg/m3,0.2,kg,110712200.0,CH4,a8cd565c-0d26-3954-9ee2-4021b20bfb1b,AR-Z,SANTA CRUZ,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,563988000.0,kg/m3,0.2,kg,112797600.0,CH4,6b11fbb1-bebe-30fa-8def-3da0e83121c9,AR-Z,SANTA CRUZ,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,552555000.0,kg/m3,0.2,kg,110511000.0,CH4,5671f0a2-eefd-343c-a4c8-92db0da84a84,AR-Z,SANTA CRUZ,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,576469910.0,kg/m3,0.2,kg,115293982.0,CH4,2ebe679b-c0e9-3b77-8838-76222c103b8d,AR-Z,SANTA CRUZ,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,2703024496.9725533,kg/m3,0.2,kg,540604899.3945106,CH4,ebd37e19-98ad-3d2d-9778-84da035c0feb,AR-S,SANTA FE,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,2482166844.0,kg/m3,0.2,kg,496433368.8,CH4,708d98ed-580d-3b61-abfd-eaedaa4aeaf7,AR-S,SANTA FE,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,2173486145.0,kg/m3,0.2,kg,434697229.0,CH4,77013308-cdce-3256-b475-d3e6fa6487cd,AR-S,SANTA FE,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,2552566030.0,kg/m3,0.2,kg,510513206.0,CH4,44f3264e-e7a2-31f8-ab09-718f3a22fa10,AR-S,SANTA FE,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,2484660910.0,kg/m3,0.2,kg,496932182.0,CH4,14bcb96d-b927-3c3b-8345-626506759c42,AR-S,SANTA FE,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,156922353.0,kg/m3,0.2,kg,31384470.6,CH4,601bb30c-9f01-369f-b982-1999216364c9,AR-G,SANTIAGO DEL ESTERO,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,117421551.0,kg/m3,0.2,kg,23484310.200000003,CH4,8c95a680-2463-3db5-8036-da7fe4794df2,AR-G,SANTIAGO DEL ESTERO,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,82903000.0,kg/m3,0.2,kg,16580600.0,CH4,11e623fa-12cd-36b1-a9ef-001eac75c6dc,AR-G,SANTIAGO DEL ESTERO,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,94194647.0,kg/m3,0.2,kg,18838929.400000002,CH4,c82e979d-3f76-3fab-b18e-6193c70545fe,AR-G,SANTIAGO DEL ESTERO,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,95420433.0,kg/m3,0.2,kg,19084086.6,CH4,732e8a23-fabe-37b5-b3f5-ae3a6b9309ee,AR-G,SANTIAGO DEL ESTERO,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,609907000.0,kg/m3,0.2,kg,121981400.0,CH4,fb9c1e26-ca6e-377a-899d-0411b697d893,AR-V,TIERRA DEL FUEGO,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,672793000.0,kg/m3,0.2,kg,134558600.0,CH4,245f754a-fd70-3e33-9d07-902e24b3219a,AR-V,TIERRA DEL FUEGO,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,672872000.0,kg/m3,0.2,kg,134574400.0,CH4,8eac9988-1bf0-3781-ba4c-2603dc28c8e3,AR-V,TIERRA DEL FUEGO,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,726069000.0,kg/m3,0.2,kg,145213800.0,CH4,0d41ee3f-fe26-33fb-b988-56df01b1a40d,AR-V,TIERRA DEL FUEGO,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,766720460.0,kg/m3,0.2,kg,153344092.0,CH4,cbf1e6f0-ae0a-3356-af70-1aa8ca842550,AR-V,TIERRA DEL FUEGO,ENARGAS,annual,2022
+I.8.1,fugitive emissions from natural gas distribution,m3,789097418.0,kg/m3,0.2,kg,157819483.6,CH4,c308e4ab-2215-304d-8680-879c64db5016,AR-T,TUCUMAN,ENARGAS,annual,2018
+I.8.1,fugitive emissions from natural gas distribution,m3,617010133.0,kg/m3,0.2,kg,123402026.60000001,CH4,83e7f738-83e7-3040-965a-5ce3f81a022d,AR-T,TUCUMAN,ENARGAS,annual,2019
+I.8.1,fugitive emissions from natural gas distribution,m3,630329000.0,kg/m3,0.2,kg,126065800.0,CH4,ea399aa6-6506-3cd4-bf92-1f514c5349c6,AR-T,TUCUMAN,ENARGAS,annual,2020
+I.8.1,fugitive emissions from natural gas distribution,m3,1636651485.2,kg/m3,0.2,kg,327330297.04,CH4,00354f48-dc00-35fe-975c-aa2599dc451e,AR-T,TUCUMAN,ENARGAS,annual,2021
+I.8.1,fugitive emissions from natural gas distribution,m3,1371805505.45,kg/m3,0.2,kg,274361101.09000003,CH4,414dd0c2-2bee-3878-b74c-f4e518c10e2f,AR-T,TUCUMAN,ENARGAS,annual,2022
 I.2.1,natural gas consumption by commercial buildings,TJ,16809.542802669082,kg/TJ,56100.0,kg,943015351.2297355,CO2,8e3ace5b-883d-357b-a1df-3211049b1223,AR-B,BUENOS AIRES,ENARGAS,annual,2018
 I.1.1,natural gas consumption by residential buildings,TJ,146786.40084474,kg/TJ,56100.0,kg,8234717087.3899145,CO2,d95b11e6-7d11-360d-a2a2-8cf32219a8db,AR-B,BUENOS AIRES,ENARGAS,annual,2018
 I.2.1,natural gas consumption by official entities,TJ,5984.119720620001,kg/TJ,56100.0,kg,335709116.32678205,CO2,af51fc6e-273d-3db1-b32a-ef5893dd0ca0,AR-B,BUENOS AIRES,ENARGAS,annual,2018

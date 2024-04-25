@@ -1,9 +1,6 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { randomUUID } from "node:crypto";
-
-async function expectText(page: Page, text: string) {
-  await expect(page.getByText(text)).toBeVisible();
-}
+import { expectText } from "./helpers";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/en/auth/signup");

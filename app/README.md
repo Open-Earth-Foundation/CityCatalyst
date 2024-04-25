@@ -22,8 +22,9 @@ npm install
 
 ### Database
 
+For a quick setup, run `scripts/start-db.sh`, which will launch a PostgreSQL Docker image with the right configuration. Otherwise continue below ⬇️
+
 You'll need to run a [PostgreSQL](https://www.postgresql.org/) database, locally or remotely.
-For a quick setup, run `scripts/start-db.sh`, which will launch a PostgreSQL docker image with the right configuration.
 
 You'll need access to the `psql`, `createuser`, and `createdb` commands.
 

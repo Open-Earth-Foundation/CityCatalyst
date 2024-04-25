@@ -35,6 +35,14 @@ export function mockRequestFormData(formData: FormData) {
   return request;
 }
 
+const MOCK_ID = "<d9df3d0b-32d8-13f6-8418-541aad2e9d26@localhost>";
+
+export const mockTransporter = {
+  sendMail: async (mailOptions: any) => {
+    return { messageId: MOCK_ID }; // Return a fake message ID
+  },
+};
+
 const finished = promisify(stream.finished);
 
 export async function getFileDataFromStream(filePath: string): Promise<Blob> {

@@ -1,23 +1,34 @@
 import { smtpOptions } from "@/lib/email";
 import nodemailer, { Transporter } from "nodemailer";
 
-interface EmailOptions {
+export interface EmailOptions {
   to: string;
   subject: string;
   text: string;
   html: string;
 }
 
-interface SendEmailResponse {
+export interface SendEmailResponse {
   success: boolean;
   messageId?: string;
   error?: any;
 }
 
 class NotificationService {
+  private static instance: NotificationService;
   private transporter: Transporter;
-  constructor() {
-    this.transporter = nodemailer.createTransport({ ...smtpOptions });
+
+  private constructor(transporter?: Transporter) {
+    this.transporter =
+      transporter || nodemailer.createTransport({ ...smtpOptions });
+  }
+
+  static getInstance(transporter?: Transporter): NotificationService {
+    if (!NotificationService.instance) {
+      NotificationService.instance = new NotificationService(transporter);
+    }
+
+    return NotificationService.instance;
   }
 
   async sendEmail({

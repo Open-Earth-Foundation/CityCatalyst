@@ -10,7 +10,15 @@ import {
 
 import { db } from "@/models";
 import assert from "node:assert";
-import { after, before, describe, it } from "node:test";
+import {
+  after,
+  afterEach,
+  before,
+  beforeEach,
+  describe,
+  it,
+  mock,
+} from "node:test";
 import {
   testFileFormat,
   filePath,
@@ -20,6 +28,7 @@ import {
   setupTests,
   testUserID,
   testCityID,
+  mockTransporter,
 } from "../helpers";
 import { randomUUID } from "node:crypto";
 import fs from "fs";
@@ -74,11 +83,6 @@ describe("UserFile API", () => {
       name: "TEST_CITY",
     });
     await user.addCity(city);
-
-    const service = new NotificationService();
-    service.sendEmail = async () => {
-      return { success: true, messageId: "send" };
-    };
   });
   after(async () => {
     if (db.sequelize) await db.sequelize.close();
@@ -110,8 +114,18 @@ describe("UserFile API", () => {
     const res = await createUserFile(req, {
       params: { city: testCityID },
     });
-    assert.equal(res.status, 200);
+
+    const service = NotificationService.getInstance(mockTransporter);
+
+    await service.sendEmail({
+      to: "text@example.com",
+      subject: "Test Email",
+      text: "This is a test",
+      html: "<p>This is a test</p>",
+    });
+
     const { data } = await res.json();
+    assert.equal(res.status, 200);
     assert.equal(data?.sector, fileData?.sector);
     assert.equal(data?.url, fileData.url);
     assert.equal(data?.status, fileData.status);

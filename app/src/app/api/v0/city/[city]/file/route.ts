@@ -61,7 +61,7 @@ export const GET = apiHandler(async (_req: Request, context) => {
 
 export const POST = apiHandler(
   async (req: NextRequest, { params, session }) => {
-    const service = new NotificationService(); // TODO cache this/ make it a singleton
+    const service = NotificationService.getInstance(); // TODO cache this/ make it a singleton
     const user = session?.user;
     const cityId = params.city;
 
@@ -129,22 +129,24 @@ export const POST = apiHandler(
       },
     };
 
-    await service.sendEmail({
-      to: process.env.ADMIN_EMAILS!,
-      subject: "CityCatalyst File Upload",
-      text: "City Catalyst",
-      html: render(
-        AdminNotificationTemplate({
-          adminNames: process.env.ADMIN_NAMES!,
-          file: newFileData,
-          user: {
-            cityName: city.name!,
-            email: user?.email!,
-            name: user?.name!,
-          },
-        }),
-      ),
-    });
+    if (!userFile) {
+      await service.sendEmail({
+        to: process.env.ADMIN_EMAILS!,
+        subject: "CityCatalyst File Upload",
+        text: "City Catalyst",
+        html: render(
+          AdminNotificationTemplate({
+            adminNames: process.env.ADMIN_NAMES!,
+            file: newFileData,
+            user: {
+              cityName: city.name!,
+              email: user?.email!,
+              name: user?.name!,
+            },
+          }),
+        ),
+      });
+    }
 
     return NextResponse.json({
       data: newFileData,

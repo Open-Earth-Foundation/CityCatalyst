@@ -5,7 +5,7 @@ CREATE TEMP TABLE IF NOT EXISTS region_code_staging (LIKE regionwide_emissions I
 TRUNCATE region_code_staging;
 
 -- Load the staging table from the downloaded file
-\copy region_code_staging (id,source_name,"GPC_refno",region_name,region_code,temporal_granularity,year,activity_name,activity_value,activity_units,gas_name,emission_factor_value,emission_factor_units,emissions_value,emissions_units) FROM 'processed_SESCO_AR.csv' WITH (FORMAT CSV, HEADER);
+\copy region_code_staging (id,source_name,"GPC_refno",region_name,region_code,temporal_granularity,year,activity_name,activity_value,activity_units,gas_name,emission_factor_value,emission_factor_units,emissions_value,emissions_units) FROM 'processed_cammesa_AR.csv' WITH (FORMAT CSV, HEADER);
 
 -- Update the main table with the staging table
 INSERT INTO regionwide_emissions (id,source_name,"GPC_refno",region_name,region_code,temporal_granularity,year,activity_name,activity_value,activity_units,gas_name,emission_factor_value,emission_factor_units,emissions_value,emissions_units)

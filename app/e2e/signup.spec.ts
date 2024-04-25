@@ -60,7 +60,6 @@ test.describe("Signup", () => {
     await expectText(page, "Minimum length");
     await expectText(page, "Invalid invite code");
     await expectText(page, "Please accept the terms");
-    await expectText(page, "Passwords don't match");
   });
 
   test("should require matching passwords", async ({ page }) => {
@@ -71,10 +70,13 @@ test.describe("Signup", () => {
     await page.getByPlaceholder("Your full name").fill("Test Account");
     await page
       .getByPlaceholder("e.g. youremail@domain.com")
-      .fill("testopenearthorg");
+      .fill("e2e-test-fail@example.com");
     await page.getByLabel("Password", { exact: true }).fill("Password1");
     await page.getByLabel("Confirm Password").fill("Password2");
     await page.getByPlaceholder("Enter the code you received").fill("123456");
+    await page
+      .locator('input[name="acceptTerms"] + .chakra-checkbox__control') // sibling
+      .click();
     await page.getByRole("button", { name: "Create Account" }).click();
 
     await expect(page).toHaveURL(`/en/auth/signup`);

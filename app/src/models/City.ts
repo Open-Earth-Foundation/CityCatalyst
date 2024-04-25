@@ -12,6 +12,8 @@ export interface CityAttributes {
   shape?: object;
   country?: string;
   region?: string;
+  countryLocode?: string;
+  regionLocode?: string;
   area?: number;
   created?: Date;
   lastUpdated?: Date;
@@ -25,6 +27,8 @@ export type CityOptionalAttributes =
   | "shape"
   | "country"
   | "region"
+  | "countryLocode"
+  | "regionLocode"
   | "area"
   | "created"
   | "lastUpdated";
@@ -43,6 +47,8 @@ export class City
   shape?: object;
   country?: string;
   region?: string;
+  countryLocode?: string;
+  regionLocode?: string;
   area?: number;
   created?: Date;
   lastUpdated?: Date;
@@ -161,6 +167,16 @@ export class City
         region: {
           type: DataTypes.STRING(255),
           allowNull: true,
+        },
+        countryLocode: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: "country_locode",
+        },
+        regionLocode: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: "region_locode",
         },
         area: {
           type: DataTypes.BIGINT,

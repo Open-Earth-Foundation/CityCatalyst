@@ -1,7 +1,7 @@
 import { expect, type Page, APIRequestContext } from "@playwright/test";
 
 export async function expectText(page: Page, text: string) {
-  await expect(page.getByText(text)).toBeVisible();
+  await expect(page.getByText(text).first()).toBeVisible();
 }
 
 export async function signup(

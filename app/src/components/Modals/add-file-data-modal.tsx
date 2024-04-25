@@ -27,8 +27,14 @@ import { useDispatch } from "react-redux";
 import { TFunction } from "i18next";
 import { addFile } from "@/features/city/inventoryDataSlice";
 import { v4 as uuidv4 } from "uuid";
-import { UserInfoResponse } from "@/util/types";
+import {
+  InventoryResponse,
+  UserFileResponse,
+  UserInfoResponse,
+} from "@/util/types";
 import { MdOutlineInsertDriveFile } from "react-icons/md";
+import { appendFileToFormData } from "@/util/helpers";
+import { api, useAddUserFileMutation } from "@/services/api";
 
 interface AddFileDataModalProps {
   isOpen: boolean;
@@ -38,6 +44,7 @@ interface AddFileDataModalProps {
   uploadedFile: File;
   currentStep: DataStep;
   userInfo: UserInfoResponse | undefined;
+  inventory: string;
 }
 
 export interface FileData {
@@ -65,6 +72,7 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
   uploadedFile,
   currentStep,
   userInfo,
+  inventory,
 }) => {
   const [selectedScopes, setSelectedScopes] = useState<number[]>([]);
 
@@ -95,27 +103,79 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
     });
   }
 
+  const { data: inventoryData } = api.useGetInventoryQuery(inventory!, {
+    skip: !userInfo,
+  });
+
+  const [addUserFile, { isLoading }] = api.useAddUserFileMutation();
+  const DEFAULT_STATUS = "pending";
+  const formData = new FormData();
+
+  const cityId = inventoryData?.city.cityId!;
+
+  const toast = useToast();
+
   const onSubmit: SubmitHandler<FileData> = async (data) => {
     const base64FileString = await fileToBase64(uploadedFile);
     const filename = uploadedFile.name;
-    dispatch(
-      addFile({
-        sectorName: currentStep.title!,
-        fileData: {
-          fileId: uuidv4(),
-          fileName: filename,
-          subsectors: data.subsectors,
-          scopes: data.scopes,
-          userId: userInfo?.userId,
-          sector: currentStep.title,
-          data: base64FileString,
-          // TODO this should not be passed in but rather set on the server (only necessary for AWS S3 or external hosting)
-          url: "http://localhost",
-          size: uploadedFile.size,
-          fileType: filename.split(".").pop(),
-        },
-      }),
+    const file = appendFileToFormData(
+      base64FileString as string,
+      `${filename}`,
     );
+
+    formData.append("userId", userInfo?.userId!);
+    formData.append("fileName", filename);
+    formData.append("sector", currentStep.title);
+    formData.append("subsectors", data.subsectors!);
+    formData.append("scopes", data.scopes!);
+    formData.append("status", DEFAULT_STATUS);
+    formData.append("fileReference", "");
+    formData.append("url", "http://localhost");
+    formData.append("gpcRefNo", "");
+    formData.append("data", file, file.name);
+
+    await addUserFile({ formData, cityId }).then((res: any) => {
+      // show toast
+      if (res.error) {
+        toast({
+          title: t("file-upload-error"),
+          description: t("file-upload-error-description"),
+          status: "error",
+          duration: 2000,
+        });
+      } else {
+        toast({
+          title: t("file-upload-success"),
+          description: t("file-upload-success"),
+          status: "success",
+          duration: 2000,
+        });
+
+        const fileData = res.data
+
+        dispatch(
+          addFile({
+            sectorName: fileData.sector,
+            fileData: {
+              fileId: fileData.id,
+              fileName: fileData.fileName,
+              subsectors: fileData.subsectors.join(","),
+              scopes: fileData.scopes,
+              userId: fileData.userId,
+              sector: fileData.sector,
+              data: base64FileString,
+              // TODO this should not be passed in but rather set on the server (only necessary for AWS S3 or external hosting)
+              url: fileData.url,
+              size: fileData.file.size,
+              fileType: fileData.fileType,
+              cityId: fileData.cityId
+            },
+          }),
+        );
+      }
+    });
+
+    
     onClose();
   };
 
@@ -262,6 +322,7 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
             bg="interactive.secondary"
             h="64px"
             w="316px"
+            isLoading={isLoading}
             onClick={handleSubmit(onSubmit)}
           >
             {t("upload")}

@@ -131,3 +131,10 @@ psql -h $CC_GLOBAL_API_DB_HOST \
    -d $CC_GLOBAL_API_DB_NAME \
    -f ./import_datasource_seeder.sql
 popd
+
+
+# Import EDGAR extract
+
+pushd importer/edgar/pilot_cities
+$python_cmd load_edgar_pilot_city.py --database_uri $DB_URI
+popd

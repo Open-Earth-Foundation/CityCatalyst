@@ -36,6 +36,7 @@ import {
   Tooltip,
   useToast,
 } from "@chakra-ui/react";
+import { signIn, useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import NextLink from "next/link";
 import { useRouter, useParams } from "next/navigation";
@@ -76,6 +77,13 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const { t } = useTranslation(lng, "dashboard");
   const toast = useToast();
   const router = useRouter();
+  // Check if user is authenticated otherwise route to login page
+  const { data, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push("/auth/login");
+    },
+  });
   const { inventory: inventoryParam } = useParams();
   let inventoryId = inventoryParam as string | null;
   if (inventoryId === "null" || inventoryId === "undefined") {
@@ -384,16 +392,17 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     />
                     <Box>
                       <Box className="flex gap-1">
-                        {inventory?.city.area! == 0 || inventory?.city.area === null ? (
-                           <Text
-                           fontFamily="heading"
-                           color="border.neutral"
-                           fontSize="headline.sm"
-                           fontWeight="semibold"
-                           lineHeight="32"
-                         >
-                           N/A
-                         </Text>
+                        {inventory?.city.area! == 0 ||
+                        inventory?.city.area === null ? (
+                          <Text
+                            fontFamily="heading"
+                            color="border.neutral"
+                            fontSize="headline.sm"
+                            fontWeight="semibold"
+                            lineHeight="32"
+                          >
+                            N/A
+                          </Text>
                         ) : (
                           <Text
                             fontFamily="heading"
@@ -401,7 +410,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                             fontSize="headline.sm"
                             fontWeight="semibold"
                             lineHeight="32"
-                            >
+                          >
                             {Math.round(inventory?.city.area!)}
                             <span className="text-[16px]">km2</span>
                           </Text>

@@ -4,6 +4,7 @@ import { Box, Spinner, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useTranslation } from "@/i18n/client";
+import { useSession } from "next-auth/react";
 
 export default function HomePage({
   params: { lng },
@@ -14,6 +15,14 @@ export default function HomePage({
   const router = useRouter();
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
+
+  // Check if user is authenticated otherwise route to login page
+  const { data, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push("/auth/login");
+    },
+  });
 
   useEffect(() => {
     const defaultInventoryAvailable = !!userInfo?.defaultInventoryId;

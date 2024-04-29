@@ -9,6 +9,7 @@ import { CircleIcon } from "@/components/icons";
 import { NavigationBar } from "@/components/navigation-bar";
 import { useTranslation } from "@/i18n/client";
 import { api, useGetCityPopulationQuery } from "@/services/api";
+import { checkUserSession } from "@/util/check-user-session";
 import {
   formatPercent,
   getShortenNumberUnit,
@@ -78,12 +79,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const toast = useToast();
   const router = useRouter();
   // Check if user is authenticated otherwise route to login page
-  const { data, status } = useSession({
-    required: true,
-    onUnauthenticated() {
-      router.push("/auth/login");
-    },
-  });
+  checkUserSession();
   const { inventory: inventoryParam } = useParams();
   let inventoryId = inventoryParam as string | null;
   if (inventoryId === "null" || inventoryId === "undefined") {
@@ -392,8 +388,8 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     />
                     <Box>
                       <Box className="flex gap-1">
-                        {inventory?.city.area! == 0 ||
-                        inventory?.city.area === null ? (
+                        {inventory?.city.area === null ||
+                        inventory?.city.area! === 0 ? (
                           <Text
                             fontFamily="heading"
                             color="border.neutral"

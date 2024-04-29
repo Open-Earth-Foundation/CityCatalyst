@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useTranslation } from "@/i18n/client";
 import { useSession } from "next-auth/react";
-import { checkUserSession } from "@/util/check-user-session";
+import { CheckUserSession } from "@/util/check-user-session";
 
 export default function HomePage({
   params: { lng },
@@ -18,7 +18,7 @@ export default function HomePage({
     api.useGetUserInfoQuery();
 
   // Check if user is authenticated otherwise route to login page
-  checkUserSession();
+  CheckUserSession();
   useEffect(() => {
     const defaultInventoryAvailable = !!userInfo?.defaultInventoryId;
     const defaultInventoryPath = `/${userInfo?.defaultInventoryId}`;

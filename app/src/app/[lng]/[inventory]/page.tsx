@@ -9,7 +9,7 @@ import { CircleIcon } from "@/components/icons";
 import { NavigationBar } from "@/components/navigation-bar";
 import { useTranslation } from "@/i18n/client";
 import { api, useGetCityPopulationQuery } from "@/services/api";
-import { checkUserSession } from "@/util/check-user-session";
+import { CheckUserSession } from "@/util/check-user-session";
 import {
   formatPercent,
   getShortenNumberUnit,
@@ -79,7 +79,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const toast = useToast();
   const router = useRouter();
   // Check if user is authenticated otherwise route to login page
-  checkUserSession();
+  CheckUserSession();
   const { inventory: inventoryParam } = useParams();
   let inventoryId = inventoryParam as string | null;
   if (inventoryId === "null" || inventoryId === "undefined") {

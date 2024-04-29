@@ -25,28 +25,165 @@ if __name__ == "__main__":
     # clean the dataset
     df = df.drop(columns=['pais', 'indice_tiempo', 'tipodecomercializacion'])
 
-    # list of "province" values to delete
+    # change column names (Spanish to English)
+    df.columns = ['year', 'company', 'marketing_subtype', 'fuel_type', 'region_name', 'activity_value']
+
+    # list of "region_name" values to delete
     filter_values = ['S/D', 'no aplica', 'Provincia', 'Estado Nacional']
     df = df[~df['provincia'].isin(filter_values)]
-    
-    # matching the 'suptipo' from SESCO to the GPC subsectors
-    suptipo_to_gpc = {
-        'Industrias Petroquímicas':'I.3.1',
-        'transporte Público de Pasajeros':'II.1.1',
-        'Transporte de Carga':'II.1.1', 
-        'Agro':'II.5.1',
-        'Transporte Ferroviario':'II.2.1'
-    }
-    df['GPC_refno'] = df['subtipodecomercializacion'].map(suptipo_to_gpc)
 
-    # delete rows without a GPC reference number
-    df = df.dropna(subset=['GPC_refno'])
+    # delete empty amounts of fuel
+    df = df[df['activity_value'] != 0]
+    df = df.reset_index(drop=True)
 
     # calculate annual values
-    df = df.groupby(['anio', 'empresa', 'subtipodecomercializacion', 'producto', 'provincia', 'GPC_refno'])['cantidad'].sum().reset_index()
+    df = df.groupby(['year', 'company', 'marketing_subtype', 'fuel_type', 'region_name'])['activity_value'].sum().reset_index()
+
+    # calculation only for complete years
+    df = df[df['year'] != 2024]
 
     #------------------------------------------------------------------------
-    ### Emission Calculation
+    ### Emission Calculation for Biofuels
+    #------------------------------------------------------------------------
+    # biofuel percentage
+    # values for 2021,2022,2023 are estimations
+    percentage_df = pd.DataFrame()
+    percentage_df['year'] = [2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023]
+    percentage_df['bioetanol'] = [0.02,0.02,0.03,0.06,0.08,0.09,0.11,0.12,0.11,0.12,0.11,0.12,0.12,0.12]
+    percentage_df['biodiesel'] = [0.04,0.06,0.07,0.08,0.09,0.09,0.09,0.10,0.10,0.09,0.05,0.10,0.10,0.10]
+
+    # list of naphthas to consider
+    naphthas = ['Nafta Grado 1 (Común)(m3)', 'Nafta Grado 2 (Súper)(m3)', 'Nafta Grado 3 (Ultra)(m3)']  
+    # Filter the DataFrame
+    bioetanol_df = df[df['fuel_type'].isin(naphthas)]
+
+    # assign to each year the corresponding percentage value of biofuel
+    bioetanol_df = pd.merge(bioetanol_df, percentage_df.loc[:, ['year','bioetanol']], left_on='year', right_on='year')
+
+    # calculate biofuel amount
+    bioetanol_df.loc[:, 'bioetanol'] = bioetanol_df['activity_value']*bioetanol_df['bioetanol']
+
+    # calculate portion of fossil fuel amount
+    bioetanol_df.loc[:, 'naphtha'] = bioetanol_df['activity_value'] - bioetanol_df['bioetanol']
+
+    # this column is unnecesary here
+    bioetanol_df = bioetanol_df.drop(columns='activity_value')
+
+    # df re-estructure
+    bioetanol_df = pd.melt(bioetanol_df, id_vars=['year', 'company', 'marketing_subtype', 'region_name'],
+                           value_vars=['bioetanol', 'naphtha'], 
+                           var_name='fuel_type', 
+                           value_name='activity_value')
+    
+    # Filter the DataFrame for diesel
+    biodiesel_df = df[df['fuel_type'].isin(['Diesel Oil(m3)'])]
+
+    # assign to each year the corresponding percentage value of biofuel
+    biodiesel_df = pd.merge(biodiesel_df, percentage_df.loc[:, ['year','biodiesel']], left_on='year', right_on='year')
+
+    # calculate biofuel amount
+    biodiesel_df.loc[:, 'biodiesel'] = biodiesel_df['activity_value']*biodiesel_df['biodiesel']
+
+    # calculate portion of fossil fuel amount
+    biodiesel_df.loc[:, 'diesel'] = biodiesel_df['activity_value'] - biodiesel_df['biodiesel']
+
+    biodiesel_df = biodiesel_df.drop(columns='activity_value')
+
+    # df re-estructure
+    biodiesel_df = pd.melt(biodiesel_df, id_vars=['year', 'company', 'marketing_subtype', 'region_name'], 
+                           value_vars=['biodiesel', 'diesel'], 
+                           var_name='fuel_type', 
+                           value_name='activity_value')
+    
+    # join these two dfs
+    result_df1 = pd.concat([biodiesel_df, bioetanol_df], ignore_index=True)
+
+    # change m3 to energy
+    fuel_dic1 = {
+        'diesel': {
+            'units': 'm3',
+            'fuel_density': 840,
+            'fuel_density_units': 'kg/m3',
+            'NCV_value': 43,
+            'NCV_units': 'TJ/Gg'
+        }, 
+        'naphtha': {
+            'units': 'm3',
+            'fuel_density': 770,
+            'fuel_density_units': 'kg/m3',
+            'NCV_value': 44.5,
+            'NCV_units': 'TJ/Gg'
+        },
+        'biodiesel': {
+            'units': 'm3',
+            'fuel_density': 880,
+            'fuel_density_units': 'kg/m3',
+            'NCV_value': 27,
+            'NCV_units': 'TJ/Gg'
+        },
+        'bioetanol': {
+            'units': 'm3',
+            'fuel_density': 789,
+            'fuel_density_units': 'kg/m3',
+            'NCV_value': 27,
+            'NCV_units': 'TJ/Gg'
+        }
+    }
+    # apply density to change m3 to kg and then, kg to TJ using the Net Calorific value
+    result_df1.loc[:, 'factor'] = result_df1['fuel_type'].apply(lambda x: (fuel_dic1[x]['fuel_density'] * fuel_dic1[x]['NCV_value'] * 1e-6) 
+                                                                if x in fuel_dic1 else None)
+    result_df1.loc[:, 'activity_value'] *= result_df1['factor']
+
+    # units after transformation
+    result_df1.loc[:, 'activity_units'] = 'TJ'
+
+    # delete the "factor" column
+    result_df1 = result_df1.drop(columns='factor')
+
+    # diccionary with the EF for these type of fuels
+    # units = kg/TJ
+    ef_bio = {
+        'diesel' : {
+            'CO2': 74100, 
+            'CH4': 3, 
+            'N2O': 0.6
+        },
+        'naphtha' : {
+            'CO2': 73300, 
+            'CH4': 3, 
+            'N2O': 0.6
+        },
+        'biodiesel' : {
+            'CH4': 10, 
+            'N2O': 0.6
+        },
+        'bioetanol' : {
+            'CH4': 10, 
+            'N2O': 0.6
+        }
+    }
+    # Function to map fuel types to emission factors
+    def map_emission_factors(row):
+        fuel_type = row['fuel_type']
+        if fuel_type in ef_bio:
+            return [(gas, value) for gas, value in ef_bio[fuel_type].items()]
+        else:
+            return []
+        
+    # Apply the function to each row and explode the result into new rows
+    result_df1['emission_factors'] = result_df1.apply(map_emission_factors, axis=1)
+    result_df1 = result_df1.explode('emission_factors')
+    result_df1['gas_name'] = result_df1['emission_factors'].apply(lambda x: x[0] if x else None)
+    result_df1['emission_factor_value'] = result_df1['emission_factors'].apply(lambda x: x[1] if x else None)
+    result_df1 = result_df1.drop('emission_factors', axis=1)
+
+    # add new columns based on the Global API schema
+    result_df1['emission_factor_units'] = 'kg/TJ'
+    result_df1.loc[:, 'emissions_value'] = result_df1['activity_value'] * result_df1['emission_factor_value']
+    result_df1.loc[:, 'emissions_units'] = 'kg'
+    
+    #------------------------------------------------------------------------
+    ### Emission Calculation for the rest of fuels
     #------------------------------------------------------------------------
     # diccionary with the data needed to convert the raw units (volume) into energy content by fuel type 
     fuel_dic = {
@@ -64,14 +201,6 @@ if __name__ == "__main__":
             'fuel_density': 710,
             'fuel_density_units': 'kg/m3',
             'NCV_value': 44.3,
-            'NCV_units': 'TJ/Gg'
-        }, 
-        'Diesel Oil(m3)': {
-            'units': 'm3',
-            'ef_fuel_name': 'Diesel Oil',
-            'fuel_density': 840,
-            'fuel_density_units': 'kg/m3',
-            'NCV_value': 43,
             'NCV_units': 'TJ/Gg'
         }, 
         'Fueloil(Ton)': {
@@ -121,206 +250,111 @@ if __name__ == "__main__":
             'fuel_density_units': 'kg/m3',
             'NCV_value': 44.3,
             'NCV_units': 'TJ/Gg'
-        }, 
-        'Nafta Grado 1 (Común)(m3)': {
-            'units': 'm3',
-            'ef_fuel_name': 'Naphtha',
-            'fuel_density': 770,
-            'fuel_density_units': 'kg/m3',
-            'NCV_value': 44.5,
-            'NCV_units': 'TJ/Gg'
-        },  
-        'Nafta Grado 2 (Súper)(m3)': {
-            'units': 'm3',
-            'ef_fuel_name': 'Naphtha',
-            'fuel_density': 770,
-            'fuel_density_units': 'kg/m3',
-            'NCV_value': 44.5,
-            'NCV_units': 'TJ/Gg'
-        }, 
-        'Nafta Grado 3 (Ultra)(m3)': {
-            'units': 'm3',
-            'ef_fuel_name': 'Naphtha',
-            'fuel_density': 770,
-            'fuel_density_units': 'kg/m3',
-            'NCV_value': 44.5,
-            'NCV_units': 'TJ/Gg'
-        }, 
-        'Nafta Virgen(m3)': {
-            'units': 'm3',
-            'ef_fuel_name': 'Naphtha',
-            'fuel_density': 770,
-            'fuel_density_units': 'kg/m3',
-            'NCV_value': 44.5,
-            'NCV_units': 'TJ/Gg'
         }
     }
+    # apply density to change m3 to kg and then, kg to TJ using the Net Calorific value
+    df.loc[:, 'factor'] = df['fuel_type'].apply(lambda x: (fuel_dic[x]['fuel_density'] * fuel_dic[x]['NCV_value'] * 1e-6)
+                                                if x in fuel_dic else None)
+    df.loc[:, 'activity_value'] *= df['factor']
 
-    # apply a filter to select specific fuels
-    df = df[df['producto'].isin(fuel_dic.keys())]
-
-    # assigning needed values to each row based on the fuel type
-    for index, row in df.iterrows():
-        producto = row['producto']
-        if producto in fuel_dic.keys():
-            #print(fuel_dic[producto]['units'])
-            df.loc[index, 'units'] = fuel_dic[producto]['units']
-            df.loc[index, 'fuel_ipcc'] = fuel_dic[producto]['ef_fuel_name']
-            df.loc[index, 'fuel_density'] = fuel_dic[producto]['fuel_density']
-            df.loc[index, 'fuel_density_units'] = fuel_dic[producto]['fuel_density_units']
-            df.loc[index, 'NCV_value'] = fuel_dic[producto]['NCV_value']
-            df.loc[index, 'NCV_units'] = fuel_dic[producto]['NCV_units']
-
-    # to calculate TJ for activity_values
-    # volume to mass, mass to energy content
-    df.loc[:, 'activity_value'] = df['cantidad'] * df['fuel_density'] * df['NCV_value'] * 1e-6    # changing Gg to kg
+    # units after transformation
     df.loc[:, 'activity_units'] = 'TJ'
 
-    #------------------------------------------------------------------------
-    ### Subsector I.3.1
-    #------------------------------------------------------------------------
-    I31 = df[df['subtipodecomercializacion'] == 'Industrias Petroquímicas']
+    df = df[df['activity_value'].notna()]
 
-    # diccionary to assign the emission factor values to each row based on the sector and fuel type
-    dic_ef_I31 = {
-        'Jet Kerosene' : {
-            'CO2': 71500, 
-            'CH4': 3, 
-            'N2O': 0.6
-        },
-        'Aviation Gasoline' : {
-            'CO2': 70000, 
-            'CH4': 3, 
-            'N2O': 0.6
-        },
-        'Diesel Oil' : {
-            'CO2': 74100, 
-            'CH4': 3, 
-            'N2O': 0.6
-        },
-        'Motor Gasoline': {
-            'CO2': 69300, 
-            'CH4': 3, 
-            'N2O': 0.6
-        },
-        'Gas Oil' : {
-            'CO2': 74100, 
-            'CH4': 3, 
-            'N2O': 0.6
-        },
-        'Naphtha' : {
-            'CO2': 73300, 
-            'CH4': 3, 
-            'N2O': 0.6
-        }
-    }
-    new_rows = []
+    # delete "factor" column
+    df = df.drop(columns='factor')
 
-    for index, row in I31.iterrows():
-        fuel = row['fuel_ipcc']
-        if fuel in dic_ef_I31.keys():
-            ef_gas = dic_ef_I31[fuel]
-            for gas, ef_value in ef_gas.items():
-                        # Create a new row with gas name and emission factor value
-                        new_row = row.copy()  # Copy the original row
-                        new_row['gas_name'] = gas
-                        new_row['emission_factor_value'] = ef_value
-                        new_row['emission_factor_units'] = 'kg/TJ'
-                        # Append the new row to the list
-                        new_rows.append(new_row)
+    # change fuel names (Spanish to English)
+    replacement_fuels = {'Gasolina Natural(m3)': 'gasoline', 'Gasoil Grado 2 (Común)(m3)': 'gas oil', 'Kerosene(m3)': 'jet kerosene', 
+                         'Fueloil(Ton)': 'gasoline', 'Aerokerosene (Jet)(m3)': 'jet kerosene', 'Gasoil Grado 3 (Ultra) (m3)': 'gas oil', 
+                         'Aeronaftas(m3)': 'Aviation Gasoline', 'Gasoil Grado 1 (Agrogasoil)(m3)': 'gas oil'}
+    df['fuel_type'] = df['fuel_type'].replace(replacement_fuels, regex=False)
 
-    # Create a new DataFrame from the list of new rows
-    I31 = pd.DataFrame(new_rows)
-    I31 = I31.reset_index(drop=True)
-
-    # calculating the emission values for this subsector
-    I31.loc[:, 'emissions_value'] = I31['activity_value'] * I31['emission_factor_value']
-
-    #------------------------------------------------------------------------
-    ### Sector II
-    #------------------------------------------------------------------------
-    II = df[df['subtipodecomercializacion'] != 'Industrias Petroquímicas']
-    # diccionary to assign the emission factor values to each row based on the sector and fuel type
-    dic_ef_II21 = {
-        'Jet Kerosene' : {
+    # diccionary with the EF for these type of fuels
+    # units = 'kg/TJ'
+    dic_ef = {
+        'jet kerosene' : {
             'CO2': 71500, 
             'CH4': 0.5, 
             'N2O': 2
         },
-        'Aviation Gasoline' : {
+        'aviation gasoline' : {
             'CO2': 72000, 
             'CH4': 0.5, 
             'N2O': 2
         },
-        'Diesel Oil' : {
-            'CO2': 74100, 
-            'CH4': 5, 
-            'N2O': 0.6
-        },
-        'Motor Gasoline': {
+        'gasoline': {
             'CO2': 69300, 
             'CH4': 33, 
             'N2O': 3.2
         },
-        'Gas Oil' : {
+        'gas oil' : {
             'CO2': 74100, 
             'CH4': 3.9, 
             'N2O': 3.9
-        },
-        'Naphtha' : {
-            'CO2': 73300, 
-            'CH4': 0.5, 
-            'N2O': 2
         }
     }
-    new_rows = []
 
-    for index, row in II.iterrows():
-        fuel = row['fuel_ipcc']
-        if fuel in dic_ef_II21.keys():
-            ef_gas = dic_ef_II21[fuel]
-            for gas, ef_value in ef_gas.items():
-                        # Create a new row with gas name and emission factor value
-                        new_row = row.copy()  # Copy the original row
-                        new_row['gas_name'] = gas
-                        new_row['emission_factor_value'] = ef_value
-                        new_row['emission_factor_units'] = 'kg/TJ'
-                        # Append the new row to the list
-                        new_rows.append(new_row)
+    # Function to map fuel types to emission factors
+    def map_emission_factors(row):
+        fuel_type = row['fuel_type']
+        if fuel_type in dic_ef:
+            return [(gas, value) for gas, value in dic_ef[fuel_type].items()]
+        else:
+            return []
+    
+    # Apply the function to each row and explode the result into new rows
+    df['emission_factors'] = df.apply(map_emission_factors, axis=1)
+    df = df.explode('emission_factors')
+    df['gas_name'] = df['emission_factors'].apply(lambda x: x[0] if isinstance(x, tuple) else None)
+    df['emission_factor_value'] = df['emission_factors'].apply(lambda x: x[1] if isinstance(x, tuple) else None)
 
-    # Create a new DataFrame from the list of new rows
-    II = pd.DataFrame(new_rows)
-    II = II.reset_index(drop=True)
+    # delete "emission_factors" column
+    df = df.drop('emission_factors', axis=1)
 
-    # calculating the emission values for this subsector
-    II.loc[:, 'emissions_value'] = II['activity_value'] * II['emission_factor_value']
+    # add new columns based on the Global API schema
+    df['emission_factor_units'] = 'kg/TJ'
+    df.loc[:, 'emissions_value'] = df['activity_value'] * df['emission_factor_value']
+    df.loc[:, 'emissions_units'] = 'kg'
 
     #------------------------------------------------------------------------
     ### Final Details
     #------------------------------------------------------------------------
-    # concatenate both dataframes
-    final_df = pd.concat([I31, II], ignore_index=True)
+    # join the final dataframes df and result_df1
+    final_df = pd.concat([df, result_df1], ignore_index=True)
 
-    # add the activity name based on the subtype of commercialization
-    translate_dic = {
-        'Industrias Petroquímicas': 'petrochemical industries', 
-        'Agro': 'agriculture machines', 
-        'Transporte de Carga': 'freight transport',
-        'transporte Público de Pasajeros': 'public passenger transport', 
-        'Transporte Ferroviario': 'railway transport'
+    # assign GPC_refno based on the marketing subtype
+    suptipo_to_gpc = {
+        'Al Público': 'II.1.1',
+        'Industrias Petroquímicas':'I.3.1',
+        'transporte Público de Pasajeros':'II.1.1',
+        'Transporte de Carga':'II.1.1', 
+        'Agro':'II.5.1',
+        'Transporte Ferroviario':'II.2.1',
+        }
+    final_df.loc[:, 'GPC_refno'] = final_df['marketing_subtype'].map(suptipo_to_gpc)
+
+    # change marketing subtype names (Spanish to English)
+    replacement_subtype = {
+        'Al Público': 'to the public',
+        'Industrias Petroquímicas':'petrochemical industries',
+        'transporte Público de Pasajeros':'public passenger transport',
+        'Transporte de Carga':'freight transport', 
+        'Agro':'agriculture machines',
+        'Transporte Ferroviario':'railway transport',
     }
-    for index, row in final_df.iterrows():
-        subsector = row['subtipodecomercializacion']
-        fuel = row['fuel_ipcc']
-        if subsector in translate_dic.keys():
-            final_df.loc[index, 'activity_name'] = f'{fuel} combustion consumption by {translate_dic[subsector]}'
+    final_df.loc[:, 'marketing_subtype'] = final_df['marketing_subtype'].replace(replacement_subtype, regex=False)
 
-    # delete extra columns
-    columns_to_drop = ['empresa', 'subtipodecomercializacion', 'producto', 'cantidad', 'units', 'fuel_ipcc', 'fuel_density', 'fuel_density_units', 'NCV_value', 'NCV_units']
+    # add activity_name using marketing subtype and type of fuel
+    final_df['activity_name'] = final_df.apply(lambda row: f"{row['fuel_type']} combustion consumption by {row['marketing_subtype']}", axis=1)
+
+    # delete columns
+    columns_to_drop = ['company', 'marketing_subtype', 'fuel_type']
     final_df = final_df.drop(columns=columns_to_drop)
 
     # assigning province CODE based on the province name
-    region_code_dic = {
+    province_code_dic = {
         'Buenos Aires':'AR-B', 
         'Capital Federal':'AR-C', 
         'Catamarca':'AR-K', 
@@ -346,34 +380,23 @@ if __name__ == "__main__":
         'Misiones':'AR-N',
         'Formosa':'AR-P'
     }
-    for index, row in final_df.iterrows():
-        region_name = row['provincia']
-        if region_name in region_code_dic.keys():
-            final_df.at[index, 'region_code'] = region_code_dic[region_name]
+    final_df.loc[:, 'region_code'] = final_df['region_name'].map(province_code_dic)
 
-    # this year is not complete ( we're in 2024 :) )
-    final_df = final_df[final_df['anio'] != 2024]
-    # rename columns
-    columns_to_rename = {
-        'anio': 'year',
-        'provincia': 'region_name'
-    }
-    final_df.rename(columns=columns_to_rename, inplace=True)
-    # adding extra columns
+    # add new columns based on the Global API schema
     final_df.loc[:, 'source_name'] = 'SESCO'
     final_df.loc[:, 'temporal_granularity'] = 'annual'
-    final_df.loc[:, 'emissions_units'] = 'kg'
 
-    # Define a function to generate UUID for each row
+    # define a function to generate UUID for each row
     def generate_uuid(row):
         id_string = str(row['region_code']) + str(row['emissions_value']) + str(row['GPC_refno'])
         return uuid_generate_v3(id_string)
-    # Apply the function to each row and assign the result to a new column 'id'
+    
+    # apply the function to each row and assign the result to a new column 'id'
     final_df['id'] = final_df.apply(generate_uuid, axis=1)
-
+    
     col_order = ['id', 'source_name', 'GPC_refno', 'region_name', 'region_code', 'temporal_granularity', 'year', 'activity_name', 'activity_value', 
                  'activity_units', 'gas_name', 'emission_factor_value', 'emission_factor_units', 'emissions_value', 'emissions_units']
     final_df = final_df.reindex(columns=col_order)
     
-    # Save the file
+    # save the file
     final_df.to_csv(f'{absolute_path}/processed_SESCO_AR.csv', sep=",", decimal=".", index=False)

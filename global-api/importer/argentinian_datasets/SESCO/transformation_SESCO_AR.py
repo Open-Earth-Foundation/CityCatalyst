@@ -2,6 +2,7 @@ import pandas as pd
 import argparse
 import uuid
 import os
+from sqlalchemy import create_engine
 
 def uuid_generate_v3(name, namespace=uuid.NAMESPACE_OID):
     """generate a version 3 UUID from namespace and name"""
@@ -12,6 +13,11 @@ def uuid_generate_v3(name, namespace=uuid.NAMESPACE_OID):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Transform files with a specified location.')
     parser.add_argument("--filepath", help="path to the files location", required=True)
+    parser.add_argument(
+        "--database_uri",
+        help="database URI (e.g. postgresql://ccglobal:@localhost/ccglobal)",
+        default=os.environ.get("DB_URI"),
+    )
     args = parser.parse_args()
 
     absolute_path = os.path.abspath(args.filepath)
@@ -23,14 +29,14 @@ if __name__ == "__main__":
     #------------------------------------------------------------------------
     
     # clean the dataset
-    df = df.drop(columns=['pais', 'indice_tiempo', 'tipodecomercializacion'])
+    df = df.drop(columns=['pais','mes', 'indice_tiempo', 'tipodecomercializacion'])
 
     # change column names (Spanish to English)
     df.columns = ['year', 'company', 'marketing_subtype', 'fuel_type', 'region_name', 'activity_value']
 
     # list of "region_name" values to delete
     filter_values = ['S/D', 'no aplica', 'Provincia', 'Estado Nacional']
-    df = df[~df['provincia'].isin(filter_values)]
+    df = df[~df['region_name'].isin(filter_values)]
 
     # delete empty amounts of fuel
     df = df[df['activity_value'] != 0]
@@ -388,7 +394,7 @@ if __name__ == "__main__":
 
     # define a function to generate UUID for each row
     def generate_uuid(row):
-        id_string = str(row['region_code']) + str(row['emissions_value']) + str(row['GPC_refno'])
+        id_string = str(row['region_code']) + str(row['source_name']) + str(row['GPC_refno']) + str(row['gas_name']) + str(row['year'])
         return uuid_generate_v3(id_string)
     
     # apply the function to each row and assign the result to a new column 'id'
@@ -396,7 +402,13 @@ if __name__ == "__main__":
     
     col_order = ['id', 'source_name', 'GPC_refno', 'region_name', 'region_code', 'temporal_granularity', 'year', 'activity_name', 'activity_value', 
                  'activity_units', 'gas_name', 'emission_factor_value', 'emission_factor_units', 'emissions_value', 'emissions_units']
-    final_df = final_df.reindex(columns=col_order)
+    final_df = final_df.reindex(columns=col_order).drop_duplicates()
     
     # save the file
-    final_df.to_csv(f'{absolute_path}/processed_SESCO_AR.csv', sep=",", decimal=".", index=False)
+    # final_df.to_csv(f'{absolute_path}/processed_SESCO_AR.csv', sep=",", decimal=".", index=False)
+
+    # Create a SQLAlchemy engine
+    engine = create_engine(args.database_uri)
+
+    # Write the DataFrame to the database table
+    final_df.to_sql('sesco_region_emissions_staging', engine, if_exists='replace', index=False)

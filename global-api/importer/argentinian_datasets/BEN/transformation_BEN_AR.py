@@ -3,6 +3,7 @@ import argparse
 import glob
 import uuid
 import os
+from sqlalchemy import create_engine
 
 def uuid_generate_v3(name, namespace=uuid.NAMESPACE_OID):
     """generate a version 3 UUID from namespace and name"""
@@ -13,6 +14,11 @@ def uuid_generate_v3(name, namespace=uuid.NAMESPACE_OID):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Transform files with a specified location.')
     parser.add_argument("--filepath", help="path to the files location", required=True)
+    parser.add_argument(
+        "--database_uri",
+        help="database URI (e.g. postgresql://ccglobal:@localhost/ccglobal)",
+        default=os.environ.get("DB_URI"),
+    )
     args = parser.parse_args()
 
     absolute_path = os.path.abspath(args.filepath)
@@ -212,4 +218,10 @@ if __name__ == "__main__":
                      'activity_units', 'gas_name', 'emission_factor_value', 'emission_factor_units', 'emissions_value', 'emissions_units']
         result_df = result_df.reindex(columns=col_order)
 
-    result_df.to_csv(f'{absolute_path}/processed_BEN_AR.csv', sep=",", decimal=".", index=False)
+    #result_df.to_csv(f'{absolute_path}/processed_BEN_AR.csv', sep=",", decimal=".", index=False)
+
+    # Create a SQLAlchemy engine
+    engine = create_engine(args.database_uri)
+
+    # Write the DataFrame to the database table
+    result_df.to_sql('ben_country_emissions_staging', engine, if_exists='replace', index=False)

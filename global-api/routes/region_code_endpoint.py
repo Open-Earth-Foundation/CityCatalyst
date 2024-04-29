@@ -21,29 +21,31 @@ def not_nan_or_none(value):
 
 
 # Extract the data by locode, year and sector/subsector
-def db_query(source_name, region_name, year, GPC_refno):
+def db_query(source_name, region_code, year, GPC_refno):
     rows = []
     with SessionLocal() as session:
         query = text(
             """
-            SELECT * FROM regionwide_emissions
+            SELECT lower(gas_name) as gas_name, sum(emissions_value) as emissions_value
+            FROM regionwide_emissions
             WHERE source_name = :source_name
             AND "GPC_refno" = :GPC_refno
-            AND region_name = :region_name
-            AND year = :year;
+            AND region_code = :region_code
+            AND year = :year
+            GROUP BY gas_name;
             """
         )
-        params = {"source_name": source_name, "region_name": region_name, "year": year, "GPC_refno": GPC_refno}
+        params = {"source_name": source_name, "region_code": region_code, "year": year, "GPC_refno": GPC_refno}
         result = session.execute(query, params)
         rows = [row._asdict() for row in result]
 
     return rows
 
 
-@api_router.get("/source/{source_name}/region/{region_name}/{year}/{GPC_refno}")
-def get_emissions_by_country_and_year(source_name: str, region_name: str, year: str, GPC_refno: str):
+@api_router.get("/source/{source_name}/region/{region_code}/{year}/{GPC_refno}")
+def get_emissions_by_country_and_year(source_name: str, region_code: str, year: str, GPC_refno: str):
 
-    records = db_query(source_name, region_name, year, GPC_refno)
+    records = db_query(source_name, region_code, year, GPC_refno)
 
     if not records:
         raise HTTPException(status_code=404, detail="No data available")

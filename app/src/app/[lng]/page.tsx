@@ -4,6 +4,8 @@ import { Box, Spinner, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useTranslation } from "@/i18n/client";
+import { useSession } from "next-auth/react";
+import { CheckUserSession } from "@/util/check-user-session";
 
 export default function HomePage({
   params: { lng },
@@ -15,6 +17,8 @@ export default function HomePage({
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
 
+  // Check if user is authenticated otherwise route to login page
+  CheckUserSession();
   useEffect(() => {
     const defaultInventoryAvailable = !!userInfo?.defaultInventoryId;
     const defaultInventoryPath = `/${userInfo?.defaultInventoryId}`;

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-DB_USER="${POSTGRES_USER:=postgres}"
-DB_PASSWORD="${POSTGRES_PASSWORD:=citycatalyst}"
-DB_NAME="${POSTGRES_DB:=development}"
+DB_USER="${POSTGRES_USER:=citycatalyst}"
+DB_PASSWORD="${POSTGRES_PASSWORD:=development}"
+DB_NAME="${POSTGRES_DB:=citycatalyst}"
 DB_PORT="${POSTGRES_PORT:=5432}"
 DB_HOST="${POSTGRES_HOST:=localhost}"
 

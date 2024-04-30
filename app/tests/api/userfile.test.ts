@@ -10,7 +10,15 @@ import {
 
 import { db } from "@/models";
 import assert from "node:assert";
-import { after, before, describe, it } from "node:test";
+import {
+  after,
+  afterEach,
+  before,
+  beforeEach,
+  describe,
+  it,
+  mock,
+} from "node:test";
 import {
   testFileFormat,
   filePath,
@@ -74,11 +82,6 @@ describe("UserFile API", () => {
       name: "TEST_CITY",
     });
     await user.addCity(city);
-
-    const service = new NotificationService();
-    service.sendEmail = async () => {
-      return { success: true, messageId: "send" };
-    };
   });
   after(async () => {
     if (db.sequelize) await db.sequelize.close();
@@ -87,6 +90,10 @@ describe("UserFile API", () => {
     await fs.unlink(await filePath(), (err: any) => {
       if (err) console.error(err);
     });
+  });
+
+  beforeEach(() => {
+    mock.method(NotificationService, "sendNotificationEmail", () => {});
   });
 
   it("should create a user file", async () => {
@@ -110,14 +117,19 @@ describe("UserFile API", () => {
     const res = await createUserFile(req, {
       params: { city: testCityID },
     });
-    assert.equal(res.status, 200);
+
     const { data } = await res.json();
+
+    assert.equal(res.status, 200);
     assert.equal(data?.sector, fileData?.sector);
     assert.equal(data?.url, fileData.url);
     assert.equal(data?.status, fileData.status);
     assert.equal(data?.gpcRefNo, fileData.gpc_ref_no);
     assert.equal(fileData.data.fileName, data?.file.fileName);
     assert.equal(fileData.data.size, data?.file.size);
+    // @ts-ignore
+    const calls = NotificationService.sendNotificationEmail.mock.calls.length;
+    assert.equal(calls, 1);
   });
 
   it("should not create a file if data is invalid", async () => {
@@ -185,7 +197,7 @@ describe("UserFile API", () => {
   it("should delete user file", async () => {
     const fileStream = await getFileDataFromStream(await filePath());
     const formData = new FormData();
-    formData.append("id", randomUUID());
+    formData.append("id", fileData.id);
     formData.append("userId", fileData.userId);
     formData.append("sector", fileData.sector);
     formData.append("subsectors", fileData.subsectors);

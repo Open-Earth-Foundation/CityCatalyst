@@ -96,9 +96,6 @@ describe("UserFile API", () => {
     mock.method(NotificationService, "sendNotificationEmail", () => {});
   });
 
-  // const call = calculateMock.mock.calls[index];
-  //assert.deepEqual(call.arguments, [argument]);
-
   it("should create a user file", async () => {
     // stream created file from path
     const path = await filePath();

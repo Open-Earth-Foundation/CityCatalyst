@@ -128,8 +128,6 @@ export const POST = apiHandler(
         fileType: userFile.fileType!,
       },
     };
-    // TODO: create a seperate function
-    // Mock it in the
 
     await NotificationService.sendNotificationEmail({
       user: { email: user?.email!, name: user?.name! },

@@ -2,20 +2,20 @@
 -- we have multiple acitivty records for single region_code, year, gas_name, GPC_refno
 -- rather than upsert we will just delete existing source data and insert fresh with egenerated id to make record unique
 -- the route for regions will need to be aggregated over region_code, year, gas_name, GPC_refno
-DELETE FROM regionwide_emissions WHERE source_name = 'ENARGAS';
+DELETE FROM country_code WHERE source_name = 'BEN';
 
 -- Update the main table with the staging table
-INSERT INTO regionwide_emissions (
-		id,source_name,"GPC_refno",region_name,region_code,temporal_granularity,year,activity_name,activity_value,
-		activity_units,gas_name,emission_factor_value,emission_factor_units,emissions_value,emissions_units
-		)
+INSERT INTO country_code (
+    id,source_name,"GPC_refno",country_name,country_code,temporal_granularity,year,activity_name,activity_value,
+    activity_units,gas_name,emission_factor_value,emission_factor_units,emissions_value,emissions_units
+    )
 SELECT 	gen_random_uuid() as id,
 		source_name,
 		"GPC_refno",
-		region_name,
-		region_code,
+		country_name,
+		country_code,
 		temporal_granularity,
-		year,
+		cast(year as int) as year,
 		activity_name,
 		activity_value,
 		activity_units,
@@ -24,8 +24,7 @@ SELECT 	gen_random_uuid() as id,
 		emission_factor_units,
 		emissions_value,
 		emissions_units
-FROM enargas_region_emissions_staging;
+FROM 	ben_country_emissions_staging;
 
 -- Drop the staging table
-DROP TABLE enargas_region_emissions_staging;
-
+DROP TABLE ben_country_emissions_staging;

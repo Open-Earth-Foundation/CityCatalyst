@@ -128,25 +128,14 @@ export const POST = apiHandler(
         fileType: userFile.fileType!,
       },
     };
+    // TODO: create a seperate function
+    // Mock it in the
 
-    if (!userFile) {
-      await service.sendEmail({
-        to: process.env.ADMIN_EMAILS!,
-        subject: "CityCatalyst File Upload",
-        text: "City Catalyst",
-        html: render(
-          AdminNotificationTemplate({
-            adminNames: process.env.ADMIN_NAMES!,
-            file: newFileData,
-            user: {
-              cityName: city.name!,
-              email: user?.email!,
-              name: user?.name!,
-            },
-          }),
-        ),
-      });
-    }
+    await NotificationService.sendNotificationEmail({
+      user: { email: user?.email!, name: user?.name! },
+      fileData: newFileData,
+      city,
+    });
 
     return NextResponse.json({
       data: newFileData,

@@ -93,6 +93,13 @@ describe("UserFile API", () => {
     });
   });
 
+  beforeEach(() => {
+    mock.method(NotificationService, "sendNotificationEmail", () => {});
+  });
+
+  // const call = calculateMock.mock.calls[index];
+  //assert.deepEqual(call.arguments, [argument]);
+
   it("should create a user file", async () => {
     // stream created file from path
     const path = await filePath();
@@ -115,16 +122,8 @@ describe("UserFile API", () => {
       params: { city: testCityID },
     });
 
-    const service = NotificationService.getInstance(mockTransporter);
-
-    await service.sendEmail({
-      to: "text@example.com",
-      subject: "Test Email",
-      text: "This is a test",
-      html: "<p>This is a test</p>",
-    });
-
     const { data } = await res.json();
+
     assert.equal(res.status, 200);
     assert.equal(data?.sector, fileData?.sector);
     assert.equal(data?.url, fileData.url);
@@ -132,6 +131,9 @@ describe("UserFile API", () => {
     assert.equal(data?.gpcRefNo, fileData.gpc_ref_no);
     assert.equal(fileData.data.fileName, data?.file.fileName);
     assert.equal(fileData.data.size, data?.file.size);
+    // @ts-ignore
+    const calls = NotificationService.sendNotificationEmail.mock.calls.length;
+    assert.equal(calls, 1);
   });
 
   it("should not create a file if data is invalid", async () => {
@@ -199,7 +201,7 @@ describe("UserFile API", () => {
   it("should delete user file", async () => {
     const fileStream = await getFileDataFromStream(await filePath());
     const formData = new FormData();
-    formData.append("id", randomUUID());
+    formData.append("id", fileData.id);
     formData.append("userId", fileData.userId);
     formData.append("sector", fileData.sector);
     formData.append("subsectors", fileData.subsectors);

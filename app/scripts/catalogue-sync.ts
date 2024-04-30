@@ -9,7 +9,7 @@ interface Source {
   datasource_name: string;
   dataset_name: string;
   source_type: string;
-  url: string;
+  dataset_url: string;
   dataset_description: string;
   access_type: string;
   geographical_location: string;
@@ -119,7 +119,7 @@ async function syncDataCatalogue() {
 
     if (!source.notes) {
       // publisher_id is still a name at this stage
-      source.notes = `${source.datasource_name} by ${source.publisher_id}. For more details see ${source.url}`;
+      source.notes = `${source.datasource_name} by ${source.publisher_id}. For more details see ${source.dataset_url}`;
     }
 
     if (source.geographical_location === "global") {
@@ -156,7 +156,7 @@ async function syncDataCatalogue() {
       publisher = await db.models.Publisher.create({
         publisherId: randomUUID(),
         name: source.publisher_id,
-        url: source.url,
+        url: source.dataset_url,
       });
     }
     source.publisher_id = publisher.publisherId;

@@ -22,6 +22,8 @@ export const createCityRequest = z.object({
   shape: geoJSON.optional(),
   country: z.string().optional(),
   region: z.string().optional(),
+  countryLocode: z.string().optional(),
+  regionLocode: z.string().optional(),
   area: z.number().int().optional(),
 });
 export type CreateCityRequest = z.infer<typeof createCityRequest>;

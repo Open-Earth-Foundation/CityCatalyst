@@ -28,7 +28,6 @@ import {
   setupTests,
   testUserID,
   testCityID,
-  mockTransporter,
 } from "../helpers";
 import { randomUUID } from "node:crypto";
 import fs from "fs";

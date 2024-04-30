@@ -14,7 +14,7 @@
   "inventory-year": "Inventar Jahr",
   "inventory-year-placeholder": "Jahr auswählen",
   "inventory-year-required": "Jahr ist ein Pflichtfeld",
-  "gpc-basic-message": "Only GPC Basic Inventories are supported momentarily",
+  "gpc-basic-message": "Nur GPC-Basisinventare werden derzeit unterstützt.",
   "save-button": "Speichern und Fortfahren",
   "search-city-button": "Andere Stadt suchen",
   "confirm-button": "Bestätigen und Fortfahren",
@@ -28,5 +28,17 @@
   "done-heading": "Ihr Stadt-Inventar-Profil<br />wurde erfolgreich erstellt",
   "inventory-title": "GPC Basic Emissions-Inventar - Jahr {{year}}",
   "done-details": "Sie haben ihr Stadt-Profile erstellt, um mit der Erstellung Ihres GPC Basic GHG Inventars zu beginnen.",
-  "check-dashboard": "Dashboard überprüfen"
+  "check-dashboard": "Dashboard überprüfen",
+
+  "information-required": "Diese Informationen sind erforderlich und beeinflussen die Genauigkeit Ihres Treibhausgasinventars.",
+  "year-placeholder": "Jahr",
+  "required": "Erforderlich",
+  "population-required": "Bitte geben Sie den Wert und das Jahr für die Bevölkerung ein.",
+  "city-population-title": "Stadtbevölkerung",
+  "city-population-placeholder": "Stadtbevölkerungszahl",
+  "population-year": "Bevölkerungsjahr",
+  "region-population-title": "Regionsbevölkerung",
+  "region-population-placeholder": "Regionsbevölkerungszahl",
+  "country-population-title": "Landesbevölkerung",
+  "country-population-placeholder": "Landesbevölkerungszahl"
 }

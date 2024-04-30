@@ -294,7 +294,7 @@ function SetupStep({
                     required: t("select-city-required"),
                   })}
                   autoComplete="off"
-                  onFocus={() => setOnInputClicked(true)}
+                  onKeyUp={() => setOnInputClicked(true)}
                 />
                 <InputRightElement>
                   {isCityNew && (

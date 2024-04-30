@@ -50,6 +50,17 @@ jobs:
       - name: Run API tests
         run: npm run api:test
 
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
       - name: Shut down database
         run: docker stop github_action_postgresql
 

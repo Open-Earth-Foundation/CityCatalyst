@@ -22,6 +22,8 @@ npm install
 
 ### Database
 
+For a quick setup, run `scripts/start-db.sh`, which will launch a PostgreSQL Docker image with the right configuration. Otherwise continue below ⬇️
+
 You'll need to run a [PostgreSQL](https://www.postgresql.org/) database, locally or remotely.
 
 You'll need access to the `psql`, `createuser`, and `createdb` commands.
@@ -95,3 +97,15 @@ Then, you can run the app in a container:
 ```bash
 docker run -p 3000:3000 ghcr.io/open-earth-foundation/citycatalyst
 ```
+
+### End to end testing
+
+We use Playwright to run automated E2E tests.
+
+Setup: `npx playwright install --with-deps`
+
+Run: `npm run e2e:test`
+
+### API unit tests
+
+Run: `npm run api:test`

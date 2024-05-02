@@ -34,7 +34,7 @@ jobs:
       - name: Push Docker image to GitHub Container Registry
         env:
           VERSION: ${{ github.sha }}
-          IMAGE: ghcr.io/open-earth-foundation/citycatalyst-global-api
+          IMAGE: ghcr.io/open-earth-foundation/citycatalyst-mage-ai
         run: |
           docker build -t $IMAGE:$VERSION importer-mage/
           docker tag $IMAGE:$VERSION $IMAGE:latest

@@ -1,0 +1,1 @@
+drop table if exists raw_data.osm_polygon_staging;

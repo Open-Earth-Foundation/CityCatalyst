@@ -1,0 +1,11 @@
+osmnx
+cython 
+numpy 
+pandas 
+shapely 
+fiona 
+pyproj 
+geopandas 
+osmnx 
+xarray 
+netcdf4

@@ -45,6 +45,7 @@ jobs:
           sleep 10
           createuser -w -h localhost -p 5432 -U postgres citycatalyst
           createdb -w -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst
+          ALEMBIC_URL=postgresql://citycatalyst:@localhost/citycatalyst alembic upgrade head
           cp sample.env .env
 
       - name: Build coverage file

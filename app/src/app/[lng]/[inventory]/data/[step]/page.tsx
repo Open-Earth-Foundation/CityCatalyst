@@ -13,6 +13,7 @@ import WizardSteps from "@/components/wizard-steps";
 import {
   InventoryUserFileAttributes,
   addFile,
+  clear,
   removeFile,
 } from "@/features/city/inventoryDataSlice";
 import { useTranslation } from "@/i18n/client";
@@ -431,7 +432,8 @@ export default function AddDataSteps({
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setConfirming(false);
     if (activeStep >= steps.length - 1) {
-      router.push(`/${inventory}/data/review`);
+      router.push(`/${inventory}`);
+      dispatch(clear());
     } else {
       window.scrollTo({ top: 0, behavior: "smooth" });
       goToNext();
@@ -440,7 +442,7 @@ export default function AddDataSteps({
 
   const onSkip = () => {
     if (activeStep >= steps.length - 1) {
-      router.push(`/${inventory}/data/review`);
+      router.push(`/${inventory}/data/`);
     } else {
       window.scrollTo({ top: 0, behavior: "smooth" });
       goToNext();
@@ -471,13 +473,35 @@ export default function AddDataSteps({
     (sector) => sector.sectorName === currentStep.title,
   );
 
-  function removeSectorFile(fileId: string, sectorName: string) {
-    dispatch(
-      removeFile({
-        sectorName,
-        fileId,
-      }),
-    );
+  const [deleteUserFile, {isLoading}] = api.useDeleteUserFileMutation()
+
+  function removeSectorFile(fileId: string, sectorName: string, cityId: string) {
+    deleteUserFile({fileId, cityId}).then((res:any)=> {
+      if(res.error){
+        toast({
+          title: t("file-deletion-error"),
+          description: t("file-deletion-error-description"),
+          status: "error",
+          duration: 2000,
+        });
+      }else {
+        toast({
+          title: t("file-deletion-success"),
+          description: t("file-deletion-success"),
+          status: "success",
+          duration: 2000,
+        });
+
+        dispatch(
+          removeFile({
+            sectorName,
+            fileId,
+          }),
+        );
+      }
+    })
+
+    
   }
 
   const [buttonText, setButtonText] = useState<string>(t("data-connected"));
@@ -970,6 +994,7 @@ export default function AddDataSteps({
                                   removeSectorFile(
                                     file.fileId,
                                     sectorData[0].sectorName,
+                                    file.cityId
                                   )
                                 }
                               >
@@ -1052,6 +1077,7 @@ export default function AddDataSteps({
         uploadedFile={uploadedFile!}
         currentStep={currentStep}
         userInfo={userInfo}
+        inventory={inventory}
       />
       {/*** Bottom bar ***/}
       <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand py-4 px-4 drop-shadow-2xl hover:drop-shadow-4xl transition-all">

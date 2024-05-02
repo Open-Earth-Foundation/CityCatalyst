@@ -12,6 +12,7 @@ export type InventoryUserFileAttributes = Omit<
   size: number | null;
   subsectors: string | null;
   scopes: string | null;
+  cityId: string | null;
 };
 
 interface SectorFileData {

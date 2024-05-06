@@ -14,6 +14,7 @@ from routes.city_locode_endpoint_edgar import api_router as edgar_city_locode_ro
 from routes.catalogue_endpoint import api_router as catalouge_route
 from routes.catalogue_last_update_endpoint import api_router as catalogue_last_update_endpoint
 from routes.city_locode_endpoint_ghgrp import api_router as ghgrp_city_locode_route
+from routes.region_code_endpoint import api_router as region_code_endpoint_route
 from routes.country_code_endpoint import api_router as country_code_endpoint_route
 from routes.citywide_emission_endpoint import api_router as citywide_route
 
@@ -133,6 +134,11 @@ app.include_router(
 app.include_router(
     citywide_route,
     tags=["Citywide emissions"],
+)
+
+app.include_router(
+    region_code_endpoint_route,
+    tags=["Region"],
 )
 
 """

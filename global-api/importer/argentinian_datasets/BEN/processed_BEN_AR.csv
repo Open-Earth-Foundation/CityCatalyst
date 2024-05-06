@@ -1,0 +1,121 @@
+id,source_name,GPC_refno,country_name,country_code,temporal_granularity,year,activity_name,activity_value,activity_units,gas_name,emission_factor_value,emission_factor_units,emissions_value,emissions_units
+85700111-3729-30ef-b38e-3ce80b843cec,BEN,I.1.1,Argentina,AR,annual,2020,fuel consumption of Wood/Wood Waste by residential buildings,3680819401821,kJ,CO2,0.0,kg/TJ,0,kg
+a4beeeda-fc67-346f-aa9e-ea0bfd9873bd,BEN,I.1.1,Argentina,AR,annual,2020,fuel consumption of Wood/Wood Waste by residential buildings,3680819401821,kJ,CH4,300.0,kg/TJ,1104245820546526,kg
+4cf4fdef-397c-3f26-a2ad-a0b962a194ff,BEN,I.1.1,Argentina,AR,annual,2020,fuel consumption of Wood/Wood Waste by residential buildings,3680819401821,kJ,N2O,4.0,kg/TJ,14723277607287,kg
+63e9ff4f-9880-34d7-bf4e-e4f79b98f531,BEN,I.1.1,Argentina,AR,annual,2020,fuel consumption of Liquefied Petroleum Gases by residential buildings,44864743968000,kJ,CO2,63100.0,kg/TJ,2830965344380801024,kg
+d2fb30b7-bbfe-354f-a113-12436f06f7ae,BEN,I.1.1,Argentina,AR,annual,2020,fuel consumption of Liquefied Petroleum Gases by residential buildings,44864743968000,kJ,CH4,5.0,kg/TJ,224323719840000,kg
+dd2b8d71-46ee-3f38-a97e-8749825e9f2d,BEN,I.1.1,Argentina,AR,annual,2020,fuel consumption of Liquefied Petroleum Gases by residential buildings,44864743968000,kJ,N2O,0.1,kg/TJ,4486474396800,kg
+33791b96-45eb-3a4b-9a8c-73b779c4b2b6,BEN,I.1.1,Argentina,AR,annual,2020,fuel consumption of Jet Kerosene by residential buildings,101005712639,kJ,CO2,71500.0,kg/TJ,7221908453759999,kg
+213cbb6b-cdd3-32b8-b357-0cb603265bde,BEN,I.1.1,Argentina,AR,annual,2020,fuel consumption of Jet Kerosene by residential buildings,101005712639,kJ,CH4,10.0,kg/TJ,1010057126399,kg
+e273f053-b952-3b58-af9f-bbdd2d27ff25,BEN,I.1.1,Argentina,AR,annual,2020,fuel consumption of Jet Kerosene by residential buildings,101005712639,kJ,N2O,0.6,kg/TJ,60603427583,kg
+7f0149f6-ff3e-3f03-a27a-655f61abc473,BEN,I.1.1,Argentina,AR,annual,2020,fuel consumption of Charcoal by residential buildings,7154006730393,kJ,CO2,112000.0,kg/TJ,801248753804083072,kg
+a511a655-72a2-398f-b115-50b860c9eff2,BEN,I.1.1,Argentina,AR,annual,2020,fuel consumption of Charcoal by residential buildings,7154006730393,kJ,CH4,200.0,kg/TJ,1430801346078719,kg
+67adae68-72d5-3727-b621-90ac8b6957b1,BEN,I.1.1,Argentina,AR,annual,2020,fuel consumption of Charcoal by residential buildings,7154006730393,kJ,N2O,1.0,kg/TJ,7154006730393,kg
+dc58b60c-82a3-35d5-b68e-011017469ba8,BEN,I.2.1,Argentina,AR,annual,2020,fuel consumption of Wood/Wood Waste by commercial buildings,1840409700910,kJ,CO2,112000.0,kg/TJ,206125886502018176,kg
+20a35b83-2d7b-3939-ab68-402fbe1857bb,BEN,I.2.1,Argentina,AR,annual,2020,fuel consumption of Wood/Wood Waste by commercial buildings,1840409700910,kJ,CH4,300.0,kg/TJ,552122910273263,kg
+d031e6f0-50e0-33a6-8211-780b52f78230,BEN,I.2.1,Argentina,AR,annual,2020,fuel consumption of Wood/Wood Waste by commercial buildings,1840409700910,kJ,N2O,4.0,kg/TJ,7361638803643,kg
+a8f36a9f-da4e-32c7-a305-ca94223dcd40,BEN,I.2.1,Argentina,AR,annual,2020,fuel consumption of Liquefied Petroleum Gases by commercial buildings,7477457328000,kJ,CO2,63100.0,kg/TJ,471827557396800128,kg
+ffb7f9f8-6a8c-3f31-9f94-b3d775aa5038,BEN,I.2.1,Argentina,AR,annual,2020,fuel consumption of Liquefied Petroleum Gases by commercial buildings,7477457328000,kJ,CH4,5.0,kg/TJ,37387286640000,kg
+6a13836f-e841-3e5b-95b1-67497f0b8e2e,BEN,I.2.1,Argentina,AR,annual,2020,fuel consumption of Liquefied Petroleum Gases by commercial buildings,7477457328000,kJ,N2O,0.1,kg/TJ,747745732800,kg
+7621d343-200d-3c37-9621-f10763cbdcf7,BEN,I.2.1,Argentina,AR,annual,2020,fuel consumption of Charcoal by commercial buildings,4769337820262,kJ,CO2,112000.0,kg/TJ,534165835869388736,kg
+6aa96c40-d9e4-3fbb-ba44-0a106315774f,BEN,I.2.1,Argentina,AR,annual,2020,fuel consumption of Charcoal by commercial buildings,4769337820262,kJ,CH4,200.0,kg/TJ,953867564052479,kg
+5c9f3c7d-a9ca-349f-9a99-165708013ea0,BEN,I.2.1,Argentina,AR,annual,2020,fuel consumption of Charcoal by commercial buildings,4769337820262,kJ,N2O,1.0,kg/TJ,4769337820262,kg
+67a51017-f033-3288-b072-edb65135140c,BEN,I.5.1,Argentina,AR,annual,2020,fuel consumption of Liquefied Petroleum Gases by agricultural activities,3115607220000,kJ,CO2,63100.0,kg/TJ,196594815582000064,kg
+d944c209-12a2-38ee-b606-87bf69a81ab0,BEN,I.5.1,Argentina,AR,annual,2020,fuel consumption of Liquefied Petroleum Gases by agricultural activities,3115607220000,kJ,CH4,5.0,kg/TJ,15578036100000,kg
+9af4efc1-8e8c-3825-9ba8-88fff0377c11,BEN,I.5.1,Argentina,AR,annual,2020,fuel consumption of Liquefied Petroleum Gases by agricultural activities,3115607220000,kJ,N2O,0.1,kg/TJ,311560722000,kg
+b1e684f9-61dd-3662-aecb-5e99ffa337e8,BEN,I.3.1,Argentina,AR,annual,2020,fuel consumption of Wood/Wood Waste by industrial buildings,3680819401821,kJ,CO2,112000.0,kg/TJ,412251773004036352,kg
+329a497c-82f4-3552-a3db-f7bd87adec96,BEN,I.3.1,Argentina,AR,annual,2020,fuel consumption of Wood/Wood Waste by industrial buildings,3680819401821,kJ,CH4,30.0,kg/TJ,110424582054652,kg
+72b5e678-1e87-3481-97c0-31486ae749f8,BEN,I.3.1,Argentina,AR,annual,2020,fuel consumption of Wood/Wood Waste by industrial buildings,3680819401821,kJ,N2O,4.0,kg/TJ,14723277607287,kg
+7fe9238c-99cc-3e8a-8f3b-563c7109e7d5,BEN,I.3.1,Argentina,AR,annual,2020,fuel consumption of Liquefied Petroleum Gases by industrial buildings,6854335884000,kJ,CO2,63100.0,kg/TJ,432508594280400256,kg
+f1c5d053-3fee-3132-bcc1-2e575c7943ff,BEN,I.3.1,Argentina,AR,annual,2020,fuel consumption of Liquefied Petroleum Gases by industrial buildings,6854335884000,kJ,CH4,1.0,kg/TJ,6854335884000,kg
+94162d43-5bbf-3929-a52c-7622a00d908b,BEN,I.3.1,Argentina,AR,annual,2020,fuel consumption of Liquefied Petroleum Gases by industrial buildings,6854335884000,kJ,N2O,0.1,kg/TJ,685433588400,kg
+3e5ce6a6-0cc4-3e90-89eb-833f974d1b46,BEN,I.1.1,Argentina,AR,annual,2021,fuel consumption of Wood/Wood Waste by residential buildings,3610487149012,kJ,CO2,0.0,kg/TJ,0,kg
+1ec37776-ab8c-37ab-8b8b-7900ba45fcae,BEN,I.1.1,Argentina,AR,annual,2021,fuel consumption of Wood/Wood Waste by residential buildings,3610487149012,kJ,CH4,300.0,kg/TJ,1083146144703822,kg
+7a5d12b5-7f59-3216-9f95-654e24059afc,BEN,I.1.1,Argentina,AR,annual,2021,fuel consumption of Wood/Wood Waste by residential buildings,3610487149012,kJ,N2O,4.0,kg/TJ,14441948596050,kg
+c25b196b-5681-3590-b559-59384483dcd4,BEN,I.1.1,Argentina,AR,annual,2021,fuel consumption of Liquefied Petroleum Gases by residential buildings,56470553567999,kJ,CO2,63100.0,kg/TJ,3563291930140799488,kg
+940afa0e-4b18-3a8b-8a71-2957f1d717b0,BEN,I.1.1,Argentina,AR,annual,2021,fuel consumption of Liquefied Petroleum Gases by residential buildings,56470553567999,kJ,CH4,5.0,kg/TJ,282352767839999,kg
+7228edc4-ff7e-3254-a630-da07e3d8fbf2,BEN,I.1.1,Argentina,AR,annual,2021,fuel consumption of Liquefied Petroleum Gases by residential buildings,56470553567999,kJ,N2O,0.1,kg/TJ,5647055356800,kg
+a6738e24-fb73-3c9f-8bcf-f595456aa5cd,BEN,I.1.1,Argentina,AR,annual,2021,fuel consumption of Jet Kerosene by residential buildings,277589864160,kJ,CO2,71500.0,kg/TJ,19847675287440004,kg
+19936953-bde0-37a3-9990-26ee2acfd800,BEN,I.1.1,Argentina,AR,annual,2021,fuel consumption of Jet Kerosene by residential buildings,277589864160,kJ,CH4,10.0,kg/TJ,2775898641600,kg
+ab1191c5-80d6-3d12-a7ba-7c3810d1e1e9,BEN,I.1.1,Argentina,AR,annual,2021,fuel consumption of Jet Kerosene by residential buildings,277589864160,kJ,N2O,0.6,kg/TJ,166553918496,kg
+819c097f-1a72-34e8-bb25-2ce8d96925fc,BEN,I.1.1,Argentina,AR,annual,2021,fuel consumption of Charcoal by residential buildings,7254170670146,kJ,CO2,112000.0,kg/TJ,812467115056396672,kg
+d0ea890f-3a10-3d9f-938c-20a9505a742d,BEN,I.1.1,Argentina,AR,annual,2021,fuel consumption of Charcoal by residential buildings,7254170670146,kJ,CH4,200.0,kg/TJ,1450834134029280,kg
+c96544f2-59db-3d6c-b5bb-abbf51481bbc,BEN,I.1.1,Argentina,AR,annual,2021,fuel consumption of Charcoal by residential buildings,7254170670146,kJ,N2O,1.0,kg/TJ,7254170670146,kg
+a2387bb3-efc1-352b-9c42-cb93f2ff6cd3,BEN,I.2.1,Argentina,AR,annual,2021,fuel consumption of Wood/Wood Waste by commercial buildings,1805243574506,kJ,CO2,112000.0,kg/TJ,202187280344713568,kg
+2ce6b9eb-7b93-3c72-8b86-2cd571e4bd86,BEN,I.2.1,Argentina,AR,annual,2021,fuel consumption of Wood/Wood Waste by commercial buildings,1805243574506,kJ,CH4,300.0,kg/TJ,541573072351911,kg
+8cad0af6-d235-3f67-852f-70480861e459,BEN,I.2.1,Argentina,AR,annual,2021,fuel consumption of Wood/Wood Waste by commercial buildings,1805243574506,kJ,N2O,4.0,kg/TJ,7220974298025,kg
+f383005d-67f9-3149-914c-2f933e948e6d,BEN,I.2.1,Argentina,AR,annual,2021,fuel consumption of Liquefied Petroleum Gases by commercial buildings,9411758928000,kJ,CO2,63100.0,kg/TJ,593881988356800000,kg
+3a1d8eb1-7785-37c8-8917-be1b08c2b541,BEN,I.2.1,Argentina,AR,annual,2021,fuel consumption of Liquefied Petroleum Gases by commercial buildings,9411758928000,kJ,CH4,5.0,kg/TJ,47058794640000,kg
+92f3420f-37d1-39ae-b0fb-80e0ce1fa2ec,BEN,I.2.1,Argentina,AR,annual,2021,fuel consumption of Liquefied Petroleum Gases by commercial buildings,9411758928000,kJ,N2O,0.1,kg/TJ,941175892800,kg
+637e5cd1-edce-3190-888f-546725af8ff4,BEN,I.2.1,Argentina,AR,annual,2021,fuel consumption of Charcoal by commercial buildings,4836113780097,kJ,CO2,112000.0,kg/TJ,541644743370931264,kg
+3aa22b55-209e-3c03-87f5-4d42129a4a27,BEN,I.2.1,Argentina,AR,annual,2021,fuel consumption of Charcoal by commercial buildings,4836113780097,kJ,CH4,200.0,kg/TJ,967222756019520,kg
+bedf126c-76af-3409-ad1b-3fd2db9ba6ad,BEN,I.2.1,Argentina,AR,annual,2021,fuel consumption of Charcoal by commercial buildings,4836113780097,kJ,N2O,1.0,kg/TJ,4836113780097,kg
+05e43d5d-a6c0-32e4-b4b8-40a533a7c345,BEN,I.5.1,Argentina,AR,annual,2021,fuel consumption of Liquefied Petroleum Gases by agricultural activities,3921566220000,kJ,CO2,63100.0,kg/TJ,247450828482000000,kg
+960c3431-fcd1-35a0-8494-c78a0cf9651e,BEN,I.5.1,Argentina,AR,annual,2021,fuel consumption of Liquefied Petroleum Gases by agricultural activities,3921566220000,kJ,CH4,5.0,kg/TJ,19607831100000,kg
+6888242f-8118-39d3-9d1f-cc7ecb6246c3,BEN,I.5.1,Argentina,AR,annual,2021,fuel consumption of Liquefied Petroleum Gases by agricultural activities,3921566220000,kJ,N2O,0.1,kg/TJ,392156622000,kg
+e37b7056-4f2d-3b0e-a687-e6f4c6e867ab,BEN,I.3.1,Argentina,AR,annual,2021,fuel consumption of Wood/Wood Waste by industrial buildings,3610487149012,kJ,CO2,112000.0,kg/TJ,404374560689427136,kg
+1bf675df-422c-38a6-b59e-fd25ee91932a,BEN,I.3.1,Argentina,AR,annual,2021,fuel consumption of Wood/Wood Waste by industrial buildings,3610487149012,kJ,CH4,30.0,kg/TJ,108314614470382,kg
+180a7aa9-0821-3b57-9457-287ffd7f2beb,BEN,I.3.1,Argentina,AR,annual,2021,fuel consumption of Wood/Wood Waste by industrial buildings,3610487149012,kJ,N2O,4.0,kg/TJ,14441948596050,kg
+052943af-7585-34c9-a1e5-ce692409d496,BEN,I.3.1,Argentina,AR,annual,2021,fuel consumption of Liquefied Petroleum Gases by industrial buildings,8627445684000,kJ,CO2,63100.0,kg/TJ,544391822660400000,kg
+6277fa46-9881-390c-8986-387ee9f0a279,BEN,I.3.1,Argentina,AR,annual,2021,fuel consumption of Liquefied Petroleum Gases by industrial buildings,8627445684000,kJ,CH4,1.0,kg/TJ,8627445684000,kg
+b8d0efdd-4dec-3abf-a2dc-32f5ba8c40de,BEN,I.3.1,Argentina,AR,annual,2021,fuel consumption of Liquefied Petroleum Gases by industrial buildings,8627445684000,kJ,N2O,0.1,kg/TJ,862744568400,kg
+74a2b832-e4a1-32b1-90c7-b6656400acf1,BEN,I.1.1,Argentina,AR,annual,2018,fuel consumption of Wood/Wood Waste by residential buildings,3839058324766,kJ,CO2,0.0,kg/TJ,0,kg
+fc8207f5-d763-36b6-9ee2-468a37b7b24a,BEN,I.1.1,Argentina,AR,annual,2018,fuel consumption of Wood/Wood Waste by residential buildings,3839058324766,kJ,CH4,300.0,kg/TJ,1151717497429815,kg
+a7ed50e0-b58d-330d-9fa1-8f15ff9ec3b4,BEN,I.1.1,Argentina,AR,annual,2018,fuel consumption of Wood/Wood Waste by residential buildings,3839058324766,kJ,N2O,4.0,kg/TJ,15356233299064,kg
+ac08fff8-d566-36f7-adbe-be571c278849,BEN,I.1.1,Argentina,AR,annual,2018,fuel consumption of Liquefied Petroleum Gases by residential buildings,50498170788383,kJ,CO2,63100.0,kg/TJ,3186434576747030016,kg
+9280b872-a62e-35dc-827a-2df0a3b1e0f3,BEN,I.1.1,Argentina,AR,annual,2018,fuel consumption of Liquefied Petroleum Gases by residential buildings,50498170788383,kJ,CH4,5.0,kg/TJ,252490853941919,kg
+ddaae8dd-6a25-32ec-a7c0-6a0abe53dd83,BEN,I.1.1,Argentina,AR,annual,2018,fuel consumption of Liquefied Petroleum Gases by residential buildings,50498170788383,kJ,N2O,0.1,kg/TJ,5049817078838,kg
+c318a86a-e308-3011-93c3-0057ee096a6d,BEN,I.1.1,Argentina,AR,annual,2018,fuel consumption of Jet Kerosene by residential buildings,477104281920,kJ,CO2,71500.0,kg/TJ,34112956157280000,kg
+ca8ebb8d-4a8a-394d-bff6-0eb1f40dc5f3,BEN,I.1.1,Argentina,AR,annual,2018,fuel consumption of Jet Kerosene by residential buildings,477104281920,kJ,CH4,10.0,kg/TJ,4771042819200,kg
+abb7535c-e343-3a38-8c06-29c2b9511b7d,BEN,I.1.1,Argentina,AR,annual,2018,fuel consumption of Jet Kerosene by residential buildings,477104281920,kJ,N2O,0.6,kg/TJ,286262569152,kg
+275ecc0b-535a-3266-8721-ecc20cb425df,BEN,I.1.1,Argentina,AR,annual,2018,fuel consumption of Charcoal by residential buildings,7098502403180,kJ,CO2,112000.0,kg/TJ,795032269156177664,kg
+b7badea9-ac68-3d49-b196-236a900060d5,BEN,I.1.1,Argentina,AR,annual,2018,fuel consumption of Charcoal by residential buildings,7098502403180,kJ,CH4,200.0,kg/TJ,1419700480636031,kg
+1062969a-6dbf-3aa9-bbff-034863b6a708,BEN,I.1.1,Argentina,AR,annual,2018,fuel consumption of Charcoal by residential buildings,7098502403180,kJ,N2O,1.0,kg/TJ,7098502403180,kg
+19122484-a58c-38d0-8398-2249dbf8e92b,BEN,I.2.1,Argentina,AR,annual,2018,fuel consumption of Wood/Wood Waste by commercial buildings,1919529162383,kJ,CO2,112000.0,kg/TJ,214987266186898912,kg
+66ad71c6-e2f9-3af5-8d50-8332b5f0173c,BEN,I.2.1,Argentina,AR,annual,2018,fuel consumption of Wood/Wood Waste by commercial buildings,1919529162383,kJ,CH4,300.0,kg/TJ,575858748714907,kg
+2af7014a-0137-39b8-a429-730dd140114a,BEN,I.2.1,Argentina,AR,annual,2018,fuel consumption of Wood/Wood Waste by commercial buildings,1919529162383,kJ,N2O,4.0,kg/TJ,7678116649532,kg
+b52abfa2-587a-3b17-8142-840f34907037,BEN,I.2.1,Argentina,AR,annual,2018,fuel consumption of Liquefied Petroleum Gases by commercial buildings,8416361798063,kJ,CO2,63100.0,kg/TJ,531072429457838336,kg
+fa15ab4f-1cbe-3aba-ace2-3822b2ebf0dd,BEN,I.2.1,Argentina,AR,annual,2018,fuel consumption of Liquefied Petroleum Gases by commercial buildings,8416361798063,kJ,CH4,5.0,kg/TJ,42081808990319,kg
+4b455f77-4090-367a-819f-c6395001093c,BEN,I.2.1,Argentina,AR,annual,2018,fuel consumption of Liquefied Petroleum Gases by commercial buildings,8416361798063,kJ,N2O,0.1,kg/TJ,841636179806,kg
+a297ed0f-f86e-3223-bca9-77775d9505f8,BEN,I.2.1,Argentina,AR,annual,2018,fuel consumption of Charcoal by commercial buildings,4732334935453,kJ,CO2,112000.0,kg/TJ,530021512770785216,kg
+eaa777bc-b7a6-3e45-aca1-2eab61e91fbb,BEN,I.2.1,Argentina,AR,annual,2018,fuel consumption of Charcoal by commercial buildings,4732334935453,kJ,CH4,200.0,kg/TJ,946466987090687,kg
+96101944-8214-344c-8214-1efebb15517b,BEN,I.2.1,Argentina,AR,annual,2018,fuel consumption of Charcoal by commercial buildings,4732334935453,kJ,N2O,1.0,kg/TJ,4732334935453,kg
+b162297f-8800-3dda-be3e-b14ebe593a49,BEN,I.5.1,Argentina,AR,annual,2018,fuel consumption of Liquefied Petroleum Gases by agricultural activities,3506817415859,kJ,CO2,63100.0,kg/TJ,221280178940765984,kg
+8736dd5e-6bed-3741-81c4-e0c809b89e77,BEN,I.5.1,Argentina,AR,annual,2018,fuel consumption of Liquefied Petroleum Gases by agricultural activities,3506817415859,kJ,CH4,5.0,kg/TJ,17534087079299,kg
+28ae2526-5f80-31fb-b533-aa2cda93b314,BEN,I.5.1,Argentina,AR,annual,2018,fuel consumption of Liquefied Petroleum Gases by agricultural activities,3506817415859,kJ,N2O,0.1,kg/TJ,350681741586,kg
+889e84ac-cdbd-3b4e-8530-bdb365a4bbfd,BEN,I.3.1,Argentina,AR,annual,2018,fuel consumption of Wood/Wood Waste by industrial buildings,3839058324766,kJ,CO2,112000.0,kg/TJ,429974532373797824,kg
+b9c4ca73-fd06-34da-a507-bc895cf1d190,BEN,I.3.1,Argentina,AR,annual,2018,fuel consumption of Wood/Wood Waste by industrial buildings,3839058324766,kJ,CH4,30.0,kg/TJ,115171749742981,kg
+1fd3ea82-8085-353d-b52f-bb49473716cf,BEN,I.3.1,Argentina,AR,annual,2018,fuel consumption of Wood/Wood Waste by industrial buildings,3839058324766,kJ,N2O,4.0,kg/TJ,15356233299064,kg
+500365d8-2941-3a75-84f8-d918ad5c56ae,BEN,I.3.1,Argentina,AR,annual,2018,fuel consumption of Liquefied Petroleum Gases by industrial buildings,7714998314891,kJ,CO2,63100.0,kg/TJ,486816393669685056,kg
+08be1053-1758-3b37-9891-e488c744c672,BEN,I.3.1,Argentina,AR,annual,2018,fuel consumption of Liquefied Petroleum Gases by industrial buildings,7714998314891,kJ,CH4,1.0,kg/TJ,7714998314891,kg
+efe7dcb2-b734-33b0-9d3d-d92f5648d6cb,BEN,I.3.1,Argentina,AR,annual,2018,fuel consumption of Liquefied Petroleum Gases by industrial buildings,7714998314891,kJ,N2O,0.1,kg/TJ,771499831489,kg
+72c4c62b-1db2-3f44-b56f-8f1862224f8a,BEN,I.1.1,Argentina,AR,annual,2019,fuel consumption of Wood/Wood Waste by residential buildings,3847111857705,kJ,CO2,0.0,kg/TJ,0,kg
+0679ec1d-e68c-3ae1-bc92-f13afb4dcf21,BEN,I.1.1,Argentina,AR,annual,2019,fuel consumption of Wood/Wood Waste by residential buildings,3847111857705,kJ,CH4,300.0,kg/TJ,1154133557311723,kg
+11fbfffb-c838-3b11-8cad-3934aebbb8f1,BEN,I.1.1,Argentina,AR,annual,2019,fuel consumption of Wood/Wood Waste by residential buildings,3847111857705,kJ,N2O,4.0,kg/TJ,15388447430822,kg
+fcaebfc7-e37f-34c4-ae40-b67910ba582b,BEN,I.1.1,Argentina,AR,annual,2019,fuel consumption of Liquefied Petroleum Gases by residential buildings,49888401552000,kJ,CO2,63100.0,kg/TJ,3147958137931200000,kg
+538fe6d2-2257-3e9f-a89a-b4d1526409d1,BEN,I.1.1,Argentina,AR,annual,2019,fuel consumption of Liquefied Petroleum Gases by residential buildings,49888401552000,kJ,CH4,5.0,kg/TJ,249442007760000,kg
+67d871f6-7147-355c-b137-0aec1265412e,BEN,I.1.1,Argentina,AR,annual,2019,fuel consumption of Liquefied Petroleum Gases by residential buildings,49888401552000,kJ,N2O,0.1,kg/TJ,4988840155200,kg
+e3c4ff73-a435-30e1-a9a9-fa0d6747e793,BEN,I.1.1,Argentina,AR,annual,2019,fuel consumption of Jet Kerosene by residential buildings,383554422719,kJ,CO2,71500.0,kg/TJ,27424141224479996,kg
+684d7689-136c-3830-86ed-9b315ecfc5bc,BEN,I.1.1,Argentina,AR,annual,2019,fuel consumption of Jet Kerosene by residential buildings,383554422719,kJ,CH4,10.0,kg/TJ,3835544227199,kg
+fb5b990f-93e0-3a39-aa23-337c81aad26d,BEN,I.1.1,Argentina,AR,annual,2019,fuel consumption of Jet Kerosene by residential buildings,383554422719,kJ,N2O,0.6,kg/TJ,230132653631,kg
+2dc7dcf2-916b-3533-9fdd-d10e40fc8190,BEN,I.1.1,Argentina,AR,annual,2019,fuel consumption of Charcoal by residential buildings,7226273011890,kJ,CO2,112000.0,kg/TJ,809342577331707008,kg
+7bb960a6-9bba-347c-9587-b4cbe997627e,BEN,I.1.1,Argentina,AR,annual,2019,fuel consumption of Charcoal by residential buildings,7226273011890,kJ,CH4,200.0,kg/TJ,1445254602378048,kg
+9f0d9091-78e5-347d-9f20-eb97cb624e76,BEN,I.1.1,Argentina,AR,annual,2019,fuel consumption of Charcoal by residential buildings,7226273011890,kJ,N2O,1.0,kg/TJ,7226273011890,kg
+c78212b6-544e-3381-9e4d-9218875f2f77,BEN,I.2.1,Argentina,AR,annual,2019,fuel consumption of Wood/Wood Waste by commercial buildings,1923555928852,kJ,CO2,112000.0,kg/TJ,215438264031521632,kg
+f35a30d9-b7bf-3fc1-8ad6-af98e959da4b,BEN,I.2.1,Argentina,AR,annual,2019,fuel consumption of Wood/Wood Waste by commercial buildings,1923555928852,kJ,CH4,300.0,kg/TJ,577066778655861,kg
+4cf1fce9-0f45-3069-b8d6-373e4bf1267c,BEN,I.2.1,Argentina,AR,annual,2019,fuel consumption of Wood/Wood Waste by commercial buildings,1923555928852,kJ,N2O,4.0,kg/TJ,7694223715411,kg
+b7921233-7b32-352b-adc9-bdbded459c12,BEN,I.2.1,Argentina,AR,annual,2019,fuel consumption of Liquefied Petroleum Gases by commercial buildings,8314733592000,kJ,CO2,63100.0,kg/TJ,524659689655200064,kg
+ebc08536-496d-3151-84d4-3c0d44aabec3,BEN,I.2.1,Argentina,AR,annual,2019,fuel consumption of Liquefied Petroleum Gases by commercial buildings,8314733592000,kJ,CH4,5.0,kg/TJ,41573667960000,kg
+34a46446-9bb2-3867-a2b1-01c55d9d5a19,BEN,I.2.1,Argentina,AR,annual,2019,fuel consumption of Liquefied Petroleum Gases by commercial buildings,8314733592000,kJ,N2O,0.1,kg/TJ,831473359200,kg
+a2395706-bc5a-3bc9-a248-c4cfb5594fef,BEN,I.2.1,Argentina,AR,annual,2019,fuel consumption of Charcoal by commercial buildings,4817515341260,kJ,CO2,112000.0,kg/TJ,539561718221138048,kg
+ebba22fd-c0cb-3b5d-8a05-2a32aaa30cda,BEN,I.2.1,Argentina,AR,annual,2019,fuel consumption of Charcoal by commercial buildings,4817515341260,kJ,CH4,200.0,kg/TJ,963503068252032,kg
+96c064bb-97bb-3ce2-8dd1-1d1853bc3a38,BEN,I.2.1,Argentina,AR,annual,2019,fuel consumption of Charcoal by commercial buildings,4817515341260,kJ,N2O,1.0,kg/TJ,4817515341260,kg
+65698d25-16d6-3892-b3ea-a4cf42b9aef2,BEN,I.5.1,Argentina,AR,annual,2019,fuel consumption of Liquefied Petroleum Gases by agricultural activities,3464472330000,kJ,CO2,63100.0,kg/TJ,218608204023000032,kg
+f1b2025d-db88-397c-b022-67022326e322,BEN,I.5.1,Argentina,AR,annual,2019,fuel consumption of Liquefied Petroleum Gases by agricultural activities,3464472330000,kJ,CH4,5.0,kg/TJ,17322361650000,kg
+dc6e741f-7290-388a-88fe-0acdea951c72,BEN,I.5.1,Argentina,AR,annual,2019,fuel consumption of Liquefied Petroleum Gases by agricultural activities,3464472330000,kJ,N2O,0.1,kg/TJ,346447233000,kg
+67a999c2-c0f7-35d8-a6f7-394ce64e3d46,BEN,I.3.1,Argentina,AR,annual,2019,fuel consumption of Wood/Wood Waste by industrial buildings,3847111857705,kJ,CO2,112000.0,kg/TJ,430876528063043264,kg
+7ddce7b9-8425-344d-beff-9d0034dc75ca,BEN,I.3.1,Argentina,AR,annual,2019,fuel consumption of Wood/Wood Waste by industrial buildings,3847111857705,kJ,CH4,30.0,kg/TJ,115413355731172,kg
+1d55c6b3-49e9-31e9-86f5-8a596660ef14,BEN,I.3.1,Argentina,AR,annual,2019,fuel consumption of Wood/Wood Waste by industrial buildings,3847111857705,kJ,N2O,4.0,kg/TJ,15388447430822,kg
+3ab3c41d-f481-3a6d-b5cc-9e805ee5dd17,BEN,I.3.1,Argentina,AR,annual,2019,fuel consumption of Liquefied Petroleum Gases by industrial buildings,7621839126000,kJ,CO2,63100.0,kg/TJ,480938048850600064,kg
+3402f0d9-63f9-39b4-8f59-baf690c3a2f1,BEN,I.3.1,Argentina,AR,annual,2019,fuel consumption of Liquefied Petroleum Gases by industrial buildings,7621839126000,kJ,CH4,1.0,kg/TJ,7621839126000,kg
+1a1633b2-0be9-3117-9d33-58f53bd2107e,BEN,I.3.1,Argentina,AR,annual,2019,fuel consumption of Liquefied Petroleum Gases by industrial buildings,7621839126000,kJ,N2O,0.1,kg/TJ,762183912600,kg

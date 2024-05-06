@@ -5,7 +5,7 @@ CREATE TEMP TABLE IF NOT EXISTS ENARGAS_staging (LIKE regionwide_emissions INCLU
 TRUNCATE ENARGAS_staging;
 
 -- Load the staging table from the downloaded file
-\copy ENARGAS_staging ("GPC_refno",activity_name,activity_units,activity_value,emission_factor_units,emission_factor_value,emissions_units,emissions_value,gas_name,id,region_name,region_code,source_name,temporal_granularity,year) FROM '/Users/maureenfonseca/Documents/OEF/Cities/CityCatalyst/global-api/importer/argentinian_datasets/ENARGAS/processed_enargas_gas_consumption_AR.csv' WITH (FORMAT CSV, HEADER);
+\copy ENARGAS_staging ("GPC_refno",activity_name,activity_units,activity_value,emission_factor_units,emission_factor_value,emissions_units,emissions_value,gas_name,id,region_name,region_code,source_name,temporal_granularity,year) FROM 'processed_enargas_gas_consumption_AR.csv' WITH (FORMAT CSV, HEADER);
 
 -- Update the main table with the staging table
 INSERT INTO regionwide_emissions ("GPC_refno",activity_name,activity_units,activity_value,emission_factor_units,emission_factor_value,emissions_units,emissions_value,gas_name,id,region_name,region_code,source_name,temporal_granularity,year)

@@ -295,6 +295,7 @@ function SetupStep({
                   })}
                   autoComplete="off"
                   onKeyUp={() => setOnInputClicked(true)}
+                  onFocus={() => setOnInputClicked(true)}
                 />
                 <InputRightElement>
                   {isCityNew && (

@@ -5,12 +5,12 @@ from sqlalchemy import text, and_
 import json
 from models.osm import Osm
 from decimal import Decimal
-from shapely.geometry import Point, shape
+from shapely.geometry import Point, shape, Polygon, MultiPolygon
 from shapely.wkt import loads
-import pyproj
 from functools import partial
 from shapely.ops import transform
 import math
+from pyproj import Transformer
 
 api_router = APIRouter(prefix="/api/v0")
 
@@ -43,18 +43,31 @@ def epsg_code(polygon):
 
     return code
 
+def transform_geometry(geometry, transformer):
+    if isinstance(geometry, Polygon):
+        transformed_polygon = []
+        for lat, lon in geometry.exterior.coords:
+            x, y = transformer.transform(lon, lat)
+            transformed_polygon.append((x, y))
+        return Polygon(transformed_polygon)
+    elif isinstance(geometry, MultiPolygon):
+        transformed_polygons = []
+        for polygon in geometry.geoms:
+            transformed_polygon = transform_geometry(polygon, transformer)
+            transformed_polygons.append(transformed_polygon)
+        return MultiPolygon(transformed_polygons)
+    else:
+        raise ValueError("Unsupported geometry type")
+
 def get_area(geometry):
     polygon = loads(geometry)
-    code = epsg_code(polygon)
 
-    proj = partial(
-        pyproj.transform,
-        pyproj.Proj("epsg:4326"), # lat/lon
-        pyproj.Proj(f'epsg:{code}')
-    )
+    transformer = Transformer.from_crs("epsg:4326", f'epsg:5070')
 
-    utm_polygon = transform(proj, polygon)
+    utm_polygon = transform_geometry(polygon, transformer)
+
     area = utm_polygon.area / 10.0**6 # in km^2
+
     return area
 
 @api_router.get("/cityboundary/city/{locode}")

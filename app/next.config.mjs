@@ -8,7 +8,7 @@ const packageInfo = JSON.parse(packageJson);
 
 const nextConfig = {
   experimental: {
-    serverComponentsExternalPackages: ["sequelize"],
+    serverComponentsExternalPackages: ["sequelize", "pino-loki"],
   },
   env: {
     APP_VERSION: packageInfo.version,

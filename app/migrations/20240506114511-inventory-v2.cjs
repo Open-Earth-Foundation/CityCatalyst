@@ -63,25 +63,6 @@ module.exports = {
         Sequelize.UUID,
         { transaction },
       );
-      await queryInterface.addColumn(
-        "EmissionsFactor",
-        "region",
-        Sequelize.CHAR(10),
-        { transaction },
-      );
-      await queryInterface.addColumn(
-        "EmissionsFactor",
-        "year",
-        Sequelize.INTEGER,
-        { transaction },
-      );
-      await queryInterface.addColumn(
-        "EmissionsFactor",
-        "reference",
-        Sequelize.TEXT,
-        { transaction },
-      );
-
       await queryInterface.addConstraint("EmissionsFactor", {
         type: "foreign key",
         name: "FK_EmissionsFactor_methodology_id",

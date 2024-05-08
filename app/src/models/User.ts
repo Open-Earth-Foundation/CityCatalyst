@@ -1,7 +1,9 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
-import type { City, CityId } from "./City";
+import type { CityInvite, CityInviteId } from "./CityInvite";
+import type { CityUser, CityUserId } from "./CityUser";
 import type { Inventory, InventoryId } from "./Inventory";
+import type { UserFile, UserFileId } from "./UserFile";
 
 export interface UserAttributes {
   userId: string;
@@ -10,10 +12,9 @@ export interface UserAttributes {
   email?: string;
   passwordHash?: string;
   role?: string;
-  defaultInventoryId?: string;
   created?: Date;
   lastUpdated?: Date;
-  organizationId?: string;
+  defaultInventoryId?: string;
 }
 
 export type UserPk = "userId";
@@ -24,10 +25,9 @@ export type UserOptionalAttributes =
   | "email"
   | "passwordHash"
   | "role"
-  | "defaultInventoryId"
   | "created"
   | "lastUpdated"
-  | "organizationId";
+  | "defaultInventoryId";
 export type UserCreationAttributes = Optional<
   UserAttributes,
   UserOptionalAttributes
@@ -43,33 +43,87 @@ export class User
   email?: string;
   passwordHash?: string;
   role?: string;
-  defaultInventoryId?: string;
   created?: Date;
   lastUpdated?: Date;
+  defaultInventoryId?: string;
 
-  // User belongsToMany City via CityId
-  cities!: City[];
-  getCities!: Sequelize.BelongsToManyGetAssociationsMixin<City>;
-  setCities!: Sequelize.BelongsToManySetAssociationsMixin<City, CityId>;
-  addCity!: Sequelize.BelongsToManyAddAssociationMixin<City, CityId>;
-  addCities!: Sequelize.BelongsToManyAddAssociationsMixin<City, CityId>;
-  createCity!: Sequelize.BelongsToManyCreateAssociationMixin<City>;
-  removeCity!: Sequelize.BelongsToManyRemoveAssociationMixin<
-    City,
-    CityId
-  >;
-  removeCities!: Sequelize.BelongsToManyRemoveAssociationsMixin<
-    City,
-    CityId
-  >;
-  hasCity!: Sequelize.BelongsToManyHasAssociationMixin<City, CityId>;
-  hasCities!: Sequelize.BelongsToManyHasAssociationsMixin<City, CityId>;
-  countCities!: Sequelize.BelongsToManyCountAssociationsMixin;
   // User belongsTo Inventory via defaultInventoryId
   defaultInventory!: Inventory;
   getDefaultInventory!: Sequelize.BelongsToGetAssociationMixin<Inventory>;
-  setDefaultInventory!: Sequelize.BelongsToSetAssociationMixin<Inventory, InventoryId>;
+  setDefaultInventory!: Sequelize.BelongsToSetAssociationMixin<
+    Inventory,
+    InventoryId
+  >;
   createDefaultInventory!: Sequelize.BelongsToCreateAssociationMixin<Inventory>;
+  // User hasMany CityInvite via invitingUserId
+  cityInvites!: CityInvite[];
+  getCityInvites!: Sequelize.HasManyGetAssociationsMixin<CityInvite>;
+  setCityInvites!: Sequelize.HasManySetAssociationsMixin<
+    CityInvite,
+    CityInviteId
+  >;
+  addCityInvite!: Sequelize.HasManyAddAssociationMixin<
+    CityInvite,
+    CityInviteId
+  >;
+  addCityInvites!: Sequelize.HasManyAddAssociationsMixin<
+    CityInvite,
+    CityInviteId
+  >;
+  createCityInvite!: Sequelize.HasManyCreateAssociationMixin<CityInvite>;
+  removeCityInvite!: Sequelize.HasManyRemoveAssociationMixin<
+    CityInvite,
+    CityInviteId
+  >;
+  removeCityInvites!: Sequelize.HasManyRemoveAssociationsMixin<
+    CityInvite,
+    CityInviteId
+  >;
+  hasCityInvite!: Sequelize.HasManyHasAssociationMixin<
+    CityInvite,
+    CityInviteId
+  >;
+  hasCityInvites!: Sequelize.HasManyHasAssociationsMixin<
+    CityInvite,
+    CityInviteId
+  >;
+  countCityInvites!: Sequelize.HasManyCountAssociationsMixin;
+  // User hasMany CityUser via userId
+  cityUsers!: CityUser[];
+  getCityUsers!: Sequelize.HasManyGetAssociationsMixin<CityUser>;
+  setCityUsers!: Sequelize.HasManySetAssociationsMixin<CityUser, CityUserId>;
+  addCityUser!: Sequelize.HasManyAddAssociationMixin<CityUser, CityUserId>;
+  addCityUsers!: Sequelize.HasManyAddAssociationsMixin<CityUser, CityUserId>;
+  createCityUser!: Sequelize.HasManyCreateAssociationMixin<CityUser>;
+  removeCityUser!: Sequelize.HasManyRemoveAssociationMixin<
+    CityUser,
+    CityUserId
+  >;
+  removeCityUsers!: Sequelize.HasManyRemoveAssociationsMixin<
+    CityUser,
+    CityUserId
+  >;
+  hasCityUser!: Sequelize.HasManyHasAssociationMixin<CityUser, CityUserId>;
+  hasCityUsers!: Sequelize.HasManyHasAssociationsMixin<CityUser, CityUserId>;
+  countCityUsers!: Sequelize.HasManyCountAssociationsMixin;
+  // User hasMany UserFile via userId
+  userFiles!: UserFile[];
+  getUserFiles!: Sequelize.HasManyGetAssociationsMixin<UserFile>;
+  setUserFiles!: Sequelize.HasManySetAssociationsMixin<UserFile, UserFileId>;
+  addUserFile!: Sequelize.HasManyAddAssociationMixin<UserFile, UserFileId>;
+  addUserFiles!: Sequelize.HasManyAddAssociationsMixin<UserFile, UserFileId>;
+  createUserFile!: Sequelize.HasManyCreateAssociationMixin<UserFile>;
+  removeUserFile!: Sequelize.HasManyRemoveAssociationMixin<
+    UserFile,
+    UserFileId
+  >;
+  removeUserFiles!: Sequelize.HasManyRemoveAssociationsMixin<
+    UserFile,
+    UserFileId
+  >;
+  hasUserFile!: Sequelize.HasManyHasAssociationMixin<UserFile, UserFileId>;
+  hasUserFiles!: Sequelize.HasManyHasAssociationsMixin<UserFile, UserFileId>;
+  countUserFiles!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof User {
     return User.init(
@@ -106,6 +160,10 @@ export class User
         defaultInventoryId: {
           type: DataTypes.UUID,
           allowNull: true,
+          references: {
+            model: "Inventory",
+            key: "inventory_id",
+          },
           field: "default_inventory_id",
         },
       },

@@ -1,5 +1,6 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
+import type { GasValue, GasValueId } from './GasValue';
 import type { InventoryValue, InventoryValueId } from './InventoryValue';
 
 export interface ActivityValueAttributes {
@@ -24,6 +25,18 @@ export class ActivityValue extends Model<ActivityValueAttributes, ActivityValueC
   created?: Date;
   lastUpdated?: Date;
 
+  // ActivityValue hasMany GasValue via activityValueId
+  gasValues!: GasValue[];
+  getGasValues!: Sequelize.HasManyGetAssociationsMixin<GasValue>;
+  setGasValues!: Sequelize.HasManySetAssociationsMixin<GasValue, GasValueId>;
+  addGasValue!: Sequelize.HasManyAddAssociationMixin<GasValue, GasValueId>;
+  addGasValues!: Sequelize.HasManyAddAssociationsMixin<GasValue, GasValueId>;
+  createGasValue!: Sequelize.HasManyCreateAssociationMixin<GasValue>;
+  removeGasValue!: Sequelize.HasManyRemoveAssociationMixin<GasValue, GasValueId>;
+  removeGasValues!: Sequelize.HasManyRemoveAssociationsMixin<GasValue, GasValueId>;
+  hasGasValue!: Sequelize.HasManyHasAssociationMixin<GasValue, GasValueId>;
+  hasGasValues!: Sequelize.HasManyHasAssociationsMixin<GasValue, GasValueId>;
+  countGasValues!: Sequelize.HasManyCountAssociationsMixin;
   // ActivityValue belongsTo InventoryValue via inventoryValueId
   inventoryValue!: InventoryValue;
   getInventoryValue!: Sequelize.BelongsToGetAssociationMixin<InventoryValue>;

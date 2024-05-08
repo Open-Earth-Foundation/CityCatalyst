@@ -285,28 +285,12 @@ export function initModels(sequelize: Sequelize) {
     as: "gasValues",
     foreignKey: "activityValueId",
   });
-  GasValue.belongsTo(EmissionsFactor, {
-    as: "emissionsFactor",
-    foreignKey: "emissionsFactorId",
-  });
-  EmissionsFactor.hasMany(GasValue, {
-    as: "gasValues",
-    foreignKey: "emissionsFactorId",
-  });
   ActivityValue.belongsTo(InventoryValue, {
     as: "inventoryValue",
     foreignKey: "inventoryValueId",
   });
   InventoryValue.hasMany(ActivityValue, {
     as: "activityValues",
-    foreignKey: "inventoryValueId",
-  });
-  GasValue.belongsTo(InventoryValue, {
-    as: "inventoryValue",
-    foreignKey: "inventoryValueId",
-  });
-  InventoryValue.hasMany(GasValue, {
-    as: "gasValues",
     foreignKey: "inventoryValueId",
   });
   DataSource.belongsToMany(EmissionsFactor, {

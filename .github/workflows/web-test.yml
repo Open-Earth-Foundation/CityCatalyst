@@ -133,7 +133,7 @@ jobs:
             "DEFAULT_ADMIN_PASSWORD=${{secrets.DEFAULT_ADMIN_PASSWORD}}" \
             "HOST=https://citycatalyst-test.openearth.dev" \
             "NEXTAUTH_URL=https://citycatalyst-test.openearth.dev" \
-            "GLOBAL_API_URL=https://ccglobaltest.openearth.dev" \
+            "GLOBAL_API_URL=https://ccglobal-test.openearth.dev" \
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "OPENCLIMATE_API_URL=https://openclimate.openearth.dev"
 

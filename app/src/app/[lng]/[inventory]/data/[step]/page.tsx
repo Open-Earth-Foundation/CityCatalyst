@@ -31,6 +31,9 @@ import {
 } from "@chakra-ui/icons";
 import {
   Box,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
   Button,
   Card,
   Center,
@@ -473,18 +476,22 @@ export default function AddDataSteps({
     (sector) => sector.sectorName === currentStep.title,
   );
 
-  const [deleteUserFile, {isLoading}] = api.useDeleteUserFileMutation()
+  const [deleteUserFile, { isLoading }] = api.useDeleteUserFileMutation();
 
-  function removeSectorFile(fileId: string, sectorName: string, cityId: string) {
-    deleteUserFile({fileId, cityId}).then((res:any)=> {
-      if(res.error){
+  function removeSectorFile(
+    fileId: string,
+    sectorName: string,
+    cityId: string,
+  ) {
+    deleteUserFile({ fileId, cityId }).then((res: any) => {
+      if (res.error) {
         toast({
           title: t("file-deletion-error"),
           description: t("file-deletion-error-description"),
           status: "error",
           duration: 2000,
         });
-      }else {
+      } else {
         toast({
           title: t("file-deletion-success"),
           description: t("file-deletion-success"),
@@ -499,9 +506,7 @@ export default function AddDataSteps({
           }),
         );
       }
-    })
-
-    
+    });
   }
 
   const [buttonText, setButtonText] = useState<string>(t("data-connected"));
@@ -581,13 +586,41 @@ export default function AddDataSteps({
 
   return (
     <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
-      <Button
-        variant="ghost"
-        leftIcon={<ArrowBackIcon boxSize={6} />}
-        onClick={() => router.back()}
-      >
-        {t("go-back")}
-      </Button>
+      <Box w="full" display="flex" alignItems="center" gap="16px">
+        <Button
+          variant="ghost"
+          leftIcon={<ArrowBackIcon boxSize={6} />}
+          onClick={() => router.back()}
+        >
+          {t("go-back")}
+        </Button>
+        <Box borderRightWidth="1px" borderColor="border.neutral" h="24px" />
+        <Box>
+          <Breadcrumb
+            spacing="8px"
+            fontFamily="heading"
+            fontWeight="bold"
+            letterSpacing="widest"
+            textTransform="uppercase"
+            separator={<ChevronRightIcon color="gray.500" h="24px" />}
+          >
+            <BreadcrumbItem>
+              <BreadcrumbLink
+                href={`/${inventory}/data`}
+                color="content.tertiary"
+              >
+                ALL SECTORS
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+
+            <BreadcrumbItem>
+              <BreadcrumbLink href="#" color="content.link">
+                {currentStep.title}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+          </Breadcrumb>
+        </Box>
+      </Box>
       <div className="w-full flex md:justify-center mb-8">
         <div className="lg:w-[900px] max-w-full">
           <WizardSteps
@@ -994,7 +1027,7 @@ export default function AddDataSteps({
                                   removeSectorFile(
                                     file.fileId,
                                     sectorData[0].sectorName,
-                                    file.cityId
+                                    file.cityId,
                                   )
                                 }
                               >

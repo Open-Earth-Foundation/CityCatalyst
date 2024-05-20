@@ -621,15 +621,7 @@ export default function AddDataSteps({
           </Breadcrumb>
         </Box>
       </Box>
-      <div className="w-full flex md:justify-center mb-8">
-        <div className="lg:w-[900px] max-w-full">
-          <WizardSteps
-            currentStep={activeStep}
-            steps={steps}
-            onSelect={onStepSelected}
-          />
-        </div>
-      </div>
+
       {/*** Sector summary section ***/}
       <Card mb={12}>
         <Flex direction="row">

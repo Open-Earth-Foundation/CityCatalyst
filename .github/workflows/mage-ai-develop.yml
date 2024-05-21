@@ -8,7 +8,7 @@ on:
       - global-api/importer-mage/**
       - charts/mage-ai/**
       - .github/workflows/mage-ai-develop.yml
-    branches: ["mage-setup"]
+    branches: ["develop"]
   pull_request:
     paths:
       - global-api/importer-mage/**
@@ -44,28 +44,28 @@ jobs:
   # deployToEKS:
   #   runs-on: ubuntu-latest
 
-  #   env:
-  #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
-  #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
-  #     EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
-  #     AWS_REGION: us-east-1             
-  #     NAMESPACE: default                   
-  #     HELM_REPO_NAME: mageai                
-  #     HELM_CHART_NAME: mageai
-  #     HELM_RELEASE_NAME: mageai
+    # env:
+    #   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
+    #   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
+    #   EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
+    #   AWS_REGION: us-east-1             
+    #   NAMESPACE: default                   
+    #   HELM_REPO_NAME: mageai                
+    #   HELM_CHART_NAME: mageai
+    #   HELM_RELEASE_NAME: mageai
     
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
+    # steps:
+    #   - name: Checkout code
+    #     uses: actions/checkout@v4
 
-  #     - name: Creating kubeconfig file
-  #       run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region $AWS_REGION
+    #   - name: Creating kubeconfig file
+    #     run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region $AWS_REGION
 
-  #     - name: Testing connection to EKS
-  #       run: kubectl get pods -n default
+    #   - name: Testing connection to EKS
+    #     run: kubectl get pods -n default
 
-  #     - name: Add Helm repository
-  #       run: helm repo add $HELM_REPO_NAME https://mage-ai.github.io/helm-charts
+    #   - name: Add Helm repository
+    #     run: helm repo add $HELM_REPO_NAME https://mage-ai.github.io/helm-charts
 
-  #     - name: Install Helm chart
-  #       run: helm install $HELM_RELEASE_NAME $HELM_REPO_NAME/$HELM_CHART_NAME --namespace $NAMESPACE -f charts/mage-ai/values.yml
+    #   - name: Install Helm chart
+    #     run: helm install $HELM_RELEASE_NAME $HELM_REPO_NAME/$HELM_CHART_NAME --namespace $NAMESPACE -f charts/mage-ai/values.yml

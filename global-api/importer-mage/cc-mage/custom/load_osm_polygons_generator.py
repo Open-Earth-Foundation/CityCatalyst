@@ -34,6 +34,7 @@ def csv_generator(url, country_code=None):
     if country_code:
         #df = df[df['locode']=='US PVK']
         df = df[df['locode'].str[:2] == country_code]
+        
     for index, row in df.iterrows():
         yield process_record(row.to_dict())
 

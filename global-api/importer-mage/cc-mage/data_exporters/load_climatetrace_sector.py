@@ -36,7 +36,7 @@ def export_data_to_postgres(df: DataFrame, **kwargs) -> None:
                 'temporal_granularity', 'activity', 'activity_units', 'emissions_factor', 
                 'emissions_factor_units', 'capacity', 'capacity_units', 'capacity_factor'
             ]
-            dtype_map = {'source_type': 'VARCHAR'}
+            dtype_map = {'source_type': 'VARCHAR', 'capacity': 'integer'}
 
             with Postgres.with_config(ConfigFileLoader(config_path, config_profile)) as loader:
                 for chunk in reader:

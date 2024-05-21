@@ -22,11 +22,11 @@ SELECT * FROM (
     ('REF_TRF', 'Oil refineries and Transformation industry', '1A1b+1A1c+1A5b1+1B1b+1B2a5+1B2a6+1B2b5+2C1b', '1A1b+1A1ci+1A1cii+1A5biii+1B1b+1B2aiii6+1B2biii3+1B1c', NULL),
     ('SWD_INC', 'Solid waste incineration', '6C+6Dhaz', '4C','III.3.1 + III.3.2'),
     ('SWD_LDF', 'Solid waste landfills', '6A+6Dcom', '4A+4B', NULL),
-    ('TNR_Aviation_CDS', 'Aviation climbing and descent', '1A3a_CDS', '1A3a_CDS', 'II.4.1'),
-    ('TNR_Aviation_CRS', 'Aviation cruise', '1A3a_CRS', '1A3a_CRS', 'II.4.1'),
-    ('TNR_Aviation_LTO', 'Aviation landing&takeoff', '1A3a_LTO', '1A3a_LTO', 'II.4.1'),
+    ('TNR_Aviation_CDS', 'Aviation climbing and descent', '1A3a_CDS', '1A3a_CDS', 'II.4.3'),
+    ('TNR_Aviation_CRS', 'Aviation cruise', '1A3a_CRS', '1A3a_CRS', 'II.4.3'),
+    ('TNR_Aviation_LTO', 'Aviation landing&takeoff', '1A3a_LTO', '1A3a_LTO', 'II.4.3'),
     ('TNR_Other', 'Railways, pipelines, off-road transport', '1A3c+1A3e', '1A3c+1A3e', NULL),
-    ('TNR_Ship', 'Shipping', '1A3d+1C2', '1A3d', 'II.3.1'),
+    ('TNR_Ship', 'Shipping', '1A3d+1C2', '1A3d', 'II.3.3'),
     ('TRO', 'Road transportation', '1A3b', '1A3b', 'II.1.1'),
     ('WWT', 'Waste water handling', '6B', '4D', 'III.4.1 + III.4.2')
 ) AS edgar_sectors (edgar_sector, edgar_description, IPCC_1996_code, IPCC_2006_code, gpc_refno);

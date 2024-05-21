@@ -1,24 +1,27 @@
-INSERT INTO raw_data.osm_polygon
-SELECT DISTINCT *
-FROM raw_data.osm_polygon_staging_delta
-ON CONFLICT (locode) DO UPDATE SET 
-    geometry = EXCLUDED.geometry, 
-    bbox_north = EXCLUDED.bbox_north, 
-    bbox_south = EXCLUDED.bbox_south, 
-    bbox_east = EXCLUDED.bbox_east, 
-    bbox_west = EXCLUDED.bbox_west, 
-    place_id = EXCLUDED.place_id, 
-    osm_type = EXCLUDED.osm_type, 
-    osm_id = EXCLUDED.osm_id, 
-    lat = EXCLUDED.lat, 
-    lon = EXCLUDED.lon, 
-    _class = EXCLUDED._class, 
-    _type = EXCLUDED._type, 
-    place_rank = EXCLUDED.place_rank, 
-    importance = EXCLUDED.importance, 
-    addresstype = EXCLUDED.addresstype, 
-    _name = EXCLUDED._name, 
-    display_name = EXCLUDED.display_name,
-    osmid = EXCLUDED.osmid;
+DELETE FROM raw_data.osm_polygon
+WHERE locode IN (SELECT locode FROM raw_data.osm_polygon_staging_delta);
 
-    DROP TABLE raw_data.osm_polygon_staging_delta;
+INSERT INTO raw_data.osm_polygon
+SELECT 	DISTINCT locode,
+		osmid,
+		ST_GeomFromText(geometry) as geometry,
+		ST_SetSRID(ST_GeomFromText(geometry), 4326)  AS geometry_type, 
+		cast(bbox_north as numeric) as bbox_north,
+		cast(bbox_south as numeric) as bbox_south,
+		cast(bbox_east as numeric) as bbox_east,
+		cast(bbox_west as numeric) as bbox_west,
+		cast(place_id as numeric) as place_id,
+		osm_type,
+		cast(osm_id as numeric) osm_id,
+		cast(lat as DOUBLE PRECISION) as lat,
+		cast(lon as DOUBLE PRECISION) as lon,
+		"_class" as geom_class,
+		"_type" as geom_type,
+		cast(place_rank as int) as place_rank,
+		importance,
+		addresstype,
+		"_name" as geom_name,
+		display_name
+FROM 	raw_data.osm_polygon_staging_delta;
+
+DROP TABLE raw_data.osm_polygon_staging_delta;

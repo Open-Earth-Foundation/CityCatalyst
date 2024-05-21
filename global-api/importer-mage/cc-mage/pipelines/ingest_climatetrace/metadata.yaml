@@ -25,12 +25,12 @@ blocks:
   language: python
   name: load_climatetrace_files
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: data_loader
   upstream_blocks: []
   uuid: load_climatetrace_files
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: null
   configuration: {}
   downstream_blocks:
@@ -41,7 +41,7 @@ blocks:
   language: python
   name: load_climatetrace_sector
   retry_config: null
-  status: updated
+  status: failed
   timeout: null
   type: data_exporter
   upstream_blocks:
@@ -65,7 +65,7 @@ blocks:
   language: sql
   name: load_climatetrace_gpc_sector
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: data_loader
   upstream_blocks: []
@@ -117,6 +117,6 @@ tags: []
 type: python
 uuid: ingest_climatetrace
 variables:
-  climatetrace_sector: transportation
+  climatetrace_sector: waste
 variables_dir: /home/src/mage_data/cc-mage
 widgets: []

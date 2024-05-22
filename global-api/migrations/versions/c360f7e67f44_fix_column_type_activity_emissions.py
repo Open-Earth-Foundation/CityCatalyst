@@ -21,16 +21,19 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     op.alter_column('country_code', 'activity_value',
                     existing_type=sa.String(),
-                    type_=sa.Float)
+                    type_=sa.Float(),
+                    postgresql_using='activity_value::double precision')
     op.alter_column('country_code', 'emissions_value',
                     existing_type=sa.String(),
-                    type_=sa.Float)
-
+                    type_=sa.Float(),
+                    postgresql_using='emissions_value::double precision')
 
 def downgrade() -> None:
     op.alter_column('country_code', 'activity_value',
-                    existing_type=sa.Float,
-                    type_=sa.String())
+                    existing_type=sa.Float(),
+                    type_=sa.String(),
+                    postgresql_using='activity_value::text')
     op.alter_column('country_code', 'emissions_value',
-                    existing_type=sa.Float,
-                    type_=sa.String())
+                    existing_type=sa.Float(),
+                    type_=sa.String(),
+                    postgresql_using='emissions_value::text')

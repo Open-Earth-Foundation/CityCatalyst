@@ -165,9 +165,9 @@ if __name__ == "__main__":
             # units conversion
             # from IEA: 1 tep = 41.868 GJ = 39.68 MBtu = 11.63 MWh
             # raw data: miles de TEP 
-            TEP_to_kJ = 41.868 * 1e6
-            df.loc[:, 'activity_value'] *= 1000
-            df.loc[:, 'activity_value'] *= TEP_to_kJ
+            df.loc[:, 'activity_value'] *= 1000     #miles of TEP to TEP
+            df.loc[:, 'activity_value'] *= 41.868   # TEP to GJ
+            df.loc[:, 'activity_value'] *= 1e-3     # GJ to TJ
 
             # merge with EF dataframe
             df = pd.merge(df, ef_df, on=['GPC_refno', 'fuel_type'])

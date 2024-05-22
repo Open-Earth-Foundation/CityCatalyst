@@ -6,7 +6,7 @@ flake8==7.0.0
 fsspec==2024.*
 geopandas==0.14.4
 mypy==1.10.0
-osmnx==1.9.2
+osmnx==1.9.3
 pandas==2.2.2
 psycopg2-binary==2.9.9
 pydantic-settings==2.*

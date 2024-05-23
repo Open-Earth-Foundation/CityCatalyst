@@ -1,10 +1,6 @@
 import { ExcelFileIcon } from "@/components/icons";
-import { CityAttributes } from "@/models/City";
-import { UserAttributes } from "@/models/User";
-import { UserFileAttributes } from "@/models/UserFile";
 import { bytesToMB } from "@/util/helpers";
 import { UserFileResponse } from "@/util/types";
-import { Tag, TagLabel } from "@chakra-ui/react";
 import React from "react";
 import {
   Body,
@@ -128,11 +124,14 @@ export default function AdminNotificationTemplate({
 const tag = {
   padding: "6px",
   paddingLeft: "8px",
+  paddingRight: "8px",
   display: "flex",
   alignItems: "center",
   width: "150px",
-  overflow: "ellipsis",
+  whiteSpace: "nowrap",
   borderRadius: "30px",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
   background: "#e8eafb",
   color: "#2351dc",
   marginRight: "8px",

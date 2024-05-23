@@ -57,7 +57,7 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: LoadBalancer
+  type: ClusterIP
   port: 6789
   # Annotations to add to the service
   annotations: {}
@@ -131,14 +131,14 @@ tolerations: []
 
 affinity: {}
 
-extraVolumeMounts:
-  - name: mage-fs
-    mountPath: /home/src
+# extraVolumeMounts:
+#   - name: mage-fs
+#     mountPath: /home/src
 
 extraVolumes:
   - name: mage-fs
-    hostPath:
-      path: /path/to/mage_project
+    persistentVolumeClaim:
+      claimName: mage-fs-pvc
 
 # config: Default configuration for mageai as environment variables. These get injected directly in the container.
 config: {}

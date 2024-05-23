@@ -73,7 +73,7 @@ blocks:
   language: sql
   name: load_osm_polygons_delta
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: data_exporter
   upstream_blocks:

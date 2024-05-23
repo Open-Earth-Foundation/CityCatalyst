@@ -68,12 +68,12 @@ blocks:
   language: sql
   name: reference_edgar_sector_staging
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: transformer
   upstream_blocks: []
   uuid: reference_edgar_sector_staging
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: null
   configuration:
     data_provider: postgres

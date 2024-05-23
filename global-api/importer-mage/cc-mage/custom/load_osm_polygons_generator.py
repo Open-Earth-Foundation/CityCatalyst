@@ -52,13 +52,13 @@ def export_data_to_postgres(*args, **kwargs)-> None:
     with Postgres.with_config(ConfigFileLoader(config_path, config_profile)) as loader:
         for record in data_generator:
             schema_name = 'raw_data'
-            table_name = 'osm_polygon_staging'
+            table_name = 'osm_city_polygon_staging'
             # Export each DataFrame to PostgreSQL
             loader.export(
                 record,
                 schema_name,
                 table_name,
-                if_exists='append',  # Append each record to the table
+                if_exists='replace',  # Append each record to the table
                 index=False,
             )
             loader.commit()  # Commit after each export

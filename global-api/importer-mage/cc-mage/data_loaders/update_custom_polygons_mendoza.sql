@@ -11,7 +11,7 @@ FROM raw_data.custom_polygon_staging;
 
 DROP TABLE IF EXISTS raw_data.custom_polygon_staging;
 
-UPDATE raw_data.osm_polygon AS tgt
+UPDATE raw_data.osm_city_polygon AS tgt
 SET
     geometry = src.geometry,
     bbox_north = src.bbox_north,

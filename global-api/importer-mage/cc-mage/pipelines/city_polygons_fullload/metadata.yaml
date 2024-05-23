@@ -1,28 +1,5 @@
 blocks:
 - all_upstream_blocks_executed: true
-  color: blue
-  configuration:
-    data_provider: postgres
-    data_provider_profile: default
-    dbt: {}
-    disable_query_preprocessing: false
-    export_write_policy: append
-    limit: 1000
-    use_raw_sql: true
-  downstream_blocks:
-  - load_osm_polygons_generator
-  executor_config: null
-  executor_type: local_python
-  has_callback: false
-  language: sql
-  name: drop_table_raw_data_osm_polygons_staging
-  retry_config: null
-  status: executed
-  timeout: null
-  type: custom
-  upstream_blocks: []
-  uuid: drop_table_raw_data_osm_polygons_staging
-- all_upstream_blocks_executed: true
   color: yellow
   configuration: {}
   downstream_blocks:
@@ -33,13 +10,12 @@ blocks:
   language: python
   name: load_osm_polygons_generator
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: custom
-  upstream_blocks:
-  - drop_table_raw_data_osm_polygons_staging
+  upstream_blocks: []
   uuid: load_osm_polygons_generator
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: blue
   configuration:
     data_provider: postgres

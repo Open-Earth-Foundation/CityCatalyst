@@ -16,7 +16,7 @@ def load_data_from_postgres(*args, **kwargs):
 
     Docs: https://docs.mage.ai/design/data-loading#postgresql
     """
-    query = 'select distinct locode, osmid from raw_data.osm_polygon where osmid is not null'  # Specify your SQL query here
+    query = 'select distinct locode, osmid from raw_data.osm_city_polygon where osmid is not null'  # Specify your SQL query here
     config_path = path.join(get_repo_path(), 'io_config.yaml')
     config_profile = 'default'
 

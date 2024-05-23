@@ -49,7 +49,7 @@ blocks:
   language: sql
   name: update_custom_polygons_mendoza
   retry_config: null
-  status: executed
+  status: updated
   timeout: null
   type: data_loader
   upstream_blocks:

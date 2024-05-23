@@ -9,7 +9,7 @@ SELECT * FROM (
     ('ENE', 'Power industry', '1A1a', '1A1a', NULL),
     ('ENF', 'Enteric fermentation', '4A', '3A1', NULL),
     ('IDE', 'Indirect emissions from NOx and NH3', '7B+7C', '5A', NULL),
-    ('IND', 'Combustion for manufacturing', '1A2', '1A2', NULL),
+    ('IND', 'Combustion for manufacturing', '1A2', '1A2', 'I.3.1'),
     ('IRO', 'Iron and steel production', '2C1a+2C1c+2C1d+2C1e+2C1f+2C2', '2C1+2C2', NULL),
     ('MNM', 'Manure management', '4B', '3A2', NULL),
     ('N2O', 'Indirect N2O emissions from agriculture', '4D3', '3C5+3C6', NULL),

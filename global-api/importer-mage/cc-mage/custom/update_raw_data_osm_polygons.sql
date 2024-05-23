@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS raw_data.osm_polygon AS 
+CREATE TABLE IF NOT EXISTS raw_data.osm_city_polygon AS 
 SELECT 	locode,
 		osmid,
 		ST_SetSRID(ST_GeomFromText(geometry), 4326) as geometry,
@@ -15,20 +15,20 @@ SELECT 	locode,
 		"_class" as geom_class,
 		"_type" as geom_type,
 		cast(place_rank as int) as place_rank,
-		importance,
+		cast(importance as numeric) as importance,
 		addresstype,
 		"_name" as geom_name,
 		display_name
-FROM 	raw_data.osm_polygon_staging;
+FROM 	raw_data.osm_city_polygon_staging;
 
-DELETE FROM raw_data.osm_polygon
-WHERE locode IN (SELECT locode FROM raw_data.osm_polygon_staging);
+DELETE FROM raw_data.osm_city_polygon_staging
+WHERE locode IN (SELECT locode FROM raw_data.osm_city_polygon_staging);
 
-INSERT INTO raw_data.osm_polygon
+INSERT INTO raw_data.osm_city_polygon
 SELECT 	DISTINCT locode,
 		osmid,
-		ST_GeomFromText(geometry) as geometry,
-		ST_SetSRID(ST_GeomFromText(geometry), 4326)  AS geometry_type, 
+		ST_SetSRID(ST_GeomFromText(geometry), 4326) as geometry,
+		ST_GeometryType(ST_GeomFromText(geometry))  AS geometry_type, 
 		cast(bbox_north as numeric) as bbox_north,
 		cast(bbox_south as numeric) as bbox_south,
 		cast(bbox_east as numeric) as bbox_east,
@@ -41,16 +41,16 @@ SELECT 	DISTINCT locode,
 		"_class" as geom_class,
 		"_type" as geom_type,
 		cast(place_rank as int) as place_rank,
-		importance,
+		cast(importance as numeric) as importance,
 		addresstype,
 		"_name" as geom_name,
 		display_name
-FROM 	raw_data.osm_polygon_staging;
+FROM 	raw_data.osm_city_polygon_staging;
 
 CREATE INDEX IF NOT EXISTS osm_emission_i_poly
-ON raw_data.osm_polygon (geometry);
+ON raw_data.osm_city_polygon USING gist (geometry); -- Using GiST index for geometry
 
 CREATE INDEX IF NOT EXISTS osm_emission_i
-ON raw_data.osm_polygon (locode);
+ON raw_data.osm_city_polygon (locode);
 
-DROP TABLE IF EXISTS raw_data.osm_polygon_staging;
+DROP TABLE IF EXISTS raw_data.osm_city_polygon_staging;

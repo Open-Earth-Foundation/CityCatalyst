@@ -24,10 +24,10 @@ createdb ccglobal -O ccglobal
 
 #### Configuration
 
-Copy `sample.env` to `.env` and edit it to match your configuration.
+Copy `dev.env` to `.env` and edit it to match your configuration.
 
 ```bash
-cp sample.env .env
+cp dev.env .env
 ```
 
 #### Start Mage-ai

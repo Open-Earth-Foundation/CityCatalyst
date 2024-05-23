@@ -172,4 +172,4 @@ scratch*
 your-first-project
 
 # raw data 
-raw_data/*/extracted/*
+#raw_data/*/extracted/*

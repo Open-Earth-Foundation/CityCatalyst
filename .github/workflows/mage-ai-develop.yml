@@ -68,5 +68,5 @@ jobs:
       - name: Add Helm repository
         run: helm repo add $HELM_REPO_NAME https://mage-ai.github.io/helm-charts
 
-      - name: Install Helm chart
-        run: helm install $HELM_RELEASE_NAME $HELM_REPO_NAME/$HELM_CHART_NAME --namespace $NAMESPACE -f charts/mage-ai/values.yml
+      - name: Upgrade/Install Helm chart
+        run: helm upgrade --install $HELM_RELEASE_NAME $HELM_REPO_NAME/$HELM_CHART_NAME --namespace $NAMESPACE -f charts/mage-ai/values.yml

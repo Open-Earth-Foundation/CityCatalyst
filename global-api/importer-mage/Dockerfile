@@ -7,7 +7,7 @@ ARG USER_CODE_PATH=${MAGE_CODE_PATH}/${PROJECT_NAME}
 WORKDIR ${MAGE_CODE_PATH}
 
 COPY cc-mage cc-mage
-COPY raw_data raw_data
+#COPY raw_data raw_data
 
 # Set up for GDAL and netcdf
 # RUN apt-get update && \

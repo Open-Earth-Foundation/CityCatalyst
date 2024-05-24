@@ -24,6 +24,10 @@ FROM 	raw_data.osm_city_polygon_staging;
 DELETE FROM raw_data.osm_city_polygon_staging
 WHERE locode IN (SELECT locode FROM raw_data.osm_city_polygon_staging);
 
+-- Step 2: Drop indexes before insertion
+DROP INDEX IF EXISTS osm_emission_i_poly;
+DROP INDEX IF EXISTS osm_emission_i;
+
 INSERT INTO raw_data.osm_city_polygon
 SELECT 	DISTINCT locode,
 		osmid,

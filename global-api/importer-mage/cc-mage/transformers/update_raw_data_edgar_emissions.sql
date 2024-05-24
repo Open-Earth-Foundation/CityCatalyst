@@ -13,6 +13,10 @@ WHERE (emissions_description, emissions_substance, emissions_year) IN (
     FROM raw_data.edgar_attributes_staging
 );
 
+-- Step 2: Drop indexes before insertion
+DROP INDEX IF EXISTS edgar_emission_i;
+DROP INDEX IF EXISTS edgar_emission_i_poly;
+
 INSERT INTO raw_data.edgar_emissions
 SELECT  ST_SetSRID(ST_MakeEnvelope(lon - 0.05, lat - 0.05, lon + 0.05, lat + 0.05),  4326) AS geometry,
         e.lat, e.lon, e.emissions, a.lat_units, a.lon_units, a.emissions_substance, cast(a.emissions_year as int) as emissions_year, a.emissions_units, a.emissions_release, a.emissions_description, s.edgar_sector, s.ipcc_2006_code, s.gpc_refno

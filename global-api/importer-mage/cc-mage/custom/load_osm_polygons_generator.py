@@ -58,7 +58,7 @@ def export_data_to_postgres(*args, **kwargs)-> None:
                 record,
                 schema_name,
                 table_name,
-                if_exists='replace',  # Append each record to the table
+                if_exists='append',  # Append each record to the table
                 index=False,
             )
             loader.commit()  # Commit after each export

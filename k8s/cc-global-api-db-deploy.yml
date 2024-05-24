@@ -22,7 +22,6 @@ spec:
         - name: postgresql
           image: postgres:15
           imagePullPolicy: Always
-          command: ["bash", "-c", "apt-get update && apt-get install -y postgis postgresql-15-postgis-3"]
           resources:
             limits:
               memory: "1024Mi"

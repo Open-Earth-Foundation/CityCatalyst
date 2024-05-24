@@ -8,85 +8,85 @@ on:
       - global-api/importer-mage/**
       - charts/mage-ai/**
       - .github/workflows/mage-ai-develop.yml
-    branches: ["mage-setup"]
+    branches: ["develop"]
   pull_request:
     paths:
       - global-api/importer-mage/**
 
 jobs:
 
-  # pushToGHCR:
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       working-directory: ./global-api
-        
-  #   steps:
-  #     - uses: actions/checkout@v4
-
-  #     - name: Log in to the Container registry
-  #       uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
-  #       with:
-  #         registry: ghcr.io
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
-
-  #     - name: Push Docker image to GitHub Container Registry
-  #       env:
-  #         VERSION: ${{ github.sha }}
-  #         IMAGE: ghcr.io/open-earth-foundation/citycatalyst-mage-ai
-  #       run: |
-  #         docker build -t $IMAGE:$VERSION importer-mage/
-  #         docker tag $IMAGE:$VERSION $IMAGE:latest
-  #         docker push $IMAGE:$VERSION
-  #         docker push $IMAGE:latest
-          
-  deployToEKS:
+  pushToGHCR:
     runs-on: ubuntu-latest
-    #needs: pushToGHCR
-
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
-      EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
-      AWS_REGION: us-east-1             
-      NAMESPACE: default                   
-      HELM_REPO_NAME: mageai                
-      HELM_CHART_NAME: mageai
-      HELM_RELEASE_NAME: mageai
-      # POSTGRES_PORT: 5432
-      # POSTGRES_HOST: ${{ secrets.DB_DEV_HOST }}
-      # POSTGRES_DBNAME: ccglobal
-      # POSTGRES_PASSWORD: ${{ secrets.DB_DEV_PW }}
-      # POSTGRES_SCHEMA: public
-      # POSTGRES_USER: ccglobal
-    
+    defaults:
+      run:
+        working-directory: ./global-api
+        
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Creating kubeconfig file
-        run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region $AWS_REGION
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Testing connection to EKS
-        run: kubectl get pods -n default
+      - name: Push Docker image to GitHub Container Registry
+        env:
+          VERSION: ${{ github.sha }}
+          IMAGE: ghcr.io/open-earth-foundation/citycatalyst-mage-ai
+        run: |
+          docker build -t $IMAGE:$VERSION importer-mage/
+          docker tag $IMAGE:$VERSION $IMAGE:latest
+          docker push $IMAGE:$VERSION
+          docker push $IMAGE:latest
+          
+  # deployToEKS:
+  #   runs-on: ubuntu-latest
+  #   needs: pushToGHCR
 
-      - name: Add Helm repository
-        run: helm repo add $HELM_REPO_NAME https://mage-ai.github.io/helm-charts
+  #   env:
+  #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
+  #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
+  #     EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
+  #     AWS_REGION: us-east-1             
+  #     NAMESPACE: default                   
+  #     HELM_REPO_NAME: mageai                
+  #     HELM_CHART_NAME: mageai
+  #     HELM_RELEASE_NAME: mageai
+  #     # POSTGRES_PORT: 5432
+  #     # POSTGRES_HOST: ${{ secrets.DB_DEV_HOST }}
+  #     # POSTGRES_DBNAME:
+  #     # POSTGRES_PASSWORD: ${{ secrets.DB_DEV_PW }}
+  #     # POSTGRES_SCHEMA:
+  #     # POSTGRES_USER:
+    
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: testing connection to Helm
-        run: helm list
+  #     - name: Creating kubeconfig file
+  #       run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region $AWS_REGION
 
-      - name: Upgrade/Install Helm chart
-        run: helm upgrade --install $HELM_RELEASE_NAME $HELM_REPO_NAME/$HELM_CHART_NAME --namespace $NAMESPACE -f charts/mage-ai/values.yml
+  #     - name: Testing connection to EKS
+  #       run: kubectl get pods -n default
 
-      # - name: Upgrade/Install Helm chart
-      #   run: |
-      #     helm upgrade --install $HELM_RELEASE_NAME $HELM_REPO_NAME/$HELM_CHART_NAME \
-      #       --namespace $NAMESPACE \
-      #       --set env[0].name=POSTGRES_DBNAME,env[0].value=${POSTGRES_DBNAME} \
-      #       --set env[1].name=POSTGRES_USER,env[1].value=${POSTGRES_USER} \
-      #       --set env[2].name=POSTGRES_PASSWORD,env[2].value=${POSTGRES_PASSWORD} \
-      #       --set env[3].name=POSTGRES_HOST,env[3].value=${POSTGRES_HOST} \
-      #       --set env[4].name=POSTGRES_PORT,env[4].value=${POSTGRES_PORT} \
-      #       -f charts/mage-ai/values.yml
+  #     - name: Add Helm repository
+  #       run: helm repo add $HELM_REPO_NAME https://mage-ai.github.io/helm-charts
+
+  #     - name: testing connection to Helm
+  #       run: helm list
+
+  #     - name: Upgrade/Install Helm chart
+  #       run: helm upgrade --install $HELM_RELEASE_NAME $HELM_REPO_NAME/$HELM_CHART_NAME --namespace $NAMESPACE -f charts/mage-ai/values.yml
+
+  #     - name: Upgrade/Install Helm chart
+  #       run: |
+  #         helm upgrade --install $HELM_RELEASE_NAME $HELM_REPO_NAME/$HELM_CHART_NAME \
+  #           --namespace $NAMESPACE \
+  #           --set env[0].name=POSTGRES_DBNAME,env[0].value=${POSTGRES_DBNAME} \
+  #           --set env[1].name=POSTGRES_USER,env[1].value=${POSTGRES_USER} \
+  #           --set env[2].name=POSTGRES_PASSWORD,env[2].value=${POSTGRES_PASSWORD} \
+  #           --set env[3].name=POSTGRES_HOST,env[3].value=${POSTGRES_HOST} \
+  #           --set env[4].name=POSTGRES_PORT,env[4].value=${POSTGRES_PORT} \
+  #           -f charts/mage-ai/values.yml

@@ -10,12 +10,12 @@ blocks:
   language: python
   name: load_osm_polygons_generator
   retry_config: null
-  status: executed
+  status: updated
   timeout: null
   type: custom
   upstream_blocks: []
   uuid: load_osm_polygons_generator
-- all_upstream_blocks_executed: true
+- all_upstream_blocks_executed: false
   color: blue
   configuration:
     data_provider: postgres
@@ -32,7 +32,7 @@ blocks:
   language: sql
   name: update_raw_data_osm_polygons
   retry_config: null
-  status: executed
+  status: updated
   timeout: null
   type: custom
   upstream_blocks:

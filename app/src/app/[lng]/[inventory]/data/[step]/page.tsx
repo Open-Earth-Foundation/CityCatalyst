@@ -584,9 +584,11 @@ export default function AddDataSteps({
     }
   };
 
+  console.log(currentStep.icon);
+
   return (
     <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
-      <Box w="full" display="flex" alignItems="center" gap="16px">
+      <Box w="full" display="flex" alignItems="center" gap="16px" mb="64px">
         <Button
           variant="ghost"
           leftIcon={<ArrowBackIcon boxSize={6} />}
@@ -621,9 +623,8 @@ export default function AddDataSteps({
           </Breadcrumb>
         </Box>
       </Box>
-
       {/*** Sector summary section ***/}
-      <Card mb={12}>
+      <Card mb={12} shadow="none" bg="none">
         <Flex direction="row">
           <Icon
             as={currentStep.icon}
@@ -683,6 +684,95 @@ export default function AddDataSteps({
             </Tag>
           </div>
         </Flex>
+      </Card>
+
+      {/*** Manual data entry section for subsectors ***/}
+      <Card mb={12}>
+        <Heading size="lg" mb={2}>
+          {t("add-data-heading")}
+        </Heading>
+        <Text color="content.tertiary" mb={12}>
+          {t("add-data-details")}
+        </Text>
+        <Heading size="sm" mb={4}>
+          {t("select-subsector")}
+        </Heading>
+        <SimpleGrid minChildWidth="250px" spacing={4}>
+          {isInventoryLoading || !currentStep.subSectors ? (
+            <Center>
+              <Spinner size="lg" />
+            </Center>
+          ) : inventoryProgressError ? (
+            <Center>
+              <WarningIcon boxSize={8} color="semantic.danger" />
+            </Center>
+          ) : (
+            currentStep.subSectors.map((subSector: SubSectorWithRelations) => (
+              <Card
+                maxHeight="120px"
+                height="120px"
+                w="full"
+                className="hover:drop-shadow-xl transition-shadow"
+                onClick={() => {
+                  console.log(subSector);
+                  router.push(`/${inventory}/data/1/${subSector.sectorId}`);
+                  // onSubsectorClick(subSector);
+                }}
+                key={subSector.subsectorId}
+              >
+                <HStack align="center" height="120px" justify="space-between">
+                  {subSector.completedCount > 0 &&
+                  subSector.completedCount < subSector.totalCount ? (
+                    <CircularProgress
+                      size="36px"
+                      thickness="12px"
+                      mr="4"
+                      color="interactive.secondary"
+                      trackColor="background.neutral"
+                      value={
+                        (subSector.completedCount / subSector.totalCount) * 100
+                      }
+                    />
+                  ) : (
+                    <Icon
+                      as={
+                        subSector.completed
+                          ? MdOutlineCheckCircle
+                          : DataAlertIcon
+                      }
+                      boxSize={9}
+                      color={
+                        subSector.completed
+                          ? "interactive.tertiary"
+                          : "sentiment.warningDefault"
+                      }
+                    />
+                  )}
+                  <Stack w="full">
+                    <Heading size="xs" noOfLines={3} maxWidth="200px">
+                      {t(nameToI18NKey(subSector.subsectorName!))}
+                    </Heading>
+                    {subSector.scope && (
+                      <Text color="content.tertiary">
+                        {t("scope")}: {subSector.scope.scopeName}
+                      </Text>
+                    )}
+                  </Stack>
+                  <IconButton
+                    aria-label={t("edit-subsector")}
+                    variant="solidIcon"
+                    icon={
+                      <Icon
+                        as={subSector.completed ? MdOutlineEdit : MdAdd}
+                        boxSize={6}
+                      />
+                    }
+                  />
+                </HStack>
+              </Card>
+            ))
+          )}
+        </SimpleGrid>
       </Card>
       {/*** Third party data source section ***/}
       <Card mb={12}>
@@ -854,90 +944,7 @@ export default function AddDataSteps({
           </Button>
         )}
       </Card>
-      {/*** Manual data entry section for subsectors ***/}
-      <Card mb={12}>
-        <Heading size="lg" mb={2}>
-          {t("add-data-heading")}
-        </Heading>
-        <Text color="content.tertiary" mb={12}>
-          {t("add-data-details")}
-        </Text>
-        <Heading size="sm" mb={4}>
-          {t("select-subsector")}
-        </Heading>
-        <SimpleGrid minChildWidth="250px" spacing={4}>
-          {isInventoryLoading || !currentStep.subSectors ? (
-            <Center>
-              <Spinner size="lg" />
-            </Center>
-          ) : inventoryProgressError ? (
-            <Center>
-              <WarningIcon boxSize={8} color="semantic.danger" />
-            </Center>
-          ) : (
-            currentStep.subSectors.map((subSector: SubSectorWithRelations) => (
-              <Card
-                maxHeight="120px"
-                height="120px"
-                w="full"
-                className="hover:drop-shadow-xl transition-shadow"
-                onClick={() => onSubsectorClick(subSector)}
-                key={subSector.subsectorId}
-              >
-                <HStack align="center" height="120px" justify="space-between">
-                  {subSector.completedCount > 0 &&
-                  subSector.completedCount < subSector.totalCount ? (
-                    <CircularProgress
-                      size="36px"
-                      thickness="12px"
-                      mr="4"
-                      color="interactive.secondary"
-                      trackColor="background.neutral"
-                      value={
-                        (subSector.completedCount / subSector.totalCount) * 100
-                      }
-                    />
-                  ) : (
-                    <Icon
-                      as={
-                        subSector.completed
-                          ? MdOutlineCheckCircle
-                          : DataAlertIcon
-                      }
-                      boxSize={9}
-                      color={
-                        subSector.completed
-                          ? "interactive.tertiary"
-                          : "sentiment.warningDefault"
-                      }
-                    />
-                  )}
-                  <Stack w="full">
-                    <Heading size="xs" noOfLines={3} maxWidth="200px">
-                      {t(nameToI18NKey(subSector.subsectorName!))}
-                    </Heading>
-                    {subSector.scope && (
-                      <Text color="content.tertiary">
-                        {t("scope")}: {subSector.scope.scopeName}
-                      </Text>
-                    )}
-                  </Stack>
-                  <IconButton
-                    aria-label={t("edit-subsector")}
-                    variant="solidIcon"
-                    icon={
-                      <Icon
-                        as={subSector.completed ? MdOutlineEdit : MdAdd}
-                        boxSize={6}
-                      />
-                    }
-                  />
-                </HStack>
-              </Card>
-            ))
-          )}
-        </SimpleGrid>
-      </Card>
+      {/* Upload own data section */}
       <Card mb={48} shadow="none">
         <Heading size="lg" mb={2}>
           {t("upload-your-data-heading")}

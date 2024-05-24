@@ -16,7 +16,7 @@
   "completion-percent": "{{progress}}% completed",
   "data-connected-percent": "{{progress}}% Connected third-party data",
   "data-added-percent": "{{progress}}% Added data",
-  "check-data-heading": "Check And Connect Third-Party Data We Found For You",
+  "check-data-heading": "Explore Relevant Datasets to Connect Into Your Inventory",
   "check-data-details": "Review and integrate automatically sourced data relevant to your city's GHG inventory.",
   "no-data-sources": "No External Data Sources Available",
   "no-data-sources-description": "It seems like there are no external sources available at this moment.<1></1>If you know any, <3>please report this</3> and we’ll prioritize your request.",
@@ -35,8 +35,8 @@
   "more-datasets": "View more datasets",
   "less-datasets": "View less datasets",
 
-  "add-data-heading": "Add Your Own Local Values Manually",
-  "add-data-details": "Manually add your calculated values for required sub-sectors to the inventory.",
+  "add-data-heading": "Add Data to Your Inventory Data",
+  "add-data-details": "These are the subsectors to be completed according to the GPC methodology for the transport sector. Select a sub-sector and fill in the information to complete your inventory.",
   "select-subsector": "Select sub-sector",
 
   "residential-buildings": "Residential buildings",

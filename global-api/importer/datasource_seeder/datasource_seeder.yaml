@@ -492,11 +492,11 @@
     datasource_id: A284E16D-F04E-46C9-A977-8BDDD396F1FB
     publisher_id: IEA
     datasource_name: International Energy Agency
-    dataset_name: Residential grid energy consumption reported by the International Energy Agency 
-        en:
+    dataset_name:  
+        en: Residential grid energy consumption reported by the International Energy Agency
         es:
-    dataset_description: Residential contains all emissions from fuel combustion in households. This corresponds to IPCC Source/Sink Category 1 A 4 b. 
-        en:
+    dataset_description: 
+        en: Residential contains all emissions from fuel combustion in households. This corresponds to IPCC Source/Sink Category 1 A 4 b.
         es:
     source_type: third_party
     access_type: public
@@ -516,8 +516,8 @@
         en: IEA calculates CO2 emissions from fuel combustion using a Tier 1 methodology. This approach is the simplest level of the IPCC's emission estimation methods, utilizing globally sourced default values and energy data without requiring country-specific details. To estimate emissions, average net calorific values are applied, which differ based on the type of oil or coal.
         es: La IEA calcula las emisiones de CO2 procedentes de la quema de combustible utilizando una metodología de Nivel 1. Este enfoque es el nivel más simple de los métodos de estimación de emisiones del IPCC, y utiliza valores predeterminados y datos energéticos de origen global sin requerir detalles específicos de cada país. Para estimar las emisiones se aplican valores caloríficos netos medios, que difieren según el tipo de petróleo o carbón.
     methodology_url: https://iea.blob.core.windows.net/assets/e6e332ed-24ab-4977-9ef9-cf3865934d63/Databasedocumentation2023Worldedition.pdf
-    transformation_description: 'A reassignment of the categories proposed by IEA was carried out to consider some of the subsectors of the GPC. For this case, the reassignment was "Residential" as ''I.1.1'''
-        en:
+    transformation_description: 
+        en: A reassignment of the categories proposed by IEA was carried out to consider some of the subsectors of the GPC. For this case, the reassignment was "Residential" as ''I.1.1''
         es:
     retrieval_method: global_api_downscaled_by_population
     api_endpoint: https://ccglobal.openearth.dev/api/v0/source/IEA_energy/country/:country/:year/:gpcReferenceNumber
@@ -527,11 +527,11 @@
     datasource_id: CAD04116-1B60-4290-A158-85F4B2BCED28
     publisher_id: IEA
     datasource_name: International Energy Agency
-    dataset_name: Manufacturing industries and construction grid energy consumption reported by the International Energy Agency 
-        en:
+    dataset_name: 
+        en: Manufacturing industries and construction grid energy consumption reported by the International Energy Agency 
         es:
-    dataset_description: Manufacturing and construction industries contribute to emissions through fuel combustion, classified under IPCC Source/Sink Category 1 A 2. The 2006 GLs include emissions from industry autoproducers generating electricity and/or heat in this category. IEA data lacks the specific end-use breakdown, resulting in unallocated autoproducers. 
-        en:
+    dataset_description: 
+        en: Manufacturing and construction industries contribute to emissions through fuel combustion, classified under IPCC Source/Sink Category 1 A 2. The 2006 GLs include emissions from industry autoproducers generating electricity and/or heat in this category. IEA data lacks the specific end-use breakdown, resulting in unallocated autoproducers. 
         es:
     source_type: third_party
     access_type: public
@@ -551,8 +551,8 @@
         en: IEA calculates CO2 emissions from fuel combustion using a Tier 1 methodology. This approach is the simplest level of the IPCC's emission estimation methods, utilizing globally sourced default values and energy data without requiring country-specific details. To estimate emissions, average net calorific values are applied, which differ based on the type of oil or coal.
         es: La IEA calcula las emisiones de CO2 procedentes de la quema de combustible utilizando una metodología de Nivel 1. Este enfoque es el nivel más simple de los métodos de estimación de emisiones del IPCC, y utiliza valores predeterminados y datos energéticos de origen global sin requerir detalles específicos de cada país. Para estimar las emisiones se aplican valores caloríficos netos medios, que difieren según el tipo de petróleo o carbón.
     methodology_url: https://iea.blob.core.windows.net/assets/e6e332ed-24ab-4977-9ef9-cf3865934d63/Databasedocumentation2023Worldedition.pdf
-    transformation_description: 'A reassignment of the categories proposed by IEA was carried out to consider some of the subsectors of the GPC. For this case, the reassignment was "Manufactoring Industries and Construction" as ''I.3.1'''
-        en:
+    transformation_description: 
+        en: A reassignment of the categories proposed by IEA was carried out to consider some of the subsectors of the GPC. For this case, the reassignment was "Manufactoring Industries and Construction" as ''I.3.1''
         es:
     retrieval_method: global_api_downscaled_by_population
     api_endpoint: https://ccglobal.openearth.dev/api/v0/source/IEA_energy/country/:country/:year/:gpcReferenceNumber
@@ -1020,7 +1020,7 @@
     dataset_name: 
         en: Commercial buildings electricity consumption in Mendoza cities
         es: Consumo de energía eléctrica por edificios comerciales en ciudades de Mendoza
-dataset_description: 
+    dataset_description: 
         en: Electric energy users by tariff category, according to year reported in the Directorate of Statistics and Economic Research based on data provided by EPRE (Provincial Electrical Regulatory Entity)
         es: Usuarios de energía eléctrica por categoría tarifaria, según año reportado en la Dirección de Estadística e Investigaciones Económicas con base en datos proporcionados por el EPRE (Ente Regulador Eléctrico Provincial)
     source_type: third_party
@@ -1265,8 +1265,8 @@ dataset_description:
     dataset_name:
         en: Estimation of residential energy emissions
         es: 
-    dataset_description: Carbon Monitor Cities is a global initiative to provide real-time and historical data on CO2 emissions from cities around the world.
-        en:
+    dataset_description: 
+        en: Carbon Monitor Cities is a global initiative to provide real-time and historical data on CO2 emissions from cities around the world.
         es:
     source_type: third_party
     access_type: public
@@ -1282,8 +1282,8 @@ dataset_description:
     data_quality: medium
     notes: 
     units: kg
-    methodology_description: The data is based on satellite observations of CO2 concentrations and a data-driven model to estimate emissions.
-        en:
+    methodology_description: 
+        en: The data is based on satellite observations of CO2 concentrations and a data-driven model to estimate emissions.
         es:
     methodology_url: https://carbonmonitor.org/
     transformation_description: 
@@ -1297,11 +1297,11 @@ dataset_description:
     datasource_id: e2143a90-0e5f-48fa-9a1d-85505f90b95f
     publisher_id: Carbon Monitor
     datasource_name: Carbon Monitor Cities
-    dataset_name: Carbon Monitor Cities On-Road Transportation
-        en: 
+    dataset_name: 
+        en: Carbon Monitor Cities On-Road Transportation
         es:
-    dataset_description: Estimation of on-road transportation emissions from Carbon Monitor. Carbon Monitor Cities is a global initiative to provide real-time and historical data on CO2 emissions from cities around the world.
-        en:
+    dataset_description: 
+        en: Estimation of on-road transportation emissions from Carbon Monitor. Carbon Monitor Cities is a global initiative to provide real-time and historical data on CO2 emissions from cities around the world.
         es:
     source_type: third_party
     access_type: public
@@ -1317,8 +1317,8 @@ dataset_description:
     data_quality: medium
     notes: 
     units: kg
-    methodology_description: The data is based on satellite observations of CO2 concentrations and a data-driven model to estimate emissions.
-        en:
+    methodology_description: 
+        en: The data is based on satellite observations of CO2 concentrations and a data-driven model to estimate emissions.
         es:
     methodology_url: https://carbonmonitor.org/
     transformation_description: 
@@ -1332,11 +1332,11 @@ dataset_description:
     datasource_id: 1007a979-3c3c-4115-b61a-c85e3e39b165
     publisher_id: Carbon Monitor
     datasource_name: Carbon Monitor Cities
-    dataset_name: Carbon Monitor Cities Aviation
-        en:
+    dataset_name: 
+        en: Carbon Monitor Cities Aviation
         es:
-    dataset_description: Estimation of aviation emissions from Carbon Monitor. Carbon Monitor Cities is a global initiative to provide real-time and historical data on CO2 emissions from cities around the world.
-        en:
+    dataset_description: 
+        en: Estimation of aviation emissions from Carbon Monitor. Carbon Monitor Cities is a global initiative to provide real-time and historical data on CO2 emissions from cities around the world.
         es:
     source_type: third_party
     access_type: public
@@ -1352,8 +1352,8 @@ dataset_description:
     data_quality: medium
     notes: 
     units: kg
-    methodology_description: The data is based on satellite observations of CO2 concentrations and a data-driven model to estimate emissions.
-        en:
+    methodology_description: 
+        en: The data is based on satellite observations of CO2 concentrations and a data-driven model to estimate emissions.
         es:
     methodology_url: https://carbonmonitor.org/
     transformation_description: 
@@ -1367,7 +1367,7 @@ dataset_description:
     datasource_id: c0ef94f0-5ecf-45bc-9e3e-f273396b101d
     publisher_id: EDGAR
     datasource_name: Emissions Database for Global Atmospheric Research
-    dataset_name: Aviation Estimated Emissions
+    dataset_name:
         en: Estimated emissions for aviation
         es: Emisiones estimadas para aviación
     dataset_description: 
@@ -1387,7 +1387,7 @@ dataset_description:
     data_quality: medium
     notes: 
     units: kg
-   methodology_description: 
+    methodology_description: 
         en: The emission calculation method utilizes a standardized approach across all countries, employing technology-based emission factors to estimate annual emissions for each compound and sector. This involves multiplying country-specific activity data with the mix of technologies and their associated abatement measures, considering both emission factors and reductions due to installed abatement measures. Spatial allocation of emissions is achieved through a grid system, utilizing geographical databases and spatial proxy datasets to distribute emissions across a country's area based on relevant spatial factors such as population density and land use.
         es: El método de cálculo de emisiones utiliza un enfoque estandarizado en todos los países, empleando factores de emisión basados en tecnología para estimar las emisiones anuales de cada compuesto y sector. Esto implica multiplicar los datos de actividad específicos de cada país con la combinación de tecnologías y sus medidas de mitigación asociadas, considerando tanto los factores de emisión como las reducciones debidas a las medidas de mitigación instaladas. La asignación espacial de las emisiones se logra a través de un sistema de cuadrícula, que utiliza bases de datos geográficas y conjuntos de datos proxy espaciales para distribuir las emisiones en el área de un país en función de factores espaciales relevantes, como la densidad de población y el uso de la tierra.
     methodology_url: https://edgar.jrc.ec.europa.eu/dataset_ghg70#intro

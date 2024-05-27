@@ -1,6 +1,7 @@
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
-import { ActivityValue } from "@/models/ActivityValue";
+import type { ActivityValue } from "@/models/ActivityValue";
+import type { EmissionsFactor } from "@/models/EmissionsFactor";
 import { apiHandler } from "@/util/api";
 import { createActivityValueRequest } from "@/util/validation";
 import { randomUUID } from "crypto";
@@ -24,6 +25,22 @@ export const POST = apiHandler(async (req, { params, session }) => {
 
     if (gasValues) {
       for (const gasValue of gasValues) {
+        let emissionsFactor: EmissionsFactor | null = null;
+
+        // update emissions factor if already assigned and from this inventory
+        if (gasValue.emissionsFactorId == null && gasValue.emissionsFactor != null) {
+          emissionsFactor = await db.models.EmissionsFactor.create({
+            ...gasValue.emissionsFactor,
+            id: randomUUID(),
+            inventoryId: params.inventory,
+          }, { transaction })
+        }
+
+        if (gasValue.emissionsFactor && !emissionsFactor) {
+          throw new createHttpError.InternalServerError("Failed to create an emissions factor");
+        }
+
+        delete gasValue.emissionsFactor;
         await db.models.GasValue.upsert({
           ...gasValue,
           id: gasValue.id ?? randomUUID(),

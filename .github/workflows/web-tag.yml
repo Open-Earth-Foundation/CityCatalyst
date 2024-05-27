@@ -135,7 +135,12 @@ jobs:
           kubectl set env deployment/cc-web-deploy "ADMIN_NAMES=${{secrets.ADMIN_NAMES}}"
           kubectl set env deployment/cc-web-deploy "DEFAULT_ADMIN_EMAIL=${{secrets.DEFAULT_ADMIN_EMAIL}}"
           kubectl set env deployment/cc-web-deploy "DEFAULT_ADMIN_PASSWORD=${{secrets.DEFAULT_ADMIN_PASSWORD}}"
-          kubectl set env deployment/cc-web-deploy "HOST=https://citycatalyst.io"
-          kubectl set env deployment/cc-web-deploy "NEXTAUTH_URL=https://citycatalyst.io"
+          kubectl set env deployment/cc-web-deploy \
+            "HOST=https://citycatalyst.io" \
+            "NEXTAUTH_URL=https://citycatalyst.io" \
+            "NEXT_PUBLIC_API_URL=https://api.citycatalyst.io" \
+            "GLOBAL_API_URL=https://api.citycatalyst.io" \
+            "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://app.openclimate.network" \
+            "OPENCLIMATE_API_URL=https://app.openclimate.network"
           kubectl create -f k8s/cc-create-admin.yml -n default
           kubectl rollout restart deployment cc-web-deploy -n default

@@ -1,5 +1,6 @@
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
+import { ActivityValue } from "@/models/ActivityValue";
 import { apiHandler } from "@/util/api";
 import { createActivityValueRequest } from "@/util/validation";
 import { randomUUID } from "crypto";
@@ -12,11 +13,30 @@ export const POST = apiHandler(async (req, { params, session }) => {
   // just for access control
   await UserService.findUserInventory(params.inventory, session);
 
-  const result = await db.models.ActivityValue.create({
-    ...body,
-    id: randomUUID(),
+  const result = await db.sequelize?.transaction(async (transaction): Promise<ActivityValue> => {
+    const gasValues = body.gasValues;
+    delete body.gasValues;
+
+    const activityValue = await db.models.ActivityValue.create({
+      ...body,
+      id: randomUUID(),
+    }, { transaction });
+
+    if (gasValues) {
+      for (const gasValue of gasValues) {
+        await db.models.GasValue.upsert({
+          ...gasValue,
+          id: gasValue.id ?? randomUUID(),
+          activityValueId: activityValue.id,
+          inventoryValueId: activityValue?.inventoryValueId
+        }, { transaction });
+      }
+    }
+
+    return activityValue;
   })
-  return NextResponse.json({ "success": true, data: result });
+
+  return NextResponse.json({ "success": result != null, data: result });
 });
 
 export const GET = apiHandler(async (req, { params, session }) => {

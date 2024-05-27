@@ -150,8 +150,14 @@ export const createUserInvite = z.object({
 export type CreateUserInvite = z.infer<typeof createUserInvite>;
 
 export const createActivityValueRequest = z.object({
-  activityData: z.any(),
   inventoryValueId: z.string().uuid(),
-  metadata: z.any(),
+  activityData: z.any().optional(),
+  metadata: z.any().optional(),
+  gasValues: z.array(z.object({
+    id: z.string().uuid().optional(),
+    emissionsFactorId: z.string().uuid().optional(),
+    gas: z.string(),
+    gasAmount: z.coerce.bigint().gte(0n).optional(),
+  })).optional()
 });
 

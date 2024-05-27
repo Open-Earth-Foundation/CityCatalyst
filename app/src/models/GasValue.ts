@@ -28,8 +28,7 @@ export type GasValueCreationAttributes = Optional<
 
 export class GasValue
   extends Model<GasValueAttributes, GasValueCreationAttributes>
-  implements GasValueAttributes
-{
+  implements GasValueAttributes {
   id!: string;
   inventoryValueId?: string;
   emissionsFactorId?: string;

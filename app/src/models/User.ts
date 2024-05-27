@@ -4,6 +4,7 @@ import type { CityInvite, CityInviteId } from "./CityInvite";
 import type { CityUser, CityUserId } from "./CityUser";
 import type { Inventory, InventoryId } from "./Inventory";
 import type { UserFile, UserFileId } from "./UserFile";
+import { City, CityId } from "./City";
 
 export interface UserAttributes {
   userId: string;
@@ -35,8 +36,7 @@ export type UserCreationAttributes = Optional<
 
 export class User
   extends Model<UserAttributes, UserCreationAttributes>
-  implements UserAttributes
-{
+  implements UserAttributes {
   userId!: string;
   name?: string;
   pictureUrl?: string;
@@ -124,6 +124,24 @@ export class User
   hasUserFile!: Sequelize.HasManyHasAssociationMixin<UserFile, UserFileId>;
   hasUserFiles!: Sequelize.HasManyHasAssociationsMixin<UserFile, UserFileId>;
   countUserFiles!: Sequelize.HasManyCountAssociationsMixin;
+  // User hasMany City via userId
+  cities!: City[];
+  getCities!: Sequelize.HasManyGetAssociationsMixin<City>;
+  setCities!: Sequelize.HasManySetAssociationsMixin<City, CityId>;
+  addCity!: Sequelize.HasManyAddAssociationMixin<City, CityId>;
+  addCities!: Sequelize.HasManyAddAssociationsMixin<City, CityId>;
+  createCity!: Sequelize.HasManyCreateAssociationMixin<City>;
+  removeCity!: Sequelize.HasManyRemoveAssociationMixin<
+    City,
+    CityId
+  >;
+  removeCities!: Sequelize.HasManyRemoveAssociationsMixin<
+    City,
+    CityId
+  >;
+  hasCity!: Sequelize.HasManyHasAssociationMixin<City, CityId>;
+  hasCities!: Sequelize.HasManyHasAssociationsMixin<City, CityId>;
+  countCities!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof User {
     return User.init(

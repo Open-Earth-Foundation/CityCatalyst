@@ -1,5 +1,6 @@
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
+import { EmissionsFactor, EmissionsFactorAttributes } from "@/models/EmissionsFactor";
 import { apiHandler } from "@/util/api";
 import { createActivityValueRequest } from "@/util/validation";
 import createHttpError from "http-errors";
@@ -22,11 +23,40 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   await db.sequelize?.transaction(async (transaction): Promise<void> => {
     if (body.gasValues) {
       for (const gasValue of body.gasValues) {
-        await db.models.GasValue.upsert({
+        let emissionsFactor: EmissionsFactor | null = null;
+
+        // update emissions factor if already assigned and from this inventory
+        if (gasValue.emissionsFactorId == null && gasValue.emissionsFactor != null) {
+          emissionsFactor = await db.models.EmissionsFactor.findOne({
+            where: { inventoryId: params.inventory },
+            include: [{ model: db.models.ActivityValue, as: "activityValue", where: { id } }],
+            transaction
+          });
+
+          // don't edit emissions factors from other inventories or pre-defined ones (without inventoryId)
+          if (emissionsFactor && emissionsFactor.inventoryId === params.inventory) {
+            Object.assign(emissionsFactor, gasValue.emissionsFactor);
+            await emissionsFactor.save({ transaction });
+          } else {
+            emissionsFactor = await db.models.EmissionsFactor.create({
+              ...gasValue.emissionsFactor,
+              id: randomUUID(),
+              inventoryId: params.inventory,
+            }, { transaction })
+          }
+        }
+
+        if (!emissionsFactor) {
+          throw new createHttpError.InternalServerError("Failed to create an emissions factor");
+        }
+
+        delete gasValue.emissionsFactor;
+        const [newGasValue, wasCreated] = await db.models.GasValue.upsert({
           ...gasValue,
           id: gasValue.id ?? randomUUID(),
           activityValueId: id,
-          inventoryValueId: activityValue?.inventoryValueId
+          inventoryValueId: activityValue?.inventoryValueId,
+          emissionsFactorId: emissionsFactor.id,
         }, { transaction });
       }
       delete body.gasValues;

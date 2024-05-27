@@ -158,6 +158,12 @@ export const createActivityValueRequest = z.object({
     emissionsFactorId: z.string().uuid().optional(),
     gas: z.string(),
     gasAmount: z.coerce.bigint().gte(0n).optional(),
+    emissionsFactor: z.object({
+      emissionsPerActivity: z.number().gte(0).optional(),
+      gas: z.string().optional(),
+      units: z.string().optional(),
+      gpcReferenceNumber: z.string().optional(),
+    }).optional(),
   })).optional()
 });
 

@@ -46,17 +46,17 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
           }
         }
 
-        if (!emissionsFactor) {
+        if (gasValue.emissionsFactor && !emissionsFactor) {
           throw new createHttpError.InternalServerError("Failed to create an emissions factor");
         }
 
         delete gasValue.emissionsFactor;
         const [newGasValue, wasCreated] = await db.models.GasValue.upsert({
+          emissionsFactorId: emissionsFactor?.id ?? undefined,
           ...gasValue,
           id: gasValue.id ?? randomUUID(),
           activityValueId: id,
           inventoryValueId: activityValue?.inventoryValueId,
-          emissionsFactorId: emissionsFactor.id,
         }, { transaction });
       }
       delete body.gasValues;

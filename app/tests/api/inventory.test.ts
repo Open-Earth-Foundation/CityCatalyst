@@ -5,6 +5,9 @@ import {
 } from "@/app/api/v0/inventory/[inventory]/route";
 import { GET as calculateProgress } from "@/app/api/v0/inventory/[inventory]/progress/route";
 import { POST as createInventory } from "@/app/api/v0/city/[city]/inventory/route";
+import {
+  POST as submitInventory
+} from "@/app/api/v0/inventory/[inventory]/cdp/route";
 import { db } from "@/models";
 import { CreateInventoryRequest } from "@/util/validation";
 import assert from "node:assert";
@@ -366,4 +369,15 @@ describe("Inventory API", () => {
     // TODO the route counts subsectors created by other tests/ seeders
     // assert.equal(totalProgress.total, 27);
   });
+
+  it("should submit an inventory to the CDP test API", async () => {
+    const req = mockRequest({});
+    const res = await submitInventory(req, {
+      params: { inventory: inventory.inventoryId },
+    });
+    assert.equal(res.status, 200);
+    const json = await res.json();
+    console.dir(json)
+    assert.equal(json.success, true);
+  })
 });

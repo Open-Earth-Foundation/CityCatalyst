@@ -294,6 +294,7 @@ function SetupStep({
                     required: t("select-city-required"),
                   })}
                   autoComplete="off"
+                  onKeyUp={() => setOnInputClicked(true)}
                   onFocus={() => setOnInputClicked(true)}
                 />
                 <InputRightElement>
@@ -741,9 +742,9 @@ export default function OnboardingSetup({
       city = await addCity({
         name: data.name,
         locode: data.locode!,
-        area,
-        region: regionName,
-        country: countryName,
+        area: (area) ? Math.round(area) : undefined,
+        region: regionName ?? undefined,
+        country: countryName ?? undefined,
         regionLocode: region?.actor_id ?? undefined,
         countryLocode: country?.actor_id ?? undefined,
       }).unwrap();
@@ -800,6 +801,7 @@ export default function OnboardingSetup({
 
     if (!newData.city || !ocCityData?.actor_id || year < 0 || !data.locode) {
       // TODO show user toast? These should normally be caught by validation logic
+      makeErrorToast("Missing data, can't go to next step!");
       console.error("Missing data, can't go to next step!");
       return;
     }

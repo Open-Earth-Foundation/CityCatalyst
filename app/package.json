@@ -43,7 +43,7 @@
     "@types/http-errors": "^2.0.4",
     "@types/js-cookie": "^3.0.6",
     "@types/jsonwebtoken": "^9.0.6",
-    "@types/node": "20.11.5",
+    "@types/node": "20.12.12",
     "@types/nodemailer": "^6.4.14",
     "@types/pg": "^8.11.5",
     "@types/react": "18.2.61",
@@ -70,7 +70,7 @@
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
     "next": "14.1.3",
-    "next-auth": "^4.24.5",
+    "next-auth": "^4.24.7",
     "nodemailer": "^6.9.13",
     "openai": "^4.33.0",
     "pg": "^8.11.5",
@@ -82,7 +82,7 @@
     "react-circle-flags": "^0.0.20",
     "react-dom": "18.2.0",
     "react-email": "^2.1.0",
-    "react-hook-form": "^7.51.3",
+    "react-hook-form": "^7.51.5",
     "react-i18next": "^14.0.5",
     "react-icons": "^5.1.0",
     "react-intersection-observer": "^9.8.2",
@@ -110,7 +110,7 @@
     "prettier": "3.2.5",
     "sequelize-auto": "^0.8.8",
     "start-server-and-test": "^2.0.3",
-    "storybook": "^8.0.4"
+    "storybook": "^8.1.3"
   },
   "engines": {
     "node": ">=20.5.0"

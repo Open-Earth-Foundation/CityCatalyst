@@ -149,3 +149,6 @@ global-api/importer/mendoza_arg/data/**
 global-api/importer/osm/cache/**
 global-api/importer/osm/data/**
 global-api/data/**
+
+#Python virtual env
+global-api/env

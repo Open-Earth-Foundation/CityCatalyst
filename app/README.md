@@ -76,10 +76,23 @@ The environment variables `NEXTAUTH_SECRET` and `NEXTAUTH_URL` are required for 
 
 ### Development
 
+
+
 To run the app in development mode, run:
 
 ```bash
 cd CityCatalyst/app
+cp env.example .env
+
+## set up your database credentials in .env file 
+
+npm run db:migrate
+
+npm run db:seed
+
+## set up login in credentials
+npm run create-admin
+
 npm run dev
 ```
 

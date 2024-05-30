@@ -406,9 +406,9 @@ function SubSectorPage({
                                       </Tr>
                                     </Thead>
                                     <Tbody>
-                                      {data?.map((activity: any) => {
+                                      {data?.map((activity: any, i: number) => {
                                         return (
-                                          <Tr>
+                                          <Tr key={i}>
                                             <Td>{activity?.fuelType}</Td>
                                             <Td>
                                               <Tag
@@ -493,10 +493,10 @@ function SubSectorPage({
                           mt="8px"
                         >
                           Some emissions activities may not be relevant for your
-                          city, or maybe they're accounted for in a different
-                          section. Check the reason that fits and provide
-                          details if needed. This helps keep your inventory
-                          accurate and tailored to your city.
+                          city, or maybe they&apos;re accounted for in a
+                          different section. Check the reason that fits and
+                          provide details if needed. This helps keep your
+                          inventory accurate and tailored to your city.
                         </Text>
                         <Box mt="48px">
                           <Text
@@ -851,10 +851,10 @@ function SubSectorPage({
                           mt="8px"
                         >
                           Some emissions activities may not be relevant for your
-                          city, or maybe they're accounted for in a different
-                          section. Check the reason that fits and provide
-                          details if needed. This helps keep your inventory
-                          accurate and tailored to your city.
+                          city, or maybe they&apos;re accounted for in a
+                          different section. Check the reason that fits and
+                          provide details if needed. This helps keep your
+                          inventory accurate and tailored to your city.
                         </Text>
                         <Box mt="48px">
                           <Text

@@ -84,7 +84,7 @@ export default function AddDataIntro({
       <Text color="content.tertiary" className="w-full">
         <Trans i18nKey="data-details" t={t}>
           Add data or connect third-party data for your city and complete your
-          city's emission inventory using the GPC Basic methodology.{" "}
+          city&apos;s emission inventory using the GPC Basic methodology.{" "}
           <Link
             className="underline"
             href="https://ghgprotocol.org/ghg-protocol-cities"
@@ -119,6 +119,7 @@ export default function AddDataIntro({
               step,
             }) => (
               <AddDataCard
+                key={sectorName}
                 title={sectorName}
                 description={descriptionText}
                 icon={icon}

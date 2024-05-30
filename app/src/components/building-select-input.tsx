@@ -1,7 +1,7 @@
 import { Box, Select, Text } from "@chakra-ui/react";
 import React, { FC } from "react";
 import { UseFormRegister } from "react-hook-form";
-import { Inputs } from "./Modals/add-activity-card";
+import { Inputs } from "./Modals/add-activity-modal";
 import { t } from "i18next";
 
 interface BuildingTypeSelectInputProps {
@@ -38,10 +38,12 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
         background="background.default"
         color="content.secondary"
         placeholder={placeholder}
-        {...register(activity!, { require: t("value-required") })}
+        {...register(activity as any, { required: t("value-required") })}
       >
         {options.map((item: string) => (
-          <option value={item}>{item}</option>
+          <option key={item} value={item}>
+            {item}
+          </option>
         ))}
       </Select>
     </Box>

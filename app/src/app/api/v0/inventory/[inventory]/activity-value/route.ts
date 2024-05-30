@@ -19,10 +19,20 @@ export const POST = apiHandler(async (req, { params, session }) => {
     async (transaction): Promise<ActivityValue> => {
       const gasValues = body.gasValues;
       delete body.gasValues;
+      const dataSourceParams = body.dataSource;
+      delete body.dataSource;
 
+      const dataSource = await db.models.DataSource.create(
+        {
+          ...dataSourceParams,
+          datasourceId: randomUUID(),
+        },
+        { transaction },
+      );
       const activityValue = await db.models.ActivityValue.create(
         {
           ...body,
+          datasourceId: dataSource.datasourceId,
           id: randomUUID(),
         },
         { transaction },

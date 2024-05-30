@@ -10,6 +10,7 @@ module.exports = {
           "id" uuid UNIQUE PRIMARY KEY NOT NULL,
           "activity_data" text,
           "inventory_value_id" uuid,
+          "datasource_id" uuid,
           "metadata" jsonb,
           "created" timestamp,
           "last_updated" timestamp
@@ -23,6 +24,15 @@ module.exports = {
         references: { table: "InventoryValue", field: "id" },
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
+        transaction,
+      });
+      await queryInterface.addConstraint("ActivityValue", {
+        type: "foreign key",
+        name: "FK_ActivityValue_datasource_id",
+        fields: ["datasource_id"],
+        references: { table: "DataSource", field: "datasource_id" },
+        onDelete: "SET NULL",
+        onUpdate: "SET NULL",
         transaction,
       });
 

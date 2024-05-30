@@ -8,6 +8,7 @@ import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { Op } from "sequelize";
+import { z } from "zod";
 
 export const POST = apiHandler(async (req, { params, session }) => {
   const body = createActivityValueRequest.parse(await req.json());

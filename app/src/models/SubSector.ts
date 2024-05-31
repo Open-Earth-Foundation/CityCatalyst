@@ -1,7 +1,6 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import type { DataSource, DataSourceId } from "./DataSource";
-import type { InventoryValue, InventoryValueId } from "./InventoryValue";
 import type { ReportingLevel, ReportingLevelId } from "./ReportingLevel";
 import type { Scope, ScopeId } from "./Scope";
 import type { Sector, SectorId } from "./Sector";
@@ -15,10 +14,9 @@ export interface SubSectorAttributes {
   subsectorId: string;
   subsectorName?: string;
   sectorId?: string;
+  referenceNumber?: string;
   created?: Date;
   lastUpdated?: Date;
-  referenceNumber?: string;
-  scopeId?: string;
 }
 
 export type SubSectorPk = "subsectorId";
@@ -26,10 +24,9 @@ export type SubSectorId = SubSector[SubSectorPk];
 export type SubSectorOptionalAttributes =
   | "subsectorName"
   | "sectorId"
-  | "created"
-  | "lastUpdated"
   | "referenceNumber"
-  | "scopeId";
+  | "created"
+  | "lastUpdated";
 export type SubSectorCreationAttributes = Optional<
   SubSectorAttributes,
   SubSectorOptionalAttributes
@@ -42,16 +39,10 @@ export class SubSector
   subsectorId!: string;
   subsectorName?: string;
   sectorId?: string;
+  referenceNumber?: string;
   created?: Date;
   lastUpdated?: Date;
-  referenceNumber?: string;
-  scopeId?: string;
 
-  // SubSector belongsTo Scope via scopeId
-  scope!: Scope;
-  getScope!: Sequelize.BelongsToGetAssociationMixin<Scope>;
-  setScope!: Sequelize.BelongsToSetAssociationMixin<Scope, ScopeId>;
-  createScope!: Sequelize.BelongsToCreateAssociationMixin<Scope>;
   // SubSector belongsTo Sector via sectorId
   sector!: Sector;
   getSector!: Sequelize.BelongsToGetAssociationMixin<Sector>;
@@ -90,39 +81,6 @@ export class SubSector
     DataSourceId
   >;
   countDataSources!: Sequelize.HasManyCountAssociationsMixin;
-  // SubSector hasMany InventoryValue via subSectorId
-  inventoryValues!: InventoryValue[];
-  getInventoryValues!: Sequelize.HasManyGetAssociationsMixin<InventoryValue>;
-  setInventoryValues!: Sequelize.HasManySetAssociationsMixin<
-    InventoryValue,
-    InventoryValueId
-  >;
-  addInventoryValue!: Sequelize.HasManyAddAssociationMixin<
-    InventoryValue,
-    InventoryValueId
-  >;
-  addInventoryValues!: Sequelize.HasManyAddAssociationsMixin<
-    InventoryValue,
-    InventoryValueId
-  >;
-  createInventoryValue!: Sequelize.HasManyCreateAssociationMixin<InventoryValue>;
-  removeInventoryValue!: Sequelize.HasManyRemoveAssociationMixin<
-    InventoryValue,
-    InventoryValueId
-  >;
-  removeInventoryValues!: Sequelize.HasManyRemoveAssociationsMixin<
-    InventoryValue,
-    InventoryValueId
-  >;
-  hasInventoryValue!: Sequelize.HasManyHasAssociationMixin<
-    InventoryValue,
-    InventoryValueId
-  >;
-  hasInventoryValues!: Sequelize.HasManyHasAssociationsMixin<
-    InventoryValue,
-    InventoryValueId
-  >;
-  countInventoryValues!: Sequelize.HasManyCountAssociationsMixin;
   // SubSector belongsToMany ReportingLevel via subsectorId and reportinglevelId
   reportinglevelIdReportingLevelSubSectorReportingLevels!: ReportingLevel[];
   getReportinglevelIdReportingLevelSubSectorReportingLevels!: Sequelize.BelongsToManyGetAssociationsMixin<ReportingLevel>;
@@ -222,6 +180,14 @@ export class SubSector
     SubSectorReportingLevelId
   >;
   countSubSectorReportingLevels!: Sequelize.HasManyCountAssociationsMixin;
+  // SubSector hasOne Scope via scopeId
+  scope!: Scope;
+  getScope!: Sequelize.HasOneGetAssociationMixin<Scope>;
+  setScope!: Sequelize.HasOneSetAssociationMixin<
+    Scope,
+    ScopeId
+  >;
+  createScope!: Sequelize.HasOneCreateAssociationMixin<Scope>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof SubSector {
     return SubSector.init(
@@ -250,15 +216,6 @@ export class SubSector
           type: DataTypes.STRING(255),
           allowNull: true,
           field: "reference_number",
-        },
-        scopeId: {
-          type: DataTypes.UUID,
-          allowNull: true,
-          references: {
-            model: "Scope",
-            key: "scope_id",
-          },
-          field: "scope_id",
         },
       },
       {

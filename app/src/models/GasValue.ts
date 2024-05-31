@@ -1,7 +1,8 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
-import { InventoryValue, InventoryValueId } from "./InventoryValue";
-import { EmissionsFactor, EmissionsFactorId } from "./EmissionsFactor";
+import type { ActivityValue, ActivityValueId } from "./ActivityValue";
+import type { EmissionsFactor, EmissionsFactorId } from "./EmissionsFactor";
+import type { InventoryValue, InventoryValueId } from "./InventoryValue";
 
 export interface GasValueAttributes {
   id: string;
@@ -9,6 +10,7 @@ export interface GasValueAttributes {
   emissionsFactorId?: string;
   gas?: string;
   gasAmount?: bigint | null;
+  activityValueId?: string;
 }
 
 export type GasValuePk = "id";
@@ -17,7 +19,8 @@ export type GasValueOptionalAttributes =
   | "inventoryValueId"
   | "emissionsFactorId"
   | "gas"
-  | "gasAmount";
+  | "gasAmount"
+  | "activityValueId";
 export type GasValueCreationAttributes = Optional<
   GasValueAttributes,
   GasValueOptionalAttributes
@@ -25,22 +28,22 @@ export type GasValueCreationAttributes = Optional<
 
 export class GasValue
   extends Model<GasValueAttributes, GasValueCreationAttributes>
-  implements GasValueAttributes
-{
+  implements GasValueAttributes {
   id!: string;
   inventoryValueId?: string;
   emissionsFactorId?: string;
   gas?: string;
   gasAmount?: bigint | null;
+  activityValueId?: string;
 
-  // GasValue belongsTo InventoryValue via inventoryValueId
-  inventoryValue!: InventoryValue;
-  getInventoryValue!: Sequelize.BelongsToGetAssociationMixin<InventoryValue>;
-  setInventoryValue!: Sequelize.BelongsToSetAssociationMixin<
-    InventoryValue,
-    InventoryValueId
+  // GasValue belongsTo ActivityValue via activityValueId
+  activityValue!: ActivityValue;
+  getActivityValue!: Sequelize.BelongsToGetAssociationMixin<ActivityValue>;
+  setActivityValue!: Sequelize.BelongsToSetAssociationMixin<
+    ActivityValue,
+    ActivityValueId
   >;
-  createInventoryValue!: Sequelize.BelongsToCreateAssociationMixin<InventoryValue>;
+  createActivityValue!: Sequelize.BelongsToCreateAssociationMixin<ActivityValue>;
   // GasValue belongsTo EmissionsFactor via emissionsFactorId
   emissionsFactor!: EmissionsFactor;
   getEmissionsFactor!: Sequelize.BelongsToGetAssociationMixin<EmissionsFactor>;
@@ -49,6 +52,14 @@ export class GasValue
     EmissionsFactorId
   >;
   createEmissionsFactor!: Sequelize.BelongsToCreateAssociationMixin<EmissionsFactor>;
+  // GasValue belongsTo InventoryValue via inventoryValueId
+  inventoryValue!: InventoryValue;
+  getInventoryValue!: Sequelize.BelongsToGetAssociationMixin<InventoryValue>;
+  setInventoryValue!: Sequelize.BelongsToSetAssociationMixin<
+    InventoryValue,
+    InventoryValueId
+  >;
+  createInventoryValue!: Sequelize.BelongsToCreateAssociationMixin<InventoryValue>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof GasValue {
     return GasValue.init(
@@ -57,16 +68,6 @@ export class GasValue
           type: DataTypes.UUID,
           allowNull: false,
           primaryKey: true,
-          field: "id",
-        },
-        gas: {
-          type: DataTypes.STRING(255),
-          allowNull: true,
-        },
-        gasAmount: {
-          type: DataTypes.BIGINT,
-          allowNull: true,
-          field: "gas_amount",
         },
         inventoryValueId: {
           type: DataTypes.UUID,
@@ -82,9 +83,27 @@ export class GasValue
           allowNull: true,
           references: {
             model: "EmissionsFactor",
-            key: "emissions_factor_id",
+            key: "id",
           },
           field: "emissions_factor_id",
+        },
+        gas: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+        },
+        gasAmount: {
+          type: DataTypes.BIGINT,
+          allowNull: true,
+          field: "gas_amount",
+        },
+        activityValueId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: "ActivityValue",
+            key: "id",
+          },
+          field: "activity_value_id",
         },
       },
       {
@@ -92,6 +111,8 @@ export class GasValue
         tableName: "GasValue",
         schema: "public",
         timestamps: false,
+        createdAt: "created",
+        updatedAt: "last_updated",
         indexes: [
           {
             name: "GasValue_pkey",

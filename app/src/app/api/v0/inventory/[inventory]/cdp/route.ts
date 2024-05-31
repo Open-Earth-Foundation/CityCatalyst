@@ -6,20 +6,19 @@ import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 
 export const POST = apiHandler(async (_req, { session, params }) => {
-
   logger.info("POST /inventory/[inventory]/cdp");
   logger.info(`Getting ${params.inventory} inventory`);
 
   const inventory = await UserService.findUserInventory(
     params.inventory,
-    session
+    session,
   );
 
   logger.info(`Got ${inventory.inventoryId}`);
 
   const cityId = await CDPService.getCityID(
-    inventory.city.name,
-    inventory.city.country
+    inventory.city.name ?? "Unknown city",
+    inventory.city.country ?? "Unknown country",
   );
 
   logger.info(`Got ${cityId}`);
@@ -28,7 +27,6 @@ export const POST = apiHandler(async (_req, { session, params }) => {
 
   // In test mode, we just need to show that we can get questions and submit a response
   if (CDPService.mode === "test") {
-
     const questionnaire = await CDPService.getQuestions(cityId);
 
     logger.info(`Got questions`);
@@ -41,7 +39,7 @@ export const POST = apiHandler(async (_req, { session, params }) => {
     success = await CDPService.submitResponse(
       cityId,
       question.id,
-      "Test response"
+      "Test response",
     );
   } else if (CDPService.mode === "production") {
     // TODO: Submit total emissions
@@ -50,7 +48,5 @@ export const POST = apiHandler(async (_req, { session, params }) => {
     success = false;
   }
 
-  return NextResponse.json({
-    success: success;
-  });
+  return NextResponse.json({ success });
 });

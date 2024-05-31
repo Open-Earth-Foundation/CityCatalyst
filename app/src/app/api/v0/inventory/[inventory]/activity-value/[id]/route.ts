@@ -9,6 +9,7 @@ import { createActivityValueRequest } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
+import { Op } from "sequelize";
 import { z } from "zod";
 
 export const PATCH = apiHandler(async (req, { params, session }) => {
@@ -143,6 +144,27 @@ export const GET = apiHandler(async (_req, { params, session }) => {
 
   const data = await db.models.ActivityValue.findOne({
     where: { id },
+    include: [
+      {
+        model: db.models.InventoryValue,
+        as: "inventoryValue",
+        where: { inventoryId: params.inventory },
+        required: true,
+      },
+      { model: db.models.DataSource, as: "dataSource" },
+      {
+        model: db.models.GasValue,
+        as: "gasValues",
+        include: [
+          {
+            model: db.models.EmissionsFactor,
+            as: "emissionsFactor",
+            include: [{ model: db.models.DataSource, as: "dataSources" }],
+          },
+        ],
+      },
+    ],
   });
+
   return NextResponse.json({ data });
 });

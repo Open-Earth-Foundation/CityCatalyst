@@ -158,7 +158,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
             borderStyle="solid"
             borderColor="border.neutral"
           >
-            Add Activity
+            {t("add-activity")}
           </ModalHeader>
           <ModalCloseButton marginTop="10px" />
           <ModalBody p={6} px={12}>
@@ -174,12 +174,12 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                 <FormControl className="w-full">
                   <BuildingTypeSelectInput
                     options={[
-                      "Commercial",
-                      "Institutional Buildings",
-                      "Street Lighting",
+                      t("commercial-buildings"),
+                      t("institutional-buildings"),
+                      t("street-lights"),
                     ]}
-                    title="Building Type"
-                    placeholder="Select type of building"
+                    title={t("building-type")}
+                    placeholder={t("select-type-of-building")}
                     register={register}
                     activity="buildingType"
                   />
@@ -187,13 +187,13 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                 <FormControl>
                   <BuildingTypeSelectInput
                     options={[
-                      "All Fuels",
-                      "Natural Gas",
-                      "propane",
-                      "Heating Oil",
+                      t("all-fuels"),
+                      t("natural-gas"),
+                      t("propane"),
+                      t("heating-oil"),
                     ]}
-                    title="Fuel Type"
-                    placeholder="Select type of fuel"
+                    title={t("fuel-type")}
+                    placeholder={t("select-type-of-fuel")}
                     register={register}
                     activity="fuelType"
                   />
@@ -207,7 +207,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                   <FormControl
                     isInvalid={!!resolve(prefix + "activityDataAmount", errors)}
                   >
-                    <FormLabel>Total Fuel Consumption</FormLabel>
+                    <FormLabel>{t("total-fuel-consumption")}</FormLabel>
                     <InputGroup>
                       <NumberInput defaultValue={0} w="full">
                         <NumberInputField
@@ -229,12 +229,12 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                           variant="unstyled"
                           {...register("activity.activityDataUnit")}
                         >
-                          <option value="1">Gallons (gal)</option>
-                          <option value="1">Liters (L)</option>
-                          <option value="1">Cubic meters (m3)</option>
-                          <option value="1">Kilograms (kg)</option>
-                          <option value="1">Terahoules (Tj)</option>
-                          <option value="1">Kilowatt-hour (kWh)</option>
+                          <option value="1">{t("gallons")} (gal)</option>
+                          <option value="1">{t("liters")} (L)</option>
+                          <option value="1">{t("cubic-meters")} (m3)</option>
+                          <option value="1">{t("kilograms")} (kg)</option>
+                          <option value="1">{t("terahoules")} (Tj)</option>
+                          <option value="1">{t("kilowatt-hour")} (kWh)</option>
                         </Select>
                       </InputRightAddon>
                     </InputGroup>
@@ -243,16 +243,16 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                     </FormErrorMessage>
                   </FormControl>
                   <FormControl>
-                    <FormLabel>Emission factor type</FormLabel>
+                    <FormLabel>{t("emission-factor-type")}</FormLabel>
                     <Select
                       {...register("activity.emissionFactorType")}
                       bgColor="base.light"
                       placeholder="Select emission factor type"
                     >
                       {/* TODO translate values and use internal value for saving */}
-                      <option value="local">Local</option>
-                      <option value="regional">Regional</option>
-                      <option value="national">National</option>
+                      <option value="local">{t("local")}</option>
+                      <option value="regional">{t("regional")}</option>
+                      <option value="national">{t("national")}</option>
                       <option value="ipcc">IPCC</option>
                       <option key="custom" value="custom">
                         {t("add-custom")}
@@ -276,7 +276,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                   letterSpacing="wide"
                   fontFamily="heading"
                 >
-                  Emissions factor values
+                  {t("emissions-factor-values")}
                 </FormLabel>
                 <Tooltip
                   hasArrow

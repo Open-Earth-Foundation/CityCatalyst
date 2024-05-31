@@ -57,54 +57,8 @@ import SuggestedActivityCard from "@/components/Cards/suggested-activities-card"
 import AddActivityModal from "@/components/Modals/add-activity-modal";
 import AddActivityModalEnergyConsumption from "@/components/Modals/add-activity-energy-consumption-modal";
 import { api } from "@/services/api";
-
-const METHODOLOGIES = [
-  {
-    name: "Fuel combustion consumption",
-    description:
-      "Direct recording of fuels combusted in commercial buildings. ",
-    inputRequired: ["Total fuel consumed amound"],
-    disabled: false,
-  },
-  {
-    name: "Scaled sample data",
-    description:
-      "Extrapolates emissions from a representative sample of buildings.",
-    inputRequired: [
-      "Sample fuel consumed amount",
-      "Scaling data (population, GDP, area, etc.) for sample and city level",
-    ],
-    disabled: false,
-  },
-  {
-    name: "Modeled data",
-    description: "Emissions estimated from predictive models. ",
-    inputRequired: ["Modeled fuel intensity consumption", "Built area"],
-    disabled: true,
-  },
-  {
-    name: "Direct measure",
-    description:
-      "Direct emission measurements from commercial buildings' combustion sources.",
-    inputRequired: ["Emissions data"],
-    disabled: false,
-  },
-];
-
-const BUILDINGS = [
-  {
-    id: 1,
-    name: "Commercial Buildings",
-  },
-  {
-    id: 2,
-    name: "Institutional Buildings",
-  },
-  {
-    id: 3,
-    name: "Street Lighting",
-  },
-];
+import { Trans } from "react-i18next";
+import { t } from "i18next";
 
 function SubSectorPage({
   params: { lng, step, inventory },
@@ -123,6 +77,46 @@ function SubSectorPage({
   const handleSwitch = (e: any) => {
     setIsChecked(!isChecked);
   };
+  const METHODOLOGIES = [
+    {
+      name: t("fuel-combustion-consumption"),
+      description: t("fuel-combustion-consuption-desciption"),
+      inputRequired: [t("total-fuel-consumed")],
+      disabled: false,
+    },
+    {
+      name: t("scaled-sample-data"),
+      description: t("scaled-sample-data-desc"),
+      inputRequired: [t("sample-fuel"), t("scaling-data")],
+      disabled: false,
+    },
+    {
+      name: t("modeled-data"),
+      description: t("modeled-data-desc"),
+      inputRequired: [t("modeled-fuel"), t("build-area")],
+      disabled: true,
+    },
+    {
+      name: t("direct-measure"),
+      description: t("direct-measure-desc"),
+      inputRequired: [t("emissions-data")],
+      disabled: false,
+    },
+  ];
+  const BUILDINGS = [
+    {
+      id: 1,
+      name: t("commercial-buildings"),
+    },
+    {
+      id: 2,
+      name: t("institutional-buildings"),
+    },
+    {
+      id: 3,
+      name: t("street-lighting"),
+    },
+  ];
 
   const handleCardClick = () => {
     setIsSelected(!isSelected);
@@ -169,7 +163,7 @@ function SubSectorPage({
                 href={`/${inventory}/data`}
                 color="content.tertiary"
               >
-                ALL SECTORS
+                {t("all-sectors")}
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbItem>
@@ -177,12 +171,12 @@ function SubSectorPage({
                 href={`/${inventory}/data/1`}
                 color="content.tertiary"
               >
-                Stationary Energy
+                {t("stationary-energy")}
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbItem>
               <BreadcrumbLink href="#" color="content.link">
-                Commercial And Institutional Buildings
+                {t("commercial-and-institutional-buildings")}
               </BreadcrumbLink>
             </BreadcrumbItem>
           </Breadcrumb>
@@ -194,7 +188,7 @@ function SubSectorPage({
         </Box>
         <Box display="flex" gap="16px" flexDirection="column">
           <Text fontFamily="heading" fontSize="headline.md" fontWeight="bold">
-            i.1.2 Commercial and Institutional Buildings
+            i.1.2 {t("commercial-and-institutional-buildings")}
           </Text>
           <Text
             fontFamily="heading"
@@ -202,7 +196,8 @@ function SubSectorPage({
             fontSize="label.lg"
             fontWeight="medium"
           >
-            Sector: Stationary Energy | Inventory Year: 2023
+            {t("sector")}: {t("stationary-energy")} | {t("inventory-year")}:
+            2023
           </Text>
           <Text
             letterSpacing="wide"
@@ -210,10 +205,7 @@ function SubSectorPage({
             fontWeight="normal"
             color="interactive.control"
           >
-            Includes all emissions from energy use in commercial buildings and
-            in institutional public buildings such as schools, hospitals,
-            government offices, highway street lighting, and other public
-            facilities.
+            {t("commercial-and-institutional-building-description")}
           </Text>
         </Box>
       </Box>
@@ -226,7 +218,7 @@ function SubSectorPage({
                 fontSize="title.md"
                 fontWeight="medium"
               >
-                Scope 1
+                {t("scope")} 1
               </Text>
             </Tab>
             <Tab>
@@ -236,7 +228,7 @@ function SubSectorPage({
                 fontSize="title.md"
                 fontWeight="medium"
               >
-                Scope 2
+                {t("scope")} 2
               </Text>
             </Tab>
           </TabList>
@@ -257,14 +249,14 @@ function SubSectorPage({
                   justifyContent="space-between"
                   mb="84px"
                 >
-                  <HeadingText title="Add Data Manually to Your Inventory" />
+                  <HeadingText title={t("add-data-manually")} />
                   <Box display="flex" gap="16px" fontSize="label.lg">
                     <Switch
                       isChecked={isChecked}
                       onChange={(e) => handleSwitch(e)}
                     />
                     <Text fontFamily="heading" fontWeight="medium">
-                      This scope is not applicable to my city
+                      {t("scope-not-applicable")}
                     </Text>
                   </Box>
                 </Box>
@@ -278,19 +270,18 @@ function SubSectorPage({
                       textTransform="uppercase"
                       color="content.tertiary"
                     >
-                      methodology
+                      {t("methodology")}
                     </Text>
                     <Box display="flex" justifyContent="space-between">
                       <Box>
-                        <HeadingText title="Fuel Combustion Consumption" />
+                        <HeadingText title={t("fuel-combustion-consumption")} />
                         <Text
                           letterSpacing="wide"
                           fontSize="body.lg"
                           fontWeight="normal"
                           color="interactive.control"
                         >
-                          Direct recording of fuels combusted in commercial
-                          buildings.
+                          {t("fuel-combustion-consumption-description")}
                         </Text>
                       </Box>
                       <Box display="flex" alignItems="center">
@@ -303,7 +294,7 @@ function SubSectorPage({
                           fontSize="button.md"
                           gap="8px"
                         >
-                          add activity
+                          {t("add-activity")}
                         </Button>
                         <IconButton
                           icon={<MdMoreVert size="24px" />}
@@ -325,7 +316,7 @@ function SubSectorPage({
                         fontWeight="semibold"
                         color="content.secondary"
                       >
-                        Suggested activities to complete.
+                        {t("activity-suggestion")}
                       </Text>
                       {hasActivityData ? (
                         <Box>
@@ -350,14 +341,14 @@ function SubSectorPage({
                                         fontSize="title.md"
                                         fontWeight="semibold"
                                       >
-                                        Commercial Buildings
+                                        {t("commercial-buildings")}
                                       </Text>
                                       <Text
                                         color="content.tertiary"
                                         letterSpacing="wide"
                                         fontSize="body.md"
                                       >
-                                        4 activities added
+                                        4 {t("activities-added")}
                                       </Text>
                                     </Box>
                                     <Box
@@ -366,7 +357,7 @@ function SubSectorPage({
                                       fontFamily="heading"
                                     >
                                       <Text fontWeight="medium">
-                                        Total Consumption:&nbsp;
+                                        {t("total-consumption")}:&nbsp;
                                       </Text>
                                       <Text fontWeight="normal">
                                         715,4M gallons
@@ -378,7 +369,7 @@ function SubSectorPage({
                                       fontFamily="heading"
                                     >
                                       <Text fontWeight="medium">
-                                        Emissions:&nbsp;
+                                        {t("emissions")}:&nbsp;
                                       </Text>
                                       <Text fontWeight="normal">15,MtCO2e</Text>
                                     </Box>
@@ -398,10 +389,10 @@ function SubSectorPage({
                                   >
                                     <Thead>
                                       <Tr>
-                                        <Th>Fuel Type</Th>
-                                        <Th>Data quality</Th>
-                                        <Th>Fuel Consumption</Th>
-                                        <Th>Emissions</Th>
+                                        <Th>{t("fuel-type")}</Th>
+                                        <Th>{t("data-quality")}</Th>
+                                        <Th>{t("fuel-consumption")}</Th>
+                                        <Th>{t("emissions")}</Th>
                                         <Th></Th>
                                       </Tr>
                                     </Thead>
@@ -459,7 +450,7 @@ function SubSectorPage({
                                 fontWeight="semibold"
                                 fontSize="headline.md"
                               >
-                                Total Emissions
+                                {t("total-emissions")}
                               </Text>
                               <Text
                                 fontFamily="heading"
@@ -474,7 +465,7 @@ function SubSectorPage({
                       ) : (
                         <Box className="flex flex-col gap-4">
                           {BUILDINGS.map(({ id, name }) => (
-                            <SuggestedActivityCard key={id} name={name} />
+                            <SuggestedActivityCard key={id} name={name} t={t} />
                           ))}
                         </Box>
                       )}
@@ -484,7 +475,7 @@ function SubSectorPage({
                   <Box>
                     {isChecked ? (
                       <Box>
-                        <HeadingText title="Scope Unavailable/Not Applicable to My City" />
+                        <HeadingText title={t("scope-unavailable")} />
                         <Text
                           letterSpacing="wide"
                           fontSize="body.lg"
@@ -492,11 +483,7 @@ function SubSectorPage({
                           color="interactive.control"
                           mt="8px"
                         >
-                          Some emissions activities may not be relevant for your
-                          city, or maybe they&apos;re accounted for in a
-                          different section. Check the reason that fits and
-                          provide details if needed. This helps keep your
-                          inventory accurate and tailored to your city.
+                          {t("scope-unavailable-description")}
                         </Text>
                         <Box mt="48px">
                           <Text
@@ -506,25 +493,24 @@ function SubSectorPage({
                             pt="48px"
                             pb="24px"
                           >
-                            Select Reason
+                            {t("select-reason")}
                           </Text>
                           <RadioGroup>
                             <Stack direction="column">
-                              <Radio value="1" color="interactive.secondary">
-                                The activity or process does not occur or exist
-                                within the city
+                              <Radio
+                                value={t("select-reason-1")}
+                                color="interactive.secondary"
+                              >
+                                {t("select-reason-1")}
                               </Radio>
-                              <Radio value="2">
-                                The emissions for this activity are not
-                                estimated
+                              <Radio value={t("select-reason-2")}>
+                                {t("select-reason-2")}
                               </Radio>
-                              <Radio value="3">
-                                The emissions could lead to the disclosure of
-                                confidential information
+                              <Radio value={t("select-reason-3")}>
+                                {t("select-reason-3")}
                               </Radio>
-                              <Radio value="4">
-                                The emissions for this activity are estimated
-                                and presented elsewhere
+                              <Radio value={t("select-reason-4")}>
+                                {t("select-reason-4")}
                               </Radio>
                             </Stack>
                           </RadioGroup>
@@ -536,17 +522,17 @@ function SubSectorPage({
                             pb="24px"
                             letterSpacing="wide"
                           >
-                            Explanation/ Justification
+                            {t("explanation-justification")}
                           </Text>
                           <Textarea
                             borderRadius="4px"
                             borderWidth="1px"
                             borderColor="border.neutral"
                             backgroundColor="base.light"
-                            placeholder="Write in detail why this scope is not included"
+                            placeholder={t("textarea-placeholder-text")}
                           />
                           <Button h="48px" p="16px" mt="24px">
-                            SAVE CHANGES
+                            {t("save-changes")}
                           </Button>
                         </Box>
                       </Box>
@@ -558,18 +544,20 @@ function SubSectorPage({
                           fontWeight="normal"
                           color="interactive.control"
                         >
-                          To add your inventory data manually, select the
-                          methodology used to collect the data and calculate
-                          your emissions.{" "}
-                          <Link
-                            href="/"
-                            color="content.link"
-                            fontWeight="bold"
-                            textDecoration="underline"
-                          >
-                            Learn more
-                          </Link>{" "}
-                          about methodologies
+                          <Trans t={t} i18nKey="add-data-manually-desciption">
+                            To add your inventory data manually, select the
+                            methodology used to collect the data and calculate
+                            your emissions.{" "}
+                            <Link
+                              href="/"
+                              color="content.link"
+                              fontWeight="bold"
+                              textDecoration="underline"
+                            >
+                              Learn more
+                            </Link>{" "}
+                            about methodologies
+                          </Trans>
                         </Text>
                         <Text
                           fontWeight="bold"
@@ -578,7 +566,7 @@ function SubSectorPage({
                           pt="48px"
                           pb="24px"
                         >
-                          Select Methodology
+                          {t("select-methodology")}
                         </Text>
                         <Box
                           gap="16px"
@@ -625,14 +613,14 @@ function SubSectorPage({
                   justifyContent="space-between"
                   mb="84px"
                 >
-                  <HeadingText title="Add Data Manually to Your Inventory" />
+                  <HeadingText title={t("add-data-manually")} />
                   <Box display="flex" gap="16px" fontSize="label.lg">
                     <Switch
                       isChecked={isChecked}
                       onChange={(e) => handleSwitch(e)}
                     />
                     <Text fontFamily="heading" fontWeight="medium">
-                      This scope is not applicable to my city
+                      {t("scope-not-applicable")}
                     </Text>
                   </Box>
                 </Box>
@@ -646,32 +634,30 @@ function SubSectorPage({
                       textTransform="uppercase"
                       color="content.tertiary"
                     >
-                      methodology
+                      {t("methodology")}
                     </Text>
                     <Box display="flex" justifyContent="space-between">
                       <Box>
-                        <HeadingText title="Energy Consumption" />
+                        <HeadingText title={t("energy-consumption")} />
                         <Text
                           letterSpacing="wide"
                           fontSize="body.lg"
                           fontWeight="normal"
                           color="interactive.control"
                         >
-                          From electricity or heat purchased for use in
-                          commercial buildings.
+                          {t("energy-consumption-description")}
                         </Text>
                       </Box>
                       <Box display="flex" alignItems="center">
                         <Button
                           onClick={onAddActivityModalOpenEC}
-                          title="Add Activity"
                           leftIcon={<AddIcon h="16px" w="16px" />}
                           h="48px"
                           aria-label="activity-button"
                           fontSize="button.md"
                           gap="8px"
                         >
-                          add activity
+                          {t("add-activity")}
                         </Button>
                         <IconButton
                           icon={<MdMoreVert size="24px" />}
@@ -693,7 +679,7 @@ function SubSectorPage({
                         fontWeight="semibold"
                         color="content.secondary"
                       >
-                        Suggested activities to complete.
+                        {t("activity-suggestion")}
                       </Text>
                       {hasActivityData ? (
                         <Box>
@@ -718,14 +704,14 @@ function SubSectorPage({
                                         fontSize="title.md"
                                         fontWeight="semibold"
                                       >
-                                        Commercial Buildings
+                                        {t("commercial-buildings")}
                                       </Text>
                                       <Text
                                         color="content.tertiary"
                                         letterSpacing="wide"
                                         fontSize="body.md"
                                       >
-                                        4 activities added
+                                        4 {t("activities-added")}
                                       </Text>
                                     </Box>
                                     <Box
@@ -734,7 +720,7 @@ function SubSectorPage({
                                       fontFamily="heading"
                                     >
                                       <Text fontWeight="medium">
-                                        Total Consumption:&nbsp;
+                                        {t("total-consumption")}:&nbsp;
                                       </Text>
                                       <Text fontWeight="normal">
                                         715,4M gallons
@@ -746,7 +732,7 @@ function SubSectorPage({
                                       fontFamily="heading"
                                     >
                                       <Text fontWeight="medium">
-                                        Emissions:&nbsp;
+                                        {t("emissions")} :&nbsp;
                                       </Text>
                                       <Text fontWeight="normal">15,MtCO2e</Text>
                                     </Box>
@@ -766,10 +752,10 @@ function SubSectorPage({
                                   >
                                     <Thead>
                                       <Tr>
-                                        <Th>Fuel Type</Th>
-                                        <Th>Data quality</Th>
-                                        <Th>Fuel Consumption</Th>
-                                        <Th>Emissions</Th>
+                                        <Th>{t("fuel-type")} </Th>
+                                        <Th>{t("data-quality")} </Th>
+                                        <Th>{t("fuel-consumption")} </Th>
+                                        <Th>{t("emissions")}</Th>
                                         <Th></Th>
                                       </Tr>
                                     </Thead>
@@ -817,7 +803,7 @@ function SubSectorPage({
                                 fontWeight="semibold"
                                 fontSize="headline.md"
                               >
-                                Total Emissions
+                                {t("total-emissions")}
                               </Text>
                               <Text
                                 fontFamily="heading"
@@ -832,7 +818,7 @@ function SubSectorPage({
                       ) : (
                         <Box className="flex flex-col gap-4">
                           {BUILDINGS.map(({ id, name }) => (
-                            <SuggestedActivityCard key={id} name={name} />
+                            <SuggestedActivityCard key={id} name={name} t={t} />
                           ))}
                         </Box>
                       )}
@@ -842,7 +828,7 @@ function SubSectorPage({
                   <Box>
                     {isChecked ? (
                       <Box>
-                        <HeadingText title="Scope Unavailable/Not Applicable to My City" />
+                        <HeadingText title={t("scope-unavailable")} />
                         <Text
                           letterSpacing="wide"
                           fontSize="body.lg"
@@ -850,11 +836,7 @@ function SubSectorPage({
                           color="interactive.control"
                           mt="8px"
                         >
-                          Some emissions activities may not be relevant for your
-                          city, or maybe they&apos;re accounted for in a
-                          different section. Check the reason that fits and
-                          provide details if needed. This helps keep your
-                          inventory accurate and tailored to your city.
+                          {t("scope-unavailable-description")}
                         </Text>
                         <Box mt="48px">
                           <Text
@@ -864,25 +846,24 @@ function SubSectorPage({
                             pt="48px"
                             pb="24px"
                           >
-                            Select Reason
+                            {t("select-reason")}
                           </Text>
                           <RadioGroup>
                             <Stack direction="column">
-                              <Radio value="1" color="interactive.secondary">
-                                The activity or process does not occur or exist
-                                within the city
+                              <Radio
+                                value={t("select-reason-1")}
+                                color="interactive.secondary"
+                              >
+                                {t("select-reason-1")}
                               </Radio>
-                              <Radio value="2">
-                                The emissions for this activity are not
-                                estimated
+                              <Radio value={t("select-reason-2")}>
+                                {t("select-reason-2")}
                               </Radio>
-                              <Radio value="3">
-                                The emissions could lead to the disclosure of
-                                confidential information
+                              <Radio value={t("select-reason-3")}>
+                                {t("select-reason-3")}
                               </Radio>
-                              <Radio value="4">
-                                The emissions for this activity are estimated
-                                and presented elsewhere
+                              <Radio value={t("select-reason-4")}>
+                                {t("select-reason-4")}
                               </Radio>
                             </Stack>
                           </RadioGroup>
@@ -894,17 +875,17 @@ function SubSectorPage({
                             pb="24px"
                             letterSpacing="wide"
                           >
-                            Explanation/ Justification
+                            {t("explanation-justification")}
                           </Text>
                           <Textarea
                             borderRadius="4px"
                             borderWidth="1px"
                             borderColor="border.neutral"
                             backgroundColor="base.light"
-                            placeholder="Write in detail why this scope is not included"
+                            placeholder={t("textarea-placeholder-text")}
                           />
                           <Button h="48px" p="16px" mt="24px">
-                            SAVE CHANGES
+                            {t("save-changes")}
                           </Button>
                         </Box>
                       </Box>
@@ -916,18 +897,20 @@ function SubSectorPage({
                           fontWeight="normal"
                           color="interactive.control"
                         >
-                          To add your inventory data manually, select the
-                          methodology used to collect the data and calculate
-                          your emissions.{" "}
-                          <Link
-                            href="/"
-                            color="content.link"
-                            fontWeight="bold"
-                            textDecoration="underline"
-                          >
-                            Learn more
-                          </Link>{" "}
-                          about methodologies
+                          <Trans t={t} i18nKey="add-data-manually-desciption">
+                            To add your inventory data manually, select the
+                            methodology used to collect the data and calculate
+                            your emissions.{" "}
+                            <Link
+                              href="/"
+                              color="content.link"
+                              fontWeight="bold"
+                              textDecoration="underline"
+                            >
+                              Learn more
+                            </Link>{" "}
+                            about methodologies
+                          </Trans>
                         </Text>
                         <Text
                           fontWeight="bold"
@@ -936,7 +919,7 @@ function SubSectorPage({
                           pt="48px"
                           pb="24px"
                         >
-                          Select Methodology
+                          {t("select-methodology")}
                         </Text>
                         <Box
                           gap="16px"

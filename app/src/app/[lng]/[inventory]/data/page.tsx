@@ -67,7 +67,7 @@ export default function AddDataIntro({
             fontSize="button.md"
             fontWeight="bold"
           >
-            go back
+            {t("go-back")}
           </Text>
         </Box>
       </Link>

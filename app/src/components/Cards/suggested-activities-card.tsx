@@ -1,12 +1,14 @@
 import { AddIcon } from "@chakra-ui/icons";
 import { Box, Button, Card, Checkbox, Text } from "@chakra-ui/react";
+import { TFunction } from "i18next";
 import React, { FC } from "react";
 
 interface SuggestedActivityCardProps {
   name: string;
+  t: TFunction;
 }
 
-const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({ name }) => {
+const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({ name, t }) => {
   return (
     <Card
       display="flex"
@@ -61,7 +63,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({ name }) => {
           fontWeight="normal"
           color="interactive.control"
         >
-          Type of buildings
+          {t("type-of-building")}
         </Text>
         <Text
           letterSpacing="wide"
@@ -83,7 +85,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({ name }) => {
           color="content.link"
           gap="8px"
         >
-          add activity
+          {t("add-activity")}
         </Button>
       </Box>
     </Card>

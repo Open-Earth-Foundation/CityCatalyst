@@ -611,7 +611,7 @@ export default function AddDataSteps({
                 href={`/${inventory}/data`}
                 color="content.tertiary"
               >
-                ALL SECTORS
+                {t("all-sectors")}
               </BreadcrumbLink>
             </BreadcrumbItem>
 

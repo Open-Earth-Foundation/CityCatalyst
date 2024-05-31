@@ -151,8 +151,9 @@ const AddActivityModalEnergyConsumption: FC<AddUserModalProps> = ({
             borderBottomWidth="1px"
             borderStyle="solid"
             borderColor="border.neutral"
+            textTransform="capitalize"
           >
-            Add Activity
+            {t("add-activity")}
           </ModalHeader>
           <ModalCloseButton marginTop="10px" />
           <ModalBody p={6} px={12}>
@@ -168,12 +169,12 @@ const AddActivityModalEnergyConsumption: FC<AddUserModalProps> = ({
                 <FormControl className="w-full">
                   <BuildingTypeSelectInput
                     options={[
-                      "Commercial",
-                      "Institutional Buildings",
-                      "Street Lighting",
+                      t("commercial-buildings"),
+                      t("institutional-buildings"),
+                      t("street-lighting"),
                     ]}
-                    title="Building Type"
-                    placeholder="Select type of building"
+                    title={t("building-type")}
+                    placeholder={t("select-type-of-building")}
                     register={register}
                     activity="buildingType"
                   />
@@ -181,18 +182,18 @@ const AddActivityModalEnergyConsumption: FC<AddUserModalProps> = ({
                 <FormControl>
                   <BuildingTypeSelectInput
                     options={[
-                      "All energy usages",
-                      "Electricity",
-                      "Electricity (CHP)",
-                      "Heating",
-                      "Heating Oil",
-                      "Stream (CHR)",
-                      "Steam",
-                      "Refrigiration",
-                      "Refrigiration (CHP)",
+                      t("all-energy-uses"),
+                      t("electricity"),
+                      t("electricity-chp"),
+                      t("heating"),
+                      t("heating-oil"),
+                      t("steam-chr"),
+                      t("steam"),
+                      t("refrigiration"),
+                      t("refrigiration-chp"),
                     ]}
-                    title="Fuel Type"
-                    placeholder="Select type of fuel"
+                    title={t("fuel-type")}
+                    placeholder={t("select-type-of-fuel")}
                     register={register}
                     activity="fuelType"
                   />
@@ -206,7 +207,7 @@ const AddActivityModalEnergyConsumption: FC<AddUserModalProps> = ({
                   <FormControl
                     isInvalid={!!resolve(prefix + "activityDataAmount", errors)}
                   >
-                    <FormLabel>Total Fuel Consumption</FormLabel>
+                    <FormLabel>{t("total-fuel-consumption")}</FormLabel>
                     <InputGroup>
                       <NumberInput defaultValue={0} w="full">
                         <NumberInputField
@@ -228,9 +229,11 @@ const AddActivityModalEnergyConsumption: FC<AddUserModalProps> = ({
                           variant="unstyled"
                           {...register("activity.activityDataUnit")}
                         >
-                          <option value="1">Kilowatt-hour (kWh)</option>
-                          <option value="1">Terajoules (Tj)</option>
-                          <option value="1">Kilowatt-kilometer (kW/mk)</option>
+                          <option value="1">{t("kilowatt-hour")} (kWh)</option>
+                          <option value="1">{t("terajoules")} (Tj)</option>
+                          <option value="1">
+                            {t("kilowatt-kilometer")} (kW/mk)
+                          </option>
                         </Select>
                       </InputRightAddon>
                     </InputGroup>
@@ -239,16 +242,16 @@ const AddActivityModalEnergyConsumption: FC<AddUserModalProps> = ({
                     </FormErrorMessage>
                   </FormControl>
                   <FormControl>
-                    <FormLabel>Emission factor type</FormLabel>
+                    <FormLabel>{t("emission-factor-type")}</FormLabel>
                     <Select
                       {...register("activity.emissionFactorType")}
                       bgColor="base.light"
-                      placeholder="Select emission factor type"
+                      placeholder={t("select-emission-factor-type")}
                     >
                       {/* TODO translate values and use internal value for saving */}
-                      <option value="local">Local</option>
-                      <option value="regional">Regional</option>
-                      <option value="national">National</option>
+                      <option value="local">{t("local")}</option>
+                      <option value="regional">{t("regional")}</option>
+                      <option value="national">{t("national")}</option>
                       <option value="ipcc">IPCC</option>
                       <option key="custom" value="custom">
                         {t("add-custom")}
@@ -272,7 +275,7 @@ const AddActivityModalEnergyConsumption: FC<AddUserModalProps> = ({
                   letterSpacing="wide"
                   fontFamily="heading"
                 >
-                  Emissions factor values
+                  {t("emissions-factor-values")}
                 </FormLabel>
                 <Tooltip
                   hasArrow
@@ -424,7 +427,7 @@ const AddActivityModalEnergyConsumption: FC<AddUserModalProps> = ({
               p={0}
               m={0}
             >
-              Add Activity
+              {t("add-activity")}
             </Button>
           </ModalFooter>
         </ModalContent>

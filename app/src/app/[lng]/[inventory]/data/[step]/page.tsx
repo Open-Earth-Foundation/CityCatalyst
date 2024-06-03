@@ -584,8 +584,6 @@ export default function AddDataSteps({
     }
   };
 
-  console.log(currentStep.icon);
-
   return (
     <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
       <Box w="full" display="flex" alignItems="center" gap="16px" mb="64px">

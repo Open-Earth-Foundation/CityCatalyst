@@ -232,7 +232,7 @@ const AddActivityModalEnergyConsumption: FC<AddUserModalProps> = ({
                           <option value="1">{t("kilowatt-hour")} (kWh)</option>
                           <option value="1">{t("terajoules")} (Tj)</option>
                           <option value="1">
-                            {t("kilowatt-kilometer")} (kW/mk)
+                            {t("kilowatt-kilometer")} (kW/km)
                           </option>
                         </Select>
                       </InputRightAddon>

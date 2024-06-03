@@ -123,8 +123,7 @@ function SubSectorPage({
     onClose: onAddActivityModalCloseEC,
   } = useDisclosure();
 
-  const { data } = api.useMockDataQuery({});
-  console.log(data);
+  const { data: activities } = api.useGetActivityValuesQuery(inventory);
 
   return (
     <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
@@ -385,39 +384,41 @@ function SubSectorPage({
                                       </Tr>
                                     </Thead>
                                     <Tbody>
-                                      {data?.map((activity: any, i: number) => {
-                                        return (
-                                          <Tr key={i}>
-                                            <Td>{activity?.fuelType}</Td>
-                                            <Td>
-                                              <Tag
-                                                size="lg"
-                                                variant="outline"
-                                                colorScheme="blue"
-                                                borderRadius="full"
-                                              >
-                                                <TagLabel>
-                                                  {activity?.dataQuality}
-                                                </TagLabel>
-                                              </Tag>
-                                            </Td>
-                                            <Td>
-                                              {activity?.fuelConsumption!}
-                                            </Td>
-                                            <Td>{activity?.emissions}</Td>
-                                            <Td>
-                                              <IconButton
-                                                color="interactive.control"
-                                                variant="ghost"
-                                                aria-label="activity-data-popover"
-                                                icon={
-                                                  <MdMoreVert size="24px" />
-                                                }
-                                              />
-                                            </Td>
-                                          </Tr>
-                                        );
-                                      })}
+                                      {activities?.map(
+                                        (activity: any, i: number) => {
+                                          return (
+                                            <Tr key={i}>
+                                              <Td>{activity?.fuelType}</Td>
+                                              <Td>
+                                                <Tag
+                                                  size="lg"
+                                                  variant="outline"
+                                                  colorScheme="blue"
+                                                  borderRadius="full"
+                                                >
+                                                  <TagLabel>
+                                                    {activity?.dataQuality}
+                                                  </TagLabel>
+                                                </Tag>
+                                              </Td>
+                                              <Td>
+                                                {activity?.fuelConsumption!}
+                                              </Td>
+                                              <Td>{activity?.emissions}</Td>
+                                              <Td>
+                                                <IconButton
+                                                  color="interactive.control"
+                                                  variant="ghost"
+                                                  aria-label="activity-data-popover"
+                                                  icon={
+                                                    <MdMoreVert size="24px" />
+                                                  }
+                                                />
+                                              </Td>
+                                            </Tr>
+                                          );
+                                        },
+                                      )}
                                     </Tbody>
                                   </Table>
                                 </TableContainer>

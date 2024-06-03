@@ -24,7 +24,6 @@ function AddDataCard({
   inventory,
 }: AddDataCardProps) {
   const router = useRouter();
-  console.log(inventory);
   return (
     <Card
       className="space-y-6 grow w-1/3"

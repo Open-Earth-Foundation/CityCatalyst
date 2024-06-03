@@ -24,10 +24,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
     // handleCardSelect(name);
   };
 
-  const handleCardClick = () => {
-    setIsSelected(!isSelected);
-    // handleCardSelect(name);
-  };
+  
   return (
     <Card
       borderWidth="1px"

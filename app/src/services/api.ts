@@ -402,6 +402,13 @@ export const api = createApi({
       },
       transformResponse: (response: { data: [] }) => response.data,
     }),
+    getActivityValues: builder.query({
+      query: (inventoryId: string) => ({
+        url: `/inventory/${inventoryId}/activity-value`,
+        method: "GET",
+      }),
+      transformResponse: (response: any) => response.data,
+    }),
   }),
 });
 

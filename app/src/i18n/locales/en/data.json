@@ -3,7 +3,7 @@
   "data-details": "Add data or connect third-party data for your city and complete your city's emission inventory using the GPC Basic methodology. <2>Learn more</2> about GPC Protocol",
   "data-view-heading": "Select Sector",
   "data-view-details": "Select and fill in the necessary data for the relevant sector to build a comprehensive GHG inventory.",
- 
+
   "all-sectors": "All sectors",
   "commercial-and-institutional-buildings": "Commercial and Institutional Buildings",
   "commercial-and-institutional-building-description": "Includes all emissions from energy use in commercial buildings and in institutional public buildings such as schools, hospitals, government offices, highway street lighting, and other public facilities.",
@@ -13,7 +13,7 @@
   "fuel-combustion-consumption-description": "Direct recording of fuels combusted in commercial buildings.",
   "add-activity": "add activity",
   "activity-suggestion": "Suggested activities to complete.",
-  "type-of-building": "Type of building", 
+  "type-of-building": "Type of building",
   "commercial-buildings": "Commercial Buildings",
   "activities-added": "activities added",
   "total-consumption": "Total Consumption",
@@ -25,10 +25,10 @@
   "energy-consumption": "Energy Consumption",
   "energy-consumption-description": "From electricity or heat purchased for use in commercial buildings.",
   "add-data-manually-desciption": "To add your inventory data manually, select the methodology used to collect the data and calculate your emissions. <2>Learn more</2> about methodologies",
-  
+
   "fuel-combustion-consumption-desciption": "Direct recording of fuels combusted in commercial buildings.",
   "total-fuel-consumed": "Total consumed amount",
-  
+
   "input-required": "Input required",
 
   "scaled-sample-data": "Scaled sample data",
@@ -273,5 +273,7 @@
   "file-upload-success": "File upload success",
   "file-deletion-error": "File deletetion error!",
   "file-deletion-error-description": "Something went wrong during file deletion",
-  "file-deletion-success": "file deleted successfully"
+  "file-deletion-success": "file deleted successfully",
+
+  "coming-soon": "Coming Soon"
 }

@@ -1,11 +1,13 @@
 "use client";
 
-import {
-  AddIcon,
-  ArrowBackIcon,
-  CheckIcon,
-  ChevronRightIcon,
-} from "@chakra-ui/icons";
+import MethodologyCard from "@/components/Cards/methodology-card";
+import SuggestedActivityCard from "@/components/Cards/suggested-activities-card";
+import AddActivityModalEnergyConsumption from "@/components/Modals/add-activity-energy-consumption-modal";
+import AddActivityModal from "@/components/Modals/add-activity-modal";
+import HeadingText from "@/components/heading-text";
+import { useTranslation } from "@/i18n/client";
+import { api } from "@/services/api";
+import { AddIcon, ArrowBackIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import {
   Accordion,
   AccordionButton,
@@ -17,8 +19,6 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   Button,
-  Card,
-  Checkbox,
   IconButton,
   Link,
   Radio,
@@ -30,35 +30,23 @@ import {
   TabPanel,
   TabPanels,
   Table,
-  TableCaption,
   TableContainer,
   Tabs,
   Tag,
   TagLabel,
-  TagRightIcon,
   Tbody,
   Td,
   Text,
   Textarea,
-  Tfoot,
   Th,
   Thead,
   Tr,
   useDisclosure,
-  useRadio,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
-import { useTranslation } from "@/i18n/client";
-import { MdMoreVert, MdOutlineHomeWork } from "react-icons/md";
-import HeadingText from "@/components/heading-text";
-import MethodologyCard from "@/components/Cards/methodology-card";
-import SuggestedActivityCard from "@/components/Cards/suggested-activities-card";
-import AddActivityModal from "@/components/Modals/add-activity-modal";
-import AddActivityModalEnergyConsumption from "@/components/Modals/add-activity-energy-consumption-modal";
-import { api } from "@/services/api";
+import { useState } from "react";
 import { Trans } from "react-i18next";
-import { t } from "i18next";
+import { MdMoreVert, MdOutlineHomeWork } from "react-icons/md";
 
 function SubSectorPage({
   params: { lng, step, inventory },
@@ -587,6 +575,7 @@ function SubSectorPage({
                                 inputRequired={inputRequired}
                                 isSelected={selectedValue === name}
                                 disabled={disabled}
+                                t={t}
                                 handleCardSelect={handleCardClick}
                               />
                             ),
@@ -940,6 +929,7 @@ function SubSectorPage({
                                 inputRequired={inputRequired}
                                 isSelected={selectedValue === name}
                                 disabled={disabled}
+                                t={t}
                                 handleCardSelect={handleCardClick}
                               />
                             ),

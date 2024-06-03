@@ -1,4 +1,5 @@
-import { Badge, Box, Card, Radio, Tag, Text } from "@chakra-ui/react";
+import { Badge, Box, Card, Radio, Text } from "@chakra-ui/react";
+import { TFunction } from "i18next";
 import React, { FC, useState } from "react";
 
 interface MethodologyCardProps {
@@ -7,26 +8,29 @@ interface MethodologyCardProps {
   inputRequired: string[];
   isSelected: boolean;
   disabled: boolean;
-  handleCardSelect: () => void;
+  t: TFunction;
+  handleCardSelect: (methodologyName: string) => void;
 }
 
 const MethodologyCard: FC<MethodologyCardProps> = ({
   name,
   description,
-  handleCardSelect,
   inputRequired,
-
   disabled,
+  t,
+  handleCardSelect = (_methodologyName: string) => {},
 }) => {
   const [isSelected, setIsSelected] = useState(false);
   const handleRadioChange = () => {
     setIsSelected(true);
-    // handleCardSelect(name);
+    handleCardSelect(name);
   };
 
   const handleCardClick = () => {
+    if (!isSelected) {
+      handleCardSelect(name);
+    }
     setIsSelected(!isSelected);
-    // handleCardSelect(name);
   };
   return (
     <Card
@@ -41,7 +45,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
       opacity={disabled ? ".7" : ""}
       h="auto"
       w="248px"
-      onClick={handleCardSelect}
+      onClick={handleCardClick}
       _hover={{
         shadow: disabled ? "none" : "md",
         cursor: disabled ? "not-allowed" : "pointer",
@@ -63,7 +67,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
             borderRadius="full"
             bg="base.light"
           >
-            Coming Soon
+            {t("coming-soon")}
           </Badge>
         ) : (
           ""
@@ -87,7 +91,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
         color="interactive.control"
         fontFamily="heading"
       >
-        Input required:
+        {t("input-required")}
       </Text>
       <Box
         pl="22px"

@@ -21,17 +21,19 @@ def db_query(locode, year, reference_number):
     with SessionLocal() as session:
         query = text(
             """
-            SELECT 		edgar.emissions_substance as gas,
-                        sum(emissions * ST_Area(ST_Intersection(edgar.geometry, osm.geometry)) / ST_Area(edgar.geometry)) * 1000 as total_emissions
-            FROM 		raw_data.osm_city_polygon AS osm
-            LEFT JOIN 	raw_data.edgar_emissions AS edgar
-            ON 			ST_Intersects(osm.geometry, edgar.geometry)
-            WHERE 		ST_Area(osm.geometry) > 0
-            AND 		osm.locode = :locode
-            AND 		edgar.gpc_refno = :reference_number
-            AND 		edgar.emissions_year = :year
-            GROUP BY 	edgar.emissions_substance 
-            """
+            SELECT
+                gce.gas,
+                SUM(gce.emissions_quantity * cco.fraction_in_city) AS total_emissions
+            FROM
+                "CityCellOverlapEdgar" cco
+            JOIN
+                "GridCellEmissionsEdgar" gce
+            ON
+                cco.cell_lat = gce.cell_lat AND cco.cell_lon = gce.cell_lon
+            WHERE cco.locode = :locode
+            AND gce.reference_number = :reference_number
+            AND gce.year = :year
+            GROUP BY gce.gas"""
         )
 
         params = {"locode": locode, "year": year, "reference_number": reference_number}

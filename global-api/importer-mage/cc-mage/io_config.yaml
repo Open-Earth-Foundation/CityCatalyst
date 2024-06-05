@@ -34,7 +34,7 @@ default:
   DRUID_SCHEME: http
   DRUID_USER: user
   # DuckDB
-  DUCKDB_DATABASE: database
+  DUCKDB_DATABASE: my_db
   DUCKDB_SCHEMA: main
   # Google
   GOOGLE_SERVICE_ACC_KEY:

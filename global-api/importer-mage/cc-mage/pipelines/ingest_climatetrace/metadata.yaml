@@ -41,7 +41,7 @@ blocks:
   language: python
   name: load_climatetrace_sector
   retry_config: null
-  status: failed
+  status: executed
   timeout: null
   type: data_exporter
   upstream_blocks:
@@ -70,7 +70,7 @@ blocks:
   type: data_loader
   upstream_blocks: []
   uuid: load_climatetrace_gpc_sector
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: null
   configuration:
     data_provider: postgres

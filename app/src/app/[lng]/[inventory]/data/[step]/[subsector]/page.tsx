@@ -91,7 +91,7 @@ function SubSectorPage({
       disabled: false,
     },
   ];
-  const BUILDINGS = [
+  const ACTIVITIES = [
     {
       id: 1,
       name: t("commercial-buildings"),
@@ -107,8 +107,9 @@ function SubSectorPage({
   ];
 
   const handleCardClick = () => {
-    setIsSelected(!isSelected);
-    console.log(isSelected);
+    setTimeout(() => {
+      setIsSelected(!isSelected);
+    }, 500);
   };
 
   const {
@@ -124,6 +125,8 @@ function SubSectorPage({
   } = useDisclosure();
 
   const { data: activities } = api.useGetActivityValuesQuery(inventory);
+
+  const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
 
   return (
     <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
@@ -453,8 +456,17 @@ function SubSectorPage({
                         </Box>
                       ) : (
                         <Box className="flex flex-col gap-4">
-                          {BUILDINGS.map(({ id, name }) => (
-                            <SuggestedActivityCard key={id} name={name} t={t} />
+                          {ACTIVITIES.map(({ id, name }) => (
+                            <SuggestedActivityCard
+                              key={id}
+                              name={name}
+                              t={t}
+                              isSelected={selectedActivity === id}
+                              onActivityAdded={() => {
+                                setSelectedActivity(id);
+                                setTimeout(onAddActivityModalOpen, 500);
+                              }}
+                            />
                           ))}
                         </Box>
                       )}
@@ -807,8 +819,13 @@ function SubSectorPage({
                         </Box>
                       ) : (
                         <Box className="flex flex-col gap-4">
-                          {BUILDINGS.map(({ id, name }) => (
-                            <SuggestedActivityCard key={id} name={name} t={t} />
+                          {ACTIVITIES.map(({ id, name }) => (
+                            <SuggestedActivityCard
+                              key={id}
+                              name={name}
+                              t={t}
+                              onActivityAdded={onAddActivityModalOpen}
+                            />
                           ))}
                         </Box>
                       )}

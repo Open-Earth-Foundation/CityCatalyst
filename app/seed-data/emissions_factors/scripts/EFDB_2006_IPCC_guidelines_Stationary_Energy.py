@@ -622,8 +622,8 @@ if __name__ == "__main__":
     EF_df = EF_df.explode('GPC_refno', ignore_index=True)
 
     # make a row for each methodology
-    EF_df['methodology'] = [mapping_gpc_to_methodologies] * len(EF_df)
-    EF_df = EF_df.explode('methodology', ignore_index=True)
+    EF_df['methodology_name'] = [mapping_gpc_to_methodologies] * len(EF_df)
+    EF_df = EF_df.explode('methodology_name', ignore_index=True)
 
     EF_df["emissions_factor_id"] = EF_df.apply(
         lambda row: uuid_generate_v4(), axis=1

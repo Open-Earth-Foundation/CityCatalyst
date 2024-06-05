@@ -31,6 +31,7 @@ export const api = createApi({
     "UserInventories",
     "SubSectorValue",
     "InventoryValue",
+    "ActivityValue",
     "UserData",
     "FileData",
     "CityData",
@@ -402,12 +403,49 @@ export const api = createApi({
       },
       transformResponse: (response: { data: [] }) => response.data,
     }),
+
+    // ActivityValue CRUD
     getActivityValues: builder.query({
       query: (inventoryId: string) => ({
         url: `/inventory/${inventoryId}/activity-value`,
         method: "GET",
       }),
       transformResponse: (response: any) => response.data,
+      providesTags: ["ActivityValue"],
+    }),
+    createActivityValue: builder.mutation({
+      query: (data) => ({
+        method: "POST",
+        url: `/inventory/${data.inventoryId}/activity-value`,
+        body: data.data,
+      }),
+      transformResponse: (response: any) => response.data,
+      invalidatesTags: ["ActivityValue"],
+    }),
+    getActivityValue: builder.query({
+      query: (data: { inventoryId: string; valueId: string }) => ({
+        method: "GET",
+        url: `/inventory/${data.inventoryId}/activity-value/${data.valueId}`,
+      }),
+      transformResponse: (response: any) => response.data,
+      providesTags: ["ActivityValue"],
+    }),
+    updateActivityValue: builder.mutation({
+      query: (data) => ({
+        method: "PATCH",
+        url: `/inventory/${data.inventoryId}/activity-value/${data.valueId}`,
+        body: data.data,
+      }),
+      transformResponse: (response: any) => response.data,
+      invalidatesTags: ["ActivityValue"],
+    }),
+    deleteActivityValue: builder.mutation({
+      query: (data: { activityValueId: string; inventoryId: string }) => ({
+        method: "DELETE",
+        url: `/inventory/${data.inventoryId}/activity-value/${data.activityValueId}`,
+      }),
+      transformResponse: (response: any) => response.data,
+      invalidatesTags: ["ActivityValue"],
     }),
   }),
 });

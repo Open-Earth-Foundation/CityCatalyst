@@ -3,7 +3,7 @@
   "data-details": "Add data or connect third-party data for your city and complete your city's emission inventory using the GPC Basic methodology. <2>Learn more</2> about GPC Protocol",
   "data-view-heading": "Select Sector",
   "data-view-details": "Select and fill in the necessary data for the relevant sector to build a comprehensive GHG inventory.",
-
+  "select-methodology-title": "Select The Methodology to Calculate Emissions",
   "all-sectors": "All sectors",
   "commercial-and-institutional-buildings": "Commercial and Institutional Buildings",
   "commercial-and-institutional-building-description": "Includes all emissions from energy use in commercial buildings and in institutional public buildings such as schools, hospitals, government offices, highway street lighting, and other public facilities.",

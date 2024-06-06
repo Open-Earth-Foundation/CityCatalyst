@@ -588,7 +588,8 @@ export default function AddDataSteps({
 
   return (
     <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
-      <Box w="full" display="flex" alignItems="center" gap="16px" mb="64px">
+     <Box bg='background.backgroundLight' ml='-2px' className="fixed z-10 w-[1100px] top-[100px] pt-[180px] -top-16">
+     <Box w="full" display="flex" alignItems="center" gap="16px" mb="64px">
         <Button
           variant="ghost"
           leftIcon={<ArrowBackIcon boxSize={6} />}
@@ -685,9 +686,10 @@ export default function AddDataSteps({
           </div>
         </Flex>
       </Card>
+     </Box> 
 
       {/*** Manual data entry section for subsectors ***/}
-      <Card mb={12}>
+      <Card mb={12} mt='350px'>
         <Heading size="lg" mb={2}>
           {t("add-data-heading")}
         </Heading>

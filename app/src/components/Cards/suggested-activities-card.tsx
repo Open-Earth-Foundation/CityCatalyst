@@ -21,7 +21,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({ name, t }) => {
       borderWidth="1px"
       borderColor="border.overlay"
       cursor="pointer"
-      _hover={{ shadow: "md" }}
+      _hover={{ shadow: "md", borderWidth: '1px', borderColor: "content.link" }}
     >
       <Box display="flex" alignItems="center">
         <Checkbox

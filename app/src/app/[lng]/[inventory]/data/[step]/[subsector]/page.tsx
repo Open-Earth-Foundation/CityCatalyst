@@ -21,8 +21,14 @@ import {
   BreadcrumbLink,
   Button,
   Card,
+  Icon,
   IconButton,
   Link,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
   Radio,
   RadioGroup,
   Stack,
@@ -48,7 +54,11 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Trans } from "react-i18next";
+import { BsTrash2 } from "react-icons/bs";
+import { FaNetworkWired } from "react-icons/fa";
+import { FiTrash2 } from "react-icons/fi";
 import { MdMoreVert, MdOutlineHomeWork } from "react-icons/md";
+import { TbTrash } from "react-icons/tb";
 
 function SubSectorPage({
   params: { lng, step, inventory },
@@ -313,12 +323,36 @@ function SubSectorPage({
                       >
                         {t("add-activity")}
                       </Button>
-                      <IconButton
-                        icon={<MdMoreVert size="24px" />}
-                        aria-label="more-icon"
-                        variant="ghost"
-                        color="content.tertiary"
-                      />
+                      <Popover>
+                          <PopoverTrigger>
+                            <IconButton
+                              icon={<MdMoreVert size="24px" />}
+                              aria-label="more-icon"
+                              variant="ghost"
+                              color="content.tertiary"
+                            />
+                          </PopoverTrigger>
+                          <PopoverContent w="auto" borderRadius="8px" shadow="2dp" px="0">
+                            <PopoverArrow />
+                            <PopoverBody p="0px">
+                              <Box p="16px"  display="flex" alignItems="center" gap="16px" _hover={{
+                                bg: "content.link",
+                                cursor: 'pointer'
+                              }} className="group">
+                                <Icon className="group-hover:text-white" color="interactive.control" as={FaNetworkWired} h="24px" w="24px"/>
+                                <Text className="group-hover:text-white" color="content.primary">Change methodology</Text>
+                              </Box>
+                              <Box p="16px"  display="flex" alignItems="center" gap="16px" _hover={{
+                                bg: "content.link",
+                                cursor: 'pointer'
+                                
+                              }} className="group">
+                                <Icon className="group-hover:text-white" color="sentiment.negativeDefault" as={FiTrash2} h="24px" w="24px"/>
+                                <Text className="group-hover:text-white" color="content.primary">Delete all activities</Text>
+                              </Box>
+                            </PopoverBody>
+                          </PopoverContent>
+                        </Popover>
                     </Box>
                   </Box>
                   <Box
@@ -618,16 +652,7 @@ function SubSectorPage({
              }
             </TabPanel>
             <TabPanel p="0" pt="48px">
-            {
-              isLoadingScope2 ? <LoadingState /> :<Box
-                h="auto"
-                px="24px"
-                py="32px"
-                bg="base.light"
-                borderRadius="8px"
-              >
-                {" "}
-                <Box
+            <Box
                   display="flex"
                   alignItems="center"
                   justifyContent="space-between"
@@ -643,6 +668,24 @@ function SubSectorPage({
                       {t("scope-not-applicable")}
                     </Text>
                   </Box>
+                </Box>
+            {
+              isLoadingScope2 ? <LoadingState /> :<Box
+                h="auto"
+                px="24px"
+                py="32px"
+                bg="base.light"
+                borderRadius="8px"
+              >
+                {" "}
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  mb="8px"
+                >
+                  <HeadingText title={t("select-methodology-title")} />
+                  
                 </Box>
                 {isSelected ? (
                   <Box>
@@ -679,12 +722,36 @@ function SubSectorPage({
                         >
                           {t("add-activity")}
                         </Button>
-                        <IconButton
-                          icon={<MdMoreVert size="24px" />}
-                          aria-label="more-icon"
-                          variant="ghost"
-                          color="content.tertiary"
-                        />
+                        <Popover>
+                          <PopoverTrigger>
+                            <IconButton
+                              icon={<MdMoreVert size="24px" />}
+                              aria-label="more-icon"
+                              variant="ghost"
+                              color="content.tertiary"
+                            />
+                          </PopoverTrigger>
+                          <PopoverContent w="auto" borderRadius="8px" shadow="2dp" px="0">
+                            <PopoverArrow />
+                            <PopoverBody p="0px">
+                              <Box p="16px"  display="flex" alignItems="center" gap="16px" _hover={{
+                                bg: "content.link",
+                                cursor: 'pointer'
+                              }} className="group">
+                                <Icon className="group-hover:text-white" color="interactive.control" as={FaNetworkWired} h="24px" w="24px"/>
+                                <Text className="group-hover:text-white" color="content.primary">Change methodology</Text>
+                              </Box>
+                              <Box p="16px"  display="flex" alignItems="center" gap="16px" _hover={{
+                                bg: "content.link",
+                                cursor: 'pointer'
+                                
+                              }} className="group">
+                                <Icon className="group-hover:text-white" color="sentiment.negativeDefault" as={FiTrash2} h="24px" w="24px"/>
+                                <Text className="group-hover:text-white" color="content.primary">Delete all activities</Text>
+                              </Box>
+                            </PopoverBody>
+                          </PopoverContent>
+                        </Popover>
                       </Box>
                     </Box>
                     <Box

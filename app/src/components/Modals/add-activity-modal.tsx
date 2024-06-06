@@ -176,7 +176,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                     options={[
                       t("commercial-buildings"),
                       t("institutional-buildings"),
-                      t("street-lights"),
+                      t("street-lighting"),
                     ]}
                     title={t("building-type")}
                     placeholder={t("select-type-of-building")}

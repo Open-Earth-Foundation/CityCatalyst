@@ -214,6 +214,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                           placeholder={t("activity-data-amount-placeholder")}
                           borderRightRadius={0}
                           bgColor="base.light"
+                          _focus={{
+                            borderWidth: '1px',
+                            shadow: 'none',
+                            borderColor: 'content.link'
+                          }}
                           {...register("activity.activityDataAmount", {
                             required: t("value-required"),
                           })}
@@ -227,6 +232,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       >
                         <Select
                           variant="unstyled"
+                          
                           {...register("activity.activityDataUnit")}
                         >
                           <option value="1">{t("gallons")} (gal)</option>
@@ -245,6 +251,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                   <FormControl>
                     <FormLabel>{t("emission-factor-type")}</FormLabel>
                     <Select
+                     _focus={{
+                      borderWidth: '1px',
+                      shadow: 'none',
+                      borderColor: 'content.link'
+                    }}
                       {...register("activity.emissionFactorType")}
                       bgColor="base.light"
                       placeholder="Select emission factor type"
@@ -316,6 +327,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                   <InputGroup>
                     <NumberInput defaultValue={0} min={0} isDisabled={true}>
                       <NumberInputField
+                       _focus={{
+                        borderWidth: '1px',
+                        shadow: 'none',
+                        borderColor: 'content.link'
+                      }}
                         borderRightRadius={0}
                         {...register("activity.n2oEmissionFactor")}
                         bgColor="background.neutral"
@@ -339,6 +355,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                   <InputGroup>
                     <NumberInput defaultValue={0} min={0} isDisabled={true}>
                       <NumberInputField
+                       _focus={{
+                        borderWidth: '1px',
+                        shadow: 'none',
+                        borderColor: 'content.link'
+                      }}
                         borderRightRadius={0}
                         {...register("activity.ch4EmissionFactor")}
                         bgColor="background.neutral"
@@ -363,6 +384,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
               >
                 <FormLabel>{t("data-quality")}</FormLabel>
                 <Select
+                 _focus={{
+                  borderWidth: '1px',
+                  shadow: 'none',
+                  borderColor: 'content.link'
+                }}
                   bgColor="base.light"
                   placeholder={t("data-quality-placeholder")}
                   {...register("activity.dataQuality", {
@@ -385,6 +411,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
               >
                 <FormLabel>{t("source-reference")}</FormLabel>
                 <Textarea
+                 _focus={{
+                  borderWidth: '1px',
+                  shadow: 'none',
+                  borderColor: 'content.link'
+                }}
                   placeholder={t("source-reference-placeholder")}
                   {...register("activity.sourceReference", {
                     required: t("source-reference-required"),

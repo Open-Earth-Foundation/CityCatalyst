@@ -6,9 +6,10 @@ import React, { FC } from "react";
 interface SuggestedActivityCardProps {
   name: string;
   t: TFunction;
+  onAddActivity: () => void;
 }
 
-const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({ name, t }) => {
+const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({ name, t, onAddActivity }) => {
   return (
     <Card
       display="flex"
@@ -22,6 +23,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({ name, t }) => {
       borderColor="border.overlay"
       cursor="pointer"
       _hover={{ shadow: "md", borderWidth: '1px', borderColor: "content.link" }}
+      onClick={onAddActivity}
     >
       <Box display="flex" alignItems="center">
         <Checkbox

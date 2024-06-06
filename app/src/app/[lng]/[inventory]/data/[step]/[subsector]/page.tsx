@@ -361,20 +361,20 @@ function SubSectorPage({
                     flexDirection="column"
                     gap="16px"
                   >
-                    <Text
+                   {!hasActivityData ?  <Text
                       fontFamily="heading"
                       fontSize="title.md"
                       fontWeight="semibold"
                       color="content.secondary"
                     >
                       {t("activity-suggestion")}
-                    </Text>
+                    </Text>: ''}
                     {hasActivityData ? (
                       <Box>
-                        <Accordion defaultIndex={[0]} allowMultiple>
-                          <AccordionItem>
+                        <Accordion defaultIndex={[0]} allowMultiple bg="white">
+                          <AccordionItem bg="none">
                             <h2>
-                              <AccordionButton>
+                              <AccordionButton h="100px" bg="base.light" borderWidth='1px' borderColor="border.overlay" px="24px">
                                 <Box
                                   display="flex"
                                   justifyContent="space-between"
@@ -424,21 +424,22 @@ function SubSectorPage({
                                     </Text>
                                     <Text fontWeight="normal">15,MtCO2e</Text>
                                   </Box>
-                                  <Box pr="56px">
+                                  <Box onClick={onAddActivityModalOpen} pr="56px">
                                     <AddIcon color="interactive.control" />
                                   </Box>
                                 </Box>
-                                <AccordionIcon />
+                                <AccordionIcon/>
                               </AccordionButton>
                             </h2>
-                            <AccordionPanel pb={4}>
+                            <AccordionPanel p={0}>
                               <TableContainer>
                                 <Table
                                   variant="simple"
                                   borderWidth="1px"
                                   borderRadius="20px"
+                                  bg="base.light"
                                 >
-                                  <Thead>
+                                  <Thead bg="background.neutral">
                                     <Tr>
                                       <Th>{t("fuel-type")}</Th>
                                       <Th>{t("data-quality")}</Th>
@@ -456,8 +457,12 @@ function SubSectorPage({
                                             <Tag
                                               size="lg"
                                               variant="outline"
-                                              colorScheme="blue"
+                                              borderWidth="1px"
+                                              shadow="none"
+                                              borderColor="content.link"
                                               borderRadius="full"
+                                              bg="background.neutral"
+                                              color="content.link"
                                             >
                                               <TagLabel>
                                                 {activity?.dataQuality}
@@ -467,8 +472,8 @@ function SubSectorPage({
                                           <Td>
                                             {activity?.fuelConsumption!}
                                           </Td>
-                                          <Td>{activity?.emissions}</Td>
-                                          <Td>
+                                          <Td>{activity?.emissions} tCO2e</Td>
+                                          <Td isNumeric>
                                             <IconButton
                                               color="interactive.control"
                                               variant="ghost"
@@ -516,7 +521,7 @@ function SubSectorPage({
                     ) : (
                       <Box className="flex flex-col gap-4">
                         {BUILDINGS.map(({ id, name }) => (
-                          <SuggestedActivityCard key={id} name={name} t={t} />
+                          <SuggestedActivityCard key={id} name={name} t={t} onAddActivity={onAddActivityModalOpen}/>
                         ))}
                       </Box>
                     )}
@@ -905,7 +910,7 @@ function SubSectorPage({
                       ) : (
                         <Box className="flex flex-col gap-4">
                           {BUILDINGS.map(({ id, name }) => (
-                            <SuggestedActivityCard key={id} name={name} t={t} />
+                            <SuggestedActivityCard key={id} name={name} t={t} onAddActivity={onAddActivityModalOpenEC}/>
                           ))}
                         </Box>
                       )}

@@ -7,6 +7,7 @@ import {
   DataAlertIcon,
   DataCheckIcon,
   ExcelFileIcon,
+  SearchOffIcon,
   WorldSearchIcon,
 } from "@/components/icons";
 import WizardSteps from "@/components/wizard-steps";
@@ -105,31 +106,35 @@ function SearchDataSourcesPrompt({
 }) {
   return (
     <Flex align="center" direction="column">
-      <Icon
-        as={WorldSearchIcon}
-        boxSize={20}
-        color="interactive.secondary"
-        borderRadius="full"
-        p={4}
-        bgColor="background.neutral"
-        mb={6}
-      />
-      <Button
-        variant="solid"
-        leftIcon={<SearchIcon boxSize={6} />}
-        isLoading={isSearching}
-        isDisabled={isDisabled}
-        loadingText={t("searching")}
-        onClick={onSearchClicked}
-        mb={2}
-        px={6}
-        h={16}
-        py={4}
+      <Box p="16px" mb="24px" borderRadius="full" bg="background.neutral">
+        <SearchOffIcon />
+      </Box>
+      <Text
+        fontFamily="heading"
+        fontSize="title.lg"
+        fontWeight="600"
+        color="interactive.control"
       >
-        {t("search-available-datasets")}
-      </Button>
-      <Text color="content.tertiary" align="center" size="sm" variant="spaced">
-        {t("wait-for-search")}
+        No External Data Sources Available
+      </Text>
+      <Text
+        color="content.tertiary"
+        align="center"
+        size="sm"
+        variant="spaced"
+        w="550px"
+        mt="8px"
+      >
+        <Text>{t("no-external-sources")}</Text>
+        <Text fontWeight="semibold">
+          <Trans t={t} i18nKey="report-any-sources">
+            if you know any,{" "}
+            <Link href="/" color="content.link" textDecor="underline">
+              please report this
+            </Link>{" "}
+            and we'll prioritize your request.
+          </Trans>
+        </Text>
       </Text>
     </Flex>
   );
@@ -583,8 +588,6 @@ export default function AddDataSteps({
       };
     }
   };
-
-  console.log(currentStep.icon);
 
   return (
     <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">

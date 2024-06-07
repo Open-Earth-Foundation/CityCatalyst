@@ -218,8 +218,8 @@
   "incomplete": "Incomplete",
   "search-available-datasets": "Search for available datasets",
   "searching": "Searching...",
-  "wait-for-search": "Please wait while we search for external data sources that match your inventory needs.",
-
+  "no-external-sources": "It seemes like there are no external sources at this moment.",
+  "report-any-sources": "if you know any, <2>please report this</2> and we'll prioritize your request.",
   "unsaved-changes": "Unsaved Changes",
   "unsaved-changes-description": "You have unsaved changes to your sub-sector data.<br/>Are you sure you want to leave this page and <strong>discard the changes?</strong>",
   "keep-editing": "Keep editing",

@@ -538,7 +538,8 @@ function SubSectorPage({
                                                     </Tag>
                                                   </Td>
                                                   <Td>
-                                                    {activity?.fuelConsumption!}
+                                                    {activity?.fuelConsumption!}{" "}
+                                                    {t("gallons")}
                                                   </Td>
                                                   <Td>
                                                     {activity?.emissions} tCO2e

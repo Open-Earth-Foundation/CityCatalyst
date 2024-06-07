@@ -174,6 +174,8 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                 <FormControl className="w-full">
                   <BuildingTypeSelectInput
                     options={[
+                      t("all"),
+                      t("commercial-institutional"),
                       t("commercial-buildings"),
                       t("institutional-buildings"),
                       t("street-lighting"),
@@ -215,9 +217,9 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                           borderRightRadius={0}
                           bgColor="base.light"
                           _focus={{
-                            borderWidth: '1px',
-                            shadow: 'none',
-                            borderColor: 'content.link'
+                            borderWidth: "1px",
+                            shadow: "none",
+                            borderColor: "content.link",
                           }}
                           {...register("activity.activityDataAmount", {
                             required: t("value-required"),
@@ -232,14 +234,13 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       >
                         <Select
                           variant="unstyled"
-                          
                           {...register("activity.activityDataUnit")}
                         >
                           <option value="1">{t("gallons")} (gal)</option>
                           <option value="1">{t("liters")} (L)</option>
                           <option value="1">{t("cubic-meters")} (m3)</option>
                           <option value="1">{t("kilograms")} (kg)</option>
-                          <option value="1">{t("terahoules")} (Tj)</option>
+                          <option value="1">{t("terajoules")} (Tj)</option>
                           <option value="1">{t("kilowatt-hour")} (kWh)</option>
                         </Select>
                       </InputRightAddon>
@@ -251,11 +252,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                   <FormControl>
                     <FormLabel>{t("emission-factor-type")}</FormLabel>
                     <Select
-                     _focus={{
-                      borderWidth: '1px',
-                      shadow: 'none',
-                      borderColor: 'content.link'
-                    }}
+                      _focus={{
+                        borderWidth: "1px",
+                        shadow: "none",
+                        borderColor: "content.link",
+                      }}
                       {...register("activity.emissionFactorType")}
                       bgColor="base.light"
                       placeholder="Select emission factor type"
@@ -327,11 +328,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                   <InputGroup>
                     <NumberInput defaultValue={0} min={0} isDisabled={true}>
                       <NumberInputField
-                       _focus={{
-                        borderWidth: '1px',
-                        shadow: 'none',
-                        borderColor: 'content.link'
-                      }}
+                        _focus={{
+                          borderWidth: "1px",
+                          shadow: "none",
+                          borderColor: "content.link",
+                        }}
                         borderRightRadius={0}
                         {...register("activity.n2oEmissionFactor")}
                         bgColor="background.neutral"
@@ -355,11 +356,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                   <InputGroup>
                     <NumberInput defaultValue={0} min={0} isDisabled={true}>
                       <NumberInputField
-                       _focus={{
-                        borderWidth: '1px',
-                        shadow: 'none',
-                        borderColor: 'content.link'
-                      }}
+                        _focus={{
+                          borderWidth: "1px",
+                          shadow: "none",
+                          borderColor: "content.link",
+                        }}
                         borderRightRadius={0}
                         {...register("activity.ch4EmissionFactor")}
                         bgColor="background.neutral"
@@ -384,18 +385,18 @@ const AddActivityModal: FC<AddUserModalProps> = ({
               >
                 <FormLabel>{t("data-quality")}</FormLabel>
                 <Select
-                 _focus={{
-                  borderWidth: '1px',
-                  shadow: 'none',
-                  borderColor: 'content.link'
-                }}
+                  _focus={{
+                    borderWidth: "1px",
+                    shadow: "none",
+                    borderColor: "content.link",
+                  }}
                   bgColor="base.light"
                   placeholder={t("data-quality-placeholder")}
                   {...register("activity.dataQuality", {
                     required: t("option-required"),
                   })}
                 >
-                  <option value="high">{t("detailed-emissions-data")}</option>
+                  <option value="high">{t("detailed-activity-data")}</option>
                   <option value="medium">{t("modeled-emissions-data")}</option>
                   <option value="low">
                     {t("highly-modeled-uncertain-emissions-data")}
@@ -411,11 +412,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
               >
                 <FormLabel>{t("source-reference")}</FormLabel>
                 <Textarea
-                 _focus={{
-                  borderWidth: '1px',
-                  shadow: 'none',
-                  borderColor: 'content.link'
-                }}
+                  _focus={{
+                    borderWidth: "1px",
+                    shadow: "none",
+                    borderColor: "content.link",
+                  }}
                   placeholder={t("source-reference-placeholder")}
                   {...register("activity.sourceReference", {
                     required: t("source-reference-required"),

@@ -588,108 +588,112 @@ export default function AddDataSteps({
 
   return (
     <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
-     <Box bg='background.backgroundLight' ml='-2px' className="fixed z-10 w-[1100px] top-[100px] pt-[180px] -top-16">
-     <Box w="full" display="flex" alignItems="center" gap="16px" mb="64px">
-        <Button
-          variant="ghost"
-          leftIcon={<ArrowBackIcon boxSize={6} />}
-          onClick={() => router.back()}
-        >
-          {t("go-back")}
-        </Button>
-        <Box borderRightWidth="1px" borderColor="border.neutral" h="24px" />
-        <Box>
-          <Breadcrumb
-            spacing="8px"
-            fontFamily="heading"
-            fontWeight="bold"
-            letterSpacing="widest"
-            textTransform="uppercase"
-            separator={<ChevronRightIcon color="gray.500" h="24px" />}
+      <Box
+        bg="background.backgroundLight"
+        ml="-2px"
+        className="fixed z-10 w-[1100px] top-[100px] pt-[180px] -top-16"
+      >
+        <Box w="full" display="flex" alignItems="center" gap="16px" mb="64px">
+          <Button
+            variant="ghost"
+            leftIcon={<ArrowBackIcon boxSize={6} />}
+            onClick={() => router.back()}
           >
-            <BreadcrumbItem>
-              <BreadcrumbLink
-                href={`/${inventory}/data`}
-                color="content.tertiary"
-              >
-                {t("all-sectors")}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-
-            <BreadcrumbItem>
-              <BreadcrumbLink href="#" color="content.link">
-                {currentStep.title}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-          </Breadcrumb>
-        </Box>
-      </Box>
-      {/*** Sector summary section ***/}
-      <Card mb={12} shadow="none" bg="none">
-        <Flex direction="row">
-          <Icon
-            as={currentStep.icon}
-            boxSize={8}
-            color="brand.secondary"
-            mr={4}
-          />
-          <div className="space-y-4 w-full">
-            <Heading
-              fontSize="24px"
-              fontWeight="semibold"
-              textTransform="capitalize"
-              lineHeight="32px"
-              size="lg"
-              mb={2}
+            {t("go-back")}
+          </Button>
+          <Box borderRightWidth="1px" borderColor="border.neutral" h="24px" />
+          <Box>
+            <Breadcrumb
+              spacing="8px"
+              fontFamily="heading"
+              fontWeight="bold"
+              letterSpacing="widest"
+              textTransform="uppercase"
+              separator={<ChevronRightIcon color="gray.500" h="24px" />}
             >
-              {currentStep.title}
-            </Heading>
-            <Text color="content.tertiary">{currentStep.details}</Text>
-            <Flex direction="row">
-              <SegmentedProgress
-                values={[
-                  currentStep.connectedProgress,
-                  currentStep.addedProgress,
-                ]}
-                height={4}
-              />
-              <Heading size="sm" ml={6} className="whitespace-nowrap -mt-1">
-                {t("completion-percent", {
-                  progress: formatPercentage(totalStepCompletion),
-                })}
+              <BreadcrumbItem>
+                <BreadcrumbLink
+                  href={`/${inventory}/data`}
+                  color="content.tertiary"
+                >
+                  {t("all-sectors")}
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+
+              <BreadcrumbItem>
+                <BreadcrumbLink href="#" color="content.link">
+                  {currentStep.title}
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+            </Breadcrumb>
+          </Box>
+        </Box>
+        {/*** Sector summary section ***/}
+        <Card mb={12} shadow="none" bg="none">
+          <Flex direction="row">
+            <Icon
+              as={currentStep.icon}
+              boxSize={8}
+              color="brand.secondary"
+              mr={4}
+            />
+            <div className="space-y-4 w-full">
+              <Heading
+                fontSize="24px"
+                fontWeight="semibold"
+                textTransform="capitalize"
+                lineHeight="32px"
+                size="lg"
+                mb={2}
+              >
+                {currentStep.title}
               </Heading>
-            </Flex>
-            <Tag mr={4}>
-              <TagLeftIcon
-                as={CircleIcon}
-                boxSize={6}
-                color="interactive.quaternary"
-              />
-              <TagLabel>
-                {t("data-connected-percent", {
-                  progress: formatPercentage(currentStep.connectedProgress),
-                })}
-              </TagLabel>
-            </Tag>
-            <Tag>
-              <TagLeftIcon
-                as={CircleIcon}
-                boxSize={6}
-                color="interactive.tertiary"
-              />
-              <TagLabel>
-                {t("data-added-percent", {
-                  progress: formatPercentage(currentStep.addedProgress),
-                })}
-              </TagLabel>
-            </Tag>
-          </div>
-        </Flex>
-      </Card>
-     </Box> 
+              <Text color="content.tertiary">{currentStep.details}</Text>
+              <Flex direction="row">
+                <SegmentedProgress
+                  values={[
+                    currentStep.connectedProgress,
+                    currentStep.addedProgress,
+                  ]}
+                  height={4}
+                />
+                <Heading size="sm" ml={6} className="whitespace-nowrap -mt-1">
+                  {t("completion-percent", {
+                    progress: formatPercentage(totalStepCompletion),
+                  })}
+                </Heading>
+              </Flex>
+              <Tag mr={4}>
+                <TagLeftIcon
+                  as={CircleIcon}
+                  boxSize={6}
+                  color="interactive.quaternary"
+                />
+                <TagLabel>
+                  {t("data-connected-percent", {
+                    progress: formatPercentage(currentStep.connectedProgress),
+                  })}
+                </TagLabel>
+              </Tag>
+              <Tag>
+                <TagLeftIcon
+                  as={CircleIcon}
+                  boxSize={6}
+                  color="interactive.tertiary"
+                />
+                <TagLabel>
+                  {t("data-added-percent", {
+                    progress: formatPercentage(currentStep.addedProgress),
+                  })}
+                </TagLabel>
+              </Tag>
+            </div>
+          </Flex>
+        </Card>
+      </Box>
 
       {/*** Manual data entry section for subsectors ***/}
-      <Card mb={12} mt='350px'>
+      <Card mb={12} mt="350px">
         <Heading size="lg" mb={2}>
           {t("add-data-heading")}
         </Heading>
@@ -970,7 +974,11 @@ export default function AddDataSteps({
                 />
               </Box>
               <Box mb="24px">
-                <Heading size="sm">{t("files-uploaded")}</Heading>
+                {sectorData[0]?.files.length > 0 ? (
+                  <Heading size="sm">{t("files-uploaded")}</Heading>
+                ) : (
+                  ""
+                )}
               </Box>
               <Box display="flex" flexDirection="column" gap="8px">
                 {sectorData &&
@@ -1114,36 +1122,7 @@ export default function AddDataSteps({
         inventory={inventory}
       />
       {/*** Bottom bar ***/}
-      <div className="bg-white w-full fixed bottom-0 left-0 border-t-4 border-brand py-4 px-4 drop-shadow-2xl hover:drop-shadow-4xl transition-all">
-        <Box className="w-[1090px] max-w-full mx-auto flex flex-row flex-wrap gap-y-2">
-          <Box className="grow w-full md:w-0">
-            <Text fontSize="sm">Step {activeStep + 1}</Text>
-            <Text fontSize="2xl" as="b">
-              {steps[activeStep]?.title}
-            </Text>
-          </Box>
-          <Button
-            h={16}
-            onClick={onSkip}
-            variant="ghost"
-            leftIcon={<Icon as={MdOutlineSkipNext} boxSize={6} />}
-            size="sm"
-            px={8}
-            mr={4}
-          >
-            {t("skip-step-button")}
-          </Button>
-          <Button
-            h={16}
-            isLoading={isConfirming}
-            px={8}
-            onClick={onConfirm}
-            size="sm"
-          >
-            {t("save-continue-button")}
-          </Button>
-        </Box>
-      </div>
+
       {/*** Drawers ***/}
       <SourceDrawer
         source={selectedSource}

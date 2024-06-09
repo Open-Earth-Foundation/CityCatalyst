@@ -132,7 +132,7 @@ function SearchDataSourcesPrompt({
             <Link href="/" color="content.link" textDecor="underline">
               please report this
             </Link>{" "}
-            and we'll prioritize your request.
+            and we&apos;ll prioritize your request.
           </Trans>
         </Text>
       </Text>

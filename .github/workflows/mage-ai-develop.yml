@@ -2,7 +2,6 @@ name: Push mageai to the latest deploy helm chart to Amazon EKS
 
 on:
   workflow_dispatch:
-
   push:
     paths:
       - global-api/importer-mage/**
@@ -31,12 +30,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push Docker image to GitHub Container Registry
-        env:
-          VERSION: ${{ github.sha }}
-          IMAGE: ghcr.io/open-earth-foundation/citycatalyst-mage-ai
+      - name: Build Docker image with Docker Compose
         run: |
-          docker build -t $IMAGE:$VERSION
-          docker tag $IMAGE:$VERSION $IMAGE:latest
-          docker push $IMAGE:$VERSION
-          docker push $IMAGE:latest
+          docker-compose -f docker-compose.yml build
+          docker tag ghcr.io/open-earth-foundation/citycatalyst-mage-ai:latest ghcr.io/open-earth-foundation/citycatalyst-mage-ai:${{ github.sha }}
+
+      - name: Push Docker image to GitHub Container Registry
+        run: |
+          docker-compose -f docker-compose.yml push
+          docker push ghcr.io/open-earth-foundation/citycatalyst-mage-ai:${{ github.sha }}
+          docker push ghcr.io/open-earth-foundation/citycatalyst-mage-ai:latest

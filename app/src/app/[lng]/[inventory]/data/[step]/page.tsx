@@ -623,14 +623,13 @@ export default function AddDataSteps({
       <Box id="top" />
       <Box
         bg="background.backgroundLight"
-        ml="-2px"
         borderColor="border.neutral"
         borderBottomWidth={scrollPosition > 0 ? "1px" : ""}
-        className={`fixed z-10 top-[0px] w-full pt-[130px]`}
+        className={`fixed z-10 top-[0px] w-full pt-[130px] h-[400px]`}
         mt={scrollPosition > 0 ? "-200px" : ""}
       >
         <div className=" w-[1090px] max-w-full mx-auto px-4">
-          <Box w="full" display="flex" alignItems="center" gap="16px" mb="64px">
+          <Box w="full" display="flex" alignItems="center" gap="16px" mb="35px">
             <Button
               variant="ghost"
               leftIcon={<ArrowBackIcon boxSize={6} />}

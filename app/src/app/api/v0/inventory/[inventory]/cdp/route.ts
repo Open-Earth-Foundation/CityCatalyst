@@ -22,7 +22,7 @@ export const POST = apiHandler(async (_req, { session, params }) => {
 
   const inventory = await UserService.findUserInventory(
     params.inventory,
-    session
+    session,
   );
 
   logger.debug(`Got ${inventory.inventoryId}`);
@@ -38,7 +38,6 @@ export const POST = apiHandler(async (_req, { session, params }) => {
 
   // In test mode, we just need to show that we can get questions and submit a response
   if (CDPService.mode === "test") {
-
     const questionnaire = await CDPService.getQuestions(cityId);
 
     logger.debug(`Got questionnaire`);

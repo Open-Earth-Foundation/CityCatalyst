@@ -1,17 +1,20 @@
 import { logger } from "@/services/logger";
+import createHttpError from "http-errors";
 
 export default class CDPService {
-
   static get mode(): string {
     return process.env.CDP_MODE || "disabled";
   }
 
   static get key(): string {
+    if (!process.env.CDP_API_KEY) {
+      logger.error("Missing CDP_API_KEY env var!");
+    }
     return process.env.CDP_API_KEY || "test-key";
   }
 
   private static url(relative: string): string {
-    const host = (this.mode === "test") ? "api-pre" : "api-prd";
+    const host = this.mode === "test" ? "api-pre" : "api-prd";
     return `https://${host}.cdpgreenstar.net/${relative}`;
   }
 
@@ -21,11 +24,14 @@ export default class CDPService {
     const response = await fetch(url, {
       headers: [
         ["user-agent", "CityCatalyst/0.10.0"],
-        ["subscription-key", this.key]
-      ]
+        ["subscription-key", this.key],
+      ],
     });
     if (!response.ok) {
-      throw new Error(`Failed to get city ID: ${response.statusText}`);
+      console.log(await response.text());
+      throw createHttpError.BadRequest(
+        `Failed to get city ID from CDP: ${response.statusText}`,
+      );
     }
     const data = await response.json();
     const organizations = data.organizations;
@@ -46,8 +52,8 @@ export default class CDPService {
       headers: [
         ["user-agent", "CityCatalyst/0.10.0"],
         ["organization-id", cityID],
-        ["subscription-key", this.key]
-      ]
+        ["subscription-key", this.key],
+      ],
     });
     if (!response.ok) {
       throw new Error(`Failed to get questions: ${response.statusText}`);
@@ -76,9 +82,9 @@ export default class CDPService {
         ["user-agent", "CityCatalyst/0.10.0"],
         ["subscription-key", this.key],
         ["organization-id", cityID],
-        ["content-type", "application/json"]
+        ["content-type", "application/json"],
       ],
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     });
     if (!res.ok) {
       logger.debug(`Failed to submit response: ${res.statusText}`);

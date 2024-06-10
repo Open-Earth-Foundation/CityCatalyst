@@ -796,6 +796,7 @@ export default function AddDataSteps({
                     w="full"
                     className="hover:drop-shadow-xl transition-shadow"
                     onClick={() => {
+                      console.log(subSector);
                       router.push(
                         `/${inventory}/data/${getCurrentStepParam(currentStep.title)}/${subSector.sectorId}`,
                       );

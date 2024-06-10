@@ -1,0 +1,31 @@
+import { RootState } from "@/lib/store";
+import { SubSectorAttributes } from "@/models/SubSector";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+
+interface SubsectorState {
+  subsector?: SubSectorAttributes;
+}
+
+const initialState = {
+  city: undefined,
+} as SubsectorState;
+
+export const subsectorSlice = createSlice({
+  name: "subsector",
+  // state type is inferred from the initial state
+  initialState,
+  reducers: {
+    set: (state, action: PayloadAction<SubSectorAttributes>) => {
+      state.subsector = action.payload;
+    },
+    clear: (state) => {
+      state.subsector = undefined;
+    },
+  },
+});
+
+export const { clear } = subsectorSlice.actions;
+
+export const selectCity = (state: RootState) => state.city.city;
+
+export default subsectorSlice.reducer;

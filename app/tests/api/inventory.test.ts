@@ -382,7 +382,6 @@ describe("Inventory API", () => {
     });
     assert.equal(res.status, 200);
     const json = await res.json();
-    console.dir(json)
     assert.equal(json.success, true);
   })
 });

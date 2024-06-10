@@ -9,14 +9,13 @@ WORKDIR ${MAGE_CODE_PATH}
 COPY cc-mage cc-mage
 
 # Set up for GDAL and netcdf
-RUN apt-get update && \
-    apt-get install -y build-essential python3-dev python3-pip \
-                       libgdal-dev libproj-dev proj-bin \
-                       libhdf5-dev libnetcdf-dev
+# RUN apt-get update && \
+#     apt-get install -y build-essential python3-dev python3-pip \
+#                        libgdal-dev libproj-dev proj-bin \
+#                        libhdf5-dev libnetcdf-dev
 
 # Set environment variables
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
-ENV C_INCLUDE_PATH=/usr/include/gdal
 
 ENV USER_CODE_PATH=${USER_CODE_PATH}
 

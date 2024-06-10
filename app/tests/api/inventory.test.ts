@@ -22,11 +22,16 @@ import { Sector } from "@/models/Sector";
 import { SubCategory } from "@/models/SubCategory";
 
 const locode = "XX_INVENTORY_CITY";
+// Matches name given by CDP for API testing
+const cityName = "Open Earth Foundation API City Discloser";
+const cityCountry = undefined;
 const inventoryName = "TEST_INVENTORY_INVENTORY";
 const sectorName = "XX_INVENTORY_TEST_SECTOR";
 const subcategoryName = "XX_INVENTORY_TEST_SUBCATEGORY";
 const subsectorName = "XX_INVENTORY_TEST_SUBSECTOR_1";
 const subSectorName2 = "XX_INVENTORY_TEST_SUBSECTOR_2";
+
+process.env.CDP_MODE = "test";
 
 const inventoryData: CreateInventoryRequest = {
   inventoryName,
@@ -88,7 +93,7 @@ describe("Inventory API", () => {
     await db.models.Sector.destroy({
       where: { sectorName: { [Op.like]: "XX_INVENTORY_PROGRESS_TEST%" } },
     });
-    city = await db.models.City.create({ cityId: randomUUID(), locode });
+    city = await db.models.City.create({ cityId: randomUUID(), name: cityName, country: cityCountry, locode });
     await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
     await city.addUser(testUserID);
     sector = await db.models.Sector.create({

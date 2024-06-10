@@ -1,7 +1,9 @@
+import { logger } from "@/services/logger";
+
 export default class CDPService {
 
   static get mode(): string {
-    return process.env.CDP_MODE || "test";
+    return process.env.CDP_MODE || "disabled";
   }
 
   static get key(): string {
@@ -13,7 +15,8 @@ export default class CDPService {
     return `https://${host}.cdpgreenstar.net/${relative}`;
   }
 
-  public static async getCityID(city: string, country: string): Promise<string>  {
+  public static async getCityID(city: string | undefined, country: string | undefined): Promise<string>  {
+    logger.info(`Getting city ID for ${city}, ${country}`);
     const url = this.url("response/partner/organizations");
     const response = await fetch(url, {
       headers: [
@@ -26,6 +29,8 @@ export default class CDPService {
     }
     const data = await response.json();
     const organizations = data.organizations;
+    logger.info(`Got ${organizations.length} organizations`);
+    logger.debug(`Organizations: ${JSON.stringify(organizations)}`);
     const cityOrg = organizations.find((org: any) => {
       return org.name === city && org.country === country;
     });
@@ -50,15 +55,21 @@ export default class CDPService {
     return await response.json();
   }
 
-  public static async submitResponse(cityID: string, question: string, response: string): Promise<boolean> {
+  public static async submitSingleSelect(
+    cityID: string,
+    question: string,
+    id: string,
+    name: string
+  ): Promise<boolean> {
     const url = this.url(`response/response`);
-    const body = {
+    const body = [{
       id: question,
       "updateResponseInput": {
-        "content": response,
+        "content": {name, id},
         "status": "ANSWERED"
       }
-    };
+    }];
+    logger.debug(`Submitting response: ${JSON.stringify(body)}`);
     const res = await fetch(url, {
       method: "PUT",
       headers: [
@@ -70,9 +81,13 @@ export default class CDPService {
       body: JSON.stringify(body)
     });
     if (!res.ok) {
-      throw new Error(`Failed to submit response: ${res.statusText}`);
+      logger.debug(`Failed to submit response: ${res.statusText}`);
+      const text = await res.text();
+      logger.debug(`Response: ${text}`);
+      throw new Error(`Failed to submit response: ${res.statusText} (${text})`);
     }
-    const doc = await res.json();
-    return doc.responseVersion === 0;
+    logger.debug(`Response: ${res.status}`);
+    logger.debug(`Response: ${res.statusText}`);
+    return true;
   }
 }

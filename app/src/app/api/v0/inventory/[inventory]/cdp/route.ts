@@ -5,24 +5,34 @@ import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 
+const EMISSIONS_SECTION = 3;
+const EMISSIONS_INVENTORY_QUESTION = 0;
+const EMISSIONS_INVENTORY_ANSWER = "Yes";
+
 export const POST = apiHandler(async (_req, { session, params }) => {
 
-  logger.info("POST /inventory/[inventory]/cdp");
-  logger.info(`Getting ${params.inventory} inventory`);
+  if (CDPService.mode === "disabled") {
+    return NextResponse.json({
+      success: false
+    });
+  }
+
+  logger.debug("POST /inventory/[inventory]/cdp");
+  logger.debug(`Getting ${params.inventory} inventory`);
 
   const inventory = await UserService.findUserInventory(
     params.inventory,
     session
   );
 
-  logger.info(`Got ${inventory.inventoryId}`);
+  logger.debug(`Got ${inventory.inventoryId}`);
 
   const cityId = await CDPService.getCityID(
     inventory.city.name,
     inventory.city.country
   );
 
-  logger.info(`Got ${cityId}`);
+  logger.debug(`Got ${cityId}`);
 
   let success = false;
 
@@ -31,18 +41,39 @@ export const POST = apiHandler(async (_req, { session, params }) => {
 
     const questionnaire = await CDPService.getQuestions(cityId);
 
-    logger.info(`Got questions`);
+    logger.debug(`Got questionnaire`);
+    logger.debug(`Got ${questionnaire.sections.length} sections`);
 
-    const section = questionnaire.sections[0];
-    const question = section.questions[0];
+    for (let i = 0; i < questionnaire.sections.length; i++) {
+      logger.debug(`Got ${questionnaire.sections[i].questions.length} questions for section ${i}`);
+      const questions = questionnaire.sections[i].questions;
+      for (let j = 0; j < questions.length; j++) {
+        const question = questions[j];
+        logger.debug(`Got keys ${Object.keys(question).join(", ")}`)
+        logger.debug(`Question ${i}.${j} (${question.id}): ${question.text}`);
+      }
+    }
 
-    logger.info(`Got question`);
+    const section = questionnaire.sections[EMISSIONS_SECTION];
+    const question = section.questions[EMISSIONS_INVENTORY_QUESTION];
 
-    success = await CDPService.submitResponse(
-      cityId,
-      question.id,
-      "Test response"
-    );
+    const yes = question.options.find((option: any) => {
+      return option.name === EMISSIONS_INVENTORY_ANSWER;
+    });
+
+    logger.debug(`Got question: ${JSON.stringify(question)}`);
+
+    try {
+      success = await CDPService.submitSingleSelect(
+        cityId,
+        question.id,
+        yes.id,
+        yes.name
+      )
+    } catch (error) {
+      logger.error(`Failed to submit response: ${error}`);
+      success = false;
+    }
   } else if (CDPService.mode === "production") {
     // TODO: Submit total emissions
     // TODO: Submit CIRIS file
@@ -51,6 +82,6 @@ export const POST = apiHandler(async (_req, { session, params }) => {
   }
 
   return NextResponse.json({
-    success: success;
+    success: success
   });
 });

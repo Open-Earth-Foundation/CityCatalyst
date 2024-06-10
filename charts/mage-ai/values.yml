@@ -8,7 +8,7 @@ standaloneScheduler: false
 # Effective if standaloneScheduler is true
 scheduler:
   replicaCount: 1
-  name: mageai-scheduler
+  name: mageai-schedulers
 
 
 # Effective if standaloneScheduler is true
@@ -30,12 +30,9 @@ image:
   pullPolicy: Always
   tag: latest
 
-imagePullSecrets:
-  - name: github-docker-secret
-
 serviceAccount:
   # Specifies whether a service account should be created
-  create: false
+  create: true
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.
@@ -160,8 +157,8 @@ env:
   - name: REQUIRE_USER_AUTHENTICATION
     value: "1"
   - name: DEFAULT_OWNER_EMAIL
-    value: "admin@admin.com"
+    value: ""
   - name: DEFAULT_OWNER_PASSWORD
-    value: "admin"
+    value: ""
   - name: DEFAULT_OWNER_USERNAME
-    value: "admin"
+    value: ""

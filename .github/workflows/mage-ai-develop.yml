@@ -33,7 +33,7 @@ jobs:
       - name: Build Docker image with Docker Compose
         run: |
           docker-compose -f docker-compose.yml build
-          docker tag ghcr.io/open-earth-foundation/citycatalyst-mage-ai:latest ghcr.io/open-earth-foundation/citycatalyst-mage-ai:${{ github.sha }}
+          docker tag ghcr.io/open-earth-foundation/citycatalyst-mage-ai:${{ github.sha }} ghcr.io/open-earth-foundation/citycatalyst-mage-ai:latest
 
       - name: Push Docker image to GitHub Container Registry
         run: |

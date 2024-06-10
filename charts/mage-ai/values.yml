@@ -156,16 +156,12 @@ extraEnvs:
       fieldRef:
         fieldPath: metadata.namespace
 
-# environment:
-#   - name: REQUIRE_USER_AUTHENTICATION
-#     value: "1"
-#   - name: AUTH_USERNAME
-#     valueFrom:
-#       secretKeyRef:
-#         name: mage-auth-secret
-#         key: username
-#   - name: AUTH_PASSWORD
-#     valueFrom:
-#       secretKeyRef:
-#         name: mage-auth-secret
-#         key: password
+env:
+  - name: REQUIRE_USER_AUTHENTICATION
+    value: "1"
+  - name: DEFAULT_OWNER_EMAIL
+    value: "admin@admin.com"
+  - name: DEFAULT_OWNER_PASSWORD
+    value: "admin"
+  - name: DEFAULT_OWNER_USERNAME
+    value: "admin"

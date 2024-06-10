@@ -54,12 +54,6 @@ jobs:
       HELM_REPO_NAME: mageai                
       HELM_CHART_NAME: mageai
       HELM_RELEASE_NAME: mageai
-  #     # POSTGRES_PORT: 5432
-  #     # POSTGRES_HOST: ${{ secrets.DB_DEV_HOST }}
-  #     # POSTGRES_DBNAME:
-  #     # POSTGRES_PASSWORD: ${{ secrets.DB_DEV_PW }}
-  #     # POSTGRES_SCHEMA:
-  #     # POSTGRES_USER:
     
     steps:
       - name: Checkout code
@@ -77,23 +71,12 @@ jobs:
       - name: testing connection to Helm
         run: helm list
       
-      - name: Add kubernetes secret 
-        run: |
-            kubectl create secret docker-registry github-docker-secret \
-              --docker-server=ghcr.io \
-              --docker-username=${{ github.actor }} \
-              --docker-password=${{ secrets.GITHUB_TOKEN }} \
-
-  #     - name: Upgrade/Install Helm chart
-  #       run: helm upgrade --install $HELM_RELEASE_NAME $HELM_REPO_NAME/$HELM_CHART_NAME --namespace $NAMESPACE -f charts/mage-ai/values.yml
-
-      # - name: Upgrade/Install Helm chart
+      # - name: Add kubernetes secret 
       #   run: |
-      #     helm upgrade --install $HELM_RELEASE_NAME $HELM_REPO_NAME/$HELM_CHART_NAME \
-      #       --namespace $NAMESPACE \
-      #       --set env[0].name=POSTGRES_DBNAME,env[0].value=${POSTGRES_DBNAME} \
-      #       --set env[1].name=POSTGRES_USER,env[1].value=${POSTGRES_USER} \
-      #       --set env[2].name=POSTGRES_PASSWORD,env[2].value=${POSTGRES_PASSWORD} \
-      #       --set env[3].name=POSTGRES_HOST,env[3].value=${POSTGRES_HOST} \
-      #       --set env[4].name=POSTGRES_PORT,env[4].value=${POSTGRES_PORT} \
-      #       -f charts/mage-ai/values.yml
+      #       kubectl create secret docker-registry github-docker-secret \
+      #         --docker-server=ghcr.io \
+      #         --docker-username=${{ github.actor }} \
+      #         --docker-password=${{ secrets.GITHUB_TOKEN }} \
+
+      - name: Upgrade/Install Helm chart
+        run: helm upgrade --install $HELM_RELEASE_NAME $HELM_REPO_NAME/$HELM_CHART_NAME --namespace $NAMESPACE -f charts/mage-ai/values.yml

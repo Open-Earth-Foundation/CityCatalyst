@@ -17,6 +17,7 @@ import {
   clear,
   removeFile,
 } from "@/features/city/inventoryDataSlice";
+import { setSubsector, clearSubsector } from "@/features/city/subsectorSlice";
 import { useTranslation } from "@/i18n/client";
 import { RootState } from "@/lib/store";
 import { ScopeAttributes } from "@/models/Scope";
@@ -796,7 +797,15 @@ export default function AddDataSteps({
                     w="full"
                     className="hover:drop-shadow-xl transition-shadow"
                     onClick={() => {
-                      console.log(subSector);
+                      dispatch(
+                        setSubsector({
+                          subsectorName: subSector.subsectorName,
+                          scopeId: "",
+                          sectorId: subSector.sectorId,
+                          subsectorId: subSector.subsectorId,
+                          referenceNumber: subSector.referenceNumber,
+                        }),
+                      );
                       router.push(
                         `/${inventory}/data/${getCurrentStepParam(currentStep.title)}/${subSector.sectorId}`,
                       );

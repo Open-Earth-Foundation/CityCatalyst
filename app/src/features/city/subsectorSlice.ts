@@ -15,17 +15,17 @@ export const subsectorSlice = createSlice({
   // state type is inferred from the initial state
   initialState,
   reducers: {
-    set: (state, action: PayloadAction<SubSectorAttributes>) => {
+    setSubsector: (state, action: PayloadAction<SubSectorAttributes>) => {
       state.subsector = action.payload;
     },
-    clear: (state) => {
+    clearSubsector: (state) => {
       state.subsector = undefined;
     },
   },
 });
 
-export const { clear } = subsectorSlice.actions;
+export const { clearSubsector, setSubsector } = subsectorSlice.actions;
 
-export const selectCity = (state: RootState) => state.city.city;
+export const selectSubsector = (state: RootState) => state.subsector.subsector;
 
 export default subsectorSlice.reducer;

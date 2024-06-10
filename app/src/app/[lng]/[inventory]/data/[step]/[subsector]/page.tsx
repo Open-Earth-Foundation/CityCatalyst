@@ -61,9 +61,9 @@ import { MdMoreVert, MdOutlineHomeWork } from "react-icons/md";
 import { TbTrash } from "react-icons/tb";
 
 function SubSectorPage({
-  params: { lng, step, inventory },
+  params: { lng, step, inventory, subsector },
 }: {
-  params: { lng: string; step: string; inventory: string };
+  params: { lng: string; step: string; inventory: string; subsector: string };
 }) {
   const router = useRouter();
   const { t } = useTranslation(lng, "data");
@@ -136,8 +136,6 @@ function SubSectorPage({
   } = useDisclosure();
 
   const { data } = api.useMockDataQuery({});
-  console.log(data);
-
   const [isLoadingScope1, setIsloadingScope1] = useState(false);
   const [isLoadingScope2, setIsloadingScope2] = useState(false);
 
@@ -153,6 +151,19 @@ function SubSectorPage({
     setTimeout(() => {
       setIsloadingScope2(false);
     }, 1000);
+  };
+
+  const getSectorName = (currentStep: string) => {
+    switch (currentStep) {
+      case "1":
+        return t("stationary-energy");
+      case "2":
+        return t("transportation");
+      case "3":
+        return t("waste");
+      default:
+        return t("stationary-energy");
+    }
   };
 
   return (
@@ -186,10 +197,10 @@ function SubSectorPage({
               </BreadcrumbItem>
               <BreadcrumbItem>
                 <BreadcrumbLink
-                  href={`/${inventory}/data/1`}
+                  href={`/${inventory}/data/${step}`}
                   color="content.tertiary"
                 >
-                  {t("stationary-energy")}
+                  {getSectorName(step)}
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>

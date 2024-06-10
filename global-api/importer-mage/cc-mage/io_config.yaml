@@ -3,10 +3,10 @@ default:
   # Default profile created for data IO access.
   # Add your credentials for the source you use, and delete the rest.
   # AWS
-  AWS_ACCESS_KEY_ID: "{{ env_var('AWS_ACCESS_KEY_ID') }}"
-  AWS_SECRET_ACCESS_KEY: "{{ env_var('AWS_SECRET_ACCESS_KEY') }}"
-  AWS_SESSION_TOKEN: session_token (Used to generate Redshift credentials)
-  AWS_REGION: region
+  AWS_ACCESS_KEY_ID: "{{ mage_secret_var('AWS_ACCESS_KEY_ID') }}"
+  AWS_SECRET_ACCESS_KEY: "{{ mage_secret_var('AWS_SECRET_ACCESS_KEY') }}"
+  #AWS_SESSION_TOKEN: session_token (Used to generate Redshift credentials)
+  AWS_REGION: us-east-1
   # Algolia
   ALGOLIA_APP_ID: app_id
   ALGOLIA_API_KEY: api_key

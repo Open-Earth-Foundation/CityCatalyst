@@ -8,6 +8,7 @@ import { NextResponse } from "next/server";
 const EMISSIONS_SECTION = 3;
 const EMISSIONS_INVENTORY_QUESTION = 0;
 const EMISSIONS_INVENTORY_ANSWER = "Yes";
+const EMISSIONS_MATRIX_QUESTION = 2;
 
 export const POST = apiHandler(async (_req, { session, params }) => {
 
@@ -62,6 +63,9 @@ export const POST = apiHandler(async (_req, { session, params }) => {
 
     logger.debug(`Got question: ${JSON.stringify(question)}`);
 
+    const matrix = questionnaire.sections[EMISSIONS_SECTION].questions[EMISSIONS_MATRIX_QUESTION];
+    logger.debug(`Got matrix question: ${JSON.stringify(matrix)}`);
+
     try {
       success = await CDPService.submitSingleSelect(
         cityId,
@@ -73,6 +77,7 @@ export const POST = apiHandler(async (_req, { session, params }) => {
       logger.error(`Failed to submit response: ${error}`);
       success = false;
     }
+
   } else if (CDPService.mode === "production") {
     // TODO: Submit total emissions
     // TODO: Submit CIRIS file

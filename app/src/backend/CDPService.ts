@@ -96,4 +96,42 @@ export default class CDPService {
     logger.debug(`Response: ${res.statusText}`);
     return true;
   }
+
+  public static async submitMatrix(
+    cityID: string,
+    question: string,
+    rows: any[]
+  ): Promise<boolean> {
+    const url = this.url(`response/response`);
+    const body = rows.map((row:any) => {
+      return {
+        id: question,
+        rowId: row.rowId,
+        "updateResponseInput": {
+          "content": row['content'].toString(),
+          "status": "ANSWERED"
+        }
+      };
+    })
+    logger.debug(`Submitting response: ${JSON.stringify(body)}`);
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: [
+        ["user-agent", "CityCatalyst/0.10.0"],
+        ["subscription-key", this.key],
+        ["organization-id", cityID],
+        ["content-type", "application/json"],
+      ],
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      logger.debug(`Failed to submit response: ${res.statusText}`);
+      const text = await res.text();
+      logger.debug(`Response: ${text}`);
+      throw new Error(`Failed to submit response: ${res.statusText} (${text})`);
+    }
+    logger.debug(`Response: ${res.status}`);
+    logger.debug(`Response: ${res.statusText}`);
+    return true;
+  }
 }

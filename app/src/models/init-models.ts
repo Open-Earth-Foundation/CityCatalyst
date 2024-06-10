@@ -1,4 +1,9 @@
 import type { Sequelize } from "sequelize";
+import { ActivityValue as _ActivityValue } from "./ActivityValue";
+import type {
+  ActivityValueAttributes,
+  ActivityValueCreationAttributes,
+} from "./ActivityValue";
 import { ActivityData as _ActivityData } from "./ActivityData";
 import type {
   ActivityDataAttributes,
@@ -128,6 +133,7 @@ import { CityInvite as _CityInvite } from "./CityInvite";
 
 export {
   _ActivityData as ActivityData,
+  _ActivityValue as ActivityValue,
   _Catalogue as Catalogue,
   _City as City,
   _CityUser as CityUser,
@@ -163,6 +169,8 @@ export {
 export type {
   ActivityDataAttributes,
   ActivityDataCreationAttributes,
+  ActivityValueAttributes,
+  ActivityValueCreationAttributes,
   CatalogueAttributes,
   CatalogueCreationAttributes,
   CityAttributes,
@@ -223,6 +231,7 @@ export type {
 
 export function initModels(sequelize: Sequelize) {
   const ActivityData = _ActivityData.initModel(sequelize);
+  const ActivityValue = _ActivityValue.initModel(sequelize);
   const Catalogue = _Catalogue.initModel(sequelize);
   const City = _City.initModel(sequelize);
   const CityUser = _CityUser.initModel(sequelize);
@@ -267,6 +276,22 @@ export function initModels(sequelize: Sequelize) {
     through: DataSourceActivityData,
     foreignKey: "datasourceId",
     otherKey: "activitydataId",
+  });
+  GasValue.belongsTo(ActivityValue, {
+    as: "activityValue",
+    foreignKey: "activityValueId",
+  });
+  ActivityValue.hasMany(GasValue, {
+    as: "gasValues",
+    foreignKey: "activityValueId",
+  });
+  ActivityValue.belongsTo(InventoryValue, {
+    as: "inventoryValue",
+    foreignKey: "inventoryValueId",
+  });
+  InventoryValue.hasMany(ActivityValue, {
+    as: "activityValues",
+    foreignKey: "inventoryValueId",
   });
   DataSource.belongsToMany(EmissionsFactor, {
     as: "emissionsFactorIdEmissionsFactors",
@@ -632,6 +657,7 @@ export function initModels(sequelize: Sequelize) {
 
   return {
     ActivityData: ActivityData,
+    ActivityValue: ActivityValue,
     Catalogue: Catalogue,
     City: City,
     CityUser: CityUser,

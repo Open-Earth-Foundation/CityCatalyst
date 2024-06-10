@@ -393,6 +393,15 @@ export const api = createApi({
       transformResponse: (response: { data: UserInviteResponse }) =>
         response.data,
     }),
+    mockData: builder.query({
+      query: () => {
+        return {
+          method: "GET",
+          url: "/mock",
+        };
+      },
+      transformResponse: (response: { data: [] }) => response.data,
+    }),
   }),
 });
 
@@ -447,5 +456,6 @@ export const {
   useDisconnectThirdPartyDataMutation,
   useInviteUserMutation,
   useCheckUserMutation,
+  useMockDataQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/i18n/client";
-import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, ArrowForwardIcon, LinkIcon } from "@chakra-ui/icons";
 import { Link } from "@chakra-ui/next-js";
 import {
   Box,
@@ -18,39 +18,85 @@ import { useParams, useRouter } from "next/navigation";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { MdOutlineHomeWork } from "react-icons/md";
 import { FiTrash2, FiTruck } from "react-icons/fi";
+import { BsPlus } from "react-icons/bs";
+import AddDataCard from "@/components/Cards/add-data-card";
 
 export default function AddDataIntro({
-  params: { lng },
+  params: { lng, inventory },
 }: {
-  params: { lng: string };
+  params: { lng: string; inventory: string };
 }) {
   const { t } = useTranslation(lng, "data");
-  const router = useRouter();
-  const { inventory } = useParams();
+
+  const SECTORCARD_DATA = [
+    {
+      sectorName: t("stationary-energy"),
+      descriptionText: t("stationary-energy-details"),
+      scope: t("stationary-energy-scope"),
+      buttonText: "Add Data",
+      icon: MdOutlineHomeWork,
+      step: 1,
+    },
+    {
+      sectorName: t("transportation"),
+      descriptionText: t("transportation-details"),
+      scope: t("transportation-scope"),
+      buttonText: "Add Data",
+      icon: FiTruck,
+      step: 2,
+    },
+    {
+      sectorName: t("waste"),
+      descriptionText: t("waste-details"),
+      scope: t("waste-scope"),
+      buttonText: "Add Data",
+      icon: FiTrash2,
+      step: 3,
+    },
+  ];
 
   return (
     <Box className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
-      <Button
-        variant="ghost"
-        leftIcon={<ArrowBackIcon boxSize={6} />}
-        onClick={() => router.back()}
-      >
-        Go Back
-      </Button>
+      <Link href="/" _hover={{ textDecoration: "none" }}>
+        <Box display="flex" alignItems="center" gap="8px">
+          <ArrowBackIcon boxSize={6} />
+          <Text
+            color="interactive.secondary"
+            textTransform="uppercase"
+            fontFamily="heading"
+            fontSize="button.md"
+            fontWeight="bold"
+          >
+            {t("go-back")}
+          </Text>
+        </Box>
+      </Link>
       <Heading
         fontSize="32px"
         lineHeight="40px"
         fontWeight="semibold"
         mb={6}
         mt={12}
-        className="w-full text-center"
+        className="w-full"
       >
         {t("data-heading")}
       </Heading>
-      <Text color="content.tertiary" className="w-full text-center">
-        <Trans i18nKey="data-details" t={t} />
+      <Text color="content.tertiary" className="w-full">
+        <Trans i18nKey="data-details" t={t}>
+          Add data or connect third-party data for your city and complete your
+          city&apos;s emission inventory using the GPC Basic methodology.{" "}
+          <Link
+            className="underline"
+            href="https://ghgprotocol.org/ghg-protocol-cities"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Learn more
+          </Link>
+          about GPC Protocol
+        </Trans>
       </Text>
-      <Card mt={16} p={6} borderColor="border.overlay" borderWidth={1}>
+      <Card mt={16} p={6} shadow="none">
         <Heading
           fontSize="24px"
           mb={1}
@@ -61,86 +107,31 @@ export default function AddDataIntro({
         >
           {t("data-view-heading")}
         </Heading>
-        <Text color="content.tertiary">
-          <Trans i18nKey="data-view-details" t={t}>
-            GPC Basic encompasses three primary sectors: Stationary Energy,
-            Transportation and Waste . Fill out the necessary data for each
-            sector to build a comprehensive GHG inventory.{" "}
-            <Link
-              className="underline"
-              href="https://ghgprotocol.org/ghg-protocol-cities"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learn more
-            </Link>
-          </Trans>
-        </Text>
+        <Text color="content.tertiary">{t("data-view-details")}</Text>
         <Flex className="space-x-4" mt={12}>
-          <Card
-            className="space-y-6 grow w-1/3"
-            boxShadow="none"
-            p={6}
-            borderColor="border.overlay"
-            borderWidth={1}
-          >
-            <Icon as={MdOutlineHomeWork} boxSize={8} color="brand.secondary" />
-            <Heading size="md">{t("stationary-energy")}</Heading>
-            <Divider borderColor="border.overlay" />
-            <Text color="content.tertiary">
-              {t("stationary-energy-details")}
-            </Text>
-            <div className="grow" />
-            <Heading size="sm" color="brand.secondary" className="font-normal">
-              {t("stationary-energy-scope")}
-            </Heading>
-          </Card>
-          <Card
-            className="space-y-6 grow w-1/3"
-            boxShadow="none"
-            p={6}
-            borderColor="border.overlay"
-            borderWidth={1}
-          >
-            <Icon as={FiTruck} boxSize={8} color="brand.secondary" />
-            <Heading size="md">{t("transportation")}</Heading>
-            <Divider borderColor="border.overlay" />
-            <Text color="content.tertiary">{t("transportation-details")}</Text>
-            <div className="grow" />
-            <Heading size="sm" color="brand.secondary" className="font-normal">
-              {t("transportation-scope")}
-            </Heading>
-          </Card>
-          <Card
-            className="space-y-6 grow w-1/3"
-            boxShadow="none"
-            p={6}
-            borderColor="border.overlay"
-            borderWidth={1}
-          >
-            <Icon as={FiTrash2} boxSize={8} color="brand.secondary" />
-            <Heading size="md">{t("waste")}</Heading>
-            <Divider borderColor="border.overlay" />
-            <Text color="content.tertiary">{t("waste-details")}</Text>
-            <div className="grow" />
-            <Heading size="sm" color="brand.secondary" className="font-normal">
-              {t("waste-scope")}
-            </Heading>
-          </Card>
+          {SECTORCARD_DATA.map(
+            ({
+              sectorName,
+              descriptionText,
+              scope,
+              icon,
+              buttonText,
+              step,
+            }) => (
+              <AddDataCard
+                key={sectorName}
+                title={sectorName}
+                description={descriptionText}
+                icon={icon}
+                scopeText={scope}
+                buttonText={buttonText}
+                step={step}
+                inventory={inventory}
+              />
+            ),
+          )}
         </Flex>
       </Card>
-      <div className="w-full text-right my-12">
-        <NextLink href={`/${inventory}/data/1`} passHref legacyBehavior>
-          <Button
-            as="a"
-            h={16}
-            px={6}
-            rightIcon={<ArrowForwardIcon boxSize={6} />}
-          >
-            {t("add-data-to-inventory")}
-          </Button>
-        </NextLink>
-      </div>
     </Box>
   );
 }

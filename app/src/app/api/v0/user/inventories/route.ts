@@ -1,4 +1,6 @@
 import { db } from "@/models";
+import type { City } from "@/models/City";
+import type { Inventory } from "@/models/Inventory";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
@@ -31,8 +33,8 @@ export const GET = apiHandler(async (_req: NextRequest, context) => {
     throw new createHttpError.NotFound("User not found");
   }
 
-  const data = user.cities.flatMap((city) => {
-    return city.inventories.map((inventory) => {
+  const data = user.cities.flatMap((city: City) => {
+    return city.inventories.map((inventory: Inventory) => {
       return {
         ...inventory.dataValues,
         city: { name: city.name, locode: city.locode },

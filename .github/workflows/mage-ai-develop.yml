@@ -15,68 +15,28 @@ on:
 
 jobs:
 
-  # pushToGHCR:
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       working-directory: ./global-api
-        
-  #   steps:
-  #     - uses: actions/checkout@v4
-
-  #     - name: Log in to the Container registry
-  #       uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
-  #       with:
-  #         registry: ghcr.io
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
-
-  #     - name: Push Docker image to GitHub Container Registry
-  #       env:
-  #         VERSION: ${{ github.sha }}
-  #         IMAGE: ghcr.io/open-earth-foundation/citycatalyst-mage-ai
-  #       run: |
-  #         docker build -t $IMAGE:$VERSION importer-mage/
-  #         docker tag $IMAGE:$VERSION $IMAGE:latest
-  #         docker push $IMAGE:$VERSION
-  #         docker push $IMAGE:latest
-          
-  deployToEKS:
+  pushToGHCR:
     runs-on: ubuntu-latest
-    # needs: pushToGHCR
-
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
-      EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
-      AWS_REGION: us-east-1             
-      NAMESPACE: default                   
-      HELM_REPO_NAME: mageai                
-      HELM_CHART_NAME: mageai
-      HELM_RELEASE_NAME: mageai
-    
+    defaults:
+      run:
+        working-directory: ./global-api/import-mage
+        
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Creating kubeconfig file
-        run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region $AWS_REGION
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Testing connection to EKS
-        run: kubectl get pods -n default
-
-      - name: Add Helm repository
-        run: helm repo add $HELM_REPO_NAME https://mage-ai.github.io/helm-charts
-
-      - name: testing connection to Helm
-        run: helm list
-      
-      # - name: Add kubernetes secret 
-      #   run: |
-      #       kubectl create secret docker-registry github-docker-secret \
-      #         --docker-server=ghcr.io \
-      #         --docker-username=${{ github.actor }} \
-      #         --docker-password=${{ secrets.GITHUB_TOKEN }} \
-
-      - name: Upgrade/Install Helm chart
-        run: helm upgrade --install $HELM_RELEASE_NAME $HELM_REPO_NAME/$HELM_CHART_NAME --namespace $NAMESPACE -f charts/mage-ai/values.yml
+      - name: Push Docker image to GitHub Container Registry
+        env:
+          VERSION: ${{ github.sha }}
+          IMAGE: ghcr.io/open-earth-foundation/citycatalyst-mage-ai
+        run: |
+          docker build -t $IMAGE:$VERSION importer-mage/
+          docker tag $IMAGE:$VERSION $IMAGE:latest
+          docker push $IMAGE:$VERSION
+          docker push $IMAGE:latest

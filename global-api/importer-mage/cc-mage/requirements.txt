@@ -1,11 +1,10 @@
-osmnx
+osmnx==1.9.3
 cython 
 numpy 
-pandas 
-shapely 
+pandas==2.2.2 
+shapely==2.0.4 
 fiona 
-pyproj 
-geopandas 
-osmnx 
-xarray 
+pyproj==3.6.* 
+geopandas==0.14.4 
+xarray==2024.* 
 netcdf4

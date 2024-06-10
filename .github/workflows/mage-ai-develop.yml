@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./global-api/import-mage
+        working-directory: ./global-api/importer-mage
         
     steps:
       - uses: actions/checkout@v4

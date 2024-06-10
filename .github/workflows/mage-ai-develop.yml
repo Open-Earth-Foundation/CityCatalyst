@@ -30,13 +30,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Docker image with Docker Compose
+      - name: Pushing mageai to GHCR
+        env:
+          VERSION: ${{ github.sha }}
+          IMAGE: ghcr.io/open-earth-foundation/citycatalyst-mage-ai
         run: |
-          docker-compose -f docker-compose.yml build
-          docker tag ghcr.io/open-earth-foundation/citycatalyst-mage-ai:${{ github.sha }} ghcr.io/open-earth-foundation/citycatalyst-mage-ai:latest
-
-      - name: Push Docker image to GitHub Container Registry
-        run: |
-          docker-compose -f docker-compose.yml push
-          docker push ghcr.io/open-earth-foundation/citycatalyst-mage-ai:${{ github.sha }}
-          docker push ghcr.io/open-earth-foundation/citycatalyst-mage-ai:latest
+          docker build -t $IMAGE:$VERSION global-api
+          docker tag $IMAGE:$VERSION $IMAGE:main
+          docker push $IMAGE:$VERSION
+          docker push $IMAGE:main

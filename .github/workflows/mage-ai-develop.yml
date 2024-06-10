@@ -36,7 +36,7 @@ jobs:
           VERSION: ${{ github.sha }}
           IMAGE: ghcr.io/open-earth-foundation/citycatalyst-mage-ai
         run: |
-          docker build -t $IMAGE:$VERSION importer-mage/
+          docker build -t $IMAGE:$VERSION
           docker tag $IMAGE:$VERSION $IMAGE:latest
           docker push $IMAGE:$VERSION
           docker push $IMAGE:latest

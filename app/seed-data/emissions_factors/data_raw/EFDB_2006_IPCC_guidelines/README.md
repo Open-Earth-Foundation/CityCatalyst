@@ -16,6 +16,7 @@ Emission factors from the [2006 IPCC Guidelines for National Greenhouse Gas Inve
 2. Click on  `Basic Search` at the tope
 3. Search for `"2006 IPCC Guidelines"` in the `Source of Data`
 4. Click `Export to XLS` to save the data to an Excel file.
+5. Convert to CSV within Excel (I was unable to open the `.xls` file from Python)
 
 Notes: [how to search the database](https://www.ipcc-nggip.iges.or.jp/EFDB/help.php)
 

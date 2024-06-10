@@ -3,8 +3,6 @@ services:
   server:
     image: mageai/mageai:latest
     command: mage start ${PROJECT_NAME}
-    env_file:
-      - .env
     build:
       context: .
       dockerfile: Dockerfile

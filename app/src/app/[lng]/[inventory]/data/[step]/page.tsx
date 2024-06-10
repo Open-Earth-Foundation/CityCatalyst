@@ -607,11 +607,11 @@ export default function AddDataSteps({
 
   const getCurrentStepParam = (currentStepName: string) => {
     switch (currentStepName) {
-      case "Stationary Energy":
+      case t("stationary-energy"):
         return 1;
-      case "Transportation":
+      case t("transportation"):
         return 2;
-      case "Waste and wastewater":
+      case t("waste"):
         return 3;
       default:
         return 1;

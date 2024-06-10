@@ -36,6 +36,6 @@ jobs:
           IMAGE: ghcr.io/open-earth-foundation/citycatalyst-mage-ai
         run: |
           docker build -t $IMAGE:$VERSION .
-          docker tag $IMAGE:$VERSION $IMAGE:main
+          docker tag $IMAGE:$VERSION $IMAGE:latest
           docker push $IMAGE:$VERSION
-          docker push $IMAGE:main
+          docker push $IMAGE:latest

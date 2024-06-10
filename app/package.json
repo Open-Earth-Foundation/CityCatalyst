@@ -36,7 +36,7 @@
     "@react-email/components": "^0.0.16",
     "@reduxjs/toolkit": "^2.2.3",
     "@storybook/cli": "^8.0.8",
-    "@storybook/react": "^7.4.5",
+    "@storybook/react": "^8.1.6",
     "@storybook/testing-library": "^0.2.2",
     "@types/bcrypt": "^5.0.2",
     "@types/geojson": "^7946.0.14",

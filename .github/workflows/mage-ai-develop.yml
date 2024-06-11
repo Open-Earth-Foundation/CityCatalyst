@@ -7,7 +7,7 @@ on:
       - global-api/importer-mage/**
       - charts/mage-ai/**
       - .github/workflows/mage-ai-develop.yml
-    branches: ["mage-setup"]
+    branches: ["develop"]
   pull_request:
     paths:
       - global-api/importer-mage/**

@@ -149,3 +149,7 @@ global-api/importer/mendoza_arg/data/**
 global-api/importer/osm/cache/**
 global-api/importer/osm/data/**
 global-api/data/**
+
+
+global-api/importer/.DS_Store
+global-api/importer/argentinian_datasets/.DS_Store

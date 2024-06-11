@@ -1,0 +1,15 @@
+version: '3'
+services:
+  server:
+    image: mageai/mageai:latest
+    command: mage start ${PROJECT_NAME}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 6789:6789
+    volumes:
+      - .:/home/src/
+    restart: on-failure:5
+    stdin_open: true 
+    tty: true 

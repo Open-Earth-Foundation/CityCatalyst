@@ -167,7 +167,7 @@ function SubSectorPage({
         return t("stationary-energy");
     }
   };
-  const getSubsectorData = useSelector(
+  const subsectorData = useSelector(
     (state: RootState) => state.subsector.subsector,
   );
 
@@ -210,7 +210,7 @@ function SubSectorPage({
               </BreadcrumbItem>
               <BreadcrumbItem>
                 <BreadcrumbLink href="#" color="content.link">
-                  {getSubsectorData?.subsectorName}
+                  {subsectorData?.subsectorName}
                 </BreadcrumbLink>
               </BreadcrumbItem>
             </Breadcrumb>
@@ -222,9 +222,9 @@ function SubSectorPage({
           </Box>
           <Box display="flex" gap="16px" flexDirection="column">
             <Text fontFamily="heading" fontSize="headline.md" fontWeight="bold">
-              {getSubsectorData?.referenceNumber +
+              {subsectorData?.referenceNumber +
                 " " +
-                getSubsectorData?.subsectorName}
+                subsectorData?.subsectorName}
             </Text>
             <Text
               fontFamily="heading"

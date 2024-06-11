@@ -3,6 +3,7 @@ import argparse
 import glob
 import uuid
 import os
+from sqlalchemy import create_engine
 
 def uuid_generate_v3(name, namespace=uuid.NAMESPACE_OID):
     """generate a version 3 UUID from namespace and name"""
@@ -13,6 +14,11 @@ def uuid_generate_v3(name, namespace=uuid.NAMESPACE_OID):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Transform files with a specified location.')
     parser.add_argument("--filepath", help="path to the files location", required=True)
+    parser.add_argument(
+        "--database_uri",
+        help="database URI (e.g. postgresql://ccglobal:@localhost/ccglobal)",
+        default=os.environ.get("DB_URI"),
+    )
     args = parser.parse_args()
 
     absolute_path = os.path.abspath(args.filepath)
@@ -164,10 +170,10 @@ if __name__ == "__main__":
             
             # units conversion
             # from IEA: 1 tep = 41.868 GJ = 39.68 MBtu = 11.63 MWh
-            # raw data: miles de TEP 
-            TEP_to_kJ = 41.868 * 1e6
-            df.loc[:, 'activity_value'] *= 1000
-            df.loc[:, 'activity_value'] *= TEP_to_kJ
+            # raw data: miles of TEP 
+            df.loc[:, 'activity_value'] *= 1000     #miles of TEP to TEP
+            df.loc[:, 'activity_value'] *= 41.868   # TEP to GJ
+            df.loc[:, 'activity_value'] *= 1e-3     # GJ to TJ
 
             # merge with EF dataframe
             df = pd.merge(df, ef_df, on=['GPC_refno', 'fuel_type'])
@@ -212,4 +218,10 @@ if __name__ == "__main__":
                      'activity_units', 'gas_name', 'emission_factor_value', 'emission_factor_units', 'emissions_value', 'emissions_units']
         result_df = result_df.reindex(columns=col_order)
 
-    result_df.to_csv(f'{absolute_path}/processed_BEN_AR.csv', sep=",", decimal=".", index=False)
+    #result_df.to_csv(f'{absolute_path}/processed_BEN_AR.csv', sep=",", decimal=".", index=False)
+
+    # Create a SQLAlchemy engine
+    engine = create_engine(args.database_uri)
+
+    # Write the DataFrame to the database table
+    result_df.to_sql('ben_country_emissions_staging', engine, if_exists='replace', index=False)

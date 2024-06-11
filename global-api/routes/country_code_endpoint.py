@@ -26,11 +26,13 @@ def db_query(source_name, country_code, year, GPC_refno):
     with SessionLocal() as session:
         query = text(
             """
-            SELECT * FROM country_code
+            SELECT lower(gas_name) as gas_name, sum(emissions_value::float) as emissions_value
+            FROM country_code
             WHERE source_name = :source_name
             AND "GPC_refno" = :GPC_refno
             AND country_code = :country_code
-            AND year = :year;
+            AND year = :year
+            GROUP BY gas_name;
             """
         )
         params = {"source_name": source_name, "country_code": country_code, "year": year, "GPC_refno": GPC_refno}

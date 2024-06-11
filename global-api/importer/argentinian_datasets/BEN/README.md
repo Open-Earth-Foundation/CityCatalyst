@@ -7,7 +7,7 @@ python ./importer/argentinian_datasets/Energy_Balances/extraction_BEN_AR.py --fi
 ```
 2. Transform the activity into emission data align with the Global API schema:
 ```bash
-python ./importer/argentinian_datasets/Energy_Balances/transformation_BEN_AR.py --filepath [path where the transformed data will be saved]
+python ./importer/argentinian_datasets/BEN/transformation_BEN_AR.py --filepath [path where the transformed data will be saved]
 ```
 3. Extract the activity row from the source:
 ```bash

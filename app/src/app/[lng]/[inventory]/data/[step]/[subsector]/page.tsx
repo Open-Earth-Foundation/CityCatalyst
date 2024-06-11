@@ -7,6 +7,7 @@ import AddActivityModal from "@/components/Modals/add-activity-modal";
 import HeadingText from "@/components/heading-text";
 import LoadingState from "@/components/loading-state";
 import { useTranslation } from "@/i18n/client";
+import { RootState } from "@/lib/store";
 import { api } from "@/services/api";
 import { AddIcon, ArrowBackIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import {
@@ -59,11 +60,12 @@ import { FaNetworkWired } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
 import { MdMoreVert, MdOutlineHomeWork } from "react-icons/md";
 import { TbTrash } from "react-icons/tb";
+import { useDispatch, useSelector } from "react-redux";
 
 function SubSectorPage({
-  params: { lng, step, inventory },
+  params: { lng, step, inventory, subsector },
 }: {
-  params: { lng: string; step: string; inventory: string };
+  params: { lng: string; step: string; inventory: string; subsector: string };
 }) {
   const router = useRouter();
   const { t } = useTranslation(lng, "data");
@@ -136,8 +138,6 @@ function SubSectorPage({
   } = useDisclosure();
 
   const { data } = api.useMockDataQuery({});
-  console.log(data);
-
   const [isLoadingScope1, setIsloadingScope1] = useState(false);
   const [isLoadingScope2, setIsloadingScope2] = useState(false);
 
@@ -154,6 +154,22 @@ function SubSectorPage({
       setIsloadingScope2(false);
     }, 1000);
   };
+
+  const getSectorName = (currentStep: string) => {
+    switch (currentStep) {
+      case "1":
+        return t("stationary-energy");
+      case "2":
+        return t("transportation");
+      case "3":
+        return t("waste");
+      default:
+        return t("stationary-energy");
+    }
+  };
+  const subsectorData = useSelector(
+    (state: RootState) => state.subsector.subsector,
+  );
 
   return (
     <>
@@ -186,15 +202,15 @@ function SubSectorPage({
               </BreadcrumbItem>
               <BreadcrumbItem>
                 <BreadcrumbLink
-                  href={`/${inventory}/data/1`}
+                  href={`/${inventory}/data/${step}`}
                   color="content.tertiary"
                 >
-                  {t("stationary-energy")}
+                  {getSectorName(step)}
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>
                 <BreadcrumbLink href="#" color="content.link">
-                  {t("commercial-and-institutional-buildings")}
+                  {subsectorData?.subsectorName}
                 </BreadcrumbLink>
               </BreadcrumbItem>
             </Breadcrumb>
@@ -206,7 +222,9 @@ function SubSectorPage({
           </Box>
           <Box display="flex" gap="16px" flexDirection="column">
             <Text fontFamily="heading" fontSize="headline.md" fontWeight="bold">
-              I.1.2 {t("commercial-and-institutional-buildings")}
+              {subsectorData?.referenceNumber +
+                " " +
+                subsectorData?.subsectorName}
             </Text>
             <Text
               fontFamily="heading"

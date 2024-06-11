@@ -17,6 +17,7 @@ import {
   clear,
   removeFile,
 } from "@/features/city/inventoryDataSlice";
+import { setSubsector, clearSubsector } from "@/features/city/subsectorSlice";
 import { useTranslation } from "@/i18n/client";
 import { RootState } from "@/lib/store";
 import { ScopeAttributes } from "@/models/Scope";
@@ -604,19 +605,31 @@ export default function AddDataSteps({
     };
   }, []);
 
+  const getCurrentStepParam = (currentStepName: string) => {
+    switch (currentStepName) {
+      case t("stationary-energy"):
+        return 1;
+      case t("transportation"):
+        return 2;
+      case t("waste"):
+        return 3;
+      default:
+        return 1;
+    }
+  };
+
   return (
     <>
       <Box id="top" />
       <Box
         bg="background.backgroundLight"
-        ml="-2px"
         borderColor="border.neutral"
         borderBottomWidth={scrollPosition > 0 ? "1px" : ""}
-        className={`fixed z-10 top-[0px] w-full pt-[130px]`}
+        className={`fixed z-10 top-[0px] w-full pt-[130px] h-[400px]`}
         mt={scrollPosition > 0 ? "-200px" : ""}
       >
         <div className=" w-[1090px] max-w-full mx-auto px-4">
-          <Box w="full" display="flex" alignItems="center" gap="16px" mb="64px">
+          <Box w="full" display="flex" alignItems="center" gap="16px" mb="35px">
             <Button
               variant="ghost"
               leftIcon={<ArrowBackIcon boxSize={6} />}
@@ -783,9 +796,18 @@ export default function AddDataSteps({
                     w="full"
                     className="hover:drop-shadow-xl transition-shadow"
                     onClick={() => {
-                      console.log(subSector);
-                      router.push(`/${inventory}/data/1/${subSector.sectorId}`);
-                      // onSubsectorClick(subSector);
+                      dispatch(
+                        setSubsector({
+                          subsectorName: subSector.subsectorName,
+                          scopeId: "",
+                          sectorId: subSector.sectorId,
+                          subsectorId: subSector.subsectorId,
+                          referenceNumber: subSector.referenceNumber,
+                        }),
+                      );
+                      router.push(
+                        `/${inventory}/data/${getCurrentStepParam(currentStep.title)}/${subSector.sectorId}`,
+                      );
                     }}
                     key={subSector.subsectorId}
                   >

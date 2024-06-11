@@ -605,7 +605,7 @@ export default function AddDataSteps({
     };
   }, []);
 
-  const getCurrentStepParam = (currentStepName: string) => {
+  const subSectorData = (currentStepName: string) => {
     switch (currentStepName) {
       case t("stationary-energy"):
         return 1;
@@ -806,7 +806,7 @@ export default function AddDataSteps({
                         }),
                       );
                       router.push(
-                        `/${inventory}/data/${getCurrentStepParam(currentStep.title)}/${subSector.sectorId}`,
+                        `/${inventory}/data/${subSectorData(currentStep.title)}/${subSector.sectorId}`,
                       );
                     }}
                     key={subSector.subsectorId}

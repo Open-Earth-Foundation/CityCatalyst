@@ -152,4 +152,7 @@ global-api/data/**
 
 global-api/importer-mage/cache
 global-api/importer/.DS_Store
+global-api/.DS_Store
+.DS_Store
+importer/DS_Store
 global-api/importer/argentinian_datasets/.DS_Store

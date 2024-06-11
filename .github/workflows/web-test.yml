@@ -18,6 +18,8 @@ jobs:
       NODE_ENV: test
       NEXTAUTH_SECRET: "diTMz/XLX4edSmmfzwJtmzKjCJGRt81Gf0PdjO3IPs8="
       NEXTAUTH_URL: "http://localhost:3000"
+      CDP_API_KEY: ${{ secrets.CDP_API_KEY_TEST }}
+      CDP_MODE: "test"
     defaults:
       run:
         working-directory: ./app

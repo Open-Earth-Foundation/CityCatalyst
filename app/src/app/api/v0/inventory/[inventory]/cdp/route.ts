@@ -39,11 +39,19 @@ async function getTotalByRefnos(inventory: Inventory, refNos: string[]): Promise
 }
 
 async function totalScope1ExcludingGeneration(inventory: Inventory): Promise<bigint> {
-  return 0n;
+  return await getTotalByRefnos(inventory, [
+    "I.1.1", "I.2.1", "I.3.1", "I.4.1", "I.5.1", "I.6.1",
+    "I.7.1", "I.8.1",
+    "II.1.1", "II.2.1", "II.3.1", "II.4.1", "II.5.1",
+    "III.1.1", "III.2.1", "III.3.1", "III.4.1",
+    "III.1.3", "III.2.3", "III.3.3", "III.4.3"
+  ]);
 }
 
 async function scope1FromGeneration(inventory: Inventory): Promise<bigint> {
-  return 0n;
+  return await getTotalByRefnos(inventory, [
+    "I.4.4"
+  ]);
 }
 
 async function totalScope2(inventory: Inventory): Promise<bigint> {
@@ -53,47 +61,76 @@ async function totalScope2(inventory: Inventory): Promise<bigint> {
 }
 
 async function totalScope3(inventory: Inventory): Promise<bigint> {
-  return 0n;
+  return await getTotalByRefnos(inventory,
+    `I.1.3, I.2.3, I.3.3, I.4.3, I.5.3, I.6.3
+    II.1.3, II.2.3, II.3.3, II.4.3
+    III.1.2, III.2.2, III.3.2, III.4.2`.split(/\s*,\s*/)
+  )
 }
 
 async function totalStationaryScope1(inventory: Inventory): Promise<bigint> {
-  return 0n;
+  return await getTotalByRefnos(inventory, [
+    "I.1.1", "I.2.1", "I.3.1", "I.4.1", "I.5.1", "I.6.1",
+    "I.7.1", "I.8.1", "I.4.4"
+  ]);
 }
 
 async function totalStationaryScope2(inventory: Inventory): Promise<bigint> {
-  return 0n;
+  return await getTotalByRefnos(inventory, [
+    "I.1.2", "I.2.2", "I.3.2", "I.4.2", "I.5.2", "I.6.2",
+  ])
 }
 
 async function totalStationaryScope3(inventory: Inventory): Promise<bigint> {
-  return 0n;
+  return await getTotalByRefnos(inventory, [
+    "I.1.3", "I.2.3", "I.3.3", "I.4.3", "I.5.3", "I.6.3"
+  ])
 }
 
 async function totalTransportationScope1(inventory: Inventory): Promise<bigint> {
-  return 0n;
+  return await getTotalByRefnos(inventory, [
+    "II.1.1", "II.2.1", "II.3.1", "II.4.1", "II.5.1"
+  ]);
 }
 
 async function totalTransportationScope2(inventory: Inventory): Promise<bigint> {
-  return 0n;
+  return await getTotalByRefnos(inventory, [
+    "II.1.2", "II.2.2", "II.3.2", "II.4.2", "II.5.2"
+  ]);
 }
 
 async function totalTransportationScope3(inventory: Inventory): Promise<bigint> {
-  return 0n;
+  return await getTotalByRefnos(inventory, [
+    "II.1.3", "II.2.3", "II.3.3", "II.4.3"
+  ]);
 }
 
 async function totalWasteWithinScope1(inventory: Inventory): Promise<bigint> {
-  return 0n;
+  return await getTotalByRefnos(inventory, [
+    "III.1.1", "III.2.1", "III.3.1", "III.4.1"
+  ]);
 }
 
 async function totalWasteWithinScope3(inventory: Inventory): Promise<bigint> {
-  return 0n;
+  return await getTotalByRefnos(inventory, [
+    "III.1.2", "III.2.2", "III.3.2", "III.4.2"
+  ]);
 }
 
 async function totalWasteOutsideScope1(inventory: Inventory): Promise<bigint> {
-  return 0n;
+  return await getTotalByRefnos(inventory, [
+    "III.1.3", "III.2.3", "III.3.3", "III.4.3"
+  ]);
 }
 
 async function totalBasic(inventory: Inventory): Promise<bigint> {
-  return 0n;
+  return await getTotalByRefnos(inventory,
+    `I.1.1, I.2.1, I.3.1, I.4.1, I.5.1, I.6.1, I.7.1, I.8.1
+    II.1.1, II.2.1, II.3.1, II.4.1, II.5.1
+    III.1.1, III.2.1, III.3.1, III.4.1
+    I.1.2, I.2.2, I.3.2, I.4.2, I.5.2, I.6.2
+    II.1.2, II.2.2, II.3.2, II.4.2, II.5.2
+    III.1.2, III.2.2, III.3.2, III.4.2`.split(/\s*,\s/));
 }
 
 export const POST = apiHandler(async (_req, { session, params }) => {

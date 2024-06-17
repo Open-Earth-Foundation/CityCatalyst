@@ -742,7 +742,7 @@ export default function OnboardingSetup({
       city = await addCity({
         name: data.name,
         locode: data.locode!,
-        area: (area) ? Math.round(area) : undefined,
+        area: area ? Math.round(area) : undefined,
         region: regionName ?? undefined,
         country: countryName ?? undefined,
         regionLocode: region?.actor_id ?? undefined,

@@ -144,3 +144,95 @@ if __name__ == "__main__":
             print("Query completed successfully.")
         except Exception as e:
             print("Error updating osm table:", e)
+
+
+    # Part2: AR VLO
+    gdf_vl = ox.geocode_to_gdf('R1224657', by_osmid=True)
+    gdf_vl['geometry'] = gdf_vl['geometry'].apply(lambda x: x.wkt)
+    gdf_vl['locode'] = 'AR VLO'
+    gdf_vl = pd.DataFrame(gdf_vl)
+
+    engine = create_engine(args.database_uri)
+    gdf_vl.to_sql('osm_staging', engine, if_exists='replace', index=False)
+
+    # Define the UPSERT query using text() construct
+    upsert_query = """
+    INSERT INTO osm (geometry, bbox_north, bbox_south, bbox_east, bbox_west, place_id, osm_type, osm_id, lat, lon, "class", "type", place_rank, importance, addresstype, name, display_name, locode)
+    SELECT geometry, bbox_north, bbox_south, bbox_east, bbox_west, place_id, osm_type, osm_id, lat, lon, "class", "type", place_rank, importance, addresstype, name, display_name, locode
+    FROM osm_staging
+    ON CONFLICT (locode)
+    DO UPDATE SET
+    geometry = EXCLUDED.geometry,
+    bbox_north = EXCLUDED.bbox_north,
+    bbox_south = EXCLUDED.bbox_south,
+    bbox_east = EXCLUDED.bbox_east,
+    bbox_west = EXCLUDED.bbox_west,
+    place_id = EXCLUDED.place_id,
+    osm_type = EXCLUDED.osm_type,
+    osm_id = EXCLUDED.osm_id,
+    lat = EXCLUDED.lat,
+    lon = EXCLUDED.lon,
+    "class" = EXCLUDED."class",
+    "type" = EXCLUDED."type",
+    place_rank = EXCLUDED.place_rank,
+    importance = EXCLUDED.importance,
+    addresstype = EXCLUDED.addresstype,
+    name = EXCLUDED.name,
+    display_name = EXCLUDED.display_name;
+
+    DROP TABLE osm_staging
+    """
+
+    with engine.connect() as connection:
+        try:
+            result = connection.execute(text(upsert_query))
+            connection.commit() 
+            print("Query completed successfully.")
+        except Exception as e:
+            print("Error updating osm table:", e)    
+
+
+    # Part3 AR DES
+    gdf_de = ox.geocode_to_gdf('R5317158', by_osmid=True)
+    gdf_de['geometry'] = gdf_de['geometry'].apply(lambda x: x.wkt)
+    gdf_de['locode'] = 'AR DES'
+    gdf_de = pd.DataFrame(gdf_de)
+
+    engine = create_engine(args.database_uri)
+    gdf_de.to_sql('osm_staging', engine, if_exists='replace', index=False)
+
+    # Define the UPSERT query using text() construct
+    upsert_query = """
+    INSERT INTO osm (geometry, bbox_north, bbox_south, bbox_east, bbox_west, place_id, osm_type, osm_id, lat, lon, "class", "type", place_rank, importance, addresstype, name, display_name, locode)
+    SELECT geometry, bbox_north, bbox_south, bbox_east, bbox_west, place_id, osm_type, osm_id, lat, lon, "class", "type", place_rank, importance, addresstype, name, display_name, locode
+    FROM osm_staging
+    ON CONFLICT (locode)
+    DO UPDATE SET
+    geometry = EXCLUDED.geometry,
+    bbox_north = EXCLUDED.bbox_north,
+    bbox_south = EXCLUDED.bbox_south,
+    bbox_east = EXCLUDED.bbox_east,
+    bbox_west = EXCLUDED.bbox_west,
+    place_id = EXCLUDED.place_id,
+    osm_type = EXCLUDED.osm_type,
+    osm_id = EXCLUDED.osm_id,
+    lat = EXCLUDED.lat,
+    lon = EXCLUDED.lon,
+    "class" = EXCLUDED."class",
+    "type" = EXCLUDED."type",
+    place_rank = EXCLUDED.place_rank,
+    importance = EXCLUDED.importance,
+    addresstype = EXCLUDED.addresstype,
+    name = EXCLUDED.name,
+    display_name = EXCLUDED.display_name;
+
+    DROP TABLE osm_staging
+    """
+
+    with engine.connect() as connection:
+        try:
+            result = connection.execute(text(upsert_query))
+            connection.commit() 
+            print("Query completed successfully.")
+        except Exception as e:
+            print("Error updating osm table:", e) 

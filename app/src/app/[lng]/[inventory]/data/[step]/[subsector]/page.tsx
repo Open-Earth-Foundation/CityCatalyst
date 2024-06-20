@@ -889,7 +889,7 @@ function SubSectorPage({
                             fontWeight="semibold"
                             color="content.secondary"
                           >
-                            {t("activity-suggestion")}
+                            {hasActivityData ? "" : t("activity-suggestion")}
                           </Text>
                           {hasActivityData ? (
                             <Box>
@@ -1033,6 +1033,35 @@ function SubSectorPage({
                                   </AccordionPanel>
                                 </AccordionItem>
                               </Accordion>
+                              <Box
+                                w="full"
+                                borderTopWidth="3px"
+                                borderColor="interactive.secondary"
+                                py="32px"
+                                px="48px"
+                                bottom="0px"
+                                bg="base.light"
+                              >
+                                <Box
+                                  display="flex"
+                                  justifyContent="space-between"
+                                >
+                                  <Text
+                                    fontFamily="heading"
+                                    fontWeight="semibold"
+                                    fontSize="headline.md"
+                                  >
+                                    {t("total-emissions")}
+                                  </Text>
+                                  <Text
+                                    fontFamily="heading"
+                                    fontWeight="semibold"
+                                    fontSize="headline.md"
+                                  >
+                                    15,4M tCO2e
+                                  </Text>
+                                </Box>
+                              </Box>{" "}
                             </Box>
                           ) : (
                             <Box className="flex flex-col gap-4">
@@ -1200,33 +1229,6 @@ function SubSectorPage({
           setHasActivityData={setHasActivityData}
         />
       </div>
-      <Box
-        w="full"
-        borderTopWidth="3px"
-        borderColor="interactive.secondary"
-        py="32px"
-        px="48px"
-        pos="fixed"
-        bottom="0px"
-        bg="base.light"
-      >
-        <Box display="flex" justifyContent="space-between">
-          <Text
-            fontFamily="heading"
-            fontWeight="semibold"
-            fontSize="headline.md"
-          >
-            {t("total-emissions")}
-          </Text>
-          <Text
-            fontFamily="heading"
-            fontWeight="semibold"
-            fontSize="headline.md"
-          >
-            15,4M tCO2e
-          </Text>
-        </Box>
-      </Box>{" "}
     </>
   );
 }

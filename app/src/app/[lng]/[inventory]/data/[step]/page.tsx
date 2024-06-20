@@ -86,6 +86,7 @@ import type {
 import AddFileDataModal from "@/components/Modals/add-file-data-modal";
 import { InventoryValueAttributes } from "@/models/InventoryValue";
 import { UserFileAttributes } from "@/models/UserFile";
+import { motion } from "framer-motion";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -618,15 +619,21 @@ export default function AddDataSteps({
     }
   };
 
+  const MotionBox = motion(Box);
+
   return (
     <>
       <Box id="top" />
-      <Box
+      <MotionBox
         bg="background.backgroundLight"
         borderColor="border.neutral"
         borderBottomWidth={scrollPosition > 0 ? "1px" : ""}
-        className={`fixed z-10 top-[0px] w-full pt-[130px] h-[400px]`}
+        className={`fixed z-10 top-0 w-full pt-[130px] h-[400px]`}
         mt={scrollPosition > 0 ? "-200px" : ""}
+        animate={{
+          y: scrollPosition > 0 ? 0 : -50,
+        }}
+        transition={{ duration: 0.2 }}
       >
         <div className=" w-[1090px] max-w-full mx-auto px-4">
           <Box w="full" display="flex" alignItems="center" gap="16px" mb="35px">
@@ -672,6 +679,7 @@ export default function AddDataSteps({
             gap="16px"
             flexDir="row"
             w="full"
+            px={0}
           >
             {scrollPosition <= 0 ? (
               ""
@@ -765,7 +773,7 @@ export default function AddDataSteps({
             </Flex>
           </Card>
         </div>
-      </Box>
+      </MotionBox>
       <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
         {/*** Manual data entry section for subsectors ***/}
         <Card mb={12} mt="350px">

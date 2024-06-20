@@ -1089,7 +1089,7 @@ return (
         </Box>
       </Box>
     </Card>
-    {/* Add fole data modal */}
+    {/* Add file data modal */}
     <AddFileDataModal
       isOpen={isfileDataModalOpen}
       onClose={onfileDataModalClose}

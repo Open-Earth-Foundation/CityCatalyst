@@ -1058,12 +1058,7 @@ export default function AddDataSteps({
             {t("upload-your-data-details")}
           </Text>
           <Box display="flex">
-            <Box
-              w="691px"
-              borderRightWidth="1px"
-              borderColor="border.overlay"
-              pr="16px"
-            >
+            <Box w="full">
               <Box w="full">
                 <Box mb="24px">
                   <FileInput
@@ -1166,46 +1161,6 @@ export default function AddDataSteps({
                     )}
                 </Box>
               </Box>
-            </Box>
-            <Box pl="16px">
-              <Card
-                shadow="none"
-                borderWidth="1px"
-                borderColor="border.overlay"
-                borderRadius="8px"
-                w="303px"
-                h="160px"
-                p="16px"
-              >
-                <Box display="flex" gap="16px">
-                  <Box>
-                    <Heading
-                      fontSize="label.lg"
-                      fontWeight="semibold"
-                      letterSpacing="wide"
-                      lineHeight="20px"
-                    >
-                      {t("download-template")}
-                    </Heading>
-                    <Text
-                      color="interactive.control"
-                      fontSize="body.md"
-                      fontWeight="normal"
-                      letterSpacing="wide"
-                      lineHeight="20px"
-                    >
-                      {t("file-upload-steps")}
-                    </Text>
-                  </Box>
-                  <Box display="flex" alignItems="center">
-                    <ChevronRightIcon
-                      h="24px"
-                      w="24px"
-                      color="interactive.control"
-                    />
-                  </Box>
-                </Box>
-              </Card>
             </Box>
           </Box>
         </Card>

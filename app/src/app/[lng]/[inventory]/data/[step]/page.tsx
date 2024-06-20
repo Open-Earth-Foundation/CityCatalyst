@@ -718,7 +718,7 @@ export default function AddDataSteps({
               >
                 <HStack align="center" height="120px" justify="space-between">
                   {subSector.completedCount > 0 &&
-                  subSector.completedCount < subSector.totalCount ? (
+                    subSector.completedCount < subSector.totalCount ? (
                     <CircularProgress
                       size="36px"
                       thickness="12px"
@@ -834,7 +834,7 @@ export default function AddDataSteps({
                     variant="outline"
                     borderColor={
                       isSourceConnected(source) &&
-                      source.inventoryValues?.length
+                        source.inventoryValues?.length
                         ? "interactive.tertiary"
                         : ""
                     }
@@ -888,7 +888,7 @@ export default function AddDataSteps({
                       {t("see-more-details")}
                     </Link>
                     {isSourceConnected(source) &&
-                    source.inventoryValues?.length ? (
+                      source.inventoryValues?.length ? (
                       <Button
                         variant={variant}
                         px={6}

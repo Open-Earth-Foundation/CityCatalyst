@@ -3,7 +3,7 @@
   "data-details": "Verbinden Sie Drittanbieterdaten oder laden Sie Ihre eigenen Daten hoch, um Ihre THG-Inventur nach der GPC-Basismethodik zu erstellen",
   "data-view-heading": "Sehen Sie die benötigten Daten, um die Inventur Ihrer Stadt abzuschließen",
   "data-view-details": "Die GPC-Basis umfasst drei Hauptsektoren: Stationäre Energie, Transport und Abfall. Geben Sie die notwendigen Daten für jeden Sektor ein, um eine umfassende THG-Inventur zu erstellen. <2>Weitere Informationen</2>",
-  "stationary-energy": "Stationäre Energie",
+  "stationary-energy": "Stationäre energie",
   "stationary-energy-details": "Dieser Sektor befasst sich mit Emissionen, die aus der Erzeugung und dem Verbrauch von Strom, Wärme und Dampf resultieren.",
   "stationary-energy-scope": "Umfang erforderlich für die Grund-THG-Inventur: 1, 2",
   "transportation": "Transport",

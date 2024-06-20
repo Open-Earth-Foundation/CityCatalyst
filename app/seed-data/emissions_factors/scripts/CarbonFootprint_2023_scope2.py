@@ -71,6 +71,14 @@ GPC_refno_dic = {
     'transmission_and_distribution': ['I.1.3', 'I.2.3', 'I.3.3', 'I.4.3', 'I.5.3', 'I.6.3', 'II.1.3', 'II.2.3', 'II.3.3', 'II.4.3'],
 }
 
+# methodologies for Stationary Energy
+mapping_gpc_to_methodologies = [
+    'electricity_consumption',
+    'energy_consumption'
+    'sampling_scaled_data',
+    'modeled_data'
+    ]
+
 if __name__ == "__main__":
     # set random.seed so UUID is reproducible
     #! assumes records always generated in same order
@@ -246,10 +254,19 @@ if __name__ == "__main__":
     df_final['GPC_refno'] = df_final['emission_factor_type'].map(GPC_refno_dic)
     df_final = df_final.explode('GPC_refno', ignore_index=True)
 
+    # make a row for each methodology
+    df_final['methodology_name'] = [mapping_gpc_to_methodologies] * len(df_final)
+    df_final = df_final.explode('methodology_name', ignore_index=True)
+
     # add columns
     df_final['dataset_name'] = 'GHG Factors for International Grid Electricity'
     df_final['datasource_name'] = 'Carbon Footprint Ltd'
     df_final['units'] = 'kg/kWh'
+
+    df_final['CO2e'] = df_final['CO2e'].round(3)
+    # create a subcategory column based on fuel name
+    df_final['metadata'] = df_final['CO2e'].apply(lambda x: f'CO2e_value:{x}')  
+    df_final = df_final.drop(columns='CO2e')
 
     df_final["emissions_factor_id"] = df_final.apply(
         lambda row: uuid_generate_v4(), axis=1

@@ -18,7 +18,6 @@ import {
 } from "@/features/city/inventoryDataSlice";
 import { useTranslation } from "@/i18n/client";
 import { RootState } from "@/lib/store";
-import { ScopeAttributes } from "@/models/Scope";
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
 import { bytesToMB, nameToI18NKey } from "@/util/helpers";
@@ -82,8 +81,7 @@ import type {
 } from "./types";
 
 import AddFileDataModal from "@/components/Modals/add-file-data-modal";
-import { InventoryValueAttributes } from "@/models/InventoryValue";
-import { UserFileAttributes } from "@/models/UserFile";
+import type { InventoryValueAttributes } from "@/models/InventoryValue";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =

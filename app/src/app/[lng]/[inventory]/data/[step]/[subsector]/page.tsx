@@ -76,9 +76,12 @@ function SubSectorPage({
 
   const [hasActivityData, setHasActivityData] = useState<boolean>(false);
 
-  const handleSwitch = (e: any) => {
+  const handleSwitch = () => {
     setIsChecked(!isChecked);
   };
+
+  console.log(isChecked);
+
   const METHODOLOGIES = [
     {
       name: t("fuel-combustion-consumption"),
@@ -279,10 +282,7 @@ function SubSectorPage({
                 >
                   <HeadingText title={t("add-data-manually")} />
                   <Box display="flex" gap="16px" fontSize="label.lg">
-                    <Switch
-                      isChecked={isChecked}
-                      onChange={(e) => handleSwitch(e)}
-                    />
+                    <Switch isChecked={isChecked} onChange={handleSwitch} />
                     <Text fontFamily="heading" fontWeight="medium">
                       {t("scope-not-applicable")}
                     </Text>
@@ -294,7 +294,9 @@ function SubSectorPage({
                   <Box h="auto" bg="base.light" borderRadius="8px">
                     <Box px="24px" py="32px">
                       {" "}
-                      {!isSelected ? (
+                      {isChecked ? (
+                        ""
+                      ) : (
                         <Box
                           display="flex"
                           alignItems="center"
@@ -303,8 +305,6 @@ function SubSectorPage({
                         >
                           <HeadingText title={t("select-methodology-title")} />
                         </Box>
-                      ) : (
-                        ""
                       )}
                       {isSelected ? (
                         <Box>
@@ -786,7 +786,9 @@ function SubSectorPage({
                   <Box h="auto" bg="base.light" borderRadius="8px">
                     <Box px="24px" py="32px">
                       {" "}
-                      {!isSelected ? (
+                      {isChecked ? (
+                        ""
+                      ) : (
                         <Box
                           display="flex"
                           alignItems="center"
@@ -795,8 +797,6 @@ function SubSectorPage({
                         >
                           <HeadingText title={t("select-methodology-title")} />
                         </Box>
-                      ) : (
-                        ""
                       )}
                       {isSelected ? (
                         <Box>

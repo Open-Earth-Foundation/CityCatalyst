@@ -4,6 +4,7 @@ import MethodologyCard from "@/components/Cards/methodology-card";
 import SuggestedActivityCard from "@/components/Cards/suggested-activities-card";
 import AddActivityModalEnergyConsumption from "@/components/Modals/add-activity-energy-consumption-modal";
 import AddActivityModal from "@/components/Modals/add-activity-modal";
+import ChangeMethodology from "@/components/Modals/change-methodology";
 import HeadingText from "@/components/heading-text";
 import LoadingState from "@/components/loading-state";
 import { useTranslation } from "@/i18n/client";
@@ -139,6 +140,12 @@ function SubSectorPage({
     isOpen: isAddActivityModalOpenEC,
     onOpen: onAddActivityModalOpenEC,
     onClose: onAddActivityModalCloseEC,
+  } = useDisclosure();
+
+  const {
+    isOpen: isChangeMethodologyModalOpen,
+    onOpen: onChangeMethodologyOpen,
+    onClose: onChangeMethodologyClose,
   } = useDisclosure();
 
   const { data } = api.useMockDataQuery({});
@@ -459,6 +466,7 @@ function SubSectorPage({
                                         cursor: "pointer",
                                       }}
                                       className="group"
+                                      onClick={onChangeMethodologyOpen}
                                     >
                                       <Icon
                                         className="group-hover:text-white"
@@ -962,6 +970,7 @@ function SubSectorPage({
                                         cursor: "pointer",
                                       }}
                                       className="group"
+                                      onClick={onChangeMethodologyOpen}
                                     >
                                       <Icon
                                         className="group-hover:text-white"
@@ -1370,6 +1379,11 @@ function SubSectorPage({
           onClose={onAddActivityModalCloseEC}
           hasActivityData={hasActivityData}
           setHasActivityData={setHasActivityData}
+        />
+        <ChangeMethodology
+          t={t}
+          onClose={onChangeMethodologyClose}
+          isOpen={isChangeMethodologyModalOpen}
         />
       </div>
     </>

@@ -280,3 +280,33 @@ export const SearchOffIcon = () => {
     </svg>
   );
 };
+
+export const ChangeMethodlogy = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="37"
+      height="36"
+      viewBox="0 0 37 36"
+      fill="none"
+    >
+      <mask
+        id="mask0_2911_36767"
+        style={{ maskType: "alpha" }}
+        maskUnits="userSpaceOnUse"
+        x="0"
+        y="0"
+        width="37"
+        height="36"
+      >
+        <rect x="0.5" width="36" height="36" fill="#D9D9D9" />
+      </mask>
+      <g mask="url(#mask0_2911_36767)">
+        <path
+          d="M23 31.5V27H17V12H14V16.5H3.5V4.5H14V9H23V4.5H33.5V16.5H23V12H20V24H23V19.5H33.5V31.5H23ZM26 13.5H30.5V7.5H26V13.5ZM26 28.5H30.5V22.5H26V28.5ZM6.5 13.5H11V7.5H6.5V13.5Z"
+          fill="#2351DC"
+        />
+      </g>
+    </svg>
+  );
+};

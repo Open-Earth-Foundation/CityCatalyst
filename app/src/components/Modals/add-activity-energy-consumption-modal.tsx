@@ -368,7 +368,7 @@ const AddActivityModalEnergyConsumption: FC<AddUserModalProps> = ({
                     required: t("option-required"),
                   })}
                 >
-                  <option value="high">{t("detailed-emissions-data")}</option>
+                  <option value="high">{t("detailed-activity-data")}</option>
                   <option value="medium">{t("modeled-emissions-data")}</option>
                   <option value="low">
                     {t("highly-modeled-uncertain-emissions-data")}

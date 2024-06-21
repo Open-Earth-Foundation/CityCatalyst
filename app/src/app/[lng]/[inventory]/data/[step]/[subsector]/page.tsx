@@ -52,8 +52,9 @@ import {
   Tr,
   useDisclosure,
 } from "@chakra-ui/react";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Trans } from "react-i18next";
 import { BsTrash2 } from "react-icons/bs";
 import { FaNetworkWired } from "react-icons/fa";
@@ -174,83 +175,164 @@ function SubSectorPage({
     (state: RootState) => state.subsector.subsector,
   );
 
+  const [scrollPosition, setScrollPosition] = useState<number>(0);
+
+  const handleScroll = () => {
+    const position = window.scrollY;
+    setScrollPosition(position);
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const MotionBox = motion(Box);
+  const MotionTabList = motion(TabList);
+
   return (
     <>
-      <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
-        <Box w="full" display="flex" alignItems="center" gap="16px" mb="64px">
-          <Button
-            variant="ghost"
-            leftIcon={<ArrowBackIcon boxSize={6} />}
-            onClick={() => router.back()}
-          >
-            {t("go-back")}
-          </Button>
-          <Box borderRightWidth="1px" borderColor="border.neutral" h="24px" />
-          <Box>
-            <Breadcrumb
-              spacing="8px"
-              fontFamily="heading"
-              fontWeight="bold"
-              letterSpacing="widest"
-              textTransform="uppercase"
-              separator={<ChevronRightIcon color="gray.500" h="24px" />}
+      <Box id="top" />
+      <MotionBox
+        bg="background.backgroundLight"
+        borderColor="border.neutral"
+        borderBottomWidth={scrollPosition > 0 ? "1px" : ""}
+        className="fixed z-10 top-0 w-full pt-[180px] h-[400px]"
+        mt={scrollPosition > 0 ? "-230px" : ""}
+        animate={{
+          y: scrollPosition > 0 ? 0 : -50,
+        }}
+        transition={{ duration: 0.2 }}
+      >
+        <Box className=" w-[1090px] max-w-full mx-auto px-4">
+          <Box w="full" display="flex" alignItems="center" gap="16px" mb="64px">
+            <Button
+              variant="ghost"
+              leftIcon={<ArrowBackIcon boxSize={6} />}
+              onClick={() => router.back()}
             >
-              <BreadcrumbItem>
-                <BreadcrumbLink
-                  href={`/${inventory}/data`}
-                  color="content.tertiary"
+              {t("go-back")}
+            </Button>
+            <Box borderRightWidth="1px" borderColor="border.neutral" h="24px" />
+            <Box>
+              <Breadcrumb
+                spacing="8px"
+                fontFamily="heading"
+                fontWeight="bold"
+                letterSpacing="widest"
+                textTransform="uppercase"
+                separator={<ChevronRightIcon color="gray.500" h="24px" />}
+              >
+                <BreadcrumbItem>
+                  <BreadcrumbLink
+                    href={`/${inventory}/data`}
+                    color="content.tertiary"
+                  >
+                    {t("all-sectors")}
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbItem>
+                  <BreadcrumbLink
+                    href={`/${inventory}/data/${step}`}
+                    color="content.tertiary"
+                  >
+                    {getSectorName(step)}
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="#" color="content.link">
+                    {subsectorData?.subsectorName}
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </Breadcrumb>
+            </Box>
+          </Box>
+          <Box display="flex">
+            {scrollPosition > 0 ? (
+              <Box>
+                <Link href="#">
+                  <Icon
+                    as={ArrowBackIcon}
+                    h="24px"
+                    w="24px"
+                    mt="24px"
+                    color="content.link"
+                  />
+                </Link>
+              </Box>
+            ) : (
+              ""
+            )}
+            <Box display="flex" gap="16px">
+              <Box
+                color="content.link"
+                pt="3"
+                pos="relative"
+                left={scrollPosition > 0 ? "30px" : ""}
+              >
+                <MdOutlineHomeWork size="32px" />
+              </Box>
+              <Box
+                display="flex"
+                gap={scrollPosition > 0 ? "8px" : "16px"}
+                flexDirection="column"
+              >
+                <Text
+                  fontFamily="heading"
+                  fontSize="headline.md"
+                  fontWeight="bold"
+                  pos="relative"
+                  left={scrollPosition > 0 ? "30px" : ""}
                 >
-                  {t("all-sectors")}
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbItem>
-                <BreadcrumbLink
-                  href={`/${inventory}/data/${step}`}
-                  color="content.tertiary"
+                  {subsectorData?.referenceNumber +
+                    " " +
+                    subsectorData?.subsectorName}
+                </Text>
+                <Text
+                  fontFamily="heading"
+                  letterSpacing="wide"
+                  fontSize="label.lg"
+                  fontWeight="medium"
+                  pos="relative"
+                  left={scrollPosition > 0 ? "30px" : ""}
                 >
-                  {getSectorName(step)}
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="#" color="content.link">
-                  {subsectorData?.subsectorName}
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-            </Breadcrumb>
+                  {t("sector")}: {t("stationary-energy")} |{" "}
+                  {t("inventory-year")}: 2023
+                </Text>
+                {scrollPosition > 0 ? (
+                  ""
+                ) : (
+                  <Text
+                    letterSpacing="wide"
+                    fontSize="body.lg"
+                    fontWeight="normal"
+                    color="interactive.control"
+                  >
+                    {t("commercial-and-institutional-building-description")}
+                  </Text>
+                )}
+              </Box>
+            </Box>
           </Box>
         </Box>
-        <Box display="flex" gap="16px">
-          <Box color="content.link" flex="1" pt="3">
-            <MdOutlineHomeWork size="32px" />
-          </Box>
-          <Box display="flex" gap="16px" flexDirection="column">
-            <Text fontFamily="heading" fontSize="headline.md" fontWeight="bold">
-              {subsectorData?.referenceNumber +
-                " " +
-                subsectorData?.subsectorName}
-            </Text>
-            <Text
-              fontFamily="heading"
-              letterSpacing="wide"
-              fontSize="label.lg"
-              fontWeight="medium"
-            >
-              {t("sector")}: {t("stationary-energy")} | {t("inventory-year")}:
-              2023
-            </Text>
-            <Text
-              letterSpacing="wide"
-              fontSize="body.lg"
-              fontWeight="normal"
-              color="interactive.control"
-            >
-              {t("commercial-and-institutional-building-description")}
-            </Text>
-          </Box>
-        </Box>
+      </MotionBox>
+      <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4 mt-[240px]">
         <Box mt="48px">
           <Tabs>
-            <TabList>
+            <MotionTabList
+              className="w-[1090px] z-10"
+              bg="background.backgroundLight"
+              h="80px"
+              pos={scrollPosition > 0 ? "fixed" : "relative"}
+              top={scrollPosition > 0 ? "170px" : "50px"}
+              animate={{
+                y: scrollPosition > 0 ? 0 : -50,
+              }}
+              transition={{ duration: 0.2 }}
+            >
               <Tab onClick={handleTabLoadingStateScope1}>
                 <Text
                   fontFamily="heading"
@@ -270,7 +352,7 @@ function SubSectorPage({
                   {t("scope")} 2
                 </Text>
               </Tab>
-            </TabList>
+            </MotionTabList>
 
             <TabPanels>
               <TabPanel p="0" pt="48px">
@@ -278,7 +360,7 @@ function SubSectorPage({
                   display="flex"
                   alignItems="center"
                   justifyContent="space-between"
-                  mb="84px"
+                  mb="48px"
                 >
                   <HeadingText title={t("add-data-manually")} />
                   <Box display="flex" gap="16px" fontSize="label.lg">
@@ -303,7 +385,13 @@ function SubSectorPage({
                           justifyContent="space-between"
                           mb="8px"
                         >
-                          <HeadingText title={t("select-methodology-title")} />
+                          {hasActivityData ? (
+                            ""
+                          ) : (
+                            <HeadingText
+                              title={t("select-methodology-title")}
+                            />
+                          )}
                         </Box>
                       )}
                       {isSelected ? (
@@ -767,13 +855,13 @@ function SubSectorPage({
                   display="flex"
                   alignItems="center"
                   justifyContent="space-between"
-                  mb="84px"
+                  mb="48px"
                 >
                   <HeadingText title={t("add-data-manually")} />
                   <Box display="flex" gap="16px" fontSize="label.lg">
                     <Switch
                       isChecked={isChecked}
-                      onChange={(e) => handleSwitch(e)}
+                      onChange={(e: any) => handleSwitch(e)}
                     />
                     <Text fontFamily="heading" fontWeight="medium">
                       {t("scope-not-applicable")}
@@ -795,7 +883,13 @@ function SubSectorPage({
                           justifyContent="space-between"
                           mb="8px"
                         >
-                          <HeadingText title={t("select-methodology-title")} />
+                          {hasActivityData ? (
+                            ""
+                          ) : (
+                            <HeadingText
+                              title={t("select-methodology-title")}
+                            />
+                          )}
                         </Box>
                       )}
                       {isSelected ? (

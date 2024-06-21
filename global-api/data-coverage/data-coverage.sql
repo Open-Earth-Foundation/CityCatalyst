@@ -21,9 +21,9 @@ insert into data_coverage(locode, year, gpc_reference_number, publisher_id, tota
 /* Scaled by country (e.g. IEA) */
 
 insert into data_coverage(locode, year, gpc_reference_number, publisher_id, total)
-select locode, country_code.year as year, "GPC_refno" as gpc_reference_number, source_name as publisher_id, ROUND((CAST(p1.population as float)/CAST(p2.population as float)) * CAST(emissions_value as float)) as total from geography, population p1, population p2, country_code where geography.locode = p1.actor_id and geography.country = p2.actor_id and p1.year = p2.year and p2.year = country_code.year and geography.country = country_code.country_code;
+select locode, country_code.year as year, "GPC_refno" as gpc_reference_number, source_name as publisher_id, ROUND((CAST(p1.population as float)/CAST(p2.population as float)) * CAST(emissions_value as float)) as total from dim_geography geography, population p1, population p2, country_code where geography.locode = p1.actor_id and geography.country = p2.actor_id and p1.year = p2.year and p2.year = country_code.year and geography.country = country_code.country_code;
 
 /* Scaled by region (e.g. Argentina) */
 
 insert into data_coverage(locode, year, gpc_reference_number, publisher_id, total)
-select locode, regionwide_emissions.year as year, "GPC_refno" as gpc_reference_number, source_name as publisher_id, ROUND((CAST(p1.population as float)/CAST(p2.population as float)) * CAST(emissions_value as float)) as total from geography, population p1, population p2, regionwide_emissions where geography.locode = p1.actor_id and geography.region = p2.actor_id and p1.year = p2.year and p2.year = regionwide_emissions.year and geography.region = regionwide_emissions.region_code;
+select locode, regionwide_emissions.year as year, "GPC_refno" as gpc_reference_number, source_name as publisher_id, ROUND((CAST(p1.population as float)/CAST(p2.population as float)) * CAST(emissions_value as float)) as total from dim_geography geography, population p1, population p2, regionwide_emissions where geography.locode = p1.actor_id and geography.region = p2.actor_id and p1.year = p2.year and p2.year = regionwide_emissions.year and geography.region = regionwide_emissions.region_code;

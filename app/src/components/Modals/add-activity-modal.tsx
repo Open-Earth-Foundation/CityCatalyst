@@ -145,7 +145,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
     <>
       <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent minH="300px" minW="768px" marginTop="10%">
+        <ModalContent minH="300px" minW="768px" marginTop="2%">
           <ModalHeader
             display="flex"
             justifyContent="center"

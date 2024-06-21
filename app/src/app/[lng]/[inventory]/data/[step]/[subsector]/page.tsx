@@ -593,10 +593,18 @@ function SubSectorPage({
                                             onClick={onAddActivityModalOpen}
                                             pr="56px"
                                           >
-                                            <AddIcon color="interactive.control" />
+                                            <AddIcon
+                                              color="content.tertiary"
+                                              h="24px"
+                                              w="24px"
+                                            />
                                           </Box>
                                         </Box>
-                                        <AccordionIcon />
+                                        <AccordionIcon
+                                          color="content.tertiary"
+                                          h="36px"
+                                          w="36px"
+                                        />
                                       </AccordionButton>
                                     </h2>
                                     <AccordionPanel p={0}>

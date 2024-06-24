@@ -46,7 +46,7 @@ jobs:
         run: npm run build
 
       - name: Run tests and generate coverage file
-        run: npm run ci:test
+        run: npm run api:test
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps

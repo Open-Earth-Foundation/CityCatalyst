@@ -79,6 +79,8 @@ function SubSectorPage({
   const handleSwitch = (e: any) => {
     setIsChecked(!isChecked);
   };
+
+  // TODO add to DB and get from there
   const METHODOLOGIES = [
     {
       name: t("fuel-combustion-consumption"),
@@ -170,6 +172,18 @@ function SubSectorPage({
   const subsectorData = useSelector(
     (state: RootState) => state.subsector.subsector,
   );
+
+  const changeMethodology = () => {
+    console.warn("TODO implement changeMethodology");
+  }
+  const deleteAllActivities = () => {
+    console.warn("TODO implement deleteAllActivities");
+  }
+
+  // calculate total consumption and emissions
+  const totalConsumption = 123.3;
+  const totalConsumptionUnit = "M gallons";
+  const totalEmissions = 11.465; // MtCO2e
 
   return (
     <>
@@ -491,7 +505,7 @@ function SubSectorPage({
                                             {t("total-consumption")}:&nbsp;
                                           </Text>
                                           <Text fontWeight="normal">
-                                            715,4M gallons
+                                            {totalConsumption}M {totalConsumptionUnit}
                                           </Text>
                                         </Box>
                                         <Box
@@ -503,7 +517,7 @@ function SubSectorPage({
                                             {t("emissions")}:&nbsp;
                                           </Text>
                                           <Text fontWeight="normal">
-                                            15,MtCO2e
+                                            {totalEmissions} MtCO2e
                                           </Text>
                                         </Box>
                                         <Box
@@ -832,6 +846,7 @@ function SubSectorPage({
                                       cursor: "pointer",
                                     }}
                                     className="group"
+                                    onClick={changeMethodology}
                                   >
                                     <Icon
                                       className="group-hover:text-white"
@@ -857,6 +872,7 @@ function SubSectorPage({
                                       cursor: "pointer",
                                     }}
                                     className="group"
+                                    onClick={deleteAllActivities}
                                   >
                                     <Icon
                                       className="group-hover:text-white"

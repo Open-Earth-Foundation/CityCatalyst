@@ -138,10 +138,8 @@ function SubSectorPage({
 
   const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
   const { data: userActivities, isLoading: areActivitiesLoading } = api.useGetActivityValuesQuery(inventory);
-  const [isLoadingScope1, setIsloadingScope1] = useState(false);
-  const [isLoadingScope2, setIsloadingScope2] = useState(false);
 
-  const [selectedTab, setSelectedTab] = useState(1);
+  const [selectedTab, setSelectedTab] = useState(1); // sector ID (1/2/3)
 
   const getSectorName = (currentStep: string) => {
     switch (currentStep) {

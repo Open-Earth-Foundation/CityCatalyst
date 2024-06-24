@@ -281,7 +281,7 @@ export const SearchOffIcon = () => {
   );
 };
 
-export const ChangeMethodlogy = () => {
+export const ChangeMethodologyIcon = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

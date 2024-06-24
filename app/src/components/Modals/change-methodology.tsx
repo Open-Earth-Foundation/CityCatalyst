@@ -28,7 +28,7 @@ import { UserAttributes } from "@/models/User";
 import { api } from "@/services/api";
 import { CityAttributes } from "@/models/City";
 import { MdCheckCircleOutline } from "react-icons/md";
-import { ChangeMethodlogy } from "../icons";
+import { ChangeMethodologyIcon } from "../icons";
 import { Trans } from "react-i18next";
 
 interface ChangeMethodologyProps {
@@ -81,7 +81,7 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
                 justifyContent="center"
                 borderRadius="full"
               >
-                <Icon as={ChangeMethodlogy} color="content.link" />
+                <Icon as={ChangeMethodologyIcon} color="content.link" />
               </Box>
               <Text textAlign="center">
                 <Trans t={t} i18nKey={"change-methodology-description-text"}>

@@ -8,6 +8,7 @@ import HeadingText from "@/components/heading-text";
 import LoadingState from "@/components/loading-state";
 import { useTranslation } from "@/i18n/client";
 import { RootState } from "@/lib/store";
+import { ActivityDataAttributes } from "@/models/ActivityData";
 import { api } from "@/services/api";
 import { AddIcon, ArrowBackIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import {
@@ -488,29 +489,46 @@ function SubSectorPage({
                                   fontWeight="semibold"
                                   fontSize="headline.md"
                                 >
-                                  15,4M tCO2e
+                                  {totalEmissions} MtCO2e
                                 </Text>
                               </Box>
                             </Box>
                           </Box>
                         ) : (
                           <Box className="flex flex-col gap-4">
-                            {areActivitiesLoading ? (
-                              <LoadingState />
-                            ) : (
-                              suggestedActivities.map(({ id, name }) => (
-                                <SuggestedActivityCard
-                                  key={id}
-                                  name={name}
-                                  t={t}
-                                  isSelected={selectedActivity === id}
-                                  onActivityAdded={() => {
-                                    setSelectedActivity(id);
-                                    setTimeout(onAddActivityModalOpen, 500);
-                                  }}
-                                />
-                              ))
-                            )}
+                            {
+                              areActivitiesLoading ? (
+                                <LoadingState />
+                              ) : (
+                                // TODO add activityData and metadata to ActivityData model
+                                userActivities?.map((activity: ActivityDataAttributes & { activityData: any, metadata: any }) => (
+                                  <SuggestedActivityCard
+                                    key={activity.activitydataId}
+                                    name={activity.activityData.buildingType ?? "Unknown"}
+                                    t={t}
+                                    isSelected={selectedActivity === activity.activitydataId}
+                                    onActivityAdded={() => {
+                                      setSelectedActivity(activity.activitydataId);
+                                      setTimeout(onAddActivityModalOpen, 500);
+                                    }}
+                                  />
+                                ))
+                              )
+                            }
+
+                            {suggestedActivities.map(({ id, name }) => (
+                              <SuggestedActivityCard
+                                key={id}
+                                name={name}
+                                t={t}
+                                isSelected={selectedActivity === id}
+                                onActivityAdded={() => {
+                                  setSelectedActivity(id);
+                                  setTimeout(onAddActivityModalOpen, 500);
+                                }}
+                              />
+                            ))}
+
                           </Box>
                         )}
                       </Box>

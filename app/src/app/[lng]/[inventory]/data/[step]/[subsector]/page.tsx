@@ -107,7 +107,7 @@ function SubSectorPage({
       disabled: false,
     },
   ];
-  const BUILDINGS = [
+  const suggestedActivities = [
     {
       id: 1,
       name: t("commercial-buildings"),
@@ -175,6 +175,7 @@ function SubSectorPage({
 
   const changeMethodology = () => {
     console.warn("TODO implement changeMethodology");
+    // redirect to page one layer up using NextJS router
   }
   const deleteAllActivities = () => {
     console.warn("TODO implement deleteAllActivities");
@@ -599,7 +600,7 @@ function SubSectorPage({
                             </Box>
                           ) : (
                             <Box className="flex flex-col gap-4">
-                              {BUILDINGS.map(({ id, name }) => (
+                              {suggestedActivities.map(({ id, name }) => (
                                 <SuggestedActivityCard
                                   key={id}
                                   name={name}
@@ -1052,7 +1053,7 @@ function SubSectorPage({
                             </Box>
                           ) : (
                             <Box className="flex flex-col gap-4">
-                              {BUILDINGS.map(({ id, name }) => (
+                              {suggestedActivities.map(({ id, name }) => (
                                 <SuggestedActivityCard
                                   key={id}
                                   name={name}

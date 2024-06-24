@@ -5,6 +5,8 @@ import SuggestedActivityCard from "@/components/Cards/suggested-activities-card"
 import AddActivityModalEnergyConsumption from "@/components/Modals/add-activity-energy-consumption-modal";
 import AddActivityModal from "@/components/Modals/add-activity-modal";
 import ChangeMethodology from "@/components/Modals/change-methodology";
+import DeleteActivityModal from "@/components/Modals/delete-activity-modal";
+import DeleteAllActivitiesModal from "@/components/Modals/delete-all-activities-modal";
 import HeadingText from "@/components/heading-text";
 import LoadingState from "@/components/loading-state";
 import { useTranslation } from "@/i18n/client";
@@ -146,6 +148,18 @@ function SubSectorPage({
     isOpen: isChangeMethodologyModalOpen,
     onOpen: onChangeMethodologyOpen,
     onClose: onChangeMethodologyClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isDeleteActivitiesModalOpen,
+    onOpen: onDeleteActivitiesModalOpen,
+    onClose: onDeleteActivitiesModalClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isDeleteActivityModalOpen,
+    onOpen: onDeleteActivityModalOpen,
+    onClose: onDeleteActivityModalClose,
   } = useDisclosure();
 
   const { data } = api.useMockDataQuery({});
@@ -492,6 +506,7 @@ function SubSectorPage({
                                         cursor: "pointer",
                                       }}
                                       className="group"
+                                      onClick={onDeleteActivitiesModalOpen}
                                     >
                                       <Icon
                                         className="group-hover:text-white"
@@ -623,7 +638,7 @@ function SubSectorPage({
                                           borderRadius="20px"
                                           bg="base.light"
                                         >
-                                          <Thead bg="background.neutral">
+                                          <Thead bg="background.backgroundLight">
                                             <Tr>
                                               <Th>{t("fuel-type")}</Th>
                                               <Th>{t("data-quality")}</Th>
@@ -669,14 +684,85 @@ function SubSectorPage({
                                                       tCO2e
                                                     </Td>
                                                     <Td isNumeric>
-                                                      <IconButton
-                                                        color="interactive.control"
-                                                        variant="ghost"
-                                                        aria-label="activity-data-popover"
-                                                        icon={
-                                                          <MdMoreVert size="24px" />
-                                                        }
-                                                      />
+                                                      <Popover>
+                                                        <PopoverTrigger>
+                                                          <IconButton
+                                                            icon={
+                                                              <MdMoreVert size="24px" />
+                                                            }
+                                                            aria-label="more-icon"
+                                                            variant="ghost"
+                                                            color="content.tertiary"
+                                                          />
+                                                        </PopoverTrigger>
+                                                        <PopoverContent
+                                                          w="auto"
+                                                          borderRadius="8px"
+                                                          shadow="2dp"
+                                                          px="0"
+                                                        >
+                                                          <PopoverArrow />
+                                                          <PopoverBody p="0px">
+                                                            <Box
+                                                              p="16px"
+                                                              display="flex"
+                                                              alignItems="center"
+                                                              gap="16px"
+                                                              _hover={{
+                                                                bg: "content.link",
+                                                                cursor:
+                                                                  "pointer",
+                                                              }}
+                                                              className="group"
+                                                            >
+                                                              <Icon
+                                                                className="group-hover:text-white"
+                                                                color="interactive.control"
+                                                                as={
+                                                                  FaNetworkWired
+                                                                }
+                                                                h="24px"
+                                                                w="24px"
+                                                              />
+                                                              <Text
+                                                                className="group-hover:text-white"
+                                                                color="content.primary"
+                                                              >
+                                                                Edit activity
+                                                              </Text>
+                                                            </Box>
+                                                            <Box
+                                                              p="16px"
+                                                              display="flex"
+                                                              alignItems="center"
+                                                              gap="16px"
+                                                              _hover={{
+                                                                bg: "content.link",
+                                                                cursor:
+                                                                  "pointer",
+                                                              }}
+                                                              className="group"
+                                                              onClick={
+                                                                onDeleteActivityModalOpen
+                                                              }
+                                                            >
+                                                              <Icon
+                                                                className="group-hover:text-white"
+                                                                color="sentiment.negativeDefault"
+                                                                as={FiTrash2}
+                                                                h="24px"
+                                                                w="24px"
+                                                              />
+                                                              <Text
+                                                                className="group-hover:text-white"
+                                                                color="content.primary"
+                                                              >
+                                                                Delete activity
+                                                              </Text>
+                                                            </Box>
+                                                          </PopoverBody>
+                                                        </PopoverContent>
+                                                      </Popover>
                                                     </Td>
                                                   </Tr>
                                                 );
@@ -996,6 +1082,7 @@ function SubSectorPage({
                                         cursor: "pointer",
                                       }}
                                       className="group"
+                                      onClick={onDeleteActivitiesModalOpen}
                                     >
                                       <Icon
                                         className="group-hover:text-white"
@@ -1119,7 +1206,7 @@ function SubSectorPage({
                                           borderRadius="20px"
                                           bg="base.light"
                                         >
-                                          <Thead bg="background.neutral">
+                                          <Thead bg="background.backgroundLight">
                                             <Tr>
                                               <Th>{t("fuel-type")}</Th>
                                               <Th>{t("data-quality")}</Th>
@@ -1164,14 +1251,85 @@ function SubSectorPage({
                                                       tCO2e
                                                     </Td>
                                                     <Td isNumeric>
-                                                      <IconButton
-                                                        color="interactive.control"
-                                                        variant="ghost"
-                                                        aria-label="activity-data-popover"
-                                                        icon={
-                                                          <MdMoreVert size="24px" />
-                                                        }
-                                                      />
+                                                      <Popover>
+                                                        <PopoverTrigger>
+                                                          <IconButton
+                                                            icon={
+                                                              <MdMoreVert size="24px" />
+                                                            }
+                                                            aria-label="more-icon"
+                                                            variant="ghost"
+                                                            color="content.tertiary"
+                                                          />
+                                                        </PopoverTrigger>
+                                                        <PopoverContent
+                                                          w="auto"
+                                                          borderRadius="8px"
+                                                          shadow="2dp"
+                                                          px="0"
+                                                        >
+                                                          <PopoverArrow />
+                                                          <PopoverBody p="0px">
+                                                            <Box
+                                                              p="16px"
+                                                              display="flex"
+                                                              alignItems="center"
+                                                              gap="16px"
+                                                              _hover={{
+                                                                bg: "content.link",
+                                                                cursor:
+                                                                  "pointer",
+                                                              }}
+                                                              className="group"
+                                                            >
+                                                              <Icon
+                                                                className="group-hover:text-white"
+                                                                color="interactive.control"
+                                                                as={
+                                                                  FaNetworkWired
+                                                                }
+                                                                h="24px"
+                                                                w="24px"
+                                                              />
+                                                              <Text
+                                                                className="group-hover:text-white"
+                                                                color="content.primary"
+                                                              >
+                                                                Edit activity
+                                                              </Text>
+                                                            </Box>
+                                                            <Box
+                                                              p="16px"
+                                                              display="flex"
+                                                              alignItems="center"
+                                                              gap="16px"
+                                                              _hover={{
+                                                                bg: "content.link",
+                                                                cursor:
+                                                                  "pointer",
+                                                              }}
+                                                              className="group"
+                                                              onClick={
+                                                                onDeleteActivityModalOpen
+                                                              }
+                                                            >
+                                                              <Icon
+                                                                className="group-hover:text-white"
+                                                                color="sentiment.negativeDefault"
+                                                                as={FiTrash2}
+                                                                h="24px"
+                                                                w="24px"
+                                                              />
+                                                              <Text
+                                                                className="group-hover:text-white"
+                                                                color="content.primary"
+                                                              >
+                                                                Delete activity
+                                                              </Text>
+                                                            </Box>
+                                                          </PopoverBody>
+                                                        </PopoverContent>
+                                                      </Popover>
                                                     </Td>
                                                   </Tr>
                                                 );
@@ -1384,6 +1542,16 @@ function SubSectorPage({
           t={t}
           onClose={onChangeMethodologyClose}
           isOpen={isChangeMethodologyModalOpen}
+        />
+        <DeleteAllActivitiesModal
+          t={t}
+          isOpen={isDeleteActivitiesModalOpen}
+          onClose={onDeleteActivitiesModalClose}
+        />
+        <DeleteActivityModal
+          t={t}
+          isOpen={isDeleteActivityModalOpen}
+          onClose={onDeleteActivityModalClose}
         />
       </div>
     </>

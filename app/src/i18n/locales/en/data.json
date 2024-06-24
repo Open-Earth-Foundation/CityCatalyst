@@ -160,6 +160,11 @@
   "wastewater-treatment-and-discharge": "Wastewater generated in the city",
   "wastewater-treatment-and-discharge-description": "This sub-sector includes emissions from incineration (a controlled, industrial process often with energy recovery where inputs and emissions can be measured and data is often available), and from open burning (an uncontrolled, often illicit process with different emissions and can typically only be estimated based on collection rates). Both generated inside the city.",
 
+  "delete-all-activities": "Delete all activities",
+  "delete-activity": "Delete activity",
+  "delete-activities-prompt": "Are you sure you want to <2>permanently delete </2> all activities in the commercial and institutional buildings sub-sector from the city's inventory data?",
+  "delete-activity-prompt": "Are you sure you want to <2> permanently delete </2> this activity from the city's inventory data?",
+  
   "skip-step-button": "Skip this step",
   "save-continue-button": "Save and Continue",
   "updated-every": "Updated every",
@@ -215,7 +220,7 @@
   "detailed-emissions-data": "High - Detailed emissions data",
   "all": "All",
   "commercial-institutional": "Commercial / Institutional",
-  "detailed-activity-data": "Detailed activity data",
+  "detailed-activity-data": "High - Detailed activity data",
   "modeled-emissions-data": "Medium - Modeled emissions data using robust assumptions",
   "highly-modeled-uncertain-emissions-data": "Low - Highly-modeled or uncertain emissions data",
   "select-subcategories": "Select the subcategories to be added",

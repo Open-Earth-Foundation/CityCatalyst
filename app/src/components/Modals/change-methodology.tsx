@@ -35,13 +35,11 @@ interface ChangeMethodologyProps {
   isOpen: boolean;
   onClose: any;
   t: TFunction;
-  lng: string;
 }
 
 const ChangeMethodology: FC<ChangeMethodologyProps> = ({
   isOpen,
   onClose,
-  lng,
   t,
 }) => {
   return (

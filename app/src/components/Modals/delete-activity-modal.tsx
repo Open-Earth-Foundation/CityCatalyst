@@ -27,7 +27,7 @@ interface DeleteAllActivitiesModalProps {
   t: TFunction;
 }
 
-const DeleteAllActivitiesModal: FC<DeleteAllActivitiesModalProps> = ({
+const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
   isOpen,
   onClose,
   t,
@@ -49,7 +49,7 @@ const DeleteAllActivitiesModal: FC<DeleteAllActivitiesModalProps> = ({
             borderStyle="solid"
             borderColor="border.neutral"
           >
-            {t("delete-all-activities")}
+            {t("delete-activity")}
           </ModalHeader>
           <ModalCloseButton marginTop="10px" />
           <ModalBody paddingTop="24px">
@@ -86,13 +86,12 @@ const DeleteAllActivitiesModal: FC<DeleteAllActivitiesModalProps> = ({
                   fontStyle="normal"
                   fontFamily="body"
                 >
-                  <Trans t={t} i18nKey="delete-activities-prompt">
+                  <Trans t={t} i18nKey="delete-activity-prompt">
                     Are you sure you want to{" "}
                     <span style={{ fontWeight: "bold" }}>
                       permanently delete
                     </span>{" "}
-                    all activities in the commercial and institutional buildings
-                    sub-sector from the city&apos;s inventory data?
+                    this activity from the city&apos;s inventory data?
                   </Trans>
                 </Text>
               </Box>
@@ -123,7 +122,7 @@ const DeleteAllActivitiesModal: FC<DeleteAllActivitiesModalProps> = ({
               p={0}
               m={0}
             >
-              {t("delete-all-activities")}
+              {t("delete-activity")}
             </Button>
           </ModalFooter>
         </ModalContent>
@@ -132,4 +131,4 @@ const DeleteAllActivitiesModal: FC<DeleteAllActivitiesModalProps> = ({
   );
 };
 
-export default DeleteAllActivitiesModal;
+export default DeleteActivityModal;

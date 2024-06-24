@@ -6,12 +6,14 @@ import React, { FC } from "react";
 interface SuggestedActivityCardProps {
   name: string;
   t: TFunction;
+  isSelected: boolean;
   onActivityAdded?: () => void;
 }
 
 const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
   name,
   t,
+  isSelected,
   onActivityAdded,
 }) => {
   const themeColors = useTheme().colors;

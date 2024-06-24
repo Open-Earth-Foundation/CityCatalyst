@@ -93,15 +93,15 @@ function SubSectorPage({
   ];
   const ACTIVITIES = [
     {
-      id: 1,
+      id: "1",
       name: t("commercial-buildings"),
     },
     {
-      id: 2,
+      id: "2",
       name: t("institutional-buildings"),
     },
     {
-      id: 3,
+      id: "3",
       name: t("street-lighting"),
     },
   ];
@@ -824,6 +824,7 @@ function SubSectorPage({
                               key={id}
                               name={name}
                               t={t}
+                              isSelected={selectedActivity === id}
                               onActivityAdded={onAddActivityModalOpen}
                             />
                           ))}

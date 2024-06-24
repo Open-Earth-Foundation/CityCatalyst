@@ -106,11 +106,7 @@ function SubSectorPage({
     },
   ];
 
-  const handleCardClick = () => {
-    setTimeout(() => {
-      setIsSelected(!isSelected);
-    }, 500);
-  };
+  const handleCardClick = () => setIsSelected(!isSelected);
 
   const {
     isOpen: isAddActivityModalOpen,

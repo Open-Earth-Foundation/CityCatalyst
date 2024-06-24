@@ -137,12 +137,9 @@ const AddActivityModal: FC<AddUserModalProps> = ({
   const inventoryId = cityParam as string;
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    console.log(data);
     setHasActivityData(!hasActivityData);
     onClose();
   };
-
-  console.log(errors);
 
   return (
     <>

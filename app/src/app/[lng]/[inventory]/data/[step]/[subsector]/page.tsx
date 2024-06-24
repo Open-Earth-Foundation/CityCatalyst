@@ -84,8 +84,6 @@ function SubSectorPage({
     setIsChecked(!isChecked);
   };
 
-  console.log(isChecked);
-
   const METHODOLOGIES = [
     {
       name: t("fuel-combustion-consumption"),
@@ -129,7 +127,6 @@ function SubSectorPage({
 
   const handleCardClick = () => {
     setIsSelected(!isSelected);
-    console.log(isSelected);
   };
 
   const {
@@ -961,10 +958,7 @@ function SubSectorPage({
                 >
                   <HeadingText title={t("add-data-manually")} />
                   <Box display="flex" gap="16px" fontSize="label.lg">
-                    <Switch
-                      isChecked={isChecked}
-                      onChange={(e: any) => handleSwitch(e)}
-                    />
+                    <Switch isChecked={isChecked} onChange={handleSwitch} />
                     <Text fontFamily="heading" fontWeight="medium">
                       {t("scope-not-applicable")}
                     </Text>

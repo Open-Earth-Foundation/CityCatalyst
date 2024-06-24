@@ -68,6 +68,7 @@ export type Inputs = {
     sourceReference: string;
     buildingType: string;
     fuelType: string;
+    totalFuelConsumption: string;
   };
   direct: DirectMeasureData;
   subcategoryData: Record<string, SubcategoryData>;
@@ -130,7 +131,6 @@ const AddActivityModalEnergyConsumption: FC<AddUserModalProps> = ({
   const inventoryId = cityParam as string;
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    console.log(data);
     setHasActivityData(!hasActivityData);
     onClose();
   };
@@ -177,6 +177,7 @@ const AddActivityModalEnergyConsumption: FC<AddUserModalProps> = ({
                     placeholder={t("select-type-of-building")}
                     register={register}
                     activity="buildingType"
+                    errors={errors}
                   />
                 </FormControl>
                 <FormControl>
@@ -196,6 +197,7 @@ const AddActivityModalEnergyConsumption: FC<AddUserModalProps> = ({
                     placeholder={t("select-type-of-fuel")}
                     register={register}
                     activity="fuelType"
+                    errors={errors}
                   />
                 </FormControl>
                 <Box

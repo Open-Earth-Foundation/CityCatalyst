@@ -38,6 +38,15 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
         background="background.default"
         color="content.secondary"
         placeholder={placeholder}
+        _placeholder={{
+          color: 'red.500'
+        }}
+        
+       _focus={{
+          borderWidth:'1px',
+          borderColor: "content.link",
+          shadow: 'none'
+        }}
         {...register(activity as any, { required: t("value-required") })}
       >
         {options.map((item: string) => (

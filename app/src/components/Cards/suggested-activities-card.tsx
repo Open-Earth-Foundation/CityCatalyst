@@ -17,6 +17,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
   onActivityAdded,
 }) => {
   const themeColors = useTheme().colors;
+
   return (
     <Card
       display="flex"
@@ -29,7 +30,8 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
       borderWidth="1px"
       borderColor="border.overlay"
       cursor="pointer"
-      _hover={{ shadow: "md" }}
+      _hover={{ shadow: "md", borderWidth: '1px', borderColor: "content.link" }}
+      onClick={onActivityAdded}
     >
       <Box display="flex" alignItems="center">
         <Checkbox

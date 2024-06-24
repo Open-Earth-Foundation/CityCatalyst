@@ -134,7 +134,8 @@ popd
 
 
 # Import EDGAR extract
+# no longer require sample data to be loaded. 
 
-pushd importer/edgar/pilot_cities
-$python_cmd load_edgar_pilot_city.py --database_uri $DB_URI
-popd
+# pushd importer/edgar/pilot_cities
+# $python_cmd load_edgar_pilot_city.py --database_uri $DB_URI
+# popd

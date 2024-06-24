@@ -62,7 +62,7 @@ export function NavigationBar({
   const currentInventoryId = userInfo?.defaultInventoryId;
   return (
     <Box
-      className="flex flex-row px-8 py-4 align-middle space-x-12 items-center"
+      className="flex flex-row px-8 py-4 align-middle space-x-12 items-center relative z-50"
       bgColor="content.alternative"
     >
       <NextLink href={`/${inventory ? inventory : currentInventoryId}`}>

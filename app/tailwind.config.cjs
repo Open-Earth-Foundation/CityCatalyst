@@ -40,11 +40,21 @@ module.exports = {
       },
       animation: {
         gradient: "gradient 3s linear infinite",
+        'gradient-x':'gradient-x 2s ease infinite'
+
       },
       keyframes: {
         gradient: {
           "0%": { "background-position": "200% center" },
           "100%": { "background-position": "0% center" },
+          'gradient-x': {
+            '0%, 100%': {
+              'background-position': '0% 50%',
+            },
+            '50%': {
+              'background-position': '100%, 50%'
+            }
+          }
         }
       }
     },

@@ -264,7 +264,6 @@ export function SubsectorDrawer({
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (!subSector) return;
     logger.debug("Subsector data", data);
-    console.log(data);
 
     const results = await resolvePromisesSequentially(
       Object.keys(data.subcategoryData).map((subCategoryId) => {
@@ -510,23 +509,26 @@ export function SubsectorDrawer({
                         <h2>
                           <AccordionButton px="16px">
                             <HStack w="full" p={0} m={0}>
-                              {
-                                !isDirty && !isScopeCompleted(scope.value, scopeData) ? "": isScopeCompleted(scope.value, scopeData) && isValid && !isDirty? (
-                                  <Tag color="interactive.tertiary" border="none">
-                                    <BsCheckCircle
-                                      color="interactive.tertiary"
-                                      size="32px"
-                                    />
-                                  </Tag>
-                                ) : (
-                                  <Tag
-                                    color="sentiment.negativeDefault"
-                                    border="none"
-                                  >
-                                    <RiErrorWarningLine size="32px" />
-                                  </Tag>
-                                )
-                              }
+                              {!isDirty &&
+                              !isScopeCompleted(scope.value, scopeData) ? (
+                                ""
+                              ) : isScopeCompleted(scope.value, scopeData) &&
+                                isValid &&
+                                !isDirty ? (
+                                <Tag color="interactive.tertiary" border="none">
+                                  <BsCheckCircle
+                                    color="interactive.tertiary"
+                                    size="32px"
+                                  />
+                                </Tag>
+                              ) : (
+                                <Tag
+                                  color="sentiment.negativeDefault"
+                                  border="none"
+                                >
+                                  <RiErrorWarningLine size="32px" />
+                                </Tag>
+                              )}
                               <Box as="span" flex="1" textAlign="left" w="full">
                                 <Heading
                                   size="title.md"
@@ -545,7 +547,16 @@ export function SubsectorDrawer({
                                 >
                                   {scope.label}
                                 </Text>
-                                {!isDirty && isScopeCompleted(scope.value, scopeData) ? null : isScopeCompleted(scope.value, scopeData) && isValid && !isDirty? (
+                                {!isDirty &&
+                                isScopeCompleted(
+                                  scope.value,
+                                  scopeData,
+                                ) ? null : isScopeCompleted(
+                                    scope.value,
+                                    scopeData,
+                                  ) &&
+                                  isValid &&
+                                  !isDirty ? (
                                   <Text
                                     color="sentiment.negativeDefault"
                                     size="body.md"
@@ -555,7 +566,9 @@ export function SubsectorDrawer({
                                   >
                                     {t("save-missing-scope-info")}
                                   </Text>
-                                ): ""}
+                                ) : (
+                                  ""
+                                )}
                               </Box>
 
                               <AccordionIcon

@@ -1,8 +1,9 @@
 import { Box, Select, Text } from "@chakra-ui/react";
 import React, { FC } from "react";
-import { UseFormRegister } from "react-hook-form";
+import { FieldError, FieldErrors, UseFormRegister } from "react-hook-form";
 import { Inputs } from "./Modals/add-activity-modal";
 import { t } from "i18next";
+import { WarningIcon } from "@chakra-ui/icons";
 
 interface BuildingTypeSelectInputProps {
   title: string;
@@ -10,6 +11,7 @@ interface BuildingTypeSelectInputProps {
   placeholder: string;
   register: UseFormRegister<Inputs>;
   activity: string;
+  errors: FieldErrors<any>;
 }
 
 const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
@@ -18,7 +20,9 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
   placeholder,
   register,
   activity,
+  errors,
 }) => {
+  console.log(errors?.buildingType?.message);
   return (
     <Box display="flex" flexDirection="column" gap="8px">
       <Text
@@ -34,10 +38,17 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
       <Select
         shadow="1dp"
         borderRadius="4px"
+        borderWidth={errors?.[activity] ? "1px" : 0}
         border="inputBox"
-        background="background.default"
+        borderColor={errors?.[activity] ? "sentiment.negativeDefault" : ""}
+        background={errors?.[activity] ? "sentiment.negativeOverlay" : ""}
         color="content.secondary"
         placeholder={placeholder}
+        _focus={{
+          borderWidth: "1px",
+          borderColor: "content.link",
+          shadow: "none",
+        }}
         {...register(activity as any, { required: t("value-required") })}
       >
         {options.map((item: string) => (
@@ -46,6 +57,16 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
           </option>
         ))}
       </Select>
+      {errors?.[activity] ? (
+        <Box display="flex" gap="6px" alignItems="center">
+          <WarningIcon color="sentiment.negativeDefault" />
+          <Text fontSize="body.md">
+            Please select the {title.toLowerCase()}
+          </Text>
+        </Box>
+      ) : (
+        ""
+      )}
     </Box>
   );
 };

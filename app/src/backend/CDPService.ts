@@ -1,31 +1,42 @@
-export default class CDPService {
+import { logger } from "@/services/logger";
+import createHttpError from "http-errors";
 
+export default class CDPService {
   static get mode(): string {
-    return process.env.CDP_MODE || "test";
+    return process.env.CDP_MODE || "disabled";
   }
 
   static get key(): string {
+    if (!process.env.CDP_API_KEY) {
+      logger.error("Missing CDP_API_KEY env var!");
+    }
     return process.env.CDP_API_KEY || "test-key";
   }
 
   private static url(relative: string): string {
-    const host = (this.mode === "test") ? "api-pre" : "api-prd";
+    const host = this.mode === "test" ? "api-pre" : "api-prd";
     return `https://${host}.cdpgreenstar.net/${relative}`;
   }
 
-  public static async getCityID(city: string, country: string): Promise<string>  {
+  public static async getCityID(city: string | undefined, country: string | undefined): Promise<string>  {
+    logger.info(`Getting city ID for ${city}, ${country}`);
     const url = this.url("response/partner/organizations");
     const response = await fetch(url, {
       headers: [
         ["user-agent", "CityCatalyst/0.10.0"],
-        ["subscription-key", this.key]
-      ]
+        ["subscription-key", this.key],
+      ],
     });
     if (!response.ok) {
-      throw new Error(`Failed to get city ID: ${response.statusText}`);
+      console.log(await response.text());
+      throw createHttpError.BadRequest(
+        `Failed to get city ID from CDP: ${response.statusText}`,
+      );
     }
     const data = await response.json();
     const organizations = data.organizations;
+    logger.info(`Got ${organizations.length} organizations`);
+    logger.debug(`Organizations: ${JSON.stringify(organizations)}`);
     const cityOrg = organizations.find((org: any) => {
       return org.name === city && org.country === country;
     });
@@ -41,8 +52,8 @@ export default class CDPService {
       headers: [
         ["user-agent", "CityCatalyst/0.10.0"],
         ["organization-id", cityID],
-        ["subscription-key", this.key]
-      ]
+        ["subscription-key", this.key],
+      ],
     });
     if (!response.ok) {
       throw new Error(`Failed to get questions: ${response.statusText}`);
@@ -50,29 +61,76 @@ export default class CDPService {
     return await response.json();
   }
 
-  public static async submitResponse(cityID: string, question: string, response: string): Promise<boolean> {
+  public static async submitSingleSelect(
+    cityID: string,
+    question: string,
+    id: string,
+    name: string
+  ): Promise<boolean> {
     const url = this.url(`response/response`);
-    const body = {
+    const body = [{
       id: question,
       "updateResponseInput": {
-        "content": response,
+        "content": {name, id},
         "status": "ANSWERED"
       }
-    };
+    }];
+    logger.debug(`Submitting response: ${JSON.stringify(body)}`);
     const res = await fetch(url, {
       method: "PUT",
       headers: [
         ["user-agent", "CityCatalyst/0.10.0"],
         ["subscription-key", this.key],
         ["organization-id", cityID],
-        ["content-type", "application/json"]
+        ["content-type", "application/json"],
       ],
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     });
     if (!res.ok) {
-      throw new Error(`Failed to submit response: ${res.statusText}`);
+      logger.debug(`Failed to submit response: ${res.statusText}`);
+      const text = await res.text();
+      logger.debug(`Response: ${text}`);
+      throw new Error(`Failed to submit response: ${res.statusText} (${text})`);
     }
-    const doc = await res.json();
-    return doc.responseVersion === 0;
+    logger.debug(`Response: ${res.status}`);
+    logger.debug(`Response: ${res.statusText}`);
+    return true;
   }
-}
+
+  public static async submitMatrix(
+    cityID: string,
+    question: string,
+    rows: any[]
+  ): Promise<boolean> {
+    const url = this.url(`response/response`);
+    const body = rows.map((row:any) => {
+      return {
+        id: question,
+        rowId: row.rowId,
+        "updateResponseInput": {
+          "content": row['content'].toString(),
+          "status": "ANSWERED"
+        }
+      };
+    })
+    logger.debug(`Submitting response: ${JSON.stringify(body)}`);
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: [
+        ["user-agent", "CityCatalyst/0.10.0"],
+        ["subscription-key", this.key],
+        ["organization-id", cityID],
+        ["content-type", "application/json"],
+      ],
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      logger.debug(`Failed to submit response: ${res.statusText}`);
+      const text = await res.text();
+      logger.debug(`Response: ${text}`);
+      throw new Error(`Failed to submit response: ${res.statusText} (${text})`);
+    }
+    logger.debug(`Response: ${res.status}`);
+    logger.debug(`Response: ${res.statusText}`);
+    return true;
+  }

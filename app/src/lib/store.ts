@@ -5,6 +5,7 @@ import cityReducer from "@/features/city/citySlice";
 import openclimateCityReducer from "@/features/city/openclimateCitySlice";
 import openclimateCityDataReducer from "@/features/city/openclimateCityDataSlice";
 import inventoryDataReducer from "@/features/city/inventoryDataSlice";
+import subsectorReducer from "@/features/city/subsectorSlice";
 
 import {
   persistStore,
@@ -25,6 +26,7 @@ const reducer = combineReducers({
   city: cityReducer,
   openClimateCity: openclimateCityReducer,
   openClimateCityData: openclimateCityDataReducer,
+  subsector: subsectorReducer,
 });
 
 const persistConfig = {

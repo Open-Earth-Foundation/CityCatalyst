@@ -14,7 +14,7 @@ pytest==8.2.2
 rioxarray==0.15.*
 scipy==1.13.*
 shapely==2.0.4
-SQLAlchemy==2.0.30
+SQLAlchemy==2.0.31
 tqdm==4.66.*
 uvicorn==0.30.1
 xarray==2024.*

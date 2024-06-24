@@ -64,6 +64,18 @@ export function SectorCard({
   ];
   const sectorScopes = sectorScopesList[stepNumber - 1];
 
+  const resolveSectorNames = (sectorName: string) => {
+    const sectorNames = ["Stationary Energy", "Transportation", "Waste"];
+    const filteredName =
+      sectorNames.find(
+        (sector: string) => sector.toLowerCase() === sectorName.toLowerCase(),
+      ) || null;
+
+    const resolvedName = filteredName?.toLowerCase().replace(" ", "-");
+
+    return t(resolvedName!);
+  };
+
   return (
     <Box
       backgroundColor="base.light"
@@ -84,7 +96,7 @@ export function SectorCard({
                   lineHeight="24"
                   className="pb-[8px]"
                 >
-                  {sectorProgress.sector.sectorName}
+                  {resolveSectorNames(sectorProgress.sector.sectorName!)}
                 </Heading>
               </Box>
               <Text

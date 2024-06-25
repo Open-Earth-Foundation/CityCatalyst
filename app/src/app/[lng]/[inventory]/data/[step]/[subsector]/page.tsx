@@ -389,62 +389,12 @@ function SubSectorPage({
                 {isSelected ? (
                   <>
                     <Box>
-                      <Text
-                        fontFamily="heading"
-                        fontSize="10px"
-                        fontWeight="semibold"
-                        letterSpacing="widest"
-                        textTransform="uppercase"
-                        color="content.tertiary"
-                      >
-                        {t("methodology")}
-                      </Text>
-                      <Box display="flex" justifyContent="space-between">
-                        <Box>
-                          <HeadingText title={t("fuel-combustion-consumption")} />
-                          <Text
-                            letterSpacing="wide"
-                            fontSize="body.lg"
-                            fontWeight="normal"
-                            color="interactive.control"
-                          >
-                            {t("fuel-combustion-consumption-description")}
-                          </Text>
-                        </Box>
-                        <Box display="flex" alignItems="center">
-                          <Button
-                            onClick={onAddActivityModalOpen}
-                            title="Add Activity"
-                            leftIcon={<AddIcon h="16px" w="16px" />}
-                            h="48px"
-                            aria-label="activity-button"
-                            fontSize="button.md"
-                            gap="8px"
-                          >
-                            {t("add-activity")}
-                          </Button>
-                          <IconButton
-                            icon={<MdMoreVert size="24px" />}
-                            aria-label="more-icon"
-                            variant="ghost"
-                            color="content.tertiary"
-                          />
-                        </Box>
-                      </Box>
                       <Box
                         mt="48px"
                         display="flex"
                         flexDirection="column"
                         gap="16px"
                       >
-                        <Text
-                          fontFamily="heading"
-                          fontSize="title.md"
-                          fontWeight="semibold"
-                          color="content.secondary"
-                        >
-                          {t("activity-suggestion")}
-                        </Text>
                         {hasActivityData ? (
                           <Box>
                             <Accordion defaultIndex={[0]} allowMultiple>
@@ -612,20 +562,6 @@ function SubSectorPage({
                                 ))
                               )
                             }
-
-                            {suggestedActivities.map(({ id, name }) => (
-                              <SuggestedActivityCard
-                                key={id}
-                                name={name}
-                                t={t}
-                                isSelected={selectedActivity === id}
-                                onActivityAdded={() => {
-                                  setSelectedActivity(id);
-                                  setTimeout(onAddActivityModalOpen, 500);
-                                }}
-                              />
-                            ))}
-
                           </Box>
                         )}
                       </Box>
@@ -638,18 +574,6 @@ function SubSectorPage({
                       borderRadius="8px"
                     >
                       {" "}
-                      {!isSelected ? (
-                        <Box
-                          display="flex"
-                          alignItems="center"
-                          justifyContent="space-between"
-                          mb="8px"
-                        >
-                          <HeadingText title={t("select-methodology-title")} />
-                        </Box>
-                      ) : (
-                        ""
-                      )}
                       {isSelected ? (
                         <Box>
                           <Text
@@ -766,16 +690,6 @@ function SubSectorPage({
                             flexDirection="column"
                             gap="16px"
                           >
-                            {!hasActivityData && (
-                              <Text
-                                fontFamily="heading"
-                                fontSize="title.md"
-                                fontWeight="semibold"
-                                color="content.secondary"
-                              >
-                                {t("activity-suggestion")}
-                              </Text>
-                            )}
                             {hasActivityData ? (
                               <Box>
                                 <Accordion
@@ -920,20 +834,39 @@ function SubSectorPage({
                                   </AccordionItem>
                                 </Accordion>
                               </Box>
-                            ) : ""}
+                            ) : (
+                              <>
+                              <Text
+                                fontFamily="heading"
+                                fontSize="title.md"
+                                fontWeight="semibold"
+                                color="content.secondary"
+                              >
+                                {t("activity-suggestion")}
+                              </Text>
+                              <Box className="flex flex-col gap-4">
+                              {suggestedActivities.map(({ id, name }) => (
+                                <SuggestedActivityCard
+                                  key={id}
+                                  name={name}
+                                  t={t}
+                                  isSelected={selectedActivity === id}
+                                  onActivityAdded={onAddActivityModalOpen}
+                                />
+                              ))}
+                            </Box>
+                            </>
+                            )}
                           </Box>
                         </Box>
                       ) : (
-                        <Box className="flex flex-col gap-4">
-                          {suggestedActivities.map(({ id, name }) => (
-                            <SuggestedActivityCard
-                              key={id}
-                              name={name}
-                              t={t}
-                              isSelected={selectedActivity === id}
-                              onActivityAdded={onAddActivityModalOpen}
-                            />
-                          ))}
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="space-between"
+                          mb="8px"
+                        >
+                          <HeadingText title={t("select-methodology-title")} />
                         </Box>
                       )}
                     </Box>
@@ -1854,7 +1787,16 @@ function SubSectorPage({
                               </Accordion>
                             </Box>
                           ) : (
-                            <Box className="flex flex-col gap-4">
+                            <Box className="flex flex-col gap-4 w-full">
+                              <Text
+                                fontFamily="heading"
+                                fontSize="title.md"
+                                fontWeight="semibold"
+                                color="content.secondary"
+                                mt={12}
+                              >
+                                {t("activity-suggestion")}
+                              </Text>
                               {suggestedActivities.map(({ id, name }) => (
                                 <SuggestedActivityCard
                                   key={id}

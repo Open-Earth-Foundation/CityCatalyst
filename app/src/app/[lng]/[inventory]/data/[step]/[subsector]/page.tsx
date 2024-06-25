@@ -639,6 +639,7 @@ function SubSectorPage({
                                         cursor: "pointer",
                                       }}
                                       className="group"
+                                      onClick={onChangeMethodologyOpen}
                                     >
                                       <Icon
                                         className="group-hover:text-white"
@@ -664,6 +665,7 @@ function SubSectorPage({
                                         cursor: "pointer",
                                       }}
                                       className="group"
+                                      onClick={onDeleteActivitiesModalOpen}
                                     >
                                       <Icon
                                         className="group-hover:text-white"

@@ -5,9 +5,12 @@ on:
   push:
     paths:
       - app/**
-      - k8s/cc-migrate.yml
-      - k8s/cc-web-deploy.yml
+      - k8s/prod/cc-prod-migrate.yml
+      - k8s/prod/cc-prod-seed.yml
+      - k8s/prod/cc-prod-sync-catalogue.yml
+      - k8s/prod/cc-prod-create-admin.yml
       - k8s/cc-web.yml
+      - k8s/cc-web-deploy.yml
       - .github/workflows/web-tag.yml
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
@@ -121,9 +124,9 @@ jobs:
 
       - name: Deploying service
         run: |
-          kubectl create -f k8s/cc-migrate.yml -n default
-          kubectl create -f k8s/cc-seed.yml -n default
-          kubectl apply -f k8s/cc-sync-catalogue.yml -n default
+          kubectl create -f k8s/prod/cc-prod-migrate.yml -n default
+          kubectl create -f k8s/prod/cc-prod-seed.yml -n default
+          kubectl apply -f k8s/prod/cc-prod-sync-catalogue.yml -n default
           kubectl apply -f k8s/cc-web-deploy.yml -n default
           kubectl set image deployment/cc-web-deploy \
             cc-web=ghcr.io/open-earth-foundation/citycatalyst:stable \
@@ -145,5 +148,5 @@ jobs:
             "GLOBAL_API_URL=https://api.citycatalyst.io" \
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://app.openclimate.network" \
             "OPENCLIMATE_API_URL=https://app.openclimate.network"
-          kubectl create -f k8s/cc-create-admin.yml -n default
+          kubectl create -f k8s/prod/cc-prod-create-admin.yml -n default
           kubectl rollout restart deployment cc-web-deploy -n default

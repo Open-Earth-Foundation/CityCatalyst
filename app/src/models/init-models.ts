@@ -285,6 +285,14 @@ export function initModels(sequelize: Sequelize) {
     as: "gasValues",
     foreignKey: "activityValueId",
   });
+  ActivityValue.belongsTo(DataSource, {
+    as: "dataSource",
+    foreignKey: "datasourceId",
+  });
+  DataSource.hasMany(ActivityValue, {
+    as: "activityValues",
+    foreignKey: "datasourceId",
+  });
   ActivityValue.belongsTo(InventoryValue, {
     as: "inventoryValue",
     foreignKey: "inventoryValueId",

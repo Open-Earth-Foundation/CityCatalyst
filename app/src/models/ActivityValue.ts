@@ -2,6 +2,7 @@ import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import type { GasValue, GasValueId } from "./GasValue";
 import type { InventoryValue, InventoryValueId } from "./InventoryValue";
+import { DataSource, DataSourceId } from "./DataSource";
 
 export interface ActivityValueAttributes {
   id: string;
@@ -64,6 +65,14 @@ export class ActivityValue
     InventoryValueId
   >;
   createInventoryValue!: Sequelize.BelongsToCreateAssociationMixin<InventoryValue>;
+  // ActivityValue belongsTo DataSource via DataSourceId
+  dataSource!: DataSource;
+  getDataSource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
+  setDataSource!: Sequelize.BelongsToSetAssociationMixin<
+    DataSource,
+    DataSourceId
+  >;
+  createDataSource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof ActivityValue {
     return ActivityValue.init(

@@ -48,7 +48,7 @@ jobs:
         run: npm run build
 
       - name: Run tests and generate coverage file
-        run: npm run ci:test
+        run: npm run api:test
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
@@ -119,7 +119,6 @@ jobs:
           kubectl create -f k8s/test/cc-test-seed.yml -n default
           kubectl apply -f k8s/test/cc-test-sync-catalogue.yml -n default
           kubectl apply -f k8s/test/cc-test-web-deploy.yml -n default
-
           kubectl set env deployment/cc-test-web-deploy \
             SMTP_USER=${{secrets.SMTP_USER}} \
             SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}} \
@@ -135,9 +134,9 @@ jobs:
             "DEFAULT_ADMIN_PASSWORD=${{secrets.DEFAULT_ADMIN_PASSWORD}}" \
             "HOST=https://citycatalyst-test.openearth.dev" \
             "NEXTAUTH_URL=https://citycatalyst-test.openearth.dev" \
+            "NEXT_PUBLIC_API_URL=https://citycatalyst-test.openearth.dev" \
             "GLOBAL_API_URL=https://ccglobal-test.openearth.dev" \
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "OPENCLIMATE_API_URL=https://openclimate.openearth.dev"
-
           kubectl create -f k8s/test/cc-test-create-admin.yml -n default
           kubectl rollout restart deployment cc-test-web-deploy -n default

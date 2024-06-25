@@ -71,8 +71,8 @@ function SubSectorPage({
 }) {
   const router = useRouter();
   const { t } = useTranslation(lng, "data");
-  const [isSelected, setIsSelected] = useState(false);
-  const [selectedValue, setSelectedValue] = useState("");
+  const [isMethodologySelected, setIsMethodologySelected] = useState(false);
+  const [selectedMethodology, setSelectedMethodology] = useState("");
 
   const { data: userActivities, isLoading: areActivitiesLoading } = api.useGetActivityValuesQuery({inventoryId: inventory, subSectorId: subsector});
 
@@ -126,7 +126,7 @@ function SubSectorPage({
     },
   ];
 
-  const handleCardClick = () => setIsSelected(!isSelected);
+  const handleCardClick = () => setIsMethodologySelected(!isMethodologySelected);
 
   const {
     isOpen: isAddActivityModalOpen,
@@ -179,11 +179,24 @@ function SubSectorPage({
   );
 
   const changeMethodology = () => {
-    console.warn("TODO implement changeMethodology");
-    // redirect to page one layer up using NextJS router
+    setSelectedMethodology("");
+    setIsMethodologySelected(false);
+    onChangeMethodologyClose();
   }
+
+  const [deleteActivity, isDeleteActivityLoading] = api.useDeleteActivityValueMutation();
+
   const deleteAllActivities = () => {
-    console.warn("TODO implement deleteAllActivities");
+    if (areActivitiesLoading || userActivities.length === 0) {
+      onDeleteActivitiesModalClose();
+      return;
+    }
+
+    for (const activity of userActivities) {
+      deleteActivity({ inventoryId: inventory, activityValueId: activity.id });
+    }
+
+    onDeleteActivitiesModalClose();
   }
 
   // calculate total consumption and emissions
@@ -386,7 +399,7 @@ function SubSectorPage({
                     </Text>
                   </Box>
                 </Box>
-                {isSelected ? (
+                {isMethodologySelected ? (
                   <>
                     <Box>
                       <Box
@@ -574,7 +587,7 @@ function SubSectorPage({
                       borderRadius="8px"
                     >
                       {" "}
-                      {isSelected ? (
+                      {isMethodologySelected ? (
                         <Box>
                           <Text
                             fontFamily="heading"
@@ -960,7 +973,7 @@ function SubSectorPage({
                             </Box>
                           </Box>
                         )}
-                        {isSelected ? (
+                        {isMethodologySelected ? (
                           <Box>
                             <Text
                               fontFamily="heading"
@@ -1447,7 +1460,7 @@ function SubSectorPage({
                                         name={name}
                                         description={description}
                                         inputRequired={inputRequired}
-                                        isSelected={selectedValue === name}
+                                        isSelected={selectedMethodology === name}
                                         disabled={disabled}
                                         t={t}
                                         handleCardSelect={handleCardClick}
@@ -1518,7 +1531,7 @@ function SubSectorPage({
                     borderRadius="8px"
                   >
                     {" "}
-                    {!isSelected ? (
+                    {!isMethodologySelected ? (
                       <Box
                         display="flex"
                         alignItems="center"
@@ -1530,7 +1543,7 @@ function SubSectorPage({
                     ) : (
                       ""
                     )}
-                    {isSelected ? (
+                    {isMethodologySelected ? (
                       <Box>
                         <Text
                           fontFamily="heading"
@@ -1592,7 +1605,7 @@ function SubSectorPage({
                                       cursor: "pointer",
                                     }}
                                     className="group"
-                                    onClick={changeMethodology}
+                                    onClick={onChangeMethodologyOpen}
                                   >
                                     <Icon
                                       className="group-hover:text-white"
@@ -1835,7 +1848,7 @@ function SubSectorPage({
                               </Box>
                           </Box>
                       )}
-                            {isSelected ? (
+                            {isMethodologySelected ? (
                               <Box>
                                 <Text
                                   fontFamily="heading"
@@ -2315,7 +2328,7 @@ function SubSectorPage({
                                             name={name}
                                             description={description}
                                             inputRequired={inputRequired}
-                                            isSelected={selectedValue === name}
+                                            isSelected={selectedMethodology === name}
                                             disabled={disabled}
                                             t={t}
                                             handleCardSelect={handleCardClick}
@@ -2383,6 +2396,7 @@ function SubSectorPage({
           t={t}
           onClose={onChangeMethodologyClose}
           isOpen={isChangeMethodologyModalOpen}
+          onChangeClicked={changeMethodology}
         />
         <DeleteAllActivitiesModal
           t={t}

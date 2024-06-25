@@ -74,7 +74,7 @@ function SubSectorPage({
   const [isSelected, setIsSelected] = useState(false);
   const [selectedValue, setSelectedValue] = useState("");
 
-  const { data: userActivities, isLoading: areActivitiesLoading } = api.useGetActivityValuesQuery(inventory);
+  const { data: userActivities, isLoading: areActivitiesLoading } = api.useGetActivityValuesQuery({inventoryId: inventory, subSectorId: subsector});
 
   const [isUnavailableChecked, setIsChecked] = useState<boolean>(false);
 

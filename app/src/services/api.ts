@@ -406,8 +406,9 @@ export const api = createApi({
 
     // ActivityValue CRUD
     getActivityValues: builder.query({
-      query: (inventoryId: string) => ({
+      query: ({inventoryId, subCategoryIds, subSectorId}: {inventoryId: string, subCategoryIds?: string[], subSectorId?: string }) => ({
         url: `/inventory/${inventoryId}/activity-value`,
+        params: { subCategoryIds: subCategoryIds?.join(",") ?? undefined, subSectorId: subSectorId ?? undefined },
         method: "GET",
       }),
       transformResponse: (response: any) => response.data,

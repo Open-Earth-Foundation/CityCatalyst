@@ -134,3 +134,4 @@ export default class CDPService {
     logger.debug(`Response: ${res.statusText}`);
     return true;
   }
+}

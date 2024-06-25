@@ -231,7 +231,7 @@ function SubSectorPage({
   const MotionTabList = motion(TabList);
 
   return (
-    <>
+    <Box>
       <Box id="top" />
       <MotionBox
         bg="background.backgroundLight"
@@ -409,184 +409,6 @@ function SubSectorPage({
                 </Box>
                 {isMethodologySelected ? (
                   <>
-                    <Box>
-                      <Box
-                        mt="48px"
-                        display="flex"
-                        flexDirection="column"
-                        gap="16px"
-                      >
-                        {hasActivityData ? (
-                          <Box>
-                            <Accordion defaultIndex={[0]} allowMultiple>
-                              <AccordionItem>
-                                <h2>
-                                  <AccordionButton>
-                                    <Box
-                                      display="flex"
-                                      justifyContent="space-between"
-                                      w="full"
-                                      alignItems="center"
-                                    >
-                                      <Box
-                                        display="flex"
-                                        flexDir="column"
-                                        alignItems="start"
-                                        gap="8px"
-                                      >
-                                        <Text
-                                          fontFamily="heading"
-                                          fontSize="title.md"
-                                          fontWeight="semibold"
-                                        >
-                                          {t("commercial-buildings")}
-                                        </Text>
-                                        <Text
-                                          color="content.tertiary"
-                                          letterSpacing="wide"
-                                          fontSize="body.md"
-                                        >
-                                          {userActivities.length} {t("activities-added")}
-                                        </Text>
-                                      </Box>
-                                      <Box
-                                        alignItems="start"
-                                        display="flex"
-                                        fontFamily="heading"
-                                      >
-                                        <Text fontWeight="medium">
-                                          {t("total-consumption")}:&nbsp;
-                                        </Text>
-                                        <Text fontWeight="normal">
-                                          715,4M gallons
-                                        </Text>
-                                      </Box>
-                                      <Box
-                                        alignItems="start"
-                                        display="flex"
-                                        fontFamily="heading"
-                                      >
-                                        <Text fontWeight="medium">
-                                          {t("emissions")}:&nbsp;
-                                        </Text>
-                                        <Text fontWeight="normal">15,MtCO2e</Text>
-                                      </Box>
-                                      <Box pr="56px">
-                                        <AddIcon color="interactive.control" />
-                                      </Box>
-                                    </Box>
-                                    <AccordionIcon />
-                                  </AccordionButton>
-                                </h2>
-                                <AccordionPanel pb={4}>
-                                  <TableContainer>
-                                    <Table
-                                      variant="simple"
-                                      borderWidth="1px"
-                                      borderRadius="20px"
-                                    >
-                                      <Thead>
-                                        <Tr>
-                                          <Th>{t("fuel-type")}</Th>
-                                          <Th>{t("data-quality")}</Th>
-                                          <Th>{t("fuel-consumption")}</Th>
-                                          <Th>{t("emissions")}</Th>
-                                          <Th></Th>
-                                        </Tr>
-                                      </Thead>
-                                      <Tbody>
-                                        {userActivities?.map(
-                                          (activity: any, i: number) => {
-                                            return (
-                                              <Tr key={i}>
-                                                <Td>{activity?.fuelType}</Td>
-                                                <Td>
-                                                  <Tag
-                                                    size="lg"
-                                                    variant="outline"
-                                                    colorScheme="blue"
-                                                    borderRadius="full"
-                                                  >
-                                                    <TagLabel>
-                                                      {activity?.dataQuality}
-                                                    </TagLabel>
-                                                  </Tag>
-                                                </Td>
-                                                <Td>
-                                                  {activity?.fuelConsumption!}
-                                                </Td>
-                                                <Td>{activity?.emissions}</Td>
-                                                <Td>
-                                                  <IconButton
-                                                    color="interactive.control"
-                                                    variant="ghost"
-                                                    aria-label="activity-data-popover"
-                                                    icon={
-                                                      <MdMoreVert size="24px" />
-                                                    }
-                                                  />
-                                                </Td>
-                                              </Tr>
-                                            );
-                                          },
-                                        )}
-                                      </Tbody>
-                                    </Table>
-                                  </TableContainer>
-                                </AccordionPanel>
-                              </AccordionItem>
-                            </Accordion>
-
-                            <Box
-                              w="full"
-                              borderTopWidth="3px"
-                              borderColor="interactive.secondary"
-                              py="32px"
-                              px="48px"
-                            >
-                              <Box display="flex" justifyContent="space-between">
-                                <Text
-                                  fontFamily="heading"
-                                  fontWeight="semibold"
-                                  fontSize="headline.md"
-                                >
-                                  {t("total-emissions")}
-                                </Text>
-                                <Text
-                                  fontFamily="heading"
-                                  fontWeight="semibold"
-                                  fontSize="headline.md"
-                                >
-                                  {totalEmissions} MtCO2e
-                                </Text>
-                              </Box>
-                            </Box>
-                          </Box>
-                        ) : (
-                          <Box className="flex flex-col gap-4">
-                            {
-                              areActivitiesLoading ? (
-                                <LoadingState />
-                              ) : (
-                                // TODO add activityData and metadata to ActivityData model
-                                userActivities?.map((activity: ActivityDataAttributes & { activityData: any, metadata: any }) => (
-                                  <SuggestedActivityCard
-                                    key={activity.activitydataId}
-                                    name={activity.activityData.buildingType ?? "Unknown"}
-                                    t={t}
-                                    isSelected={selectedActivity === activity.activitydataId}
-                                    onActivityAdded={() => {
-                                      setSelectedActivity(activity.activitydataId);
-                                      setTimeout(onAddActivityModalOpen, 500);
-                                    }}
-                                  />
-                                ))
-                              )
-                            }
-                          </Box>
-                        )}
-                      </Box>
-                    </Box>
                     <Box
                       h="auto"
                       px="24px"
@@ -707,193 +529,219 @@ function SubSectorPage({
                               </Popover>
                             </Box>
                           </Box>
-                          <Box
-                            mt="48px"
-                            display="flex"
-                            flexDirection="column"
-                            gap="16px"
-                          >
-                            {hasActivityData ? (
-                              <Box>
-                                <Accordion
-                                  defaultIndex={[0]}
-                                  allowMultiple
-                                  bg="white"
-                                >
-                                  <AccordionItem bg="none">
-                                    <h2>
-                                      <AccordionButton
-                                        h="100px"
-                                        bg="base.light"
-                                        borderWidth="1px"
-                                        borderColor="border.overlay"
-                                        px="24px"
+                        <Box>
+                      <Box
+                        mt="48px"
+                        display="flex"
+                        flexDirection="column"
+                        gap="16px"
+                      >
+                        {hasActivityData ? (
+                         <Box>
+                         <Accordion
+                           defaultIndex={[0]}
+                           allowMultiple
+                           bg="white"
+                         >
+                           <AccordionItem bg="none">
+                             <h2>
+                               <AccordionButton
+                                 h="100px"
+                                 bg="base.light"
+                                 borderWidth="1px"
+                                 borderColor="border.overlay"
+                                 px="24px"
+                               >
+                                    <Box
+                                      display="flex"
+                                      justifyContent="space-between"
+                                      w="full"
+                                      alignItems="center"
+                                    >
+                                      <Box
+                                        display="flex"
+                                        flexDir="column"
+                                        alignItems="start"
+                                        gap="8px"
                                       >
-                                        <Box
-                                          display="flex"
-                                          justifyContent="space-between"
-                                          w="full"
-                                          alignItems="center"
+                                        <Text
+                                          fontFamily="heading"
+                                          fontSize="title.md"
+                                          fontWeight="semibold"
                                         >
-                                          <Box
-                                            display="flex"
-                                            flexDir="column"
-                                            alignItems="start"
-                                            gap="8px"
-                                          >
-                                            <Text
-                                              fontFamily="heading"
-                                              fontSize="title.md"
-                                              fontWeight="semibold"
-                                            >
-                                              {t("commercial-buildings")}
-                                            </Text>
-                                            <Text
-                                              color="content.tertiary"
-                                              letterSpacing="wide"
-                                              fontSize="body.md"
-                                            >
-                                              {userActivities.length} {t("activities-added")}
-                                            </Text>
-                                          </Box>
-                                          <Box
-                                            alignItems="start"
-                                            display="flex"
-                                            fontFamily="heading"
-                                          >
-                                            <Text fontWeight="medium">
-                                              {t("total-consumption")}:&nbsp;
-                                            </Text>
-                                            <Text fontWeight="normal">
-                                              {totalConsumption} {totalConsumptionUnit}
-                                            </Text>
-                                          </Box>
-                                          <Box
-                                            alignItems="start"
-                                            display="flex"
-                                            fontFamily="heading"
-                                          >
-                                            <Text fontWeight="medium">
-                                              {t("emissions")}:&nbsp;
-                                            </Text>
-                                            <Text fontWeight="normal">
-                                              {totalEmissions} MtCO2e
-                                            </Text>
-                                          </Box>
-                                          <Box
-                                            onClick={onAddActivityModalOpen}
-                                            pr="56px"
-                                          >
-                                            <AddIcon color="interactive.control" />
-                                          </Box>
-                                        </Box>
-                                        <AccordionIcon />
-                                      </AccordionButton>
-                                    </h2>
-                                    <AccordionPanel p={0}>
-                                      <TableContainer>
-                                        <Table
-                                          variant="simple"
-                                          borderWidth="1px"
-                                          borderRadius="20px"
-                                          bg="base.light"
+                                          {t("commercial-buildings")}
+                                        </Text>
+                                        <Text
+                                          color="content.tertiary"
+                                          letterSpacing="wide"
+                                          fontSize="body.md"
                                         >
-                                          <Thead bg="background.neutral">
-                                            <Tr>
-                                              <Th>{t("fuel-type")}</Th>
-                                              <Th>{t("data-quality")}</Th>
-                                              <Th>{t("fuel-consumption")}</Th>
-                                              <Th>{t("emissions")}</Th>
-                                              <Th></Th>
-                                            </Tr>
-                                          </Thead>
-                                          <Tbody>
-                                            {userActivities?.map(
-                                              (activity: any, i: number) => {
-                                                return (
-                                                  <Tr key={i}>
-                                                    <Td>{activity?.fuelType}</Td>
-                                                    <Td>
-                                                      <Tag
-                                                        size="lg"
-                                                        variant="outline"
-                                                        borderWidth="1px"
-                                                        shadow="none"
-                                                        borderColor="content.link"
-                                                        borderRadius="full"
-                                                        bg="background.neutral"
-                                                        color="content.link"
-                                                      >
-                                                        <TagLabel>
-                                                          {activity?.dataQuality}
-                                                        </TagLabel>
-                                                      </Tag>
-                                                    </Td>
-                                                    <Td>
-                                                      {activity?.fuelConsumption!}{" "}
-                                                      {t("gallons")}
-                                                    </Td>
-                                                    <Td>
-                                                      {activity?.emissions} tCO2e
-                                                    </Td>
-                                                    <Td isNumeric>
-                                                      <IconButton
-                                                        color="interactive.control"
-                                                        variant="ghost"
-                                                        aria-label="activity-data-popover"
-                                                        icon={
-                                                          <MdMoreVert size="24px" />
-                                                        }
-                                                      />
-                                                    </Td>
-                                                  </Tr>
-                                                );
-                                              },
-                                            )}
-                                          </Tbody>
-                                        </Table>
-                                      </TableContainer>
-                                    </AccordionPanel>
-                                  </AccordionItem>
-                                </Accordion>
+                                          {userActivities.length} {t("activities-added")}
+                                        </Text>
+                                      </Box>
+                                      <Box
+                                        alignItems="start"
+                                        display="flex"
+                                        fontFamily="heading"
+                                      >
+                                        <Text fontWeight="medium">
+                                          {t("total-consumption")}:&nbsp;
+                                        </Text>
+                                        <Text fontWeight="normal">
+                                          {totalConsumption} {totalConsumptionUnit}
+                                        </Text>
+                                      </Box>
+                                      <Box
+                                        alignItems="start"
+                                        display="flex"
+                                        fontFamily="heading"
+                                      >
+                                        <Text fontWeight="medium">
+                                          {t("emissions")}:&nbsp;
+                                        </Text>
+                                        <Text fontWeight="normal">
+                                          {totalEmissions} MtCO2e
+                                        </Text>
+                                      </Box>
+                                      <Box
+                                        onClick={onAddActivityModalOpen}
+                                        pr="56px"
+                                      >
+                                        <AddIcon color="interactive.control" />
+                                      </Box>
+                                    </Box>
+                                    <AccordionIcon />
+                                  </AccordionButton>
+                                </h2>
+                                <AccordionPanel p={0}>
+                                  <TableContainer>
+                                    <Table
+                                      variant="simple"
+                                      borderWidth="1px"
+                                      borderRadius="20px"
+                                      bg="base.light"
+                                    >
+                                      <Thead bg="background.neutral">
+                                        <Tr>
+                                          <Th>{t("fuel-type")}</Th>
+                                          <Th>{t("data-quality")}</Th>
+                                          <Th>{t("fuel-consumption")}</Th>
+                                          <Th>{t("emissions")}</Th>
+                                          <Th></Th>
+                                        </Tr>
+                                      </Thead>
+                                      <Tbody>
+                                        {userActivities?.map(
+                                          (activity: any, i: number) => {
+                                            return (
+                                              <Tr key={i}>
+                                                <Td>{activity?.fuelType}</Td>
+                                                <Td>
+                                                  <Tag
+                                                    size="lg"
+                                                    variant="outline"
+                                                    borderWidth="1px"
+                                                    shadow="none"
+                                                    borderColor="content.link"
+                                                    borderRadius="full"
+                                                    bg="background.neutral"
+                                                    color="content.link"  
+                                                  >
+                                                    <TagLabel>
+                                                      {activity?.dataQuality}
+                                                    </TagLabel>
+                                                  </Tag>
+                                                </Td>
+                                                <Td>
+                                                  {activity?.fuelConsumption!}{" "}
+                                                  {t("gallons")}
+                                                </Td>
+                                                <Td>
+                                                  {activity?.emissions} tCO2e
+                                                </Td>
+                                                <Td isNumeric>
+                                                  <IconButton
+                                                    color="interactive.control"
+                                                    variant="ghost"
+                                                    aria-label="activity-data-popover"
+                                                    icon={
+                                                      <MdMoreVert size="24px" />
+                                                    }
+                                                  />
+                                                </Td>
+                                              </Tr>
+                                            );
+                                          },
+                                        )}
+                                      </Tbody>
+                                    </Table>
+                                  </TableContainer>
+                                </AccordionPanel>
+                              </AccordionItem>
+                            </Accordion>
+
+                            <Box
+                              w="full"
+                              borderTopWidth="3px"
+                              borderColor="interactive.secondary"
+                              py="32px"
+                              px="48px"
+                            >
+                              <Box display="flex" justifyContent="space-between">
+                                <Text
+                                  fontFamily="heading"
+                                  fontSize="title.md"
+                                  fontWeight="semibold"
+                                  color="content.secondary"
+                                >
+                                  {t("total-emissions")}
+                                </Text>
+                                <Text
+                                  fontFamily="heading"
+                                  fontWeight="semibold"
+                                  fontSize="headline.md"
+                                >
+                                  {totalEmissions} MtCO2e
+                                </Text>
                               </Box>
-                            ) : (
-                              <>
-                              <Text
-                                fontFamily="heading"
-                                fontSize="title.md"
-                                fontWeight="semibold"
-                                color="content.secondary"
-                              >
-                                {t("activity-suggestion")}
-                              </Text>
-                              <Box className="flex flex-col gap-4">
-                              {suggestedActivities.map(({ id, name }) => (
-                                <SuggestedActivityCard
-                                  key={id}
-                                  name={name}
-                                  t={t}
-                                  isSelected={selectedActivity === id}
-                                  onActivityAdded={onAddActivityModalOpen}
-                                />
-                              ))}
                             </Box>
-                            </>
-                            )}
                           </Box>
+                        ) : (
+                          <Box className="flex flex-col gap-4">
+                            {
+                              areActivitiesLoading ? (
+                                <LoadingState />
+                              ) : (
+                                // TODO add activityData and metadata to ActivityData model
+                                <>
+                                        <Box
+                                  display="flex"
+                                    alignItems="center"
+                                    justifyContent="space-between"
+                                    mb="8px"
+                                  >
+                                    <HeadingText title={t("select-methodology-title")} />
                         </Box>
-                      ) : (
-                        <Box
-                          display="flex"
-                          alignItems="center"
-                          justifyContent="space-between"
-                          mb="8px"
-                        >
-                          <HeadingText title={t("select-methodology-title")} />
-                        </Box>
-                      )}
+                                
+                                {userActivities?.map((activity: ActivityDataAttributes & { activityData: any, metadata: any }) => (
+                                  <SuggestedActivityCard
+                                    key={activity.activitydataId}
+                                    name={activity.activityData.buildingType ?? "Unknown"}
+                                    t={t}
+                                    isSelected={selectedActivity === activity.activitydataId}
+                                    onActivityAdded={() => {
+                                      setSelectedActivity(activity.activitydataId);
+                                      setTimeout(onAddActivityModalOpen, 500);
+                                    }}
+                                  />
+                                ))}
+                              </>
+                              )}
+                          </Box>
+                        )}
+                      </Box>
                     </Box>
-                  </>
+                  </Box>
                 ) : (
                   <Box>
                     {isUnavailableChecked ? (
@@ -1513,6 +1361,9 @@ function SubSectorPage({
                     )}
                   </Box>
                 )}
+                </Box>
+                </>
+                ):""}
               </TabPanel>
               <TabPanel p="0" pt="48px">
                 <Box
@@ -2415,7 +2266,7 @@ function SubSectorPage({
           onClose={onDeleteActivitiesModalClose}
         />
       </div>
-    </>
+    </Box>
   );
 }
 

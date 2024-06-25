@@ -38,7 +38,7 @@ import FormSelectOrganization from "../form-select-organization";
 import { TFunction } from "i18next";
 import { useParams } from "next/navigation";
 import BuildingTypeSelectInput from "../building-select-input";
-import { InfoOutlineIcon } from "@chakra-ui/icons";
+import { InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
 import { Trans } from "react-i18next";
 import Link from "next/link";
 
@@ -74,6 +74,7 @@ export type Inputs = {
     sourceReference: string;
     buildingType: string;
     fuelType: string;
+    totalFuelConsumption: string;
   };
   direct: DirectMeasureData;
   subcategoryData: Record<string, SubcategoryData>;
@@ -136,7 +137,6 @@ const AddActivityModal: FC<AddUserModalProps> = ({
   const inventoryId = cityParam as string;
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    console.log(data);
     setHasActivityData(!hasActivityData);
     onClose();
   };
@@ -145,7 +145,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
     <>
       <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent minH="300px" minW="768px" marginTop="10%">
+        <ModalContent minH="300px" minW="768px" marginTop="2%">
           <ModalHeader
             display="flex"
             justifyContent="center"
@@ -184,6 +184,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                     placeholder={t("select-type-of-building")}
                     register={register}
                     activity="buildingType"
+                    errors={errors}
                   />
                 </FormControl>
                 <FormControl>
@@ -198,6 +199,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                     placeholder={t("select-type-of-fuel")}
                     register={register}
                     activity="fuelType"
+                    errors={errors}
                   />
                 </FormControl>
                 <Box
@@ -213,15 +215,30 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                     <InputGroup>
                       <NumberInput defaultValue={0} w="full">
                         <NumberInputField
+                          borderRadius="4px"
                           placeholder={t("activity-data-amount-placeholder")}
                           borderRightRadius={0}
+                          borderWidth={
+                            errors?.activity?.totalFuelConsumption ? "1px" : 0
+                          }
+                          border="inputBox"
+                          borderColor={
+                            errors?.activity?.totalFuelConsumption
+                              ? "sentiment.negativeDefault"
+                              : ""
+                          }
+                          background={
+                            errors?.activity?.totalFuelConsumption
+                              ? "sentiment.negativeOverlay"
+                              : ""
+                          }
                           bgColor="base.light"
                           _focus={{
                             borderWidth: "1px",
                             shadow: "none",
                             borderColor: "content.link",
                           }}
-                          {...register("activity.activityDataAmount", {
+                          {...register("activity.totalFuelConsumption", {
                             required: t("value-required"),
                           })}
                         />
@@ -245,13 +262,39 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                         </Select>
                       </InputRightAddon>
                     </InputGroup>
-                    <FormErrorMessage>
-                      {resolve(prefix + "activityDataAmount", errors)?.message}
-                    </FormErrorMessage>
+
+                    {errors.activity?.totalFuelConsumption ? (
+                      <Box
+                        display="flex"
+                        gap="6px"
+                        alignItems="center"
+                        mt="6px"
+                      >
+                        <WarningIcon color="sentiment.negativeDefault" />
+                        <Text fontSize="body.md">Please enter amount</Text>
+                      </Box>
+                    ) : (
+                      ""
+                    )}
                   </FormControl>
                   <FormControl>
                     <FormLabel>{t("emission-factor-type")}</FormLabel>
                     <Select
+                      borderRadius="4px"
+                      borderWidth={
+                        errors?.activity?.emissionFactorType ? "1px" : 0
+                      }
+                      border="inputBox"
+                      borderColor={
+                        errors?.activity?.emissionFactorType
+                          ? "sentiment.negativeDefault"
+                          : ""
+                      }
+                      background={
+                        errors?.activity?.emissionFactorType
+                          ? "sentiment.negativeOverlay"
+                          : ""
+                      }
                       _focus={{
                         borderWidth: "1px",
                         shadow: "none",
@@ -270,6 +313,21 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                         {t("add-custom")}
                       </option>
                     </Select>
+                    {errors.activity?.emissionFactorType ? (
+                      <Box
+                        display="flex"
+                        gap="6px"
+                        alignItems="center"
+                        mt="6px"
+                      >
+                        <WarningIcon color="sentiment.negativeDefault" />
+                        <Text fontSize="body.md">
+                          Please select an emission factor type
+                        </Text>
+                      </Box>
+                    ) : (
+                      ""
+                    )}
                   </FormControl>
                 </Box>
               </HStack>
@@ -385,6 +443,19 @@ const AddActivityModal: FC<AddUserModalProps> = ({
               >
                 <FormLabel>{t("data-quality")}</FormLabel>
                 <Select
+                  borderWidth={errors?.activity?.dataQuality ? "1px" : 0}
+                  border="inputBox"
+                  borderRadius="4px"
+                  borderColor={
+                    errors?.activity?.dataQuality
+                      ? "sentiment.negativeDefault"
+                      : ""
+                  }
+                  background={
+                    errors?.activity?.dataQuality
+                      ? "sentiment.negativeOverlay"
+                      : ""
+                  }
                   _focus={{
                     borderWidth: "1px",
                     shadow: "none",
@@ -402,9 +473,14 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                     {t("highly-modeled-uncertain-emissions-data")}
                   </option>
                 </Select>
-                <FormErrorMessage>
-                  {resolve(prefix + "dataQuality", errors)?.message}
-                </FormErrorMessage>
+                {errors.activity?.dataQuality ? (
+                  <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                    <WarningIcon color="sentiment.negativeDefault" />
+                    <Text fontSize="body.md">Please select data quality</Text>
+                  </Box>
+                ) : (
+                  ""
+                )}
               </FormControl>
               <FormControl
                 isInvalid={!!resolve(prefix + "sourceReference", errors)}
@@ -412,6 +488,19 @@ const AddActivityModal: FC<AddUserModalProps> = ({
               >
                 <FormLabel>{t("source-reference")}</FormLabel>
                 <Textarea
+                  borderWidth={errors?.activity?.dataQuality ? "1px" : 0}
+                  border="inputBox"
+                  borderRadius="4px"
+                  borderColor={
+                    errors?.activity?.dataQuality
+                      ? "sentiment.negativeDefault"
+                      : ""
+                  }
+                  background={
+                    errors?.activity?.dataQuality
+                      ? "sentiment.negativeOverlay"
+                      : ""
+                  }
                   _focus={{
                     borderWidth: "1px",
                     shadow: "none",
@@ -422,9 +511,16 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                     required: t("source-reference-required"),
                   })}
                 />
-                <FormErrorMessage>
-                  {resolve(prefix + "sourceReference", errors)?.message}
-                </FormErrorMessage>
+                {errors.activity?.sourceReference ? (
+                  <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                    <WarningIcon color="sentiment.negativeDefault" />
+                    <Text fontSize="body.md">
+                      Please select a source reference
+                    </Text>
+                  </Box>
+                ) : (
+                  ""
+                )}
               </FormControl>
               <HStack className="items-start" mb={13}>
                 <InfoOutlineIcon mt={1} color="content.link" />

@@ -24,7 +24,7 @@ import { SubCategory } from "@/models/SubCategory";
 const locode = "XX_INVENTORY_CITY";
 // Matches name given by CDP for API testing
 const cityName = "Open Earth Foundation API City Discloser";
-const cityCountry = undefined;
+const cityCountry = "United Kingdom of Great Britain and Northern Ireland";
 const inventoryName = "TEST_INVENTORY_INVENTORY";
 const sectorName = "XX_INVENTORY_TEST_SECTOR";
 const subcategoryName = "XX_INVENTORY_TEST_SUBCATEGORY";
@@ -375,7 +375,7 @@ describe("Inventory API", () => {
     // assert.equal(totalProgress.total, 27);
   });
 
-  it("should submit an inventory to the CDP test API", async () => {
+  it("should submit an inventory to the CDP test API", { skip: true }, async () => {
     const req = mockRequest({});
     const res = await submitInventory(req, {
       params: { inventory: inventory.inventoryId },

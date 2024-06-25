@@ -65,7 +65,7 @@ import { MdMoreVert, MdOutlineHomeWork } from "react-icons/md";
 import { useSelector } from "react-redux";
 
 function SubSectorPage({
-  params: { lng, step, inventory, subsector },
+  params: { lng, step, inventory: inventoryId, subsector },
 }: {
   params: { lng: string; step: string; inventory: string; subsector: string };
 }) {
@@ -74,7 +74,8 @@ function SubSectorPage({
   const [isMethodologySelected, setIsMethodologySelected] = useState(false);
   const [selectedMethodology, setSelectedMethodology] = useState("");
 
-  const { data: userActivities, isLoading: areActivitiesLoading } = api.useGetActivityValuesQuery({inventoryId: inventory, subSectorId: subsector});
+  const { data: inventory, isLoading: isInventoryLoading } = api.useGetInventoryQuery(inventoryId);
+  const { data: userActivities, isLoading: areActivitiesLoading } = api.useGetActivityValuesQuery({inventoryId, subSectorId: subsector});
 
   const [isUnavailableChecked, setIsChecked] = useState<boolean>(false);
 
@@ -87,24 +88,28 @@ function SubSectorPage({
   // TODO add to DB and get from there
   const METHODOLOGIES = [
     {
+      methodologyId: "1",
       name: t("fuel-combustion-consumption"),
       description: t("fuel-combustion-consuption-desciption"),
       inputRequired: [t("total-fuel-consumed")],
       disabled: false,
     },
     {
+      methodologyId: "2",
       name: t("scaled-sample-data"),
       description: t("scaled-sample-data-desc"),
       inputRequired: [t("sample-fuel"), t("scaling-data")],
       disabled: false,
     },
     {
+      methodologyId: "3",
       name: t("modeled-data"),
       description: t("modeled-data-desc"),
       inputRequired: [t("modeled-fuel"), t("build-area")],
       disabled: true,
     },
     {
+      methodologyId: "4",
       name: t("direct-measure"),
       description: t("direct-measure-desc"),
       inputRequired: [t("emissions-data")],
@@ -126,7 +131,10 @@ function SubSectorPage({
     },
   ];
 
-  const handleCardClick = () => setIsMethodologySelected(!isMethodologySelected);
+  const handleMethodologySelected = (methodologyId: string) => {
+    setSelectedMethodology(methodologyId);
+    setIsMethodologySelected(!isMethodologySelected);
+  }
 
   const {
     isOpen: isAddActivityModalOpen,
@@ -193,7 +201,7 @@ function SubSectorPage({
     }
 
     for (const activity of userActivities) {
-      deleteActivity({ inventoryId: inventory, activityValueId: activity.id });
+      deleteActivity({ inventoryId, activityValueId: activity.id });
     }
 
     onDeleteActivitiesModalClose();
@@ -438,7 +446,7 @@ function SubSectorPage({
                                           letterSpacing="wide"
                                           fontSize="body.md"
                                         >
-                                          4 {t("activities-added")}
+                                          {userActivities.length} {t("activities-added")}
                                         </Text>
                                       </Box>
                                       <Box
@@ -745,7 +753,7 @@ function SubSectorPage({
                                               letterSpacing="wide"
                                               fontSize="body.md"
                                             >
-                                              4 {t("activities-added")}
+                                              {userActivities.length} {t("activities-added")}
                                             </Text>
                                           </Box>
                                           <Box
@@ -757,7 +765,7 @@ function SubSectorPage({
                                               {t("total-consumption")}:&nbsp;
                                             </Text>
                                             <Text fontWeight="normal">
-                                              {totalConsumption}M {totalConsumptionUnit}
+                                              {totalConsumption} {totalConsumptionUnit}
                                             </Text>
                                           </Box>
                                           <Box
@@ -1143,7 +1151,7 @@ function SubSectorPage({
                                                 letterSpacing="wide"
                                                 fontSize="body.md"
                                               >
-                                                4 {t("activities-added")}
+                                                {userActivities.length} {t("activities-added")}
                                               </Text>
                                             </Box>
                                             <Box
@@ -1155,7 +1163,7 @@ function SubSectorPage({
                                                 {t("total-consumption")}:&nbsp;
                                               </Text>
                                               <Text fontWeight="normal">
-                                                715,4M gallons
+                                                {totalConsumption} {totalConsumptionUnit}
                                               </Text>
                                             </Box>
                                             <Box
@@ -1167,7 +1175,7 @@ function SubSectorPage({
                                                 {t("emissions")}:&nbsp;
                                               </Text>
                                               <Text fontWeight="normal">
-                                                15,MtCO2e
+                                                {totalEmissions} MtCO2e
                                               </Text>
                                             </Box>
                                             <Box
@@ -1454,8 +1462,9 @@ function SubSectorPage({
                                   justifyContent="space-between"
                                 >
                                   {METHODOLOGIES.map(
-                                    ({ name, description, inputRequired, disabled }) => (
+                                    ({ methodologyId, name, description, inputRequired, disabled }) => (
                                       <MethodologyCard
+                                        methodologyId={methodologyId}
                                         key={name}
                                         name={name}
                                         description={description}
@@ -1463,7 +1472,7 @@ function SubSectorPage({
                                         isSelected={selectedMethodology === name}
                                         disabled={disabled}
                                         t={t}
-                                        handleCardSelect={handleCardClick}
+                                        handleCardSelect={handleMethodologySelected}
                                       />
                                     ),
                                   )}
@@ -1698,7 +1707,7 @@ function SubSectorPage({
                                             letterSpacing="wide"
                                             fontSize="body.md"
                                           >
-                                            4 {t("activities-added")}
+                                            {userActivities.length} {t("activities-added")}
                                           </Text>
                                         </Box>
                                         <Box
@@ -2015,7 +2024,7 @@ function SubSectorPage({
                                                     letterSpacing="wide"
                                                     fontSize="body.md"
                                                   >
-                                                    4 {t("activities-added")}
+                                                    {userActivities.length} {t("activities-added")}
                                                   </Text>
                                                 </Box>
                                                 <Box
@@ -2318,12 +2327,14 @@ function SubSectorPage({
                                     >
                                       {METHODOLOGIES.map(
                                         ({
+                                          methodologyId,
                                           name,
                                           description,
                                           inputRequired,
                                           disabled,
                                         }) => (
                                           <MethodologyCard
+                                            methodologyId={methodologyId}
                                             key={name}
                                             name={name}
                                             description={description}
@@ -2331,7 +2342,7 @@ function SubSectorPage({
                                             isSelected={selectedMethodology === name}
                                             disabled={disabled}
                                             t={t}
-                                            handleCardSelect={handleCardClick}
+                                            handleCardSelect={handleMethodologySelected}
                                           />
                                         ),
                                       )}

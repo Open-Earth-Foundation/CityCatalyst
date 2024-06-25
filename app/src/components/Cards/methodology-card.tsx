@@ -3,32 +3,34 @@ import { TFunction } from "i18next";
 import React, { FC, useState } from "react";
 
 interface MethodologyCardProps {
+  methodologyId: string;
   name: string;
   description: string;
   inputRequired: string[];
   isSelected: boolean;
   disabled: boolean;
   t: TFunction;
-  handleCardSelect: (methodologyName: string) => void;
+  handleCardSelect: (methodologyId: string) => void;
 }
 
 const MethodologyCard: FC<MethodologyCardProps> = ({
+  methodologyId,
   name,
   description,
   inputRequired,
   disabled,
   t,
-  handleCardSelect = (_methodologyName: string) => {},
+  handleCardSelect = (_methodologyId: string) => {},
 }) => {
   const [isSelected, setIsSelected] = useState(false);
   const handleRadioChange = () => {
     setIsSelected(true);
-    handleCardSelect(name);
+    handleCardSelect(methodologyId);
   };
 
   const handleCardClick = () => {
     if (!isSelected) {
-      handleCardSelect(name);
+      handleCardSelect(methodologyId);
     }
     setIsSelected(!isSelected);
   };

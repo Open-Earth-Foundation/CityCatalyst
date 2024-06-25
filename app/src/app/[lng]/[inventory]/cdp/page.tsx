@@ -12,9 +12,21 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { useTranslation } from "@/i18n/client";
+import { api } from "@/services/api";
 
-function Page({ params: { lng } }: { params: { lng: string } }) {
+function Page({
+  params: { lng, inventory },
+}: {
+  params: { lng: string; inventory: string };
+}) {
   const { t } = useTranslation(lng, "cdp");
+  const [connectToCDP] = api.useConnectToCDPMutation();
+  const handleConnectToCDP = async () => {
+    await connectToCDP({ inventoryId: inventory }).then((res) =>
+      console.log(res),
+    );
+    console.log(inventory);
+  };
   return (
     <Box>
       <NavigationBar lng="" />
@@ -32,7 +44,7 @@ function Page({ params: { lng } }: { params: { lng: string } }) {
             <Text>{t("submit-data-to-cdp")}</Text>
           </CardBody>
           <CardFooter p="0">
-            <Button className="w-[100%]" h="50px">
+            <Button onClick={handleConnectToCDP} className="w-[100%]" h="50px">
               {t("submit-data-to-cdp")}
             </Button>
           </CardFooter>

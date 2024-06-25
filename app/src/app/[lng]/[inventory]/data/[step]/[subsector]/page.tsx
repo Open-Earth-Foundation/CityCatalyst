@@ -2443,7 +2443,7 @@ function SubSectorPage({
         <DeleteAllActivitiesModal
           t={t}
           isOpen={isDeleteActivitiesModalOpen}
-          onClose={onDeleteActivityModalClose}
+          onClose={onDeleteActivitiesModalClose}
         />
       </div>
     </>

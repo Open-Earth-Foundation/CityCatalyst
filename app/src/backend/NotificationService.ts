@@ -40,7 +40,7 @@ class NotificationService {
     html,
   }: EmailOptions): Promise<SendEmailResponse> {
     const mailOptions = {
-      from: "",
+      from: process.env.SMTP_FROM_EMAIL,
       to,
       subject,
       text,

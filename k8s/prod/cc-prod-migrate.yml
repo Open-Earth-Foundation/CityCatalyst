@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: cc-migrate-
+  generateName: cc-prod-migrate-
 spec:
   ttlSecondsAfterFinished: 86400
   template:

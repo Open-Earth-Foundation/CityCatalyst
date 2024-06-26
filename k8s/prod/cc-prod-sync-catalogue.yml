@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: cc-sync-catalogue
+  name: cc-prod-sync-catalogue
 spec:
   # run every monday
   schedule: 0 0 * * 1

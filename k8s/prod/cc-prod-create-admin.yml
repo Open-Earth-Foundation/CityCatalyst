@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: cc-create-admin-
+  generateName: cc-prod-create-admin-
 spec:
   ttlSecondsAfterFinished: 86400
   template:

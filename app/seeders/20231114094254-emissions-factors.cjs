@@ -31,7 +31,11 @@ module.exports = {
           "DataSourceEmissionsFactor",
           folder,
         );
-        const emissionsFactors = await parseFile("EmissionsFactor", folder);
+
+        const emissionsFactorsStationaryEnergy = await parseFile("EmissionsFactor_Stationary_Energy", folder);
+        const emissionsFactorsStationaryEnergyScope1 = await parseFile("EmissionsFactor_Stationary_Energy_Scope1", folder);
+        const emissionsFactors = emissionsFactorsStationaryEnergy.concat(emissionsFactorsStationaryEnergyScope1);
+
         const publishers = await parseFile("Publisher", folder);
 
         await bulkUpsert(

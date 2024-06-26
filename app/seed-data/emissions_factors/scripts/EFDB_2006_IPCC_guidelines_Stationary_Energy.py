@@ -254,6 +254,20 @@ densities_dic = {
     }
 }
 
+region_to_locode = {'world': 'world', 
+                    'Republic of Korea': 'KR', 
+                    'Indonesia': 'ID', 
+                    'Mexico': 'MX', 
+                    'Japan': 'JP',
+                    'All over Ukraine territory within boundaries recognized by the United Nations': 'UA',
+                    'Australia': 'AU', 
+                    'Malaysia': 'MY', 
+                    'Papua New Guinea': 'PG', 
+                    'Russian Federation': 'RU',
+                    'United States of America': 'US', 
+                    'South Africa': 'ZA'
+       }
+
 if __name__ == "__main__":
     # set random.seed so UUID is reproducible
     #! assumes records always generated in same order
@@ -361,6 +375,9 @@ if __name__ == "__main__":
 
     # assign "GPC_refno" using the mapping dic
     EF_df['GPC_refno'] = EF_df['ipcc_2006_category'].map(mapping_ipcc_to_gpc)
+
+    # assign "actor_id" using the region_to_locode dic
+    EF_df['actor_id'] = EF_df['region'].map(region_to_locode)
 
     # remove EFs that don't apply
     EF_df = EF_df.dropna(subset=['GPC_refno'])
@@ -624,6 +641,25 @@ if __name__ == "__main__":
     # make a row for each methodology
     EF_df['methodology_name'] = [mapping_gpc_to_methodologies] * len(EF_df)
     EF_df = EF_df.explode('methodology_name', ignore_index=True)
+
+    # rename columns
+    EF_df.rename(columns={'reference': 'comments', 'region': 'actor_name'}, inplace=True)
+    
+    # add datasource name and dataset name
+    EF_df['datasource_name'] = 'IPCC 2006'
+    EF_df['dataset_name'] = 'EFDB IPCC'
+
+    # drop extra columns
+    EF_df = EF_df.drop(columns=['ipcc_2006_category', 'practices', 'parameters', 'properties', 'equation', 'EF ID'])
+
+    # create a subcategory column based on fuel name
+    EF_df['subcategory'] = EF_df['fuel'].apply(lambda x: f'fuel:{x}')
+
+    # create a 'metadata' column based on density values, density units, NCV values and NCV units
+    EF_df['metadata'] = EF_df.apply(lambda row: f"density_value:{row['density_value']}, density_units:{row['density_units']}, NCV_value:{row['NCV_value']}, NCV_units:{row['NCV_units']}", axis=1)
+
+    # year column
+    EF_df['year'] = ''
 
     EF_df["emissions_factor_id"] = EF_df.apply(
         lambda row: uuid_generate_v4(), axis=1

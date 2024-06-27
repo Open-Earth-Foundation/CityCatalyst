@@ -105,7 +105,7 @@
     "@storybook/blocks": "^8.0.4",
     "@storybook/nextjs": "^8.0.8",
     "@types/glob": "^8.1.0",
-    "cypress": "^13.7.3",
+    "cypress": "^13.12.0",
     "glob": "^10.4.1",
     "prettier": "3.2.5",
     "sequelize-auto": "^0.8.8",

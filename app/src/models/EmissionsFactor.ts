@@ -16,6 +16,10 @@ export interface EmissionsFactorAttributes {
   gas?: string;
   units?: string;
   inventoryId?: string | null;
+  region?: string | null;
+  actorId?: string | null;
+  methodologyName?: string | null;
+  reference?: string | null;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -29,6 +33,10 @@ export type EmissionsFactorOptionalAttributes =
   | "gas"
   | "units"
   | "inventoryId"
+  | "region"
+  | "actorId"
+  | "methodologyName"
+  | "reference"
   | "created"
   | "lastUpdated";
 export type EmissionsFactorCreationAttributes = Optional<
@@ -38,8 +46,7 @@ export type EmissionsFactorCreationAttributes = Optional<
 
 export class EmissionsFactor
   extends Model<EmissionsFactorAttributes, EmissionsFactorCreationAttributes>
-  implements EmissionsFactorAttributes
-{
+  implements EmissionsFactorAttributes {
   id!: string;
   gpcReferenceNumber?: string;
   emissionsPerActivity?: number;
@@ -47,6 +54,10 @@ export class EmissionsFactor
   gas?: string;
   units?: string;
   inventoryId?: string | null;
+  region?: string | null;
+  actorId?: string | null;
+  methodologyName?: string | null;
+  reference?: string | null;
   created?: Date;
   lastUpdated?: Date;
 
@@ -179,6 +190,22 @@ export class EmissionsFactor
           },
           field: "inventory_id",
         },
+        region: {
+          type: DataTypes.TEXT,
+          allowNull: true,
+        },
+        actorId: {
+          type: DataTypes.TEXT,
+          allowNull: true,
+        },
+        methodologyName: {
+          type: DataTypes.TEXT,
+          allowNull: true,
+        },
+        reference: {
+          type: DataTypes.TEXT,
+          allowNull: true,
+        },
       },
       {
         sequelize,
@@ -191,7 +218,7 @@ export class EmissionsFactor
           {
             name: "EmissionsFactor_pkey",
             unique: true,
-            fields: [{ name: "emissions_factor_id" }],
+            fields: [{ name: "id" }],
           },
         ],
       },

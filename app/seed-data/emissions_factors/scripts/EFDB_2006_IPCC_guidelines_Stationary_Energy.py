@@ -16,6 +16,7 @@ from utils import (
     string_to_hash,
 )
 
+
 def separate_min_max_median(val):
     """extract value, takes median if range is given"""
     if isinstance(val, float):
@@ -43,6 +44,7 @@ def separate_min_max_median(val):
     else:
         return {"value": None, "value_min": None, "value_max": None}
 
+
 def gas_name_to_formula(value, replace_dict=None):
     """replace gas name with formula"""
     if replace_dict is None:
@@ -54,10 +56,11 @@ def gas_name_to_formula(value, replace_dict=None):
             "CARBON MONOXIDE\n": "CO",
             "Nitrogen Trifluoride\n": "NF3",
             "AMMONIA\n": "NH3"
-            
+
         }
     else:
-        replace_dict = {key.upper(): value for key, value in replace_dict.items()}
+        replace_dict = {key.upper(): value for key,
+                        value in replace_dict.items()}
 
     new_value = replace_dict.get(value.upper(), None)
 
@@ -66,14 +69,17 @@ def gas_name_to_formula(value, replace_dict=None):
 
     return value
 
+
 def save_to_csv(fl, data):
     """save list of dictionaries to CSV"""
     with open(fl, "w", newline="") as csvfile:
-        fieldnames = data[0].keys()  # Assuming all dictionaries have the same keys
+        # Assuming all dictionaries have the same keys
+        fieldnames = data[0].keys()
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()
         writer.writerows(data)
+
 
 # Mapping IPCC to GPC
 mapping_ipcc_to_gpc = {
@@ -91,12 +97,12 @@ mapping_ipcc_to_gpc = {
     '1.A.1.a.i - Electricity Generation\n': ['I.4.4'],
     '1.A.1.a.ii - Combined Heat and Power Generation (CHP)\n': ['I.4.4'],
     '1.A.1.a.iii - Heat Plants\n': ['I.4.4'],
-     '1.A.1.c.ii - Other Energy Industries\n': ['1.4.4'],
+    '1.A.1.c.ii - Other Energy Industries\n': ['1.4.4'],
     '1.A.2 - Manufacturing Industries and Construction\n': ['I.3.1'],
-    '1.A.2 - Manufacturing Industries and Construction\n1.A.4.a - Commercial/Institutional\n': ['I.3.1', 
+    '1.A.2 - Manufacturing Industries and Construction\n1.A.4.a - Commercial/Institutional\n': ['I.3.1',
                                                                                                 'I.2.1'],
-    '1.A.2 - Manufacturing Industries and Construction\n1.A.4.a - Commercial/Institutional\n1.A.4.b - Residential\n1.A.4.c.ii - Off-road Vehicles and Other Machinery\n': ['I.3.1', 
-                                                                                                                                                                           'I.2.1', 
+    '1.A.2 - Manufacturing Industries and Construction\n1.A.4.a - Commercial/Institutional\n1.A.4.b - Residential\n1.A.4.c.ii - Off-road Vehicles and Other Machinery\n': ['I.3.1',
+                                                                                                                                                                           'I.2.1',
                                                                                                                                                                            'I.1.1'],
     '1.A.2.a - Iron and Steel\n': ['I.3.1'],
     '1.A.2.b - Non-Ferrous Metals\n': ['I.3.1'],
@@ -136,7 +142,7 @@ mapping_gpc_to_methodologies = [
     'fuel_combustion_consumption',
     'sampling_scaled_data',
     'modeled_data'
-    ]
+]
 
 # References on density values
 ref_density_dic = {
@@ -148,107 +154,107 @@ ref_density_dic = {
 # dictionary with density values
 densities_dic = {
     'Anthracite': {
-        'value': 1506, 
+        'value': 1506,
         'units': 'kg/m3',
         'reference': 'Aqua_Calc_tool',
-    }, 
+    },
     'Other Bituminous Coal': {
-        'value': 1346, 
+        'value': 1346,
         'units': 'kg/m3',
         'reference': 'Aqua_Calc_tool'
-    }, 
+    },
     'Lignite': {
-        'value': 400, 
+        'value': 400,
         'units': 'kg/m3',
         'reference': 'Aqua_Calc_tool'
-    }, 
+    },
     'Peat': {
-        'value': 400, 
+        'value': 400,
         'units': 'kg/m3',
         'reference': 'Aqua_Calc_tool'
     },
     'Crude Oil': {
-        'value': 800, 
+        'value': 800,
         'units': 'kg/m3',
         'reference': 'EF_GHG_protocol'
-    }, 
+    },
     'Motor Gasoline': {
-        'value': 740, 
+        'value': 740,
         'units': 'kg/m3',
         'reference': 'EF_GHG_protocol'
-    }, 
+    },
     'Other Kerosene': {
-        'value': 800, 
+        'value': 800,
         'units': 'kg/m3',
         'reference': 'EF_GHG_protocol'
-    }, 
+    },
     'Gas Oil': {
-        'value': 840, 
+        'value': 840,
         'units': 'kg/m3',
         'reference': 'EF_GHG_protocol'
     },
     'Diesel Oil': {
-        'value': 840, 
+        'value': 840,
         'units': 'kg/m3',
         'reference': 'EF_GHG_protocol'
-    }, 
+    },
     'Residual Fuel Oil': {
-        'value': 940, 
+        'value': 940,
         'units': 'kg/m3',
         'reference': 'EF_GHG_protocol'
-    }, 
+    },
     'Natural Gas': {
-        'value': 0.7, 
+        'value': 0.7,
         'units': 'kg/m3',
         'reference': 'EF_GHG_protocol'
     },
     'Charcoal': {
-        'value': 208, 
+        'value': 208,
         'units': 'kg/m3',
         'reference': 'Aqua_Calc_tool'
     },
     'Sub-Bituminous Coal': {
-        'value': 1346, 
+        'value': 1346,
         'units': 'kg/m3',
         'reference': 'Aqua_Calc_tool'
-    }, 
+    },
     'Liquefied Petroleum Gases': {
-        'value': 540, 
+        'value': 540,
         'units': 'kg/m3',
         'reference': 'EF_GHG_protocol'
-    }, 
+    },
     'Coking Coal': {
-        'value': 829.76, 
+        'value': 829.76,
         'units': 'kg/m3',
         'reference': 'Aqua_Calc_tool'
     },
     'Coke Oven Coke and Lignite Coke': {
-        'value': 400, 
+        'value': 400,
         'units': 'kg/m3',
         'reference': 'Aqua_Calc_tool'
-    }, 
+    },
     'Naphtha': {
-        'value': 770, 
+        'value': 770,
         'units': 'kg/m3',
         'reference': 'EF_GHG_protocol'
-    }, 
+    },
     'Coke Oven Gas': {
-        'value': 0.545, 
+        'value': 0.545,
         'units': 'kg/m3',
         'reference': 'engineering_tool_box'
     },
     'Natural Gas Liquids\n(NGLs)': {
-        'value': 500, 
+        'value': 500,
         'units': 'kg/m3',
         'reference': 'Aqua_Calc_tool'
     },
     'Jet Kerosene': {
-        'value': 790, 
+        'value': 790,
         'units': 'kg/m3',
         'reference': 'EF_GHG_protocol'
-    }, 
+    },
     'Bitumen': {
-        'value': 1346, 
+        'value': 1346,
         'units': 'kg/m3',
         'reference': 'Aqua_Calc_tool'
     }
@@ -277,7 +283,8 @@ if __name__ == "__main__":
         "name": "IPCC",
         "URL": "https://www.ipcc.ch/",
     }
-    publisher_data["publisher_id"] = uuid_generate_v3(name=publisher_data.get("name"))
+    publisher_data["publisher_id"] = uuid_generate_v3(
+        name=publisher_data.get("name"))
 
     write_dic_to_csv(output_dir, "Publisher", publisher_data)
 
@@ -290,7 +297,8 @@ if __name__ == "__main__":
         "URL": "https://www.ipcc-nggip.iges.or.jp/EFDB/main.php",
         "publisher_id": publisher_data.get("publisher_id"),
     }
-    datasource_data["datasource_id"] = uuid_generate_v3(name=datasource_data.get("dataset_name"))
+    datasource_data["datasource_id"] = uuid_generate_v3(
+        name=datasource_data.get("dataset_name"))
 
     write_dic_to_csv(output_dir, "DataSource", datasource_data)
 
@@ -301,17 +309,21 @@ if __name__ == "__main__":
     df = pd.read_excel(input_fl)
 
     # drop extra columns
-    df = df.drop(columns=['IPCC 1996 Source/Sink Category', 'Fuel 1996', 'C pool', 'Type of parameter', 'Abatement / Control Technologies', 'IPCC Worksheet', 'Source of data', 'Data provider'])
+    df = df.drop(columns=['IPCC 1996 Source/Sink Category', 'Fuel 1996', 'C pool', 'Type of parameter',
+                 'Abatement / Control Technologies', 'IPCC Worksheet', 'Source of data', 'Data provider'])
 
     # clean reference info
-    df['Technical Reference'] = df['Technical Reference'].replace('??????? ? ?????? ???????-????? I. ???????-??????? ???????', None)
+    df['Technical Reference'] = df['Technical Reference'].replace(
+        '??????? ? ?????? ???????-????? I. ???????-??????? ???????', None)
 
     # extract only EF values for Stationary Energy using IPCC refno
-    filt_cat = df["IPCC 2006 Source/Sink Category"].str.contains("1.A", case=True, na=False)
+    filt_cat = df["IPCC 2006 Source/Sink Category"].str.contains(
+        "1.A", case=True, na=False)
     df_filt = df.loc[filt_cat].reset_index(drop=True)
 
     # extract only EF values
-    filt_desc = df_filt["Description"].str.contains("EF | emission factor", case=False, na=False)
+    filt_desc = df_filt["Description"].str.contains(
+        "EF | emission factor", case=False, na=False)
     df_filt = df_filt.loc[filt_desc].reset_index(drop=True)
 
     # delete the other EF values we don't need
@@ -347,7 +359,8 @@ if __name__ == "__main__":
 
         # convert nan to None
         output_dic = {
-            key: None if (isinstance(value, float)) and math.isnan(value) else value
+            key: None if (isinstance(value, float)
+                          ) and math.isnan(value) else value
             for key, value in dic_tmp.items()
         }
 
@@ -369,7 +382,8 @@ if __name__ == "__main__":
     EF_df = EF_df[EF_df['gas'].isin(gas)]
 
     # standardize units
-    EF_df['units'] = EF_df['units'].replace({'KG/TJ':'kg/TJ', 'kg CO2/GJ': 'kg/GJ'}, regex=True)
+    EF_df['units'] = EF_df['units'].replace(
+        {'KG/TJ': 'kg/TJ', 'kg CO2/GJ': 'kg/GJ'}, regex=True)
 
     # Replace None values, which means "generic EF", with "world"
     EF_df['region'].fillna('world', inplace=True)
@@ -395,7 +409,7 @@ if __name__ == "__main__":
         elif condition == 'NCV: ':
             return {'NCV_value': properties[NCV_START_2:NCV_END_2], 'NCV_units': NCV_UNITS_2}
         elif condition == 'density:':
-            return {'NCV_value': properties[NCV_START_2:NCV_END_2], 'NCV_units': NCV_UNITS_2, 
+            return {'NCV_value': properties[NCV_START_2:NCV_END_2], 'NCV_units': NCV_UNITS_2,
                     'density_value': properties[DENSITY_VALUE_START:DENSITY_VALUE_END], 'density_units': DENSITY_UNITS}
         return {'NCV_value': pd.NA, 'NCV_units': pd.NA, 'density_value': pd.NA, 'density_units': pd.NA}
 
@@ -407,7 +421,8 @@ if __name__ == "__main__":
     conditions = ['Net Calorific Value', 'NCV: ', 'density:']
     for condition in conditions:
         mask = EF_df['properties'].str.contains(condition, na=False)
-        EF_df.loc[mask, ['NCV_value', 'NCV_units', 'density_value', 'density_units']] = EF_df.loc[mask, 'properties'].apply(lambda x: expand_metadata(extract_metadata(x, condition))) 
+        EF_df.loc[mask, ['NCV_value', 'NCV_units', 'density_value', 'density_units']] = EF_df.loc[mask,
+                                                                                                  'properties'].apply(lambda x: expand_metadata(extract_metadata(x, condition)))
 
     # drop extra columns
     EF_df = EF_df.drop(columns=['value_min', 'value_max'])
@@ -418,10 +433,12 @@ if __name__ == "__main__":
     filt_df = df.loc[filt_NCV].reset_index(drop=True)
 
     # change column names
-    filt_df = filt_df.rename(columns={'IPCC 2006 Source/Sink Category': 'ipcc_2006_category', 'Fuel 2006': 'fuel', 'Value': 'NCV_value', 'Unit': 'NCV_units'})
+    filt_df = filt_df.rename(columns={'IPCC 2006 Source/Sink Category': 'ipcc_2006_category',
+                             'Fuel 2006': 'fuel', 'Value': 'NCV_value', 'Unit': 'NCV_units'})
 
     # drop extra columns
-    filt_df = filt_df.drop(columns = ['EF ID', 'Gas', 'Technologies / Practices', 'Parameters / Conditions', 'Region / Regional Conditions',  'Other properties', 'Equation', 'Technical Reference'])
+    filt_df = filt_df.drop(columns=['EF ID', 'Gas', 'Technologies / Practices', 'Parameters / Conditions',
+                           'Region / Regional Conditions',  'Other properties', 'Equation', 'Technical Reference'])
 
     # New list to hold NCV and GCV values
     tmp = []
@@ -429,7 +446,7 @@ if __name__ == "__main__":
     # Process each row
     for index, row in filt_df.iterrows():
         value = str(row['NCV_value'])
-        
+
         if '(GCV)' in value and '(NCV)' in value:
             # Extract the values
             parts = value.split('(GCV)')
@@ -439,11 +456,11 @@ if __name__ == "__main__":
             gcv_row = row.copy()
             gcv_row['NCV_value'] = gcv_value
             gcv_row['Description'] = 'Gross Calorific Value'
-            
+
             ncv_row = row.copy()
             ncv_row['NCV_value'] = ncv_value
             ncv_row['Description'] = 'Net Calorific Value'
-            
+
             # Append new rows
             tmp.append(gcv_row)
             tmp.append(ncv_row)
@@ -454,36 +471,37 @@ if __name__ == "__main__":
     filt_df = pd.DataFrame(tmp)
 
     # standardization of units
-    valid_units = ['TJ/Gg', 'TJ/kt', 'MJ/m3', 'MJ/kg', 'kJ/g', 'GJ/tonne', 'Btu/gal', 'tC/TJ', 'TJ/m3', 'TJ/kl']
+    valid_units = ['TJ/Gg', 'TJ/kt', 'MJ/m3', 'MJ/kg', 'kJ/g',
+                   'GJ/tonne', 'Btu/gal', 'tC/TJ', 'TJ/m3', 'TJ/kl']
 
     for index, row in filt_df.iterrows():
         units = row['NCV_units']
         value = row['NCV_value']
         converted_value = None
         new_units = None
-        
+
         # Check if units need conversion
         if 'GJ/1000m3' in units:
             converted_value = np.float16(value) * 1e-3
             new_units = 'GJ/m3'
-            
+
         elif units in ['GJ/1000 litre', 'GJ/1000litre']:
             converted_value = np.float16(value) * 1e-3
             new_units = 'GJ/litre'
-            
+
         elif units == 'TJ/10^6m3 @SATP':
             converted_value = np.float16(value) * 1e-6
             new_units = 'TJ/m3'
-            
+
         elif units == 'TJ/10^3kl @SATP':
             converted_value = np.float16(value) * 1e-3
             new_units = 'TJ/kl'
-        
+
         # Update df with converted value and units if conversion occurred
         if converted_value is not None:
             filt_df.at[index, 'NCV_value'] = converted_value
             filt_df.at[index, 'NCV_units'] = new_units
-        
+
         # Check if units are valid
         elif units not in valid_units:
             print("Error: unrecognized units - ", units, " - line ", index)
@@ -497,14 +515,16 @@ if __name__ == "__main__":
         filt_df.at[index, 'Value_max'] = value_dic['value_max']
 
     # drop extra columns
-    filt_df = filt_df.drop(columns=['Value_min','Value_max'])
+    filt_df = filt_df.drop(columns=['Value_min', 'Value_max'])
 
     # change 'Description' information
     filt_df['Description'] = np.where(
-        filt_df['Description'].str.contains('Net Calorific Value|NCV', case=False, na=False),
+        filt_df['Description'].str.contains(
+            'Net Calorific Value|NCV', case=False, na=False),
         'NCV',
         np.where(
-            filt_df['Description'].str.contains('Gross Calorific Value', case=False, na=False),
+            filt_df['Description'].str.contains(
+                'Gross Calorific Value', case=False, na=False),
             'GCV',
             filt_df['Description']
         )
@@ -514,14 +534,17 @@ if __name__ == "__main__":
     filt_df = filt_df[filt_df['Description'] == 'NCV']
 
     # Merge NCV with EF_df
-    EF_df = EF_df.merge(filt_df, on=['fuel','ipcc_2006_category'], how='left')
+    EF_df = EF_df.merge(filt_df, on=['fuel', 'ipcc_2006_category'], how='left')
 
     # assign NCV values and units when apply
-    EF_df['NCV_value'] = EF_df['NCV_value_x'].combine_first(EF_df['NCV_value_y'])
-    EF_df['NCV_units'] = EF_df['NCV_units_x'].combine_first(EF_df['NCV_units_y'])
+    EF_df['NCV_value'] = EF_df['NCV_value_x'].combine_first(
+        EF_df['NCV_value_y'])
+    EF_df['NCV_units'] = EF_df['NCV_units_x'].combine_first(
+        EF_df['NCV_units_y'])
 
     # Drop the original 'NCV_value_x' and 'NCV_value_y' columns
-    EF_df.drop(columns=['NCV_value_x', 'NCV_value_y', 'NCV_units_x', 'NCV_units_y'], inplace=True)
+    EF_df.drop(columns=['NCV_value_x', 'NCV_value_y',
+               'NCV_units_x', 'NCV_units_y'], inplace=True)
 
     # fill density values in EF_df
     for index, row in EF_df.iterrows():
@@ -549,9 +572,10 @@ if __name__ == "__main__":
         ('kg/GJ', 'kg/TJ', 1000)
     ]
 
-    # Apply the conversions 
+    # Apply the conversions
     for from_unit, to_unit, conversion_factor in conversions:
-        convert_units(EF_df, 'units', 'value', from_unit, to_unit, conversion_factor)
+        convert_units(EF_df, 'units', 'value', from_unit,
+                      to_unit, conversion_factor)
 
     # convert 'NCV_value' column into numeric
     EF_df['NCV_value'] = pd.to_numeric(EF_df['NCV_value'], errors='coerce')
@@ -588,12 +612,14 @@ if __name__ == "__main__":
 
     new_rows = []
 
-    # Apply the conversions 
+    # Apply the conversions
     for from_unit, to_unit, conversion_factor in conversions:
-        convert_units(EF_df, 'units', 'emissions_per_activity', from_unit, to_unit, conversion_factor)
+        convert_units(EF_df, 'units', 'emissions_per_activity',
+                      from_unit, to_unit, conversion_factor)
 
     # convert 'density_value' column into numertic type
-    EF_df['density_value'] = pd.to_numeric(EF_df['density_value'], errors='coerce')
+    EF_df['density_value'] = pd.to_numeric(
+        EF_df['density_value'], errors='coerce')
 
     new_rows = []
 
@@ -607,7 +633,7 @@ if __name__ == "__main__":
             new_row['emissions_per_activity'] = ef_value * density_value
             new_row['units'] = 'kg/m3'
             new_rows.append(new_row)
-            
+
     new_rows = pd.DataFrame(new_rows)
     # add the new rows with the conversions
     EF_df = pd.concat([EF_df, new_rows], ignore_index=True)
@@ -616,7 +642,7 @@ if __name__ == "__main__":
     EF_df['emissions_per_activity'].fillna(EF_df['value'], inplace=True)
 
     # drop extra columns
-    EF_df = EF_df.drop(columns = ['Description', 'value'])
+    EF_df = EF_df.drop(columns=['Description', 'value'])
 
     # make a row for each GPC_refno
     EF_df = EF_df.explode('GPC_refno', ignore_index=True)

@@ -69,7 +69,8 @@ def gas_name_to_formula(value, replace_dict=None):
             "NITROUS OXIDE": "N2O",
         }
     else:
-        replace_dict = {key.upper(): value for key, value in replace_dict.items()}
+        replace_dict = {key.upper(): value for key,
+                        value in replace_dict.items()}
 
     new_value = replace_dict.get(value.upper(), None)
 
@@ -118,7 +119,8 @@ def merge_columns(row):
 def save_to_csv(fl, data):
     """save list of dictionaries to CSV"""
     with open(fl, "w", newline="") as csvfile:
-        fieldnames = data[0].keys()  # Assuming all dictionaries have the same keys
+        # Assuming all dictionaries have the same keys
+        fieldnames = data[0].keys()
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()
@@ -170,8 +172,10 @@ if __name__ == "__main__":
     # =================================================================
     # read raw dataset
     df = pd.read_csv(input_fl)
-    filt_desc = df["Description"].str.contains("emission factor", case=False, na=False)
-    filt_cat = df["IPCC 2006 Source/Sink Category"].isin(IPCC_2006_THAT_ARE_GPC_BASIC)
+    filt_desc = df["Description"].str.contains(
+        "emission factor", case=False, na=False)
+    filt_cat = df["IPCC 2006 Source/Sink Category"].isin(
+        IPCC_2006_THAT_ARE_GPC_BASIC)
     filt = filt_desc & filt_cat
     df_filt = df.loc[filt].reset_index(drop=True)
 
@@ -209,7 +213,8 @@ if __name__ == "__main__":
 
         # convert nan to None
         output_dic = {
-            key: None if (isinstance(value, float)) and math.isnan(value) else value
+            key: None if (isinstance(value, float)
+                          ) and math.isnan(value) else value
             for key, value in dic_tmp.items()
         }
 
@@ -237,7 +242,8 @@ if __name__ == "__main__":
 
     df_out["value"] = df_out["value"].round(3)
 
-    COLUMNS = ["gpc_sector", "value", "units_merged", "gas", "region", "reference"]
+    COLUMNS = ["gpc_sector", "value",
+               "units_merged", "gas", "region", "reference"]
     df_emissions_factor = df_out.loc[:, COLUMNS].rename(
         columns={
             "units_merged": "units",
@@ -249,7 +255,8 @@ if __name__ == "__main__":
         lambda row: uuid_generate_v4(), axis=1
     )
 
-    df_emissions_factor.to_csv(f"{output_dir}/EmissionsFactor.csv", index=False)
+    df_emissions_factor.to_csv(
+        f"{output_dir}/EmissionsFactor.csv", index=False)
 
     # =================================================================
     # DataSourceEmissionsFactor

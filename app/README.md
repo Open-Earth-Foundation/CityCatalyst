@@ -3,6 +3,15 @@
 This is the main CityCatalyst Web app. This directory includes both the
 frontend and backend code for the app, as well as database management scripts.
 
+## Prerequisites
+
+This guide assumes you have installed and access to the following tools:
+
+1. git command line interface. Please follow [this link](https://git-scm.com/downloads) for installation instructions.
+2. Node.js and the node package manager npm. Please follow [this link](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) for installation instructions.
+3. (optional) docker engine. Docker is not strictly necessary but recommended. It makes the setup of the database service much easier. Please follow [this link](https://docs.docker.com/engine/install/) for installation instructions. 
+4. (optional, Windows OS only) Windows Subsystem for Linux WSL2. This step is only needed for running the convenience shell scripts below e.g. for setting up the Postgres database via docker. Different Linux subsystems can be installed. The following link is for Ubuntu. Please follow [this link](https://ubuntu.com/desktop/wsl) for installation instructions. 
+
 ## Installation
 
 ### Code
@@ -22,7 +31,22 @@ npm install
 
 ### Database
 
-For a quick setup, run `scripts/start-db.sh`, which will launch a PostgreSQL Docker image with the right configuration. Otherwise continue below ⬇️
+#### Automated setup via Docker
+
+For a quick setup, run `scripts/start-db.sh`, which will launch a PostgreSQL Docker image with the right configuration.
+
+Note for Windows users only: Make sure you run this script in the WSL2 environment. Since WSL2 does not share the same resources as the Windows host system, you have to configure the integration of docker with the WSL2 system. For this, open Docker Desktop, go to `Settings > Resources > WSL integration` and activate `Enable integration with my default WSL distro` and make sure your Linux distribution is listed and enabled.
+
+Run the following command.
+
+```bash
+cd app/scripts/
+bash start-db.sh
+```
+
+If you use this script, continue at [Environment](#environment). Otherwise continue below ⬇️ with the manual setup of the database service.
+
+#### Manual setup
 
 You'll need to run a [PostgreSQL](https://www.postgresql.org/) database, locally or remotely.
 
@@ -82,7 +106,10 @@ To run the app in development mode, run:
 
 ```bash
 cd CityCatalyst/app
-cp env.example .env
+
+## if you have copied and renamed the env.example file in the step under 'Environment', 
+## skip the next line otherwise remove the comment in the next line
+#cp env.example .env
 
 ## set up your database credentials in .env file 
 
@@ -95,6 +122,10 @@ npm run create-admin
 
 npm run dev
 ```
+
+The standard port is 3000 and the application can be opend at http://localhost:3000. Please check the log outputs, if a different port has been used.
+
+Use `johndeo@example.com` and `password` to login.
 
 ### Docker
 

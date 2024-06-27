@@ -245,7 +245,7 @@ if __name__ == "__main__":
             "value": "emissions_factor",
         }
     )
-    df_emissions_factor["emissions_factor_id"] = df_emissions_factor.apply(
+    df_emissions_factor["id"] = df_emissions_factor.apply(
         lambda row: uuid_generate_v4(), axis=1
     )
 
@@ -257,9 +257,9 @@ if __name__ == "__main__":
     datasource_emissions_factor_data = [
         {
             "datasource_id": datasource_data.get("datasource_id"),
-            "emissions_factor_id": emissions_factor_id,
+            "id": id,
         }
-        for emissions_factor_id in df_emissions_factor["emissions_factor_id"]
+        for id in df_emissions_factor["id"]
     ]
 
     write_dic_to_csv(

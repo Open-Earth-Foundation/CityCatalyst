@@ -625,7 +625,7 @@ if __name__ == "__main__":
     EF_df['methodology_name'] = [mapping_gpc_to_methodologies] * len(EF_df)
     EF_df = EF_df.explode('methodology_name', ignore_index=True)
 
-    EF_df["emissions_factor_id"] = EF_df.apply(
+    EF_df['id'] = EF_df.apply(
         lambda row: uuid_generate_v4(), axis=1
     )
 
@@ -637,9 +637,9 @@ if __name__ == "__main__":
     datasource_emissions_factor_data = [
         {
             "datasource_id": datasource_data.get("datasource_id"),
-            "emissions_factor_id": emissions_factor_id,
+            "id": id,
         }
-        for emissions_factor_id in EF_df["emissions_factor_id"]
+        for id in EF_df["id"]
     ]
 
     write_dic_to_csv(

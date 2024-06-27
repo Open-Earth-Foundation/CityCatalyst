@@ -197,10 +197,12 @@ export class EmissionsFactor
         actorId: {
           type: DataTypes.TEXT,
           allowNull: true,
+          field: "actor_id",
         },
         methodologyName: {
           type: DataTypes.TEXT,
           allowNull: true,
+          field: "methodology_name",
         },
         reference: {
           type: DataTypes.TEXT,

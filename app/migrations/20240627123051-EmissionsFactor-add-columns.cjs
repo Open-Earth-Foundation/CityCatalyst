@@ -1,6 +1,6 @@
 'use strict';
 
-const columns = ["region", "actor_id", "methodology_name", "reference"];
+const columns = ["actor_id", "methodology_name"];
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {

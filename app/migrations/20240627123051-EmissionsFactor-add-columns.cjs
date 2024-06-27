@@ -1,20 +1,22 @@
 'use strict';
 
+const columns = ["region", "actor_id", "methodology_name", "reference"];
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     return queryInterface.sequelize.transaction(async (transaction) => {
-      await queryInterface.addColumn("EmissionsFactor", "region", Sequelize.TEXT, { transaction });
-      await queryInterface.addColumn("EmissionsFactor", "practices", Sequelize.TEXT, { transaction });
-      await queryInterface.addColumn("EmissionsFactor", "properties", Sequelize.TEXT, { transaction });
-      await queryInterface.addColumn("EmissionsFactor", "methodology", Sequelize.TEXT, { transaction });
-      await queryInterface.addColumn("EmissionsFactor", "reference", Sequelize.TEXT, { transaction });
-      await queryInterface.addColumn("EmissionsFactor", "parameters", Sequelize.TEXT, { transaction });
+      for (const column of columns) {
+        await queryInterface.addColumn("EmissionsFactor", column, Sequelize.TEXT, { transaction });
+      }
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     return queryInterface.sequelize.transaction(async (transaction) => {
+      for (const column of columns) {
+        await queryInterface.removeColumn("EmissionsFactor", column, { transaction });
+      }
     });
   }
 };

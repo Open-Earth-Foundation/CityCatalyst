@@ -260,19 +260,19 @@ densities_dic = {
     }
 }
 
-region_to_locode = {'world': 'world', 
-                    'Republic of Korea': 'KR', 
-                    'Indonesia': 'ID', 
-                    'Mexico': 'MX', 
+region_to_locode = {'world': 'world',
+                    'Republic of Korea': 'KR',
+                    'Indonesia': 'ID',
+                    'Mexico': 'MX',
                     'Japan': 'JP',
                     'All over Ukraine territory within boundaries recognized by the United Nations': 'UA',
-                    'Australia': 'AU', 
-                    'Malaysia': 'MY', 
-                    'Papua New Guinea': 'PG', 
+                    'Australia': 'AU',
+                    'Malaysia': 'MY',
+                    'Papua New Guinea': 'PG',
                     'Russian Federation': 'RU',
-                    'United States of America': 'US', 
+                    'United States of America': 'US',
                     'South Africa': 'ZA'
-       }
+                    }
 
 if __name__ == "__main__":
     # set random.seed so UUID is reproducible
@@ -669,25 +669,28 @@ if __name__ == "__main__":
     EF_df = EF_df.explode('methodology_name', ignore_index=True)
 
     # rename columns
-    EF_df.rename(columns={'reference': 'comments', 'region': 'actor_name'}, inplace=True)
-    
+    EF_df.rename(columns={'reference': 'comments',
+                 'region': 'actor_name'}, inplace=True)
+
     # add datasource name and dataset name
     EF_df['datasource_name'] = 'IPCC 2006'
     EF_df['dataset_name'] = 'EFDB IPCC'
 
     # drop extra columns
-    EF_df = EF_df.drop(columns=['ipcc_2006_category', 'practices', 'parameters', 'properties', 'equation', 'EF ID'])
+    EF_df = EF_df.drop(columns=['ipcc_2006_category', 'practices',
+                       'parameters', 'properties', 'equation', 'EF ID'])
 
     # create a subcategory column based on fuel name
     EF_df['subcategory'] = EF_df['fuel'].apply(lambda x: f'fuel:{x}')
 
     # create a 'metadata' column based on density values, density units, NCV values and NCV units
-    EF_df['metadata'] = EF_df.apply(lambda row: f"density_value:{row['density_value']}, density_units:{row['density_units']}, NCV_value:{row['NCV_value']}, NCV_units:{row['NCV_units']}", axis=1)
+    EF_df['metadata'] = EF_df.apply(lambda row: f"density_value:{row['density_value']}, density_units:{
+                                    row['density_units']}, NCV_value:{row['NCV_value']}, NCV_units:{row['NCV_units']}", axis=1)
 
     # year column
     EF_df['year'] = ''
 
-    EF_df["emissions_factor_id"] = EF_df.apply(
+    EF_df["id"] = EF_df.apply(
         lambda row: uuid_generate_v4(), axis=1
     )
 

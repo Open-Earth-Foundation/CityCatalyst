@@ -31,6 +31,7 @@ import type { Sector, SectorId } from "./Sector";
 import type { SubCategory, SubCategoryId } from "./SubCategory";
 import type { SubSector, SubSectorId } from "./SubSector";
 import { InventoryValue, InventoryValueId } from "./InventoryValue";
+import { ActivityValue, ActivityValueId } from "./ActivityValue";
 
 export interface DataSourceAttributes {
   datasourceId: string;
@@ -722,6 +723,38 @@ export class DataSource
   hasInventoryValues!: Sequelize.HasManyHasAssociationsMixin<
     InventoryValue,
     InventoryValueId
+  >;
+  // DataSource hasMany ActivityValue via datasourceId
+  activityValues!: ActivityValue[];
+  getActivityValues!: Sequelize.HasManyGetAssociationsMixin<ActivityValue>;
+  setActivityValues!: Sequelize.HasManySetAssociationsMixin<
+    ActivityValue,
+    ActivityValueId
+  >;
+  addActivityValue!: Sequelize.HasManyAddAssociationMixin<
+    ActivityValue,
+    ActivityValueId
+  >;
+  addActivityValues!: Sequelize.HasManyAddAssociationsMixin<
+    ActivityValue,
+    ActivityValueId
+  >;
+  createActivityValue!: Sequelize.HasManyCreateAssociationMixin<ActivityValue>;
+  removeActivityValue!: Sequelize.HasManyRemoveAssociationMixin<
+    ActivityValue,
+    ActivityValueId
+  >;
+  removeActivityValues!: Sequelize.HasManyRemoveAssociationsMixin<
+    ActivityValue,
+    ActivityValueId
+  >;
+  hasActivityValue!: Sequelize.HasManyHasAssociationMixin<
+    ActivityValue,
+    ActivityValueId
+  >;
+  hasActivityValues!: Sequelize.HasManyHasAssociationsMixin<
+    ActivityValue,
+    ActivityValueId
   >;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof DataSource {

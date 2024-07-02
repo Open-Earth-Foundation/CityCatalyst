@@ -33,13 +33,15 @@ import { Trans } from "react-i18next";
 
 interface ChangeMethodologyProps {
   isOpen: boolean;
-  onClose: any;
+  onClose: () => void;
+  onChangeClicked: () => void;
   t: TFunction;
 }
 
 const ChangeMethodology: FC<ChangeMethodologyProps> = ({
   isOpen,
   onClose,
+  onChangeClicked,
   t,
 }) => {
   return (
@@ -120,6 +122,7 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
               type="submit"
               p={0}
               m={0}
+              onClick={onChangeClicked}
             >
               {t("change-methodology")}
             </Button>

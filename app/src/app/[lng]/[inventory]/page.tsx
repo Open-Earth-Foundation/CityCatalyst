@@ -655,7 +655,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
         </Box>
       </Box>
       <Footer lng={lng} />
-      <ChatPopover />
+      <ChatPopover inventoryId={inventory?.inventoryId!} />
     </>
   );
 }

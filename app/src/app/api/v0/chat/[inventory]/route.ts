@@ -91,6 +91,9 @@ async function handleOpenAIChat(
 }
 
 export const POST = apiHandler(async (req, { params, session }) => {
+  
+  // FETCH INVENTORY DATA FROM DB
+  
   const inventory = await UserService.findUserInventory(
     params.inventory,
     session,
@@ -116,7 +119,10 @@ export const POST = apiHandler(async (req, { params, session }) => {
     ],
   );
 
+  // Use this log to view actual data in the console
   console.log(inventory)
+
+  // TODO: Create prompt function based on inventory data returned from query above
 
   const { messages } = chatRequest.parse(await req.json());
   if (!messages[0].content.startsWith("You are a")) {

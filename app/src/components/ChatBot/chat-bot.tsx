@@ -51,10 +51,12 @@ function useEnterSubmit(): {
 export default function ChatBot({
   inputRef,
   t,
+  inventoryId,
 }: {
   userName?: string;
   inputRef?: React.Ref<HTMLTextAreaElement>;
   t: TFunction;
+  inventoryId: string;
 }) {
   const {
     messages,
@@ -65,7 +67,7 @@ export default function ChatBot({
     append,
     reload,
   } = useChat({
-    api: "/api/v0/chat/d752b26f-223d-4ea7-ab60-88822f4a6e3e",
+    api: `/api/v0/chat/${inventoryId}`,
     initialMessages: [
       { id: "-1", content: t("initial-message"), role: "assistant" },
     ],

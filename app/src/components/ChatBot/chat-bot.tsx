@@ -65,7 +65,7 @@ export default function ChatBot({
     append,
     reload,
   } = useChat({
-    api: "/api/v0/chat",
+    api: "/api/v0/chat/d752b26f-223d-4ea7-ab60-88822f4a6e3e",
     initialMessages: [
       { id: "-1", content: t("initial-message"), role: "assistant" },
     ],

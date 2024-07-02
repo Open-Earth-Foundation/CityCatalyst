@@ -5,6 +5,8 @@ import { experimental_buildOpenAssistantPrompt } from "ai/prompts";
 import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { apiHandler } from "@/util/api";
+import UserService from "@/backend/UserService";
+import { db } from "@/models";
 
 let Hf: HfInference, openai: OpenAI;
 
@@ -88,7 +90,34 @@ async function handleOpenAIChat(
   return new StreamingTextResponse(stream);
 }
 
-export const POST = apiHandler(async (req: Request) => {
+export const POST = apiHandler(async (req, { params, session }) => {
+  const inventory = await UserService.findUserInventory(
+    params.inventory,
+    session,
+    [
+      {
+        model: db.models.InventoryValue,
+        as: "inventoryValues",
+        include: [
+          {
+            model: db.models.GasValue,
+            as: "gasValues",
+            include: [
+              { model: db.models.EmissionsFactor, as: "emissionsFactor" },
+            ],
+          },
+          {
+            model: db.models.DataSource,
+            attributes: ["datasourceId", "sourceType"],
+            as: "dataSource",
+          },
+        ],
+      },
+    ],
+  );
+
+  console.log(inventory)
+
   const { messages } = chatRequest.parse(await req.json());
   if (!messages[0].content.startsWith("You are a")) {
     messages.unshift({

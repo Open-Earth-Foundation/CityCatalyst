@@ -5,14 +5,10 @@ import { experimental_buildOpenAssistantPrompt } from "ai/prompts";
 import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { apiHandler } from "@/util/api";
-<<<<<<< HEAD:app/src/app/api/v0/chat/route.ts
-import { City } from "@/models/City";
-import { CityUser } from "@/models/CityUser";
-import { Inventory } from "@/models/Inventory";
-=======
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
->>>>>>> feature/implement-inventory-access-in-chatbot:app/src/app/api/v0/chat/[inventory]/route.ts
+import { Inventory } from "@/models/Inventory";
+import { Population } from "@/models/Population";
 
 let Hf: HfInference, openai: OpenAI;
 
@@ -45,31 +41,32 @@ const chatRequest = z.object({
 });
 type Messages = z.infer<typeof messagesSchema>;
 
-async function streamToString(stream: any) {
-  const reader = stream.getReader();
-  const textDecoder = new TextDecoder();
-  let result = "";
+// What is this function doing here?
 
-  async function read() {
-    const { done, value } = await reader.read();
+// async function streamToString(stream: any) {
+//   const reader = stream.getReader();
+//   const textDecoder = new TextDecoder();
+//   let result = "";
 
-    if (done) {
-      return result;
-    }
+//   async function read() {
+//     const { done, value } = await reader.read();
 
-    result += textDecoder.decode(value, { stream: true });
-    return read();
-  }
+//     if (done) {
+//       return result;
+//     }
 
-  return read();
-}
+//     result += textDecoder.decode(value, { stream: true });
+//     return read();
+//   }
+
+//   return read();
+// }
 
 async function handleHuggingFaceChat(
   messages: Messages,
 ): Promise<StreamingTextResponse> {
-
-  console.log("Messages before:")
-  console.log(messages)
+  console.log("Messages before:");
+  console.log(messages);
 
   const response = Hf.textGenerationStream({
     model: "OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5",
@@ -92,9 +89,8 @@ async function handleHuggingFaceChat(
 async function handleOpenAIChat(
   messages: Messages,
 ): Promise<StreamingTextResponse> {
-
-  console.log("Messages before:")
-  console.log(messages)
+  console.log("Messages before:");
+  console.log(messages);
 
   const response = await openai.chat.completions.create({
     model: "gpt-3.5-turbo",
@@ -105,28 +101,109 @@ async function handleOpenAIChat(
   return new StreamingTextResponse(stream);
 }
 
-<<<<<<< HEAD:app/src/app/api/v0/chat/route.ts
 /**
  * Creates a system message with context included
- *  
  */
-async function create_prompt_template(
-  inventory: string
-  // cityName: string,
-  // regionName: string,
-  // countryName: string,
-  // cityPopulation: number, 
-  // cityArea: number,
-): Promise<string> {
+function create_prompt_template(inventory: Inventory): string {
+  console.log(inventory.city);
+  console.log(inventory.city.populations);
 
-  const cityID = "City";
+  /**
+   * Helper function to extract the latest population value
+   */
+  function find_last_city_population(
+    populations: Population[],
+  ): [number | undefined, number | undefined] {
+    let result: [number | undefined, number | undefined] = [
+      undefined,
+      undefined,
+    ];
 
-  // const cityName = await fetch(`v0/city/${CityID}`);
-  const cityName = "";
-  const regionName = "";
-  const countryName = "";
-  const cityPopulation = "";
-  const cityArea = "";
+    // Loop through the array from back to front
+    for (let i = populations.length - 1; i >= 0; i--) {
+      // Check if the population field is populated
+      if (populations[i].dataValues.population) {
+        // Add the year and population to the results array
+        result = [
+          populations[i].dataValues.year,
+          populations[i].dataValues.population,
+        ];
+        break;
+      }
+    }
+    // Return either undefined or the latest known population
+    return result;
+  }
+
+  /**
+   * Helper function to extract the latest region population value
+   */
+  function find_last_region_population(
+    populations: Population[],
+  ): [number | undefined, number | undefined] {
+    let result: [number | undefined, number | undefined] = [
+      undefined,
+      undefined,
+    ];
+
+    // Loop through the array from back to front
+    for (let i = populations.length - 1; i >= 0; i--) {
+      // Check if the population field is populated
+      if (populations[i].dataValues.regionPopulation) {
+        // Add the year and population to the results array
+        result = [
+          populations[i].dataValues.year,
+          populations[i].dataValues.regionPopulation,
+        ];
+        break;
+      }
+    }
+    // Return either undefined or the latest known population
+    return result;
+  }
+
+  /**
+   * Helper function to extract the latest country population value
+   */
+  function find_last_country_population(
+    populations: Population[],
+  ): [number | undefined, number | undefined] {
+    let result: [number | undefined, number | undefined] = [
+      undefined,
+      undefined,
+    ];
+
+    // Loop through the array from back to front
+    for (let i = populations.length - 1; i >= 0; i--) {
+      // Check if the population field is populated
+      if (populations[i].dataValues.countryPopulation) {
+        // Add the year and population to the results array
+        result = [
+          populations[i].dataValues.year,
+          populations[i].dataValues.countryPopulation,
+        ];
+        break;
+      }
+    }
+    // Return either undefined or the latest known population
+    return result;
+  }
+
+  const inventoryYear = inventory.dataValues.year;
+  const cityName = inventory.city.dataValues.name;
+  const regionName = inventory.city.dataValues.region;
+  const countryName = inventory.city.dataValues.country;
+  const countryLocode = inventory.city.dataValues.countryLocode;
+  const cityArea = inventory.city.dataValues.area;
+
+  const [cityPopulationYear, cityPopulation] = find_last_city_population(
+    inventory.city.populations,
+  );
+  const [regionPopulationYear, regionPopulation] = find_last_region_population(
+    inventory.city.populations,
+  );
+  const [countryPopulationYear, countryPopulation] =
+    find_last_country_population(inventory.city.populations);
 
   return `You are a climate assistant for creating 
 'Global Protocol for Community-Scale (GPC) Greenhouse Gas (GHG) Inventories' using CityCatalyst, 
@@ -138,23 +215,20 @@ Try to be as scientific as possible. Use the provided context below, to support 
 CONTEXT 
 + Name of city name that the inventory is being created for: ${cityName},
 + Name of the corresponding region: ${regionName},
-+ name of the corresponding country: ${countryName},
-+ Population of the city: ${cityPopulation},
++ Name of the corresponding country: ${countryName},
++ UN/LOCODE of the corresponding country: ${countryLocode},
++ Population of the city for the year ${cityPopulationYear} (latest know value in the database): ${cityPopulation},
++ Population of the region for the year ${regionPopulationYear} (latest know value in the database): ${regionPopulation},
++ Population of the country for the year ${countryPopulationYear} (latest know value in the database): ${countryPopulation},
 + Area of the city in km\u00B2: ${cityArea},
 + Gross domestic product (GDP) of the city: ,
-+ Year for which the the inventory is being created: ,
++ Year for which the the inventory is being created: ${inventoryYear},
 + Current inventory values: .`;
 }
 
-export const POST = apiHandler(async (req: Request) => {
-  
-  const prompt = await create_prompt_template("1234-5678")
-  console.log(prompt)
-=======
 export const POST = apiHandler(async (req, { params, session }) => {
-  
   // FETCH INVENTORY DATA FROM DB
-  
+
   const inventory = await UserService.findUserInventory(
     params.inventory,
     session,
@@ -177,23 +251,29 @@ export const POST = apiHandler(async (req, { params, session }) => {
           },
         ],
       },
+      {
+        model: db.models.City,
+        as: "city",
+        include: [
+          {
+            model: db.models.Population,
+            as: "populations",
+          },
+        ],
+      },
     ],
   );
 
-  // Use this log to view actual data in the console
-  console.log(inventory)
+  console.log(inventory);
 
-  // TODO: Create prompt function based on inventory data returned from query above
->>>>>>> feature/implement-inventory-access-in-chatbot:app/src/app/api/v0/chat/[inventory]/route.ts
+  const prompt = create_prompt_template(inventory);
 
   const { messages } = chatRequest.parse(await req.json());
   if (!messages[0].content.startsWith("You are a")) {
     messages.unshift({
       // The currently implemented HF model does not support system messages
       role: process.env.CHAT_PROVIDER == "huggingface" ? "user" : "system",
-      content:
-        prompt
-        // 'You are a climate assistant for creating GPC climate inventories using CityCatalyst, an open source tool for creating climate inventories by Open Earth Foundation. You try to be as helpful as possible when answering the user\'s questions about their inventory or any climate science or data science related questions. Try to be as scientific as possible.',
+      content: prompt,
     });
   }
 

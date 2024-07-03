@@ -5,9 +5,14 @@ import { experimental_buildOpenAssistantPrompt } from "ai/prompts";
 import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { apiHandler } from "@/util/api";
+<<<<<<< HEAD:app/src/app/api/v0/chat/route.ts
 import { City } from "@/models/City";
 import { CityUser } from "@/models/CityUser";
 import { Inventory } from "@/models/Inventory";
+=======
+import UserService from "@/backend/UserService";
+import { db } from "@/models";
+>>>>>>> feature/implement-inventory-access-in-chatbot:app/src/app/api/v0/chat/[inventory]/route.ts
 
 let Hf: HfInference, openai: OpenAI;
 
@@ -100,6 +105,7 @@ async function handleOpenAIChat(
   return new StreamingTextResponse(stream);
 }
 
+<<<<<<< HEAD:app/src/app/api/v0/chat/route.ts
 /**
  * Creates a system message with context included
  *  
@@ -144,6 +150,41 @@ export const POST = apiHandler(async (req: Request) => {
   
   const prompt = await create_prompt_template("1234-5678")
   console.log(prompt)
+=======
+export const POST = apiHandler(async (req, { params, session }) => {
+  
+  // FETCH INVENTORY DATA FROM DB
+  
+  const inventory = await UserService.findUserInventory(
+    params.inventory,
+    session,
+    [
+      {
+        model: db.models.InventoryValue,
+        as: "inventoryValues",
+        include: [
+          {
+            model: db.models.GasValue,
+            as: "gasValues",
+            include: [
+              { model: db.models.EmissionsFactor, as: "emissionsFactor" },
+            ],
+          },
+          {
+            model: db.models.DataSource,
+            attributes: ["datasourceId", "sourceType"],
+            as: "dataSource",
+          },
+        ],
+      },
+    ],
+  );
+
+  // Use this log to view actual data in the console
+  console.log(inventory)
+
+  // TODO: Create prompt function based on inventory data returned from query above
+>>>>>>> feature/implement-inventory-access-in-chatbot:app/src/app/api/v0/chat/[inventory]/route.ts
 
   const { messages } = chatRequest.parse(await req.json());
   if (!messages[0].content.startsWith("You are a")) {

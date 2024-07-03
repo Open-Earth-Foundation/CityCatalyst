@@ -403,6 +403,14 @@ export const api = createApi({
       },
       transformResponse: (response: { data: [] }) => response.data,
     }),
+    connectToCDP: builder.mutation({
+      query: ({inventoryId}) => {
+        return{
+          method: 'POST',
+          url: `/inventory/${inventoryId}/cdp`
+        }
+      }
+    }),
 
     // ActivityValue CRUD
     getActivityValues: builder.query({
@@ -503,5 +511,6 @@ export const {
   useInviteUserMutation,
   useCheckUserMutation,
   useMockDataQuery,
+  useConnectToCDPMutation
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

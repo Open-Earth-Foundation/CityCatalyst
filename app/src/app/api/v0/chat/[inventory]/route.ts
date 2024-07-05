@@ -41,7 +41,7 @@ const chatRequest = z.object({
 });
 type Messages = z.infer<typeof messagesSchema>;
 
-// What is this function doing here?
+// Function below is not being referenced/implemented
 
 // async function streamToString(stream: any) {
 //   const reader = stream.getReader();
@@ -65,10 +65,9 @@ type Messages = z.infer<typeof messagesSchema>;
 async function handleHuggingFaceChat(
   messages: Messages,
 ): Promise<StreamingTextResponse> {
-  console.log("Messages before:");
-  console.log(messages);
-
   const response = Hf.textGenerationStream({
+    // The chosen model below is performing much worse compared to GPT3.5
+    // Should be exchanged with a more performant open model from HF that also supports system messages
     model: "OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5",
     inputs: experimental_buildOpenAssistantPrompt(messages),
     parameters: {
@@ -89,9 +88,6 @@ async function handleHuggingFaceChat(
 async function handleOpenAIChat(
   messages: Messages,
 ): Promise<StreamingTextResponse> {
-  console.log("Messages before:");
-  console.log(messages);
-
   const response = await openai.chat.completions.create({
     model: "gpt-3.5-turbo",
     stream: true,
@@ -105,9 +101,6 @@ async function handleOpenAIChat(
  * Creates a system message with context included
  */
 function create_prompt_template(inventory: Inventory): string {
-  console.log(inventory.city);
-  console.log(inventory.city.populations);
-
   /**
    * Helper function to extract the latest population value
    */
@@ -210,7 +203,8 @@ function create_prompt_template(inventory: Inventory): string {
 an open source tool for creating climate inventories by Open Earth Foundation. 
 You try to be as helpful as possible when answering the user\'s questions about their inventory 
 or any climate science or data science related questions. 
-Try to be as scientific as possible. Use the provided context below, to support the user.
+Try to be as scientific as possible. Use primarily the provided context below, to support the user. 
+If you need information that is not provided in the context below, use your own, internal knowledge.
 
 CONTEXT 
 + Name of city name that the inventory is being created for: ${cityName},
@@ -221,7 +215,6 @@ CONTEXT
 + Population of the region for the year ${regionPopulationYear} (latest know value in the database): ${regionPopulation},
 + Population of the country for the year ${countryPopulationYear} (latest know value in the database): ${countryPopulation},
 + Area of the city in km\u00B2: ${cityArea},
-+ Gross domestic product (GDP) of the city: ,
 + Year for which the the inventory is being created: ${inventoryYear},
 + Current inventory values: .`;
 }
@@ -263,8 +256,6 @@ export const POST = apiHandler(async (req, { params, session }) => {
       },
     ],
   );
-
-  console.log(inventory);
 
   const prompt = create_prompt_template(inventory);
 

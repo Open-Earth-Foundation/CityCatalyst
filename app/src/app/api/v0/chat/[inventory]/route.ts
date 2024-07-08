@@ -8,11 +8,7 @@ import { apiHandler } from "@/util/api";
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { Inventory } from "@/models/Inventory";
-import {
-  PopulationEntry,
-  findClosestYearToInventory,
-  findClosestYear,
-} from "@/util/helpers";
+import { PopulationEntry, findClosestYear } from "@/util/helpers";
 import { PopulationAttributes } from "@/models/Population";
 
 let Hf: HfInference, openai: OpenAI;

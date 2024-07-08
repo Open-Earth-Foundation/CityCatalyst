@@ -8,12 +8,12 @@ import { apiHandler } from "@/util/api";
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { Inventory } from "@/models/Inventory";
-import { Population } from "@/models/Population";
 import {
   PopulationEntry,
-  findClosestYear,
   findClosestYearToInventory,
+  findClosestYear,
 } from "@/util/helpers";
+import { PopulationAttributes } from "@/models/Population";
 
 let Hf: HfInference, openai: OpenAI;
 
@@ -87,20 +87,38 @@ async function handleOpenAIChat(
 function createPromptTemplate(inventory: Inventory): string {
   const inventoryYear = inventory.dataValues.year;
 
-  let population = null;
-  let cityPopulation = undefined;
-  let cityPopulationYear = undefined;
+  const countryPopulations = inventory.city.populations.filter(
+    (pop) => !!pop.countryPopulation,
+  );
+  const countryPopulationObj = findClosestYear(
+    countryPopulations as PopulationEntry[],
+    inventoryYear!,
+  ) as PopulationAttributes;
 
-  if (inventoryYear) {
-    // The following function returns only the city population closest to the inventory data.
-    // Currrently there is no function that returns all 3 population values closest to the inventory data.
-    population = findClosestYearToInventory(
-      inventory.city.populations as PopulationEntry[],
-      inventoryYear,
-    );
-    cityPopulation = population?.population;
-    cityPopulationYear = population?.year;
-  }
+  const countryPopulation = countryPopulationObj.countryPopulation;
+  const countryPopulationYear = countryPopulationObj.year;
+
+  const regionPopulations = inventory.city.populations.filter(
+    (pop) => !!pop.regionPopulation,
+  );
+  const regionPopulationObj = findClosestYear(
+    regionPopulations as PopulationEntry[],
+    inventoryYear!,
+  ) as PopulationAttributes;
+
+  const regionPopulation = regionPopulationObj.regionPopulation;
+  const regionPopulationYear = regionPopulationObj.year;
+
+  const cityPopulations = inventory.city.populations.filter(
+    (pop) => !!pop.population,
+  );
+  const cityPopulationObj = findClosestYear(
+    cityPopulations as PopulationEntry[],
+    inventoryYear!,
+  ) as PopulationAttributes;
+
+  const cityPopulation = cityPopulationObj.population;
+  const cityPopulationYear = cityPopulationObj.year;
 
   const cityName = inventory.city.dataValues.name;
   const regionName = inventory.city.dataValues.region;
@@ -121,8 +139,10 @@ CONTEXT
 + Name of the corresponding region: ${regionName},
 + Name of the corresponding country: ${countryName},
 + UN/LOCODE of the corresponding country: ${countryLocode},
-+ Population of the city for the year ${cityPopulationYear} (closest known value to the inventory year): ${cityPopulation},
-+ Area of the city in km\u00B2: ${cityArea},
++ Population of the city ${cityName} for the year ${cityPopulationYear} (closest known value to the inventory year): ${cityPopulation},
++ Population of the region ${regionName} for the year ${regionPopulationYear} (closest known value to the inventory year): ${regionPopulation},
++ Population of the country ${countryName} for the year ${countryPopulationYear} (closest known value to the inventory year): ${countryPopulation},
++ Area of the city ${cityName} in km\u00B2: ${cityArea},
 + Year for which the the inventory is being created: ${inventoryYear},
 + Current inventory values: .`;
 }

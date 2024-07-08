@@ -25,7 +25,6 @@ function Page({
     await connectToCDP({ inventoryId: inventory }).then((res) =>
       console.log(res),
     );
-    console.log(inventory);
   };
   return (
     <Box>

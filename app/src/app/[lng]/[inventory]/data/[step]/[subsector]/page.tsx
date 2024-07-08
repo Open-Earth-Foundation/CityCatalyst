@@ -1,6 +1,7 @@
 "use client";
 
 import ActivityTab from "@/components/Tabs/Activity/activity-tab";
+import LoadingState from "@/components/loading-state";
 import { useTranslation } from "@/i18n/client";
 import { RootState } from "@/lib/store";
 import { api } from "@/services/api";
@@ -36,8 +37,6 @@ function SubSectorPage({
 
   const { data: inventory, isLoading: isInventoryLoading } =
     api.useGetInventoryQuery(inventoryId);
-  const { data: userActivities, isLoading: areActivitiesLoading } =
-    api.useGetActivityValuesQuery({ inventoryId, subSectorId: subsector });
 
   const {
     isOpen: isDeleteActivitiesModalOpen,
@@ -64,8 +63,6 @@ function SubSectorPage({
     (state: RootState) => state.subsector,
   );
 
-  console.log(subsectorData);
-
   // calculate total consumption and emissions
 
   const [scrollPosition, setScrollPosition] = useState<number>(0);
@@ -86,8 +83,18 @@ function SubSectorPage({
   const MotionBox = motion(Box);
   const MotionTabList = motion(TabList);
 
-  const filterdScope = scopes.filter((scope) => scope.scope === selectedScope);
-  console.log(filterdScope);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const triggerMochLoading = () => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  };
 
   return (
     <>
@@ -230,7 +237,13 @@ function SubSectorPage({
               transition={{ duration: 0.2 }}
             >
               {scopes?.map((scope, index) => (
-                <Tab onClick={() => setSelectedScope(scope.scope)}>
+                <Tab
+                  key={index}
+                  onClick={() => {
+                    setSelectedScope(scope.scope);
+                    triggerMochLoading();
+                  }}
+                >
                   <Text
                     fontFamily="heading"
                     fontSize="title.md"
@@ -243,13 +256,18 @@ function SubSectorPage({
             </MotionTabList>
 
             <TabPanels>
-              {scopes.map((scope) => (
-                <ActivityTab
-                  filteredScope={scope}
-                  t={t}
-                  inventoryId={inventoryId}
-                />
-              ))}
+              {isLoading ? (
+                <LoadingState />
+              ) : (
+                scopes.map((scope) => (
+                  <ActivityTab
+                    key={scope.scope}
+                    filteredScope={scope}
+                    t={t}
+                    inventoryId={inventoryId}
+                  />
+                ))
+              )}
             </TabPanels>
           </Tabs>
         </Box>

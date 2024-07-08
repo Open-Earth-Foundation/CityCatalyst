@@ -33,7 +33,7 @@ const persistConfig = {
   key: "root",
   version: 1,
   storage,
-  blacklist: ["api", "subsector"],
+  blacklist: ["api"],
 };
 
 const persistedReducer = persistReducer(persistConfig, reducer);

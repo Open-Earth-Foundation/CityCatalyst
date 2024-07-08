@@ -38,7 +38,11 @@ import FormSelectOrganization from "../form-select-organization";
 import { TFunction } from "i18next";
 import { useParams } from "next/navigation";
 import BuildingTypeSelectInput from "../building-select-input";
-import { InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
+import {
+  CheckCircleIcon,
+  InfoOutlineIcon,
+  WarningIcon,
+} from "@chakra-ui/icons";
 import { Trans } from "react-i18next";
 import Link from "next/link";
 
@@ -142,17 +146,41 @@ const AddActivityModal: FC<AddUserModalProps> = ({
   const [createActivityValue] = api.useCreateActivityValueMutation();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    // setHasActivityData(!hasActivityData);
-    await createActivityValue({ inventoryId, data }).then((res) =>
-      console.log(res),
-    );
-
-    console.log(data);
+    setHasActivityData(!hasActivityData);
+    await createActivityValue({ inventoryId, data }).then((res: any) => {
+      if (res.data) {
+        toast({
+          status: "success",
+          duration: 1200,
+          title: "New activity data successfully added!",
+          render: ({ title }) => (
+            <Box
+              h="48px"
+              w="600px"
+              borderRadius="8px"
+              display="flex"
+              alignItems="center"
+              color="white"
+              backgroundColor="interactive.primary"
+              gap="8px"
+              px="16px"
+            >
+              <CheckCircleIcon />
+              <Text>{title}</Text>
+            </Box>
+          ),
+        });
+        onClose();
+      } else {
+        toast({
+          status: "error",
+          title: "Something went wrong!",
+        });
+      }
+    });
   };
 
   const formInputs = formStruct.formInputs;
-
-  console.log(formStruct);
 
   return (
     <>
@@ -256,7 +284,9 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                           {...register("activity.activityDataUnit")}
                         >
                           {formInputs.fields[2].options?.map((item: string) => (
-                            <option value={item}>{item}</option>
+                            <option key={item} value={item}>
+                              {item}
+                            </option>
                           ))}
                         </Select>
                       </InputRightAddon>
@@ -305,7 +335,9 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                     >
                       {/* TODO translate values and use internal value for saving */}
                       {formInputs.fields[3].options?.map((item: string) => (
-                        <option value="local">{item}</option>
+                        <option key={item} value="local">
+                          {item}
+                        </option>
                       ))}
                     </Select>
                     {errors.activity?.emissionFactorType ? (
@@ -369,7 +401,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       bgColor="background.neutral"
                       color="content.tertiary"
                     >
-                      CO2/Gal
+                      {formInputs.fields[4].unit}
                     </InputRightAddon>
                   </InputGroup>
                   <FormHelperText>&nbsp;</FormHelperText>
@@ -395,7 +427,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       bgColor="background.neutral"
                       color="content.tertiary"
                     >
-                      NO2/Gal
+                      {formInputs.fields[5].unit}
                     </InputRightAddon>
                   </InputGroup>
                   <FormHelperText color="content.tertiary">
@@ -423,7 +455,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       bgColor="background.neutral"
                       color="content.tertiary"
                     >
-                      CH4/Gal
+                      {formInputs.fields[6].unit}
                     </InputRightAddon>
                   </InputGroup>
                   <FormHelperText color="content.tertiary">

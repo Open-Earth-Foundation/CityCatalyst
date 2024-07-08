@@ -2,7 +2,7 @@ import { RootState } from "@/lib/store";
 import { SubSectorAttributes } from "@/models/SubSector";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import stationaryEnergyForm from './data/stationary-form-inputs.json'
-import { SubCategory } from "@/models/SubCategory";
+import { SubCategory, SubCategoryAttributes } from "@/models/SubCategory";
 
 export type Methodology = {
   methodologyId:string,
@@ -21,7 +21,7 @@ export type ActivityDataScope = {
 
 interface SubsectorState {
   subsector?: SubSectorAttributes;
-  subCategories: SubCategory[];
+  subCategories: SubCategoryAttributes[];
   scopes: ActivityDataScope[];
 }
 
@@ -34,27 +34,27 @@ const initialState = {
     methodologies: [{
       methodologyId: "1",
       methodologyName: 'Fuel Combustion Consumption',
-      description: '',
-      inputRequired: [""],
+      description: 'Direct recording of fuels combusted in commercial buildings',
+      inputRequired: ["Total fuel consumed amount"],
       disabled: false,
     },{
       methodologyId: "2",
       methodologyName: 'Scaled sample data',
-      description: '',
-      inputRequired: [""],
+      description: 'Extrapolates emissions from a representative sample of buildings.',
+      inputRequired: ["Sample fuel consumed amount", "Scaling data (population, GDP, area, etc.) for sample and city level"],
       disabled: false,
      
     },{
       methodologyId: "3",
       methodologyName: 'Modeled data',
-      description: '',
-      inputRequired: [""],
+      description: 'Emissions estimated from predictive models.',
+      inputRequired: ["Modeled fuel intensity consumption", "Build area"],
       disabled: true,
     },{
       methodologyId: "4",
       methodologyName: 'Direct measure',
-      description: '',
-      inputRequired: [""],
+      description: "Direct emission measurements from commercial buildings' combustion sources.",
+      inputRequired: ["Emissions data"],
       disabled: false,
     }]
   },{
@@ -63,10 +63,27 @@ const initialState = {
     methodologies: [{
       methodologyId: "1",
       methodologyName: 'Energy Consumption',
+      description: "Direct recording of fuels combusted in commercial buildings",
+
     },{
+      methodologyId: "2",
+      methodologyName: 'Scaled sample data',
+      description: 'Extrapolates emissions from a representative sample of buildings.',
+      inputRequired: ["Sample fuel consumed amount", "Scaling data (population, GDP, area, etc.) for sample and city level"],
+      disabled: false,
+     
+    },{
+      methodologyId: "3",
       methodologyName: 'Modeled data',
-      description: '',
-      inputRequired: [""],
+      description: 'Emissions estimated from predictive models.',
+      inputRequired: ["Modeled fuel intensity consumption", "Build area"],
+      disabled: true,
+    },{
+      methodologyId: "4",
+      methodologyName: 'Direct measure',
+      description: "Direct emission measurements from commercial buildings' combustion sources.",
+      inputRequired: ["Emissions data"],
+      disabled: false,
     }]
   }]
 } as SubsectorState;
@@ -76,7 +93,7 @@ export const subsectorSlice = createSlice({
   // state type is inferred from the initial state
   initialState,
   reducers: {
-    setSubsector: (state, action: PayloadAction<SubSectorAttributes & {subCatetories: SubCategory[]}>) => {
+    setSubsector: (state, action: PayloadAction<SubSectorAttributes & {subCatetories: SubCategoryAttributes[]}>) => {
       state.subsector = action.payload;
     },
     clearSubsector: (state) => {

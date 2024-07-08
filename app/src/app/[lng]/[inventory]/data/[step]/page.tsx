@@ -311,7 +311,6 @@ export default function AddDataSteps({
     );
     history.replaceState(null, "", newPath);
   }, [activeStep]);
-  console.log(inventoryProgress);
 
   const totalStepCompletion = currentStep
     ? currentStep.connectedProgress + currentStep.addedProgress

@@ -1,36 +1,49 @@
 import { Badge, Box, Card, Radio, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC, useState } from "react";
+import { MethodologyValues } from "../Tabs/Activity/activity-tab";
 
 interface MethodologyCardProps {
   methodologyId: string;
-  name: string;
+  methodologyName: string;
   description: string;
   inputRequired: string[];
   isSelected: boolean;
   disabled: boolean;
   t: TFunction;
-  handleCardSelect: (methodologyId: string) => void;
+  handleCardSelect: (methodologyId: MethodologyValues) => void;
 }
 
 const MethodologyCard: FC<MethodologyCardProps> = ({
   methodologyId,
-  name,
+  methodologyName,
   description,
   inputRequired,
   disabled,
   t,
-  handleCardSelect = (_methodologyId: string) => {},
+  handleCardSelect = (_methodologyId: MethodologyValues) => {},
 }) => {
   const [isSelected, setIsSelected] = useState(false);
   const handleRadioChange = () => {
     setIsSelected(true);
-    handleCardSelect(methodologyId);
+    handleCardSelect({
+      description,
+      disabled,
+      inputRequired,
+      methodologyId,
+      methodologyName,
+    });
   };
 
   const handleCardClick = () => {
     if (!isSelected) {
-      handleCardSelect(methodologyId);
+      handleCardSelect({
+        description,
+        disabled,
+        inputRequired,
+        methodologyId,
+        methodologyName,
+      });
     }
     setIsSelected(!isSelected);
   };
@@ -76,7 +89,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
         )}
       </Box>
       <Text fontWeight="bold" fontSize="title.md" fontFamily="heading">
-        {name}
+        {methodologyName}
       </Text>
       <Text
         letterSpacing="wide"

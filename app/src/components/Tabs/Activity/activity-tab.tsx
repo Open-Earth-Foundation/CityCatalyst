@@ -64,6 +64,14 @@ interface ActivityTabProps {
   inventoryId: string;
 }
 
+export type MethodologyValues = {
+  methodologyId: string;
+  methodologyName: string;
+  description: string;
+  inputRequired: string[];
+  disabled: boolean;
+};
+
 const ActivityTab: FC<ActivityTabProps> = ({
   t,
   userActivities,
@@ -79,10 +87,24 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const [selectedMethodology, setSelectedMethodology] = useState("");
   const [isUnavailableChecked, setIsChecked] = useState<boolean>(false);
   const [hasActivityData, setHasActivityData] = useState<boolean>(false);
+  const [methodology, setMethodology] = useState<MethodologyValues>();
 
-  const handleMethodologySelected = (methodologyId: string) => {
+  const handleMethodologySelected = ({
+    description,
+    disabled,
+    inputRequired,
+    methodologyId,
+    methodologyName,
+  }: MethodologyValues) => {
     setSelectedMethodology(methodologyId);
     setIsMethodologySelected(!isMethodologySelected);
+    setMethodology({
+      description,
+      disabled,
+      inputRequired,
+      methodologyId,
+      methodologyName,
+    });
   };
   const changeMethodology = () => {
     setSelectedMethodology("");
@@ -113,36 +135,6 @@ const ActivityTab: FC<ActivityTabProps> = ({
     onOpen: onDeleteActivityModalOpen,
     onClose: onDeleteActivityModalClose,
   } = useDisclosure();
-  const METHODOLOGIES = [
-    {
-      methodologyId: "1",
-      name: t("fuel-combustion-consumption"),
-      description: t("fuel-combustion-consuption-desciption"),
-      inputRequired: [t("total-fuel-consumed")],
-      disabled: false,
-    },
-    {
-      methodologyId: "2",
-      name: t("scaled-sample-data"),
-      description: t("scaled-sample-data-desc"),
-      inputRequired: [t("sample-fuel"), t("scaling-data")],
-      disabled: false,
-    },
-    {
-      methodologyId: "3",
-      name: t("modeled-data"),
-      description: t("modeled-data-desc"),
-      inputRequired: [t("modeled-fuel"), t("build-area")],
-      disabled: true,
-    },
-    {
-      methodologyId: "4",
-      name: t("direct-measure"),
-      description: t("direct-measure-desc"),
-      inputRequired: [t("emissions-data")],
-      disabled: false,
-    },
-  ];
 
   const suggestedActivities = [
     {
@@ -179,7 +171,6 @@ const ActivityTab: FC<ActivityTabProps> = ({
   //   onDeleteActivitiesModalClose();
   // };
 
-  console.log(filteredScope);
   return (
     <>
       <TabPanel p="0" pt="48px">
@@ -221,14 +212,14 @@ const ActivityTab: FC<ActivityTabProps> = ({
                   </Text>
                   <Box display="flex" justifyContent="space-between">
                     <Box>
-                      <HeadingText title={t("fuel-combustion-consumption")} />
+                      <HeadingText title={methodology?.methodologyName!} />
                       <Text
                         letterSpacing="wide"
                         fontSize="body.lg"
                         fontWeight="normal"
                         color="interactive.control"
                       >
-                        {t("fuel-combustion-consumption-description")}
+                        {methodology?.description}
                       </Text>
                     </Box>
                     <Box display="flex" alignItems="center">
@@ -283,7 +274,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                                 className="group-hover:text-white"
                                 color="content.primary"
                               >
-                                Change methodology
+                                {t("change-methodology")}
                               </Text>
                             </Box>
                             <Box
@@ -417,135 +408,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                   </Box>
                 )}
                 {isMethodologySelected ? (
-                  <Box>
-                    <Text
-                      fontFamily="heading"
-                      fontSize="10px"
-                      fontWeight="semibold"
-                      letterSpacing="widest"
-                      textTransform="uppercase"
-                      color="content.tertiary"
-                    >
-                      {t("methodology")}
-                    </Text>
-                    <Box display="flex" justifyContent="space-between">
-                      <Box>
-                        <HeadingText title={t("fuel-combustion-consumption")} />
-                        <Text
-                          letterSpacing="wide"
-                          fontSize="body.lg"
-                          fontWeight="normal"
-                          color="interactive.control"
-                        >
-                          {t("fuel-combustion-consumption-description")}
-                        </Text>
-                      </Box>
-                      <Box display="flex" alignItems="center">
-                        <Button
-                          onClick={onAddActivityModalOpen}
-                          title="Add Activity"
-                          leftIcon={<AddIcon h="16px" w="16px" />}
-                          h="48px"
-                          aria-label="activity-button"
-                          fontSize="button.md"
-                          gap="8px"
-                        >
-                          {t("add-activity")}
-                        </Button>
-                        <Popover>
-                          <PopoverTrigger>
-                            <IconButton
-                              icon={<MdMoreVert size="24px" />}
-                              aria-label="more-icon"
-                              variant="ghost"
-                              color="content.tertiary"
-                            />
-                          </PopoverTrigger>
-                          <PopoverContent
-                            w="auto"
-                            borderRadius="8px"
-                            shadow="2dp"
-                            px="0"
-                          >
-                            <PopoverArrow />
-                            <PopoverBody p="0px">
-                              <Box
-                                p="16px"
-                                display="flex"
-                                alignItems="center"
-                                gap="16px"
-                                _hover={{
-                                  bg: "content.link",
-                                  cursor: "pointer",
-                                }}
-                                className="group"
-                                onClick={onChangeMethodologyOpen}
-                              >
-                                <Icon
-                                  className="group-hover:text-white"
-                                  color="interactive.control"
-                                  as={FaNetworkWired}
-                                  h="24px"
-                                  w="24px"
-                                />
-                                <Text
-                                  className="group-hover:text-white"
-                                  color="content.primary"
-                                >
-                                  Change methodolog
-                                </Text>
-                              </Box>
-                              <Box
-                                p="16px"
-                                display="flex"
-                                alignItems="center"
-                                gap="16px"
-                                _hover={{
-                                  bg: "content.link",
-                                  cursor: "pointer",
-                                }}
-                                className="group"
-                                onClick={onDeleteActivitiesModalOpen}
-                              >
-                                <Icon
-                                  className="group-hover:text-white"
-                                  color="sentiment.negativeDefault"
-                                  as={FiTrash2}
-                                  h="24px"
-                                  w="24px"
-                                />
-                                <Text
-                                  className="group-hover:text-white"
-                                  color="content.primary"
-                                >
-                                  Delete all activities
-                                </Text>
-                              </Box>
-                            </PopoverBody>
-                          </PopoverContent>
-                        </Popover>
-                      </Box>
-                    </Box>
-                    <Box
-                      mt="48px"
-                      display="flex"
-                      flexDirection="column"
-                      gap="16px"
-                    >
-                      {!hasActivityData ? (
-                        <Text
-                          fontFamily="heading"
-                          fontSize="title.md"
-                          fontWeight="semibold"
-                          color="content.secondary"
-                        >
-                          {t("activity-suggestion")}
-                        </Text>
-                      ) : (
-                        ""
-                      )}
-                    </Box>
-                  </Box>
+                  ""
                 ) : (
                   <Box>
                     <Text
@@ -594,13 +457,21 @@ const ActivityTab: FC<ActivityTabProps> = ({
                           <MethodologyCard
                             methodologyId={methodologyId}
                             key={methodologyId}
-                            name={methodologyName}
+                            methodologyName={methodologyName}
                             description={description}
                             inputRequired={inputRequired}
                             isSelected={selectedMethodology === methodologyName}
                             disabled={disabled}
                             t={t}
-                            handleCardSelect={handleMethodologySelected}
+                            handleCardSelect={() =>
+                              handleMethodologySelected({
+                                description,
+                                disabled,
+                                inputRequired,
+                                methodologyId,
+                                methodologyName,
+                              })
+                            }
                           />
                         ),
                       )}

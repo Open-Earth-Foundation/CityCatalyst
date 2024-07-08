@@ -50,6 +50,7 @@ import DeleteAllActivitiesModal from "../../Modals/delete-all-activities-modal";
 import { api } from "@/services/api";
 import ActivityAccordion from "./activity-accordion";
 import ScopeUnavailable from "./scope-unavailable";
+import { ActivityDataScope } from "@/features/city/subsectorSlice";
 
 interface ActivityTabProps {
   t: TFunction;
@@ -59,6 +60,8 @@ interface ActivityTabProps {
   areActivitiesLoading?: boolean;
   totalConsumption?: boolean;
   totalConsumptionUnit?: boolean;
+  filteredScope: ActivityDataScope;
+  inventoryId: string;
 }
 
 const ActivityTab: FC<ActivityTabProps> = ({
@@ -67,6 +70,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
   areActivitiesLoading,
   totalConsumption,
   totalConsumptionUnit,
+  filteredScope,
+  inventoryId,
 }) => {
   const totalEmissions = 0;
   const [selectedActivity, setSelectedActivity] = useState();
@@ -174,6 +179,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
   //   onDeleteActivitiesModalClose();
   // };
 
+  console.log(filteredScope);
   return (
     <>
       <TabPanel p="0" pt="48px">
@@ -388,68 +394,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
         ) : (
           <Box>
             {isUnavailableChecked ? (
-              <Box>
-                <HeadingText title={t("scope-unavailable")} />
-                <Text
-                  letterSpacing="wide"
-                  fontSize="body.lg"
-                  fontWeight="normal"
-                  color="interactive.control"
-                  mt="8px"
-                >
-                  {t("scope-unavailable-description")}
-                </Text>
-                <Box mt="48px">
-                  <Text
-                    fontWeight="bold"
-                    fontSize="title.md"
-                    fontFamily="heading"
-                    pt="48px"
-                    pb="24px"
-                  >
-                    {t("select-reason")}
-                  </Text>
-                  <RadioGroup>
-                    <Stack direction="column">
-                      <Radio
-                        value={t("select-reason-1")}
-                        color="interactive.secondary"
-                      >
-                        {t("select-reason-1")}
-                      </Radio>
-                      <Radio value={t("select-reason-2")}>
-                        {t("select-reason-2")}
-                      </Radio>
-                      <Radio value={t("select-reason-3")}>
-                        {t("select-reason-3")}
-                      </Radio>
-                      <Radio value={t("select-reason-4")}>
-                        {t("select-reason-4")}
-                      </Radio>
-                    </Stack>
-                  </RadioGroup>
-                  <Text
-                    fontWeight="medium"
-                    fontSize="title.md"
-                    fontFamily="heading"
-                    pt="48px"
-                    pb="24px"
-                    letterSpacing="wide"
-                  >
-                    {t("explanation-justification")}
-                  </Text>
-                  <Textarea
-                    borderRadius="4px"
-                    borderWidth="1px"
-                    borderColor="border.neutral"
-                    backgroundColor="base.light"
-                    placeholder={t("textarea-placeholder-text")}
-                  />
-                  <Button h="48px" p="16px" mt="24px">
-                    {t("save-changes")}
-                  </Button>
-                </Box>
-              </Box>
+              <ScopeUnavailable t={t} />
             ) : (
               <Box>
                 {isUnavailableChecked && (
@@ -603,69 +548,63 @@ const ActivityTab: FC<ActivityTabProps> = ({
                   </Box>
                 ) : (
                   <Box>
-                    {isUnavailableChecked ? (
-                      <ScopeUnavailable t={t} />
-                    ) : (
-                      <Box>
-                        <Text
-                          letterSpacing="wide"
-                          fontSize="body.lg"
-                          fontWeight="normal"
-                          color="interactive.control"
-                        >
-                          <Trans t={t} i18nKey="add-data-manually-desciption">
-                            To add your inventory data manually, select the
-                            methodology used to collect the data and calculate
-                            your emissions.{" "}
-                            <Link
-                              href="/"
-                              color="content.link"
-                              fontWeight="bold"
-                              textDecoration="underline"
-                            >
-                              Learn more
-                            </Link>{" "}
-                            about methodologies
-                          </Trans>
-                        </Text>
-                        <Text
+                    <Text
+                      letterSpacing="wide"
+                      fontSize="body.lg"
+                      fontWeight="normal"
+                      color="interactive.control"
+                    >
+                      <Trans t={t} i18nKey="add-data-manually-desciption">
+                        To add your inventory data manually, select the
+                        methodology used to collect the data and calculate your
+                        emissions.{" "}
+                        <Link
+                          href="/"
+                          color="content.link"
                           fontWeight="bold"
-                          fontSize="title.md"
-                          fontFamily="heading"
-                          pt="48px"
-                          pb="24px"
+                          textDecoration="underline"
                         >
-                          {t("select-methodology")}
-                        </Text>
-                        <Box
-                          gap="16px"
-                          display="flex"
-                          justifyContent="space-between"
-                        >
-                          {METHODOLOGIES.map(
-                            ({
-                              methodologyId,
-                              name,
-                              description,
-                              inputRequired,
-                              disabled,
-                            }) => (
-                              <MethodologyCard
-                                methodologyId={methodologyId}
-                                key={name}
-                                name={name}
-                                description={description}
-                                inputRequired={inputRequired}
-                                isSelected={selectedMethodology === name}
-                                disabled={disabled}
-                                t={t}
-                                handleCardSelect={handleMethodologySelected}
-                              />
-                            ),
-                          )}
-                        </Box>
-                      </Box>
-                    )}
+                          Learn more
+                        </Link>{" "}
+                        about methodologies
+                      </Trans>
+                    </Text>
+                    <Text
+                      fontWeight="bold"
+                      fontSize="title.md"
+                      fontFamily="heading"
+                      pt="48px"
+                      pb="24px"
+                    >
+                      {t("select-methodology")}
+                    </Text>
+                    <Box
+                      gap="16px"
+                      display="flex"
+                      justifyContent="space-between"
+                    >
+                      {filteredScope.methodologies.map(
+                        ({
+                          methodologyId,
+                          methodologyName,
+                          description,
+                          inputRequired,
+                          disabled,
+                        }) => (
+                          <MethodologyCard
+                            methodologyId={methodologyId}
+                            key={methodologyId}
+                            name={methodologyName}
+                            description={description}
+                            inputRequired={inputRequired}
+                            isSelected={selectedMethodology === methodologyName}
+                            disabled={disabled}
+                            t={t}
+                            handleCardSelect={handleMethodologySelected}
+                          />
+                        ),
+                      )}
+                    </Box>
                   </Box>
                 )}
               </Box>
@@ -680,6 +619,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
         onClose={onAddActivityModalClose}
         hasActivityData={hasActivityData}
         setHasActivityData={setHasActivityData}
+        formStruct={filteredScope}
+        inventoryId={inventoryId}
       />
 
       <ChangeMethodology

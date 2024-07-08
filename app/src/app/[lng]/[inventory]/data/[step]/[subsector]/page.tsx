@@ -46,6 +46,7 @@ function SubSectorPage({
   } = useDisclosure();
 
   const [selectedTab, setSelectedTab] = useState(1); // sector ID (1/2/3)
+  const [selectedScope, setSelectedScope] = useState(1);
 
   const getSectorName = (currentStep: string) => {
     switch (currentStep) {
@@ -59,9 +60,11 @@ function SubSectorPage({
         return t("stationary-energy");
     }
   };
-  const subsectorData = useSelector(
-    (state: RootState) => state.subsector.subsector,
+  const { subsector: subsectorData, scopes } = useSelector(
+    (state: RootState) => state.subsector,
   );
+
+  console.log(subsectorData);
 
   // calculate total consumption and emissions
 
@@ -82,6 +85,9 @@ function SubSectorPage({
 
   const MotionBox = motion(Box);
   const MotionTabList = motion(TabList);
+
+  const filterdScope = scopes.filter((scope) => scope.scope === selectedScope);
+  console.log(filterdScope);
 
   return (
     <>
@@ -223,30 +229,27 @@ function SubSectorPage({
               }}
               transition={{ duration: 0.2 }}
             >
-              <Tab onClick={() => setSelectedTab(1)}>
-                <Text
-                  fontFamily="heading"
-                  fontSize="title.md"
-                  fontWeight="medium"
-                >
-                  {t("scope")} 1
-                </Text>
-              </Tab>
-              <Tab onClick={() => setSelectedTab(2)}>
-                {" "}
-                <Text
-                  fontFamily="heading"
-                  fontSize="title.md"
-                  fontWeight="medium"
-                >
-                  {t("scope")} 2
-                </Text>
-              </Tab>
+              {scopes?.map((scope, index) => (
+                <Tab onClick={() => setSelectedScope(scope.scope)}>
+                  <Text
+                    fontFamily="heading"
+                    fontSize="title.md"
+                    fontWeight="medium"
+                  >
+                    {t("scope")} {scope.scope}
+                  </Text>
+                </Tab>
+              ))}
             </MotionTabList>
 
             <TabPanels>
-              <ActivityTab t={t} />
-              <ActivityTab t={t} />
+              {scopes.map((scope) => (
+                <ActivityTab
+                  filteredScope={scope}
+                  t={t}
+                  inventoryId={inventoryId}
+                />
+              ))}
             </TabPanels>
           </Tabs>
         </Box>

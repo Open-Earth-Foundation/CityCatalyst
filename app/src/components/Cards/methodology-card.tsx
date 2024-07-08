@@ -102,7 +102,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
         fontWeight="normal"
         color="interactive.control"
       >
-        {inputRequired.map((item: string, i: number) => (
+        {inputRequired?.map((item: string, i: number) => (
           <li key={i}>{item}</li>
         ))}
       </Box>

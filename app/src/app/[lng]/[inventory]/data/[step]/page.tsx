@@ -311,7 +311,7 @@ export default function AddDataSteps({
     );
     history.replaceState(null, "", newPath);
   }, [activeStep]);
-  console.log(currentStep)
+  console.log(inventoryProgress);
 
   const totalStepCompletion = currentStep
     ? currentStep.connectedProgress + currentStep.addedProgress
@@ -812,6 +812,7 @@ export default function AddDataSteps({
                           sectorId: subSector.sectorId,
                           subsectorId: subSector.subsectorId,
                           referenceNumber: subSector.referenceNumber,
+                          subCatetories: subSector.subCategories,
                         }),
                       );
                       router.push(

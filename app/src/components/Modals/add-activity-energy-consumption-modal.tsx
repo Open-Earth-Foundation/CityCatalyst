@@ -43,6 +43,7 @@ import type {
   EmissionsFactorData,
 } from "../../app/[lng]/[inventory]/data/[step]/types";
 import { groupBy, resolve } from "@/util/helpers";
+import { ActivityDataScope } from "@/features/city/subsectorSlice";
 
 interface AddUserModalProps {
   isOpen: boolean;

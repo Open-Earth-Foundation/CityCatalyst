@@ -319,6 +319,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                         <ActivityAccordion
                           t={t}
                           userActivities={userActivities}
+                          showActivityModal={onAddActivityModalOpen}
                         />
                         <Box
                           w="full"

@@ -143,7 +143,8 @@ const AddActivityModal: FC<AddUserModalProps> = ({
 
   const toast = useToast();
 
-  const [createActivityValue] = api.useCreateActivityValueMutation();
+  const [createActivityValue, { isLoading }] =
+    api.useCreateActivityValueMutation();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     setHasActivityData(!hasActivityData);
@@ -578,7 +579,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
               fontWeight="semibold"
               fontSize="button.md"
               type="submit"
-              // isLoading={}
+              isLoading={isLoading}
               onClick={handleSubmit(onSubmit)}
               p={0}
               m={0}

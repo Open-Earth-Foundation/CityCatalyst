@@ -259,7 +259,7 @@ function SubSectorPage({
               {isLoading ? (
                 <LoadingState />
               ) : (
-                scopes.map((scope) => (
+                scopes?.map((scope) => (
                   <ActivityTab
                     key={scope.scope}
                     filteredScope={scope}

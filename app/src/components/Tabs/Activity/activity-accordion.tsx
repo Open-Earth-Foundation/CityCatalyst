@@ -25,11 +25,13 @@ import { MdMoreVert } from "react-icons/md";
 interface ActivityAccordionProps {
   t: TFunction;
   userActivities: any;
+  showActivityModal: () => void;
 }
 
 const ActivityAccordion: FC<ActivityAccordionProps> = ({
   t,
   userActivities,
+  showActivityModal,
 }) => {
   return (
     <Accordion defaultIndex={[0]} allowMultiple>
@@ -60,14 +62,22 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
               </Box>
               <Box alignItems="start" display="flex" fontFamily="heading">
                 <Text fontWeight="medium">{t("total-consumption")}:&nbsp;</Text>
-                <Text fontWeight="normal">715,4M gallons</Text>
+                <Text fontWeight="normal">0M gallons</Text>
               </Box>
               <Box alignItems="start" display="flex" fontFamily="heading">
                 <Text fontWeight="medium">{t("emissions")}:&nbsp;</Text>
-                <Text fontWeight="normal">15,MtCO2e</Text>
+                <Text fontWeight="normal">0tCO2e</Text>
               </Box>
               <Box pr="56px">
-                <AddIcon color="interactive.control" />
+                <IconButton
+                  bg="none"
+                  pos="relative"
+                  zIndex={20}
+                  onClick={showActivityModal}
+                  _hover={{ bg: "none" }}
+                  aria-label="add-activity"
+                  icon={<AddIcon color="interactive.control" />}
+                />
               </Box>
             </Box>
             <AccordionIcon />

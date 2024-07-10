@@ -811,7 +811,7 @@ export default function AddDataSteps({
                           sectorId: subSector.sectorId,
                           subsectorId: subSector.subsectorId,
                           referenceNumber: subSector.referenceNumber,
-                          subCatetories: subSector.subCategories,
+                          subCategories: subSector.subCategories,
                         }),
                       );
                       router.push(

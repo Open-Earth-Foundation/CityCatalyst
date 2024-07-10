@@ -93,7 +93,7 @@ export const subsectorSlice = createSlice({
   // state type is inferred from the initial state
   initialState,
   reducers: {
-    setSubsector: (state, action: PayloadAction<SubSectorAttributes & {subCatetories: SubCategoryAttributes[]}>) => {
+    setSubsector: (state, action: PayloadAction<SubSectorAttributes & {subCategories: SubCategoryAttributes[]}>) => {
       state.subsector = action.payload;
     },
     clearSubsector: (state) => {

@@ -206,7 +206,7 @@
   "n2o-emission-factor": "N2O emission factor",
   "ch4-emission-factor": "CH4 emission factor",
   "optional": "Optional",
-  "change-methodology": "Change Methodology",
+  "change-methodology": "Change methodology",
   "change-methodology-description-text": "Please be aware that <2>changing methodology may impact your existing inventory data.</2> Are you sure you want to proceed with changing your methodology?",
   "emissions-factor-details": "At least one emission factor is required. Empty values will be computed as 0 and require to be justified.",
   "source-reference": "Source reference",

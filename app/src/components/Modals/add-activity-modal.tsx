@@ -38,7 +38,11 @@ import FormSelectOrganization from "../form-select-organization";
 import { TFunction } from "i18next";
 import { useParams } from "next/navigation";
 import BuildingTypeSelectInput from "../building-select-input";
-import { InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
+import {
+  CheckCircleIcon,
+  InfoOutlineIcon,
+  WarningIcon,
+} from "@chakra-ui/icons";
 import { Trans } from "react-i18next";
 import Link from "next/link";
 
@@ -49,6 +53,7 @@ import type {
   EmissionsFactorData,
 } from "../../app/[lng]/[inventory]/data/[step]/types";
 import { groupBy, resolve } from "@/util/helpers";
+import { ActivityDataScope } from "@/features/city/subsectorSlice";
 
 interface AddUserModalProps {
   isOpen: boolean;
@@ -58,6 +63,8 @@ interface AddUserModalProps {
   defaultCityId?: string;
   setHasActivityData: Function;
   hasActivityData: boolean;
+  formStruct: ActivityDataScope;
+  inventoryId: string;
 }
 
 export type Inputs = {
@@ -75,6 +82,7 @@ export type Inputs = {
     buildingType: string;
     fuelType: string;
     totalFuelConsumption: string;
+    formStruct: ActivityDataScope;
   };
   direct: DirectMeasureData;
   subcategoryData: Record<string, SubcategoryData>;
@@ -117,6 +125,8 @@ const AddActivityModal: FC<AddUserModalProps> = ({
   t,
   setHasActivityData,
   hasActivityData,
+  formStruct,
+  inventoryId,
 }) => {
   const {
     register,
@@ -133,13 +143,45 @@ const AddActivityModal: FC<AddUserModalProps> = ({
 
   const toast = useToast();
 
-  const { inventory: cityParam } = useParams();
-  const inventoryId = cityParam as string;
+  const [createActivityValue, { isLoading }] =
+    api.useCreateActivityValueMutation();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     setHasActivityData(!hasActivityData);
-    onClose();
+    await createActivityValue({ inventoryId, data }).then((res: any) => {
+      if (res.data) {
+        toast({
+          status: "success",
+          duration: 1200,
+          title: "New activity data successfully added!",
+          render: ({ title }) => (
+            <Box
+              h="48px"
+              w="600px"
+              borderRadius="8px"
+              display="flex"
+              alignItems="center"
+              color="white"
+              backgroundColor="interactive.primary"
+              gap="8px"
+              px="16px"
+            >
+              <CheckCircleIcon />
+              <Text>{title}</Text>
+            </Box>
+          ),
+        });
+        onClose();
+      } else {
+        toast({
+          status: "error",
+          title: "Something went wrong!",
+        });
+      }
+    });
   };
+
+  const formInputs = formStruct.formInputs;
 
   return (
     <>
@@ -173,14 +215,8 @@ const AddActivityModal: FC<AddUserModalProps> = ({
               >
                 <FormControl className="w-full">
                   <BuildingTypeSelectInput
-                    options={[
-                      t("all"),
-                      t("commercial-institutional"),
-                      t("commercial-buildings"),
-                      t("institutional-buildings"),
-                      t("street-lighting"),
-                    ]}
-                    title={t("building-type")}
+                    options={formInputs.fields[0].options}
+                    title={formStruct.formInputs.fields[0].label}
                     placeholder={t("select-type-of-building")}
                     register={register}
                     activity="buildingType"
@@ -189,13 +225,8 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                 </FormControl>
                 <FormControl>
                   <BuildingTypeSelectInput
-                    options={[
-                      t("all-fuels"),
-                      t("natural-gas"),
-                      t("propane"),
-                      t("heating-oil"),
-                    ]}
-                    title={t("fuel-type")}
+                    options={formInputs.fields[1].options}
+                    title={formInputs.fields[1].label}
                     placeholder={t("select-type-of-fuel")}
                     register={register}
                     activity="fuelType"
@@ -211,7 +242,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                   <FormControl
                     isInvalid={!!resolve(prefix + "activityDataAmount", errors)}
                   >
-                    <FormLabel>{t("total-fuel-consumption")}</FormLabel>
+                    <FormLabel>{formInputs.fields[2].label}</FormLabel>
                     <InputGroup>
                       <NumberInput defaultValue={0} w="full">
                         <NumberInputField
@@ -253,12 +284,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                           variant="unstyled"
                           {...register("activity.activityDataUnit")}
                         >
-                          <option value="1">{t("gallons")} (gal)</option>
-                          <option value="1">{t("liters")} (L)</option>
-                          <option value="1">{t("cubic-meters")} (m3)</option>
-                          <option value="1">{t("kilograms")} (kg)</option>
-                          <option value="1">{t("terajoules")} (Tj)</option>
-                          <option value="1">{t("kilowatt-hour")} (kWh)</option>
+                          {formInputs.fields[2].options?.map((item: string) => (
+                            <option key={item} value={item}>
+                              {item}
+                            </option>
+                          ))}
                         </Select>
                       </InputRightAddon>
                     </InputGroup>
@@ -278,7 +308,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                     )}
                   </FormControl>
                   <FormControl>
-                    <FormLabel>{t("emission-factor-type")}</FormLabel>
+                    <FormLabel>{formInputs.fields[3].label}</FormLabel>
                     <Select
                       borderRadius="4px"
                       borderWidth={
@@ -305,13 +335,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       placeholder="Select emission factor type"
                     >
                       {/* TODO translate values and use internal value for saving */}
-                      <option value="local">{t("local")}</option>
-                      <option value="regional">{t("regional")}</option>
-                      <option value="national">{t("national")}</option>
-                      <option value="ipcc">IPCC</option>
-                      <option key="custom" value="custom">
-                        {t("add-custom")}
-                      </option>
+                      {formInputs.fields[3].options?.map((item: string) => (
+                        <option key={item} value="local">
+                          {item}
+                        </option>
+                      ))}
                     </Select>
                     {errors.activity?.emissionFactorType ? (
                       <Box
@@ -374,7 +402,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       bgColor="background.neutral"
                       color="content.tertiary"
                     >
-                      CO2/Gal
+                      {formInputs.fields[4].unit}
                     </InputRightAddon>
                   </InputGroup>
                   <FormHelperText>&nbsp;</FormHelperText>
@@ -400,7 +428,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       bgColor="background.neutral"
                       color="content.tertiary"
                     >
-                      NO2/Gal
+                      {formInputs.fields[5].unit}
                     </InputRightAddon>
                   </InputGroup>
                   <FormHelperText color="content.tertiary">
@@ -428,7 +456,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       bgColor="background.neutral"
                       color="content.tertiary"
                     >
-                      CH4/Gal
+                      {formInputs.fields[6].unit}
                     </InputRightAddon>
                   </InputGroup>
                   <FormHelperText color="content.tertiary">
@@ -551,7 +579,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
               fontWeight="semibold"
               fontSize="button.md"
               type="submit"
-              // isLoading={}
+              isLoading={isLoading}
               onClick={handleSubmit(onSubmit)}
               p={0}
               m={0}

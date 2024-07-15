@@ -145,7 +145,7 @@ function SubSectorPage({
                 </BreadcrumbItem>
                 <BreadcrumbItem>
                   <BreadcrumbLink href="#" color="content.link">
-                    {subsectorData?.subsectorName}
+                    <Text noOfLines={1}>{subsectorData?.subsectorName}</Text>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               </Breadcrumb>

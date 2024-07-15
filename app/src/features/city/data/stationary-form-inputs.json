@@ -35,8 +35,8 @@
             "Liters (L)",
             "Cubic meters (m3)",
             "Kilograms (kg)",
-            "Terajoules (Tj)",
-            "Kilowatt hour (kWh"
+            "Terajoules (TJ)",
+            "Kilowatt hour (kWh)"
           ]
         },
         {
@@ -112,8 +112,8 @@
             "name": "fuelConsumption",
             "unit": "gal",
             "options": [
-              "Kilowatt hour (kWh",
-              "Terajoules (Tj)",
+              "Kilowatt hour (kWh)",
+              "Terajoules (TJ)",
               "Kilowatt-kilometer (kW/km)"
             ]
           },

@@ -154,7 +154,7 @@ function SubSectorPage({
           <Box display="flex">
             {scrollPosition > 0 ? (
               <Box>
-                <Link href="#">
+                <Link href={`/${inventory}/data`}>
                   <Icon
                     as={ArrowBackIcon}
                     h="24px"

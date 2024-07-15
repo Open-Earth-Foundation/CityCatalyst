@@ -17,7 +17,7 @@ interface ScopeUnavailableProps {
 
 const ScopeUnavailable: FC<ScopeUnavailableProps> = ({ t }) => {
   return (
-    <Box>
+    <Box bg="base.light" borderRadius="8px" p="24px">
       <HeadingText title={t("scope-unavailable")} />
       <Text
         letterSpacing="wide"

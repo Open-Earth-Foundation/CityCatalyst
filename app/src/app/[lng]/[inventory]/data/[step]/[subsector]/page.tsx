@@ -101,8 +101,6 @@ function SubSectorPage({
       <Box id="top" />
       <MotionBox
         bg="background.backgroundLight"
-        borderColor="border.neutral"
-        borderBottomWidth={scrollPosition > 0 ? "1px" : ""}
         className="fixed z-10 top-0 w-full pt-[180px] h-[400px]"
         mt={scrollPosition > 0 ? "-230px" : ""}
         animate={{

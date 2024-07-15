@@ -635,7 +635,7 @@ export default function AddDataSteps({
         }}
         transition={{ duration: 0.2 }}
       >
-        <div className=" w-[1090px] max-w-full mx-auto px-4">
+        <div className=" w-[1090px] mx-auto px-4  ">
           <Box w="full" display="flex" alignItems="center" gap="16px" mb="35px">
             <Button
               variant="ghost"
@@ -696,7 +696,7 @@ export default function AddDataSteps({
                 </Link>
               </Box>
             )}
-            <Flex direction="row">
+            <Flex direction="row" className="w-full">
               <Icon
                 as={currentStep.icon}
                 boxSize={8}

@@ -628,7 +628,7 @@ export default function AddDataSteps({
         bg="background.backgroundLight"
         borderColor="border.neutral"
         borderBottomWidth={scrollPosition > 0 ? "1px" : ""}
-        className={`fixed z-10 top-0 w-full pt-[130px] h-[400px]`}
+        className={`fixed z-10 top-0 w-full pt-[170px] h-[400px]`}
         mt={scrollPosition > 0 ? "-200px" : ""}
         animate={{
           y: scrollPosition > 0 ? 0 : -50,

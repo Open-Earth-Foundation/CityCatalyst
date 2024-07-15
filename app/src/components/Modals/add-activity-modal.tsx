@@ -249,6 +249,8 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                           borderRadius="4px"
                           placeholder={t("activity-data-amount-placeholder")}
                           borderRightRadius={0}
+                          h="48px"
+                          shadow="1dp"
                           borderWidth={
                             errors?.activity?.totalFuelConsumption ? "1px" : 0
                           }
@@ -279,6 +281,8 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                         pl={4}
                         pr={0}
                         bgColor="base.light"
+                        h="48px"
+                        shadow="1dp"
                       >
                         <Select
                           variant="unstyled"
@@ -315,6 +319,8 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                         errors?.activity?.emissionFactorType ? "1px" : 0
                       }
                       border="inputBox"
+                      h="48px"
+                      shadow="1dp"
                       borderColor={
                         errors?.activity?.emissionFactorType
                           ? "sentiment.negativeDefault"
@@ -393,19 +399,26 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                     {/* TODO translate values and use internal value for checking */}
                     <NumberInput defaultValue={0} min={0} isDisabled={true}>
                       <NumberInputField
+                        h="48px"
+                        shadow="1dp"
                         borderRightRadius={0}
                         {...register("activity.co2EmissionFactor")}
                         bgColor="background.neutral"
+                        pos="relative"
+                        zIndex={999}
                       />
                     </NumberInput>
                     <InputRightAddon
                       bgColor="background.neutral"
                       color="content.tertiary"
+                      h="48px"
+                      shadow="1dp"
+                      pos="relative"
+                      zIndex={10}
                     >
                       {formInputs.fields[4].unit}
                     </InputRightAddon>
                   </InputGroup>
-                  <FormHelperText>&nbsp;</FormHelperText>
                 </FormControl>
                 <FormControl>
                   <FormLabel color="content.tertiary">
@@ -422,18 +435,23 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                         borderRightRadius={0}
                         {...register("activity.n2oEmissionFactor")}
                         bgColor="background.neutral"
+                        h="48px"
+                        shadow="1dp"
+                        pos="relative"
+                        zIndex={999}
                       />
                     </NumberInput>
                     <InputRightAddon
                       bgColor="background.neutral"
                       color="content.tertiary"
+                      h="48px"
+                      shadow="1dp"
+                      pos="relative"
+                      zIndex={10}
                     >
                       {formInputs.fields[5].unit}
                     </InputRightAddon>
                   </InputGroup>
-                  <FormHelperText color="content.tertiary">
-                    {t("optional")}
-                  </FormHelperText>
                 </FormControl>
                 <FormControl>
                   <FormLabel color="content.tertiary">
@@ -450,18 +468,23 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                         borderRightRadius={0}
                         {...register("activity.ch4EmissionFactor")}
                         bgColor="background.neutral"
+                        h="48px"
+                        shadow="1dp"
+                        pos="relative"
+                        zIndex={999}
                       />
                     </NumberInput>
                     <InputRightAddon
                       bgColor="background.neutral"
                       color="content.tertiary"
+                      h="48px"
+                      shadow="1dp"
+                      pos="relative"
+                      zIndex={10}
                     >
                       {formInputs.fields[6].unit}
                     </InputRightAddon>
                   </InputGroup>
-                  <FormHelperText color="content.tertiary">
-                    {t("optional")}
-                  </FormHelperText>
                 </FormControl>
               </HStack>
 
@@ -494,6 +517,9 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                   {...register("activity.dataQuality", {
                     required: t("option-required"),
                   })}
+                  h="48px"
+                  shadow="1dp"
+                  color="content.tertiary"
                 >
                   <option value="high">{t("detailed-activity-data")}</option>
                   <option value="medium">{t("modeled-emissions-data")}</option>
@@ -519,6 +545,8 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                   borderWidth={errors?.activity?.dataQuality ? "1px" : 0}
                   border="inputBox"
                   borderRadius="4px"
+                  shadow="1dp"
+                  h="96px"
                   borderColor={
                     errors?.activity?.dataQuality
                       ? "sentiment.negativeDefault"

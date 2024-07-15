@@ -123,6 +123,7 @@ function SubSectorPage({
                 spacing="8px"
                 fontFamily="heading"
                 fontWeight="bold"
+                fontSize="14px"
                 letterSpacing="widest"
                 textTransform="uppercase"
                 separator={<ChevronRightIcon color="gray.500" h="24px" />}

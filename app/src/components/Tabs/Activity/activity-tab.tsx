@@ -423,7 +423,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                         methodology used to collect the data and calculate your
                         emissions.{" "}
                         <Link
-                          href="/"
+                          href="https://docs.google.com/spreadsheets/d/1cKN9jjxs6gLHTbuJyclsJaVDA_0CQxSg8qSjTSDr5eU/edit?pli=1#gid=2028597557 No, this one https://ghgprotocol.org/ghg-protocol-cities"
                           color="content.link"
                           fontWeight="bold"
                           textDecoration="underline"

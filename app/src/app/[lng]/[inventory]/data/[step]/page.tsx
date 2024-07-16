@@ -639,6 +639,7 @@ export default function AddDataSteps({
           <Box w="full" display="flex" alignItems="center" gap="16px" mb="35px">
             <Button
               variant="ghost"
+              fontSize="14px"
               leftIcon={<ArrowBackIcon boxSize={6} />}
               onClick={() => router.back()}
             >
@@ -651,6 +652,7 @@ export default function AddDataSteps({
                 fontFamily="heading"
                 fontWeight="bold"
                 letterSpacing="widest"
+                fontSize="14px"
                 textTransform="uppercase"
                 separator={<ChevronRightIcon color="gray.500" h="24px" />}
               >

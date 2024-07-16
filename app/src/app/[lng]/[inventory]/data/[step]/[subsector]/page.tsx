@@ -155,6 +155,7 @@ function SubSectorPage({
           <Box w="full" display="flex" alignItems="center" gap="16px" mb="64px">
             <Button
               variant="ghost"
+              fontSize="14px"
               leftIcon={<ArrowBackIcon boxSize={6} />}
               onClick={() => router.back()}
             >

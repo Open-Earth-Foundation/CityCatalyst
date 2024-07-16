@@ -624,19 +624,21 @@ export default function AddDataSteps({
   return (
     <>
       <Box id="top" />
-      <MotionBox
+      <Box
         bg="background.backgroundLight"
         borderColor="border.neutral"
         borderBottomWidth={scrollPosition > 0 ? "1px" : ""}
-        className={`fixed z-10 top-0 w-full ${scrollPosition > 50 ? "pt-[140px]" : "pt-[170px]"} h-[400px]`}
-        mt={scrollPosition > 0 ? "-200px" : ""}
-        animate={{
-          y: scrollPosition > 0 ? 0 : -50,
-        }}
-        transition={{ duration: 0.2 }}
+        className={`fixed z-10 top-0 w-full ${scrollPosition > 0 ? "pt-[0px] h-[200px]" : "pt-[120px] h-[400px]"} transition-all duration-50 ease-linear`}
       >
         <div className=" w-[1090px] mx-auto px-4  ">
-          <Box w="full" display="flex" alignItems="center" gap="16px" mb="35px">
+          <Box
+            w="full"
+            display="flex"
+            alignItems="center"
+            gap="16px"
+            mb="28px"
+            className={` ${scrollPosition > 0 ? "hidden" : "flex"} transition-all duration-50 ease-linear`}
+          >
             <Button
               variant="ghost"
               fontSize="14px"
@@ -707,12 +709,12 @@ export default function AddDataSteps({
               />
               <div className="space-y-4 w-[100%]">
                 <Heading
-                  fontSize="24px"
                   fontWeight="semibold"
                   textTransform="capitalize"
                   lineHeight="32px"
-                  size="lg"
                   mb={2}
+                  className="transition-all duration-50 ease-linear"
+                  fontSize={scrollPosition > 0 ? "headline.sm" : "headline.md"}
                 >
                   {currentStep.title}
                 </Heading>
@@ -721,11 +723,11 @@ export default function AddDataSteps({
                 ) : (
                   <Box w="800px"></Box>
                 )}
-                <Text fontWeight="bold">
+                <Text fontWeight="bold" ml={scrollPosition > 0 ? "-48px" : ""}>
                   {t("inventory-year")}: 2023 |{" "}
                   {t("gpc-scope-required-summary")} 1,2
                 </Text>
-                <Flex direction="row">
+                <Flex direction="row" ml={scrollPosition > 0 ? "-48px" : ""}>
                   <SegmentedProgress
                     values={[
                       currentStep.connectedProgress,
@@ -775,7 +777,7 @@ export default function AddDataSteps({
             </Flex>
           </Card>
         </div>
-      </MotionBox>
+      </Box>
       <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
         {/*** Manual data entry section for subsectors ***/}
         <Card mb={12} mt="350px">

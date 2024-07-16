@@ -116,7 +116,7 @@ function SubSectorPage({
   };
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -142,17 +142,19 @@ function SubSectorPage({
   return (
     <>
       <Box id="top" />
-      <MotionBox
+      <Box
         bg="background.backgroundLight"
-        className="fixed z-10 top-0 w-full pt-[180px] h-[400px]"
-        mt={scrollPosition > 0 ? "-230px" : ""}
-        animate={{
-          y: scrollPosition > 0 ? 0 : -50,
-        }}
-        transition={{ duration: 0.2 }}
+        className={`fixed z-10 top-0 w-full ${scrollPosition > 0 ? "pt-[50px] h-[200px]" : "pt-[100px] h-[400px]"} transition-all duration-50 ease-linear`}
       >
-        <Box className=" w-[1090px] max-w-full mx-auto px-4">
-          <Box w="full" display="flex" alignItems="center" gap="16px" mb="64px">
+        <Box className=" w-[1090px]  max-w-full mx-auto px-4">
+          <Box
+            w="full"
+            display="flex"
+            alignItems="center"
+            gap="16px"
+            mb="64px"
+            className={` ${scrollPosition > 0 ? "hidden" : "flex"} transition-all duration-50 ease-linear`}
+          >
             <Button
               variant="ghost"
               fontSize="14px"
@@ -225,7 +227,7 @@ function SubSectorPage({
             <Box display="flex" gap="16px">
               <Box
                 color="content.link"
-                pt="3"
+                pt="5px"
                 pos="relative"
                 left={scrollPosition > 0 ? "30px" : ""}
               >
@@ -238,10 +240,11 @@ function SubSectorPage({
               >
                 <Text
                   fontFamily="heading"
-                  fontSize="headline.md"
+                  fontSize={scrollPosition > 0 ? "headline.sm" : "headline.md"}
                   fontWeight="bold"
                   pos="relative"
                   left={scrollPosition > 0 ? "30px" : ""}
+                  className="transition-all duration-50 ease-linear"
                 >
                   {!subSectorData ? (
                     <CircularProgress
@@ -263,7 +266,7 @@ function SubSectorPage({
                   fontSize="label.lg"
                   fontWeight="medium"
                   pos="relative"
-                  left={scrollPosition > 0 ? "30px" : ""}
+                  left={scrollPosition > 0 ? "-15px" : ""}
                 >
                   {t("sector")}: {getSectorName(step)} | {t("inventory-year")}:{" "}
                   {inventoryProgress?.inventory.year}
@@ -284,7 +287,7 @@ function SubSectorPage({
             </Box>
           </Box>
         </Box>
-      </MotionBox>
+      </Box>
       <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4 mt-[240px]">
         <Box mt="48px">
           <Tabs>

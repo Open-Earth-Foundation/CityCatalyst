@@ -91,8 +91,8 @@ function createPromptTemplate(inventory: Inventory): string {
     inventoryYear!,
   ) as PopulationAttributes;
 
-  const countryPopulation = countryPopulationObj.countryPopulation;
-  const countryPopulationYear = countryPopulationObj.year;
+  const countryPopulation = countryPopulationObj?.countryPopulation;
+  const countryPopulationYear = countryPopulationObj?.year;
 
   const regionPopulations = inventory.city.populations.filter(
     (pop) => !!pop.regionPopulation,
@@ -102,8 +102,8 @@ function createPromptTemplate(inventory: Inventory): string {
     inventoryYear!,
   ) as PopulationAttributes;
 
-  const regionPopulation = regionPopulationObj.regionPopulation;
-  const regionPopulationYear = regionPopulationObj.year;
+  const regionPopulation = regionPopulationObj?.regionPopulation;
+  const regionPopulationYear = regionPopulationObj?.year;
 
   const cityPopulations = inventory.city.populations.filter(
     (pop) => !!pop.population,
@@ -113,14 +113,16 @@ function createPromptTemplate(inventory: Inventory): string {
     inventoryYear!,
   ) as PopulationAttributes;
 
-  const cityPopulation = cityPopulationObj.population;
-  const cityPopulationYear = cityPopulationObj.year;
+  const cityPopulation = cityPopulationObj?.population;
+  const cityPopulationYear = cityPopulationObj?.year;
 
   const cityName = inventory.city.dataValues.name;
   const regionName = inventory.city.dataValues.region;
   const countryName = inventory.city.dataValues.country;
   const countryLocode = inventory.city.dataValues.countryLocode;
   const cityArea = inventory.city.dataValues.area;
+
+  const numInventoryValues = inventory.inventoryValues?.length;
 
   return `You are a climate assistant for creating 
 'Global Protocol for Community-Scale (GPC) Greenhouse Gas (GHG) Inventories' using CityCatalyst, 
@@ -140,7 +142,7 @@ CONTEXT
 + Population of the country ${countryName} for the year ${countryPopulationYear} (closest known value to the inventory year): ${countryPopulation},
 + Area of the city ${cityName} in km\u00B2: ${cityArea},
 + Year for which the the inventory is being created: ${inventoryYear},
-+ Current inventory values: .`;
++ Current number of inventory values for this city: ${numInventoryValues}.`;
 }
 
 export const POST = apiHandler(async (req, { params, session }) => {

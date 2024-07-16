@@ -815,7 +815,7 @@ export default function AddDataSteps({
                         }),
                       );
                       router.push(
-                        `/${inventory}/data/${getCurrentStepParam(currentStep.title)}/${subSector.sectorId}`,
+                        `/${inventory}/data/${getCurrentStepParam(currentStep.title)}/${subSector.subsectorId}`,
                       );
                     }}
                     key={subSector.subsectorId}

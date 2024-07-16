@@ -581,7 +581,10 @@ const AddActivityModal: FC<AddUserModalProps> = ({
               <HStack className="items-start" mb={13}>
                 <InfoOutlineIcon mt={1} color="content.link" />
                 <Text color="content.tertiary">
-                  All calculations consider a GWP value of X.
+                  All calculations consider a{" "}
+                  <Text as="span" fontWeight="bold">
+                    GWP value of 28 for CH4 and 265 for N20 (Version AR5).
+                  </Text>
                 </Text>
               </HStack>
             </form>

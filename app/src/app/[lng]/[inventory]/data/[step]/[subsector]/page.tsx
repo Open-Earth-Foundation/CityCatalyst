@@ -12,6 +12,7 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   Button,
+  CircularProgress,
   Icon,
   Link,
   Tab,
@@ -47,6 +48,47 @@ function SubSectorPage({
   const [selectedTab, setSelectedTab] = useState(1); // sector ID (1/2/3)
   const [selectedScope, setSelectedScope] = useState(1);
 
+  const { data: userInfo, isLoading: isUserInfoLoading } =
+    api.useGetUserInfoQuery();
+  const defaultInventoryId = userInfo?.defaultInventoryId;
+
+  const {
+    data: inventoryProgress,
+    isLoading: isInventoryProgressLoading,
+    error: inventoryProgressError,
+  } = api.useGetInventoryProgressQuery(defaultInventoryId!, {
+    skip: !defaultInventoryId,
+  });
+
+  console.log(inventoryProgress);
+
+  // map subsector to sector by reference number
+
+  const mapSectorName = (currentStep: string) => {
+    switch (currentStep) {
+      case "1":
+        return t("I");
+      case "2":
+        return t("II");
+      case "3":
+        return t("II");
+      default:
+        return t("III");
+    }
+  };
+
+  console.log(mapSectorName(step));
+
+  const sectorData = inventoryProgress?.sectorProgress.find(
+    (sector) => sector.sector.referenceNumber === mapSectorName(step),
+  );
+
+  const subSectorData = sectorData?.subSectors.find(
+    (subsectorItem) => subsectorItem.subsectorId === subsector,
+  );
+
+  console.log(inventoryProgress);
+
   const getSectorName = (currentStep: string) => {
     switch (currentStep) {
       case "1":
@@ -59,6 +101,7 @@ function SubSectorPage({
         return t("stationary-energy");
     }
   };
+
   const { subsector: subsectorData, scopes } = useSelector(
     (state: RootState) => state.subsector,
   );
@@ -146,7 +189,17 @@ function SubSectorPage({
                 </BreadcrumbItem>
                 <BreadcrumbItem>
                   <BreadcrumbLink href="#" color="content.link">
-                    <Text noOfLines={1}>{subsectorData?.subsectorName}</Text>
+                    <Text noOfLines={1}>
+                      {!subSectorData ? (
+                        <CircularProgress
+                          isIndeterminate
+                          color="content.tertiary"
+                          size={"30px"}
+                        />
+                      ) : (
+                        subSectorData?.subsectorName
+                      )}
+                    </Text>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               </Breadcrumb>
@@ -189,9 +242,19 @@ function SubSectorPage({
                   pos="relative"
                   left={scrollPosition > 0 ? "30px" : ""}
                 >
-                  {subsectorData?.referenceNumber +
+                  {!subSectorData ? (
+                    <CircularProgress
+                      isIndeterminate
+                      color="content.tertiary"
+                      size={"30px"}
+                    />
+                  ) : subSectorData?.referenceNumber !== undefined ? (
+                    subSectorData?.referenceNumber +
                     " " +
-                    subsectorData?.subsectorName}
+                    subSectorData?.subsectorName
+                  ) : (
+                    ""
+                  )}
                 </Text>
                 <Text
                   fontFamily="heading"
@@ -201,8 +264,8 @@ function SubSectorPage({
                   pos="relative"
                   left={scrollPosition > 0 ? "30px" : ""}
                 >
-                  {t("sector")}: {t("stationary-energy")} |{" "}
-                  {t("inventory-year")}: 2023
+                  {t("sector")}: {getSectorName(step)} | {t("inventory-year")}:{" "}
+                  {inventoryProgress?.inventory.year}
                 </Text>
                 {scrollPosition > 0 ? (
                   ""

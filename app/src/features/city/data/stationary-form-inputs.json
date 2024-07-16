@@ -122,9 +122,12 @@
             "type": "select",
             "name": "emissionFactorType",
             "options": [
-              "IPCC",
+              "Carbon Footprint",
               "DEFRA",
-              "GHG Protocol"
+              "GHG Protocol",
+              "Local",
+              "Regional",
+              "National"
             ]
           },
           {

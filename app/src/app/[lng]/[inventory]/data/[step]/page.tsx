@@ -804,16 +804,6 @@ export default function AddDataSteps({
                     w="full"
                     className="hover:drop-shadow-xl transition-shadow"
                     onClick={() => {
-                      dispatch(
-                        setSubsector({
-                          subsectorName: subSector.subsectorName,
-                          scopeId: "",
-                          sectorId: subSector.sectorId,
-                          subsectorId: subSector.subsectorId,
-                          referenceNumber: subSector.referenceNumber,
-                          subCategories: subSector.subCategories,
-                        }),
-                      );
                       router.push(
                         `/${inventory}/data/${getCurrentStepParam(currentStep.title)}/${subSector.subsectorId}`,
                       );

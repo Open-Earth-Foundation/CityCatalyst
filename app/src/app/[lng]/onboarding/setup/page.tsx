@@ -631,7 +631,6 @@ function ConfirmStep({
                   ) : (
                     "N/A"
                   )}
-                  <InfoOutlineIcon boxSize={4} mt={-0.5} ml={1} color="brand" />
                 </Text>
                 <Text fontSize="xs">{t("total-population")}</Text>
               </Box>
@@ -648,7 +647,6 @@ function ConfirmStep({
                   ) : (
                     "N/A"
                   )}
-                  <InfoOutlineIcon boxSize={4} mt={-0.5} ml={1} color="brand" />
                 </Text>
                 <Text fontSize="xs">{t("total-land-area")}</Text>
               </Box>

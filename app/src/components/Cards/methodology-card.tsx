@@ -1,34 +1,49 @@
 import { Badge, Box, Card, Radio, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC, useState } from "react";
+import { MethodologyValues } from "../Tabs/Activity/activity-tab";
 
 interface MethodologyCardProps {
-  name: string;
+  methodologyId: string;
+  methodologyName: string;
   description: string;
   inputRequired: string[];
   isSelected: boolean;
   disabled: boolean;
   t: TFunction;
-  handleCardSelect: (methodologyName: string) => void;
+  handleCardSelect: (methodologyId: MethodologyValues) => void;
 }
 
 const MethodologyCard: FC<MethodologyCardProps> = ({
-  name,
+  methodologyId,
+  methodologyName,
   description,
   inputRequired,
   disabled,
   t,
-  handleCardSelect = (_methodologyName: string) => {},
+  handleCardSelect = (_methodologyId: MethodologyValues) => {},
 }) => {
   const [isSelected, setIsSelected] = useState(false);
   const handleRadioChange = () => {
     setIsSelected(true);
-    handleCardSelect(name);
+    handleCardSelect({
+      description,
+      disabled,
+      inputRequired,
+      methodologyId,
+      methodologyName,
+    });
   };
 
   const handleCardClick = () => {
     if (!isSelected) {
-      handleCardSelect(name);
+      handleCardSelect({
+        description,
+        disabled,
+        inputRequired,
+        methodologyId,
+        methodologyName,
+      });
     }
     setIsSelected(!isSelected);
   };
@@ -74,7 +89,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
         )}
       </Box>
       <Text fontWeight="bold" fontSize="title.md" fontFamily="heading">
-        {name}
+        {methodologyName}
       </Text>
       <Text
         letterSpacing="wide"
@@ -100,7 +115,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
         fontWeight="normal"
         color="interactive.control"
       >
-        {inputRequired.map((item: string, i: number) => (
+        {inputRequired?.map((item: string, i: number) => (
           <li key={i}>{item}</li>
         ))}
       </Box>

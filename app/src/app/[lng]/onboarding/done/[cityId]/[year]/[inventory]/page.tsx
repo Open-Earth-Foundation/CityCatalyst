@@ -3,11 +3,12 @@
 import { useTranslation } from "@/i18n/client";
 import { useAppSelector } from "@/lib/hooks";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
-import { Button, Card, Flex, Heading, Text } from "@chakra-ui/react";
+import { Box, Button, Card, Flex, Heading, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import NextLink from "next/link";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { logger } from "@/services/logger";
+import { CircleFlag } from "react-circle-flags";
 
 export default function OnboardingDone({
   params: { lng, year, inventory },
@@ -31,8 +32,13 @@ export default function OnboardingDone({
         <Trans t={t}>done-heading</Trans>
       </Heading>
       <Card w="full" px={6} py={8}>
-        <Flex direction="row">
-          <div className="rounded-full bg-brand w-8 h-8 mr-4 flex-grow-0" />
+        <Flex direction="row" gap="8px">
+          <Box>
+            <CircleFlag
+              countryCode={data?.actor_id.substring(0, 2).toLowerCase() || ""}
+              width={32}
+            />
+          </Box>
           <div className="max-w-full flex-shrink-1 space-y-4">
             <Heading fontSize="2xl">{data?.name}</Heading>
             <Heading fontSize="lg">{t("inventory-title", { year })}</Heading>

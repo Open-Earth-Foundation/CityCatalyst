@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: cc-prod-seed-
+spec:
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: cc-seed
+        image: ghcr.io/open-earth-foundation/citycatalyst:stable
+        imagePullPolicy: Always
+        env:
+        - name: NODE_ENV
+          value: development
+        - name: DATABASE_NAME
+          value: "citycatalyst"
+        - name: DATABASE_HOST
+          value: "cc-db"
+        - name: DATABASE_USER
+          value: "citycatalyst"
+        - name: DATABASE_PASSWORD
+          value: "development"
+        command: ["npm",  "run", "db:seed"]
+        resources:
+          limits:
+            memory: "1024Mi"
+            cpu: "1000m"

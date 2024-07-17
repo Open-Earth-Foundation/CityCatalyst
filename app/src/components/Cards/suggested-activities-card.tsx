@@ -1,15 +1,23 @@
 import { AddIcon } from "@chakra-ui/icons";
-import { Box, Button, Card, Checkbox, Text } from "@chakra-ui/react";
+import { Box, Button, Card, Checkbox, Text, useTheme } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC } from "react";
 
 interface SuggestedActivityCardProps {
   name: string;
   t: TFunction;
-  onAddActivity: () => void;
+  isSelected: boolean;
+  onActivityAdded?: () => void;
 }
 
-const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({ name, t, onAddActivity }) => {
+const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
+  name,
+  t,
+  isSelected,
+  onActivityAdded,
+}) => {
+  const themeColors = useTheme().colors;
+
   return (
     <Card
       display="flex"
@@ -23,7 +31,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({ name, t, onAddA
       borderColor="border.overlay"
       cursor="pointer"
       _hover={{ shadow: "md", borderWidth: '1px', borderColor: "content.link" }}
-      onClick={onAddActivity}
+      onClick={onActivityAdded}
     >
       <Box display="flex" alignItems="center">
         <Checkbox
@@ -31,7 +39,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({ name, t, onAddA
           __css={{
             "& .chakra-checkbox__control": {
               bg: "white",
-              color: "#2351DC", // TODO: figure out how to include theme variable in css
+              color: themeColors.brand,
               borderRadius: "full",
               borderColor: "#D7D8FA",
               h: "24px",
@@ -86,6 +94,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({ name, t, onAddA
           fontSize="button.md"
           color="content.link"
           gap="8px"
+          onClick={onActivityAdded}
         >
           {t("add-activity")}
         </Button>

@@ -1,0 +1,74 @@
+blocks:
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - cleaning_oil_gas_refining_ct
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: oil_gas_refining_read_s3
+  retry_config: null
+  status: executed
+  timeout: null
+  type: data_loader
+  upstream_blocks: []
+  uuid: oil_gas_refining_read_s3
+- all_upstream_blocks_executed: true
+  color: teal
+  configuration: {}
+  downstream_blocks:
+  - transformation_oil_gas_refining_ct
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: cleaning_oil_gas_refining_ct
+  retry_config: null
+  status: executed
+  timeout: null
+  type: custom
+  upstream_blocks:
+  - oil_gas_refining_read_s3
+  uuid: cleaning_oil_gas_refining_ct
+- all_upstream_blocks_executed: true
+  color: pink
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: transformation_oil_gas_refining_ct
+  retry_config: null
+  status: updated
+  timeout: null
+  type: custom
+  upstream_blocks:
+  - cleaning_oil_gas_refining_ct
+  uuid: transformation_oil_gas_refining_ct
+cache_block_output_in_memory: false
+callbacks: []
+concurrency_config: {}
+conditionals: []
+created_at: '2024-07-14 20:09:20.013800+00:00'
+data_integration: null
+description: null
+executor_config: {}
+executor_count: 1
+executor_type: null
+extensions: {}
+name: oil_and_gas_refining_Climate_TRACE
+notification_config: {}
+remote_variables_dir: null
+retry_config: {}
+run_pipeline_in_one_process: false
+settings:
+  triggers: null
+spark_config: {}
+tags: []
+type: python
+uuid: oil_and_gas_refining_climate_trace
+variables_dir: /home/src/mage_data/cc-mage
+widgets: []

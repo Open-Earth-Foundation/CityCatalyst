@@ -7,20 +7,16 @@ import {
   DataAlertIcon,
   DataCheckIcon,
   ExcelFileIcon,
-  SearchOffIcon,
   WorldSearchIcon,
 } from "@/components/icons";
-import WizardSteps from "@/components/wizard-steps";
 import {
   InventoryUserFileAttributes,
-  addFile,
   clear,
   removeFile,
 } from "@/features/city/inventoryDataSlice";
-import { setSubsector, clearSubsector } from "@/features/city/subsectorSlice";
+import { setSubsector } from "@/features/city/subsectorSlice";
 import { useTranslation } from "@/i18n/client";
 import { RootState } from "@/lib/store";
-import { ScopeAttributes } from "@/models/Scope";
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
 import { bytesToMB, nameToI18NKey } from "@/util/helpers";
@@ -71,7 +67,6 @@ import {
   MdOutlineCheckCircle,
   MdOutlineEdit,
   MdOutlineHomeWork,
-  MdOutlineSkipNext,
   MdRefresh,
 } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
@@ -85,7 +80,6 @@ import type {
 
 import AddFileDataModal from "@/components/Modals/add-file-data-modal";
 import { InventoryValueAttributes } from "@/models/InventoryValue";
-import { UserFileAttributes } from "@/models/UserFile";
 import { motion } from "framer-motion";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {

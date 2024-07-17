@@ -65,6 +65,8 @@ interface AddUserModalProps {
   hasActivityData: boolean;
   formStruct: ActivityDataScope;
   inventoryId: string;
+  step: string;
+  scope: number;
 }
 
 export type Inputs = {
@@ -127,6 +129,8 @@ const AddActivityModal: FC<AddUserModalProps> = ({
   hasActivityData,
   formStruct,
   inventoryId,
+  step,
+  scope,
 }) => {
   const {
     register,
@@ -181,7 +185,8 @@ const AddActivityModal: FC<AddUserModalProps> = ({
     });
   };
 
-  const formInputs = formStruct.formInputs;
+  const formInputs = formStruct?.formInputs[step][scope];
+  console.log(formInputs, step);
 
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
     useState<boolean>(true);
@@ -231,8 +236,8 @@ const AddActivityModal: FC<AddUserModalProps> = ({
               >
                 <FormControl className="w-full">
                   <BuildingTypeSelectInput
-                    options={formInputs.fields[0].options}
-                    title={formStruct.formInputs.fields[0].label}
+                    options={formInputs?.fields[0].options || []}
+                    title={formInputs?.fields[0].label}
                     placeholder={t("select-type-of-building")}
                     register={register}
                     activity="buildingType"
@@ -241,8 +246,8 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                 </FormControl>
                 <FormControl>
                   <BuildingTypeSelectInput
-                    options={formInputs.fields[1].options}
-                    title={formInputs.fields[1].label}
+                    options={formInputs?.fields[1].options}
+                    title={formInputs?.fields[1].label}
                     placeholder={t("select-type-of-fuel")}
                     register={register}
                     activity="fuelType"
@@ -258,7 +263,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                   <FormControl
                     isInvalid={!!resolve(prefix + "activityDataAmount", errors)}
                   >
-                    <FormLabel>{formInputs.fields[2].label}</FormLabel>
+                    <FormLabel>{formInputs?.fields[2].label}</FormLabel>
                     <InputGroup>
                       <NumberInput defaultValue={0} w="full">
                         <NumberInputField
@@ -304,11 +309,13 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                           variant="unstyled"
                           {...register("activity.activityDataUnit")}
                         >
-                          {formInputs.fields[2].options?.map((item: string) => (
-                            <option key={item} value={item}>
-                              {item}
-                            </option>
-                          ))}
+                          {formInputs?.fields[2].options?.map(
+                            (item: string) => (
+                              <option key={item} value={item}>
+                                {item}
+                              </option>
+                            ),
+                          )}
                         </Select>
                       </InputRightAddon>
                     </InputGroup>
@@ -328,7 +335,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                     )}
                   </FormControl>
                   <FormControl>
-                    <FormLabel>{formInputs.fields[3].label}</FormLabel>
+                    <FormLabel>{formInputs?.fields[3].label}</FormLabel>
                     <Select
                       borderRadius="4px"
                       borderWidth={
@@ -358,7 +365,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       onChange={(e: any) => onEmissionFactorTypeChange(e)}
                     >
                       {/* TODO translate values and use internal value for saving */}
-                      {formInputs.fields[3].options?.map((item: string) => (
+                      {formInputs?.fields[3].options?.map((item: string) => (
                         <option key={item} value={item}>
                           {item}
                         </option>
@@ -445,7 +452,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       pos="relative"
                       zIndex={10}
                     >
-                      {formInputs.fields[4].unit}
+                      {formInputs?.fields[4].unit}
                     </InputRightAddon>
                   </InputGroup>
                 </FormControl>
@@ -490,7 +497,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       pos="relative"
                       zIndex={10}
                     >
-                      {formInputs.fields[5].unit}
+                      {formInputs?.fields[5].unit}
                     </InputRightAddon>
                   </InputGroup>
                 </FormControl>
@@ -535,7 +542,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       pos="relative"
                       zIndex={10}
                     >
-                      {formInputs.fields[6].unit}
+                      {formInputs?.fields[6].unit}
                     </InputRightAddon>
                   </InputGroup>
                 </FormControl>

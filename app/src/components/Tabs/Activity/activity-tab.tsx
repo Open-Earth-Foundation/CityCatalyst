@@ -62,6 +62,7 @@ interface ActivityTabProps {
   totalConsumptionUnit?: boolean;
   filteredScope: ActivityDataScope;
   inventoryId: string;
+  step: string;
 }
 
 export type MethodologyValues = {
@@ -80,6 +81,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
   totalConsumptionUnit,
   filteredScope,
   inventoryId,
+  step,
 }) => {
   const totalEmissions = 0;
   const [selectedActivity, setSelectedActivity] = useState();
@@ -493,6 +495,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
         setHasActivityData={setHasActivityData}
         formStruct={filteredScope}
         inventoryId={inventoryId}
+        step={step}
+        scope={filteredScope.scope}
       />
 
       <ChangeMethodology

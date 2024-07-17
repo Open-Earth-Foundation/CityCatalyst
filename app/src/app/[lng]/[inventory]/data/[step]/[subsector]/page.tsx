@@ -331,6 +331,7 @@ function SubSectorPage({
                     filteredScope={scope}
                     t={t}
                     inventoryId={inventoryId}
+                    step={step}
                   />
                 ))
               )}

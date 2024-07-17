@@ -51,7 +51,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
         }}
         {...register(activity as any, { required: t("value-required") })}
       >
-        {options.map((item: string) => (
+        {options?.map((item: string) => (
           <option key={item} value={item}>
             {item}
           </option>

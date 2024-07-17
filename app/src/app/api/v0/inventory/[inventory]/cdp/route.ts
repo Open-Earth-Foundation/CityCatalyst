@@ -208,13 +208,17 @@ export const POST = apiHandler(async (_req, { session, params }) => {
       }
     } catch (error) {
       logger.error(`Failed to submit response: ${error}`);
-      success = false;
+      throw new createHttpError.FailedDependency(
+        "CDP API response error: " + error,
+      );
     }
   } else if (CDPService.mode === "production") {
     // TODO: Submit total emissions
     // TODO: Submit CIRIS file
     // TODO: Submit emissions matrix
-    success = false;
+    throw new createHttpError.InternalServerError(
+      "CDP service is set to production mode, which is not yet implemented.",
+    );
   }
 
   return NextResponse.json({

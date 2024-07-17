@@ -86,12 +86,21 @@ export const POST = apiHandler(async (req, { params, session }) => {
 export const GET = apiHandler(async (req, { params, session }) => {
   // extract and validate query params
   const subCategoryIdsParam = req.nextUrl.searchParams.get("subCategoryIds");
-  if (!subCategoryIdsParam || subCategoryIdsParam.length === 0) {
+  const subSectorId = req.nextUrl.searchParams.get("subSectorId");
+
+  let subCategoryIds;
+  if (subCategoryIdsParam && subCategoryIdsParam.length > 0) {
+    subCategoryIds = subCategoryIdsParam.split(",");
+  } else if (subSectorId && subSectorId.length > 0) {
+    const subCategories = await db.models.SubCategory.findAll({
+      where: { subsectorId: subSectorId! },
+    });
+    subCategoryIds = subCategories.map((sc) => sc.subcategoryId);
+  } else {
     throw new createHttpError.BadRequest(
-      "Query parameter subCategoryIds is required!",
+      "Query parameter subCategoryIds or subSectorId is required!",
     );
   }
-  const subCategoryIds = subCategoryIdsParam.split(",");
 
   // optional filter for a specific methodology
   const methodologyId = req.nextUrl.searchParams.get("methodologyId");
@@ -104,16 +113,19 @@ export const GET = apiHandler(async (req, { params, session }) => {
     session,
   );
 
+  const query: any = {
+    subCategoryId: { [Op.in]: subCategoryIds },
+    inventoryId: inventory.inventoryId,
+  };
+  if (methodologyId) {
+    query.methodologyId = methodologyId;
+  }
   const activityValues = await db.models.ActivityValue.findAll({
     include: [
       {
         model: db.models.InventoryValue,
         as: "inventoryValue",
-        where: {
-          subCategoryId: { [Op.in]: subCategoryIds },
-          inventoryId: inventory.inventoryId,
-          methodologyId: methodologyId ?? undefined,
-        },
+        where: query,
       },
       { model: db.models.DataSource, as: "dataSource" },
       {

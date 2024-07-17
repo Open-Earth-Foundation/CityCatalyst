@@ -58,7 +58,7 @@ jobs:
       #   run: npm run cy:test
 
       - name: Run tests and generate coverage file
-        run: npm run ci:test
+        run: npm run api:test
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
@@ -132,17 +132,24 @@ jobs:
           kubectl apply -f k8s/cc-sync-catalogue.yml -n default
           # kubectl create job --from=cronjob/cc-sync-catalogue cc-sync-catalogue-manual -n default
           kubectl apply -f k8s/cc-web-deploy.yml -n default
-          kubectl set env deployment/cc-web-deploy SMTP_USER=${{secrets.SMTP_USER}}
-          kubectl set env deployment/cc-web-deploy SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}}
-          kubectl set env deployment/cc-web-deploy NEXTAUTH_SECRET=${{secrets.NEXTAUTH_SECRET}}
-          kubectl set env deployment/cc-web-deploy RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}}
-          kubectl set env deployment/cc-web-deploy VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}}
-          kubectl set env deployment/cc-web-deploy CHAT_PROVIDER=openai
-          kubectl set env deployment/cc-web-deploy OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}}
-          kubectl set env deployment/cc-web-deploy HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}}
-          kubectl set env deployment/cc-web-deploy "ADMIN_EMAILS=${{secrets.ADMIN_EMAILS}}"
-          kubectl set env deployment/cc-web-deploy "ADMIN_NAMES=${{secrets.ADMIN_NAMES}}"
-          kubectl set env deployment/cc-web-deploy "DEFAULT_ADMIN_EMAIL=${{secrets.DEFAULT_ADMIN_EMAIL}}"
-          kubectl set env deployment/cc-web-deploy "DEFAULT_ADMIN_PASSWORD=${{secrets.DEFAULT_ADMIN_PASSWORD}}"
+          kubectl set env deployment/cc-web-deploy \
+            SMTP_USER=${{secrets.SMTP_USER}} \
+            SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}} \
+            NEXTAUTH_SECRET=${{secrets.NEXTAUTH_SECRET}} \
+            RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}} \
+            VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}} \
+            CHAT_PROVIDER=openai \
+            OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}} \
+            HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}} \
+            "ADMIN_EMAILS=${{secrets.ADMIN_EMAILS}}" \
+            "ADMIN_NAMES=${{secrets.ADMIN_NAMES}}" \
+            "DEFAULT_ADMIN_EMAIL=${{secrets.DEFAULT_ADMIN_EMAIL}}" \
+            "DEFAULT_ADMIN_PASSWORD=${{secrets.DEFAULT_ADMIN_PASSWORD}}" \
+            "HOST=https://citycatalyst.openearth.dev" \
+            "NEXTAUTH_URL=https://citycatalyst.openearth.dev" \
+            "NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev" \
+            "GLOBAL_API_URL=https://ccglobal.openearth.dev" \
+            "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
+            "OPENCLIMATE_API_URL=https://openclimate.openearth.dev"
           kubectl create -f k8s/cc-create-admin.yml -n default
           kubectl rollout restart deployment cc-web-deploy -n default

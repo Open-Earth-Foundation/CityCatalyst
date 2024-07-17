@@ -8,14 +8,15 @@ import { Inventory } from "@/models/Inventory";
 import { InventoryValue } from "@/models/InventoryValue";
 import { db } from "@/models";
 import { Op } from "sequelize";
+import createHttpError from "http-errors";
 
 const EMISSIONS_SECTION = 3;
 const EMISSIONS_INVENTORY_QUESTION = 0;
 const EMISSIONS_INVENTORY_ANSWER = "Yes";
 const EMISSIONS_MATRIX_QUESTION = 2;
 
-function findRow(rows: any[], regex: RegExp): string|null {
-  const row = rows.find((row: any) => row.title.match(regex))
+function findRow(rows: any[], regex: RegExp): string | null {
+  const row = rows.find((row: any) => row.title.match(regex));
   return row ? row.id : null;
 }
 
@@ -134,11 +135,10 @@ async function totalBasic(inventory: Inventory): Promise<bigint> {
 }
 
 export const POST = apiHandler(async (_req, { session, params }) => {
-
   if (CDPService.mode === "disabled") {
-    return NextResponse.json({
-      success: false
-    });
+    throw new createHttpError.InternalServerError(
+      "CDP service is disabled. Set env var CDP_MODE to test or production.",
+    );
   }
 
   logger.debug("POST /inventory/[inventory]/cdp");
@@ -153,7 +153,7 @@ export const POST = apiHandler(async (_req, { session, params }) => {
 
   const cityId = await CDPService.getCityID(
     inventory.city.name,
-    inventory.city.country
+    inventory.city.country,
   );
 
   logger.debug(`Got ${cityId}`);
@@ -168,11 +168,13 @@ export const POST = apiHandler(async (_req, { session, params }) => {
     logger.debug(`Got ${questionnaire.sections.length} sections`);
 
     for (let i = 0; i < questionnaire.sections.length; i++) {
-      logger.debug(`Got ${questionnaire.sections[i].questions.length} questions for section ${i}`);
+      logger.debug(
+        `Got ${questionnaire.sections[i].questions.length} questions for section ${i}`,
+      );
       const questions = questionnaire.sections[i].questions;
       for (let j = 0; j < questions.length; j++) {
         const question = questions[j];
-        logger.debug(`Got keys ${Object.keys(question).join(", ")}`)
+        logger.debug(`Got keys ${Object.keys(question).join(", ")}`);
         logger.debug(`Question ${i}.${j} (${question.id}): ${question.text}`);
       }
     }
@@ -186,12 +188,15 @@ export const POST = apiHandler(async (_req, { session, params }) => {
 
     logger.debug(`Got question: ${JSON.stringify(question)}`);
 
-    const matrix = questionnaire.sections[EMISSIONS_SECTION].questions[EMISSIONS_MATRIX_QUESTION];
+    const matrix =
+      questionnaire.sections[EMISSIONS_SECTION].questions[
+        EMISSIONS_MATRIX_QUESTION
+      ];
     logger.debug(`Got matrix question: ${JSON.stringify(matrix)}`);
 
     const col = matrix.columns.find((column: any) => {
       return column.text.match(/^Emissions/);
-    })
+    });
 
     const rows = [
       { rowId: findRow(matrix.rows, /Total scope 1 emissions.*excluding/),
@@ -229,28 +234,27 @@ export const POST = apiHandler(async (_req, { session, params }) => {
         cityId,
         question.id,
         yes.id,
-        yes.name
-      )
+        yes.name,
+      );
       if (success) {
-        success = await CDPService.submitMatrix(
-          cityId,
-          col.id,
-          rows
-        );
+        success = await CDPService.submitMatrix(cityId, col.id, rows);
       }
     } catch (error) {
       logger.error(`Failed to submit response: ${error}`);
-      success = false;
+      throw new createHttpError.FailedDependency(
+        "CDP API response error: " + error,
+      );
     }
-
   } else if (CDPService.mode === "production") {
     // TODO: Submit total emissions
     // TODO: Submit CIRIS file
     // TODO: Submit emissions matrix
-    success = false;
+    throw new createHttpError.InternalServerError(
+      "CDP service is set to production mode, which is not yet implemented.",
+    );
   }
 
   return NextResponse.json({
-    success: success
+    success: success,
   });
 });

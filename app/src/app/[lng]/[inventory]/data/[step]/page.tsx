@@ -86,6 +86,7 @@ import type {
 import AddFileDataModal from "@/components/Modals/add-file-data-modal";
 import { InventoryValueAttributes } from "@/models/InventoryValue";
 import { UserFileAttributes } from "@/models/UserFile";
+import { motion } from "framer-motion";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -618,15 +619,21 @@ export default function AddDataSteps({
     }
   };
 
+  const MotionBox = motion(Box);
+
   return (
     <>
       <Box id="top" />
-      <Box
+      <MotionBox
         bg="background.backgroundLight"
         borderColor="border.neutral"
         borderBottomWidth={scrollPosition > 0 ? "1px" : ""}
-        className={`fixed z-10 top-[0px] w-full pt-[130px] h-[400px]`}
+        className={`fixed z-10 top-0 w-full pt-[130px] h-[400px]`}
         mt={scrollPosition > 0 ? "-200px" : ""}
+        animate={{
+          y: scrollPosition > 0 ? 0 : -50,
+        }}
+        transition={{ duration: 0.2 }}
       >
         <div className=" w-[1090px] max-w-full mx-auto px-4">
           <Box w="full" display="flex" alignItems="center" gap="16px" mb="35px">
@@ -672,6 +679,7 @@ export default function AddDataSteps({
             gap="16px"
             flexDir="row"
             w="full"
+            px={0}
           >
             {scrollPosition <= 0 ? (
               ""
@@ -765,7 +773,7 @@ export default function AddDataSteps({
             </Flex>
           </Card>
         </div>
-      </Box>
+      </MotionBox>
       <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
         {/*** Manual data entry section for subsectors ***/}
         <Card mb={12} mt="350px">
@@ -803,6 +811,7 @@ export default function AddDataSteps({
                           sectorId: subSector.sectorId,
                           subsectorId: subSector.subsectorId,
                           referenceNumber: subSector.referenceNumber,
+                          subCategories: subSector.subCategories,
                         }),
                       );
                       router.push(
@@ -1050,12 +1059,7 @@ export default function AddDataSteps({
             {t("upload-your-data-details")}
           </Text>
           <Box display="flex">
-            <Box
-              w="691px"
-              borderRightWidth="1px"
-              borderColor="border.overlay"
-              pr="16px"
-            >
+            <Box w="full">
               <Box w="full">
                 <Box mb="24px">
                   <FileInput
@@ -1158,46 +1162,6 @@ export default function AddDataSteps({
                     )}
                 </Box>
               </Box>
-            </Box>
-            <Box pl="16px">
-              <Card
-                shadow="none"
-                borderWidth="1px"
-                borderColor="border.overlay"
-                borderRadius="8px"
-                w="303px"
-                h="160px"
-                p="16px"
-              >
-                <Box display="flex" gap="16px">
-                  <Box>
-                    <Heading
-                      fontSize="label.lg"
-                      fontWeight="semibold"
-                      letterSpacing="wide"
-                      lineHeight="20px"
-                    >
-                      {t("download-template")}
-                    </Heading>
-                    <Text
-                      color="interactive.control"
-                      fontSize="body.md"
-                      fontWeight="normal"
-                      letterSpacing="wide"
-                      lineHeight="20px"
-                    >
-                      {t("file-upload-steps")}
-                    </Text>
-                  </Box>
-                  <Box display="flex" alignItems="center">
-                    <ChevronRightIcon
-                      h="24px"
-                      w="24px"
-                      color="interactive.control"
-                    />
-                  </Box>
-                </Box>
-              </Card>
             </Box>
           </Box>
         </Card>

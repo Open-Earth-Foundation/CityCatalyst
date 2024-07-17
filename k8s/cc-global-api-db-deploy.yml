@@ -20,7 +20,7 @@ spec:
             claimName: cc-global-api-db-pvc
       containers:
         - name: postgresql
-          image: postgres:15
+          image: postgis/postgis:15-3.3
           imagePullPolicy: Always
           resources:
             limits:

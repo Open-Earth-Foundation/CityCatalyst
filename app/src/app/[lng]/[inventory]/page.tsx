@@ -99,11 +99,20 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
 
     // TODO also add this to login logic or after email verification to prevent extra redirect?
     // if the user doesn't have a default inventory or if path has a null inventory id, redirect to onboarding page
-    if (!inventoryId && !defaultInventoryId) {
-      // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
-      setTimeout(() => router.push(`/onboarding`), 0);
+    if (!inventoryId) {
+      if (defaultInventoryId) {
+        inventoryId = defaultInventoryId;
+        // fix inventoryId in URL without reloading page
+        const newPath = "/" + lng + "/" + inventoryId;
+        history.replaceState(null, "", newPath);
+
+      } else {
+        // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
+        setTimeout(() => router.push(`/onboarding`), 0);
+      }
     }
   }
+
   const { data: inventory, isLoading: isInventoryLoading } =
     api.useGetInventoryQuery(inventoryId!, {
       skip: !inventoryId,
@@ -389,7 +398,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     <Box>
                       <Box className="flex gap-1">
                         {inventory?.city.area === null ||
-                        inventory?.city.area! === 0 ? (
+                          inventory?.city.area! === 0 ? (
                           <Text
                             fontFamily="heading"
                             color="border.neutral"
@@ -646,7 +655,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
         </Box>
       </Box>
       <Footer lng={lng} />
-      <ChatPopover />
+      <ChatPopover inventoryId={inventory?.inventoryId!} />
     </>
   );
 }

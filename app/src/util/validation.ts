@@ -150,7 +150,7 @@ export const createUserInvite = z.object({
 export type CreateUserInvite = z.infer<typeof createUserInvite>;
 
 export const createActivityValueRequest = z.object({
-  inventoryValueId: z.string().uuid(),
+  inventoryValueId: z.string().uuid().optional(),
   activityData: z.any().optional(),
   metadata: z.any().optional(),
   dataSource: z

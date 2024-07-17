@@ -31,8 +31,20 @@ module.exports = {
           "DataSourceEmissionsFactor",
           folder,
         );
-        const emissionsFactors = await parseFile("EmissionsFactor", folder);
+
+        const emissionsFactorsStationaryEnergy = await parseFile("EmissionsFactor_Stationary_Energy", folder);
+        const emissionsFactorsStationaryEnergyScope1 = await parseFile("EmissionsFactor_Stationary_Energy_Scope1", folder);
+        const emissionsFactorsRaw = emissionsFactorsStationaryEnergy.concat(emissionsFactorsStationaryEnergyScope1);
+
+        const emissionsFactors = emissionsFactorsRaw.map((ef) => {
+          delete ef["EF ID_x"];
+          // delete ef["ipcc_2006_category"];
+          return ef;
+        })
+
         const publishers = await parseFile("Publisher", folder);
+
+        console.info("Done loading files");
 
         await bulkUpsert(
           queryInterface,
@@ -41,6 +53,7 @@ module.exports = {
           "publisher_id",
           transaction,
         );
+        console.info("Finished adding publishers");
         await bulkUpsert(
           queryInterface,
           "DataSource",
@@ -48,13 +61,16 @@ module.exports = {
           "datasource_id",
           transaction,
         );
+        console.info("Finished adding data sources");
         await bulkUpsert(
           queryInterface,
           "EmissionsFactor",
           emissionsFactors,
           "id",
           transaction,
+          true,
         );
+        console.info("Finished adding emissions factors");
         await bulkUpsert(
           queryInterface,
           "DataSourceEmissionsFactor",
@@ -62,6 +78,7 @@ module.exports = {
           "emissions_factor_id", // TODO handle multiple primary keys
           transaction,
         );
+        console.info("Done, have a nice day ✨");
       }
     });
   },

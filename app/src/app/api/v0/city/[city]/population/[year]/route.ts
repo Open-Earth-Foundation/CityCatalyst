@@ -5,12 +5,13 @@ import { apiHandler } from "@/util/api";
 import { PopulationEntry, findClosestYearToInventory } from "@/util/helpers";
 import { NextResponse } from "next/server";
 import { Op } from "sequelize";
+import { z } from "zod";
 
 const maxPopulationYearDifference = 5;
 
 export const GET = apiHandler(async (_req: Request, { session, params }) => {
   const city = await UserService.findUserCity(params.city, session);
-  const year = parseInt(params.year);
+  const year = z.coerce.number().parse(params.year);
   const populations = await db.models.Population.findAll({
     where: {
       cityId: params.city,
@@ -46,10 +47,10 @@ export const GET = apiHandler(async (_req: Request, { session, params }) => {
       cityId: city.cityId,
       population: cityPopulation?.population,
       year: cityPopulation?.year,
-      countryPopulation: countryPopulation.population,
-      countryPopulationYear: countryPopulation.year,
-      regionPopulation: regionPopulation.population,
-      regionPopulationYear: regionPopulation.year,
+      countryPopulation: countryPopulation?.population,
+      countryPopulationYear: countryPopulation?.year,
+      regionPopulation: regionPopulation?.population,
+      regionPopulationYear: regionPopulation?.year,
     },
   });
 });

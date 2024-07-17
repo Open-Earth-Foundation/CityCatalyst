@@ -92,12 +92,12 @@ function getMailURI(locode?: string, sector?: string, year?: number): string {
 function SearchDataSourcesPrompt({
   t,
   isSearching,
-  isDisabled,
+  isDisabled = false,
   onSearchClicked,
 }: {
   t: TFunction;
   isSearching: boolean;
-  isDisabled: boolean;
+  isDisabled?: boolean;
   onSearchClicked: () => void;
 }) {
   return (
@@ -899,7 +899,6 @@ export default function AddDataSteps({
             <SearchDataSourcesPrompt
               t={t}
               isSearching={areDataSourcesLoading}
-              isDisabled={!inventoryProgress}
               onSearchClicked={onSearchDataSourcesClicked}
             />
           ) : dataSourcesError ? (

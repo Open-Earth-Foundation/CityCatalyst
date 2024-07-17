@@ -413,11 +413,7 @@ export default function AddDataSteps({
   }
 
   function onSearchDataSourcesClicked() {
-    if (inventoryProgress) {
-      loadDataSources({ inventoryId: inventoryProgress.inventory.inventoryId });
-    } else {
-      console.error("Inventory progress is still loading!");
-    }
+    loadDataSources({ inventoryId: inventory });
   }
 
   const [selectedSubsector, setSelectedSubsector] =

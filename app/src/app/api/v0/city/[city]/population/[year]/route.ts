@@ -10,7 +10,7 @@ const maxPopulationYearDifference = 5;
 
 export const GET = apiHandler(async (_req: Request, { session, params }) => {
   const city = await UserService.findUserCity(params.city, session);
-  const year  = parseInt(params.year);
+  const year = parseInt(params.year);
   const populations = await db.models.Population.findAll({
     where: {
       cityId: params.city,
@@ -35,22 +35,21 @@ export const GET = apiHandler(async (_req: Request, { session, params }) => {
     countryPopulations as PopulationEntry[],
     year!,
   ) as PopulationAttributes;
-  const regionPopulations = populations.filter(
-    (pop) => !!pop.regionPopulation,
-  );
+  const regionPopulations = populations.filter((pop) => !!pop.regionPopulation);
   const regionPopulation = findClosestYearToInventory(
     regionPopulations as PopulationEntry[],
     year!,
   ) as PopulationAttributes;
 
- 
-  return NextResponse.json({ data: {
-    "cityId": city.cityId,
-    "population": cityPopulation?.population,
-    "year": cityPopulation?.year,
-    "countryPopulation": countryPopulation.population,
-    "countryPopulationYear": countryPopulation.year,
-    "regionPopulation": regionPopulation.population,
-    "regionPopulationYear": regionPopulation.year,
- } });
+  return NextResponse.json({
+    data: {
+      cityId: city.cityId,
+      population: cityPopulation?.population,
+      year: cityPopulation?.year,
+      countryPopulation: countryPopulation.population,
+      countryPopulationYear: countryPopulation.year,
+      regionPopulation: regionPopulation.population,
+      regionPopulationYear: regionPopulation.year,
+    },
+  });
 });

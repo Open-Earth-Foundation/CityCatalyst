@@ -916,7 +916,7 @@ export default function AddDataSteps({
             <Center>
               <WarningIcon boxSize={8} color="semantic.danger" />
             </Center>
-          ) : dataSources && dataSources.length === 0 ? (
+          ) : dataSources && dataSources?.length === 0 ? (
             <NoDataSourcesMessage
               t={t}
               sector={currentStep.referenceNumber}

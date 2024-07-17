@@ -186,7 +186,6 @@ const AddActivityModal: FC<AddUserModalProps> = ({
   };
 
   const formInputs = formStruct?.formInputs[step][scope];
-  console.log(formInputs, step);
 
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
     useState<boolean>(true);

@@ -60,8 +60,6 @@ function SubSectorPage({
     skip: !defaultInventoryId,
   });
 
-  console.log(inventoryProgress);
-
   // map subsector to sector by reference number
 
   const mapSectorName = (currentStep: string) => {
@@ -77,8 +75,6 @@ function SubSectorPage({
     }
   };
 
-  console.log(mapSectorName(step));
-
   const sectorData = inventoryProgress?.sectorProgress.find(
     (sector) => sector.sector.referenceNumber === mapSectorName(step),
   );
@@ -86,8 +82,6 @@ function SubSectorPage({
   const subSectorData = sectorData?.subSectors.find(
     (subsectorItem) => subsectorItem.subsectorId === subsector,
   );
-
-  console.log(inventoryProgress);
 
   const getSectorName = (currentStep: string) => {
     switch (currentStep) {

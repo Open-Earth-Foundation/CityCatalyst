@@ -45,10 +45,9 @@
           "name": "emissionFactorType",
           "options": [
             "IPCC",
+            "Local",
             "Regional",
-            "National",
-            "IPCC",
-            "Add custom"
+            "National"
           ]
         },
         {
@@ -123,8 +122,7 @@
             "name": "emissionFactorType",
             "options": [
               "Carbon Footprint",
-              "DEFRA",
-              "GHG Protocol",
+              
               "Local",
               "Regional",
               "National"

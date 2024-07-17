@@ -41,7 +41,6 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
         border="inputBox"
         borderColor={errors?.[activity] ? "sentiment.negativeDefault" : ""}
         background={errors?.[activity] ? "sentiment.negativeOverlay" : ""}
-        color="content.tertiary"
         fontSize="body.lg"
         h="48px"
         placeholder={placeholder}

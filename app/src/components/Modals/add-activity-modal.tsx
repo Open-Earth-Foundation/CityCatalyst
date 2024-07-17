@@ -183,6 +183,22 @@ const AddActivityModal: FC<AddUserModalProps> = ({
 
   const formInputs = formStruct.formInputs;
 
+  const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
+    useState<boolean>(true);
+
+  const onEmissionFactorTypeChange = (e: any) => {
+    const emissionFactorType = e.target.value;
+    if (
+      emissionFactorType === "Local" ||
+      emissionFactorType === "Regional" ||
+      emissionFactorType === "National"
+    ) {
+      setIsEmissionFactorInputDisabled(false);
+    } else {
+      setIsEmissionFactorInputDisabled(true);
+    }
+  };
+
   return (
     <>
       <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
@@ -339,10 +355,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       {...register("activity.emissionFactorType")}
                       bgColor="base.light"
                       placeholder="Select emission factor type"
+                      onChange={(e: any) => onEmissionFactorTypeChange(e)}
                     >
                       {/* TODO translate values and use internal value for saving */}
                       {formInputs.fields[3].options?.map((item: string) => (
-                        <option key={item} value="local">
+                        <option key={item} value={item}>
                           {item}
                         </option>
                       ))}
@@ -397,19 +414,31 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                   </FormLabel>
                   <InputGroup>
                     {/* TODO translate values and use internal value for checking */}
-                    <NumberInput defaultValue={0} min={0} isDisabled={true}>
+                    <NumberInput
+                      defaultValue={0}
+                      min={0}
+                      isDisabled={isEmissionFactorInputDisabled}
+                    >
                       <NumberInputField
                         h="48px"
                         shadow="1dp"
                         borderRightRadius={0}
                         {...register("activity.co2EmissionFactor")}
-                        bgColor="background.neutral"
+                        bgColor={
+                          isEmissionFactorInputDisabled
+                            ? "background.neutral"
+                            : "base.light"
+                        }
                         pos="relative"
                         zIndex={999}
                       />
                     </NumberInput>
                     <InputRightAddon
-                      bgColor="background.neutral"
+                      bgColor={
+                        isEmissionFactorInputDisabled
+                          ? "background.neutral"
+                          : "base.light"
+                      }
                       color="content.tertiary"
                       h="48px"
                       shadow="1dp"
@@ -425,7 +454,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                     {t("n2o-emission-factor")}
                   </FormLabel>
                   <InputGroup>
-                    <NumberInput defaultValue={0} min={0} isDisabled={true}>
+                    <NumberInput
+                      defaultValue={0}
+                      min={0}
+                      isDisabled={isEmissionFactorInputDisabled}
+                    >
                       <NumberInputField
                         _focus={{
                           borderWidth: "1px",
@@ -434,7 +467,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                         }}
                         borderRightRadius={0}
                         {...register("activity.n2oEmissionFactor")}
-                        bgColor="background.neutral"
+                        bgColor={
+                          isEmissionFactorInputDisabled
+                            ? "background.neutral"
+                            : "base.light"
+                        }
                         h="48px"
                         shadow="1dp"
                         pos="relative"
@@ -442,7 +479,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       />
                     </NumberInput>
                     <InputRightAddon
-                      bgColor="background.neutral"
+                      bgColor={
+                        isEmissionFactorInputDisabled
+                          ? "background.neutral"
+                          : "base.light"
+                      }
                       color="content.tertiary"
                       h="48px"
                       shadow="1dp"
@@ -458,7 +499,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                     {t("ch4-emission-factor")}
                   </FormLabel>
                   <InputGroup>
-                    <NumberInput defaultValue={0} min={0} isDisabled={true}>
+                    <NumberInput
+                      defaultValue={0}
+                      min={0}
+                      isDisabled={isEmissionFactorInputDisabled}
+                    >
                       <NumberInputField
                         _focus={{
                           borderWidth: "1px",
@@ -467,7 +512,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                         }}
                         borderRightRadius={0}
                         {...register("activity.ch4EmissionFactor")}
-                        bgColor="background.neutral"
+                        bgColor={
+                          isEmissionFactorInputDisabled
+                            ? "background.neutral"
+                            : "base.light"
+                        }
                         h="48px"
                         shadow="1dp"
                         pos="relative"
@@ -475,7 +524,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       />
                     </NumberInput>
                     <InputRightAddon
-                      bgColor="background.neutral"
+                      bgColor={
+                        isEmissionFactorInputDisabled
+                          ? "background.neutral"
+                          : "base.light"
+                      }
                       color="content.tertiary"
                       h="48px"
                       shadow="1dp"

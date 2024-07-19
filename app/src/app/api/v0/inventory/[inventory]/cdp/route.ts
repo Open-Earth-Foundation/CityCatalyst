@@ -5,7 +5,6 @@ import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import { Inventory } from "@/models/Inventory";
-import { InventoryValue } from "@/models/InventoryValue";
 import { db } from "@/models";
 import { Op } from "sequelize";
 import createHttpError from "http-errors";
@@ -20,26 +19,30 @@ function findRow(rows: any[], regex: RegExp): string | null {
   return row ? row.id : null;
 }
 
-async function getTotalByRefnos(inventory: Inventory, refNos: string[]): Promise<bigint> {
-
-  let total:bigint = 0n;
+async function getTotalByRefnos(
+  inventory: Inventory,
+  refNos: string[],
+): Promise<bigint> {
+  let total: bigint = 0n;
 
   const values = await db.models.InventoryValue.findAll({
-    where:
-      {
-        inventoryId: inventory.inventoryId,
-        gpcReferenceNumber: { [Op.in]: refNos }
-      }
+    where: {
+      inventoryId: inventory.inventoryId,
+      gpcReferenceNumber: { [Op.in]: refNos },
+    },
   });
 
   for (const value of values) {
-    total += (value.co2eq ?? 0n);
+    total += value.co2eq ?? 0n;
   }
 
   return total;
 }
 
-async function totalScope1ExcludingGeneration(inventory: Inventory): Promise<bigint> {
+async function totalScope1ExcludingGeneration(
+  inventory: Inventory,
+): Promise<bigint> {
+  // prettier-ignore
   return await getTotalByRefnos(inventory, [
     "I.1.1", "I.2.1", "I.3.1", "I.4.1", "I.5.1", "I.6.1",
     "I.7.1", "I.8.1",
@@ -50,26 +53,28 @@ async function totalScope1ExcludingGeneration(inventory: Inventory): Promise<big
 }
 
 async function scope1FromGeneration(inventory: Inventory): Promise<bigint> {
-  return await getTotalByRefnos(inventory, [
-    "I.4.4"
-  ]);
+  return await getTotalByRefnos(inventory, ["I.4.4"]);
 }
 
 async function totalScope2(inventory: Inventory): Promise<bigint> {
+  // prettier-ignore
   return await getTotalByRefnos(inventory, [
     "I.1.2", "I.2.2", "I.3.2", "I.4.2", "I.5.2", "I.6.2",
     "II.1.2", "II.2.2", "II.3.2", "II.4.2", "II.5.2"])
 }
 
 async function totalScope3(inventory: Inventory): Promise<bigint> {
-  return await getTotalByRefnos(inventory,
+  // prettier-ignore
+  return await getTotalByRefnos(
+    inventory,
     `I.1.3, I.2.3, I.3.3, I.4.3, I.5.3, I.6.3
     II.1.3, II.2.3, II.3.3, II.4.3
-    III.1.2, III.2.2, III.3.2, III.4.2`.split(/\s*,\s*/)
-  )
+    III.1.2, III.2.2, III.3.2, III.4.2`.split(/\s*,\s*/),
+  );
 }
 
 async function totalStationaryScope1(inventory: Inventory): Promise<bigint> {
+  // prettier-ignore
   return await getTotalByRefnos(inventory, [
     "I.1.1", "I.2.1", "I.3.1", "I.4.1", "I.5.1", "I.6.1",
     "I.7.1", "I.8.1", "I.4.4"
@@ -77,61 +82,77 @@ async function totalStationaryScope1(inventory: Inventory): Promise<bigint> {
 }
 
 async function totalStationaryScope2(inventory: Inventory): Promise<bigint> {
+  // prettier-ignore
   return await getTotalByRefnos(inventory, [
     "I.1.2", "I.2.2", "I.3.2", "I.4.2", "I.5.2", "I.6.2",
   ])
 }
 
 async function totalStationaryScope3(inventory: Inventory): Promise<bigint> {
+  // prettier-ignore
   return await getTotalByRefnos(inventory, [
     "I.1.3", "I.2.3", "I.3.3", "I.4.3", "I.5.3", "I.6.3"
   ])
 }
 
-async function totalTransportationScope1(inventory: Inventory): Promise<bigint> {
+async function totalTransportationScope1(
+  inventory: Inventory,
+): Promise<bigint> {
+  // prettier-ignore
   return await getTotalByRefnos(inventory, [
     "II.1.1", "II.2.1", "II.3.1", "II.4.1", "II.5.1"
   ]);
 }
 
-async function totalTransportationScope2(inventory: Inventory): Promise<bigint> {
+async function totalTransportationScope2(
+  inventory: Inventory,
+): Promise<bigint> {
+  // prettier-ignore
   return await getTotalByRefnos(inventory, [
     "II.1.2", "II.2.2", "II.3.2", "II.4.2", "II.5.2"
   ]);
 }
 
-async function totalTransportationScope3(inventory: Inventory): Promise<bigint> {
+async function totalTransportationScope3(
+  inventory: Inventory,
+): Promise<bigint> {
+  // prettier-ignore
   return await getTotalByRefnos(inventory, [
     "II.1.3", "II.2.3", "II.3.3", "II.4.3"
   ]);
 }
 
 async function totalWasteWithinScope1(inventory: Inventory): Promise<bigint> {
+  // prettier-ignore
   return await getTotalByRefnos(inventory, [
     "III.1.1", "III.2.1", "III.3.1", "III.4.1"
   ]);
 }
 
 async function totalWasteWithinScope3(inventory: Inventory): Promise<bigint> {
+  // prettier-ignore
   return await getTotalByRefnos(inventory, [
     "III.1.2", "III.2.2", "III.3.2", "III.4.2"
   ]);
 }
 
 async function totalWasteOutsideScope1(inventory: Inventory): Promise<bigint> {
+  // prettier-ignore
   return await getTotalByRefnos(inventory, [
     "III.1.3", "III.2.3", "III.3.3", "III.4.3"
   ]);
 }
 
 async function totalBasic(inventory: Inventory): Promise<bigint> {
-  return await getTotalByRefnos(inventory,
+  return await getTotalByRefnos(
+    inventory,
     `I.1.1, I.2.1, I.3.1, I.4.1, I.5.1, I.6.1, I.7.1, I.8.1
     II.1.1, II.2.1, II.3.1, II.4.1, II.5.1
     III.1.1, III.2.1, III.3.1, III.4.1
     I.1.2, I.2.2, I.3.2, I.4.2, I.5.2, I.6.2
     II.1.2, II.2.2, II.3.2, II.4.2, II.5.2
-    III.1.2, III.2.2, III.3.2, III.4.2`.split(/\s*,\s/));
+    III.1.2, III.2.2, III.3.2, III.4.2`.split(/\s*,\s/),
+  );
 }
 
 export const POST = apiHandler(async (_req, { session, params }) => {
@@ -199,35 +220,63 @@ export const POST = apiHandler(async (_req, { session, params }) => {
     });
 
     const rows = [
-      { rowId: findRow(matrix.rows, /Total scope 1 emissions.*excluding/),
-        content: await totalScope1ExcludingGeneration(inventory) },
-      { rowId: findRow(matrix.rows, /[Ss]cope 1 emissions.*from generation/),
-        content: await scope1FromGeneration(inventory) },
-      { rowId: findRow(matrix.rows, /Total scope 2 emissions/),
-        content: await totalScope2(inventory) },
-      { rowId: findRow(matrix.rows, /Total scope 3 emissions/),
-        content: await totalScope3(inventory) },
-      { rowId: findRow(matrix.rows, /Stationary Energy.*scope 1/),
-        content: await totalStationaryScope1(inventory) },
-      { rowId: findRow(matrix.rows, /Stationary Energy.*scope 2/),
-        content: await totalStationaryScope2(inventory) },
-      { rowId: findRow(matrix.rows, /Stationary Energy.*scope 3/),
-        content: await totalStationaryScope3(inventory) },
-      { rowId: findRow(matrix.rows, /Transportation.*scope 1/),
-        content: await totalTransportationScope1(inventory) },
-      { rowId: findRow(matrix.rows, /Transportation.*scope 2/),
-        content: await totalTransportationScope2(inventory) },
-      { rowId: findRow(matrix.rows, /Transportation.*scope 3/),
-        content: await totalTransportationScope3(inventory) },
-      { rowId: findRow(matrix.rows, /Waste.*within.*scope 1/),
-        content: await totalWasteWithinScope1(inventory) },
-      { rowId: findRow(matrix.rows, /Waste.*within.*scope 3/),
-        content: await totalWasteWithinScope3(inventory) },
-      { rowId: findRow(matrix.rows, /Waste.*outside.*scope 1/),
-        content: await totalWasteOutsideScope1(inventory) },
-      { rowId: findRow(matrix.rows, /TOTAL BASIC emissions/),
-        content: await totalBasic(inventory) },
-    ]
+      {
+        rowId: findRow(matrix.rows, /Total scope 1 emissions.*excluding/),
+        content: await totalScope1ExcludingGeneration(inventory),
+      },
+      {
+        rowId: findRow(matrix.rows, /[Ss]cope 1 emissions.*from generation/),
+        content: await scope1FromGeneration(inventory),
+      },
+      {
+        rowId: findRow(matrix.rows, /Total scope 2 emissions/),
+        content: await totalScope2(inventory),
+      },
+      {
+        rowId: findRow(matrix.rows, /Total scope 3 emissions/),
+        content: await totalScope3(inventory),
+      },
+      {
+        rowId: findRow(matrix.rows, /Stationary Energy.*scope 1/),
+        content: await totalStationaryScope1(inventory),
+      },
+      {
+        rowId: findRow(matrix.rows, /Stationary Energy.*scope 2/),
+        content: await totalStationaryScope2(inventory),
+      },
+      {
+        rowId: findRow(matrix.rows, /Stationary Energy.*scope 3/),
+        content: await totalStationaryScope3(inventory),
+      },
+      {
+        rowId: findRow(matrix.rows, /Transportation.*scope 1/),
+        content: await totalTransportationScope1(inventory),
+      },
+      {
+        rowId: findRow(matrix.rows, /Transportation.*scope 2/),
+        content: await totalTransportationScope2(inventory),
+      },
+      {
+        rowId: findRow(matrix.rows, /Transportation.*scope 3/),
+        content: await totalTransportationScope3(inventory),
+      },
+      {
+        rowId: findRow(matrix.rows, /Waste.*within.*scope 1/),
+        content: await totalWasteWithinScope1(inventory),
+      },
+      {
+        rowId: findRow(matrix.rows, /Waste.*within.*scope 3/),
+        content: await totalWasteWithinScope3(inventory),
+      },
+      {
+        rowId: findRow(matrix.rows, /Waste.*outside.*scope 1/),
+        content: await totalWasteOutsideScope1(inventory),
+      },
+      {
+        rowId: findRow(matrix.rows, /TOTAL BASIC emissions/),
+        content: await totalBasic(inventory),
+      },
+    ];
 
     try {
       success = await CDPService.submitSingleSelect(

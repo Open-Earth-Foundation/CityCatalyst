@@ -48,6 +48,8 @@ spec:
               value: "https://ccglobal.openearth.dev"
             - name: NEXT_PUBLIC_OPENCLIMATE_API_URL
               value: "https://openclimate.openearth.dev"
+            - name: CDP_MODE
+              value: test
           resources:
             limits:
               memory: "1024Mi"

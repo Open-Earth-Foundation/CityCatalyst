@@ -1,6 +1,24 @@
 blocks:
 - all_upstream_blocks_executed: true
   color: null
+  configuration:
+    file_path: markdowns/overview.md
+    file_source:
+      path: markdowns/overview.md
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: markdown
+  name: OVERVIEW
+  retry_config: null
+  status: updated
+  timeout: null
+  type: markdown
+  upstream_blocks: []
+  uuid: overview
+- all_upstream_blocks_executed: true
+  color: null
   configuration: {}
   downstream_blocks:
   - cleaning_oil_gas_refining_ct
@@ -16,10 +34,28 @@ blocks:
   upstream_blocks: []
   uuid: oil_gas_refining_read_s3
 - all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: markdown
+  name: stage 1
+  retry_config: null
+  status: updated
+  timeout: null
+  type: markdown
+  upstream_blocks: []
+  uuid: stage_1
+- all_upstream_blocks_executed: true
   color: teal
   configuration: {}
   downstream_blocks:
-  - transformation_oil_gas_refining_ct
+  - ingest_raw_oil_gas_refining_ct
+  - activity_oil_gas_refining_ct
+  - ef_oil_gas_refining_ct
+  - emissions_oil_gas_refining_ct
   executor_config: null
   executor_type: local_python
   has_callback: false
@@ -33,21 +69,135 @@ blocks:
   - oil_gas_refining_read_s3
   uuid: cleaning_oil_gas_refining_ct
 - all_upstream_blocks_executed: true
-  color: pink
+  color: null
   configuration: {}
   downstream_blocks: []
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: python
-  name: transformation_oil_gas_refining_ct
+  name: ingest_raw_oil_gas_refining_ct
+  retry_config: null
+  status: updated
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - cleaning_oil_gas_refining_ct
+  uuid: ingest_raw_oil_gas_refining_ct
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: markdown
+  name: stage2
+  retry_config: null
+  status: updated
+  timeout: null
+  type: markdown
+  upstream_blocks: []
+  uuid: stage2
+- all_upstream_blocks_executed: true
+  color: purple
+  configuration: {}
+  downstream_blocks:
+  - populate_activity_subcategory
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: activity_oil_gas_refining_ct
   retry_config: null
   status: updated
   timeout: null
   type: custom
   upstream_blocks:
   - cleaning_oil_gas_refining_ct
-  uuid: transformation_oil_gas_refining_ct
+  uuid: activity_oil_gas_refining_ct
+- all_upstream_blocks_executed: false
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: populate_activity_subcategory
+  retry_config: null
+  status: updated
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - activity_oil_gas_refining_ct
+  uuid: populate_activity_subcategory
+- all_upstream_blocks_executed: true
+  color: purple
+  configuration: {}
+  downstream_blocks:
+  - populate_emission_factor
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: ef_oil_gas_refining_ct
+  retry_config: null
+  status: updated
+  timeout: null
+  type: custom
+  upstream_blocks:
+  - cleaning_oil_gas_refining_ct
+  uuid: ef_oil_gas_refining_ct
+- all_upstream_blocks_executed: false
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: populate_emission_factor
+  retry_config: null
+  status: updated
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - ef_oil_gas_refining_ct
+  uuid: populate_emission_factor
+- all_upstream_blocks_executed: true
+  color: purple
+  configuration: {}
+  downstream_blocks:
+  - populate_emissions
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: emissions_oil_gas_refining_ct
+  retry_config: null
+  status: updated
+  timeout: null
+  type: custom
+  upstream_blocks:
+  - cleaning_oil_gas_refining_ct
+  uuid: emissions_oil_gas_refining_ct
+- all_upstream_blocks_executed: false
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: populate_emissions
+  retry_config: null
+  status: updated
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - emissions_oil_gas_refining_ct
+  uuid: populate_emissions
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}

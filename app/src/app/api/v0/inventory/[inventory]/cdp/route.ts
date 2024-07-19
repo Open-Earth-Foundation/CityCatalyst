@@ -144,82 +144,74 @@ export const POST = apiHandler(async (_req, { session, params }) => {
 
   let success = false;
 
-  // In test mode, we just need to show that we can get questions and submit a response
-  if (CDPService.mode === "test") {
-    const questionnaire = await CDPService.getQuestions(cityId);
+  const questionnaire = await CDPService.getQuestions(cityId);
 
-    logger.debug(`Got questionnaire`);
-    logger.debug(`Got ${questionnaire.sections.length} sections`);
+  logger.debug(`Got questionnaire`);
+  logger.debug(`Got ${questionnaire.sections.length} sections`);
 
-    for (let i = 0; i < questionnaire.sections.length; i++) {
-      logger.debug(
-        `Got ${questionnaire.sections[i].questions.length} questions for section ${i}`,
-      );
-      const questions = questionnaire.sections[i].questions;
-      for (let j = 0; j < questions.length; j++) {
-        const question = questions[j];
-        logger.debug(`Got keys ${Object.keys(question).join(", ")}`);
-        logger.debug(`Question ${i}.${j} (${question.id}): ${question.text}`);
-      }
+  for (let i = 0; i < questionnaire.sections.length; i++) {
+    logger.debug(
+      `Got ${questionnaire.sections[i].questions.length} questions for section ${i}`,
+    );
+    const questions = questionnaire.sections[i].questions;
+    for (let j = 0; j < questions.length; j++) {
+      const question = questions[j];
+      logger.debug(`Got keys ${Object.keys(question).join(", ")}`);
+      logger.debug(`Question ${i}.${j} (${question.id}): ${question.text}`);
     }
+  }
 
-    const section = questionnaire.sections[EMISSIONS_SECTION];
-    const question = section.questions[EMISSIONS_INVENTORY_QUESTION];
+  const section = questionnaire.sections[EMISSIONS_SECTION];
+  const question = section.questions[EMISSIONS_INVENTORY_QUESTION];
 
-    const yes = question.options.find((option: any) => {
-      return option.name === EMISSIONS_INVENTORY_ANSWER;
-    });
+  const yes = question.options.find((option: any) => {
+    return option.name === EMISSIONS_INVENTORY_ANSWER;
+  });
 
-    logger.debug(`Got question: ${JSON.stringify(question)}`);
+  logger.debug(`Got question: ${JSON.stringify(question)}`);
 
-    const matrix =
-      questionnaire.sections[EMISSIONS_SECTION].questions[
-        EMISSIONS_MATRIX_QUESTION
-      ];
-    logger.debug(`Got matrix question: ${JSON.stringify(matrix)}`);
+  const matrix =
+    questionnaire.sections[EMISSIONS_SECTION].questions[
+      EMISSIONS_MATRIX_QUESTION
+    ];
+  logger.debug(`Got matrix question: ${JSON.stringify(matrix)}`);
 
-    const col = matrix.columns.find((column: any) => {
-      return column.text.match(/^Emissions/);
-    });
+  const col = matrix.columns.find((column: any) => {
+    return column.text.match(/^Emissions/);
+  });
 
-    const rows = (
-      await Promise.all(
-        cdpRows.map(async (rowData) => {
-          const rowId = findRow(matrix.rows, rowData.rowRegex);
-          if (!rowId) {
-            logger.error("Couldn't find row id for: " + rowData.rowRegex);
-            return null;
-          }
-          const content = (
-            await getTotalByRefnos(inventory.inventoryId, rowData.refNos)
-          ).toString();
-          return { rowId, content };
-        }),
-      )
-    ).filter(notEmpty);
+  const rows = (
+    await Promise.all(
+      cdpRows.map(async (rowData) => {
+        const rowId = findRow(matrix.rows, rowData.rowRegex);
+        if (!rowId) {
+          logger.error("Couldn't find row id for: " + rowData.rowRegex);
+          return null;
+        }
+        const content = (
+          await getTotalByRefnos(inventory.inventoryId, rowData.refNos)
+        ).toString();
+        return { rowId, content };
+      }),
+    )
+  ).filter(notEmpty);
 
-    try {
-      success = await CDPService.submitSingleSelect(
-        cityId,
-        question.id,
-        yes.id,
-        yes.name,
-      );
-      if (success) {
-        success = await CDPService.submitMatrix(cityId, col.id, rows);
-      }
-    } catch (error) {
-      logger.error(`Failed to submit response: ${error}`);
-      throw new createHttpError.FailedDependency(
-        "CDP API response error: " + error,
-      );
+  // TODO: Submit CIRIS file
+
+  try {
+    success = await CDPService.submitSingleSelect(
+      cityId,
+      question.id,
+      yes.id,
+      yes.name,
+    );
+    if (success) {
+      success = await CDPService.submitMatrix(cityId, col.id, rows);
     }
-  } else if (CDPService.mode === "production") {
-    // TODO: Submit total emissions
-    // TODO: Submit CIRIS file
-    // TODO: Submit emissions matrix
-    throw new createHttpError.InternalServerError(
-      "CDP service is set to production mode, which is not yet implemented.",
+  } catch (error) {
+    logger.error(`Failed to submit response: ${error}`);
+    throw new createHttpError.FailedDependency(
+      "CDP API response error: " + error,
     );
   }
 

@@ -42,28 +42,11 @@ async function getTotalByRefnos(
 const cdpRows = [
   {
     rowRegex: /Total scope 1 emissions.*excluding/,
+    // prettier-ignore
     refNos: [
-      "I.1.1",
-      "I.2.1",
-      "I.3.1",
-      "I.4.1",
-      "I.5.1",
-      "I.6.1",
-      "I.7.1",
-      "I.8.1",
-      "II.1.1",
-      "II.2.1",
-      "II.3.1",
-      "II.4.1",
-      "II.5.1",
-      "III.1.1",
-      "III.2.1",
-      "III.3.1",
-      "III.4.1",
-      "III.1.3",
-      "III.2.3",
-      "III.3.3",
-      "III.4.3",
+      "I.1.1", "I.2.1", "I.3.1", "I.4.1", "I.5.1", "I.6.1", "I.7.1", "I.8.1",
+      "II.1.1", "II.2.1", "II.3.1", "II.4.1", "II.5.1",
+      "III.1.1", "III.2.1", "III.3.1", "III.4.1", "III.1.3", "III.2.3", "III.3.3", "III.4.3"
     ],
   },
   {
@@ -72,39 +55,22 @@ const cdpRows = [
   },
   {
     rowRegex: /Total scope 2 emissions/,
-    refNos: [
-      "I.1.2",
-      "I.2.2",
-      "I.3.2",
-      "I.4.2",
-      "I.5.2",
-      "I.6.2",
-      "II.1.2",
-      "II.2.2",
-      "II.3.2",
-      "II.4.2",
-      "II.5.2",
-    ],
+    // prettier-ignore
+    refNos: ["I.1.2", "I.2.2", "I.3.2", "I.4.2", "I.5.2", "I.6.2", "II.1.2", "II.2.2", "II.3.2", "II.4.2", "II.5.2"],
   },
   {
     rowRegex: /Total scope 3 emissions/,
-    refNos: `I.1.3, I.2.3, I.3.3, I.4.3, I.5.3, I.6.3
-    II.1.3, II.2.3, II.3.3, II.4.3
-    III.1.2, III.2.2, III.3.2, III.4.2`.split(/\s*,\s*/),
+    // prettier-ignore
+    refNos: [
+      "I.1.3", "I.2.3", "I.3.3", "I.4.3", "I.5.3", "I.6.3",
+      "II.1.3", "II.2.3", "II.3.3", "II.4.3",
+      "III.1.2", "III.2.2", "III.3.2", "III.4.2"
+    ],
   },
   {
     rowRegex: /Stationary Energy.*scope 1/,
-    refNos: [
-      "I.1.1",
-      "I.2.1",
-      "I.3.1",
-      "I.4.1",
-      "I.5.1",
-      "I.6.1",
-      "I.7.1",
-      "I.8.1",
-      "I.4.4",
-    ],
+    // prettier-ignore
+    refNos: ["I.1.1", "I.2.1", "I.3.1", "I.4.1", "I.5.1", "I.6.1", "I.7.1", "I.8.1", "I.4.4"],
   },
   {
     rowRegex: /Stationary Energy.*scope 2/,
@@ -140,12 +106,15 @@ const cdpRows = [
   },
   {
     rowRegex: /TOTAL BASIC emissions/,
-    refNos: `I.1.1, I.2.1, I.3.1, I.4.1, I.5.1, I.6.1, I.7.1, I.8.1
-    II.1.1, II.2.1, II.3.1, II.4.1, II.5.1
-    III.1.1, III.2.1, III.3.1, III.4.1
-    I.1.2, I.2.2, I.3.2, I.4.2, I.5.2, I.6.2
-    II.1.2, II.2.2, II.3.2, II.4.2, II.5.2
-    III.1.2, III.2.2, III.3.2, III.4.2`.split(/\s*,\s/),
+    // prettier-ignore
+    refNos: [
+      "I.1.1", "I.2.1", "I.3.1", "I.4.1", "I.5.1", "I.6.1", "I.7.1", "I.8.1",
+      "II.1.1", "II.2.1", "II.3.1", "II.4.1", "II.5.1",
+      "III.1.1", "III.2.1", "III.3.1", "III.4.1",
+      "I.1.2", "I.2.2", "I.3.2", "I.4.2", "I.5.2", "I.6.2",
+      "II.1.2", "II.2.2", "II.3.2", "II.4.2", "II.5.2",
+      "III.1.2", "III.2.2", "III.3.2", "III.4.2"
+    ],
   },
 ];
 

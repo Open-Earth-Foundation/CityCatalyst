@@ -164,7 +164,7 @@
   "delete-activity": "Delete activity",
   "delete-activities-prompt": "Are you sure you want to <2>permanently delete </2> all activities in the commercial and institutional buildings sub-sector from the city's inventory data?",
   "delete-activity-prompt": "Are you sure you want to <2> permanently delete </2> this activity from the city's inventory data?",
-  
+
   "skip-step-button": "Skip this step",
   "save-continue-button": "Save and Continue",
   "updated-every": "Updated every",
@@ -228,6 +228,7 @@
   "incomplete": "Incomplete",
   "search-available-datasets": "Search for available datasets",
   "searching": "Searching...",
+  "wait-for-search": "Please wait while we search for external data sources that match your inventory needs.",
   "no-external-sources": "It seemes like there are no external sources at this moment.",
   "report-any-sources": "if you know any, <2>please report this</2> and we'll prioritize your request.",
   "unsaved-changes": "Unsaved Changes",

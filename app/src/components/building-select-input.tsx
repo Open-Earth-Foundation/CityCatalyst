@@ -22,7 +22,6 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
   activity,
   errors,
 }) => {
-  console.log(errors?.buildingType?.message);
   return (
     <Box display="flex" flexDirection="column" gap="8px">
       <Text

@@ -164,7 +164,7 @@
   "delete-activity": "Delete activity",
   "delete-activities-prompt": "Are you sure you want to <2>permanently delete </2> all activities in the commercial and institutional buildings sub-sector from the city's inventory data?",
   "delete-activity-prompt": "Are you sure you want to <2> permanently delete </2> this activity from the city's inventory data?",
-  
+
   "skip-step-button": "Skip this step",
   "save-continue-button": "Save and Continue",
   "updated-every": "Updated every",
@@ -206,7 +206,7 @@
   "n2o-emission-factor": "N2O emission factor",
   "ch4-emission-factor": "CH4 emission factor",
   "optional": "Optional",
-  "change-methodology": "Change Methodology",
+  "change-methodology": "Change methodology",
   "change-methodology-description-text": "Please be aware that <2>changing methodology may impact your existing inventory data.</2> Are you sure you want to proceed with changing your methodology?",
   "emissions-factor-details": "At least one emission factor is required. Empty values will be computed as 0 and require to be justified.",
   "source-reference": "Source reference",
@@ -228,6 +228,7 @@
   "incomplete": "Incomplete",
   "search-available-datasets": "Search for available datasets",
   "searching": "Searching...",
+  "wait-for-search": "Please wait while we search for external data sources that match your inventory needs.",
   "no-external-sources": "It seemes like there are no external sources at this moment.",
   "report-any-sources": "if you know any, <2>please report this</2> and we'll prioritize your request.",
   "unsaved-changes": "Unsaved Changes",

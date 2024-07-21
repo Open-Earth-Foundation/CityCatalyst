@@ -112,13 +112,15 @@
           {
             "label": "Total grid-supplied energy consumption",
             "type": "number",
-            "name": "fuelConsumption",
-            "unit": "gal",
-            "options": [
+            "name": "energyConsumption",
+            "addon": {
+              "name": "energyConsumptionUnites",
+              "options": [
               "Kilowatt hour (kWh)",
               "Terajoules (TJ)",
               "Kilowatt-kilometer (kW/m2)"
             ]
+            }
           },
           {
             "label": "Emission factor type",
@@ -126,7 +128,6 @@
             "name": "emissionFactorType",
             "options": [
               "Carbon Footprint",
-              
               "Local",
               "Regional",
               "National"

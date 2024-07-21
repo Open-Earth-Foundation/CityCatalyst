@@ -179,7 +179,9 @@ const AddActivityModal: FC<AddUserModalProps> = ({
     });
   };
 
-  const formInputs = formStruct?.formInputs[step][scope];
+  const defaultScope = 1;
+
+  const formInputs = formStruct?.formInputs[step][scope ?? defaultScope];
 
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
     useState<boolean>(true);
@@ -244,7 +246,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                     title={formInputs?.fields[1].label}
                     placeholder={t("select-type-of-fuel")}
                     register={register}
-                    activity={formInputs?.fields[0].name}
+                    activity={formInputs?.fields[1].name}
                     errors={errors}
                   />
                 </FormControl>
@@ -286,7 +288,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                             shadow: "none",
                             borderColor: "content.link",
                           }}
-                          {...register(formInputs?.fields[0].name, {
+                          {...register(formInputs?.fields[2].name, {
                             required: t("value-required"),
                           })}
                         />
@@ -353,7 +355,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                         shadow: "none",
                         borderColor: "content.link",
                       }}
-                      {...register("activity.emissionFactorType")}
+                      {...register(formInputs?.fields[3].name)}
                       bgColor="base.light"
                       placeholder="Select emission factor type"
                       onChange={(e: any) => onEmissionFactorTypeChange(e)}

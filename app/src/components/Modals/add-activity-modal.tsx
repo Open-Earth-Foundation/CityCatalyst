@@ -1,6 +1,5 @@
 "use client";
 
-import { ProfileInputs } from "@/app/[lng]/[inventory]/settings/page";
 import type { UserAttributes } from "@/models/User";
 import { api } from "@/services/api";
 import {
@@ -31,12 +30,7 @@ import {
 } from "@chakra-ui/react";
 import { FC, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { MdCheckCircleOutline } from "react-icons/md";
-import FormInput from "../form-input";
-import FormSelectInput from "../form-select-input";
-import FormSelectOrganization from "../form-select-organization";
 import { TFunction } from "i18next";
-import { useParams } from "next/navigation";
 import BuildingTypeSelectInput from "../building-select-input";
 import {
   CheckCircleIcon,
@@ -190,6 +184,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
     useState<boolean>(true);
 
+  // Adjust function for countries with national emission factors i.e US
   const onEmissionFactorTypeChange = (e: any) => {
     const emissionFactorType = e.target.value;
     if (
@@ -239,7 +234,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                     title={formInputs?.fields[0].label}
                     placeholder={t("select-type-of-building")}
                     register={register}
-                    activity="buildingType"
+                    activity={formInputs?.fields[0].name}
                     errors={errors}
                   />
                 </FormControl>
@@ -249,7 +244,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                     title={formInputs?.fields[1].label}
                     placeholder={t("select-type-of-fuel")}
                     register={register}
-                    activity="fuelType"
+                    activity={formInputs?.fields[0].name}
                     errors={errors}
                   />
                 </FormControl>
@@ -291,7 +286,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                             shadow: "none",
                             borderColor: "content.link",
                           }}
-                          {...register("activity.totalFuelConsumption", {
+                          {...register(formInputs?.fields[0].name, {
                             required: t("value-required"),
                           })}
                         />
@@ -306,9 +301,9 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       >
                         <Select
                           variant="unstyled"
-                          {...register("activity.activityDataUnit")}
+                          {...register(formInputs?.fields[2].addon?.name)}
                         >
-                          {formInputs?.fields[2].options?.map(
+                          {formInputs?.fields[2].addon?.options?.map(
                             (item: string) => (
                               <option key={item} value={item}>
                                 {item}
@@ -405,18 +400,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                 >
                   {t("emissions-factor-values")}
                 </FormLabel>
-                <Tooltip
-                  hasArrow
-                  label={t("value-types-tooltip")}
-                  placement="bottom-start"
-                >
-                  <InfoOutlineIcon mt={-0.5} color="content.tertiary" />
-                </Tooltip>
               </Heading>
               <HStack spacing={4} mb={5}>
                 <FormControl>
                   <FormLabel color="content.tertiary">
-                    {t("co2-emission-factor")}
+                    {formInputs?.fields[4]?.label}
                   </FormLabel>
                   <InputGroup>
                     {/* TODO translate values and use internal value for checking */}
@@ -429,7 +417,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                         h="48px"
                         shadow="1dp"
                         borderRightRadius={0}
-                        {...register("activity.co2EmissionFactor")}
+                        {...register(formInputs?.fields[4]?.name)}
                         bgColor={
                           isEmissionFactorInputDisabled
                             ? "background.neutral"
@@ -450,6 +438,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       shadow="1dp"
                       pos="relative"
                       zIndex={10}
+                      {...register(formInputs?.fields[4]?.unit)}
                     >
                       {formInputs?.fields[4].unit}
                     </InputRightAddon>
@@ -457,7 +446,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                 </FormControl>
                 <FormControl>
                   <FormLabel color="content.tertiary">
-                    {t("n2o-emission-factor")}
+                    {formInputs?.fields[5].label}
                   </FormLabel>
                   <InputGroup>
                     <NumberInput
@@ -472,7 +461,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                           borderColor: "content.link",
                         }}
                         borderRightRadius={0}
-                        {...register("activity.n2oEmissionFactor")}
+                        {...register(formInputs?.fields[5].unit)}
                         bgColor={
                           isEmissionFactorInputDisabled
                             ? "background.neutral"
@@ -495,6 +484,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       shadow="1dp"
                       pos="relative"
                       zIndex={10}
+                      {...register(formInputs?.fields[5].name)}
                     >
                       {formInputs?.fields[5].unit}
                     </InputRightAddon>
@@ -502,7 +492,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                 </FormControl>
                 <FormControl>
                   <FormLabel color="content.tertiary">
-                    {t("ch4-emission-factor")}
+                    {formInputs?.fields[6].label}
                   </FormLabel>
                   <InputGroup>
                     <NumberInput
@@ -517,7 +507,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                           borderColor: "content.link",
                         }}
                         borderRightRadius={0}
-                        {...register("activity.ch4EmissionFactor")}
+                        {...register(formInputs?.fields[6].unit)}
                         bgColor={
                           isEmissionFactorInputDisabled
                             ? "background.neutral"
@@ -540,6 +530,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       shadow="1dp"
                       pos="relative"
                       zIndex={10}
+                      {...register(formInputs?.fields[6].unit)}
                     >
                       {formInputs?.fields[6].unit}
                     </InputRightAddon>
@@ -578,7 +569,6 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                   })}
                   h="48px"
                   shadow="1dp"
-                  color="content.tertiary"
                 >
                   <option value="high">{t("detailed-activity-data")}</option>
                   <option value="medium">{t("modeled-emissions-data")}</option>

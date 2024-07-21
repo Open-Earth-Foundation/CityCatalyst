@@ -31,7 +31,9 @@
           "label": "Total fuel consumption",
           "type": "number",
           "name": "fuelConsumption",
-          "options": [
+          "addon": {
+            "name": "fuelConsumptionUnits",
+            "options": [
             "Gallons (gal)",
             "Liters (L)",
             "Cubic meters (m3)",
@@ -39,6 +41,7 @@
             "Terajoules (TJ)",
             "Kilowatt hour (kWh)"
           ]
+          }
         },
         {
           "label": "Select emission factor type",

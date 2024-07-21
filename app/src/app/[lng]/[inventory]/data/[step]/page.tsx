@@ -621,14 +621,17 @@ export default function AddDataSteps({
 
   const MotionBox = motion(Box);
 
+  const scrollResizeHeaderThreshold = 50;
+  const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
+
   return (
     <>
       <Box id="top" />
       <Box
         bg="background.backgroundLight"
         borderColor="border.neutral"
-        borderBottomWidth={scrollPosition > 0 ? "1px" : ""}
-        className={`fixed z-10 top-0 w-full ${scrollPosition > 0 ? "pt-[0px] h-[200px]" : "pt-[120px] h-[400px]"} transition-all duration-50 ease-linear`}
+        borderBottomWidth={isExpanded ? "1px" : ""}
+        className={`fixed z-10 top-0 w-full ${isExpanded ? "pt-[0px] h-[200px]" : "pt-[120px] h-[400px]"} transition-all duration-50 ease-linear`}
       >
         <div className=" w-[1090px] mx-auto px-4  ">
           <Box
@@ -637,7 +640,7 @@ export default function AddDataSteps({
             alignItems="center"
             gap="16px"
             mb="28px"
-            className={` ${scrollPosition > 0 ? "hidden" : "flex"} transition-all duration-50 ease-linear`}
+            className={` ${isExpanded ? "hidden" : "flex"} transition-all duration-50 ease-linear`}
           >
             <Button
               variant="ghost"
@@ -714,7 +717,7 @@ export default function AddDataSteps({
                   lineHeight="32px"
                   mb={2}
                   className="transition-all duration-50 ease-linear"
-                  fontSize={scrollPosition > 0 ? "headline.sm" : "headline.md"}
+                  fontSize={isExpanded ? "headline.sm" : "headline.md"}
                 >
                   {currentStep.title}
                 </Heading>
@@ -723,11 +726,11 @@ export default function AddDataSteps({
                 ) : (
                   <Box w="800px"></Box>
                 )}
-                <Text fontWeight="bold" ml={scrollPosition > 0 ? "-48px" : ""}>
+                <Text fontWeight="bold" ml={isExpanded ? "-48px" : ""}>
                   {t("inventory-year")}: 2023 |{" "}
                   {t("gpc-scope-required-summary")} 1,2
                 </Text>
-                <Flex direction="row" ml={scrollPosition > 0 ? "-48px" : ""}>
+                <Flex direction="row" ml={isExpanded ? "-48px" : ""}>
                   <SegmentedProgress
                     values={[
                       currentStep.connectedProgress,

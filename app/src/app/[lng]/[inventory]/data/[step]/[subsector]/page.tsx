@@ -62,21 +62,21 @@ function SubSectorPage({
 
   // map subsector to sector by reference number
 
-  const mapSectorName = (currentStep: string) => {
+  const getSectorRefNo = (currentStep: string) => {
     switch (currentStep) {
       case "1":
         return t("I");
       case "2":
         return t("II");
       case "3":
-        return t("II");
-      default:
         return t("III");
+      default:
+        return t("I");
     }
   };
 
   const sectorData = inventoryProgress?.sectorProgress.find(
-    (sector) => sector.sector.referenceNumber === mapSectorName(step),
+    (sector) => sector.sector.referenceNumber === getSectorRefNo(step),
   );
 
   const subSectorData = sectorData?.subSectors.find(
@@ -132,13 +132,14 @@ function SubSectorPage({
       clearTimeout(timer);
     };
   };
+  const scrollResizeHeaderThreshold = 50;
+  const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
 
   return (
     <>
-      <Box id="top" />
       <Box
         bg="background.backgroundLight"
-        className={`fixed z-10 top-0 w-full ${scrollPosition > 0 ? "pt-[50px] h-[200px]" : "pt-[100px] h-[400px]"} transition-all duration-50 ease-linear`}
+        className={`fixed z-10 top-0 w-full ${isExpanded ? "pt-[50px] h-[200px]" : "pt-[100px] h-[400px]"} transition-all duration-50 ease-linear`}
       >
         <Box className=" w-[1090px]  max-w-full mx-auto px-4">
           <Box
@@ -147,7 +148,7 @@ function SubSectorPage({
             alignItems="center"
             gap="16px"
             mb="64px"
-            className={` ${scrollPosition > 0 ? "hidden" : "flex"} transition-all duration-50 ease-linear`}
+            className={` ${isExpanded ? "hidden" : "flex"} transition-all duration-50 ease-linear`}
           >
             <Button
               variant="ghost"
@@ -203,7 +204,7 @@ function SubSectorPage({
             </Box>
           </Box>
           <Box display="flex">
-            {scrollPosition > 0 ? (
+            {isExpanded ? (
               <Box>
                 <Link href={`/${inventory}/data`}>
                   <Icon
@@ -223,21 +224,21 @@ function SubSectorPage({
                 color="content.link"
                 pt="5px"
                 pos="relative"
-                left={scrollPosition > 0 ? "30px" : ""}
+                left={isExpanded ? "30px" : ""}
               >
                 <MdOutlineHomeWork size="32px" />
               </Box>
               <Box
                 display="flex"
-                gap={scrollPosition > 0 ? "8px" : "16px"}
+                gap={isExpanded ? "8px" : "16px"}
                 flexDirection="column"
               >
                 <Text
                   fontFamily="heading"
-                  fontSize={scrollPosition > 0 ? "headline.sm" : "headline.md"}
+                  fontSize={isExpanded ? "headline.sm" : "headline.md"}
                   fontWeight="bold"
                   pos="relative"
-                  left={scrollPosition > 0 ? "30px" : ""}
+                  left={isExpanded ? "30px" : ""}
                   className="transition-all duration-50 ease-linear"
                 >
                   {!subSectorData ? (
@@ -246,7 +247,7 @@ function SubSectorPage({
                       color="content.tertiary"
                       size={"30px"}
                     />
-                  ) : subSectorData?.referenceNumber !== undefined ? (
+                  ) : subSectorData?.referenceNumber != undefined ? (
                     subSectorData?.referenceNumber +
                     " " +
                     subSectorData?.subsectorName
@@ -260,12 +261,12 @@ function SubSectorPage({
                   fontSize="label.lg"
                   fontWeight="medium"
                   pos="relative"
-                  left={scrollPosition > 0 ? "-15px" : ""}
+                  left={isExpanded ? "-15px" : ""}
                 >
                   {t("sector")}: {getSectorName(step)} | {t("inventory-year")}:{" "}
                   {inventoryProgress?.inventory.year}
                 </Text>
-                {scrollPosition > 0 ? (
+                {isExpanded ? (
                   ""
                 ) : (
                   <Text
@@ -289,10 +290,10 @@ function SubSectorPage({
               className="w-[1090px] z-10"
               bg="background.backgroundLight"
               h="80px"
-              pos={scrollPosition > 0 ? "fixed" : "relative"}
-              top={scrollPosition > 0 ? "170px" : "50px"}
+              pos={isExpanded ? "fixed" : "relative"}
+              top={isExpanded ? "170px" : "50px"}
               animate={{
-                y: scrollPosition > 0 ? 0 : -50,
+                y: isExpanded ? 0 : -50,
               }}
               transition={{ duration: 0.2 }}
             >

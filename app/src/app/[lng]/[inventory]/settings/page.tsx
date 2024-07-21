@@ -74,7 +74,6 @@ export default function Settings({
 
   return (
     <Box backgroundColor="background.backgroundLight" paddingBottom="125px">
-      <NavigationBar lng={lng} />
       <Box className="flex mx-auto w-[1090px] h-[100vh]">
         <Box w="full">
           <Box paddingTop="64px">

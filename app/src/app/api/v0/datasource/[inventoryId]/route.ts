@@ -101,10 +101,6 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
     {
       model: DataSource,
       as: "dataSources",
-      where: {
-        startYear: { [Op.lte]: inventory.year },
-        endYear: { [Op.gte]: inventory.year },
-      },
       include: [
         { model: Scope, as: "scopes" },
         { model: Publisher, as: "publisher" },
@@ -142,7 +138,10 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const sources = sectorSources
     .concat(subSectorSources)
     .concat(subCategorySources);
-  const applicableSources = DataSourceService.filterSources(inventory, sources);
+  const { applicableSources, removedSources } = DataSourceService.filterSources(
+    inventory,
+    sources,
+  );
 
   // determine scaling factor for downscaled sources
   const {
@@ -176,7 +175,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
     )
   ).filter((source) => !!source);
 
-  return NextResponse.json({ data: sourceData });
+  return NextResponse.json({ data: sourceData, removedSources });
 });
 
 const applySourcesRequest = z.object({
@@ -214,7 +213,10 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
   if (!sources) {
     throw new createHttpError.NotFound("Sources not found");
   }
-  const applicableSources = DataSourceService.filterSources(inventory, sources);
+  const { applicableSources, removedSources } = DataSourceService.filterSources(
+    inventory,
+    sources,
+  );
   const applicableSourceIds = applicableSources.map(
     (source) => source.datasourceId,
   );
@@ -297,6 +299,12 @@ export const POST = apiHandler(async (req: NextRequest, { params }) => {
     }, {});
 
   return NextResponse.json({
-    data: { successful, failed, invalid: invalidSourceIds, issues },
+    data: {
+      successful,
+      failed,
+      invalid: invalidSourceIds,
+      issues,
+      removedSources,
+    },
   });
 });

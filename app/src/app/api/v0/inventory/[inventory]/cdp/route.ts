@@ -5,79 +5,140 @@ import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import { Inventory } from "@/models/Inventory";
+import { InventoryValue } from "@/models/InventoryValue";
+import { db } from "@/models";
+import { Op } from "sequelize";
+import createHttpError from "http-errors";
 
 const EMISSIONS_SECTION = 3;
 const EMISSIONS_INVENTORY_QUESTION = 0;
 const EMISSIONS_INVENTORY_ANSWER = "Yes";
 const EMISSIONS_MATRIX_QUESTION = 2;
 
-function findRow(rows: any[], regex: RegExp): string|null {
-  const row = rows.find((row: any) => row.title.match(regex))
+function findRow(rows: any[], regex: RegExp): string | null {
+  const row = rows.find((row: any) => row.title.match(regex));
   return row ? row.id : null;
 }
 
-function totalScope1ExcludingGeneration(inventory: Inventory): number {
-  return 0.0;
+async function getTotalByRefnos(inventory: Inventory, refNos: string[]): Promise<bigint> {
+
+  let total:bigint = 0n;
+
+  const values = await db.models.InventoryValue.findAll({
+    where:
+      {
+        inventoryId: inventory.inventoryId,
+        gpcReferenceNumber: { [Op.in]: refNos }
+      }
+  });
+
+  for (const value of values) {
+    total += (value.co2eq ?? 0n);
+  }
+
+  return total;
 }
 
-function scope1FromGeneration(inventory: Inventory): number {
-  return 0.0;
+async function totalScope1ExcludingGeneration(inventory: Inventory): Promise<bigint> {
+  return await getTotalByRefnos(inventory, [
+    "I.1.1", "I.2.1", "I.3.1", "I.4.1", "I.5.1", "I.6.1",
+    "I.7.1", "I.8.1",
+    "II.1.1", "II.2.1", "II.3.1", "II.4.1", "II.5.1",
+    "III.1.1", "III.2.1", "III.3.1", "III.4.1",
+    "III.1.3", "III.2.3", "III.3.3", "III.4.3"
+  ]);
 }
 
-function totalScope2(inventory: Inventory): number {
-  return 0.0;
+async function scope1FromGeneration(inventory: Inventory): Promise<bigint> {
+  return await getTotalByRefnos(inventory, [
+    "I.4.4"
+  ]);
 }
 
-function totalScope3(inventory: Inventory): number {
-  return 0.0;
+async function totalScope2(inventory: Inventory): Promise<bigint> {
+  return await getTotalByRefnos(inventory, [
+    "I.1.2", "I.2.2", "I.3.2", "I.4.2", "I.5.2", "I.6.2",
+    "II.1.2", "II.2.2", "II.3.2", "II.4.2", "II.5.2"])
 }
 
-function totalStationaryScope1(inventory: Inventory): number {
-  return 0.0;
+async function totalScope3(inventory: Inventory): Promise<bigint> {
+  return await getTotalByRefnos(inventory,
+    `I.1.3, I.2.3, I.3.3, I.4.3, I.5.3, I.6.3
+    II.1.3, II.2.3, II.3.3, II.4.3
+    III.1.2, III.2.2, III.3.2, III.4.2`.split(/\s*,\s*/)
+  )
 }
 
-function totalStationaryScope2(inventory: Inventory): number {
-  return 0.0;
+async function totalStationaryScope1(inventory: Inventory): Promise<bigint> {
+  return await getTotalByRefnos(inventory, [
+    "I.1.1", "I.2.1", "I.3.1", "I.4.1", "I.5.1", "I.6.1",
+    "I.7.1", "I.8.1", "I.4.4"
+  ]);
 }
 
-function totalStationaryScope3(inventory: Inventory): number {
-  return 0.0;
+async function totalStationaryScope2(inventory: Inventory): Promise<bigint> {
+  return await getTotalByRefnos(inventory, [
+    "I.1.2", "I.2.2", "I.3.2", "I.4.2", "I.5.2", "I.6.2",
+  ])
 }
 
-function totalTransportationScope1(inventory: Inventory): number {
-  return 0.0;
+async function totalStationaryScope3(inventory: Inventory): Promise<bigint> {
+  return await getTotalByRefnos(inventory, [
+    "I.1.3", "I.2.3", "I.3.3", "I.4.3", "I.5.3", "I.6.3"
+  ])
 }
 
-function totalTransportationScope2(inventory: Inventory): number {
-  return 0.0;
+async function totalTransportationScope1(inventory: Inventory): Promise<bigint> {
+  return await getTotalByRefnos(inventory, [
+    "II.1.1", "II.2.1", "II.3.1", "II.4.1", "II.5.1"
+  ]);
 }
 
-function totalTransportationScope3(inventory: Inventory): number {
-  return 0.0;
+async function totalTransportationScope2(inventory: Inventory): Promise<bigint> {
+  return await getTotalByRefnos(inventory, [
+    "II.1.2", "II.2.2", "II.3.2", "II.4.2", "II.5.2"
+  ]);
 }
 
-function totalWasteWithinScope1(inventory: Inventory): number {
-  return 0.0;
+async function totalTransportationScope3(inventory: Inventory): Promise<bigint> {
+  return await getTotalByRefnos(inventory, [
+    "II.1.3", "II.2.3", "II.3.3", "II.4.3"
+  ]);
 }
 
-function totalWasteWithinScope3(inventory: Inventory): number {
-  return 0.0;
+async function totalWasteWithinScope1(inventory: Inventory): Promise<bigint> {
+  return await getTotalByRefnos(inventory, [
+    "III.1.1", "III.2.1", "III.3.1", "III.4.1"
+  ]);
 }
 
-function totalWasteOutsideScope1(inventory: Inventory): number {
-  return 0.0;
+async function totalWasteWithinScope3(inventory: Inventory): Promise<bigint> {
+  return await getTotalByRefnos(inventory, [
+    "III.1.2", "III.2.2", "III.3.2", "III.4.2"
+  ]);
 }
 
-function totalBasic(inventory: Inventory): number {
-  return 0.0;
+async function totalWasteOutsideScope1(inventory: Inventory): Promise<bigint> {
+  return await getTotalByRefnos(inventory, [
+    "III.1.3", "III.2.3", "III.3.3", "III.4.3"
+  ]);
+}
+
+async function totalBasic(inventory: Inventory): Promise<bigint> {
+  return await getTotalByRefnos(inventory,
+    `I.1.1, I.2.1, I.3.1, I.4.1, I.5.1, I.6.1, I.7.1, I.8.1
+    II.1.1, II.2.1, II.3.1, II.4.1, II.5.1
+    III.1.1, III.2.1, III.3.1, III.4.1
+    I.1.2, I.2.2, I.3.2, I.4.2, I.5.2, I.6.2
+    II.1.2, II.2.2, II.3.2, II.4.2, II.5.2
+    III.1.2, III.2.2, III.3.2, III.4.2`.split(/\s*,\s/));
 }
 
 export const POST = apiHandler(async (_req, { session, params }) => {
-
   if (CDPService.mode === "disabled") {
-    return NextResponse.json({
-      success: false
-    });
+    throw new createHttpError.InternalServerError(
+      "CDP service is disabled. Set env var CDP_MODE to test or production.",
+    );
   }
 
   logger.debug("POST /inventory/[inventory]/cdp");
@@ -92,7 +153,7 @@ export const POST = apiHandler(async (_req, { session, params }) => {
 
   const cityId = await CDPService.getCityID(
     inventory.city.name,
-    inventory.city.country
+    inventory.city.country,
   );
 
   logger.debug(`Got ${cityId}`);
@@ -107,11 +168,13 @@ export const POST = apiHandler(async (_req, { session, params }) => {
     logger.debug(`Got ${questionnaire.sections.length} sections`);
 
     for (let i = 0; i < questionnaire.sections.length; i++) {
-      logger.debug(`Got ${questionnaire.sections[i].questions.length} questions for section ${i}`);
+      logger.debug(
+        `Got ${questionnaire.sections[i].questions.length} questions for section ${i}`,
+      );
       const questions = questionnaire.sections[i].questions;
       for (let j = 0; j < questions.length; j++) {
         const question = questions[j];
-        logger.debug(`Got keys ${Object.keys(question).join(", ")}`)
+        logger.debug(`Got keys ${Object.keys(question).join(", ")}`);
         logger.debug(`Question ${i}.${j} (${question.id}): ${question.text}`);
       }
     }
@@ -125,42 +188,45 @@ export const POST = apiHandler(async (_req, { session, params }) => {
 
     logger.debug(`Got question: ${JSON.stringify(question)}`);
 
-    const matrix = questionnaire.sections[EMISSIONS_SECTION].questions[EMISSIONS_MATRIX_QUESTION];
+    const matrix =
+      questionnaire.sections[EMISSIONS_SECTION].questions[
+        EMISSIONS_MATRIX_QUESTION
+      ];
     logger.debug(`Got matrix question: ${JSON.stringify(matrix)}`);
 
     const col = matrix.columns.find((column: any) => {
       return column.text.match(/^Emissions/);
-    })
+    });
 
     const rows = [
       { rowId: findRow(matrix.rows, /Total scope 1 emissions.*excluding/),
-        content: totalScope1ExcludingGeneration(inventory) },
+        content: await totalScope1ExcludingGeneration(inventory) },
       { rowId: findRow(matrix.rows, /[Ss]cope 1 emissions.*from generation/),
-        content: scope1FromGeneration(inventory) },
+        content: await scope1FromGeneration(inventory) },
       { rowId: findRow(matrix.rows, /Total scope 2 emissions/),
-        content: totalScope2(inventory) },
+        content: await totalScope2(inventory) },
       { rowId: findRow(matrix.rows, /Total scope 3 emissions/),
-        content: totalScope3(inventory) },
+        content: await totalScope3(inventory) },
       { rowId: findRow(matrix.rows, /Stationary Energy.*scope 1/),
-        content: totalStationaryScope1(inventory) },
+        content: await totalStationaryScope1(inventory) },
       { rowId: findRow(matrix.rows, /Stationary Energy.*scope 2/),
-        content: totalStationaryScope2(inventory) },
+        content: await totalStationaryScope2(inventory) },
       { rowId: findRow(matrix.rows, /Stationary Energy.*scope 3/),
-        content: totalStationaryScope3(inventory) },
+        content: await totalStationaryScope3(inventory) },
       { rowId: findRow(matrix.rows, /Transportation.*scope 1/),
-        content: totalTransportationScope1(inventory) },
+        content: await totalTransportationScope1(inventory) },
       { rowId: findRow(matrix.rows, /Transportation.*scope 2/),
-        content: totalTransportationScope2(inventory) },
+        content: await totalTransportationScope2(inventory) },
       { rowId: findRow(matrix.rows, /Transportation.*scope 3/),
-        content: totalTransportationScope3(inventory) },
+        content: await totalTransportationScope3(inventory) },
       { rowId: findRow(matrix.rows, /Waste.*within.*scope 1/),
-        content: totalWasteWithinScope1(inventory) },
+        content: await totalWasteWithinScope1(inventory) },
       { rowId: findRow(matrix.rows, /Waste.*within.*scope 3/),
-        content: totalWasteWithinScope3(inventory) },
+        content: await totalWasteWithinScope3(inventory) },
       { rowId: findRow(matrix.rows, /Waste.*outside.*scope 1/),
-        content: totalWasteOutsideScope1(inventory) },
+        content: await totalWasteOutsideScope1(inventory) },
       { rowId: findRow(matrix.rows, /TOTAL BASIC emissions/),
-        content: totalBasic(inventory) },
+        content: await totalBasic(inventory) },
     ]
 
     try {
@@ -168,28 +234,27 @@ export const POST = apiHandler(async (_req, { session, params }) => {
         cityId,
         question.id,
         yes.id,
-        yes.name
-      )
+        yes.name,
+      );
       if (success) {
-        success = await CDPService.submitMatrix(
-          cityId,
-          col.id,
-          rows
-        );
+        success = await CDPService.submitMatrix(cityId, col.id, rows);
       }
     } catch (error) {
       logger.error(`Failed to submit response: ${error}`);
-      success = false;
+      throw new createHttpError.FailedDependency(
+        "CDP API response error: " + error,
+      );
     }
-
   } else if (CDPService.mode === "production") {
     // TODO: Submit total emissions
     // TODO: Submit CIRIS file
     // TODO: Submit emissions matrix
-    success = false;
+    throw new createHttpError.InternalServerError(
+      "CDP service is set to production mode, which is not yet implemented.",
+    );
   }
 
   return NextResponse.json({
-    success: success
+    success: success,
   });
 });

@@ -7,22 +7,52 @@ import createHttpError from "http-errors";
 
 const EARTH_LOCATION = "EARTH";
 
+type RemovedSourceResult = { source: DataSource; reason: string };
+type FilterSourcesResult = {
+  applicableSources: DataSource[];
+  removedSources: RemovedSourceResult[];
+};
+
 export default class DataSourceService {
   public static filterSources(
     inventory: Inventory,
     dataSources: DataSource[],
-  ): DataSource[] {
+  ): FilterSourcesResult {
     if (!inventory.city) {
       throw createHttpError.InternalServerError(
         "Inventory doesn't contain city data!",
       );
     }
+    if (!inventory.year) {
+      throw createHttpError.InternalServerError(
+        "Inventory doesn't contain year!",
+      );
+    }
     const { city } = inventory;
 
-    return dataSources.filter((source) => {
+    const removedSources: RemovedSourceResult[] = [];
+    const applicableSources = dataSources.filter((source) => {
       const locations = source.geographicalLocation?.split(",");
       if (locations?.includes(EARTH_LOCATION)) {
         return true;
+      }
+
+      if (!source.startYear || !source.endYear) {
+        removedSources.push({
+          source,
+          reason: "startYear or endYear missing in source",
+        });
+        return false;
+      }
+      const isMatchingYearRange =
+        source.startYear <= inventory.year! &&
+        source.endYear >= inventory.year!;
+      if (!isMatchingYearRange) {
+        removedSources.push({
+          source,
+          reason: "inventory year not in [startYear, endYear] range of source",
+        });
+        return false;
       }
 
       // TODO store locode for country and region as separate columns in City
@@ -30,9 +60,20 @@ export default class DataSourceService {
       const isCountry = countryLocode && locations?.includes(countryLocode);
       const isRegion = city.region && locations?.includes(city.region);
       const isCity = city.locode && locations?.includes(city.locode);
+      const isMatchingLocation = isCountry || isRegion || isCity;
 
-      return isCountry || isRegion || isCity;
+      if (!isMatchingLocation) {
+        removedSources.push({
+          source,
+          reason: "geographicalLocation doesn't match inventory locodes",
+        });
+        return false;
+      }
+
+      return true;
     });
+
+    return { applicableSources, removedSources };
   }
 
   public static async retrieveGlobalAPISource(

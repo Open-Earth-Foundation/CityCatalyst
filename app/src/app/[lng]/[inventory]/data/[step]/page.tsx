@@ -7,20 +7,16 @@ import {
   DataAlertIcon,
   DataCheckIcon,
   ExcelFileIcon,
-  SearchOffIcon,
   WorldSearchIcon,
 } from "@/components/icons";
-import WizardSteps from "@/components/wizard-steps";
 import {
   InventoryUserFileAttributes,
-  addFile,
   clear,
   removeFile,
 } from "@/features/city/inventoryDataSlice";
-import { setSubsector, clearSubsector } from "@/features/city/subsectorSlice";
+import { setSubsector } from "@/features/city/subsectorSlice";
 import { useTranslation } from "@/i18n/client";
 import { RootState } from "@/lib/store";
-import { ScopeAttributes } from "@/models/Scope";
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
 import { bytesToMB, nameToI18NKey } from "@/util/helpers";
@@ -71,7 +67,6 @@ import {
   MdOutlineCheckCircle,
   MdOutlineEdit,
   MdOutlineHomeWork,
-  MdOutlineSkipNext,
   MdRefresh,
 } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
@@ -85,7 +80,6 @@ import type {
 
 import AddFileDataModal from "@/components/Modals/add-file-data-modal";
 import { InventoryValueAttributes } from "@/models/InventoryValue";
-import { UserFileAttributes } from "@/models/UserFile";
 import { motion } from "framer-motion";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
@@ -98,45 +92,41 @@ function getMailURI(locode?: string, sector?: string, year?: number): string {
 function SearchDataSourcesPrompt({
   t,
   isSearching,
-  isDisabled,
+  isDisabled = false,
   onSearchClicked,
 }: {
   t: TFunction;
   isSearching: boolean;
-  isDisabled: boolean;
+  isDisabled?: boolean;
   onSearchClicked: () => void;
 }) {
   return (
     <Flex align="center" direction="column">
-      <Box p="16px" mb="24px" borderRadius="full" bg="background.neutral">
-        <SearchOffIcon />
-      </Box>
-      <Text
-        fontFamily="heading"
-        fontSize="title.lg"
-        fontWeight="600"
-        color="interactive.control"
+      <Icon
+        as={WorldSearchIcon}
+        boxSize={20}
+        color="interactive.secondary"
+        borderRadius="full"
+        p={4}
+        bgColor="background.neutral"
+        mb={6}
+      />
+      <Button
+        variant="solid"
+        leftIcon={<SearchIcon boxSize={6} />}
+        isLoading={isSearching}
+        isDisabled={isDisabled}
+        loadingText={t("searching")}
+        onClick={onSearchClicked}
+        mb={2}
+        px={6}
+        h={16}
+        py={4}
       >
-        No External Data Sources Available
-      </Text>
-      <Text
-        color="content.tertiary"
-        align="center"
-        size="sm"
-        variant="spaced"
-        w="550px"
-        mt="8px"
-      >
-        <Text>{t("no-external-sources")}</Text>
-        <Text fontWeight="semibold">
-          <Trans t={t} i18nKey="report-any-sources">
-            if you know any,{" "}
-            <Link href="/" color="content.link" textDecor="underline">
-              please report this
-            </Link>{" "}
-            and we&apos;ll prioritize your request.
-          </Trans>
-        </Text>
+        {t("search-available-datasets")}
+      </Button>
+      <Text color="content.tertiary" align="center" size="sm" variant="spaced">
+        {t("wait-for-search")}
       </Text>
     </Flex>
   );
@@ -413,11 +403,7 @@ export default function AddDataSteps({
   }
 
   function onSearchDataSourcesClicked() {
-    if (inventoryProgress) {
-      loadDataSources({ inventoryId: inventoryProgress.inventory.inventoryId });
-    } else {
-      console.error("Inventory progress is still loading!");
-    }
+    loadDataSources({ inventoryId: inventory });
   }
 
   const [selectedSubsector, setSelectedSubsector] =
@@ -910,14 +896,13 @@ export default function AddDataSteps({
             <SearchDataSourcesPrompt
               t={t}
               isSearching={areDataSourcesLoading}
-              isDisabled={!inventoryProgress}
               onSearchClicked={onSearchDataSourcesClicked}
             />
           ) : dataSourcesError ? (
             <Center>
               <WarningIcon boxSize={8} color="semantic.danger" />
             </Center>
-          ) : dataSources && dataSources.length === 0 ? (
+          ) : dataSources && dataSources?.length === 0 ? (
             <NoDataSourcesMessage
               t={t}
               sector={currentStep.referenceNumber}

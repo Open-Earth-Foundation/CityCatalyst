@@ -30,7 +30,7 @@ def transform_custom(*args, **kwargs):
     # Select the columns of interest
     act = act[['source_id','activity_name', 'activity_units', 'activity_subcategory_type']]
 
-    return df
+    return act
 
 @test
 def test_output(output, *args) -> None:

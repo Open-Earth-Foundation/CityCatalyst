@@ -200,6 +200,9 @@ const AddActivityModal: FC<AddUserModalProps> = ({
     }
   };
 
+  // Todo - Get activity key to infer fields form names properly
+  type ActivityKey = any;
+
   return (
     <>
       <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
@@ -236,7 +239,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                     title={formInputs?.fields[0].label}
                     placeholder={t("select-type-of-building")}
                     register={register}
-                    activity={formInputs?.fields[0].name}
+                    activity={"activity." + formInputs?.fields[0].name}
                     errors={errors}
                   />
                 </FormControl>
@@ -246,7 +249,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                     title={formInputs?.fields[1].label}
                     placeholder={t("select-type-of-fuel")}
                     register={register}
-                    activity={formInputs?.fields[1].name}
+                    activity={"activity." + formInputs?.fields[1].name}
                     errors={errors}
                   />
                 </FormControl>
@@ -288,9 +291,13 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                             shadow: "none",
                             borderColor: "content.link",
                           }}
-                          {...register(formInputs?.fields[2].name, {
-                            required: t("value-required"),
-                          })}
+                          {...register(
+                            ("activity." +
+                              formInputs?.fields[2].name) as ActivityKey,
+                            {
+                              required: t("value-required"),
+                            },
+                          )}
                         />
                       </NumberInput>
                       <InputRightAddon
@@ -303,7 +310,10 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       >
                         <Select
                           variant="unstyled"
-                          {...register(formInputs?.fields[2].addon?.name)}
+                          {...register(
+                            ("activity." +
+                              formInputs?.fields[2].addon?.name) as ActivityKey,
+                          )}
                         >
                           {formInputs?.fields[2].addon?.options?.map(
                             (item: string) => (
@@ -355,7 +365,10 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                         shadow: "none",
                         borderColor: "content.link",
                       }}
-                      {...register(formInputs?.fields[3].name)}
+                      {...register(
+                        ("activity." +
+                          formInputs?.fields[3].name) as ActivityKey,
+                      )}
                       bgColor="base.light"
                       placeholder="Select emission factor type"
                       onChange={(e: any) => onEmissionFactorTypeChange(e)}
@@ -419,7 +432,10 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                         h="48px"
                         shadow="1dp"
                         borderRightRadius={0}
-                        {...register(formInputs?.fields[4]?.name)}
+                        {...register(
+                          ("activity." +
+                            formInputs?.fields[4]?.name) as ActivityKey,
+                        )}
                         bgColor={
                           isEmissionFactorInputDisabled
                             ? "background.neutral"
@@ -440,7 +456,10 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       shadow="1dp"
                       pos="relative"
                       zIndex={10}
-                      {...register(formInputs?.fields[4]?.unit)}
+                      {...register(
+                        ("activity." +
+                          formInputs?.fields[4]?.name) as ActivityKey,
+                      )}
                     >
                       {formInputs?.fields[4].unit}
                     </InputRightAddon>
@@ -463,7 +482,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                           borderColor: "content.link",
                         }}
                         borderRightRadius={0}
-                        {...register(formInputs?.fields[5].unit)}
+                        {...register(formInputs?.fields[5].name as ActivityKey)}
                         bgColor={
                           isEmissionFactorInputDisabled
                             ? "background.neutral"
@@ -486,7 +505,10 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       shadow="1dp"
                       pos="relative"
                       zIndex={10}
-                      {...register(formInputs?.fields[5].name)}
+                      {...register(
+                        ("activity." +
+                          formInputs?.fields[5].name) as ActivityKey,
+                      )}
                     >
                       {formInputs?.fields[5].unit}
                     </InputRightAddon>
@@ -509,7 +531,10 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                           borderColor: "content.link",
                         }}
                         borderRightRadius={0}
-                        {...register(formInputs?.fields[6].unit)}
+                        {...register(
+                          ("activity." +
+                            formInputs?.fields[6].name) as ActivityKey,
+                        )}
                         bgColor={
                           isEmissionFactorInputDisabled
                             ? "background.neutral"
@@ -532,7 +557,10 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       shadow="1dp"
                       pos="relative"
                       zIndex={10}
-                      {...register(formInputs?.fields[6].unit)}
+                      {...register(
+                        ("activity." +
+                          formInputs?.fields[6].name) as ActivityKey,
+                      )}
                     >
                       {formInputs?.fields[6].unit}
                     </InputRightAddon>
@@ -573,9 +601,9 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                   shadow="1dp"
                 >
                   <option value="high">{t("detailed-activity-data")}</option>
-                  <option value="medium">{t("modeled-emissions-data")}</option>
+                  <option value="medium">{t("modeled-activity-data")}</option>
                   <option value="low">
-                    {t("highly-modeled-uncertain-emissions-data")}
+                    {t("highly-modeled-uncertain-activity-data")}
                   </option>
                 </Select>
                 {errors.activity?.dataQuality ? (

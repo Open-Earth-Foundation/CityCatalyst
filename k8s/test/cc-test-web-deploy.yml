@@ -48,6 +48,8 @@ spec:
               value: "https://ccglobal-test.openearth.dev"
             - name: NEXT_PUBLIC_OPENCLIMATE_API_URL
               value: "https://app.openclimate.network"
+            - name: OPEN_AI_MODEL
+              value: "gpt-4o-mini"
           resources:
             limits:
               memory: "1024Mi"

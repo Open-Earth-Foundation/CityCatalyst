@@ -482,7 +482,10 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                           borderColor: "content.link",
                         }}
                         borderRightRadius={0}
-                        {...register(formInputs?.fields[5].name as ActivityKey)}
+                        {...register(
+                          ("activity" +
+                            formInputs?.fields[5].name) as ActivityKey,
+                        )}
                         bgColor={
                           isEmissionFactorInputDisabled
                             ? "background.neutral"

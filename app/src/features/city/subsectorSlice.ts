@@ -2,7 +2,7 @@ import { RootState } from "@/lib/store";
 import { SubSectorAttributes } from "@/models/SubSector";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { SubCategory, SubCategoryAttributes } from "@/models/SubCategory";
-import { type SectorFormSchema } from "@/util/form-schema";
+import { SectorFormSchema } from "@/util/form-schema";
 
 export type Methodology = {
   methodologyId:string,

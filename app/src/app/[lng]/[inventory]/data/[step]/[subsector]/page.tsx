@@ -132,14 +132,14 @@ function SubSectorPage({
       clearTimeout(timer);
     };
   };
-  const scrollResizeHeaderThreshold = 0;
+  const scrollResizeHeaderThreshold = 50;
   const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
 
   return (
     <>
       <Box
         bg="background.backgroundLight"
-        className={`fixed z-10 top-0 w-full ${isExpanded ? "pt-[50px] h-[250px]" : "pt-[50px] h-[430px]"} transition-all duration-50 ease-linear`}
+        className={`fixed z-10 top-0 w-full ${isExpanded ? "pt-[50px] h-[200px]" : "pt-[100px] h-[400px]"} transition-all duration-50 ease-linear`}
       >
         <Box className=" w-[1090px]  max-w-full mx-auto px-4">
           <Box

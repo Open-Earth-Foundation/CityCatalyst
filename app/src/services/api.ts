@@ -404,19 +404,32 @@ export const api = createApi({
       transformResponse: (response: { data: [] }) => response.data,
     }),
     connectToCDP: builder.mutation({
-      query: ({inventoryId}) => {
-        return{
-          method: 'POST',
-          url: `/inventory/${inventoryId}/cdp`
-        }
-      }
+      query: ({ inventoryId }) => {
+        return {
+          method: "POST",
+          url: `/inventory/${inventoryId}/cdp`,
+        };
+      },
     }),
 
     // ActivityValue CRUD
     getActivityValues: builder.query({
-      query: ({inventoryId, subCategoryIds, subSectorId, methodologyId}: {inventoryId: string, subCategoryIds?: string[], subSectorId?: string, methodologyId?: string }) => ({
+      query: ({
+        inventoryId,
+        subCategoryIds,
+        subSectorId,
+        methodologyId,
+      }: {
+        inventoryId: string;
+        subCategoryIds?: string[];
+        subSectorId?: string;
+        methodologyId?: string;
+      }) => ({
         url: `/inventory/${inventoryId}/activity-value`,
-        params: { subCategoryIds: subCategoryIds?.join(",") ?? undefined, subSectorId: subSectorId ?? undefined },
+        params: {
+          subCategoryIds: subCategoryIds?.join(",") ?? undefined,
+          subSectorId: subSectorId ?? undefined,
+        },
         method: "GET",
       }),
       transformResponse: (response: any) => response.data,
@@ -511,6 +524,6 @@ export const {
   useInviteUserMutation,
   useCheckUserMutation,
   useMockDataQuery,
-  useConnectToCDPMutation
+  useConnectToCDPMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

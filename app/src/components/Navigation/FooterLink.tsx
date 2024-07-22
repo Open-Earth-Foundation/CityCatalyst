@@ -11,7 +11,9 @@ interface FooterLinkProps {
 const FooterLink: FC<FooterLinkProps> = ({ title, url }) => {
   return (
     <Link
-      href={`/${url}`}
+      href={url}
+      rel="noopener noreferrer"
+      target="_blank"
       fontSize="body.md"
       fontWeight="medium"
       lineHeight="20"

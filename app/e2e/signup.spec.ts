@@ -37,7 +37,7 @@ test.describe("Signup", () => {
     await page.getByRole("button", { name: "Create Account" }).click();
 
     await expect(page).toHaveURL(
-      `/en/auth/check-email?email=${email.replace("@", "%40")}`,
+      `/en/auth/check-email/?email=${email.replace("@", "%40")}`,
     );
   });
 
@@ -55,7 +55,7 @@ test.describe("Signup", () => {
     await page.getByPlaceholder("Enter the code you received").fill("12345");
     await page.getByRole("button", { name: "Create Account" }).click();
 
-    await expect(page).toHaveURL(`/en/auth/signup`);
+    await expect(page).toHaveURL(`/en/auth/signup/`);
     await expectText(page, "valid email address");
     await expectText(page, "Minimum length");
     await expectText(page, "Invalid invite code");
@@ -79,7 +79,7 @@ test.describe("Signup", () => {
       .click();
     await page.getByRole("button", { name: "Create Account" }).click();
 
-    await expect(page).toHaveURL(`/en/auth/signup`);
+    await expect(page).toHaveURL(`/en/auth/signup/`);
     await expectText(page, "Passwords don't match");
   });
 

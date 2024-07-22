@@ -1,4 +1,5 @@
 {
+  "1":{
     "1": {
       "fields": [
         {
@@ -30,14 +31,17 @@
           "label": "Total fuel consumption",
           "type": "number",
           "name": "fuelConsumption",
-          "options": [
+          "addon": {
+            "name": "fuelConsumptionUnits",
+            "options": [
             "Gallons (gal)",
             "Liters (L)",
             "Cubic meters (m3)",
             "Kilograms (kg)",
-            "Terajoules (Tj)",
-            "Kilowatt hour (kWh"
+            "Terajoules (TJ)",
+            "Kilowatt hour (kWh)"
           ]
+          }
         },
         {
           "label": "Select emission factor type",
@@ -45,10 +49,9 @@
           "name": "emissionFactorType",
           "options": [
             "IPCC",
+            "Local",
             "Regional",
-            "National",
-            "IPCC",
-            "Add custom"
+            "National"
           ]
         },
         {
@@ -109,22 +112,25 @@
           {
             "label": "Total grid-supplied energy consumption",
             "type": "number",
-            "name": "fuelConsumption",
-            "unit": "gal",
-            "options": [
-              "Kilowatt hour (kWh",
-              "Terajoules (Tj)",
-              "Kilowatt-kilometer (kW/km)"
+            "name": "energyConsumption",
+            "addon": {
+              "name": "energyConsumptionUnites",
+              "options": [
+              "Kilowatt hour (kWh)",
+              "Terajoules (TJ)",
+              "Kilowatt-kilometer (kW/m2)"
             ]
+            }
           },
           {
             "label": "Emission factor type",
             "type": "select",
             "name": "emissionFactorType",
             "options": [
-              "IPCC",
-              "DEFRA",
-              "GHG Protocol"
+              "Carbon Footprint",
+              "Local",
+              "Regional",
+              "National"
             ]
           },
           {
@@ -167,4 +173,7 @@
           "action": "/submit-activity"
         }
       }
-  }
+  },
+  "2": {},
+  "3": {}
+}

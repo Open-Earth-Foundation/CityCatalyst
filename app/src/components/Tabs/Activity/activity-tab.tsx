@@ -62,6 +62,7 @@ interface ActivityTabProps {
   totalConsumptionUnit?: boolean;
   filteredScope: ActivityDataScope;
   inventoryId: string;
+  step: string;
 }
 
 export type MethodologyValues = {
@@ -80,6 +81,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
   totalConsumptionUnit,
   filteredScope,
   inventoryId,
+  step,
 }) => {
   const totalEmissions = 0;
   const [selectedActivity, setSelectedActivity] = useState();
@@ -423,7 +425,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                         methodology used to collect the data and calculate your
                         emissions.{" "}
                         <Link
-                          href="/"
+                          href="https://ghgprotocol.org/ghg-protocol-cities"
                           color="content.link"
                           fontWeight="bold"
                           textDecoration="underline"
@@ -493,6 +495,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
         setHasActivityData={setHasActivityData}
         formStruct={filteredScope}
         inventoryId={inventoryId}
+        step={step}
+        scope={filteredScope.scope}
       />
 
       <ChangeMethodology

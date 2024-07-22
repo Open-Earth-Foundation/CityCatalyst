@@ -69,7 +69,7 @@ async function handleOpenAIChat(
   messages: Messages,
 ): Promise<StreamingTextResponse> {
   const response = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
+    model: "gpt-4o-mini",
     stream: true,
     messages: messages as any as ChatCompletionMessageParam[],
   });

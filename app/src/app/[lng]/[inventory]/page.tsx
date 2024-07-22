@@ -105,7 +105,6 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
         // fix inventoryId in URL without reloading page
         const newPath = "/" + lng + "/" + inventoryId;
         history.replaceState(null, "", newPath);
-
       } else {
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
         setTimeout(() => router.push(`/onboarding`), 0);
@@ -262,7 +261,6 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
 
   return (
     <>
-      <NavigationBar lng={lng} />
       <Box bg="brand.primary" className="w-full h-[491px] pt-[150px]" px={8}>
         <Box className="flex mx-auto max-w-full w-[1090px]">
           <Box className="w-full h-[240px] flex flex-col justify-center">
@@ -398,7 +396,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                     <Box>
                       <Box className="flex gap-1">
                         {inventory?.city.area === null ||
-                          inventory?.city.area! === 0 ? (
+                        inventory?.city.area! === 0 ? (
                           <Text
                             fontFamily="heading"
                             color="border.neutral"
@@ -655,7 +653,6 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
         </Box>
       </Box>
       <Footer lng={lng} />
-      <ChatPopover inventoryId={inventory?.inventoryId!} />
     </>
   );
 }

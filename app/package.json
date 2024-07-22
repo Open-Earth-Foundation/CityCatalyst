@@ -100,7 +100,7 @@
   "devDependencies": {
     "@playwright/test": "^1.43.1",
     "@storybook/addon-essentials": "^8.1.6",
-    "@storybook/addon-interactions": "^7.4.5",
+    "@storybook/addon-interactions": "^8.2.5",
     "@storybook/addon-links": "^7.6.17",
     "@storybook/blocks": "^8.0.4",
     "@storybook/nextjs": "^8.0.8",

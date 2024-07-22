@@ -26,7 +26,7 @@ def transform_custom(*args, **kwargs):
     df['start_time'] = pd.to_datetime(df['start_time'])
 
     # Extract year
-    df['year'] = df['start_time'].dt.year
+    df['emissions_year'] = df['start_time'].dt.year
 
     # Convert tonnes to kg
     df['emissions_value'] *= 1000
@@ -44,6 +44,7 @@ def transform_custom(*args, **kwargs):
     df = df[df['gas_name'].isin(['CH4', 'CO2', 'N2O'])]
 
     return df
+
 @test
 def test_output(output, *args) -> None:
     """

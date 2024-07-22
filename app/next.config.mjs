@@ -1,4 +1,3 @@
-/** @type {import('next').NextConfig} */
 import fs from "fs";
 import path from "path";
 
@@ -6,7 +5,9 @@ const packagePath = path.join(process.cwd(), "package.json");
 const packageJson = fs.readFileSync(packagePath);
 const packageInfo = JSON.parse(packageJson);
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
+  trailingSlash: true,
   experimental: {
     serverComponentsExternalPackages: ["sequelize"],
   },

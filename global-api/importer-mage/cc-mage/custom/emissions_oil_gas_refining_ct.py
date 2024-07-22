@@ -22,7 +22,7 @@ def transform_custom(*args, **kwargs):
     gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.lon, df.lat))
     
     # Filter df
-    gdf = gdf[['source_id', 'gas_name', 'emissions_value', 'year', 'emissions_units', 'gpc_refno', 'geometry']]
+    gdf = gdf[['gas_name', 'emissions_value', 'emissions_year', 'emissions_units', 'gpc_refno', 'geometry']]
 
     # Add columns
     gdf.loc[:, 'source_name'] = 'Climate TRACE Fall_2023'
@@ -32,11 +32,8 @@ def transform_custom(*args, **kwargs):
     # Convert geometries to WKT format to avoid circular references
     gdf['geometry'] = gdf['geometry'].apply(lambda geom: geom.wkt)
 
-    # Drop columns
-    gdf = gdf.drop(columns=['source_id', 'lat', 'lon'])
-
-    # Rename column based on the Global API schema
-    gdf = gdf.rename(columns={'geometry':'geometry_value'})
+    # Rename column
+    gdf.rename(columns={'geometry': 'geometry_value'}, inplace=True)
 
     return gdf
 

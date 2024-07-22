@@ -48,6 +48,8 @@ spec:
               value: "https://ccglobal-test.openearth.dev"
             - name: NEXT_PUBLIC_OPENCLIMATE_API_URL
               value: "https://app.openclimate.network"
+            - name: CHAT_PROVIDER
+              value: "openai"
             - name: OPEN_AI_MODEL
               value: "gpt-4o-mini"
           resources:

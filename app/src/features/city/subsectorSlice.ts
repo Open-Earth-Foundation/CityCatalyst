@@ -1,8 +1,8 @@
 import { RootState } from "@/lib/store";
 import { SubSectorAttributes } from "@/models/SubSector";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import stationaryEnergyForm from './data/stationary-form-inputs.json'
 import { SubCategory, SubCategoryAttributes } from "@/models/SubCategory";
+import { SectorFormSchema } from "@/util/form-schema";
 
 export type Methodology = {
   methodologyId:string,
@@ -30,7 +30,7 @@ const initialState = {
   subCategories: [],
   scopes: [{
     scope: 1,
-    formInputs: stationaryEnergyForm[1],
+    formInputs: SectorFormSchema,
     methodologies: [{
       methodologyId: "1",
       methodologyName: 'Fuel Combustion Consumption',
@@ -59,7 +59,7 @@ const initialState = {
     }]
   },{
     scope: 2,
-    formInputs: stationaryEnergyForm[2],
+    formInputs: SectorFormSchema,
     methodologies: [{
       methodologyId: "1",
       methodologyName: 'Energy Consumption',

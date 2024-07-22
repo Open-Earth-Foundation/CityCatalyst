@@ -607,24 +607,30 @@ export default function AddDataSteps({
 
   const MotionBox = motion(Box);
 
+  const scrollResizeHeaderThreshold = 50;
+  const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
+
   return (
     <>
       <Box id="top" />
-      <MotionBox
+      <Box
         bg="background.backgroundLight"
         borderColor="border.neutral"
-        borderBottomWidth={scrollPosition > 0 ? "1px" : ""}
-        className={`fixed z-10 top-0 w-full pt-[130px] h-[400px]`}
-        mt={scrollPosition > 0 ? "-200px" : ""}
-        animate={{
-          y: scrollPosition > 0 ? 0 : -50,
-        }}
-        transition={{ duration: 0.2 }}
+        borderBottomWidth={isExpanded ? "1px" : ""}
+        className={`fixed z-10 top-0 w-full ${isExpanded ? "pt-[0px] h-[200px]" : "pt-[120px] h-[400px]"} transition-all duration-50 ease-linear`}
       >
-        <div className=" w-[1090px] max-w-full mx-auto px-4">
-          <Box w="full" display="flex" alignItems="center" gap="16px" mb="35px">
+        <div className=" w-[1090px] mx-auto px-4  ">
+          <Box
+            w="full"
+            display="flex"
+            alignItems="center"
+            gap="16px"
+            mb="28px"
+            className={` ${isExpanded ? "hidden" : "flex"} transition-all duration-50 ease-linear`}
+          >
             <Button
               variant="ghost"
+              fontSize="14px"
               leftIcon={<ArrowBackIcon boxSize={6} />}
               onClick={() => router.back()}
             >
@@ -637,6 +643,7 @@ export default function AddDataSteps({
                 fontFamily="heading"
                 fontWeight="bold"
                 letterSpacing="widest"
+                fontSize="14px"
                 textTransform="uppercase"
                 separator={<ChevronRightIcon color="gray.500" h="24px" />}
               >
@@ -682,7 +689,7 @@ export default function AddDataSteps({
                 </Link>
               </Box>
             )}
-            <Flex direction="row">
+            <Flex direction="row" className="w-full">
               <Icon
                 as={currentStep.icon}
                 boxSize={8}
@@ -691,12 +698,12 @@ export default function AddDataSteps({
               />
               <div className="space-y-4 w-[100%]">
                 <Heading
-                  fontSize="24px"
                   fontWeight="semibold"
                   textTransform="capitalize"
                   lineHeight="32px"
-                  size="lg"
                   mb={2}
+                  className="transition-all duration-50 ease-linear"
+                  fontSize={isExpanded ? "headline.sm" : "headline.md"}
                 >
                   {currentStep.title}
                 </Heading>
@@ -705,11 +712,11 @@ export default function AddDataSteps({
                 ) : (
                   <Box w="800px"></Box>
                 )}
-                <Text fontWeight="bold">
+                <Text fontWeight="bold" ml={isExpanded ? "-48px" : ""}>
                   {t("inventory-year")}: 2023 |{" "}
                   {t("gpc-scope-required-summary")} 1,2
                 </Text>
-                <Flex direction="row">
+                <Flex direction="row" ml={isExpanded ? "-48px" : ""}>
                   <SegmentedProgress
                     values={[
                       currentStep.connectedProgress,
@@ -759,7 +766,7 @@ export default function AddDataSteps({
             </Flex>
           </Card>
         </div>
-      </MotionBox>
+      </Box>
       <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
         {/*** Manual data entry section for subsectors ***/}
         <Card mb={12} mt="350px">
@@ -790,18 +797,8 @@ export default function AddDataSteps({
                     w="full"
                     className="hover:drop-shadow-xl transition-shadow"
                     onClick={() => {
-                      dispatch(
-                        setSubsector({
-                          subsectorName: subSector.subsectorName,
-                          scopeId: "",
-                          sectorId: subSector.sectorId,
-                          subsectorId: subSector.subsectorId,
-                          referenceNumber: subSector.referenceNumber,
-                          subCategories: subSector.subCategories,
-                        }),
-                      );
                       router.push(
-                        `/${inventory}/data/${getCurrentStepParam(currentStep.title)}/${subSector.sectorId}`,
+                        `/${inventory}/data/${getCurrentStepParam(currentStep.title)}/${subSector.subsectorId}`,
                       );
                     }}
                     key={subSector.subsectorId}

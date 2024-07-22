@@ -12,6 +12,7 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   Button,
+  CircularProgress,
   Icon,
   Link,
   Tab,
@@ -47,6 +48,41 @@ function SubSectorPage({
   const [selectedTab, setSelectedTab] = useState(1); // sector ID (1/2/3)
   const [selectedScope, setSelectedScope] = useState(1);
 
+  const { data: userInfo, isLoading: isUserInfoLoading } =
+    api.useGetUserInfoQuery();
+  const defaultInventoryId = userInfo?.defaultInventoryId;
+
+  const {
+    data: inventoryProgress,
+    isLoading: isInventoryProgressLoading,
+    error: inventoryProgressError,
+  } = api.useGetInventoryProgressQuery(defaultInventoryId!, {
+    skip: !defaultInventoryId,
+  });
+
+  // map subsector to sector by reference number
+
+  const getSectorRefNo = (currentStep: string) => {
+    switch (currentStep) {
+      case "1":
+        return t("I");
+      case "2":
+        return t("II");
+      case "3":
+        return t("III");
+      default:
+        return t("I");
+    }
+  };
+
+  const sectorData = inventoryProgress?.sectorProgress.find(
+    (sector) => sector.sector.referenceNumber === getSectorRefNo(step),
+  );
+
+  const subSectorData = sectorData?.subSectors.find(
+    (subsectorItem) => subsectorItem.subsectorId === subsector,
+  );
+
   const getSectorName = (currentStep: string) => {
     switch (currentStep) {
       case "1":
@@ -59,6 +95,7 @@ function SubSectorPage({
         return t("stationary-energy");
     }
   };
+
   const { subsector: subsectorData, scopes } = useSelector(
     (state: RootState) => state.subsector,
   );
@@ -73,7 +110,7 @@ function SubSectorPage({
   };
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -95,25 +132,27 @@ function SubSectorPage({
       clearTimeout(timer);
     };
   };
+  const scrollResizeHeaderThreshold = 50;
+  const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
 
   return (
     <>
-      <Box id="top" />
-      <MotionBox
+      <Box
         bg="background.backgroundLight"
-        borderColor="border.neutral"
-        borderBottomWidth={scrollPosition > 0 ? "1px" : ""}
-        className="fixed z-10 top-0 w-full pt-[180px] h-[400px]"
-        mt={scrollPosition > 0 ? "-230px" : ""}
-        animate={{
-          y: scrollPosition > 0 ? 0 : -50,
-        }}
-        transition={{ duration: 0.2 }}
+        className={`fixed z-10 top-0 w-full ${isExpanded ? "pt-[50px] h-[200px]" : "pt-[100px] h-[400px]"} transition-all duration-50 ease-linear`}
       >
-        <Box className=" w-[1090px] max-w-full mx-auto px-4">
-          <Box w="full" display="flex" alignItems="center" gap="16px" mb="64px">
+        <Box className=" w-[1090px]  max-w-full mx-auto px-4">
+          <Box
+            w="full"
+            display="flex"
+            alignItems="center"
+            gap="16px"
+            mb="64px"
+            className={` ${isExpanded ? "hidden" : "flex"} transition-all duration-50 ease-linear`}
+          >
             <Button
               variant="ghost"
+              fontSize="14px"
               leftIcon={<ArrowBackIcon boxSize={6} />}
               onClick={() => router.back()}
             >
@@ -125,6 +164,7 @@ function SubSectorPage({
                 spacing="8px"
                 fontFamily="heading"
                 fontWeight="bold"
+                fontSize="14px"
                 letterSpacing="widest"
                 textTransform="uppercase"
                 separator={<ChevronRightIcon color="gray.500" h="24px" />}
@@ -147,16 +187,26 @@ function SubSectorPage({
                 </BreadcrumbItem>
                 <BreadcrumbItem>
                   <BreadcrumbLink href="#" color="content.link">
-                    {subsectorData?.subsectorName}
+                    <Text noOfLines={1}>
+                      {!subSectorData ? (
+                        <CircularProgress
+                          isIndeterminate
+                          color="content.tertiary"
+                          size={"30px"}
+                        />
+                      ) : (
+                        subSectorData?.subsectorName
+                      )}
+                    </Text>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               </Breadcrumb>
             </Box>
           </Box>
           <Box display="flex">
-            {scrollPosition > 0 ? (
+            {isExpanded ? (
               <Box>
-                <Link href="#">
+                <Link href={`/${inventory}/data`}>
                   <Icon
                     as={ArrowBackIcon}
                     h="24px"
@@ -172,27 +222,38 @@ function SubSectorPage({
             <Box display="flex" gap="16px">
               <Box
                 color="content.link"
-                pt="3"
+                pt="5px"
                 pos="relative"
-                left={scrollPosition > 0 ? "30px" : ""}
+                left={isExpanded ? "30px" : ""}
               >
                 <MdOutlineHomeWork size="32px" />
               </Box>
               <Box
                 display="flex"
-                gap={scrollPosition > 0 ? "8px" : "16px"}
+                gap={isExpanded ? "8px" : "16px"}
                 flexDirection="column"
               >
                 <Text
                   fontFamily="heading"
-                  fontSize="headline.md"
+                  fontSize={isExpanded ? "headline.sm" : "headline.md"}
                   fontWeight="bold"
                   pos="relative"
-                  left={scrollPosition > 0 ? "30px" : ""}
+                  left={isExpanded ? "30px" : ""}
+                  className="transition-all duration-50 ease-linear"
                 >
-                  {subsectorData?.referenceNumber +
+                  {!subSectorData ? (
+                    <CircularProgress
+                      isIndeterminate
+                      color="content.tertiary"
+                      size={"30px"}
+                    />
+                  ) : subSectorData?.referenceNumber != undefined ? (
+                    subSectorData?.referenceNumber +
                     " " +
-                    subsectorData?.subsectorName}
+                    subSectorData?.subsectorName
+                  ) : (
+                    ""
+                  )}
                 </Text>
                 <Text
                   fontFamily="heading"
@@ -200,12 +261,12 @@ function SubSectorPage({
                   fontSize="label.lg"
                   fontWeight="medium"
                   pos="relative"
-                  left={scrollPosition > 0 ? "30px" : ""}
+                  left={isExpanded ? "-15px" : ""}
                 >
-                  {t("sector")}: {t("stationary-energy")} |{" "}
-                  {t("inventory-year")}: 2023
+                  {t("sector")}: {getSectorName(step)} | {t("inventory-year")}:{" "}
+                  {inventoryProgress?.inventory.year}
                 </Text>
-                {scrollPosition > 0 ? (
+                {isExpanded ? (
                   ""
                 ) : (
                   <Text
@@ -221,7 +282,7 @@ function SubSectorPage({
             </Box>
           </Box>
         </Box>
-      </MotionBox>
+      </Box>
       <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4 mt-[240px]">
         <Box mt="48px">
           <Tabs>
@@ -229,10 +290,10 @@ function SubSectorPage({
               className="w-[1090px] z-10"
               bg="background.backgroundLight"
               h="80px"
-              pos={scrollPosition > 0 ? "fixed" : "relative"}
-              top={scrollPosition > 0 ? "170px" : "50px"}
+              pos={isExpanded ? "fixed" : "relative"}
+              top={isExpanded ? "170px" : "50px"}
               animate={{
-                y: scrollPosition > 0 ? 0 : -50,
+                y: isExpanded ? 0 : -50,
               }}
               transition={{ duration: 0.2 }}
             >
@@ -265,6 +326,7 @@ function SubSectorPage({
                     filteredScope={scope}
                     t={t}
                     inventoryId={inventoryId}
+                    step={step}
                   />
                 ))
               )}

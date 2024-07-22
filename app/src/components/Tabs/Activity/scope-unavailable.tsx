@@ -17,7 +17,7 @@ interface ScopeUnavailableProps {
 
 const ScopeUnavailable: FC<ScopeUnavailableProps> = ({ t }) => {
   return (
-    <Box>
+    <Box bg="base.light" borderRadius="8px" p="24px">
       <HeadingText title={t("scope-unavailable")} />
       <Text
         letterSpacing="wide"
@@ -43,7 +43,6 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({ t }) => {
             <Radio value={t("select-reason-1")} color="interactive.secondary">
               {t("select-reason-1")}
             </Radio>
-            <Radio value={t("select-reason-2")}>{t("select-reason-2")}</Radio>
             <Radio value={t("select-reason-3")}>{t("select-reason-3")}</Radio>
             <Radio value={t("select-reason-4")}>{t("select-reason-4")}</Radio>
           </Stack>

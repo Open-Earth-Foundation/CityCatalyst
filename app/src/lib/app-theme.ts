@@ -94,7 +94,7 @@ export const appTheme = extendTheme({
 
     headline: {
       lg: "32px",
-      md: "36px",
+      md: "28px",
       sm: "24px",
     },
 

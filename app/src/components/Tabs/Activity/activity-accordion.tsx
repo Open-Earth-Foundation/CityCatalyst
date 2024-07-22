@@ -76,11 +76,14 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                   onClick={showActivityModal}
                   _hover={{ bg: "none" }}
                   aria-label="add-activity"
-                  icon={<AddIcon color="interactive.control" />}
+                  icon={<AddIcon color="interactive.control" fontSize="24px" />}
                 />
               </Box>
             </Box>
-            <AccordionIcon />
+            <AccordionIcon
+              color="interactive.control"
+              style={{ fontSize: "40px" }}
+            />
           </AccordionButton>
         </h2>
         <AccordionPanel pb={4}>

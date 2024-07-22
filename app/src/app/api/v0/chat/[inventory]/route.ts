@@ -68,8 +68,11 @@ async function handleHuggingFaceChat(
 async function handleOpenAIChat(
   messages: Messages,
 ): Promise<StreamingTextResponse> {
+  // Use type assertion to avoid TypeScript errors
+  const model = process.env.OPEN_AI_MODEL as string;
+
   const response = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
+    model: model,
     stream: true,
     messages: messages as any as ChatCompletionMessageParam[],
   });

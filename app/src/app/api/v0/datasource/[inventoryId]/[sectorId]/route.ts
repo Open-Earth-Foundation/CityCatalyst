@@ -5,7 +5,6 @@ import { DataSource } from "@/models/DataSource";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
-import { Op } from "sequelize";
 
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const inventory = await db.models.Inventory.findOne({
@@ -22,10 +21,6 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
       {
         model: DataSource,
         as: "dataSources",
-        where: {
-          startYear: { [Op.lte]: inventory.year },
-          endYear: { [Op.gte]: inventory.year },
-        },
         include: [
           { model: db.models.Scope, as: "scopes" },
           { model: db.models.Publisher, as: "publisher" },
@@ -48,7 +43,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
     throw new createHttpError.NotFound("Sector not found");
   }
 
-  const applicableSources = DataSourceService.filterSources(
+  const { applicableSources, removedSources } = DataSourceService.filterSources(
     inventory,
     sector.dataSources,
   );
@@ -69,5 +64,5 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
     )
   ).filter((source) => !!source);
 
-  return NextResponse.json({ data: sourceData });
+  return NextResponse.json({ data: sourceData, removedSources });
 });

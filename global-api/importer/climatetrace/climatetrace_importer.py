@@ -17,7 +17,7 @@ refno_to_assets = {
     "I.7.1": ["./fossil_fuel_operations/asset_coal-mining_emissions.csv"],
     "I.8.1": ["./fossil_fuel_operations/asset_oil-and-gas-production-and-transport_emissions.csv"],
     "II.1.1": ["./transportation/asset_road-transportation_emissions.csv"],
-    "II.4.1": ["./transportation/asset_domestic-aviation_emissions.csv"],
+    "II.4.3": ["./transportation/asset_domestic-aviation_emissions.csv"],
     "II.4.3": ["./transportation/asset_international-aviation_emissions.csv"],
     "III.1.1": ["./waste/asset_solid-waste-disposal_emissions.csv"],
     "V.1": [

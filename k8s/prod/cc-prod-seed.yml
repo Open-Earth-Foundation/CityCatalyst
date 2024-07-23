@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: cc-seed-
+  generateName: cc-prod-seed-
 spec:
   ttlSecondsAfterFinished: 86400
   template:

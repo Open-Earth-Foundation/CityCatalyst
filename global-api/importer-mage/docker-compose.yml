@@ -6,6 +6,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    #env_file:
+    #  - .env
     ports:
       - 6789:6789
     volumes:

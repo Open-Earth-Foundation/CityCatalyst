@@ -169,7 +169,7 @@ blocks:
   color: purple
   configuration: {}
   downstream_blocks:
-  - populate_emissions
+  - emissions_staging_ct
   executor_config: null
   executor_type: local_python
   has_callback: false
@@ -185,6 +185,47 @@ blocks:
 - all_upstream_blocks_executed: false
   color: null
   configuration: {}
+  downstream_blocks:
+  - locode_transformation
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: emissions_staging_ct
+  retry_config: null
+  status: updated
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - emissions_oil_gas_refining_ct
+  uuid: emissions_staging_ct
+- all_upstream_blocks_executed: false
+  color: null
+  configuration:
+    data_provider: postgres
+    data_provider_profile: default
+    dbt: {}
+    disable_query_preprocessing: false
+    export_write_policy: append
+    limit: 1000
+    use_raw_sql: true
+  downstream_blocks:
+  - populate_emissions
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: sql
+  name: locode_transformation
+  retry_config: null
+  status: updated
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - emissions_staging_ct
+  uuid: locode_transformation
+- all_upstream_blocks_executed: false
+  color: null
+  configuration: {}
   downstream_blocks: []
   executor_config: null
   executor_type: local_python
@@ -196,7 +237,7 @@ blocks:
   timeout: null
   type: data_exporter
   upstream_blocks:
-  - emissions_oil_gas_refining_ct
+  - locode_transformation
   uuid: populate_emissions
 cache_block_output_in_memory: false
 callbacks: []

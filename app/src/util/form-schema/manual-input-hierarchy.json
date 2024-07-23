@@ -15,7 +15,7 @@
           "status": "required",
           "name": "commercial-building-fakevalue-name",
           "formula": "activity-times-emissions-factor",
-          "activity-title": "commercial-building-fakevalue-title",
+          "activity-title": "commercial-building-fakevalue-title"
         }
       }
     ]

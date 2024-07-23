@@ -40,32 +40,29 @@ function Page({
     }
   };
   return (
-    <Box>
-      <NavigationBar lng="" />
-      <Box className="h-[100vh] w-full flex justify-center items-center">
-        <Card className="min-h-[300px] min-w-[300px] flex">
-          <CardHeader
-            fontFamily="heading"
-            fontWeight="bold"
-            fontSize="headline.lg"
-            className="flex items-center justify-center"
-          >
-            <Text>{t("add-data")}</Text>
-          </CardHeader>
-          <CardBody className="flex items-center justify-center">
-            <VStack>
-              <Text color={wasSuccessful ? "green" : "red"} align="center">
-                {statusMessage}
-              </Text>
-            </VStack>
-          </CardBody>
-          <CardFooter px="0">
-            <Button onClick={handleConnectToCDP} className="w-[100%]" size="lg">
-              {t("submit-data-to-cdp")}
-            </Button>
-          </CardFooter>
-        </Card>
-      </Box>
+    <Box className="h-[100vh] w-full flex justify-center items-center">
+      <Card className="min-h-[300px] min-w-[300px] flex">
+        <CardHeader
+          fontFamily="heading"
+          fontWeight="bold"
+          fontSize="headline.lg"
+          className="flex items-center justify-center"
+        >
+          <Text>{t("add-data")}</Text>
+        </CardHeader>
+        <CardBody className="flex items-center justify-center">
+          <VStack>
+            <Text color={wasSuccessful ? "green" : "red"} align="center">
+              {statusMessage}
+            </Text>
+          </VStack>
+        </CardBody>
+        <CardFooter px="0">
+          <Button onClick={handleConnectToCDP} className="w-[100%]" size="lg">
+            {t("submit-data-to-cdp")}
+          </Button>
+        </CardFooter>
+      </Card>
     </Box>
   );
 }

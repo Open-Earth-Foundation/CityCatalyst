@@ -24,7 +24,7 @@ function Page({
   const [statusMessage, setStatusMessage] = useState(t("submit-data-to-cdp"));
   const [wasSuccessful, setWasSuccessful] = useState(true);
 
-  const [connectToCDP] = api.useConnectToCDPMutation();
+  const [connectToCDP, { isLoading }] = api.useConnectToCDPMutation();
   const handleConnectToCDP = async () => {
     const res: { data?: any; error?: any } = await connectToCDP({
       inventoryId: inventory,
@@ -41,7 +41,7 @@ function Page({
   };
   return (
     <Box className="h-[100vh] w-full flex justify-center items-center">
-      <Card className="min-h-[300px] min-w-[300px] flex">
+      <Card minH="300px" minW="300px">
         <CardHeader
           fontFamily="heading"
           fontWeight="bold"
@@ -58,7 +58,12 @@ function Page({
           </VStack>
         </CardBody>
         <CardFooter px="0">
-          <Button onClick={handleConnectToCDP} className="w-[100%]" size="lg">
+          <Button
+            onClick={handleConnectToCDP}
+            isLoading={isLoading}
+            w="full"
+            size="lg"
+          >
             {t("submit-data-to-cdp")}
           </Button>
         </CardFooter>

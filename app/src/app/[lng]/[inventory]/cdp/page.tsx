@@ -1,6 +1,5 @@
 "use client";
 
-import { NavigationBar } from "@/components/navigation-bar";
 import {
   Box,
   Button,

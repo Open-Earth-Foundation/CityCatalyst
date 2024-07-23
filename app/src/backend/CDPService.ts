@@ -18,7 +18,10 @@ export default class CDPService {
     return `https://${host}.cdpgreenstar.net/${relative}`;
   }
 
-  public static async getCityID(city: string | undefined, country: string | undefined): Promise<string>  {
+  public static async getCityID(
+    city: string | undefined,
+    country: string | undefined,
+  ): Promise<string> {
     logger.info(`Getting city ID for ${city}, ${country}`);
     const url = this.url("response/partner/organizations");
     const response = await fetch(url, {
@@ -65,16 +68,18 @@ export default class CDPService {
     cityID: string,
     question: string,
     id: string,
-    name: string
+    name: string,
   ): Promise<boolean> {
     const url = this.url(`response/response`);
-    const body = [{
-      id: question,
-      "updateResponseInput": {
-        "content": {name, id},
-        "status": "ANSWERED"
-      }
-    }];
+    const body = [
+      {
+        id: question,
+        updateResponseInput: {
+          content: { name, id },
+          status: "ANSWERED",
+        },
+      },
+    ];
     logger.debug(`Submitting response: ${JSON.stringify(body)}`);
     const res = await fetch(url, {
       method: "PUT",
@@ -100,19 +105,19 @@ export default class CDPService {
   public static async submitMatrix(
     cityID: string,
     question: string,
-    rows: any[]
+    rows: { rowId: string; content: string }[],
   ): Promise<boolean> {
     const url = this.url(`response/response`);
-    const body = rows.map((row:any) => {
+    const body = rows.map((row) => {
       return {
         id: question,
         rowId: row.rowId,
-        "updateResponseInput": {
-          "content": row['content'].toString(),
-          "status": "ANSWERED"
-        }
+        updateResponseInput: {
+          content: row.content.toString(),
+          status: "ANSWERED",
+        },
       };
-    })
+    });
     logger.debug(`Submitting response: ${JSON.stringify(body)}`);
     const res = await fetch(url, {
       method: "PUT",

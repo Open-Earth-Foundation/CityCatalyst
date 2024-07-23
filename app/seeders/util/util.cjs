@@ -7,8 +7,11 @@ async function bulkUpsert(
   entries,
   idColumnName,
   transaction,
+  debug = false,
 ) {
   for (const entry of entries) {
+    if (debug) { console.info("Upserting entry", entry); }
+
     const id = entry[idColumnName];
     const item = await queryInterface.sequelize.query(
       `SELECT COUNT(*) FROM "${tableName}" WHERE "${idColumnName}" = '${id}';`,

@@ -136,7 +136,6 @@ jobs:
             SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}} \
             NEXTAUTH_SECRET=${{secrets.NEXTAUTH_SECRET}} \
             RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}} \ VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}} \
-            CHAT_PROVIDER=openai \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}} \
             HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}} \ "ADMIN_EMAILS=${{secrets.ADMIN_EMAILS}}" \
             "ADMIN_NAMES=${{secrets.ADMIN_NAMES}}" \

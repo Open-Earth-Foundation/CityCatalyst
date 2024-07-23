@@ -28,10 +28,13 @@ const Footer = ({ lng }: { lng: string }) => {
           >
             <FooterLink url="/" title={t("about-citycatalyst")} />
             <FooterLink url="/" title={t("contribution-guide")} />
-            <FooterLink url="/" title={t("goto-gh")} />
+            <FooterLink
+              url="https://github.com/Open-Earth-Foundation/CityCatalyst"
+              title={t("goto-gh")}
+            />
             <FooterLink url="/" title={t("cad")} />
             <FooterLink url="/" title={t("read-the-docs")} />
-            <FooterLink url="/" title={t("python-client-docs")} />
+            <FooterLink url="./cdp" title={t("submit-to-cdp")} />
           </Box>
           <Box>
             <Button

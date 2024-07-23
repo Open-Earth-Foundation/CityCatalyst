@@ -22,7 +22,6 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
   activity,
   errors,
 }) => {
-  console.log(errors?.buildingType?.message);
   return (
     <Box display="flex" flexDirection="column" gap="8px">
       <Text
@@ -42,7 +41,8 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
         border="inputBox"
         borderColor={errors?.[activity] ? "sentiment.negativeDefault" : ""}
         background={errors?.[activity] ? "sentiment.negativeOverlay" : ""}
-        color="content.secondary"
+        fontSize="body.lg"
+        h="48px"
         placeholder={placeholder}
         _focus={{
           borderWidth: "1px",
@@ -51,7 +51,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
         }}
         {...register(activity as any, { required: t("value-required") })}
       >
-        {options.map((item: string) => (
+        {options?.map((item: string) => (
           <option key={item} value={item}>
             {item}
           </option>

@@ -31,7 +31,14 @@ module.exports = {
           "DataSourceEmissionsFactor",
           folder,
         );
-        const emissionsFactors = await parseFile("EmissionsFactor", folder);
+
+        const emissionsFactorsRaw = await parseFile("EmissionsFactor", folder);
+        const emissionsFactors = emissionsFactorsRaw.map((ef) => {
+          delete ef["EF ID_x"];
+          // delete ef["ipcc_2006_category"];
+          return ef;
+        });
+
         const publishers = await parseFile("Publisher", folder);
 
         await bulkUpsert(

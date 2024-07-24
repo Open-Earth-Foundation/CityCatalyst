@@ -1,5 +1,5 @@
 {
-  "1":{
+  "1": {
     "1": {
       "fields": [
         {
@@ -34,13 +34,13 @@
           "addon": {
             "name": "fuelConsumptionUnits",
             "options": [
-            "Gallons (gal)",
-            "Liters (L)",
-            "Cubic meters (m3)",
-            "Kilograms (kg)",
-            "Terajoules (TJ)",
-            "Kilowatt hour (kWh)"
-          ]
+              "Gallons (gal)",
+              "Liters (L)",
+              "Cubic meters (m3)",
+              "Kilograms (kg)",
+              "Terajoules (TJ)",
+              "Kilowatt hour (kWh)"
+            ]
           }
         },
         {
@@ -72,7 +72,6 @@
           "name": "ch4EmissionFactor",
           "unit": "kg/Gal"
         }
-        
       ],
       "submit": {
         "label": "Add Activity",
@@ -120,60 +119,52 @@
               "Terajoules (TJ)",
               "Kilowatt-kilometer (kW/m2)"
             ]
-            }
-          },
-          {
-            "label": "Emission factor type",
-            "type": "select",
-            "name": "emissionFactorType",
-            "options": [
-              "Carbon Footprint",
-              "Local",
-              "Regional",
-              "National"
-            ]
-          },
-          {
-            "label": "CO2 emission factor",
-            "type": "number",
-            "name": "co2EmissionFactor",
-            "unit": "CO2/kWh"
-          },
-          {
-            "label": "N2O emission factor",
-            "type": "number",
-            "name": "n2oEmissionFactor",
-            "unit": "NO2/kWh"
-          },
-          {
-            "label": "CH4 emission factor",
-            "type": "number",
-            "name": "ch4EmissionFactor",
-            "unit": "CH4/kWh"
-          },
-          {
-            "label": "Data quality",
-            "type": "select",
-            "name": "dataQuality",
-            "options": [
-              "High",
-              "Medium",
-              "Low"
-            ]
-          },
-          {
-            "label": "Source reference",
-            "type": "text",
-            "name": "sourceReference",
-            "placeholder": "Write in detail from which source the entered values come from."
           }
-        ],
-        "submit": {
-          "label": "Add Activity",
-          "action": "/submit-activity"
+        },
+        {
+          "label": "Emission factor type",
+          "type": "select",
+          "name": "emissionFactorType",
+          "options": ["Carbon Footprint", "Local", "Regional", "National"]
+        },
+        {
+          "label": "CO2 emission factor",
+          "type": "number",
+          "name": "co2EmissionFactor",
+          "unit": "CO2/kWh"
+        },
+        {
+          "label": "N2O emission factor",
+          "type": "number",
+          "name": "n2oEmissionFactor",
+          "unit": "NO2/kWh"
+        },
+        {
+          "label": "CH4 emission factor",
+          "type": "number",
+          "name": "ch4EmissionFactor",
+          "unit": "CH4/kWh"
+        },
+        {
+          "label": "Data quality",
+          "type": "select",
+          "name": "dataQuality",
+          "options": ["High", "Medium", "Low"]
+        },
+        {
+          "label": "Source reference",
+          "type": "text",
+          "name": "sourceReference",
+          "placeholder": "Write in detail from which source the entered values come from."
         }
+      ],
+      "submit": {
+        "label": "Add Activity",
+        "action": "/submit-activity"
       }
+    }
   },
   "2": {},
   "3": {}
 }
+

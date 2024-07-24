@@ -32,15 +32,12 @@ module.exports = {
           folder,
         );
 
-        const emissionsFactorsStationaryEnergy = await parseFile("EmissionsFactor_Stationary_Energy", folder);
-        const emissionsFactorsStationaryEnergyScope1 = await parseFile("EmissionsFactor_Stationary_Energy_Scope1", folder);
-        const emissionsFactorsRaw = emissionsFactorsStationaryEnergy.concat(emissionsFactorsStationaryEnergyScope1);
-
+        const emissionsFactorsRaw = await parseFile("EmissionsFactor", folder);
         const emissionsFactors = emissionsFactorsRaw.map((ef) => {
           delete ef["EF ID_x"];
           // delete ef["ipcc_2006_category"];
           return ef;
-        })
+        });
 
         const publishers = await parseFile("Publisher", folder);
 

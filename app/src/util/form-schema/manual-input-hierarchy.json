@@ -1,24 +1,147 @@
 {
- "methodologies": {
-  "fakemethod": {
-    "gpcrefnos": ["I.1.1", "I.2.1", "IV.1"],
-    "name": "fakemethod-name",
-    "status": "enabled",
-    "description": "fakemethod-description",
-    "extra-fields": {
-      "building-type": {},
-      "fuel-type": {}
-    },
-    "subcategories": [
+  "I.2.1": {
+    "methodologies": [
       {
-        "building-type-and-fuel": {
-          "status": "required",
-          "name": "commercial-building-fakevalue-name",
-          "formula": "activity-times-emissions-factor",
-          "activity-title": "commercial-building-fakevalue-title"
-        }
+        "id": "fuel-combustion-commercial-buildings-methodology",
+        "activities": [
+          {
+            "id": "fuel-combustion-commercial-buildings-activity",
+            "unique-by": [
+              "commercial-building-type",
+              "commercial-building-fuel-type",
+              "commercial-buildings-fuel-source"
+            ],
+            "activity-title": "activity-total-fuel-consumption",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "commercial-building-type",
+                "options": [
+                  "commercial-building-type-all",
+                  "commercial-building-type-commercial-institutional",
+                  "commercial-building-type-commercial-buildings",
+                  "commercial-building-type-institutional-buildings",
+                  "commercial-building-type-street-lighting"
+                ],
+                "exclusive": "commercial-building-type-all"
+              },
+              {
+                "id": "commercial-building-fuel-type",
+                "options": [
+                  "commercial-building-fuel-type-propane",
+                  "commercial-building-fuel-type-natural-gas",
+                  "commercial-building-fuel-type-heating-oil"
+                ]
+              },
+              {
+                "id": "commercial-buildings-fuel-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-gallons",
+              "units-liters",
+              "units-cubic-meters",
+              "units-kilograms",
+              "units-other"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "direct-measurement-commercial-buildings-methodology",
+        "activities": [
+          {
+            "id": "direct-measurement-commercial-buildings-activity",
+            "unique-by": ["commercial-building-type"],
+            "activity-title": "activity-emissions",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "commercial-building-type",
+                "options": [
+                  "commercial-building-type-all",
+                  "commercial-building-type-commercial-institutional",
+                  "commercial-building-type-commercial-buildings",
+                  "commercial-building-type-institutional-buildings",
+                  "commercial-building-type-street-lighting"
+                ],
+                "exclusive": "commercial-building-type-all"
+              },
+              {
+                "id": "commercial-building-co2",
+                "type": "number",
+                "units": ["units-tons"]
+              },
+              {
+                "id": "commercial-building-ch4",
+                "type": "number",
+                "units": ["units-tons"]
+              },
+              {
+                "id": "commercial-building-n2o",
+                "type": "number",
+                "units": ["units-tons"]
+              }
+            ],
+            "units": []
+          }
+        ]
+      }
+    ]
+  },
+  "II.1.1": {
+    "methodologies": [
+      {
+        "id": "fuel-sales-on-road-transport-methodology",
+        "activities": [
+          {
+            "id": "fuel-sales-on-road-transport-activity",
+            "unique-by": [
+              "on-road-transport-vehicle-type",
+              "on-road-transport-fuel-type",
+              "on-road-transport-fuel-source"
+            ],
+            "activity-title": "activity-total-fuel-sales",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "on-road-transport-fuel-type",
+                "options": [
+                  "fuel-type-gasoline",
+                  "fuel-type-diesel",
+                  "fuel-type-lpg",
+                  "fuel-type-cng",
+                  "fuel-type-biofuel"
+                ]
+              },
+              {
+                "id": "on-road-transport-vehicle-type",
+                "options": [
+                  "vehicle-type-all",
+                  "vehicle-type-passenger-vehicles",
+                  "vehicle-type-commercial-vehicles",
+                  "vehicle-type-public-transport-vehicles",
+                  "vehicle-type-emergency-vehicles",
+                  "vehicle-type-service-vehicles"
+                ]
+              },
+              {
+                "id": "on-road-transport-fuel-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-gallons",
+              "units-liters",
+              "units-cubic-meters",
+              "units-kilograms",
+              "units-terajoules",
+              "units-kilowatt-hours"
+            ]
+          }
+        ]
       }
     ]
   }
- }
 }

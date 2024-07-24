@@ -34,8 +34,14 @@ module.exports = {
 
         const emissionsFactorsRaw = await parseFile("EmissionsFactor", folder);
         const emissionsFactors = emissionsFactorsRaw.map((ef) => {
-          delete ef["EF ID_x"];
-          // delete ef["ipcc_2006_category"];
+          const metadata = (ef.metadata ? ef.metadata : "")
+            .split(", ")
+            .map((entry) => entry.split(":"));
+          ef.metadata = JSON.stringify(Object.fromEntries(metadata));
+          if (!ef.year) {
+            ef.year = null;
+          }
+
           return ef;
         });
 
@@ -65,7 +71,6 @@ module.exports = {
           emissionsFactors,
           "id",
           transaction,
-          true,
         );
         console.info("Finished adding emissions factors");
         await bulkUpsert(

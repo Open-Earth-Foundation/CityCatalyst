@@ -149,7 +149,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
       .flatMap((factor) => {
         return factor.dataSources.map((source) => ({
           id: source.datasourceId,
-          name: source.datasetName,
+          name: source.datasetName ?? "unknown",
         }));
       })
       .filter((source) => {
@@ -393,8 +393,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       placeholder="Select emission factor type"
                       onChange={(e: any) => onEmissionFactorTypeChange(e)}
                     >
-                      {/* TODO translate values and use internal value for saving */}
-                      {emissionsFactorTypes.map((id: string, name: string) => (
+                      {emissionsFactorTypes.map(({ id, name }) => (
                         <option key={id} value={id}>
                           {t(name)}
                         </option>

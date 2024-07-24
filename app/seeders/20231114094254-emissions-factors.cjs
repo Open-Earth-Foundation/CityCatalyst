@@ -4,7 +4,11 @@ const fs = require("node:fs");
 const { parse } = require("csv-parse");
 const { bulkUpsert } = require("./util/util.cjs");
 
-const folders = ["EFDB_2006_IPCC_guidelines", "EFDB_US"];
+const folders = [
+  "EFDB_2006_IPCC_guidelines",
+  "EFDB_US",
+  "CarbonFootPrint_2023",
+];
 
 async function parseFile(filename, folder) {
   const records = [];
@@ -26,6 +30,7 @@ module.exports = {
   async up(queryInterface) {
     await queryInterface.sequelize.transaction(async (transaction) => {
       for (const folder of folders) {
+        console.log("Loading emissions factor folder " + folder + "...");
         const dataSources = await parseFile("DataSource", folder);
         const dataSourceEmissionsFactors = await parseFile(
           "DataSourceEmissionsFactor",
@@ -71,6 +76,7 @@ module.exports = {
           emissionsFactors,
           "id",
           transaction,
+          folder == "CarbonFootPrint_2023",
         );
         console.info("Finished adding emissions factors");
         await bulkUpsert(

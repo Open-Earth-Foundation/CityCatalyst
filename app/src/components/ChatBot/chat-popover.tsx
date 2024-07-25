@@ -16,6 +16,10 @@ import { BsStars } from "react-icons/bs";
 import ChatBot from "./chat-bot";
 import { useTranslation } from "@/i18n/client";
 
+// TODO: Hard coded threadID, exchange with threadId retrieved from API call
+// app\src\app\api\v0\assistants\threads\route.ts
+const threadId = "thread_806Ho9yfMxUKtLSSc4co7hAT"
+
 export default function ChatPopover({
   lng = "en",
   inventoryId,
@@ -75,7 +79,7 @@ export default function ChatPopover({
             />
           </PopoverHeader>
           <PopoverBody maxH={650} w="full" p={6} borderRadius={4}>
-            <ChatBot inputRef={inputRef} t={t} inventoryId={inventoryId} />
+            <ChatBot inputRef={inputRef} t={t} inventoryId={inventoryId} threadId={threadId}/>
           </PopoverBody>
         </PopoverContent>
       </Popover>

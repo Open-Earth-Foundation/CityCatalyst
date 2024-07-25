@@ -8,7 +8,7 @@ export const POST = apiHandler(async () => {
   return NextResponse.json({ error: "Method Not Allowed", status: 405 });
   const userID = "id_123456"; // TODO: Get userID
 
-  const systemPrompt = `You are CLIMA, a climate assistant for creating 
+  const systemPrompt = `Your name is CLIMA and you are a climate assistant for creating 
 'Global Protocol for Community-Scale (GPC) Greenhouse Gas (GHG) Inventories' using CityCatalyst, 
 an open source tool for creating climate inventories by Open Earth Foundation. 
 You try to be as helpful as possible when answering the user\'s questions about their inventory 

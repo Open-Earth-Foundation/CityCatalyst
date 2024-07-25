@@ -12,7 +12,8 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react";
-import { useChat } from "ai/react";
+// import { useChat } from "ai/react";
+import { useAssistant } from 'ai/react'
 import { TFunction } from "i18next";
 import { BsStars } from "react-icons/bs";
 import {
@@ -31,7 +32,6 @@ function useEnterSubmit(): {
   onKeyDown: (event: React.KeyboardEvent<HTMLTextAreaElement>) => void;
 } {
   const formRef = useRef<HTMLFormElement>(null);
-
   const handleKeyDown = (
     event: React.KeyboardEvent<HTMLTextAreaElement>,
   ): void => {
@@ -52,26 +52,36 @@ export default function ChatBot({
   inputRef,
   t,
   inventoryId,
+  threadId,
 }: {
   userName?: string;
   inputRef?: React.Ref<HTMLTextAreaElement>;
   t: TFunction;
   inventoryId: string;
+  threadId: string
 }) {
   const {
     messages,
     input,
-    handleInputChange,
-    handleSubmit,
-    isLoading,
+    handleInputChange,// had to change handleSubmit to handleInputChange
+    // handleSubmit,
+    submitMessage,
+    // isLoading,
     append,
-    reload,
-  } = useChat({
-    api: `/api/v0/chat/${inventoryId}`,
-    initialMessages: [
-      { id: "-1", content: t("initial-message"), role: "assistant" },
-    ],
-  });
+    // reload,
+  } = useAssistant({
+    api: `/api/v0/assistants/threads/${threadId}/messages`,
+    threadId: threadId,
+    // body: {
+    //   content: "I am a pirate"
+    // }
+  })
+  // } = useChat({
+  //   api: `/api/v0/chat/${inventoryId}`,
+  //   initialMessages: [
+  //     { id: "-1", content: t("initial-message"), role: "assistant" },
+  //   ],
+  // });
   const { copyToClipboard, isCopied } = useCopyToClipboard({});
   const { formRef, onKeyDown } = useEnterSubmit();
   const messagesWrapperRef = useRef<HTMLDivElement>(null);
@@ -163,7 +173,7 @@ export default function ChatBot({
                         />
                         <Spacer />
                         <Button
-                          onClick={() => reload()}
+                          // onClick={() => reload()}
                           leftIcon={<Icon as={MdRefresh} boxSize={5} />}
                           variant="outline"
                           textTransform="none"
@@ -184,7 +194,7 @@ export default function ChatBot({
           );
         })}
         <ScrollAnchor
-          trackVisibility={isLoading}
+          // trackVisibility={isLoading}
           rootRef={messagesWrapperRef}
         />
       </div>
@@ -219,7 +229,7 @@ export default function ChatBot({
         ))}
       </div>
 
-      <form onSubmit={handleSubmit} ref={formRef}>
+      <form onSubmit={submitMessage} ref={formRef}>
         <HStack mt={1}>
           {/*<IconButton
             variant="ghost"

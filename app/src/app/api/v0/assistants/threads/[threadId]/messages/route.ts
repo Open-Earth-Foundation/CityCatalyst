@@ -1,10 +1,6 @@
-// import OpenAI from "openai";
 import { apiHandler } from "@/util/api";
 import { openai } from "@/util/openai";
-
-// const openai = new OpenAI({
-//   apiKey: process.env.OPENAI_API_KEY,
-// });
+import { NextResponse } from "next/server";
 
 const assistantId = process.env.OPENAI_ASSISTANT_ID as string;
 
@@ -17,9 +13,16 @@ export const POST = apiHandler(async (req, { params: { threadId } }) => {
     content: content,
   });
 
-  const stream = openai.beta.threads.runs.stream(threadId, {
-    assistant_id: assistantId,
-  });
+  const stream = openai.beta.threads.runs
+    .stream(threadId, {
+      assistant_id: assistantId,
+    })
+    .on("textCreated", () => process.stdout.write("\nassistant > "))
+    .on("textDelta", (textDelta) => {
+      if (typeof textDelta.value === "string") {
+        process.stdout.write(textDelta.value);
+      }
+    });
 
-  return new Response(stream.toReadableStream());
+  return new NextResponse(stream.toReadableStream());
 });

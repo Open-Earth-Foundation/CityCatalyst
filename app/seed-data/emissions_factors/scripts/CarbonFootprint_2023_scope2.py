@@ -182,8 +182,7 @@ if __name__ == "__main__":
         id_vars=["actor_id", "region", "datasource_name", "year", "reference"],
         value_vars=[
             "grid_supply_energy_consumed",
-            "transmission_and_distribution",
-            "residual_fuel_mix_factor",
+            "transmission_and_distribution"
         ],
         var_name="emission_factor_type",
         value_name="CO2e",
@@ -318,10 +317,11 @@ if __name__ == "__main__":
             new_rows.append(new_row)
 
     df_final = pd.DataFrame(new_rows)
+    df_final = df_final[df_final["emissions_per_activity"] > 0].head(1)
 
     # assign GPC_refno
-    df_final["gpc_refno"] = df_final["emission_factor_type"].map(GPC_refno_dic)
-    df_final = df_final.explode("gpc_refno", ignore_index=True)
+    df_final["gpc_reference_number"] = df_final["emission_factor_type"].map(GPC_refno_dic)
+    df_final = df_final.explode("gpc_reference_number", ignore_index=True)
 
     # make a row for each methodology
     df_final["methodology_name"] = [mapping_gpc_to_methodologies] * len(df_final)
@@ -337,12 +337,13 @@ if __name__ == "__main__":
         columns=["CO2e", "datasource_name", "emission_factor_type"]
     )
 
-    df_final["emissions_factor_id"] = df_final.apply(
+    df_final["id"] = df_final.apply(
         lambda row: uuid_generate_v4(), axis=1
     )
 
     df_final.to_csv(
-        f"{output_dir}/EmissionsFactor_Stationary_Energy_Scope2.csv", index=False
+        f"{output_dir}/EmissionsFactor.csv", index=False
+        #f"{output_dir}/EmissionsFactor_Stationary_Energy_Scope2.csv", index=False
     )
 
     # =================================================================
@@ -353,7 +354,7 @@ if __name__ == "__main__":
             "datasource_id": datasource_data.get("datasource_id"),
             "emissions_factor_id": emissions_factor_id,
         }
-        for emissions_factor_id in df_final["emissions_factor_id"]
+        for emissions_factor_id in df_final["id"]
     ]
 
     write_dic_to_csv(

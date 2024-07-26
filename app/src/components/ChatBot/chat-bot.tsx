@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useEffect, useState } from 'react';
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import {
   Box,
@@ -52,14 +53,38 @@ export default function ChatBot({
   inputRef,
   t,
   inventoryId,
-  threadId,
 }: {
   userName?: string;
   inputRef?: React.Ref<HTMLTextAreaElement>;
   t: TFunction;
   inventoryId: string;
-  threadId: string
 }) {
+
+  const [threadId, setthreadId] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`/api/v0/assistants/threads/${inventoryId}`, { method: "POST" });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('API Response:', data.threadId);
+        setthreadId(data.threadId)
+        // Handle your response data here
+      } catch (error) {
+        console.error('API Call Failed:', error);
+        // Handle error here, maybe update state with the error, and reflect it in the UI
+      }
+    };
+
+    fetchData();
+  }, []); // Empty dependency array means this effect runs only once
+
+  console.log("threadId")
+  console.log(threadId)
+
   const {
     status,
     messages,
@@ -175,8 +200,8 @@ export default function ChatBot({
                           }
                         />
                         <Spacer />
-                        <Button
-                          // onClick={() => reload()}
+                        {/* <Button
+                          onClick={() => reload()}
                           leftIcon={<Icon as={MdRefresh} boxSize={5} />}
                           variant="outline"
                           textTransform="none"
@@ -188,7 +213,7 @@ export default function ChatBot({
                           letterSpacing="0.5px"
                         >
                           {t("regenerate")}
-                        </Button>
+                        </Button> */}
                       </HStack>
                     </>
                   )}
@@ -197,7 +222,7 @@ export default function ChatBot({
           );
         })}
         <ScrollAnchor
-          // trackVisibility={isLoading}
+          trackVisibility={status==="in_progress"}
           rootRef={messagesWrapperRef}
         />
       </div>

@@ -6,6 +6,7 @@ import { NextResponse } from "next/server";
 export const POST = apiHandler(async () => {
   // Currently we create the assistant via OpenAI web interface and do not implement this function here
   return NextResponse.json({ error: "Method Not Allowed", status: 405 });
+  // TODO: should be an admin function
   const userID = "id_123456"; // TODO: Get userID
 
   const systemPrompt = `Your name is CLIMA and you are a climate assistant for creating 

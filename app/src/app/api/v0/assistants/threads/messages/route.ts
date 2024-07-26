@@ -41,5 +41,4 @@ export const POST = apiHandler(async (req) => {
       let runStream = await forwardStream(stream);
     },
   );
-  // return new NextResponse(stream.toReadableStream());
 });

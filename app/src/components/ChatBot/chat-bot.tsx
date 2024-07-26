@@ -61,21 +61,24 @@ export default function ChatBot({
   threadId: string
 }) {
   const {
+    status,
     messages,
     input,
-    handleInputChange,// had to change handleSubmit to handleInputChange
-    // handleSubmit,
-    submitMessage,
-    // isLoading,
+    submitMessage, // had to change handleSubmit to submitMessage
+    handleInputChange,
+    // isLoading, // does not exist in useAssistant
     append,
-    // reload,
+    // reload, // does not exist in useAssistant
   } = useAssistant({
-    api: `/api/v0/assistants/threads/${threadId}/messages`,
+    // api: `/api/v0/assistants/threads/${threadId}/messages`,
+    api: `/api/v0/assistants/threads/messages`,
     threadId: threadId,
-    // body: {
-    //   content: "I am a pirate"
-    // }
   })
+
+  console.log(threadId)
+  console.log(status)
+  console.log(messages)
+
   // } = useChat({
   //   api: `/api/v0/chat/${inventoryId}`,
   //   initialMessages: [

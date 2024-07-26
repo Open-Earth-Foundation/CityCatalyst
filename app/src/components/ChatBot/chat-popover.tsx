@@ -18,7 +18,7 @@ import { useTranslation } from "@/i18n/client";
 
 // TODO: Hard coded threadID, exchange with threadId retrieved from API call
 // app\src\app\api\v0\assistants\threads\route.ts
-const threadId = "thread_806Ho9yfMxUKtLSSc4co7hAT"
+const threadId = "thread_9s7HTj5S6beeUOJWFBqP21Xq"
 
 export default function ChatPopover({
   lng = "en",

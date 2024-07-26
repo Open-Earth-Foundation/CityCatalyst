@@ -128,4 +128,4 @@ if __name__ == "__main__":
             connection.commit() 
             print("Query completed successfully.")
         except Exception as e:
-            print("Error updating osm table:", e)
+            print("Error updating datasource table:", e)

@@ -62,54 +62,60 @@ export default function ChatBot({
 
   const [threadId, setthreadId] = useState("");
 
+  // Creating the thread id for the given inventory on initial render
+  // Passing the initial message to api to be set in thread
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`/api/v0/assistants/threads/${inventoryId}`, { method: "POST" });
+        const response = await fetch(`/api/v0/assistants/threads/${inventoryId}`, { 
+          method: "POST", 
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            content: t("initial-message")
+          })
+        });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log('API Response:', data.threadId);
         setthreadId(data.threadId)
-        // Handle your response data here
       } catch (error) {
         console.error('API Call Failed:', error);
-        // Handle error here, maybe update state with the error, and reflect it in the UI
+        // Handle error here
       }
     };
 
     fetchData();
-  }, []); // Empty dependency array means this effect runs only once
-
-  console.log("threadId")
-  console.log(threadId)
+  }, []); // Empty dependency array means this effect runs only once, 
+  // HOWEVER currently it always runs twiche
 
   const {
     status,
-    messages,
     input,
-    submitMessage, // had to change handleSubmit to submitMessage
+    messages,
+    submitMessage,
+    setMessages,
     handleInputChange,
-    // isLoading, // does not exist in useAssistant
     append,
-    // reload, // does not exist in useAssistant
   } = useAssistant({
-    // api: `/api/v0/assistants/threads/${threadId}/messages`,
     api: `/api/v0/assistants/threads/messages`,
     threadId: threadId,
   })
 
-  console.log(threadId)
-  console.log(status)
-  console.log(messages)
+  // Setting the initial message to display for the user
+  // This message will not be passed to the assistant api
+  // It will be set additionally when creating the threadId
+  // to pass to the assistant api
+  useEffect(() => {
+    setMessages([{
+      id: "-1",
+      role: "assistant",
+      content: t("initial-message"),
+    }])
+  }, [])
 
-  // } = useChat({
-  //   api: `/api/v0/chat/${inventoryId}`,
-  //   initialMessages: [
-  //     { id: "-1", content: t("initial-message"), role: "assistant" },
-  //   ],
-  // });
   const { copyToClipboard, isCopied } = useCopyToClipboard({});
   const { formRef, onKeyDown } = useEnterSubmit();
   const messagesWrapperRef = useRef<HTMLDivElement>(null);
@@ -171,7 +177,7 @@ export default function ChatBot({
                     <>
                       <Divider borderColor="border.overlay" my={3} />
                       <HStack>
-                        <IconButton
+                        {/* <IconButton
                           variant="ghost"
                           icon={<Icon as={MdOutlineThumbUp} boxSize={5} />}
                           aria-label="Vote good"
@@ -182,7 +188,7 @@ export default function ChatBot({
                           icon={<Icon as={MdOutlineThumbDown} boxSize={5} />}
                           aria-label="Vote bad"
                           color="content.tertiary"
-                        />
+                        /> */}
                         <IconButton
                           onClick={() => copyToClipboard(m.content)}
                           variant="ghost"
@@ -251,6 +257,7 @@ export default function ChatBot({
             fontWeight="400"
             whiteSpace="nowrap"
             display="inline-block"
+            isDisabled={status==="in_progress"}
           >
             {suggestion.preview}
           </Button>
@@ -280,6 +287,8 @@ export default function ChatBot({
             icon={<MdOutlineSend size={24} />}
             color="content.tertiary"
             aria-label="Send message"
+            disabled={true}
+            isDisabled={status==="in_progress"}
           />
         </HStack>
       </form>

@@ -7,9 +7,7 @@ import { Inventory } from "@/models/Inventory";
 import { PopulationEntry, findClosestYear } from "@/util/helpers";
 import { PopulationAttributes } from "@/models/Population";
 
-// TODO: Add t object to new message below.
-
-function createPromptTemplate(inventory: Inventory): string {
+function createContext(inventory: Inventory): string {
   const inventoryYear = inventory.dataValues.year;
 
   const countryPopulations = inventory.city.populations.filter(
@@ -70,6 +68,7 @@ function createPromptTemplate(inventory: Inventory): string {
 }
 
 export const POST = apiHandler(async (req, { params, session }) => {
+  const { content } = await req.json();
   const inventory = await UserService.findUserInventory(
     params.inventory,
     session,
@@ -105,20 +104,20 @@ export const POST = apiHandler(async (req, { params, session }) => {
     ],
   );
 
-  const prompt = createPromptTemplate(inventory);
+  const context = createContext(inventory);
 
   const thread = await openai.beta.threads.create();
 
   // Add an optional context message on the thread
   await openai.beta.threads.messages.create(thread.id, {
     role: "user",
-    content: prompt,
+    content: context,
   });
 
   // Add custom initial message to newly created thread.
   await openai.beta.threads.messages.create(thread.id, {
     role: "assistant",
-    content: "Hello! I am CLIMA",
+    content: content,
   });
 
   return NextResponse.json({ threadId: thread.id });

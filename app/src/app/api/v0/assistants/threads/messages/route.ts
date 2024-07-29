@@ -12,13 +12,13 @@ const handleReadableStream = (stream: AssistantStream): AssistantStream => {
   stream.on("textDelta", async (delta) => {
     // Make sure token has annotation value
     if (delta.annotations !== undefined && delta.annotations.length > 0) {
-      console.log(delta.value);
-      console.log(delta.annotations);
+      // console.log(delta.value);
+      // console.log(delta.annotations);
       // Token can have only one annotation
       const file_id = delta.annotations[0].file_citation.file_id;
 
       const citedFile = await openai.files.retrieve(file_id);
-      console.log(citedFile.filename);
+      // console.log(citedFile.filename);
     }
   });
 

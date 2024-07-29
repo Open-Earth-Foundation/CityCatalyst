@@ -58,19 +58,28 @@
           "label": "CO2 emission factor",
           "type": "number",
           "name": "co2EmissionFactor",
-          "unit": "CO2/Gal"
+          "addon": {
+            "name": "co2EmissionFactorUnit",
+            "unit": "CO2/Gal"
+          }
         },
         {
           "label": "N2O emission factor",
           "type": "number",
           "name": "n2oEmissionFactor",
-          "unit": "NO2/Gal"
+          "addon": {
+            "name": "n2oEmissionFactorUnit",
+            "unit": "NO2/Gal"
+          }
         },
         {
           "label": "CH4 emission factor",
           "type": "number",
           "name": "ch4EmissionFactor",
-          "unit": "kg/Gal"
+          "addon": {
+            "name": "ch4EmissionFactorUnit",
+            "unit": "Kg/Gal"
+          }
         }
         
       ],
@@ -137,19 +146,28 @@
             "label": "CO2 emission factor",
             "type": "number",
             "name": "co2EmissionFactor",
-            "unit": "CO2/kWh"
+            "addon": {
+              "name": "co2EmissionFactorUnit",
+              "unit": "CO2/kWh"
+            }
           },
           {
             "label": "N2O emission factor",
             "type": "number",
             "name": "n2oEmissionFactor",
-            "unit": "NO2/kWh"
+            "addon": {
+              "name": "n2oEmissionFactorUnit",
+              "unit": "NO2/kWh"
+            }
           },
           {
             "label": "CH4 emission factor",
             "type": "number",
             "name": "ch4EmissionFactor",
-            "unit": "CH4/kWh"
+            "addon": {
+              "name": "ch4EmissionFactorUnit",
+              "unit": "CH4/kWh"
+          }
           },
           {
             "label": "Data quality",

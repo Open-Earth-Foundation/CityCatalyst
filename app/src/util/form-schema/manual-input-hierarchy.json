@@ -49,12 +49,28 @@
         ]
       },
       {
-        "id": "direct-measurement-commercial-buildings-methodology",
+        "id": "scaled-sample-fuel-combustion-commercial-buildings-methodology",
+        "implemented": false
+      },
+      {
+        "id": "modeled-data-fuel-consumption-commercial-buildings-methodology",
+        "implemented": false
+      }
+    ]
+  },
+  "I.2.2": {
+    "methodologies": [
+      {
+        "id": "energy-consumption-commercial-buildings-methodology",
         "activities": [
           {
-            "id": "direct-measurement-commercial-buildings-activity",
-            "unique-by": ["commercial-building-type"],
-            "activity-title": "activity-emissions",
+            "id": "energy-consumption-commercial-buildings-activity",
+            "unique-by": [
+              "commercial-building-type",
+              "commercial-building-energy-usage",
+              "commercial-buildings-energy-source"
+            ],
+            "activity-title": "activity-energy-consumption",
             "minimum": 1,
             "extra-fields": [
               {
@@ -69,24 +85,38 @@
                 "exclusive": "commercial-building-type-all"
               },
               {
-                "id": "commercial-building-co2",
-                "type": "number",
-                "units": ["units-tons"]
+                "id": "commercial-building-energy-usage",
+                "options": [
+                  "commercial-building-energy-usage-all",
+                  "commercial-building-energy-usage-electricity",
+                  "commercial-building-energy-usage-electricity-chp",
+                  "commercial-building-energy-usage-heating",
+                  "commercial-building-energy-usage-heating-chp",
+                  "commercial-building-energy-usage-steam",
+                  "commercial-building-energy-usage-steam-chp",
+                  "commercial-building-energy-usage-refrigeration",
+                  "commercial-building-energy-usage-refrigeration-chp"
+                ]
               },
               {
-                "id": "commercial-building-ch4",
-                "type": "number",
-                "units": ["units-tons"]
-              },
-              {
-                "id": "commercial-building-n2o",
-                "type": "number",
-                "units": ["units-tons"]
+                "id": "commercial-buildings-energy-source",
+                "type": "text"
               }
             ],
-            "units": []
+            "units": [
+              "units-kilowatt-hours",
+              "units-terajoules"
+            ]
           }
         ]
+      },
+      {
+        "id": "scaled-sample-energy-usage-commercial-buildings-methodology",
+        "implemented": false
+      },
+      {
+        "id": "modeled-data-energy-usage-commercial-buildings-methodology",
+        "implemented": false
       }
     ]
   },
@@ -141,6 +171,108 @@
             ]
           }
         ]
+      },
+      {
+        "id": "induced-activity-transboundary-trips-on-road-transport-methodology",
+        "implemented": false
+      },
+      {
+        "id": "induced-activity-only-departing-trips-on-road-transport-methodology",
+        "implemented": false
+      },
+      {
+        "id": "geographic-on-road-transport-methodology",
+        "implemented": false
+      },
+      {
+        "id": "resident-activity-on-road-transport-methodology",
+        "implemented": false
+      }
+    ]
+  },
+  "II.1.2": {
+    "methodologies": [
+      {
+        "id": "electricity-consumption-on-road-transport-methodology",
+        "activities": [
+          {
+            "id": "electricity-consumption-on-road-transport-activity",
+            "unique-by": [
+              "on-road-transport-vehicle-type",
+              "on-road-transport-electricity-source"
+            ],
+            "extra-fields": [
+              {
+                "id": "on-road-transport-vehicle-type",
+                "options": [
+                  "vehicle-type-all",
+                  "vehicle-type-passenger-vehicles",
+                  "vehicle-type-commercial-vehicles",
+                  "vehicle-type-public-transport-vehicles",
+                  "vehicle-type-emergency-vehicles",
+                  "vehicle-type-service-vehicles"
+                ]
+              },
+              {
+                "id": "on-road-transport-electricity-source",
+                "type": "text"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "III.1.1": {
+    "methodologies": [
+      {
+        "id": "methane-commitment-solid-waste-methodology",
+        "activities": {
+          "unique-by": [
+            "methane-commitment-solid-waste-landfill-id"
+          ],
+          "activity-title": "total-municipal-solid-waste-disposed",
+          "extra-fields": [
+            {
+              "id": "methane-commitment-solid-waste-landfill-id",
+              "type": "text"
+            },
+            {
+              "id": "methane-commitment-solid-waste-landfill-address",
+              "type": "text",
+              "required": false
+            },
+            {
+              "id": "methane-commitment-solid-waste-oxidation-factor",
+              "options": [
+                "methane-commitment-solid-waste-well-managed-landfill",
+                "methane-commitment-solid-waste-unmanaged-landfill"
+              ]
+            },
+            {
+              "id": "methane-commitment-solid-waste-landfill-methane-collected-and-removed",
+              "type": "number"
+            },
+            {
+              "id": "methane-commitment-solid-waste-landfill-waste-composition",
+              "type": "percentage-breakdown",
+              "total-required": 100,
+              "subtypes": [
+                "methane-commitment-solid-waste-landfill-waste-composition-food",
+                "methane-commitment-solid-waste-landfill-waste-composition-garden",
+                "methane-commitment-solid-waste-landfill-waste-composition-paper",
+                "methane-commitment-solid-waste-landfill-waste-composition-wood",
+                "methane-commitment-solid-waste-landfill-waste-composition-textiles",
+                "methane-commitment-solid-waste-landfill-waste-composition-plastics",
+                "methane-commitment-solid-waste-landfill-waste-composition-nappies"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "first-order-of-decay-solid-waste-methodology",
+        "implemented": false
       }
     ]
   }

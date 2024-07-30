@@ -372,11 +372,11 @@
                 "methane-commitment-solid-waste-landfill-waste-composition-paper",
                 "methane-commitment-solid-waste-landfill-waste-composition-wood",
                 "methane-commitment-solid-waste-landfill-waste-composition-textiles",
-                "methane-commitment-solid-waste-landfill-waste-composition-plastics",
-                "methane-commitment-solid-waste-landfill-waste-composition-nappies"
+                "methane-commitment-solid-waste-landfill-waste-composition-industrial"
               ]
             }
-          ]
+          ],
+          "formula": "methane-commitment"
         }
       },
       {

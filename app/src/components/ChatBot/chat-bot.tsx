@@ -285,7 +285,6 @@ export default function ChatBot({
             icon={<MdOutlineSend size={24} />}
             color="content.tertiary"
             aria-label="Send message"
-            disabled={true}
             isDisabled={status === "in_progress"}
           />
         </HStack>

@@ -1,24 +1,415 @@
 {
- "methodologies": {
-  "fakemethod": {
-    "gpcrefnos": ["I.1.1", "I.2.1", "IV.1"],
-    "name": "fakemethod-name",
-    "status": "enabled",
-    "description": "fakemethod-description",
-    "extra-fields": {
-      "building-type": {},
-      "fuel-type": {}
-    },
-    "subcategories": [
+  "I.2.1": {
+    "methodologies": [
       {
-        "building-type-and-fuel": {
-          "status": "required",
-          "name": "commercial-building-fakevalue-name",
-          "formula": "activity-times-emissions-factor",
-          "activity-title": "commercial-building-fakevalue-title"
-        }
+        "id": "fuel-combustion-commercial-buildings-methodology",
+        "activities": [
+          {
+            "id": "fuel-combustion-commercial-buildings-activity",
+            "unique-by": [
+              "commercial-building-type",
+              "commercial-building-fuel-type",
+              "commercial-buildings-fuel-source"
+            ],
+            "activity-title": "activity-total-fuel-consumption",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "commercial-building-type",
+                "options": [
+                  "commercial-building-type-all",
+                  "commercial-building-type-commercial-institutional",
+                  "commercial-building-type-commercial-buildings",
+                  "commercial-building-type-institutional-buildings",
+                  "commercial-building-type-street-lighting"
+                ],
+                "exclusive": "commercial-building-type-all"
+              },
+              {
+                "id": "commercial-building-fuel-type",
+                "options": [
+                  "commercial-building-fuel-type-propane",
+                  "commercial-building-fuel-type-natural-gas",
+                  "commercial-building-fuel-type-heating-oil"
+                ]
+              },
+              {
+                "id": "commercial-buildings-fuel-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-gallons",
+              "units-liters",
+              "units-cubic-meters",
+              "units-kilograms",
+              "units-other"
+            ]
+          }
+        ],
+        "suggested_activities": [
+          {
+            "id": "fuel-combustion-commercial-buildings-activity",
+            "commercial-building-type": "commercial-building-type-all"
+          },
+          {
+            "id": "fuel-combustion-commercial-buildings-activity",
+            "commercial-building-type": "commercial-building-type-commercial-buildings"
+          },
+          {
+            "id": "fuel-combustion-commercial-buildings-activity",
+            "commercial-building-type": "commercial-building-type-institutional-buildings"
+          }
+        ]
+      },
+      {
+        "id": "scaled-sample-fuel-combustion-commercial-buildings-methodology",
+        "implemented": false
+      },
+      {
+        "id": "modeled-data-fuel-consumption-commercial-buildings-methodology",
+        "implemented": false
       }
-    ]
+    ],
+    "direct_measure": {
+      "extra-fields": [
+        {
+          "id": "commercial-building-type",
+          "options": [
+            "commercial-building-type-all",
+            "commercial-building-type-commercial-institutional",
+            "commercial-building-type-commercial-buildings",
+            "commercial-building-type-institutional-buildings",
+            "commercial-building-type-street-lighting"
+          ],
+          "exclusive": "commercial-building-type-all"
+        },
+        {
+          "id": "commercial-building-fuel-type",
+          "options": [
+            "commercial-building-fuel-type-all",
+            "commercial-building-fuel-type-propane",
+            "commercial-building-fuel-type-natural-gas",
+            "commercial-building-fuel-type-heating-oil"
+          ]
+        },
+        {
+          "id": "commercial-buildings-fuel-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "I.2.2": {
+    "methodologies": [
+      {
+        "id": "energy-consumption-commercial-buildings-methodology",
+        "activities": [
+          {
+            "id": "energy-consumption-commercial-buildings-activity",
+            "unique-by": [
+              "commercial-building-type",
+              "commercial-building-energy-usage",
+              "commercial-buildings-energy-source"
+            ],
+            "activity-title": "activity-energy-consumption",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "commercial-building-type",
+                "options": [
+                  "commercial-building-type-all",
+                  "commercial-building-type-commercial-institutional",
+                  "commercial-building-type-commercial-buildings",
+                  "commercial-building-type-institutional-buildings",
+                  "commercial-building-type-street-lighting"
+                ],
+                "exclusive": "commercial-building-type-all"
+              },
+              {
+                "id": "commercial-building-energy-usage",
+                "options": [
+                  "commercial-building-energy-usage-all",
+                  "commercial-building-energy-usage-electricity",
+                  "commercial-building-energy-usage-electricity-chp",
+                  "commercial-building-energy-usage-heating",
+                  "commercial-building-energy-usage-heating-chp",
+                  "commercial-building-energy-usage-steam",
+                  "commercial-building-energy-usage-steam-chp",
+                  "commercial-building-energy-usage-refrigeration",
+                  "commercial-building-energy-usage-refrigeration-chp"
+                ]
+              },
+              {
+                "id": "commercial-buildings-energy-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-kilowatt-hours",
+              "units-terajoules"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "scaled-sample-energy-usage-commercial-buildings-methodology",
+        "implemented": false
+      },
+      {
+        "id": "modeled-data-energy-usage-commercial-buildings-methodology",
+        "implemented": false
+      }
+    ],
+    "direct_measure": {
+      "extra-fields": [
+        {
+          "id": "commercial-building-type",
+          "options": [
+            "commercial-building-type-all",
+            "commercial-building-type-commercial-institutional",
+            "commercial-building-type-commercial-buildings",
+            "commercial-building-type-institutional-buildings",
+            "commercial-building-type-street-lighting"
+          ],
+          "exclusive": "commercial-building-type-all"
+        },
+        {
+          "id": "commercial-building-energy-usage",
+          "options": [
+            "commercial-building-energy-usage-all",
+            "commercial-building-energy-usage-electricity",
+            "commercial-building-energy-usage-electricity-chp",
+            "commercial-building-energy-usage-heating",
+            "commercial-building-energy-usage-heating-chp",
+            "commercial-building-energy-usage-steam",
+            "commercial-building-energy-usage-steam-chp",
+            "commercial-building-energy-usage-refrigeration",
+            "commercial-building-energy-usage-refrigeration-chp"
+          ]
+        },
+        {
+          "id": "commercial-buildings-energy-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "II.1.1": {
+    "methodologies": [
+      {
+        "id": "fuel-sales-on-road-transport-methodology",
+        "activities": [
+          {
+            "id": "fuel-sales-on-road-transport-activity",
+            "unique-by": [
+              "on-road-transport-vehicle-type",
+              "on-road-transport-fuel-type",
+              "on-road-transport-fuel-source"
+            ],
+            "activity-title": "activity-total-fuel-sales",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "on-road-transport-fuel-type",
+                "options": [
+                  "fuel-type-gasoline",
+                  "fuel-type-diesel",
+                  "fuel-type-lpg",
+                  "fuel-type-cng",
+                  "fuel-type-biofuel"
+                ]
+              },
+              {
+                "id": "on-road-transport-vehicle-type",
+                "options": [
+                  "vehicle-type-all",
+                  "vehicle-type-passenger-vehicles",
+                  "vehicle-type-commercial-vehicles",
+                  "vehicle-type-public-transport-vehicles",
+                  "vehicle-type-emergency-vehicles",
+                  "vehicle-type-service-vehicles"
+                ]
+              },
+              {
+                "id": "on-road-transport-fuel-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-gallons",
+              "units-liters",
+              "units-cubic-meters",
+              "units-kilograms",
+              "units-terajoules",
+              "units-kilowatt-hours"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "induced-activity-transboundary-trips-on-road-transport-methodology",
+        "implemented": false
+      },
+      {
+        "id": "induced-activity-only-departing-trips-on-road-transport-methodology",
+        "implemented": false
+      },
+      {
+        "id": "geographic-on-road-transport-methodology",
+        "implemented": false
+      },
+      {
+        "id": "resident-activity-on-road-transport-methodology",
+        "implemented": false
+      }
+    ],
+    "direct_measure": {
+      "extra-fields": [
+        {
+          "id": "on-road-transport-fuel-type",
+          "options": [
+            "fuel-type-gasoline",
+            "fuel-type-diesel",
+            "fuel-type-lpg",
+            "fuel-type-cng",
+            "fuel-type-biofuel"
+          ]
+        },
+        {
+          "id": "on-road-transport-vehicle-type",
+          "options": [
+            "vehicle-type-passenger-vehicles",
+            "vehicle-type-commercial-vehicles",
+            "vehicle-type-public-transport-vehicles",
+            "vehicle-type-emergency-vehicles",
+            "vehicle-type-service-vehicles"
+          ],
+          "multiselect": true
+        },
+        {
+          "id": "on-road-transport-fuel-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "II.1.2": {
+    "methodologies": [
+      {
+        "id": "electricity-consumption-on-road-transport-methodology",
+        "activities": [
+          {
+            "id": "electricity-consumption-on-road-transport-activity",
+            "unique-by": [
+              "on-road-transport-vehicle-type",
+              "on-road-transport-electricity-source"
+            ],
+            "extra-fields": [
+              {
+                "id": "on-road-transport-vehicle-type",
+                "options": [
+                  "vehicle-type-all",
+                  "vehicle-type-passenger-vehicles",
+                  "vehicle-type-commercial-vehicles",
+                  "vehicle-type-public-transport-vehicles",
+                  "vehicle-type-emergency-vehicles",
+                  "vehicle-type-service-vehicles"
+                ]
+              },
+              {
+                "id": "on-road-transport-electricity-source",
+                "type": "text"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "direct_measure": {
+      "extra-fields": [
+        {
+          "id": "on-road-transport-vehicle-type",
+          "options": [
+            "vehicle-type-passenger-vehicles",
+            "vehicle-type-commercial-vehicles",
+            "vehicle-type-public-transport-vehicles",
+            "vehicle-type-emergency-vehicles",
+            "vehicle-type-service-vehicles"
+          ],
+          "multiselect": true
+        },
+        {
+          "id": "on-road-transport-electricity-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "III.1.1": {
+    "methodologies": [
+      {
+        "id": "methane-commitment-solid-waste-methodology",
+        "activities": {
+          "unique-by": [
+            "methane-commitment-solid-waste-landfill-id"
+          ],
+          "activity-title": "total-municipal-solid-waste-disposed",
+          "extra-fields": [
+            {
+              "id": "methane-commitment-solid-waste-landfill-id",
+              "type": "text"
+            },
+            {
+              "id": "methane-commitment-solid-waste-landfill-address",
+              "type": "text",
+              "required": false
+            },
+            {
+              "id": "methane-commitment-solid-waste-oxidation-factor",
+              "options": [
+                "methane-commitment-solid-waste-well-managed-landfill",
+                "methane-commitment-solid-waste-unmanaged-landfill"
+              ]
+            },
+            {
+              "id": "methane-commitment-solid-waste-landfill-methane-collected-and-removed",
+              "type": "number"
+            },
+            {
+              "id": "methane-commitment-solid-waste-landfill-waste-composition",
+              "type": "percentage-breakdown",
+              "total-required": 100,
+              "subtypes": [
+                "methane-commitment-solid-waste-landfill-waste-composition-food",
+                "methane-commitment-solid-waste-landfill-waste-composition-garden",
+                "methane-commitment-solid-waste-landfill-waste-composition-paper",
+                "methane-commitment-solid-waste-landfill-waste-composition-wood",
+                "methane-commitment-solid-waste-landfill-waste-composition-textiles",
+                "methane-commitment-solid-waste-landfill-waste-composition-industrial"
+              ]
+            }
+          ],
+          "formula": "methane-commitment"
+        }
+      },
+      {
+        "id": "first-order-of-decay-solid-waste-methodology",
+        "implemented": false
+      }
+    ],
+    "direct_measure": {
+      "extra-fields": [
+        {
+          "id": "landfill-id",
+          "type": "text"
+        },
+        {
+          "id": "landfill-address",
+          "type": "text",
+          "required": false
+        }
+      ]
+    }
   }
- }
 }

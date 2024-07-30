@@ -105,18 +105,9 @@ export class InventoryValue
   // InventoryValue hasMany GasValue via inventoryValueId
   gasValues!: GasValue[];
   getGasValues!: Sequelize.HasManyGetAssociationsMixin<GasValue>;
-  setGasValues!: Sequelize.HasManySetAssociationsMixin<
-    GasValue,
-    GasValueId
-  >;
-  addGasValue!: Sequelize.HasManyAddAssociationMixin<
-    GasValue,
-    GasValueId
-  >;
-  addGasValues!: Sequelize.HasManyAddAssociationsMixin<
-    GasValue,
-    GasValueId
-  >;
+  setGasValues!: Sequelize.HasManySetAssociationsMixin<GasValue, GasValueId>;
+  addGasValue!: Sequelize.HasManyAddAssociationMixin<GasValue, GasValueId>;
+  addGasValues!: Sequelize.HasManyAddAssociationsMixin<GasValue, GasValueId>;
   createGasValue!: Sequelize.HasManyCreateAssociationMixin<GasValue>;
   removeGasValue!: Sequelize.HasManyRemoveAssociationMixin<
     GasValue,
@@ -126,14 +117,8 @@ export class InventoryValue
     GasValue,
     GasValueId
   >;
-  hasGasValue!: Sequelize.HasManyHasAssociationMixin<
-    GasValue,
-    GasValueId
-  >;
-  hasGasValues!: Sequelize.HasManyHasAssociationsMixin<
-    GasValue,
-    GasValueId
-  >;
+  hasGasValue!: Sequelize.HasManyHasAssociationMixin<GasValue, GasValueId>;
+  hasGasValues!: Sequelize.HasManyHasAssociationsMixin<GasValue, GasValueId>;
   countGasValues!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof InventoryValue {

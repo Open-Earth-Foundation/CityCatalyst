@@ -9,7 +9,7 @@ import { logger } from "@/services/logger";
 
 export const POST = apiHandler(async (req: NextRequest) => {
   logger.debug("Cookies", req.cookies);
-  const token = await getToken({req});
+  const token = await getToken({ req });
   logger.debug("Token", token);
   const session = await getServerSession(authOptions);
   if (!session) {

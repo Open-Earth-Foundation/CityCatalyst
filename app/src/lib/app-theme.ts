@@ -46,7 +46,7 @@ export const appTheme = extendTheme({
       transparentGrey: "rgba(232, 234, 251, 0.20)",
       backgroundLight: "#FAFAFA",
       backgroundGreyFlat: "#FAFBFE",
-      backgroundLoading: "#E8EAFB"
+      backgroundLoading: "#E8EAFB",
     },
 
     interactive: {

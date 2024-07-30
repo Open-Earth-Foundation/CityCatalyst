@@ -183,8 +183,7 @@
             "type": "text",
             "name": "sourceReference",
             "placeholder": "Write in detail from which source the entered values come from."
-          }
-        },
+          },
         {
           "label": "Emission factor type",
           "type": "select",

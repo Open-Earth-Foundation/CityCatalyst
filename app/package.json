@@ -33,6 +33,7 @@
     "@chakra-ui/next-js": "^2.2.0",
     "@chakra-ui/react": "^2.8.2",
     "@huggingface/inference": "^2.8.0",
+    "@next/env": "^14.2.5",
     "@react-email/components": "^0.0.19",
     "@reduxjs/toolkit": "^2.2.7",
     "@storybook/cli": "^8.0.8",
@@ -99,7 +100,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.43.1",
-    "@storybook/addon-essentials": "^8.1.6",
+    "@storybook/addon-essentials": "^8.2.6",
     "@storybook/addon-interactions": "^8.2.5",
     "@storybook/addon-links": "^7.6.17",
     "@storybook/blocks": "^8.0.4",
@@ -110,7 +111,7 @@
     "prettier": "3.2.5",
     "sequelize-auto": "^0.8.8",
     "start-server-and-test": "^2.0.3",
-    "storybook": "^8.2.5"
+    "storybook": "^8.2.6"
   },
   "engines": {
     "node": ">=20.5.0"

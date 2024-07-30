@@ -56,7 +56,17 @@
         "id": "modeled-data-fuel-consumption-commercial-buildings-methodology",
         "implemented": false
       }
-    ]
+    ],
+    "direct_measure": {
+      "subcategories": [
+        "commercial-buildings-all",
+        "commercial-buildings-commercial-institutional",
+        "commercial-buildings-commercial-buildings",
+        "commercial-buildings-institutional-buildings",
+        "commercial-buildings-street-lighting"
+      ],
+      "exclusive": "commercial-buildings-all"
+    }
   },
   "I.2.2": {
     "methodologies": [
@@ -188,7 +198,17 @@
         "id": "resident-activity-on-road-transport-methodology",
         "implemented": false
       }
-    ]
+    ],
+    "direct_measure": {
+      "subcategories": [
+        "on-road-transport-passenger-vehicles",
+        "on-road-transport-commercial-vehicles",
+        "on-road-transport-public-transport-vehicles",
+        "on-road-transport-emergency-vehicles",
+        "on-road-transport-service-vehicles"
+      ],
+      "multiselect": true
+    }
   },
   "II.1.2": {
     "methodologies": [

@@ -1,0 +1,24 @@
+{
+ "methodologies": {
+  "fakemethod": {
+    "gpcrefnos": ["I.1.1", "I.2.1", "IV.1"],
+    "name": "fakemethod-name",
+    "status": "enabled",
+    "description": "fakemethod-description",
+    "extra-fields": {
+      "building-type": {},
+      "fuel-type": {}
+    },
+    "subcategories": [
+      {
+        "building-type-and-fuel": {
+          "status": "required",
+          "name": "commercial-building-fakevalue-name",
+          "formula": "activity-times-emissions-factor",
+          "activity-title": "commercial-building-fakevalue-title"
+        }
+      }
+    ]
+  }
+ }
+}

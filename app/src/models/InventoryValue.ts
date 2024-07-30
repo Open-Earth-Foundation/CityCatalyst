@@ -17,6 +17,7 @@ export interface InventoryValueAttributes {
   co2eqYears?: number;
   unavailableReason?: string;
   unavailableExplanation?: string;
+  inputMethodology?: string;
   sectorId?: string;
   subSectorId?: string;
   subCategoryId?: string;
@@ -36,6 +37,7 @@ export type InventoryValueOptionalAttributes =
   | "co2eqYears"
   | "unavailableReason"
   | "unavailableExplanation"
+  | "inputMethodology"
   | "sectorId"
   | "subSectorId"
   | "subCategoryId"
@@ -60,6 +62,7 @@ export class InventoryValue
   co2eqYears?: number;
   unavailableReason?: string;
   unavailableExplanation?: string;
+  inputMethodology?: string;
   sectorId?: string;
   subSectorId?: string;
   subCategoryId?: string;
@@ -175,6 +178,11 @@ export class InventoryValue
           type: DataTypes.TEXT,
           allowNull: true,
           field: "unavailable_explanation",
+        },
+        inputMethodology: {
+          type: DataTypes.TEXT,
+          allowNull: true,
+          field: "input_methodology",
         },
         sectorId: {
           type: DataTypes.UUID,

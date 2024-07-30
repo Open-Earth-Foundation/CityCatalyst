@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import {
   Box,
@@ -13,8 +13,7 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react";
-// import { useChat } from "ai/react";
-import { useAssistant } from 'ai/react'
+import { useAssistant } from "ai/react";
 import { TFunction } from "i18next";
 import { BsStars } from "react-icons/bs";
 import {
@@ -27,6 +26,7 @@ import {
 } from "react-icons/md";
 import { ScrollAnchor } from "./scroll-anchor";
 import { RefObject, useRef } from "react";
+import { api, useCreateThreadIdMutation } from "@/services/api";
 
 function useEnterSubmit(): {
   formRef: RefObject<HTMLFormElement>;
@@ -59,37 +59,33 @@ export default function ChatBot({
   t: TFunction;
   inventoryId: string;
 }) {
+  const [threadId, setThreadId] = useState("");
+  const [createThreadId, { data: threadData }] = useCreateThreadIdMutation();
 
-  const [threadId, setthreadId] = useState("");
+  // Function to create the threadId with initial message
+  const handleSubmit = async () => {
+    try {
+      await createThreadId({
+        inventoryId: inventoryId,
+        content: t("initial-message"),
+      }).unwrap();
+    } catch (err) {
+      console.error("Failed to create thread ID:", err);
+    }
+  };
 
   // Creating the thread id for the given inventory on initial render
-  // Passing the initial message to api to be set in thread
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`/api/v0/assistants/threads/${inventoryId}`, { 
-          method: "POST", 
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            content: t("initial-message")
-          })
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setthreadId(data.threadId)
-      } catch (error) {
-        console.error('API Call Failed:', error);
-        // Handle error here
-      }
-    };
+    handleSubmit();
+  }, []); // Empty dependency array means this effect runs only once,
+  // HOWEVER currently it always runs twice
 
-    fetchData();
-  }, []); // Empty dependency array means this effect runs only once, 
-  // HOWEVER currently it always runs twiche
+  // Set threadId once the value from API call is returned to threadData
+  useEffect(() => {
+    if (threadData) {
+      setThreadId(threadData);
+    }
+  }, [threadData]);
 
   const {
     status,
@@ -102,19 +98,21 @@ export default function ChatBot({
   } = useAssistant({
     api: `/api/v0/assistants/threads/messages`,
     threadId: threadId,
-  })
+  });
 
   // Setting the initial message to display for the user
   // This message will not be passed to the assistant api
   // It will be set additionally when creating the threadId
   // to pass to the assistant api
   useEffect(() => {
-    setMessages([{
-      id: "-1",
-      role: "assistant",
-      content: t("initial-message"),
-    }])
-  }, [])
+    setMessages([
+      {
+        id: "-1",
+        role: "assistant",
+        content: t("initial-message"),
+      },
+    ]);
+  }, []);
 
   const { copyToClipboard, isCopied } = useCopyToClipboard({});
   const { formRef, onKeyDown } = useEnterSubmit();
@@ -228,7 +226,7 @@ export default function ChatBot({
           );
         })}
         <ScrollAnchor
-          trackVisibility={status==="in_progress"}
+          trackVisibility={status === "in_progress"}
           rootRef={messagesWrapperRef}
         />
       </div>
@@ -257,7 +255,7 @@ export default function ChatBot({
             fontWeight="400"
             whiteSpace="nowrap"
             display="inline-block"
-            isDisabled={status==="in_progress"}
+            isDisabled={status === "in_progress"}
           >
             {suggestion.preview}
           </Button>
@@ -288,7 +286,7 @@ export default function ChatBot({
             color="content.tertiary"
             aria-label="Send message"
             disabled={true}
-            isDisabled={status==="in_progress"}
+            isDisabled={status === "in_progress"}
           />
         </HStack>
       </form>

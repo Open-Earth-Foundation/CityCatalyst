@@ -58,14 +58,32 @@
       }
     ],
     "direct_measure": {
-      "subcategories": [
-        "commercial-buildings-all",
-        "commercial-buildings-commercial-institutional",
-        "commercial-buildings-commercial-buildings",
-        "commercial-buildings-institutional-buildings",
-        "commercial-buildings-street-lighting"
-      ],
-      "exclusive": "commercial-buildings-all"
+      "extra-fields": [
+        {
+          "id": "commercial-building-type",
+          "options": [
+            "commercial-building-type-all",
+            "commercial-building-type-commercial-institutional",
+            "commercial-building-type-commercial-buildings",
+            "commercial-building-type-institutional-buildings",
+            "commercial-building-type-street-lighting"
+          ],
+          "exclusive": "commercial-building-type-all"
+        },
+        {
+          "id": "commercial-building-fuel-type",
+          "options": [
+            "commercial-building-fuel-type-all",
+            "commercial-building-fuel-type-propane",
+            "commercial-building-fuel-type-natural-gas",
+            "commercial-building-fuel-type-heating-oil"
+          ]
+        },
+        {
+          "id": "commercial-buildings-fuel-source",
+          "type": "text"
+        }
+      ]
     }
   },
   "I.2.2": {
@@ -128,7 +146,40 @@
         "id": "modeled-data-energy-usage-commercial-buildings-methodology",
         "implemented": false
       }
-    ]
+    ],
+    "direct_measure": {
+      "extra-fields": [
+        {
+          "id": "commercial-building-type",
+          "options": [
+            "commercial-building-type-all",
+            "commercial-building-type-commercial-institutional",
+            "commercial-building-type-commercial-buildings",
+            "commercial-building-type-institutional-buildings",
+            "commercial-building-type-street-lighting"
+          ],
+          "exclusive": "commercial-building-type-all"
+        },
+        {
+          "id": "commercial-building-energy-usage",
+          "options": [
+            "commercial-building-energy-usage-all",
+            "commercial-building-energy-usage-electricity",
+            "commercial-building-energy-usage-electricity-chp",
+            "commercial-building-energy-usage-heating",
+            "commercial-building-energy-usage-heating-chp",
+            "commercial-building-energy-usage-steam",
+            "commercial-building-energy-usage-steam-chp",
+            "commercial-building-energy-usage-refrigeration",
+            "commercial-building-energy-usage-refrigeration-chp"
+          ]
+        },
+        {
+          "id": "commercial-buildings-energy-source",
+          "type": "text"
+        }
+      ]
+    }
   },
   "II.1.1": {
     "methodologies": [
@@ -200,14 +251,33 @@
       }
     ],
     "direct_measure": {
-      "subcategories": [
-        "on-road-transport-passenger-vehicles",
-        "on-road-transport-commercial-vehicles",
-        "on-road-transport-public-transport-vehicles",
-        "on-road-transport-emergency-vehicles",
-        "on-road-transport-service-vehicles"
-      ],
-      "multiselect": true
+      "extra-fields": [
+        {
+          "id": "on-road-transport-fuel-type",
+          "options": [
+            "fuel-type-gasoline",
+            "fuel-type-diesel",
+            "fuel-type-lpg",
+            "fuel-type-cng",
+            "fuel-type-biofuel"
+          ]
+        },
+        {
+          "id": "on-road-transport-vehicle-type",
+          "options": [
+            "vehicle-type-passenger-vehicles",
+            "vehicle-type-commercial-vehicles",
+            "vehicle-type-public-transport-vehicles",
+            "vehicle-type-emergency-vehicles",
+            "vehicle-type-service-vehicles"
+          ],
+          "multiselect": true
+        },
+        {
+          "id": "on-road-transport-fuel-source",
+          "type": "text"
+        }
+      ]
     }
   },
   "II.1.2": {
@@ -241,7 +311,26 @@
           }
         ]
       }
-    ]
+    ],
+    "direct_measure": {
+      "extra-fields": [
+        {
+          "id": "on-road-transport-vehicle-type",
+          "options": [
+            "vehicle-type-passenger-vehicles",
+            "vehicle-type-commercial-vehicles",
+            "vehicle-type-public-transport-vehicles",
+            "vehicle-type-emergency-vehicles",
+            "vehicle-type-service-vehicles"
+          ],
+          "multiselect": true
+        },
+        {
+          "id": "on-road-transport-electricity-source",
+          "type": "text"
+        }
+      ]
+    }
   },
   "III.1.1": {
     "methodologies": [
@@ -294,6 +383,19 @@
         "id": "first-order-of-decay-solid-waste-methodology",
         "implemented": false
       }
-    ]
+    ],
+    "direct_measure": {
+      "extra-fields": [
+        {
+          "id": "landfill-id",
+          "type": "text"
+        },
+        {
+          "id": "landfill-address",
+          "type": "text",
+          "required": false
+        }
+      ]
+    }
   }
 }

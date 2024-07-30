@@ -46,6 +46,20 @@
               "units-other"
             ]
           }
+        ],
+        "suggested_activities": [
+          {
+            "id": "fuel-combustion-commercial-buildings-activity",
+            "commercial-building-type": "commercial-building-type-all"
+          },
+          {
+            "id": "fuel-combustion-commercial-buildings-activity",
+            "commercial-building-type": "commercial-building-type-commercial-buildings"
+          },
+          {
+            "id": "fuel-combustion-commercial-buildings-activity",
+            "commercial-building-type": "commercial-building-type-institutional-buildings"
+          }
         ]
       },
       {

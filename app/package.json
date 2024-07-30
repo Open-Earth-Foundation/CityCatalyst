@@ -34,7 +34,7 @@
     "@chakra-ui/react": "^2.8.2",
     "@huggingface/inference": "^2.8.0",
     "@react-email/components": "^0.0.19",
-    "@reduxjs/toolkit": "^2.2.3",
+    "@reduxjs/toolkit": "^2.2.7",
     "@storybook/cli": "^8.0.8",
     "@storybook/react": "^8.1.6",
     "@storybook/testing-library": "^0.2.2",

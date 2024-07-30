@@ -4,9 +4,9 @@ black==24.4.2
 fastapi==0.111.1
 flake8==7.1.0
 fsspec==2024.*
-geopandas==1.0.1
+geopandas>=0.12,<0.15
 mypy==1.11.0
-osmnx==1.9.3
+osmnx==1.9.4
 pandas==2.2.2
 psycopg2-binary==2.9.9
 pydantic-settings==2.*

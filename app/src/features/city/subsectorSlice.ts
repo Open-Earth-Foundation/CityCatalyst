@@ -42,7 +42,7 @@ const initialState = {
       methodologyName: 'Scaled sample data',
       description: 'Extrapolates emissions from a representative sample of buildings.',
       inputRequired: ["Sample fuel consumed amount", "Scaling data (population, GDP, area, etc.) for sample and city level"],
-      disabled: false,
+      disabled: true,
      
     },{
       methodologyId: "3",
@@ -70,7 +70,7 @@ const initialState = {
       methodologyName: 'Scaled sample data',
       description: 'Extrapolates emissions from a representative sample of buildings.',
       inputRequired: ["Sample fuel consumed amount", "Scaling data (population, GDP, area, etc.) for sample and city level"],
-      disabled: false,
+      disabled: true,
      
     },{
       methodologyId: "3",

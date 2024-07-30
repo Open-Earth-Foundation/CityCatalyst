@@ -78,7 +78,6 @@ export type Inputs = {
     buildingType: string;
     fuelType: string;
     totalFuelConsumption: string;
-    formStruct: ActivityDataScope;
   };
   direct: DirectMeasureData;
   subcategoryData: Record<string, SubcategoryData>;
@@ -480,10 +479,10 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       zIndex={10}
                       {...register(
                         ("activity." +
-                          formInputs?.fields[4]?.name) as ActivityKey,
+                          formInputs?.fields[4]?.addon.name) as ActivityKey,
                       )}
                     >
-                      {formInputs?.fields[4].unit}
+                      {formInputs?.fields[4].addon.unit}
                     </InputRightAddon>
                   </InputGroup>
                 </FormControl>
@@ -532,10 +531,10 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       zIndex={10}
                       {...register(
                         ("activity." +
-                          formInputs?.fields[5].name) as ActivityKey,
+                          formInputs?.fields[5].addon.name) as ActivityKey,
                       )}
                     >
-                      {formInputs?.fields[5].unit}
+                      {formInputs?.fields[5].addon.unit}
                     </InputRightAddon>
                   </InputGroup>
                 </FormControl>
@@ -584,10 +583,10 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       zIndex={10}
                       {...register(
                         ("activity." +
-                          formInputs?.fields[6].name) as ActivityKey,
+                          formInputs?.fields[6].addon.name) as ActivityKey,
                       )}
                     >
-                      {formInputs?.fields[6].unit}
+                      {formInputs?.fields[6].addon.unit}
                     </InputRightAddon>
                   </InputGroup>
                 </FormControl>

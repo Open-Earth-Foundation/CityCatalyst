@@ -24,7 +24,8 @@ or context provided by the user.`;
     temperature: 0.2,
     tools: [{ type: "file_search" }],
     tool_resources: {
-      file_search: { vector_store_ids: ["vs_oS3uJ02f4enB7oK5pSU8pIHq"] }, // TODO: Hardcoded vectorstore ID
+      // Hardcoded vectorstore ID. Should be implemented setting via admin page or similar
+      file_search: { vector_store_ids: ["vs_"] },
     },
   });
   return NextResponse.json({ assistantId: assistant.id });

@@ -2,11 +2,14 @@ import { apiHandler } from "@/util/api";
 import { openai } from "@/util/openai";
 import { NextResponse } from "next/server";
 
+import { Roles } from "@/lib/auth";
+
 // Create a new assistant
-export const POST = apiHandler(async () => {
+export const POST = apiHandler(async (_req, { session }) => {
   // Currently we create the assistant via OpenAI web interface and do not implement this function here
-  return NextResponse.json({ error: "Method Not Allowed", status: 405 });
-  // TODO: should be an admin function
+  if (session.role !== Roles.Admin) {
+    return NextResponse.json({ error: "Method Not Allowed", status: 405 });
+  }
   const userID = "id_123456"; // TODO: Get userID
 
   const systemPrompt = `Your name is CLIMA and you are a climate assistant for creating 

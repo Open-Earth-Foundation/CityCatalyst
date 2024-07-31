@@ -46,7 +46,8 @@ export type EmissionsFactorCreationAttributes = Optional<
 
 export class EmissionsFactor
   extends Model<EmissionsFactorAttributes, EmissionsFactorCreationAttributes>
-  implements EmissionsFactorAttributes {
+  implements EmissionsFactorAttributes
+{
   id!: string;
   gpcReferenceNumber?: string;
   emissionsPerActivity?: number;

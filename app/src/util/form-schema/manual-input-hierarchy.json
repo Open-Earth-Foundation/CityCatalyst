@@ -145,10 +145,7 @@
                 "type": "text"
               }
             ],
-            "units": [
-              "units-kilowatt-hours",
-              "units-terajoules"
-            ]
+            "units": ["units-kilowatt-hours", "units-terajoules"]
           }
         ]
       },
@@ -351,9 +348,7 @@
       {
         "id": "methane-commitment-solid-waste-methodology",
         "activities": {
-          "unique-by": [
-            "methane-commitment-solid-waste-landfill-id"
-          ],
+          "unique-by": ["methane-commitment-solid-waste-landfill-id"],
           "activity-title": "total-municipal-solid-waste-disposed",
           "extra-fields": [
             {

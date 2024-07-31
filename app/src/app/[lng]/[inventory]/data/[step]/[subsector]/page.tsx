@@ -100,20 +100,25 @@ function SubSectorPage({
     (state: RootState) => state.subsector,
   );
 
-  const filteredSubsectorSchema = () => {
+  const filteredSubsectorScopes = () => {
+    const scopes = [];
     const getRefNo = getSectorRefNo(step);
-    const filteredManualInputSchema: any = {};
     const romanNumeralPattern = new RegExp(`^${getRefNo}\\.`);
 
     for (const key in manualInputSchema) {
       if (romanNumeralPattern.test(key)) {
-        filteredManualInputSchema[key] = manualInputSchema[key];
+        const scopeNumber = key.split(".").pop();
+        const result = {
+          ...manualInputSchema[key],
+          scope: Number(scopeNumber),
+        };
+        scopes.push(result);
       }
     }
-    return filteredManualInputSchema;
+    return scopes;
   };
 
-  console.log(filteredSubsectorSchema());
+  const scopes = filteredSubsectorScopes();
 
   // calculate total consumption and emissions
 
@@ -316,7 +321,7 @@ function SubSectorPage({
                 <Tab
                   key={index}
                   onClick={() => {
-                    setSelectedScope(scope.scope);
+                    setSelectedScope(scope);
                     triggerMochLoading();
                   }}
                 >

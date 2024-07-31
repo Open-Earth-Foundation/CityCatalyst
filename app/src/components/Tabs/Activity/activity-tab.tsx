@@ -66,11 +66,12 @@ interface ActivityTabProps {
 }
 
 export type MethodologyValues = {
-  methodologyId: string;
-  methodologyName: string;
-  description: string;
-  inputRequired: string[];
-  disabled: boolean;
+  id: string;
+  activities: any[];
+  methodologyName?: string;
+  description?: string;
+  inputRequired?: string[];
+  disabled?: boolean;
 };
 
 const ActivityTab: FC<ActivityTabProps> = ({
@@ -95,16 +96,18 @@ const ActivityTab: FC<ActivityTabProps> = ({
     description,
     disabled,
     inputRequired,
-    methodologyId,
+    activities,
+    id,
     methodologyName,
   }: MethodologyValues) => {
-    setSelectedMethodology(methodologyId);
+    setSelectedMethodology(id);
     setIsMethodologySelected(!isMethodologySelected);
     setMethodology({
       description,
       disabled,
       inputRequired,
-      methodologyId,
+      id,
+      activities,
       methodologyName,
     });
   };
@@ -451,18 +454,20 @@ const ActivityTab: FC<ActivityTabProps> = ({
                     >
                       {filteredScope.methodologies.map(
                         ({
-                          methodologyId,
+                          id,
                           methodologyName,
+                          activities,
+                          suggestedActivities,
                           description,
                           inputRequired,
                           disabled,
                         }) => (
                           <MethodologyCard
-                            methodologyId={methodologyId}
-                            key={methodologyId}
-                            methodologyName={methodologyName}
-                            description={description}
-                            inputRequired={inputRequired}
+                            methodologyId={id}
+                            key={id}
+                            methodologyName={id}
+                            description={"Description"}
+                            inputRequired={[]}
                             isSelected={selectedMethodology === methodologyName}
                             disabled={disabled}
                             t={t}
@@ -471,7 +476,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
                                 description,
                                 disabled,
                                 inputRequired,
-                                methodologyId,
+                                id,
+                                activities,
                                 methodologyName,
                               })
                             }
@@ -493,10 +499,10 @@ const ActivityTab: FC<ActivityTabProps> = ({
         onClose={onAddActivityModalClose}
         hasActivityData={hasActivityData}
         setHasActivityData={setHasActivityData}
-        formStruct={filteredScope}
+        formStruct={methodology?.activities}
         inventoryId={inventoryId}
         step={step}
-        scope={filteredScope.scope}
+        scope={1}
       />
 
       <ChangeMethodology

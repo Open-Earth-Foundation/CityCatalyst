@@ -5,18 +5,20 @@ import { SubCategory, SubCategoryAttributes } from "@/models/SubCategory";
 import { manualInputHierarchySchema } from "@/util/form-schema";
 
 export type Methodology = {
-  methodologyId:string,
-  methodologyName: string,
-  description: string,
-  inputRequired: string[],
+  id:string,
+  activities: any;
+  suggestedActivities: any
+  methodologyName?: string,
+  description?: string,
+  inputRequired?: string[],
   disabled:boolean,
 }
 
 export type ActivityDataScope = {
-  scope: number,
-  formInputs: any,
+  direct_measure: {
+    extraFields: any[]
+  },
   methodologies: Methodology[]
-
 }
 
 interface SubsectorState {

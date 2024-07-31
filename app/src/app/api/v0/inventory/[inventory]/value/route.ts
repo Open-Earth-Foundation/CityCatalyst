@@ -14,7 +14,10 @@ export const GET = apiHandler(async (req, { params, session }) => {
   }
   const subCategoryIds = subCategoryIdsParam.split(",");
 
-  const inventory = await UserService.findUserInventory(params.inventory, session);
+  const inventory = await UserService.findUserInventory(
+    params.inventory,
+    session,
+  );
 
   const inventoryValues = await db.models.InventoryValue.findAll({
     where: {
@@ -24,17 +27,21 @@ export const GET = apiHandler(async (req, { params, session }) => {
     include: [
       { model: db.models.DataSource, as: "dataSource" },
       {
-        model: db.models.ActivityValue, as: "activityValues", include: [{
-          model: db.models.GasValue,
-          as: "gasValues",
-          include: [
-            {
-              model: db.models.EmissionsFactor,
-              as: "emissionsFactor",
-              include: [{ model: db.models.DataSource, as: "dataSources" }],
-            },
-          ],
-        }]
+        model: db.models.ActivityValue,
+        as: "activityValues",
+        include: [
+          {
+            model: db.models.GasValue,
+            as: "gasValues",
+            include: [
+              {
+                model: db.models.EmissionsFactor,
+                as: "emissionsFactor",
+                include: [{ model: db.models.DataSource, as: "dataSources" }],
+              },
+            ],
+          },
+        ],
       },
     ],
   });
@@ -45,4 +52,3 @@ export const GET = apiHandler(async (req, { params, session }) => {
 
   return NextResponse.json({ data: inventoryValues });
 });
-

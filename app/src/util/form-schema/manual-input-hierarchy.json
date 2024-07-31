@@ -1,4 +1,173 @@
 {
+  "I.1.1": {
+    "methodologies": [
+      {
+        "id": "fuel-combustion-residential-buildings-methodology",
+        "activities": [
+          {
+            "id": "fuel-combustion-residential-buildings-activity",
+            "unique-by": [
+              "residential-building-type",
+              "residential-building-fuel-type",
+              "residential-buildings-fuel-source"
+            ],
+            "activity-title": "activity-total-fuel-consumption",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "residential-building-type",
+                "options": [
+                  "residential-building-type-all"
+                ]
+              },
+              {
+                "id": "residential-building-fuel-type",
+                "options": [
+                  "residential-building-fuel-type-propane",
+                  "residential-building-fuel-type-natural-gas",
+                  "residential-building-fuel-type-heating-oil"
+                ]
+              },
+              {
+                "id": "residential-buildings-fuel-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-gallons",
+              "units-liters",
+              "units-cubic-meters",
+              "units-kilograms",
+              "units-other"
+            ]
+          }
+        ],
+        "suggested_activities": [
+          {
+            "id": "fuel-combustion-residential-buildings-activity",
+            "commercial-building-type": "residential-building-type-all"
+          }
+        ]
+      },
+      {
+        "id": "scaled-sample-fuel-combustion-residential-buildings-methodology",
+        "implemented": false
+      },
+      {
+        "id": "modeled-data-fuel-consumption-residential-buildings-methodology",
+        "implemented": false
+      }
+    ],
+    "direct_measure": {
+      "extra-fields": [
+        {
+          "id": "residential-building-type",
+          "options": [
+            "residential-building-type-all"
+          ]
+        },
+        {
+          "id": "residential-building-fuel-type",
+          "options": [
+            "residential-building-fuel-type-all",
+            "residential-building-fuel-type-propane",
+            "residential-building-fuel-type-natural-gas",
+            "residential-building-fuel-type-heating-oil"
+          ]
+        },
+        {
+          "id": "residential-buildings-fuel-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "I.1.2": {
+    "methodologies": [
+      {
+        "id": "energy-consumption-residential-buildings-methodology",
+        "activities": [
+          {
+            "id": "energy-consumption-residential-buildings-activity",
+            "unique-by": [
+              "residential-building-type",
+              "residential-building-energy-usage",
+              "residential-buildings-energy-source"
+            ],
+            "activity-title": "activity-energy-consumption",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "residential-building-type",
+                "options": [
+                  "commercial-building-type-all"
+                ]
+              },
+              {
+                "id": "residential-building-energy-usage",
+                "options": [
+                  "residential-building-energy-usage-all",
+                  "residential-building-energy-usage-electricity",
+                  "residential-building-energy-usage-electricity-chp",
+                  "residential-building-energy-usage-heating",
+                  "residential-building-energy-usage-heating-chp",
+                  "residential-building-energy-usage-steam",
+                  "residential-building-energy-usage-steam-chp",
+                  "residential-building-energy-usage-refrigeration",
+                  "residential-building-energy-usage-refrigeration-chp"
+                ]
+              },
+              {
+                "id": "residential-buildings-energy-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-kilowatt-hours",
+              "units-terajoules"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "scaled-sample-energy-usage-residential-buildings-methodology",
+        "implemented": false
+      },
+      {
+        "id": "modeled-data-energy-usage-residential-buildings-methodology",
+        "implemented": false
+      }
+    ],
+    "direct_measure": {
+      "extra-fields": [
+        {
+          "id": "residential-building-type",
+          "options": [
+            "residential-building-type-all"
+          ],
+          "exclusive": "residential-building-type-all"
+        },
+        {
+          "id": "residential-building-energy-usage",
+          "options": [
+            "residential-building-energy-usage-all",
+            "residential-building-energy-usage-electricity",
+            "residential-building-energy-usage-electricity-chp",
+            "residential-building-energy-usage-heating",
+            "residential-building-energy-usage-heating-chp",
+            "residential-building-energy-usage-steam",
+            "residential-building-energy-usage-steam-chp",
+            "residential-building-energy-usage-refrigeration",
+            "residential-building-energy-usage-refrigeration-chp"
+          ]
+        },
+        {
+          "id": "residential-buildings-energy-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
   "I.2.1": {
     "methodologies": [
       {

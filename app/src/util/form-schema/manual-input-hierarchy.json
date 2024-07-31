@@ -382,6 +382,268 @@
       ]
     }
   },
+  "I.3.1": {
+    "methodologies": [
+      {
+        "id": "fuel-combustion-manufacturing-and-construction-methodology",
+        "activities": [
+          {
+            "id": "fuel-combustion-manufacturing-and-construction-activity",
+            "unique-by": [
+              "manufacturing-and-construction-type",
+              "manufacturing-and-construction-fuel-type",
+              "manufacturing-and-construction-fuel-source"
+            ],
+            "activity-title": "activity-total-fuel-consumption",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "manufacturing-and-construction-type",
+                "options": [
+                  "manufacturing-and-construction-type-all",
+                  "manufacturing-and-construction-type-manufacturing-industries-and-construction",
+                  "manufacturing-and-construction-type-steel",
+                  "manufacturing-and-construction-type-cement",
+                  "manufacturing-and-construction-type-iron",
+                  "manufacturing-and-construction-type-non-ferrous-metals",
+                  "manufacturing-and-construction-type-chemical-products",
+                  "manufacturing-and-construction-type-pulp-paper-and-printing",
+                  "manufacturing-and-construction-type-non-metallic-minerals",
+                  "manufacturing-and-construction-type-transport-equipment",
+                  "manufacturing-and-construction-type-machinery",
+                  "manufacturing-and-construction-type-mining-and-quarrying",
+                  "manufacturing-and-construction-type-wood-and-wood-products",
+                  "manufacturing-and-construction-type-construction",
+                  "manufacturing-and-construction-type-textiles-and-leather",
+                  "manufacturing-and-construction-type-unspecified-industry"
+                ],
+                "exclusive": "manufacturing-and-construction-type-all"
+              },
+              {
+                "id": "manufacturing-and-construction-fuel-type",
+                "options": [
+                  "manufacturing-and-construction-fuel-type-propane",
+                  "manufacturing-and-construction-fuel-type-natural-gas",
+                  "manufacturing-and-construction-fuel-type-charcoal",
+                  "manufacturing-and-construction-fuel-type-liquefied-petroleum-gases",
+                  "manufacturing-and-construction-fuel-type-peat",
+                  "manufacturing-and-construction-fuel-type-anthracite",
+                  "manufacturing-and-construction-fuel-type-gasoline",
+                  "manufacturing-and-construction-fuel-type-diesel"
+                ],
+                "exclusive": "manufacturing-and-construction-fuel-type-all"
+              },
+              {
+                "id": "manufacturing-and-construction-fuel-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-gallons",
+              "units-liters",
+              "units-cubic-meters",
+              "units-kilograms",
+              "units-other"
+            ]
+          }
+        ],
+        "suggested_activities": [
+          {
+            "id": "fuel-combustion-manufacturing-and-construction-activity",
+            "manufacturing-and-construction-type": "manufacturing-and-construction-type-all"
+          },
+          {
+            "id": "fuel-combustion-manufacturing-and-construction-activity",
+            "manufacturing-and-construction-type": "manufacturing-and-construction-type-cement"
+          },
+          {
+            "id": "fuel-combustion-manufacturing-and-construction-activity",
+            "manufacturing-and-construction-type": "manufacturing-and-construction-type-iron"
+          },
+          {
+            "id": "fuel-combustion-manufacturing-and-construction-activity",
+            "manufacturing-and-construction-type": "manufacturing-and-construction-type-steel"
+          },
+          {
+            "id": "fuel-combustion-manufacturing-and-construction-activity",
+            "manufacturing-and-construction-type": "manufacturing-and-construction-type-chemical-products"
+          }
+        ]
+      },
+      {
+        "id": "scaled-sample-fuel-combustion-manufacturing-and-construction-methodology",
+        "implemented": false
+      },
+      {
+        "id": "modeled-data-fuel-consumption-manufacturing-and-construction-methodology",
+        "implemented": false
+      }
+    ],
+    "direct_measure": {
+      "extra-fields": [
+        {
+          "id": "manufacturing-and-construction-type",
+          "options": [
+            "manufacturing-and-construction-type-all",
+            "manufacturing-and-construction-type-manufacturing-industries-and-construction",
+            "manufacturing-and-construction-type-steel",
+            "manufacturing-and-construction-type-cement",
+            "manufacturing-and-construction-type-iron",
+            "manufacturing-and-construction-type-non-ferrous-metals",
+            "manufacturing-and-construction-type-chemical-products",
+            "manufacturing-and-construction-type-pulp-paper-and-printing",
+            "manufacturing-and-construction-type-non-metallic-minerals",
+            "manufacturing-and-construction-type-transport-equipment",
+            "manufacturing-and-construction-type-machinery",
+            "manufacturing-and-construction-type-mining-and-quarrying",
+            "manufacturing-and-construction-type-wood-and-wood-products",
+            "manufacturing-and-construction-type-construction",
+            "manufacturing-and-construction-type-textiles-and-leather",
+            "manufacturing-and-construction-type-unspecified-industry"
+          ],
+          "exclusive": "manufacturing-and-construction-type-all"
+        },
+        {
+          "id": "manufacturing-and-construction-fuel-type",
+          "options": [
+            "manufacturing-and-construction-fuel-type-all",
+            "manufacturing-and-construction-fuel-type-propane",
+            "manufacturing-and-construction-fuel-type-natural-gas",
+            "manufacturing-and-construction-fuel-type-charcoal",
+            "manufacturing-and-construction-fuel-type-liquefied-petroleum-gases",
+            "manufacturing-and-construction-fuel-type-peat",
+            "manufacturing-and-construction-fuel-type-anthracite",
+            "manufacturing-and-construction-fuel-type-gasoline",
+            "manufacturing-and-construction-fuel-type-diesel"
+          ],
+          "exclusive": "manufacturing-and-construction-fuel-type-all"
+        },
+        {
+          "id": "manufacturing-and-construction-fuel-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "I.3.2": {
+    "methodologies": [
+      {
+        "id": "energy-consumption-manufacturing-and-construction-methodology",
+        "activities": [
+          {
+            "id": "energy-consumption-manufacturing-and-construction-activity",
+            "unique-by": [
+              "manufacturing-and-construction-type",
+              "manufacturing-and-construction-energy-usage",
+              "manufacturing-and-construction-energy-source"
+            ],
+            "activity-title": "activity-energy-consumption",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "manufacturing-and-construction-type",
+                "options": [
+                  "manufacturing-and-construction-type-all",
+                  "manufacturing-and-construction-type-manufacturing-industries-and-construction",
+                  "manufacturing-and-construction-type-steel",
+                  "manufacturing-and-construction-type-cement",
+                  "manufacturing-and-construction-type-iron",
+                  "manufacturing-and-construction-type-non-ferrous-metals",
+                  "manufacturing-and-construction-type-chemical-products",
+                  "manufacturing-and-construction-type-pulp-paper-and-printing",
+                  "manufacturing-and-construction-type-non-metallic-minerals",
+                  "manufacturing-and-construction-type-transport-equipment",
+                  "manufacturing-and-construction-type-machinery",
+                  "manufacturing-and-construction-type-mining-and-quarrying",
+                  "manufacturing-and-construction-type-wood-and-wood-products",
+                  "manufacturing-and-construction-type-construction",
+                  "manufacturing-and-construction-type-textiles-and-leather",
+                  "manufacturing-and-construction-type-unspecified-industry"
+                ],
+                "exclusive": "manufacturing-and-construction-type-all"
+              },
+              {
+                "id": "manufacturing-and-construction-energy-usage",
+                "options": [
+                  "manufacturing-and-construction-energy-usage-all",
+                  "manufacturing-and-construction-energy-usage-electricity",
+                  "manufacturing-and-construction-energy-usage-electricity-chp",
+                  "manufacturing-and-construction-energy-usage-heating",
+                  "manufacturing-and-construction-energy-usage-heating-chp",
+                  "manufacturing-and-construction-energy-usage-steam",
+                  "manufacturing-and-construction-energy-usage-steam-chp",
+                  "manufacturing-and-construction-energy-usage-refrigeration",
+                  "manufacturing-and-construction-energy-usage-refrigeration-chp"
+                ],
+                "exclusive": "manufacturing-and-construction-energy-usage-all"
+              },
+              {
+                "id": "manufacturing-and-construction-energy-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-kilowatt-hours",
+              "units-terajoules"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "scaled-sample-energy-usage-manufacturing-and-construction-methodology",
+        "implemented": false
+      },
+      {
+        "id": "modeled-data-energy-usage-manufacturing-and-construction-methodology",
+        "implemented": false
+      }
+    ],
+    "direct_measure": {
+      "extra-fields": [
+        {
+          "id": "manufacturing-and-construction-type",
+          "options": [
+            "manufacturing-and-construction-type-all",
+            "manufacturing-and-construction-type-manufacturing-industries-and-construction",
+            "manufacturing-and-construction-type-steel",
+            "manufacturing-and-construction-type-cement",
+            "manufacturing-and-construction-type-iron",
+            "manufacturing-and-construction-type-non-ferrous-metals",
+            "manufacturing-and-construction-type-chemical-products",
+            "manufacturing-and-construction-type-pulp-paper-and-printing",
+            "manufacturing-and-construction-type-non-metallic-minerals",
+            "manufacturing-and-construction-type-transport-equipment",
+            "manufacturing-and-construction-type-machinery",
+            "manufacturing-and-construction-type-mining-and-quarrying",
+            "manufacturing-and-construction-type-wood-and-wood-products",
+            "manufacturing-and-construction-type-construction",
+            "manufacturing-and-construction-type-textiles-and-leather",
+            "manufacturing-and-construction-type-unspecified-industry",
+          ],
+          "exclusive": "manufacturing-and-construction-type-all"
+        },
+        {
+          "id": "manufacturing-and-construction-energy-usage",
+          "options": [
+            "manufacturing-and-construction-energy-usage-all",
+            "manufacturing-and-construction-energy-usage-electricity",
+            "manufacturing-and-construction-energy-usage-electricity-chp",
+            "manufacturing-and-construction-energy-usage-heating",
+            "manufacturing-and-construction-energy-usage-heating-chp",
+            "manufacturing-and-construction-energy-usage-steam",
+            "manufacturing-and-construction-energy-usage-steam-chp",
+            "manufacturing-and-construction-energy-usage-refrigeration",
+            "manufacturing-and-construction-energy-usage-refrigeration-chp"
+          ],
+          "exclusive": "manufacturing-and-construction-energy-usage-all"
+        },
+        {
+          "id": "manufacturing-and-construction-energy-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
   "II.1.1": {
     "methodologies": [
       {

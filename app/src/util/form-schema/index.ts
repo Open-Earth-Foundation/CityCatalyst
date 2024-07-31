@@ -1,5 +1,4 @@
-import SectorFormSchema from "./sector-form-schema.json";
-
+import manualInputHierarchySchema from './manual-input-hierarchy.json'
 export {
-    SectorFormSchema
+    manualInputHierarchySchema
 }

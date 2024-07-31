@@ -96,9 +96,11 @@ function SubSectorPage({
     }
   };
 
-  const { subsector: subsectorData, scopes } = useSelector(
+  const { subsector: subsectorData, manualInputSchema } = useSelector(
     (state: RootState) => state.subsector,
   );
+
+  console.log(manualInputSchema);
 
   // calculate total consumption and emissions
 

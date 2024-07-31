@@ -100,7 +100,20 @@ function SubSectorPage({
     (state: RootState) => state.subsector,
   );
 
-  console.log(manualInputSchema);
+  const filteredSubsectorSchema = () => {
+    const getRefNo = getSectorRefNo(step);
+    const filteredManualInputSchema: any = {};
+    const romanNumeralPattern = new RegExp(`^${getRefNo}\\.`);
+
+    for (const key in manualInputSchema) {
+      if (romanNumeralPattern.test(key)) {
+        filteredManualInputSchema[key] = manualInputSchema[key];
+      }
+    }
+    return filteredManualInputSchema;
+  };
+
+  console.log(filteredSubsectorSchema());
 
   // calculate total consumption and emissions
 

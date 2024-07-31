@@ -25,7 +25,12 @@
                 "options": [
                   "residential-building-fuel-type-propane",
                   "residential-building-fuel-type-natural-gas",
-                  "residential-building-fuel-type-heating-oil"
+                  "residential-building-fuel-type-charcoal",
+                  "residential-building-fuel-type-liquefied-petroleum-gases",
+                  "residential-building-fuel-type-peat",
+                  "residential-building-fuel-type-anthracite",
+                  "residential-building-fuel-type-gasoline",
+                  "residential-building-fuel-type-diesel"
                 ]
               },
               {
@@ -72,7 +77,12 @@
             "residential-building-fuel-type-all",
             "residential-building-fuel-type-propane",
             "residential-building-fuel-type-natural-gas",
-            "residential-building-fuel-type-heating-oil"
+            "residential-building-fuel-type-charcoal",
+            "residential-building-fuel-type-liquefied-petroleum-gases",
+            "residential-building-fuel-type-peat",
+            "residential-building-fuel-type-anthracite",
+            "residential-building-fuel-type-gasoline",
+            "residential-building-fuel-type-diesel"
           ]
         },
         {
@@ -100,7 +110,7 @@
               {
                 "id": "residential-building-type",
                 "options": [
-                  "commercial-building-type-all"
+                  "residential-building-type-all"
                 ]
               },
               {
@@ -198,8 +208,12 @@
                 "id": "commercial-building-fuel-type",
                 "options": [
                   "commercial-building-fuel-type-propane",
+                  "commercial-building-fuel-type-wood/wood-waste",
                   "commercial-building-fuel-type-natural-gas",
-                  "commercial-building-fuel-type-heating-oil"
+                  "commercial-building-fuel-type-liquefied-petroleum-gases",
+                  "commercial-building-fuel-type-anthracite",
+                  "commercial-building-fuel-type-gasoline",
+                  "commercial-building-fuel-type-diesel"
                 ]
               },
               {
@@ -258,8 +272,12 @@
           "options": [
             "commercial-building-fuel-type-all",
             "commercial-building-fuel-type-propane",
+            "commercial-building-fuel-type-wood/wood-waste",
             "commercial-building-fuel-type-natural-gas",
-            "commercial-building-fuel-type-heating-oil"
+            "commercial-building-fuel-type-liquefied-petroleum-gases",
+            "commercial-building-fuel-type-anthracite",
+            "commercial-building-fuel-type-gasoline",
+            "commercial-building-fuel-type-diesel"
           ]
         },
         {

@@ -422,14 +422,27 @@
               {
                 "id": "manufacturing-and-construction-fuel-type",
                 "options": [
-                  "manufacturing-and-construction-fuel-type-propane",
-                  "manufacturing-and-construction-fuel-type-natural-gas",
-                  "manufacturing-and-construction-fuel-type-charcoal",
-                  "manufacturing-and-construction-fuel-type-liquefied-petroleum-gases",
-                  "manufacturing-and-construction-fuel-type-peat",
                   "manufacturing-and-construction-fuel-type-anthracite",
-                  "manufacturing-and-construction-fuel-type-gasoline",
-                  "manufacturing-and-construction-fuel-type-diesel"
+                  "manufacturing-and-construction-fuel-type-natural-other-bituminous-coal",
+                  "manufacturing-and-construction-fuel-type-sub-bituminous-coal",
+                  "manufacturing-and-construction-fuel-type-lignite",
+                  "manufacturing-and-construction-fuel-type-coking-coal",
+                  "manufacturing-and-construction-fuel-type-coke-oven-coke-and-lignite-coke",
+                  "manufacturing-and-construction-fuel-type-natural-gas",
+                  "manufacturing-and-construction-fuel-type-residual-fuel-oil",
+                  "manufacturing-and-construction-fuel-type-gas-oil",
+                  "manufacturing-and-construction-fuel-type-diesel-oil",
+                  "manufacturing-and-construction-fuel-type-other-kerosene",
+                  "manufacturing-and-construction-fuel-type-crude-oil",
+                  "manufacturing-and-construction-fuel-type-naphtha",
+                  "manufacturing-and-construction-fuel-type-refinery-gas",
+                  "manufacturing-and-construction-fuel-type-coke-oven-gas",
+                  "manufacturing-and-construction-fuel-type-oxygen-steel-furnace-gas",
+                  "manufacturing-and-construction-fuel-type-natural-gas-liquids",
+                  "manufacturing-and-construction-fuel-type-industrial-wastes",
+                  "manufacturing-and-construction-fuel-type-waste-oils",
+                  "manufacturing-and-construction-fuel-type-bitumen",
+                  "manufacturing-and-construction-fuel-type-municipal-wastes"
                 ],
                 "exclusive": "manufacturing-and-construction-fuel-type-all"
               },
@@ -507,14 +520,27 @@
           "id": "manufacturing-and-construction-fuel-type",
           "options": [
             "manufacturing-and-construction-fuel-type-all",
-            "manufacturing-and-construction-fuel-type-propane",
-            "manufacturing-and-construction-fuel-type-natural-gas",
-            "manufacturing-and-construction-fuel-type-charcoal",
-            "manufacturing-and-construction-fuel-type-liquefied-petroleum-gases",
-            "manufacturing-and-construction-fuel-type-peat",
             "manufacturing-and-construction-fuel-type-anthracite",
-            "manufacturing-and-construction-fuel-type-gasoline",
-            "manufacturing-and-construction-fuel-type-diesel"
+            "manufacturing-and-construction-fuel-type-natural-other-bituminous-coal",
+            "manufacturing-and-construction-fuel-type-sub-bituminous-coal",
+            "manufacturing-and-construction-fuel-type-lignite",
+            "manufacturing-and-construction-fuel-type-coking-coal",
+            "manufacturing-and-construction-fuel-type-coke-oven-coke-and-lignite-coke",
+            "manufacturing-and-construction-fuel-type-natural-gas",
+            "manufacturing-and-construction-fuel-type-residual-fuel-oil",
+            "manufacturing-and-construction-fuel-type-gas-oil",
+            "manufacturing-and-construction-fuel-type-diesel-oil",
+            "manufacturing-and-construction-fuel-type-other-kerosene",
+            "manufacturing-and-construction-fuel-type-crude-oil",
+            "manufacturing-and-construction-fuel-type-naphtha",
+            "manufacturing-and-construction-fuel-type-refinery-gas",
+            "manufacturing-and-construction-fuel-type-coke-oven-gas",
+            "manufacturing-and-construction-fuel-type-oxygen-steel-furnace-gas",
+            "manufacturing-and-construction-fuel-type-natural-gas-liquids",
+            "manufacturing-and-construction-fuel-type-industrial-wastes",
+            "manufacturing-and-construction-fuel-type-waste-oils",
+            "manufacturing-and-construction-fuel-type-bitumen",
+            "manufacturing-and-construction-fuel-type-municipal-wastes"
           ],
           "exclusive": "manufacturing-and-construction-fuel-type-all"
         },
@@ -618,7 +644,7 @@
             "manufacturing-and-construction-type-wood-and-wood-products",
             "manufacturing-and-construction-type-construction",
             "manufacturing-and-construction-type-textiles-and-leather",
-            "manufacturing-and-construction-type-unspecified-industry",
+            "manufacturing-and-construction-type-unspecified-industry"
           ],
           "exclusive": "manufacturing-and-construction-type-all"
         },
@@ -639,6 +665,452 @@
         },
         {
           "id": "manufacturing-and-construction-energy-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "I.4.1": {
+    "methodologies": [
+      {
+        "id": "fuel-combustion-energy-industries-methodology",
+        "activities": [
+          {
+            "id": "fuel-combustion-energy-industries-activity",
+            "unique-by": [
+              "energy-industries-type",
+              "energy-industries-fuel-type",
+              "energy-industries-fuel-source"
+            ],
+            "activity-title": "activity-total-fuel-consumption",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "energy-industries-type",
+                "options": [
+                  "energy-industries-type-all",
+                  "energy-industries-type-electricity_generation",
+                  "energy-industries-type-combined-heat-and-power-generation",
+                  "energy-industries-type-heat-plants",
+                  "energy-industries-type-pretroleum-refining",
+                  "energy-industries-type-non-ferrous-manufacture-of-solid-fuels",
+                  "energy-industries-type-chemical-other-energy-industries"
+                ],
+                "exclusive": "energy-industries-type-all"
+              },
+              {
+                "id": "energy-industries-fuel-type",
+                "options": [
+                  "energy-industries-fuel-type-anthracite",
+                  "energy-industries-fuel-type-natural-other-bituminous-coal",
+                  "energy-industries-fuel-type-sub-bituminous-coal",
+                  "energy-industries-fuel-type-lignite",
+                  "energy-industries-fuel-type-coking-coal",
+                  "energy-industries-fuel-type-coke-oven-coke-and-lignite-coke",
+                  "energy-industries-fuel-type-natural-gas",
+                  "energy-industries-fuel-type-residual-fuel-oil",
+                  "energy-industries-fuel-type-crude-oil",
+                  "energy-industries-fuel-type-refinery-gas",
+                  "energy-industries-fuel-type-coke-oven-gas",
+                  "energy-industries-fuel-type-oxygen-steel-furnace-gas",
+                  "energy-industries-fuel-type-natural-gas-liquids",
+                  "energy-industries-fuel-type-jet-kerosene",
+                  "energy-industries-fuel-type-municipal-wastes"
+                ],
+                "exclusive": "energy-industries-fuel-type-all"
+              },
+              {
+                "id": "energy-industries-fuel-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-gallons",
+              "units-liters",
+              "units-cubic-meters",
+              "units-kilograms",
+              "units-other"
+            ]
+          }
+        ],
+        "suggested_activities": [
+          {
+            "id": "fuel-combustion-energy-industries-activity",
+            "energy-industries-type": "energy-industries-type-all"
+          },
+          {
+            "id": "fuel-combustion-energy-industries-activity",
+            "energy-industries-type": "energy-industries-type-electricity_generation"
+          },
+          {
+            "id": "fuel-combustion-energy-industries-activity",
+            "energy-industries-type": "energy-industries-type-combined-heat-and-power-generation"
+          },
+          {
+            "id": "fuel-combustion-energy-industries-activity",
+            "energy-industries-type": "energy-industries-type-heat-pants"
+          }
+        ]
+      },
+      {
+        "id": "scaled-sample-fuel-combustion-energy-industries-methodology",
+        "implemented": false
+      },
+      {
+        "id": "modeled-data-fuel-consumption-energy-industries-methodology",
+        "implemented": false
+      }
+    ],
+    "direct_measure": {
+      "extra-fields": [
+        {
+          "id": "energy-industries-type",
+          "options": [
+            "energy-industries-type-all",
+            "energy-industries-type-electricity_generation",
+            "energy-industries-type-combined-heat-and-power-generation",
+            "energy-industries-type-heat-plants",
+            "energy-industries-type-pretroleum-refining",
+            "energy-industries-type-non-ferrous-manufacture-of-solid-fuels",
+            "energy-industries-type-chemical-other-energy-industries"
+          ],
+          "exclusive": "energy-industries-type-all"
+        },
+        {
+          "id": "energy-industries-fuel-type",
+          "options": [
+            "energy-industries-fuel-type-all",
+            "energy-industries-fuel-type-anthracite",
+            "energy-industries-fuel-type-natural-other-bituminous-coal",
+            "energy-industries-fuel-type-sub-bituminous-coal",
+            "energy-industries-fuel-type-lignite",
+            "energy-industries-fuel-type-coking-coal",
+            "energy-industries-fuel-type-coke-oven-coke-and-lignite-coke",
+            "energy-industries-fuel-type-natural-gas",
+            "energy-industries-fuel-type-residual-fuel-oil",
+            "energy-industries-fuel-type-crude-oil",
+            "energy-industries-fuel-type-refinery-gas",
+            "energy-industries-fuel-type-coke-oven-gas",
+            "energy-industries-fuel-type-oxygen-steel-furnace-gas",
+            "energy-industries-fuel-type-natural-gas-liquids",
+            "energy-industries-fuel-type-jet-kerosene",
+            "energy-industries-fuel-type-municipal-wastes"
+          ],
+          "exclusive": "energy-industries-fuel-type-all"
+        },
+        {
+          "id": "energy-industries-fuel-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "I.4.2": {
+    "methodologies": [
+      {
+        "id": "energy-consumption-energy-industries-methodology",
+        "activities": [
+          {
+            "id": "energy-consumption-energy-industries-activity",
+            "unique-by": [
+              "energy-industries-type",
+              "energy-industries-energy-usage",
+              "energy-industries-energy-source"
+            ],
+            "activity-title": "activity-energy-consumption",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "energy-industries-type",
+                "options": [
+                  "energy-industries-type-all",
+                  "energy-industries-type-electricity_generation",
+                  "energy-industries-type-combined-heat-and-power-generation",
+                  "energy-industries-type-heat-plants",
+                  "energy-industries-type-pretroleum-refining",
+                  "energy-industries-type-non-ferrous-manufacture-of-solid-fuels",
+                  "energy-industries-type-chemical-other-energy-industries"
+                ],
+                "exclusive": "energy-industries-type-all"
+              },
+              {
+                "id": "energy-industries-energy-usage",
+                "options": [
+                  "energy-industries-energy-usage-all",
+                  "energy-industries-energy-usage-electricity",
+                  "energy-industries-energy-usage-electricity-chp",
+                  "energy-industries-energy-usage-heating",
+                  "energy-industries-energy-usage-heating-chp",
+                  "energy-industries-energy-usage-steam",
+                  "energy-industries-energy-usage-steam-chp",
+                  "energy-industries-energy-usage-refrigeration",
+                  "energy-industries-energy-usage-refrigeration-chp"
+                ],
+                "exclusive": "energy-industries-energy-usage-all"
+              },
+              {
+                "id": "energy-industries-energy-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-kilowatt-hours",
+              "units-terajoules"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "scaled-sample-energy-usage-energy-industries-methodology",
+        "implemented": false
+      },
+      {
+        "id": "modeled-data-energy-usage-energy-industries-methodology",
+        "implemented": false
+      }
+    ],
+    "direct_measure": {
+      "extra-fields": [
+        {
+          "id": "energy-industries-type",
+          "options": [
+            "energy-industries-type-all",
+            "energy-industries-type-electricity_generation",
+            "energy-industries-type-combined-heat-and-power-generation",
+            "energy-industries-type-heat-plants",
+            "energy-industries-type-pretroleum-refining",
+            "energy-industries-type-non-ferrous-manufacture-of-solid-fuels",
+            "energy-industries-type-chemical-other-energy-industries"
+          ],
+          "exclusive": "energy-industries-type-all"
+        },
+        {
+          "id": "energy-industries-energy-usage",
+          "options": [
+            "energy-industries-energy-usage-all",
+            "energy-industries-energy-usage-electricity",
+            "energy-industries-energy-usage-electricity-chp",
+            "energy-industries-energy-usage-heating",
+            "energy-industries-energy-usage-heating-chp",
+            "energy-industries-energy-usage-steam",
+            "energy-industries-energy-usage-steam-chp",
+            "energy-industries-energy-usage-refrigeration",
+            "energy-industries-energy-usage-refrigeration-chp"
+          ],
+          "exclusive": "energy-industries-energy-usage-all"
+        },
+        {
+          "id": "energy-industries-energy-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "I.5.1": {
+    "methodologies": [
+      {
+        "id": "fuel-combustion-agriculture-forestry-fishing-activities-methodology",
+        "activities": [
+          {
+            "id": "fuel-combustion-agriculture-forestry-fishing-activities-activity",
+            "unique-by": [
+              "agriculture-forestry-fishing-activities-type",
+              "agriculture-forestry-fishing-activities-fuel-type",
+              "agriculture-forestry-fishing-activities-fuel-source"
+            ],
+            "activity-title": "activity-total-fuel-consumption",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "agriculture-forestry-fishing-activities-type",
+                "options": [
+                  "agriculture-forestry-fishing-activities-type-all",
+                  "agriculture-forestry-fishing-activities-type-stationary",
+                  "agriculture-forestry-fishing-activities-type-off-road-vehicles-and-machinery",
+                  "agriculture-forestry-fishing-activities-type-fishing-mobile-combustion"
+                ],
+                "exclusive": "agriculture-forestry-fishing-activities-type-all"
+              },
+              {
+                "id": "agriculture-forestry-fishing-activities-fuel-type",
+                "options": [
+                  "agriculture-forestry-fishing-activities-fuel-type-diesel-oil",
+                  "agriculture-forestry-fishing-activities-fuel-type-natural-gas",
+                  "agriculture-forestry-fishing-activities-fuel-type-liquefied-petroleum-gases",
+                  "agriculture-forestry-fishing-activities-fuel-type-wood/wood-waste",
+                  "agriculture-forestry-fishing-activities-fuel-type-other-primary-solid-biomass",
+                  "agriculture-forestry-fishing-activities-fuel-type-natural-charcoal",
+                  "agriculture-forestry-fishing-activities-fuel-type-natural-gas-oil",
+                  "agriculture-forestry-fishing-activities-fuel-type-natural-peat"
+                ],
+                "exclusive": "agriculture-forestry-fishing-activities-fuel-type-all"
+              },
+              {
+                "id": "agriculture-forestry-fishing-activities-fuel-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-gallons",
+              "units-liters",
+              "units-cubic-meters",
+              "units-kilograms",
+              "units-other"
+            ]
+          }
+        ],
+        "suggested_activities": [
+          {
+            "id": "fuel-combustion-agriculture-forestry-fishing-activities-activity",
+            "agriculture-forestry-fishing-activities-type": "agriculture-forestry-fishing-activities-type-all"
+          },
+          {
+            "id": "fuel-combustion-agriculture-forestry-fishing-activities-activity",
+            "agriculture-forestry-fishing-activities-type": "agriculture-forestry-fishing-activities-type-stationary"
+          },
+          {
+            "id": "fuel-combustion-agriculture-forestry-fishing-activities-activity",
+            "agriculture-forestry-fishing-activities-type": "agriculture-forestry-fishing-activities-type-off-road-vehicles-and-machinery"
+          },
+          {
+            "id": "fuel-combustion-agriculture-forestry-fishing-activities-activity",
+            "agriculture-forestry-fishing-activities-type": "agriculture-forestry-fishing-activities-type-fishing-mobile-combustion"
+          }
+        ]
+      },
+      {
+        "id": "scaled-sample-fuel-combustion-agriculture-forestry-fishing-activities-methodology",
+        "implemented": false
+      },
+      {
+        "id": "modeled-data-fuel-consumption-agriculture-forestry-fishing-activities-methodology",
+        "implemented": false
+      }
+    ],
+    "direct_measure": {
+      "extra-fields": [
+        {
+          "id": "agriculture-forestry-fishing-activities-type",
+          "options": [
+            "agriculture-forestry-fishing-activities-type-all",
+            "agriculture-forestry-fishing-activities-type-stationary",
+            "agriculture-forestry-fishing-activities-type-off-road-vehicles-and-machinery",
+            "agriculture-forestry-fishing-activities-type-fishing-mobile-combustion"
+          ],
+          "exclusive": "agriculture-forestry-fishing-activities-type-all"
+        },
+        {
+          "id": "agriculture-forestry-fishing-activities-fuel-type",
+          "options": [
+            "agriculture-forestry-fishing-activities-fuel-type-all",
+            "agriculture-forestry-fishing-activities-fuel-type-diesel-oil",
+            "agriculture-forestry-fishing-activities-fuel-type-natural-gas",
+            "agriculture-forestry-fishing-activities-fuel-type-liquefied-petroleum-gases",
+            "agriculture-forestry-fishing-activities-fuel-type-wood/wood-waste",
+            "agriculture-forestry-fishing-activities-fuel-type-other-primary-solid-biomass",
+            "agriculture-forestry-fishing-activities-fuel-type-natural-charcoal",
+            "agriculture-forestry-fishing-activities-fuel-type-natural-gas-oil",
+            "agriculture-forestry-fishing-activities-fuel-type-natural-peat"
+          ],
+          "exclusive": "agriculture-forestry-fishing-activities-fuel-type-all"
+        },
+        {
+          "id": "agriculture-forestry-fishing-activities-fuel-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "I.5.2": {
+    "methodologies": [
+      {
+        "id": "energy-consumption-agriculture-forestry-fishing-activities-methodology",
+        "activities": [
+          {
+            "id": "energy-consumption-agriculture-forestry-fishing-activities-activity",
+            "unique-by": [
+              "agriculture-forestry-fishing-activities-type",
+              "agriculture-forestry-fishing-activities-energy-usage",
+              "agriculture-forestry-fishing-activities-energy-source"
+            ],
+            "activity-title": "activity-energy-consumption",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "agriculture-forestry-fishing-activities-type",
+                "options": [
+                  "agriculture-forestry-fishing-activities-type-all",
+                  "agriculture-forestry-fishing-activities-type-stationary",
+                  "agriculture-forestry-fishing-activities-type-off-road-vehicles-and-machinery",
+                  "agriculture-forestry-fishing-activities-type-fishing-mobile-combustion"
+                ],
+                "exclusive": "agriculture-forestry-fishing-activities-type-all"
+              },
+              {
+                "id": "agriculture-forestry-fishing-activities-energy-usage",
+                "options": [
+                  "agriculture-forestry-fishing-activities-energy-usage-all",
+                  "agriculture-forestry-fishing-activities-energy-usage-electricity",
+                  "agriculture-forestry-fishing-activities-energy-usage-electricity-chp",
+                  "agriculture-forestry-fishing-activities-energy-usage-heating",
+                  "agriculture-forestry-fishing-activities-energy-usage-heating-chp",
+                  "agriculture-forestry-fishing-activities-energy-usage-steam",
+                  "agriculture-forestry-fishing-activities-energy-usage-steam-chp",
+                  "agriculture-forestry-fishing-activities-energy-usage-refrigeration",
+                  "agriculture-forestry-fishing-activities-energy-usage-refrigeration-chp"
+                ],
+                "exclusive": "agriculture-forestry-fishing-activities-energy-usage-all"
+              },
+              {
+                "id": "agriculture-forestry-fishing-activities-energy-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-kilowatt-hours",
+              "units-terajoules"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "scaled-sample-energy-usage-agriculture-forestry-fishing-activities-methodology",
+        "implemented": false
+      },
+      {
+        "id": "modeled-data-energy-usage-agriculture-forestry-fishing-activities-methodology",
+        "implemented": false
+      }
+    ],
+    "direct_measure": {
+      "extra-fields": [
+        {
+          "id": "agriculture-forestry-fishing-activities-type",
+          "options": [
+            "agriculture-forestry-fishing-activities-type-all",
+            "agriculture-forestry-fishing-activities-type-stationary",
+            "agriculture-forestry-fishing-activities-type-off-road-vehicles-and-machinery",
+            "agriculture-forestry-fishing-activities-type-fishing-mobile-combustion"
+          ],
+          "exclusive": "agriculture-forestry-fishing-activities-type-all"
+        },
+        {
+          "id": "agriculture-forestry-fishing-activities-energy-usage",
+          "options": [
+            "agriculture-forestry-fishing-activities-energy-usage-all",
+            "agriculture-forestry-fishing-activities-energy-usage-electricity",
+            "agriculture-forestry-fishing-activities-energy-usage-electricity-chp",
+            "agriculture-forestry-fishing-activities-energy-usage-heating",
+            "agriculture-forestry-fishing-activities-energy-usage-heating-chp",
+            "agriculture-forestry-fishing-activities-energy-usage-steam",
+            "agriculture-forestry-fishing-activities-energy-usage-steam-chp",
+            "agriculture-forestry-fishing-activities-energy-usage-refrigeration",
+            "agriculture-forestry-fishing-activities-energy-usage-refrigeration-chp"
+          ],
+          "exclusive": "agriculture-forestry-fishing-activities-energy-usage-all"
+        },
+        {
+          "id": "agriculture-forestry-fishing-activities-energy-source",
           "type": "text"
         }
       ]

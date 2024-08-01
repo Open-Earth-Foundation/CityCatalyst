@@ -75,7 +75,7 @@ export default function ChatPopover({
             />
           </PopoverHeader>
           <PopoverBody maxH={650} w="full" p={6} borderRadius={4}>
-            <ChatBot inputRef={inputRef} t={t} inventoryId={inventoryId}/>
+            <ChatBot inputRef={inputRef} t={t} inventoryId={inventoryId} />
           </PopoverBody>
         </PopoverContent>
       </Popover>

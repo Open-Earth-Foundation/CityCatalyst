@@ -940,8 +940,8 @@
                   "agriculture-forestry-fishing-activities-fuel-type-wood/wood-waste",
                   "agriculture-forestry-fishing-activities-fuel-type-other-primary-solid-biomass",
                   "agriculture-forestry-fishing-activities-fuel-type-natural-charcoal",
-                  "agriculture-forestry-fishing-activities-fuel-type-natural-gas-oil",
-                  "agriculture-forestry-fishing-activities-fuel-type-natural-peat"
+                  "agriculture-forestry-fishing-activities-fuel-type-gas-oil",
+                  "agriculture-forestry-fishing-activities-fuel-type-peat"
                 ],
                 "exclusive": "agriculture-forestry-fishing-activities-fuel-type-all"
               },
@@ -1008,9 +1008,9 @@
             "agriculture-forestry-fishing-activities-fuel-type-liquefied-petroleum-gases",
             "agriculture-forestry-fishing-activities-fuel-type-wood/wood-waste",
             "agriculture-forestry-fishing-activities-fuel-type-other-primary-solid-biomass",
-            "agriculture-forestry-fishing-activities-fuel-type-natural-charcoal",
-            "agriculture-forestry-fishing-activities-fuel-type-natural-gas-oil",
-            "agriculture-forestry-fishing-activities-fuel-type-natural-peat"
+            "agriculture-forestry-fishing-activities-fuel-type-charcoal",
+            "agriculture-forestry-fishing-activities-fuel-type-gas-oil",
+            "agriculture-forestry-fishing-activities-fuel-type-peat"
           ],
           "exclusive": "agriculture-forestry-fishing-activities-fuel-type-all"
         },
@@ -1111,6 +1111,212 @@
         },
         {
           "id": "agriculture-forestry-fishing-activities-energy-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "I.6.1": {
+    "methodologies": [
+      {
+        "id": "fuel-combustion-non-specific-sources-methodology",
+        "activities": [
+          {
+            "id": "fuel-combustion-non-specific-sources-activity",
+            "unique-by": [
+              "non-specific-sources-type",
+              "non-specific-sources-fuel-type",
+              "non-specific-sources-fuel-source"
+            ],
+            "activity-title": "activity-total-fuel-consumption",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "non-specific-sources-type",
+                "options": [
+                  "non-specific-sources-type-all",
+                  "non-specific-sources-type-stationary",
+                  "non-specific-sources-type-mobile"
+                ],
+                "exclusive": "non-specific-sources-type-all"
+              },
+              {
+                "id": "non-specific-sources-fuel-type",
+                "options": [
+                  "non-specific-sources-fuel-type-gas-oil",
+                  "non-specific-sources-fuel-type-naphtha",
+                  "non-specific-sources-fuel-type-diesel-oil",
+                  "non-specific-sources-fuel-type-natural-gas",
+                  "non-specific-sources-fuel-type-liquefied-petroleum-gases",
+                  "non-specific-sources-fuel-type-wood/wood-waste",
+                  "non-specific-sources-fuel-type-other-primary-solid-biomass",
+                  "non-specific-sources-fuel-type-charcoal",
+                  "non-specific-sources-fuel-type-natural-gas-oil",
+                  "non-specific-sources-fuel-type-peat"
+                ],
+                "exclusive": "non-specific-sources-fuel-type-all"
+              },
+              {
+                "id": "non-specific-sources-fuel-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-gallons",
+              "units-liters",
+              "units-cubic-meters",
+              "units-kilograms",
+              "units-other"
+            ]
+          }
+        ],
+        "suggested_activities": [
+          {
+            "id": "fuel-combustion-non-specific-sources-activity",
+            "non-specific-sources-type": "non-specific-sources-type-all"
+          },
+          {
+            "id": "fuel-combustion-non-specific-sources-activity",
+            "non-specific-sources-type": "non-specific-sources-type-stationary"
+          },
+          {
+            "id": "fuel-combustion-non-specific-sources-activity",
+            "non-specific-sources-type": "non-specific-sources-type-mobile"
+          }
+        ]
+      },
+      {
+        "id": "scaled-sample-fuel-combustion-non-specific-sources-methodology",
+        "implemented": false
+      },
+      {
+        "id": "modeled-data-fuel-consumption-non-specific-sources-methodology",
+        "implemented": false
+      }
+    ],
+    "direct_measure": {
+      "extra-fields": [
+        {
+          "id": "non-specific-sources-type",
+          "options": [
+            "non-specific-sources-type-all",
+            "non-specific-sources-type-stationary",
+            "non-specific-sources-type-mobile"
+          ],
+          "exclusive": "non-specific-sources-type-all"
+        },
+        {
+          "id": "non-specific-sources-fuel-type",
+          "options": [
+            "non-specific-sources-fuel-type-all",
+            "non-specific-sources-fuel-type-gas-oil",
+            "non-specific-sources-fuel-type-naphtha",
+            "non-specific-sources-fuel-type-diesel-oil",
+            "non-specific-sources-fuel-type-natural-gas",
+            "non-specific-sources-fuel-type-liquefied-petroleum-gases",
+            "non-specific-sources-fuel-type-wood/wood-waste",
+            "non-specific-sources-fuel-type-other-primary-solid-biomass",
+            "non-specific-sources-fuel-type-charcoal",
+            "non-specific-sources-fuel-type-natural-gas-oil",
+            "non-specific-sources-fuel-type-peat"
+          ],
+          "exclusive": "non-specific-sources-fuel-type-all"
+        },
+        {
+          "id": "non-specific-sources-fuel-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "I.6.2": {
+    "methodologies": [
+      {
+        "id": "energy-consumption-non-specific-sources-methodology",
+        "activities": [
+          {
+            "id": "energy-consumption-non-specific-sources-activity",
+            "unique-by": [
+              "non-specific-sources-type",
+              "non-specific-sources-energy-usage",
+              "non-specific-sources-energy-source"
+            ],
+            "activity-title": "activity-energy-consumption",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "non-specific-sources-type",
+                "options": [
+                  "non-specific-sources-type-all",
+                  "non-specific-sources-type-stationary",
+                  "non-specific-sources-type-mobile"
+                ],
+                "exclusive": "non-specific-sources-type-all"
+              },
+              {
+                "id": "non-specific-sources-energy-usage",
+                "options": [
+                  "non-specific-sources-energy-usage-all",
+                  "non-specific-sources-energy-usage-electricity",
+                  "non-specific-sources-energy-usage-electricity-chp",
+                  "non-specific-sources-energy-usage-heating",
+                  "non-specific-sources-energy-usage-heating-chp",
+                  "non-specific-sources-energy-usage-steam",
+                  "non-specific-sources-energy-usage-steam-chp",
+                  "non-specific-sources-energy-usage-refrigeration",
+                  "non-specific-sources-energy-usage-refrigeration-chp"
+                ],
+                "exclusive": "non-specific-sources-energy-usage-all"
+              },
+              {
+                "id": "non-specific-sources-energy-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-kilowatt-hours",
+              "units-terajoules"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "scaled-sample-energy-usage-non-specific-sources-methodology",
+        "implemented": false
+      },
+      {
+        "id": "modeled-data-energy-usage-non-specific-sources-methodology",
+        "implemented": false
+      }
+    ],
+    "direct_measure": {
+      "extra-fields": [
+        {
+          "id": "non-specific-sources-type",
+          "options": [
+            "non-specific-sources-type-all",
+            "non-specific-sources-type-stationary",
+            "non-specific-sources-type-mobile"
+          ],
+          "exclusive": "non-specific-sources-type-all"
+        },
+        {
+          "id": "non-specific-sources-energy-usage",
+          "options": [
+            "non-specific-sources-energy-usage-all",
+            "non-specific-sources-energy-usage-electricity",
+            "non-specific-sources-energy-usage-electricity-chp",
+            "non-specific-sources-energy-usage-heating",
+            "non-specific-sources-energy-usage-heating-chp",
+            "non-specific-sources-energy-usage-steam",
+            "non-specific-sources-energy-usage-steam-chp",
+            "non-specific-sources-energy-usage-refrigeration",
+            "non-specific-sources-energy-usage-refrigeration-chp"
+          ],
+          "exclusive": "non-specific-sources-energy-usage-all"
+        },
+        {
+          "id": "non-specific-sources-energy-source",
           "type": "text"
         }
       ]

@@ -28,7 +28,7 @@ import {
   Tooltip,
   useToast,
 } from "@chakra-ui/react";
-import { FC, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { TFunction } from "i18next";
 import BuildingTypeSelectInput from "../building-select-input";
@@ -78,7 +78,6 @@ export type Inputs = {
     buildingType: string;
     fuelType: string;
     totalFuelConsumption: string;
-    formStruct: ActivityDataScope;
   };
   direct: DirectMeasureData;
   subcategoryData: Record<string, SubcategoryData>;
@@ -137,7 +136,27 @@ const AddActivityModal: FC<AddUserModalProps> = ({
   } = useForm<Inputs>();
 
   let prefix = "";
-  let emissionsFactors: any = [];
+  let { data: emissionsFactors, isLoading: emissionsFactorsLoading } =
+    api.useGetEmissionsFactorsQuery();
+  // extract and deduplicate data sources from emissions factors
+  const emissionsFactorTypes = useMemo(() => {
+    if (!emissionsFactors) {
+      return [];
+    }
+    const seen: Record<string, boolean> = {};
+    return emissionsFactors
+      .flatMap((factor) => {
+        return factor.dataSources.map((source) => ({
+          id: source.datasourceId,
+          name: source.datasetName ?? "unknown",
+        }));
+      })
+      .filter((source) => {
+        return seen.hasOwnProperty(source.id)
+          ? false
+          : (seen[source.id] = true);
+      });
+  }, [emissionsFactors]);
 
   const toast = useToast();
 
@@ -373,12 +392,14 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       placeholder="Select emission factor type"
                       onChange={(e: any) => onEmissionFactorTypeChange(e)}
                     >
-                      {/* TODO translate values and use internal value for saving */}
-                      {formInputs?.fields[3].options?.map((item: string) => (
-                        <option key={item} value={item}>
-                          {item}
+                      {emissionsFactorTypes.map(({ id, name }) => (
+                        <option key={id} value={id}>
+                          {t(name)}
                         </option>
                       ))}
+                      <option key="custom" value="custom">
+                        {t("add-custom")}
+                      </option>
                     </Select>
                     {errors.activity?.emissionFactorType ? (
                       <Box
@@ -458,10 +479,10 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       zIndex={10}
                       {...register(
                         ("activity." +
-                          formInputs?.fields[4]?.name) as ActivityKey,
+                          formInputs?.fields[4]?.addon.name) as ActivityKey,
                       )}
                     >
-                      {formInputs?.fields[4].unit}
+                      {formInputs?.fields[4].addon.unit}
                     </InputRightAddon>
                   </InputGroup>
                 </FormControl>
@@ -510,10 +531,10 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       zIndex={10}
                       {...register(
                         ("activity." +
-                          formInputs?.fields[5].name) as ActivityKey,
+                          formInputs?.fields[5].addon.name) as ActivityKey,
                       )}
                     >
-                      {formInputs?.fields[5].unit}
+                      {formInputs?.fields[5].addon.unit}
                     </InputRightAddon>
                   </InputGroup>
                 </FormControl>
@@ -562,10 +583,10 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       zIndex={10}
                       {...register(
                         ("activity." +
-                          formInputs?.fields[6].name) as ActivityKey,
+                          formInputs?.fields[6].addon.name) as ActivityKey,
                       )}
                     >
-                      {formInputs?.fields[6].unit}
+                      {formInputs?.fields[6].addon.unit}
                     </InputRightAddon>
                   </InputGroup>
                 </FormControl>

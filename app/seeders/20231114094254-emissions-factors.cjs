@@ -4,7 +4,11 @@ const fs = require("node:fs");
 const { parse } = require("csv-parse");
 const { bulkUpsert } = require("./util/util.cjs");
 
-const folders = ["EFDB_2006_IPCC_guidelines", "EFDB_US"];
+const folders = [
+  "EFDB_2006_IPCC_guidelines",
+  "EFDB_US",
+  // "CarbonFootPrint_2023",
+];
 
 async function parseFile(filename, folder) {
   const records = [];
@@ -26,21 +30,25 @@ module.exports = {
   async up(queryInterface) {
     await queryInterface.sequelize.transaction(async (transaction) => {
       for (const folder of folders) {
+        console.log("Loading emissions factor folder " + folder + "...");
         const dataSources = await parseFile("DataSource", folder);
         const dataSourceEmissionsFactors = await parseFile(
           "DataSourceEmissionsFactor",
           folder,
         );
 
-        const emissionsFactorsStationaryEnergy = await parseFile("EmissionsFactor_Stationary_Energy", folder);
-        const emissionsFactorsStationaryEnergyScope1 = await parseFile("EmissionsFactor_Stationary_Energy_Scope1", folder);
-        const emissionsFactorsRaw = emissionsFactorsStationaryEnergy.concat(emissionsFactorsStationaryEnergyScope1);
-
+        const emissionsFactorsRaw = await parseFile("EmissionsFactor", folder);
         const emissionsFactors = emissionsFactorsRaw.map((ef) => {
-          delete ef["EF ID_x"];
-          // delete ef["ipcc_2006_category"];
+          const metadata = (ef.metadata ? ef.metadata : "")
+            .split(", ")
+            .map((entry) => entry.split(":"));
+          ef.metadata = JSON.stringify(Object.fromEntries(metadata));
+          if (!ef.year) {
+            ef.year = null;
+          }
+
           return ef;
-        })
+        });
 
         const publishers = await parseFile("Publisher", folder);
 
@@ -68,7 +76,7 @@ module.exports = {
           emissionsFactors,
           "id",
           transaction,
-          true,
+          folder == "CarbonFootPrint_2023",
         );
         console.info("Finished adding emissions factors");
         await bulkUpsert(

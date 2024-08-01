@@ -153,3 +153,6 @@ global-api/data/**
 
 #Python virtual env
 global-api/env
+
+#Intellij
+/.idea/**

@@ -8,7 +8,10 @@ export const POST = apiHandler(async (_req, { session }) => {
   if (session?.user.role !== Roles.Admin) {
     return NextResponse.json({ error: "Method Not Allowed", status: 405 });
   } else {
-    // API rooute not yet fully implemented
+    // API route not yet fully implemented. It gives the baseline for future automation
+    // TODO: Add API route for creating a vector store
+    // TODO: Add API route for uploading files to vector store.
+    // TODO: This vector store needs to passed to this endpoint below.
     return NextResponse.json({ error: "Not Implemented", status: 501 });
     const userID = session?.user.id;
 

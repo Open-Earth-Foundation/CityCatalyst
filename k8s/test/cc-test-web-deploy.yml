@@ -52,6 +52,8 @@ spec:
               value: "openai"
             - name: OPEN_AI_MODEL
               value: "gpt-4o-mini"
+            - name: OPENAI_ASSISTANT_ID
+              value: ""
           resources:
             limits:
               memory: "1024Mi"

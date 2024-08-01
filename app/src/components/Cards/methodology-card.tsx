@@ -1,48 +1,40 @@
 import { Badge, Box, Card, Radio, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC, useState } from "react";
-import { MethodologyValues } from "../Tabs/Activity/activity-tab";
+import { Methodology } from "@/util/form-schema";
 
 interface MethodologyCardProps {
-  methodologyId: string;
-  methodologyName: string;
-  description: string;
-  inputRequired: string[];
+  id: string;
+  inputRequired?: string[];
   isSelected: boolean;
   disabled: boolean;
   t: TFunction;
-  handleCardSelect: (methodologyId: MethodologyValues) => void;
+  handleCardSelect: (methodologyId: Methodology) => void;
 }
 
 const MethodologyCard: FC<MethodologyCardProps> = ({
-  methodologyId,
-  methodologyName,
-  description,
+  id,
   inputRequired,
   disabled,
   t,
-  handleCardSelect = (_methodologyId: MethodologyValues) => {},
+  handleCardSelect = (_methodology: Methodology) => {},
 }) => {
   const [isSelected, setIsSelected] = useState(false);
   const handleRadioChange = () => {
     setIsSelected(true);
     handleCardSelect({
-      description,
       disabled,
       inputRequired,
-      methodologyId,
-      methodologyName,
+      id: id,
     });
   };
 
   const handleCardClick = () => {
     if (!isSelected) {
       handleCardSelect({
-        description,
         disabled,
         inputRequired,
-        methodologyId,
-        methodologyName,
+        id: id,
       });
     }
     setIsSelected(!isSelected);
@@ -89,7 +81,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
         )}
       </Box>
       <Text fontWeight="bold" fontSize="title.md" fontFamily="heading">
-        {methodologyName}
+        {t(id)}
       </Text>
       <Text
         letterSpacing="wide"
@@ -97,7 +89,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
         fontWeight="normal"
         color="interactive.control"
       >
-        {description}
+        {t(id + "-description")}
       </Text>
       <Text
         letterSpacing="wide"
@@ -116,7 +108,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
         color="interactive.control"
       >
         {inputRequired?.map((item: string, i: number) => (
-          <li key={i}>{item}</li>
+          <li key={i}>{t(item)}</li>
         ))}
       </Box>
     </Card>

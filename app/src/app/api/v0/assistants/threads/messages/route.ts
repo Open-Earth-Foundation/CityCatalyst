@@ -6,19 +6,18 @@ import { AssistantResponse } from "ai";
 const assistantId = process.env.OPENAI_ASSISTANT_ID as string;
 
 // Helper function for debugging
-// Extracting tokens, looking into events, ...
 const handleReadableStream = (stream: AssistantStream): AssistantStream => {
-  // stream.on("textCreated", () => console.log("Created"));
+  stream.on("textCreated", () => console.log("Created"));
   stream.on("textDelta", async (delta) => {
     // Make sure token has annotation value
     if (delta.annotations !== undefined && delta.annotations.length > 0) {
       // console.log(delta.value);
       // console.log(delta.annotations);
-      // Token can have only one annotation
+      // @ts-ignore
       const file_id = delta.annotations[0].file_citation.file_id;
 
       const citedFile = await openai.files.retrieve(file_id);
-      // console.log(citedFile.filename);
+      console.log(citedFile.filename);
     }
   });
 
@@ -48,7 +47,33 @@ export const POST = apiHandler(async (req) => {
   return AssistantResponse(
     { threadId, messageId: createdMessage.id },
     async ({ forwardStream, sendDataMessage }) => {
-      let runStream = await forwardStream(handleReadableStream(stream));
+      const run = await forwardStream(stream);
+
+      // TODO: Implement visiualization on client side
+      if (run?.required_action?.type === "submit_tool_outputs") {
+        console.log("tool calls");
+
+        const runId = run?.id;
+        const toolCallId =
+          run.required_action.submit_tool_outputs.tool_calls[0].id;
+
+        // Get tool outputs - here mocked
+        const toolOutputs = [
+          {
+            tool_call_id: toolCallId,
+            output: "Mock ooutput",
+          },
+        ];
+
+        // Submit result of tool outputs here
+        const modifiedRun = await openai.beta.threads.runs.submitToolOutputs(
+          threadId,
+          runId,
+          {
+            tool_outputs: toolOutputs,
+          },
+        );
+      }
     },
   );
 });

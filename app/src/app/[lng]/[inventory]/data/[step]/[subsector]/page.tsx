@@ -322,6 +322,7 @@ function SubSectorPage({
               ) : (
                 scopes?.map((scope) => (
                   <ActivityTab
+                    subsectorId={subsector}
                     key={scope.scope}
                     filteredScope={scope}
                     t={t}

@@ -1,5 +1,6 @@
 import { db } from "@/models";
 import type { ActivityValue } from "@/models/ActivityValue";
+import type { GasToCO2Eq } from "@/models/GasToCO2Eq";
 import type { InventoryValue } from "@/models/InventoryValue";
 import { logger } from "@/services/logger";
 import { multiplyBigIntFloat } from "@/util/big_int";
@@ -13,6 +14,28 @@ export type GasAmountResult = {
 const GAS_NAMES = ["CO2", "N2O", "CH4"];
 
 export default class CalculationService {
+  private static calculateCO2eq(
+    gasToCO2Eqs: GasToCO2Eq[],
+    gasName: string,
+    amount: bigint,
+  ): bigint {
+    // TODO the rest of this could be shared for all formulas?
+    const globalWarmingPotential = gasToCO2Eqs.find(
+      (entry) => entry.gas === gasName,
+    );
+    if (!globalWarmingPotential) {
+      throw new createHttpError.NotFound(
+        `Could not find gas ${gasName} in GasToCO2Eq table`,
+      );
+    }
+
+    const co2eq = multiplyBigIntFloat(
+      amount,
+      globalWarmingPotential.co2eqPerKg || 0,
+    );
+    return co2eq;
+  }
+
   public static async calculateGasAmount(
     inventoryValue: InventoryValue,
     activityValue: ActivityValue,
@@ -35,23 +58,36 @@ export default class CalculationService {
           }
           // TODO save amount to GasValue entry?
           const amount = BigInt(data[key]);
-
-          // TODO the rest of this could be shared for all formulas?
-          const globalWarmingPotential = gasToCO2Eqs.find(
-            (entry) => entry.gas === gasName,
-          );
-          if (!globalWarmingPotential) {
-            throw new createHttpError.NotFound(
-              `Could not find gas ${gasName} in GasToCO2Eq table`,
+          totalCO2e += this.calculateCO2eq(gasToCO2Eqs, gasName, amount);
+          return { gas: gasName, amount };
+        });
+        break;
+      case "activity-amount-times-emissions-factor":
+        // TODO add actvityAmount column to ActivityValue
+        // const activityAmount = activityValue.activityAmount || 0;
+        const activityAmount = activityValue.activityData
+          ? activityValue.activityData["activity_amount"] || 0
+          : 0;
+        gases = activityValue.gasValues.map((gasValue) => {
+          const emissionsFactor = gasValue.emissionsFactor;
+          if (emissionsFactor == null) {
+            throw new createHttpError.BadRequest(
+              "Missing emissions factor for activity",
             );
           }
-
-          const co2eq = multiplyBigIntFloat(
-            amount,
-            globalWarmingPotential.co2eqPerKg || 0,
+          if (emissionsFactor.emissionsPerActivity == null) {
+            throw new createHttpError.BadRequest(
+              `Emissions factor ${emissionsFactor.id} has no emissions per activity`,
+            );
+          }
+          const amount = activityAmount * emissionsFactor.emissionsPerActivity;
+          totalCO2e += this.calculateCO2eq(
+            gasToCO2Eqs,
+            gasValue.gas!,
+            BigInt(amount), // this rounds/ truncates!
           );
-          totalCO2e += co2eq;
-          return { gas: gasName, amount };
+
+          return { gas: gasValue.gas, amount };
         });
         break;
       default:

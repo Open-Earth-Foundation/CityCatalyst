@@ -1,3 +1,4 @@
+import CalculationService from "@/backend/CalculationService";
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import type { ActivityValue } from "@/models/ActivityValue";
@@ -29,10 +30,19 @@ export const POST = apiHandler(async (req, { params, session }) => {
         },
         { transaction },
       );
+      let inventoryValueId: string | undefined = body.inventoryValueId;
+      if (!inventoryValueId) {
+        // TODO create inventory value here
+        throw new createHttpError.NotImplemented(
+          "Creating InventoryValue from ActivityValue not yet implemented, so inventoryValueId is required currently",
+        );
+      }
+
       const activityValue = await db.models.ActivityValue.create(
         {
           ...body,
           datasourceId: dataSource.datasourceId,
+          inventoryValueId,
           id: randomUUID(),
         },
         { transaction },
@@ -64,6 +74,14 @@ export const POST = apiHandler(async (req, { params, session }) => {
           }
 
           delete gasValue.emissionsFactor;
+
+          if (gasValue.gasAmount == null) {
+            gasValue.gasAmount = CalculationService.calculateGasAmount(
+              inventoryValue,
+              activityValue,
+            );
+          }
+
           await db.models.GasValue.upsert(
             {
               ...gasValue,

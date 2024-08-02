@@ -31,12 +31,11 @@ import ActivityAccordion from "./activity-accordion";
 import ScopeUnavailable from "./scope-unavailable";
 import { ActivityDataScope } from "@/features/city/subsectorSlice";
 import { MANUAL_INPUT_HIERARCHY, Methodology } from "@/util/form-schema";
-import { ids } from "./ids";
 import MethodologyCard from "@/components/Cards/methodology-card";
 
 interface ActivityTabProps {
   t: TFunction;
-  subsectorId: string;
+  refNumber: string;
   isUnavailableChecked?: boolean;
   isMethodologySelected?: boolean;
   userActivities?: [];
@@ -51,7 +50,7 @@ interface ActivityTabProps {
 const ActivityTab: FC<ActivityTabProps> = ({
   t,
   userActivities,
-  subsectorId,
+  refNumber,
   areActivitiesLoading,
   totalConsumption,
   totalConsumptionUnit,
@@ -68,13 +67,13 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const [methodology, setMethodology] = useState<Methodology>();
 
   function getMethodologies() {
-    const refNumber = ids[subsectorId] + "." + (filteredScope.scope || 1);
+    const refNumberWithScope = refNumber + "." + (filteredScope.scope || 1);
     const methodologies =
-      MANUAL_INPUT_HIERARCHY[refNumber]?.methodologies || [];
+      MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.methodologies || [];
     const directMeasure = {
-      ...MANUAL_INPUT_HIERARCHY[refNumber]?.directMeasure,
+      ...MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.directMeasure,
       id:
-        MANUAL_INPUT_HIERARCHY[refNumber]?.directMeasure?.id ||
+        MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.directMeasure?.id ||
         "direct-measure", // adds a fallback generic id for direct measure
     };
     return { methodologies, directMeasure };

@@ -35,7 +35,7 @@ import MethodologyCard from "@/components/Cards/methodology-card";
 
 interface ActivityTabProps {
   t: TFunction;
-  refNumber: string;
+  referenceNumber: string;
   isUnavailableChecked?: boolean;
   isMethodologySelected?: boolean;
   userActivities?: [];
@@ -50,7 +50,7 @@ interface ActivityTabProps {
 const ActivityTab: FC<ActivityTabProps> = ({
   t,
   userActivities,
-  refNumber,
+  referenceNumber,
   areActivitiesLoading,
   totalConsumption,
   totalConsumptionUnit,
@@ -67,14 +67,13 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const [methodology, setMethodology] = useState<Methodology>();
 
   function getMethodologies() {
-    const refNumberWithScope = refNumber + "." + (filteredScope.scope || 1);
-    const methodologies =
-      MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.methodologies || [];
+    const refNumberWithScope =
+      referenceNumber + "." + (filteredScope.scope || 1);
+    const hierarchy = MANUAL_INPUT_HIERARCHY[refNumberWithScope] || {};
+    const methodologies = hierarchy?.methodologies || [];
     const directMeasure = {
-      ...MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.directMeasure,
-      id:
-        MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.directMeasure?.id ||
-        "direct-measure", // adds a fallback generic id for direct measure
+      ...hierarchy.directMeasure,
+      id: hierarchy.directMeasure?.id || "direct-measure", // adds a fallback generic id for direct measure
     };
     return { methodologies, directMeasure };
   }
@@ -465,18 +464,20 @@ const ActivityTab: FC<ActivityTabProps> = ({
                           />
                         ),
                       )}
-                      <MethodologyCard
-                        id={directMeasure.id}
-                        key={directMeasure.id}
-                        isSelected={selectedMethodology === directMeasure.id}
-                        t={t}
-                        handleCardSelect={handleCardSelect(
-                          false,
-                          ["emissions-data"],
-                          directMeasure.id,
-                        )}
-                        disabled={false}
-                      />
+                      {methodologies.length > 0 ? ( // hide this card until other methodologies can also load
+                        <MethodologyCard
+                          id={directMeasure.id}
+                          key={directMeasure.id}
+                          isSelected={selectedMethodology === directMeasure.id}
+                          t={t}
+                          handleCardSelect={handleCardSelect(
+                            false,
+                            ["emissions-data"],
+                            directMeasure.id,
+                          )}
+                          disabled={false}
+                        />
+                      ) : null}
                     </Box>
                   </Box>
                 )}

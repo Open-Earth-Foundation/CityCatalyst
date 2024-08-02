@@ -24,7 +24,7 @@ import {
   MdRefresh,
 } from "react-icons/md";
 import { RefObject, useRef } from "react";
-import { useCreateThreadIdMutation } from "@/services/api";
+import { api, useCreateThreadIdMutation } from "@/services/api";
 import { AssistantStream } from "openai/lib/AssistantStream";
 // @ts-expect-error - no types for this yet
 import { AssistantStreamEvent } from "openai/resources/beta/assistants/assistants";
@@ -76,21 +76,6 @@ function useEnterSubmit(): {
   return { formRef, onKeyDown: handleKeyDown };
 }
 
-////////////////////
-// Function calls //
-////////////////////
-
-const functionCallHandler = async (call: any) => {
-  if (call?.function?.name !== "query_global_api") return;
-  const args = JSON.parse(call.function.arguments);
-  // TODO: Add proper function response
-  //const data = getWeather(args.location);
-  //setWeatherData(data);
-  // Moch data
-  const data = "CO2, SF6, SF8, and Methane of doom";
-  return JSON.stringify(data);
-};
-
 export default function ChatBot({
   inputRef,
   t,
@@ -105,7 +90,9 @@ export default function ChatBot({
   const [userInput, setUserInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputDisabled, setInputDisabled] = useState(false);
-  const [createThreadId, { data: threadData }] = useCreateThreadIdMutation();
+  const [createThreadId, { data: threadIdData }] = useCreateThreadIdMutation();
+  const [getAllDataSources, { data, error, isLoading }] =
+    api.useLazyGetAllDataSourcesQuery();
 
   // Automatically scroll to bottom of chat
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -138,6 +125,29 @@ export default function ChatBot({
       handleReadableStream(stream);
     } catch (err) {
       console.error("Failed to send message:", err);
+    }
+  };
+
+  ////////////////////
+  // Function calls //
+  ////////////////////
+
+  const functionCallHandler = async (call: any) => {
+    if (call?.function?.name === "get_all_datasources") {
+      console.log("function call get data sources");
+
+      const { data, error, isLoading } = await getAllDataSources({
+        inventoryId,
+      });
+
+      console.log(data);
+      return JSON.stringify(data);
+    } else if (call?.function?.name === "query_global_api") {
+      console.log("function call generic");
+      const mockData = "CO2, SF6, SF8, and Methane of doom";
+      return mockData; // no stringify needed since its a string already
+    } else {
+      return JSON.stringify({ status: "no function identified to call" });
     }
   };
 
@@ -215,7 +225,7 @@ export default function ChatBot({
     // }
   };
 
-  // handleRunCompleted - re-enable the input form
+  // Re-enable the input form
   const handleRunCompleted = () => {
     setInputDisabled(false);
   };
@@ -229,13 +239,17 @@ export default function ChatBot({
     const toolCallOutputs = await Promise.all(
       toolCalls.map(async (toolCall: any) => {
         const result = await functionCallHandler(toolCall);
+
+        console.log(result);
         return { output: result, tool_call_id: toolCall.id };
       }),
     );
+    console.log(toolCallOutputs);
     setInputDisabled(true);
     submitActionResult(threadId, runId, toolCallOutputs);
   };
 
+  // Here all the streaming events get processed
   const handleReadableStream = (stream: AssistantStream) => {
     // messages
     stream.on("textCreated", handleTextCreated);
@@ -276,10 +290,10 @@ export default function ChatBot({
 
   // Set threadId once the value from API call is returned to threadData
   useEffect(() => {
-    if (threadData) {
-      setThreadId(threadData);
+    if (threadIdData) {
+      setThreadId(threadIdData);
     }
-  }, [threadData]);
+  }, [threadIdData]);
 
   // Setting the initial message to display for the user
   // This message will not be passed to the assistant api

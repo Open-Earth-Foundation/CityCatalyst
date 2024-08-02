@@ -26,7 +26,40 @@ import {
 } from "react-icons/md";
 import { ScrollAnchor } from "./scroll-anchor";
 import { RefObject, useRef } from "react";
-import { api, useCreateThreadIdMutation } from "@/services/api";
+import {
+  api,
+  useCreateThreadIdMutation,
+  useGetFileQuery,
+} from "@/services/api";
+
+import { AssistantStream } from "openai/lib/AssistantStream";
+import { AssistantStreamEvent } from "openai/resources/beta/assistants/assistants";
+
+type MessageProps = {
+  role: "user" | "assistant" | "code";
+  text: string;
+};
+
+const UserMessage = ({ text }: { text: string }) => {
+  return <div>{text}</div>;
+};
+
+const AssistantMessage = ({ text }: { text: string }) => {
+  return <div>{text}</div>;
+};
+
+const Message = ({ role, text }: MessageProps) => {
+  switch (role) {
+    case "user":
+      return <UserMessage text={text} />;
+    case "assistant":
+      return <AssistantMessage text={text} />;
+    case "code":
+    //return <CodeMessage text={text} />;
+    default:
+      return null;
+  }
+};
 
 function useEnterSubmit(): {
   formRef: RefObject<HTMLFormElement>;
@@ -49,6 +82,19 @@ function useEnterSubmit(): {
   return { formRef, onKeyDown: handleKeyDown };
 }
 
+/////////////////////////////////
+// Function caller functions
+/////////////////////////////////
+
+const functionCallHandler = async (call) => {
+  if (call?.function?.name !== "query_global_api") return;
+  const args = JSON.parse(call.function.arguments);
+  //const data = getWeather(args.location);
+  //setWeatherData(data);
+  const data = "CO2, SF6, SF8, and Methane of doom";
+  return JSON.stringify(data);
+};
+
 export default function ChatBot({
   inputRef,
   t,
@@ -60,10 +106,136 @@ export default function ChatBot({
   inventoryId: string;
 }) {
   const [threadId, setThreadId] = useState("");
+  const [userInput, setUserInput] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [inputDisabled, setInputDisabled] = useState(false);
   const [createThreadId, { data: threadData }] = useCreateThreadIdMutation();
+  //const [getFile, { data: file }] = useGetFileQuery();
+
+  // TODO: Convert to Redux
+  const sendMessage = async (text: string) => {
+    const response = await fetch(`/api/v0/assistants/threads/messages`, {
+      method: "POST",
+      body: JSON.stringify({
+        threadId: threadId,
+        content: text,
+      }),
+    });
+    const stream = AssistantStream.fromReadableStream(response.body);
+    handleReadableStream(stream);
+  };
+
+  const submitActionResult = async (
+    threadId: string,
+    runId: string,
+    toolCallOutputs: object,
+  ) => {
+    const response = await fetch(`/api/v0/assistants/threads/actions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        threadId: threadId,
+        runId: runId,
+        toolCallOutputs: toolCallOutputs,
+      }),
+    });
+    const stream = AssistantStream.fromReadableStream(response.body);
+    handleReadableStream(stream);
+  };
+
+  const handleSubmit = (e) => {
+    console.log("handle submit");
+    e.preventDefault();
+    if (!userInput.trim()) return;
+    sendMessage(userInput);
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { role: "user", text: userInput },
+    ]);
+    setUserInput("");
+    setInputDisabled(true);
+    // scrollToBottom();
+  };
+
+  ////////////////////////////////
+  // Stream Event Handlers
+  ////////////////////////////////
+
+  // textCreated - create new assistant message
+  const handleTextCreated = () => {
+    appendMessage("assistant", "");
+  };
+
+  // textDelta - append text to last assistant message
+  const handleTextDelta = (delta) => {
+    if (delta.value != null) {
+      appendToLastMessage(delta.value);
+    }
+    if (delta.annotations != null) {
+      annotateLastMessage(delta.annotations);
+      console.log(messages);
+    }
+  };
+
+  // handleRunCompleted - re-enable the input form
+  const handleRunCompleted = () => {
+    console.log("run completed");
+    setInputDisabled(false);
+  };
+
+  const handleRequiresAction = async (
+    event: AssistantStreamEvent.ThreadRunRequiresAction,
+  ) => {
+    const runId = event.data.id;
+    const toolCalls = event.data.required_action.submit_tool_outputs.tool_calls;
+
+    console.log(toolCalls);
+    // loop over tool calls and call function handler
+
+    // Mock tool call output
+    // const toolCallOutputs = [
+    //   {
+    //     output: "CO2, SF6, SF8, and Methane of doom",
+    //     tool_call_id: toolCalls[0].id,
+    //   },
+    // ];
+
+    const toolCallOutputs = await Promise.all(
+      toolCalls.map(async (toolCall) => {
+        const result = await functionCallHandler(toolCall);
+        return { output: result, tool_call_id: toolCall.id };
+      }),
+    );
+    setInputDisabled(true);
+    submitActionResult(threadId, runId, toolCallOutputs);
+  };
+
+  const handleReadableStream = (stream: AssistantStream) => {
+    // messages
+    //console.log("Stream Handler");
+    //console.log(stream);
+    stream.on("textCreated", handleTextCreated);
+    stream.on("textDelta", handleTextDelta);
+
+    // // image
+    // stream.on("imageFileDone", handleImageFileDone);
+
+    // // code interpreter
+    // stream.on("toolCallCreated", toolCallCreated);
+    // stream.on("toolCallDelta", toolCallDelta);
+
+    // events without helpers yet (e.g. requires_action and run.done)
+    stream.on("event", (event) => {
+      if (event.event === "thread.run.requires_action")
+        handleRequiresAction(event);
+      if (event.event === "thread.run.completed") handleRunCompleted();
+    });
+  };
 
   // Function to create the threadId with initial message
-  const handleSubmit = async () => {
+  const createThread = async () => {
     try {
       await createThreadId({
         inventoryId: inventoryId,
@@ -76,7 +248,7 @@ export default function ChatBot({
 
   // Creating the thread id for the given inventory on initial render
   useEffect(() => {
-    handleSubmit();
+    createThread();
   }, []); // Empty dependency array means this effect runs only once,
   // HOWEVER currently it always runs twice
 
@@ -87,18 +259,18 @@ export default function ChatBot({
     }
   }, [threadData]);
 
-  const {
-    status,
-    input,
-    messages,
-    submitMessage,
-    setMessages,
-    handleInputChange,
-    append,
-  } = useAssistant({
-    api: `/api/v0/assistants/threads/messages`,
-    threadId: threadId,
-  });
+  // const {
+  //   status,
+  //   input,
+  //   messages,
+  //   submitMessage,
+  //   setMessages,
+  //   handleInputChange,
+  //   append,
+  // } = useAssistant({
+  //   api: `/api/v0/assistants/threads/messages`,
+  //   threadId: threadId,
+  // });
 
   // Setting the initial message to display for the user
   // This message will not be passed to the assistant api
@@ -107,7 +279,6 @@ export default function ChatBot({
   useEffect(() => {
     setMessages([
       {
-        id: "-1",
         role: "assistant",
         content: t("initial-message"),
       },
@@ -135,12 +306,77 @@ export default function ChatBot({
     },
   ];
 
+  //////////////////////
+  // Utility Helpers
+  //////////////////////
+
+  const appendMessage = (role, text: string) => {
+    console.log("role, text");
+    console.log(role);
+    console.log(text);
+    setMessages((prevMessages) => [...prevMessages, { role, text }]);
+  };
+
+  const appendToLastMessage = (text: string) => {
+    setMessages((prevMessages) => {
+      const lastMessage = prevMessages[prevMessages.length - 1];
+      const updatedLastMessage = {
+        ...lastMessage,
+        text: lastMessage.text + text,
+      };
+      return [...prevMessages.slice(0, -1), updatedLastMessage];
+    });
+  };
+
+  const annotateLastMessage = async (annotations) => {
+    setMessages((prevMessages) => {
+      const lastMessage = prevMessages[prevMessages.length - 1];
+      const updatedLastMessage = {
+        ...lastMessage,
+      };
+      annotations.forEach(async (annotation) => {
+        console.log("annotations");
+        console.log(annotation);
+        if (annotation.type === "file_citation") {
+          const fileId = annotation.file_citation.file_id;
+
+          try {
+            const response = await fetch(`/api/v0/assistants/files/${fileId}`, {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log("File data:", data);
+
+            updatedLastMessage.text = updatedLastMessage.text.replaceAll(
+              annotation.text,
+              `【${data.file.filename}】`,
+            );
+          } catch (error) {
+            console.error("Error fetching file:", error);
+          }
+        }
+      });
+      console.log(updatedLastMessage);
+      return [...prevMessages.slice(0, -1), updatedLastMessage];
+    });
+  };
+
   return (
     <div className="flex flex-col w-full stretch">
       <div
         className="overflow-y-auto max-h-96 space-y-4"
         ref={messagesWrapperRef}
       >
+        {messages.map((msg, index) => (
+          <Message key={index} role={msg.role} text={msg.text} />
+        ))}
         {messages.map((m, i) => {
           const isUser = m.role === "user";
           return (
@@ -237,12 +473,12 @@ export default function ChatBot({
         {suggestions.map((suggestion, i) => (
           <Button
             key={i}
-            onClick={() => {
-              append({
-                content: suggestion.message,
-                role: "user",
-              });
-            }}
+            // onClick={() => {
+            //   append({
+            //     content: suggestion.message,
+            //     role: "user",
+            //   });
+            // }}
             bg="background.overlay"
             color="content.alternative"
             py={2}
@@ -255,14 +491,15 @@ export default function ChatBot({
             fontWeight="400"
             whiteSpace="nowrap"
             display="inline-block"
-            isDisabled={status === "in_progress"}
+            isDisabled={inputDisabled}
           >
             {suggestion.preview}
           </Button>
         ))}
       </div>
 
-      <form onSubmit={submitMessage} ref={formRef}>
+      {/* <form onSubmit={submitMessage} ref={formRef}> */}
+      <form onSubmit={handleSubmit} ref={formRef}>
         <HStack mt={1}>
           {/*<IconButton
             variant="ghost"
@@ -274,9 +511,9 @@ export default function ChatBot({
             h="80px"
             ref={inputRef}
             className="flex-grow w-full p-4"
-            value={input}
+            value={userInput}
             placeholder={t("ask-assistant")}
-            onChange={handleInputChange}
+            onChange={(e) => setUserInput(e.target.value)} //{handleInputChange}
             onKeyDown={onKeyDown}
           />
           <IconButton
@@ -285,7 +522,7 @@ export default function ChatBot({
             icon={<MdOutlineSend size={24} />}
             color="content.tertiary"
             aria-label="Send message"
-            isDisabled={status === "in_progress"}
+            isDisabled={inputDisabled}
           />
         </HStack>
       </form>

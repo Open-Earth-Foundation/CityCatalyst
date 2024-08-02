@@ -26,19 +26,21 @@ import {
 } from "react-icons/md";
 import { ScrollAnchor } from "./scroll-anchor";
 import { RefObject, useRef } from "react";
-import {
-  api,
-  useCreateThreadIdMutation,
-  useGetFileQuery,
-} from "@/services/api";
+import { api, useCreateThreadIdMutation } from "@/services/api";
 
 import { AssistantStream } from "openai/lib/AssistantStream";
+// @ts-expect-error - no types for this yet
 import { AssistantStreamEvent } from "openai/resources/beta/assistants/assistants";
 
-type MessageProps = {
+interface Message {
   role: "user" | "assistant" | "code";
   text: string;
-};
+}
+
+// type MessageProps = {
+//   role: "user" | "assistant" | "code";
+//   text: string;
+// };
 
 const UserMessage = ({ text }: { text: string }) => {
   return <div>{text}</div>;
@@ -48,7 +50,7 @@ const AssistantMessage = ({ text }: { text: string }) => {
   return <div>{text}</div>;
 };
 
-const Message = ({ role, text }: MessageProps) => {
+const Message = ({ role, text }: Message) => {
   switch (role) {
     case "user":
       return <UserMessage text={text} />;
@@ -86,7 +88,7 @@ function useEnterSubmit(): {
 // Function caller functions
 /////////////////////////////////
 
-const functionCallHandler = async (call) => {
+const functionCallHandler = async (call: any) => {
   if (call?.function?.name !== "query_global_api") return;
   const args = JSON.parse(call.function.arguments);
   //const data = getWeather(args.location);
@@ -107,22 +109,35 @@ export default function ChatBot({
 }) {
   const [threadId, setThreadId] = useState("");
   const [userInput, setUserInput] = useState("");
-  const [messages, setMessages] = useState([]);
+  //const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputDisabled, setInputDisabled] = useState(false);
   const [createThreadId, { data: threadData }] = useCreateThreadIdMutation();
   //const [getFile, { data: file }] = useGetFileQuery();
 
   // TODO: Convert to Redux
   const sendMessage = async (text: string) => {
-    const response = await fetch(`/api/v0/assistants/threads/messages`, {
-      method: "POST",
-      body: JSON.stringify({
-        threadId: threadId,
-        content: text,
-      }),
-    });
-    const stream = AssistantStream.fromReadableStream(response.body);
-    handleReadableStream(stream);
+    try {
+      const response = await fetch(`/api/v0/assistants/threads/messages`, {
+        method: "POST",
+        body: JSON.stringify({
+          threadId: threadId,
+          content: text,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      if (response.body == null) {
+        throw new Error("Response body is null");
+      }
+
+      const stream = AssistantStream.fromReadableStream(response.body);
+      handleReadableStream(stream);
+    } catch (err) {
+      console.error("Failed to send message:", err);
+    }
   };
 
   const submitActionResult = async (
@@ -130,22 +145,34 @@ export default function ChatBot({
     runId: string,
     toolCallOutputs: object,
   ) => {
-    const response = await fetch(`/api/v0/assistants/threads/actions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        threadId: threadId,
-        runId: runId,
-        toolCallOutputs: toolCallOutputs,
-      }),
-    });
-    const stream = AssistantStream.fromReadableStream(response.body);
-    handleReadableStream(stream);
+    try {
+      const response = await fetch(`/api/v0/assistants/threads/actions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          threadId: threadId,
+          runId: runId,
+          toolCallOutputs: toolCallOutputs,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      if (response.body == null) {
+        throw new Error("Response body is null");
+      }
+
+      const stream = AssistantStream.fromReadableStream(response.body);
+      handleReadableStream(stream);
+    } catch (err) {
+      console.error("Failed to submit tool output:", err);
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     console.log("handle submit");
     e.preventDefault();
     if (!userInput.trim()) return;
@@ -169,7 +196,7 @@ export default function ChatBot({
   };
 
   // textDelta - append text to last assistant message
-  const handleTextDelta = (delta) => {
+  const handleTextDelta = (delta: any) => {
     if (delta.value != null) {
       appendToLastMessage(delta.value);
     }
@@ -203,7 +230,7 @@ export default function ChatBot({
     // ];
 
     const toolCallOutputs = await Promise.all(
-      toolCalls.map(async (toolCall) => {
+      toolCalls.map(async (toolCall: any) => {
         const result = await functionCallHandler(toolCall);
         return { output: result, tool_call_id: toolCall.id };
       }),
@@ -280,7 +307,7 @@ export default function ChatBot({
     setMessages([
       {
         role: "assistant",
-        content: t("initial-message"),
+        text: t("initial-message"),
       },
     ]);
   }, []);
@@ -310,7 +337,7 @@ export default function ChatBot({
   // Utility Helpers
   //////////////////////
 
-  const appendMessage = (role, text: string) => {
+  const appendMessage = (role: Message["role"], text: string) => {
     console.log("role, text");
     console.log(role);
     console.log(text);
@@ -328,13 +355,13 @@ export default function ChatBot({
     });
   };
 
-  const annotateLastMessage = async (annotations) => {
+  const annotateLastMessage = async (annotations: any) => {
     setMessages((prevMessages) => {
       const lastMessage = prevMessages[prevMessages.length - 1];
       const updatedLastMessage = {
         ...lastMessage,
       };
-      annotations.forEach(async (annotation) => {
+      annotations.forEach(async (annotation: any) => {
         console.log("annotations");
         console.log(annotation);
         if (annotation.type === "file_citation") {

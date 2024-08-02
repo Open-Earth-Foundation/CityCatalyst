@@ -1,7 +1,7 @@
 import { Badge, Box, Card, Radio, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC, useState } from "react";
-import { Methodology } from "@/util/form-schema";
+import type { Methodology } from "@/util/form-schema";
 
 interface MethodologyCardProps {
   id: string;

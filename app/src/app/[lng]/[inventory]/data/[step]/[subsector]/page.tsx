@@ -82,7 +82,6 @@ function SubSectorPage({
   const subSectorData = sectorData?.subSectors.find(
     (subsectorItem) => subsectorItem.subsectorId === subsector,
   );
-
   const getSectorName = (currentStep: string) => {
     switch (currentStep) {
       case "1":
@@ -115,19 +114,6 @@ function SubSectorPage({
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch(`/api/v0/subsector/${subsector}`);
-      if (!res.ok) {
-        throw new Error("Failed to fetch data");
-      }
-      const data = await res.json();
-      setRefNumber(data.data.referenceNumber);
-    };
-
-    fetchData();
   }, []);
 
   const MotionBox = motion(Box);
@@ -330,13 +316,13 @@ function SubSectorPage({
             </MotionTabList>
 
             <TabPanels>
-              {isLoading || !refNumber ? (
+              {isLoading ? (
                 <LoadingState />
               ) : (
                 scopes?.map((scope) => (
                   <ActivityTab
-                    refNumber={refNumber}
-                    key={scope.scope}
+                    referenceNumber={subSectorData?.referenceNumber}
+                    key={subSectorData?.referenceNumber}
                     filteredScope={scope}
                     t={t}
                     inventoryId={inventoryId}

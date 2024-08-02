@@ -80,14 +80,13 @@ export default class CalculationService {
               `Emissions factor ${emissionsFactor.id} has no emissions per activity`,
             );
           }
-          const amount = activityAmount * emissionsFactor.emissionsPerActivity;
-          totalCO2e += this.calculateCO2eq(
-            gasToCO2Eqs,
-            gasValue.gas!,
-            BigInt(amount), // this rounds/ truncates!
+          // this rounds/ truncates!
+          const amount = BigInt(
+            activityAmount * emissionsFactor.emissionsPerActivity,
           );
+          totalCO2e += this.calculateCO2eq(gasToCO2Eqs, gasValue.gas!, amount);
 
-          return { gas: gasValue.gas, amount };
+          return { gas: gasValue.gas!, amount };
         });
         break;
       default:

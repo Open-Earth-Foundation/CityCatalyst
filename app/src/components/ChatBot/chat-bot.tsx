@@ -13,7 +13,6 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react";
-import { useAssistant } from "ai/react";
 import { TFunction } from "i18next";
 import { BsStars } from "react-icons/bs";
 import {
@@ -24,10 +23,8 @@ import {
   MdOutlineThumbUp,
   MdRefresh,
 } from "react-icons/md";
-import { ScrollAnchor } from "./scroll-anchor";
 import { RefObject, useRef } from "react";
-import { api, useCreateThreadIdMutation } from "@/services/api";
-
+import { useCreateThreadIdMutation } from "@/services/api";
 import { AssistantStream } from "openai/lib/AssistantStream";
 // @ts-expect-error - no types for this yet
 import { AssistantStreamEvent } from "openai/resources/beta/assistants/assistants";
@@ -37,31 +34,26 @@ interface Message {
   text: string;
 }
 
-// type MessageProps = {
-//   role: "user" | "assistant" | "code";
-//   text: string;
+// const UserMessage = ({ text }: { text: string }) => {
+//   return <div>{text}</div>;
 // };
 
-const UserMessage = ({ text }: { text: string }) => {
-  return <div>{text}</div>;
-};
+// const AssistantMessage = ({ text }: { text: string }) => {
+//   return <div>{text}</div>;
+// };
 
-const AssistantMessage = ({ text }: { text: string }) => {
-  return <div>{text}</div>;
-};
-
-const Message = ({ role, text }: Message) => {
-  switch (role) {
-    case "user":
-      return <UserMessage text={text} />;
-    case "assistant":
-      return <AssistantMessage text={text} />;
-    case "code":
-    //return <CodeMessage text={text} />;
-    default:
-      return null;
-  }
-};
+// const Message = ({ role, text }: Message) => {
+//   switch (role) {
+//     case "user":
+//       return <UserMessage text={text} />;
+//     case "assistant":
+//       return <AssistantMessage text={text} />;
+//     case "code":
+//     //return <CodeMessage text={text} />;
+//     default:
+//       return null;
+//   }
+// };
 
 function useEnterSubmit(): {
   formRef: RefObject<HTMLFormElement>;
@@ -84,15 +76,17 @@ function useEnterSubmit(): {
   return { formRef, onKeyDown: handleKeyDown };
 }
 
-/////////////////////////////////
-// Function caller functions
-/////////////////////////////////
+////////////////////
+// Function calls //
+////////////////////
 
 const functionCallHandler = async (call: any) => {
   if (call?.function?.name !== "query_global_api") return;
   const args = JSON.parse(call.function.arguments);
+  // TODO: Add proper function response
   //const data = getWeather(args.location);
   //setWeatherData(data);
+  // Moch data
   const data = "CO2, SF6, SF8, and Methane of doom";
   return JSON.stringify(data);
 };
@@ -109,11 +103,18 @@ export default function ChatBot({
 }) {
   const [threadId, setThreadId] = useState("");
   const [userInput, setUserInput] = useState("");
-  //const [messages, setMessages] = useState([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputDisabled, setInputDisabled] = useState(false);
   const [createThreadId, { data: threadData }] = useCreateThreadIdMutation();
-  //const [getFile, { data: file }] = useGetFileQuery();
+
+  // Automatically scroll to bottom of chat
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   // TODO: Convert to Redux
   const sendMessage = async (text: string) => {
@@ -173,7 +174,6 @@ export default function ChatBot({
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    console.log("handle submit");
     e.preventDefault();
     if (!userInput.trim()) return;
     sendMessage(userInput);
@@ -183,32 +183,40 @@ export default function ChatBot({
     ]);
     setUserInput("");
     setInputDisabled(true);
-    // scrollToBottom();
+    scrollToBottom();
   };
 
-  ////////////////////////////////
-  // Stream Event Handlers
-  ////////////////////////////////
+  const handleSuggestionClick = (message: string) => {
+    sendMessage(message);
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { role: "user", text: message },
+    ]);
+    setInputDisabled(true);
+  };
 
-  // textCreated - create new assistant message
+  ////////////////////////////
+  // Stream Event Handlers //
+  ///////////////////////////
+
+  // Create new assistant message
   const handleTextCreated = () => {
     appendMessage("assistant", "");
   };
 
-  // textDelta - append text to last assistant message
+  // Append text to last assistant message
   const handleTextDelta = (delta: any) => {
     if (delta.value != null) {
       appendToLastMessage(delta.value);
     }
-    if (delta.annotations != null) {
-      annotateLastMessage(delta.annotations);
-      console.log(messages);
-    }
+    // TODO: Currently not working properly
+    // if (delta.annotations != null) {
+    //   annotateLastMessage(delta.annotations);
+    // }
   };
 
   // handleRunCompleted - re-enable the input form
   const handleRunCompleted = () => {
-    console.log("run completed");
     setInputDisabled(false);
   };
 
@@ -217,17 +225,6 @@ export default function ChatBot({
   ) => {
     const runId = event.data.id;
     const toolCalls = event.data.required_action.submit_tool_outputs.tool_calls;
-
-    console.log(toolCalls);
-    // loop over tool calls and call function handler
-
-    // Mock tool call output
-    // const toolCallOutputs = [
-    //   {
-    //     output: "CO2, SF6, SF8, and Methane of doom",
-    //     tool_call_id: toolCalls[0].id,
-    //   },
-    // ];
 
     const toolCallOutputs = await Promise.all(
       toolCalls.map(async (toolCall: any) => {
@@ -241,8 +238,6 @@ export default function ChatBot({
 
   const handleReadableStream = (stream: AssistantStream) => {
     // messages
-    //console.log("Stream Handler");
-    //console.log(stream);
     stream.on("textCreated", handleTextCreated);
     stream.on("textDelta", handleTextDelta);
 
@@ -286,19 +281,6 @@ export default function ChatBot({
     }
   }, [threadData]);
 
-  // const {
-  //   status,
-  //   input,
-  //   messages,
-  //   submitMessage,
-  //   setMessages,
-  //   handleInputChange,
-  //   append,
-  // } = useAssistant({
-  //   api: `/api/v0/assistants/threads/messages`,
-  //   threadId: threadId,
-  // });
-
   // Setting the initial message to display for the user
   // This message will not be passed to the assistant api
   // It will be set additionally when creating the threadId
@@ -333,14 +315,11 @@ export default function ChatBot({
     },
   ];
 
-  //////////////////////
-  // Utility Helpers
-  //////////////////////
+  /////////////////////
+  // Utility Helpers //
+  /////////////////////
 
   const appendMessage = (role: Message["role"], text: string) => {
-    console.log("role, text");
-    console.log(role);
-    console.log(text);
     setMessages((prevMessages) => [...prevMessages, { role, text }]);
   };
 
@@ -355,6 +334,7 @@ export default function ChatBot({
     });
   };
 
+  // TODO: Fix annotations
   const annotateLastMessage = async (annotations: any) => {
     setMessages((prevMessages) => {
       const lastMessage = prevMessages[prevMessages.length - 1];
@@ -362,8 +342,6 @@ export default function ChatBot({
         ...lastMessage,
       };
       annotations.forEach(async (annotation: any) => {
-        console.log("annotations");
-        console.log(annotation);
         if (annotation.type === "file_citation") {
           const fileId = annotation.file_citation.file_id;
 
@@ -379,7 +357,6 @@ export default function ChatBot({
             }
 
             const data = await response.json();
-            console.log("File data:", data);
 
             updatedLastMessage.text = updatedLastMessage.text.replaceAll(
               annotation.text,
@@ -390,7 +367,6 @@ export default function ChatBot({
           }
         }
       });
-      console.log(updatedLastMessage);
       return [...prevMessages.slice(0, -1), updatedLastMessage];
     });
   };
@@ -401,13 +377,10 @@ export default function ChatBot({
         className="overflow-y-auto max-h-96 space-y-4"
         ref={messagesWrapperRef}
       >
-        {messages.map((msg, index) => (
-          <Message key={index} role={msg.role} text={msg.text} />
-        ))}
         {messages.map((m, i) => {
           const isUser = m.role === "user";
           return (
-            <HStack key={m.id} align="top">
+            <HStack key={i} align="top">
               <Box
                 w={9}
                 h={9}
@@ -430,7 +403,7 @@ export default function ChatBot({
                   lineHeight="24px"
                   fontSize="16px"
                 >
-                  {m.content}
+                  {m.text}
                 </Text>
                 {!isUser &&
                   i === messages.length - 1 &&
@@ -451,7 +424,7 @@ export default function ChatBot({
                           color="content.tertiary"
                         /> */}
                         <IconButton
-                          onClick={() => copyToClipboard(m.content)}
+                          onClick={() => copyToClipboard(m.text)}
                           variant="ghost"
                           icon={
                             <Icon
@@ -488,10 +461,11 @@ export default function ChatBot({
             </HStack>
           );
         })}
-        <ScrollAnchor
+        {/* <ScrollAnchor
           trackVisibility={status === "in_progress"}
           rootRef={messagesWrapperRef}
-        />
+        /> */}
+        <div ref={messagesEndRef} />
       </div>
 
       <Divider mt={2} mb={6} borderColor="border.neutral" />
@@ -500,12 +474,9 @@ export default function ChatBot({
         {suggestions.map((suggestion, i) => (
           <Button
             key={i}
-            // onClick={() => {
-            //   append({
-            //     content: suggestion.message,
-            //     role: "user",
-            //   });
-            // }}
+            onClick={() => {
+              handleSuggestionClick(suggestion.message);
+            }}
             bg="background.overlay"
             color="content.alternative"
             py={2}
@@ -525,7 +496,6 @@ export default function ChatBot({
         ))}
       </div>
 
-      {/* <form onSubmit={submitMessage} ref={formRef}> */}
       <form onSubmit={handleSubmit} ref={formRef}>
         <HStack mt={1}>
           {/*<IconButton
@@ -540,7 +510,7 @@ export default function ChatBot({
             className="flex-grow w-full p-4"
             value={userInput}
             placeholder={t("ask-assistant")}
-            onChange={(e) => setUserInput(e.target.value)} //{handleInputChange}
+            onChange={(e) => setUserInput(e.target.value)}
             onKeyDown={onKeyDown}
           />
           <IconButton

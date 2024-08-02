@@ -47,7 +47,7 @@ function SubSectorPage({
 
   const [selectedTab, setSelectedTab] = useState(1); // sector ID (1/2/3)
   const [selectedScope, setSelectedScope] = useState(1);
-
+  const [refNumber, setRefNumber] = useState();
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
   const defaultInventoryId = userInfo?.defaultInventoryId;
@@ -115,6 +115,19 @@ function SubSectorPage({
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch(`/api/v0/subsector/${subsector}`);
+      if (!res.ok) {
+        throw new Error("Failed to fetch data");
+      }
+      const data = await res.json();
+      setRefNumber(data.data.referenceNumber);
+    };
+
+    fetchData();
   }, []);
 
   const MotionBox = motion(Box);
@@ -317,12 +330,12 @@ function SubSectorPage({
             </MotionTabList>
 
             <TabPanels>
-              {isLoading ? (
+              {isLoading || !refNumber ? (
                 <LoadingState />
               ) : (
                 scopes?.map((scope) => (
                   <ActivityTab
-                    subsectorId={subsector}
+                    refNumber={refNumber}
                     key={scope.scope}
                     filteredScope={scope}
                     t={t}

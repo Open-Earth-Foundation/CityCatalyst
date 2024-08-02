@@ -6,10 +6,10 @@ import { DataSource, DataSourceId } from "./DataSource";
 
 export interface ActivityValueAttributes {
   id: string;
-  activityData?: object;
+  activityData?: Record<string, any>;
   inventoryValueId?: string;
   datasourceId?: string;
-  metadata?: object;
+  metadata?: Record<string, any>;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -32,10 +32,10 @@ export class ActivityValue
   implements ActivityValueAttributes
 {
   id!: string;
-  activityData?: object;
+  activityData?: Record<string, any>;
   inventoryValueId?: string;
   datasourceId?: string;
-  metadata?: object;
+  metadata?: Record<string, any>;
   created?: Date;
   lastUpdated?: Date;
 

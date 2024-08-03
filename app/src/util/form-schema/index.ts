@@ -26,6 +26,8 @@ export interface Methodology {
   id: string;
   disabled?: boolean;
   activities?: Activity[];
+  suggestedActivitiesId?: string;
+  suggestedActivities?: Activity[];
   inputRequired?: string[];
 }
 

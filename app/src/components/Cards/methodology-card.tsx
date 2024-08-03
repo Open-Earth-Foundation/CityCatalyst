@@ -4,41 +4,30 @@ import React, { FC, useState } from "react";
 import type { Methodology } from "@/util/form-schema";
 
 interface MethodologyCardProps {
-  id: string;
-  inputRequired?: string[];
+  methodology: Methodology;
   isSelected: boolean;
-  disabled: boolean;
   t: TFunction;
   handleCardSelect: (methodologyId: Methodology) => void;
 }
 
 const MethodologyCard: FC<MethodologyCardProps> = ({
-  id,
-  inputRequired,
-  disabled,
+  methodology,
   t,
   handleCardSelect = (_methodology: Methodology) => {},
 }) => {
   const [isSelected, setIsSelected] = useState(false);
   const handleRadioChange = () => {
     setIsSelected(true);
-    handleCardSelect({
-      disabled,
-      inputRequired,
-      id: id,
-    });
+    handleCardSelect(methodology);
   };
 
   const handleCardClick = () => {
     if (!isSelected) {
-      handleCardSelect({
-        disabled,
-        inputRequired,
-        id: id,
-      });
+      handleCardSelect(methodology);
     }
     setIsSelected(!isSelected);
   };
+  const isMethodologyDisabled = methodology.disabled;
   return (
     <Card
       borderWidth="1px"
@@ -49,23 +38,23 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
       gap="16px"
       shadow="none"
       display="flex"
-      opacity={disabled ? ".7" : ""}
+      opacity={isMethodologyDisabled ? ".7" : ""}
       h="auto"
       w="248px"
       onClick={handleCardClick}
       _hover={{
-        shadow: disabled ? "none" : "md",
-        cursor: disabled ? "not-allowed" : "pointer",
+        shadow: isMethodologyDisabled ? "none" : "md",
+        cursor: isMethodologyDisabled ? "not-allowed" : "pointer",
       }}
       backgroundColor={isSelected ? "gray.200" : "white"}
     >
       <Box w="full" display="flex" justifyContent="space-between">
         <Radio
-          disabled={disabled}
+          disabled={isMethodologyDisabled}
           isChecked={isSelected}
           onChange={handleRadioChange}
         />{" "}
-        {disabled ? (
+        {isMethodologyDisabled ? (
           <Badge
             borderWidth="1px"
             borderColor="border.neutral"
@@ -81,7 +70,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
         )}
       </Box>
       <Text fontWeight="bold" fontSize="title.md" fontFamily="heading">
-        {t(id)}
+        {t(methodology.id)}
       </Text>
       <Text
         letterSpacing="wide"
@@ -89,7 +78,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
         fontWeight="normal"
         color="interactive.control"
       >
-        {t(id + "-description")}
+        {t(methodology.id + "-description")}
       </Text>
       <Text
         letterSpacing="wide"
@@ -107,7 +96,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
         fontWeight="normal"
         color="interactive.control"
       >
-        {inputRequired?.map((item: string, i: number) => (
+        {methodology.inputRequired?.map((item: string, i: number) => (
           <li key={i}>{t(item)}</li>
         ))}
       </Box>

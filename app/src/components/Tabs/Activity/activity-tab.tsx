@@ -42,7 +42,7 @@ interface ActivityTabProps {
   areActivitiesLoading?: boolean;
   totalConsumption?: boolean;
   totalConsumptionUnit?: boolean;
-  filteredScope: ActivityDataScope;
+  filteredScope: any;
   inventoryId: string;
   step: string;
 }
@@ -67,9 +67,9 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const [methodology, setMethodology] = useState<Methodology>();
 
   function getMethodologies() {
-    const refNumberWithScope =
-      referenceNumber + "." + (filteredScope.scope || 1);
+    const refNumberWithScope = referenceNumber + "." + (filteredScope || 1);
     const hierarchy = MANUAL_INPUT_HIERARCHY[refNumberWithScope] || {};
+    // console.log(refNumberWithScope, hierarchy.directMeasure);
     const methodologies = hierarchy?.methodologies || [];
     const directMeasure = {
       ...hierarchy.directMeasure,
@@ -84,6 +84,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
     disabled,
     inputRequired,
     id,
+    activities,
   }: Methodology) => {
     setSelectedMethodology(id);
     setIsMethodologySelected(!isMethodologySelected);
@@ -91,6 +92,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
       disabled,
       inputRequired,
       id,
+      activities,
     });
   };
   const changeMethodology = () => {
@@ -98,6 +100,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
     setIsMethodologySelected(false);
     onChangeMethodologyClose();
   };
+
+  // console.log(directMeasure);
 
   const {
     isOpen: isAddActivityModalOpen,
@@ -168,9 +172,6 @@ const ActivityTab: FC<ActivityTabProps> = ({
         id,
       });
   }
-
-  // };
-
   return (
     <>
       <TabPanel p="0" pt="48px">

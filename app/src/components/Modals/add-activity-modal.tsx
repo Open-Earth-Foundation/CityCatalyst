@@ -200,7 +200,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
 
   const defaultScope = 1;
 
-  const formInputs = formStruct?.formInputs[step][scope ?? defaultScope];
+  const formInputs = [];
 
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
     useState<boolean>(true);
@@ -254,21 +254,21 @@ const AddActivityModal: FC<AddUserModalProps> = ({
               >
                 <FormControl className="w-full">
                   <BuildingTypeSelectInput
-                    options={formInputs?.fields[0].options || []}
-                    title={formInputs?.fields[0].label}
+                    options={[]}
+                    title={""}
                     placeholder={t("select-type-of-building")}
                     register={register}
-                    activity={"activity." + formInputs?.fields[0].name}
+                    activity={"activity."}
                     errors={errors}
                   />
                 </FormControl>
                 <FormControl>
                   <BuildingTypeSelectInput
-                    options={formInputs?.fields[1].options}
-                    title={formInputs?.fields[1].label}
+                    options={[]}
+                    title={""}
                     placeholder={t("select-type-of-fuel")}
                     register={register}
-                    activity={"activity." + formInputs?.fields[1].name}
+                    activity={"activity"}
                     errors={errors}
                   />
                 </FormControl>
@@ -281,7 +281,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                   <FormControl
                     isInvalid={!!resolve(prefix + "activityDataAmount", errors)}
                   >
-                    <FormLabel>{formInputs?.fields[2].label}</FormLabel>
+                    <FormLabel>{""}</FormLabel>
                     <InputGroup>
                       <NumberInput defaultValue={0} w="full">
                         <NumberInputField
@@ -310,13 +310,9 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                             shadow: "none",
                             borderColor: "content.link",
                           }}
-                          {...register(
-                            ("activity." +
-                              formInputs?.fields[2].name) as ActivityKey,
-                            {
-                              required: t("value-required"),
-                            },
-                          )}
+                          {...register("activity." as ActivityKey, {
+                            required: t("value-required"),
+                          })}
                         />
                       </NumberInput>
                       <InputRightAddon
@@ -329,18 +325,11 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       >
                         <Select
                           variant="unstyled"
-                          {...register(
-                            ("activity." +
-                              formInputs?.fields[2].addon?.name) as ActivityKey,
-                          )}
+                          {...register("activity." as ActivityKey)}
                         >
-                          {formInputs?.fields[2].addon?.options?.map(
-                            (item: string) => (
-                              <option key={item} value={item}>
-                                {item}
-                              </option>
-                            ),
-                          )}
+                          <option key="" value="">
+                            item
+                          </option>
                         </Select>
                       </InputRightAddon>
                     </InputGroup>
@@ -360,7 +349,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                     )}
                   </FormControl>
                   <FormControl>
-                    <FormLabel>{formInputs?.fields[3].label}</FormLabel>
+                    <FormLabel>{""}</FormLabel>
                     <Select
                       borderRadius="4px"
                       borderWidth={
@@ -384,10 +373,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                         shadow: "none",
                         borderColor: "content.link",
                       }}
-                      {...register(
-                        ("activity." +
-                          formInputs?.fields[3].name) as ActivityKey,
-                      )}
+                      {...register("activity." as ActivityKey)}
                       bgColor="base.light"
                       placeholder="Select emission factor type"
                       onChange={(e: any) => onEmissionFactorTypeChange(e)}
@@ -439,9 +425,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
               </Heading>
               <HStack spacing={4} mb={5}>
                 <FormControl>
-                  <FormLabel color="content.tertiary">
-                    {formInputs?.fields[4]?.label}
-                  </FormLabel>
+                  <FormLabel color="content.tertiary">{""}</FormLabel>
                   <InputGroup>
                     {/* TODO translate values and use internal value for checking */}
                     <NumberInput
@@ -453,10 +437,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                         h="48px"
                         shadow="1dp"
                         borderRightRadius={0}
-                        {...register(
-                          ("activity." +
-                            formInputs?.fields[4]?.name) as ActivityKey,
-                        )}
+                        {...register("activity." as ActivityKey)}
                         bgColor={
                           isEmissionFactorInputDisabled
                             ? "background.neutral"
@@ -477,19 +458,14 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       shadow="1dp"
                       pos="relative"
                       zIndex={10}
-                      {...register(
-                        ("activity." +
-                          formInputs?.fields[4]?.addon.name) as ActivityKey,
-                      )}
+                      {...register("activity." as ActivityKey)}
                     >
-                      {formInputs?.fields[4].addon.unit}
+                      {""}
                     </InputRightAddon>
                   </InputGroup>
                 </FormControl>
                 <FormControl>
-                  <FormLabel color="content.tertiary">
-                    {formInputs?.fields[5].label}
-                  </FormLabel>
+                  <FormLabel color="content.tertiary">{""}</FormLabel>
                   <InputGroup>
                     <NumberInput
                       defaultValue={0}
@@ -503,10 +479,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                           borderColor: "content.link",
                         }}
                         borderRightRadius={0}
-                        {...register(
-                          ("activity" +
-                            formInputs?.fields[5].name) as ActivityKey,
-                        )}
+                        {...register("activity" as ActivityKey)}
                         bgColor={
                           isEmissionFactorInputDisabled
                             ? "background.neutral"
@@ -529,19 +502,14 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       shadow="1dp"
                       pos="relative"
                       zIndex={10}
-                      {...register(
-                        ("activity." +
-                          formInputs?.fields[5].addon.name) as ActivityKey,
-                      )}
+                      {...register("activity." as ActivityKey)}
                     >
-                      {formInputs?.fields[5].addon.unit}
+                      {""}
                     </InputRightAddon>
                   </InputGroup>
                 </FormControl>
                 <FormControl>
-                  <FormLabel color="content.tertiary">
-                    {formInputs?.fields[6].label}
-                  </FormLabel>
+                  <FormLabel color="content.tertiary">{""}</FormLabel>
                   <InputGroup>
                     <NumberInput
                       defaultValue={0}
@@ -555,10 +523,7 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                           borderColor: "content.link",
                         }}
                         borderRightRadius={0}
-                        {...register(
-                          ("activity." +
-                            formInputs?.fields[6].name) as ActivityKey,
-                        )}
+                        {...register("activity." as ActivityKey)}
                         bgColor={
                           isEmissionFactorInputDisabled
                             ? "background.neutral"
@@ -581,12 +546,9 @@ const AddActivityModal: FC<AddUserModalProps> = ({
                       shadow="1dp"
                       pos="relative"
                       zIndex={10}
-                      {...register(
-                        ("activity." +
-                          formInputs?.fields[6].addon.name) as ActivityKey,
-                      )}
+                      {...register("activity." as ActivityKey)}
                     >
-                      {formInputs?.fields[6].addon.unit}
+                      {""}
                     </InputRightAddon>
                   </InputGroup>
                 </FormControl>

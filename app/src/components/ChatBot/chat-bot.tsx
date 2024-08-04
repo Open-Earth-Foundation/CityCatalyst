@@ -34,27 +34,6 @@ interface Message {
   text: string;
 }
 
-// const UserMessage = ({ text }: { text: string }) => {
-//   return <div>{text}</div>;
-// };
-
-// const AssistantMessage = ({ text }: { text: string }) => {
-//   return <div>{text}</div>;
-// };
-
-// const Message = ({ role, text }: Message) => {
-//   switch (role) {
-//     case "user":
-//       return <UserMessage text={text} />;
-//     case "assistant":
-//       return <AssistantMessage text={text} />;
-//     case "code":
-//     //return <CodeMessage text={text} />;
-//     default:
-//       return null;
-//   }
-// };
-
 function useEnterSubmit(): {
   formRef: RefObject<HTMLFormElement>;
   onKeyDown: (event: React.KeyboardEvent<HTMLTextAreaElement>) => void;
@@ -90,9 +69,25 @@ export default function ChatBot({
   const [userInput, setUserInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputDisabled, setInputDisabled] = useState(false);
-  const [createThreadId, { data: threadIdData }] = useCreateThreadIdMutation();
-  const [getAllDataSources, { data, error, isLoading }] =
-    api.useLazyGetAllDataSourcesQuery();
+  const [createThreadId] = useCreateThreadIdMutation();
+  const [getAllDataSources] = api.useLazyGetAllDataSourcesQuery();
+  const [getUserInventories] = api.useLazyGetUserInventoriesQuery();
+  const [getInventory] = api.useLazyGetInventoryQuery();
+
+  // Creating the thread id for the given inventory on initial render
+  useEffect(() => {
+    // Function to create the threadId with initial message
+    const initializeThread = async () => {
+      const result = await createThreadId({
+        inventoryId: inventoryId,
+        content: t("initial-message"),
+      }).unwrap();
+      setThreadId(result);
+    };
+    if (!threadId) {
+      initializeThread();
+    }
+  }, []); // Empty dependency array means this effect runs only once
 
   // Automatically scroll to bottom of chat
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -133,21 +128,31 @@ export default function ChatBot({
   ////////////////////
 
   const functionCallHandler = async (call: any) => {
+    // Handle function get all data sources
     if (call?.function?.name === "get_all_datasources") {
-      console.log("function call get data sources");
-
       const { data, error, isLoading } = await getAllDataSources({
         inventoryId,
       });
 
-      console.log(data);
       return JSON.stringify(data);
-    } else if (call?.function?.name === "query_global_api") {
-      console.log("function call generic");
-      const mockData = "CO2, SF6, SF8, and Methane of doom";
-      return mockData; // no stringify needed since its a string already
-    } else {
-      return JSON.stringify({ status: "no function identified to call" });
+
+      // Handle function to get all user inventories
+    } else if (call?.function?.name === "get_user_inventories") {
+      const { data, error, isLoading } = await getUserInventories();
+      return JSON.stringify(data);
+
+      // Handle function to get details of specific inventory
+    } else if (call?.function?.name === "get_inventory") {
+      // Parse the nested JSON string in the "arguments" field
+      const argument = JSON.parse(call.function.arguments);
+      const selectedInventoryId = argument.inventory_id;
+      const { data, error, isLoading } =
+        await getInventory(selectedInventoryId);
+      return JSON.stringify(data);
+    }
+    // Handle if no function call was identified
+    else {
+      return JSON.stringify({ error: "no function identified to call" });
     }
   };
 
@@ -240,60 +245,26 @@ export default function ChatBot({
       toolCalls.map(async (toolCall: any) => {
         const result = await functionCallHandler(toolCall);
 
-        console.log(result);
         return { output: result, tool_call_id: toolCall.id };
       }),
     );
-    console.log(toolCallOutputs);
     setInputDisabled(true);
     submitActionResult(threadId, runId, toolCallOutputs);
   };
 
   // Here all the streaming events get processed
   const handleReadableStream = (stream: AssistantStream) => {
-    // messages
+    // Messages
     stream.on("textCreated", handleTextCreated);
     stream.on("textDelta", handleTextDelta);
 
-    // // image
-    // stream.on("imageFileDone", handleImageFileDone);
-
-    // // code interpreter
-    // stream.on("toolCallCreated", toolCallCreated);
-    // stream.on("toolCallDelta", toolCallDelta);
-
-    // events without helpers yet (e.g. requires_action and run.done)
+    // Events without helpers yet (e.g. requires_action and run.done)
     stream.on("event", (event) => {
       if (event.event === "thread.run.requires_action")
         handleRequiresAction(event);
       if (event.event === "thread.run.completed") handleRunCompleted();
     });
   };
-
-  // Function to create the threadId with initial message
-  const createThread = async () => {
-    try {
-      await createThreadId({
-        inventoryId: inventoryId,
-        content: t("initial-message"),
-      }).unwrap();
-    } catch (err) {
-      console.error("Failed to create thread ID:", err);
-    }
-  };
-
-  // Creating the thread id for the given inventory on initial render
-  useEffect(() => {
-    createThread();
-  }, []); // Empty dependency array means this effect runs only once,
-  // HOWEVER currently it always runs twice
-
-  // Set threadId once the value from API call is returned to threadData
-  useEffect(() => {
-    if (threadIdData) {
-      setThreadId(threadIdData);
-    }
-  }, [threadIdData]);
 
   // Setting the initial message to display for the user
   // This message will not be passed to the assistant api
@@ -475,10 +446,6 @@ export default function ChatBot({
             </HStack>
           );
         })}
-        {/* <ScrollAnchor
-          trackVisibility={status === "in_progress"}
-          rootRef={messagesWrapperRef}
-        /> */}
         <div ref={messagesEndRef} />
       </div>
 

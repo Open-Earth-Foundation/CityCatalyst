@@ -351,7 +351,7 @@ export default function ChatBot({
     });
   };
 
-  // TODO: Fix annotations
+  // TODO: Fix annotations ON-2114
   const annotateLastMessage = async (annotations: any) => {
     setMessages((prevMessages) => {
       const lastMessage = prevMessages[prevMessages.length - 1];

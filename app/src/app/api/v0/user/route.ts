@@ -10,13 +10,7 @@ export const GET = apiHandler(async (_req: Request, context) => {
   }
 
   const user = await db.models.User.findOne({
-    attributes: [
-      "userId",
-      "name",
-      "defaultInventoryId",
-      "role",
-      "email",
-    ],
+    attributes: ["userId", "name", "defaultInventoryId", "role", "email"],
     where: {
       userId: context.session.user.id,
     },

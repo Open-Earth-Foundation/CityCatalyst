@@ -1,52 +1,33 @@
 import { Badge, Box, Card, Radio, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC, useState } from "react";
-import { MethodologyValues } from "../Tabs/Activity/activity-tab";
+import type { Methodology } from "@/util/form-schema";
 
 interface MethodologyCardProps {
-  methodologyId: string;
-  methodologyName: string;
-  description: string;
-  inputRequired: string[];
+  methodology: Methodology;
   isSelected: boolean;
-  disabled: boolean;
   t: TFunction;
-  handleCardSelect: (methodologyId: MethodologyValues) => void;
+  handleCardSelect: (methodologyId: Methodology) => void;
 }
 
 const MethodologyCard: FC<MethodologyCardProps> = ({
-  methodologyId,
-  methodologyName,
-  description,
-  inputRequired,
-  disabled,
+  methodology,
   t,
-  handleCardSelect = (_methodologyId: MethodologyValues) => {},
+  handleCardSelect = (_methodology: Methodology) => {},
 }) => {
   const [isSelected, setIsSelected] = useState(false);
   const handleRadioChange = () => {
     setIsSelected(true);
-    handleCardSelect({
-      description,
-      disabled,
-      inputRequired,
-      methodologyId,
-      methodologyName,
-    });
+    handleCardSelect(methodology);
   };
 
   const handleCardClick = () => {
     if (!isSelected) {
-      handleCardSelect({
-        description,
-        disabled,
-        inputRequired,
-        methodologyId,
-        methodologyName,
-      });
+      handleCardSelect(methodology);
     }
     setIsSelected(!isSelected);
   };
+  const isMethodologyDisabled = methodology.disabled;
   return (
     <Card
       borderWidth="1px"
@@ -57,23 +38,23 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
       gap="16px"
       shadow="none"
       display="flex"
-      opacity={disabled ? ".7" : ""}
+      opacity={isMethodologyDisabled ? ".7" : ""}
       h="auto"
       w="248px"
       onClick={handleCardClick}
       _hover={{
-        shadow: disabled ? "none" : "md",
-        cursor: disabled ? "not-allowed" : "pointer",
+        shadow: isMethodologyDisabled ? "none" : "md",
+        cursor: isMethodologyDisabled ? "not-allowed" : "pointer",
       }}
       backgroundColor={isSelected ? "gray.200" : "white"}
     >
       <Box w="full" display="flex" justifyContent="space-between">
         <Radio
-          disabled={disabled}
+          disabled={isMethodologyDisabled}
           isChecked={isSelected}
           onChange={handleRadioChange}
         />{" "}
-        {disabled ? (
+        {isMethodologyDisabled ? (
           <Badge
             borderWidth="1px"
             borderColor="border.neutral"
@@ -89,7 +70,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
         )}
       </Box>
       <Text fontWeight="bold" fontSize="title.md" fontFamily="heading">
-        {methodologyName}
+        {t(methodology.id)}
       </Text>
       <Text
         letterSpacing="wide"
@@ -97,7 +78,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
         fontWeight="normal"
         color="interactive.control"
       >
-        {description}
+        {t(methodology.id + "-description")}
       </Text>
       <Text
         letterSpacing="wide"
@@ -115,8 +96,8 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
         fontWeight="normal"
         color="interactive.control"
       >
-        {inputRequired?.map((item: string, i: number) => (
-          <li key={i}>{item}</li>
+        {methodology.inputRequired?.map((item: string, i: number) => (
+          <li key={i}>{t(item)}</li>
         ))}
       </Box>
     </Card>

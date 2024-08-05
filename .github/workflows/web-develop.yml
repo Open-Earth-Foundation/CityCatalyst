@@ -149,6 +149,7 @@ jobs:
             "NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev" \
             "GLOBAL_API_URL=https://ccglobal.openearth.dev" \
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
-            "OPENCLIMATE_API_URL=https://openclimate.openearth.dev"
+            "OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
+            CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}}
           kubectl create -f k8s/cc-create-admin.yml -n default
           kubectl rollout restart deployment cc-web-deploy -n default

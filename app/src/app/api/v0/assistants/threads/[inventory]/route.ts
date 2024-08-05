@@ -7,66 +7,6 @@ import { Inventory } from "@/models/Inventory";
 import { PopulationEntry, findClosestYear } from "@/util/helpers";
 import { PopulationAttributes } from "@/models/Population";
 
-function createContext(inventory: Inventory): string {
-  const inventoryYear = inventory.dataValues.year;
-
-  const countryPopulations = inventory.city.populations.filter(
-    (pop) => !!pop.countryPopulation,
-  );
-  const countryPopulationObj = findClosestYear(
-    countryPopulations as PopulationEntry[],
-    inventoryYear!,
-  ) as PopulationAttributes;
-
-  const countryPopulation = countryPopulationObj?.countryPopulation;
-  const countryPopulationYear = countryPopulationObj?.year;
-
-  const regionPopulations = inventory.city.populations.filter(
-    (pop) => !!pop.regionPopulation,
-  );
-  const regionPopulationObj = findClosestYear(
-    regionPopulations as PopulationEntry[],
-    inventoryYear!,
-  ) as PopulationAttributes;
-
-  const regionPopulation = regionPopulationObj?.regionPopulation;
-  const regionPopulationYear = regionPopulationObj?.year;
-
-  const cityPopulations = inventory.city.populations.filter(
-    (pop) => !!pop.population,
-  );
-  const cityPopulationObj = findClosestYear(
-    cityPopulations as PopulationEntry[],
-    inventoryYear!,
-  ) as PopulationAttributes;
-
-  const cityPopulation = cityPopulationObj?.population;
-  const cityPopulationYear = cityPopulationObj?.year;
-
-  const cityName = inventory.city.dataValues.name;
-  const regionName = inventory.city.dataValues.region;
-  const countryName = inventory.city.dataValues.country;
-  const countryLocode = inventory.city.dataValues.countryLocode;
-  const cityArea = inventory.city.dataValues.area;
-
-  const numInventoryValues = inventory.inventoryValues?.length;
-
-  return `
-###### BEGINNING OF CONTEXT ######
-+ Name of city name that the inventory is being created for: ${cityName},
-+ Name of the corresponding region: ${regionName},
-+ Name of the corresponding country: ${countryName},
-+ UN/LOCODE of the corresponding country: ${countryLocode},
-+ Population of the city ${cityName} for the year ${cityPopulationYear} (closest known value to the inventory year): ${cityPopulation},
-+ Population of the region ${regionName} for the year ${regionPopulationYear} (closest known value to the inventory year): ${regionPopulation},
-+ Population of the country ${countryName} for the year ${countryPopulationYear} (closest known value to the inventory year): ${countryPopulation},
-+ Area of the city ${cityName} in km\u00B2: ${cityArea},
-+ Year for which the the inventory is being created: ${inventoryYear},
-+ Current number of inventory values for this city: ${numInventoryValues}.
-###### END OF CONTEXT ######
-`;
-}
-
 export const POST = apiHandler(async (req, { params, session }) => {
   const { content } = await req.json();
   const inventory = await UserService.findUserInventory(
@@ -103,6 +43,69 @@ export const POST = apiHandler(async (req, { params, session }) => {
       },
     ],
   );
+
+  function createContext(inventory: Inventory): string {
+    const inventoryYear = inventory.dataValues.year;
+
+    const countryPopulations = inventory.city.populations.filter(
+      (pop) => !!pop.countryPopulation,
+    );
+    const countryPopulationObj = findClosestYear(
+      countryPopulations as PopulationEntry[],
+      inventoryYear!,
+    ) as PopulationAttributes;
+
+    const countryPopulation = countryPopulationObj?.countryPopulation;
+    const countryPopulationYear = countryPopulationObj?.year;
+
+    const regionPopulations = inventory.city.populations.filter(
+      (pop) => !!pop.regionPopulation,
+    );
+    const regionPopulationObj = findClosestYear(
+      regionPopulations as PopulationEntry[],
+      inventoryYear!,
+    ) as PopulationAttributes;
+
+    const regionPopulation = regionPopulationObj?.regionPopulation;
+    const regionPopulationYear = regionPopulationObj?.year;
+
+    const cityPopulations = inventory.city.populations.filter(
+      (pop) => !!pop.population,
+    );
+    const cityPopulationObj = findClosestYear(
+      cityPopulations as PopulationEntry[],
+      inventoryYear!,
+    ) as PopulationAttributes;
+
+    const cityPopulation = cityPopulationObj?.population;
+    const cityPopulationYear = cityPopulationObj?.year;
+
+    const cityName = inventory.city.dataValues.name;
+    const regionName = inventory.city.dataValues.region;
+    const countryName = inventory.city.dataValues.country;
+    const countryLocode = inventory.city.dataValues.countryLocode;
+    const cityArea = inventory.city.dataValues.area;
+
+    const numInventoryValues = inventory.inventoryValues?.length;
+
+    const userName = session?.user.name;
+
+    return `
+  ###### BEGINNING OF CONTEXT ######
+  + Name of the currently logged in user: ${userName},
+  + Name of city name that the inventory is being created for: ${cityName},
+  + Name of the corresponding region: ${regionName},
+  + Name of the corresponding country: ${countryName},
+  + UN/LOCODE of the corresponding country: ${countryLocode},
+  + Population of the city ${cityName} for the year ${cityPopulationYear} (closest known value to the inventory year): ${cityPopulation},
+  + Population of the region ${regionName} for the year ${regionPopulationYear} (closest known value to the inventory year): ${regionPopulation},
+  + Population of the country ${countryName} for the year ${countryPopulationYear} (closest known value to the inventory year): ${countryPopulation},
+  + Area of the city ${cityName} in km\u00B2: ${cityArea},
+  + Year for which the the inventory is being created: ${inventoryYear},
+  + Current number of inventory values for this city: ${numInventoryValues}.
+  ###### END OF CONTEXT ######
+  `;
+  }
 
   const context = createContext(inventory);
 

@@ -1333,13 +1333,13 @@
               {
                 "id": "on-road-transport-vehicle-type",
                 "options": [
-                  "vehicle-type-all",
                   "vehicle-type-passenger-vehicles",
                   "vehicle-type-commercial-vehicles",
                   "vehicle-type-public-transport-vehicles",
                   "vehicle-type-emergency-vehicles",
                   "vehicle-type-service-vehicles"
-                ]
+                ],
+                "multiselect": true
               },
               {
                 "id": "on-road-transport-fuel-source",
@@ -1350,24 +1350,37 @@
               "units-gallons",
               "units-liters",
               "units-cubic-meters",
-              "units-kilograms",
-              "units-terajoules",
-              "units-kilowatt-hours"
+              "units-kilograms"
             ]
           }
         ],
         "suggestedActivities": [
           {
             "id": "fuel-sales-on-road-transport-activity",
-            "on-road-transport-vehicle-type": "vehicle-type-all"
+            "prefills": [
+              {
+                "name": "on-road-transport-vehicle-type",
+                "value": "vehicle-type-all"
+              }
+            ]
           },
           {
             "id": "fuel-sales-on-road-transport-activity",
-            "on-road-transport-vehicle-type": "vehicle-type-passenger-vehicles"
+            "prefills": [
+              {
+                "name": "on-road-transport-vehicle-type",
+                "value": "vehicle-type-passenger-vehicles"
+              }
+            ]
           },
           {
             "id": "fuel-sales-on-road-transport-activity",
-            "on-road-transport-vehicle-type": "vehicle-type-public-transport-vehicles"
+            "prefills": [
+              {
+                "name": "on-road-transport-vehicle-type",
+                "value": "vehicle-type-public-transport-vehicles"
+              }
+            ]
           }
         ]
       },
@@ -1408,13 +1421,13 @@
               {
                 "id": "on-road-transport-vehicle-type",
                 "options": [
-                  "vehicle-type-all",
                   "vehicle-type-passenger-vehicles",
                   "vehicle-type-commercial-vehicles",
                   "vehicle-type-public-transport-vehicles",
                   "vehicle-type-emergency-vehicles",
                   "vehicle-type-service-vehicles"
-                ]
+                ],
+                "multiselect": true
               },
               {
                 "id": "on-road-transport-fuel-type",
@@ -1430,8 +1443,12 @@
                 "id": "on-road-transport-fuel-intensity",
                 "type": "number",
                 "units": [
-                  "units-grams-per-kilometer",
-                  "units-kilograms-per-kilometer"
+                  "tonnes-per-kilometer",
+                  "gallons-per-kilometer",
+                  "cubic-meters-per-kilometer",
+                  "tonnes-per-miles",
+                  "gallons-per-miles",
+                  "cubic-meters-per-miles"
                 ]
               }
             ]
@@ -1467,12 +1484,14 @@
         {
           "id": "on-road-transport-fuel-type",
           "options": [
+            "fuel-type-all",
             "fuel-type-gasoline",
             "fuel-type-diesel",
             "fuel-type-lpg",
             "fuel-type-cng",
             "fuel-type-biofuel"
-          ]
+          ],
+          "exclusive": "fuel-type-all"
         },
         {
           "id": "on-road-transport-vehicle-type",
@@ -1595,7 +1614,8 @@
                   "vehicle-type-freight-trains",
                   "vehicle-type-high-speed-trains",
                   "vehicle-type-tourist-trains"
-                ]
+                ],
+                "exclusive": "vehicle-type-all"
               },
               {
                 "id": "railways-fuel-source",
@@ -1607,8 +1627,7 @@
               "units-liters",
               "units-cubic-meters",
               "units-kilograms",
-              "units-terajoules",
-              "units-kilowatt-hours"
+              "units-terajoules"
             ]
           }
         ],
@@ -1643,12 +1662,12 @@
               {
                 "id": "railways-vehicle-type",
                 "options": [
-                  "vehicle-type-all",
                   "vehicle-type-passenger-trains",
                   "vehicle-type-freight-trains",
                   "vehicle-type-high-speed-trains",
                   "vehicle-type-tourist-trains"
-                ]
+                ],
+                "multiselect": true
               },
               {
                 "id": "railways-fuel-type",
@@ -1664,8 +1683,12 @@
                 "id": "railways-fuel-intensity",
                 "type": "number",
                 "units": [
-                  "units-grams-per-kilometer",
-                  "units-kilograms-per-kilometer"
+                  "tonnes-per-kilometer",
+                  "gallons-per-kilometer",
+                  "cubic-meters-per-kilometer",
+                  "tonnes-per-miles",
+                  "gallons-per-miles",
+                  "cubic-meters-per-miles"
                 ]
               }
             ]
@@ -1707,7 +1730,6 @@
         {
           "id": "railways-vehicle-type",
           "options": [
-            "vehicle-type-all",
             "vehicle-type-passenger-trains",
             "vehicle-type-freight-trains",
             "vehicle-type-high-speed-trains",
@@ -1742,7 +1764,8 @@
                   "vehicle-type-freight-trains",
                   "vehicle-type-high-speed-trains",
                   "vehicle-type-tourist-trains"
-                ]
+                ],
+                "exclusive": "vehicle-type-all"
               },
               {
                 "id": "railways-electricity-source",
@@ -1820,7 +1843,8 @@
                   "vehicle-type-ferries",
                   "vehicle-type-boats",
                   "vehicle-type-marine-vessels"
-                ]
+                ],
+                "exclusive": "vehicle-type-all"
               },
               {
                 "id": "waterborne-navigation-fuel-source",
@@ -1875,7 +1899,8 @@
                   "vehicle-type-ferries",
                   "vehicle-type-boats",
                   "vehicle-type-marine-vessels"
-                ]
+                ],
+                "exclusive": "vehicle-type-all"
               },
               {
                 "id": "waterborne-navigation-fuel-type",
@@ -1962,7 +1987,8 @@
                   "vehicle-type-ferries",
                   "vehicle-type-boats",
                   "vehicle-type-marine-vessels"
-                ]
+                ],
+                "exclusive": "vehicle-type-all"
               },
               {
                 "id": "waterborne-navigation-electricity-source",
@@ -2025,11 +2051,13 @@
               {
                 "id": "aviation-fuel-type",
                 "options": [
-                  "fuel-type-gasoline",
+                  "fuel-type-aviation-gasoline",
                   "fuel-type-diesel",
+                  "fuel-type-jet-gasoline",
+                  "fuel-type-jet-kerosene",
                   "fuel-type-lpg",
-                  "fuel-type-cng",
-                  "fuel-type-biofuel"
+                  "fuel-type-gasoline",
+                  "fuel-type-natural-gas-liquids"
                 ]
               },
               {
@@ -2040,7 +2068,8 @@
                   "vehicle-type-cargo-aircraft",
                   "vehicle-type-private-and-business-aircraft",
                   "vehicle-type-helicopters"
-                ]
+                ],
+                "exclusive": "vehicle-type-all"
               },
               {
                 "id": "aviation-fuel-source",
@@ -2093,16 +2122,19 @@
                   "vehicle-type-cargo-aircraft",
                   "vehicle-type-private-and-business-aircraft",
                   "vehicle-type-helicopters"
-                ]
+                ],
+                "exclusive": "vehicle-type-all"
               },
               {
                 "id": "aviation-fuel-type",
                 "options": [
-                  "fuel-type-gasoline",
+                  "fuel-type-aviation-gasoline",
                   "fuel-type-diesel",
+                  "fuel-type-jet-gasoline",
+                  "fuel-type-jet-kerosene",
                   "fuel-type-lpg",
-                  "fuel-type-cng",
-                  "fuel-type-biofuel"
+                  "fuel-type-gasoline",
+                  "fuel-type-natural-gas-liquids"
                 ]
               },
               {
@@ -2143,7 +2175,8 @@
             "fuel-type-lpg",
             "fuel-type-cng",
             "fuel-type-biofuel"
-          ]
+          ],
+          "multiselect": true
         },
         {
           "id": "aviation-vehicle-type",
@@ -2183,7 +2216,8 @@
                   "vehicle-type-cargo-aircraft",
                   "vehicle-type-private-and-business-aircraft",
                   "vehicle-type-helicopters"
-                ]
+                ],
+                "exclusive": "vehicle-type-all"
               },
               {
                 "id": "aviation-electricity-source",
@@ -2262,7 +2296,8 @@
                   "vehicle-type-agricultural-machinery",
                   "vehicle-type-mining-equipment",
                   "vehicle-type-forestry-equipment"
-                ]
+                ],
+                "exclusive": "vehicle-type-all"
               },
               {
                 "id": "off-road-transport-fuel-source",
@@ -2305,7 +2340,8 @@
             "fuel-type-lpg",
             "fuel-type-cng",
             "fuel-type-biofuel"
-          ]
+          ],
+          "multiselect": true
         },
         {
           "id": "off-road-transport-vehicle-type",
@@ -2345,7 +2381,8 @@
                   "vehicle-type-agricultural-machinery",
                   "vehicle-type-mining-equipment",
                   "vehicle-type-forestry-equipment"
-                ]
+                ],
+                "exclusive": "vehicle-type-all"
               },
               {
                 "id": "off-road-transport-electricity-source",

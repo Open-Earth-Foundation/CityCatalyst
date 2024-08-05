@@ -107,7 +107,7 @@ function SubSectorPage({
     console.log(romanNumeralPattern);
 
     for (const key in MANUAL_INPUT_HIERARCHY) {
-      if (key.startsWith(subSectorData.referenceNumber!)) {
+      if (key.startsWith(subSectorData?.referenceNumber!)) {
         const scopeNumber = key.split(".").pop();
         const result = {
           ...MANUAL_INPUT_HIERARCHY[key],

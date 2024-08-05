@@ -266,7 +266,7 @@
       }
     ],
     "directMeasure": {
-      "id": "stationary-energy-direct-measure-methodology",
+      "id": "direct-measure",
       "extra-fields": [
         {
           "id": "commercial-building-type",
@@ -365,7 +365,7 @@
       }
     ],
     "directMeasure": {
-      "id": "stationary-energy-direct-measure-methodology",
+      "id": "direct-measure",
       "extra-fields": [
         {
           "id": "commercial-building-type",

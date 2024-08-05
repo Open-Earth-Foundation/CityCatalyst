@@ -9,6 +9,7 @@ import {
   FormErrorMessage,
   FormHelperText,
   FormLabel,
+  Grid,
   HStack,
   Heading,
   InputGroup,
@@ -48,19 +49,17 @@ import type {
 } from "../../app/[lng]/[inventory]/data/[step]/types";
 import { groupBy, resolve } from "@/util/helpers";
 import { ActivityDataScope } from "@/features/city/subsectorSlice";
+import { Methodology } from "@/util/form-schema";
 
-interface AddUserModalProps {
+interface AddActivityModalProps {
   isOpen: boolean;
   onClose: () => void;
   t: TFunction;
-  userInfo: UserAttributes | null;
   defaultCityId?: string;
   setHasActivityData: Function;
   hasActivityData: boolean;
-  formStruct: ActivityDataScope;
   inventoryId: string;
-  step: string;
-  scope: number;
+  methodology: any;
 }
 
 export type Inputs = {
@@ -114,16 +113,14 @@ export function determineEmissionsFactorType(factor: EmissionsFactorData) {
   return sourceName;
 }
 
-const AddActivityModal: FC<AddUserModalProps> = ({
+const AddActivityModal: FC<AddActivityModalProps> = ({
   isOpen,
   onClose,
   t,
   setHasActivityData,
   hasActivityData,
-  formStruct,
   inventoryId,
-  step,
-  scope,
+  methodology,
 }) => {
   const {
     register,
@@ -200,7 +197,9 @@ const AddActivityModal: FC<AddUserModalProps> = ({
 
   const defaultScope = 1;
 
-  const formInputs = [];
+  console.log(methodology);
+
+  const formInputs = null;
 
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
     useState<boolean>(true);
@@ -221,6 +220,20 @@ const AddActivityModal: FC<AddUserModalProps> = ({
 
   // Todo - Get activity key to infer fields form names properly
   type ActivityKey = any;
+
+  let fields = null;
+  let units = null;
+  if (
+    methodology?.id === "direct-measure" ||
+    methodology?.id === "stationary-energy-direct-measure-methodology"
+  ) {
+    fields = methodology.fields;
+  } else {
+    fields = methodology?.fields[0]["extra-fields"];
+    units = methodology?.fields[0].units;
+  }
+
+  console.log(fields);
 
   return (
     <>
@@ -254,305 +267,459 @@ const AddActivityModal: FC<AddUserModalProps> = ({
               >
                 <FormControl className="w-full">
                   <BuildingTypeSelectInput
-                    options={[]}
-                    title={""}
-                    placeholder={t("select-type-of-building")}
+                    options={fields?.[0].options}
+                    title={fields?.[0].id}
+                    placeholder={t("select-type-activity")}
                     register={register}
-                    activity={"activity."}
+                    activity={"activity." + formInputs?.fields[0].name}
                     errors={errors}
                   />
                 </FormControl>
                 <FormControl>
                   <BuildingTypeSelectInput
-                    options={[]}
-                    title={""}
+                    options={fields?.[1].options}
+                    title={fields?.[1].id}
                     placeholder={t("select-type-of-fuel")}
                     register={register}
-                    activity={"activity"}
+                    activity={"activity." + formInputs?.fields[1].name}
                     errors={errors}
                   />
                 </FormControl>
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  gap="16px"
-                  w="full"
-                >
-                  <FormControl
-                    isInvalid={!!resolve(prefix + "activityDataAmount", errors)}
+                {methodology?.id !== "direct-measure" ? (
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    gap="16px"
+                    w="full"
                   >
-                    <FormLabel>{""}</FormLabel>
-                    <InputGroup>
-                      <NumberInput defaultValue={0} w="full">
-                        <NumberInputField
-                          borderRadius="4px"
-                          placeholder={t("activity-data-amount-placeholder")}
-                          borderRightRadius={0}
+                    <FormControl
+                      isInvalid={
+                        !!resolve(prefix + "activityDataAmount", errors)
+                      }
+                    >
+                      <FormLabel>{fields?.[2].id}</FormLabel>
+                      <InputGroup>
+                        <NumberInput defaultValue={0} w="full">
+                          <NumberInputField
+                            borderRadius="4px"
+                            placeholder={t("activity-data-amount-placeholder")}
+                            borderRightRadius={0}
+                            h="48px"
+                            shadow="1dp"
+                            borderWidth={
+                              errors?.activity?.totalFuelConsumption ? "1px" : 0
+                            }
+                            border="inputBox"
+                            borderColor={
+                              errors?.activity?.totalFuelConsumption
+                                ? "sentiment.negativeDefault"
+                                : ""
+                            }
+                            background={
+                              errors?.activity?.totalFuelConsumption
+                                ? "sentiment.negativeOverlay"
+                                : ""
+                            }
+                            bgColor="base.light"
+                            _focus={{
+                              borderWidth: "1px",
+                              shadow: "none",
+                              borderColor: "content.link",
+                            }}
+                            {...register(
+                              ("activity." +
+                                formInputs?.fields[2].name) as ActivityKey,
+                              {
+                                required: t("value-required"),
+                              },
+                            )}
+                          />
+                        </NumberInput>
+                        <InputRightAddon
+                          className="border-l-2"
+                          pl={4}
+                          pr={0}
+                          bgColor="base.light"
                           h="48px"
                           shadow="1dp"
-                          borderWidth={
-                            errors?.activity?.totalFuelConsumption ? "1px" : 0
+                        >
+                          <Select
+                            variant="unstyled"
+                            {...register(
+                              ("activity." +
+                                formInputs?.fields[2].addon
+                                  ?.name) as ActivityKey,
+                            )}
+                          >
+                            {units?.map((item: string) => (
+                              <option key={item} value={item}>
+                                {item}
+                              </option>
+                            ))}
+                          </Select>
+                        </InputRightAddon>
+                      </InputGroup>
+
+                      {errors.activity?.totalFuelConsumption ? (
+                        <Box
+                          display="flex"
+                          gap="6px"
+                          alignItems="center"
+                          mt="6px"
+                        >
+                          <WarningIcon color="sentiment.negativeDefault" />
+                          <Text fontSize="body.md">Please enter amount</Text>
+                        </Box>
+                      ) : (
+                        ""
+                      )}
+                    </FormControl>
+                    <FormControl>
+                      <FormLabel>{t("emission-factor-type")}</FormLabel>
+                      <Select
+                        borderRadius="4px"
+                        borderWidth={
+                          errors?.activity?.emissionFactorType ? "1px" : 0
+                        }
+                        border="inputBox"
+                        h="48px"
+                        shadow="1dp"
+                        borderColor={
+                          errors?.activity?.emissionFactorType
+                            ? "sentiment.negativeDefault"
+                            : ""
+                        }
+                        background={
+                          errors?.activity?.emissionFactorType
+                            ? "sentiment.negativeOverlay"
+                            : ""
+                        }
+                        _focus={{
+                          borderWidth: "1px",
+                          shadow: "none",
+                          borderColor: "content.link",
+                        }}
+                        {...register(
+                          ("activity." +
+                            formInputs?.fields[3].name) as ActivityKey,
+                        )}
+                        bgColor="base.light"
+                        placeholder="Select emission factor type"
+                        onChange={(e: any) => onEmissionFactorTypeChange(e)}
+                      >
+                        {emissionsFactorTypes.map(({ id, name }) => (
+                          <option key={id} value={id}>
+                            {t(name)}
+                          </option>
+                        ))}
+                        <option key="custom" value="custom">
+                          {t("add-custom")}
+                        </option>
+                      </Select>
+                      {errors.activity?.emissionFactorType ? (
+                        <Box
+                          display="flex"
+                          gap="6px"
+                          alignItems="center"
+                          mt="6px"
+                        >
+                          <WarningIcon color="sentiment.negativeDefault" />
+                          <Text fontSize="body.md">
+                            Please select an emission factor type
+                          </Text>
+                        </Box>
+                      ) : (
+                        ""
+                      )}
+                    </FormControl>
+                  </Box>
+                ) : null}
+              </HStack>
+              {methodology?.id !== "direct-measure" ? (
+                <>
+                  <Heading
+                    size="sm"
+                    mb={4}
+                    className="font-normal"
+                    display="flex"
+                    alignItems="center"
+                  >
+                    <FormLabel
+                      variant="label"
+                      fontSize="label.lg"
+                      fontStyle="normal"
+                      fontWeight="medium"
+                      letterSpacing="wide"
+                      fontFamily="heading"
+                    >
+                      {t("emissions-factor-values")}
+                    </FormLabel>
+                  </Heading>
+                  <HStack spacing={4} mb={5}>
+                    <FormControl>
+                      <FormLabel color="content.tertiary">
+                        {t("co2-emission-factor")}
+                      </FormLabel>
+                      <InputGroup>
+                        {/* TODO translate values and use internal value for checking */}
+                        <NumberInput
+                          defaultValue={0}
+                          min={0}
+                          isDisabled={isEmissionFactorInputDisabled}
+                        >
+                          <NumberInputField
+                            h="48px"
+                            shadow="1dp"
+                            borderRightRadius={0}
+                            {...register(
+                              ("activity." +
+                                formInputs?.fields[4]?.name) as ActivityKey,
+                            )}
+                            bgColor={
+                              isEmissionFactorInputDisabled
+                                ? "background.neutral"
+                                : "base.light"
+                            }
+                            pos="relative"
+                            zIndex={999}
+                          />
+                        </NumberInput>
+                        <InputRightAddon
+                          bgColor={
+                            isEmissionFactorInputDisabled
+                              ? "background.neutral"
+                              : "base.light"
                           }
-                          border="inputBox"
-                          borderColor={
-                            errors?.activity?.totalFuelConsumption
-                              ? "sentiment.negativeDefault"
-                              : ""
+                          color="content.tertiary"
+                          h="48px"
+                          shadow="1dp"
+                          pos="relative"
+                          zIndex={10}
+                          {...register(
+                            ("activity." +
+                              formInputs?.fields[4]?.addon.name) as ActivityKey,
+                          )}
+                        >
+                          {formInputs?.fields[4].addon.unit}
+                        </InputRightAddon>
+                      </InputGroup>
+                    </FormControl>
+                    <FormControl>
+                      <FormLabel color="content.tertiary">
+                        {t("n2o-emission-factor")}
+                      </FormLabel>
+                      <InputGroup>
+                        <NumberInput
+                          defaultValue={0}
+                          min={0}
+                          isDisabled={isEmissionFactorInputDisabled}
+                        >
+                          <NumberInputField
+                            _focus={{
+                              borderWidth: "1px",
+                              shadow: "none",
+                              borderColor: "content.link",
+                            }}
+                            borderRightRadius={0}
+                            {...register(
+                              ("activity" +
+                                formInputs?.fields[5].name) as ActivityKey,
+                            )}
+                            bgColor={
+                              isEmissionFactorInputDisabled
+                                ? "background.neutral"
+                                : "base.light"
+                            }
+                            h="48px"
+                            shadow="1dp"
+                            pos="relative"
+                            zIndex={999}
+                          />
+                        </NumberInput>
+                        <InputRightAddon
+                          bgColor={
+                            isEmissionFactorInputDisabled
+                              ? "background.neutral"
+                              : "base.light"
                           }
-                          background={
-                            errors?.activity?.totalFuelConsumption
-                              ? "sentiment.negativeOverlay"
-                              : ""
+                          color="content.tertiary"
+                          h="48px"
+                          shadow="1dp"
+                          pos="relative"
+                          zIndex={10}
+                          {...register(
+                            ("activity." +
+                              formInputs?.fields[5].addon.name) as ActivityKey,
+                          )}
+                        >
+                          {formInputs?.fields[5].addon.unit}
+                        </InputRightAddon>
+                      </InputGroup>
+                    </FormControl>
+                    <FormControl>
+                      <FormLabel color="content.tertiary">
+                        {t("ch4-emission-factor")}
+                      </FormLabel>
+                      <InputGroup>
+                        <NumberInput
+                          defaultValue={0}
+                          min={0}
+                          isDisabled={isEmissionFactorInputDisabled}
+                        >
+                          <NumberInputField
+                            _focus={{
+                              borderWidth: "1px",
+                              shadow: "none",
+                              borderColor: "content.link",
+                            }}
+                            borderRightRadius={0}
+                            {...register(
+                              ("activity." +
+                                formInputs?.fields[6].name) as ActivityKey,
+                            )}
+                            bgColor={
+                              isEmissionFactorInputDisabled
+                                ? "background.neutral"
+                                : "base.light"
+                            }
+                            h="48px"
+                            shadow="1dp"
+                            pos="relative"
+                            zIndex={999}
+                          />
+                        </NumberInput>
+                        <InputRightAddon
+                          bgColor={
+                            isEmissionFactorInputDisabled
+                              ? "background.neutral"
+                              : "base.light"
                           }
+                          color="content.tertiary"
+                          h="48px"
+                          shadow="1dp"
+                          pos="relative"
+                          zIndex={10}
+                          {...register(
+                            ("activity." +
+                              formInputs?.fields[6].addon.name) as ActivityKey,
+                          )}
+                        >
+                          {formInputs?.fields[6].addon.unit}
+                        </InputRightAddon>
+                      </InputGroup>
+                    </FormControl>
+                  </HStack>{" "}
+                </>
+              ) : (
+                <Grid templateColumns="repeat(2, 1fr)" gap={4} mb={5}>
+                  <FormControl w="full">
+                    <FormLabel color="content.secondary">
+                      {t("emissions-value-co2")}
+                    </FormLabel>
+                    <InputGroup w="full" shadow="1dp" borderRadius={"8px"}>
+                      {/* TODO translate values and use internal value for checking */}
+                      <NumberInput w="full" defaultValue={0} min={0}>
+                        <NumberInputField
+                          h="48px"
+                          placeholder="Enter emissions value"
+                          {...register(
+                            ("activity." +
+                              formInputs?.fields[4]?.name) as ActivityKey,
+                          )}
                           bgColor="base.light"
-                          _focus={{
-                            borderWidth: "1px",
-                            shadow: "none",
-                            borderColor: "content.link",
-                          }}
-                          {...register("activity." as ActivityKey, {
-                            required: t("value-required"),
-                          })}
+                          pos="relative"
+                          zIndex={999}
                         />
                       </NumberInput>
                       <InputRightAddon
-                        className="border-l-2"
-                        pl={4}
-                        pr={0}
                         bgColor="base.light"
+                        color="content.tertiary"
                         h="48px"
-                        shadow="1dp"
+                        pos="relative"
+                        zIndex={10}
+                        {...register(
+                          ("activity." +
+                            formInputs?.fields[4]?.addon.name) as ActivityKey,
+                        )}
                       >
-                        <Select
-                          variant="unstyled"
-                          {...register("activity." as ActivityKey)}
-                        >
-                          <option key="" value="">
-                            item
-                          </option>
-                        </Select>
+                        tCO2
                       </InputRightAddon>
                     </InputGroup>
-
-                    {errors.activity?.totalFuelConsumption ? (
-                      <Box
-                        display="flex"
-                        gap="6px"
-                        alignItems="center"
-                        mt="6px"
-                      >
-                        <WarningIcon color="sentiment.negativeDefault" />
-                        <Text fontSize="body.md">Please enter amount</Text>
-                      </Box>
-                    ) : (
-                      ""
-                    )}
                   </FormControl>
-                  <FormControl>
-                    <FormLabel>{""}</FormLabel>
-                    <Select
-                      borderRadius="4px"
-                      borderWidth={
-                        errors?.activity?.emissionFactorType ? "1px" : 0
-                      }
-                      border="inputBox"
-                      h="48px"
-                      shadow="1dp"
-                      borderColor={
-                        errors?.activity?.emissionFactorType
-                          ? "sentiment.negativeDefault"
-                          : ""
-                      }
-                      background={
-                        errors?.activity?.emissionFactorType
-                          ? "sentiment.negativeOverlay"
-                          : ""
-                      }
-                      _focus={{
-                        borderWidth: "1px",
-                        shadow: "none",
-                        borderColor: "content.link",
-                      }}
-                      {...register("activity." as ActivityKey)}
-                      bgColor="base.light"
-                      placeholder="Select emission factor type"
-                      onChange={(e: any) => onEmissionFactorTypeChange(e)}
-                    >
-                      {emissionsFactorTypes.map(({ id, name }) => (
-                        <option key={id} value={id}>
-                          {t(name)}
-                        </option>
-                      ))}
-                      <option key="custom" value="custom">
-                        {t("add-custom")}
-                      </option>
-                    </Select>
-                    {errors.activity?.emissionFactorType ? (
-                      <Box
-                        display="flex"
-                        gap="6px"
-                        alignItems="center"
-                        mt="6px"
+                  <FormControl w="full">
+                    <FormLabel color="content.secondary">
+                      {t("emissions-value-n2o")}
+                    </FormLabel>
+                    <InputGroup w="full" shadow="1dp" borderRadius={"8px"}>
+                      {/* TODO translate values and use internal value for checking */}
+                      <NumberInput w="full" defaultValue={0} min={0}>
+                        <NumberInputField
+                          h="48px"
+                          borderRightRadius={0}
+                          placeholder="Enter emissions value"
+                          {...register(
+                            ("activity." +
+                              formInputs?.fields[4]?.name) as ActivityKey,
+                          )}
+                          bgColor="base.light"
+                          pos="relative"
+                          zIndex={999}
+                        />
+                      </NumberInput>
+                      <InputRightAddon
+                        bgColor="base.light"
+                        color="content.tertiary"
+                        borderLeft={"none"}
+                        h="48px"
+                        pos="relative"
+                        zIndex={10}
+                        {...register(
+                          ("activity." +
+                            formInputs?.fields[4]?.addon.name) as ActivityKey,
+                        )}
                       >
-                        <WarningIcon color="sentiment.negativeDefault" />
-                        <Text fontSize="body.md">
-                          Please select an emission factor type
-                        </Text>
-                      </Box>
-                    ) : (
-                      ""
-                    )}
+                        tN2O
+                      </InputRightAddon>
+                    </InputGroup>
                   </FormControl>
-                </Box>
-              </HStack>
-              <Heading
-                size="sm"
-                mb={4}
-                className="font-normal"
-                display="flex"
-                alignItems="center"
-              >
-                <FormLabel
-                  variant="label"
-                  fontSize="label.lg"
-                  fontStyle="normal"
-                  fontWeight="medium"
-                  letterSpacing="wide"
-                  fontFamily="heading"
-                >
-                  {t("emissions-factor-values")}
-                </FormLabel>
-              </Heading>
-              <HStack spacing={4} mb={5}>
-                <FormControl>
-                  <FormLabel color="content.tertiary">{""}</FormLabel>
-                  <InputGroup>
-                    {/* TODO translate values and use internal value for checking */}
-                    <NumberInput
-                      defaultValue={0}
-                      min={0}
-                      isDisabled={isEmissionFactorInputDisabled}
-                    >
-                      <NumberInputField
+                  <FormControl w="full">
+                    <FormLabel color="content.secondary">
+                      {t("emissions-value-ch4")}
+                    </FormLabel>
+                    <InputGroup w="full" shadow="1dp" borderRadius={"8px"}>
+                      {/* TODO translate values and use internal value for checking */}
+                      <NumberInput w="full " defaultValue={0} min={0}>
+                        <NumberInputField
+                          h="48px"
+                          borderRightRadius={0}
+                          placeholder="Enter emissions value"
+                          {...register(
+                            ("activity." +
+                              formInputs?.fields[4]?.name) as ActivityKey,
+                          )}
+                          bgColor="base.light"
+                          pos="relative"
+                          zIndex={999}
+                        />
+                      </NumberInput>
+                      <InputRightAddon
+                        bgColor="base.light"
+                        color="content.tertiary"
+                        borderLeft={"none"}
                         h="48px"
-                        shadow="1dp"
-                        borderRightRadius={0}
-                        {...register("activity." as ActivityKey)}
-                        bgColor={
-                          isEmissionFactorInputDisabled
-                            ? "background.neutral"
-                            : "base.light"
-                        }
                         pos="relative"
-                        zIndex={999}
-                      />
-                    </NumberInput>
-                    <InputRightAddon
-                      bgColor={
-                        isEmissionFactorInputDisabled
-                          ? "background.neutral"
-                          : "base.light"
-                      }
-                      color="content.tertiary"
-                      h="48px"
-                      shadow="1dp"
-                      pos="relative"
-                      zIndex={10}
-                      {...register("activity." as ActivityKey)}
-                    >
-                      {""}
-                    </InputRightAddon>
-                  </InputGroup>
-                </FormControl>
-                <FormControl>
-                  <FormLabel color="content.tertiary">{""}</FormLabel>
-                  <InputGroup>
-                    <NumberInput
-                      defaultValue={0}
-                      min={0}
-                      isDisabled={isEmissionFactorInputDisabled}
-                    >
-                      <NumberInputField
-                        _focus={{
-                          borderWidth: "1px",
-                          shadow: "none",
-                          borderColor: "content.link",
-                        }}
-                        borderRightRadius={0}
-                        {...register("activity" as ActivityKey)}
-                        bgColor={
-                          isEmissionFactorInputDisabled
-                            ? "background.neutral"
-                            : "base.light"
-                        }
-                        h="48px"
-                        shadow="1dp"
-                        pos="relative"
-                        zIndex={999}
-                      />
-                    </NumberInput>
-                    <InputRightAddon
-                      bgColor={
-                        isEmissionFactorInputDisabled
-                          ? "background.neutral"
-                          : "base.light"
-                      }
-                      color="content.tertiary"
-                      h="48px"
-                      shadow="1dp"
-                      pos="relative"
-                      zIndex={10}
-                      {...register("activity." as ActivityKey)}
-                    >
-                      {""}
-                    </InputRightAddon>
-                  </InputGroup>
-                </FormControl>
-                <FormControl>
-                  <FormLabel color="content.tertiary">{""}</FormLabel>
-                  <InputGroup>
-                    <NumberInput
-                      defaultValue={0}
-                      min={0}
-                      isDisabled={isEmissionFactorInputDisabled}
-                    >
-                      <NumberInputField
-                        _focus={{
-                          borderWidth: "1px",
-                          shadow: "none",
-                          borderColor: "content.link",
-                        }}
-                        borderRightRadius={0}
-                        {...register("activity." as ActivityKey)}
-                        bgColor={
-                          isEmissionFactorInputDisabled
-                            ? "background.neutral"
-                            : "base.light"
-                        }
-                        h="48px"
-                        shadow="1dp"
-                        pos="relative"
-                        zIndex={999}
-                      />
-                    </NumberInput>
-                    <InputRightAddon
-                      bgColor={
-                        isEmissionFactorInputDisabled
-                          ? "background.neutral"
-                          : "base.light"
-                      }
-                      color="content.tertiary"
-                      h="48px"
-                      shadow="1dp"
-                      pos="relative"
-                      zIndex={10}
-                      {...register("activity." as ActivityKey)}
-                    >
-                      {""}
-                    </InputRightAddon>
-                  </InputGroup>
-                </FormControl>
-              </HStack>
+                        zIndex={10}
+                        {...register(
+                          ("activity." +
+                            formInputs?.fields[4]?.addon.name) as ActivityKey,
+                        )}
+                      >
+                        tCH4
+                      </InputRightAddon>
+                    </InputGroup>
+                  </FormControl>
+                </Grid>
+              )}
 
               <FormControl
                 isInvalid={!!resolve(prefix + "dataQuality", errors)}

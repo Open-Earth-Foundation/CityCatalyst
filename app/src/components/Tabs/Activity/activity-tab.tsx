@@ -30,9 +30,13 @@ import { api } from "@/services/api";
 import ActivityAccordion from "./activity-accordion";
 import ScopeUnavailable from "./scope-unavailable";
 import { ActivityDataScope } from "@/features/city/subsectorSlice";
-import { MANUAL_INPUT_HIERARCHY, Methodology } from "@/util/form-schema";
+import {
+  Activity,
+  DirectMeasure,
+  MANUAL_INPUT_HIERARCHY,
+  Methodology,
+} from "@/util/form-schema";
 import MethodologyCard from "@/components/Cards/methodology-card";
-
 interface ActivityTabProps {
   t: TFunction;
   referenceNumber: string;
@@ -65,11 +69,12 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const [isUnavailableChecked, setIsChecked] = useState<boolean>(false);
   const [hasActivityData, setHasActivityData] = useState<boolean>(false);
   const [methodology, setMethodology] = useState<Methodology>();
+  const [directMeasureFields, setDirectMeasureFields] =
+    useState<DirectMeasure>();
 
   function getMethodologies() {
     const refNumberWithScope = referenceNumber + "." + (filteredScope || 1);
     const hierarchy = MANUAL_INPUT_HIERARCHY[refNumberWithScope] || {};
-    // console.log(refNumberWithScope, hierarchy.directMeasure);
     const methodologies = hierarchy?.methodologies || [];
     const directMeasure = {
       ...hierarchy.directMeasure,
@@ -84,6 +89,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
     disabled,
     inputRequired,
     id,
+    fields,
     activities,
   }: Methodology) => {
     setSelectedMethodology(id);
@@ -92,16 +98,27 @@ const ActivityTab: FC<ActivityTabProps> = ({
       disabled,
       inputRequired,
       id,
-      activities,
+      fields,
     });
   };
+
+  const handleDirectMeasureSelected = ({
+    id,
+    "extra-fields": extraFields,
+  }: DirectMeasure) => {
+    setSelectedMethodology(id!);
+    setIsMethodologySelected(!isMethodologySelected);
+    setDirectMeasureFields({
+      id,
+      "extra-fields": extraFields,
+    });
+  };
+
   const changeMethodology = () => {
     setSelectedMethodology("");
     setIsMethodologySelected(false);
     onChangeMethodologyClose();
   };
-
-  // console.log(directMeasure);
 
   const {
     isOpen: isAddActivityModalOpen,
@@ -164,12 +181,14 @@ const ActivityTab: FC<ActivityTabProps> = ({
     disabled: boolean | undefined,
     inputRequired: string[] | undefined,
     id: string,
+    fields: any,
   ) {
     return () =>
       handleMethodologySelected({
         disabled: !!disabled,
         inputRequired,
         id,
+        fields,
       });
   }
   return (
@@ -461,6 +480,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                               disabled,
                               inputRequired,
                               id,
+                              activities,
                             )}
                           />
                         ),
@@ -475,6 +495,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                             false,
                             ["emissions-data"],
                             directMeasure.id,
+                            directMeasure["extra-fields"],
                           )}
                           disabled={false}
                         />
@@ -489,15 +510,14 @@ const ActivityTab: FC<ActivityTabProps> = ({
       </TabPanel>
       <AddActivityModal
         t={t}
-        userInfo={null}
         isOpen={isAddActivityModalOpen}
         onClose={onAddActivityModalClose}
         hasActivityData={hasActivityData}
         setHasActivityData={setHasActivityData}
-        formStruct={filteredScope}
+        methodology={methodology!}
         inventoryId={inventoryId}
         step={step}
-        scope={filteredScope.scope}
+        scope={filteredScope}
       />
 
       <ChangeMethodology

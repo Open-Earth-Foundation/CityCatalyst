@@ -37,6 +37,16 @@ export const POST = apiHandler(async (req, { params, session }) => {
           "Creating InventoryValue from ActivityValue not yet implemented, so inventoryValueId is required currently",
         );
       }
+      const inventoryValue =
+        await db.models.InventoryValue.findByPk(inventoryValueId);
+      if (!inventoryValue) {
+        throw new createHttpError.NotFound("InventoryValue not found");
+      }
+      if (!inventoryValue.inputMethodology) {
+        throw new createHttpError.BadRequest(
+          `Inventory value ${inventoryValue.id} is missing an input methodology`,
+        );
+      }
 
       const activityValue = await db.models.ActivityValue.create(
         {
@@ -47,6 +57,22 @@ export const POST = apiHandler(async (req, { params, session }) => {
         },
         { transaction },
       );
+
+      let { totalCO2e, totalCO2eYears, gases } =
+        await CalculationService.calculateGasAmount(
+          inventoryValue,
+          activityValue,
+          inventoryValue.inputMethodology,
+        );
+
+      // TODO for PATCH version of this, subtract previous value first
+      inventoryValue.co2eq = (inventoryValue.co2eq ?? 0n) + totalCO2e;
+      inventoryValue.co2eqYears = Math.max(
+        inventoryValue.co2eqYears ?? 0,
+        totalCO2eYears,
+      );
+      activityValue.co2eq = totalCO2e;
+      activityValue.co2eqYears = totalCO2eYears;
 
       if (gasValues) {
         for (const gasValue of gasValues) {
@@ -76,10 +102,8 @@ export const POST = apiHandler(async (req, { params, session }) => {
           delete gasValue.emissionsFactor;
 
           if (gasValue.gasAmount == null) {
-            gasValue.gasAmount = CalculationService.calculateGasAmount(
-              inventoryValue,
-              activityValue,
-            );
+            gasValue.gasAmount =
+              gases.find((gas) => gas.gas === gasValue.gas)?.amount ?? 0n;
           }
 
           await db.models.GasValue.upsert(

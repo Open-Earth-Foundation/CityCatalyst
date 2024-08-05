@@ -2,23 +2,24 @@ import { db } from "@/models";
 import type { ActivityValue } from "@/models/ActivityValue";
 import type { GasToCO2Eq } from "@/models/GasToCO2Eq";
 import type { InventoryValue } from "@/models/InventoryValue";
-import { logger } from "@/services/logger";
 import { multiplyBigIntFloat } from "@/util/big_int";
 import createHttpError from "http-errors";
 
 export type GasAmountResult = {
   totalCO2e: bigint;
+  totalCO2eYears: number;
   gases: { gas: string; amount: bigint }[];
 };
 
 const GAS_NAMES = ["CO2", "N2O", "CH4"];
+const DEFAULT_CO2EQ_YEARS = 100;
 
 export default class CalculationService {
   private static calculateCO2eq(
     gasToCO2Eqs: GasToCO2Eq[],
     gasName: string,
     amount: bigint,
-  ): bigint {
+  ): { co2eq: bigint; co2eqYears: number } {
     // TODO the rest of this could be shared for all formulas?
     const globalWarmingPotential = gasToCO2Eqs.find(
       (entry) => entry.gas === gasName,
@@ -33,17 +34,32 @@ export default class CalculationService {
       amount,
       globalWarmingPotential.co2eqPerKg || 0,
     );
-    return co2eq;
+    const co2eqYears = globalWarmingPotential.co2eqYears || DEFAULT_CO2EQ_YEARS;
+    return { co2eq, co2eqYears };
+  }
+
+  public static async getFormula(inputMethodology: string): Promise<string> {
+    if (inputMethodology === "direct-measure") {
+      return "direct-measure";
+    }
+
+    const formula = "unknown";
+    // TODO load JSON schema file
+    // TODO search for inputMethodology ID
+    return formula;
   }
 
   public static async calculateGasAmount(
     inventoryValue: InventoryValue,
     activityValue: ActivityValue,
-    formula: string,
+    inputMethodology: string,
   ): Promise<GasAmountResult> {
+    const formula = await CalculationService.getFormula(inputMethodology);
+
     // TODO cache
     const gasToCO2Eqs = await db.models.GasToCO2Eq.findAll();
     let totalCO2e = 0n;
+    let totalCO2eYears = 0;
     let gases: { gas: string; amount: bigint }[] = [];
 
     switch (formula) {
@@ -58,8 +74,14 @@ export default class CalculationService {
           }
           // TODO save amount to GasValue entry?
           const amount = BigInt(data[key]);
-          totalCO2e += this.calculateCO2eq(gasToCO2Eqs, gasName, amount);
-          return { gas: gasName, amount };
+          const { co2eq, co2eqYears } = this.calculateCO2eq(
+            gasToCO2Eqs,
+            gasName,
+            amount,
+          );
+          totalCO2e += co2eq;
+          totalCO2eYears = Math.max(totalCO2eYears, co2eqYears);
+          return { gas: gasName, amount: amount };
         });
         break;
       case "activity-amount-times-emissions-factor":
@@ -84,7 +106,13 @@ export default class CalculationService {
           const amount = BigInt(
             activityAmount * emissionsFactor.emissionsPerActivity,
           );
-          totalCO2e += this.calculateCO2eq(gasToCO2Eqs, gasValue.gas!, amount);
+          const { co2eq, co2eqYears } = this.calculateCO2eq(
+            gasToCO2Eqs,
+            gasValue.gas!,
+            amount,
+          );
+          totalCO2e += co2eq;
+          totalCO2eYears = Math.max(totalCO2eYears, co2eqYears);
 
           return { gas: gasValue.gas!, amount };
         });
@@ -96,6 +124,7 @@ export default class CalculationService {
     }
     return {
       totalCO2e,
+      totalCO2eYears,
       gases,
     };
   }

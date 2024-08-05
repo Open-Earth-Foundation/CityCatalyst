@@ -80,14 +80,15 @@ export const POST = apiHandler(async (req, { params, session }) => {
     const cityPopulation = cityPopulationObj?.population;
     const cityPopulationYear = cityPopulationObj?.year;
 
-    const cityName = inventory.city.dataValues.name;
-    const regionName = inventory.city.dataValues.region;
-    const countryName = inventory.city.dataValues.country;
-    const countryLocode = inventory.city.dataValues.countryLocode;
-    const cityArea = inventory.city.dataValues.area;
+    const {
+      name: cityName,
+      region: regionName,
+      country: countryName,
+      countryLocode: countryLocode,
+      area: cityArea,
+    } = inventory.city.dataValues;
 
     const numInventoryValues = inventory.inventoryValues?.length;
-
     const userName = session?.user.name;
 
     return `

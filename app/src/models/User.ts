@@ -36,7 +36,8 @@ export type UserCreationAttributes = Optional<
 
 export class User
   extends Model<UserAttributes, UserCreationAttributes>
-  implements UserAttributes {
+  implements UserAttributes
+{
   userId!: string;
   name?: string;
   pictureUrl?: string;
@@ -131,14 +132,8 @@ export class User
   addCity!: Sequelize.HasManyAddAssociationMixin<City, CityId>;
   addCities!: Sequelize.HasManyAddAssociationsMixin<City, CityId>;
   createCity!: Sequelize.HasManyCreateAssociationMixin<City>;
-  removeCity!: Sequelize.HasManyRemoveAssociationMixin<
-    City,
-    CityId
-  >;
-  removeCities!: Sequelize.HasManyRemoveAssociationsMixin<
-    City,
-    CityId
-  >;
+  removeCity!: Sequelize.HasManyRemoveAssociationMixin<City, CityId>;
+  removeCities!: Sequelize.HasManyRemoveAssociationsMixin<City, CityId>;
   hasCity!: Sequelize.HasManyHasAssociationMixin<City, CityId>;
   hasCities!: Sequelize.HasManyHasAssociationsMixin<City, CityId>;
   countCities!: Sequelize.HasManyCountAssociationsMixin;

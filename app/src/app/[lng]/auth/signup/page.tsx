@@ -23,6 +23,7 @@ import { Trans } from "react-i18next/TransWithoutContext";
 import { logger } from "@/services/logger";
 
 type Inputs = {
+  inventory?: string;
   name: string;
   email: string;
   password: string;
@@ -78,10 +79,14 @@ export default function Signup({
       return;
     }
 
+    if(inventoryId && inventoryId !== '') {
+      data.inventory = inventoryId
+    }
+
     try {
       const res = await fetch("/api/v0/auth/register", {
         method: "POST",
-        body: JSON.stringify({ ...data, inventory: inventoryId }),
+        body: JSON.stringify(data),
         headers: {
           "Content-Type": "application/json",
         },

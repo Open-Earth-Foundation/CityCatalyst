@@ -1,11 +1,12 @@
 {
-    "about-citycatalyst": "About CityCatalyst",
-    "contribution-guide": "Contribution Guide",
-    "goto-gh": "Go to GitHub",
-    "cad": "CAD2.0 Community",
-    "read-the-docs": "Read the Docs",
-    "python-client-docs": "Python Client Docs",
-    "contact-us": "Contact Us",
-    "beta-text": "This site is a beta version, we appreciate all feedback to improve the platform.",
-    "send-feedback": "Send Feedback"
+  "about-citycatalyst": "About CityCatalyst",
+  "contribution-guide": "Contribution Guide",
+  "goto-gh": "Go to GitHub",
+  "cad": "CAD2.0 Community",
+  "read-the-docs": "Read the Docs",
+  "python-client-docs": "Python Client Docs",
+  "submit-to-cdp": "Submit to CDP",
+  "contact-us": "Contact Us",
+  "beta-text": "This site is a beta version, we appreciate all feedback to improve the platform.",
+  "send-feedback": "Send Feedback"
 }

@@ -1,9 +1,4 @@
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
   Box,
   Button,
   Icon,
@@ -14,22 +9,9 @@ import {
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
-  Radio,
-  RadioGroup,
-  Stack,
   Switch,
   TabPanel,
-  Table,
-  TableContainer,
-  Tag,
-  TagLabel,
-  Tbody,
-  Td,
   Text,
-  Textarea,
-  Th,
-  Thead,
-  Tr,
   useDisclosure,
 } from "@chakra-ui/react";
 import React, { FC, useState } from "react";
@@ -37,12 +19,9 @@ import HeadingText from "../../heading-text";
 import { AddIcon } from "@chakra-ui/icons";
 import { MdMoreVert } from "react-icons/md";
 import SuggestedActivityCard from "../../Cards/suggested-activities-card";
-import { ActivityDataAttributes } from "@/models/ActivityData";
-import LoadingState from "../../loading-state";
 import { TFunction } from "i18next";
 import { FiTrash2 } from "react-icons/fi";
 import { FaNetworkWired } from "react-icons/fa";
-import MethodologyCard from "../../Cards/methodology-card";
 import { Trans } from "react-i18next";
 import AddActivityModal from "../../Modals/add-activity-modal";
 import ChangeMethodology from "../../Modals/change-methodology";
@@ -51,9 +30,12 @@ import { api } from "@/services/api";
 import ActivityAccordion from "./activity-accordion";
 import ScopeUnavailable from "./scope-unavailable";
 import { ActivityDataScope } from "@/features/city/subsectorSlice";
+import { MANUAL_INPUT_HIERARCHY, Methodology } from "@/util/form-schema";
+import MethodologyCard from "@/components/Cards/methodology-card";
 
 interface ActivityTabProps {
   t: TFunction;
+  referenceNumber: string;
   isUnavailableChecked?: boolean;
   isMethodologySelected?: boolean;
   userActivities?: [];
@@ -65,17 +47,10 @@ interface ActivityTabProps {
   step: string;
 }
 
-export type MethodologyValues = {
-  methodologyId: string;
-  methodologyName: string;
-  description: string;
-  inputRequired: string[];
-  disabled: boolean;
-};
-
 const ActivityTab: FC<ActivityTabProps> = ({
   t,
   userActivities,
+  referenceNumber,
   areActivitiesLoading,
   totalConsumption,
   totalConsumptionUnit,
@@ -89,24 +64,36 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const [selectedMethodology, setSelectedMethodology] = useState("");
   const [isUnavailableChecked, setIsChecked] = useState<boolean>(false);
   const [hasActivityData, setHasActivityData] = useState<boolean>(false);
-  const [methodology, setMethodology] = useState<MethodologyValues>();
+  const [methodology, setMethodology] = useState<Methodology>();
 
-  const handleMethodologySelected = ({
-    description,
-    disabled,
-    inputRequired,
-    methodologyId,
-    methodologyName,
-  }: MethodologyValues) => {
-    setSelectedMethodology(methodologyId);
+  const refNumberWithScope = referenceNumber + "." + (filteredScope.scope || 1);
+
+  function getMethodologies() {
+    const methodologies =
+      MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.methodologies || [];
+    const directMeasure = {
+      ...MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.directMeasure,
+      id:
+        MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.directMeasure?.id ||
+        "direct-measure", // adds a fallback generic id for direct measure
+    };
+    return { methodologies, directMeasure };
+  }
+
+  const { methodologies, directMeasure } = getMethodologies();
+
+  const getSuggestedActivities = () => {
+    if (!selectedMethodology) return [];
+    const methodology = (
+      MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.methodologies || []
+    ).find((m) => m.id === selectedMethodology);
+    return methodology?.suggestedActivities || [];
+  };
+
+  const handleMethodologySelected = (methodology: Methodology) => {
+    setSelectedMethodology(methodology.id);
     setIsMethodologySelected(!isMethodologySelected);
-    setMethodology({
-      description,
-      disabled,
-      inputRequired,
-      methodologyId,
-      methodologyName,
-    });
+    setMethodology(methodology);
   };
   const changeMethodology = () => {
     setSelectedMethodology("");
@@ -138,20 +125,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
     onClose: onDeleteActivityModalClose,
   } = useDisclosure();
 
-  const suggestedActivities = [
-    {
-      id: "1",
-      name: t("commercial-buildings"),
-    },
-    {
-      id: "2",
-      name: t("institutional-buildings"),
-    },
-    {
-      id: "3",
-      name: t("street-lighting"),
-    },
-  ];
+  const suggestedActivities = getSuggestedActivities();
 
   const handleSwitch = (e: any) => {
     setIsChecked(!isUnavailableChecked);
@@ -171,6 +145,10 @@ const ActivityTab: FC<ActivityTabProps> = ({
   //   }
 
   //   onDeleteActivitiesModalClose();
+  function handleCardSelect(methodology: Methodology) {
+    return () => handleMethodologySelected(methodology);
+  }
+
   // };
 
   return (
@@ -214,14 +192,14 @@ const ActivityTab: FC<ActivityTabProps> = ({
                   </Text>
                   <Box display="flex" justifyContent="space-between">
                     <Box>
-                      <HeadingText title={methodology?.methodologyName!} />
+                      <HeadingText title={t(methodology?.id || "")} />
                       <Text
                         letterSpacing="wide"
                         fontSize="body.lg"
                         fontWeight="normal"
                         color="interactive.control"
                       >
-                        {methodology?.description}
+                        {t(methodology?.id + "-description")}
                       </Text>
                     </Box>
                     <Box display="flex" alignItems="center">
@@ -359,11 +337,12 @@ const ActivityTab: FC<ActivityTabProps> = ({
                           {t("activity-suggestion")}
                         </Text>
                         <Box className="flex flex-col gap-4">
-                          {suggestedActivities.map(({ id, name }) => (
+                          {suggestedActivities.map(({ id }) => (
                             <SuggestedActivityCard
                               key={id}
-                              name={name}
+                              id={id}
                               t={t}
+                              description={methodology?.suggestedActivitiesId || ""}
                               isSelected={selectedActivity === id}
                               onActivityAdded={onAddActivityModalOpen}
                             />
@@ -449,35 +428,24 @@ const ActivityTab: FC<ActivityTabProps> = ({
                       display="flex"
                       justifyContent="space-between"
                     >
-                      {filteredScope.methodologies.map(
-                        ({
-                          methodologyId,
-                          methodologyName,
-                          description,
-                          inputRequired,
-                          disabled,
-                        }) => (
-                          <MethodologyCard
-                            methodologyId={methodologyId}
-                            key={methodologyId}
-                            methodologyName={methodologyName}
-                            description={description}
-                            inputRequired={inputRequired}
-                            isSelected={selectedMethodology === methodologyName}
-                            disabled={disabled}
-                            t={t}
-                            handleCardSelect={() =>
-                              handleMethodologySelected({
-                                description,
-                                disabled,
-                                inputRequired,
-                                methodologyId,
-                                methodologyName,
-                              })
-                            }
-                          />
-                        ),
-                      )}
+                      {(methodologies || []).map((methodology) => (
+                        <MethodologyCard
+                          methodology={methodology}
+                          key={directMeasure.id}
+                          isSelected={selectedMethodology === methodology.id}
+                          t={t}
+                          handleCardSelect={handleCardSelect(methodology)}
+                        />
+                      ))}
+                      {methodologies.length > 0 ? ( // hide this card until other methodologies can also load
+                        <MethodologyCard
+                          methodology={directMeasure}
+                          key={directMeasure.id}
+                          isSelected={selectedMethodology === directMeasure.id}
+                          t={t}
+                          handleCardSelect={handleCardSelect(directMeasure)}
+                        />
+                      ) : null}
                     </Box>
                   </Box>
                 )}

@@ -6,8 +6,9 @@ This is a catalogue of datasources that are available for use by CityCatalyst.
 - `import_datasource_seeder.sql` imports the `datasource_seeder.csv` file into the database. It will update existing records and add new ones. You can run it like this:
 
 ```bash
-psql -U ccglobal -d ccglobal -f import_datasource_seeder.sql
+python3 import_dataseeder.py --database_uri postgresql://ccglobal:@localhost/ccglobal
 ```
+
 ## Datasource catalogue structure
 
 - `datasource_id`: unique UUID for the datasource

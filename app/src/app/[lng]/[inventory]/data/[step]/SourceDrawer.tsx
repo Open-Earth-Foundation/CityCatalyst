@@ -161,7 +161,9 @@ export function SourceDrawer({
 
               <HStack align="baseline">
                 <Heading fontSize="57px" lineHeight="64px">
-                  {totalEmissions}
+                  {t("intlNumber", {
+                    val: totalEmissions,
+                  })}
                 </Heading>
                 <Text
                   color="content.tertiary"

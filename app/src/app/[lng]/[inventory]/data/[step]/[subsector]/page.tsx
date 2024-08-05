@@ -47,7 +47,7 @@ function SubSectorPage({
 
   const [selectedTab, setSelectedTab] = useState(1); // sector ID (1/2/3)
   const [selectedScope, setSelectedScope] = useState(1);
-
+  const [refNumber, setRefNumber] = useState();
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
   const defaultInventoryId = userInfo?.defaultInventoryId;
@@ -82,7 +82,6 @@ function SubSectorPage({
   const subSectorData = sectorData?.subSectors.find(
     (subsectorItem) => subsectorItem.subsectorId === subsector,
   );
-
   const getSectorName = (currentStep: string) => {
     switch (currentStep) {
       case "1":
@@ -322,7 +321,8 @@ function SubSectorPage({
               ) : (
                 scopes?.map((scope) => (
                   <ActivityTab
-                    key={scope.scope}
+                    referenceNumber={subSectorData?.referenceNumber}
+                    key={subSectorData?.referenceNumber}
                     filteredScope={scope}
                     t={t}
                     inventoryId={inventoryId}

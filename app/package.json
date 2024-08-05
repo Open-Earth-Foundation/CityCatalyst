@@ -76,7 +76,7 @@
     "openai": "^4.52.7",
     "pg": "^8.11.5",
     "pg-hstore": "^2.3.4",
-    "pigeon-maps": "^0.21.3",
+    "pigeon-maps": "^0.21.6",
     "pino": "^9.0.0",
     "postcss": "8.4.31",
     "react": "18.3.1",

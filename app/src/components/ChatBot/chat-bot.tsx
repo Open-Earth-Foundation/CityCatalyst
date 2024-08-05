@@ -154,7 +154,7 @@ export default function ChatBot({
     try {
       // Handle function get all data sources
       if (call?.function?.name === "get_all_datasources") {
-        const { data, error, isLoading } = await getAllDataSources({
+        const { data, error } = await getAllDataSources({
           inventoryId,
         });
         if (error) throw error;
@@ -162,7 +162,7 @@ export default function ChatBot({
 
         // Handle function to get all user inventories
       } else if (call?.function?.name === "get_user_inventories") {
-        const { data, error, isLoading } = await getUserInventories();
+        const { data, error } = await getUserInventories();
         if (error) throw error;
         return JSON.stringify(data);
 
@@ -171,31 +171,19 @@ export default function ChatBot({
         // Parse the nested JSON string in the "arguments" field
         const argument = JSON.parse(call.function.arguments);
         const selectedInventoryId = argument.inventory_id;
-        const { data, error, isLoading } =
-          await getInventory(selectedInventoryId);
+        const { data, error } = await getInventory(selectedInventoryId);
         if (error) throw error;
         return JSON.stringify(data);
       }
       // Handle if no function call was identified
       else {
         throw new Error("No function identified to call");
-        //return JSON.stringify({ error: "no function identified to call" });
       }
     } catch (error) {
       handleError(error, `Error in function call: ${call?.function?.name}`);
       return JSON.stringify({
-        error: { message: "Error in function call", error: error },
+        error: { error: error, message: "Error in function call" },
       });
-      // if (error instanceof Error) {
-      //   handleError(error, `Error in function call: ${call?.function?.name}`);
-      //   return JSON.stringify({ error: error.message });
-      // } else {
-      //   handleError(
-      //     new Error("An unknown error occurred"),
-      //     `Error in function call: ${call?.function?.name}`,
-      //   );
-      //   return JSON.stringify({ error: "An unknown error occurred" });
-      // }
     }
   };
 

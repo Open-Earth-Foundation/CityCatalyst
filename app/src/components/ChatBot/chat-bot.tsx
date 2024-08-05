@@ -77,9 +77,7 @@ export default function ChatBot({
   const toast = useToast();
 
   const handleError = (error: any, errorMessage: string) => {
-    console.error(errorMessage, error);
-    // Display error to user (you can use a toast notification or a modal)
-    // Example using Chakra UI's toast:
+    // Display error to user
     toast({
       title: "An error occurred",
       description: errorMessage,
@@ -132,10 +130,13 @@ export default function ChatBot({
       });
 
       if (!response.ok) {
+        const data = await response.text();
+        console.error("HTTP response text", data);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       if (response.body == null) {
-        throw new Error("Response body is null");
+        console.error("HTTP response is null");
+        throw new Error("HTTP response is null");
       }
 
       const stream = AssistantStream.fromReadableStream(response.body);
@@ -206,16 +207,19 @@ export default function ChatBot({
       });
 
       if (!response.ok) {
+        const data = await response.text();
+        console.error("HTTP response text", data);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       if (response.body == null) {
-        throw new Error("Response body is null");
+        console.error("HTTP response is null");
+        throw new Error("HTTP response is null");
       }
 
       const stream = AssistantStream.fromReadableStream(response.body);
       handleReadableStream(stream);
-    } catch (err) {
-      handleError(err, "Failed to submit tool output. Please try again.");
+    } catch (error) {
+      handleError(error, "Failed to submit tool output. Please try again.");
       setInputDisabled(false);
     }
   };
@@ -370,7 +374,13 @@ export default function ChatBot({
               },
             });
             if (!response.ok) {
+              const data = await response.text();
+              console.error("HTTP response text", data);
               throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            if (response.body == null) {
+              console.error("HTTP response is null");
+              throw new Error("HTTP response is null");
             }
 
             const data = await response.json();

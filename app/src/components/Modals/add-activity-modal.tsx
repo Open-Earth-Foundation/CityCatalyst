@@ -1,13 +1,10 @@
 "use client";
 
-import type { UserAttributes } from "@/models/User";
 import { api } from "@/services/api";
 import {
   Box,
   Button,
   FormControl,
-  FormErrorMessage,
-  FormHelperText,
   FormLabel,
   Grid,
   HStack,
@@ -42,13 +39,11 @@ import { Trans } from "react-i18next";
 import Link from "next/link";
 
 import type {
-  ActivityData,
   DirectMeasureData,
   SubcategoryData,
   EmissionsFactorData,
 } from "../../app/[lng]/[inventory]/data/[step]/types";
-import { groupBy, resolve } from "@/util/helpers";
-import { ActivityDataScope } from "@/features/city/subsectorSlice";
+import { resolve } from "@/util/helpers";
 import { Methodology } from "@/util/form-schema";
 
 interface AddActivityModalProps {
@@ -63,8 +58,6 @@ interface AddActivityModalProps {
 }
 
 export type Inputs = {
-  methodology: "fuel-combustion-consuption" | "direct-measure" | "";
-  fuelType: "all-fuels" | "natural-gas" | "propane" | "heating-oil";
   activity: {
     activityDataAmount?: number | null | undefined;
     activityDataUnit?: string | null | undefined;
@@ -77,27 +70,13 @@ export type Inputs = {
     buildingType: string;
     fuelType: string;
     totalFuelConsumption: string;
+    totalFuelConsumptionUnits: string;
+    co2EmissionFactorUnit: string;
+    n2oEmissionFactorUnit: string;
+    ch4EmissionFactorUnit: string;
   };
   direct: DirectMeasureData;
   subcategoryData: Record<string, SubcategoryData>;
-};
-
-const activityDataUnits: Record<string, string[]> = {
-  I: [
-    "l",
-    "m3",
-    "ft3",
-    "bbl",
-    "gal (US)",
-    "gal (UK)",
-    "MWh",
-    "GJ",
-    "BTUs",
-    "MW",
-    "Other",
-  ],
-  II: ["l", "m3", "ft3", "bbl", "gal (US)", "gal (UK)", "km", "mi", "Other"],
-  III: ["g", "kg", "t", "kt", "lt", "st", "lb", "Other"],
 };
 
 export function determineEmissionsFactorType(factor: EmissionsFactorData) {
@@ -195,12 +174,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     });
   };
 
-  const defaultScope = 1;
-
-  console.log(methodology);
-
-  const formInputs = null;
-
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
     useState<boolean>(true);
 
@@ -218,22 +191,15 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     }
   };
 
-  // Todo - Get activity key to infer fields form names properly
-  type ActivityKey = any;
-
   let fields = null;
   let units = null;
-  if (
-    methodology?.id === "direct-measure" ||
-    methodology?.id === "stationary-energy-direct-measure-methodology"
-  ) {
+
+  if (methodology?.id === "direct-measure") {
     fields = methodology.fields;
   } else {
     fields = methodology?.fields[0]["extra-fields"];
     units = methodology?.fields[0].units;
   }
-
-  console.log(fields);
 
   return (
     <>
@@ -271,7 +237,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                     title={fields?.[0].id}
                     placeholder={t("select-type-activity")}
                     register={register}
-                    activity={"activity." + formInputs?.fields[0].name}
+                    activity={"activity.buildingType"}
                     errors={errors}
                   />
                 </FormControl>
@@ -281,7 +247,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                     title={fields?.[1].id}
                     placeholder={t("select-type-of-fuel")}
                     register={register}
-                    activity={"activity." + formInputs?.fields[1].name}
+                    activity={"activity.fuelType"}
                     errors={errors}
                   />
                 </FormControl>
@@ -297,7 +263,9 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                         !!resolve(prefix + "activityDataAmount", errors)
                       }
                     >
-                      <FormLabel>{fields?.[2].id}</FormLabel>
+                      <FormLabel className="truncate">
+                        {fields?.[2].id}
+                      </FormLabel>
                       <InputGroup>
                         <NumberInput defaultValue={0} w="full">
                           <NumberInputField
@@ -326,13 +294,9 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                               shadow: "none",
                               borderColor: "content.link",
                             }}
-                            {...register(
-                              ("activity." +
-                                formInputs?.fields[2].name) as ActivityKey,
-                              {
-                                required: t("value-required"),
-                              },
-                            )}
+                            {...register("activity.totalFuelConsumption", {
+                              required: t("value-required"),
+                            })}
                           />
                         </NumberInput>
                         <InputRightAddon
@@ -345,11 +309,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                         >
                           <Select
                             variant="unstyled"
-                            {...register(
-                              ("activity." +
-                                formInputs?.fields[2].addon
-                                  ?.name) as ActivityKey,
-                            )}
+                            {...register("activity.totalFuelConsumptionUnits")}
                           >
                             {units?.map((item: string) => (
                               <option key={item} value={item}>
@@ -399,10 +359,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                           shadow: "none",
                           borderColor: "content.link",
                         }}
-                        {...register(
-                          ("activity." +
-                            formInputs?.fields[3].name) as ActivityKey,
-                        )}
+                        {...register("activity.emissionFactorType")}
                         bgColor="base.light"
                         placeholder="Select emission factor type"
                         onChange={(e: any) => onEmissionFactorTypeChange(e)}
@@ -471,10 +428,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                             h="48px"
                             shadow="1dp"
                             borderRightRadius={0}
-                            {...register(
-                              ("activity." +
-                                formInputs?.fields[4]?.name) as ActivityKey,
-                            )}
+                            {...register("activity.co2EmissionFactor")}
                             bgColor={
                               isEmissionFactorInputDisabled
                                 ? "background.neutral"
@@ -495,12 +449,9 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                           shadow="1dp"
                           pos="relative"
                           zIndex={10}
-                          {...register(
-                            ("activity." +
-                              formInputs?.fields[4]?.addon.name) as ActivityKey,
-                          )}
+                          {...register("activity.co2EmissionFactorUnit")}
                         >
-                          {formInputs?.fields[4].addon.unit}
+                          {""}
                         </InputRightAddon>
                       </InputGroup>
                     </FormControl>
@@ -521,10 +472,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                               borderColor: "content.link",
                             }}
                             borderRightRadius={0}
-                            {...register(
-                              ("activity" +
-                                formInputs?.fields[5].name) as ActivityKey,
-                            )}
+                            {...register("activity.n2oEmissionFactor")}
                             bgColor={
                               isEmissionFactorInputDisabled
                                 ? "background.neutral"
@@ -547,12 +495,9 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                           shadow="1dp"
                           pos="relative"
                           zIndex={10}
-                          {...register(
-                            ("activity." +
-                              formInputs?.fields[5].addon.name) as ActivityKey,
-                          )}
+                          {...register("activity.n2oEmissionFactorUnit")}
                         >
-                          {formInputs?.fields[5].addon.unit}
+                          {""}
                         </InputRightAddon>
                       </InputGroup>
                     </FormControl>
@@ -573,10 +518,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                               borderColor: "content.link",
                             }}
                             borderRightRadius={0}
-                            {...register(
-                              ("activity." +
-                                formInputs?.fields[6].name) as ActivityKey,
-                            )}
+                            {...register("activity.ch4EmissionFactor")}
                             bgColor={
                               isEmissionFactorInputDisabled
                                 ? "background.neutral"
@@ -599,12 +541,9 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                           shadow="1dp"
                           pos="relative"
                           zIndex={10}
-                          {...register(
-                            ("activity." +
-                              formInputs?.fields[6].addon.name) as ActivityKey,
-                          )}
+                          {...register("activity.ch4EmissionFactorUnit")}
                         >
-                          {formInputs?.fields[6].addon.unit}
+                          {""}
                         </InputRightAddon>
                       </InputGroup>
                     </FormControl>
@@ -622,10 +561,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                         <NumberInputField
                           h="48px"
                           placeholder="Enter emissions value"
-                          {...register(
-                            ("activity." +
-                              formInputs?.fields[4]?.name) as ActivityKey,
-                          )}
+                          {...register("activity.co2EmissionFactor")}
                           bgColor="base.light"
                           pos="relative"
                           zIndex={999}
@@ -637,10 +573,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                         h="48px"
                         pos="relative"
                         zIndex={10}
-                        {...register(
-                          ("activity." +
-                            formInputs?.fields[4]?.addon.name) as ActivityKey,
-                        )}
+                        {...register("activity.co2EmissionFactorUnit")}
                       >
                         tCO2
                       </InputRightAddon>
@@ -657,10 +590,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                           h="48px"
                           borderRightRadius={0}
                           placeholder="Enter emissions value"
-                          {...register(
-                            ("activity." +
-                              formInputs?.fields[4]?.name) as ActivityKey,
-                          )}
+                          {...register("activity.n2oEmissionFactor")}
                           bgColor="base.light"
                           pos="relative"
                           zIndex={999}
@@ -673,10 +603,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                         h="48px"
                         pos="relative"
                         zIndex={10}
-                        {...register(
-                          ("activity." +
-                            formInputs?.fields[4]?.addon.name) as ActivityKey,
-                        )}
+                        {...register("activity.n2oEmissionFactorUnit")}
                       >
                         tN2O
                       </InputRightAddon>
@@ -693,10 +620,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                           h="48px"
                           borderRightRadius={0}
                           placeholder="Enter emissions value"
-                          {...register(
-                            ("activity." +
-                              formInputs?.fields[4]?.name) as ActivityKey,
-                          )}
+                          {...register("activity.ch4EmissionFactor")}
                           bgColor="base.light"
                           pos="relative"
                           zIndex={999}
@@ -709,10 +633,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                         h="48px"
                         pos="relative"
                         zIndex={10}
-                        {...register(
-                          ("activity." +
-                            formInputs?.fields[4]?.addon.name) as ActivityKey,
-                        )}
+                        {...register("activity.ch4EmissionFactorUnit")}
                       >
                         tCH4
                       </InputRightAddon>

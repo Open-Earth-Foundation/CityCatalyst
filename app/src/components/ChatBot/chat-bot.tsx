@@ -12,6 +12,7 @@ import {
   Spacer,
   Text,
   Textarea,
+  useToast,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { BsStars } from "react-icons/bs";
@@ -73,16 +74,37 @@ export default function ChatBot({
   const [getAllDataSources] = api.useLazyGetAllDataSourcesQuery();
   const [getUserInventories] = api.useLazyGetUserInventoriesQuery();
   const [getInventory] = api.useLazyGetInventoryQuery();
+  const toast = useToast();
+
+  const handleError = (error: any, errorMessage: string) => {
+    console.error(errorMessage, error);
+    // Display error to user (you can use a toast notification or a modal)
+    // Example using Chakra UI's toast:
+    toast({
+      title: "An error occurred",
+      description: errorMessage,
+      status: "error",
+      duration: 5000,
+      isClosable: true,
+    });
+  };
 
   // Creating the thread id for the given inventory on initial render
   useEffect(() => {
     // Function to create the threadId with initial message
     const initializeThread = async () => {
-      const result = await createThreadId({
-        inventoryId: inventoryId,
-        content: t("initial-message"),
-      }).unwrap();
-      setThreadId(result);
+      try {
+        const result = await createThreadId({
+          inventoryId: inventoryId,
+          content: t("initial-message"),
+        }).unwrap();
+        setThreadId(result);
+      } catch (error) {
+        handleError(
+          error,
+          "Failed to initialize chat. Please refresh the page.",
+        );
+      }
     };
     if (!threadId) {
       initializeThread();
@@ -118,8 +140,9 @@ export default function ChatBot({
 
       const stream = AssistantStream.fromReadableStream(response.body);
       handleReadableStream(stream);
-    } catch (err) {
-      console.error("Failed to send message:", err);
+    } catch (error) {
+      handleError(error, "Failed to send message. Please try again.");
+      setInputDisabled(false);
     }
   };
 
@@ -128,31 +151,51 @@ export default function ChatBot({
   ////////////////////
 
   const functionCallHandler = async (call: any) => {
-    // Handle function get all data sources
-    if (call?.function?.name === "get_all_datasources") {
-      const { data, error, isLoading } = await getAllDataSources({
-        inventoryId,
+    try {
+      // Handle function get all data sources
+      if (call?.function?.name === "get_all_datasources") {
+        const { data, error, isLoading } = await getAllDataSources({
+          inventoryId,
+        });
+        if (error) throw error;
+        return JSON.stringify(data);
+
+        // Handle function to get all user inventories
+      } else if (call?.function?.name === "get_user_inventories") {
+        const { data, error, isLoading } = await getUserInventories();
+        if (error) throw error;
+        return JSON.stringify(data);
+
+        // Handle function to get details of specific inventory
+      } else if (call?.function?.name === "get_inventory") {
+        // Parse the nested JSON string in the "arguments" field
+        const argument = JSON.parse(call.function.arguments);
+        const selectedInventoryId = argument.inventory_id;
+        const { data, error, isLoading } =
+          await getInventory(selectedInventoryId);
+        if (error) throw error;
+        return JSON.stringify(data);
+      }
+      // Handle if no function call was identified
+      else {
+        throw new Error("No function identified to call");
+        //return JSON.stringify({ error: "no function identified to call" });
+      }
+    } catch (error) {
+      handleError(error, `Error in function call: ${call?.function?.name}`);
+      return JSON.stringify({
+        error: { message: "Error in function call", error: error },
       });
-
-      return JSON.stringify(data);
-
-      // Handle function to get all user inventories
-    } else if (call?.function?.name === "get_user_inventories") {
-      const { data, error, isLoading } = await getUserInventories();
-      return JSON.stringify(data);
-
-      // Handle function to get details of specific inventory
-    } else if (call?.function?.name === "get_inventory") {
-      // Parse the nested JSON string in the "arguments" field
-      const argument = JSON.parse(call.function.arguments);
-      const selectedInventoryId = argument.inventory_id;
-      const { data, error, isLoading } =
-        await getInventory(selectedInventoryId);
-      return JSON.stringify(data);
-    }
-    // Handle if no function call was identified
-    else {
-      return JSON.stringify({ error: "no function identified to call" });
+      // if (error instanceof Error) {
+      //   handleError(error, `Error in function call: ${call?.function?.name}`);
+      //   return JSON.stringify({ error: error.message });
+      // } else {
+      //   handleError(
+      //     new Error("An unknown error occurred"),
+      //     `Error in function call: ${call?.function?.name}`,
+      //   );
+      //   return JSON.stringify({ error: "An unknown error occurred" });
+      // }
     }
   };
 
@@ -184,7 +227,8 @@ export default function ChatBot({
       const stream = AssistantStream.fromReadableStream(response.body);
       handleReadableStream(stream);
     } catch (err) {
-      console.error("Failed to submit tool output:", err);
+      handleError(err, "Failed to submit tool output. Please try again.");
+      setInputDisabled(false);
     }
   };
 

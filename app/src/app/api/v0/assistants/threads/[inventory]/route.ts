@@ -1,11 +1,13 @@
 import { apiHandler } from "@/util/api";
-import { openai } from "@/util/openai";
+import { setupOpenAI } from "@/util/openai";
 import { NextResponse } from "next/server";
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { Inventory } from "@/models/Inventory";
 import { PopulationEntry, findClosestYear } from "@/util/helpers";
 import { PopulationAttributes } from "@/models/Population";
+
+const openai = setupOpenAI();
 
 export const POST = apiHandler(async (req, { params, session }) => {
   const { content } = await req.json();

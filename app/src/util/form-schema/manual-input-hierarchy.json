@@ -1662,7 +1662,7 @@
         "disabled": true,
         "inputRequired": [
           "total-distance-travelled-in-in-boundary-trips",
-          "distnace-travelled-within-city-transboundary-departing-only",
+          "distance-travelled-within-city-transboundary-departing-only",
           "fuel-intensity"
         ]
       },

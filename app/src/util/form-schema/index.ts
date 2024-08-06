@@ -27,7 +27,7 @@ export interface Methodology {
   disabled?: boolean;
   activities?: Activity[];
   inputRequired?: string[];
-  fields?: []
+  fields?: [];
   suggestedActivitiesId?: string;
   suggestedActivities?: Activity[];
 }
@@ -36,8 +36,7 @@ export interface DirectMeasure {
   suggestedActivitiesId?: string;
   suggestedActivities?: Activity[];
   inputRequired?: string[];
-  id?: string;
- "extra-fields"?: ExtraField[];
+  "extra-fields"?: ExtraField[];
 }
 
 interface ManualInputHierarchy {

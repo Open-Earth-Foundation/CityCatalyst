@@ -9,7 +9,7 @@ TRUNCATE datasource_staging;
 
 /* Load the staging table from the transformed file */
 
-\copy datasource_staging (datasource_id,publisher_id,datasource_name,dataset_name,dataset_description,source_type,access_type,dataset_url,geographical_location,start_year,end_year,latest_accounting_year,frequency_of_update,spatial_resolution,language,accessibility,data_quality,notes,units,methodology_description,methodology_url,transformation_description,retrieval_method,api_endpoint,gpc_reference_number,scope) from 'datasource_seeder.csv' with CSV HEADER;
+\copy datasource_staging (datasource_id,publisher_id,datasource_name,dataset_name,dataset_description,source_type,access_type,dataset_url,geographical_location,start_year,end_year,latest_accounting_year,frequency_of_update,spatial_resolution,language,accessibility,data_quality,notes,units,methodology_description,methodology_url,transformation_description,retrieval_method,api_endpoint,gpc_reference_number,scope) from 'datasource_seeder.yaml' with CSV HEADER;
 
 /* Update the main table with the staging table */
 

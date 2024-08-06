@@ -7,10 +7,11 @@ import { Inventory } from "@/models/Inventory";
 import { PopulationEntry, findClosestYear } from "@/util/helpers";
 import { PopulationAttributes } from "@/models/Population";
 
-const openai = setupOpenAI();
-
 export const POST = apiHandler(async (req, { params, session }) => {
   const { content } = await req.json();
+
+  const openai = setupOpenAI();
+
   const inventory = await UserService.findUserInventory(
     params.inventory,
     session,

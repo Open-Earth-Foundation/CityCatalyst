@@ -60,7 +60,8 @@ popd
 # Import datasources
 
 pushd importer/datasource_seeder
-
-$python_cmd ./import_dataseeder.py --database_uri $DB_URI
-
+psql -h $CC_GLOBAL_API_DB_HOST \
+   -U $CC_GLOBAL_API_DB_USER \
+   -d $CC_GLOBAL_API_DB_NAME \
+   -f ./import_datasource_seeder.sql
 popd

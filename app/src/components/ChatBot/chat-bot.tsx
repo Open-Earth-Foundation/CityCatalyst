@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import {
   Box,
@@ -11,8 +12,8 @@ import {
   Spacer,
   Text,
   Textarea,
+  useToast,
 } from "@chakra-ui/react";
-import { useChat } from "ai/react";
 import { TFunction } from "i18next";
 import { BsStars } from "react-icons/bs";
 import {
@@ -23,15 +24,22 @@ import {
   MdOutlineThumbUp,
   MdRefresh,
 } from "react-icons/md";
-import { ScrollAnchor } from "./scroll-anchor";
 import { RefObject, useRef } from "react";
+import { api, useCreateThreadIdMutation } from "@/services/api";
+import { AssistantStream } from "openai/lib/AssistantStream";
+// @ts-expect-error - no types for this yet
+import { AssistantStreamEvent } from "openai/resources/beta/assistants/assistants";
+
+interface Message {
+  role: "user" | "assistant" | "code";
+  text: string;
+}
 
 function useEnterSubmit(): {
   formRef: RefObject<HTMLFormElement>;
   onKeyDown: (event: React.KeyboardEvent<HTMLTextAreaElement>) => void;
 } {
   const formRef = useRef<HTMLFormElement>(null);
-
   const handleKeyDown = (
     event: React.KeyboardEvent<HTMLTextAreaElement>,
   ): void => {
@@ -58,20 +66,255 @@ export default function ChatBot({
   t: TFunction;
   inventoryId: string;
 }) {
-  const {
-    messages,
-    input,
-    handleInputChange,
-    handleSubmit,
-    isLoading,
-    append,
-    reload,
-  } = useChat({
-    api: `/api/v0/chat/${inventoryId}`,
-    initialMessages: [
-      { id: "-1", content: t("initial-message"), role: "assistant" },
-    ],
-  });
+  const [threadId, setThreadId] = useState("");
+  const [userInput, setUserInput] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputDisabled, setInputDisabled] = useState(false);
+  const [createThreadId] = useCreateThreadIdMutation();
+  const [getAllDataSources] = api.useLazyGetAllDataSourcesQuery();
+  const [getUserInventories] = api.useLazyGetUserInventoriesQuery();
+  const [getInventory] = api.useLazyGetInventoryQuery();
+  const toast = useToast();
+
+  const handleError = (error: any, errorMessage: string) => {
+    // Display error to user
+    toast({
+      title: "An error occurred",
+      description: errorMessage,
+      status: "error",
+      duration: 5000,
+      isClosable: true,
+    });
+  };
+
+  // Creating the thread id for the given inventory on initial render
+  useEffect(() => {
+    // Function to create the threadId with initial message
+    const initializeThread = async () => {
+      try {
+        const result = await createThreadId({
+          inventoryId: inventoryId,
+          content: t("initial-message"),
+        }).unwrap();
+        setThreadId(result);
+      } catch (error) {
+        handleError(
+          error,
+          "Failed to initialize chat. Please refresh the page.",
+        );
+      }
+    };
+    if (!threadId) {
+      initializeThread();
+    }
+  }, []); // Empty dependency array means this effect runs only once
+
+  // Automatically scroll to bottom of chat
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // TODO: Convert to Redux #ON-2137
+  const sendMessage = async (text: string) => {
+    try {
+      const response = await fetch(`/api/v0/assistants/threads/messages`, {
+        method: "POST",
+        body: JSON.stringify({
+          threadId: threadId,
+          content: text,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.text();
+        console.error("HTTP response text", data);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      if (response.body == null) {
+        console.error("HTTP response is null");
+        throw new Error("HTTP response is null");
+      }
+
+      const stream = AssistantStream.fromReadableStream(response.body);
+      handleReadableStream(stream);
+    } catch (error) {
+      handleError(error, "Failed to send message. Please try again.");
+      setInputDisabled(false);
+    }
+  };
+
+  ////////////////////
+  // Function calls //
+  ////////////////////
+
+  const functionCallHandler = async (call: any) => {
+    try {
+      // Handle function get all data sources
+      if (call?.function?.name === "get_all_datasources") {
+        const { data, error } = await getAllDataSources({
+          inventoryId,
+        });
+        if (error) throw error;
+        return JSON.stringify(data);
+
+        // Handle function to get all user inventories
+      } else if (call?.function?.name === "get_user_inventories") {
+        const { data, error } = await getUserInventories();
+        if (error) throw error;
+        return JSON.stringify(data);
+
+        // Handle function to get details of specific inventory
+      } else if (call?.function?.name === "get_inventory") {
+        // Parse the nested JSON string in the "arguments" field
+        const argument = JSON.parse(call.function.arguments);
+        const selectedInventoryId = argument.inventory_id;
+        const { data, error } = await getInventory(selectedInventoryId);
+        if (error) throw error;
+        return JSON.stringify(data);
+      }
+      // Handle if no function call was identified
+      else {
+        throw new Error("No function identified to call");
+      }
+    } catch (error) {
+      handleError(error, `Error in function call: ${call?.function?.name}`);
+      return JSON.stringify({
+        error: { error: error, message: "Error in function call" },
+      });
+    }
+  };
+
+  const submitActionResult = async (
+    threadId: string,
+    runId: string,
+    toolCallOutputs: object,
+  ) => {
+    try {
+      const response = await fetch(`/api/v0/assistants/threads/actions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          threadId: threadId,
+          runId: runId,
+          toolCallOutputs: toolCallOutputs,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.text();
+        console.error("HTTP response text", data);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      if (response.body == null) {
+        console.error("HTTP response is null");
+        throw new Error("HTTP response is null");
+      }
+
+      const stream = AssistantStream.fromReadableStream(response.body);
+      handleReadableStream(stream);
+    } catch (error) {
+      handleError(error, "Failed to submit tool output. Please try again.");
+      setInputDisabled(false);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userInput.trim()) return;
+    sendMessage(userInput);
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { role: "user", text: userInput },
+    ]);
+    setUserInput("");
+    setInputDisabled(true);
+    scrollToBottom();
+  };
+
+  const handleSuggestionClick = (message: string) => {
+    sendMessage(message);
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { role: "user", text: message },
+    ]);
+    setInputDisabled(true);
+  };
+
+  ////////////////////////////
+  // Stream Event Handlers //
+  ///////////////////////////
+
+  // Create new assistant message
+  const handleTextCreated = () => {
+    appendMessage("assistant", "");
+  };
+
+  // Append text to last assistant message
+  const handleTextDelta = (delta: any) => {
+    if (delta.value != null) {
+      appendToLastMessage(delta.value);
+    }
+    // TODO: Currently not working properly
+    // if (delta.annotations != null) {
+    //   annotateLastMessage(delta.annotations);
+    // }
+  };
+
+  // Re-enable the input form
+  const handleRunCompleted = () => {
+    setInputDisabled(false);
+  };
+
+  const handleRequiresAction = async (
+    event: AssistantStreamEvent.ThreadRunRequiresAction,
+  ) => {
+    const runId = event.data.id;
+    const toolCalls = event.data.required_action.submit_tool_outputs.tool_calls;
+
+    const toolCallOutputs = await Promise.all(
+      toolCalls.map(async (toolCall: any) => {
+        const result = await functionCallHandler(toolCall);
+
+        return { output: result, tool_call_id: toolCall.id };
+      }),
+    );
+    setInputDisabled(true);
+    submitActionResult(threadId, runId, toolCallOutputs);
+  };
+
+  // Here all the streaming events get processed
+  const handleReadableStream = (stream: AssistantStream) => {
+    // Messages
+    stream.on("textCreated", handleTextCreated);
+    stream.on("textDelta", handleTextDelta);
+
+    // Events without helpers yet (e.g. requires_action and run.done)
+    stream.on("event", (event) => {
+      if (event.event === "thread.run.requires_action")
+        handleRequiresAction(event);
+      if (event.event === "thread.run.completed") handleRunCompleted();
+    });
+  };
+
+  // Setting the initial message to display for the user
+  // This message will not be passed to the assistant api
+  // It will be set additionally when creating the threadId
+  // to pass to the assistant api
+  useEffect(() => {
+    setMessages([
+      {
+        role: "assistant",
+        text: t("initial-message"),
+      },
+    ]);
+  }, []);
+
   const { copyToClipboard, isCopied } = useCopyToClipboard({});
   const { formRef, onKeyDown } = useEnterSubmit();
   const messagesWrapperRef = useRef<HTMLDivElement>(null);
@@ -93,6 +336,68 @@ export default function ChatBot({
     },
   ];
 
+  /////////////////////
+  // Utility Helpers //
+  /////////////////////
+
+  const appendMessage = (role: Message["role"], text: string) => {
+    setMessages((prevMessages) => [...prevMessages, { role, text }]);
+  };
+
+  const appendToLastMessage = (text: string) => {
+    setMessages((prevMessages) => {
+      const lastMessage = prevMessages[prevMessages.length - 1];
+      const updatedLastMessage = {
+        ...lastMessage,
+        text: lastMessage.text + text,
+      };
+      return [...prevMessages.slice(0, -1), updatedLastMessage];
+    });
+  };
+
+  // TODO: Fix annotations ON-2114
+  const annotateLastMessage = async (annotations: any) => {
+    setMessages((prevMessages) => {
+      const lastMessage = prevMessages[prevMessages.length - 1];
+      const updatedLastMessage = {
+        ...lastMessage,
+      };
+      annotations.forEach(async (annotation: any) => {
+        if (annotation.type === "file_citation") {
+          const fileId = annotation.file_citation.file_id;
+
+          try {
+            const response = await fetch(`/api/v0/assistants/files/${fileId}`, {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+            if (!response.ok) {
+              const data = await response.text();
+              console.error("HTTP response text", data);
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            if (response.body == null) {
+              console.error("HTTP response is null");
+              throw new Error("HTTP response is null");
+            }
+
+            const data = await response.json();
+
+            updatedLastMessage.text = updatedLastMessage.text.replaceAll(
+              annotation.text,
+              `【${data.file.filename}】`,
+            );
+          } catch (error) {
+            console.error("Error fetching file:", error);
+          }
+        }
+      });
+      return [...prevMessages.slice(0, -1), updatedLastMessage];
+    });
+  };
+
   return (
     <div className="flex flex-col w-full stretch">
       <div
@@ -102,7 +407,7 @@ export default function ChatBot({
         {messages.map((m, i) => {
           const isUser = m.role === "user";
           return (
-            <HStack key={m.id} align="top">
+            <HStack key={i} align="top">
               <Box
                 w={9}
                 h={9}
@@ -125,7 +430,7 @@ export default function ChatBot({
                   lineHeight="24px"
                   fontSize="16px"
                 >
-                  {m.content}
+                  {m.text}
                 </Text>
                 {!isUser &&
                   i === messages.length - 1 &&
@@ -133,7 +438,7 @@ export default function ChatBot({
                     <>
                       <Divider borderColor="border.overlay" my={3} />
                       <HStack>
-                        <IconButton
+                        {/* <IconButton
                           variant="ghost"
                           icon={<Icon as={MdOutlineThumbUp} boxSize={5} />}
                           aria-label="Vote good"
@@ -144,9 +449,9 @@ export default function ChatBot({
                           icon={<Icon as={MdOutlineThumbDown} boxSize={5} />}
                           aria-label="Vote bad"
                           color="content.tertiary"
-                        />
+                        /> */}
                         <IconButton
-                          onClick={() => copyToClipboard(m.content)}
+                          onClick={() => copyToClipboard(m.text)}
                           variant="ghost"
                           icon={
                             <Icon
@@ -162,7 +467,7 @@ export default function ChatBot({
                           }
                         />
                         <Spacer />
-                        <Button
+                        {/* <Button
                           onClick={() => reload()}
                           leftIcon={<Icon as={MdRefresh} boxSize={5} />}
                           variant="outline"
@@ -175,7 +480,7 @@ export default function ChatBot({
                           letterSpacing="0.5px"
                         >
                           {t("regenerate")}
-                        </Button>
+                        </Button> */}
                       </HStack>
                     </>
                   )}
@@ -183,10 +488,7 @@ export default function ChatBot({
             </HStack>
           );
         })}
-        <ScrollAnchor
-          trackVisibility={isLoading}
-          rootRef={messagesWrapperRef}
-        />
+        <div ref={messagesEndRef} />
       </div>
 
       <Divider mt={2} mb={6} borderColor="border.neutral" />
@@ -196,10 +498,7 @@ export default function ChatBot({
           <Button
             key={i}
             onClick={() => {
-              append({
-                content: suggestion.message,
-                role: "user",
-              });
+              handleSuggestionClick(suggestion.message);
             }}
             bg="background.overlay"
             color="content.alternative"
@@ -213,6 +512,7 @@ export default function ChatBot({
             fontWeight="400"
             whiteSpace="nowrap"
             display="inline-block"
+            isDisabled={inputDisabled}
           >
             {suggestion.preview}
           </Button>
@@ -231,9 +531,9 @@ export default function ChatBot({
             h="80px"
             ref={inputRef}
             className="flex-grow w-full p-4"
-            value={input}
+            value={userInput}
             placeholder={t("ask-assistant")}
-            onChange={handleInputChange}
+            onChange={(e) => setUserInput(e.target.value)}
             onKeyDown={onKeyDown}
           />
           <IconButton
@@ -242,6 +542,7 @@ export default function ChatBot({
             icon={<MdOutlineSend size={24} />}
             color="content.tertiary"
             aria-label="Send message"
+            isDisabled={inputDisabled}
           />
         </HStack>
       </form>

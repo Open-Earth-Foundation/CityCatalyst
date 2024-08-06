@@ -3,6 +3,9 @@
     "methodologies": [
       {
         "id": "fuel-combustion-residential-buildings-methodology",
+        "inputRequired": [
+          "total-fuel-consumption"
+        ],
         "activities": [
           {
             "id": "fuel-combustion-residential-buildings-activity",
@@ -16,19 +19,21 @@
             "extra-fields": [
               {
                 "id": "residential-building-type",
-                "options": ["residential-building-type-all"]
+                "options": [
+                  "building-type-all"
+                ]
               },
               {
                 "id": "residential-building-fuel-type",
                 "options": [
-                  "residential-building-fuel-type-propane",
-                  "residential-building-fuel-type-natural-gas",
-                  "residential-building-fuel-type-charcoal",
-                  "residential-building-fuel-type-liquefied-petroleum-gases",
-                  "residential-building-fuel-type-peat",
-                  "residential-building-fuel-type-anthracite",
-                  "residential-building-fuel-type-gasoline",
-                  "residential-building-fuel-type-diesel"
+                  "fuel-type-propane",
+                  "fuel-type-natural-gas",
+                  "fuel-type-charcoal",
+                  "fuel-type-liquefied-petroleum-gases",
+                  "fuel-type-peat",
+                  "fuel-type-anthracite",
+                  "fuel-type-gasoline",
+                  "fuel-type-diesel"
                 ]
               },
               {
@@ -48,38 +53,50 @@
         "suggestedActivities": [
           {
             "id": "fuel-combustion-residential-buildings-activity",
-            "commercial-building-type": "residential-building-type-all"
+            "residential-building-type": "building-type-all"
           }
         ]
       },
       {
         "id": "scaled-sample-fuel-combustion-residential-buildings-methodology",
+        "inputRequired": [
+          "sample-fuel",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
         "id": "modeled-data-fuel-consumption-residential-buildings-methodology",
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
+      "id": "fuel-combustion-residential-buildings-direct-measure-methodology",
       "extra-fields": [
         {
           "id": "residential-building-type",
-          "options": ["residential-building-type-all"]
+          "options": [
+            "residential-building-type-all"
+          ]
         },
         {
           "id": "residential-building-fuel-type",
           "options": [
-            "residential-building-fuel-type-all",
-            "residential-building-fuel-type-propane",
-            "residential-building-fuel-type-natural-gas",
-            "residential-building-fuel-type-charcoal",
-            "residential-building-fuel-type-liquefied-petroleum-gases",
-            "residential-building-fuel-type-peat",
-            "residential-building-fuel-type-anthracite",
-            "residential-building-fuel-type-gasoline",
-            "residential-building-fuel-type-diesel"
-          ]
+            "fuel-type-all",
+            "fuel-type-propane",
+            "fuel-type-natural-gas",
+            "fuel-type-charcoal",
+            "fuel-type-liquefied-petroleum-gases",
+            "fuel-type-peat",
+            "fuel-type-anthracite",
+            "fuel-type-gasoline",
+            "fuel-type-diesel"
+          ],
+          "exclusive": "fuel-type-all"
         },
         {
           "id": "residential-buildings-fuel-source",
@@ -92,6 +109,9 @@
     "methodologies": [
       {
         "id": "energy-consumption-residential-buildings-methodology",
+        "inputRequired": [
+          "total-grid-consumption"
+        ],
         "activities": [
           {
             "id": "energy-consumption-residential-buildings-activity",
@@ -105,60 +125,83 @@
             "extra-fields": [
               {
                 "id": "residential-building-type",
-                "options": ["residential-building-type-all"]
+                "options": [
+                  "residential-building-type-all"
+                ]
               },
               {
                 "id": "residential-building-energy-usage",
                 "options": [
-                  "residential-building-energy-usage-all",
-                  "residential-building-energy-usage-electricity",
-                  "residential-building-energy-usage-electricity-chp",
-                  "residential-building-energy-usage-heating",
-                  "residential-building-energy-usage-heating-chp",
-                  "residential-building-energy-usage-steam",
-                  "residential-building-energy-usage-steam-chp",
-                  "residential-building-energy-usage-refrigeration",
-                  "residential-building-energy-usage-refrigeration-chp"
-                ]
+                  "energy-usage-all",
+                  "energy-usage-electricity",
+                  "energy-usage-electricity-chp",
+                  "energy-usage-heating",
+                  "energy-usage-heating-chp",
+                  "energy-usage-steam",
+                  "energy-usage-steam-chp",
+                  "energy-usage-refrigeration",
+                  "energy-usage-refrigeration-chp"
+                ],
+                "exclusive": "energy-usage-all"
               },
               {
                 "id": "residential-buildings-energy-source",
                 "type": "text"
               }
             ],
-            "units": ["units-kilowatt-hours", "units-terajoules"]
+            "units": [
+              "units-kilowatt-hours",
+              "units-terajoules"
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "energy-consumption-residential-buildings-activity",
+            "residential-building-type": "building-type-all"
           }
         ]
       },
       {
         "id": "scaled-sample-energy-usage-residential-buildings-methodology",
+        "inputRequired": [
+          "sample-fuel",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
         "id": "modeled-data-energy-usage-residential-buildings-methodology",
+        "inputRequired": [
+          "sample-fuel",
+          "scaling-data"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
+      "id": "energy-consumption-residential-buildings-direct-measure-methodology",
       "extra-fields": [
         {
           "id": "residential-building-type",
-          "options": ["residential-building-type-all"],
-          "exclusive": "residential-building-type-all"
+          "options": [
+            "building-type-all"
+          ]
         },
         {
           "id": "residential-building-energy-usage",
           "options": [
-            "residential-building-energy-usage-all",
-            "residential-building-energy-usage-electricity",
-            "residential-building-energy-usage-electricity-chp",
-            "residential-building-energy-usage-heating",
-            "residential-building-energy-usage-heating-chp",
-            "residential-building-energy-usage-steam",
-            "residential-building-energy-usage-steam-chp",
-            "residential-building-energy-usage-refrigeration",
-            "residential-building-energy-usage-refrigeration-chp"
-          ]
+            "energy-usage-all",
+            "energy-usage-electricity",
+            "energy-usage-electricity-chp",
+            "energy-usage-heating",
+            "energy-usage-heating-chp",
+            "energy-usage-steam",
+            "energy-usage-steam-chp",
+            "energy-usage-refrigeration",
+            "energy-usage-refrigeration-chp"
+          ],
+          "exclusive": "energy-usage-all"
         },
         {
           "id": "residential-buildings-energy-source",
@@ -171,7 +214,9 @@
     "methodologies": [
       {
         "id": "fuel-combustion-commercial-buildings-methodology",
-        "inputRequired": ["total-fuel-consumption"],
+        "inputRequired": [
+          "total-fuel-consumption"
+        ],
         "activities": [
           {
             "id": "fuel-combustion-commercial-buildings-activity",
@@ -186,24 +231,24 @@
               {
                 "id": "commercial-building-type",
                 "options": [
-                  "commercial-building-type-all",
-                  "commercial-building-type-commercial-institutional",
-                  "commercial-building-type-commercial-buildings",
-                  "commercial-building-type-institutional-buildings",
-                  "commercial-building-type-street-lighting"
+                  "type-all",
+                  "type-commercial-institutional",
+                  "type-commercial-buildings",
+                  "type-institutional-buildings",
+                  "type-street-lighting"
                 ],
-                "exclusive": "commercial-building-type-all"
+                "exclusive": "type-all"
               },
               {
                 "id": "commercial-building-fuel-type",
                 "options": [
-                  "commercial-building-fuel-type-propane",
-                  "commercial-building-fuel-type-wood/wood-waste",
-                  "commercial-building-fuel-type-natural-gas",
-                  "commercial-building-fuel-type-liquefied-petroleum-gases",
-                  "commercial-building-fuel-type-anthracite",
-                  "commercial-building-fuel-type-gasoline",
-                  "commercial-building-fuel-type-diesel"
+                  "fuel-type-propane",
+                  "fuel-type-wood/wood-waste",
+                  "fuel-type-natural-gas",
+                  "fuel-type-liquefied-petroleum-gases",
+                  "fuel-type-anthracite",
+                  "fuel-type-gasoline",
+                  "fuel-type-diesel"
                 ]
               },
               {
@@ -223,55 +268,62 @@
         "suggestedActivities": [
           {
             "id": "fuel-combustion-commercial-buildings-activity",
-            "commercial-building-type": "commercial-building-type-all"
+            "commercial-building-type": "type-all"
           },
           {
             "id": "fuel-combustion-commercial-buildings-activity",
-            "commercial-building-type": "commercial-building-type-commercial-buildings"
+            "commercial-building-type": "type-commercial-buildings"
           },
           {
             "id": "fuel-combustion-commercial-buildings-activity",
-            "commercial-building-type": "commercial-building-type-institutional-buildings"
+            "commercial-building-type": "type-institutional-buildings"
           }
         ]
       },
       {
         "id": "scaled-sample-fuel-combustion-commercial-buildings-methodology",
-        "inputRequired": ["sample-fuel", "scaling-data"],
+        "inputRequired": [
+          "sample-fuel",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
         "id": "modeled-data-fuel-consumption-commercial-buildings-methodology",
-        "inputRequired": ["modeled-fuel", "built-area"],
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
-      "id": "stationary-energy-direct-measure-methodology",
+      "id": "fuel-consumption-commercial-buildings-direct-measure-methodology",
       "extra-fields": [
         {
           "id": "commercial-building-type",
           "options": [
-            "commercial-building-type-all",
-            "commercial-building-type-commercial-institutional",
-            "commercial-building-type-commercial-buildings",
-            "commercial-building-type-institutional-buildings",
-            "commercial-building-type-street-lighting"
+            "type-all",
+            "type-commercial-institutional",
+            "type-commercial-buildings",
+            "type-institutional-buildings",
+            "type-street-lighting"
           ],
-          "exclusive": "commercial-building-type-all"
+          "exclusive": "type-all"
         },
         {
           "id": "commercial-building-fuel-type",
           "options": [
-            "commercial-building-fuel-type-all",
-            "commercial-building-fuel-type-propane",
-            "commercial-building-fuel-type-wood/wood-waste",
-            "commercial-building-fuel-type-natural-gas",
-            "commercial-building-fuel-type-liquefied-petroleum-gases",
-            "commercial-building-fuel-type-anthracite",
-            "commercial-building-fuel-type-gasoline",
-            "commercial-building-fuel-type-diesel"
-          ]
+            "fuel-type-all",
+            "fuel-type-propane",
+            "fuel-type-wood/wood-waste",
+            "fuel-type-natural-gas",
+            "fuel-type-liquefied-petroleum-gases",
+            "fuel-type-anthracite",
+            "fuel-type-gasoline",
+            "fuel-type-diesel"
+          ],
+          "exclusive": "fuel-type-all"
         },
         {
           "id": "commercial-buildings-fuel-source",
@@ -284,7 +336,9 @@
     "methodologies": [
       {
         "id": "energy-consumption-commercial-buildings-methodology",
-        "inputRequired": ["total-grid-consumption"],
+        "inputRequired": [
+          "total-grid-consumption"
+        ],
         "activities": [
           {
             "id": "energy-consumption-commercial-buildings-activity",
@@ -299,73 +353,98 @@
               {
                 "id": "commercial-building-type",
                 "options": [
-                  "commercial-building-type-all",
-                  "commercial-building-type-commercial-institutional",
-                  "commercial-building-type-commercial-buildings",
-                  "commercial-building-type-institutional-buildings",
-                  "commercial-building-type-street-lighting"
+                  "type-all",
+                  "type-commercial-institutional",
+                  "type-commercial-buildings",
+                  "type-institutional-buildings",
+                  "type-street-lighting"
                 ],
-                "exclusive": "commercial-building-type-all"
+                "exclusive": "type-all"
               },
               {
                 "id": "commercial-building-energy-usage",
                 "options": [
-                  "commercial-building-energy-usage-all",
-                  "commercial-building-energy-usage-electricity",
-                  "commercial-building-energy-usage-electricity-chp",
-                  "commercial-building-energy-usage-heating",
-                  "commercial-building-energy-usage-heating-chp",
-                  "commercial-building-energy-usage-steam",
-                  "commercial-building-energy-usage-steam-chp",
-                  "commercial-building-energy-usage-refrigeration",
-                  "commercial-building-energy-usage-refrigeration-chp"
-                ]
+                  "energy-usage-all",
+                  "energy-usage-electricity",
+                  "energy-usage-electricity-chp",
+                  "energy-usage-heating",
+                  "energy-usage-heating-chp",
+                  "energy-usage-steam",
+                  "energy-usage-steam-chp",
+                  "energy-usage-refrigeration",
+                  "energy-usage-refrigeration-chp"
+                ],
+                "exclusive": "energy-usage-all"
               },
               {
                 "id": "commercial-buildings-energy-source",
                 "type": "text"
               }
             ],
-            "units": ["units-kilowatt-hours", "units-terajoules"]
+            "units": [
+              "units-kilowatt-hours", 
+              "units-terajoules"
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "energy-combustion-commercial-buildings-activity",
+            "commercial-building-type": "type-all"
+          },
+          {
+            "id": "energy-combustion-commercial-buildings-activity",
+            "commercial-building-type": "type-commercial-buildings"
+          },
+          {
+            "id": "energy-combustion-commercial-buildings-activity",
+            "commercial-building-type": "type-institutional-buildings"
           }
         ]
       },
       {
         "id": "scaled-sample-energy-usage-commercial-buildings-methodology",
-        "inputRequired": ["sample-grid-supplied-energy", "scaling-data"],
+        "inputRequired": [
+          "sample-grid-supplied-energy",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
         "id": "modeled-data-energy-usage-commercial-buildings-methodology",
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
-      "id": "stationary-energy-direct-measure-methodology",
+      "id": "energy-consumption-commercial-buildings-direct-measure-methodology",
       "extra-fields": [
         {
           "id": "commercial-building-type",
           "options": [
-            "commercial-building-type-all",
-            "commercial-building-type-commercial-institutional",
-            "commercial-building-type-commercial-buildings",
-            "commercial-building-type-institutional-buildings",
-            "commercial-building-type-street-lighting"
+            "type-all",
+            "type-commercial-institutional",
+            "type-commercial-buildings",
+            "type-institutional-buildings",
+            "type-street-lighting"
           ],
-          "exclusive": "commercial-building-type-all"
+          "exclusive": "type-all"
         },
         {
           "id": "commercial-building-energy-usage",
           "options": [
-            "commercial-building-energy-usage-all",
-            "commercial-building-energy-usage-electricity",
-            "commercial-building-energy-usage-electricity-chp",
-            "commercial-building-energy-usage-heating",
-            "commercial-building-energy-usage-heating-chp",
-            "commercial-building-energy-usage-steam",
-            "commercial-building-energy-usage-steam-chp",
-            "commercial-building-energy-usage-refrigeration",
-            "commercial-building-energy-usage-refrigeration-chp"
+            "energy-usage-all",
+            "energy-usage-electricity",
+            "energy-usage-electricity-chp",
+            "energy-usage-heating",
+            "energy-usage-heating-chp",
+            "energy-usage-steam",
+            "energy-usage-steam-chp",
+            "energy-usage-refrigeration",
+            "energy-usage-refrigeration-chp"
           ]
         },
         {
@@ -379,6 +458,9 @@
     "methodologies": [
       {
         "id": "fuel-combustion-manufacturing-and-construction-methodology",
+        "inputRequired": [
+          "total-fuel-consumption"
+        ],
         "activities": [
           {
             "id": "fuel-combustion-manufacturing-and-construction-activity",
@@ -393,54 +475,53 @@
               {
                 "id": "manufacturing-and-construction-type",
                 "options": [
-                  "manufacturing-and-construction-type-all",
-                  "manufacturing-and-construction-type-manufacturing-industries-and-construction",
-                  "manufacturing-and-construction-type-steel",
-                  "manufacturing-and-construction-type-cement",
-                  "manufacturing-and-construction-type-iron",
-                  "manufacturing-and-construction-type-non-ferrous-metals",
-                  "manufacturing-and-construction-type-chemical-products",
-                  "manufacturing-and-construction-type-pulp-paper-and-printing",
-                  "manufacturing-and-construction-type-non-metallic-minerals",
-                  "manufacturing-and-construction-type-transport-equipment",
-                  "manufacturing-and-construction-type-machinery",
-                  "manufacturing-and-construction-type-mining-and-quarrying",
-                  "manufacturing-and-construction-type-wood-and-wood-products",
-                  "manufacturing-and-construction-type-construction",
-                  "manufacturing-and-construction-type-textiles-and-leather",
-                  "manufacturing-and-construction-type-unspecified-industry"
+                  "type-all",
+                  "type-manufacturing-industries-and-construction",
+                  "type-steel",
+                  "type-cement",
+                  "type-iron",
+                  "type-non-ferrous-metals",
+                  "type-chemical-products",
+                  "type-pulp-paper-and-printing",
+                  "type-non-metallic-minerals",
+                  "type-transport-equipment",
+                  "type-machinery",
+                  "type-mining-and-quarrying",
+                  "type-wood-and-wood-products",
+                  "type-construction",
+                  "type-textiles-and-leather",
+                  "type-unspecified-industry"
                 ],
-                "exclusive": "manufacturing-and-construction-type-all"
+                "exclusive": "type-all"
               },
               {
                 "id": "manufacturing-and-construction-fuel-type",
                 "options": [
-                  "manufacturing-and-construction-fuel-type-anthracite",
-                  "manufacturing-and-construction-fuel-type-natural-other-bituminous-coal",
-                  "manufacturing-and-construction-fuel-type-sub-bituminous-coal",
-                  "manufacturing-and-construction-fuel-type-lignite",
-                  "manufacturing-and-construction-fuel-type-coking-coal",
-                  "manufacturing-and-construction-fuel-type-coke-oven-coke-and-lignite-coke",
-                  "manufacturing-and-construction-fuel-type-natural-gas",
-                  "manufacturing-and-construction-fuel-type-residual-fuel-oil",
-                  "manufacturing-and-construction-fuel-type-gas-oil",
-                  "manufacturing-and-construction-fuel-type-diesel-oil",
-                  "manufacturing-and-construction-fuel-type-other-kerosene",
-                  "manufacturing-and-construction-fuel-type-crude-oil",
-                  "manufacturing-and-construction-fuel-type-naphtha",
-                  "manufacturing-and-construction-fuel-type-refinery-gas",
-                  "manufacturing-and-construction-fuel-type-coke-oven-gas",
-                  "manufacturing-and-construction-fuel-type-oxygen-steel-furnace-gas",
-                  "manufacturing-and-construction-fuel-type-natural-gas-liquids",
-                  "manufacturing-and-construction-fuel-type-industrial-wastes",
-                  "manufacturing-and-construction-fuel-type-waste-oils",
-                  "manufacturing-and-construction-fuel-type-bitumen",
-                  "manufacturing-and-construction-fuel-type-municipal-wastes"
-                ],
-                "exclusive": "manufacturing-and-construction-fuel-type-all"
+                  "fuel-type-anthracite",
+                  "fuel-type-natural-other-bituminous-coal",
+                  "fuel-type-sub-bituminous-coal",
+                  "fuel-type-lignite",
+                  "fuel-type-coking-coal",
+                  "fuel-type-coke-oven-coke-and-lignite-coke",
+                  "fuel-type-natural-gas",
+                  "fuel-type-residual-fuel-oil",
+                  "fuel-type-gas-oil",
+                  "fuel-type-diesel-oil",
+                  "fuel-type-other-kerosene",
+                  "fuel-type-crude-oil",
+                  "fuel-type-naphtha",
+                  "fuel-type-refinery-gas",
+                  "fuel-type-coke-oven-gas",
+                  "fuel-type-oxygen-steel-furnace-gas",
+                  "fuel-type-natural-gas-liquids",
+                  "fuel-type-industrial-wastes",
+                  "fuel-type-waste-oils",
+                  "fuel-type-bitumen",
+                  "fuel-type-municipal-wastes"
+                ]
               },
               {
-                "id": "manufacturing-and-construction-fuel-source",
+                "id": "fuel-source",
                 "type": "text"
               }
             ],
@@ -456,86 +537,87 @@
         "suggestedActivities": [
           {
             "id": "fuel-combustion-manufacturing-and-construction-activity",
-            "manufacturing-and-construction-type": "manufacturing-and-construction-type-all"
+            "manufacturing-and-construction-type": "type-all"
           },
           {
             "id": "fuel-combustion-manufacturing-and-construction-activity",
-            "manufacturing-and-construction-type": "manufacturing-and-construction-type-cement"
+            "manufacturing-and-construction-type": "type-commercial-buildings"
           },
           {
             "id": "fuel-combustion-manufacturing-and-construction-activity",
-            "manufacturing-and-construction-type": "manufacturing-and-construction-type-iron"
-          },
-          {
-            "id": "fuel-combustion-manufacturing-and-construction-activity",
-            "manufacturing-and-construction-type": "manufacturing-and-construction-type-steel"
-          },
-          {
-            "id": "fuel-combustion-manufacturing-and-construction-activity",
-            "manufacturing-and-construction-type": "manufacturing-and-construction-type-chemical-products"
+            "manufacturing-and-construction-type": "type-institutional-buildings"
           }
         ]
       },
       {
         "id": "scaled-sample-fuel-combustion-manufacturing-and-construction-methodology",
+        "inputRequired": [
+          "sample-grid-supplied-energy",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
-        "id": "modeled-data-fuel-consumption-manufacturing-and-construction-methodology",
+        "id": "modeled-data-fuel-combustion-manufacturing-and-construction-methodology",
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
+      "id": "fuel-consumption-manufacturing-and-construction-direct-measure-methodology",
       "extra-fields": [
         {
           "id": "manufacturing-and-construction-type",
           "options": [
-            "manufacturing-and-construction-type-all",
-            "manufacturing-and-construction-type-manufacturing-industries-and-construction",
-            "manufacturing-and-construction-type-steel",
-            "manufacturing-and-construction-type-cement",
-            "manufacturing-and-construction-type-iron",
-            "manufacturing-and-construction-type-non-ferrous-metals",
-            "manufacturing-and-construction-type-chemical-products",
-            "manufacturing-and-construction-type-pulp-paper-and-printing",
-            "manufacturing-and-construction-type-non-metallic-minerals",
-            "manufacturing-and-construction-type-transport-equipment",
-            "manufacturing-and-construction-type-machinery",
-            "manufacturing-and-construction-type-mining-and-quarrying",
-            "manufacturing-and-construction-type-wood-and-wood-products",
-            "manufacturing-and-construction-type-construction",
-            "manufacturing-and-construction-type-textiles-and-leather",
-            "manufacturing-and-construction-type-unspecified-industry"
+            "type-all",
+            "type-manufacturing-industries-and-construction",
+            "type-steel",
+            "type-cement",
+            "type-iron",
+            "type-non-ferrous-metals",
+            "type-chemical-products",
+            "type-pulp-paper-and-printing",
+            "type-non-metallic-minerals",
+            "type-transport-equipment",
+            "type-machinery",
+            "type-mining-and-quarrying",
+            "type-wood-and-wood-products",
+            "type-construction",
+            "type-textiles-and-leather",
+            "type-unspecified-industry"
           ],
-          "exclusive": "manufacturing-and-construction-type-all"
+          "exclusive": "type-all"
         },
         {
           "id": "manufacturing-and-construction-fuel-type",
           "options": [
-            "manufacturing-and-construction-fuel-type-all",
-            "manufacturing-and-construction-fuel-type-anthracite",
-            "manufacturing-and-construction-fuel-type-natural-other-bituminous-coal",
-            "manufacturing-and-construction-fuel-type-sub-bituminous-coal",
-            "manufacturing-and-construction-fuel-type-lignite",
-            "manufacturing-and-construction-fuel-type-coking-coal",
-            "manufacturing-and-construction-fuel-type-coke-oven-coke-and-lignite-coke",
-            "manufacturing-and-construction-fuel-type-natural-gas",
-            "manufacturing-and-construction-fuel-type-residual-fuel-oil",
-            "manufacturing-and-construction-fuel-type-gas-oil",
-            "manufacturing-and-construction-fuel-type-diesel-oil",
-            "manufacturing-and-construction-fuel-type-other-kerosene",
-            "manufacturing-and-construction-fuel-type-crude-oil",
-            "manufacturing-and-construction-fuel-type-naphtha",
-            "manufacturing-and-construction-fuel-type-refinery-gas",
-            "manufacturing-and-construction-fuel-type-coke-oven-gas",
-            "manufacturing-and-construction-fuel-type-oxygen-steel-furnace-gas",
-            "manufacturing-and-construction-fuel-type-natural-gas-liquids",
-            "manufacturing-and-construction-fuel-type-industrial-wastes",
-            "manufacturing-and-construction-fuel-type-waste-oils",
-            "manufacturing-and-construction-fuel-type-bitumen",
-            "manufacturing-and-construction-fuel-type-municipal-wastes"
+            "fuel-type-all",
+            "fuel-type-anthracite",
+            "fuel-type-natural-other-bituminous-coal",
+            "fuel-type-sub-bituminous-coal",
+            "fuel-type-lignite",
+            "fuel-type-coking-coal",
+            "fuel-type-coke-oven-coke-and-lignite-coke",
+            "fuel-type-natural-gas",
+            "fuel-type-residual-fuel-oil",
+            "fuel-type-gas-oil",
+            "fuel-type-diesel-oil",
+            "fuel-type-other-kerosene",
+            "fuel-type-crude-oil",
+            "fuel-type-naphtha",
+            "fuel-type-refinery-gas",
+            "fuel-type-coke-oven-gas",
+            "fuel-type-oxygen-steel-furnace-gas",
+            "fuel-type-natural-gas-liquids",
+            "fuel-type-industrial-wastes",
+            "fuel-type-waste-oils",
+            "fuel-type-bitumen",
+            "fuel-type-municipal-wastes"
           ],
-          "exclusive": "manufacturing-and-construction-fuel-type-all"
+          "exclusive": "fuel-type-all"
         },
         {
           "id": "manufacturing-and-construction-fuel-source",
@@ -548,6 +630,9 @@
     "methodologies": [
       {
         "id": "energy-consumption-manufacturing-and-construction-methodology",
+        "inputRequired": [
+          "total-grid-consumption"
+        ],
         "activities": [
           {
             "id": "energy-consumption-manufacturing-and-construction-activity",
@@ -562,59 +647,85 @@
               {
                 "id": "manufacturing-and-construction-type",
                 "options": [
-                  "manufacturing-and-construction-type-all",
-                  "manufacturing-and-construction-type-manufacturing-industries-and-construction",
-                  "manufacturing-and-construction-type-steel",
-                  "manufacturing-and-construction-type-cement",
-                  "manufacturing-and-construction-type-iron",
-                  "manufacturing-and-construction-type-non-ferrous-metals",
-                  "manufacturing-and-construction-type-chemical-products",
-                  "manufacturing-and-construction-type-pulp-paper-and-printing",
-                  "manufacturing-and-construction-type-non-metallic-minerals",
-                  "manufacturing-and-construction-type-transport-equipment",
-                  "manufacturing-and-construction-type-machinery",
-                  "manufacturing-and-construction-type-mining-and-quarrying",
-                  "manufacturing-and-construction-type-wood-and-wood-products",
-                  "manufacturing-and-construction-type-construction",
-                  "manufacturing-and-construction-type-textiles-and-leather",
-                  "manufacturing-and-construction-type-unspecified-industry"
+                  "type-all",
+                  "type-manufacturing-industries-and-construction",
+                  "type-steel",
+                  "type-cement",
+                  "type-iron",
+                  "type-non-ferrous-metals",
+                  "type-chemical-products",
+                  "type-pulp-paper-and-printing",
+                  "type-non-metallic-minerals",
+                  "type-transport-equipment",
+                  "type-machinery",
+                  "type-mining-and-quarrying",
+                  "type-wood-and-wood-products",
+                  "type-construction",
+                  "type-textiles-and-leather",
+                  "type-unspecified-industry"
                 ],
                 "exclusive": "manufacturing-and-construction-type-all"
               },
               {
                 "id": "manufacturing-and-construction-energy-usage",
                 "options": [
-                  "manufacturing-and-construction-energy-usage-all",
-                  "manufacturing-and-construction-energy-usage-electricity",
-                  "manufacturing-and-construction-energy-usage-electricity-chp",
-                  "manufacturing-and-construction-energy-usage-heating",
-                  "manufacturing-and-construction-energy-usage-heating-chp",
-                  "manufacturing-and-construction-energy-usage-steam",
-                  "manufacturing-and-construction-energy-usage-steam-chp",
-                  "manufacturing-and-construction-energy-usage-refrigeration",
-                  "manufacturing-and-construction-energy-usage-refrigeration-chp"
+                  "energy-usage-all",
+                  "energy-usage-electricity",
+                  "energy-usage-electricity-chp",
+                  "energy-usage-heating",
+                  "energy-usage-heating-chp",
+                  "energy-usage-steam",
+                  "energy-usage-steam-chp",
+                  "energy-usage-refrigeration",
+                  "energy-usage-refrigeration-chp"
                 ],
-                "exclusive": "manufacturing-and-construction-energy-usage-all"
+                "exclusive": "energy-usage-all"
               },
               {
                 "id": "manufacturing-and-construction-energy-source",
                 "type": "text"
               }
             ],
-            "units": ["units-kilowatt-hours", "units-terajoules"]
+            "units": [
+              "units-kilowatt-hours",
+              "units-terajoules"
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "energy-combustion-manufacturing-and-construction-activity",
+            "manufacturing-and-construction-type": "manufacturing-and-construction-type-all"
+          },
+          {
+            "id": "energy-combustion-manufacturing-and-construction-activity",
+            "manufacturing-and-construction-type": "manufacturing-and-construction-type-commercial-buildings"
+          },
+          {
+            "id": "energy-combustion-manufacturing-and-construction-activity",
+            "manufacturing-and-construction-type": "manufacturing-and-construction-type-institutional-buildings"
           }
         ]
       },
       {
         "id": "scaled-sample-energy-usage-manufacturing-and-construction-methodology",
+        "inputRequired": [
+          "sample-grid-supplied-energy",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
         "id": "modeled-data-energy-usage-manufacturing-and-construction-methodology",
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
+      "id": "energy-consumption-manufacturing-and-construction-direct-measure-methodology",
       "extra-fields": [
         {
           "id": "manufacturing-and-construction-type",
@@ -641,17 +752,17 @@
         {
           "id": "manufacturing-and-construction-energy-usage",
           "options": [
-            "manufacturing-and-construction-energy-usage-all",
-            "manufacturing-and-construction-energy-usage-electricity",
-            "manufacturing-and-construction-energy-usage-electricity-chp",
-            "manufacturing-and-construction-energy-usage-heating",
-            "manufacturing-and-construction-energy-usage-heating-chp",
-            "manufacturing-and-construction-energy-usage-steam",
-            "manufacturing-and-construction-energy-usage-steam-chp",
-            "manufacturing-and-construction-energy-usage-refrigeration",
-            "manufacturing-and-construction-energy-usage-refrigeration-chp"
+            "energy-usage-all",
+            "energy-usage-electricity",
+            "energy-usage-electricity-chp",
+            "energy-usage-heating",
+            "energy-usage-heating-chp",
+            "energy-usage-steam",
+            "energy-usage-steam-chp",
+            "energy-usage-refrigeration",
+            "energy-usage-refrigeration-chp"
           ],
-          "exclusive": "manufacturing-and-construction-energy-usage-all"
+          "exclusive": "energy-usage-all"
         },
         {
           "id": "manufacturing-and-construction-energy-source",
@@ -664,6 +775,9 @@
     "methodologies": [
       {
         "id": "fuel-combustion-energy-industries-methodology",
+        "inputRequired": [
+          "total-fuel-consumption"
+        ],
         "activities": [
           {
             "id": "fuel-combustion-energy-industries-activity",
@@ -678,39 +792,38 @@
               {
                 "id": "energy-industries-type",
                 "options": [
-                  "energy-industries-type-all",
-                  "energy-industries-type-electricity-generation",
-                  "energy-industries-type-combined-heat-and-power-generation",
-                  "energy-industries-type-heat-plants",
-                  "energy-industries-type-pretroleum-refining",
-                  "energy-industries-type-non-ferrous-manufacture-of-solid-fuels",
-                  "energy-industries-type-chemical-other-energy-industries"
+                  "type-all",
+                  "type-electricity-generation",
+                  "type-combined-heat-and-power-generation",
+                  "type-heat-plants",
+                  "type-pretroleum-refining",
+                  "type-non-ferrous-manufacture-of-solid-fuels",
+                  "type-chemical-other-energy-industries"
                 ],
-                "exclusive": "energy-industries-type-all"
+                "exclusive": "type-all"
               },
               {
                 "id": "energy-industries-fuel-type",
                 "options": [
-                  "energy-industries-fuel-type-anthracite",
-                  "energy-industries-fuel-type-natural-other-bituminous-coal",
-                  "energy-industries-fuel-type-sub-bituminous-coal",
-                  "energy-industries-fuel-type-lignite",
-                  "energy-industries-fuel-type-coking-coal",
-                  "energy-industries-fuel-type-coke-oven-coke-and-lignite-coke",
-                  "energy-industries-fuel-type-natural-gas",
-                  "energy-industries-fuel-type-residual-fuel-oil",
-                  "energy-industries-fuel-type-crude-oil",
-                  "energy-industries-fuel-type-refinery-gas",
-                  "energy-industries-fuel-type-coke-oven-gas",
-                  "energy-industries-fuel-type-oxygen-steel-furnace-gas",
-                  "energy-industries-fuel-type-natural-gas-liquids",
-                  "energy-industries-fuel-type-jet-kerosene",
-                  "energy-industries-fuel-type-municipal-wastes"
-                ],
-                "exclusive": "energy-industries-fuel-type-all"
+                  "fuel-type-anthracite",
+                  "fuel-type-natural-other-bituminous-coal",
+                  "fuel-type-sub-bituminous-coal",
+                  "fuel-type-lignite",
+                  "fuel-type-coking-coal",
+                  "fuel-type-coke-oven-coke-and-lignite-coke",
+                  "fuel-type-natural-gas",
+                  "fuel-type-residual-fuel-oil",
+                  "fuel-type-crude-oil",
+                  "fuel-type-refinery-gas",
+                  "fuel-type-coke-oven-gas",
+                  "fuel-type-oxygen-steel-furnace-gas",
+                  "fuel-type-natural-gas-liquids",
+                  "fuel-type-jet-kerosene",
+                  "fuel-type-municipal-wastes"
+                ]
               },
               {
-                "id": "energy-industries-fuel-source",
+                "id": "fuel-source",
                 "type": "text"
               }
             ],
@@ -726,67 +839,76 @@
         "suggestedActivities": [
           {
             "id": "fuel-combustion-energy-industries-activity",
-            "energy-industries-type": "energy-industries-type-all"
+            "energy-industries-type": "type-all"
           },
           {
             "id": "fuel-combustion-energy-industries-activity",
-            "energy-industries-type": "energy-industries-type-electricity-generation"
+            "energy-industries-type": "type-electricity-generation"
           },
           {
             "id": "fuel-combustion-energy-industries-activity",
-            "energy-industries-type": "energy-industries-type-combined-heat-and-power-generation"
+            "energy-industries-type": "type-combined-heat-and-power-generation"
           },
           {
             "id": "fuel-combustion-energy-industries-activity",
-            "energy-industries-type": "energy-industries-type-heat-pants"
+            "energy-industries-type": "type-heat-pants"
           }
         ]
       },
       {
         "id": "scaled-sample-fuel-combustion-energy-industries-methodology",
+        "inputRequired": [
+          "sample-grid-supplied-energy",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
-        "id": "modeled-data-fuel-consumption-energy-industries-methodology",
+        "id": "modeled-data-fuel-combustion-energy-industries-methodology",
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
+      "id": "fuel-consumption-energy-industries-direct-measure-methodology",
       "extra-fields": [
         {
           "id": "energy-industries-type",
           "options": [
-            "energy-industries-type-all",
-            "energy-industries-type-electricity-generation",
-            "energy-industries-type-combined-heat-and-power-generation",
-            "energy-industries-type-heat-plants",
-            "energy-industries-type-pretroleum-refining",
-            "energy-industries-type-non-ferrous-manufacture-of-solid-fuels",
-            "energy-industries-type-chemical-other-energy-industries"
+            "type-all",
+            "type-electricity-generation",
+            "type-combined-heat-and-power-generation",
+            "type-heat-plants",
+            "type-pretroleum-refining",
+            "type-non-ferrous-manufacture-of-solid-fuels",
+            "type-chemical-other-energy-industries"
           ],
-          "exclusive": "energy-industries-type-all"
+          "exclusive": "type-all"
         },
         {
           "id": "energy-industries-fuel-type",
           "options": [
-            "energy-industries-fuel-type-all",
-            "energy-industries-fuel-type-anthracite",
-            "energy-industries-fuel-type-natural-other-bituminous-coal",
-            "energy-industries-fuel-type-sub-bituminous-coal",
-            "energy-industries-fuel-type-lignite",
-            "energy-industries-fuel-type-coking-coal",
-            "energy-industries-fuel-type-coke-oven-coke-and-lignite-coke",
-            "energy-industries-fuel-type-natural-gas",
-            "energy-industries-fuel-type-residual-fuel-oil",
-            "energy-industries-fuel-type-crude-oil",
-            "energy-industries-fuel-type-refinery-gas",
-            "energy-industries-fuel-type-coke-oven-gas",
-            "energy-industries-fuel-type-oxygen-steel-furnace-gas",
-            "energy-industries-fuel-type-natural-gas-liquids",
-            "energy-industries-fuel-type-jet-kerosene",
-            "energy-industries-fuel-type-municipal-wastes"
+            "fuel-type-all",
+            "fuel-type-anthracite",
+            "fuel-type-natural-other-bituminous-coal",
+            "fuel-type-sub-bituminous-coal",
+            "fuel-type-lignite",
+            "fuel-type-coking-coal",
+            "fuel-type-coke-oven-coke-and-lignite-coke",
+            "fuel-type-natural-gas",
+            "fuel-type-residual-fuel-oil",
+            "fuel-type-crude-oil",
+            "fuel-type-refinery-gas",
+            "fuel-type-coke-oven-gas",
+            "fuel-type-oxygen-steel-furnace-gas",
+            "fuel-type-natural-gas-liquids",
+            "fuel-type-jet-kerosene",
+            "fuel-type-municipal-wastes"
           ],
-          "exclusive": "energy-industries-fuel-type-all"
+          "exclusive": "fuel-type-all"
         },
         {
           "id": "energy-industries-fuel-source",
@@ -799,6 +921,9 @@
     "methodologies": [
       {
         "id": "energy-consumption-energy-industries-methodology",
+        "inputRequired": [
+          "total-grid-consumption"
+        ],
         "activities": [
           {
             "id": "energy-consumption-energy-industries-activity",
@@ -813,78 +938,108 @@
               {
                 "id": "energy-industries-type",
                 "options": [
-                  "energy-industries-type-all",
-                  "energy-industries-type-electricity-generation",
-                  "energy-industries-type-combined-heat-and-power-generation",
-                  "energy-industries-type-heat-plants",
-                  "energy-industries-type-pretroleum-refining",
-                  "energy-industries-type-non-ferrous-manufacture-of-solid-fuels",
-                  "energy-industries-type-chemical-other-energy-industries"
+                  "type-all",
+                  "type-electricity-generation",
+                  "type-combined-heat-and-power-generation",
+                  "type-heat-plants",
+                  "type-pretroleum-refining",
+                  "type-non-ferrous-manufacture-of-solid-fuels",
+                  "type-chemical-other-energy-industries"
                 ],
-                "exclusive": "energy-industries-type-all"
+                "exclusive": "type-all"
               },
               {
                 "id": "energy-industries-energy-usage",
                 "options": [
-                  "energy-industries-energy-usage-all",
-                  "energy-industries-energy-usage-electricity",
-                  "energy-industries-energy-usage-electricity-chp",
-                  "energy-industries-energy-usage-heating",
-                  "energy-industries-energy-usage-heating-chp",
-                  "energy-industries-energy-usage-steam",
-                  "energy-industries-energy-usage-steam-chp",
-                  "energy-industries-energy-usage-refrigeration",
-                  "energy-industries-energy-usage-refrigeration-chp"
+                  "energy-usage-all",
+                  "energy-usage-electricity",
+                  "energy-usage-electricity-chp",
+                  "energy-usage-heating",
+                  "energy-usage-heating-chp",
+                  "energy-usage-steam",
+                  "energy-usage-steam-chp",
+                  "energy-usage-refrigeration",
+                  "energy-usage-refrigeration-chp"
                 ],
-                "exclusive": "energy-industries-energy-usage-all"
+                "exclusive": "energy-usage-all"
               },
               {
                 "id": "energy-industries-energy-source",
                 "type": "text"
               }
             ],
-            "units": ["units-kilowatt-hours", "units-terajoules"]
+            "units": [
+              "units-kilowatt-hours",
+              "units-terajoules"
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "energy-combustion-energy-industries-activity",
+            "energy-industries-type": "type-all"
+          },
+          {
+            "id": "energy-combustion-energy-industries-activity",
+            "energy-industries-type": "type-electricity-generation"
+          },
+          {
+            "id": "energy-combustion-energy-industries-activity",
+            "energy-industries-type": "type-combined-heat-and-power-generation"
+          },
+          {
+            "id": "energy-combustion-energy-industries-activity",
+            "energy-industries-type": "type-heat-pants"
           }
         ]
       },
       {
         "id": "scaled-sample-energy-usage-energy-industries-methodology",
+        "inputRequired": [
+          "sample-grid-supplied-energy",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
         "id": "modeled-data-energy-usage-energy-industries-methodology",
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
+      "id": "energy-consumption-energy-industries-direct-measure-methodology",
       "extra-fields": [
         {
           "id": "energy-industries-type",
           "options": [
-            "energy-industries-type-all",
-            "energy-industries-type-electricity-generation",
-            "energy-industries-type-combined-heat-and-power-generation",
-            "energy-industries-type-heat-plants",
-            "energy-industries-type-pretroleum-refining",
-            "energy-industries-type-non-ferrous-manufacture-of-solid-fuels",
-            "energy-industries-type-chemical-other-energy-industries"
+            "type-all",
+            "type-electricity-generation",
+            "type-combined-heat-and-power-generation",
+            "type-heat-plants",
+            "type-pretroleum-refining",
+            "type-non-ferrous-manufacture-of-solid-fuels",
+            "type-chemical-other-energy-industries"
           ],
-          "exclusive": "energy-industries-type-all"
+          "exclusive": "type-all"
         },
         {
           "id": "energy-industries-energy-usage",
           "options": [
-            "energy-industries-energy-usage-all",
-            "energy-industries-energy-usage-electricity",
-            "energy-industries-energy-usage-electricity-chp",
-            "energy-industries-energy-usage-heating",
-            "energy-industries-energy-usage-heating-chp",
-            "energy-industries-energy-usage-steam",
-            "energy-industries-energy-usage-steam-chp",
-            "energy-industries-energy-usage-refrigeration",
-            "energy-industries-energy-usage-refrigeration-chp"
+            "energy-usage-all",
+            "energy-usage-electricity",
+            "energy-usage-electricity-chp",
+            "energy-usage-heating",
+            "energy-usage-heating-chp",
+            "energy-usage-steam",
+            "energy-usage-steam-chp",
+            "energy-usage-refrigeration",
+            "energy-usage-refrigeration-chp"
           ],
-          "exclusive": "energy-industries-energy-usage-all"
+          "exclusive": "energy-usage-all"
         },
         {
           "id": "energy-industries-energy-source",
@@ -897,6 +1052,9 @@
     "methodologies": [
       {
         "id": "fuel-combustion-agriculture-forestry-fishing-activities-methodology",
+        "inputRequired": [
+          "total-fuel-consumption"
+        ],
         "activities": [
           {
             "id": "fuel-combustion-agriculture-forestry-fishing-activities-activity",
@@ -911,26 +1069,25 @@
               {
                 "id": "agriculture-forestry-fishing-activities-type",
                 "options": [
-                  "agriculture-forestry-fishing-activities-type-all",
-                  "agriculture-forestry-fishing-activities-type-stationary",
-                  "agriculture-forestry-fishing-activities-type-off-road-vehicles-and-machinery",
-                  "agriculture-forestry-fishing-activities-type-fishing-mobile-combustion"
+                  "type-all",
+                  "type-stationary",
+                  "type-off-road-vehicles-and-machinery",
+                  "type-fishing-mobile-combustion"
                 ],
-                "exclusive": "agriculture-forestry-fishing-activities-type-all"
+                "exclusive": "type-all"
               },
               {
                 "id": "agriculture-forestry-fishing-activities-fuel-type",
                 "options": [
-                  "agriculture-forestry-fishing-activities-fuel-type-diesel-oil",
-                  "agriculture-forestry-fishing-activities-fuel-type-natural-gas",
-                  "agriculture-forestry-fishing-activities-fuel-type-liquefied-petroleum-gases",
-                  "agriculture-forestry-fishing-activities-fuel-type-wood/wood-waste",
-                  "agriculture-forestry-fishing-activities-fuel-type-other-primary-solid-biomass",
-                  "agriculture-forestry-fishing-activities-fuel-type-natural-charcoal",
-                  "agriculture-forestry-fishing-activities-fuel-type-gas-oil",
-                  "agriculture-forestry-fishing-activities-fuel-type-peat"
-                ],
-                "exclusive": "agriculture-forestry-fishing-activities-fuel-type-all"
+                  "fuel-type-diesel-oil",
+                  "fuel-type-natural-gas",
+                  "fuel-type-liquefied-petroleum-gases",
+                  "fuel-type-wood/wood-waste",
+                  "fuel-type-other-primary-solid-biomass",
+                  "fuel-type-natural-charcoal",
+                  "fuel-type-gas-oil",
+                  "fuel-type-peat"
+                ]
               },
               {
                 "id": "agriculture-forestry-fishing-activities-fuel-source",
@@ -949,57 +1106,58 @@
         "suggestedActivities": [
           {
             "id": "fuel-combustion-agriculture-forestry-fishing-activities-activity",
-            "agriculture-forestry-fishing-activities-type": "agriculture-forestry-fishing-activities-type-all"
+            "agriculture-forestry-fishing-activities-type": "type-all"
           },
           {
             "id": "fuel-combustion-agriculture-forestry-fishing-activities-activity",
-            "agriculture-forestry-fishing-activities-type": "agriculture-forestry-fishing-activities-type-stationary"
-          },
-          {
-            "id": "fuel-combustion-agriculture-forestry-fishing-activities-activity",
-            "agriculture-forestry-fishing-activities-type": "agriculture-forestry-fishing-activities-type-off-road-vehicles-and-machinery"
-          },
-          {
-            "id": "fuel-combustion-agriculture-forestry-fishing-activities-activity",
-            "agriculture-forestry-fishing-activities-type": "agriculture-forestry-fishing-activities-type-fishing-mobile-combustion"
+            "agriculture-forestry-fishing-activities-type": "type-stationary"
           }
         ]
       },
       {
         "id": "scaled-sample-fuel-combustion-agriculture-forestry-fishing-activities-methodology",
+        "inputRequired": [
+          "sample-grid-supplied-energy",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
-        "id": "modeled-data-fuel-consumption-agriculture-forestry-fishing-activities-methodology",
+        "id": "modeled-data-fuel-combustion-agriculture-forestry-fishing-activities-methodology",
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
+      "id": "fuel-consumption-agriculture-forestry-fishing-activities-direct-measure-methodology",
       "extra-fields": [
         {
           "id": "agriculture-forestry-fishing-activities-type",
           "options": [
-            "agriculture-forestry-fishing-activities-type-all",
-            "agriculture-forestry-fishing-activities-type-stationary",
-            "agriculture-forestry-fishing-activities-type-off-road-vehicles-and-machinery",
-            "agriculture-forestry-fishing-activities-type-fishing-mobile-combustion"
+            "type-all",
+            "type-stationary",
+            "type-off-road-vehicles-and-machinery",
+            "type-fishing-mobile-combustion"
           ],
-          "exclusive": "agriculture-forestry-fishing-activities-type-all"
+          "exclusive": "type-all"
         },
         {
           "id": "agriculture-forestry-fishing-activities-fuel-type",
           "options": [
-            "agriculture-forestry-fishing-activities-fuel-type-all",
-            "agriculture-forestry-fishing-activities-fuel-type-diesel-oil",
-            "agriculture-forestry-fishing-activities-fuel-type-natural-gas",
-            "agriculture-forestry-fishing-activities-fuel-type-liquefied-petroleum-gases",
-            "agriculture-forestry-fishing-activities-fuel-type-wood/wood-waste",
-            "agriculture-forestry-fishing-activities-fuel-type-other-primary-solid-biomass",
-            "agriculture-forestry-fishing-activities-fuel-type-charcoal",
-            "agriculture-forestry-fishing-activities-fuel-type-gas-oil",
-            "agriculture-forestry-fishing-activities-fuel-type-peat"
+            "fuel-type-all",
+            "fuel-type-diesel-oil",
+            "fuel-type-natural-gas",
+            "fuel-type-liquefied-petroleum-gases",
+            "fuel-type-wood/wood-waste",
+            "fuel-type-other-primary-solid-biomass",
+            "fuel-type-charcoal",
+            "fuel-type-gas-oil",
+            "fuel-type-peat"
           ],
-          "exclusive": "agriculture-forestry-fishing-activities-fuel-type-all"
+          "exclusive": "fuel-type-all"
         },
         {
           "id": "agriculture-forestry-fishing-activities-fuel-source",
@@ -1012,6 +1170,9 @@
     "methodologies": [
       {
         "id": "energy-consumption-agriculture-forestry-fishing-activities-methodology",
+        "inputRequired": [
+          "total-grid-consumption"
+        ],
         "activities": [
           {
             "id": "energy-consumption-agriculture-forestry-fishing-activities-activity",
@@ -1026,72 +1187,94 @@
               {
                 "id": "agriculture-forestry-fishing-activities-type",
                 "options": [
-                  "agriculture-forestry-fishing-activities-type-all",
-                  "agriculture-forestry-fishing-activities-type-stationary",
-                  "agriculture-forestry-fishing-activities-type-off-road-vehicles-and-machinery",
-                  "agriculture-forestry-fishing-activities-type-fishing-mobile-combustion"
+                  "type-all",
+                  "type-stationary",
+                  "type-off-road-vehicles-and-machinery",
+                  "type-fishing-mobile-combustion"
                 ],
-                "exclusive": "agriculture-forestry-fishing-activities-type-all"
+                "exclusive": "type-all"
               },
               {
                 "id": "agriculture-forestry-fishing-activities-energy-usage",
                 "options": [
-                  "agriculture-forestry-fishing-activities-energy-usage-all",
-                  "agriculture-forestry-fishing-activities-energy-usage-electricity",
-                  "agriculture-forestry-fishing-activities-energy-usage-electricity-chp",
-                  "agriculture-forestry-fishing-activities-energy-usage-heating",
-                  "agriculture-forestry-fishing-activities-energy-usage-heating-chp",
-                  "agriculture-forestry-fishing-activities-energy-usage-steam",
-                  "agriculture-forestry-fishing-activities-energy-usage-steam-chp",
-                  "agriculture-forestry-fishing-activities-energy-usage-refrigeration",
-                  "agriculture-forestry-fishing-activities-energy-usage-refrigeration-chp"
+                  "energy-usage-all",
+                  "energy-usage-electricity",
+                  "energy-usage-electricity-chp",
+                  "energy-usage-heating",
+                  "energy-usage-heating-chp",
+                  "energy-usage-steam",
+                  "energy-usage-steam-chp",
+                  "energy-usage-refrigeration",
+                  "energy-usage-refrigeration-chp"
                 ],
-                "exclusive": "agriculture-forestry-fishing-activities-energy-usage-all"
+                "exclusive": "energy-usage-all"
               },
               {
                 "id": "agriculture-forestry-fishing-activities-energy-source",
                 "type": "text"
               }
             ],
-            "units": ["units-kilowatt-hours", "units-terajoules"]
+            "units": [
+              "units-kilowatt-hours",
+              "units-terajoules"
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "energy-combustion-agriculture-forestry-fishing-activities-activity",
+            "agriculture-forestry-fishing-activities-type": "type-all"
+          },
+          {
+            "id": "energy-combustion-agriculture-forestry-fishing-activities-activity",
+            "agriculture-forestry-fishing-activities-type": "type-stationary"
           }
         ]
       },
       {
         "id": "scaled-sample-energy-usage-agriculture-forestry-fishing-activities-methodology",
+        "inputRequired": [
+          "sample-grid-supplied-energy",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
         "id": "modeled-data-energy-usage-agriculture-forestry-fishing-activities-methodology",
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
+      "id": "energy-consumption-agriculture-forestry-fishing-activities-direct-measure-methodology",
       "extra-fields": [
         {
           "id": "agriculture-forestry-fishing-activities-type",
           "options": [
-            "agriculture-forestry-fishing-activities-type-all",
-            "agriculture-forestry-fishing-activities-type-stationary",
-            "agriculture-forestry-fishing-activities-type-off-road-vehicles-and-machinery",
-            "agriculture-forestry-fishing-activities-type-fishing-mobile-combustion"
+            "type-all",
+            "type-stationary",
+            "type-off-road-vehicles-and-machinery",
+            "type-fishing-mobile-combustion"
           ],
-          "exclusive": "agriculture-forestry-fishing-activities-type-all"
+          "exclusive": "type-all"
         },
         {
           "id": "agriculture-forestry-fishing-activities-energy-usage",
           "options": [
-            "agriculture-forestry-fishing-activities-energy-usage-all",
-            "agriculture-forestry-fishing-activities-energy-usage-electricity",
-            "agriculture-forestry-fishing-activities-energy-usage-electricity-chp",
-            "agriculture-forestry-fishing-activities-energy-usage-heating",
-            "agriculture-forestry-fishing-activities-energy-usage-heating-chp",
-            "agriculture-forestry-fishing-activities-energy-usage-steam",
-            "agriculture-forestry-fishing-activities-energy-usage-steam-chp",
-            "agriculture-forestry-fishing-activities-energy-usage-refrigeration",
-            "agriculture-forestry-fishing-activities-energy-usage-refrigeration-chp"
+            "energy-usage-all",
+            "energy-usage-electricity",
+            "energy-usage-electricity-chp",
+            "energy-usage-heating",
+            "energy-usage-heating-chp",
+            "energy-usage-steam",
+            "energy-usage-steam-chp",
+            "energy-usage-refrigeration",
+            "energy-usage-refrigeration-chp"
           ],
-          "exclusive": "agriculture-forestry-fishing-activities-energy-usage-all"
+          "exclusive": "energy-usage-all"
         },
         {
           "id": "agriculture-forestry-fishing-activities-energy-source",
@@ -1104,6 +1287,9 @@
     "methodologies": [
       {
         "id": "fuel-combustion-non-specific-sources-methodology",
+        "inputRequired": [
+          "total-fuel-consumption"
+        ],
         "activities": [
           {
             "id": "fuel-combustion-non-specific-sources-activity",
@@ -1127,18 +1313,17 @@
               {
                 "id": "non-specific-sources-fuel-type",
                 "options": [
-                  "non-specific-sources-fuel-type-gas-oil",
-                  "non-specific-sources-fuel-type-naphtha",
-                  "non-specific-sources-fuel-type-diesel-oil",
-                  "non-specific-sources-fuel-type-natural-gas",
-                  "non-specific-sources-fuel-type-liquefied-petroleum-gases",
-                  "non-specific-sources-fuel-type-wood/wood-waste",
-                  "non-specific-sources-fuel-type-other-primary-solid-biomass",
-                  "non-specific-sources-fuel-type-charcoal",
-                  "non-specific-sources-fuel-type-natural-gas-oil",
-                  "non-specific-sources-fuel-type-peat"
-                ],
-                "exclusive": "non-specific-sources-fuel-type-all"
+                  "fuel-type-gas-oil",
+                  "fuel-type-naphtha",
+                  "fuel-type-diesel-oil",
+                  "fuel-type-natural-gas",
+                  "fuel-type-liquefied-petroleum-gases",
+                  "fuel-type-wood/wood-waste",
+                  "fuel-type-other-primary-solid-biomass",
+                  "fuel-type-charcoal",
+                  "fuel-type-natural-gas-oil",
+                  "fuel-type-peat"
+                ]
               },
               {
                 "id": "non-specific-sources-fuel-source",
@@ -1157,54 +1342,59 @@
         "suggestedActivities": [
           {
             "id": "fuel-combustion-non-specific-sources-activity",
-            "non-specific-sources-type": "non-specific-sources-type-all"
+            "non-specific-sources-type": "type-all"
           },
           {
             "id": "fuel-combustion-non-specific-sources-activity",
-            "non-specific-sources-type": "non-specific-sources-type-stationary"
-          },
-          {
-            "id": "fuel-combustion-non-specific-sources-activity",
-            "non-specific-sources-type": "non-specific-sources-type-mobile"
+            "non-specific-sources-type": "type-stationary"
           }
         ]
       },
       {
         "id": "scaled-sample-fuel-combustion-non-specific-sources-methodology",
+        "inputRequired": [
+          "sample-grid-supplied-energy",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
-        "id": "modeled-data-fuel-consumption-non-specific-sources-methodology",
+        "id": "modeled-data-fuel-combustion-non-specific-sources-methodology",
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
+      "id": "fuel-consumption-non-specific-sources-direct-measure-methodology",
       "extra-fields": [
         {
           "id": "non-specific-sources-type",
           "options": [
-            "non-specific-sources-type-all",
-            "non-specific-sources-type-stationary",
-            "non-specific-sources-type-mobile"
+            "type-all",
+            "type-stationary",
+            "type-mobile"
           ],
-          "exclusive": "non-specific-sources-type-all"
+          "exclusive": "type-all"
         },
         {
           "id": "non-specific-sources-fuel-type",
           "options": [
-            "non-specific-sources-fuel-type-all",
-            "non-specific-sources-fuel-type-gas-oil",
-            "non-specific-sources-fuel-type-naphtha",
-            "non-specific-sources-fuel-type-diesel-oil",
-            "non-specific-sources-fuel-type-natural-gas",
-            "non-specific-sources-fuel-type-liquefied-petroleum-gases",
-            "non-specific-sources-fuel-type-wood/wood-waste",
-            "non-specific-sources-fuel-type-other-primary-solid-biomass",
-            "non-specific-sources-fuel-type-charcoal",
-            "non-specific-sources-fuel-type-natural-gas-oil",
-            "non-specific-sources-fuel-type-peat"
+            "fuel-type-all",
+            "fuel-type-gas-oil",
+            "fuel-type-naphtha",
+            "fuel-type-diesel-oil",
+            "fuel-type-natural-gas",
+            "fuel-type-liquefied-petroleum-gases",
+            "fuel-type-wood/wood-waste",
+            "fuel-type-other-primary-solid-biomass",
+            "fuel-type-charcoal",
+            "fuel-type-natural-gas-oil",
+            "fuel-type-peat"
           ],
-          "exclusive": "non-specific-sources-fuel-type-all"
+          "exclusive": "fuel-type-all"
         },
         {
           "id": "non-specific-sources-fuel-source",
@@ -1217,13 +1407,16 @@
     "methodologies": [
       {
         "id": "energy-consumption-non-specific-sources-methodology",
+        "inputRequired": [
+          "total-grid-consumption"
+        ],
         "activities": [
           {
             "id": "energy-consumption-non-specific-sources-activity",
             "unique-by": [
-              "non-specific-sources-type",
-              "non-specific-sources-energy-usage",
-              "non-specific-sources-energy-source"
+              "type",
+              "energy-usage",
+              "energy-source"
             ],
             "activity-title": "activity-energy-consumption",
             "minimum": 1,
@@ -1231,73 +1424,286 @@
               {
                 "id": "non-specific-sources-type",
                 "options": [
-                  "non-specific-sources-type-all",
-                  "non-specific-sources-type-stationary",
-                  "non-specific-sources-type-mobile"
+                  "type-all",
+                  "type-stationary",
+                  "type-mobile"
                 ],
-                "exclusive": "non-specific-sources-type-all"
+                "exclusive": "type-all"
               },
               {
                 "id": "non-specific-sources-energy-usage",
                 "options": [
-                  "non-specific-sources-energy-usage-all",
-                  "non-specific-sources-energy-usage-electricity",
-                  "non-specific-sources-energy-usage-electricity-chp",
-                  "non-specific-sources-energy-usage-heating",
-                  "non-specific-sources-energy-usage-heating-chp",
-                  "non-specific-sources-energy-usage-steam",
-                  "non-specific-sources-energy-usage-steam-chp",
-                  "non-specific-sources-energy-usage-refrigeration",
-                  "non-specific-sources-energy-usage-refrigeration-chp"
+                  "energy-usage-all",
+                  "energy-usage-electricity",
+                  "energy-usage-electricity-chp",
+                  "energy-usage-heating",
+                  "energy-usage-heating-chp",
+                  "energy-usage-steam",
+                  "energy-usage-steam-chp",
+                  "energy-usage-refrigeration",
+                  "energy-usage-refrigeration-chp"
                 ],
-                "exclusive": "non-specific-sources-energy-usage-all"
+                "exclusive": "energy-usage-all"
               },
               {
                 "id": "non-specific-sources-energy-source",
                 "type": "text"
               }
             ],
-            "units": ["units-kilowatt-hours", "units-terajoules"]
+            "units": [
+              "units-kilowatt-hours",
+              "units-terajoules"
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "energy-combustion-non-specific-sources-activity",
+            "non-specific-sources-type": "type-all"
+          },
+          {
+            "id": "energy-combustion-non-specific-sources-activity",
+            "non-specific-sources-type": "type-stationary"
           }
         ]
       },
       {
         "id": "scaled-sample-energy-usage-non-specific-sources-methodology",
+        "inputRequired": [
+          "sample-grid-supplied-energy",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
         "id": "modeled-data-energy-usage-non-specific-sources-methodology",
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
+      "id": "energy-consumption-non-specific-sources-direct-measure-methodology",
       "extra-fields": [
         {
           "id": "non-specific-sources-type",
           "options": [
-            "non-specific-sources-type-all",
-            "non-specific-sources-type-stationary",
-            "non-specific-sources-type-mobile"
+            "type-all",
+            "type-stationary",
+            "type-mobile"
           ],
-          "exclusive": "non-specific-sources-type-all"
+          "exclusive": "type-all"
         },
         {
           "id": "non-specific-sources-energy-usage",
           "options": [
-            "non-specific-sources-energy-usage-all",
-            "non-specific-sources-energy-usage-electricity",
-            "non-specific-sources-energy-usage-electricity-chp",
-            "non-specific-sources-energy-usage-heating",
-            "non-specific-sources-energy-usage-heating-chp",
-            "non-specific-sources-energy-usage-steam",
-            "non-specific-sources-energy-usage-steam-chp",
-            "non-specific-sources-energy-usage-refrigeration",
-            "non-specific-sources-energy-usage-refrigeration-chp"
+            "energy-usage-all",
+            "energy-usage-electricity",
+            "energy-usage-electricity-chp",
+            "energy-usage-heating",
+            "energy-usage-heating-chp",
+            "energy-usage-steam",
+            "energy-usage-steam-chp",
+            "energy-usage-refrigeration",
+            "energy-usage-refrigeration-chp"
           ],
-          "exclusive": "non-specific-sources-energy-usage-all"
+          "exclusive": "energy-usage-all"
         },
         {
           "id": "non-specific-sources-energy-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "I.7.1": {
+    "methodologies": [
+      {
+        "id": "fugitive-emissions-coal-methodology",
+        "inputRequired": [
+          "total-fugitive-activity"
+        ],
+        "activities": [
+          {
+            "id": "fugitive-emissions-coal-activity",
+            "unique-by": [
+              "fugitive-emissions-coal-type",
+              "fugitive-emissions-coal-source"
+            ],
+            "activity-title": "activity-total-fugitive-emissions",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "fugitive-emissions-coal-type",
+                "options": [
+                  "type-all",
+                  "type-coal-mining-and-handling",
+                  "type-coal-mining-and-handling-underground-mines",
+                  "type-coal-mining-and-handling-underground-mines-mining",
+                  "type-coal-mining-and-handling-underground-mines-mining-post-mining-seam-gas-emissions",
+                  "type-coal-mining-and-handling-underground-mines-mining-abandoned-underground-mines",
+                  "type-coal-mining-and-handling-underground-mines-flaring-of-drained-CH4-or-conversion-of-CH4-to-CO2",
+                  "type-surface-mines",
+                  "type-surface-mines-mining",
+                  "type-surface-mines-post-mining-seam-gas-emissions",
+                  "type-uncontrolled-combustion-and-burning-coal-dumps",
+                  "type-solid-fuel-transformation"
+                ],
+                "exclusive": "type-all"
+              },
+              {
+                "id": "fugitive-emissions-coal-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-gallons",
+              "units-liters",
+              "units-cubic-meters",
+              "units-kilograms",
+              "units-other"
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "fugitive-emissions-coal-activity",
+            "fugitive-emissions-coal-type": "type-all"
+          },
+          {
+            "id": "fugitive-emissions-coal-activity",
+            "fugitive-emissions-coal-type": "type-coal-mining-and-handling"
+          },
+          {
+            "id": "fugitive-emissions-coal-activity",
+            "fugitive-emissions-coal-type": "type-surface-mines"
+          }
+        ]
+      }
+    ],
+    "directMeasure": {
+      "id": "fugitive-emissions-coal-direct-measure-methodology",
+      "extra-fields": [
+        {
+          "id": "fugitive-emissions-coal-type",
+          "options": [
+            "type-all",
+            "type-coal-mining-and-handling",
+            "type-coal-mining-and-handling-underground-mines",
+            "type-coal-mining-and-handling-underground-mines-mining",
+            "type-coal-mining-and-handling-underground-mines-mining-post-mining-seam-gas-emissions",
+            "type-coal-mining-and-handling-underground-mines-mining-abandoned-underground-mines",
+            "type-coal-mining-and-handling-underground-mines-flaring-of-drained-CH4-or-conversion-of-CH4-to-CO2",
+            "type-surface-mines",
+            "type-surface-mines-mining",
+            "type-surface-mines-post-mining-seam-gas-emissions",
+            "type-uncontrolled-combustion-and-burning-coal-dumps",
+            "type-solid-fuel-transformation "
+          ],
+          "exclusive": "type-all"
+        },
+        {
+          "id": "fugitive-emissions-coal-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "I.8.1": {
+    "methodologies": [
+      {
+        "id": "fugitive-emissions-oil-gas-methodology",
+        "inputRequired": [
+          "total-fugitive-activity"
+        ],
+        "activities": [
+          {
+            "id": "fugitive-emissions-oil-gas-activity",
+            "unique-by": [
+              "fugitive-emissions-oil-gas-type",
+              "fugitive-emissions-oil-gas-fugitive-type",
+              "fugitive-emissions-oil-gas-fugitive-source"
+            ],
+            "activity-title": "activity-total-fugitive-activity",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "fugitive-emissions-oil-gas-type",
+                "options": [
+                  "fugitive-emissions-oil-gas-type-all",
+                  "fugitive-emissions-oil-gas-type-oil",
+                  "fugitive-emissions-oil-gas-type-natural-gas"
+                ],
+                "exclusive": "fugitive-emissions-oil-gas-type-all"
+              },
+              {
+                "id": "fugitive-emissions-oil-gas-fugitive-type",
+                "options": [
+                  "type-all",
+                  "type-extraction",
+                  "type-processing",
+                  "type-storage",
+                  "type-distribution"
+                ],
+                "exclusive": "type-all"
+              },
+              {
+                "id": "fugitive-emissions-oil-gas-fugitive-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-gallons",
+              "units-liters",
+              "units-cubic-meters",
+              "units-kilograms",
+              "units-other"
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "fugitive-emissions-oil-gas-activity",
+            "fugitive-emissions-oil-gas-type": "fugitive-emissions-oil-gas-type-all"
+          },
+          {
+            "id": "fugitive-emissions-oil-gas-activity",
+            "fugitive-emissions-oil-gas-type": "fugitive-emissions-oil-gas-type-oil"
+          },
+          {
+            "id": "fugitive-emissions-oil-gas-activity",
+            "fugitive-emissions-oil-gas-type": "fugitive-emissions-oil-gas-type-natural-gas"
+          }
+        ]
+      }
+    ],
+    "directMeasure": {
+      "id": "fugitive-emissions-oil-gas-direct-measure-methodology",
+      "extra-fields": [
+        {
+          "id": "fugitive-emissions-oil-gas-type",
+          "options": [
+            "fugitive-emissions-oil-gas-type-all",
+            "fugitive-emissions-oil-gas-type-oil",
+            "fugitive-emissions-oil-gas-type-natural-gas"
+          ],
+          "exclusive": "fugitive-emissions-oil-gas-type-all"
+        },
+        {
+          "id": "fugitive-emissions-oil-gas-fugitive-type",
+          "options": [
+            "type-all",
+            "type-extraction",
+            "type-processing",
+            "type-storage",
+            "type-distribution"
+          ],
+          "exclusive": "type-all"
+        },
+        {
+          "id": "fugitive-emissions-oil-gas-fugitive-source",
           "type": "text"
         }
       ]
@@ -2429,54 +2835,83 @@
   "III.1.1": {
     "methodologies": [
       {
-        "id": "methane-commitment-solid-waste-methodology",
+        "id": "methane-commitment-solid-waste-inboundary-methodology",
+        "inputRequired": [
+          "landfill-id",
+          "landfill-address",
+          "total-municipal-solid-waste-disposed",
+          "methane-collected-and-removed",
+          "waste-composition"
+        ],
+        "formula": "methane-commitment",
         "activities": {
-          "unique-by": ["methane-commitment-solid-waste-landfill-id"],
+          "unique-by": [
+            "methane-commitment-solid-waste-inboundary-landfill-id"
+          ],
           "activity-title": "total-municipal-solid-waste-disposed",
           "extra-fields": [
             {
-              "id": "methane-commitment-solid-waste-landfill-id",
+              "id": "methane-commitment-solid-waste-inboundary-landfill-id",
               "type": "text"
             },
             {
-              "id": "methane-commitment-solid-waste-landfill-address",
+              "id": "methane-commitment-solid-waste-inboundary-landfill-address",
               "type": "text",
               "required": false
             },
             {
-              "id": "methane-commitment-solid-waste-oxidation-factor",
+              "id": "methane-commitment-solid-waste-inboundary-oxidation-factor",
               "options": [
-                "methane-commitment-solid-waste-well-managed-landfill",
-                "methane-commitment-solid-waste-unmanaged-landfill"
+                "oxidation-factor-well-managed-landfill",
+                "oxidation-factor-unmanaged-landfill"
               ]
             },
             {
-              "id": "methane-commitment-solid-waste-landfill-methane-collected-and-removed",
+              "id": "methane-commitment-solid-waste-inboundary-methane-collected-and-removed",
               "type": "number"
             },
             {
-              "id": "methane-commitment-solid-waste-landfill-waste-composition",
+              "id": "methane-commitment-solid-waste-inboundary-waste-composition",
               "type": "percentage-breakdown",
               "total-required": 100,
               "subtypes": [
-                "methane-commitment-solid-waste-landfill-waste-composition-food",
-                "methane-commitment-solid-waste-landfill-waste-composition-garden",
-                "methane-commitment-solid-waste-landfill-waste-composition-paper",
-                "methane-commitment-solid-waste-landfill-waste-composition-wood",
-                "methane-commitment-solid-waste-landfill-waste-composition-textiles",
-                "methane-commitment-solid-waste-landfill-waste-composition-industrial"
+                "waste-composition-food",
+                "waste-composition-garden",
+                "waste-composition-paper",
+                "waste-composition-wood",
+                "waste-composition-textiles",
+                "waste-composition-industrial"
               ]
+            },
+            {
+              "id": "methane-commitment-solid-waste-inboundary-source",
+              "type": "text"
             }
           ],
-          "formula": "methane-commitment"
+          "units": [
+            "units-kilograms",
+            "units-tonnes"
+          ]
         }
       },
       {
-        "id": "first-order-of-decay-solid-waste-methodology",
+        "id": "first-order-of-decay-solid-waste-inboundary-methodology",
+        "inputRequired": [
+          "landfill-id",
+          "landfill-address",
+          "total-municipal-solid-waste-disposed",
+          "methane-collected-and-removed",
+          "waste-composition"
+        ],
+        "formula": "first-order-of-decay",
         "disabled": true
       }
     ],
     "directMeasure": {
+      "id": "direct-measure-solid-waste-inboundary-methodology",
+      "inputRequired": [
+        "emissions-value-ch4"
+      ],
       "extra-fields": [
         {
           "id": "landfill-id",
@@ -2484,6 +2919,388 @@
         },
         {
           "id": "landfill-address",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "direct-measure-solid-waste-inboundary-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "III.1.3": {
+    "methodologies": [
+      {
+        "id": "methane-commitment-solid-waste-outboundary-methodology",
+        "inputRequired": [
+          "landfill-id",
+          "landfill-address",
+          "total-municipal-solid-waste-disposed",
+          "methane-collected-and-removed",
+          "waste-composition"
+        ],
+        "formula": "methane-commitment",
+        "activities": {
+          "unique-by": [
+            "methane-commitment-solid-waste-outboundary-landfill-id"
+          ],
+          "activity-title": "total-municipal-solid-waste-disposed",
+          "extra-fields": [
+            {
+              "id": "methane-commitment-solid-waste-outboundary-landfill-id",
+              "type": "text"
+            },
+            {
+              "id": "methane-commitment-solid-waste-outboundary-landfill-address",
+              "type": "text",
+              "required": false
+            },
+            {
+              "id": "methane-commitment-solid-waste-outboundary-oxidation-factor",
+              "options": [
+                "oxidation-factor-well-managed-landfill",
+                "oxidation-factor-unmanaged-landfill"
+              ]
+            },
+            {
+              "id": "methane-commitment-solid-waste-outboundary-methane-collected-and-removed",
+              "type": "number"
+            },
+            {
+              "id": "methane-commitment-solid-waste-outboundary-waste-composition",
+              "type": "percentage-breakdown",
+              "total-required": 100,
+              "subtypes": [
+                "waste-composition-food",
+                "waste-composition-garden",
+                "waste-composition-paper",
+                "waste-composition-wood",
+                "waste-composition-textiles",
+                "waste-composition-industrial"
+              ]
+            }
+          ],
+          "units": [
+            "units-kilograms",
+            "units-tonnes"
+          ]
+        }
+      },
+      {
+        "id": "first-order-of-decay-solid-waste-outboundary-methodology",
+        "inputRequired": [
+          "landfill-id",
+          "landfill-address",
+          "total-municipal-solid-waste-disposed",
+          "methane-collected-and-removed",
+          "waste-composition"
+        ],
+        "formula": "first-order-of-decay",
+        "disabled": true
+      }
+    ],
+    "directMeasure": {
+      "id": "direct-measure-solid-waste-outboundary-methodology",
+      "extra-fields": [
+        {
+          "id": "landfill-id",
+          "type": "text"
+        },
+        {
+          "id": "landfill-address",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "direct-measure-solid-waste-outboundary-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "III.2.1": {
+    "methodologies": [
+      {
+        "id": "biological-treatment-inboundary-methodology",
+        "inputRequired": [
+          "mass-of-organic-waste-treated",
+          "total-of-ch4-recovered"
+        ],
+        "formula": "biological-treatment",
+        "activities": {
+          "unique-by": [
+            "biological-treatment-inboundary-treatment-type",
+            "biological-treatment-inboundary-source"
+          ],
+          "activity-title": "total-organic-waste-treated",
+          "extra-fields": [
+            {
+              "id": "biological-treatment-inboundary-treatment-type",
+              "options": [
+                "treatment-type-all-organic-waste",
+                "treatment-type-composting",
+                "treatment-type-anaerobic-digestion"
+              ],
+              "exclusive": "treatment-type-all-organic-waste"
+            },
+            {
+              "id": "biological-treatment-inboundary-waste-state",
+              "options": [
+                "waste-state-dry-waste",
+                "waste-state-wet-waste"
+              ]
+            },
+            {
+              "id": "biological-treatment-inboundary-total-of-ch4-recovered",
+              "type": "number"
+            },
+            {
+              "id": "biological-treatment-inboundary-source",
+              "type": "text"
+            }
+          ],
+          "units": [
+            "units-kilograms",
+            "units-tonnes"
+          ]
+        }
+      }
+    ],
+    "directMeasure": {
+      "id": "direct-measure-biological-treatment-inboundary-methodology",
+      "extra-fields": [
+        {
+          "id": "biological-treatment-inboundary-treatment-type",
+          "options": [
+            "treatment-type-all-organic-waste",
+            "treatment-type-composting",
+            "treatment-type-anaerobic-digestion"
+          ],
+          "exclusive": "treatment-type-all-organic-waste"
+        },
+        {
+          "id": "direct-measure-biological-treatment-inboundary-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "III.2.3": {
+    "methodologies": [
+      {
+        "id": "biological-treatment-outboundary-methodology",
+        "inputRequired": [
+          "mass-of-organic-waste-treated",
+          "total-of-ch4-recovered"
+        ],
+        "formula": "biological-treatment",
+        "activities": {
+          "unique-by": [
+            "biological-treatment-outboundary-treatment-type",
+            "biological-treatment-outboundary-source"
+          ],
+          "activity-title": "total-organic-waste-treated",
+          "extra-fields": [
+            {
+              "id": "biological-treatment-outboundary-treatment-type",
+              "options": [
+                "treatment-type-all-organic-waste",
+                "treatment-type-composting",
+                "treatment-type-anaerobic-digestion"
+              ],
+              "exclusive": "treatment-type-all-organic-waste"
+            },
+            {
+              "id": "biological-treatment-outboundary-waste-state",
+              "options": [
+                "waste-state-dry-waste",
+                "waste-state-wet-waste"
+              ]
+            },
+            {
+              "id": "biological-treatment-outboundary-total-of-ch4-recovered",
+              "type": "number"
+            },
+            {
+              "id": "biological-treatment-outboundary-source",
+              "type": "text"
+            }
+          ],
+          "units": [
+            "units-kilograms",
+            "units-tonnes"
+          ]
+        }
+      }
+    ],
+    "directMeasure": {
+      "id": "direct-measure-biological-treatment-outboundary-methodology",
+      "extra-fields": [
+        {
+          "id": "biological-treatment-outboundary-treatment-type",
+          "options": [
+            "treatment-type-all-organic-waste",
+            "treatment-type-composting",
+            "treatment-type-anaerobic-digestion"
+          ],
+          "exclusive": "treatment-type-all-organic-waste"
+        },
+        {
+          "id": "direct-measure-biological-treatment-outboundary-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "III.3.1": {
+    "methodologies": [
+      {
+        "id": "incineration-waste-inboundary-methodology",
+        "inputRequired": [
+          "incineration-facility-id",
+          "incineration-facility-address",
+          "total-municipal-solid-waste-disposed",
+          "methane-collected-and-removed",
+          "waste-composition"
+        ],
+        "formula": "incineration-waste",
+        "activities": {
+          "unique-by": [
+            "incineration-waste-inboundary-incineration-facility-id"
+          ],
+          "activity-title": "total-mass-of-waste-incinerated-or-burned",
+          "extra-fields": [
+            {
+              "id": "incineration-waste-inboundary-incineration-facility-id",
+              "type": "text"
+            },
+            {
+              "id": "incineration-waste-inboundary-incineration-facility-address",
+              "type": "text",
+              "required": false
+            },
+            {
+              "id": "incineration-waste-inboundary-waste-composition",
+              "type": "percentage-breakdown",
+              "total-required": 100,
+              "subtypes": [
+                "waste-composition-municipal-solid-waste",
+                "waste-composition-industrial-solid-waste",
+                "waste-composition-hazardous-waste",
+                "waste-composition-clinical-waste",
+                "waste-composition-sewage-sludge"
+              ]
+            },
+            {
+              "id": "incineration-waste-inboundary-technology",
+              "options": [
+                "technology-continuous-incineration",
+                "technology-semi-continuous-incineration",
+                "technology-batch-type-incineration"
+              ]
+            },
+            {
+              "id": "incineration-waste-inboundary-boiler-type",
+              "options": [
+                "boiler-type-stoker",
+                "boiler-type-fluidised-bed"
+              ]
+            }
+          ],
+          "units": [
+            "units-kilograms",
+            "units-tonnes"
+          ]
+        }
+      }
+    ],
+    "directMeasure": {
+      "id": "direct-measure-incineration-waste-inboundary-methodology",
+      "extra-fields": [
+        {
+          "id": "incineration-facility-id",
+          "type": "text"
+        },
+        {
+          "id": "incineration-facility-address",
+          "type": "text",
+          "required": false
+        }
+      ]
+    }
+  },
+  "III.3.3": {
+    "methodologies": [
+      {
+        "id": "incineration-waste-outboundary-methodology",
+        "inputRequired": [
+          "incineration-facility-id",
+          "incineration-facility-address",
+          "total-municipal-solid-waste-disposed",
+          "methane-collected-and-removed",
+          "waste-composition"
+        ],
+        "formula": "incineration-waste",
+        "activities": {
+          "unique-by": [
+            "incineration-waste-outboundary-incineration-facility-id"
+          ],
+          "activity-title": "total-mass-of-waste-incinerated-or-burned",
+          "extra-fields": [
+            {
+              "id": "incineration-waste-outboundary-incineration-facility-id",
+              "type": "text"
+            },
+            {
+              "id": "incineration-waste-outboundary-incineration-facility-address",
+              "type": "text",
+              "required": false
+            },
+            {
+              "id": "incineration-waste-outboundary-waste-composition",
+              "type": "percentage-breakdown",
+              "total-required": 100,
+              "subtypes": [
+                "waste-composition-municipal-solid-waste",
+                "waste-composition-industrial-solid-waste",
+                "waste-composition-hazardous-waste",
+                "waste-composition-clinical-waste",
+                "waste-composition-sewage-sludge"
+              ]
+            },
+            {
+              "id": "incineration-waste-outboundary-technology",
+              "options": [
+                "technology-continuous-incineration",
+                "technology-semi-continuous-incineration",
+                "technology-batch-type-incineration"
+              ]
+            },
+            {
+              "id": "incineration-waste-outboundary-boiler-type",
+              "options": [
+                "boiler-type-stoker",
+                "boiler-type-fluidised-bed"
+              ]
+            }
+          ],
+          "units": [
+            "units-kilograms",
+            "units-tonnes"
+          ]
+        }
+      }
+    ],
+    "directMeasure": {
+      "id": "direct-measure-incineration-waste-boundary-methodology",
+      "extra-fields": [
+        {
+          "id": "incineration-facility-id",
+          "type": "text"
+        },
+        {
+          "id": "incineration-facility-address",
           "type": "text",
           "required": false
         }

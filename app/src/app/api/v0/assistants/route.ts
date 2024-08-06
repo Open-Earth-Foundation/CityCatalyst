@@ -3,8 +3,6 @@ import { setupOpenAI } from "@/util/openai";
 import { NextResponse } from "next/server";
 import { Roles } from "@/lib/auth";
 
-const openai = setupOpenAI();
-
 // Create a new assistant
 export const POST = apiHandler(async (_req, { session }) => {
   if (session?.user.role !== Roles.Admin) {
@@ -15,6 +13,8 @@ export const POST = apiHandler(async (_req, { session }) => {
     // TODO: Add API route for uploading files to vector store.
     // TODO: This vector store needs to passed to this endpoint below.
     return NextResponse.json({ error: "Not Implemented", status: 501 });
+
+    const openai = setupOpenAI();
     const userID = session?.user.id;
 
     const systemPrompt = `Your name is CLIMA and you are a climate assistant for creating 

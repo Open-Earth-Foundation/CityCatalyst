@@ -16,9 +16,7 @@
             "extra-fields": [
               {
                 "id": "residential-building-type",
-                "options": [
-                  "residential-building-type-all"
-                ]
+                "options": ["residential-building-type-all"]
               },
               {
                 "id": "residential-building-fuel-type",
@@ -67,9 +65,7 @@
       "extra-fields": [
         {
           "id": "residential-building-type",
-          "options": [
-            "residential-building-type-all"
-          ]
+          "options": ["residential-building-type-all"]
         },
         {
           "id": "residential-building-fuel-type",
@@ -109,9 +105,7 @@
             "extra-fields": [
               {
                 "id": "residential-building-type",
-                "options": [
-                  "residential-building-type-all"
-                ]
+                "options": ["residential-building-type-all"]
               },
               {
                 "id": "residential-building-energy-usage",
@@ -132,10 +126,7 @@
                 "type": "text"
               }
             ],
-            "units": [
-              "units-kilowatt-hours",
-              "units-terajoules"
-            ]
+            "units": ["units-kilowatt-hours", "units-terajoules"]
           }
         ]
       },
@@ -152,9 +143,7 @@
       "extra-fields": [
         {
           "id": "residential-building-type",
-          "options": [
-            "residential-building-type-all"
-          ],
+          "options": ["residential-building-type-all"],
           "exclusive": "residential-building-type-all"
         },
         {
@@ -182,9 +171,7 @@
     "methodologies": [
       {
         "id": "fuel-combustion-commercial-buildings-methodology",
-        "inputRequired": [
-          "total-fuel-consumption"
-        ],
+        "inputRequired": ["total-fuel-consumption"],
         "activities": [
           {
             "id": "fuel-combustion-commercial-buildings-activity",
@@ -250,18 +237,12 @@
       },
       {
         "id": "scaled-sample-fuel-combustion-commercial-buildings-methodology",
-        "inputRequired": [
-          "sample-fuel",
-          "scaling-data"
-        ],
+        "inputRequired": ["sample-fuel", "scaling-data"],
         "disabled": true
       },
       {
         "id": "modeled-data-fuel-consumption-commercial-buildings-methodology",
-        "inputRequired": [
-          "modeled-fuel",
-          "built-area"
-        ],
+        "inputRequired": ["modeled-fuel", "built-area"],
         "disabled": true
       }
     ],
@@ -303,9 +284,7 @@
     "methodologies": [
       {
         "id": "energy-consumption-commercial-buildings-methodology",
-        "inputRequired": [
-          "total-grid-consumption"
-        ],
+        "inputRequired": ["total-grid-consumption"],
         "activities": [
           {
             "id": "energy-consumption-commercial-buildings-activity",
@@ -353,10 +332,7 @@
       },
       {
         "id": "scaled-sample-energy-usage-commercial-buildings-methodology",
-        "inputRequired": [
-          "sample-grid-supplied-energy",
-          "scaling-data"
-        ],
+        "inputRequired": ["sample-grid-supplied-energy", "scaling-data"],
         "disabled": true
       },
       {
@@ -625,10 +601,7 @@
                 "type": "text"
               }
             ],
-            "units": [
-              "units-kilowatt-hours",
-              "units-terajoules"
-            ]
+            "units": ["units-kilowatt-hours", "units-terajoules"]
           }
         ]
       },
@@ -870,10 +843,7 @@
                 "type": "text"
               }
             ],
-            "units": [
-              "units-kilowatt-hours",
-              "units-terajoules"
-            ]
+            "units": ["units-kilowatt-hours", "units-terajoules"]
           }
         ]
       },
@@ -1083,10 +1053,7 @@
                 "type": "text"
               }
             ],
-            "units": [
-              "units-kilowatt-hours",
-              "units-terajoules"
-            ]
+            "units": ["units-kilowatt-hours", "units-terajoules"]
           }
         ]
       },
@@ -1290,10 +1257,7 @@
                 "type": "text"
               }
             ],
-            "units": [
-              "units-kilowatt-hours",
-              "units-terajoules"
-            ]
+            "units": ["units-kilowatt-hours", "units-terajoules"]
           }
         ]
       },
@@ -1494,46 +1458,49 @@
     "methodologies": [
       {
         "id": "methane-commitment-solid-waste-methodology",
-        "activities": {
-          "unique-by": ["methane-commitment-solid-waste-landfill-id"],
-          "activity-title": "total-municipal-solid-waste-disposed",
-          "extra-fields": [
-            {
-              "id": "methane-commitment-solid-waste-landfill-id",
-              "type": "text"
-            },
-            {
-              "id": "methane-commitment-solid-waste-landfill-address",
-              "type": "text",
-              "required": false
-            },
-            {
-              "id": "methane-commitment-solid-waste-oxidation-factor",
-              "options": [
-                "methane-commitment-solid-waste-well-managed-landfill",
-                "methane-commitment-solid-waste-unmanaged-landfill"
-              ]
-            },
-            {
-              "id": "methane-commitment-solid-waste-landfill-methane-collected-and-removed",
-              "type": "number"
-            },
-            {
-              "id": "methane-commitment-solid-waste-landfill-waste-composition",
-              "type": "percentage-breakdown",
-              "total-required": 100,
-              "subtypes": [
-                "methane-commitment-solid-waste-landfill-waste-composition-food",
-                "methane-commitment-solid-waste-landfill-waste-composition-garden",
-                "methane-commitment-solid-waste-landfill-waste-composition-paper",
-                "methane-commitment-solid-waste-landfill-waste-composition-wood",
-                "methane-commitment-solid-waste-landfill-waste-composition-textiles",
-                "methane-commitment-solid-waste-landfill-waste-composition-industrial"
-              ]
-            }
-          ],
-          "formula": "methane-commitment"
-        }
+        "activities": [
+          {
+            "id": "methane-commitment-solid-waste-activity",
+            "unique-by": ["methane-commitment-solid-waste-landfill-id"],
+            "activity-title": "total-municipal-solid-waste-disposed",
+            "extra-fields": [
+              {
+                "id": "methane-commitment-solid-waste-landfill-id",
+                "type": "text"
+              },
+              {
+                "id": "methane-commitment-solid-waste-landfill-address",
+                "type": "text",
+                "required": false
+              },
+              {
+                "id": "methane-commitment-solid-waste-oxidation-factor",
+                "options": [
+                  "methane-commitment-solid-waste-well-managed-landfill",
+                  "methane-commitment-solid-waste-unmanaged-landfill"
+                ]
+              },
+              {
+                "id": "methane-commitment-solid-waste-landfill-methane-collected-and-removed",
+                "type": "number"
+              },
+              {
+                "id": "methane-commitment-solid-waste-landfill-waste-composition",
+                "type": "percentage-breakdown",
+                "total-required": 100,
+                "subtypes": [
+                  "methane-commitment-solid-waste-landfill-waste-composition-food",
+                  "methane-commitment-solid-waste-landfill-waste-composition-garden",
+                  "methane-commitment-solid-waste-landfill-waste-composition-paper",
+                  "methane-commitment-solid-waste-landfill-waste-composition-wood",
+                  "methane-commitment-solid-waste-landfill-waste-composition-textiles",
+                  "methane-commitment-solid-waste-landfill-waste-composition-industrial"
+                ]
+              }
+            ],
+            "formula": "methane-commitment"
+          }
+        ]
       },
       {
         "id": "first-order-of-decay-solid-waste-methodology",

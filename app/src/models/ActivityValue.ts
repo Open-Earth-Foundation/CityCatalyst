@@ -6,10 +6,12 @@ import { DataSource, DataSourceId } from "./DataSource";
 
 export interface ActivityValueAttributes {
   id: string;
-  activityData?: object;
+  activityData?: Record<string, any>;
+  co2eq?: bigint;
+  co2eqYears?: number;
   inventoryValueId?: string;
   datasourceId?: string;
-  metadata?: object;
+  metadata?: Record<string, any>;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -18,6 +20,8 @@ export type ActivityValuePk = "id";
 export type ActivityValueId = ActivityValue[ActivityValuePk];
 export type ActivityValueOptionalAttributes =
   | "activityData"
+  | "co2eq"
+  | "co2eqYears"
   | "inventoryValueId"
   | "metadata"
   | "created"
@@ -32,10 +36,12 @@ export class ActivityValue
   implements ActivityValueAttributes
 {
   id!: string;
-  activityData?: object;
+  activityData?: Record<string, any>;
+  co2eq?: bigint;
+  co2eqYears?: number;
   inventoryValueId?: string;
   datasourceId?: string;
-  metadata?: object;
+  metadata?: Record<string, any>;
   created?: Date;
   lastUpdated?: Date;
 
@@ -86,6 +92,15 @@ export class ActivityValue
           type: DataTypes.JSONB,
           allowNull: true,
           field: "activity_data",
+        },
+        co2eq: {
+          type: DataTypes.BIGINT,
+          allowNull: true,
+        },
+        co2eqYears: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+          field: "co2eq_years",
         },
         inventoryValueId: {
           type: DataTypes.UUID,

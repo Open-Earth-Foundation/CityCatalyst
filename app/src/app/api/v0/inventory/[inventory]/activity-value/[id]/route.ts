@@ -1,15 +1,11 @@
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
-import {
-  EmissionsFactor,
-  EmissionsFactorAttributes,
-} from "@/models/EmissionsFactor";
+import { EmissionsFactor } from "@/models/EmissionsFactor";
 import { apiHandler } from "@/util/api";
 import { createActivityValueRequest } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
-import { Op } from "sequelize";
 import { z } from "zod";
 
 export const PATCH = apiHandler(async (req, { params, session }) => {

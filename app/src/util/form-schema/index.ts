@@ -12,7 +12,7 @@ interface ExtraField {
   subtypes?: string[];
 }
 
-interface Activity {
+export interface Activity {
   id: string;
   "unique-by"?: string[];
   "activity-title"?: string;
@@ -26,14 +26,18 @@ export interface Methodology {
   id: string;
   disabled?: boolean;
   activities?: Activity[];
+  inputRequired?: string[];
+  fields?: []
+  suggestedActivitiesId?: string;
+  suggestedActivities?: Activity[];
+}
+
+export interface DirectMeasure {
   suggestedActivitiesId?: string;
   suggestedActivities?: Activity[];
   inputRequired?: string[];
-}
-
-interface DirectMeasure {
   id?: string;
-  "extra-fields"?: ExtraField[];
+ "extra-fields"?: ExtraField[];
 }
 
 interface ManualInputHierarchy {

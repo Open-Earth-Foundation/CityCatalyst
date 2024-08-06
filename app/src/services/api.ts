@@ -469,6 +469,19 @@ export const api = createApi({
       transformResponse: (response: any) => response.data,
       invalidatesTags: ["ActivityValue"],
     }),
+    createThreadId: builder.mutation({
+      query: (data: { inventoryId: string; content: string }) => ({
+        url: `/assistants/threads/${data.inventoryId}`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: data.content,
+        }),
+      }),
+      transformResponse: (response: { threadId: string }) => response.threadId,
+    }),
   }),
 });
 
@@ -525,5 +538,6 @@ export const {
   useCheckUserMutation,
   useMockDataQuery,
   useConnectToCDPMutation,
+  useCreateThreadIdMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

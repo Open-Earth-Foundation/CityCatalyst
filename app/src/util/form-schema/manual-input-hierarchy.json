@@ -247,7 +247,7 @@
       }
     ],
     "directMeasure": {
-      "id": "stationary-energy-direct-measure-methodology",
+      "id": "direct-measure",
       "extra-fields": [
         {
           "id": "commercial-building-type",
@@ -341,7 +341,7 @@
       }
     ],
     "directMeasure": {
-      "id": "stationary-energy-direct-measure-methodology",
+      "id": "direct-measure",
       "extra-fields": [
         {
           "id": "commercial-building-type",
@@ -1307,6 +1307,8 @@
     "methodologies": [
       {
         "id": "fuel-sales-on-road-transport-methodology",
+        "mostUsed": true,
+        "inputRequired": ["total-fuel-sold-in-gas-stations"],
         "activities": [
           {
             "id": "fuel-sales-on-road-transport-activity",
@@ -1331,13 +1333,13 @@
               {
                 "id": "on-road-transport-vehicle-type",
                 "options": [
-                  "vehicle-type-all",
                   "vehicle-type-passenger-vehicles",
                   "vehicle-type-commercial-vehicles",
                   "vehicle-type-public-transport-vehicles",
                   "vehicle-type-emergency-vehicles",
                   "vehicle-type-service-vehicles"
-                ]
+                ],
+                "multiselect": true
               },
               {
                 "id": "on-road-transport-fuel-source",
@@ -1348,41 +1350,148 @@
               "units-gallons",
               "units-liters",
               "units-cubic-meters",
-              "units-kilograms",
-              "units-terajoules",
-              "units-kilowatt-hours"
+              "units-kilograms"
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "fuel-sales-on-road-transport-activity",
+            "prefills": [
+              {
+                "name": "on-road-transport-vehicle-type",
+                "value": "vehicle-type-all"
+              }
+            ]
+          },
+          {
+            "id": "fuel-sales-on-road-transport-activity",
+            "prefills": [
+              {
+                "name": "on-road-transport-vehicle-type",
+                "value": "vehicle-type-passenger-vehicles"
+              }
+            ]
+          },
+          {
+            "id": "fuel-sales-on-road-transport-activity",
+            "prefills": [
+              {
+                "name": "on-road-transport-vehicle-type",
+                "value": "vehicle-type-public-transport-vehicles"
+              }
             ]
           }
         ]
       },
       {
         "id": "induced-activity-transboundary-trips-on-road-transport-methodology",
+        "inputRequired": [
+          "total-distance-travelled-in-in-boundary-trips",
+          "total-distance-travelled-in-transboundary",
+          "fuel-intensity"
+        ],
         "disabled": true
       },
       {
         "id": "induced-activity-only-departing-trips-on-road-transport-methodology",
-        "disabled": true
+        "disabled": true,
+        "inputRequired": [
+          "total-distance-travelled-in-in-boundary-trips",
+          "distnace-travelled-within-city-transboundary-departing-only",
+          "fuel-intensity"
+        ]
       },
       {
         "id": "geographic-on-road-transport-methodology",
-        "disabled": true
+        "inputRequired": [
+          "total-distance-travelled-in-in-boundary-trips",
+          "fuel-intensity"
+        ],
+        "activities": [
+          {
+            "id": "geographic-on-road-transport-activity",
+            "unique-by": [
+              "on-road-transport-vehicle-type",
+              "on-road-transport-fuel-source"
+            ],
+            "activity-title": "total-distance-travelled-in-boundary",
+            "units": ["units-kilometers", "units-miles"],
+            "extra-fields": [
+              {
+                "id": "on-road-transport-vehicle-type",
+                "options": [
+                  "vehicle-type-passenger-vehicles",
+                  "vehicle-type-commercial-vehicles",
+                  "vehicle-type-public-transport-vehicles",
+                  "vehicle-type-emergency-vehicles",
+                  "vehicle-type-service-vehicles"
+                ],
+                "multiselect": true
+              },
+              {
+                "id": "on-road-transport-fuel-type",
+                "options": [
+                  "fuel-type-gasoline",
+                  "fuel-type-diesel",
+                  "fuel-type-lpg",
+                  "fuel-type-cng",
+                  "fuel-type-biofuel"
+                ]
+              },
+              {
+                "id": "on-road-transport-fuel-intensity",
+                "type": "number",
+                "units": [
+                  "tonnes-per-kilometer",
+                  "gallons-per-kilometer",
+                  "cubic-meters-per-kilometer",
+                  "tonnes-per-miles",
+                  "gallons-per-miles",
+                  "cubic-meters-per-miles"
+                ]
+              }
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "geographic-on-road-transport-activity",
+            "on-road-transport-vehicle-type": "vehicle-type-all"
+          },
+          {
+            "id": "geographic-on-road-transport-activity",
+            "on-road-transport-vehicle-type": "vehicle-type-passenger-vehicles"
+          },
+          {
+            "id": "geographic-on-road-transport-activity",
+            "on-road-transport-vehicle-type": "vehicle-type-public-transport-vehicles"
+          }
+        ]
       },
       {
         "id": "resident-activity-on-road-transport-methodology",
-        "disabled": true
+        "disabled": true,
+        "inputRequired": [
+          "total-distance-travelled-in-in-boundary-trips-residents",
+          "fuel-intensity"
+        ]
       }
     ],
     "directMeasure": {
+      "id": "on-road-transport-direct-measure-methodology",
       "extra-fields": [
         {
           "id": "on-road-transport-fuel-type",
           "options": [
+            "fuel-type-all",
             "fuel-type-gasoline",
             "fuel-type-diesel",
             "fuel-type-lpg",
             "fuel-type-cng",
             "fuel-type-biofuel"
-          ]
+          ],
+          "exclusive": "fuel-type-all"
         },
         {
           "id": "on-road-transport-vehicle-type",
@@ -1406,6 +1515,7 @@
     "methodologies": [
       {
         "id": "electricity-consumption-on-road-transport-methodology",
+        "inputRequired": ["total-electricity-consumed-in-charging-stations"],
         "activities": [
           {
             "id": "electricity-consumption-on-road-transport-activity",
@@ -1431,10 +1541,25 @@
               }
             ]
           }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "electricity-consumption-on-road-transport-activity",
+            "on-road-transport-vehicle-type": "vehicle-type-all"
+          },
+          {
+            "id": "electricity-consumption-on-road-transport-activity",
+            "on-road-transport-vehicle-type": "vehicle-type-passenger-vehicles"
+          },
+          {
+            "id": "electricity-consumption-on-road-transport-activity",
+            "on-road-transport-vehicle-type": "vehicle-type-public-transport-vehicles"
+          }
         ]
       }
     ],
     "directMeasure": {
+      "id": "on-road-transport-direct-measure-energy-consumption-methodology",
       "extra-fields": [
         {
           "id": "on-road-transport-vehicle-type",
@@ -1449,6 +1574,853 @@
         },
         {
           "id": "on-road-transport-electricity-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "II.2.1": {
+    "methodologies": [
+      {
+        "id": "fuel-sales-railways-methodology",
+        "mostUsed": true,
+        "inputRequired": ["total-fuel-consumed"],
+        "activities": [
+          {
+            "id": "fuel-sales-railways-activity",
+            "unique-by": [
+              "railways-vehicle-type",
+              "railways-fuel-type",
+              "railways-fuel-source"
+            ],
+            "activity-title": "activity-total-fuel-sales",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "railways-fuel-type",
+                "options": [
+                  "fuel-type-gasoline",
+                  "fuel-type-diesel",
+                  "fuel-type-lpg",
+                  "fuel-type-cng",
+                  "fuel-type-biofuel"
+                ]
+              },
+              {
+                "id": "railways-vehicle-type",
+                "options": [
+                  "vehicle-type-all",
+                  "vehicle-type-passenger-trains",
+                  "vehicle-type-freight-trains",
+                  "vehicle-type-high-speed-trains",
+                  "vehicle-type-tourist-trains"
+                ],
+                "exclusive": "vehicle-type-all"
+              },
+              {
+                "id": "railways-fuel-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-gallons",
+              "units-liters",
+              "units-cubic-meters",
+              "units-kilograms",
+              "units-terajoules"
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "fuel-sales-railways-activity",
+            "railways-vehicle-type": "vehicle-type-all"
+          },
+          {
+            "id": "fuel-sales-railways-activity",
+            "railways-vehicle-type": "vehicle-type-passenger-trains"
+          },
+          {
+            "id": "fuel-sales-railways-activity",
+            "railways-vehicle-type": "vehicle-type-freight-trains"
+          }
+        ]
+      },
+      {
+        "id": "geographic-railways-methodology",
+        "inputRequired": [
+          "total-distance-travelled-in-in-boundary-trips",
+          "fuel-intensity"
+        ],
+        "activities": [
+          {
+            "id": "geographic-railways-activity",
+            "unique-by": ["railways-vehicle-type", "railways-fuel-type"],
+            "activity-title": "total-distance-travelled-in-boundary",
+            "units": ["units-kilometers", "units-miles"],
+            "extra-fields": [
+              {
+                "id": "railways-vehicle-type",
+                "options": [
+                  "vehicle-type-passenger-trains",
+                  "vehicle-type-freight-trains",
+                  "vehicle-type-high-speed-trains",
+                  "vehicle-type-tourist-trains"
+                ],
+                "multiselect": true
+              },
+              {
+                "id": "railways-fuel-type",
+                "options": [
+                  "fuel-type-gasoline",
+                  "fuel-type-diesel",
+                  "fuel-type-lpg",
+                  "fuel-type-cng",
+                  "fuel-type-biofuel"
+                ]
+              },
+              {
+                "id": "railways-fuel-intensity",
+                "type": "number",
+                "units": [
+                  "tonnes-per-kilometer",
+                  "gallons-per-kilometer",
+                  "cubic-meters-per-kilometer",
+                  "tonnes-per-miles",
+                  "gallons-per-miles",
+                  "cubic-meters-per-miles"
+                ]
+              }
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "geographic-railways-activity",
+            "railways-vehicle-type": "vehicle-type-all"
+          },
+          {
+            "id": "geographic-railways-activity",
+            "railways-vehicle-type": "vehicle-type-passenger-trains"
+          },
+          {
+            "id": "geographic-railways-activity",
+            "railways-vehicle-type": "vehicle-type-freight-trains"
+          }
+        ]
+      },
+      {
+        "id": "movement-driver-railways-methodology",
+        "implemented": false
+      }
+    ],
+    "directMeasure": {
+      "id": "railways-direct-measure-methodology",
+      "extra-fields": [
+        {
+          "id": "railways-fuel-type",
+          "options": [
+            "fuel-type-gasoline",
+            "fuel-type-diesel",
+            "fuel-type-lpg",
+            "fuel-type-cng",
+            "fuel-type-biofuel"
+          ]
+        },
+        {
+          "id": "railways-vehicle-type",
+          "options": [
+            "vehicle-type-passenger-trains",
+            "vehicle-type-freight-trains",
+            "vehicle-type-high-speed-trains",
+            "vehicle-type-tourist-trains"
+          ],
+          "multiselect": true
+        },
+        {
+          "id": "railways-fuel-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "II.2.2": {
+    "methodologies": [
+      {
+        "id": "electricity-consumption-railways-methodology",
+        "activities": [
+          {
+            "id": "electricity-consumption-railways-activity",
+            "unique-by": [
+              "railways-vehicle-type",
+              "railways-electricity-source"
+            ],
+            "extra-fields": [
+              {
+                "id": "railways-vehicle-type",
+                "options": [
+                  "vehicle-type-all",
+                  "vehicle-type-passenger-trains",
+                  "vehicle-type-freight-trains",
+                  "vehicle-type-high-speed-trains",
+                  "vehicle-type-tourist-trains"
+                ],
+                "exclusive": "vehicle-type-all"
+              },
+              {
+                "id": "railways-electricity-source",
+                "type": "text"
+              }
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "electricity-consumption-railways-activity",
+            "railways-vehicle-type": "vehicle-type-all"
+          },
+          {
+            "id": "electricity-consumption-railways-activity",
+            "railways-vehicle-type": "vehicle-type-passenger-trains"
+          },
+          {
+            "id": "electricity-consumption-railways-activity",
+            "railways-vehicle-type": "vehicle-type-freight-trains"
+          }
+        ]
+      }
+    ],
+    "directMeasure": {
+      "id": "railways-direct-measure-energy-consumption-methodology",
+      "extra-fields": [
+        {
+          "id": "railways-vehicle-type",
+          "options": [
+            "vehicle-type-passenger-trains",
+            "vehicle-type-freight-trains",
+            "vehicle-type-high-speed-trains",
+            "vehicle-type-tourist-trains"
+          ],
+          "multiselect": true
+        },
+        {
+          "id": "railways-electricity-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "II.3.1": {
+    "methodologies": [
+      {
+        "id": "fuel-sales-waterborne-navigation-methodology",
+        "inputRequired": ["total-fuel-sold-in-gas-stations"],
+        "activities": [
+          {
+            "id": "fuel-sales-waterborne-navigation-activity",
+            "unique-by": [
+              "waterborne-navigation-vehicle-type",
+              "waterborne-navigation-fuel-type",
+              "waterborne-navigation-fuel-source"
+            ],
+            "activity-title": "activity-total-fuel-sales",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "waterborne-navigation-fuel-type",
+                "options": [
+                  "fuel-type-gasoline",
+                  "fuel-type-diesel",
+                  "fuel-type-lpg",
+                  "fuel-type-cng",
+                  "fuel-type-biofuel"
+                ]
+              },
+              {
+                "id": "waterborne-navigation-vehicle-type",
+                "options": [
+                  "vehicle-type-all",
+                  "vehicle-type-ferries",
+                  "vehicle-type-boats",
+                  "vehicle-type-marine-vessels"
+                ],
+                "exclusive": "vehicle-type-all"
+              },
+              {
+                "id": "waterborne-navigation-fuel-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-gallons",
+              "units-liters",
+              "units-cubic-meters",
+              "units-kilograms",
+              "units-terajoules",
+              "units-kilowatt-hours"
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "fuel-sales-waterborne-navigation-activity",
+            "waterborne-navigation-vehicle-type": "vehicle-type-all"
+          },
+          {
+            "id": "fuel-sales-waterborne-navigation-activity",
+            "waterborne-navigation-vehicle-type": "vehicle-type-ferries"
+          },
+          {
+            "id": "fuel-sales-waterborne-navigation-activity",
+            "waterborne-navigation-vehicle-type": "vehicle-type-boats"
+          }
+        ]
+      },
+      {
+        "id": "geographic-waterborne-navigation-methodology",
+        "inputRequired": [
+          "total-distance-travelled-in-in-boundary-trips",
+          "fuel-intensity"
+        ],
+        "activities": [
+          {
+            "id": "geographic-waterborne-navigation-activity",
+            "unique-by": [
+              "waterborne-navigation-vehicle-type",
+              "waterborne-navigation-fuel-type"
+            ],
+            "activity-title": "total-distance-travelled-in-boundary",
+            "units": ["units-kilometers", "units-miles"],
+            "extra-fields": [
+              {
+                "id": "waterborne-navigation-vehicle-type",
+                "options": [
+                  "vehicle-type-all",
+                  "vehicle-type-ferries",
+                  "vehicle-type-boats",
+                  "vehicle-type-marine-vessels"
+                ],
+                "exclusive": "vehicle-type-all"
+              },
+              {
+                "id": "waterborne-navigation-fuel-type",
+                "options": [
+                  "fuel-type-gasoline",
+                  "fuel-type-diesel",
+                  "fuel-type-lpg",
+                  "fuel-type-cng",
+                  "fuel-type-biofuel"
+                ]
+              },
+              {
+                "id": "waterborne-navigation-fuel-intensity",
+                "type": "number",
+                "units": [
+                  "units-grams-per-kilometer",
+                  "units-kilograms-per-kilometer"
+                ]
+              }
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "geographic-waterborne-navigation-activity",
+            "waterborne-navigation-vehicle-type": "vehicle-type-all"
+          },
+          {
+            "id": "geographic-waterborne-navigation-activity",
+            "waterborne-navigation-vehicle-type": "vehicle-type-ferries"
+          },
+          {
+            "id": "geographic-waterborne-navigation-activity",
+            "waterborne-navigation-vehicle-type": "vehicle-type-boats"
+          }
+        ]
+      }
+    ],
+    "directMeasure": {
+      "id": "waterborne-navigation-direct-measure-methodology",
+      "extra-fields": [
+        {
+          "id": "waterborne-navigation-fuel-type",
+          "options": [
+            "fuel-type-gasoline",
+            "fuel-type-diesel",
+            "fuel-type-lpg",
+            "fuel-type-cng",
+            "fuel-type-biofuel"
+          ]
+        },
+        {
+          "id": "waterborne-navigation-vehicle-type",
+          "options": [
+            "vehicle-type-ferries",
+            "vehicle-type-boats",
+            "vehicle-type-marine-vessels"
+          ],
+          "multiselect": true
+        },
+        {
+          "id": "waterborne-navigation-fuel-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "II.3.2": {
+    "methodologies": [
+      {
+        "id": "electricity-consumption-waterborne-navigation-methodology",
+        "activities": [
+          {
+            "id": "electricity-consumption-waterborne-navigation-activity",
+            "unique-by": [
+              "waterborne-navigation-vehicle-type",
+              "waterborne-navigation-electricity-source"
+            ],
+            "extra-fields": [
+              {
+                "id": "waterborne-navigation-vehicle-type",
+                "options": [
+                  "vehicle-type-all",
+                  "vehicle-type-ferries",
+                  "vehicle-type-boats",
+                  "vehicle-type-marine-vessels"
+                ],
+                "exclusive": "vehicle-type-all"
+              },
+              {
+                "id": "waterborne-navigation-electricity-source",
+                "type": "text"
+              }
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "electricity-consumption-waterborne-navigation-activity",
+            "waterborne-navigation-vehicle-type": "vehicle-type-all"
+          },
+          {
+            "id": "electricity-consumption-waterborne-navigation-activity",
+            "waterborne-navigation-vehicle-type": "vehicle-type-ferries"
+          },
+          {
+            "id": "electricity-consumption-waterborne-navigation-activity",
+            "waterborne-navigation-vehicle-type": "vehicle-type-boats"
+          }
+        ]
+      }
+    ],
+    "directMeasure": {
+      "id": "waterborne-navigation-direct-measure-energy-consumption-methodology",
+      "extra-fields": [
+        {
+          "id": "waterborne-navigation-vehicle-type",
+          "options": [
+            "vehicle-type-ferries",
+            "vehicle-type-boats",
+            "vehicle-type-marine-vessels"
+          ],
+          "multiselect": true
+        },
+        {
+          "id": "waterborne-navigation-electricity-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "II.4.1": {
+    "methodologies": [
+      {
+        "id": "fuel-sales-aviation-methodology",
+        "inputRequired": ["total-fuel-sold-in-gas-stations"],
+        "activities": [
+          {
+            "id": "fuel-sales-aviation-activity",
+            "unique-by": [
+              "aviation-vehicle-type",
+              "aviation-fuel-type",
+              "aviation-fuel-source"
+            ],
+            "activity-title": "activity-total-fuel-sales",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "aviation-fuel-type",
+                "options": [
+                  "fuel-type-aviation-gasoline",
+                  "fuel-type-diesel",
+                  "fuel-type-jet-gasoline",
+                  "fuel-type-jet-kerosene",
+                  "fuel-type-lpg",
+                  "fuel-type-gasoline",
+                  "fuel-type-natural-gas-liquids"
+                ]
+              },
+              {
+                "id": "aviation-vehicle-type",
+                "options": [
+                  "vehicle-type-all",
+                  "vehicle-type-passenger-aircraft",
+                  "vehicle-type-cargo-aircraft",
+                  "vehicle-type-private-and-business-aircraft",
+                  "vehicle-type-helicopters"
+                ],
+                "exclusive": "vehicle-type-all"
+              },
+              {
+                "id": "aviation-fuel-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-gallons",
+              "units-liters",
+              "units-cubic-meters",
+              "units-kilograms",
+              "units-terajoules",
+              "units-kilowatt-hours"
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "fuel-sales-aviation-activity",
+            "aviation-vehicle-type": "vehicle-type-all"
+          },
+          {
+            "id": "fuel-sales-aviation-activity",
+            "aviation-vehicle-type": "vehicle-type-passenger-aircraft"
+          },
+          {
+            "id": "fuel-sales-aviation-activity",
+            "aviation-vehicle-type": "vehicle-type-cargo-aircraft"
+          }
+        ]
+      },
+      {
+        "id": "geographic-aviation-methodology",
+        "inputRequired": [
+          "total-distance-travelled-in-in-boundary-trips",
+          "fuel-intensity"
+        ],
+        "activities": [
+          {
+            "id": "geographic-aviation-activity",
+            "unique-by": ["aviation-vehicle-type", "aviation-fuel-type"],
+            "activity-title": "total-distance-travelled-in-boundary",
+            "units": ["units-kilometers", "units-miles"],
+            "extra-fields": [
+              {
+                "id": "aviation-vehicle-type",
+                "options": [
+                  "vehicle-type-all",
+                  "vehicle-type-passenger-aircraft",
+                  "vehicle-type-cargo-aircraft",
+                  "vehicle-type-private-and-business-aircraft",
+                  "vehicle-type-helicopters"
+                ],
+                "exclusive": "vehicle-type-all"
+              },
+              {
+                "id": "aviation-fuel-type",
+                "options": [
+                  "fuel-type-aviation-gasoline",
+                  "fuel-type-diesel",
+                  "fuel-type-jet-gasoline",
+                  "fuel-type-jet-kerosene",
+                  "fuel-type-lpg",
+                  "fuel-type-gasoline",
+                  "fuel-type-natural-gas-liquids"
+                ]
+              },
+              {
+                "id": "aviation-fuel-intensity",
+                "type": "number",
+                "units": [
+                  "units-grams-per-kilometer",
+                  "units-kilograms-per-kilometer"
+                ]
+              }
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "geographic-aviation-activity",
+            "aviation-vehicle-type": "vehicle-type-all"
+          },
+          {
+            "id": "geographic-aviation-activity",
+            "aviation-vehicle-type": "vehicle-type-passenger-aircraft"
+          },
+          {
+            "id": "geographic-aviation-activity",
+            "aviation-vehicle-type": "vehicle-type-cargo-aircraft"
+          }
+        ]
+      }
+    ],
+    "directMeasure": {
+      "id": "aviation-direct-measure-methodology",
+      "extra-fields": [
+        {
+          "id": "aviation-fuel-type",
+          "options": [
+            "fuel-type-gasoline",
+            "fuel-type-diesel",
+            "fuel-type-lpg",
+            "fuel-type-cng",
+            "fuel-type-biofuel"
+          ],
+          "multiselect": true
+        },
+        {
+          "id": "aviation-vehicle-type",
+          "options": [
+            "vehicle-type-passenger-aircraft",
+            "vehicle-type-cargo-aircraft",
+            "vehicle-type-private-and-business-aircraft",
+            "vehicle-type-helicopters"
+          ],
+          "multiselect": true
+        },
+        {
+          "id": "aviation-fuel-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "II.4.2": {
+    "methodologies": [
+      {
+        "id": "electricity-consumption-aviation-methodology",
+        "inputRequired": ["total-electricity-consumed-in-charging-stations"],
+        "activities": [
+          {
+            "id": "electricity-consumption-aviation-activity",
+            "unique-by": [
+              "aviation-vehicle-type",
+              "aviation-electricity-source"
+            ],
+            "extra-fields": [
+              {
+                "id": "aviation-vehicle-type",
+                "options": [
+                  "vehicle-type-all",
+                  "vehicle-type-passenger-aircraft",
+                  "vehicle-type-cargo-aircraft",
+                  "vehicle-type-private-and-business-aircraft",
+                  "vehicle-type-helicopters"
+                ],
+                "exclusive": "vehicle-type-all"
+              },
+              {
+                "id": "aviation-electricity-source",
+                "type": "text"
+              }
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "electricity-consumption-aviation-activity",
+            "aviation-vehicle-type": "vehicle-type-all"
+          },
+          {
+            "id": "electricity-consumption-aviation-activity",
+            "aviation-vehicle-type": "vehicle-type-passenger-aircraft"
+          },
+          {
+            "id": "electricity-consumption-aviation-activity",
+            "aviation-vehicle-type": "vehicle-type-cargo-aircraft"
+          }
+        ]
+      }
+    ],
+    "directMeasure": {
+      "id": "aviation-direct-measure-energy-consumption-methodology",
+      "extra-fields": [
+        {
+          "id": "aviation-vehicle-type",
+          "options": [
+            "vehicle-type-passenger-aircraft",
+            "vehicle-type-cargo-aircraft",
+            "vehicle-type-private-and-business-aircraft",
+            "vehicle-type-helicopters"
+          ],
+          "multiselect": true
+        },
+        {
+          "id": "aviation-electricity-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "II.5.1": {
+    "methodologies": [
+      {
+        "id": "fuel-sales-off-road-transport-methodology",
+        "inputRequired": ["total-fuel-sold-in-gas-stations"],
+        "activities": [
+          {
+            "id": "fuel-sales-off-road-transport-activity",
+            "unique-by": [
+              "off-road-transport-vehicle-type",
+              "off-road-transport-fuel-type",
+              "off-road-transport-fuel-source"
+            ],
+            "activity-title": "activity-total-fuel-sales",
+            "minimum": 1,
+            "extra-fields": [
+              {
+                "id": "off-road-transport-fuel-type",
+                "options": [
+                  "fuel-type-gasoline",
+                  "fuel-type-diesel",
+                  "fuel-type-lpg",
+                  "fuel-type-cng",
+                  "fuel-type-biofuel"
+                ]
+              },
+              {
+                "id": "off-road-transport-vehicle-type",
+                "options": [
+                  "vehicle-type-all",
+                  "vehicle-type-construction-machinery",
+                  "vehicle-type-agricultural-machinery",
+                  "vehicle-type-mining-equipment",
+                  "vehicle-type-forestry-equipment"
+                ],
+                "exclusive": "vehicle-type-all"
+              },
+              {
+                "id": "off-road-transport-fuel-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-gallons",
+              "units-liters",
+              "units-cubic-meters",
+              "units-kilograms",
+              "units-terajoules",
+              "units-kilowatt-hours"
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "fuel-sales-off-road-transport-activity",
+            "off-road-transport-vehicle-type": "vehicle-type-all"
+          },
+          {
+            "id": "fuel-sales-off-road-transport-activity",
+            "off-road-transport-vehicle-type": "vehicle-type-construction-machinery"
+          },
+          {
+            "id": "fuel-sales-off-road-transport-activity",
+            "off-road-transport-vehicle-type": "vehicle-type-agricultural-machinery"
+          }
+        ]
+      }
+    ],
+    "directMeasure": {
+      "extra-fields": [
+        {
+          "id": "off-road-transport-fuel-type",
+          "options": [
+            "fuel-type-gasoline",
+            "fuel-type-diesel",
+            "fuel-type-lpg",
+            "fuel-type-cng",
+            "fuel-type-biofuel"
+          ],
+          "multiselect": true
+        },
+        {
+          "id": "off-road-transport-vehicle-type",
+          "options": [
+            "vehicle-type-construction-machinery",
+            "vehicle-type-agricultural-machinery",
+            "vehicle-type-mining-equipment",
+            "vehicle-type-forestry-equipment"
+          ],
+          "multiselect": true
+        },
+        {
+          "id": "off-road-transport-fuel-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "II.5.2": {
+    "methodologies": [
+      {
+        "id": "electricity-consumption-off-road-transport-methodology",
+        "inputRequired": ["total-electricity-consumed-in-charging-stations"],
+        "activities": [
+          {
+            "id": "electricity-consumption-off-road-transport-activity",
+            "unique-by": [
+              "off-road-transport-vehicle-type",
+              "off-road-transport-electricity-source"
+            ],
+            "extra-fields": [
+              {
+                "id": "off-road-transport-vehicle-type",
+                "options": [
+                  "vehicle-type-all",
+                  "vehicle-type-construction-machinery",
+                  "vehicle-type-agricultural-machinery",
+                  "vehicle-type-mining-equipment",
+                  "vehicle-type-forestry-equipment"
+                ],
+                "exclusive": "vehicle-type-all"
+              },
+              {
+                "id": "off-road-transport-electricity-source",
+                "type": "text"
+              }
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "electricity-consumption-off-road-transport-activity",
+            "off-road-transport-vehicle-type": "vehicle-type-all"
+          },
+          {
+            "id": "electricity-consumption-off-road-transport-activity",
+            "off-road-transport-vehicle-type": "vehicle-type-construction-machinery"
+          },
+          {
+            "id": "electricity-consumption-off-road-transport-activity",
+            "off-road-transport-vehicle-type": "vehicle-type-agricultural-machinery"
+          }
+        ]
+      }
+    ],
+    "directMeasure": {
+      "extra-fields": [
+        {
+          "id": "off-road-transport-vehicle-type",
+          "options": [
+            "vehicle-type-construction-machinery",
+            "vehicle-type-agricultural-machinery",
+            "vehicle-type-mining-equipment",
+            "vehicle-type-forestry-equipment"
+          ],
+          "multiselect": true
+        },
+        {
+          "id": "off-road-transport-electricity-source",
           "type": "text"
         }
       ]

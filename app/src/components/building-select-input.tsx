@@ -12,6 +12,7 @@ interface BuildingTypeSelectInputProps {
   register: UseFormRegister<Inputs>;
   activity: string;
   errors: FieldErrors<any>;
+  selectedActivity?: string;
 }
 
 const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
@@ -21,6 +22,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
   register,
   activity,
   errors,
+  selectedActivity,
 }) => {
   return (
     <Box display="flex" flexDirection="column" gap="8px">

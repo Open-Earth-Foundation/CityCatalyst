@@ -100,18 +100,6 @@ const ActivityTab: FC<ActivityTabProps> = ({
     setMethodology(methodology);
   };
 
-  const handleDirectMeasureSelected = ({
-    id,
-    "extra-fields": extraFields,
-  }: DirectMeasure) => {
-    setSelectedMethodology(id!);
-    setIsMethodologySelected(!isMethodologySelected);
-    setDirectMeasureFields({
-      id,
-      "extra-fields": extraFields,
-    });
-  };
-
   const changeMethodology = () => {
     setSelectedMethodology("");
     setIsMethodologySelected(false);

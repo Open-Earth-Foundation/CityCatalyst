@@ -28,11 +28,16 @@ export interface Methodology {
   activities?: Activity[];
   inputRequired?: string[];
   fields?: []
+  suggestedActivitiesId?: string;
+  suggestedActivities?: Activity[];
 }
 
 export interface DirectMeasure {
+  suggestedActivitiesId?: string;
+  suggestedActivities?: Activity[];
+  inputRequired?: string[];
   id?: string;
-  "extra-fields"?: ExtraField[];
+ "extra-fields"?: ExtraField[];
 }
 
 interface ManualInputHierarchy {

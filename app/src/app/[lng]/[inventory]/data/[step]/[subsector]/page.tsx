@@ -118,8 +118,6 @@ function SubSectorPage({
 
   const scopes = filteredSubsectorScopes();
 
-  console.log(scopes);
-
   // calculate total consumption and emissions
 
   const [scrollPosition, setScrollPosition] = useState<number>(0);

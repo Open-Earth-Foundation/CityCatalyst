@@ -2704,6 +2704,7 @@
         "formula": "methane-commitment",
         "activities": [
           {
+            "id": "methane-commitment-solid-waste-inboundary-activity",
             "unique-by": [
               "methane-commitment-solid-waste-inboundary-landfill-id"
             ],
@@ -2798,6 +2799,7 @@
         "formula": "methane-commitment",
         "activities": [
           {
+            "id": "methane-commitment-solid-waste-outboundary-activity",
             "unique-by": [
               "methane-commitment-solid-waste-outboundary-landfill-id"
             ],
@@ -2884,6 +2886,7 @@
         "formula": "biological-treatment",
         "activities": [
           {
+            "id": "biological-treatment-inboundary-activity",
             "unique-by": [
               "biological-treatment-inboundary-treatment-type",
               "biological-treatment-inboundary-source"
@@ -2947,6 +2950,7 @@
         "formula": "biological-treatment",
         "activities": [
           {
+            "id": "biological-treatment-outboundary-activity",
             "unique-by": [
               "biological-treatment-outboundary-treatment-type",
               "biological-treatment-outboundary-source"
@@ -3013,6 +3017,7 @@
         "formula": "incineration-waste",
         "activities": [
           {
+            "id": "incineration-waste-inboundary-activity",
             "unique-by": [
               "incineration-waste-inboundary-incineration-facility-id"
             ],
@@ -3086,6 +3091,7 @@
         "formula": "incineration-waste",
         "activities": [
           {
+            "id": "incineration-waste-outboundary-methodology",
             "unique-by": [
               "incineration-waste-outboundary-incineration-facility-id"
             ],

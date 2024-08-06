@@ -38,7 +38,7 @@ export type AppSession = DefaultSession & {
     id: string;
     role: string;
   };
-}
+};
 
 export class Auth {
   static async getServerSession(): Promise<AppSession | null> {
@@ -118,4 +118,3 @@ export const authOptions: NextAuthOptions = {
     },
   },
 };
-;

@@ -165,18 +165,9 @@ export class Scope
   // Scope hasMany SubSector via scopeId and subsectorId
   subSectors!: SubSector[];
   getSubSectors!: Sequelize.HasManyGetAssociationsMixin<SubSector>;
-  setSubSectors!: Sequelize.HasManySetAssociationsMixin<
-    SubSector,
-    SubSectorId
-  >;
-  addSubSector!: Sequelize.HasManyAddAssociationMixin<
-    SubSector,
-    SubSectorId
-  >;
-  addSubSectors!: Sequelize.HasManyAddAssociationsMixin<
-    SubSector,
-    SubSectorId
-  >;
+  setSubSectors!: Sequelize.HasManySetAssociationsMixin<SubSector, SubSectorId>;
+  addSubSector!: Sequelize.HasManyAddAssociationMixin<SubSector, SubSectorId>;
+  addSubSectors!: Sequelize.HasManyAddAssociationsMixin<SubSector, SubSectorId>;
   createSubSector!: Sequelize.HasManyCreateAssociationMixin<SubSector>;
   removeSubSector!: Sequelize.HasManyRemoveAssociationMixin<
     SubSector,
@@ -186,14 +177,8 @@ export class Scope
     SubSector,
     SubSectorId
   >;
-  hasSubSector!: Sequelize.HasManyHasAssociationMixin<
-    SubSector,
-    SubSectorId
-  >;
-  hasSubSectors!: Sequelize.HasManyHasAssociationsMixin<
-    SubSector,
-    SubSectorId
-  >;
+  hasSubSector!: Sequelize.HasManyHasAssociationMixin<SubSector, SubSectorId>;
+  hasSubSectors!: Sequelize.HasManyHasAssociationsMixin<SubSector, SubSectorId>;
   countSubSectors!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Scope {

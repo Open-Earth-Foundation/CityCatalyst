@@ -52,7 +52,7 @@
     "@types/uuid": "^9.0.8",
     "@types/wellknown": "^0.5.8",
     "accept-language": "^3.0.18",
-    "ai": "^3.2.27",
+    "ai": "^3.2.35",
     "autoprefixer": "10.4.16",
     "bcrypt": "^5.1.1",
     "csv-parse": "^5.5.5",

@@ -1,0 +1,283 @@
+gas,parameter_code,parameter_name,methodology,gpc_refno,year,formula_input_value,formula_input_units,formula_name,metadata,region,actor_id,datasource,emissions_factor_id
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.1,,0.3,fraction,,"{""treatment_type"":""Stagnant Sewer""}",Global,,IPCC,f67b1cb5-24d0-4f89-a34b-009f88e22c08
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,9.0,kg/m3,,"{""industry_type"":""Coffee""}",Global,,IPCC,620dfc30-774a-4b59-b1fe-2a9034ee5683
+CH4,MCF,methane_correction_factor,first_order_decay,III.1.1,,0.5,fraction,,"{""treatment_type"":""Managed Well – Semi-Aerobic""}",Global,,IPCC,f9b50987-a3d4-49ea-9fe5-daf399c1c4d7
+CH4,MCF,methane_correction_factor,first_order_decay,III.1.3,,0.5,fraction,,"{""treatment_type"":""Managed Well – Semi-Aerobic""}",Global,,IPCC,f6abd2a4-848f-4c09-bc56-e9768baafa40
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,5000.0,kg/m3,,"{""industry_type"":""Distilled & Ethanol Beverages""}",Global,,IPCC,dd149178-2112-4b79-8293-f44cdcc04c5c
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,34,0.05,fraction,,"{""treatment_type"":""Anaerobic Shallow Lagoon""}",Global,,IPCC,072dd634-3d29-4b90-9c44-a942f5b2df6c
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,17.0,kg/m3,,"{""industry_type"":""Beer & Malt""}",Global,,IPCC,ee70fd30-d209-4bc5-b4db-1fd390f83f5a
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,1.0,kg/m3,,"{""industry_type"":""Petroleum Refining""}",Global,,IPCC,7d347204-b7d3-4978-b2b4-fd0c55acff75
+CH4,DOC,degradable_organic_carbon_under_aerobic_conditions,first_order_decay,III.1.1,,0.135,fraction,,"{""waste_form"":""unclassified"",""waste_type"":null}",Thailand,TH,IPCC,7eb9f336-22f1-4146-997a-5b61118d4ced
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.1,34,0.42,fraction,,"{""treatment_type"":""Anaerobic Reactor""}",Global,,IPCC,24714720-5f28-4e5b-adcb-c8fea90a249a
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,34,0.19,fraction,,"{""treatment_type"":""Discharge to Aquatic Environments""}",Global,,IPCC,bd337ae9-d9e6-4923-a5de-90968e4364a2
+CH4,MCF,methane_correction_factor,first_order_decay,III.1.1,,0.4,fraction,,"{""treatment_type"":""Managed Well – Active Aeration""}",Global,,IPCC,a5908042-6591-47c7-a0c2-572f25a9432e
+CH4,MCF,methane_correction_factor,first_order_decay,III.1.3,,0.4,fraction,,"{""treatment_type"":""Managed Well – Active Aeration""}",Global,,IPCC,59bdace0-1a80-436c-8c70-61164b1366d8
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.085,year,,"{""climate"":""Temperate - Dry"",""waste_type"":""Rapidly Degrading Waste""}",Global,,IPCC,af3f572c-c767-40d6-b90e-497a490d5a16
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.02,year,,"{""climate"":""Temperate - Dry"",""waste_type"":""Slowly Degrading Waste""}",Global,,IPCC,306e02d8-597f-40bc-b8fc-9fede8dd8a75
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.2,year,,"{""climate"":""Tropical - Moist"",""waste_type"":""Rapidly Degrading Waste""}",Global,,IPCC,0458f7c9-5de9-4b84-bd79-1f8b2e84fa5a
+CH4,BOD,degradable_organic_component,domestic_wastewater,III.4.1,94,0.04,kg/cap/day,,{},Latin America,,IPCC,a4c8b457-df7c-449b-8a9d-219549899c33
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,3.0,kg/m3,,"{""industry_type"":""Organic Chemicals""}",Global,,IPCC,c2306453-c063-47ce-9b5a-3ef234e237ff
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,10.0,kg/m3,,"{""industry_type"":""Starch Production""}",Global,,IPCC,ce0d9aaa-b623-46d4-bd72-8b92ca68ffa5
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,10.0,kg/m3,,"{""industry_type"":""Starch Production""}",Global,,IPCC,92a56cf2-616a-448d-96b1-39810916517e
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,34,0.2,fraction,,"{""treatment_type"":""Anaerobic Reactor""}",Global,,IPCC,87918349-705a-40ea-bfa2-e639a4e11a90
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.1,34,0.114,fraction,,"{""treatment_type"":""Discharge to Aquatic Environments""}",Global,,IPCC,c27422f9-fdea-4d2f-aef9-6c3781d43613
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.05,year,,"{""climate"":""Temperate - Dry"",""waste_type"":""Bulk MSW or Industrial Waste""}",Global,,IPCC,79ec163d-f061-4720-a04b-7620e4159239
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,22.0,kg/m3,,"{""industry_type"":""Distilled & Ethanol Beverages""}",Brazil,,IPCC,c0a6c736-7e91-4625-8a8b-b68b54bfe268
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,2.027,kg/m3,,"{""industry_type"":""Soft Drinks""}",Thailand,TH,IPCC,1f7093fb-e11d-4a0d-8ebd-b0db9a1ee72b
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,34,0.2,fraction,,"{""treatment_type"":""Anaerobic Shallow Lagoon""}",Global,,IPCC,8e71ac9b-7750-4e69-a187-05e3834b09fd
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,34,0.2,fraction,,"{""treatment_type"":""Anaerobic Treatment""}",Global,,IPCC,fcf312c5-3492-40f1-b8b0-644d64cd6efa
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,34,0.035,fraction,,"{""treatment_type"":""Discharge to Aquatic Environments""}",Global,,IPCC,b1614460-dee3-45f0-b87a-3a4066334dcd
+CH4,OX,oxidation_factor,methane_commitment,III.1.1,,0.0,fraction,,"{""treatment_type"":""Unmanaged""}",Global,,IPCC,3b71a9d5-d7cd-45bd-96b4-27f469e7e37f
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.09,year,,"{""climate"":""Wet"",""waste_type"":""Bulk MSW or Industrial Waste""}",Global,,IPCC,b95a095b-89f0-42de-9967-612813a91c73
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,11.0,kg/m3,,"{""industry_type"":""Alcohol Refining""}",Global,,IPCC,fd797944-dc0c-4af1-bf44-f2ebe27633be
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,4.1,kg/m3,,"{""industry_type"":""Meat & Poultry""}",Global,,IPCC,d3c11eeb-5277-472b-bd1c-8464447ef683
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,5.0,kg/m3,,"{""industry_type"":""Pulp & Paper""}",Global,,IPCC,7f745871-32ac-46e9-99e6-e2568a61d93d
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,9.0,kg/m3,,"{""industry_type"":""Pulp & Paper""}",Global,,IPCC,18eed9be-069a-489e-ab3e-4b31487f6e85
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,1.481,kg/m3,,"{""industry_type"":""Seasoning""}",Thailand,TH,IPCC,4bdc0fde-b2f0-4e77-b26c-d8d127cfbb99
+CH4,F,fraction_of_methane_in_landfill_gas,methane_commitment,III.1.1,,0.5,fraction,,{},Global,,IPCC,f3af7faa-47b6-484c-8efb-00868ce4d93e
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,34,0.028,fraction,,"{""treatment_type"":""Discharge to Aquatic Environments""}",Global,,IPCC,2a7f6fff-3aa9-48fc-8ed0-937462918166
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.3,,0.3,fraction,,"{""treatment_type"":""Septic Tank""}",Global,,IPCC,d092d6e6-8be2-4883-a217-8183117d5bf8
+CH4,MCF,methane_correction_factor,first_order_decay,III.1.1,,0.7,fraction,,"{""treatment_type"":""Managed Poorly – Semi-Aerobic""}",Global,,IPCC,eb8d97eb-31a3-47bf-aa7e-13246440ef5e
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,2.507,kg/m3,,"{""industry_type"":""Textiles""}",Thailand,TH,IPCC,e75fc5ff-d81d-45eb-a652-3befaf1e1346
+CH4,DOCf,fraction_of_doc_decomposing_under_anaerobic_conditions,first_order_decay,III.1.1,,22.8,fraction,,"{""waste_form"":""unclassified"",""waste_type"":""Wood""}",United States of America,US,IPCC,12fdf7b4-25e5-427e-8410-02e07d1c2471
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.1,,0.0,fraction,,"{""treatment_type"":""Flowing Sewer""}",Global,,IPCC,80608097-81bc-4ece-b8bc-4321fa536358
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.3,,0.3,fraction,,"{""treatment_type"":""Latrine""}",Global,,IPCC,019aabc8-1ef8-4b4a-97f7-611fdc67da0c
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.04,year,,"{""climate"":""Temperate - Dry"",""waste_type"":""Slowly Degrading Waste""}",Global,,IPCC,23868b77-028d-4833-99a7-eb63981e7f0d
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.06,year,,"{""climate"":""Temperate - Dry"",""waste_type"":""Rapidly Degrading Waste""}",Global,,IPCC,5dce75e1-4a61-4e83-bc9c-dc6febe241c4
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,34,0.11,fraction,,"{""treatment_type"":""Discharge to Aquatic Environments""}",Global,,IPCC,0d9116d6-7be2-4cfc-9b5b-725ecab52aab
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.4,year,,"{""climate"":""Tropical - Moist"",""waste_type"":""Rapidly Degrading Waste""}",Global,,IPCC,f1e81d51-ff80-4248-989a-7d04b52b503f
+CH4,MCF,methane_correction_factor,first_order_decay,III.1.1,,0.8,fraction,,"{""treatment_type"":""Unmanaged Waste Sites - Deep SWDS""}",Global,,IPCC,40b95c6b-5e6c-4686-82f9-7d8d86d2a451
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,17.0,kg/m3,,"{""industry_type"":""Beer & Malt""}",Global,,IPCC,c4209a82-695c-43ef-bb9c-6f1e2b93f52f
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,2.7,kg/m3,,"{""industry_type"":""Dairy Products""}",Global,,IPCC,86902f84-179e-4414-a212-8e9f20efdf43
+CH4,DOCf,fraction_of_doc_decomposing_under_anaerobic_conditions,first_order_decay,III.1.1,,4.95,fraction,,"{""waste_form"":""unclassified"",""waste_type"":""Wood""}",United States of America,US,IPCC,ae022443-11ca-4bda-9240-82459fc70e3f
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,34,0.19,fraction,,"{""treatment_type"":""Discharge to Aquatic Environments""}",Global,,IPCC,b065ecea-2ecd-4c93-baea-dae81e605a2f
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,2.143,kg/m3,,"{""industry_type"":""Meat & Poultry""}",Thailand,TH,IPCC,2256fad9-60ac-4b3b-a293-4eccde099e85
+CH4,DOCf,fraction_of_doc_decomposing_under_anaerobic_conditions,first_order_decay,III.1.3,,0.7,fraction,,"{""waste_form"":""unclassified"",""waste_type"":""Food Waste""}",Global,,IPCC,54317197-4dd2-4576-81a4-fdda42bc8501
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,,0.175,fraction,,"{""treatment_type"":""Latrine""}",Global,,IPCC,aa77dfcb-47c7-464b-aa91-4ff84e8dc3fd
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,,0.125,fraction,,"{""treatment_type"":""Stagnant Sewer""}",Global,,IPCC,baa0a619-c3f7-48a4-b81e-cfa8849bcf59
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.1,year,,"{""climate"":""Wet"",""waste_type"":null}",Global,,IPCC,438e5372-92d3-4869-91ca-4b15448f7881
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.1,year,,"{""climate"":""Wet"",""waste_type"":null}",Global,,IPCC,cf19ab25-87c6-4fa5-a67b-470aa2844d5a
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,2.717,kg/m3,,"{""industry_type"":""Chemical Products""}",Thailand,TH,IPCC,e17e8a0e-f7ee-4cb2-8cdd-8cc09f66c7f2
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.3,34,0.114,fraction,,"{""treatment_type"":""Discharge to Aquatic Environments""}",Global,,IPCC,9abe763f-4c45-4537-a55f-b2eacce9ded0
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.18,year,,"{""climate"":null,""waste_type"":null}",Finland,FI,IPCC,eb6dbf1c-9723-49e8-9113-2f974cd05722
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,2.027,kg/m3,,"{""industry_type"":""Soft Drinks""}",Thailand,TH,IPCC,266a9cd7-f525-4ca0-b993-14666bda61a6
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,0.85,kg/m3,,"{""industry_type"":""Vegetable Oils""}",Global,,IPCC,483f0a3e-4066-4421-96cf-fb940af843ae
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.1,,0.06,fraction,,"{""treatment_type"":""Latrine""}",Global,,IPCC,7908063f-85be-4245-ae71-178343732283
+CH4,OX,oxidation_factor,methane_commitment,III.1.3,,0.0,fraction,,"{""treatment_type"":""Unmanaged""}",Global,,IPCC,aa4dcb90-4e5c-4064-89b2-359a53c0c9bf
+N2O,W_i,wastewater_generation,industrial_wastewater,III.4.1,,9.0,m3/tonne,,"{""industry_type"":""Starch Production""}",Global,,IPCC,cdadf043-722f-4756-9cd2-3e84d407f3fd
+N2O,W_i,wastewater_generation,industrial_wastewater,III.4.3,,9.0,m3/tonne,,"{""industry_type"":""Starch Production""}",Global,,IPCC,e3558845-c4a9-4679-9e09-9d24c5b98ea5
+CH4,MCF,methane_correction_factor,first_order_decay,III.1.3,,0.6,fraction,,"{""treatment_type"":""Uncategorized Waste Sites""}",Global,,IPCC,c123e024-2d12-4176-8f66-b0a4f1a82dc5
+CH4,F,fraction_of_methane_in_landfill_gas,methane_commitment,III.1.3,,0.5,fraction,,{},Global,,IPCC,98127477-39ae-4c07-abf5-c93bdd15943a
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,,0.0,fraction,,"{""treatment_type"":""Aerobic Treatment Plant - Well Managed""}",Global,,IPCC,dbc12f0e-ec5b-41f7-b421-ada352337134
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,34,0.048,fraction,,"{""treatment_type"":""Discharge to Aquatic Environments""}",Global,,IPCC,534a11e5-cbe5-45c9-a6a2-b1b0cc3283ab
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.065,year,,"{""climate"":""Temperate - Dry"",""waste_type"":""Bulk MSW or Industrial Waste""}",Global,,IPCC,cc166df3-4f18-4a43-b9e7-1fde9993bba0
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.035,year,,"{""climate"":""Tropical - Moist"",""waste_type"":""Slowly Degrading Waste""}",Global,,IPCC,34eb79e0-01b2-40b0-bf15-2a332a51c99a
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.06,year,,"{""climate"":""Wet"",""waste_type"":""Slowly Degrading Waste""}",Global,,IPCC,9a4f2be2-b9ca-42e3-9b03-829922f1a086
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,3.098,kg/m3,,"{""industry_type"":""Beer & Malt""}",Thailand,TH,IPCC,11d24311-0e7d-4910-aebd-400af160b1c9
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,,0.125,fraction,,"{""treatment_type"":""Septic Tank""}",Global,,IPCC,da0ad17a-ad75-47f6-be13-061739731a9a
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,3.331,kg/m3,,"{""industry_type"":""Dairy Products""}",Thailand,TH,IPCC,b9a32262-958b-4e83-b381-898faa932b57
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,34,0.8,fraction,,"{""treatment_type"":""Anaerobic Treatment""}",Global,,IPCC,6f24625c-efa9-4d48-93e4-199dcaac4a1a
+CH4,MCF,methane_correction_factor,first_order_decay,III.1.1,,0.4,fraction,,"{""treatment_type"":""Unmanaged Waste Sites - Shallow SWDS""}",Global,,IPCC,5c299f0d-bccd-4708-bb03-9a548365b83b
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,4.865,kg/m3,,"{""industry_type"":""Animal Feed Production""}",Thailand,TH,IPCC,92c71189-8b7a-4129-b2d3-dfa7f10cd002
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,2.873,kg/m3,,"{""industry_type"":""Frozen Food Processing""}",Thailand,TH,IPCC,faa0eb39-d0d7-473a-99c8-57b9c8c115b5
+N2O,W_i,wastewater_generation,industrial_wastewater,III.4.1,,5.0,m3/tonne,,"{""industry_type"":""Fish Processing""}",Global,,IPCC,019898a2-ef23-4f17-8d1b-a4b322a9296e
+N2O,W_i,wastewater_generation,industrial_wastewater,III.4.3,,5.0,m3/tonne,,"{""industry_type"":""Fish Processing""}",Global,,IPCC,3912c5a6-cf01-4445-b4d3-4afeca9f55c5
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.4,year,,"{""climate"":""Tropical - Moist"",""waste_type"":""Rapidly Degrading Waste""}",Global,,IPCC,37f4f561-1c7b-41a6-84e0-c3c270ed8176
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.185,year,,"{""climate"":""Wet"",""waste_type"":""Rapidly Degrading Waste""}",Global,,IPCC,9c7187c6-7717-45c7-b070-fabbf71a3ab2
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.185,year,,"{""climate"":""Wet"",""waste_type"":""Rapidly Degrading Waste""}",Global,,IPCC,ac0d6d98-0415-4fd7-bd5a-a9b3c4e672ba
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,5.071,kg/m3,,"{""industry_type"":""Canneries""}",Thailand,TH,IPCC,c9f4fd7f-ed3a-4845-b3af-19213aa01263
+CH4,DOCf,fraction_of_doc_decomposing_under_anaerobic_conditions,first_order_decay,III.1.3,,0.5,fraction,,"{""waste_form"":""unclassified"",""waste_type"":""Textile""}",Global,,IPCC,cf438f12-a8ba-46b2-bf54-a5abd1ca008d
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,34,0.8,fraction,,"{""treatment_type"":""Anaerobic Reactor""}",Global,,IPCC,59d8f92e-fc6d-4ea8-bc12-5923837ea034
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,,0.125,fraction,,"{""treatment_type"":""Stagnant Sewer""}",Global,,IPCC,623aad2d-5ebf-4f36-8dc3-d6cd3b188d25
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,,0.025,fraction,,"{""treatment_type"":""Latrine""}",Global,,IPCC,d98ed68c-411d-4110-9030-45d83e960202
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,,0.125,fraction,,"{""treatment_type"":""Latrine""}",Global,,IPCC,075a5ac1-e3fe-421c-852c-1683567bff89
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.03,year,,"{""climate"":null,""waste_type"":null}",Global,,IPCC,ea007b78-f3ea-464e-89c5-7dbe51385292
+CH4,OX,oxidation_factor,methane_commitment,III.1.1,,0.1,fraction,,"{""treatment_type"":""Managed""}",Global,,IPCC,996b5148-4314-42d2-a141-fc619752044d
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,8.5,kg/m3,,"{""industry_type"":""Pulp & Paper""}",Global,,IPCC,3a63065c-5f5c-4f37-ad36-3425a3d6ab7f
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,5.0,kg/m3,,"{""industry_type"":""Pulp & Paper""}",Global,,IPCC,c99d13b8-2483-4c02-a1b5-5434448e0a73
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,7.204,kg/m3,,"{""industry_type"":""Tannery""}",Thailand,TH,IPCC,59a920b3-c693-436f-999c-2169b11fdfca
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,34,0.0,fraction,,"{""treatment_type"":""Centralized Aerobic Treatment Plant""}",Global,,IPCC,b13663e9-b329-4539-9bce-52a8448fbf3e
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.1,,0.42,fraction,,"{""treatment_type"":""Latrine""}",Global,,IPCC,83b01c39-f121-44fa-ba13-0c51734f6734
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.3,,0.42,fraction,,"{""treatment_type"":""Latrine""}",Global,,IPCC,36c8a42b-dede-4cfa-8a03-54bcebf46903
+CH4,MCF,methane_correction_factor,first_order_decay,III.1.1,,0.5,fraction,,"{""treatment_type"":""Managed – Anaerobic""}",Global,,IPCC,ecfada79-903c-43b7-9d79-139bd9507f94
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,3.007,kg/m3,,"{""industry_type"":""Flour Products""}",Thailand,TH,IPCC,09363c85-46d8-4df5-b01f-18d8efe85696
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,3.679,kg/m3,,"{""industry_type"":""Rubber Manufacturing""}",Thailand,TH,IPCC,c331cb13-c1e1-4a38-a24b-5ebd399f4d24
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,0.85,kg/m3,,"{""industry_type"":""Soap & Detergents""}",Global,,IPCC,d12efdbf-9dcb-4438-8dcc-1d36addd1b78
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,,0.125,fraction,,"{""treatment_type"":""Septic Tank""}",Global,,IPCC,acc4f02a-bbef-4692-8242-bbbcfa3dabf5
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,22.0,kg/m3,,"{""industry_type"":""Starch Production""}",Global,,IPCC,47a4a654-ce05-4530-bbb0-fc01adbf7e8d
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,34,0.8,fraction,,"{""treatment_type"":""Anaerobic Treatment""}",Global,,IPCC,f68373de-16ee-4005-8c56-d8f1b278a894
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.17,year,,"{""climate"":""Tropical - Moist"",""waste_type"":""Bulk MSW or Industrial Waste""}",Global,,IPCC,541a75e1-2d1b-49ca-99e3-0fc18c4d7633
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,4.5,kg/m3,,"{""industry_type"":""Beer & Malt""}",Global,,IPCC,d1c7695b-dfbf-4f46-ac9b-b33e7216979e
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,4.5,kg/m3,,"{""industry_type"":""Beer & Malt""}",Global,,IPCC,78137529-bf1e-4046-a0ff-a5e512ff33d7
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,4.238,kg/m3,,"{""industry_type"":""Ice Cream Production""}",Thailand,TH,IPCC,bb14db69-719c-4472-8f93-da19444522e4
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,4.238,kg/m3,,"{""industry_type"":""Ice Cream Production""}",Thailand,TH,IPCC,d8217be8-eeb5-4e45-8051-a0d7cca8bdfb
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,3.3,kg/m3,,"{""industry_type"":""Meat & Poultry""}",Argentina,AR,IPCC,65d1de74-4398-4df5-b930-a97b0189fcba
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,9.07,kg/m3,,"{""industry_type"":""Starch Production""}",Thailand,TH,IPCC,371e8a21-5f20-421a-98bf-f6f605408763
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.21,year,,"{""climate"":null,""waste_type"":""Bulk MSW or Industrial Waste""}",Brazil,,IPCC,de39b20a-e953-4813-a22a-f734caecda47
+CH4,DOCf,fraction_of_doc_decomposing_under_anaerobic_conditions,first_order_decay,III.1.1,,0.5,fraction,,"{""waste_form"":""unclassified"",""waste_type"":""Textile""}",Global,,IPCC,c5d92bb0-0c54-43e5-a3c5-cef1e3668a06
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,34,0.8,fraction,,"{""treatment_type"":""Anaerobic Reactor""}",Global,,IPCC,cb3ad6a6-47c9-4403-9c25-76a1649e4710
+CH4,BOD,degradable_organic_component,domestic_wastewater,III.4.3,94,0.04,kg/cap/day,,{},Latin America,,IPCC,0a86c56c-89a8-46a7-bea3-f7dc4a5f7ee4
+CH4,BOD,degradable_organic_component,domestic_wastewater,III.4.3,94,14600.0,kg/1000 persons/yr,,{},Latin America,,IPCC,340d5e7d-53b8-46a0-a1e7-6573a9ecea9b
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,2.9,kg/m3,,"{""industry_type"":""Beer & Malt""}",Global,,IPCC,8d6202d2-2fe3-4bc3-b19c-171f61b4a021
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,2.9,kg/m3,,"{""industry_type"":""Beer & Malt""}",Global,,IPCC,d6ff2478-2f93-4eb5-ac06-a065a1fbb939
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,4.948,kg/m3,,"{""industry_type"":""Chemical Products""}",Thailand,TH,IPCC,9593cb7d-84b5-4c66-9f61-4e852ec93b1b
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,,0.025,fraction,,"{""treatment_type"":""Latrine""}",Global,,IPCC,48026f19-75ed-4a00-b26c-d74df0141adb
+N2O,W_i,wastewater_generation,industrial_wastewater,III.4.1,,5.0,m3/tonne,,"{""industry_type"":""Iron & Steel Manufacturing""}",Global,,IPCC,afa03bc5-580d-47cb-9403-fce7c54feb5e
+N2O,W_i,wastewater_generation,industrial_wastewater,III.4.3,,5.0,m3/tonne,,"{""industry_type"":""Iron & Steel Manufacturing""}",Global,,IPCC,87d89803-4b9c-4640-8aba-3d4691cfad13
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.05,year,,"{""climate"":""Dry"",""waste_type"":""Slowly Degrading Waste""}",Global,,IPCC,f949ae57-cc6e-427e-99bc-faa0cbe31eef
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.05,year,,"{""climate"":""Temperate - Dry"",""waste_type"":""Bulk MSW or Industrial Waste""}",Global,,IPCC,8a8b7c82-3d68-48c4-a0d1-e920d864fa05
+CH4,MCF,methane_correction_factor,first_order_decay,III.1.1,,0.7,fraction,,"{""treatment_type"":""Managed Poorly – Active Aeration""}",Global,,IPCC,b26e47e4-5c4c-493e-9756-0fb2282a93c1
+CH4,MCF,methane_correction_factor,first_order_decay,III.1.3,,0.7,fraction,,"{""treatment_type"":""Managed Poorly – Active Aeration""}",Global,,IPCC,d08ff991-158a-4586-b9f8-23c64a9f60d6
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,0.751,kg/m3,,"{""industry_type"":""Petroleum Refining""}",Thailand,TH,IPCC,1e6f6ff0-cb25-4c63-89ed-7d0495f62c65
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,3.7,kg/m3,,"{""industry_type"":""Plastics & Resins""}",Global,,IPCC,24e630f8-106b-4e5b-8be2-412ea72300b4
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,3.7,kg/m3,,"{""industry_type"":""Plastics & Resins""}",Global,,IPCC,171ef467-a248-4ba3-bf0a-4ddf34797d19
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,3.2,kg/m3,,"{""industry_type"":""Sugar Refining""}",Global,,IPCC,174730d9-8683-42ac-84df-34b685b1af82
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,2.422,kg/m3,,"{""industry_type"":""Wine & Vinegar""}",Thailand,TH,IPCC,505239ae-076c-4f08-bfa3-2288e816adf3
+CH4,OX,oxidation_factor,methane_commitment,III.1.3,,0.1,fraction,,"{""treatment_type"":""Managed""}",Global,,IPCC,35387ad1-3f32-440b-9993-aa7743a91992
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.025,year,,"{""climate"":""Temperate - Dry"",""waste_type"":""Slowly Degrading Waste""}",Global,,IPCC,99e74a17-2dd4-41ed-8f48-47200d69c74a
+CH4,MCF,methane_correction_factor,first_order_decay,III.1.1,,0.6,fraction,,"{""treatment_type"":""Uncategorized Waste Sites""}",Global,,IPCC,9b9500c7-97c5-4d6f-ab45-1c2b286408e7
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,8.5,kg/m3,,"{""industry_type"":""Pulp & Paper""}",Global,,IPCC,41cd34d7-7f05-4cb3-b31a-3662dfb2ff5d
+N2O,W_i,wastewater_generation,industrial_wastewater,III.4.3,,0.6,m3/tonne,,"{""industry_type"":""Plastics & Resins""}",Global,,IPCC,4c802a47-a391-4f29-82cf-1b097bcfe7a7
+CH4,B0,maximum_methane_producing_capacity,industrial_wastewater,III.4.3,,0.25,Kg/Kg,,{},Global,,IPCC,be96a15d-1fd4-4f1b-9cd7-b04cba2500e7
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,2.5,kg/m3,,"{""industry_type"":""Fish Processing""}",Global,,IPCC,3839b9b4-cce9-4fba-9dc7-6785b5827f7b
+N2O,W_i,wastewater_generation,industrial_wastewater,III.4.1,,24.0,m3/tonne,,"{""industry_type"":""Alcohol Refining""}",Global,,IPCC,4a2de607-37eb-43ae-b5d3-22fe5ecc79f6
+N2O,W_i,wastewater_generation,industrial_wastewater,III.4.3,,24.0,m3/tonne,,"{""industry_type"":""Alcohol Refining""}",Global,,IPCC,6b9c8218-6fcd-46c9-a8b5-c298f0c3b82b
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.07,year,,"{""climate"":""Tropical - Moist"",""waste_type"":""Slowly Degrading Waste""}",Global,,IPCC,118023ae-4098-4dce-b6c4-6e2c7ee79c32
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.07,year,,"{""climate"":""Tropical - Moist"",""waste_type"":""Slowly Degrading Waste""}",Global,,IPCC,a8dbff19-90ea-4a4e-a3bd-4961d66c7773
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,9.0,kg/m3,,"{""industry_type"":""Coffee""}",Global,,IPCC,7cc93fcf-466c-410d-89ed-4f012d037a05
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,22.0,kg/m3,,"{""industry_type"":""Starch Production""}",Global,,IPCC,0d4b7882-95da-4283-a522-318ab89a5481
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,,0.3,fraction,,"{""treatment_type"":""Aerobic Treatment Plant - Well Managed""}",Global,,IPCC,da1534d0-4f99-4ca7-b754-5236c045e241
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.3,34,0.0,fraction,,"{""treatment_type"":""Centralized Aerobic Treatment Plant""}",Global,,IPCC,fbf02bf0-070d-413a-8c8f-037b4b02a210
+CH4,MCF,methane_correction_factor,first_order_decay,III.1.3,,0.4,fraction,,"{""treatment_type"":""Unmanaged Waste Sites - Shallow SWDS""}",Global,,IPCC,81aec8c1-5831-4cfd-b27b-8b7f5ff6b6b9
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,2.873,kg/m3,,"{""industry_type"":""Frozen Food Processing""}",Thailand,TH,IPCC,129f9605-ae16-4865-be3d-a303d815da41
+CH4,DOCf,fraction_of_doc_decomposing_under_anaerobic_conditions,first_order_decay,III.1.3,,0.55,fraction,,"{""waste_form"":""unclassified"",""waste_type"":null}",Global,,IPCC,261ea653-1410-4feb-b3be-51dcde78b585
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,34,0.11,fraction,,"{""treatment_type"":""Discharge to Aquatic Environments""}",Global,,IPCC,aa35584f-5711-4d1b-b605-987729fc1756
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,2.7,kg/m3,,"{""industry_type"":""Dairy Products""}",Global,,IPCC,6692f797-7d0f-4621-8a7c-9037f7c12720
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,3.3,kg/m3,,"{""industry_type"":""Meat & Poultry""}",Argentina,AR,IPCC,dc2bb0b0-76bd-40d8-ad4e-d73a3b1e68d3
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,9.07,kg/m3,,"{""industry_type"":""Starch Production""}",Thailand,TH,IPCC,ba037666-fdc4-45f6-bc72-20389ce73eba
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.21,year,,"{""climate"":null,""waste_type"":""Bulk MSW or Industrial Waste""}",Brazil,,IPCC,cc1eee52-7425-4cc5-a734-39d7bbaa28f9
+CH4,DOCf,fraction_of_doc_decomposing_under_anaerobic_conditions,first_order_decay,III.1.3,,0.1,fraction,,"{""waste_form"":""unclassified"",""waste_type"":""Wood""}",Global,,IPCC,83c66047-d2a0-4b76-9cc6-2e4573f8c7c5
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.085,year,,"{""climate"":""Temperate - Dry"",""waste_type"":""Rapidly Degrading Waste""}",Global,,IPCC,3e800836-7b0b-4636-b15f-455b3a97bc7f
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.02,year,,"{""climate"":""Temperate - Dry"",""waste_type"":""Slowly Degrading Waste""}",Global,,IPCC,67a64d50-3c08-4793-9cfb-6622dd8002be
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.2,year,,"{""climate"":""Tropical - Moist"",""waste_type"":""Rapidly Degrading Waste""}",Global,,IPCC,585cf26d-0d0e-41a0-9a60-bc45bf92069c
+CH4,BOD,degradable_organic_component,domestic_wastewater,III.4.1,94,14600.0,kg/1000 persons/yr,,{},Latin America,,IPCC,1ec806e2-4307-4de5-8eb8-f8638681142c
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,34,0.2,fraction,,"{""treatment_type"":""Anaerobic Reactor""}",Global,,IPCC,bf460e1d-e395-450e-9c62-07cab7e3826e
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.18,year,,"{""climate"":null,""waste_type"":null}",Finland,FI,IPCC,07e8d11d-3913-46de-9aae-38535e1cd4f3
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,0.3,kg/m3,,"{""industry_type"":""Vegetable Oils""}",Global,,IPCC,3a2db6fc-6348-4a79-beb2-5014cf0e9c6c
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,2.422,kg/m3,,"{""industry_type"":""Wine & Vinegar""}",Thailand,TH,IPCC,4b951fdd-c7e8-46ce-a18a-0d0a23f73823
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.025,year,,"{""climate"":""Temperate - Dry"",""waste_type"":""Slowly Degrading Waste""}",Global,,IPCC,371d5f59-8633-4933-a203-1c2c5c929e4e
+CH4,MCF,methane_correction_factor,first_order_decay,III.1.1,,1.0,fraction,,"{""treatment_type"":""Managed – Anaerobic""}",Global,,IPCC,f4b40cf2-b820-43fe-b691-ef69c9aa4491
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,5.0,kg/m3,,"{""industry_type"":""Fruits & Vegetables Processing""}",Global,,IPCC,f90053f2-972b-41e4-b06b-2f5ddbae6ae4
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,4.1,kg/m3,,"{""industry_type"":""Meat & Poultry""}",Global,,IPCC,9ed1bc6f-0e2b-4772-84c2-8d6403a4054b
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.1,34,0.12,fraction,,"{""treatment_type"":""Anaerobic Shallow Lagoon""}",Global,,IPCC,7bf2d23d-25cb-4935-98d0-8d1e4d95c7d5
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,34,0.028,fraction,,"{""treatment_type"":""Discharge to Aquatic Environments""}",Global,,IPCC,0a9c4310-75d7-4317-b747-e120ae2cb456
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,34,0.048,fraction,,"{""treatment_type"":""Discharge to Aquatic Environments""}",Global,,IPCC,790c4cd7-1619-4dfb-a85c-d70ce3cf2bea
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.065,year,,"{""climate"":""Temperate - Dry"",""waste_type"":null}",Global,,IPCC,379bbf83-275f-4210-9d1d-24ddce03573a
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.06,year,,"{""climate"":""Wet"",""waste_type"":""Slowly Degrading Waste""}",Global,,IPCC,e13c68bb-84b2-4a35-9cb1-1e068fc3a063
+CH4,B0,maximum_methane_producing_capacity,industrial_wastewater,III.4.1,,0.25,Kg/Kg,,{},Global,,IPCC,1af44f25-a211-4b17-ace2-72dda2acf2f7
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,3.098,kg/m3,,"{""industry_type"":""Beer & Malt""}",Thailand,TH,IPCC,06cf570e-d5ab-4cf6-afc6-c5fdf74cc34a
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,42.0,kg/m3,,"{""industry_type"":""Food Oils""}",Global,,IPCC,4b736fa2-5453-41a8-9fcb-bec9dcd5a29c
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,0.85,kg/m3,,"{""industry_type"":""Soap & Detergents""}",Global,,IPCC,d5354cb9-772e-4671-8c8b-b7f54a92f860
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,2.507,kg/m3,,"{""industry_type"":""Textiles""}",Thailand,TH,IPCC,965e2305-6a23-4c97-8710-5f762806eeca
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,34,0.009,fraction,,"{""treatment_type"":""Discharge to Aquatic Environments""}",Global,,IPCC,962e84f5-3469-4ee4-ace3-3355d4707041
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.1,,0.3,fraction,,"{""treatment_type"":""Latrine""}",Global,,IPCC,f72a2f30-cb0c-483c-ab86-1791aa8bd30b
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.3,,0.3,fraction,,"{""treatment_type"":""Stagnant Sewer""}",Global,,IPCC,8b62a1ed-a796-435c-9337-a34bdae6e706
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.04,year,,"{""climate"":""Temperate - Dry"",""waste_type"":""Slowly Degrading Waste""}",Global,,IPCC,322a2842-da2d-40b7-a51e-9ab411b62f9f
+CH4,B0,maximum_methane_producing_capacity,domestic_wastewater,III.4.1,,0.6,Kg/Kg,,{},Global,,IPCC,2bf225c8-d2e6-4c02-8564-839a868fe3e1
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,3.331,kg/m3,,"{""industry_type"":""Dairy Products""}",Thailand,TH,IPCC,2c88ba22-73b3-4398-8912-6271dcc7e571
+N2O,W_i,wastewater_generation,industrial_wastewater,III.4.1,,2.89,m3/tonne,,"{""industry_type"":""Nitrogen Fertiliser Production""}",Global,,IPCC,399931d4-5b18-4c69-8d4d-ff807531402e
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.17,year,,"{""climate"":""Tropical - Moist"",""waste_type"":""Bulk MSW or Industrial Waste""}",Global,,IPCC,4c52d781-29cf-4736-8abd-3cb59b166042
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,2.203,kg/m3,,"{""industry_type"":""Pulp & Paper""}",Thailand,TH,IPCC,40ffd155-de85-4cd7-85c3-eaa95b18370c
+CH4,DOCf,fraction_of_doc_decomposing_under_anaerobic_conditions,first_order_decay,III.1.1,,0.55,fraction,,"{""waste_form"":""unclassified"",""waste_type"":null}",Global,,IPCC,178686eb-eba3-4162-85e7-4fa0053aacf9
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,,0.0,fraction,,"{""treatment_type"":""Flowing Sewer""}",Global,,IPCC,71279cbb-b831-402b-b5f3-8743dc72a590
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,,0.0,fraction,,"{""treatment_type"":""Flowing Sewer""}",Global,,IPCC,877359ad-8df0-404a-94dc-e7295bfd9239
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,0.999,kg/m3,,"{""industry_type"":""Fish Processing""}",Argentina,AR,IPCC,56a9f147-d3df-4760-acdd-e704a4380d9c
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,0.999,kg/m3,,"{""industry_type"":""Fish Processing""}",Argentina,AR,IPCC,54746242-c98b-40e8-ae65-c7b382324e3c
+CH4,DOCf,fraction_of_doc_decomposing_under_anaerobic_conditions,first_order_decay,III.1.3,,4.95,fraction,,"{""waste_form"":""unclassified"",""waste_type"":""Wood""}",United States of America,US,IPCC,ca7d0282-a1b6-4f04-b094-e23507cb7b4b
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.3,34,0.48,fraction,,"{""treatment_type"":""Anaerobic Treatment""}",Global,,IPCC,d27b9fa2-b095-4356-8b11-20b6ac323d4b
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,,0.175,fraction,,"{""treatment_type"":""Latrine""}",Global,,IPCC,0c9f5b93-5f80-405d-99fa-079af8711cde
+CH4,DOCf,fraction_of_doc_decomposing_under_anaerobic_conditions,first_order_decay,III.1.3,,0.5,fraction,,"{""waste_form"":""unclassified"",""waste_type"":null}",Global,,IPCC,64c731f7-0bdf-4183-b492-33fd4855e0af
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,1.5,kg/m3,,"{""industry_type"":""Wine & Vinegar""}",Global,,IPCC,b38911b5-3233-4457-8517-412203c88d89
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,1.5,kg/m3,,"{""industry_type"":""Wine & Vinegar""}",Global,,IPCC,e181cb75-7315-4538-b895-5b57490391b9
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,34,0.2,fraction,,"{""treatment_type"":""Anaerobic Shallow Lagoon""}",Global,,IPCC,0fe219da-e68b-4ba5-8969-083610ba4e17
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,34,0.035,fraction,,"{""treatment_type"":""Discharge to Aquatic Environments""}",Global,,IPCC,c611833b-a6f0-4f83-8525-4276d5b8f6a4
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.3,,0.06,fraction,,"{""treatment_type"":""Latrine""}",Global,,IPCC,6fedafa7-7965-46f1-87b6-dfaf62e5ed9b
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.09,year,,"{""climate"":""Wet"",""waste_type"":""Bulk MSW or Industrial Waste""}",Global,,IPCC,c9c19a4c-321c-4035-92e1-f683158702b3
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,11.0,kg/m3,,"{""industry_type"":""Alcohol Refining""}",Global,,IPCC,cd5ee172-8457-4605-aa9e-98736aae11f4
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,7.204,kg/m3,,"{""industry_type"":""Tannery""}",Thailand,TH,IPCC,4b7183b6-012d-4f1e-b92e-ca8ba4edbbe7
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.3,34,0.021,fraction,,"{""treatment_type"":""Discharge to Aquatic Environments""}",Global,,IPCC,2052874b-91da-4eb4-88f1-5a5007c11572
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,,0.1,fraction,,"{""treatment_type"":""Untreated System""}",Global,,IPCC,9e0f10db-a96e-4109-a2f7-c5841b2b11a6
+N2O,W_i,wastewater_generation,industrial_wastewater,III.4.1,,0.6,m3/tonne,,"{""industry_type"":""Plastics & Resins""}",Global,,IPCC,0064eb2e-0b1b-407d-8f4a-44b5fd67c95e
+CH4,MCF,methane_correction_factor,first_order_decay,III.1.3,,0.5,fraction,,"{""treatment_type"":""Managed – Anaerobic""}",Global,,IPCC,cefad4c1-0b51-469b-839f-9ef0081e68a1
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,42.0,kg/m3,,"{""industry_type"":""Food Oils""}",Global,,IPCC,ebb49606-ecc3-4f61-a220-8eb7a4215c0e
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,3.679,kg/m3,,"{""industry_type"":""Rubber Manufacturing""}",Thailand,TH,IPCC,1642c042-aee2-4153-a057-78479198e118
+CH4,DOCf,fraction_of_doc_decomposing_under_anaerobic_conditions,first_order_decay,III.1.3,,22.8,fraction,,"{""waste_form"":""unclassified"",""waste_type"":""Wood""}",United States of America,US,IPCC,ce945b8b-be78-42f0-aa12-532dc9c3ae6e
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.3,,0.0,fraction,,"{""treatment_type"":""Flowing Sewer""}",Global,,IPCC,32a38f46-8a47-4e3c-ab49-5134df3150d5
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,,0.3,fraction,,"{""treatment_type"":""Aerobic Treatment Plant - Well Managed""}",Global,,IPCC,163eec69-64cd-44ed-97cf-5ac99aefadf4
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.1,34,0.0,fraction,,"{""treatment_type"":""Centralized Aerobic Treatment Plant""}",Global,,IPCC,0322c7d4-8ae4-4c2e-aee7-44970a77cb0f
+N2O,W_i,wastewater_generation,industrial_wastewater,III.4.3,,2.89,m3/tonne,,"{""industry_type"":""Nitrogen Fertiliser Production""}",Global,,IPCC,ade96baa-47c6-4322-92bc-a7671103713c
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.045,year,,"{""climate"":""Temperate - Dry"",""waste_type"":""Slowly Degrading Waste""}",Global,,IPCC,dd7eb312-36d0-4228-8bbc-b0b873f4eee8
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,2.203,kg/m3,,"{""industry_type"":""Pulp & Paper""}",Thailand,TH,IPCC,438f139a-ba49-4f9a-810f-d6325ba3c6bf
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.3,34,0.068,fraction,,"{""treatment_type"":""Discharge to Aquatic Environments""}",Global,,IPCC,23080198-0fd5-4347-9d92-939a61926630
+CH4,MCF,methane_correction_factor,first_order_decay,III.1.3,,0.8,fraction,,"{""treatment_type"":""Unmanaged Waste Sites - Deep SWDS""}",Global,,IPCC,d317905d-bdae-4fcd-95f6-fd971a1d8b4d
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,1.0,kg/m3,,"{""industry_type"":""Petroleum Refining""}",Global,,IPCC,0ff6694f-68cb-4bd1-914f-e31f61f2f255
+N2O,W_i,wastewater_generation,industrial_wastewater,III.4.3,,6.3,m3/tonne,,"{""industry_type"":""Beer & Malt""}",Global,,IPCC,9327ecb4-f323-4db8-b777-e8c9f1d5edce
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.03,year,,"{""climate"":""Wet"",""waste_type"":""Slowly Degrading Waste""}",Global,,IPCC,bdca20bf-0a3d-4127-a1c3-241f5b051693
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,5.071,kg/m3,,"{""industry_type"":""Canneries""}",Thailand,TH,IPCC,a5847efb-9ce6-4656-ae5e-565752226626
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,40.0,kg/m3,,"{""industry_type"":""Distilled & Ethanol Beverages""}",Global,,IPCC,3d7c5b6e-4400-4884-ba9c-bfb9d33be71c
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,40.0,kg/m3,,"{""industry_type"":""Distilled & Ethanol Beverages""}",Global,,IPCC,facf55e1-85a9-45ea-ba72-f8b52daa3a7b
+CH4,DOCf,fraction_of_doc_decomposing_under_anaerobic_conditions,first_order_decay,III.1.1,,0.7,fraction,,"{""waste_form"":""unclassified"",""waste_type"":""Food Waste""}",Global,,IPCC,20eae2a9-d31e-4afd-9fc3-577c395da927
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.1,34,0.48,fraction,,"{""treatment_type"":""Anaerobic Treatment""}",Global,,IPCC,2ad1c130-070d-4e99-8634-d7c86f27dd0a
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,4.948,kg/m3,,"{""industry_type"":""Chemical Products""}",Thailand,TH,IPCC,11bd625d-342a-402f-9342-dea5d0feea01
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,,0.125,fraction,,"{""treatment_type"":""Latrine""}",Global,,IPCC,598b2e12-d5fb-4de9-b132-3b0c54ef3f7a
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.05,year,,"{""climate"":""Dry"",""waste_type"":""Slowly Degrading Waste""}",Global,,IPCC,8b0124a5-d522-4f09-895a-97da6cc92f58
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.03,year,,"{""climate"":null,""waste_type"":null}",Global,,IPCC,a4bb32e6-fc78-454a-abc1-b19a86c40e6a
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,3.208,kg/m3,,"{""industry_type"":""Sugar Refining""}",Thailand,TH,IPCC,ebaa8efb-e7f5-4383-9688-baa6923fbd31
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,0.85,kg/m3,,"{""industry_type"":""Vegetable Oils""}",Global,,IPCC,e03e94ab-a614-4138-b1c4-fd59e840b928
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,0.3,kg/m3,,"{""industry_type"":""Vegetable Oils""}",Global,,IPCC,ded0d4b4-9c4d-4d32-aee1-6970bd0e36dd
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,34,0.2,fraction,,"{""treatment_type"":""Anaerobic Treatment""}",Global,,IPCC,0d827296-cb1a-4adc-ac89-657ac41bd2d8
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.17,year,,"{""climate"":""Tropical - Moist"",""waste_type"":null}",Global,,IPCC,7a1c0c1f-4bf9-4ee2-8205-dcd098eb80ed
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.17,year,,"{""climate"":""Tropical - Moist"",""waste_type"":null}",Global,,IPCC,213cb35f-0461-4e93-8695-61d8ae07dd94
+CH4,MCF,methane_correction_factor,first_order_decay,III.1.3,,1.0,fraction,,"{""treatment_type"":""Managed – Anaerobic""}",Global,,IPCC,00b67565-3308-43f0-ac3f-96eaaa0bf8f9
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,1.481,kg/m3,,"{""industry_type"":""Seasoning""}",Thailand,TH,IPCC,ef934dee-3b46-4ef4-9dd3-f88035e00151
+CH4,DOCf,fraction_of_doc_decomposing_under_anaerobic_conditions,first_order_decay,III.1.1,,0.77,fraction,,"{""waste_form"":""unclassified"",""waste_type"":null}",Global,,IPCC,616a01f6-f988-46db-88ba-217c87df144f
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,,0.0,fraction,,"{""treatment_type"":""Aerobic Treatment Plant - Well Managed""}",Global,,IPCC,62a6973d-ac08-4d03-8c71-386452aa4bb3
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.1,34,0.021,fraction,,"{""treatment_type"":""Discharge to Aquatic Environments""}",Global,,IPCC,6cf6d046-677d-4dc5-85ca-60934380b48c
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.1,,0.3,fraction,,"{""treatment_type"":""Septic Tank""}",Global,,IPCC,fad4064e-c080-4719-9e3a-039bb2e2f538
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.1,,0.1,fraction,,"{""treatment_type"":""Untreated System""}",Global,,IPCC,960d126e-cb22-41b3-8efb-dd8da8209b06
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,2.5,kg/m3,,"{""industry_type"":""Fish Processing""}",Global,,IPCC,c037a703-7b90-4459-80ff-3b975145ca2b
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,3.007,kg/m3,,"{""industry_type"":""Flour Products""}",Thailand,TH,IPCC,80db67d7-2fda-4606-973c-8e5971c238e2
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,34,0.009,fraction,,"{""treatment_type"":""Discharge to Aquatic Environments""}",Global,,IPCC,3aaaabfd-a1c0-49b4-9315-c2e0c54d056a
+CH4,B0,maximum_methane_producing_capacity,domestic_wastewater,III.4.3,,0.6,Kg/Kg,,{},Global,,IPCC,f7017235-8e57-4d38-9187-9e745459177d
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.06,year,,"{""climate"":""Temperate - Dry"",""waste_type"":""Rapidly Degrading Waste""}",Global,,IPCC,3595fb3d-3e61-48ec-9ca8-3c99c5eb67ad
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.045,year,,"{""climate"":""Temperate - Dry"",""waste_type"":""Slowly Degrading Waste""}",Global,,IPCC,dc2499c8-1ede-4285-8507-fc3979484a2e
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,4.865,kg/m3,,"{""industry_type"":""Animal Feed Production""}",Thailand,TH,IPCC,5781c56c-298b-4e72-960c-0b55cb9e7a92
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,5000.0,kg/m3,,"{""industry_type"":""Distilled & Ethanol Beverages""}",Global,,IPCC,c709274b-f2a7-4acf-99f5-34b0bcd9383f
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,34,0.05,fraction,,"{""treatment_type"":""Anaerobic Shallow Lagoon""}",Global,,IPCC,4c5fca13-4aa7-440c-aa39-91237736873e
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.1,34,0.068,fraction,,"{""treatment_type"":""Discharge to Aquatic Environments""}",Global,,IPCC,a21e2ad7-00e3-4de3-9c70-2e683983e019
+CH4,DOC,degradable_organic_carbon_under_aerobic_conditions,first_order_decay,III.1.3,,0.135,fraction,,"{""waste_form"":""unclassified"",""waste_type"":null}",Thailand,TH,IPCC,c355155a-f11d-4e31-b780-8e8804973a3c
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.3,34,0.42,fraction,,"{""treatment_type"":""Anaerobic Reactor""}",Global,,IPCC,8828e5e8-1ccb-4274-b63a-e4210b83b723
+N2O,W_i,wastewater_generation,industrial_wastewater,III.4.1,,6.3,m3/tonne,,"{""industry_type"":""Beer & Malt""}",Global,,IPCC,e85a76f3-7d49-408b-8312-63dbdfc1c618
+N2O,W_i,wastewater_generation,industrial_wastewater,III.4.1,,13.0,m3/tonne,,"{""industry_type"":""Meat & Poultry""}",Global,,IPCC,44fd80d0-2df5-46db-a4cf-6df78ddc1e1e
+N2O,W_i,wastewater_generation,industrial_wastewater,III.4.3,,13.0,m3/tonne,,"{""industry_type"":""Meat & Poultry""}",Global,,IPCC,ed063726-0052-442c-96d6-d83a4563dff5
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.03,year,,"{""climate"":""Wet"",""waste_type"":""Slowly Degrading Waste""}",Global,,IPCC,10260119-1081-409b-b451-dd1cd457fff7
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,2.143,kg/m3,,"{""industry_type"":""Meat & Poultry""}",Thailand,TH,IPCC,5c683441-d678-4b02-a487-f92bb111393f
+CH4,DOCf,fraction_of_doc_decomposing_under_anaerobic_conditions,first_order_decay,III.1.1,,0.1,fraction,,"{""waste_form"":""unclassified"",""waste_type"":""Wood""}",Global,,IPCC,01d63654-4aae-4447-ae79-14530aaeba5b
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.05,year,,"{""climate"":""Temperate - Dry"",""waste_type"":null}",Global,,IPCC,f80fdef9-d33e-4582-ada4-a9662283c0dc
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.05,year,,"{""climate"":""Temperate - Dry"",""waste_type"":null}",Global,,IPCC,378e76b6-42e6-4758-96a1-9ddaaa7412de
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,2.717,kg/m3,,"{""industry_type"":""Chemical Products""}",Thailand,TH,IPCC,a1ecdb1c-85e6-4099-a5b0-b469dc5efdf7
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,3.0,kg/m3,,"{""industry_type"":""Organic Chemicals""}",Global,,IPCC,53521bc6-2886-483a-8f06-d82d18dfb5e0
+CH4,DOCf,fraction_of_doc_decomposing_under_anaerobic_conditions,first_order_decay,III.1.1,,0.5,fraction,,"{""waste_form"":""unclassified"",""waste_type"":null}",Global,,IPCC,1b1ff500-7a0d-4d98-a278-403c262db2cb
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,22.0,kg/m3,,"{""industry_type"":""Distilled & Ethanol Beverages""}",Brazil,,IPCC,13dfffd9-5255-4381-9123-ca0606d18c31
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,0.751,kg/m3,,"{""industry_type"":""Petroleum Refining""}",Thailand,TH,IPCC,950637e8-1531-4029-a61f-15c95e9b5e1f
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,3.208,kg/m3,,"{""industry_type"":""Sugar Refining""}",Thailand,TH,IPCC,ecfff076-073e-4183-a3d3-09521b8a5791
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.1,,3.2,kg/m3,,"{""industry_type"":""Sugar Refining""}",Global,,IPCC,487d38d3-b70f-40eb-ad8b-ae04724a7621
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,5.0,kg/m3,,"{""industry_type"":""Fruits & Vegetables Processing""}",Global,,IPCC,3e0aa5e7-c03b-4278-9a33-0f7960cd9f88
+CH4,COD_i,chemical_oxygen_demand,industrial_wastewater,III.4.3,,9.0,kg/m3,,"{""industry_type"":""Pulp & Paper""}",Global,,IPCC,52cd5c8b-7b2d-4eb9-865d-f6ac769d59f5
+CH4,DOCf,fraction_of_doc_decomposing_under_anaerobic_conditions,first_order_decay,III.1.3,,0.77,fraction,,"{""waste_form"":""unclassified"",""waste_type"":null}",Global,,IPCC,499ed550-acc6-480d-a47c-04ca28506090
+CH4,MCF,methane_correction_factor,domestic_wastewater,III.4.3,34,0.12,fraction,,"{""treatment_type"":""Anaerobic Shallow Lagoon""}",Global,,IPCC,38cec6a4-5b09-43f2-9427-561af1ad696e
+CH4,MCF,methane_correction_factor,industrial_wastewater,III.4.3,34,0.0,fraction,,"{""treatment_type"":""Centralized Aerobic Treatment Plant""}",Global,,IPCC,f51224cb-8778-460a-82be-966cced6cff8
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.065,year,,"{""climate"":""Temperate - Dry"",""waste_type"":""Bulk MSW or Industrial Waste""}",Global,,IPCC,284ec2a7-5379-44a0-b871-e08288a10846
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.3,,0.065,year,,"{""climate"":""Temperate - Dry"",""waste_type"":null}",Global,,IPCC,eb48a630-3f71-43be-87b2-b5314c32ae62
+CH4,k,rate_of_reaction_constant,first_order_decay,III.1.1,,0.035,year,,"{""climate"":""Tropical - Moist"",""waste_type"":""Slowly Degrading Waste""}",Global,,IPCC,929b308a-9f21-49bf-b4b2-cd171e247c12
+CH4,MCF,methane_correction_factor,first_order_decay,III.1.3,,0.7,fraction,,"{""treatment_type"":""Managed Poorly – Semi-Aerobic""}",Global,,IPCC,fc3e8fd3-0d19-4d9e-9750-9d497744d2ff

@@ -1,6 +1,8 @@
 import { apiHandler } from "@/util/api";
-import { openai } from "@/util/openai";
+import { setupOpenAI } from "@/util/openai";
 import { NextResponse } from "next/server";
+
+const openai = setupOpenAI();
 
 // Send a new message to a thread
 export const POST = apiHandler(async (req) => {

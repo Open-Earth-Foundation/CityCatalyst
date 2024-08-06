@@ -1,8 +1,9 @@
 import { apiHandler } from "@/util/api";
-import { openai } from "@/util/openai";
+import { setupOpenAI } from "@/util/openai";
 import { AssistantStream } from "openai/lib/AssistantStream";
 import { NextResponse } from "next/server";
 
+const openai = setupOpenAI();
 const assistantId = process.env.OPENAI_ASSISTANT_ID as string;
 
 // Helper function for debugging

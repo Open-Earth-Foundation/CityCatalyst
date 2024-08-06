@@ -97,11 +97,8 @@ function SubSectorPage({
     }
   };
 
-  const filteredSubsectorScopes = () => {
+  const getFilteredSubsectorScopes = () => {
     const scopes = [];
-    const getRefNo = getSectorRefNo(step);
-    const romanNumeralPattern = new RegExp(`^${getRefNo}\\.`);
-    console.log(romanNumeralPattern);
 
     for (const key in MANUAL_INPUT_HIERARCHY) {
       if (key.startsWith(subSectorData?.referenceNumber!)) {
@@ -116,7 +113,7 @@ function SubSectorPage({
     return scopes;
   };
 
-  const scopes = filteredSubsectorScopes();
+  const scopes = getFilteredSubsectorScopes();
 
   // calculate total consumption and emissions
 

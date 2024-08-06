@@ -489,6 +489,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
         setHasActivityData={setHasActivityData}
         methodology={methodology!}
         inventoryId={inventoryId}
+        selectedActivity="Example Activity"
       />
 
       <ChangeMethodology

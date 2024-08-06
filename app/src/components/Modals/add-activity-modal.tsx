@@ -140,6 +140,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     api.useCreateActivityValueMutation();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    console.log(data);
     setHasActivityData(!hasActivityData);
     await createActivityValue({ inventoryId, data }).then((res: any) => {
       if (res.data) {

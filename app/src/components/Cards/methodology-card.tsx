@@ -4,30 +4,42 @@ import React, { FC, useState } from "react";
 import type { Methodology } from "@/util/form-schema";
 
 interface MethodologyCardProps {
-  methodology: Methodology;
+  id: string;
+  inputRequired?: string[];
   isSelected: boolean;
   t: TFunction;
+  disabled: boolean;
   handleCardSelect: (methodologyId: Methodology) => void;
 }
 
 const MethodologyCard: FC<MethodologyCardProps> = ({
-  methodology,
+  id,
+  inputRequired,
+  disabled,
   t,
   handleCardSelect = (_methodology: Methodology) => {},
 }) => {
   const [isSelected, setIsSelected] = useState(false);
   const handleRadioChange = () => {
     setIsSelected(true);
-    handleCardSelect(methodology);
+    handleCardSelect({
+      disabled,
+      inputRequired,
+      id: id,
+    });
   };
 
   const handleCardClick = () => {
     if (!isSelected) {
-      handleCardSelect(methodology);
+      handleCardSelect({
+        disabled,
+        inputRequired,
+        id: id,
+      });
     }
     setIsSelected(!isSelected);
   };
-  const isMethodologyDisabled = methodology.disabled;
+  const isMethodologyDisabled = disabled;
   return (
     <Card
       borderWidth="1px"
@@ -70,7 +82,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
         )}
       </Box>
       <Text fontWeight="bold" fontSize="title.md" fontFamily="heading">
-        {t(methodology.id)}
+        {t(id)}
       </Text>
       <Text
         letterSpacing="wide"
@@ -78,7 +90,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
         fontWeight="normal"
         color="interactive.control"
       >
-        {t(methodology.id + "-description")}
+        {t(id + "-description")}
       </Text>
       <Text
         letterSpacing="wide"
@@ -96,7 +108,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
         fontWeight="normal"
         color="interactive.control"
       >
-        {methodology.inputRequired?.map((item: string, i: number) => (
+        {inputRequired?.map((item: string, i: number) => (
           <li key={i}>{t(item)}</li>
         ))}
       </Box>

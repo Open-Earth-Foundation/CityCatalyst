@@ -30,9 +30,13 @@ import { api } from "@/services/api";
 import ActivityAccordion from "./activity-accordion";
 import ScopeUnavailable from "./scope-unavailable";
 import { ActivityDataScope } from "@/features/city/subsectorSlice";
-import { MANUAL_INPUT_HIERARCHY, Methodology } from "@/util/form-schema";
+import {
+  Activity,
+  DirectMeasure,
+  MANUAL_INPUT_HIERARCHY,
+  Methodology,
+} from "@/util/form-schema";
 import MethodologyCard from "@/components/Cards/methodology-card";
-
 interface ActivityTabProps {
   t: TFunction;
   referenceNumber: string;
@@ -66,7 +70,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const [hasActivityData, setHasActivityData] = useState<boolean>(false);
   const [methodology, setMethodology] = useState<Methodology>();
 
-  const refNumberWithScope = referenceNumber + "." + (filteredScope.scope || 1);
+  const refNumberWithScope = referenceNumber + "." + (filteredScope || 1);
 
   function getMethodologies() {
     const methodologies =
@@ -94,6 +98,18 @@ const ActivityTab: FC<ActivityTabProps> = ({
     setSelectedMethodology(methodology.id);
     setIsMethodologySelected(!isMethodologySelected);
     setMethodology(methodology);
+  };
+
+  const handleDirectMeasureSelected = ({
+    id,
+    "extra-fields": extraFields,
+  }: DirectMeasure) => {
+    setSelectedMethodology(id!);
+    setIsMethodologySelected(!isMethodologySelected);
+    setDirectMeasureFields({
+      id,
+      "extra-fields": extraFields,
+    });
   };
 
   const changeMethodology = () => {
@@ -146,12 +162,20 @@ const ActivityTab: FC<ActivityTabProps> = ({
   //   }
 
   //   onDeleteActivitiesModalClose();
-  function handleCardSelect(methodology: Methodology) {
-    return () => handleMethodologySelected(methodology);
+  function handleCardSelect(
+    disabled: boolean | undefined,
+    inputRequired: string[] | undefined,
+    id: string,
+    fields: any,
+  ) {
+    return () =>
+      handleMethodologySelected({
+        disabled: !!disabled,
+        inputRequired,
+        id,
+        fields,
+      });
   }
-
-  // };
-
   return (
     <>
       <TabPanel p="0" pt="48px">
@@ -431,22 +455,37 @@ const ActivityTab: FC<ActivityTabProps> = ({
                       display="flex"
                       justifyContent="space-between"
                     >
-                      {(methodologies || []).map((methodology) => (
-                        <MethodologyCard
-                          methodology={methodology}
-                          key={directMeasure.id}
-                          isSelected={selectedMethodology === methodology.id}
-                          t={t}
-                          handleCardSelect={handleCardSelect(methodology)}
-                        />
-                      ))}
+                      {(methodologies || []).map(
+                        ({ id, disabled, activities, inputRequired }) => (
+                          <MethodologyCard
+                            id={id}
+                            key={id}
+                            inputRequired={inputRequired}
+                            isSelected={selectedMethodology === id}
+                            disabled={!!disabled}
+                            t={t}
+                            handleCardSelect={handleCardSelect(
+                              disabled,
+                              inputRequired,
+                              id,
+                              activities,
+                            )}
+                          />
+                        ),
+                      )}
                       {methodologies.length > 0 ? ( // hide this card until other methodologies can also load
                         <MethodologyCard
-                          methodology={directMeasure}
+                          id={directMeasure.id}
                           key={directMeasure.id}
                           isSelected={selectedMethodology === directMeasure.id}
                           t={t}
-                          handleCardSelect={handleCardSelect(directMeasure)}
+                          handleCardSelect={handleCardSelect(
+                            false,
+                            ["emissions-data"],
+                            directMeasure.id,
+                            directMeasure["extra-fields"],
+                          )}
+                          disabled={false}
                         />
                       ) : null}
                     </Box>

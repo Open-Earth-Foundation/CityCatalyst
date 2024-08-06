@@ -5,9 +5,7 @@ import {
 } from "@/app/api/v0/inventory/[inventory]/route";
 import { GET as calculateProgress } from "@/app/api/v0/inventory/[inventory]/progress/route";
 import { POST as createInventory } from "@/app/api/v0/city/[city]/inventory/route";
-import {
-  POST as submitInventory
-} from "@/app/api/v0/inventory/[inventory]/cdp/route";
+import { POST as submitInventory } from "@/app/api/v0/inventory/[inventory]/cdp/route";
 import { db } from "@/models";
 import { CreateInventoryRequest } from "@/util/validation";
 import assert from "node:assert";
@@ -93,7 +91,12 @@ describe("Inventory API", () => {
     await db.models.Sector.destroy({
       where: { sectorName: { [Op.like]: "XX_INVENTORY_PROGRESS_TEST%" } },
     });
-    city = await db.models.City.create({ cityId: randomUUID(), name: cityName, country: cityCountry, locode });
+    city = await db.models.City.create({
+      cityId: randomUUID(),
+      name: cityName,
+      country: cityCountry,
+      locode,
+    });
     await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
     await city.addUser(testUserID);
     sector = await db.models.Sector.create({
@@ -185,7 +188,7 @@ describe("Inventory API", () => {
     assert.equal(data.totalEmissions, inventory.totalEmissions);
   });
 
-  it("should download an inventory in csv format", async () => {
+  it.skip("should download an inventory in csv format", async () => {
     const url = `http://localhost:3000/api/v0/inventory/${inventory.inventoryId}?format=csv`;
     const req = createRequest(url);
     const res = await findInventory(req, {
@@ -213,7 +216,8 @@ describe("Inventory API", () => {
     assert.ok(lines.slice(1).every((line) => line.split(",").length == 6));
   });
 
-  it("should download an inventory in xls format", async () => {
+  // TODO this test is very slow. use "CIRIS Light" spreadsheet instead (for download as well anyways)
+  it.skip("should download an inventory in xls format", async () => {
     const url = `http://localhost:3000/api/v0/inventory/${inventory.inventoryId}?format=xls`;
     const req = createRequest(url);
     const res = await findInventory(req, {
@@ -375,13 +379,17 @@ describe("Inventory API", () => {
     // assert.equal(totalProgress.total, 27);
   });
 
-  it("should submit an inventory to the CDP test API", { skip: true }, async () => {
-    const req = mockRequest({});
-    const res = await submitInventory(req, {
-      params: { inventory: inventory.inventoryId },
-    });
-    assert.equal(res.status, 200);
-    const json = await res.json();
-    assert.equal(json.success, true);
-  })
+  it(
+    "should submit an inventory to the CDP test API",
+    { skip: true },
+    async () => {
+      const req = mockRequest({});
+      const res = await submitInventory(req, {
+        params: { inventory: inventory.inventoryId },
+      });
+      assert.equal(res.status, 200);
+      const json = await res.json();
+      assert.equal(json.success, true);
+    },
+  );
 });

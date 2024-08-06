@@ -118,7 +118,7 @@ export default function ChatBot({
     scrollToBottom();
   }, [messages]);
 
-  // TODO: Convert to Redux
+  // TODO: Convert to Redux #ON-2137
   const sendMessage = async (text: string) => {
     try {
       const response = await fetch(`/api/v0/assistants/threads/messages`, {

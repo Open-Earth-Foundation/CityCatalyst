@@ -97,9 +97,6 @@ function SubSectorPage({
     }
   };
 
-  console.log(MANUAL_INPUT_HIERARCHY);
-  // console.log(console.log(subSectorData));
-
   const filteredSubsectorScopes = () => {
     const scopes = [];
     const getRefNo = getSectorRefNo(step);

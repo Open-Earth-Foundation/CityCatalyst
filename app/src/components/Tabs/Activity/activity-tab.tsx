@@ -79,7 +79,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
       ...MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.directMeasure,
       id:
         MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.directMeasure?.id ||
-        "direct-measure", // adds a fallback generic id for direct measure
+        refNumberWithScope + "-direct-measure", // adds a fallback generic id for direct measure
     };
     return { methodologies, directMeasure };
   }

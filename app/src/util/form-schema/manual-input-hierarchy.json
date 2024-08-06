@@ -3076,48 +3076,50 @@
           "waste-composition"
         ],
         "formula": "incineration-waste",
-        "activities": {
-          "unique-by": [
-            "incineration-waste-outboundary-incineration-facility-id"
-          ],
-          "activity-title": "total-mass-of-waste-incinerated-or-burned",
-          "extra-fields": [
-            {
-              "id": "incineration-waste-outboundary-incineration-facility-id",
-              "type": "text"
-            },
-            {
-              "id": "incineration-waste-outboundary-incineration-facility-address",
-              "type": "text",
-              "required": false
-            },
-            {
-              "id": "incineration-waste-outboundary-waste-composition",
-              "type": "percentage-breakdown",
-              "total-required": 100,
-              "subtypes": [
-                "waste-composition-municipal-solid-waste",
-                "waste-composition-industrial-solid-waste",
-                "waste-composition-hazardous-waste",
-                "waste-composition-clinical-waste",
-                "waste-composition-sewage-sludge"
-              ]
-            },
-            {
-              "id": "incineration-waste-outboundary-technology",
-              "options": [
-                "technology-continuous-incineration",
-                "technology-semi-continuous-incineration",
-                "technology-batch-type-incineration"
-              ]
-            },
-            {
-              "id": "incineration-waste-outboundary-boiler-type",
-              "options": ["boiler-type-stoker", "boiler-type-fluidised-bed"]
-            }
-          ],
-          "units": ["units-kilograms", "units-tonnes"]
-        }
+        "activities": [
+          {
+            "unique-by": [
+              "incineration-waste-outboundary-incineration-facility-id"
+            ],
+            "activity-title": "total-mass-of-waste-incinerated-or-burned",
+            "extra-fields": [
+              {
+                "id": "incineration-waste-outboundary-incineration-facility-id",
+                "type": "text"
+              },
+              {
+                "id": "incineration-waste-outboundary-incineration-facility-address",
+                "type": "text",
+                "required": false
+              },
+              {
+                "id": "incineration-waste-outboundary-waste-composition",
+                "type": "percentage-breakdown",
+                "total-required": 100,
+                "subtypes": [
+                  "waste-composition-municipal-solid-waste",
+                  "waste-composition-industrial-solid-waste",
+                  "waste-composition-hazardous-waste",
+                  "waste-composition-clinical-waste",
+                  "waste-composition-sewage-sludge"
+                ]
+              },
+              {
+                "id": "incineration-waste-outboundary-technology",
+                "options": [
+                  "technology-continuous-incineration",
+                  "technology-semi-continuous-incineration",
+                  "technology-batch-type-incineration"
+                ]
+              },
+              {
+                "id": "incineration-waste-outboundary-boiler-type",
+                "options": ["boiler-type-stoker", "boiler-type-fluidised-bed"]
+              }
+            ],
+            "units": ["units-kilograms", "units-tonnes"]
+          }
+        ]
       }
     ],
     "directMeasure": {

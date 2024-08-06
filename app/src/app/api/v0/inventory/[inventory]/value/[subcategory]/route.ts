@@ -21,13 +21,19 @@ export const GET = apiHandler(async (_req, { params, session }) => {
     include: [
       { model: db.models.DataSource, as: "dataSource" },
       {
-        model: db.models.GasValue,
-        as: "gasValues",
+        model: db.models.ActivityValue,
+        as: "activityValues",
         include: [
           {
-            model: db.models.EmissionsFactor,
-            as: "emissionsFactor",
-            include: [{ model: db.models.DataSource, as: "dataSources" }],
+            model: db.models.GasValue,
+            as: "gasValues",
+            include: [
+              {
+                model: db.models.EmissionsFactor,
+                as: "emissionsFactor",
+                include: [{ model: db.models.DataSource, as: "dataSources" }],
+              },
+            ],
           },
         ],
       },
@@ -55,8 +61,12 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
       inventoryId: inventory.inventoryId,
     },
     include: [
+      {
+        model: db.models.ActivityValue,
+        as: "activityValues",
+        include: [{ model: db.models.GasValue, as: "gasValues" }],
+      },
       { model: db.models.DataSource, as: "dataSource" },
-      { model: db.models.GasValue, as: "gasValues" },
     ],
   });
   const gasValuesData = body.gasValues;

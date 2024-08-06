@@ -382,7 +382,7 @@
               }
             ],
             "units": [
-              "units-kilowatt-hours", 
+              "units-kilowatt-hours",
               "units-terajoules"
             ]
           }

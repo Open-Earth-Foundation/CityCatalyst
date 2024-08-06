@@ -4,7 +4,9 @@ import ActivityTab from "@/components/Tabs/Activity/activity-tab";
 import LoadingState from "@/components/loading-state";
 import { useTranslation } from "@/i18n/client";
 import { RootState } from "@/lib/store";
+import { SubSectorAttributes } from "@/models/SubSector";
 import { api } from "@/services/api";
+import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
 import { ArrowBackIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -79,7 +81,7 @@ function SubSectorPage({
     (sector) => sector.sector.referenceNumber === getSectorRefNo(step),
   );
 
-  const subSectorData = sectorData?.subSectors.find(
+  const subSectorData: SubSectorAttributes = sectorData?.subSectors.find(
     (subsectorItem) => subsectorItem.subsectorId === subsector,
   );
   const getSectorName = (currentStep: string) => {
@@ -95,9 +97,23 @@ function SubSectorPage({
     }
   };
 
-  const { subsector: subsectorData, scopes } = useSelector(
-    (state: RootState) => state.subsector,
-  );
+  const getFilteredSubsectorScopes = () => {
+    const scopes = [];
+
+    for (const key in MANUAL_INPUT_HIERARCHY) {
+      if (key.startsWith(subSectorData?.referenceNumber!)) {
+        const scopeNumber = key.split(".").pop();
+        const result = {
+          ...MANUAL_INPUT_HIERARCHY[key],
+          scope: Number(scopeNumber),
+        };
+        scopes.push(result);
+      }
+    }
+    return scopes;
+  };
+
+  const scopes = getFilteredSubsectorScopes();
 
   // calculate total consumption and emissions
 
@@ -321,9 +337,9 @@ function SubSectorPage({
               ) : (
                 scopes?.map((scope) => (
                   <ActivityTab
-                    referenceNumber={subSectorData?.referenceNumber}
+                    referenceNumber={subSectorData?.referenceNumber!}
                     key={subSectorData?.referenceNumber}
-                    filteredScope={scope}
+                    filteredScope={scope.scope}
                     t={t}
                     inventoryId={inventoryId}
                     step={step}

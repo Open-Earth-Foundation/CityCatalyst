@@ -2796,48 +2796,50 @@
           "waste-composition"
         ],
         "formula": "methane-commitment",
-        "activities": {
-          "unique-by": [
-            "methane-commitment-solid-waste-outboundary-landfill-id"
-          ],
-          "activity-title": "total-municipal-solid-waste-disposed",
-          "extra-fields": [
-            {
-              "id": "methane-commitment-solid-waste-outboundary-landfill-id",
-              "type": "text"
-            },
-            {
-              "id": "methane-commitment-solid-waste-outboundary-landfill-address",
-              "type": "text",
-              "required": false
-            },
-            {
-              "id": "methane-commitment-solid-waste-outboundary-oxidation-factor",
-              "options": [
-                "oxidation-factor-well-managed-landfill",
-                "oxidation-factor-unmanaged-landfill"
-              ]
-            },
-            {
-              "id": "methane-commitment-solid-waste-outboundary-methane-collected-and-removed",
-              "type": "number"
-            },
-            {
-              "id": "methane-commitment-solid-waste-outboundary-waste-composition",
-              "type": "percentage-breakdown",
-              "total-required": 100,
-              "subtypes": [
-                "waste-composition-food",
-                "waste-composition-garden",
-                "waste-composition-paper",
-                "waste-composition-wood",
-                "waste-composition-textiles",
-                "waste-composition-industrial"
-              ]
-            }
-          ],
-          "units": ["units-kilograms", "units-tonnes"]
-        }
+        "activities": [
+          {
+            "unique-by": [
+              "methane-commitment-solid-waste-outboundary-landfill-id"
+            ],
+            "activity-title": "total-municipal-solid-waste-disposed",
+            "extra-fields": [
+              {
+                "id": "methane-commitment-solid-waste-outboundary-landfill-id",
+                "type": "text"
+              },
+              {
+                "id": "methane-commitment-solid-waste-outboundary-landfill-address",
+                "type": "text",
+                "required": false
+              },
+              {
+                "id": "methane-commitment-solid-waste-outboundary-oxidation-factor",
+                "options": [
+                  "oxidation-factor-well-managed-landfill",
+                  "oxidation-factor-unmanaged-landfill"
+                ]
+              },
+              {
+                "id": "methane-commitment-solid-waste-outboundary-methane-collected-and-removed",
+                "type": "number"
+              },
+              {
+                "id": "methane-commitment-solid-waste-outboundary-waste-composition",
+                "type": "percentage-breakdown",
+                "total-required": 100,
+                "subtypes": [
+                  "waste-composition-food",
+                  "waste-composition-garden",
+                  "waste-composition-paper",
+                  "waste-composition-wood",
+                  "waste-composition-textiles",
+                  "waste-composition-industrial"
+                ]
+              }
+            ],
+            "units": ["units-kilograms", "units-tonnes"]
+          }
+        ]
       },
       {
         "id": "first-order-of-decay-solid-waste-outboundary-methodology",
@@ -2880,37 +2882,39 @@
           "total-of-ch4-recovered"
         ],
         "formula": "biological-treatment",
-        "activities": {
-          "unique-by": [
-            "biological-treatment-inboundary-treatment-type",
-            "biological-treatment-inboundary-source"
-          ],
-          "activity-title": "total-organic-waste-treated",
-          "extra-fields": [
-            {
-              "id": "biological-treatment-inboundary-treatment-type",
-              "options": [
-                "treatment-type-all-organic-waste",
-                "treatment-type-composting",
-                "treatment-type-anaerobic-digestion"
-              ],
-              "exclusive": "treatment-type-all-organic-waste"
-            },
-            {
-              "id": "biological-treatment-inboundary-waste-state",
-              "options": ["waste-state-dry-waste", "waste-state-wet-waste"]
-            },
-            {
-              "id": "biological-treatment-inboundary-total-of-ch4-recovered",
-              "type": "number"
-            },
-            {
-              "id": "biological-treatment-inboundary-source",
-              "type": "text"
-            }
-          ],
-          "units": ["units-kilograms", "units-tonnes"]
-        }
+        "activities": [
+          {
+            "unique-by": [
+              "biological-treatment-inboundary-treatment-type",
+              "biological-treatment-inboundary-source"
+            ],
+            "activity-title": "total-organic-waste-treated",
+            "extra-fields": [
+              {
+                "id": "biological-treatment-inboundary-treatment-type",
+                "options": [
+                  "treatment-type-all-organic-waste",
+                  "treatment-type-composting",
+                  "treatment-type-anaerobic-digestion"
+                ],
+                "exclusive": "treatment-type-all-organic-waste"
+              },
+              {
+                "id": "biological-treatment-inboundary-waste-state",
+                "options": ["waste-state-dry-waste", "waste-state-wet-waste"]
+              },
+              {
+                "id": "biological-treatment-inboundary-total-of-ch4-recovered",
+                "type": "number"
+              },
+              {
+                "id": "biological-treatment-inboundary-source",
+                "type": "text"
+              }
+            ],
+            "units": ["units-kilograms", "units-tonnes"]
+          }
+        ]
       }
     ],
     "directMeasure": {
@@ -2941,37 +2945,39 @@
           "total-of-ch4-recovered"
         ],
         "formula": "biological-treatment",
-        "activities": {
-          "unique-by": [
-            "biological-treatment-outboundary-treatment-type",
-            "biological-treatment-outboundary-source"
-          ],
-          "activity-title": "total-organic-waste-treated",
-          "extra-fields": [
-            {
-              "id": "biological-treatment-outboundary-treatment-type",
-              "options": [
-                "treatment-type-all-organic-waste",
-                "treatment-type-composting",
-                "treatment-type-anaerobic-digestion"
-              ],
-              "exclusive": "treatment-type-all-organic-waste"
-            },
-            {
-              "id": "biological-treatment-outboundary-waste-state",
-              "options": ["waste-state-dry-waste", "waste-state-wet-waste"]
-            },
-            {
-              "id": "biological-treatment-outboundary-total-of-ch4-recovered",
-              "type": "number"
-            },
-            {
-              "id": "biological-treatment-outboundary-source",
-              "type": "text"
-            }
-          ],
-          "units": ["units-kilograms", "units-tonnes"]
-        }
+        "activities": [
+          {
+            "unique-by": [
+              "biological-treatment-outboundary-treatment-type",
+              "biological-treatment-outboundary-source"
+            ],
+            "activity-title": "total-organic-waste-treated",
+            "extra-fields": [
+              {
+                "id": "biological-treatment-outboundary-treatment-type",
+                "options": [
+                  "treatment-type-all-organic-waste",
+                  "treatment-type-composting",
+                  "treatment-type-anaerobic-digestion"
+                ],
+                "exclusive": "treatment-type-all-organic-waste"
+              },
+              {
+                "id": "biological-treatment-outboundary-waste-state",
+                "options": ["waste-state-dry-waste", "waste-state-wet-waste"]
+              },
+              {
+                "id": "biological-treatment-outboundary-total-of-ch4-recovered",
+                "type": "number"
+              },
+              {
+                "id": "biological-treatment-outboundary-source",
+                "type": "text"
+              }
+            ],
+            "units": ["units-kilograms", "units-tonnes"]
+          }
+        ]
       }
     ],
     "directMeasure": {
@@ -3005,48 +3011,50 @@
           "waste-composition"
         ],
         "formula": "incineration-waste",
-        "activities": {
-          "unique-by": [
-            "incineration-waste-inboundary-incineration-facility-id"
-          ],
-          "activity-title": "total-mass-of-waste-incinerated-or-burned",
-          "extra-fields": [
-            {
-              "id": "incineration-waste-inboundary-incineration-facility-id",
-              "type": "text"
-            },
-            {
-              "id": "incineration-waste-inboundary-incineration-facility-address",
-              "type": "text",
-              "required": false
-            },
-            {
-              "id": "incineration-waste-inboundary-waste-composition",
-              "type": "percentage-breakdown",
-              "total-required": 100,
-              "subtypes": [
-                "waste-composition-municipal-solid-waste",
-                "waste-composition-industrial-solid-waste",
-                "waste-composition-hazardous-waste",
-                "waste-composition-clinical-waste",
-                "waste-composition-sewage-sludge"
-              ]
-            },
-            {
-              "id": "incineration-waste-inboundary-technology",
-              "options": [
-                "technology-continuous-incineration",
-                "technology-semi-continuous-incineration",
-                "technology-batch-type-incineration"
-              ]
-            },
-            {
-              "id": "incineration-waste-inboundary-boiler-type",
-              "options": ["boiler-type-stoker", "boiler-type-fluidised-bed"]
-            }
-          ],
-          "units": ["units-kilograms", "units-tonnes"]
-        }
+        "activities": [
+          {
+            "unique-by": [
+              "incineration-waste-inboundary-incineration-facility-id"
+            ],
+            "activity-title": "total-mass-of-waste-incinerated-or-burned",
+            "extra-fields": [
+              {
+                "id": "incineration-waste-inboundary-incineration-facility-id",
+                "type": "text"
+              },
+              {
+                "id": "incineration-waste-inboundary-incineration-facility-address",
+                "type": "text",
+                "required": false
+              },
+              {
+                "id": "incineration-waste-inboundary-waste-composition",
+                "type": "percentage-breakdown",
+                "total-required": 100,
+                "subtypes": [
+                  "waste-composition-municipal-solid-waste",
+                  "waste-composition-industrial-solid-waste",
+                  "waste-composition-hazardous-waste",
+                  "waste-composition-clinical-waste",
+                  "waste-composition-sewage-sludge"
+                ]
+              },
+              {
+                "id": "incineration-waste-inboundary-technology",
+                "options": [
+                  "technology-continuous-incineration",
+                  "technology-semi-continuous-incineration",
+                  "technology-batch-type-incineration"
+                ]
+              },
+              {
+                "id": "incineration-waste-inboundary-boiler-type",
+                "options": ["boiler-type-stoker", "boiler-type-fluidised-bed"]
+              }
+            ],
+            "units": ["units-kilograms", "units-tonnes"]
+          }
+        ]
       }
     ],
     "directMeasure": {

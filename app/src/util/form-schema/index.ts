@@ -12,7 +12,11 @@ interface ExtraField {
   subtypes?: string[];
 }
 
+<<<<<<< HEAD
 export interface Activity {
+=======
+interface Activity {
+>>>>>>> develop
   id: string;
   "unique-by"?: string[];
   "activity-title"?: string;
@@ -26,11 +30,20 @@ export interface Methodology {
   id: string;
   disabled?: boolean;
   activities?: Activity[];
+<<<<<<< HEAD
   inputRequired?: string[];
   fields?: []
 }
 
 export interface DirectMeasure {
+=======
+  suggestedActivitiesId?: string;
+  suggestedActivities?: Activity[];
+  inputRequired?: string[];
+}
+
+interface DirectMeasure {
+>>>>>>> develop
   id?: string;
   "extra-fields"?: ExtraField[];
 }

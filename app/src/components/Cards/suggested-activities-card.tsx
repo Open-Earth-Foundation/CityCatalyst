@@ -4,20 +4,21 @@ import { TFunction } from "i18next";
 import React, { FC } from "react";
 
 interface SuggestedActivityCardProps {
-  name: string;
   t: TFunction;
+  id: string;
+  description: string;
   isSelected: boolean;
   onActivityAdded?: () => void;
 }
 
 const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
-  name,
   t,
   isSelected,
+  description,
+  id,
   onActivityAdded,
 }) => {
   const themeColors = useTheme().colors;
-
   return (
     <Card
       display="flex"
@@ -30,7 +31,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
       borderWidth="1px"
       borderColor="border.overlay"
       cursor="pointer"
-      _hover={{ shadow: "md", borderWidth: '1px', borderColor: "content.link" }}
+      _hover={{ shadow: "md", borderWidth: "1px", borderColor: "content.link" }}
       onClick={onActivityAdded}
     >
       <Box display="flex" alignItems="center">
@@ -73,7 +74,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
           fontWeight="normal"
           color="interactive.control"
         >
-          {t("type-of-building")}
+          {t(description)}
         </Text>
         <Text
           letterSpacing="wide"
@@ -81,7 +82,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
           fontWeight="medium"
           fontFamily="heading"
         >
-          {name}
+          {t(id)}
         </Text>
       </Box>
       <Box display="flex" alignItems="center" w="full" justifyContent="end">

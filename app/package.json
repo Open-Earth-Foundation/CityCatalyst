@@ -65,7 +65,7 @@
     "framer-motion": "^11.1.7",
     "geojson": "^0.5.0",
     "http-errors": "^2.0.0",
-    "i18next": "^23.4.2",
+    "i18next": "^23.12.2",
     "i18next-browser-languagedetector": "^7.2.0",
     "i18next-resources-to-backend": "^1.2.1",
     "js-cookie": "^3.0.5",
@@ -76,7 +76,7 @@
     "openai": "^4.52.7",
     "pg": "^8.11.5",
     "pg-hstore": "^2.3.4",
-    "pigeon-maps": "^0.21.3",
+    "pigeon-maps": "^0.21.6",
     "pino": "^9.0.0",
     "postcss": "8.4.31",
     "react": "18.3.1",
@@ -93,7 +93,7 @@
     "sequelize-cli": "^6.6.2",
     "tailwindcss": "3.4.3",
     "tsx": "^4.7.3",
-    "typescript": "5.3.3",
+    "typescript": "5.5.4",
     "uuid": "^9.0.1",
     "wellknown": "^0.5.0",
     "zod": "^3.22.4"
@@ -106,12 +106,12 @@
     "@storybook/blocks": "^8.0.4",
     "@storybook/nextjs": "^8.0.8",
     "@types/glob": "^8.1.0",
-    "cypress": "^13.13.1",
+    "cypress": "^13.13.2",
     "glob": "^10.4.1",
     "prettier": "3.2.5",
     "sequelize-auto": "^0.8.8",
     "start-server-and-test": "^2.0.3",
-    "storybook": "^8.2.6"
+    "storybook": "^8.2.7"
   },
   "engines": {
     "node": ">=20.5.0"

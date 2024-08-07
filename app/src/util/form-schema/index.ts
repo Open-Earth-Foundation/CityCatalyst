@@ -39,6 +39,7 @@ export interface Methodology {
   inputRequired?: string[];
   fields?: [];
   suggestedActivities?: SuggestedActivity[];
+  suggestedActivitiesId?: string;
 }
 
 export interface DirectMeasure {

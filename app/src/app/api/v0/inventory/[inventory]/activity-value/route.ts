@@ -3,12 +3,13 @@ import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import type { ActivityValue } from "@/models/ActivityValue";
 import type { EmissionsFactor } from "@/models/EmissionsFactor";
+import type { InventoryValue } from "@/models/InventoryValue";
 import { apiHandler } from "@/util/api";
 import { createActivityValueRequest } from "@/util/validation";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
-import { Op } from "sequelize";
+import { Op, type WhereOptions } from "sequelize";
 import { z } from "zod";
 
 export const POST = apiHandler(async (req, { params, session }) => {
@@ -155,12 +156,12 @@ export const GET = apiHandler(async (req, { params, session }) => {
     session,
   );
 
-  const query: any = {
+  const query: WhereOptions<InventoryValue> = {
     subCategoryId: { [Op.in]: subCategoryIds },
     inventoryId: inventory.inventoryId,
   };
   if (methodologyId) {
-    query.methodologyId = methodologyId;
+    query.inputMethodology = methodologyId;
   }
   const activityValues = await db.models.ActivityValue.findAll({
     include: [

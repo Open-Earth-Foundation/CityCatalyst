@@ -3114,6 +3114,7 @@
       }
     ],
     "directMeasure": {
+      "id": "fuel-sales-off-road-transport-direct-measure-methodology",
       "extra-fields": [
         {
           "id": "off-road-transport-fuel-type",
@@ -3208,6 +3209,7 @@
       }
     ],
     "directMeasure": {
+      "id": "electricity-consumption-off-road-transport-direct-measure-methodology",
       "extra-fields": [
         {
           "id": "off-road-transport-vehicle-type",
@@ -3625,7 +3627,7 @@
       }
     ],
     "directMeasure": {
-      "id": "direct-measure-incineration-waste-inboundary-methodology",
+      "id": "incineration-waste-inboundary-direct-measure-methodology",
       "extra-fields": [
         {
           "id": "incineration-facility-id",

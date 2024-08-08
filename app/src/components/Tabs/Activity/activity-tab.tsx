@@ -29,7 +29,11 @@ import DeleteAllActivitiesModal from "../../Modals/delete-all-activities-modal";
 import { api } from "@/services/api";
 import ActivityAccordion from "./activity-accordion";
 import ScopeUnavailable from "./scope-unavailable";
-import { MANUAL_INPUT_HIERARCHY, Methodology } from "@/util/form-schema";
+import {
+  MANUAL_INPUT_HIERARCHY,
+  Methodology,
+  SuggestedActivity,
+} from "@/util/form-schema";
 import MethodologyCard from "@/components/Cards/methodology-card";
 
 interface ActivityTabProps {
@@ -58,7 +62,9 @@ const ActivityTab: FC<ActivityTabProps> = ({
   step,
 }) => {
   const totalEmissions = 0;
-  const [selectedActivity, setSelectedActivity] = useState();
+  const [selectedActivity, setSelectedActivity] = useState<
+    SuggestedActivity | undefined
+  >();
   const [isMethodologySelected, setIsMethodologySelected] = useState(false);
   const [selectedMethodology, setSelectedMethodology] = useState("");
   const [isUnavailableChecked, setIsChecked] = useState<boolean>(false);
@@ -77,8 +83,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
 
   const { methodologies, directMeasure } = getMethodologies();
 
-  const getSuggestedActivities = () => {
-    if (!selectedMethodology) return [];
+  const getSuggestedActivities: () => SuggestedActivity[] = () => {
+    if (!selectedMethodology) return [] as SuggestedActivity[];
     let methodology;
     const scope = MANUAL_INPUT_HIERARCHY[refNumberWithScope];
     if (selectedMethodology.includes("direct-measure")) {
@@ -88,7 +94,10 @@ const ActivityTab: FC<ActivityTabProps> = ({
         (m) => m.id === selectedMethodology,
       );
     }
-    return methodology?.suggestedActivities || [];
+    return (
+      (methodology?.suggestedActivities as SuggestedActivity[]) ||
+      ([] as SuggestedActivity[])
+    );
   };
 
   const handleMethodologySelected = (methodology: Methodology) => {
@@ -127,10 +136,19 @@ const ActivityTab: FC<ActivityTabProps> = ({
     onClose: onDeleteActivityModalClose,
   } = useDisclosure();
 
-  const suggestedActivities = getSuggestedActivities();
+  const suggestedActivities: SuggestedActivity[] = getSuggestedActivities();
 
   const handleSwitch = (e: any) => {
     setIsChecked(!isUnavailableChecked);
+  };
+
+  const handleActivityAdded = (
+    suggestedActivity: SuggestedActivity,
+    // ...args: any[]
+  ) => {
+    setSelectedActivity(suggestedActivity);
+
+    onAddActivityModalOpen();
   };
 
   const [deleteActivity, isDeleteActivityLoading] =
@@ -347,18 +365,23 @@ const ActivityTab: FC<ActivityTabProps> = ({
                           {t("activity-suggestion")}
                         </Text>
                         <Box className="flex flex-col gap-4">
-                          {suggestedActivities.map(({ id }) => (
-                            <SuggestedActivityCard
-                              key={id}
-                              id={id}
-                              t={t}
-                              description={
-                                methodology?.suggestedActivitiesId || ""
-                              }
-                              isSelected={selectedActivity === id}
-                              onActivityAdded={onAddActivityModalOpen}
-                            />
-                          ))}
+                          {suggestedActivities.map((suggestedActivity) => {
+                            const { id } = suggestedActivity;
+                            return (
+                              <SuggestedActivityCard
+                                key={id}
+                                id={id}
+                                t={t}
+                                isSelected={selectedActivity?.id === id}
+                                onActivityAdded={(...args) =>
+                                  handleActivityAdded(
+                                    suggestedActivity,
+                                    // ...args,
+                                  )
+                                }
+                              />
+                            );
+                          })}
                         </Box>
                       </>
                     )}
@@ -489,7 +512,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
         setHasActivityData={setHasActivityData}
         methodology={methodology!}
         inventoryId={inventoryId}
-        selectedActivity="Example Activity"
+        selectedActivity={selectedActivity}
       />
 
       <ChangeMethodology

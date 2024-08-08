@@ -29,14 +29,9 @@ import DeleteAllActivitiesModal from "../../Modals/delete-all-activities-modal";
 import { api } from "@/services/api";
 import ActivityAccordion from "./activity-accordion";
 import ScopeUnavailable from "./scope-unavailable";
-import { ActivityDataScope } from "@/features/city/subsectorSlice";
-import {
-  Activity,
-  DirectMeasure,
-  MANUAL_INPUT_HIERARCHY,
-  Methodology,
-} from "@/util/form-schema";
+import { MANUAL_INPUT_HIERARCHY, Methodology } from "@/util/form-schema";
 import MethodologyCard from "@/components/Cards/methodology-card";
+
 interface ActivityTabProps {
   t: TFunction;
   referenceNumber: string;
@@ -75,10 +70,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
   function getMethodologies() {
     const methodologies =
       MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.methodologies || [];
-    const directMeasure = {
-      ...MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.directMeasure,
-      id: refNumberWithScope + "-direct-measure", // adds a fallback generic id for direct measure
-    };
+    const directMeasure =
+      MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.directMeasure;
     return { methodologies, directMeasure };
   }
 
@@ -86,9 +79,15 @@ const ActivityTab: FC<ActivityTabProps> = ({
 
   const getSuggestedActivities = () => {
     if (!selectedMethodology) return [];
-    const methodology = (
-      MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.methodologies || []
-    ).find((m) => m.id === selectedMethodology);
+    let methodology;
+    const scope = MANUAL_INPUT_HIERARCHY[refNumberWithScope];
+    if (selectedMethodology.includes("direct-measure")) {
+      methodology = scope.directMeasure;
+    } else {
+      methodology = (scope.methodologies || []).find(
+        (m) => m.id === selectedMethodology,
+      );
+    }
     return methodology?.suggestedActivities || [];
   };
 
@@ -459,7 +458,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                           />
                         ),
                       )}
-                      {methodologies.length > 0 ? ( // hide this card until other methodologies can also load
+                      {directMeasure?.id ? (
                         <MethodologyCard
                           id={directMeasure.id}
                           key={directMeasure.id}

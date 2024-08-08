@@ -9,6 +9,7 @@ import type {
 import type { DataSourceAttributes } from "@/models/DataSource";
 import type {
   EmissionsFactor,
+  EmissionsFactorAttributes,
   EmissionsFactorCreationAttributes,
 } from "@/models/EmissionsFactor";
 import type { GasValueCreationAttributes } from "@/models/GasValue";
@@ -20,8 +21,8 @@ import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 import type { Transaction } from "sequelize";
 
-type GasValueInput = GasValueCreationAttributes & {
-  emissionsFactor?: EmissionsFactorCreationAttributes;
+type GasValueInput = Omit<GasValueCreationAttributes, "id"> & {
+  emissionsFactor?: Omit<EmissionsFactorAttributes, "id">;
 };
 
 export default class ActivityService {
@@ -29,9 +30,9 @@ export default class ActivityService {
     activityValueParams: Omit<ActivityValueAttributes, "id">,
     inventoryId: string,
     inventoryValueId: string | undefined,
-    inventoryValueParams: InventoryValueAttributes | undefined,
-    gasValues: GasValueInput[],
-    dataSourceParams: DataSourceAttributes,
+    inventoryValueParams: Omit<InventoryValueAttributes, "id"> | undefined,
+    gasValues: GasValueInput[] | undefined,
+    dataSourceParams: Omit<DataSourceAttributes, "datasourceId"> | undefined,
   ): Promise<ActivityValue | undefined> {
     const result = await db.sequelize?.transaction(
       async (transaction: Transaction): Promise<ActivityValue> => {

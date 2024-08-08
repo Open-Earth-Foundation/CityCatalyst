@@ -1,4 +1,5 @@
 import CalculationService from "@/backend/CalculationService";
+import GPCService from "@/backend/GPCService";
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import type { ActivityValue } from "@/models/ActivityValue";
@@ -19,10 +20,12 @@ export const POST = apiHandler(async (req, { params, session }) => {
 
   const result = await db.sequelize?.transaction(
     async (transaction): Promise<ActivityValue> => {
-      const gasValues = body.gasValues;
-      delete body.gasValues;
-      const dataSourceParams = body.dataSource;
-      delete body.dataSource;
+      const {
+        gasValues,
+        dataSource: dataSourceParams,
+        inventoryValue: inventoryValueParams,
+        ...data
+      } = body;
 
       const dataSource = await db.models.DataSource.create(
         {
@@ -31,18 +34,41 @@ export const POST = apiHandler(async (req, { params, session }) => {
         },
         { transaction },
       );
-      let inventoryValueId: string | undefined = body.inventoryValueId;
-      if (!inventoryValueId) {
-        // TODO create inventory value here
-        throw new createHttpError.NotImplemented(
-          "Creating InventoryValue from ActivityValue not yet implemented, so inventoryValueId is required currently",
+      let inventoryValueId: string | undefined = data.inventoryValueId;
+      if (inventoryValueId && inventoryValueParams) {
+        throw new createHttpError.BadRequest(
+          "Can't use both inventoryValueId and inventoryValue",
         );
       }
-      const inventoryValue =
-        await db.models.InventoryValue.findByPk(inventoryValueId);
-      if (!inventoryValue) {
-        throw new createHttpError.NotFound("InventoryValue not found");
+
+      let inventoryValue: InventoryValue | null = null;
+      if (!inventoryValueId && inventoryValueParams) {
+        const { sectorId, subSectorId, subCategoryId } =
+          await GPCService.getIDsFromReferenceNumber(
+            inventoryValueParams!.gpcReferenceNumber,
+          );
+
+        // create inventory value if there isn't one yet
+        inventoryValue = await db.models.InventoryValue.create({
+          ...inventoryValueParams,
+          id: randomUUID(),
+          inventoryId: params.inventory,
+          sectorId,
+          subSectorId,
+          subCategoryId,
+        });
+      } else if (inventoryValueId) {
+        inventoryValue =
+          await db.models.InventoryValue.findByPk(inventoryValueId);
+        if (!inventoryValue) {
+          throw new createHttpError.NotFound("InventoryValue not found");
+        }
+      } else {
+        throw new createHttpError.BadRequest(
+          "Either inventoryValueId or inventoryValue must be provided",
+        );
       }
+
       if (!inventoryValue.inputMethodology) {
         throw new createHttpError.BadRequest(
           `Inventory value ${inventoryValue.id} is missing an input methodology`,
@@ -51,7 +77,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
 
       const activityValue = await db.models.ActivityValue.create(
         {
-          ...body,
+          ...data,
           datasourceId: dataSource.datasourceId,
           inventoryValueId,
           id: randomUUID(),
@@ -72,8 +98,10 @@ export const POST = apiHandler(async (req, { params, session }) => {
         inventoryValue.co2eqYears ?? 0,
         totalCO2eYears,
       );
+      await inventoryValue.save({ transaction });
       activityValue.co2eq = totalCO2e;
       activityValue.co2eqYears = totalCO2eYears;
+      await activityValue.save({ transaction });
 
       if (gasValues) {
         for (const gasValue of gasValues) {

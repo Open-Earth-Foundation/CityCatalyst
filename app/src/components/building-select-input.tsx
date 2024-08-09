@@ -4,6 +4,7 @@ import { FieldError, FieldErrors, UseFormRegister } from "react-hook-form";
 import { Inputs } from "./Modals/add-activity-modal";
 import { t } from "i18next";
 import { WarningIcon } from "@chakra-ui/icons";
+import type { SuggestedActivity } from "@/util/form-schema";
 
 interface BuildingTypeSelectInputProps {
   title: string;
@@ -12,6 +13,7 @@ interface BuildingTypeSelectInputProps {
   register: UseFormRegister<Inputs>;
   activity: string;
   errors: FieldErrors<any>;
+  selectedActivity?: SuggestedActivity;
 }
 
 const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
@@ -21,6 +23,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
   register,
   activity,
   errors,
+  selectedActivity,
 }) => {
   return (
     <Box display="flex" flexDirection="column" gap="8px">

@@ -5,10 +5,15 @@ import type { InventoryValue } from "@/models/InventoryValue";
 import { multiplyBigIntFloat } from "@/util/big_int";
 import createHttpError from "http-errors";
 
+export type Gas = {
+  gas: string;
+  amount: bigint;
+};
+
 export type GasAmountResult = {
   totalCO2e: bigint;
   totalCO2eYears: number;
-  gases: { gas: string; amount: bigint }[];
+  gases: Gas[];
 };
 
 const GAS_NAMES = ["CO2", "N2O", "CH4"];

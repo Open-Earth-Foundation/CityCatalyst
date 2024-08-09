@@ -3,7 +3,10 @@ import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import type { InventoryValue } from "@/models/InventoryValue";
 import { apiHandler } from "@/util/api";
-import { createActivityValueRequest } from "@/util/validation";
+import {
+  createActivityValueRequest,
+  updateActivityValueRequest,
+} from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { Op, type WhereOptions } from "sequelize";

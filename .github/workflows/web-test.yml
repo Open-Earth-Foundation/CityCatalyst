@@ -125,7 +125,8 @@ jobs:
             NEXTAUTH_SECRET=${{secrets.NEXTAUTH_SECRET}} \
             RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}} \
             VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}} \
-            OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}} \
+            OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_TEST}} \
+            "OPENAI_ASSISTANT_ID=asst_4if8qn6W8Vlxwbf2cuyH8OFU" \
             HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}} \
             "ADMIN_EMAILS=${{secrets.ADMIN_EMAILS}}" \
             "ADMIN_NAMES=${{secrets.ADMIN_NAMES}}" \

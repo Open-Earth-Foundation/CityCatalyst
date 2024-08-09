@@ -187,8 +187,8 @@ export const updateActivityValueRequest = z.object({
 });
 
 export const createActivityValueRequest = z.object({
-  activityData: z.any().optional(),
-  metadata: z.any().optional(),
+  activityData: z.record(z.string(), z.any()),
+  metadata: z.record(z.string(), z.any()),
   inventoryValueId: z.string().uuid().optional(),
   inventoryValue: z
     .object({
@@ -207,3 +207,7 @@ export const createActivityValueRequest = z.object({
     .optional(),
   gasValues: z.array(gasValueSchema).optional(),
 });
+
+export type CreateActivityValueRequest = z.infer<
+  typeof createActivityValueRequest
+>;

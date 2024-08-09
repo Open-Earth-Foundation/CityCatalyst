@@ -4,13 +4,11 @@ import { db } from "@/models";
 import type {
   ActivityValue,
   ActivityValueAttributes,
-  ActivityValueCreationAttributes,
 } from "@/models/ActivityValue";
 import type { DataSourceAttributes } from "@/models/DataSource";
 import type {
   EmissionsFactor,
   EmissionsFactorAttributes,
-  EmissionsFactorCreationAttributes,
 } from "@/models/EmissionsFactor";
 import type { GasValueCreationAttributes } from "@/models/GasValue";
 import type {
@@ -310,10 +308,10 @@ export default class ActivityService {
                 gases.find((gas) => gas.gas === gasValue.gas)?.amount ?? 0n;
             }
 
-            await db.models.GasValue.upsert(
+            await db.models.GasValue.create(
               {
                 ...gasValue,
-                id: gasValue.id ?? randomUUID(),
+                id: randomUUID(),
                 activityValueId: activityValue.id,
                 inventoryValueId: activityValue?.inventoryValueId,
               },

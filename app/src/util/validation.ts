@@ -150,9 +150,17 @@ export const createUserInvite = z.object({
 export type CreateUserInvite = z.infer<typeof createUserInvite>;
 
 export const createActivityValueRequest = z.object({
+  activityData: z.record(z.string(), z.any()),
+  metadata: z.record(z.string(), z.any()),
   inventoryValueId: z.string().uuid().optional(),
-  activityData: z.any().optional(),
-  metadata: z.any().optional(),
+  inventoryValue: z
+    .object({
+      inputMethodology: z.string(),
+      gpcReferenceNumber: z.string(),
+      unavailableReason: z.string().optional(),
+      unavailableExplanation: z.string().optional(),
+    })
+    .optional(),
   dataSource: z
     .object({
       sourceType: z.string(),
@@ -179,3 +187,7 @@ export const createActivityValueRequest = z.object({
     )
     .optional(),
 });
+
+export type CreateActivityValueRequest = z.infer<
+  typeof createActivityValueRequest
+>;

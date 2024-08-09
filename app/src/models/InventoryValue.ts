@@ -11,8 +11,10 @@ import type { GasValue, GasValueId } from "./GasValue";
 export interface InventoryValueAttributes {
   id: string;
   gpcReferenceNumber?: string;
-  activityValue?: number | null;
-  activityUnits?: string | null;
+  /** @deprecated moved to ActivityValue */
+  activityValue?: number | null; // TODO remove
+  /** @deprecated moved to ActivityValue */
+  activityUnits?: string | null; // TODO remove
   co2eq?: bigint;
   co2eqYears?: number;
   unavailableReason?: string;
@@ -22,7 +24,8 @@ export interface InventoryValueAttributes {
   subSectorId?: string;
   subCategoryId?: string;
   inventoryId?: string;
-  datasourceId?: string;
+  /** @deprecated moved to ActivityValue */
+  datasourceId?: string; // TODO remove
   created?: Date;
   lastUpdated?: Date;
 }
@@ -56,8 +59,10 @@ export class InventoryValue
 {
   id!: string;
   gpcReferenceNumber?: string;
-  activityValue?: number | null;
-  activityUnits?: string | null;
+  /** @deprecated moved to ActivityValue */
+  activityValue?: number | null; // TODO remove
+  /** @deprecated moved to ActivityValue */
+  activityUnits?: string | null; // TODO remove
   co2eq?: bigint;
   co2eqYears?: number;
   unavailableReason?: string;
@@ -67,7 +72,8 @@ export class InventoryValue
   subSectorId?: string;
   subCategoryId?: string;
   inventoryId?: string;
-  datasourceId?: string;
+  /** @deprecated moved to ActivityValue */
+  datasourceId?: string; // TODO remove
   created?: Date;
   lastUpdated?: Date;
 

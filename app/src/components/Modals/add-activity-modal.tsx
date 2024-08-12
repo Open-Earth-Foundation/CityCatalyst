@@ -238,8 +238,9 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
 
   let fields = null;
   let units = null;
-
-  if (methodology?.id === "direct-measure") {
+  console.log(methodology?.id);
+  if (methodology?.id.includes("direct-measure")) {
+    console.log(methodology.id);
     fields = methodology.fields;
   } else {
     fields = methodology?.fields[0]["extra-fields"];
@@ -298,7 +299,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                     t={t}
                   />
                 </FormControl>
-                {methodology?.id !== "direct-measure" ? (
+                {!methodology?.id.includes("direct-measure") ? (
                   <Box
                     display="flex"
                     justifyContent="space-between"
@@ -439,7 +440,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                   </Box>
                 ) : null}
               </HStack>
-              {methodology?.id !== "direct-measure" ? (
+              {!methodology?.id.includes("direct-measure") ? (
                 <>
                   <Heading
                     size="sm"

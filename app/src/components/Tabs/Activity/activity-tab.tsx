@@ -77,6 +77,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
 
   const { methodologies, directMeasure } = getMethodologies();
 
+  console.log(directMeasure);
+
   const getSuggestedActivities = () => {
     if (!selectedMethodology) return [];
     let methodology;

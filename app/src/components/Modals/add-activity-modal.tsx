@@ -139,9 +139,54 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   const [createActivityValue, { isLoading }] =
     api.useCreateActivityValueMutation();
 
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+  function extractGasesAndUnits(data: any) {
+    const gases = ["ch4", "co2", "n20"];
+    const gasArray: { gas: string; factor: number; unit: string }[] = [];
+    gases.forEach((gas) => {
+      const gasFactorKey = `${gas}EmissionFactor`;
+      const gasUnitKey = `${gas}EmissionFactorUnit`;
+
+      const gasObject = {
+        gas: gas,
+        factor: data[gasFactorKey],
+        unit: data[gasUnitKey],
+      };
+
+      gasArray.push(gasObject);
+    });
+    return gasArray;
+  }
+
+  const onSubmit: SubmitHandler<Inputs> = async ({ activity }) => {
+    console.log(activity);
+    const gasValues = extractGasesAndUnits(activity);
+    console.log(gasValues);
+    const requestData = {
+      activityData: {},
+      metadata: {},
+      inventoryValue: {
+        inputMethodology: "",
+        gpcReferenceNumber: "",
+        unavailableReason: "",
+        unavailableExplanation: "",
+      },
+      dataSource: {
+        sourceType: "",
+        dataQuality: activity.dataQuality,
+        notes: activity.sourceReference,
+      },
+      gasValues: gasValues.map(({ gas, factor, unit }) => ({
+        gas,
+        gasAmount: factor,
+        emissionsFactor: {
+          gas,
+          unit,
+          gpcReferenceNuber: "I.2.1",
+        },
+      })),
+    };
     setHasActivityData(!hasActivityData);
-    await createActivityValue({ inventoryId, data }).then((res: any) => {
+    await createActivityValue({ inventoryId, requestData }).then((res: any) => {
       if (res.data) {
         toast({
           status: "success",

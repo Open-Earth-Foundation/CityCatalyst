@@ -439,7 +439,7 @@ export const api = createApi({
       query: (data) => ({
         method: "POST",
         url: `/inventory/${data.inventoryId}/activity-value`,
-        body: data.data,
+        body: data.requestData,
       }),
       transformResponse: (response: any) => response.data,
       invalidatesTags: ["ActivityValue"],

@@ -83,8 +83,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
 
   const { methodologies, directMeasure } = getMethodologies();
 
-  const getSuggestedActivities: () => SuggestedActivity[] = () => {
-    if (!selectedMethodology) return [] as SuggestedActivity[];
+  const getSuggestedActivities = (): SuggestedActivity[] => {
+    if (!selectedMethodology) return [];
     let methodology;
     const scope = MANUAL_INPUT_HIERARCHY[refNumberWithScope];
     if (selectedMethodology.includes("direct-measure")) {

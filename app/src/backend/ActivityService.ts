@@ -24,7 +24,7 @@ type GasValueInput = Omit<GasValueCreationAttributes, "id"> & {
   id?: string;
 };
 
-type UpdateGasValueInput = GasValueCreationAttributes & {
+export type UpdateGasValueInput = GasValueCreationAttributes & {
   emissionsFactor?: EmissionsFactorAttributes;
 };
 
@@ -168,7 +168,7 @@ export default class ActivityService {
     activityValueParams: Omit<ActivityValueAttributes, "id">;
     inventoryValueId: string | undefined;
     inventoryValueParams: Omit<InventoryValueAttributes, "id"> | undefined;
-    gasValues: GasValueInput[] | undefined;
+    gasValues: UpdateGasValueInput[] | undefined;
     dataSourceParams: Omit<DataSourceAttributes, "datasourceId"> | undefined;
   }): Promise<ActivityValue | undefined> {
     const activityValue = await db.models.ActivityValue.findOne({

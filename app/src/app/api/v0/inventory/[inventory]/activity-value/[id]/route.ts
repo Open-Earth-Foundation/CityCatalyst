@@ -5,6 +5,7 @@ import { createActivityValueRequest } from "@/util/validation";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import ActivityService from "@/backend/ActivityService";
+import { UpdateGasValueInput } from "@/backend/ActivityService";
 
 export const PATCH = apiHandler(async (req, { params, session }) => {
   const id = z.string().uuid().parse(params.id);
@@ -26,7 +27,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     activityValueParams: data,
     inventoryValueId,
     inventoryValueParams,
-    gasValues,
+    gasValues: gasValues as UpdateGasValueInput[],
     dataSourceParams,
   });
 

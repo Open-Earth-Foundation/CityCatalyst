@@ -280,10 +280,11 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                   <BuildingTypeSelectInput
                     options={fields?.[0].options}
                     title={fields?.[0].id}
-                    placeholder={t("select-type-activity")}
+                    placeholder={t("select-activity-type")}
                     register={register}
                     activity={"activity.buildingType"}
                     errors={errors}
+                    t={t}
                   />
                 </FormControl>
                 <FormControl>
@@ -294,6 +295,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                     register={register}
                     activity={"activity.fuelType"}
                     errors={errors}
+                    t={t}
                   />
                 </FormControl>
                 {methodology?.id !== "direct-measure" ? (

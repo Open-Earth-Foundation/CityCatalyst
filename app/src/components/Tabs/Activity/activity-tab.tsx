@@ -94,10 +94,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
         (m) => m.id === selectedMethodology,
       );
     }
-    return (
-      (methodology?.suggestedActivities as SuggestedActivity[]) ||
-      ([] as SuggestedActivity[])
-    );
+    return (methodology?.suggestedActivities ?? []) as SuggestedActivity[];
   };
 
   const handleMethodologySelected = (methodology: Methodology) => {

@@ -8,7 +8,7 @@ import type { Inventory } from "@/models/Inventory";
 import type { InventoryValue } from "@/models/InventoryValue";
 import createHttpError from "http-errors";
 import { db } from "@/models";
-import { keyBy } from "@/util/helpers";
+import { keyBy, getTranslationFromDictionary } from "@/util/helpers";
 
 const CIRIS_TEMPLATE_PATH = "./templates/CIRIS_template.xlsm";
 
@@ -243,7 +243,9 @@ async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
       row.getCell("AD").value = inventoryValue.dataSource.dataQuality
         ?.slice(0, 1)
         .toUpperCase();
-      row.getCell("AP").value = inventoryValue.dataSource.datasetName; // TODO add source to Data sources sheet (ID 20)
+      row.getCell("AP").value = getTranslationFromDictionary(
+        inventoryValue.dataSource.datasetName,
+      ); // TODO add source to Data sources sheet (ID 20)
 
       row.commit();
     }

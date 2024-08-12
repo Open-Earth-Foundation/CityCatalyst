@@ -1,5 +1,5 @@
 import { db } from "@/models";
-import { DataSourceCreationAttributes } from "@/models/DataSource";
+import { DataSourceI18nCreationAttributes } from "@/models/DataSourceI18n";
 import env from "@next/env";
 import { randomUUID } from "node:crypto";
 import { logger } from "@/services/logger";
@@ -7,10 +7,10 @@ import { logger } from "@/services/logger";
 interface Source {
   datasource_id: string;
   datasource_name: string;
-  dataset_name: string;
+  dataset_name: Record<string, string>;
   source_type: string;
   dataset_url: string;
-  dataset_description: string;
+  dataset_description: Record<string, string>;
   access_type: string;
   geographical_location: string;
   start_year: number;
@@ -24,8 +24,8 @@ interface Source {
   notes: string;
   units: string;
   methodology_url: string;
-  methodology_description: string;
-  transformation_description: string;
+  methodology_description: Record<string, string>;
+  transformation_description: Record<string, string>;
   publisher_id: string;
   retrieval_method: string;
   api_endpoint: string;
@@ -51,7 +51,7 @@ async function syncDataCatalogue() {
   env.loadEnvConfig(projectDir);
 
   const GLOBAL_API_URL =
-    process.env.GLOBAL_API_URL || "http://api.citycatalyst.io";
+    process.env.GLOBAL_API_URL || "https://ccglobal.openearth.dev";
   console.log("Using global API at", GLOBAL_API_URL);
 
   if (!db.initialized) {
@@ -68,10 +68,8 @@ async function syncDataCatalogue() {
     });
   }
   const previousUpdate = catalogue.lastUpdate?.getTime() || 0;
-
-  const lastUpdateResponse = await fetch(
-    `${GLOBAL_API_URL}/api/v0/catalogue/last-update`,
-  );
+  const catalogUrl = `${GLOBAL_API_URL}/api/v0/catalogue`;
+  const lastUpdateResponse = await fetch(`${catalogUrl}/last-update`);
   const lastUpdateData = await lastUpdateResponse.json();
   if (!lastUpdateData?.last_update) {
     throw new Error(
@@ -163,13 +161,15 @@ async function syncDataCatalogue() {
   }
 
   // convert keys from snake_case to camelCase
-  const sources: DataSourceCreationAttributes[] = dataSources.map((source) => {
-    const result: Record<string, any> = {};
-    for (const key in source) {
-      result[snakeToCamel(key as string)] = (source as any)[key];
-    }
-    return result as DataSourceCreationAttributes;
-  });
+  const sources: DataSourceI18nCreationAttributes[] = dataSources.map(
+    (source) => {
+      const result: Record<string, any> = {};
+      for (const key in source) {
+        result[snakeToCamel(key as string)] = (source as any)[key];
+      }
+      return result as DataSourceI18nCreationAttributes;
+    },
+  );
 
   console.dir(sources);
   logger.debug("Saving sources...");
@@ -180,7 +180,7 @@ async function syncDataCatalogue() {
    * https://github.com/sequelize/sequelize/issues/13545
    */
   for (const source of sources) {
-    await db.models.DataSource.upsert(source);
+    await db.models.DataSource.upsert(source); // TODO NINA DataSourceI18n
   }
 
   await catalogue.update({ lastUpdate: new Date(lastUpdate) });

@@ -5,7 +5,7 @@ import type {
   ActivityValue,
   ActivityValueAttributes,
 } from "@/models/ActivityValue";
-import type { DataSourceAttributes } from "@/models/DataSource";
+import type { DataSourceI18nAttributes as DataSourceAttributes } from "@/models/DataSourceI18n";
 import type {
   EmissionsFactor,
   EmissionsFactorAttributes,

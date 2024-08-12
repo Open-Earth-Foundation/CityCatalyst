@@ -24,6 +24,10 @@ type GasValueInput = Omit<GasValueCreationAttributes, "id"> & {
   id?: string;
 };
 
+type UpdateGasValueInput = GasValueCreationAttributes & {
+  emissionsFactor?: EmissionsFactorAttributes;
+};
+
 export default class ActivityService {
   private static async updateDataSource({
     activityValue,
@@ -34,45 +38,39 @@ export default class ActivityService {
     dataSourceParams: Omit<DataSourceAttributes, "datasourceId"> | undefined;
     transaction: Transaction;
   }): Promise<string> {
-    if (activityValue.datasourceId) {
-      const dataSource = await db.models.DataSource.findOne({
-        where: { datasourceId: activityValue.datasourceId },
-        transaction,
-      });
-      if (!dataSource) {
-        throw new createHttpError.NotFound(
-          "Data source for ActivityValue not found",
-        );
-      }
-      Object.assign(dataSource, dataSourceParams);
-      await dataSource?.save({ transaction });
-      return dataSource.datasourceId;
-    } else {
-      const dataSource = await db.models.DataSource.create(
-        {
-          ...dataSourceParams,
-          datasourceId: randomUUID(),
-        },
-        { transaction },
+    const dataSource = await db.models.DataSource.findOne({
+      where: { datasourceId: activityValue.datasourceId },
+      transaction,
+    });
+
+    if (!dataSource) {
+      throw new createHttpError.NotFound(
+        "Data source for ActivityValue not found",
       );
-      return dataSource.datasourceId;
     }
+
+    // update the data source
+    await dataSource.update({
+      ...dataSourceParams,
+    });
+    return dataSource.datasourceId;
   }
 
-  private static async updateInventory({
+  private static async updateInventoryValue({
     activityValue,
     inventoryValueParams,
   }: {
     activityValue: ActivityValue;
     inventoryValueParams?: Omit<InventoryValueAttributes, "id"> | undefined;
   }) {
-    let inventoryId = activityValue.inventoryValueId;
+    let inventoryValueId = activityValue.inventoryValueId;
 
-    let inventoryValue = await db.models.InventoryValue.findByPk(inventoryId);
+    let inventoryValue =
+      await db.models.InventoryValue.findByPk(inventoryValueId);
 
     if (!inventoryValue) {
       throw new createHttpError.NotFound(
-        `Inventory value with ID ${inventoryId} not found`,
+        `Inventory value with ID ${inventoryValueId} not found`,
       );
     }
 
@@ -96,7 +94,7 @@ export default class ActivityService {
         );
 
       await inventoryValue.update({
-        id: inventoryId as string,
+        id: inventoryValueId as string,
         ...inventoryValueParams,
         sectorId,
         subSectorId,
@@ -113,52 +111,29 @@ export default class ActivityService {
     transaction,
     gases,
   }: {
-    gasValues: GasValueInput[];
+    gasValues: UpdateGasValueInput[];
     activityValue: ActivityValue;
     transaction: Transaction;
     gases: Gas[];
   }) {
     for (const gasValue of gasValues) {
       let emissionsFactor: EmissionsFactor | null = null;
-      if (
-        gasValue.emissionsFactorId == null &&
-        gasValue.emissionsFactor != null
-      ) {
-        emissionsFactor = await db.models.EmissionsFactor.findOne({
-          where: { inventoryId: activityValue.inventoryValueId },
-          include: [
-            {
-              model: db.models.ActivityValue,
-              as: "activityValue",
-              where: { id: activityValue.id },
-            },
-          ],
-          transaction,
-        });
 
-        // don't edit emissions factors from other inventories or pre-defined ones (without inventoryId)
-        if (
-          emissionsFactor &&
-          emissionsFactor.inventoryId === activityValue.inventoryValueId
-        ) {
-          Object.assign(emissionsFactor, gasValue.emissionsFactor);
-          await emissionsFactor.save({ transaction });
-        } else {
-          emissionsFactor = await db.models.EmissionsFactor.create(
-            {
-              ...gasValue.emissionsFactor,
-              id: randomUUID(),
-              inventoryId: activityValue.inventoryValueId,
-            },
-            { transaction },
-          );
-        }
+      // find the emissions factor with the gas emissions Factor id
+      emissionsFactor = await db.models.EmissionsFactor.findByPk(
+        gasValue.emissionsFactorId,
+        { transaction },
+      );
+
+      if (!emissionsFactor) {
+        throw new createHttpError.InternalServerError(
+          "EmissionsFactor not found",
+        );
       }
 
-      if (gasValue.emissionsFactor && !emissionsFactor) {
-        throw new createHttpError.InternalServerError(
-          "Failed to create an emissions factor",
-        );
+      // Update the EmissionsFactor if needed
+      if (gasValue.emissionsFactor) {
+        await emissionsFactor.update(gasValue.emissionsFactor, { transaction });
       }
 
       delete gasValue.emissionsFactor;
@@ -170,9 +145,9 @@ export default class ActivityService {
 
       await db.models.GasValue.upsert(
         {
-          emissionsFactorId: emissionsFactor?.id ?? undefined,
+          emissionsFactorId: emissionsFactor.id,
           ...gasValue,
-          id: gasValue.id ?? randomUUID(),
+          id: gasValue.id,
           activityValueId: activityValue.id,
           inventoryValueId: activityValue?.inventoryValueId,
         },
@@ -216,7 +191,7 @@ export default class ActivityService {
           transaction,
         });
 
-        const inventoryValue = await this.updateInventory({
+        const inventoryValue = await this.updateInventoryValue({
           activityValue,
           inventoryValueParams,
         });
@@ -242,6 +217,7 @@ export default class ActivityService {
 
         activityValue.co2eq = totalCO2e;
         activityValue.co2eqYears = totalCO2eYears;
+        await activityValue.save({ transaction });
 
         if (gasValues) {
           await this.updateGasValues({

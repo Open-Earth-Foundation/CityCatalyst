@@ -1,15 +1,9 @@
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
-import { EmissionsFactor } from "@/models/EmissionsFactor";
 import { apiHandler } from "@/util/api";
-import {
-  createActivityValueRequest,
-  updateActivityValueRequest,
-} from "@/util/validation";
-import createHttpError from "http-errors";
+import { createActivityValueRequest } from "@/util/validation";
 import { NextResponse } from "next/server";
-import { randomUUID } from "node:crypto";
-import { undefined, z } from "zod";
+import { z } from "zod";
 import ActivityService from "@/backend/ActivityService";
 
 export const PATCH = apiHandler(async (req, { params, session }) => {
@@ -29,10 +23,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 
   const result = await ActivityService.updateActivity({
     id,
-    activityValueParams: {
-      activityData: data.activityData,
-      metadata: data.metadata,
-    },
+    activityValueParams: data,
     inventoryValueId,
     inventoryValueParams,
     gasValues,

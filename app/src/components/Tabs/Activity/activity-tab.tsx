@@ -29,14 +29,13 @@ import DeleteAllActivitiesModal from "../../Modals/delete-all-activities-modal";
 import { api } from "@/services/api";
 import ActivityAccordion from "./activity-accordion";
 import ScopeUnavailable from "./scope-unavailable";
-import { ActivityDataScope } from "@/features/city/subsectorSlice";
 import {
-  Activity,
-  DirectMeasure,
   MANUAL_INPUT_HIERARCHY,
   Methodology,
+  SuggestedActivity,
 } from "@/util/form-schema";
 import MethodologyCard from "@/components/Cards/methodology-card";
+
 interface ActivityTabProps {
   t: TFunction;
   referenceNumber: string;
@@ -63,7 +62,9 @@ const ActivityTab: FC<ActivityTabProps> = ({
   step,
 }) => {
   const totalEmissions = 0;
-  const [selectedActivity, setSelectedActivity] = useState();
+  const [selectedActivity, setSelectedActivity] = useState<
+    SuggestedActivity | undefined
+  >();
   const [isMethodologySelected, setIsMethodologySelected] = useState(false);
   const [selectedMethodology, setSelectedMethodology] = useState("");
   const [isUnavailableChecked, setIsChecked] = useState<boolean>(false);
@@ -75,23 +76,28 @@ const ActivityTab: FC<ActivityTabProps> = ({
   function getMethodologies() {
     const methodologies =
       MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.methodologies || [];
-    const directMeasure = {
-      ...MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.directMeasure,
-      id:
-        MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.directMeasure?.id ||
-        refNumberWithScope + "-direct-measure", // adds a fallback generic id for direct measure
-    };
+    const directMeasure =
+      MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.directMeasure;
     return { methodologies, directMeasure };
   }
 
   const { methodologies, directMeasure } = getMethodologies();
 
-  const getSuggestedActivities = () => {
-    if (!selectedMethodology) return [];
-    const methodology = (
-      MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.methodologies || []
-    ).find((m) => m.id === selectedMethodology);
-    return methodology?.suggestedActivities || [];
+  const getSuggestedActivities: () => SuggestedActivity[] = () => {
+    if (!selectedMethodology) return [] as SuggestedActivity[];
+    let methodology;
+    const scope = MANUAL_INPUT_HIERARCHY[refNumberWithScope];
+    if (selectedMethodology.includes("direct-measure")) {
+      methodology = scope.directMeasure;
+    } else {
+      methodology = (scope.methodologies || []).find(
+        (m) => m.id === selectedMethodology,
+      );
+    }
+    return (
+      (methodology?.suggestedActivities as SuggestedActivity[]) ||
+      ([] as SuggestedActivity[])
+    );
   };
 
   const handleMethodologySelected = (methodology: Methodology) => {
@@ -130,10 +136,19 @@ const ActivityTab: FC<ActivityTabProps> = ({
     onClose: onDeleteActivityModalClose,
   } = useDisclosure();
 
-  const suggestedActivities = getSuggestedActivities();
+  const suggestedActivities: SuggestedActivity[] = getSuggestedActivities();
 
   const handleSwitch = (e: any) => {
     setIsChecked(!isUnavailableChecked);
+  };
+
+  const handleActivityAdded = (
+    suggestedActivity: SuggestedActivity,
+    // ...args: any[]
+  ) => {
+    setSelectedActivity(suggestedActivity);
+
+    onAddActivityModalOpen();
   };
 
   const [deleteActivity, isDeleteActivityLoading] =
@@ -350,18 +365,23 @@ const ActivityTab: FC<ActivityTabProps> = ({
                           {t("activity-suggestion")}
                         </Text>
                         <Box className="flex flex-col gap-4">
-                          {suggestedActivities.map(({ id }) => (
-                            <SuggestedActivityCard
-                              key={id}
-                              id={id}
-                              t={t}
-                              description={
-                                methodology?.suggestedActivitiesId || ""
-                              }
-                              isSelected={selectedActivity === id}
-                              onActivityAdded={onAddActivityModalOpen}
-                            />
-                          ))}
+                          {suggestedActivities.map((suggestedActivity) => {
+                            const { id } = suggestedActivity;
+                            return (
+                              <SuggestedActivityCard
+                                key={id}
+                                id={id}
+                                t={t}
+                                isSelected={selectedActivity?.id === id}
+                                onActivityAdded={(...args) =>
+                                  handleActivityAdded(
+                                    suggestedActivity,
+                                    // ...args,
+                                  )
+                                }
+                              />
+                            );
+                          })}
                         </Box>
                       </>
                     )}
@@ -461,7 +481,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                           />
                         ),
                       )}
-                      {methodologies.length > 0 ? ( // hide this card until other methodologies can also load
+                      {directMeasure?.id ? (
                         <MethodologyCard
                           id={directMeasure.id}
                           key={directMeasure.id}
@@ -492,7 +512,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
         setHasActivityData={setHasActivityData}
         methodology={methodology!}
         inventoryId={inventoryId}
-        selectedActivity="Example Activity"
+        selectedActivity={selectedActivity}
       />
 
       <ChangeMethodology

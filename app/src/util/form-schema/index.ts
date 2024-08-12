@@ -22,22 +22,32 @@ export interface Activity {
   formula?: string;
 }
 
+export interface Prefill {
+  key: string;
+  value: string;
+}
+
+export interface SuggestedActivity {
+  id: string;
+  prefills: Prefill[];
+}
+
 export interface Methodology {
   id: string;
   disabled?: boolean;
   activities?: Activity[];
   inputRequired?: string[];
-  fields?: []
+  fields?: [];
+  suggestedActivities?: SuggestedActivity[];
   suggestedActivitiesId?: string;
-  suggestedActivities?: Activity[];
 }
 
 export interface DirectMeasure {
+  id: string;
   suggestedActivitiesId?: string;
   suggestedActivities?: Activity[];
   inputRequired?: string[];
-  id?: string;
- "extra-fields"?: ExtraField[];
+  "extra-fields"?: ExtraField[];
 }
 
 interface ManualInputHierarchy {

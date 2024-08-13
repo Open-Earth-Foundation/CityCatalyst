@@ -1,5 +1,5 @@
 import * as Sequelize from "sequelize";
-import { DataTypes, Model, Optional } from "sequelize";
+import { CreateOptions, DataTypes, Model, Optional } from "sequelize";
 import type { GasValue, GasValueId } from "./GasValue";
 import type { InventoryValue, InventoryValueId } from "./InventoryValue";
 import { DataSource, DataSourceId } from "./DataSource";
@@ -139,6 +139,13 @@ export class ActivityValue
             fields: [{ name: "id" }],
           },
         ],
+        hooks: {
+          afterCreate: (attributes) => {
+            attributes.activityData = JSON.parse(
+              attributes.activityData as unknown as string,
+            );
+          },
+        },
       },
     );
   }

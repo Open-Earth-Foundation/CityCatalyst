@@ -50,23 +50,30 @@ export default class ActivityService {
     }
 
     // update the data source
-    await dataSource.update({
-      ...dataSourceParams,
-    });
+    await dataSource.update(
+      {
+        ...dataSourceParams,
+      },
+      { transaction },
+    );
     return dataSource.datasourceId;
   }
 
   private static async updateInventoryValue({
     activityValue,
     inventoryValueParams,
+    transaction,
   }: {
     activityValue: ActivityValue;
     inventoryValueParams?: Omit<InventoryValueAttributes, "id"> | undefined;
+    transaction: Transaction;
   }) {
     let inventoryValueId = activityValue.inventoryValueId;
 
-    let inventoryValue =
-      await db.models.InventoryValue.findByPk(inventoryValueId);
+    let inventoryValue = await db.models.InventoryValue.findByPk(
+      inventoryValueId,
+      { transaction },
+    );
 
     if (!inventoryValue) {
       throw new createHttpError.NotFound(
@@ -194,20 +201,24 @@ export default class ActivityService {
         const inventoryValue = await this.updateInventoryValue({
           activityValue,
           inventoryValueParams,
+          transaction,
         });
 
         // update the activity value with new params
-        await activityValue.update({
-          ...activityValueParams,
-          datasourceId,
-          inventoryValueId,
-        });
+        const updatedActivityValue = await activityValue.update(
+          {
+            ...activityValueParams,
+            datasourceId,
+            inventoryValueId,
+          },
+          { transaction },
+        );
 
         // CO2 calculation
         let { totalCO2e, totalCO2eYears, gases } =
           await CalculationService.calculateGasAmount(
             inventoryValue,
-            activityValue,
+            updatedActivityValue,
             inventoryValue.inputMethodology as string,
           );
 
@@ -215,19 +226,15 @@ export default class ActivityService {
         inventoryValue.co2eqYears = Math.max(0, totalCO2eYears);
         await inventoryValue.save({ transaction });
 
-        activityValue.co2eq = totalCO2e;
-        activityValue.co2eqYears = totalCO2eYears;
-        await activityValue.save({ transaction });
-
         if (gasValues) {
           await this.updateGasValues({
             gasValues,
-            activityValue,
+            activityValue: updatedActivityValue,
             gases,
             transaction,
           });
         }
-        return activityValue;
+        return updatedActivityValue;
       },
     );
   }
@@ -249,6 +256,7 @@ export default class ActivityService {
           },
           { transaction },
         );
+
         if (inventoryValueId && inventoryValueParams) {
           throw new createHttpError.BadRequest(
             "Can't use both inventoryValueId and inventoryValue",
@@ -262,18 +270,24 @@ export default class ActivityService {
               inventoryValueParams.gpcReferenceNumber!,
             );
 
-          // create inventory value if there isn't one yet
-          inventoryValue = await db.models.InventoryValue.create({
-            ...inventoryValueParams,
-            id: randomUUID(),
-            inventoryId,
-            sectorId,
-            subSectorId,
-            subCategoryId,
-          });
+          inventoryValue = await db.models.InventoryValue.create(
+            {
+              ...inventoryValueParams,
+              id: randomUUID(),
+              inventoryId,
+              sectorId,
+              subSectorId,
+              subCategoryId,
+              gpcReferenceNumber: inventoryValueParams.gpcReferenceNumber,
+              datasourceId: dataSource.datasourceId,
+            },
+            { transaction },
+          );
         } else if (inventoryValueId) {
-          inventoryValue =
-            await db.models.InventoryValue.findByPk(inventoryValueId);
+          inventoryValue = await db.models.InventoryValue.findByPk(
+            inventoryValueId,
+            { transaction },
+          );
           if (!inventoryValue) {
             throw new createHttpError.NotFound("InventoryValue not found");
           }
@@ -289,11 +303,15 @@ export default class ActivityService {
           );
         }
 
+        // activityValueParams.activityData = JSON.stringify(
+        //   activityValueParams.activityData,
+        // ) as unknown as Record<string, any>;
+
         const activityValue = await db.models.ActivityValue.create(
           {
             ...activityValueParams,
             datasourceId: dataSource.datasourceId,
-            inventoryValueId,
+            inventoryValueId: inventoryValue.id,
             id: randomUUID(),
           },
           { transaction },

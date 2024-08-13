@@ -66,7 +66,6 @@ export default class CalculationService {
     let totalCO2e = 0n;
     let totalCO2eYears = 0;
     let gases: { gas: string; amount: bigint }[] = [];
-
     switch (formula) {
       case "direct-measure":
         gases = GAS_NAMES.map((gasName) => {

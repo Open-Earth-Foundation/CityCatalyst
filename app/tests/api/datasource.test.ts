@@ -1,14 +1,11 @@
 import { GET as getDataSourcesForSector } from "@/app/api/v0/datasource/[inventoryId]/[sectorId]/route";
-import {
-  GET as getAllDataSources,
-  POST as applyDataSources,
-} from "@/app/api/v0/datasource/[inventoryId]/route";
+import { GET as getAllDataSources } from "@/app/api/v0/datasource/[inventoryId]/route";
 
 import { db } from "@/models";
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, describe, it } from "node:test";
-import { Op } from "sequelize";
+import { literal, Op } from "sequelize";
 import { mockRequest, setupTests } from "../helpers";
 import { City } from "@/models/City";
 import { CreateInventoryRequest } from "@/util/validation";
@@ -66,7 +63,9 @@ describe("DataSource API", () => {
       where: { year: inventoryData.year },
     });
     await db.models.DataSource.destroy({
-      where: { datasetName: { [Op.like]: "XX_DATASOURCE_TEST%" } },
+      where: {
+        [Op.or]: [literal(`dataset_name ->> 'en' LIKE 'XX_INVENTORY_TEST_%'`)],
+      },
     });
     await db.models.City.destroy({ where: { locode } });
     city = await db.models.City.create({
@@ -105,7 +104,7 @@ describe("DataSource API", () => {
     for (let i = 0; i < 3; i++) {
       const source = await db.models.DataSource.create({
         datasourceId: randomUUID(),
-        datasetName: "XX_DATASOURCE_TEST_" + i,
+        datasetName: { en: "XX_DATASOURCE_TEST_" + i },
         sectorId: sector.sectorId,
         apiEndpoint,
         startYear: 4000 + i,
@@ -134,7 +133,7 @@ describe("DataSource API", () => {
     const { data } = await res.json();
     assert.equal(data.length, 1);
     const { source } = data[0];
-    assert.equal(source.datasetName, "XX_DATASOURCE_TEST_0");
+    assert.equal(source.datasetName.en, "XX_DATASOURCE_TEST_0");
     assert.equal(source.sectorId, sector.sectorId);
     assert.equal(source.apiEndpoint, apiEndpoint);
     assert.equal(source.geographicalLocation, "EARTH");

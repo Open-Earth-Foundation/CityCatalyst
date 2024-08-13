@@ -44,7 +44,7 @@ import type {
   EmissionsFactorData,
 } from "../../app/[lng]/[inventory]/data/[step]/types";
 import { resolve } from "@/util/helpers";
-import { Methodology } from "@/util/form-schema";
+import type { SuggestedActivity } from "@/util/form-schema";
 
 interface AddActivityModalProps {
   isOpen: boolean;
@@ -55,6 +55,7 @@ interface AddActivityModalProps {
   hasActivityData: boolean;
   inventoryId: string;
   methodology: any;
+  selectedActivity?: SuggestedActivity;
 }
 
 export type Inputs = {
@@ -100,6 +101,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   hasActivityData,
   inventoryId,
   methodology,
+  selectedActivity,
 }) => {
   const {
     register,
@@ -239,6 +241,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                     register={register}
                     activity={"activity.buildingType"}
                     errors={errors}
+                    selectedActivity={selectedActivity}
                   />
                 </FormControl>
                 <FormControl>

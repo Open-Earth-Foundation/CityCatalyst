@@ -6,7 +6,6 @@ import React, { FC } from "react";
 interface SuggestedActivityCardProps {
   t: TFunction;
   id: string;
-  description: string;
   isSelected: boolean;
   onActivityAdded?: () => void;
 }
@@ -14,7 +13,6 @@ interface SuggestedActivityCardProps {
 const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
   t,
   isSelected,
-  description,
   id,
   onActivityAdded,
 }) => {
@@ -74,7 +72,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
           fontWeight="normal"
           color="interactive.control"
         >
-          {t(description)}
+          {t(id + "-description")}
         </Text>
         <Text
           letterSpacing="wide"

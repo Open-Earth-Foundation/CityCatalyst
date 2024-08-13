@@ -4,7 +4,7 @@ black==24.8.0
 fastapi==0.111.1
 flake8==7.1.1
 fsspec==2024.*
-geopandas>=0.12,<0.15
+geopandas>=0.12,<1.1
 mypy==1.11.1
 osmnx==1.9.4
 pandas==2.2.2
@@ -14,7 +14,7 @@ pytest==8.3.2
 rioxarray==0.17.*
 scipy==1.14.*
 shapely==2.0.5
-SQLAlchemy==2.0.31
+SQLAlchemy==2.0.32
 tqdm==4.66.*
 uvicorn==0.30.5
 xarray==2024.*

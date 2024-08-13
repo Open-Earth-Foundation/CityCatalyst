@@ -70,7 +70,7 @@
     "i18next-resources-to-backend": "^1.2.1",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
-    "next": "14.2.3",
+    "next": "14.2.5",
     "next-auth": "^4.24.7",
     "nodemailer": "^6.9.13",
     "openai": "^4.52.7",

@@ -17,7 +17,7 @@ export default class GPCService {
       include: [
         {
           model: db.models.SubSector,
-          as: "subSector",
+          as: "subsector",
           attributes: ["subsectorId"],
           include: [
             {

@@ -1,5 +1,5 @@
 import { db } from "@/models";
-import { DataSourceI18nCreationAttributes } from "@/models/DataSourceI18n";
+import { DataSourceI18nCreationAttributes as DataSourceCreationAttributes } from "@/models/DataSourceI18n";
 import env from "@next/env";
 import { randomUUID } from "node:crypto";
 import { logger } from "@/services/logger";
@@ -88,8 +88,7 @@ async function syncDataCatalogue() {
     await db.sequelize?.close();
     return;
   }
-
-  const dataSourcesResponse = await fetch(`${GLOBAL_API_URL}/api/v0/catalogue`);
+  const dataSourcesResponse = await fetch(`${catalogUrl}/i18n`);
   const dataSourcesData = await dataSourcesResponse.json();
   if (!dataSourcesData?.datasources) {
     throw new Error(
@@ -161,15 +160,13 @@ async function syncDataCatalogue() {
   }
 
   // convert keys from snake_case to camelCase
-  const sources: DataSourceI18nCreationAttributes[] = dataSources.map(
-    (source) => {
-      const result: Record<string, any> = {};
-      for (const key in source) {
-        result[snakeToCamel(key as string)] = (source as any)[key];
-      }
-      return result as DataSourceI18nCreationAttributes;
-    },
-  );
+  const sources: DataSourceCreationAttributes[] = dataSources.map((source) => {
+    const result: Record<string, any> = {};
+    for (const key in source) {
+      result[snakeToCamel(key as string)] = (source as any)[key];
+    }
+    return result as DataSourceCreationAttributes;
+  });
 
   console.dir(sources);
   logger.debug("Saving sources...");
@@ -180,7 +177,7 @@ async function syncDataCatalogue() {
    * https://github.com/sequelize/sequelize/issues/13545
    */
   for (const source of sources) {
-    await db.models.DataSource.upsert(source); // TODO NINA DataSourceI18n
+    await db.models.DataSource.upsert(source);
   }
 
   await catalogue.update({ lastUpdate: new Date(lastUpdate) });

@@ -51,7 +51,7 @@ const activityDataUnits: Record<string, string[]> = {
 
 export function determineEmissionsFactorType(factor: EmissionsFactorData) {
   const sourceName =
-    getTranslationFromDict(factor.dataSources?.[0]?.datasetName || {}) ||
+    getTranslationFromDict(factor.dataSources?.[0]?.datasetName ?? {}) ??
     "Unknown data source";
   if (sourceName.includes("IPCC") && sourceName.includes("US")) {
     return "National (US)";

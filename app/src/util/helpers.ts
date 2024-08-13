@@ -1,6 +1,6 @@
 export const getTranslationFromDictionary = (
   translations: Record<string, string> | string | undefined,
-  lang?: string,
+  lng?: string,
 ): string | undefined => {
   if (!!translations) {
     if (translations instanceof String) {
@@ -11,7 +11,7 @@ export const getTranslationFromDictionary = (
       !!Object.keys(translations).length
     ) {
       return (
-        (lang && translations["lang"]) ||
+        (lng && translations[lng]) ||
         translations["user"] ||
         translations["en"] ||
         Object.values(translations).find((t) => !!t)

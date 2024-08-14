@@ -70,7 +70,7 @@ const validCreateActivity: CreateActivityValueRequest = {
 const updatedActivityValue: CreateActivityValueRequest = {
   activityData: {
     co2_amount: 120,
-    ch4_amount: 150,
+    ch4_amount: 160,
     n2o_amount: 100,
   },
   metadata: {
@@ -313,7 +313,7 @@ describe("Activity Value API", () => {
     createdActivityValue2 = data;
 
     assert.equal(
-      data.activityDataJsonb.co2_amount,
+      data.activityData.co2_amount,
       validCreateActivity.activityData.co2_amount,
     );
 
@@ -345,7 +345,7 @@ describe("Activity Value API", () => {
     createdActivityValue = data;
 
     assert.equal(
-      data.activityDataJsonb.co2_amount,
+      data.activityData.co2_amount,
       validCreateActivity.activityData.co2_amount,
     );
 
@@ -401,12 +401,12 @@ describe("Activity Value API", () => {
 
     assert.equal(res.status, 200);
     assert.equal(
-      data.activityDataJsonb.co2_amount,
+      data.activityData.co2_amount,
       updatedActivityValue.activityData.co2_amount,
     );
   });
 
-  // test good delete
+  //  test good delete
   it("should delete an activity value", async () => {
     const req = mockRequest();
     const res = await DELETE(req, {

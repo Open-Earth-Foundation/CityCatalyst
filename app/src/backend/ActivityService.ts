@@ -21,7 +21,6 @@ import type { Transaction } from "sequelize";
 
 type GasValueInput = Omit<GasValueCreationAttributes, "id"> & {
   emissionsFactor?: Omit<EmissionsFactorAttributes, "id">;
-  id?: string;
 };
 
 export type UpdateGasValueInput = GasValueCreationAttributes & {
@@ -95,17 +94,9 @@ export default class ActivityService {
 
     // if inventoryValueParams exist update the inventoryValues
     if (inventoryValueParams) {
-      const { sectorId, subSectorId, subCategoryId } =
-        await GPCService.getIDsFromReferenceNumber(
-          inventoryValueParams.gpcReferenceNumber!,
-        );
-
       await inventoryValue.update({
         id: inventoryValueId as string,
         ...inventoryValueParams,
-        sectorId,
-        subSectorId,
-        subCategoryId,
       });
     }
 
@@ -208,7 +199,6 @@ export default class ActivityService {
         const updatedActivityValue = await activityValue.update(
           {
             ...activityValueParams,
-            activityDataJsonb: activityValueParams.activityData,
             datasourceId,
             inventoryValueId,
           },
@@ -304,14 +294,9 @@ export default class ActivityService {
           );
         }
 
-        // activityValueParams.activityData = JSON.stringify(
-        //   activityValueParams.activityData,
-        // ) as unknown as Record<string, any>;
-
         const activityValue = await db.models.ActivityValue.create(
           {
             ...activityValueParams,
-            activityDataJsonb: activityValueParams.activityData,
             datasourceId: dataSource.datasourceId,
             inventoryValueId: inventoryValue.id,
             id: randomUUID(),

@@ -19,8 +19,9 @@ import { SubCategory } from "@/models/SubCategory";
 import { SubSector } from "@/models/SubSector";
 import { InventoryValue } from "@/models/InventoryValue";
 import { ActivityValue } from "@/models/ActivityValue";
+import { Sector } from "@/models/Sector";
 
-const ReferenceNumber = "I.1.2";
+const ReferenceNumber = "I.1.9.test";
 
 const validCreateActivity: CreateActivityValueRequest = {
   activityData: {
@@ -156,12 +157,14 @@ const locode = "XX_INVENTORY_CITY_ACTIVITY_VALUE";
 const cityName = "Open Earth Foundation API City Discloser activity value";
 const cityCountry = "United Kingdom of Great Britain and Northern Ireland";
 const inventoryName = "TEST_INVENTORY_INVENTORY_ACTIVITY_VALUE";
-const subcategoryName = "XX_INVENTORY_TEST_SUBCATEGORY";
-const subsectorName = "XX_INVENTORY_TEST_SUBSECTOR_1";
+const sectorName = "XX_INVENTORY_TEST_SECTOR_ACTIVITY_VALUE";
+const subcategoryName = "XX_INVENTORY_TEST_SUBCATEGORY_ACTIVITY_VALUE";
+const subsectorName = "XX_INVENTORY_TEST_SUBSECTOR_1_ACTIVITY_VALUE";
 
 describe("Activity Value API", () => {
   let city: City;
   let inventory: Inventory;
+  let sector: Sector;
   let subCategory: SubCategory;
   let subSector: SubSector;
   let inventoryValue: InventoryValue;
@@ -171,6 +174,10 @@ describe("Activity Value API", () => {
   before(async () => {
     setupTests();
     await db.initialize();
+
+    await db.models.Sector.destroy({
+      where: { sectorName },
+    });
 
     await db.models.SubCategory.destroy({
       where: { subcategoryName },
@@ -210,14 +217,21 @@ describe("Activity Value API", () => {
       cityId: city.cityId,
     });
 
+    sector = await db.models.Sector.create({
+      sectorId: randomUUID(),
+      sectorName,
+    });
+
     subSector = await db.models.SubSector.create({
       subsectorId: randomUUID(),
+      sectorId: sector.sectorId,
       subsectorName,
     });
 
     subCategory = await db.models.SubCategory.create({
       subcategoryId: randomUUID(),
       subsectorId: subSector.subsectorId,
+      referenceNumber: ReferenceNumber,
       subcategoryName,
     });
 

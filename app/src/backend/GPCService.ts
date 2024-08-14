@@ -34,6 +34,8 @@ export default class GPCService {
     const subSectorId = subcategory?.subsector?.subsectorId;
     const sectorId = subcategory?.subsector?.sector?.sectorId;
 
+    console.log(subCategoryId, subSectorId, sectorId, "wagwan");
+
     if (!sectorId || !subSectorId || !subCategoryId) {
       throw new createHttpError.BadRequest(
         "Couldn't find sector/ subsector/ subcategory for given GPC reference number",

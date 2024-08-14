@@ -150,6 +150,12 @@ function SubSectorPage({
   const scrollResizeHeaderThreshold = 50;
   const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
 
+  const { data: activityData, isLoading: isActivityDataLoading } =
+    api.useGetActivityValuesQuery({
+      inventoryId,
+      subSectorId: subSectorData?.subsectorId,
+    });
+
   return (
     <>
       <Box
@@ -343,6 +349,7 @@ function SubSectorPage({
                     t={t}
                     inventoryId={inventoryId}
                     step={step}
+                    activityData={activityData}
                   />
                 ))
               )}

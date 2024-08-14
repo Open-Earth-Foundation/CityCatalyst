@@ -35,6 +35,7 @@ import {
   SuggestedActivity,
 } from "@/util/form-schema";
 import MethodologyCard from "@/components/Cards/methodology-card";
+import { ActivityData } from "@/models/ActivityData";
 
 interface ActivityTabProps {
   t: TFunction;
@@ -48,6 +49,7 @@ interface ActivityTabProps {
   filteredScope: number;
   inventoryId: string;
   step: string;
+  activityData: ActivityData[] | undefined;
 }
 
 const ActivityTab: FC<ActivityTabProps> = ({
@@ -60,6 +62,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
   filteredScope,
   inventoryId,
   step,
+  activityData,
 }) => {
   const totalEmissions = 0;
   const [selectedActivity, setSelectedActivity] = useState<
@@ -70,6 +73,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const [isUnavailableChecked, setIsChecked] = useState<boolean>(false);
   const [hasActivityData, setHasActivityData] = useState<boolean>(false);
   const [methodology, setMethodology] = useState<Methodology>();
+
+  console.log(activityData);
 
   const refNumberWithScope = referenceNumber + "." + (filteredScope || 1);
 
@@ -319,11 +324,11 @@ const ActivityTab: FC<ActivityTabProps> = ({
                     flexDirection="column"
                     gap="16px"
                   >
-                    {hasActivityData ? (
+                    {activityData?.length ? (
                       <Box>
                         <ActivityAccordion
                           t={t}
-                          userActivities={userActivities}
+                          activityData={activityData}
                           showActivityModal={onAddActivityModalOpen}
                         />
                         <Box

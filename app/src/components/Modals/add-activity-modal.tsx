@@ -169,9 +169,9 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     console.log(gasValues);
     const requestData = {
       activityData: {
-        co2_amount: 100,
-        ch4_amount: 100,
-        n2o_amount: 100,
+        co2_amount: gasValues[1].factor,
+        ch4_amount: gasValues[0].factor,
+        n2o_amount: gasValues[2].factor,
       },
       metadata: {},
       inventoryValue: {

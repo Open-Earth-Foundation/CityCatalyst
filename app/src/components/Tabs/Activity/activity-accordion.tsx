@@ -1,3 +1,4 @@
+import { ActivityData } from "@/models/ActivityData";
 import { AddIcon } from "@chakra-ui/icons";
 import {
   Accordion,
@@ -24,13 +25,13 @@ import { MdMoreVert } from "react-icons/md";
 
 interface ActivityAccordionProps {
   t: TFunction;
-  userActivities: any;
+  activityData: ActivityData[] | undefined;
   showActivityModal: () => void;
 }
 
 const ActivityAccordion: FC<ActivityAccordionProps> = ({
   t,
-  userActivities,
+  activityData,
   showActivityModal,
 }) => {
   return (
@@ -57,7 +58,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                   letterSpacing="wide"
                   fontSize="body.md"
                 >
-                  {userActivities?.length} {t("activities-added")}
+                  {activityData?.length} {t("activities-added")}
                 </Text>
               </Box>
               <Box alignItems="start" display="flex" fontFamily="heading">
@@ -99,7 +100,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                 </Tr>
               </Thead>
               <Tbody>
-                {userActivities?.map((activity: any, i: number) => {
+                {activityData?.map((activity: any, i: number) => {
                   return (
                     <Tr key={i}>
                       <Td>{activity?.fuelType}</Td>

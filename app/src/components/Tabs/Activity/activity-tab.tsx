@@ -510,6 +510,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
         methodology={methodology!}
         inventoryId={inventoryId}
         selectedActivity={selectedActivity}
+        referenceNumber={refNumberWithScope}
       />
 
       <ChangeMethodology

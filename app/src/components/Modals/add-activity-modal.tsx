@@ -56,21 +56,22 @@ interface AddActivityModalProps {
   inventoryId: string;
   methodology: any;
   selectedActivity?: SuggestedActivity;
+  referenceNumber: string;
 }
 
 export type Inputs = {
   activity: {
     activityDataAmount?: number | null | undefined;
     activityDataUnit?: string | null | undefined;
-    emissionFactorType: string;
-    co2EmissionFactor: number;
-    n2oEmissionFactor: number;
-    ch4EmissionFactor: number;
+    emissionFactorType?: string;
+    CO2EmissionFactor: number;
+    N2OEmissionFactor: number;
+    CH4EmissionFactor: number;
     dataQuality: string;
     sourceReference: string;
     buildingType: string;
     fuelType: string;
-    totalFuelConsumption: string;
+    totalFuelConsumption?: string | null | undefined;
     totalFuelConsumptionUnits: string;
     co2EmissionFactorUnit: string;
     n2oEmissionFactorUnit: string;
@@ -102,6 +103,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   inventoryId,
   methodology,
   selectedActivity,
+  referenceNumber,
 }) => {
   const {
     register,
@@ -112,6 +114,8 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     control,
     setValue,
   } = useForm<Inputs>();
+
+  console.log(errors);
 
   let prefix = "";
   let { data: emissionsFactors, isLoading: emissionsFactorsLoading } =
@@ -142,12 +146,12 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     api.useCreateActivityValueMutation();
 
   function extractGasesAndUnits(data: any) {
-    const gases = ["ch4", "co2", "n20"];
+    const gases = ["CH4", "CO2", "N2O"];
     const gasArray: { gas: string; factor: number; unit: string }[] = [];
     gases.forEach((gas) => {
       const gasFactorKey = `${gas}EmissionFactor`;
       const gasUnitKey = `${gas}EmissionFactorUnit`;
-
+      console.log(data[gasFactorKey]);
       const gasObject = {
         gas: gas,
         factor: data[gasFactorKey],
@@ -164,11 +168,15 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     const gasValues = extractGasesAndUnits(activity);
     console.log(gasValues);
     const requestData = {
-      activityData: {},
+      activityData: {
+        co2_amount: 100,
+        ch4_amount: 100,
+        n2o_amount: 100,
+      },
       metadata: {},
       inventoryValue: {
-        inputMethodology: "",
-        gpcReferenceNumber: "",
+        inputMethodology: "direct-measure",
+        gpcReferenceNumber: referenceNumber,
         unavailableReason: "",
         unavailableExplanation: "",
       },
@@ -183,7 +191,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         emissionsFactor: {
           gas,
           unit,
-          gpcReferenceNuber: "I.2.1",
+          gpcReferenceNumber: referenceNumber,
         },
       })),
     };
@@ -345,9 +353,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                               shadow: "none",
                               borderColor: "content.link",
                             }}
-                            {...register("activity.totalFuelConsumption", {
-                              required: t("value-required"),
-                            })}
+                            {...register("activity.totalFuelConsumption")}
                           />
                         </NumberInput>
                         <InputRightAddon
@@ -479,7 +485,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                             h="48px"
                             shadow="1dp"
                             borderRightRadius={0}
-                            {...register("activity.co2EmissionFactor")}
+                            {...register("activity.CO2EmissionFactor")}
                             bgColor={
                               isEmissionFactorInputDisabled
                                 ? "background.neutral"
@@ -523,7 +529,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                               borderColor: "content.link",
                             }}
                             borderRightRadius={0}
-                            {...register("activity.n2oEmissionFactor")}
+                            {...register("activity.N2OEmissionFactor")}
                             bgColor={
                               isEmissionFactorInputDisabled
                                 ? "background.neutral"
@@ -569,7 +575,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                               borderColor: "content.link",
                             }}
                             borderRightRadius={0}
-                            {...register("activity.ch4EmissionFactor")}
+                            {...register("activity.CH4EmissionFactor")}
                             bgColor={
                               isEmissionFactorInputDisabled
                                 ? "background.neutral"
@@ -612,7 +618,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                         <NumberInputField
                           h="48px"
                           placeholder="Enter emissions value"
-                          {...register("activity.co2EmissionFactor")}
+                          {...register("activity.CO2EmissionFactor")}
                           bgColor="base.light"
                           pos="relative"
                           zIndex={999}
@@ -641,7 +647,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                           h="48px"
                           borderRightRadius={0}
                           placeholder="Enter emissions value"
-                          {...register("activity.n2oEmissionFactor")}
+                          {...register("activity.N2OEmissionFactor")}
                           bgColor="base.light"
                           pos="relative"
                           zIndex={999}
@@ -671,7 +677,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                           h="48px"
                           borderRightRadius={0}
                           placeholder="Enter emissions value"
-                          {...register("activity.ch4EmissionFactor")}
+                          {...register("activity.CH4EmissionFactor")}
                           bgColor="base.light"
                           pos="relative"
                           zIndex={999}

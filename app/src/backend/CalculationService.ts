@@ -85,6 +85,7 @@ export default class CalculationService {
         });
         break;
       case "activity-amount-times-emissions-factor":
+        console.log(formula)
         // TODO add actvityAmount column to ActivityValue
         // const activityAmount = activityValue.activityAmount || 0;
         const activityAmount = activityValue.activityData

@@ -262,6 +262,22 @@ describe("Activity Value API", () => {
       where: { id: createdActivityValue2.id },
     });
 
+    await db.models.Sector.destroy({
+      where: { sectorName },
+    });
+
+    await db.models.SubCategory.destroy({
+      where: { subcategoryName },
+    });
+
+    await db.models.SubSector.destroy({
+      where: { subsectorName },
+    });
+
+    await db.models.InventoryValue.destroy({
+      where: { inventoryId: inventory.inventoryId },
+    });
+
     if (db.sequelize) await db.sequelize.close();
   });
 

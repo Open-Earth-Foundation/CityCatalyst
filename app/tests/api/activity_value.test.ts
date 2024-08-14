@@ -167,6 +167,7 @@ describe("Activity Value API", () => {
   let subSector: SubSector;
   let inventoryValue: InventoryValue;
   let createdActivityValue: ActivityValue;
+  let createdActivityValue2: ActivityValue;
 
   before(async () => {
     setupTests();
@@ -206,7 +207,7 @@ describe("Activity Value API", () => {
     // create an inventory
     inventory = await db.models.Inventory.create({
       inventoryId: randomUUID(),
-      inventoryName: "TEST_SUBCATEGORY_INVENTORY",
+      inventoryName: inventoryName,
       cityId: city.cityId,
     });
 
@@ -244,6 +245,10 @@ describe("Activity Value API", () => {
       where: { inventoryId: inventory.inventoryId },
     });
 
+    await db.models.ActivityValue.destroy({
+      where: { id: createdActivityValue2.id },
+    });
+
     if (db.sequelize) await db.sequelize.close();
   });
 
@@ -258,8 +263,15 @@ describe("Activity Value API", () => {
   });
 
   it("should create an activity, creating an inventory value with inventoryValue params", async () => {
-    // console.log("+++++");
-    // console.log("testing subCategory", subCategory);
+    const findInventory = await db.models.Inventory.findOne({
+      where: {
+        inventoryName: inventoryName,
+      },
+    });
+
+    console.log(findInventory, inventory);
+
+    assert.equal(findInventory?.inventoryId, inventory.inventoryId);
 
     const req = mockRequest(validCreateActivity);
     const res = await createActivityValue(req, {
@@ -271,8 +283,10 @@ describe("Activity Value API", () => {
     assert.equal(res.status, 200);
     const { data } = await res.json();
 
+    createdActivityValue2 = data;
+
     assert.equal(
-      data.activityData.co2_amount,
+      data.activityDataJsonb.co2_amount,
       validCreateActivity.activityData.co2_amount,
     );
 
@@ -280,6 +294,14 @@ describe("Activity Value API", () => {
   });
 
   it("should create an activity value with inventoryValueId", async () => {
+    const findInventory = await db.models.Inventory.findOne({
+      where: {
+        inventoryName: inventoryName,
+      },
+    });
+
+    assert.equal(findInventory?.inventoryId, inventory.inventoryId);
+
     const req = mockRequest({
       ...validCreateActivity,
       inventoryValueId: inventoryValue.id,
@@ -296,7 +318,7 @@ describe("Activity Value API", () => {
     createdActivityValue = data;
 
     assert.equal(
-      data.activityData.co2_amount,
+      data.activityDataJsonb.co2_amount,
       validCreateActivity.activityData.co2_amount,
     );
 
@@ -352,7 +374,7 @@ describe("Activity Value API", () => {
 
     assert.equal(res.status, 200);
     assert.equal(
-      data.activityData.co2_amount,
+      data.activityDataJsonb.co2_amount,
       updatedActivityValue.activityData.co2_amount,
     );
   });

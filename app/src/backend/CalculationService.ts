@@ -69,8 +69,14 @@ export default class CalculationService {
     switch (formula) {
       case "direct-measure":
         gases = GAS_NAMES.map((gasName) => {
-          const data = activityValue.activityData as Record<string, any>;
+          // backwards compatibly with activityDataJsonb and activityData
+          const data = activityValue.activityDataJsonb
+            ? activityValue.activityDataJsonb
+            : (JSON.parse(
+                activityValue.activityData as unknown as string,
+              ) as Record<string, any>);
           const key = gasName.toLowerCase() + "_amount";
+          console.log(data, key, data[key], "nina");
           if (!data || !data[key]) {
             throw new createHttpError.BadRequest(
               "Missing direct measure form entry " + key,
@@ -91,9 +97,12 @@ export default class CalculationService {
       case "activity-amount-times-emissions-factor":
         // TODO add actvityAmount column to ActivityValue
         // const activityAmount = activityValue.activityAmount || 0;
-        const activityAmount = activityValue.activityData
-          ? activityValue.activityData["activity_amount"] || 0
-          : 0;
+        const data = activityValue.activityDataJsonb
+          ? activityValue.activityDataJsonb
+          : (JSON.parse(
+              activityValue.activityData as unknown as string,
+            ) as Record<string, any>);
+        const activityAmount = data ? data["activity_amount"] || 0 : 0;
         gases = activityValue.gasValues.map((gasValue) => {
           const emissionsFactor = gasValue.emissionsFactor;
           if (emissionsFactor == null) {

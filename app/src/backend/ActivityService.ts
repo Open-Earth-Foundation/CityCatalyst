@@ -208,6 +208,7 @@ export default class ActivityService {
         const updatedActivityValue = await activityValue.update(
           {
             ...activityValueParams,
+            activityDataJsonb: activityValueParams.activityData,
             datasourceId,
             inventoryValueId,
           },
@@ -310,6 +311,7 @@ export default class ActivityService {
         const activityValue = await db.models.ActivityValue.create(
           {
             ...activityValueParams,
+            activityDataJsonb: activityValueParams.activityData,
             datasourceId: dataSource.datasourceId,
             inventoryValueId: inventoryValue.id,
             id: randomUUID(),

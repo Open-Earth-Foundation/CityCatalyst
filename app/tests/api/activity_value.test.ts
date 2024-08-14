@@ -10,7 +10,7 @@ import { db } from "@/models";
 import { CreateActivityValueRequest } from "@/util/validation";
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";
-import { after, before, beforeEach, describe, it } from "node:test";
+import { after, before, describe, it } from "node:test";
 
 import { mockRequest, setupTests, testUserID } from "../helpers";
 import { City } from "@/models/City";
@@ -151,12 +151,11 @@ const invalidCreateActivity: CreateActivityValueRequest = {
 const activityUnits = "UNITS";
 const activityValue = 1000;
 const co2eq = 44000n;
-const locode = "XX_INVENTORY_CITY";
+const locode = "XX_INVENTORY_CITY_ACTIVITY_VALUE";
 // Matches name given by CDP for API testing
-const cityName = "Open Earth Foundation API City Discloser";
+const cityName = "Open Earth Foundation API City Discloser activity value";
 const cityCountry = "United Kingdom of Great Britain and Northern Ireland";
-const inventoryName = "TEST_INVENTORY_INVENTORY";
-const sectorName = "XX_INVENTORY_TEST_SECTOR";
+const inventoryName = "TEST_INVENTORY_INVENTORY_ACTIVITY_VALUE";
 const subcategoryName = "XX_INVENTORY_TEST_SUBCATEGORY";
 const subsectorName = "XX_INVENTORY_TEST_SUBSECTOR_1";
 
@@ -269,8 +268,6 @@ describe("Activity Value API", () => {
       },
     });
 
-    console.log(findInventory, inventory);
-
     assert.equal(findInventory?.inventoryId, inventory.inventoryId);
 
     const req = mockRequest(validCreateActivity);
@@ -326,7 +323,7 @@ describe("Activity Value API", () => {
   });
 
   // test getting an activity value
-  it("should get an activity value", async (t) => {
+  it("should get an activity value", async () => {
     const req = mockRequest();
     const res = await getActivityValue(req, {
       params: {

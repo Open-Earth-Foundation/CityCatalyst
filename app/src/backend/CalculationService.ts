@@ -76,7 +76,6 @@ export default class CalculationService {
                 activityValue.activityData as unknown as string,
               ) as Record<string, any>);
           const key = gasName.toLowerCase() + "_amount";
-          console.log(data, key, data[key], "nina");
           if (!data || !data[key]) {
             throw new createHttpError.BadRequest(
               "Missing direct measure form entry " + key,

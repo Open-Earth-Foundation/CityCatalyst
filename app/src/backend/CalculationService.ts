@@ -5,10 +5,15 @@ import type { InventoryValue } from "@/models/InventoryValue";
 import { multiplyBigIntFloat } from "@/util/big_int";
 import createHttpError from "http-errors";
 
+export type Gas = {
+  gas: string;
+  amount: bigint;
+};
+
 export type GasAmountResult = {
   totalCO2e: bigint;
   totalCO2eYears: number;
-  gases: { gas: string; amount: bigint }[];
+  gases: Gas[];
 };
 
 const GAS_NAMES = ["CO2", "N2O", "CH4"];
@@ -61,11 +66,15 @@ export default class CalculationService {
     let totalCO2e = 0n;
     let totalCO2eYears = 0;
     let gases: { gas: string; amount: bigint }[] = [];
-
     switch (formula) {
       case "direct-measure":
         gases = GAS_NAMES.map((gasName) => {
-          const data = activityValue.activityData as Record<string, any>;
+          // backwards compatibly with activityDataJsonb and activityData
+          const data = activityValue.activityDataJsonb
+            ? activityValue.activityDataJsonb
+            : (JSON.parse(
+                activityValue.activityData as unknown as string,
+              ) as Record<string, any>);
           const key = gasName.toLowerCase() + "_amount";
           if (!data || !data[key]) {
             throw new createHttpError.BadRequest(
@@ -88,9 +97,12 @@ export default class CalculationService {
         console.log(formula)
         // TODO add actvityAmount column to ActivityValue
         // const activityAmount = activityValue.activityAmount || 0;
-        const activityAmount = activityValue.activityData
-          ? activityValue.activityData["activity_amount"] || 0
-          : 0;
+        const data = activityValue.activityDataJsonb
+          ? activityValue.activityDataJsonb
+          : (JSON.parse(
+              activityValue.activityData as unknown as string,
+            ) as Record<string, any>);
+        const activityAmount = data ? data["activity_amount"] || 0 : 0;
         gases = activityValue.gasValues.map((gasValue) => {
           const emissionsFactor = gasValue.emissionsFactor;
           if (emissionsFactor == null) {

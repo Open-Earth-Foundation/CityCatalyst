@@ -21,11 +21,11 @@ import type {
   CityUserAttributes,
   CityUserCreationAttributes,
 } from "./CityUser";
-import { DataSource as _DataSource } from "./DataSource";
+import { DataSourceI18n as _DataSource } from "./DataSourceI18n";
 import type {
-  DataSourceAttributes,
-  DataSourceCreationAttributes,
-} from "./DataSource";
+  DataSourceI18nAttributes as DataSourceAttributes,
+  DataSourceI18nCreationAttributes as DataSourceCreationAttributes,
+} from "./DataSourceI18n";
 import { DataSourceActivityData as _DataSourceActivityData } from "./DataSourceActivityData";
 import type {
   DataSourceActivityDataAttributes,

@@ -1,7 +1,10 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import type { ActivityData, ActivityDataId } from "./ActivityData";
-import type { DataSource, DataSourceId } from "./DataSource";
+import type {
+  DataSourceI18n as DataSource,
+  DataSourceId,
+} from "./DataSourceI18n";
 
 export interface DataSourceActivityDataAttributes {
   datasourceId: string;

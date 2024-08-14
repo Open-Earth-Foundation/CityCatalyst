@@ -45,6 +45,8 @@ import type {
 } from "../../app/[lng]/[inventory]/data/[step]/types";
 import { resolve } from "@/util/helpers";
 import type { SuggestedActivity } from "@/util/form-schema";
+import { Methodology } from "@/util/form-schema";
+import { getTranslationFromDict } from "@/i18n";
 
 interface AddActivityModalProps {
   isOpen: boolean;
@@ -80,19 +82,6 @@ export type Inputs = {
   subcategoryData: Record<string, SubcategoryData>;
 };
 
-export function determineEmissionsFactorType(factor: EmissionsFactorData) {
-  let sourceName = factor.dataSources
-    ? factor.dataSources[0].datasetName || "Unknown data source"
-    : "Unknown data source";
-  if (sourceName.includes("IPCC") && sourceName.includes("US")) {
-    return "National (US)";
-  } else if (sourceName.includes("IPCC")) {
-    return "IPCC";
-  }
-
-  return sourceName;
-}
-
 const AddActivityModal: FC<AddActivityModalProps> = ({
   isOpen,
   onClose,
@@ -126,7 +115,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       .flatMap((factor) => {
         return factor.dataSources.map((source) => ({
           id: source.datasourceId,
-          name: source.datasetName ?? "unknown",
+          name: getTranslationFromDict(source.datasetName) ?? "unknown",
         }));
       })
       .filter((source) => {

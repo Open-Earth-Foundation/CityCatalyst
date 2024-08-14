@@ -10,6 +10,23 @@ const folders = [
   // "CarbonFootPrint_2023",
 ];
 
+const toJson = ({
+                  transformation_description,
+                  dataset_description,
+                  methodology_description,
+                  dataset_name,
+                  ...row
+                }) => {
+    const out = { ...row };
+
+    if (!!transformation_description) out.transformation_description = JSON.stringify({ user: transformation_description });
+    if (!!dataset_description) out.dataset_description = JSON.stringify({ user: dataset_description });
+    if (!!methodology_description) out.methodology_description = JSON.stringify({ user: methodology_description });
+    if (!!dataset_name) out.dataset_name = JSON.stringify({ user: dataset_name });
+    return out;
+  }
+;
+
 async function parseFile(filename, folder) {
   const records = [];
   const parser = fs
@@ -64,8 +81,8 @@ module.exports = {
         console.info("Finished adding publishers");
         await bulkUpsert(
           queryInterface,
-          "DataSource",
-          dataSources,
+          "DataSourceI18n",
+          dataSources.map(toJson),
           "datasource_id",
           transaction,
         );
@@ -106,7 +123,7 @@ module.exports = {
         const publisherIds = publishers.map((p) => p.publisher_id);
 
         await queryInterface.bulkDelete(
-          "DataSource",
+          "DataSourceI18n",
           { id: { [Sequelize.Op.in]: dataSourceIds } },
           { transaction },
         );

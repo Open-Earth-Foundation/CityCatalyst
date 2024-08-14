@@ -2,7 +2,10 @@ import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import type { GasValue, GasValueId } from "./GasValue";
 import type { InventoryValue, InventoryValueId } from "./InventoryValue";
-import { DataSource, DataSourceId } from "./DataSource";
+import type {
+  DataSourceI18n as DataSource,
+  DataSourceId,
+} from "./DataSourceI18n";
 
 export interface ActivityValueAttributes {
   id: string;

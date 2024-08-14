@@ -14,6 +14,7 @@ export interface ActivityValueAttributes {
   metadata?: Record<string, any>;
   created?: Date;
   lastUpdated?: Date;
+  activityDataJsonb?: Record<string, any>;
 }
 
 export type ActivityValuePk = "id";
@@ -25,6 +26,7 @@ export type ActivityValueOptionalAttributes =
   | "inventoryValueId"
   | "metadata"
   | "created"
+  | "activityDataJsonb"
   | "lastUpdated";
 export type ActivityValueCreationAttributes = Optional<
   ActivityValueAttributes,
@@ -44,6 +46,7 @@ export class ActivityValue
   metadata?: Record<string, any>;
   created?: Date;
   lastUpdated?: Date;
+  activityDataJsonb?: Record<string, any>;
 
   // ActivityValue hasMany GasValue via activityValueId
   gasValues!: GasValue[];
@@ -124,6 +127,11 @@ export class ActivityValue
           type: DataTypes.JSONB,
           allowNull: true,
         },
+        activityDataJsonb: {
+          type: DataTypes.JSONB,
+          allowNull: true,
+          field: "activity_data_jsonb",
+        },
       },
       {
         sequelize,
@@ -140,11 +148,11 @@ export class ActivityValue
           },
         ],
         hooks: {
-          afterCreate: (attributes) => {
-            attributes.activityData = JSON.parse(
-              attributes.activityData as unknown as string,
-            );
-          },
+          // afterCreate: (attributes) => {
+          //   attributes.activityData = JSON.parse(
+          //     attributes.activityData as unknown as string,
+          //   );
+          // },
         },
       },
     );

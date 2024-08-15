@@ -1,11 +1,10 @@
 apiVersion: batch/v1
-kind: CronJob
+kind: Job
 metadata:
-  name: cc-sync-catalogue
+  generateName: cc-sync-catalogue-manual-
 spec:
-  # run every monday
-  schedule: 0 0 * * 1
-  jobTemplate:
+  ttlSecondsAfterFinished: 86400
+  template:
     spec:
       ttlSecondsAfterFinished: 86400
       template:

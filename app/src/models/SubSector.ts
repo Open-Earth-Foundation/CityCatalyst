@@ -1,6 +1,9 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
-import type { DataSource, DataSourceId } from "./DataSource";
+import type {
+  DataSourceI18n as DataSource,
+  DataSourceI18n as DataSourceId,
+} from "./DataSourceI18n";
 import type { InventoryValue, InventoryValueId } from "./InventoryValue";
 import type { ReportingLevel, ReportingLevelId } from "./ReportingLevel";
 import type { Scope, ScopeId } from "./Scope";

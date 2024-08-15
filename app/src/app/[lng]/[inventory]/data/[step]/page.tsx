@@ -81,6 +81,7 @@ import type {
 import AddFileDataModal from "@/components/Modals/add-file-data-modal";
 import { InventoryValueAttributes } from "@/models/InventoryValue";
 import { motion } from "framer-motion";
+import { getTranslationFromDict } from "@/i18n";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -936,7 +937,7 @@ export default function AddDataSteps({
                       {/* TODO add icon to DataSource */}
                       <Icon as={MdHomeWork} boxSize={9} mb={6} />
                       <Heading size="sm" noOfLines={2} minHeight={10}>
-                        {source.datasetName}
+                        {getTranslationFromDict(source.datasetName)}
                       </Heading>
                       <Flex direction="row" my={4} wrap="wrap" gap={2}>
                         <Tag>
@@ -968,8 +969,8 @@ export default function AddDataSteps({
                         noOfLines={5}
                         minHeight={120}
                       >
-                        {source.datasetDescription ||
-                          source.methodologyDescription}
+                        {getTranslationFromDict(source.datasetDescription) ||
+                          getTranslationFromDict(source.methodologyDescription)}
                       </Text>
                       <Link
                         className="underline"

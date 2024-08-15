@@ -1,5 +1,5 @@
 import { db } from "@/models";
-import { DataSource } from "@/models/DataSource";
+import type { DataSourceI18n as DataSource } from "@/models/DataSourceI18n";
 import { Inventory } from "@/models/Inventory";
 import { multiplyBigIntFloat } from "@/util/big_int";
 import { randomUUID } from "crypto";

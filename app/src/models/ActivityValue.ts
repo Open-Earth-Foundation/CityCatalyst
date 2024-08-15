@@ -1,8 +1,11 @@
 import * as Sequelize from "sequelize";
-import { DataTypes, Model, Optional } from "sequelize";
+import { CreateOptions, DataTypes, Model, Optional } from "sequelize";
 import type { GasValue, GasValueId } from "./GasValue";
 import type { InventoryValue, InventoryValueId } from "./InventoryValue";
-import { DataSource, DataSourceId } from "./DataSource";
+import type {
+  DataSourceI18n as DataSource,
+  DataSourceId,
+} from "./DataSourceI18n";
 
 export interface ActivityValueAttributes {
   id: string;
@@ -91,7 +94,7 @@ export class ActivityValue
         activityData: {
           type: DataTypes.JSONB,
           allowNull: true,
-          field: "activity_data",
+          field: "activity_data_jsonb",
         },
         co2eq: {
           type: DataTypes.BIGINT,
@@ -124,6 +127,11 @@ export class ActivityValue
           type: DataTypes.JSONB,
           allowNull: true,
         },
+        // activityDataJsonb: {
+        //   type: DataTypes.JSONB,
+        //   allowNull: true,
+        //   field: "activity_data_jsonb",
+        // },
       },
       {
         sequelize,

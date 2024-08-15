@@ -1,3 +1,25 @@
+export const getTranslationFromDictionary = (
+  translations: Record<string, string> | string | undefined,
+  lng?: string,
+): string | undefined => {
+  if (!!translations) {
+    if (translations instanceof String) {
+      return translations as string;
+    }
+    if (
+      typeof translations === "object" &&
+      !!Object.keys(translations).length
+    ) {
+      return (
+        (lng && translations[lng]) ||
+        translations["user"] ||
+        translations["en"] ||
+        Object.values(translations).find((t) => !!t)
+      );
+    }
+  }
+};
+
 /** Extract data from a nested object using a string path or array
  * Source: https://stackoverflow.com/a/22129960
  * @param path: string separated by . or an array of keys for each nested object

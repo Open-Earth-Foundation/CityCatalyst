@@ -763,5 +763,8 @@
   "waterborne-navigation-fuel-intensity": "Fuel intensity",
   "waterborne-navigation-fuel-source": "Fuel source",
   "waterborne-navigation-fuel-type": "Fuel type",
-  "waterborne-navigation-vehicle-type": "Vehicle type"
+  "waterborne-navigation-vehicle-type": "Vehicle type",
+  "add-emissions-data-title": "You have not added any emission data",
+  "add-emissions-data-subtext": "Add emissions data and complete your inventory",
+  "add-emission-data-btn": "Add emission data"
 }

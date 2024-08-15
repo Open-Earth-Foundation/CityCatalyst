@@ -310,3 +310,31 @@ export const ChangeMethodologyIcon = () => {
     </svg>
   );
 };
+
+export const DataConnectIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+  >
+    <mask
+      id="mask0_3667_59236"
+      style={{ maskType: "alpha" }}
+      maskUnits="userSpaceOnUse"
+      x="0"
+      y="0"
+      width="24"
+      height="24"
+    >
+      <rect width="24" height="24" fill="#D9D9D9" />
+    </mask>
+    <g mask="url(#mask0_3667_59236)">
+      <path
+        d="M15 21V18H11V8H9V11H2V3H9V6H15V3H22V11H15V8H13V16H15V13H22V21H15ZM17 9H20V5H17V9ZM17 19H20V15H17V19ZM4 9H7V5H4V9Z"
+        fill="#2351DC"
+      />
+    </g>
+  </svg>
+);

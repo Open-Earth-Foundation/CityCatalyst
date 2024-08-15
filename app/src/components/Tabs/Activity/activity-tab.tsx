@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Card,
   Icon,
   IconButton,
   Link,
@@ -37,6 +38,7 @@ import {
 import MethodologyCard from "@/components/Cards/methodology-card";
 import { ActivityData } from "@/models/ActivityData";
 import { ActivityValue } from "@/models/ActivityValue";
+import { DataConnectIcon } from "@/components/icons";
 
 interface ActivityTabProps {
   t: TFunction;
@@ -365,33 +367,86 @@ const ActivityTab: FC<ActivityTabProps> = ({
                       </Box>
                     ) : (
                       <>
-                        <Text
-                          fontFamily="heading"
-                          fontSize="title.md"
-                          fontWeight="semibold"
-                          color="content.secondary"
-                        >
-                          {t("activity-suggestion")}
-                        </Text>
-                        <Box className="flex flex-col gap-4">
-                          {suggestedActivities.map((suggestedActivity) => {
-                            const { id } = suggestedActivity;
-                            return (
-                              <SuggestedActivityCard
-                                key={id}
-                                id={id}
-                                t={t}
-                                isSelected={selectedActivity?.id === id}
-                                onActivityAdded={(...args) =>
-                                  handleActivityAdded(
-                                    suggestedActivity,
-                                    // ...args,
-                                  )
-                                }
-                              />
-                            );
-                          })}
-                        </Box>
+                        {suggestedActivities.length ? (
+                          <>
+                            <Text
+                              fontFamily="heading"
+                              fontSize="title.md"
+                              fontWeight="semibold"
+                              color="content.secondary"
+                            >
+                              {t("activity-suggestion")}
+                            </Text>
+                            <Box className="flex flex-col gap-4">
+                              {suggestedActivities.map((suggestedActivity) => {
+                                const { id } = suggestedActivity;
+                                return (
+                                  <SuggestedActivityCard
+                                    key={id}
+                                    id={id}
+                                    t={t}
+                                    isSelected={selectedActivity?.id === id}
+                                    onActivityAdded={(...args) =>
+                                      handleActivityAdded(
+                                        suggestedActivity,
+                                        // ...args,
+                                      )
+                                    }
+                                  />
+                                );
+                              })}
+                            </Box>
+                          </>
+                        ) : (
+                          <Card
+                            w="full"
+                            bg="background.backgroundLight"
+                            shadow="none"
+                            h="100px"
+                            flexDir="row"
+                            p="24px"
+                            justifyContent="space-between"
+                          >
+                            <Box display="flex" gap="12px">
+                              <Box>
+                                <DataConnectIcon />
+                              </Box>
+                              <Box display="flex" flexDir="column" gap="8px">
+                                <Text
+                                  color="interactive.secondary"
+                                  fontSize="title.md"
+                                  fontWeight="bold"
+                                  lineHeight="24px"
+                                  fontFamily="heading"
+                                >
+                                  {t("add-emissions-data-title")}
+                                </Text>
+                                <Text
+                                  color="content.tertiary"
+                                  fontSize="body.md"
+                                  fontWeight="semibold"
+                                  lineHeight="20px"
+                                  letterSpacing="wide"
+                                >
+                                  {t("add-emissions-data-subtext")}
+                                </Text>
+                              </Box>
+                            </Box>
+                            <Box>
+                              <Button
+                                onClick={onAddActivityModalOpen}
+                                title={t("add-emission-data")}
+                                leftIcon={<AddIcon h="16px" w="16px" />}
+                                h="48px"
+                                aria-label="activity-button"
+                                fontSize="button.md"
+                                gap="8px"
+                              >
+                                {t("add-emission-data-btn")}
+                              </Button>
+                            </Box>
+                          </Card>
+                        )}
                       </>
                     )}
                   </Box>

@@ -1,4 +1,5 @@
 import { ActivityData } from "@/models/ActivityData";
+import { ActivityValue } from "@/models/ActivityValue";
 import { AddIcon } from "@chakra-ui/icons";
 import {
   Accordion,
@@ -103,7 +104,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                 {activityData?.map((activity: any, i: number) => {
                   return (
                     <Tr key={i}>
-                      <Td>{activity?.fuelType}</Td>
+                      <Td className="truncate">{activity.id}</Td>
                       <Td>
                         <Tag
                           size="lg"
@@ -111,11 +112,13 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                           colorScheme="blue"
                           borderRadius="full"
                         >
-                          <TagLabel>{activity?.dataQuality}</TagLabel>
+                          <TagLabel>
+                            {activity?.dataSource.dataQuality}
+                          </TagLabel>
                         </Tag>
                       </Td>
                       <Td>{activity?.fuelConsumption!}</Td>
-                      <Td>{activity?.emissions}</Td>
+                      <Td>{activity?.co2eq}</Td>
                       <Td>
                         <IconButton
                           color="interactive.control"

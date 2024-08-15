@@ -175,7 +175,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       },
       metadata: {},
       inventoryValue: {
-        inputMethodology: "direct-measure",
+        inputMethodology: "direct-measure", // extract methodology name
         gpcReferenceNumber: referenceNumber,
         unavailableReason: "",
         unavailableExplanation: "",
@@ -236,9 +236,9 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   const onEmissionFactorTypeChange = (e: any) => {
     const emissionFactorType = e.target.value;
     if (
-      emissionFactorType === "Local" ||
-      emissionFactorType === "Regional" ||
-      emissionFactorType === "National"
+      emissionFactorType === "local" ||
+      emissionFactorType === "regional" ||
+      emissionFactorType === "national"
     ) {
       setIsEmissionFactorInputDisabled(false);
     } else {
@@ -428,6 +428,15 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                         ))}
                         <option key="custom" value="custom">
                           {t("add-custom")}
+                        </option>
+                        <option key="local" value="local">
+                          {t("local")}
+                        </option>
+                        <option key="regional" value="regional">
+                          {t("regional")}
+                        </option>
+                        <option key="national" value="national">
+                          {t("national")}
                         </option>
                       </Select>
                       {errors.activity?.emissionFactorType ? (

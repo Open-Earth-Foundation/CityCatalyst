@@ -341,6 +341,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                           t={t}
                           activityData={getfilteredActivityValues}
                           showActivityModal={onAddActivityModalOpen}
+                          methodologyId={methodology?.id}
                         />
                         <Box
                           w="full"

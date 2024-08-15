@@ -1,5 +1,6 @@
 import { ActivityData } from "@/models/ActivityData";
 import { ActivityValue } from "@/models/ActivityValue";
+import { getInputMethodology } from "@/util/helpers";
 import { AddIcon } from "@chakra-ui/icons";
 import {
   Accordion,
@@ -28,13 +29,16 @@ interface ActivityAccordionProps {
   t: TFunction;
   activityData: ActivityValue[] | undefined;
   showActivityModal: () => void;
+  methodologyId: string | undefined;
 }
 
 const ActivityAccordion: FC<ActivityAccordionProps> = ({
   t,
   activityData,
   showActivityModal,
+  methodologyId,
 }) => {
+  const methodologyName = getInputMethodology(methodologyId!);
   return (
     <Accordion defaultIndex={[0]} allowMultiple>
       <AccordionItem>
@@ -91,17 +95,36 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
           <TableContainer>
             <Table variant="simple" borderWidth="1px" borderRadius="20px">
               <Thead>
-                <Tr>
-                  <Th>{t("fuel-type")}</Th>
-                  <Th>{t("data-quality")}</Th>
-                  <Th>{t("fuel-consumption")}</Th>
-                  <Th>{t("emissions")}</Th>
-                  <Th></Th>
-                </Tr>
+                {methodologyName === "direct-measure" ? (
+                  <Tr>
+                    <Th>{t("building-type")}</Th>
+                    <Th>{t("data-quality")}</Th>
+                    <Th>{t("co2-emissions")}</Th>
+                    <Th>{t("n2o-emissions")}</Th>
+                    <Th>{t("ch4-emissions")}</Th>
+                    <Th></Th>
+                  </Tr>
+                ) : (
+                  <Tr>
+                    <Th>{t("fuel-type")}</Th>
+                    <Th>{t("data-quality")}</Th>
+                    <Th>{t("fuel-consumption")}</Th>
+                    <Th>{t("emissions")}</Th>
+                    <Th></Th>
+                  </Tr>
+                )}
               </Thead>
               <Tbody>
                 {activityData?.map((activity: any, i: number) => {
-                  return (
+                  return methodologyName === "direct-measure" ? (
+                    <Tr key={i}>
+                      <Td>BUILDING TYPE</Td>
+                      <Td>1{activity?.dataSource.dataQuality}</Td>
+                      <Td>1{activity?.activityDataJsonb.co2_amount}</Td>
+                      <Td>{activity?.activityDataJsonb.n2o_amount}</Td>
+                      <Td>{activity?.activityDataJsonb.ch4_amount}</Td>
+                    </Tr>
+                  ) : (
                     <Tr key={i}>
                       <Td className="truncate">{activity.id}</Td>
                       <Td>

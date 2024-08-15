@@ -43,7 +43,7 @@ import type {
   SubcategoryData,
   EmissionsFactorData,
 } from "../../app/[lng]/[inventory]/data/[step]/types";
-import { resolve } from "@/util/helpers";
+import { getInputMethodology, resolve } from "@/util/helpers";
 import type { SuggestedActivity } from "@/util/form-schema";
 
 interface AddActivityModalProps {
@@ -162,13 +162,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     });
     return gasArray;
   }
-
-  const getInputMethodology = (methodologyId: string) => {
-    if (methodologyId?.includes("direct-measure")) return "direct-measure";
-    else {
-      return methodologyId;
-    }
-  };
 
   const onSubmit: SubmitHandler<Inputs> = async ({ activity }) => {
     const gasValues = extractGasesAndUnits(activity);

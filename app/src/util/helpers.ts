@@ -191,3 +191,10 @@ export function findClosestYearToInventory(
 
   return null; // In case all entries are outside the maxYearDifference and no closest entry was found
 }
+
+export const getInputMethodology = (methodologyId: string) => {
+  if (methodologyId?.includes("direct-measure")) return "direct-measure";
+  else {
+    return methodologyId;
+  }
+};

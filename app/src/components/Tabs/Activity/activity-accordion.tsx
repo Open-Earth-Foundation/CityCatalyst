@@ -26,7 +26,7 @@ import { MdMoreVert } from "react-icons/md";
 
 interface ActivityAccordionProps {
   t: TFunction;
-  activityData: ActivityData[] | undefined;
+  activityData: ActivityValue[] | undefined;
   showActivityModal: () => void;
 }
 

@@ -36,6 +36,7 @@ import {
 } from "@/util/form-schema";
 import MethodologyCard from "@/components/Cards/methodology-card";
 import { ActivityData } from "@/models/ActivityData";
+import { ActivityValue } from "@/models/ActivityValue";
 
 interface ActivityTabProps {
   t: TFunction;
@@ -49,7 +50,7 @@ interface ActivityTabProps {
   filteredScope: number;
   inventoryId: string;
   step: string;
-  activityData: ActivityData[] | undefined;
+  activityData: ActivityValue[] | undefined;
 }
 
 const ActivityTab: FC<ActivityTabProps> = ({
@@ -74,9 +75,15 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const [hasActivityData, setHasActivityData] = useState<boolean>(false);
   const [methodology, setMethodology] = useState<Methodology>();
 
-  console.log(activityData);
-
   const refNumberWithScope = referenceNumber + "." + (filteredScope || 1);
+  console.log(refNumberWithScope);
+
+  const getfilteredActivityValues = activityData?.filter(
+    (activity) =>
+      activity.inventoryValue.gpcReferenceNumber === refNumberWithScope,
+  );
+
+  console.log(getfilteredActivityValues);
 
   function getMethodologies() {
     const methodologies =
@@ -328,7 +335,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                       <Box>
                         <ActivityAccordion
                           t={t}
-                          activityData={activityData}
+                          activityData={getfilteredActivityValues}
                           showActivityModal={onAddActivityModalOpen}
                         />
                         <Box

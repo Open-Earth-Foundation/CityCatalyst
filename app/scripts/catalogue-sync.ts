@@ -51,7 +51,7 @@ async function syncDataCatalogue() {
   env.loadEnvConfig(projectDir);
 
   const GLOBAL_API_URL =
-    process.env.GLOBAL_API_URL || "https://ccglobal.openearth.dev";
+    process.env.GLOBAL_API_URL || "http://api.citycatalyst.io";
   console.log("Using global API at", GLOBAL_API_URL);
 
   if (!db.initialized) {

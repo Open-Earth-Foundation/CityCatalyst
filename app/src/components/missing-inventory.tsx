@@ -25,7 +25,6 @@ const MissingInventory = ({ lng }: { lng: string }) => {
       <Box
         display="flex"
         flexDir="column"
-        gap=""
         alignItems="center"
         justifyContent="center"
         h="full"
@@ -34,7 +33,7 @@ const MissingInventory = ({ lng }: { lng: string }) => {
         zIndex="10"
       >
         <Heading
-          fontSize="57px"
+          fontSize="display.lg"
           mb="24px"
           textAlign="center"
           color="content.alternative"

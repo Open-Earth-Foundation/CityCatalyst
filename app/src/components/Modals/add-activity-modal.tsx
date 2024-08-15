@@ -163,10 +163,15 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     return gasArray;
   }
 
+  const getInputMethodology = (methodologyId: string) => {
+    if (methodologyId?.includes("direct-measure")) return "direct-measure";
+    else {
+      return methodologyId;
+    }
+  };
+
   const onSubmit: SubmitHandler<Inputs> = async ({ activity }) => {
-    console.log(activity);
     const gasValues = extractGasesAndUnits(activity);
-    console.log(gasValues);
     const requestData = {
       activityData: {
         co2_amount: gasValues[1].factor,
@@ -175,7 +180,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       },
       metadata: {},
       inventoryValue: {
-        inputMethodology: "direct-measure", // extract methodology name
+        inputMethodology: getInputMethodology(methodology?.id), // extract methodology name
         gpcReferenceNumber: referenceNumber,
         unavailableReason: "",
         unavailableExplanation: "",
@@ -195,9 +200,10 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         },
       })),
     };
-    setHasActivityData(!hasActivityData);
+
     await createActivityValue({ inventoryId, requestData }).then((res: any) => {
       if (res.data) {
+        setHasActivityData(!hasActivityData);
         toast({
           status: "success",
           duration: 1200,

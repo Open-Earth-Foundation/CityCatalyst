@@ -38,9 +38,6 @@ function SubSectorPage({
   const router = useRouter();
   const { t } = useTranslation(lng, "data");
 
-  const { data: inventory, isLoading: isInventoryLoading } =
-    api.useGetInventoryQuery(inventoryId);
-
   const {
     isOpen: isDeleteActivitiesModalOpen,
     onOpen: onDeleteActivitiesModalOpen,
@@ -132,7 +129,6 @@ function SubSectorPage({
     };
   }, []);
 
-  const MotionBox = motion(Box);
   const MotionTabList = motion(TabList);
 
   const [isLoading, setIsLoading] = useState(false);

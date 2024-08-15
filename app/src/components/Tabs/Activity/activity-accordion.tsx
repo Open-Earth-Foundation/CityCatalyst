@@ -74,7 +74,6 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                 <IconButton
                   bg="none"
                   pos="relative"
-                  zIndex={20}
                   onClick={showActivityModal}
                   _hover={{ bg: "none" }}
                   aria-label="add-activity"

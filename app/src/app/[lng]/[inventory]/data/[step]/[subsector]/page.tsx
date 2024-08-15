@@ -192,7 +192,7 @@ function SubSectorPage({
               >
                 <BreadcrumbItem>
                   <BreadcrumbLink
-                    href={`/${inventory}/data`}
+                    href={`/${inventoryId}/data`}
                     color="content.tertiary"
                   >
                     {t("all-sectors")}
@@ -200,7 +200,7 @@ function SubSectorPage({
                 </BreadcrumbItem>
                 <BreadcrumbItem>
                   <BreadcrumbLink
-                    href={`/${inventory}/data/${step}`}
+                    href={`/${inventoryId}/data/${step}`}
                     color="content.tertiary"
                   >
                     {getSectorName(step)}
@@ -227,7 +227,7 @@ function SubSectorPage({
           <Box display="flex">
             {isExpanded ? (
               <Box>
-                <Link href={`/${inventory}/data`}>
+                <Link href={`/${inventoryId}/data`}>
                   <Icon
                     as={ArrowBackIcon}
                     h="24px"

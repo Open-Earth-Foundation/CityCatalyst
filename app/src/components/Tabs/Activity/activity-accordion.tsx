@@ -118,9 +118,15 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                 {activityData?.map((activity: any, i: number) => {
                   return methodologyName === "direct-measure" ? (
                     <Tr key={i}>
-                      <Td>BUILDING TYPE</Td>
-                      <Td>1{activity?.dataSource.dataQuality}</Td>
-                      <Td>1{activity?.activityDataJsonb.co2_amount}</Td>
+                      <Td>{t(activity?.activityDataJsonb.activityType)}</Td>
+                      <Td>
+                        <Tag>
+                          <TagLabel>
+                            {activity?.dataSource.dataQuality}
+                          </TagLabel>
+                        </Tag>
+                      </Td>
+                      <Td>{activity?.activityDataJsonb.co2_amount}</Td>
                       <Td>{activity?.activityDataJsonb.n2o_amount}</Td>
                       <Td>{activity?.activityDataJsonb.ch4_amount}</Td>
                     </Tr>

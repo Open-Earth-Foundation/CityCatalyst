@@ -170,6 +170,8 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         co2_amount: gasValues[1].factor,
         ch4_amount: gasValues[0].factor,
         n2o_amount: gasValues[2].factor,
+        activityType: activity.buildingType,
+        fuelType: activity.fuelType,
       },
       metadata: {},
       inventoryValue: {

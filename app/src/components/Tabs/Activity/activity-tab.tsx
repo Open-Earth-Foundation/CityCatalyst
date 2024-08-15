@@ -242,17 +242,19 @@ const ActivityTab: FC<ActivityTabProps> = ({
                       </Text>
                     </Box>
                     <Box display="flex" alignItems="center">
-                      <Button
-                        onClick={onAddActivityModalOpen}
-                        title="Add Activity"
-                        leftIcon={<AddIcon h="16px" w="16px" />}
-                        h="48px"
-                        aria-label="activity-button"
-                        fontSize="button.md"
-                        gap="8px"
-                      >
-                        {t("add-activity")}
-                      </Button>
+                      {suggestedActivities.length ? (
+                        <Button
+                          onClick={onAddActivityModalOpen}
+                          title="Add Activity"
+                          leftIcon={<AddIcon h="16px" w="16px" />}
+                          h="48px"
+                          aria-label="activity-button"
+                          fontSize="button.md"
+                          gap="8px"
+                        >
+                          {t("add-activity")}
+                        </Button>
+                      ) : null}
                       <Popover>
                         <PopoverTrigger>
                           <IconButton

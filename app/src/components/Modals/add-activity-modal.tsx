@@ -275,7 +275,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
             borderStyle="solid"
             borderColor="border.neutral"
           >
-            {t("add-activity")}
+            {t("add-emission-data")}
           </ModalHeader>
           <ModalCloseButton marginTop="10px" />
           <ModalBody p={6} px={12}>

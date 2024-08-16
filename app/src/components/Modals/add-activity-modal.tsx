@@ -115,8 +115,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     setValue,
   } = useForm<Inputs>();
 
-  console.log(errors);
-
   let prefix = "";
   let { data: emissionsFactors, isLoading: emissionsFactorsLoading } =
     api.useGetEmissionsFactorsQuery();
@@ -151,7 +149,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     gases.forEach((gas) => {
       const gasFactorKey = `${gas}EmissionFactor`;
       const gasUnitKey = `${gas}EmissionFactorUnit`;
-      console.log(data[gasFactorKey]);
       const gasObject = {
         gas: gas,
         factor: data[gasFactorKey],
@@ -249,9 +246,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
 
   let fields = null;
   let units = null;
-  console.log(methodology?.id);
   if (methodology?.id.includes("direct-measure")) {
-    console.log(methodology.id);
     fields = methodology.fields;
   } else {
     fields = methodology?.fields[0]["extra-fields"];

@@ -19,8 +19,6 @@ export const POST = apiHandler(async (req, { params, session }) => {
     ...data
   } = body;
 
-  console.log(body)
-
   // just for access control
   await UserService.findUserInventory(params.inventory, session);
 

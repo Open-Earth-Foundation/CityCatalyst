@@ -88,7 +88,6 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const [methodology, setMethodology] = useState<Methodology>();
 
   const refNumberWithScope = referenceNumber + "." + (filteredScope || 1);
-  console.log(refNumberWithScope);
 
   const getfilteredActivityValues = activityData?.filter(
     (activity) =>
@@ -109,8 +108,6 @@ const ActivityTab: FC<ActivityTabProps> = ({
 
   const activityValues =
     getActivityValuesByMethodology(getfilteredActivityValues) || [];
-  console.log(activityValues);
-  console.log(getfilteredActivityValues);
   function getMethodologies() {
     const methodologies =
       MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.methodologies || [];

@@ -39,11 +39,17 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
       <Table variant="simple" borderWidth="1px">
         <Thead bg="background.backgroundLight">
           <Tr fontSize="button.sm" fontWeight="bold">
-            <Th>{t("building-type")}</Th>
-            <Th>{t("data-quality")}</Th>
-            <Th isNumeric>{t("co2-emissions")}</Th>
-            <Th isNumeric>{t("n2o-emissions")}</Th>
-            <Th isNumeric>{t("ch4-emissions")}</Th>
+            <Th isTruncated>{t("building-type")}</Th>
+            <Th isTruncated>{t("data-quality")}</Th>
+            <Th isNumeric isTruncated>
+              {t("co2-emissions")}
+            </Th>
+            <Th isNumeric isTruncated>
+              {t("n2o-emissions")}
+            </Th>
+            <Th isNumeric isTruncated>
+              {t("ch4-emissions")}
+            </Th>
             <Th></Th>
           </Tr>
         </Thead>
@@ -84,7 +90,9 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
             }
             return (
               <Tr key={i}>
-                <Td>{t(activity?.activityDataJsonb.activityType)}</Td>
+                <Td isTruncated>
+                  {t(activity?.activityDataJsonb.activityType)}
+                </Td>
                 <Td>
                   <Tag
                     p="8px"
@@ -101,11 +109,13 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                     </TagLabel>
                   </Tag>
                 </Td>
-                <Td isNumeric>{activity?.activityDataJsonb.co2_amount} tCO2</Td>
-                <Td isNumeric>
+                <Td isNumeric isTruncated>
+                  {activity?.activityDataJsonb.co2_amount} tCO2
+                </Td>
+                <Td isNumeric isTruncated>
                   {activity?.activityDataJsonb.n2o_amount} tN2Oe
                 </Td>
-                <Td isNumeric>
+                <Td isNumeric isTruncated>
                   {activity?.activityDataJsonb.ch4_amount} tCH4e
                 </Td>
                 <Td>

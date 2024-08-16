@@ -22,6 +22,8 @@ spec:
               value: "citycatalyst"
             - name: DATABASE_PASSWORD
               value: "development"
+            - name: GLOBAL_API_URL
+              value: "https://ccglobal.openearth.dev"
           command: ["npm", "run", "sync-catalogue"]
           resources:
             limits:

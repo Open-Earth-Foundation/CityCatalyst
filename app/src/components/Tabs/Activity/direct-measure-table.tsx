@@ -21,9 +21,8 @@ import {
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC } from "react";
-import { FaEdit, FaNetworkWired } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
-import { MdEdit, MdModeEditOutline, MdMoreVert } from "react-icons/md";
+import { MdModeEditOutline, MdMoreVert } from "react-icons/md";
 
 interface DirectMeasureTableProps {
   t: TFunction;
@@ -54,7 +53,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
           </Tr>
         </Thead>
         <Tbody>
-          {activityData?.map((activity: any, i: number) => {
+          {activityData?.map((activity: ActivityValue, i: number) => {
             const dataQuality = activity?.dataSource.dataQuality;
             let tagStyles = {
               bg: "",
@@ -91,7 +90,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
             return (
               <Tr key={i}>
                 <Td isTruncated>
-                  {t(activity?.activityDataJsonb.activityType)}
+                  {t(activity?.activityDataJsonb?.activityType!)}
                 </Td>
                 <Td>
                   <Tag
@@ -110,13 +109,13 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                   </Tag>
                 </Td>
                 <Td isNumeric isTruncated>
-                  {activity?.activityDataJsonb.co2_amount} tCO2
+                  {activity?.activityDataJsonb?.co2_amount} tCO2
                 </Td>
                 <Td isNumeric isTruncated>
-                  {activity?.activityDataJsonb.n2o_amount} tN2Oe
+                  {activity?.activityDataJsonb?.n2o_amount} tN2Oe
                 </Td>
                 <Td isNumeric isTruncated>
-                  {activity?.activityDataJsonb.ch4_amount} tCH4e
+                  {activity?.activityDataJsonb?.ch4_amount} tCH4e
                 </Td>
                 <Td>
                   <Popover>

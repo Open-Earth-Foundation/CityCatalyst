@@ -4,6 +4,7 @@ import type { GasToCO2Eq } from "@/models/GasToCO2Eq";
 import type { InventoryValue } from "@/models/InventoryValue";
 import { multiplyBigIntFloat } from "@/util/big_int";
 import createHttpError from "http-errors";
+import { findMethodology, MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
 
 export type Gas = {
   gas: string;
@@ -48,10 +49,17 @@ export default class CalculationService {
       return "direct-measure";
     }
 
-    const formula = "unknown";
-    // TODO load JSON schema file
-    // TODO search for inputMethodology ID
-    return formula;
+    let formula = "unknown";
+
+    // search manual-input-hierarchy.json for inputMethodology ID
+    // TODO pass refNo from request into this function for faster search
+    const methodology = findMethodology(inputMethodology);
+    if (!methodology) {
+      throw new createHttpError.NotFound(
+        `Could not find methodology ${inputMethodology} in manual-input-hierarchy.json`,
+      );
+    }
+    return methodology.formula ?? formula;
   }
 
   public static async calculateGasAmount(

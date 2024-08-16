@@ -49,7 +49,7 @@ export default class CalculationService {
       return "direct-measure";
     }
 
-    let formula = "unknown";
+    let formula = "activity-amount-times-emissions-factor"; // fallback value
 
     // search manual-input-hierarchy.json for inputMethodology ID
     // TODO pass refNo from request into this function for faster search

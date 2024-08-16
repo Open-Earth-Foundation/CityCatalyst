@@ -34,19 +34,62 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
         </Tr>
       </Thead>
       <Tbody>
-        {activityData?.map((activity: any, i: number) => (
-          <Tr key={i}>
-            <Td>{t(activity?.activityDataJsonb.activityType)}</Td>
-            <Td>
-              <Tag>
-                <TagLabel>{activity?.dataSource.dataQuality}</TagLabel>
-              </Tag>
-            </Td>
-            <Td>{activity?.activityDataJsonb.co2_amount}</Td>
-            <Td>{activity?.activityDataJsonb.n2o_amount}</Td>
-            <Td>{activity?.activityDataJsonb.ch4_amount}</Td>
-          </Tr>
-        ))}
+        {activityData?.map((activity: any, i: number) => {
+          const dataQuality = activity?.dataSource.dataQuality;
+          let tagStyles = {
+            bg: "",
+            border: "",
+            color: "",
+          };
+          switch (dataQuality) {
+            case "low":
+              tagStyles = {
+                bg: "sentiment.warningOverlay",
+                border: "sentiment.warningDefault",
+                color: "sentiment.warningDefault",
+              };
+              break;
+            case "medium":
+              tagStyles = {
+                bg: "background.neutral",
+                border: "content.link",
+                color: "content.link",
+              };
+              break;
+
+            case "high":
+              tagStyles = {
+                bg: "sentiment.positiveOverlay",
+                border: "interactive.tertiary",
+                color: "interactive.tertiary",
+              };
+              break;
+
+            default:
+              break;
+          }
+          return (
+            <Tr key={i}>
+              <Td>{t(activity?.activityDataJsonb.activityType)}</Td>
+              <Td>
+                <Tag
+                  p="8px"
+                  minW="50px"
+                  bg={tagStyles.bg}
+                  borderWidth="1px"
+                  borderColor={tagStyles.border}
+                >
+                  <TagLabel color={tagStyles.color} textTransform="capitalize">
+                    {dataQuality}
+                  </TagLabel>
+                </Tag>
+              </Td>
+              <Td>{activity?.activityDataJsonb.co2_amount}</Td>
+              <Td>{activity?.activityDataJsonb.n2o_amount}</Td>
+              <Td>{activity?.activityDataJsonb.ch4_amount}</Td>
+            </Tr>
+          );
+        })}
       </Tbody>
     </Table>
   );

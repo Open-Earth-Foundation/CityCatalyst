@@ -95,8 +95,22 @@ const ActivityTab: FC<ActivityTabProps> = ({
       activity.inventoryValue.gpcReferenceNumber === refNumberWithScope,
   );
 
-  console.log(getfilteredActivityValues);
+  const getActivityValuesByMethodology = (
+    activityValues: ActivityValue[] | undefined,
+  ) => {
+    const isDirectMeasure = methodology?.id.includes("direct-measure");
 
+    return activityValues?.filter((activity) =>
+      isDirectMeasure
+        ? activity.inventoryValue.inputMethodology === "direct-measure"
+        : activity.inventoryValue.inputMethodology !== "direct-measure",
+    );
+  };
+
+  const activityValues =
+    getActivityValuesByMethodology(getfilteredActivityValues) || [];
+  console.log(activityValues);
+  console.log(getfilteredActivityValues);
   function getMethodologies() {
     const methodologies =
       MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.methodologies || [];
@@ -345,18 +359,18 @@ const ActivityTab: FC<ActivityTabProps> = ({
                     flexDirection="column"
                     gap="16px"
                   >
-                    {activityData?.length ? (
+                    {activityValues?.length ? (
                       <Box>
                         {getInputMethodology(methodology?.id!) ===
                         "direct-measure" ? (
                           <DirectMeasureTable
                             t={t}
-                            activityData={activityData}
+                            activityData={activityValues}
                           />
                         ) : (
                           <ActivityAccordion
                             t={t}
-                            activityData={getfilteredActivityValues}
+                            activityData={activityValues}
                             showActivityModal={onAddActivityModalOpen}
                             methodologyId={methodology?.id}
                           />

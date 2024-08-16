@@ -95,42 +95,17 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
           <TableContainer>
             <Table variant="simple" borderWidth="1px" borderRadius="20px">
               <Thead>
-                {methodologyName === "direct-measure" ? (
-                  <Tr>
-                    <Th>{t("building-type")}</Th>
-                    <Th>{t("data-quality")}</Th>
-                    <Th>{t("co2-emissions")}</Th>
-                    <Th>{t("n2o-emissions")}</Th>
-                    <Th>{t("ch4-emissions")}</Th>
-                    <Th></Th>
-                  </Tr>
-                ) : (
-                  <Tr>
-                    <Th>{t("fuel-type")}</Th>
-                    <Th>{t("data-quality")}</Th>
-                    <Th>{t("fuel-consumption")}</Th>
-                    <Th>{t("emissions")}</Th>
-                    <Th></Th>
-                  </Tr>
-                )}
+                <Tr>
+                  <Th>{t("fuel-type")}</Th>
+                  <Th>{t("data-quality")}</Th>
+                  <Th>{t("fuel-consumption")}</Th>
+                  <Th>{t("emissions")}</Th>
+                  <Th></Th>
+                </Tr>
               </Thead>
               <Tbody>
                 {activityData?.map((activity: any, i: number) => {
-                  return methodologyName === "direct-measure" ? (
-                    <Tr key={i}>
-                      <Td>{t(activity?.activityDataJsonb.activityType)}</Td>
-                      <Td>
-                        <Tag>
-                          <TagLabel>
-                            {activity?.dataSource.dataQuality}
-                          </TagLabel>
-                        </Tag>
-                      </Td>
-                      <Td>{activity?.activityDataJsonb.co2_amount}</Td>
-                      <Td>{activity?.activityDataJsonb.n2o_amount}</Td>
-                      <Td>{activity?.activityDataJsonb.ch4_amount}</Td>
-                    </Tr>
-                  ) : (
+                  return (
                     <Tr key={i}>
                       <Td className="truncate">{activity.id}</Td>
                       <Td>

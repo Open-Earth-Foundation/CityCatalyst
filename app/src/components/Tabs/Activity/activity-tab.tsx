@@ -12,7 +12,15 @@ import {
   PopoverTrigger,
   Switch,
   TabPanel,
+  Table,
+  Tag,
+  TagLabel,
+  Tbody,
+  Td,
   Text,
+  Th,
+  Thead,
+  Tr,
   useDisclosure,
 } from "@chakra-ui/react";
 import React, { FC, useState } from "react";
@@ -39,6 +47,8 @@ import MethodologyCard from "@/components/Cards/methodology-card";
 import { ActivityData } from "@/models/ActivityData";
 import { ActivityValue } from "@/models/ActivityValue";
 import { DataConnectIcon } from "@/components/icons";
+import { getInputMethodology } from "@/util/helpers";
+import DirectMeasureTable from "./direct-measure-table";
 
 interface ActivityTabProps {
   t: TFunction;
@@ -337,12 +347,20 @@ const ActivityTab: FC<ActivityTabProps> = ({
                   >
                     {activityData?.length ? (
                       <Box>
-                        <ActivityAccordion
-                          t={t}
-                          activityData={getfilteredActivityValues}
-                          showActivityModal={onAddActivityModalOpen}
-                          methodologyId={methodology?.id}
-                        />
+                        {getInputMethodology(methodology?.id!) ===
+                        "direct-measure" ? (
+                          <DirectMeasureTable
+                            t={t}
+                            activityData={activityData}
+                          />
+                        ) : (
+                          <ActivityAccordion
+                            t={t}
+                            activityData={getfilteredActivityValues}
+                            showActivityModal={onAddActivityModalOpen}
+                            methodologyId={methodology?.id}
+                          />
+                        )}
                         <Box
                           w="full"
                           borderTopWidth="3px"

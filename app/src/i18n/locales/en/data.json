@@ -768,5 +768,8 @@
   "add-emissions-data-subtext": "Add emissions data and complete your inventory",
   "add-emission-data-btn": "Add emission data",
   "update-activity": "Update activity",
-  "add-emission-data": "Add emission data"
+  "add-emission-data": "Add emission data",
+  "co2-emissions": "co2 emissions",
+  "n2o-emissions": "n2o emissions",
+  "ch4-emissions": "ch4 emissions"
 }

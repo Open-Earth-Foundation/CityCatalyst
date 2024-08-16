@@ -835,7 +835,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
               p={0}
               m={0}
             >
-              Add Activity
+              {t("add-emission-data")}
             </Button>
           </ModalFooter>
         </ModalContent>

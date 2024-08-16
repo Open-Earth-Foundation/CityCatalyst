@@ -266,19 +266,17 @@ const ActivityTab: FC<ActivityTabProps> = ({
                       </Text>
                     </Box>
                     <Box display="flex" alignItems="center">
-                      {activityData?.length ? (
-                        <Button
-                          onClick={onAddActivityModalOpen}
-                          title="Add Activity"
-                          leftIcon={<AddIcon h="16px" w="16px" />}
-                          h="48px"
-                          aria-label="activity-button"
-                          fontSize="button.md"
-                          gap="8px"
-                        >
-                          {t("add-activity")}
-                        </Button>
-                      ) : null}
+                      <Button
+                        onClick={onAddActivityModalOpen}
+                        title="Add Activity"
+                        leftIcon={<AddIcon h="16px" w="16px" />}
+                        h="48px"
+                        aria-label="activity-button"
+                        fontSize="button.md"
+                        gap="8px"
+                      >
+                        {t("add-emission-data")}
+                      </Button>
                       <Popover>
                         <PopoverTrigger>
                           <IconButton
@@ -345,7 +343,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                                 className="group-hover:text-white"
                                 color="content.primary"
                               >
-                                Delete all activities
+                                {t("delete-all-activities")}
                               </Text>
                             </Box>
                           </PopoverBody>

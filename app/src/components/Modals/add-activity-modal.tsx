@@ -233,11 +233,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   // Adjust function for countries with national emission factors i.e US
   const onEmissionFactorTypeChange = (e: any) => {
     const emissionFactorType = e.target.value;
-    if (
-      emissionFactorType === "local" ||
-      emissionFactorType === "regional" ||
-      emissionFactorType === "national"
-    ) {
+    if (emissionFactorType === "custom") {
       setIsEmissionFactorInputDisabled(false);
     } else {
       setIsEmissionFactorInputDisabled(true);
@@ -424,15 +420,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                         ))}
                         <option key="custom" value="custom">
                           {t("add-custom")}
-                        </option>
-                        <option key="local" value="local">
-                          {t("local")}
-                        </option>
-                        <option key="regional" value="regional">
-                          {t("regional")}
-                        </option>
-                        <option key="national" value="national">
-                          {t("national")}
                         </option>
                       </Select>
                       {errors.activity?.emissionFactorType ? (

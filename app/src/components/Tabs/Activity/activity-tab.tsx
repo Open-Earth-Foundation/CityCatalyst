@@ -266,7 +266,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                       </Text>
                     </Box>
                     <Box display="flex" alignItems="center">
-                      {suggestedActivities.length ? (
+                      {activityData?.length ? (
                         <Button
                           onClick={onAddActivityModalOpen}
                           title="Add Activity"

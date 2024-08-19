@@ -432,19 +432,19 @@ if __name__ == "__main__":
     EF_df = pd.DataFrame(output_list)
 
     # assign "GPC_refno" using the mapping dic
-    EF_df["gpc_refno"] = EF_df["ipcc_2006_category"].map(mapping_ipcc_to_gpc)
+    EF_df["gpc_reference_number"] = EF_df["ipcc_2006_category"].map(mapping_ipcc_to_gpc)
 
     # make a row for each GPC_refno
-    EF_df = EF_df.explode("gpc_refno", ignore_index=True)
+    EF_df = EF_df.explode("gpc_reference_number", ignore_index=True)
 
     # remove EFs that don't apply
-    EF_df = EF_df.dropna(subset=["gpc_refno"])
+    EF_df = EF_df.dropna(subset=["gpc_reference_number"])
 
     # assign "actor_id" using the region_to_locode dic
     EF_df["actor_id"] = EF_df["region"].map(region_to_locode)
 
     # remove EFs that don't apply
-    EF_df = EF_df.dropna(subset=["gpc_refno"])
+    EF_df = EF_df.dropna(subset=["gpc_reference_number"])
 
     gas = ["CO2", "CH4", "N2O"]
     EF_df = EF_df[EF_df["gas"].isin(gas)]
@@ -459,14 +459,14 @@ if __name__ == "__main__":
     EF_df["actor_id"].fillna("world", inplace=True)
 
     # df with EF for fugitive emissions
-    EF_df_fugitive = EF_df[(EF_df['gpc_refno'] == 'I.8.1') | (EF_df['gpc_refno'] == 'I.7.1')]
+    EF_df_fugitive = EF_df[(EF_df['gpc_reference_number'] == 'I.8.1') | (EF_df['gpc_reference_number'] == 'I.7.1')]
     EF_df_fugitive.reset_index(drop=True, inplace=True)
 
     ## ------------------------------------------
     # Emissions for subsectors from I.1 to I.6
     ## ------------------------------------------
     # drop EF for fugitive emissions
-    EF_df = EF_df[(EF_df['gpc_refno'] != 'I.8.1') & (EF_df['gpc_refno'] != 'I.7.1')]
+    EF_df = EF_df[(EF_df['gpc_reference_number'] != 'I.8.1') & (EF_df['gpc_reference_number'] != 'I.7.1')]
 
     # Filter out the rows that are for Japan and Korea
     filter_values = ['Only for Japan', 'Japan', 'Republic of Korea']
@@ -789,7 +789,7 @@ if __name__ == "__main__":
     EF_df = EF_df.drop(columns=["Description", "value"])
 
     # make a row for each GPC_refno
-    EF_df = EF_df.explode("gpc_refno", ignore_index=True)
+    EF_df = EF_df.explode("gpc_reference_number", ignore_index=True)
 
     # make a row for each methodology
     EF_df["methodology_name"] = [mapping_gpc_to_methodologies] * len(EF_df)
@@ -895,8 +895,8 @@ if __name__ == "__main__":
         axis=1,
     )
 
-    EF_df_fugitive.loc[EF_df_fugitive['gpc_refno'] == 'I.8.1', 'methodology_name'] = 'fugitive-emissions-oil-gas'
-    EF_df_fugitive.loc[EF_df_fugitive['gpc_refno'] == 'I.7.1', 'methodology_name'] = 'fugitive-emissions-coal'  
+    EF_df_fugitive.loc[EF_df_fugitive['gpc_reference_number'] == 'I.8.1', 'methodology_name'] = 'fugitive-emissions-oil-gas'
+    EF_df_fugitive.loc[EF_df_fugitive['gpc_reference_number'] == 'I.7.1', 'methodology_name'] = 'fugitive-emissions-coal'  
 
     # year column
     EF_df_fugitive["year"] = ""

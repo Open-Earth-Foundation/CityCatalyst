@@ -22,6 +22,7 @@ import { resolve, groupBy } from "@/util/helpers";
 import type { EmissionsFactorWithDataSources } from "@/util/types";
 import type { EmissionsFactorData } from "./types";
 import { useEffect } from "react";
+import { getTranslationFromDict } from "@/i18n";
 
 const activityDataUnits: Record<string, string[]> = {
   I: [
@@ -49,9 +50,9 @@ const activityDataUnits: Record<string, string[]> = {
 ];*/
 
 export function determineEmissionsFactorType(factor: EmissionsFactorData) {
-  let sourceName = factor.dataSources
-    ? factor.dataSources[0].datasetName || "Unknown data source"
-    : "Unknown data source";
+  const sourceName =
+    getTranslationFromDict(factor.dataSources?.[0]?.datasetName ?? {}) ??
+    "Unknown data source";
   if (sourceName.includes("IPCC") && sourceName.includes("US")) {
     return "National (US)";
   } else if (sourceName.includes("IPCC")) {

@@ -69,12 +69,7 @@ export default class CalculationService {
     switch (formula) {
       case "direct-measure":
         gases = GAS_NAMES.map((gasName) => {
-          // backwards compatibly with activityDataJsonb and activityData
-          const data = activityValue.activityDataJsonb
-            ? activityValue.activityDataJsonb
-            : (JSON.parse(
-                activityValue.activityData as unknown as string,
-              ) as Record<string, any>);
+          const data = activityValue.activityData;
           const key = gasName.toLowerCase() + "_amount";
           if (!data || !data[key]) {
             throw new createHttpError.BadRequest(
@@ -96,11 +91,7 @@ export default class CalculationService {
       case "activity-amount-times-emissions-factor":
         // TODO add actvityAmount column to ActivityValue
         // const activityAmount = activityValue.activityAmount || 0;
-        const data = activityValue.activityDataJsonb
-          ? activityValue.activityDataJsonb
-          : (JSON.parse(
-              activityValue.activityData as unknown as string,
-            ) as Record<string, any>);
+        const data = activityValue.activityData;
         const activityAmount = data ? data["activity_amount"] || 0 : 0;
         gases = activityValue.gasValues.map((gasValue) => {
           const emissionsFactor = gasValue.emissionsFactor;

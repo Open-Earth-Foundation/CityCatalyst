@@ -3,7 +3,10 @@ import { DataTypes, Model } from "sequelize";
 import type { Optional } from "sequelize";
 import type { Inventory, InventoryId } from "./Inventory";
 import type { SubCategory, SubCategoryId } from "./SubCategory";
-import type { DataSource, DataSourceId } from "./DataSource";
+import type {
+  DataSourceI18n as DataSource,
+  DataSourceId,
+} from "./DataSourceI18n";
 import type { Sector, SectorId } from "./Sector";
 import type { SubSector, SubSectorId } from "./SubSector";
 import type { GasValue, GasValueId } from "./GasValue";

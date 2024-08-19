@@ -33,6 +33,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
   activityData,
   t,
 }) => {
+  console.log(activityData);
   return (
     <Box>
       <Table variant="simple" borderWidth="1px">
@@ -54,7 +55,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
         </Thead>
         <Tbody>
           {activityData?.map((activity: ActivityValue, i: number) => {
-            const dataQuality = activity?.dataSource.dataQuality;
+            const dataQuality = activity?.dataSource?.dataQuality;
             let tagStyles = {
               bg: "",
               border: "",
@@ -89,9 +90,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
             }
             return (
               <Tr key={i}>
-                <Td isTruncated>
-                  {t(activity?.activityDataJsonb?.activityType!)}
-                </Td>
+                <Td isTruncated>{t(activity?.activityData?.activityType!)}</Td>
                 <Td>
                   <Tag
                     p="8px"
@@ -109,13 +108,13 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                   </Tag>
                 </Td>
                 <Td isNumeric isTruncated>
-                  {activity?.activityDataJsonb?.co2_amount} tCO2
+                  {activity?.activityData?.co2_amount} tCO2
                 </Td>
                 <Td isNumeric isTruncated>
-                  {activity?.activityDataJsonb?.n2o_amount} tN2Oe
+                  {activity?.activityData?.n2o_amount} tN2Oe
                 </Td>
                 <Td isNumeric isTruncated>
-                  {activity?.activityDataJsonb?.ch4_amount} tCH4e
+                  {activity?.activityData?.ch4_amount} tCH4e
                 </Td>
                 <Td>
                   <Popover>

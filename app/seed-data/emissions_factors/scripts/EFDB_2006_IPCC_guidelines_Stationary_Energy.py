@@ -923,7 +923,7 @@ if __name__ == "__main__":
 
     EF_final = pd.concat([EF_df, EF_df_fugitive], ignore_index=True)
     
-    EF_final["emissions_factor_id"] = EF_final.apply(lambda row: uuid_generate_v4(), axis=1)
+    EF_final["id"] = EF_final.apply(lambda row: uuid_generate_v4(), axis=1)
 
     EF_final.to_csv(
         f"{output_dir}/EmissionsFactor.csv", index=False
@@ -937,7 +937,7 @@ if __name__ == "__main__":
             "datasource_id": datasource_data.get("datasource_id"),
             "emissions_factor_id": id,
         }
-        for id in EF_final["emissions_factor_id"]
+        for id in EF_final["id"]
     ]
 
     write_dic_to_csv(

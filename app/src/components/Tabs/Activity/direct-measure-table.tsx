@@ -1,4 +1,5 @@
 import { ActivityValue } from "@/models/ActivityValue";
+import { convertKgToTonnes } from "@/util/helpers";
 import { EditIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -33,9 +34,6 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
   activityData,
   t,
 }) => {
-  function convertKgToTonne(kg: number) {
-    return kg / 1000;
-  }
   return (
     <Box>
       <Table variant="simple" borderWidth="1px">
@@ -69,13 +67,13 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                   </Tag>
                 </Td>
                 <Td isNumeric isTruncated>
-                  {convertKgToTonne(activity?.activityData?.co2_amount)} tCO2e
+                  {convertKgToTonnes(activity?.activityData?.co2_amount)}
                 </Td>
                 <Td isNumeric isTruncated>
-                  {convertKgToTonne(activity?.activityData?.n2o_amount)} tN2Oe
+                  {convertKgToTonnes(activity?.activityData?.n2o_amount)}
                 </Td>
                 <Td isNumeric isTruncated>
-                  {convertKgToTonne(activity?.activityData?.ch4_amount)} tCH4e
+                  {convertKgToTonnes(activity?.activityData?.ch4_amount)}
                 </Td>
                 <Td>
                   <Popover>

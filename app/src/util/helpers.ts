@@ -221,8 +221,8 @@ export const getInputMethodology = (methodologyId: string) => {
   }
 };
 
-export function convertFromTonnes(valueInTonnes: number) {
-  let result;
+export function convertKgToTonnes(valueInTonnes: number) {
+  let result = "";
 
   if (valueInTonnes >= 1e6) {
     // Convert to megatonnes if the value is 1,000,000 tonnes or more
@@ -232,8 +232,12 @@ export function convertFromTonnes(valueInTonnes: number) {
     // Convert to kilotonnes if the value is 1,000 tonnes or more but less than 1,000,000 tonnes
     const kilotonnes = (valueInTonnes / 1e3).toFixed(0);
     result = `${kilotonnes} KtCO2`;
+  } else if (valueInTonnes < 1) {
+    // Convert to kg if the value is less than 1 tonne
+    const kilograms = (valueInTonnes * 1e3).toFixed(0);
+    result = `${kilograms} kgCO2`;
   } else {
-    // Return as tonnes if the value is less than 1,000 tonnes
+    // Return as tonnes if the value is less than 1,000 tonnes but more than or equal to 1 tonne
     result = `${valueInTonnes} tCO2`;
   }
 

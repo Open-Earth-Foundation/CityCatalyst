@@ -47,7 +47,7 @@ import MethodologyCard from "@/components/Cards/methodology-card";
 import { ActivityData } from "@/models/ActivityData";
 import { ActivityValue } from "@/models/ActivityValue";
 import { DataConnectIcon } from "@/components/icons";
-import { convertFromTonnes, getInputMethodology } from "@/util/helpers";
+import { convertKgToTonnes, getInputMethodology } from "@/util/helpers";
 import DirectMeasureTable from "./direct-measure-table";
 
 interface ActivityTabProps {
@@ -395,7 +395,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                               fontWeight="semibold"
                               fontSize="headline.md"
                             >
-                              {convertFromTonnes(totalEmissions)}
+                              {convertKgToTonnes(totalEmissions)}
                             </Text>
                           </Box>
                         </Box>

@@ -43,7 +43,7 @@ import type {
   SubcategoryData,
   EmissionsFactorData,
 } from "../../app/[lng]/[inventory]/data/[step]/types";
-import { resolve } from "@/util/helpers";
+import { getInputMethodology, resolve } from "@/util/helpers";
 import type { SuggestedActivity } from "@/util/form-schema";
 import { Methodology } from "@/util/form-schema";
 import { getTranslationFromDict } from "@/i18n";
@@ -58,21 +58,22 @@ interface AddActivityModalProps {
   inventoryId: string;
   methodology: any;
   selectedActivity?: SuggestedActivity;
+  referenceNumber: string;
 }
 
 export type Inputs = {
   activity: {
     activityDataAmount?: number | null | undefined;
     activityDataUnit?: string | null | undefined;
-    emissionFactorType: string;
-    co2EmissionFactor: number;
-    n2oEmissionFactor: number;
-    ch4EmissionFactor: number;
+    emissionFactorType?: string;
+    CO2EmissionFactor: number;
+    N2OEmissionFactor: number;
+    CH4EmissionFactor: number;
     dataQuality: string;
     sourceReference: string;
     buildingType: string;
     fuelType: string;
-    totalFuelConsumption: string;
+    totalFuelConsumption?: string | undefined;
     totalFuelConsumptionUnits: string;
     co2EmissionFactorUnit: string;
     n2oEmissionFactorUnit: string;
@@ -91,6 +92,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   inventoryId,
   methodology,
   selectedActivity,
+  referenceNumber,
 }) => {
   const {
     register,
@@ -130,10 +132,59 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   const [createActivityValue, { isLoading }] =
     api.useCreateActivityValueMutation();
 
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    setHasActivityData(!hasActivityData);
-    await createActivityValue({ inventoryId, data }).then((res: any) => {
+  function extractGasesAndUnits(data: any) {
+    const gases = ["CH4", "CO2", "N2O"];
+    const gasArray: { gas: string; factor: number; unit: string }[] = [];
+    gases.forEach((gas) => {
+      const gasFactorKey = `${gas}EmissionFactor`;
+      const gasUnitKey = `${gas}EmissionFactorUnit`;
+      const gasObject = {
+        gas: gas,
+        factor: data[gasFactorKey],
+        unit: data[gasUnitKey],
+      };
+
+      gasArray.push(gasObject);
+    });
+    return gasArray;
+  }
+
+  const onSubmit: SubmitHandler<Inputs> = async ({ activity }) => {
+    const gasValues = extractGasesAndUnits(activity);
+    const requestData = {
+      activityData: {
+        co2_amount: gasValues[1].factor,
+        ch4_amount: gasValues[0].factor,
+        n2o_amount: gasValues[2].factor,
+        activity_type: activity.buildingType,
+        fuel_type: activity.fuelType,
+      },
+      metadata: {},
+      inventoryValue: {
+        inputMethodology: getInputMethodology(methodology?.id), // extract methodology name
+        gpcReferenceNumber: referenceNumber,
+        unavailableReason: "",
+        unavailableExplanation: "",
+      },
+      dataSource: {
+        sourceType: "",
+        dataQuality: activity.dataQuality,
+        notes: activity.sourceReference,
+      },
+      gasValues: gasValues.map(({ gas, factor, unit }) => ({
+        gas,
+        gasAmount: factor,
+        emissionsFactor: {
+          gas,
+          unit,
+          gpcReferenceNumber: referenceNumber,
+        },
+      })),
+    };
+
+    await createActivityValue({ inventoryId, requestData }).then((res: any) => {
       if (res.data) {
+        setHasActivityData(!hasActivityData);
         toast({
           status: "success",
           duration: 1200,
@@ -171,11 +222,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   // Adjust function for countries with national emission factors i.e US
   const onEmissionFactorTypeChange = (e: any) => {
     const emissionFactorType = e.target.value;
-    if (
-      emissionFactorType === "Local" ||
-      emissionFactorType === "Regional" ||
-      emissionFactorType === "National"
-    ) {
+    if (emissionFactorType === "custom") {
       setIsEmissionFactorInputDisabled(false);
     } else {
       setIsEmissionFactorInputDisabled(true);
@@ -184,8 +231,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
 
   let fields = null;
   let units = null;
-
-  if (methodology?.id === "direct-measure") {
+  if (methodology?.id.includes("direct-measure")) {
     fields = methodology.fields;
   } else {
     fields = methodology?.fields[0]["extra-fields"];
@@ -209,7 +255,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
             borderStyle="solid"
             borderColor="border.neutral"
           >
-            {t("add-activity")}
+            {t("add-emission-data")}
           </ModalHeader>
           <ModalCloseButton marginTop="10px" />
           <ModalBody p={6} px={12}>
@@ -226,10 +272,11 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                   <BuildingTypeSelectInput
                     options={fields?.[0].options}
                     title={fields?.[0].id}
-                    placeholder={t("select-type-activity")}
+                    placeholder={t("select-activity-type")}
                     register={register}
                     activity={"activity.buildingType"}
                     errors={errors}
+                    t={t}
                     selectedActivity={selectedActivity}
                   />
                 </FormControl>
@@ -241,9 +288,10 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                     register={register}
                     activity={"activity.fuelType"}
                     errors={errors}
+                    t={t}
                   />
                 </FormControl>
-                {methodology?.id !== "direct-measure" ? (
+                {!methodology?.id.includes("direct-measure") ? (
                   <Box
                     display="flex"
                     justifyContent="space-between"
@@ -286,9 +334,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                               shadow: "none",
                               borderColor: "content.link",
                             }}
-                            {...register("activity.totalFuelConsumption", {
-                              required: t("value-required"),
-                            })}
+                            {...register("activity.totalFuelConsumption")}
                           />
                         </NumberInput>
                         <InputRightAddon
@@ -384,7 +430,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                   </Box>
                 ) : null}
               </HStack>
-              {methodology?.id !== "direct-measure" ? (
+              {!methodology?.id.includes("direct-measure") ? (
                 <>
                   <Heading
                     size="sm"
@@ -420,7 +466,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                             h="48px"
                             shadow="1dp"
                             borderRightRadius={0}
-                            {...register("activity.co2EmissionFactor")}
+                            {...register("activity.CO2EmissionFactor")}
                             bgColor={
                               isEmissionFactorInputDisabled
                                 ? "background.neutral"
@@ -464,7 +510,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                               borderColor: "content.link",
                             }}
                             borderRightRadius={0}
-                            {...register("activity.n2oEmissionFactor")}
+                            {...register("activity.N2OEmissionFactor")}
                             bgColor={
                               isEmissionFactorInputDisabled
                                 ? "background.neutral"
@@ -510,7 +556,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                               borderColor: "content.link",
                             }}
                             borderRightRadius={0}
-                            {...register("activity.ch4EmissionFactor")}
+                            {...register("activity.CH4EmissionFactor")}
                             bgColor={
                               isEmissionFactorInputDisabled
                                 ? "background.neutral"
@@ -553,7 +599,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                         <NumberInputField
                           h="48px"
                           placeholder="Enter emissions value"
-                          {...register("activity.co2EmissionFactor")}
+                          {...register("activity.CO2EmissionFactor")}
                           bgColor="base.light"
                           pos="relative"
                           zIndex={999}
@@ -582,7 +628,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                           h="48px"
                           borderRightRadius={0}
                           placeholder="Enter emissions value"
-                          {...register("activity.n2oEmissionFactor")}
+                          {...register("activity.N2OEmissionFactor")}
                           bgColor="base.light"
                           pos="relative"
                           zIndex={999}
@@ -612,7 +658,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                           h="48px"
                           borderRightRadius={0}
                           placeholder="Enter emissions value"
-                          {...register("activity.ch4EmissionFactor")}
+                          {...register("activity.CH4EmissionFactor")}
                           bgColor="base.light"
                           pos="relative"
                           zIndex={999}
@@ -760,7 +806,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
               p={0}
               m={0}
             >
-              Add Activity
+              {t("add-emission-data")}
             </Button>
           </ModalFooter>
         </ModalContent>

@@ -73,7 +73,7 @@ export type Inputs = {
     sourceReference: string;
     buildingType: string;
     fuelType: string;
-    totalFuelConsumption?: string | null | undefined;
+    totalFuelConsumption?: string | undefined;
     totalFuelConsumptionUnits: string;
     co2EmissionFactorUnit: string;
     n2oEmissionFactorUnit: string;

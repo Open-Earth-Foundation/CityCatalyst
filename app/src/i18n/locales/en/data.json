@@ -775,5 +775,7 @@
   "add-emission-data": "Add emission data",
   "co2-emissions": "CO2 emissions",
   "n2o-emissions": "N2O emissions",
-  "ch4-emissions": "CH4 emissions"
+  "ch4-emissions": "CH4 emissions",
+  "emissions-value-co2": "CO2",
+  "emissions-value-n2o": "N2O"
 }

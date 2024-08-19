@@ -67,8 +67,8 @@ if __name__ == "__main__":
     query = f"""
             INSTALL spatial;
             LOAD spatial;
-            
-            CREATE OR REPLACE TABLE waste_ef AS 
+
+            CREATE OR REPLACE TABLE waste_ef AS
             SELECT "EF ID" AS ef_id,
             REPLACE(REGEXP_REPLACE("IPCC 1996 Source/Sink Category", '\n', '|'), CHR(10), '|') AS ipcc_sector_multi,
             REPLACE(REGEXP_REPLACE("Gas", '\n', '|'), CHR(10), '|')  AS gas_multi,
@@ -160,7 +160,7 @@ if __name__ == "__main__":
             FROM waste_ef_split_gas
             WHERE gas != '';
 
-            CREATE OR REPLACE TABLE country_region_codes AS 
+            CREATE OR REPLACE TABLE country_region_codes AS
             SELECT * FROM (VALUES
                 ('Austria', 'AT'),
                 ('Belgium', 'BE'),
@@ -222,25 +222,25 @@ if __name__ == "__main__":
             ) AS t (country_name, country_code);
 
             CREATE OR REPLACE TABLE waste_default_values AS
-            SELECT  
+            SELECT
                 ef_id,
                 ipcc_sector,
-                CASE 
+                CASE
                     WHEN ipcc_sector = '6A - Solid Waste Disposal on Land' THEN 'Solid Waste'
                     WHEN ipcc_sector IN ('6B - Wastewater Handling', '6B2 - Domestic and Commercial Wastewater') THEN 'Wastewater'
                     WHEN ipcc_sector = '6B1 - Industrial Wastewater' THEN 'Wastewater'
-                    WHEN ipcc_sector = '6C - Waste Incineration' THEN 'Waste Incineration' 
+                    WHEN ipcc_sector = '6C - Waste Incineration' THEN 'Waste Incineration'
                 END AS gpc_sector,
                 lower(gas) AS gas_name,
-                CASE 
+                CASE
                     WHEN gas = 'METHANE' THEN 'CH4'
                     WHEN gas = 'NITROUS OXIDE' THEN 'N2O'
-                    WHEN gas = 'CARBON DIOXIDE' THEN 'CO2' 
+                    WHEN gas = 'CARBON DIOXIDE' THEN 'CO2'
                 END AS gas,
                 description AS description,
-                CASE 
-                    WHEN gpc_sector = 'Solid Waste' THEN 
-                        CASE 
+                CASE
+                    WHEN gpc_sector = 'Solid Waste' THEN
+                        CASE
                             WHEN description LIKE '%DOCf%' OR description LIKE '%Fraction%DOC%' OR description LIKE '%DOC%fraction%' THEN 'DOCf'
                             WHEN description LIKE '%DDOCm%' THEN 'DDOCm'
                             WHEN description LIKE '%DOC%' AND lower(description) NOT LIKE '%fraction%' AND lower(description) NOT LIKE '%frction%' THEN 'DOC'
@@ -251,7 +251,7 @@ if __name__ == "__main__":
                             ELSE NULL
                         END
                     WHEN gpc_sector LIKE '%Wastewater%' THEN
-                        CASE 
+                        CASE
                             WHEN lower(description) LIKE '%wastewater generation%' THEN 'W_i'
                             WHEN lower(description) LIKE '%cod%' THEN 'COD_i'
                             WHEN lower(description) LIKE '% bo' THEN 'B0'
@@ -260,29 +260,29 @@ if __name__ == "__main__":
                             ELSE NULL
                         END
                 END AS parameter_code,
-                CASE 
-                    WHEN gpc_sector = 'Solid Waste' THEN 
-                        CASE 
+                CASE
+                    WHEN gpc_sector = 'Solid Waste' THEN
+                        CASE
                             WHEN (description LIKE '%MSW%' OR  emissionsfactor_units like '%BOD%') THEN 'Domestic'
                             WHEN (lower(description) LIKE '%industrial%' OR description LIKE '%industry%' OR emissionsfactor_units like '%COD%') THEN 'Industrial'
                             WHEN description LIKE '%clinical%' THEN 'Clinical'
                             ELSE NULL
                         END
                     WHEN gpc_sector = 'Wastewater' THEN
-                        CASE 
+                        CASE
                             WHEN (parameter_code = 'BOD' OR emissionsfactor_units like '%BOD%') THEN 'Domestic'
                             WHEN (parameter_code = 'COD_i' OR lower(description) LIKE '%industrial%' OR description LIKE '%industry%' OR emissionsfactor_units like '%COD%') THEN 'Industrial'
                             WHEN description LIKE '%clinical%' THEN 'Clinical'
-                            ELSE NULL 	
+                            ELSE NULL
                         END
                     ELSE NULL
                 END AS gpc_subsector,
                 type_parameter,
-                CASE 
+                CASE
                     WHEN regexp_extract(technical_reference, '([0-9]{4})') = '' OR regexp_extract(technical_reference, '([0-9]{4})') IS NULL THEN regexp_extract(type_parameter, '([0-9]{4})')
-                    ELSE regexp_extract(technical_reference, '([0-9]{4})') 
+                    ELSE regexp_extract(technical_reference, '([0-9]{4})')
                 END AS technical_reference_year,
-                CASE 
+                CASE
                     WHEN parameter_code IN ('DOCf', 'DOC') THEN 'waste_form'
                     WHEN parameter_code IN ('MCF', 'OX') AND gpc_sector = 'Solid Waste' THEN 'treatment_type'
                     WHEN parameter_code = 'k' THEN 'climate'
@@ -290,33 +290,33 @@ if __name__ == "__main__":
                     WHEN parameter_code = 'MCF' AND gpc_sector LIKE '%water%' THEN 'treatment_type'
                     ELSE NULL
                 END AS parameter_subcategory_type1,
-                CASE 
+                CASE
                     WHEN parameter_code IN ('DOCf', 'DOC') THEN
-                        CASE 
+                        CASE
                             WHEN lower(emissionfactor_details) LIKE '%wet waste%' OR emissionsfactor_units LIKE '%wet%' THEN 'wet waste'
                             WHEN lower(emissionfactor_details) LIKE '%dry waste%' OR emissionsfactor_units LIKE '%dry%' THEN 'dry waste'
                             ELSE 'unclassified'
                         END
                     WHEN parameter_code = 'MCF' AND gpc_sector = 'Solid Waste' THEN
-                        CASE 
+                        CASE
                             WHEN lower(emissionfactor_details) LIKE '%managed%anaerobic%' THEN 'Managed – Anaerobic'
                             WHEN lower(emissionfactor_details) LIKE '%semi%aerobic%well%' THEN 'Managed Well – Semi-Aerobic'
                             WHEN lower(emissionfactor_details) LIKE '%semi%aerobic%poor%' THEN 'Managed Poorly – Semi-Aerobic'
                             WHEN lower(emissionfactor_details) LIKE '%active%aeration%poor%' THEN 'Managed Poorly – Active Aeration'
-                            WHEN lower(emissionfactor_details) LIKE '%active%aeration%' THEN 'Managed Well – Active Aeration'    
+                            WHEN lower(emissionfactor_details) LIKE '%active%aeration%' THEN 'Managed Well – Active Aeration'
                             WHEN lower(emissionfactor_details) LIKE '%managed%greater%5%' OR lower(emissionfactor_details) LIKE '%unmanaged-deep%' THEN 'Unmanaged Waste Sites - Deep SWDS'
-                            WHEN lower(emissionfactor_details) LIKE '%managed%less%5%' THEN 'Unmanaged Waste Sites - Shallow SWDS'     
-                            WHEN lower(emissionfactor_details) LIKE '%uncategorised%' OR lower(emissionfactor_details) LIKE '%uncategorized%' THEN 'Uncategorized Waste Sites'     
+                            WHEN lower(emissionfactor_details) LIKE '%managed%less%5%' THEN 'Unmanaged Waste Sites - Shallow SWDS'
+                            WHEN lower(emissionfactor_details) LIKE '%uncategorised%' OR lower(emissionfactor_details) LIKE '%uncategorized%' THEN 'Uncategorized Waste Sites'
                             ELSE 'Other'
                         END
                     WHEN parameter_code = 'OX' THEN
-                        CASE 
+                        CASE
                             WHEN lower(emissionfactor_details) LIKE '%unmanaged%' THEN 'Unmanaged'
                             WHEN lower(emissionfactor_details) LIKE '%well-managed%' THEN 'Managed'
                             ELSE NULL
                         END
                     WHEN parameter_code = 'k' THEN
-                        CASE 
+                        CASE
                             WHEN (emissionfactor_details LIKE '%< 1%' OR emissionfactor_details LIKE '%< 1000 mm%') AND lower(emissionfactor_details) LIKE '%dry%' THEN 'Temperate - Dry'
                             WHEN (emissionfactor_details LIKE '%< 1%' OR emissionfactor_details LIKE '%< 1000 mm%') AND lower(emissionfactor_details) LIKE '%wet%' THEN 'Temperate - Wet'
                             WHEN lower(emissionfactor_details) LIKE '%moist%' THEN 'Tropical - Moist'
@@ -369,45 +369,45 @@ if __name__ == "__main__":
                             WHEN lower(emissionfactor_details) LIKE '%petrochemical%' THEN 'Petrochemical Products'
                             WHEN lower(emissionfactor_details) LIKE '%food - oils%' THEN 'Food Oils'
                             WHEN lower(emissionfactor_details) LIKE '%other vegetable processing%' THEN 'Other Vegetable Processing'
-                            WHEN lower(emissionfactor_details) LIKE '%non-citrus%' THEN 'Non-Citrus Processing'   
+                            WHEN lower(emissionfactor_details) LIKE '%non-citrus%' THEN 'Non-Citrus Processing'
                             ELSE 'Other'
                         END
-                    WHEN parameter_code IN ('MCF') AND gpc_sector LIKE '%water%' THEN 
+                    WHEN parameter_code IN ('MCF') AND gpc_sector LIKE '%water%' THEN
                         CASE
                             WHEN lower(emissionfactor_details) LIKE '%flowing sewer%' THEN 'Flowing Sewer'
                             WHEN lower(emissionfactor_details) LIKE '%sea, river, lake discharge%' THEN 'Flowing Water'
                             WHEN lower(emissionfactor_details) LIKE '%stagnant sewer%' THEN 'Stagnant Sewer'
-                            WHEN lower(emissionfactor_details) LIKE '%anaerobic reactor%' 
+                            WHEN lower(emissionfactor_details) LIKE '%anaerobic reactor%'
                             OR lower(emissionfactor_details) LIKE '%a2o%' THEN 'Anaerobic Reactor'
                             WHEN lower(emissionfactor_details) LIKE '%septic%' THEN 'Septic Tank'
                             WHEN lower(emissionfactor_details) LIKE '%centralized% aerobic treatment%'
                             OR lower(emissionfactor_details) LIKE '%centralised% aerobic treatment%' THEN 'Centralized Aerobic Treatment Plant'
-                            WHEN lower(emissionfactor_details) LIKE '%anaerobic shallow lagoon%' 
+                            WHEN lower(emissionfactor_details) LIKE '%anaerobic shallow lagoon%'
                             OR lower(emissionfactor_details) LIKE '%facultative lagoons%' THEN 'Anaerobic Shallow Lagoon'
                             WHEN lower(emissionfactor_details) LIKE '%bardenpho%' THEN 'Bardenpho Treatment'
                             WHEN lower(emissionfactor_details) LIKE '%biological nutrient removal%' THEN 'Biological Nutrient Removal'
                             WHEN lower(emissionfactor_details) LIKE '%latrine%' THEN 'Latrine'
                             WHEN lower(emissionfactor_details) LIKE '%untreated%' THEN 'Untreated System'
-                            WHEN lower(emissionfactor_details) LIKE '%treated anaerobic%' 
-                            OR lower(emissionfactor_details) LIKE '%anaerobic digester%' 
-                            OR lower(emissionfactor_details) LIKE '%anaerobic shallow lagoon%' 
+                            WHEN lower(emissionfactor_details) LIKE '%treated anaerobic%'
+                            OR lower(emissionfactor_details) LIKE '%anaerobic digester%'
+                            OR lower(emissionfactor_details) LIKE '%anaerobic shallow lagoon%'
                             OR lower(emissionfactor_details) LIKE '%anaerobic deep lagoon%' THEN 'Anaerobic Treatment'
-                            WHEN lower(emissionfactor_details) LIKE '%treated aerobic%' 
+                            WHEN lower(emissionfactor_details) LIKE '%treated aerobic%'
                             OR lower(emissionfactor_details) LIKE '%well-managed aerobic%' THEN 'Aerobic Treatment Plant - Well Managed'
                             WHEN lower(emissionfactor_details) LIKE '%overloaded aerobic%' THEN 'Aerobic Treatment Plant - Overloaded'
-                            WHEN lower(emissionfactor_details) LIKE '%discharge to aquatic%' 
+                            WHEN lower(emissionfactor_details) LIKE '%discharge to aquatic%'
                             OR lower(emissionfactor_details) LIKE '%reservoir%' THEN 'Discharge to Aquatic Environments'
                             WHEN lower(emissionfactor_details) LIKE '%activated sludge%' THEN 'Activated Sludge'
                             ELSE 'Other'
                         END
                 END AS parameter_subcategory_typename1,
-                CASE 
+                CASE
                     WHEN parameter_code IN ('DOCf', 'DOC', 'k') THEN 'waste_type'
-                    ELSE NULL 
+                    ELSE NULL
                 END AS parameter_subcategory_type2,
-                CASE 
+                CASE
                     WHEN parameter_code IN ('DOCf', 'DOC') THEN
-                        CASE 
+                        CASE
                             WHEN lower(emissionfactor_details) LIKE '%food%' THEN 'Food Waste'
                             WHEN lower(emissionfactor_details) LIKE '%textile%' THEN 'Textile'
                             WHEN lower(emissionfactor_details) LIKE '%paper%' THEN 'Paper/Cardboard'
@@ -419,7 +419,7 @@ if __name__ == "__main__":
                             ELSE NULL
                         END
                     WHEN parameter_code = 'k' THEN
-                        CASE 
+                        CASE
                             WHEN lower(emissionfactor_details) LIKE '%slow%' THEN 'Slowly Degrading Waste'
                             WHEN lower(emissionfactor_details) LIKE '%rapid%' THEN 'Rapidly Degrading Waste'
                             WHEN lower(emissionfactor_details) LIKE '%bulk%' OR lower(emissionfactor_details) LIKE '%mixed%' THEN 'Bulk MSW or Industrial Waste'
@@ -429,12 +429,12 @@ if __name__ == "__main__":
                 END AS parameter_subcategory_typename2,
                 emissionsfactor_value,
                 emissionsfactor_units,
-                COALESCE(CASE 
+                COALESCE(CASE
                     WHEN lower(region) LIKE '%latin america%' THEN 'Latin America'
                     WHEN lower(region) LIKE '%brazil%' THEN 'Brazil'
                     WHEN lower(region) LIKE '%chile%' THEN 'Chile'
                     WHEN lower(region) LIKE '%argentina%' THEN 'Argentina'
-                    WHEN region IS NULL OR region = 'Region: Generic' THEN 'Global'
+                    WHEN region IS NULL OR region = 'Region: Generic' THEN 'world'
                     ELSE NULL
                 END, b.country_name) AS region,
                 b.country_code as actor_id,
@@ -446,7 +446,7 @@ if __name__ == "__main__":
             ON a.region = b.country_name;
 
             CREATE OR REPLACE TABLE waste_default_values_rnk AS
-            SELECT 
+            SELECT
                 gpc_sector,
                 gas_name,
                 gas,
@@ -464,21 +464,21 @@ if __name__ == "__main__":
                 actor_id,
                 ef_id AS ipcc_ef_id,
                 RANK() OVER (
-                    PARTITION BY 
+                    PARTITION BY
                         parameter_code,
                         parameter_subcategory_type1,
                         parameter_subcategory_typename1,
                         parameter_subcategory_type2,
-                        parameter_subcategory_typename2 
-                    ORDER BY 
+                        parameter_subcategory_typename2
+                    ORDER BY
                         technical_reference_year DESC
                 ) AS rnk
-            FROM 
+            FROM
                 waste_default_values
-            WHERE 
-                parameter_code IS NOT NULL 
+            WHERE
+                parameter_code IS NOT NULL
                 AND (actor_id IS NOT NULL OR region IS NOT NULL)
-            ORDER BY 
+            ORDER BY
                 parameter_code,
                 parameter_subcategory_type1,
                 parameter_subcategory_typename1,
@@ -486,25 +486,25 @@ if __name__ == "__main__":
                 parameter_subcategory_typename2,
                 technical_reference_year DESC;
 
-            
+
             CREATE OR REPLACE TABLE waste_formula_input_values AS
-            SELECT 
+            SELECT
                 gas,
                 parameter_code,
                 gpc_sector,
                 gpc_subsector,
                 technical_reference_year AS year,
-                CASE 
+                CASE
                     WHEN REGEXP_MATCHES(emissionsfactor_value, '(\d+\.?\d*)\s*-\s*(\d+\.?\d*)') THEN
                         ROUND((
                             NULLIF(SPLIT_PART(REGEXP_EXTRACT(emissionsfactor_value, '(\d+\.?\d*)\s*-\s*(\d+\.?\d*)'), '-', 1), '')::decimal +
                             NULLIF(SPLIT_PART(REGEXP_EXTRACT(emissionsfactor_value, '(\d+\.?\d*)\s*-\s*(\d+\.?\d*)'), '-', 2), '')::decimal
-                        ) / 2.0::decimal, 3) 
-                    WHEN NOT REGEXP_MATCHES(emissionsfactor_value, '[a-zA-Z]') THEN 
-                        emissionsfactor_value::numeric 
+                        ) / 2.0::decimal, 3)
+                    WHEN NOT REGEXP_MATCHES(emissionsfactor_value, '[a-zA-Z]') THEN
+                        emissionsfactor_value::numeric
                     ELSE NULL
                 END AS formula_input_value,
-                CASE 
+                CASE
                     WHEN parameter_code = 'B0' THEN 'Kg/Kg'
                     WHEN parameter_code = 'BOD' THEN emissionsfactor_units
                     WHEN parameter_code = 'COD_i' AND emissionsfactor_units LIKE '%kg%/m3%' THEN 'kg/m3'
@@ -521,20 +521,20 @@ if __name__ == "__main__":
                 region,
                 actor_id,
                 'IPCC' AS datasource
-            FROM 
+            FROM
                 waste_default_values_rnk
-            WHERE 
+            WHERE
                 rnk = 1
                 AND formula_input_units IS NOT NULL
                 ;
-            
-            
-			CREATE OR REPLACE TABLE waste_formula_input_description AS 
+
+
+			CREATE OR REPLACE TABLE waste_formula_input_description AS
 			SELECT 	*,
-			        CASE 
+			        CASE
 			            WHEN methodology LIKE '%industrial%' THEN 'Industrial'
-			            WHEN methodology LIKE '%domestic%' THEN 'Domestic' 
-			            ELSE NULL 
+			            WHEN methodology LIKE '%domestic%' THEN 'Domestic'
+			            ELSE NULL
 			        END AS gpc_subsector
 			FROM (VALUES
 			    ('W-i', 'Wastewater', LOWER(REPLACE('wastewater generation', ' ', '-')), LOWER(REPLACE('Industrial Wastewater', ' ', '-'))),
@@ -558,9 +558,9 @@ if __name__ == "__main__":
 			) AS t (parameter, sector, parameter_name, methodology);
 
 
-            CREATE OR REPLACE TABLE waste_formula_input AS 
-            WITH waste_formula_input AS (   
-            SELECT DISTINCT 
+            CREATE OR REPLACE TABLE waste_formula_input AS
+            WITH waste_formula_input AS (
+            SELECT DISTINCT
                 b.gas,
                 b.parameter_code,
                 a.parameter_name,
@@ -577,26 +577,27 @@ if __name__ == "__main__":
                 b.region,
                 actor_id,
                 b.datasource
-            FROM 
-                waste_formula_input_description a 
-            INNER JOIN 
-                waste_formula_input_values b 
-            ON 
-                a.sector = b.gpc_sector 
-                AND a.parameter = b.parameter_code 
+            FROM
+                waste_formula_input_description a
+            INNER JOIN
+                waste_formula_input_values b
+            ON
+                a.sector = b.gpc_sector
+                AND a.parameter = b.parameter_code
                 AND COALESCE(b.gpc_subsector, 'unk') = COALESCE(a.gpc_subsector, 'unk'))
             SELECT 	DISTINCT gas,
                     parameter_code,
                     parameter_name,
                     methodology,
                     UNNEST(gpc_refno) AS gpc_refno,
-                    year,
+                    null as year,
                     formula_input_value,
                     formula_input_units,
                     null as formula_name,
                     metadata,
                     region,
-                    case when region = 'Global' then 'GLOBAL'
+                    case when region = 'world' then 'world'
+                        when region = 'Brazil' then 'BR'
                     else actor_id end as actor_id,
                     datasource
             FROM waste_formula_input;
@@ -606,7 +607,7 @@ if __name__ == "__main__":
     df = conn.execute("SELECT * FROM waste_formula_input").fetchdf()
 
     query2 = f"""
-            CREATE OR REPLACE TABLE waste_ef AS 
+            CREATE OR REPLACE TABLE waste_ef AS
             SELECT "EF ID" AS ef_id,
             REPLACE(REGEXP_REPLACE("IPCC 1996 Source/Sink Category", '\n', '|'), CHR(10), '|') AS ipcc_sector_multi,
             REPLACE(REGEXP_REPLACE("Gas", '\n', '|'), CHR(10), '|')  AS gas_multi,
@@ -698,7 +699,7 @@ if __name__ == "__main__":
             FROM waste_ef_split_gas
             WHERE gas != '';
 
-            CREATE OR REPLACE TABLE country_region_codes AS 
+            CREATE OR REPLACE TABLE country_region_codes AS
             SELECT * FROM (VALUES
                 ('Austria', 'AT'),
                 ('Belgium', 'BE'),
@@ -759,32 +760,32 @@ if __name__ == "__main__":
                 ('Azerbaijan', 'AZ')
             ) AS t (country_name, country_code);
 
-            CREATE OR REPLACE TABLE waste_default_values AS 
+            CREATE OR REPLACE TABLE waste_default_values AS
             WITH dmi AS (
             SELECT 	ef_id,
                     ipcc_sector,
                     'Waste Incineration' AS sector,
-                    CASE 
+                    CASE
                     WHEN gas = 'METHANE' THEN 'CH4'
                     WHEN gas = 'NITROUS OXIDE' THEN 'N2O'
-                    WHEN gas = 'CARBON DIOXIDE' THEN 'CO2' 
+                    WHEN gas = 'CARBON DIOXIDE' THEN 'CO2'
                     END AS gas,
                     CASE WHEN lower(Description) like '%dry%matter%' THEN 'dmi'
                     ELSE NULL END AS parameter_code,
-                    CASE 
+                    CASE
                     WHEN regexp_extract(technical_reference, '([0-9]{4})') = '' OR regexp_extract(technical_reference, '([0-9]{4})') IS NULL THEN regexp_extract(type_parameter, '([0-9]{4})')
-                    ELSE regexp_extract(technical_reference, '([0-9]{4})') 
+                    ELSE regexp_extract(technical_reference, '([0-9]{4})')
                     END AS technical_reference_year,
                     CASE WHEN lower(Description) like '%dry%matter%' THEN 'waste_type'
                     END AS parameter_subcategory_type1,
                     CASE WHEN lower(Description) like '%dry%matter%' THEN technologies_paractises
                     END AS parameter_subcategory_typename1,
-                    COALESCE(b.country_code, 'GLOBAL') as actor_id,
+                    COALESCE(b.country_code, 'world') as actor_id,
                     data_source,
                     emissionsfactor_value,
                     emissionsfactor_units,
                     technical_reference,
-                    emissionfactor_details  	
+                    emissionfactor_details
             FROM waste_emissionfactor a
             LEFT JOIN country_region_codes b
             ON a.region = b.country_name
@@ -795,16 +796,16 @@ if __name__ == "__main__":
             SELECT 	ef_id,
                     ipcc_sector,
                     'Waste Incineration' AS sector,
-                    CASE 
+                    CASE
                     WHEN gas = 'METHANE' THEN 'CH4'
                     WHEN gas = 'NITROUS OXIDE' THEN 'N2O'
-                    WHEN gas = 'CARBON DIOXIDE' THEN 'CO2' 
+                    WHEN gas = 'CARBON DIOXIDE' THEN 'CO2'
                     END AS gas,
                     CASE WHEN lower(a.Description) like '%fraction of carbon%' THEN 'CFi'
                     ELSE NULL END AS parameter_code,
-                    CASE 
+                    CASE
                     WHEN regexp_extract(technical_reference, '([0-9]{4})') = '' OR regexp_extract(technical_reference, '([0-9]{4})') IS NULL THEN regexp_extract(type_parameter, '([0-9]{4})')
-                    ELSE regexp_extract(technical_reference, '([0-9]{4})') 
+                    ELSE regexp_extract(technical_reference, '([0-9]{4})')
                     END AS technical_reference_year,
                     CASE WHEN lower(Description) like '%dry%matter%' THEN 'waste_type'
                     END AS parameter_subcategory_type1,
@@ -812,12 +813,12 @@ if __name__ == "__main__":
                         WHEN lower(Description) like '%paper%cardboard%' THEN 'Paper/cardboard'
                         WHEN lower(Description) like '%pet%bottles%' THEN 'PET bottles'
                     END AS parameter_subcategory_typename1,
-                    COALESCE(b.country_code, region, 'GLOBAL') as actor_id,
+                    COALESCE(b.country_code, region, 'world') as actor_id,
                     data_source,
                     emissionsfactor_value,
                     emissionsfactor_units,
                     technical_reference,
-                    emissionfactor_details  	
+                    emissionfactor_details
             FROM waste_emissionfactor a
             LEFT JOIN country_region_codes b
             ON a.region = b.country_name
@@ -828,19 +829,19 @@ if __name__ == "__main__":
             SELECT 	ef_id,
                     ipcc_sector,
                     'Waste Incineration' AS sector,
-                    CASE 
+                    CASE
                     WHEN gas = 'METHANE' THEN 'CH4'
                     WHEN gas = 'NITROUS OXIDE' THEN 'N2O'
-                    WHEN gas = 'CARBON DIOXIDE' THEN 'CO2' 
+                    WHEN gas = 'CARBON DIOXIDE' THEN 'CO2'
                     END AS gas,
                     CASE WHEN lower(a.Description) like '%fossil%carbon%' THEN 'FCFi'
                     END AS parameter_code,
-                    CASE 
+                    CASE
                     WHEN regexp_extract(technical_reference, '([0-9]{4})') = '' OR regexp_extract(technical_reference, '([0-9]{4})') IS NULL THEN regexp_extract(type_parameter, '([0-9]{4})')
-                    ELSE regexp_extract(technical_reference, '([0-9]{4})') 
+                    ELSE regexp_extract(technical_reference, '([0-9]{4})')
                     END AS technical_reference_year,
                     'waste_type' AS parameter_subcategory_type1,
-                    CASE 
+                    CASE
                     WHEN emissionfactor_details ILIKE '%plastic%' THEN 'Plastics'
                     WHEN emissionfactor_details ILIKE '%other, inert waste%' THEN 'Other, inert waste'
                     WHEN emissionfactor_details ILIKE '%food%' THEN 'Food waste'
@@ -852,31 +853,31 @@ if __name__ == "__main__":
                     WHEN emissionfactor_details ILIKE '%nappies%' OR emissionfactor_details ILIKE '%diaper%' THEN 'Nappies'
                     WHEN emissionfactor_details ILIKE '%metal%' THEN 'Metal'
                     ELSE 'Uncategorized' END parameter_subcategory_typename1,
-                    COALESCE(b.country_code, region, 'GLOBAL') as actor_id,
+                    COALESCE(b.country_code, region, 'world') as actor_id,
                     data_source,
                     emissionsfactor_value,
                     emissionsfactor_units,
                     technical_reference,
-                    emissionfactor_details  	
+                    emissionfactor_details
             FROM waste_emissionfactor a
             LEFT JOIN country_region_codes b
             ON a.region = b.country_name
             WHERE ipcc_sector = '6C - Waste Incineration'
-            AND lower(a.Description) like '%fossil%carbon%'), 
+            AND lower(a.Description) like '%fossil%carbon%'),
             oxidation_factor AS (
             SELECT 	ef_id,
                     ipcc_sector,
                     'Waste Incineration' AS sector,
-                    CASE 
+                    CASE
                     WHEN gas = 'METHANE' THEN 'CH4'
                     WHEN gas = 'NITROUS OXIDE' THEN 'N2O'
-                    WHEN gas = 'CARBON DIOXIDE' THEN 'CO2' 
+                    WHEN gas = 'CARBON DIOXIDE' THEN 'CO2'
                     END AS gas,
                     CASE WHEN lower(a.Description) like '%fossil%carbon%' THEN 'OFi'
                     END AS parameter_code,
-                    CASE 
+                    CASE
                     WHEN regexp_extract(technical_reference, '([0-9]{4})') = '' OR regexp_extract(technical_reference, '([0-9]{4})') IS NULL THEN regexp_extract(type_parameter, '([0-9]{4})')
-                    ELSE regexp_extract(technical_reference, '([0-9]{4})') 
+                    ELSE regexp_extract(technical_reference, '([0-9]{4})')
                     END AS technical_reference_year,
                     'waste_type' AS parameter_subcategory_type1,
                     CASE WHEN (emissionfactor_details LIKE '%MSW%' OR lower(emissionfactor_details) LIKE '%municipal%') THEN 'Muncipal Solid Waste'
@@ -885,13 +886,13 @@ if __name__ == "__main__":
                         WHEN lower(emissionfactor_details) LIKE '%clinical%' THEN 'Clinical'
                         WHEN lower(emissionfactor_details) LIKE '%sewage%' THEN 'Sewage'
                         WHEN lower(emissionfactor_details) LIKE '%hazardous%' THEN 'Hazardous'
-                    END AS subcategory_typename1, 
-                    COALESCE(b.country_code, region, 'GLOBAL') as actor_id,
+                    END AS subcategory_typename1,
+                    COALESCE(b.country_code, region, 'world') as actor_id,
                     data_source,
                     emissionsfactor_value,
                     emissionsfactor_units,
                     technical_reference,
-                    emissionfactor_details  	
+                    emissionfactor_details
             FROM waste_emissionfactor a
             LEFT JOIN country_region_codes b
             ON a.region = b.country_name
@@ -917,14 +918,14 @@ if __name__ == "__main__":
                     technical_reference_year AS year,
                     COALESCE(parameter_subcategory_type1, 'waste_type') AS parameter_subcategory_type1,
                     parameter_subcategory_typename1,
-                    CASE 
+                    CASE
                     WHEN REGEXP_MATCHES(emissionsfactor_value, '(\d+\.?\d*)\s*-\s*(\d+\.?\d*)') THEN
                         ROUND((
                             NULLIF(SPLIT_PART(REGEXP_EXTRACT(emissionsfactor_value, '(\d+\.?\d*)\s*-\s*(\d+\.?\d*)'), '-', 1), '')::decimal +
                             NULLIF(SPLIT_PART(REGEXP_EXTRACT(emissionsfactor_value, '(\d+\.?\d*)\s*-\s*(\d+\.?\d*)'), '-', 2), '')::decimal
-                        ) / 2.0::decimal, 3) 
-                    WHEN NOT REGEXP_MATCHES(emissionsfactor_value, '[a-zA-Z]') THEN 
-                        emissionsfactor_value::numeric 
+                        ) / 2.0::decimal, 3)
+                    WHEN NOT REGEXP_MATCHES(emissionsfactor_value, '[a-zA-Z]') THEN
+                        emissionsfactor_value::numeric
                     ELSE NULL
                 END AS formula_input_value,
                 '%' AS formula_input_units,
@@ -932,7 +933,7 @@ if __name__ == "__main__":
                 actor_id,
                 RANK() OVER(PARTITION BY sector, gas, parameter_code, parameter_subcategory_type1, parameter_subcategory_typename1, actor_id ORDER BY technical_reference_year DESC) AS RNK
             FROM waste_default_values
-            WHERE (LENGTH(actor_id) = 2 OR actor_id = 'GLOBAL')
+            WHERE (LENGTH(actor_id) = 2 OR actor_id = 'world')
             AND formula_input_value > 0;
 
             CREATE TABLE waste_formula_input_incineration AS
@@ -954,14 +955,14 @@ if __name__ == "__main__":
                                 parameter_subcategory_type1,parameter_subcategory_typename1) AS metadata,
                     NULL AS region,
                     actor_id,
-                    datasource		
+                    datasource
             FROM waste_default_values_rnk)
             SELECT 	gas,
                     parameter_code,
                     parameter_name,
                     methodology,
                     UNNEST(gpc_refno) AS gpc_refno,
-                    year,
+                    null as year,
                     formula_input_value,
                     formula_input_units,
                     formula_name,

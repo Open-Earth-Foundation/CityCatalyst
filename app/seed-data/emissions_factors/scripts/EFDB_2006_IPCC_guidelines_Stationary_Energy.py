@@ -467,6 +467,10 @@ if __name__ == "__main__":
     ## ------------------------------------------
     # drop EF for fugitive emissions
     EF_df = EF_df[(EF_df['gpc_refno'] != 'I.8.1') & (EF_df['gpc_refno'] != 'I.7.1')]
+
+    # Filter out the rows that are for Japan and Korea
+    filter_values = ['Only for Japan', 'Japan', 'Republic of Korea']
+    EF_df = EF_df[~EF_df['region'].isin(filter_values)]
     
     # list of units to exclude
     exclude_units = ['MMT C / QBtu [HHV]', 'g CH4/10^6 BTU']

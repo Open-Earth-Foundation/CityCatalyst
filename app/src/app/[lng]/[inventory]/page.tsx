@@ -480,7 +480,10 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   </Box>
                 </Box>
                 <Box className="flex gap-[24px] relative justify-between top-[100px]">
-                  <NextLink href={`/${inventoryId}/data`}>
+                  <NextLink
+                    data-testid={"add-data-to-inventory-card"}
+                    href={`/${inventoryId}/data`}
+                  >
                     <Card
                       shadow="2dp"
                       backgroundColor="base.light"

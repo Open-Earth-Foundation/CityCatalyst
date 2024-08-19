@@ -88,26 +88,26 @@ export default function ChatBot({
   };
 
   // Creating the thread id for the given inventory on initial render
-  useEffect(() => {
-    // Function to create the threadId with initial message
-    const initializeThread = async () => {
-      try {
-        const result = await createThreadId({
-          inventoryId: inventoryId,
-          content: t("initial-message"),
-        }).unwrap();
-        setThreadId(result);
-      } catch (error) {
-        handleError(
-          error,
-          "Failed to initialize chat. Please refresh the page.",
-        );
-      }
-    };
-    if (!threadId) {
-      initializeThread();
-    }
-  }, []); // Empty dependency array means this effect runs only once
+  // useEffect(() => {
+  //   // Function to create the threadId with initial message
+  //   const initializeThread = async () => {
+  //     try {
+  //       const result = await createThreadId({
+  //         inventoryId: inventoryId,
+  //         content: t("initial-message"),
+  //       }).unwrap();
+  //       setThreadId(result);
+  //     } catch (error) {
+  //       handleError(
+  //         error,
+  //         "Failed to initialize chat. Please refresh the page.",
+  //       );
+  //     }
+  //   };
+  //   if (!threadId) {
+  //     initializeThread();
+  //   }
+  // }, []); // Empty dependency array means this effect runs only once
 
   // Automatically scroll to bottom of chat
   const messagesEndRef = useRef<HTMLDivElement | null>(null);

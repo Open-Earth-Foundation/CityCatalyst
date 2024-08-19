@@ -1,3 +1,6 @@
+import { ActivityData } from "@/models/ActivityData";
+import { ActivityValue } from "@/models/ActivityValue";
+import { convertKgToTonnes, getInputMethodology } from "@/util/helpers";
 import { AddIcon } from "@chakra-ui/icons";
 import {
   Accordion,
@@ -24,15 +27,18 @@ import { MdMoreVert } from "react-icons/md";
 
 interface ActivityAccordionProps {
   t: TFunction;
-  userActivities: any;
+  activityData: ActivityValue[] | undefined;
   showActivityModal: () => void;
+  methodologyId: string | undefined;
 }
 
 const ActivityAccordion: FC<ActivityAccordionProps> = ({
   t,
-  userActivities,
+  activityData,
   showActivityModal,
+  methodologyId,
 }) => {
+  const methodologyName = getInputMethodology(methodologyId!);
   return (
     <Accordion defaultIndex={[0]} allowMultiple>
       <AccordionItem>
@@ -57,7 +63,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                   letterSpacing="wide"
                   fontSize="body.md"
                 >
-                  {userActivities?.length} {t("activities-added")}
+                  {activityData?.length} {t("activities-added")}
                 </Text>
               </Box>
               <Box alignItems="start" display="flex" fontFamily="heading">
@@ -72,7 +78,6 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                 <IconButton
                   bg="none"
                   pos="relative"
-                  zIndex={20}
                   onClick={showActivityModal}
                   _hover={{ bg: "none" }}
                   aria-label="add-activity"
@@ -99,10 +104,12 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                 </Tr>
               </Thead>
               <Tbody>
-                {userActivities?.map((activity: any, i: number) => {
+                {activityData?.map((activity: any, i: number) => {
                   return (
                     <Tr key={i}>
-                      <Td>{activity?.fuelType}</Td>
+                      <Td className="truncate">
+                        {t(activity.activityData.fuel_type)}
+                      </Td>
                       <Td>
                         <Tag
                           size="lg"
@@ -110,11 +117,13 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                           colorScheme="blue"
                           borderRadius="full"
                         >
-                          <TagLabel>{activity?.dataQuality}</TagLabel>
+                          <TagLabel>
+                            {t(activity?.dataSource.dataQuality)}
+                          </TagLabel>
                         </Tag>
                       </Td>
                       <Td>{activity?.fuelConsumption!}</Td>
-                      <Td>{activity?.emissions}</Td>
+                      <Td>{convertKgToTonnes(activity?.co2eq)}</Td>
                       <Td>
                         <IconButton
                           color="interactive.control"

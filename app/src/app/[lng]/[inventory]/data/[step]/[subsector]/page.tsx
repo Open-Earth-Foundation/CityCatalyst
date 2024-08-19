@@ -38,9 +38,6 @@ function SubSectorPage({
   const router = useRouter();
   const { t } = useTranslation(lng, "data");
 
-  const { data: inventory, isLoading: isInventoryLoading } =
-    api.useGetInventoryQuery(inventoryId);
-
   const {
     isOpen: isDeleteActivitiesModalOpen,
     onOpen: onDeleteActivitiesModalOpen,
@@ -132,7 +129,6 @@ function SubSectorPage({
     };
   }, []);
 
-  const MotionBox = motion(Box);
   const MotionTabList = motion(TabList);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -149,6 +145,12 @@ function SubSectorPage({
   };
   const scrollResizeHeaderThreshold = 50;
   const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
+
+  const { data: activityData, isLoading: isActivityDataLoading } =
+    api.useGetActivityValuesQuery({
+      inventoryId,
+      subSectorId: subSectorData?.subsectorId,
+    });
 
   return (
     <>
@@ -186,7 +188,7 @@ function SubSectorPage({
               >
                 <BreadcrumbItem>
                   <BreadcrumbLink
-                    href={`/${inventory}/data`}
+                    href={`/${inventoryId}/data`}
                     color="content.tertiary"
                   >
                     {t("all-sectors")}
@@ -194,7 +196,7 @@ function SubSectorPage({
                 </BreadcrumbItem>
                 <BreadcrumbItem>
                   <BreadcrumbLink
-                    href={`/${inventory}/data/${step}`}
+                    href={`/${inventoryId}/data/${step}`}
                     color="content.tertiary"
                   >
                     {getSectorName(step)}
@@ -221,7 +223,7 @@ function SubSectorPage({
           <Box display="flex">
             {isExpanded ? (
               <Box>
-                <Link href={`/${inventory}/data`}>
+                <Link href={`/${inventoryId}/data`}>
                   <Icon
                     as={ArrowBackIcon}
                     h="24px"
@@ -343,6 +345,7 @@ function SubSectorPage({
                     t={t}
                     inventoryId={inventoryId}
                     step={step}
+                    activityData={activityData}
                   />
                 ))
               )}

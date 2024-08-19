@@ -118,8 +118,6 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
       skip: !inventoryId,
     });
 
-  console.log("inventory", inventory);
-
   const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
     api.useGetInventoryProgressQuery(inventoryId!, {
       skip: !inventoryId,

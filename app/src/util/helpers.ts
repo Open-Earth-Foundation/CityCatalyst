@@ -220,3 +220,22 @@ export const getInputMethodology = (methodologyId: string) => {
     return methodologyId;
   }
 };
+
+export function convertFromTonnes(valueInTonnes: number) {
+  let result;
+
+  if (valueInTonnes >= 1e6) {
+    // Convert to megatonnes if the value is 1,000,000 tonnes or more
+    const megatonnes = (valueInTonnes / 1e6).toFixed(0);
+    result = `${megatonnes} MtCO2`;
+  } else if (valueInTonnes >= 1e3) {
+    // Convert to kilotonnes if the value is 1,000 tonnes or more but less than 1,000,000 tonnes
+    const kilotonnes = (valueInTonnes / 1e3).toFixed(0);
+    result = `${kilotonnes} KtCO2`;
+  } else {
+    // Return as tonnes if the value is less than 1,000 tonnes
+    result = `${valueInTonnes} tCO2`;
+  }
+
+  return result;
+}

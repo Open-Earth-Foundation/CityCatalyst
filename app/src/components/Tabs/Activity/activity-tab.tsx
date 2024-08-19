@@ -47,7 +47,7 @@ import MethodologyCard from "@/components/Cards/methodology-card";
 import { ActivityData } from "@/models/ActivityData";
 import { ActivityValue } from "@/models/ActivityValue";
 import { DataConnectIcon } from "@/components/icons";
-import { getInputMethodology } from "@/util/helpers";
+import { convertFromTonnes, getInputMethodology } from "@/util/helpers";
 import DirectMeasureTable from "./direct-measure-table";
 
 interface ActivityTabProps {
@@ -77,7 +77,14 @@ const ActivityTab: FC<ActivityTabProps> = ({
   step,
   activityData,
 }) => {
-  const totalEmissions = 0;
+  let totalEmissions = 0;
+
+  activityData?.forEach((activity: any) => {
+    totalEmissions += parseInt(activity?.co2eq);
+  });
+
+  console.log(totalEmissions);
+
   const [selectedActivity, setSelectedActivity] = useState<
     SuggestedActivity | undefined
   >();
@@ -390,7 +397,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                               fontWeight="semibold"
                               fontSize="headline.md"
                             >
-                              {totalEmissions} MtCO2
+                              {convertFromTonnes(totalEmissions)}
                             </Text>
                           </Box>
                         </Box>

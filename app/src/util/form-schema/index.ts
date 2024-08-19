@@ -1,5 +1,26 @@
 import SectorFormSchema from "./sector-form-schema.json";
+export { SectorFormSchema };
 import HIERARCHY from "./manual-input-hierarchy.json";
+
+export function findMethodology(
+  methodologyId: string,
+  refNo: string | null = null, // if null, search all reference numbers (slower)
+) {
+  let methodologies: Methodology[] = [];
+  if (refNo) {
+    methodologies =
+      MANUAL_INPUT_HIERARCHY[refNo]?.methodologies ?? methodologies;
+  } else {
+    methodologies = Object.values(MANUAL_INPUT_HIERARCHY).flatMap(
+      (hierarchy) => {
+        return hierarchy.methodologies ?? [];
+      },
+    );
+  }
+  return methodologies.find((methodology) => {
+    methodology.id === methodologyId;
+  });
+}
 
 interface ExtraField {
   id: string;
@@ -37,6 +58,7 @@ export interface Methodology {
   disabled?: boolean;
   activities?: Activity[];
   inputRequired?: string[];
+  formula?: string;
   fields?: [];
   suggestedActivities?: SuggestedActivity[];
   suggestedActivitiesId?: string;
@@ -57,6 +79,4 @@ interface ManualInputHierarchy {
   };
 }
 
-const MANUAL_INPUT_HIERARCHY = HIERARCHY as ManualInputHierarchy;
-
-export { SectorFormSchema, MANUAL_INPUT_HIERARCHY };
+export const MANUAL_INPUT_HIERARCHY = HIERARCHY as ManualInputHierarchy;

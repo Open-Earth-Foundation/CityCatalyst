@@ -33,7 +33,6 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
   activityData,
   t,
 }) => {
-  console.log(activityData);
   return (
     <Box>
       <Table variant="simple" borderWidth="1px">
@@ -56,53 +55,12 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
         <Tbody>
           {activityData?.map((activity: ActivityValue, i: number) => {
             const dataQuality = activity?.dataSource?.dataQuality;
-            let tagStyles = {
-              bg: "",
-              border: "",
-              color: "",
-            };
-            switch (dataQuality) {
-              case "low":
-                tagStyles = {
-                  bg: "sentiment.warningOverlay",
-                  border: "sentiment.warningDefault",
-                  color: "sentiment.warningDefault",
-                };
-                break;
-              case "medium":
-                tagStyles = {
-                  bg: "background.neutral",
-                  border: "content.link",
-                  color: "content.link",
-                };
-                break;
-
-              case "high":
-                tagStyles = {
-                  bg: "sentiment.positiveOverlay",
-                  border: "interactive.tertiary",
-                  color: "interactive.tertiary",
-                };
-                break;
-
-              default:
-                break;
-            }
             return (
               <Tr key={i}>
                 <Td isTruncated>{t(activity?.activityData?.activity_type!)}</Td>
                 <Td>
-                  <Tag
-                    p="8px"
-                    minW="50px"
-                    bg={tagStyles.bg}
-                    borderWidth="1px"
-                    borderColor={tagStyles.border}
-                  >
-                    <TagLabel
-                      color={tagStyles.color}
-                      textTransform="capitalize"
-                    >
+                  <Tag p="8px" minW="50px" variant={dataQuality}>
+                    <TagLabel textTransform="capitalize">
                       {dataQuality}
                     </TagLabel>
                   </Tag>

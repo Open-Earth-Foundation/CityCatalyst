@@ -78,6 +78,11 @@ def save_to_csv(fl, data):
         writer.writeheader()
         writer.writerows(data)
 
+def convert_units(df, unit_col, value_col, from_unit, to_unit, conversion_factor):
+    # Filter the DataFrame based on the from_unit using .loc to avoid SettingWithCopyWarning
+    df.loc[df[unit_col] == from_unit, unit_col] = to_unit
+    df.loc[df[unit_col] == from_unit, value_col] *= conversion_factor
+
 
 # Mapping IPCC to GPC
 mapping_ipcc_to_gpc = {
@@ -217,18 +222,89 @@ densities_dic = {
 }
 
 region_to_locode = {
-    "world": "world",
-    "Republic of Korea": "KR",
-    "Indonesia": "ID",
-    "Mexico": "MX",
-    "Japan": "JP",
-    "All over Ukraine territory within boundaries recognized by the United Nations": "UA",
-    "Australia": "AU",
-    "Malaysia": "MY",
-    "Papua New Guinea": "PG",
-    "Russian Federation": "RU",
-    "United States of America": "US",
-    "South Africa": "ZA",
+    'world': 'world', 
+    'Republic of Korea': 'KR', 
+    'Indonesia': 'ID', 
+    'Mexico': 'MX', 
+    'Japan': 'JP',
+    'All over Ukraine territory within boundaries recognized by the United Nations': 'UA',
+    'Australia': 'AU', 
+    'Malaysia': 'MY', 
+    'Papua New Guinea': 'PG', 
+    'Russian Federation': 'RU',
+    'United States of America': 'US', 
+    'South Africa': 'ZA',
+    'India': 'IN', 
+    'China': 'CH', 
+    'Developed country': 'world',
+    'Developing country and country with economy in transition': 'world',
+    'Mexico': 'MX', 
+    'West Bengal, India': 'IN', 
+    'Jharkhand, India': 'IN'
+}
+
+extraction_fugitive_dic = {
+    'CH4 emission factor for undeground mines in Jharia coalfield': 'undeground mines',
+    'CH4 emission factor for undeground mines in Raniganj coalfield': 'undeground mines',
+    'CO2 emission factor for refinery gas combustion': 'refinery gas combustion',
+    'CO2 emission factor for undeground mines in Jharia coalfield': 'undeground mines',
+    'CO2 emission factor for undeground mines in Raniganj coalfield': 'undeground mines',
+    'Carbon dioxide emission factor for fugitive emissions from gas operations - Gas Transmission & Storage (transmission, venting)': 'Gas Transmission & Storage',
+    'Carbon dioxide emission factor for fugitive emissions from gas operations - Gas processing (Default weighted total for flaring)': 'Gas processing - flaring',
+    'Carbon dioxide emission factor for fugitive emissions from gas operations - Gas processing (deep-cut extraction plants, flaring)': 'Gas processing - flaring',
+    'Carbon dioxide emission factor for fugitive emissions from gas operations - Gas processing (sour gas plants, flaring)': 'Gas processing - flaring',
+    'Carbon dioxide emission factor for fugitive emissions from gas operations - Gas processing (sour gas plants, raw CO2 venting)': 'Gas processing - venting',
+    'Carbon dioxide emission factor for fugitive emissions from gas operations - Gas processing (sweet gas plants, flaring)': 'Gas processing - flaring',
+    'Carbon dioxide emission factor for fugitive emissions from gas operations - Gas production (flaring)': 'Gas production - flaring',
+    'Carbon dioxide emission factor for fugitive emissions from oil and gas operations - Well drilling (flaring and venting)': 'Well drilling - flaring and venting',
+    'Carbon dioxide emission factor for fugitive emissions from oil and gas operations - Well servicing (flaring and venting)': 'Well servicing - flaring and venting',
+    'Carbon dioxide emission factor for fugitive emissions from oil and gas operations - Well testing (flaring and venting)': 'Well testing - flaring and venting',
+    'Carbon dioxide emission factor for fugitive emissions from oil operations - Oil production (Default weighted total for venting)': 'Oil production - venting',
+    'Carbon dioxide emission factor for fugitive emissions from oil operations - Oil production (conventional oil, flaring)': 'Oil production - flaring',
+    'Carbon dioxide emission factor for fugitive emissions from oil operations - Oil production (conventional oil, venting)': 'Oil production - venting',
+    'Carbon dioxide emission factor for fugitive emissions from oil operations - Oil production (heavy oil/cold bitumen, flaring)': 'Oil production - flaring',
+    'Carbon dioxide emission factor for fugitive emissions from oil operations - Oil production (heavy oil/cold bitumen, venting)': 'Oil production - venting',
+    'Carbon dioxide emission factor for fugitive emissions from oil operations - Oil production (thermal oil production, flaring)': 'Oil production - flaring',
+    'Carbon dioxide emission factor for fugitive emissions from oil operations - Oil production (thermal oil production, venting)': 'Oil production - venting',
+    'Carbon dioxide emission factor for fugitive emissions from oil operations - Oil transport (tanker trucks and rail cars, venting)': 'Oil transport - venting',
+    'EF of Surfacemining': 'surface mining',
+    'EF of Underground mines': 'underground mines',
+    'Methane emission factor based on data for Chinese underground mines.': 'underground mines',
+    'Methane emission factor for fugitive emissions from gas operations - Gas Transmission & Storage (transmission, venting)': 'Gas Transmission & Storage - venting',
+    'Methane emission factor for fugitive emissions from gas operations - Gas processing (Default weighted total for flaring)': 'Gas processing - flaring',
+    'Methane emission factor for fugitive emissions from gas operations - Gas processing (deep-cut extraction plants, flaring)': 'Gas processing - flaring',
+    'Methane emission factor for fugitive emissions from gas operations - Gas processing (sour gas plants, flaring)': 'Gas processing - flaring',
+    'Methane emission factor for fugitive emissions from gas operations - Gas processing (sweet gas plants, flaring)': 'Gas processing - flaring',
+    'Methane emission factor for fugitive emissions from gas operations - Gas production (flaring)': 'Gas production - flaring',
+    'Methane emission factor for fugitive emissions from oil and gas operations - Well drilling (flaring and venting)': 'Well drilling - flaring and venting',
+    'Methane emission factor for fugitive emissions from oil and gas operations - Well servicing (flaring and venting)': 'Well servicing - flaring and venting',
+    'Methane emission factor for fugitive emissions from oil and gas operations - Well testing (flaring and venting)': 'Well testing - flaring and venting',
+    'Methane emission factor for fugitive emissions from oil operations - Oil production (Default weighted total for flaring)': 'Oil production - flaring',
+    'Methane emission factor for fugitive emissions from oil operations - Oil production (Default weighted total for venting)': 'Oil production - venting',
+    'Methane emission factor for fugitive emissions from oil operations - Oil production (conventional oil, flaring)': 'Oil production - flaring',
+    'Methane emission factor for fugitive emissions from oil operations - Oil production (conventional oil, venting)': 'Oil production - venting',
+    'Methane emission factor for fugitive emissions from oil operations - Oil production (heavy oil/cold bitumen, flaring)': 'Oil production - flaring',
+    'Methane emission factor for fugitive emissions from oil operations - Oil production (heavy oil/cold bitumen, venting)': 'Oil production - venting',
+    'Methane emission factor for fugitive emissions from oil operations - Oil production (thermal oil production, flaring)': 'Oil production - flaring',
+    'Methane emission factor for fugitive emissions from oil operations - Oil production (thermal oil production, venting)': 'Oil production - venting',
+    'Methane emission factor for fugitive emissions from oil operations - Oil transport (tanker trucks and rail cars, venting)': 'Oil transport - venting',
+    'Nitrous oxide emission factor for fugitive emissions from gas operations - Gas processing (Default weighted total for Raw CO2 venting)': 'Gas processing - venting',
+    'Nitrous oxide emission factor for fugitive emissions from gas operations - Gas processing (Default weighted total for flaring)': 'Gas processing - flaring',
+    'Nitrous oxide emission factor for fugitive emissions from gas operations - Gas processing (deep-cut extraction plants, flaring)': 'Gas processing - flaring',
+    'Nitrous oxide emission factor for fugitive emissions from gas operations - Gas processing (sour gas plants, flaring)': 'Gas processing - flaring',
+    'Nitrous oxide emission factor for fugitive emissions from gas operations - Gas processing (sweet gas plants, flaring)': 'Gas processing - flaring',
+    'Nitrous oxide emission factor for fugitive emissions from gas operations - Gas production (flaring)': 'Gas production - flaring',
+    'Nitrous oxide emission factor for fugitive emissions from oil and gas operations - Well testing (flaring and venting)': 'Well testing - flaring and venting',
+    'Nitrous oxide emission factor for fugitive emissions from oil operations - Oil production (Default weighted total for flaring)': 'Oil production - flaring',
+    'Nitrous oxide emission factor for fugitive emissions from oil operations - Oil production (conventional oil, flaring)': 'Oil production - flaring',
+    'Nitrous oxide emission factor for fugitive emissions from oil operations - Oil production (heavy oil/cold bitumen, flaring)': 'Oil production - flaring',
+    'Nitrous oxide emission factor for fugitive emissions from oil operations - Oil production (thermal oil production, flaring)': 'Oil production - flaring',
+    'Tier 1 CH4 emission factor for surface mining': 'surface mining',
+    'Tier 1 CH4 emission factor for surface post-mining': 'surface post-mining',
+    'Tier 1 CH4 emission factor for undeground mining': 'undeground mining',
+    'Tier 1 CH4 emission factor for undeground post-mining': 'undeground post-mining',
+    'Tier 1 CO2 Emission Factors for underground mining': 'underground mining',
+    'Tier 1 CO2 emission factor for surface mining': 'surface mining'
 }
 
 if __name__ == "__main__":
@@ -298,9 +374,9 @@ if __name__ == "__main__":
         "??????? ? ?????? ???????-????? I. ???????-??????? ???????", None
     )
 
-    # extract only EF values for Stationary Energy using IPCC refno
+    # extract only EF values for Stationary Energy using IPCC refno "1.A" and "1.B"
     filt_cat = df["IPCC 2006 Source/Sink Category"].str.contains(
-        "1.A", case=True, na=False
+        r"1\.A|1\.B", case=True, na=False
     )
     df_filt = df.loc[filt_cat].reset_index(drop=True)
 
@@ -356,13 +432,19 @@ if __name__ == "__main__":
     EF_df = pd.DataFrame(output_list)
 
     # assign "GPC_refno" using the mapping dic
-    EF_df["gpc_refno"] = EF_df["ipcc_2006_category"].map(mapping_ipcc_to_gpc)
+    EF_df["gpc_reference_number"] = EF_df["ipcc_2006_category"].map(mapping_ipcc_to_gpc)
+
+    # make a row for each GPC_refno
+    EF_df = EF_df.explode("gpc_reference_number", ignore_index=True)
+
+    # remove EFs that don't apply
+    EF_df = EF_df.dropna(subset=["gpc_reference_number"])
 
     # assign "actor_id" using the region_to_locode dic
     EF_df["actor_id"] = EF_df["region"].map(region_to_locode)
 
     # remove EFs that don't apply
-    EF_df = EF_df.dropna(subset=["gpc_refno"])
+    EF_df = EF_df.dropna(subset=["gpc_reference_number"])
 
     gas = ["CO2", "CH4", "N2O"]
     EF_df = EF_df[EF_df["gas"].isin(gas)]
@@ -374,6 +456,42 @@ if __name__ == "__main__":
 
     # Replace None values, which means "generic EF", with "world"
     EF_df["region"].fillna("world", inplace=True)
+    EF_df["actor_id"].fillna("world", inplace=True)
+
+    # df with EF for fugitive emissions
+    EF_df_fugitive = EF_df[(EF_df['gpc_reference_number'] == 'I.8.1') | (EF_df['gpc_reference_number'] == 'I.7.1')]
+    EF_df_fugitive.reset_index(drop=True, inplace=True)
+
+    ## ------------------------------------------
+    # Emissions for subsectors from I.1 to I.6
+    ## ------------------------------------------
+    # drop EF for fugitive emissions
+    EF_df = EF_df[(EF_df['gpc_reference_number'] != 'I.8.1') & (EF_df['gpc_reference_number'] != 'I.7.1')]
+
+    # Filter out the rows that are for Japan and Korea
+    filter_values = ['Only for Japan', 'Japan', 'Republic of Korea']
+    EF_df = EF_df[~EF_df['region'].isin(filter_values)]
+    
+    # list of units to exclude
+    exclude_units = ['MMT C / QBtu [HHV]', 'g CH4/10^6 BTU']
+
+    # Filter the DataFrame to exclude rows with these values in the specified column
+    EF_df = EF_df[~EF_df['units'].isin(exclude_units)]
+
+    # Define the conversions and their respective factors
+    conversions = [
+        ("KG/TJ", "kg/TJ", 1),
+        ("kg CO2/GJ", "kg/GJ", 1),
+        ("t CO2/TJ", "t/TJ", 1),
+        ("kg/GJ", "kg/TJ", 1000),
+        ("ng/J of Fuel", "kg/TJ", 1),
+        ("g/tonnes fuel", "kg/t", 0.001),
+        ("g/MJ", "kg/TJ", 1000)
+    ]
+
+    # Apply the conversions
+    for from_unit, to_unit, conversion_factor in conversions:
+        convert_units(EF_df, "units", "value", from_unit, to_unit, conversion_factor)
 
     # extract useful information from 'properties' column to be used later
     # Define constants for slicing positions
@@ -463,7 +581,6 @@ if __name__ == "__main__":
 
     # New list to hold NCV and GCV values
     tmp = []
-
     # Process each row
     for index, row in filt_df.iterrows():
         value = str(row["NCV_value"])
@@ -588,15 +705,6 @@ if __name__ == "__main__":
                 EF_df.at[index, "density_value"] = densities_dic[fuel]["value"]
                 EF_df.at[index, "density_units"] = densities_dic[fuel]["units"]
 
-    # Conversion process
-    def convert_units(df, unit_col, value_col, from_unit, to_unit, conversion_factor):
-        # Filter the DataFrame based on the from_unit
-        filtered_df = df[df[unit_col] == from_unit]
-        # conversion
-        filtered_df[unit_col] = to_unit
-        filtered_df[value_col] *= conversion_factor
-        df.update(filtered_df)
-
     # Define the conversions and their respective factors
     conversions = [
         ("tC/TJ", "kg/TJ", 44 / 12),
@@ -640,9 +748,9 @@ if __name__ == "__main__":
         ("kg/Gg", "kg/kg", 1e-6),
         ("kg/kt", "kg/t", 1e-3),
         ("kg/l", "kg/m3", 1e3),
+        ("t//kt", "t/t", 1e-3),
+        ("t//Gg", "t/kg", 1e-6),
     ]
-
-    new_rows = []
 
     # Apply the conversions
     for from_unit, to_unit, conversion_factor in conversions:
@@ -659,7 +767,6 @@ if __name__ == "__main__":
     EF_df["density_value"] = pd.to_numeric(EF_df["density_value"], errors="coerce")
 
     new_rows = []
-
     for index, row in EF_df.iterrows():
         density_value = row["density_value"]
         ef_value = row["emissions_per_activity"]
@@ -682,7 +789,7 @@ if __name__ == "__main__":
     EF_df = EF_df.drop(columns=["Description", "value"])
 
     # make a row for each GPC_refno
-    EF_df = EF_df.explode("gpc_refno", ignore_index=True)
+    EF_df = EF_df.explode("gpc_reference_number", ignore_index=True)
 
     # make a row for each methodology
     EF_df["methodology_name"] = [mapping_gpc_to_methodologies] * len(EF_df)
@@ -715,10 +822,111 @@ if __name__ == "__main__":
         ]
     )
 
-    EF_df["emissions_factor_id"] = EF_df.apply(lambda row: uuid_generate_v4(), axis=1)
+    ## ------------------------------------------
+    # Emissions for subsectors I.7 and I.8
+    ## ------------------------------------------
+    # create new columns for EF units transformation
+    EF_df_fugitive.loc[:, 'emissions_per_activity'] = EF_df_fugitive['value']
 
-    EF_df.to_csv(
-        f"{output_dir}/EmissionsFactor_Stationary_Energy_Scope1.csv", index=False
+    # Define the conversions and their respective factors
+    conversions = [
+        ('Gg per 10^3 m^3 total oil production', 'kg/m3', 1e-3),
+        ('Gg per 10^6 m^3 gas production', 'kg/m3', 1),
+        ('Gg per 10^6 m^3 raw gas feed', 'kg/m3', 1),
+        ('Gg per 10^6 m^3 of marketable gas', 'kg/m3', 1),
+        ('Gg per 10^3 m^3 conventional oil production', 'kg/m3', 1e-3),
+        ('Gg per 10^3 m^3 heavy oil production', 'kg/m3', 1e-3),
+        ('Gg per 10^3 m^3 thermal bitumen production', 'kg/m3', 1e-3),
+        ('Gg per 10^3 m^3 oil transported by pipeline', 'kg/m3', 1e-3),
+        ('m3 CH4/tonne of coal produced', 'm3/tonne', 1),
+        ('m3/tonne of coal', 'm3/tonne', 1),
+        ('KG/TJ', 'kg/TJ', 1),
+    ]
+
+    # Apply the conversions
+    for from_unit, to_unit, conversion_factor in conversions:
+        convert_units(
+            EF_df_fugitive,
+            "units",
+            "value",
+            from_unit,
+            to_unit,
+            conversion_factor,
+        )
+
+    # list of units to exclude
+    exclude_units = ['Gg per well drilled', 'Gg/yr per producing or capable well', 'million m^3/mine/year']
+
+    # Filter the DataFrame to exclude rows with these values in the specified column
+    EF_df_fugitive = EF_df_fugitive[~EF_df_fugitive['units'].isin(exclude_units)]
+
+    # density values for each ghg gas
+    gas_densities = {
+        'CO2': 1.98,
+        'CH4': 0.717,
+        'N2O': 1.98
+    }
+
+    # apply the gas densities to the density column
+    EF_df_fugitive.loc[EF_df_fugitive['units'] == 'm3/tonne', 'density_value'] = EF_df_fugitive['gas'].map(gas_densities)
+
+    # apply the conversion and change the units
+    EF_df_fugitive.loc[EF_df_fugitive['units'] == 'm3/tonne', 'emissions_per_activity'] = EF_df_fugitive['value'] * EF_df_fugitive['density_value']
+
+    # assign the density units
+    EF_df_fugitive.loc[EF_df_fugitive['units'] == 'm3/tonne', 'density_units'] = 'kg/m3'
+
+    # change the original units
+    EF_df_fugitive.loc[EF_df_fugitive['units'] == 'm3/tonne', 'units'] = 'kg/tonne'
+
+    # apply extraction of activity and proccess from the 'description' column
+    EF_df_fugitive['extra'] = EF_df_fugitive['description'].map(extraction_fugitive_dic)
+
+    mapping_parameters = {
+        'The value presented is for a mining depth of up to 200 m': 'mining depth of up to 200 m',
+        'The value presented is for a mining depth of between 200 and 400 m.': 'mining depth of between 200 and 400 m',
+        'The value presented is for a mining depth of above 400 m.': 'mining depth of above 400 m',
+    }
+    EF_df_fugitive['parameters'] = EF_df_fugitive['parameters'].replace(mapping_parameters)
+
+    # create a 'metadata' column based on density values, density units, NCV values and NCV units
+    EF_df_fugitive["metadata"] = EF_df_fugitive.apply(
+        lambda row: f"activity_description_1:{row['extra']}, activity_description_2:{row['parameters']}, density_value:{row['density_value']}, density_units:{row['density_units']}",
+        axis=1,
+    )
+
+    EF_df_fugitive.loc[EF_df_fugitive['gpc_reference_number'] == 'I.8.1', 'methodology_name'] = 'fugitive-emissions-oil-gas'
+    EF_df_fugitive.loc[EF_df_fugitive['gpc_reference_number'] == 'I.7.1', 'methodology_name'] = 'fugitive-emissions-coal'  
+
+    # year column
+    EF_df_fugitive["year"] = ""
+
+    # drop extra columns
+    EF_df_fugitive = EF_df_fugitive.drop(
+        columns=[
+            "EF ID",
+            "ipcc_2006_category",
+            "fuel",
+            "description",
+            "practices",
+            "parameters",
+            "properties",
+            "equation",
+            "value",
+            "value_min", 
+            "value_max",
+            "density_value",
+            "density_units",
+            "extra"
+        ]
+    )
+
+    EF_final = pd.concat([EF_df, EF_df_fugitive], ignore_index=True)
+    
+    EF_final["id"] = EF_final.apply(lambda row: uuid_generate_v4(), axis=1)
+
+    EF_final.to_csv(
+        f"{output_dir}/EmissionsFactor.csv", index=False
     )
 
     # =================================================================
@@ -729,7 +937,7 @@ if __name__ == "__main__":
             "datasource_id": datasource_data.get("datasource_id"),
             "emissions_factor_id": id,
         }
-        for id in EF_df["emissions_factor_id"]
+        for id in EF_final["id"]
     ]
 
     write_dic_to_csv(

@@ -83,8 +83,6 @@ const ActivityTab: FC<ActivityTabProps> = ({
     totalEmissions += parseInt(activity?.co2eq);
   });
 
-  console.log(totalEmissions);
-
   const [selectedActivity, setSelectedActivity] = useState<
     SuggestedActivity | undefined
   >();

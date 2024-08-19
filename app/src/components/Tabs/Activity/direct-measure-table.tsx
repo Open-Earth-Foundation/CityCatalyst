@@ -90,7 +90,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
             }
             return (
               <Tr key={i}>
-                <Td isTruncated>{t(activity?.activityData?.activityType!)}</Td>
+                <Td isTruncated>{t(activity?.activityData?.activity_type!)}</Td>
                 <Td>
                   <Tag
                     p="8px"

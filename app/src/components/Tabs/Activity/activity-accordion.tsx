@@ -1,6 +1,6 @@
 import { ActivityData } from "@/models/ActivityData";
 import { ActivityValue } from "@/models/ActivityValue";
-import { getInputMethodology } from "@/util/helpers";
+import { convertFromTonnes, getInputMethodology } from "@/util/helpers";
 import { AddIcon } from "@chakra-ui/icons";
 import {
   Accordion,
@@ -121,7 +121,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                         </Tag>
                       </Td>
                       <Td>{activity?.fuelConsumption!}</Td>
-                      <Td>{activity?.co2eq}</Td>
+                      <Td>{convertFromTonnes(activity?.co2eq)}</Td>
                       <Td>
                         <IconButton
                           color="interactive.control"

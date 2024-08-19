@@ -107,7 +107,9 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                 {activityData?.map((activity: any, i: number) => {
                   return (
                     <Tr key={i}>
-                      <Td className="truncate">{activity.id}</Td>
+                      <Td className="truncate">
+                        {t(activity.activityData.fuel_type)}
+                      </Td>
                       <Td>
                         <Tag
                           size="lg"
@@ -116,7 +118,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                           borderRadius="full"
                         >
                           <TagLabel>
-                            {activity?.dataSource.dataQuality}
+                            {t(activity?.dataSource.dataQuality)}
                           </TagLabel>
                         </Tag>
                       </Td>

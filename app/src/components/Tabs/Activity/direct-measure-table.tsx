@@ -33,6 +33,9 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
   activityData,
   t,
 }) => {
+  function convertKgToTonne(kg: number) {
+    return kg / 1000;
+  }
   return (
     <Box>
       <Table variant="simple" borderWidth="1px">
@@ -61,18 +64,18 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                 <Td>
                   <Tag p="8px" minW="50px" variant={dataQuality}>
                     <TagLabel textTransform="capitalize">
-                      {dataQuality}
+                      {t(dataQuality!)}
                     </TagLabel>
                   </Tag>
                 </Td>
                 <Td isNumeric isTruncated>
-                  {activity?.activityData?.co2_amount} tCO2
+                  {convertKgToTonne(activity?.activityData?.co2_amount)} tCO2e
                 </Td>
                 <Td isNumeric isTruncated>
-                  {activity?.activityData?.n2o_amount} tN2Oe
+                  {convertKgToTonne(activity?.activityData?.n2o_amount)} tN2Oe
                 </Td>
                 <Td isNumeric isTruncated>
-                  {activity?.activityData?.ch4_amount} tCH4e
+                  {convertKgToTonne(activity?.activityData?.ch4_amount)} tCH4e
                 </Td>
                 <Td>
                   <Popover>

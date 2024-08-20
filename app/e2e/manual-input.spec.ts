@@ -1,6 +1,9 @@
 import { test, expect, Page } from "@playwright/test";
 import { indexPageRegex, regexForPath } from "./utils";
 
+// inventory creation data
+// call the endpoint to create an inventory
+
 const testIds = {
   addDataToInventoryNavButton: "add-data-to-inventory-card",
 };

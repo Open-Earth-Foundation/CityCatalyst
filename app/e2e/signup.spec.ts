@@ -2,6 +2,8 @@ import { test, expect } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { expectText } from "./helpers";
 
+test.use({ storageState: { cookies: [], origins: [] } });
+
 test.beforeEach(async ({ page }) => {
   await page.goto("/en/auth/signup");
 });

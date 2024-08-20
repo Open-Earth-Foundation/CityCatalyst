@@ -13,7 +13,7 @@ export async function signup(
   inviteCode: string = "123456",
   acceptTerms: boolean = true,
 ) {
-  const result = await request.post("/api/v0/auth/signup", {
+  const result = await request.post("/api/v0/auth/register", {
     data: {
       email,
       password,
@@ -23,6 +23,7 @@ export async function signup(
       acceptTerms,
     },
   });
+  console.log("result", result);
   expect(result.ok()).toBeTruthy();
   return await result.json();
 }

@@ -75,6 +75,7 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
   inventory,
 }) => {
   const [selectedScopes, setSelectedScopes] = useState<number[]>([]);
+  console.log(inventory);
 
   const handleSelectedScopes = (value: number, checked: boolean) => {
     if (checked) {
@@ -125,6 +126,7 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
 
     formData.append("userId", userInfo?.userId!);
     formData.append("fileName", filename);
+    formData.append("inventoryId", inventory!);
     formData.append("sector", currentStep.title);
     formData.append("subsectors", data.subsectors!);
     formData.append("scopes", data.scopes!);
@@ -151,7 +153,7 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
           duration: 2000,
         });
 
-        const fileData = res.data
+        const fileData = res.data;
 
         dispatch(
           addFile({
@@ -168,14 +170,13 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
               url: fileData.url,
               size: fileData.file.size,
               fileType: fileData.fileType,
-              cityId: fileData.cityId
+              cityId: fileData.cityId,
             },
           }),
         );
       }
     });
 
-    
     onClose();
   };
 

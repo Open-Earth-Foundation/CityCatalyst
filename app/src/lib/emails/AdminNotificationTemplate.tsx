@@ -20,10 +20,12 @@ export default function AdminNotificationTemplate({
   user,
   file,
   adminNames,
+  inventoryId,
 }: {
   user: { name: string; email: string; cityName: string };
   file: UserFileResponse;
   adminNames: string;
+  inventoryId: string;
 }) {
   const host = process.env.HOST ?? "http://localhost:3000";
   return (
@@ -103,7 +105,7 @@ export default function AdminNotificationTemplate({
               marginBottom: "36px",
             }}
           >
-            <Link href={"/"} style={urlLink}>
+            <Link href={`${host}/${inventoryId}/settings/`} style={urlLink}>
               GO TO REVIEW
             </Link>
           </div>

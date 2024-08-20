@@ -99,7 +99,7 @@ export default function Settings({
             </Text>
           </Box>
           <Box marginTop="48px" borderBottomColor={"border.overlay"}>
-            <Tabs>
+            <Tabs defaultIndex={1}>
               <TabList>
                 <Tab>
                   <Text

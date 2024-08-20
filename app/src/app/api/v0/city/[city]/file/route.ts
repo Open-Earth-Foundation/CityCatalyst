@@ -99,6 +99,7 @@ export const POST = apiHandler(
     };
 
     const body = createUserFileRequset.parse(fileData);
+    const inventoryId = formData.get("inventoryId") as string;
 
     const userFile = await db.models.UserFile.create({
       id: randomUUID(),
@@ -133,6 +134,7 @@ export const POST = apiHandler(
       user: { email: user?.email!, name: user?.name! },
       fileData: newFileData,
       city,
+      inventoryId,
     });
 
     return NextResponse.json({

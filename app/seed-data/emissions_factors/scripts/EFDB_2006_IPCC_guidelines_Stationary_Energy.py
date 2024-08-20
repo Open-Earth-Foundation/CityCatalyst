@@ -19,7 +19,7 @@ from utils import (
 
 def separate_min_max_median(val):
     """extract value, takes median if range is given"""
-    if isinstance(val, float):
+    if isinstance(val, (float, np.floating)):
         return {"value": val, "value_min": None, "value_max": None}
 
     value = val.replace(" ", "").strip()
@@ -222,24 +222,26 @@ densities_dic = {
 }
 
 region_to_locode = {
-    'world': 'world', 
-    'Republic of Korea': 'KR', 
-    'Indonesia': 'ID', 
-    'Mexico': 'MX', 
+    'world': 'world',
+    'Denmark': 'DK',
+    'Greece': 'GR',
+    'Republic of Korea': 'KR',
+    'Indonesia': 'ID',
+    'Mexico': 'MX',
     'Japan': 'JP',
     'All over Ukraine territory within boundaries recognized by the United Nations': 'UA',
-    'Australia': 'AU', 
-    'Malaysia': 'MY', 
-    'Papua New Guinea': 'PG', 
+    'Australia': 'AU',
+    'Malaysia': 'MY',
+    'Papua New Guinea': 'PG',
     'Russian Federation': 'RU',
-    'United States of America': 'US', 
+    'United States of America': 'US',
     'South Africa': 'ZA',
-    'India': 'IN', 
-    'China': 'CH', 
+    'India': 'IN',
+    'China': 'CH',
     'Developed country': 'world',
     'Developing country and country with economy in transition': 'world',
-    'Mexico': 'MX', 
-    'West Bengal, India': 'IN', 
+    'Mexico': 'MX',
+    'West Bengal, India': 'IN',
     'Jharkhand, India': 'IN'
 }
 
@@ -440,6 +442,9 @@ if __name__ == "__main__":
     # remove EFs that don't apply
     EF_df = EF_df.dropna(subset=["gpc_reference_number"])
 
+    # Replace None values, which means "generic EF", with "world"
+    EF_df["region"].fillna("world", inplace=True)
+
     # assign "actor_id" using the region_to_locode dic
     EF_df["actor_id"] = EF_df["region"].map(region_to_locode)
 
@@ -454,9 +459,8 @@ if __name__ == "__main__":
         {"KG/TJ": "kg/TJ", "kg CO2/GJ": "kg/GJ"}, regex=True
     )
 
-    # Replace None values, which means "generic EF", with "world"
-    EF_df["region"].fillna("world", inplace=True)
-    EF_df["actor_id"].fillna("world", inplace=True)
+    # filter the dataframe when the actor_id is not mapped
+    EF_df = EF_df[EF_df['actor_id'].notnull()]
 
     # df with EF for fugitive emissions
     EF_df_fugitive = EF_df[(EF_df['gpc_reference_number'] == 'I.8.1') | (EF_df['gpc_reference_number'] == 'I.7.1')]
@@ -471,7 +475,7 @@ if __name__ == "__main__":
     # Filter out the rows that are for Japan and Korea
     filter_values = ['Only for Japan', 'Japan', 'Republic of Korea']
     EF_df = EF_df[~EF_df['region'].isin(filter_values)]
-    
+
     # list of units to exclude
     exclude_units = ['MMT C / QBtu [HHV]', 'g CH4/10^6 BTU']
 
@@ -896,7 +900,7 @@ if __name__ == "__main__":
     )
 
     EF_df_fugitive.loc[EF_df_fugitive['gpc_reference_number'] == 'I.8.1', 'methodology_name'] = 'fugitive-emissions-oil-gas'
-    EF_df_fugitive.loc[EF_df_fugitive['gpc_reference_number'] == 'I.7.1', 'methodology_name'] = 'fugitive-emissions-coal'  
+    EF_df_fugitive.loc[EF_df_fugitive['gpc_reference_number'] == 'I.7.1', 'methodology_name'] = 'fugitive-emissions-coal'
 
     # year column
     EF_df_fugitive["year"] = ""
@@ -913,7 +917,7 @@ if __name__ == "__main__":
             "properties",
             "equation",
             "value",
-            "value_min", 
+            "value_min",
             "value_max",
             "density_value",
             "density_units",
@@ -922,7 +926,7 @@ if __name__ == "__main__":
     )
 
     EF_final = pd.concat([EF_df, EF_df_fugitive], ignore_index=True)
-    
+
     EF_final["id"] = EF_final.apply(lambda row: uuid_generate_v4(), axis=1)
 
     EF_final.to_csv(

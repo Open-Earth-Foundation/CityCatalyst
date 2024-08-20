@@ -1,0 +1,237 @@
+gas,parameter_code,parameter_name,methodology,gpc_refno,year,formula_input_value,formula_input_units,formula_name,metadata,region,actor_id,datasource,formulainput_id
+CH4,k,rate-of-reaction-constant,first-order-decay,III.1.3,,0.03,year,,"{""climate"":null,""waste_type"":null}",world,world,IPCC,f67b1cb5-24d0-4f89-a34b-009f88e22c08
+CH4,BOD,degradable-organic-component,domestic-wastewater,III.4.1,,14600.0,kg/1000 persons/yr,,{},Latin America,,IPCC,620dfc30-774a-4b59-b1fe-2a9034ee5683
+CH4,k,rate-of-reaction-constant,first-order-decay,III.1.3,,0.21,year,,"{""climate"":null,""waste_type"":""Bulk MSW or Industrial Waste""}",Brazil,BR,IPCC,f9b50987-a3d4-49ea-9fe5-daf399c1c4d7
+CH4,DOCf,fraction-of-doc-decomposing-under-anaerobic-conditions,first-order-decay,III.1.1,,0.5,fraction,,"{""waste_form"":""unclassified"",""waste_type"":null}",world,world,IPCC,f6abd2a4-848f-4c09-bc56-e9768baafa40
+CH4,OX,oxidation-factor,methane-commitment,III.1.3,,0.1,fraction,,"{""treatment_type"":""Managed""}",world,world,IPCC,dd149178-2112-4b79-8293-f44cdcc04c5c
+CH4,DOCf,fraction-of-doc-decomposing-under-anaerobic-conditions,first-order-decay,III.1.1,,22.8,fraction,,"{""waste_form"":""unclassified"",""waste_type"":""Wood""}",United States of America,US,IPCC,072dd634-3d29-4b90-9c44-a942f5b2df6c
+CH4,MCF,methane-correction-factor,first-order-decay,III.1.1,,1.0,fraction,,"{""treatment_type"":""Managed – Anaerobic""}",world,world,IPCC,ee70fd30-d209-4bc5-b4db-1fd390f83f5a
+CH4,MCF,methane-correction-factor,first-order-decay,III.1.1,,0.5,fraction,,"{""treatment_type"":""Managed – Anaerobic""}",world,world,IPCC,7d347204-b7d3-4978-b2b4-fd0c55acff75
+CH4,MCF,methane-correction-factor,industrial-wastewater,III.4.3,,0.8,fraction,,"{""treatment_type"":""Anaerobic Treatment""}",world,world,IPCC,7eb9f336-22f1-4146-997a-5b61118d4ced
+CH4,DOCf,fraction-of-doc-decomposing-under-anaerobic-conditions,first-order-decay,III.1.1,,0.55,fraction,,"{""waste_form"":""unclassified"",""waste_type"":null}",world,world,IPCC,24714720-5f28-4e5b-adcb-c8fea90a249a
+CH4,k,rate-of-reaction-constant,first-order-decay,III.1.3,,0.18,year,,"{""climate"":null,""waste_type"":null}",Finland,FI,IPCC,bd337ae9-d9e6-4923-a5de-90968e4364a2
+CH4,F,fraction-of-methane-in-landfill-gas,methane-commitment,III.1.1,,0.5,fraction,,{},world,world,IPCC,a5908042-6591-47c7-a0c2-572f25a9432e
+CH4,MCF,methane-correction-factor,first-order-decay,III.1.3,,0.6,fraction,,"{""treatment_type"":""Uncategorized Waste Sites""}",world,world,IPCC,59bdace0-1a80-436c-8c70-61164b1366d8
+CH4,DOCf,fraction-of-doc-decomposing-under-anaerobic-conditions,first-order-decay,III.1.1,,4.95,fraction,,"{""waste_form"":""unclassified"",""waste_type"":""Wood""}",United States of America,US,IPCC,af3f572c-c767-40d6-b90e-497a490d5a16
+CH4,k,rate-of-reaction-constant,first-order-decay,III.1.1,,0.2,year,,"{""climate"":""Tropical - Moist"",""waste_type"":""Rapidly Degrading Waste""}",world,world,IPCC,306e02d8-597f-40bc-b8fc-9fede8dd8a75
+CH4,k,rate-of-reaction-constant,first-order-decay,III.1.1,,0.03,year,,"{""climate"":null,""waste_type"":null}",world,world,IPCC,0458f7c9-5de9-4b84-bd79-1f8b2e84fa5a
+CH4,BOD,degradable-organic-component,domestic-wastewater,III.4.3,,0.04,kg/cap/day,,{},Latin America,,IPCC,a4c8b457-df7c-449b-8a9d-219549899c33
+CH4,DOCf,fraction-of-doc-decomposing-under-anaerobic-conditions,first-order-decay,III.1.3,,0.55,fraction,,"{""waste_form"":""unclassified"",""waste_type"":null}",world,world,IPCC,c2306453-c063-47ce-9b5a-3ef234e237ff
+CH4,MCF,methane-correction-factor,first-order-decay,III.1.3,,0.5,fraction,,"{""treatment_type"":""Managed – Anaerobic""}",world,world,IPCC,ce0d9aaa-b623-46d4-bd72-8b92ca68ffa5
+CH4,B0,maximum-methane-producing-capacity,industrial-wastewater,III.4.1,,0.25,Kg/Kg,,{},world,world,IPCC,92a56cf2-616a-448d-96b1-39810916517e
+CH4,DOCf,fraction-of-doc-decomposing-under-anaerobic-conditions,first-order-decay,III.1.3,,0.77,fraction,,"{""waste_form"":""unclassified"",""waste_type"":null}",world,world,IPCC,87918349-705a-40ea-bfa2-e639a4e11a90
+CH4,MCF,methane-correction-factor,industrial-wastewater,III.4.3,,0.1,fraction,,"{""treatment_type"":""Untreated System""}",world,world,IPCC,c27422f9-fdea-4d2f-aef9-6c3781d43613
+CH4,k,rate-of-reaction-constant,first-order-decay,III.1.3,,0.05,year,,"{""climate"":""Dry"",""waste_type"":""Slowly Degrading Waste""}",world,world,IPCC,79ec163d-f061-4720-a04b-7620e4159239
+CH4,DOCf,fraction-of-doc-decomposing-under-anaerobic-conditions,first-order-decay,III.1.3,,0.5,fraction,,"{""waste_form"":""unclassified"",""waste_type"":null}",world,world,IPCC,c0a6c736-7e91-4625-8a8b-b68b54bfe268
+CH4,DOCf,fraction-of-doc-decomposing-under-anaerobic-conditions,first-order-decay,III.1.3,,22.8,fraction,,"{""waste_form"":""unclassified"",""waste_type"":""Wood""}",United States of America,US,IPCC,1f7093fb-e11d-4a0d-8ebd-b0db9a1ee72b
+CH4,k,rate-of-reaction-constant,first-order-decay,III.1.1,,0.21,year,,"{""climate"":null,""waste_type"":""Bulk MSW or Industrial Waste""}",Brazil,BR,IPCC,8e71ac9b-7750-4e69-a187-05e3834b09fd
+CH4,DOC,degradable-organic-carbon-under-aerobic-conditions,first-order-decay,III.1.1,,0.135,fraction,,"{""waste_form"":""unclassified"",""waste_type"":null}",Thailand,TH,IPCC,fcf312c5-3492-40f1-b8b0-644d64cd6efa
+CH4,DOC,degradable-organic-carbon-under-aerobic-conditions,first-order-decay,III.1.3,,0.135,fraction,,"{""waste_form"":""unclassified"",""waste_type"":null}",Thailand,TH,IPCC,b1614460-dee3-45f0-b87a-3a4066334dcd
+CH4,MCF,methane-correction-factor,industrial-wastewater,III.4.1,,0.0,fraction,,"{""treatment_type"":""Aerobic Treatment Plant - Well Managed""}",world,world,IPCC,3b71a9d5-d7cd-45bd-96b4-27f469e7e37f
+CH4,MCF,methane-correction-factor,first-order-decay,III.1.1,,0.6,fraction,,"{""treatment_type"":""Uncategorized Waste Sites""}",world,world,IPCC,b95a095b-89f0-42de-9967-612813a91c73
+CH4,MCF,methane-correction-factor,first-order-decay,III.1.3,,0.8,fraction,,"{""treatment_type"":""Unmanaged Waste Sites - Deep SWDS""}",world,world,IPCC,fd797944-dc0c-4af1-bf44-f2ebe27633be
+CH4,MCF,methane-correction-factor,industrial-wastewater,III.4.1,,0.8,fraction,,"{""treatment_type"":""Anaerobic Reactor""}",world,world,IPCC,d3c11eeb-5277-472b-bd1c-8464447ef683
+CH4,B0,maximum-methane-producing-capacity,domestic-wastewater,III.4.1,,0.6,Kg/Kg,,{},world,world,IPCC,7f745871-32ac-46e9-99e6-e2568a61d93d
+CH4,k,rate-of-reaction-constant,first-order-decay,III.1.1,,0.18,year,,"{""climate"":null,""waste_type"":null}",Finland,FI,IPCC,18eed9be-069a-489e-ab3e-4b31487f6e85
+CH4,MCF,methane-correction-factor,industrial-wastewater,III.4.1,,0.8,fraction,,"{""treatment_type"":""Anaerobic Treatment""}",world,world,IPCC,4bdc0fde-b2f0-4e77-b26c-d8d127cfbb99
+CH4,MCF,methane-correction-factor,industrial-wastewater,III.4.1,,0.1,fraction,,"{""treatment_type"":""Untreated System""}",world,world,IPCC,f3af7faa-47b6-484c-8efb-00868ce4d93e
+CH4,DOCf,fraction-of-doc-decomposing-under-anaerobic-conditions,first-order-decay,III.1.3,,4.95,fraction,,"{""waste_form"":""unclassified"",""waste_type"":""Wood""}",United States of America,US,IPCC,2a7f6fff-3aa9-48fc-8ed0-937462918166
+CH4,MCF,methane-correction-factor,industrial-wastewater,III.4.1,,0.2,fraction,,"{""treatment_type"":""Anaerobic Shallow Lagoon""}",world,world,IPCC,d092d6e6-8be2-4883-a217-8183117d5bf8
+CH4,OX,oxidation-factor,methane-commitment,III.1.1,,0.1,fraction,,"{""treatment_type"":""Managed""}",world,world,IPCC,eb8d97eb-31a3-47bf-aa7e-13246440ef5e
+CH4,k,rate-of-reaction-constant,first-order-decay,III.1.3,,0.2,year,,"{""climate"":""Tropical - Moist"",""waste_type"":""Rapidly Degrading Waste""}",world,world,IPCC,e75fc5ff-d81d-45eb-a652-3befaf1e1346
+CH4,MCF,methane-correction-factor,first-order-decay,III.1.1,,0.8,fraction,,"{""treatment_type"":""Unmanaged Waste Sites - Deep SWDS""}",world,world,IPCC,12fdf7b4-25e5-427e-8410-02e07d1c2471
+CH4,MCF,methane-correction-factor,industrial-wastewater,III.4.3,,0.8,fraction,,"{""treatment_type"":""Anaerobic Reactor""}",world,world,IPCC,80608097-81bc-4ece-b8bc-4321fa536358
+CH4,BOD,degradable-organic-component,domestic-wastewater,III.4.3,,14600.0,kg/1000 persons/yr,,{},Latin America,,IPCC,019aabc8-1ef8-4b4a-97f7-611fdc67da0c
+CH4,MCF,methane-correction-factor,first-order-decay,III.1.3,,1.0,fraction,,"{""treatment_type"":""Managed – Anaerobic""}",world,world,IPCC,23868b77-028d-4833-99a7-eb63981e7f0d
+CH4,OX,oxidation-factor,methane-commitment,III.1.1,,0.0,fraction,,"{""treatment_type"":""Unmanaged""}",world,world,IPCC,5dce75e1-4a61-4e83-bc9c-dc6febe241c4
+CH4,F,fraction-of-methane-in-landfill-gas,methane-commitment,III.1.3,,0.5,fraction,,{},world,world,IPCC,0d9116d6-7be2-4cfc-9b5b-725ecab52aab
+CH4,k,rate-of-reaction-constant,first-order-decay,III.1.1,,0.05,year,,"{""climate"":""Dry"",""waste_type"":""Slowly Degrading Waste""}",world,world,IPCC,f1e81d51-ff80-4248-989a-7d04b52b503f
+CH4,MCF,methane-correction-factor,first-order-decay,III.1.1,,0.4,fraction,,"{""treatment_type"":""Unmanaged Waste Sites - Shallow SWDS""}",world,world,IPCC,40b95c6b-5e6c-4686-82f9-7d8d86d2a451
+CH4,MCF,methane-correction-factor,first-order-decay,III.1.3,,0.4,fraction,,"{""treatment_type"":""Unmanaged Waste Sites - Shallow SWDS""}",world,world,IPCC,c4209a82-695c-43ef-bb9c-6f1e2b93f52f
+CH4,MCF,methane-correction-factor,industrial-wastewater,III.4.1,,0.3,fraction,,"{""treatment_type"":""Aerobic Treatment Plant - Well Managed""}",world,world,IPCC,86902f84-179e-4414-a212-8e9f20efdf43
+CH4,MCF,methane-correction-factor,industrial-wastewater,III.4.3,,0.3,fraction,,"{""treatment_type"":""Aerobic Treatment Plant - Well Managed""}",world,world,IPCC,ae022443-11ca-4bda-9240-82459fc70e3f
+CH4,BOD,degradable-organic-component,domestic-wastewater,III.4.1,,0.04,kg/cap/day,,{},Latin America,,IPCC,b065ecea-2ecd-4c93-baea-dae81e605a2f
+CH4,B0,maximum-methane-producing-capacity,domestic-wastewater,III.4.3,,0.6,Kg/Kg,,{},world,world,IPCC,2256fad9-60ac-4b3b-a293-4eccde099e85
+CH4,B0,maximum-methane-producing-capacity,industrial-wastewater,III.4.3,,0.25,Kg/Kg,,{},world,world,IPCC,54317197-4dd2-4576-81a4-fdda42bc8501
+CH4,OX,oxidation-factor,methane-commitment,III.1.3,,0.0,fraction,,"{""treatment_type"":""Unmanaged""}",world,world,IPCC,aa77dfcb-47c7-464b-aa91-4ff84e8dc3fd
+CH4,DOCf,fraction-of-doc-decomposing-under-anaerobic-conditions,first-order-decay,III.1.1,,0.77,fraction,,"{""waste_form"":""unclassified"",""waste_type"":null}",world,world,IPCC,baa0a619-c3f7-48a4-b81e-cfa8849bcf59
+CH4,MCF,methane-correction-factor,industrial-wastewater,III.4.3,,0.0,fraction,,"{""treatment_type"":""Aerobic Treatment Plant - Well Managed""}",world,world,IPCC,438e5372-92d3-4869-91ca-4b15448f7881
+CH4,MCF,methane-correction-factor,industrial-wastewater,III.4.3,,0.2,fraction,,"{""treatment_type"":""Anaerobic Shallow Lagoon""}",world,world,IPCC,cf19ab25-87c6-4fa5-a67b-470aa2844d5a
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,40.0,%,,"{""waste_type"":""Clinical""}",,world,IPCC,e17e8a0e-f7ee-4cb2-8cdd-8cc09f66c7f2
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,40.0,%,,"{""waste_type"":""Clinical""}",,world,IPCC,9abe763f-4c45-4537-a55f-b2eacce9ded0
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,25.0,%,,"{""waste_type"":""Clinical""}",,world,IPCC,eb6dbf1c-9723-49e8-9113-2f974cd05722
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,25.0,%,,"{""waste_type"":""Clinical""}",,world,IPCC,266a9cd7-f525-4ca0-b993-14666bda61a6
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,95.0,%,,"{""waste_type"":""Hazardous""}",,world,IPCC,483f0a3e-4066-4421-96cf-fb940af843ae
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,95.0,%,,"{""waste_type"":""Hazardous""}",,world,IPCC,7908063f-85be-4245-ae71-178343732283
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,9.6,%,,"{""waste_type"":""Muncipal Solid Waste""}",,JP,IPCC,aa4dcb90-4e5c-4064-89b2-359a53c0c9bf
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,9.6,%,,"{""waste_type"":""Muncipal Solid Waste""}",,JP,IPCC,cdadf043-722f-4756-9cd2-3e84d407f3fd
+N2O,dmi,dry-matter-content,incineration-waste,III.3.1,,100.0,%,,"{""waste_type"":""Glass""}",,world,IPCC,e3558845-c4a9-4679-9e09-9d24c5b98ea5
+N2O,dmi,dry-matter-content,incineration-waste,III.3.3,,100.0,%,,"{""waste_type"":""Glass""}",,world,IPCC,c123e024-2d12-4176-8f66-b0a4f1a82dc5
+CH4,dmi,dry-matter-content,incineration-waste,III.3.1,,84.0,%,,"{""waste_type"":""Rubber and Leather""}",,world,IPCC,98127477-39ae-4c07-abf5-c93bdd15943a
+CH4,dmi,dry-matter-content,incineration-waste,III.3.3,,84.0,%,,"{""waste_type"":""Rubber and Leather""}",,world,IPCC,dbc12f0e-ec5b-41f7-b421-ada352337134
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,20.0,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,534a11e5-cbe5-45c9-a6a2-b1b0cc3283ab
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,20.0,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,cc166df3-4f18-4a43-b9e7-1fde9993bba0
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,31.5,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,34eb79e0-01b2-40b0-bf15-2a332a51c99a
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,31.5,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,9a4f2be2-b9ca-42e3-9b03-829922f1a086
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,29.5,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,11d24311-0e7d-4910-aebd-400af160b1c9
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,29.5,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,da0ad17a-ad75-47f6-be13-061739731a9a
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,95.0,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,b9a32262-958b-4e83-b381-898faa932b57
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,95.0,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,6f24625c-efa9-4d48-93e4-199dcaac4a1a
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,38.0,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,5c299f0d-bccd-4708-bb03-9a548365b83b
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,38.0,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,92c71189-8b7a-4129-b2d3-dfa7f10cd002
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,33.5,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,faa0eb39-d0d7-473a-99c8-57b9c8c115b5
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,33.5,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,019898a2-ef23-4f17-8d1b-a4b322a9296e
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,25.0,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,3912c5a6-cf01-4445-b4d3-4afeca9f55c5
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,25.0,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,37f4f561-1c7b-41a6-84e0-c3c270ed8176
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,40.0,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,9c7187c6-7717-45c7-b070-fabbf71a3ab2
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,40.0,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,ac0d6d98-0415-4fd7-bd5a-a9b3c4e672ba
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,90.0,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,c9f4fd7f-ed3a-4845-b3af-19213aa01263
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,90.0,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,cf438f12-a8ba-46b2-bf54-a5abd1ca008d
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,100.0,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,59d8f92e-fc6d-4ea8-bc12-5923837ea034
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,100.0,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,623aad2d-5ebf-4f36-8dc3-d6cd3b188d25
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,43.5,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,d98ed68c-411d-4110-9030-45d83e960202
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,43.5,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,075a5ac1-e3fe-421c-852c-1683567bff89
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,37.0,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,ea007b78-f3ea-464e-89c5-7dbe51385292
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,37.0,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,996b5148-4314-42d2-a141-fc619752044d
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,1.0,%,,"{""waste_type"":""Sludge""}",,world,IPCC,3a63065c-5f5c-4f37-ad36-3425a3d6ab7f
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,1.0,%,,"{""waste_type"":""Sludge""}",,world,IPCC,c99d13b8-2483-4c02-a1b5-5434448e0a73
+CO2,dmi,dry-matter-content,incineration-waste,III.3.1,,90.0,%,,"{""waste_type"":""Paper/cardboard""}",,world,IPCC,59a920b3-c693-436f-999c-2169b11fdfca
+CO2,dmi,dry-matter-content,incineration-waste,III.3.3,,90.0,%,,"{""waste_type"":""Paper/cardboard""}",,world,IPCC,b13663e9-b329-4539-9bce-52a8448fbf3e
+N2O,dmi,dry-matter-content,incineration-waste,III.3.1,,40.0,%,,"{""waste_type"":""Nappies""}",,world,IPCC,83b01c39-f121-44fa-ba13-0c51734f6734
+N2O,dmi,dry-matter-content,incineration-waste,III.3.3,,40.0,%,,"{""waste_type"":""Nappies""}",,world,IPCC,36c8a42b-dede-4cfa-8a03-54bcebf46903
+N2O,dmi,dry-matter-content,incineration-waste,III.3.1,,100.0,%,,"{""waste_type"":""Plastics""}",,world,IPCC,ecfada79-903c-43b7-9d79-139bd9507f94
+N2O,dmi,dry-matter-content,incineration-waste,III.3.3,,100.0,%,,"{""waste_type"":""Plastics""}",,world,IPCC,09363c85-46d8-4df5-b01f-18d8efe85696
+CH4,dmi,dry-matter-content,incineration-waste,III.3.1,,40.0,%,,"{""waste_type"":""Food waste""}",,world,IPCC,c331cb13-c1e1-4a38-a24b-5ebd399f4d24
+CH4,dmi,dry-matter-content,incineration-waste,III.3.3,,40.0,%,,"{""waste_type"":""Food waste""}",,world,IPCC,d12efdbf-9dcb-4438-8dcc-1d36addd1b78
+CO2,CFi,fraction-of-carbon,incineration-waste,III.3.1,,40.8,%,,"{""waste_type"":""Paper/cardboard""}",,JP,IPCC,acc4f02a-bbef-4692-8242-bbbcfa3dabf5
+CO2,CFi,fraction-of-carbon,incineration-waste,III.3.3,,40.8,%,,"{""waste_type"":""Paper/cardboard""}",,JP,IPCC,47a4a654-ce05-4530-bbb0-fc01adbf7e8d
+CO2,dmi,dry-matter-content,incineration-waste,III.3.1,,40.0,%,,"{""waste_type"":""Nappies""}",,world,IPCC,f68373de-16ee-4005-8c56-d8f1b278a894
+CO2,dmi,dry-matter-content,incineration-waste,III.3.3,,40.0,%,,"{""waste_type"":""Nappies""}",,world,IPCC,541a75e1-2d1b-49ca-99e3-0fc18c4d7633
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,10.0,%,,"{""waste_type"":""Nappies""}",,world,IPCC,d1c7695b-dfbf-4f46-ac9b-b33e7216979e
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,10.0,%,,"{""waste_type"":""Nappies""}",,world,IPCC,78137529-bf1e-4046-a0ff-a5e512ff33d7
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,9.6,%,,"{""waste_type"":""Paper/cardboard""}",,JP,IPCC,bb14db69-719c-4472-8f93-da19444522e4
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,9.6,%,,"{""waste_type"":""Paper/cardboard""}",,JP,IPCC,d8217be8-eeb5-4e45-8051-a0d7cca8bdfb
+N2O,dmi,dry-matter-content,incineration-waste,III.3.1,,40.0,%,,"{""waste_type"":""Garden and Park waste""}",,world,IPCC,65d1de74-4398-4df5-b930-a97b0189fcba
+N2O,dmi,dry-matter-content,incineration-waste,III.3.3,,40.0,%,,"{""waste_type"":""Garden and Park waste""}",,world,IPCC,371e8a21-5f20-421a-98bf-f6f605408763
+CH4,dmi,dry-matter-content,incineration-waste,III.3.1,,100.0,%,,"{""waste_type"":""Plastics""}",,world,IPCC,de39b20a-e953-4813-a22a-f734caecda47
+CH4,dmi,dry-matter-content,incineration-waste,III.3.3,,100.0,%,,"{""waste_type"":""Plastics""}",,world,IPCC,c5d92bb0-0c54-43e5-a3c5-cef1e3668a06
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,100.0,%,,"{""waste_type"":null}",,world,IPCC,cb3ad6a6-47c9-4403-9c25-76a1649e4710
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,100.0,%,,"{""waste_type"":null}",,world,IPCC,0a86c56c-89a8-46a7-bea3-f7dc4a5f7ee4
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,29.5,%,,"{""waste_type"":null}",,world,IPCC,340d5e7d-53b8-46a0-a1e7-6573a9ecea9b
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,29.5,%,,"{""waste_type"":null}",,world,IPCC,8d6202d2-2fe3-4bc3-b19c-171f61b4a021
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,20.0,%,,"{""waste_type"":null}",,world,IPCC,d6ff2478-2f93-4eb5-ac06-a065a1fbb939
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,20.0,%,,"{""waste_type"":null}",,world,IPCC,9593cb7d-84b5-4c66-9f61-4e852ec93b1b
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,31.5,%,,"{""waste_type"":null}",,world,IPCC,48026f19-75ed-4a00-b26c-d74df0141adb
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,31.5,%,,"{""waste_type"":null}",,world,IPCC,afa03bc5-580d-47cb-9403-fce7c54feb5e
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,43.5,%,,"{""waste_type"":null}",,world,IPCC,87d89803-4b9c-4640-8aba-3d4691cfad13
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,43.5,%,,"{""waste_type"":null}",,world,IPCC,f949ae57-cc6e-427e-99bc-faa0cbe31eef
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,38.0,%,,"{""waste_type"":null}",,world,IPCC,8a8b7c82-3d68-48c4-a0d1-e920d864fa05
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,38.0,%,,"{""waste_type"":null}",,world,IPCC,b26e47e4-5c4c-493e-9756-0fb2282a93c1
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,33.5,%,,"{""waste_type"":null}",,world,IPCC,d08ff991-158a-4586-b9f8-23c64a9f60d6
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,33.5,%,,"{""waste_type"":null}",,world,IPCC,1e6f6ff0-cb25-4c63-89ed-7d0495f62c65
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,1.0,%,,"{""waste_type"":null}",,world,IPCC,24e630f8-106b-4e5b-8be2-412ea72300b4
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,1.0,%,,"{""waste_type"":null}",,world,IPCC,171ef467-a248-4ba3-bf0a-4ddf34797d19
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,10.0,%,,"{""waste_type"":null}",,world,IPCC,174730d9-8683-42ac-84df-34b685b1af82
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,10.0,%,,"{""waste_type"":null}",,world,IPCC,505239ae-076c-4f08-bfa3-2288e816adf3
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,37.0,%,,"{""waste_type"":null}",,world,IPCC,35387ad1-3f32-440b-9993-aa7743a91992
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,37.0,%,,"{""waste_type"":null}",,world,IPCC,99e74a17-2dd4-41ed-8f48-47200d69c74a
+N2O,dmi,dry-matter-content,incineration-waste,III.3.1,,90.0,%,,"{""waste_type"":""Paper/cardboard""}",,world,IPCC,9b9500c7-97c5-4d6f-ab45-1c2b286408e7
+N2O,dmi,dry-matter-content,incineration-waste,III.3.3,,90.0,%,,"{""waste_type"":""Paper/cardboard""}",,world,IPCC,41cd34d7-7f05-4cb3-b31a-3662dfb2ff5d
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,1.0,%,,"{""waste_type"":""Paper/cardboard""}",,world,IPCC,4c802a47-a391-4f29-82cf-1b097bcfe7a7
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,1.0,%,,"{""waste_type"":""Paper/cardboard""}",,world,IPCC,be96a15d-1fd4-4f1b-9cd7-b04cba2500e7
+CO2,dmi,dry-matter-content,incineration-waste,III.3.1,,100.0,%,,"{""waste_type"":""Metal""}",,world,IPCC,3839b9b4-cce9-4fba-9dc7-6785b5827f7b
+CO2,dmi,dry-matter-content,incineration-waste,III.3.3,,100.0,%,,"{""waste_type"":""Metal""}",,world,IPCC,4a2de607-37eb-43ae-b5d3-22fe5ecc79f6
+CO2,dmi,dry-matter-content,incineration-waste,III.3.1,,90.0,%,,"{""waste_type"":""Other, inert waste""}",,world,IPCC,6b9c8218-6fcd-46c9-a8b5-c298f0c3b82b
+CO2,dmi,dry-matter-content,incineration-waste,III.3.3,,90.0,%,,"{""waste_type"":""Other, inert waste""}",,world,IPCC,118023ae-4098-4dce-b6c4-6e2c7ee79c32
+CO2,dmi,dry-matter-content,incineration-waste,III.3.1,,85.0,%,,"{""waste_type"":""Wood""}",,world,IPCC,a8dbff19-90ea-4a4e-a3bd-4961d66c7773
+CO2,dmi,dry-matter-content,incineration-waste,III.3.3,,85.0,%,,"{""waste_type"":""Wood""}",,world,IPCC,7cc93fcf-466c-410d-89ed-4f012d037a05
+CH4,dmi,dry-matter-content,incineration-waste,III.3.1,,40.0,%,,"{""waste_type"":""Nappies""}",,world,IPCC,0d4b7882-95da-4283-a522-318ab89a5481
+CH4,dmi,dry-matter-content,incineration-waste,III.3.3,,40.0,%,,"{""waste_type"":""Nappies""}",,world,IPCC,da1534d0-4f99-4ca7-b754-5236c045e241
+CO2,dmi,dry-matter-content,incineration-waste,III.3.1,,40.0,%,,"{""waste_type"":""Garden and Park waste""}",,world,IPCC,fbf02bf0-070d-413a-8c8f-037b4b02a210
+CO2,dmi,dry-matter-content,incineration-waste,III.3.3,,40.0,%,,"{""waste_type"":""Garden and Park waste""}",,world,IPCC,81aec8c1-5831-4cfd-b27b-8b7f5ff6b6b9
+CO2,dmi,dry-matter-content,incineration-waste,III.3.1,,84.0,%,,"{""waste_type"":""Rubber and Leather""}",,world,IPCC,129f9605-ae16-4865-be3d-a303d815da41
+CO2,dmi,dry-matter-content,incineration-waste,III.3.3,,84.0,%,,"{""waste_type"":""Rubber and Leather""}",,world,IPCC,261ea653-1410-4feb-b3be-51dcde78b585
+CH4,dmi,dry-matter-content,incineration-waste,III.3.1,,90.0,%,,"{""waste_type"":""Other, inert waste""}",,world,IPCC,aa35584f-5711-4d1b-b605-987729fc1756
+CH4,dmi,dry-matter-content,incineration-waste,III.3.3,,90.0,%,,"{""waste_type"":""Other, inert waste""}",,world,IPCC,6692f797-7d0f-4621-8a7c-9037f7c12720
+CO2,dmi,dry-matter-content,incineration-waste,III.3.1,,40.0,%,,"{""waste_type"":""Food waste""}",,world,IPCC,dc2bb0b0-76bd-40d8-ad4e-d73a3b1e68d3
+CO2,dmi,dry-matter-content,incineration-waste,III.3.3,,40.0,%,,"{""waste_type"":""Food waste""}",,world,IPCC,ba037666-fdc4-45f6-bc72-20389ce73eba
+N2O,dmi,dry-matter-content,incineration-waste,III.3.1,,80.0,%,,"{""waste_type"":""Textile""}",,world,IPCC,cc1eee52-7425-4cc5-a734-39d7bbaa28f9
+N2O,dmi,dry-matter-content,incineration-waste,III.3.3,,80.0,%,,"{""waste_type"":""Textile""}",,world,IPCC,83c66047-d2a0-4b76-9cc6-2e4573f8c7c5
+CH4,dmi,dry-matter-content,incineration-waste,III.3.1,,85.0,%,,"{""waste_type"":""Wood""}",,world,IPCC,3e800836-7b0b-4636-b15f-455b3a97bc7f
+CH4,dmi,dry-matter-content,incineration-waste,III.3.3,,85.0,%,,"{""waste_type"":""Wood""}",,world,IPCC,67a64d50-3c08-4793-9cfb-6622dd8002be
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,20.0,%,,"{""waste_type"":""Textile""}",,world,IPCC,585cf26d-0d0e-41a0-9a60-bc45bf92069c
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,20.0,%,,"{""waste_type"":""Textile""}",,world,IPCC,1ec806e2-4307-4de5-8eb8-f8638681142c
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,16.0,%,,"{""waste_type"":""Textile""}",,world,IPCC,bf460e1d-e395-450e-9c62-07cab7e3826e
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,16.0,%,,"{""waste_type"":""Textile""}",,world,IPCC,07e8d11d-3913-46de-9aae-38535e1cd4f3
+CO2,dmi,dry-matter-content,incineration-waste,III.3.1,,100.0,%,,"{""waste_type"":""Glass""}",,world,IPCC,3a2db6fc-6348-4a79-beb2-5014cf0e9c6c
+CO2,dmi,dry-matter-content,incineration-waste,III.3.3,,100.0,%,,"{""waste_type"":""Glass""}",,world,IPCC,4b951fdd-c7e8-46ce-a18a-0d0a23f73823
+CO2,dmi,dry-matter-content,incineration-waste,III.3.1,,80.0,%,,"{""waste_type"":""Textile""}",,world,IPCC,371d5f59-8633-4933-a203-1c2c5c929e4e
+CO2,dmi,dry-matter-content,incineration-waste,III.3.3,,80.0,%,,"{""waste_type"":""Textile""}",,world,IPCC,f4b40cf2-b820-43fe-b691-ef69c9aa4491
+CH4,dmi,dry-matter-content,incineration-waste,III.3.1,,100.0,%,,"{""waste_type"":""Metal""}",,world,IPCC,f90053f2-972b-41e4-b06b-2f5ddbae6ae4
+CH4,dmi,dry-matter-content,incineration-waste,III.3.3,,100.0,%,,"{""waste_type"":""Metal""}",,world,IPCC,9ed1bc6f-0e2b-4772-84c2-8d6403a4054b
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,20.0,%,,"{""waste_type"":""Rubber and Leather""}",,world,IPCC,7bf2d23d-25cb-4935-98d0-8d1e4d95c7d5
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,20.0,%,,"{""waste_type"":""Rubber and Leather""}",,world,IPCC,0a9c4310-75d7-4317-b747-e120ae2cb456
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,17.0,%,,"{""waste_type"":""Rubber and Leather""}",,world,IPCC,790c4cd7-1619-4dfb-a85c-d70ce3cf2bea
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,17.0,%,,"{""waste_type"":""Rubber and Leather""}",,world,IPCC,379bbf83-275f-4210-9d1d-24ddce03573a
+CH4,dmi,dry-matter-content,incineration-waste,III.3.1,,40.0,%,,"{""waste_type"":""Garden and Park waste""}",,world,IPCC,e13c68bb-84b2-4a35-9cb1-1e068fc3a063
+CH4,dmi,dry-matter-content,incineration-waste,III.3.3,,40.0,%,,"{""waste_type"":""Garden and Park waste""}",,world,IPCC,1af44f25-a211-4b17-ace2-72dda2acf2f7
+CH4,dmi,dry-matter-content,incineration-waste,III.3.1,,90.0,%,,"{""waste_type"":""Paper/cardboard""}",,world,IPCC,06cf570e-d5ab-4cf6-afc6-c5fdf74cc34a
+CH4,dmi,dry-matter-content,incineration-waste,III.3.3,,90.0,%,,"{""waste_type"":""Paper/cardboard""}",,world,IPCC,4b736fa2-5453-41a8-9fcb-bec9dcd5a29c
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,16.0,%,,"{""waste_type"":""Industrial""}",,world,IPCC,d5354cb9-772e-4671-8c8b-b7f54a92f860
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,16.0,%,,"{""waste_type"":""Industrial""}",,world,IPCC,965e2305-6a23-4c97-8710-5f762806eeca
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,90.0,%,,"{""waste_type"":""Industrial""}",,world,IPCC,962e84f5-3469-4ee4-ace3-3355d4707041
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,90.0,%,,"{""waste_type"":""Industrial""}",,world,IPCC,f72a2f30-cb0c-483c-ab86-1791aa8bd30b
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,17.0,%,,"{""waste_type"":""Industrial""}",,world,IPCC,8b62a1ed-a796-435c-9337-a34bdae6e706
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,17.0,%,,"{""waste_type"":""Industrial""}",,world,IPCC,322a2842-da2d-40b7-a51e-9ab411b62f9f
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,20.0,%,,"{""waste_type"":""Industrial""}",,world,IPCC,2bf225c8-d2e6-4c02-8564-839a868fe3e1
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,20.0,%,,"{""waste_type"":""Industrial""}",,world,IPCC,2c88ba22-73b3-4398-8912-6271dcc7e571
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,3.0,%,,"{""waste_type"":""Industrial""}",,world,IPCC,399931d4-5b18-4c69-8d4d-ff807531402e
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,3.0,%,,"{""waste_type"":""Industrial""}",,world,IPCC,4c52d781-29cf-4736-8abd-3cb59b166042
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,80.0,%,,"{""waste_type"":""Industrial""}",,world,IPCC,40ffd155-de85-4cd7-85c3-eaa95b18370c
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,80.0,%,,"{""waste_type"":""Industrial""}",,world,IPCC,178686eb-eba3-4162-85e7-4fa0053aacf9
+N2O,OFi,oxidation-factor,incineration-waste,III.3.1,,38.0,%,,"{""waste_type"":""Muncipal Solid Waste""}",,world,IPCC,71279cbb-b831-402b-b5f3-8743dc72a590
+N2O,OFi,oxidation-factor,incineration-waste,III.3.3,,38.0,%,,"{""waste_type"":""Muncipal Solid Waste""}",,world,IPCC,877359ad-8df0-404a-94dc-e7295bfd9239
+N2O,dmi,dry-matter-content,incineration-waste,III.3.1,,40.0,%,,"{""waste_type"":""Food waste""}",,world,IPCC,56a9f147-d3df-4760-acdd-e704a4380d9c
+N2O,dmi,dry-matter-content,incineration-waste,III.3.3,,40.0,%,,"{""waste_type"":""Food waste""}",,world,IPCC,54746242-c98b-40e8-ae65-c7b382324e3c
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,100.0,%,,"{""waste_type"":""Muncipal Solid Waste""}",,world,IPCC,ca7d0282-a1b6-4f04-b094-e23507cb7b4b
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,100.0,%,,"{""waste_type"":""Muncipal Solid Waste""}",,world,IPCC,d27b9fa2-b095-4356-8b11-20b6ac323d4b
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,40.0,%,,"{""waste_type"":""Muncipal Solid Waste""}",,world,IPCC,0c9f5b93-5f80-405d-99fa-079af8711cde
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,40.0,%,,"{""waste_type"":""Muncipal Solid Waste""}",,world,IPCC,64c731f7-0bdf-4183-b492-33fd4855e0af
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,1.0,%,,"{""waste_type"":""Muncipal Solid Waste""}",,world,IPCC,b38911b5-3233-4457-8517-412203c88d89
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,1.0,%,,"{""waste_type"":""Muncipal Solid Waste""}",,world,IPCC,e181cb75-7315-4538-b895-5b57490391b9
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,20.0,%,,"{""waste_type"":""Muncipal Solid Waste""}",,world,IPCC,0fe219da-e68b-4ba5-8969-083610ba4e17
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,20.0,%,,"{""waste_type"":""Muncipal Solid Waste""}",,world,IPCC,c611833b-a6f0-4f83-8525-4276d5b8f6a4
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,10.0,%,,"{""waste_type"":""Muncipal Solid Waste""}",,world,IPCC,6fedafa7-7965-46f1-87b6-dfaf62e5ed9b
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,10.0,%,,"{""waste_type"":""Muncipal Solid Waste""}",,world,IPCC,c9c19a4c-321c-4035-92e1-f683158702b3
+CO2,OFi,oxidation-factor,incineration-waste,III.3.1,,38.0,%,,"{""waste_type"":""Muncipal Solid Waste""}",,world,IPCC,cd5ee172-8457-4605-aa9e-98736aae11f4
+CO2,OFi,oxidation-factor,incineration-waste,III.3.3,,38.0,%,,"{""waste_type"":""Muncipal Solid Waste""}",,world,IPCC,4b7183b6-012d-4f1e-b92e-ca8ba4edbbe7
+N2O,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,38.0,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,2052874b-91da-4eb4-88f1-5a5007c11572
+N2O,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,38.0,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,9e0f10db-a96e-4109-a2f7-c5841b2b11a6
+CH4,OFi,oxidation-factor,incineration-waste,III.3.1,,38.0,%,,"{""waste_type"":""Muncipal Solid Waste""}",,world,IPCC,0064eb2e-0b1b-407d-8f4a-44b5fd67c95e
+CH4,OFi,oxidation-factor,incineration-waste,III.3.3,,38.0,%,,"{""waste_type"":""Muncipal Solid Waste""}",,world,IPCC,cefad4c1-0b51-469b-839f-9ef0081e68a1
+CO2,CFi,fraction-of-carbon,incineration-waste,III.3.1,,62.1,%,,"{""waste_type"":""PET bottles""}",,JP,IPCC,ebb49606-ecc3-4f61-a220-8eb7a4215c0e
+CO2,CFi,fraction-of-carbon,incineration-waste,III.3.3,,62.1,%,,"{""waste_type"":""PET bottles""}",,JP,IPCC,1642c042-aee2-4153-a057-78479198e118
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,80.0,%,,"{""waste_type"":""Plastics""}",,world,IPCC,ce945b8b-be78-42f0-aa12-532dc9c3ae6e
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,80.0,%,,"{""waste_type"":""Plastics""}",,world,IPCC,32a38f46-8a47-4e3c-ab49-5134df3150d5
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,3.0,%,,"{""waste_type"":""Plastics""}",,world,IPCC,163eec69-64cd-44ed-97cf-5ac99aefadf4
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,3.0,%,,"{""waste_type"":""Plastics""}",,world,IPCC,0322c7d4-8ae4-4c2e-aee7-44970a77cb0f
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,100.0,%,,"{""waste_type"":""Plastics""}",,world,IPCC,ade96baa-47c6-4322-92bc-a7671103713c
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,100.0,%,,"{""waste_type"":""Plastics""}",,world,IPCC,dd7eb312-36d0-4228-8bbc-b0b873f4eee8
+N2O,dmi,dry-matter-content,incineration-waste,III.3.1,,85.0,%,,"{""waste_type"":""Wood""}",,world,IPCC,438f139a-ba49-4f9a-810f-d6325ba3c6bf
+N2O,dmi,dry-matter-content,incineration-waste,III.3.3,,85.0,%,,"{""waste_type"":""Wood""}",,world,IPCC,23080198-0fd5-4347-9d92-939a61926630
+N2O,dmi,dry-matter-content,incineration-waste,III.3.1,,90.0,%,,"{""waste_type"":""Other, inert waste""}",,world,IPCC,d317905d-bdae-4fcd-95f6-fd971a1d8b4d
+N2O,dmi,dry-matter-content,incineration-waste,III.3.3,,90.0,%,,"{""waste_type"":""Other, inert waste""}",,world,IPCC,0ff6694f-68cb-4bd1-914f-e31f61f2f255
+CH4,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,38.0,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,9327ecb4-f323-4db8-b777-e8c9f1d5edce
+CH4,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,38.0,%,,"{""waste_type"":""Uncategorized""}",,world,IPCC,bdca20bf-0a3d-4127-a1c3-241f5b051693
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.1,,100.0,%,,"{""waste_type"":""Other, inert waste""}",,world,IPCC,a5847efb-9ce6-4656-ae5e-565752226626
+CO2,FCFi,fraction-of-fossil-carbon,incineration-waste,III.3.3,,100.0,%,,"{""waste_type"":""Other, inert waste""}",,world,IPCC,3d7c5b6e-4400-4884-ba9c-bfb9d33be71c
+CO2,dmi,dry-matter-content,incineration-waste,III.3.1,,100.0,%,,"{""waste_type"":""Plastics""}",,world,IPCC,facf55e1-85a9-45ea-ba72-f8b52daa3a7b
+CO2,dmi,dry-matter-content,incineration-waste,III.3.3,,100.0,%,,"{""waste_type"":""Plastics""}",,world,IPCC,20eae2a9-d31e-4afd-9fc3-577c395da927
+N2O,dmi,dry-matter-content,incineration-waste,III.3.1,,84.0,%,,"{""waste_type"":""Rubber and Leather""}",,world,IPCC,2ad1c130-070d-4e99-8634-d7c86f27dd0a
+N2O,dmi,dry-matter-content,incineration-waste,III.3.3,,84.0,%,,"{""waste_type"":""Rubber and Leather""}",,world,IPCC,11bd625d-342a-402f-9342-dea5d0feea01
+CH4,dmi,dry-matter-content,incineration-waste,III.3.1,,100.0,%,,"{""waste_type"":""Glass""}",,world,IPCC,598b2e12-d5fb-4de9-b132-3b0c54ef3f7a
+CH4,dmi,dry-matter-content,incineration-waste,III.3.3,,100.0,%,,"{""waste_type"":""Glass""}",,world,IPCC,8b0124a5-d522-4f09-895a-97da6cc92f58
+CH4,dmi,dry-matter-content,incineration-waste,III.3.1,,80.0,%,,"{""waste_type"":""Textile""}",,world,IPCC,a4bb32e6-fc78-454a-abc1-b19a86c40e6a
+CH4,dmi,dry-matter-content,incineration-waste,III.3.3,,80.0,%,,"{""waste_type"":""Textile""}",,world,IPCC,ebaa8efb-e7f5-4383-9688-baa6923fbd31
+N2O,dmi,dry-matter-content,incineration-waste,III.3.1,,100.0,%,,"{""waste_type"":""Metal""}",,world,IPCC,e03e94ab-a614-4138-b1c4-fd59e840b928
+N2O,dmi,dry-matter-content,incineration-waste,III.3.3,,100.0,%,,"{""waste_type"":""Metal""}",,world,IPCC,ded0d4b4-9c4d-4d32-aee1-6970bd0e36dd

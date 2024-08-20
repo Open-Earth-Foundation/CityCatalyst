@@ -75,7 +75,6 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
   inventory,
 }) => {
   const [selectedScopes, setSelectedScopes] = useState<number[]>([]);
-  console.log(inventory);
 
   const handleSelectedScopes = (value: number, checked: boolean) => {
     if (checked) {

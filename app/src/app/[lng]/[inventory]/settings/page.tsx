@@ -11,7 +11,7 @@ import MyProfileTab from "@/components/Tabs/my-profile-tab";
 import MyFilesTab from "@/components/Tabs/my-files-tab";
 import MyInventoriesTab from "@/components/Tabs/my-inventories-tab";
 import { api } from "@/services/api";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 
 export type ProfileInputs = {
   name: string;
@@ -43,6 +43,11 @@ export default function Settings({
   params: { lng: string };
 }) {
   const { data: session, status } = useSession();
+  const searchParams = useSearchParams();
+  console.log(searchParams.get("tabIndex"));
+
+  const paramValue = searchParams.get("tabIndex");
+  const tabIndex = paramValue ? Number(paramValue) : 0;
 
   const { t } = useTranslation(lng, "settings");
 
@@ -99,7 +104,7 @@ export default function Settings({
             </Text>
           </Box>
           <Box marginTop="48px" borderBottomColor={"border.overlay"}>
-            <Tabs defaultIndex={1}>
+            <Tabs defaultIndex={tabIndex}>
               <TabList>
                 <Tab>
                   <Text

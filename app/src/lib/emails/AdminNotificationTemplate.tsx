@@ -105,7 +105,10 @@ export default function AdminNotificationTemplate({
               marginBottom: "36px",
             }}
           >
-            <Link href={`${host}/${inventoryId}/settings/`} style={urlLink}>
+            <Link
+              href={`${host}/${inventoryId}/settings/?tabIndex=1`}
+              style={urlLink}
+            >
               GO TO REVIEW
             </Link>
           </div>

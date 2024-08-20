@@ -382,6 +382,42 @@ export const appTheme = extendTheme({
             color: "sentiment.warningDefault",
           },
         },
+        low: {
+          container: {
+            bgColor: "sentiment.warningOverlay",
+            borderColor: "sentiment.warningDefault",
+            borderWidth: 1,
+            borderRadius: "full",
+          },
+          label: {
+            color: "sentiment.warningDefault",
+            fontWeight: "medium",
+          },
+        },
+        medium: {
+          container: {
+            bgColor: "background.neutral",
+            borderColor: "content.link",
+            borderWidth: 1,
+            borderRadius: "full",
+          },
+          label: {
+            color: "content.link",
+            fontWeight: "medium",
+          },
+        },
+        high: {
+          container: {
+            bgColor: "sentiment.positiveOverlay",
+            borderColor: "interactive.tertiary",
+            borderWidth: 1,
+            borderRadius: "full",
+          },
+          label: {
+            color: "interactive.tertiary",
+            fontWeight: "medium",
+          },
+        },
       },
       defaultProps: {
         variant: "brand",

@@ -25,17 +25,14 @@
   "energy-consumption": "Energy Consumption",
   "energy-consumption-description": "From electricity or heat purchased for use in commercial buildings.",
   "add-data-manually-desciption": "To add your inventory data manually, select the methodology used to collect the data and calculate your emissions. <2>Learn more</2> about methodologies",
-
   "fuel-combustion-consumption-desciption": "Direct recording of fuels combusted in commercial buildings.",
   "total-fuel-consumed": "Total consumed amount",
-
   "input-required": "Input required",
-
+  "select-activity-type": "Select activity type",
   "scaled-sample-data": "Scaled sample data",
   "scaled-sample-data-desc": "Extrapoles emissions from a representative sample of buildings",
   "sample-fuel": "Sample fuel consumed amount",
   "scaling-data": "Scaling data (population, GDP, area, etc) for sample and city level",
-
   "modeled-data": "Modeled data",
   "modeled-data-desc": "Emissions estimated from predictive models",
   "modeled-fuel": "Modeled fuel intensity consumption",
@@ -593,7 +590,7 @@
   "fuel-type-residual-fuel-oil": "Residual Fuel Oil",
   "fuel-type-sub-bituminous-coal": "Sub-Bituminous Coal",
   "fuel-type-waste-oils": "Waste Oils",
-  "fuel-type-wood/wood-waste": "Wood/wWood Waste",
+  "fuel-type-wood/wood-waste": "Wood/Wood Waste",
   "fugitive-emissions-coal-source": "Source Reference",
   "fugitive-emissions-coal-type": "Activity Type",
   "fugitive-emissions-oil-gas-fugitive-source": "Source Reference",
@@ -770,5 +767,15 @@
   "waterborne-navigation-fuel-intensity": "Fuel intensity",
   "waterborne-navigation-fuel-source": "Fuel source",
   "waterborne-navigation-fuel-type": "Fuel type",
-  "waterborne-navigation-vehicle-type": "Vehicle type"
+  "waterborne-navigation-vehicle-type": "Vehicle type",
+  "add-emissions-data-title": "You have not added any emission data",
+  "add-emissions-data-subtext": "Add emissions data and complete your inventory",
+  "add-emission-data-btn": "Add emission data",
+  "update-activity": "Update activity",
+  "add-emission-data": "Add emission data",
+  "co2-emissions": "CO2 emissions",
+  "n2o-emissions": "N2O emissions",
+  "ch4-emissions": "CH4 emissions",
+  "emissions-value-co2": "CO2",
+  "emissions-value-n2o": "N2O"
 }

@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Card,
   Icon,
   IconButton,
   Link,
@@ -11,7 +12,15 @@ import {
   PopoverTrigger,
   Switch,
   TabPanel,
+  Table,
+  Tag,
+  TagLabel,
+  Tbody,
+  Td,
   Text,
+  Th,
+  Thead,
+  Tr,
   useDisclosure,
 } from "@chakra-ui/react";
 import React, { FC, useState } from "react";
@@ -35,6 +44,11 @@ import {
   SuggestedActivity,
 } from "@/util/form-schema";
 import MethodologyCard from "@/components/Cards/methodology-card";
+import { ActivityData } from "@/models/ActivityData";
+import { ActivityValue } from "@/models/ActivityValue";
+import { DataConnectIcon } from "@/components/icons";
+import { convertKgToTonnes, getInputMethodology } from "@/util/helpers";
+import DirectMeasureTable from "./direct-measure-table";
 
 interface ActivityTabProps {
   t: TFunction;
@@ -48,6 +62,7 @@ interface ActivityTabProps {
   filteredScope: number;
   inventoryId: string;
   step: string;
+  activityData: ActivityValue[] | undefined;
 }
 
 const ActivityTab: FC<ActivityTabProps> = ({
@@ -60,8 +75,14 @@ const ActivityTab: FC<ActivityTabProps> = ({
   filteredScope,
   inventoryId,
   step,
+  activityData,
 }) => {
-  const totalEmissions = 0;
+  let totalEmissions = 0;
+
+  activityData?.forEach((activity: any) => {
+    totalEmissions += parseInt(activity?.co2eq);
+  });
+
   const [selectedActivity, setSelectedActivity] = useState<
     SuggestedActivity | undefined
   >();
@@ -73,6 +94,25 @@ const ActivityTab: FC<ActivityTabProps> = ({
 
   const refNumberWithScope = referenceNumber + "." + (filteredScope || 1);
 
+  const getfilteredActivityValues = activityData?.filter(
+    (activity) =>
+      activity.inventoryValue.gpcReferenceNumber === refNumberWithScope,
+  );
+
+  const getActivityValuesByMethodology = (
+    activityValues: ActivityValue[] | undefined,
+  ) => {
+    const isDirectMeasure = methodology?.id.includes("direct-measure");
+
+    return activityValues?.filter((activity) =>
+      isDirectMeasure
+        ? activity.inventoryValue.inputMethodology === "direct-measure"
+        : activity.inventoryValue.inputMethodology !== "direct-measure",
+    );
+  };
+
+  const activityValues =
+    getActivityValuesByMethodology(getfilteredActivityValues) || [];
   function getMethodologies() {
     const methodologies =
       MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.methodologies || [];
@@ -237,7 +277,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                         fontSize="button.md"
                         gap="8px"
                       >
-                        {t("add-activity")}
+                        {t("add-emission-data")}
                       </Button>
                       <Popover>
                         <PopoverTrigger>
@@ -305,7 +345,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                                 className="group-hover:text-white"
                                 color="content.primary"
                               >
-                                Delete all activities
+                                {t("delete-all-activities")}
                               </Text>
                             </Box>
                           </PopoverBody>
@@ -319,13 +359,22 @@ const ActivityTab: FC<ActivityTabProps> = ({
                     flexDirection="column"
                     gap="16px"
                   >
-                    {hasActivityData ? (
+                    {activityValues?.length ? (
                       <Box>
-                        <ActivityAccordion
-                          t={t}
-                          userActivities={userActivities}
-                          showActivityModal={onAddActivityModalOpen}
-                        />
+                        {getInputMethodology(methodology?.id!) ===
+                        "direct-measure" ? (
+                          <DirectMeasureTable
+                            t={t}
+                            activityData={activityValues}
+                          />
+                        ) : (
+                          <ActivityAccordion
+                            t={t}
+                            activityData={activityValues}
+                            showActivityModal={onAddActivityModalOpen}
+                            methodologyId={methodology?.id}
+                          />
+                        )}
                         <Box
                           w="full"
                           borderTopWidth="3px"
@@ -346,40 +395,93 @@ const ActivityTab: FC<ActivityTabProps> = ({
                               fontWeight="semibold"
                               fontSize="headline.md"
                             >
-                              {totalEmissions} MtCO2
+                              {convertKgToTonnes(totalEmissions)}
                             </Text>
                           </Box>
                         </Box>
                       </Box>
                     ) : (
                       <>
-                        <Text
-                          fontFamily="heading"
-                          fontSize="title.md"
-                          fontWeight="semibold"
-                          color="content.secondary"
-                        >
-                          {t("activity-suggestion")}
-                        </Text>
-                        <Box className="flex flex-col gap-4">
-                          {suggestedActivities.map((suggestedActivity) => {
-                            const { id } = suggestedActivity;
-                            return (
-                              <SuggestedActivityCard
-                                key={id}
-                                id={id}
-                                t={t}
-                                isSelected={selectedActivity?.id === id}
-                                onActivityAdded={(...args) =>
-                                  handleActivityAdded(
-                                    suggestedActivity,
-                                    // ...args,
-                                  )
-                                }
-                              />
-                            );
-                          })}
-                        </Box>
+                        {suggestedActivities.length ? (
+                          <>
+                            <Text
+                              fontFamily="heading"
+                              fontSize="title.md"
+                              fontWeight="semibold"
+                              color="content.secondary"
+                            >
+                              {t("activity-suggestion")}
+                            </Text>
+                            <Box className="flex flex-col gap-4">
+                              {suggestedActivities.map((suggestedActivity) => {
+                                const { id } = suggestedActivity;
+                                return (
+                                  <SuggestedActivityCard
+                                    key={id}
+                                    id={id}
+                                    t={t}
+                                    isSelected={selectedActivity?.id === id}
+                                    onActivityAdded={(...args) =>
+                                      handleActivityAdded(
+                                        suggestedActivity,
+                                        // ...args,
+                                      )
+                                    }
+                                  />
+                                );
+                              })}
+                            </Box>
+                          </>
+                        ) : (
+                          <Card
+                            w="full"
+                            bg="background.backgroundLight"
+                            shadow="none"
+                            h="100px"
+                            flexDir="row"
+                            p="24px"
+                            justifyContent="space-between"
+                          >
+                            <Box display="flex" gap="12px">
+                              <Box>
+                                <DataConnectIcon />
+                              </Box>
+                              <Box display="flex" flexDir="column" gap="8px">
+                                <Text
+                                  color="interactive.secondary"
+                                  fontSize="title.md"
+                                  fontWeight="bold"
+                                  lineHeight="24px"
+                                  fontFamily="heading"
+                                >
+                                  {t("add-emissions-data-title")}
+                                </Text>
+                                <Text
+                                  color="content.tertiary"
+                                  fontSize="body.md"
+                                  fontWeight="semibold"
+                                  lineHeight="20px"
+                                  letterSpacing="wide"
+                                >
+                                  {t("add-emissions-data-subtext")}
+                                </Text>
+                              </Box>
+                            </Box>
+                            <Box>
+                              <Button
+                                onClick={onAddActivityModalOpen}
+                                title={t("add-emission-data")}
+                                leftIcon={<AddIcon h="16px" w="16px" />}
+                                h="48px"
+                                aria-label="activity-button"
+                                fontSize="button.md"
+                                gap="8px"
+                              >
+                                {t("add-emission-data-btn")}
+                              </Button>
+                            </Box>
+                          </Card>
+                        )}
                       </>
                     )}
                   </Box>
@@ -510,6 +612,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
         methodology={methodology!}
         inventoryId={inventoryId}
         selectedActivity={selectedActivity}
+        referenceNumber={refNumberWithScope}
       />
 
       <ChangeMethodology

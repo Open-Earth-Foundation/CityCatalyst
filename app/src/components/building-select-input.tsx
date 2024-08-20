@@ -2,8 +2,8 @@ import { Box, Select, Text } from "@chakra-ui/react";
 import React, { FC } from "react";
 import { FieldError, FieldErrors, UseFormRegister } from "react-hook-form";
 import { Inputs } from "./Modals/add-activity-modal";
-import { t } from "i18next";
 import { WarningIcon } from "@chakra-ui/icons";
+import { TFunction } from "i18next";
 import type { SuggestedActivity } from "@/util/form-schema";
 
 interface BuildingTypeSelectInputProps {
@@ -13,6 +13,7 @@ interface BuildingTypeSelectInputProps {
   register: UseFormRegister<Inputs>;
   activity: string;
   errors: FieldErrors<any>;
+  t: TFunction;
   selectedActivity?: SuggestedActivity;
 }
 
@@ -23,6 +24,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
   register,
   activity,
   errors,
+  t,
   selectedActivity,
 }) => {
   return (
@@ -35,7 +37,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
         letterSpacing="wide"
         fontFamily="heading"
       >
-        {title}
+        {t(title)}
       </Text>
       <Select
         shadow="1dp"
@@ -56,7 +58,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
       >
         {options?.map((item: string) => (
           <option key={item} value={item}>
-            {item}
+            {t(item)}
           </option>
         ))}
       </Select>

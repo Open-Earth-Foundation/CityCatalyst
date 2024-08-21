@@ -272,6 +272,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                     </Box>
                     <Box display="flex" alignItems="center">
                       <Button
+                        data-testid="add-emission-data-button"
                         onClick={onAddActivityModalOpen}
                         title="Add Activity"
                         leftIcon={<AddIcon h="16px" w="16px" />}

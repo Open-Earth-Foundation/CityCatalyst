@@ -242,7 +242,12 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     <>
       <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent minH="300px" minW="768px" marginTop="2%">
+        <ModalContent
+          data-testid="add-emission-modal"
+          minH="300px"
+          minW="768px"
+          marginTop="2%"
+        >
           <ModalHeader
             display="flex"
             justifyContent="center"
@@ -464,6 +469,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                         >
                           <NumberInputField
                             h="48px"
+                            type="number"
                             shadow="1dp"
                             borderRightRadius={0}
                             {...register("activity.CO2EmissionFactor")}
@@ -791,6 +797,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
             justifyContent="center"
           >
             <Button
+              data-testid="add-emission-modal-submit"
               h="56px"
               w="full"
               paddingTop="16px"

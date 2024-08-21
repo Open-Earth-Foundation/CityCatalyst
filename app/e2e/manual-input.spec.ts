@@ -80,18 +80,44 @@ const createInventory = async (request: APIRequestContext): Promise<string> => {
 const testIds = {
   addDataToInventoryNavButton: "add-data-to-inventory-card",
   addDataStepHeading: "add-data-step-title",
-  sectorCard: "sector-card",
+  stationaryEnergySectorCard: "stationary-energy-sector-card",
+  transportationSectorCard: "transportation-sector-card",
+  wasteSectorCard: "waste-sector-card",
   sectorCardButton: "sector-card-button",
   subsectorCard: "subsector-card",
   manualInputHeader: "manual-input-header",
+  methodologyCard: "methodology-card",
+  methodologyCardHeader: "methodology-card-header",
+  addEmissionButton: "add-emission-data-button",
+  addEmissionModal: "add-emission-modal",
+  addEmissionModalSubmitButton: "add-emission-modal-submit",
 };
+
+const sectorData = [
+  {
+    sectorName: "Stationary Energy",
+    testId: testIds.stationaryEnergySectorCard,
+    url1: "/data/1/",
+  },
+  {
+    sectorName: "Transportation",
+    testId: testIds.transportationSectorCard,
+    url1: "/data/2/",
+  },
+  {
+    sectorName: "Waste",
+    testId: testIds.wasteSectorCard,
+    url1: "/data/3/",
+  },
+];
 
 test.describe("Manual Input", () => {
   let page: Page;
+  let id: string;
 
   test.beforeAll(async ({ browser, request }) => {
     page = await browser.newPage();
-    const id = await createInventory(request);
+    id = await createInventory(request);
     await page.goto(`/en/${id}/`);
     await expect(page).toHaveURL(indexPageRegex);
     // wait for page to load
@@ -111,51 +137,158 @@ test.describe("Manual Input", () => {
     await expect(pageHeader).toHaveText(
       "Add Data to Complete Your GHG Inventory",
     );
-    const sectorCrds = await page.$$(`[data-testid="${testIds.sectorCard}"]`);
-    expect(sectorCrds.length).toBeGreaterThan(0);
+
+    // check for sector cards
+    const stationaryEnergySectorCard = await page.getByTestId(
+      testIds.stationaryEnergySectorCard,
+    );
+    expect(stationaryEnergySectorCard).toBeTruthy();
+
+    const transportationSectorCard = await page.getByTestId(
+      testIds.transportationSectorCard,
+    );
+    expect(transportationSectorCard).toBeTruthy();
+
+    const wasteSectorCard = await page.getByTestId(testIds.wasteSectorCard);
+    expect(wasteSectorCard).toBeTruthy();
   });
 
-  test("should navigate to a sub sector page", async () => {
-    const sectorCrdsButtons = await page.$$(
-      `[data-testid="${testIds.sectorCardButton}"]`,
-    );
-    await sectorCrdsButtons[0].click();
-    await page.waitForURL(regexForPath("/data/1/"));
-    await expect(page).toHaveURL(regexForPath("/data/1/"));
-    // wait for page to load
-    await page.waitForSelector(`[data-testid="${testIds.subsectorCard}"]`);
-    const subsectorCrds = await page.$$(
-      `[data-testid=${testIds.subsectorCard}]`,
-    );
-    expect(subsectorCrds.length).toBeGreaterThan(0);
+  sectorData.forEach((sector) => {
+    test.describe(() => {
+      test(`should navigate to ${sector.sectorName} sector page`, async () => {
+        await page.goto(`/en/${id}/data/`);
+        await page.waitForURL(regexForPath("/data/"));
+        await expect(page).toHaveURL(regexForPath("/data/"));
 
-    const targetSubSector = subsectorCrds[0];
-    await targetSubSector.click();
-    await expect(page).toHaveURL(
-      /\/data\/\d+\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/$/,
-    );
-  });
+        // wait for sector card to load
+        const sectorCard = await page.waitForSelector(
+          `[data-testid="${sector.testId}"]`,
+        );
+        expect(sectorCard).toBeTruthy();
+        const sectorCardBtn = await sectorCard?.$(
+          `[data-testid="${testIds.sectorCardButton}"]`,
+        );
+        await sectorCardBtn?.click();
+        await page.waitForURL(regexForPath(sector.url1));
+        await expect(page).toHaveURL(regexForPath(sector.url1));
 
-  test.skip("should list methodologies", async () => {
-    // see a list of the methodologies
-    await page.click(`[data-testid="subsector-card"]`); // clicks on the first subsector card
-    await expect(page).toHaveURL(/.*subsector-page/); // adjust regex to match your subsector page URL
-  });
+        await page.waitForResponse((resp) => resp.status() == 200);
+        // wait for 10 seconds
+        await page.waitForTimeout(3000);
 
-  test.skip("test direct measure", async () => {
-    // click the direct measure card ? find the one with the text in it
-    // it should load the data entry page for the methodology
-    // clicking on the entry button should lead
-  });
+        const subsectorCrds = await page.$$(
+          `[data-testid=${testIds.subsectorCard}]`,
+        );
+        expect(subsectorCrds.length).toBeGreaterThan(0);
 
-  test.skip("should display correct number of methodology cards based on subsector reference number", async () => {
-    const referenceNumber = await page.getAttribute(
-      `[data-testid="subsector-reference"]`,
-      "data-reference-number",
-    );
-    const methodologyCards = await page.$$(`[data-testid="methodology-card"]`);
-    // Replace with logic to determine the correct number of methodology cards based on the reference number
-    const expectedMethodologyCount = 3; // example value
-    expect(methodologyCards.length).toBe(expectedMethodologyCount);
+        // await page response
+
+        await page.waitForSelector(`[data-testid="${testIds.subsectorCard}"]`);
+        const targetSubSector = subsectorCrds[0];
+        await targetSubSector.click();
+        await expect(page).toHaveURL(
+          /\/data\/\d+\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/$/,
+        );
+      });
+
+      test(`should list methodologies in ${sector.sectorName}`, async () => {
+        // check on a list of methodologies
+        const methodologyCards = await page.$$(
+          `[data-testid=${testIds.methodologyCard}]`,
+        );
+        expect(methodologyCards.length).toBeGreaterThan(0);
+      });
+
+      test(`test direct measure methodology in scope 1 with incomplete  & complete values in in ${sector.sectorName}`, async () => {
+        test.skip(sector.sectorName === "Waste");
+        // look for a direct measure
+        // select all the methodology card headers and check if any of them is direct measure
+        const directMeasureCardHeader = await page.$(
+          `[data-testid=${testIds.methodologyCardHeader}]` &&
+            "text=Direct Measure",
+        );
+
+        expect(directMeasureCardHeader).toBeTruthy();
+        // click on the direct measure card
+        await directMeasureCardHeader?.click();
+
+        const addEmissionButton = await page.$(
+          `[data-testid=${testIds.addEmissionButton}]`,
+        );
+        expect(addEmissionButton).toBeTruthy();
+        await addEmissionButton?.click();
+
+        // wait for the modal to open;
+        const addEmissionModal = await page.waitForSelector(
+          `[data-testid=${testIds.addEmissionModal}]`,
+        );
+
+        // fill in the select fields
+        const selectElements = await addEmissionModal.$$("select");
+
+        for (const selectElement of selectElements) {
+          await selectElement.selectOption({ index: 1 });
+          await page.waitForTimeout(1000); // Selects the first option (index 0)
+        }
+
+        // fill in the  numeric input fields
+        const numericInputs = await addEmissionModal.$$(
+          'input[inputmode="decimal"][pattern="[0-9]*(\\.[0-9]+)?"]',
+        );
+
+        for (const input of numericInputs) {
+          await input.fill("122"); // Example: filling with the value '1.0'
+        }
+
+        // try to submit the form
+        const submitButton = await addEmissionModal.$(
+          `[data-testid=${testIds.addEmissionModalSubmitButton}]`,
+        );
+
+        await submitButton?.click();
+
+        // look for error-text within the modal "please select a source reference"
+        const element = await page.getByText(
+          "Please select a source reference",
+        );
+
+        expect(element).toBeTruthy();
+
+        // fill in the text field
+        const textInputs = await addEmissionModal.$$("textarea");
+        for (const textInput of textInputs) {
+          await textInput.fill("test values");
+        }
+
+        await submitButton?.click();
+
+        // wait for a 200 response
+        await page.waitForResponse((resp) => resp.status() == 200);
+        // wait for 10 seconds
+        await page.waitForTimeout(3000);
+      });
+
+      test(`should display newly created activity in activity table in in ${sector.sectorName}`, async () => {
+        test.skip(sector.sectorName === "Waste");
+        // wait for the page to load
+        // wait for the table to load
+        const table = await page.waitForSelector("table");
+
+        // Ensure the table exists
+        expect(table).not.toBeNull();
+
+        // Get all the rows in the table (excluding the header row if there is one)
+        const rows = await table?.$$("tbody tr");
+
+        // Ensure the table has at least one row
+        expect(rows?.length).toBeGreaterThan(0);
+
+        const cellWithValue = await page
+          ?.getByRole("cell", { name: "tCO2" })
+          .first();
+
+        expect(cellWithValue).toBeTruthy();
+      });
+    });
   });
 });

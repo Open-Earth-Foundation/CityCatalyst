@@ -11,12 +11,14 @@ interface AddDataCardProps {
   scopeText: string;
   step: number;
   buttonText: string;
+  testId?: string;
   inventory: string;
 }
 
 function AddDataCard({
   icon,
   description,
+  testId,
   scopeText,
   step,
   buttonText,
@@ -28,7 +30,7 @@ function AddDataCard({
     <Card
       className="space-y-6 grow w-1/3"
       boxShadow="none"
-      data-testid="sector-card"
+      data-testid={testId}
       p={6}
       borderColor="border.overlay"
       borderWidth={1}

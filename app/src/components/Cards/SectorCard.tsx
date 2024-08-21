@@ -13,7 +13,6 @@ import {
   Icon,
   Text,
 } from "@chakra-ui/react";
-import { MdArrowForward } from "react-icons/md";
 import NextLink from "next/link";
 import { BsTruck } from "react-icons/bs";
 import { PiTrashLight } from "react-icons/pi";
@@ -23,6 +22,7 @@ import { SegmentedProgress } from "../SegmentedProgress";
 import { formatPercent } from "@/util/helpers";
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
+import { AddIcon } from "@chakra-ui/icons";
 
 export function SectorCard({
   sectorProgress,
@@ -131,10 +131,10 @@ export function SectorCard({
                   color="brand.secondary"
                   ml={2}
                 >
+                  <AddIcon />
                   <Text fontFamily="heading" fontSize="button.md">
                     <Trans t={t}>add-data-to-sector</Trans>
                   </Text>
-                  <MdArrowForward size={24} />
                 </Button>
               </NextLink>
             </Box>

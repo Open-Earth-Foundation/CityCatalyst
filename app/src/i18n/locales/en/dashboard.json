@@ -10,16 +10,16 @@
   "add-data-to-inventory-description": "Upload data or connect third-party data to complete the GPC Basic Emissions Inventory",
   "download": "Download",
   "download-description": "View and download your inventory data in CSV or GPC format and share your progress",
-  "gpc-basic-emissions-inventory-calculations-year": "GPC Basic Emission Inventory Calculation - Year",
-  "gpc-inventory-description": "The data you have submitted is now officially incorporated into your city's {{year}} GHG Emissions Inventory, compiled according to the GPC Basic methodology. <4>Learn more</4> about GPC Protocol.",
+  "inventory-calculations-title": "Emission inventory calculation",
+  "inventory-results-title": "Emission inventory results",
+  "gpc-inventory-description": "Track and review your {{year}} GHG Emission inventory data, prepared according to the Greenhouse Gas Protocol for Cities (GPC) Framework. <4>Learn more</4> about the GPC framework for the inventory calculation.",
   "learn-more": "Learn more",
   "completed": "completed",
   "uploaded-data": "Uploaded data",
   "connect-third-party-data": " Connected third-party data",
-  "sectors-required-from-inventory": "Sectors required from inventory",
   "stationary-energy": "Stationary Energy",
   "stationary-energy-description": "This sector deals with emissions that result from the generation of electricity, heat, and steam, as well as their consumption.",
-  "add-data-to-sector": "Add data to sector",
+  "add-data-to-sector": "Add data",
   "scope-required-for-gpc": "Scope Required for GPC Basic Inventory",
   "sub-sectors-required": "Sub-sector required",
   "view-more": "VIEW MORE",
@@ -35,5 +35,15 @@
   "download-complete": "Inventory report download completed!",
   "downloading-data": "Downloading your data",
   "download-failed": "Download failed",
-  "download-error": "There was an error during download"
+  "download-error": "There was an error during download",
+  "tab-emission-inventory-calculation-title": "Inventory Calculation",
+  "tab-emission-inventory-results-title": "Inventory Results",
+  "inventory-format-basic": "Inventory format: GPC BASIC",
+  "view-progress-in-each-sector": "View the progress of data collection in each GPC-required sector.",
+  "sector-emissions": "Sector Emissions",
+  "sector-data": "SECTOR DATA",
+  "total-emissions-tooltip": "Here you can see the total emissions in {{year}} when the inventory is completed."
+
+
+
 }

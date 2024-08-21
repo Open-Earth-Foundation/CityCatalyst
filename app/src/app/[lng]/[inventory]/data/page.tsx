@@ -75,6 +75,7 @@ export default function AddDataIntro({
         fontSize="32px"
         lineHeight="40px"
         fontWeight="semibold"
+        data-testid="add-data-step-title"
         mb={6}
         mt={12}
         className="w-full"

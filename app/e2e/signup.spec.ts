@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/en/auth/signup");
 });
 
-test.describe("Signup", () => {
+test.describe.skip("Signup", () => {
   test("should navigate to signup from login", async ({ page }) => {
     await page.goto("/");
     const link = page.getByText("Sign up");

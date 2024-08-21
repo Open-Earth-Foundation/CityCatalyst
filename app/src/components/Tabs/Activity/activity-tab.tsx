@@ -225,7 +225,10 @@ const ActivityTab: FC<ActivityTabProps> = ({
           justifyContent="space-between"
           mb="48px"
         >
-          <HeadingText title={t("add-data-manually")} />
+          <HeadingText
+            data-testid="manual-input-header"
+            title={t("add-data-manually")}
+          />
           <Box display="flex" gap="16px" fontSize="label.lg">
             <Switch isChecked={isUnavailableChecked} onChange={handleSwitch} />
             <Text fontFamily="heading" fontWeight="medium">

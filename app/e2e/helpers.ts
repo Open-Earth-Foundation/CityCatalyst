@@ -27,3 +27,24 @@ export async function signup(
   expect(result.ok()).toBeTruthy();
   return await result.json();
 }
+
+export async function createInventory(
+  request: APIRequestContext,
+  name: string,
+  description: string,
+  sector: string,
+  subsector: string,
+  methodology: string,
+) {
+  const result = await request.post("/api/v0/inventory", {
+    data: {
+      name,
+      description,
+      sector,
+      subsector,
+      methodology,
+    },
+  });
+  expect(result.ok()).toBeTruthy();
+  return await result.json();
+}

@@ -77,6 +77,7 @@ const createInventory = async (request: APIRequestContext): Promise<string> => {
 
   return inventoryID;
 };
+
 const testIds = {
   addDataToInventoryNavButton: "add-data-to-inventory-card",
   addDataStepHeading: "add-data-step-title",
@@ -91,6 +92,10 @@ const testIds = {
   addEmissionButton: "add-emission-data-button",
   addEmissionModal: "add-emission-modal",
   addEmissionModalSubmitButton: "add-emission-modal-submit",
+  co2EmissionInput: "co2-emission-factor",
+  n2oEmissionInput: "n2o-emission-factor",
+  ch4EmissionInput: "ch4-emission-factor",
+  sourceReferenceInput: "source-reference",
 };
 
 const sectorData = [
@@ -110,6 +115,12 @@ const sectorData = [
     url1: "/data/3/",
   },
 ];
+
+const EmissionFactos = {
+  CO2: 120,
+  N2O: 202,
+  CH4: 300,
+};
 
 test.describe.serial("Manual Input", () => {
   let page: Page;
@@ -172,11 +183,11 @@ test.describe.serial("Manual Input", () => {
         // wait for 10 seconds
         await page.waitForTimeout(3000);
 
-        const subsectorCrds = await page.getByTestId(testIds.subsectorCard);
-        expect(await subsectorCrds.count()).toBeGreaterThan(0);
+        const subsectorCards = await page.getByTestId(testIds.subsectorCard);
+        expect(await subsectorCards.count()).toBeGreaterThan(0);
 
         // await page response
-        const targetSubSector = subsectorCrds.first();
+        const targetSubSector = subsectorCards.first();
         await targetSubSector.click();
         await expect(page).toHaveURL(
           /\/data\/\d+\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/$/,
@@ -224,15 +235,24 @@ test.describe.serial("Manual Input", () => {
           await dropdown.selectOption({ index: 1 });
         }
 
-        // fill in the  numeric input fields
-        const numericInputs = await addEmissionModal.locator(
-          'input[inputmode="decimal"][pattern="[0-9]*(\\.[0-9]+)?"]',
+        // fill in the emission values
+        const co2Input = await addEmissionModal.getByTestId(
+          testIds.co2EmissionInput,
         );
 
-        for (let i = 0; i < (await numericInputs.count()); i++) {
-          const input = numericInputs.nth(i);
-          await input.fill("122"); // Example: filling with the value '1.0'
-        }
+        await co2Input.fill(EmissionFactos.CO2.toString());
+
+        const n2oInput = await addEmissionModal.getByTestId(
+          testIds.n2oEmissionInput,
+        );
+
+        await n2oInput.fill(EmissionFactos.N2O.toString());
+
+        const ch4Input = await addEmissionModal.getByTestId(
+          testIds.ch4EmissionInput,
+        );
+
+        await ch4Input.fill(EmissionFactos.CH4.toString());
 
         // try to submit the form
         const submitButton = await addEmissionModal.getByTestId(
@@ -249,21 +269,20 @@ test.describe.serial("Manual Input", () => {
         expect(element).toBeTruthy();
 
         // fill in the text fields
-        const textInputs = await addEmissionModal.locator("textarea");
-        for (let i = 0; i < (await textInputs.count()); i++) {
-          const input = textInputs.nth(i);
-          await input.fill("122");
-        }
+        const textInput = await addEmissionModal.getByTestId(
+          testIds.sourceReferenceInput,
+        );
+        await textInput.fill("test");
 
         await submitButton?.click();
 
         // wait for a 200 response
         await page.waitForResponse((resp) => resp.status() == 200);
-        // wait for 10 seconds
         await page.waitForTimeout(3000);
       });
 
       test(`should display newly created activity in activity table in in ${sector.sectorName}`, async () => {
+        // TODO: Enable these tests when manul input for waste works.
         test.skip(sector.sectorName === "Waste");
         // wait for the page to load
         // wait for the table to load
@@ -272,17 +291,16 @@ test.describe.serial("Manual Input", () => {
         // Ensure the table exists
         expect(table).not.toBeNull();
 
-        // Get all the rows in the table (excluding the header row if there is one)
-        const rows = await table?.locator("tbody tr");
-
-        // Ensure the table has at least one row
-        expect(await rows.count()).toBeGreaterThan(0);
-
         const cellWithValue = await page
           ?.getByRole("cell", { name: "tCO2" })
           .first();
 
         expect(cellWithValue).toBeTruthy();
+
+        // Ensure the cell has the correct value
+        expect(await cellWithValue?.innerText()).toContain(
+          EmissionFactos.CO2.toString(),
+        );
       });
     });
   });

@@ -603,6 +603,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                       {/* TODO translate values and use internal value for checking */}
                       <NumberInput w="full" defaultValue={0} min={0}>
                         <NumberInputField
+                          data-testid="co2-emission-factor"
                           h="48px"
                           placeholder="Enter emissions value"
                           {...register("activity.CO2EmissionFactor")}
@@ -631,6 +632,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                       {/* TODO translate values and use internal value for checking */}
                       <NumberInput w="full" defaultValue={0} min={0}>
                         <NumberInputField
+                          data-testid="n2o-emission-factor"
                           h="48px"
                           borderRightRadius={0}
                           placeholder="Enter emissions value"
@@ -661,6 +663,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
                       {/* TODO translate values and use internal value for checking */}
                       <NumberInput w="full " defaultValue={0} min={0}>
                         <NumberInputField
+                          data-testid="ch4-emission-factor"
                           h="48px"
                           borderRightRadius={0}
                           placeholder="Enter emissions value"
@@ -739,6 +742,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
               >
                 <FormLabel>{t("source-reference")}</FormLabel>
                 <Textarea
+                  data-testid="source-reference"
                   borderWidth={errors?.activity?.dataQuality ? "1px" : 0}
                   border="inputBox"
                   borderRadius="4px"

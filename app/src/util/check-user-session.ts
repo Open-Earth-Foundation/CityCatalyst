@@ -10,6 +10,4 @@ export const CheckUserSession = () => {
       router.push("/auth/login");
     },
   });
-
-  console.log("user session", data);
 };

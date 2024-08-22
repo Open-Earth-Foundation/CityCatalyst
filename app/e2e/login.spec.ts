@@ -26,7 +26,7 @@ test.describe("Login page", () => {
     // TODO how to ensure that session route was called?
     await page.waitForResponse("/api/auth/session");
 
-    // await expect(page).toHaveURL("/en/onboarding/");
+    await expect(page).not.toHaveURL("/en/auth/login/");
   });
 
   test("shows errors when entering invalid data", async ({ page }) => {

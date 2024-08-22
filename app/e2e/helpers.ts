@@ -23,7 +23,6 @@ export async function signup(
       acceptTerms,
     },
   });
-  console.log("result", result);
   expect(result.ok()).toBeTruthy();
   return await result.json();
 }

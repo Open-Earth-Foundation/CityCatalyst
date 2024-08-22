@@ -74,7 +74,6 @@ export default function Login({
 
       if (!res?.error) {
         router.push(callbackUrl);
-        // what happens if there is no callback url ?
         setError("");
       } else {
         console.error("Sign in failure:", res.error);

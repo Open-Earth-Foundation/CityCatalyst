@@ -1,7 +1,7 @@
 import { TFunction } from "i18next";
-import { Badge, Box, Heading, Link, Text } from "@chakra-ui/react";
+import { Badge, Box, Heading, HStack, Link, Text } from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { CalendarIcon } from "@chakra-ui/icons";
+import { MdOutlineAccountTree, MdOutlineCalendarToday } from "react-icons/md";
 
 export function TabHeader({
   t,
@@ -28,9 +28,15 @@ export function TabHeader({
           borderRadius="full"
           bg="base.light"
         >
-          <CalendarIcon mx="4px" />
-          Year: {year}
+          <Box style={{ display: "flex", flexDirection: "row" }}>
+            <MdOutlineCalendarToday
+              size="20px"
+              style={{ marginRight: "4px" }}
+            />
+            {t("year")}: {year}
+          </Box>
         </Badge>
+
         <Badge
           borderWidth="1px"
           borderColor="border.neutral"
@@ -39,7 +45,10 @@ export function TabHeader({
           borderRadius="full"
           bg="base.light"
         >
-          {t("inventory-format-basic")}
+          <Box style={{ display: "flex", flexDirection: "row" }}>
+            <MdOutlineAccountTree size="20px" style={{ marginRight: "4px" }} />
+            {t("inventory-format-basic")}
+          </Box>
         </Badge>
       </Box>
       <Text

@@ -352,6 +352,32 @@ if __name__ == "__main__":
     write_dic_to_csv(output_dir, "DataSource", datasource_data)
 
     # =================================================================
+    # Methodology
+    # =================================================================
+    methodologies = [
+        "fugitive-emissions-coal",
+        "sampling-scaled-data",
+        "fuel-combustion-consumption",
+        "modeled-data",
+        "fugitive-emissions-oil-gas"
+    ]
+
+    methodology_data_list = []
+
+    for methodology in methodologies:
+        methodology_data = {
+            "methodology_id": uuid_generate_v3(methodology),
+            "methodology": methodology,
+            "methodology_url": "",  # Add the URL if needed
+            "datasource_id": datasource_data.get("datasource_id")
+        }
+        methodology_data_list.append(methodology_data)
+
+    # Write data to CSV
+    write_dic_to_csv(output_dir, "Methodology", methodology_data_list)
+
+
+    # =================================================================
     # EmissionsFactor
     # =================================================================
     # read raw dataset
@@ -926,6 +952,11 @@ if __name__ == "__main__":
     )
 
     EF_final = pd.concat([EF_df, EF_df_fugitive], ignore_index=True)
+
+    # methodology_name
+    EF_final['methodology_name'] = EF_final['methodology_name'].str.replace('_', '-')
+
+    EF_final['methodology_id'] = EF_final['methodology_name'].apply(uuid_generate_v3)
 
     EF_final["id"] = EF_final.apply(lambda row: uuid_generate_v4(), axis=1)
 

@@ -542,6 +542,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
                           color="content.link"
                           fontWeight="bold"
                           textDecoration="underline"
+                          target="_blank"
+                          rel="noreferrer noopener"
                         >
                           Learn more
                         </Link>{" "}

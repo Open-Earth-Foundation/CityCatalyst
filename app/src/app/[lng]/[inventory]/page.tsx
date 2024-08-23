@@ -378,12 +378,33 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                                 N/A
                               </Text>
                             )}
-
-                            <InfoOutlineIcon
-                              w={3}
-                              h={3}
-                              color="brandScheme.100"
-                            />
+                            <Tooltip
+                              hasArrow
+                              label={
+                                <>
+                                  <Trans i18nKey="source-open-climate" t={t}>
+                                    {`Source: OpenClimate`}
+                                  </Trans>
+                                  <br />
+                                  <Trans
+                                    i18nKey="population-year"
+                                    values={{
+                                      year: inventory.city.populationYear,
+                                    }}
+                                    t={t}
+                                  >
+                                    {`Year: ${inventory.city.populationYear}`}
+                                  </Trans>
+                                </>
+                              }
+                              placement="bottom-start"
+                            >
+                              <InfoOutlineIcon
+                                w={3}
+                                h={3}
+                                color="brandScheme.100"
+                              />
+                            </Tooltip>
                           </Box>
                           <Text
                             fontSize="body.md"
@@ -428,11 +449,23 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                                 <span className="text-[16px]">km2</span>
                               </Text>
                             )}
-                            <InfoOutlineIcon
-                              w={3}
-                              h={3}
-                              color="brandScheme.100"
-                            />
+                            <Tooltip
+                              hasArrow
+                              label={
+                                <>
+                                  <Trans i18nKey="source-open-climate" t={t}>
+                                    {`Source: OpenClimate`}
+                                  </Trans>
+                                </>
+                              }
+                              placement="bottom-start"
+                            >
+                              <InfoOutlineIcon
+                                w={3}
+                                h={3}
+                                color="brandScheme.100"
+                              />
+                            </Tooltip>
                           </Box>
                           <Text
                             fontSize="body.md"

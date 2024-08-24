@@ -3,6 +3,7 @@ import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { Op } from "sequelize";
+import uniqBy from "lodash/uniqBy";
 
 export const GET = apiHandler(async (req: NextRequest, _context: {}) => {
   const { searchParams } = new URL(req.url);
@@ -51,10 +52,11 @@ export const GET = apiHandler(async (req: NextRequest, _context: {}) => {
     include: [{ model: db.models.DataSource, as: "dataSources" }],
   });
 
-  const output = emissionsFactors.filter(({ actorId }) =>
+  let output = emissionsFactors.filter(({ actorId }) =>
     ["world", city?.countryLocode].includes(actorId as string),
   );
 
+  output = uniqBy(output, (e) => e.dataSources[0].datasourceId);
   if (output.length === 0) {
     throw new createHttpError.NotFound("Emissions factors not found");
   }

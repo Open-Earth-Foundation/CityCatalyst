@@ -793,6 +793,7 @@ export default function AddDataSteps({
               currentStep.subSectors.map(
                 (subSector: SubSectorWithRelations) => (
                   <Card
+                    data-testid="subsector-card"
                     maxHeight="120px"
                     height="120px"
                     w="full"

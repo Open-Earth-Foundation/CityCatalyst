@@ -11,6 +11,7 @@
     "test": "npm run api:test & npm run e2e:test",
     "api:test": "glob -c \"tsx --no-warnings --test\" \"./tests/**/*.test.ts\"",
     "e2e:test": "npx playwright test",
+    "e2e:debug": "playwright test --debug",
     "e2e:test:head": "npx playwright test -- --headed",
     "test-single": "tsx --no-warnings --test",
     "storybook": "storybook dev -p 6006",

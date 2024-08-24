@@ -42,6 +42,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
   const isMethodologyDisabled = disabled;
   return (
     <Card
+      data-testid="methodology-card"
       borderWidth="1px"
       borderRadius="8px"
       flexDirection="column"
@@ -81,7 +82,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
           ""
         )}
       </Box>
-      <Text fontWeight="bold" fontSize="title.md" fontFamily="heading">
+      <Text data-testid="methodology-card-header" fontWeight="bold" fontSize="title.md" fontFamily="heading">
         {t(id)}
       </Text>
       <Text

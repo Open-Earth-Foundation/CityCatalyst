@@ -11,12 +11,14 @@ interface AddDataCardProps {
   scopeText: string;
   step: number;
   buttonText: string;
+  testId?: string;
   inventory: string;
 }
 
 function AddDataCard({
   icon,
   description,
+  testId,
   scopeText,
   step,
   buttonText,
@@ -28,6 +30,7 @@ function AddDataCard({
     <Card
       className="space-y-6 grow w-1/3"
       boxShadow="none"
+      data-testid={testId}
       p={6}
       borderColor="border.overlay"
       borderWidth={1}
@@ -48,6 +51,7 @@ function AddDataCard({
         {scopeText}
       </Text>
       <Button
+        data-testid="sector-card-button"
         onClick={() => router.push(`/${inventory}/data/${step}`)}
         leftIcon={<BsPlus size={32} />}
         variant="ghost"

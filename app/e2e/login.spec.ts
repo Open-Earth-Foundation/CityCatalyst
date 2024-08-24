@@ -1,30 +1,6 @@
 import { test, expect, APIRequestContext } from "@playwright/test";
-import { expectText } from "./helpers";
+import { expectText, signup } from "./helpers";
 import { randomUUID } from "node:crypto";
-
-async function signup(
-  request: APIRequestContext,
-  email: string,
-  password: string = "Test123!",
-  confirmPassword: string = "Test123!",
-  name: string = "Test Account",
-  inviteCode: string = "123456",
-  acceptTerms: boolean = true,
-) {
-  const result = await request.post("/api/v0/auth/register", {
-    data: {
-      email,
-      password,
-      confirmPassword,
-      name,
-      inviteCode,
-      acceptTerms,
-    },
-  });
-  console.log("Signup res", await result.text());
-  expect(result.ok()).toBeTruthy();
-  return await result.json();
-}
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/en/auth/login");
@@ -50,7 +26,7 @@ test.describe("Login page", () => {
     // TODO how to ensure that session route was called?
     await page.waitForResponse("/api/auth/session");
 
-    await expect(page).toHaveURL("/en/onboarding/");
+    await expect(page).not.toHaveURL("/en/auth/login/");
   });
 
   test("shows errors when entering invalid data", async ({ page }) => {

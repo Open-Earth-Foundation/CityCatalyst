@@ -106,7 +106,11 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
 
   let prefix = "";
   let { data: emissionsFactors, isLoading: emissionsFactorsLoading } =
-    api.useGetEmissionsFactorsQuery();
+    api.useGetEmissionsFactorsQuery({
+      referenceNumber,
+      methodologyId: methodology?.id,
+      inventoryId,
+    });
   // extract and deduplicate data sources from emissions factors
   const emissionsFactorTypes = useMemo(() => {
     if (!emissionsFactors) {

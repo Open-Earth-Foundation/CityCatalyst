@@ -357,10 +357,21 @@ export const api = createApi({
         response.data,
       invalidatesTags: ["FileData"],
     }),
-    getEmissionsFactors: builder.query<EmissionsFactorResponse, void>({
-      query: () => `/emissions-factor`,
-      transformResponse: (response: { data: EmissionsFactorResponse }) =>
-        response.data,
+    getEmissionsFactors: builder.query<
+      EmissionsFactorResponse,
+      {
+        methodologyId: string;
+        inventoryId: string;
+        referenceNumber: string;
+      }
+    >({
+      query: (params) => {
+        const queryString = new URLSearchParams(params).toString();
+        return `/emissions-factor${queryString ? `?${queryString}` : ""}`;
+      },
+      transformResponse: (response: { data: EmissionsFactorResponse }) => {
+        return response.data;
+      },
     }),
     disconnectThirdPartyData: builder.mutation({
       query: ({ inventoryId, subCategoryId }) => ({

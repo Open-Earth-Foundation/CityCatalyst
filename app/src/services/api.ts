@@ -19,6 +19,7 @@ import type {
   UserFileResponse,
   EmissionsFactorResponse,
   UserInviteResponse,
+  RequiredScopesResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -56,6 +57,11 @@ export const api = createApi({
     getInventory: builder.query<InventoryResponse, string>({
       query: (inventoryId) => `inventory/${inventoryId}`,
       transformResponse: (response: { data: InventoryResponse }) =>
+        response.data,
+    }),
+    getRequiredScopes: builder.query<RequiredScopesResponse, string>({
+      query: (sectorId) => `sector/${sectorId}/required-scopes`,
+      transformResponse: (response: { data: RequiredScopesResponse }) =>
         response.data,
     }),
     getInventoryProgress: builder.query<InventoryProgressResponse, string>({

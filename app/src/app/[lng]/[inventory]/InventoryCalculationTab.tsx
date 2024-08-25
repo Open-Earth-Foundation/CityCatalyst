@@ -22,6 +22,7 @@ import {
 } from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { TabHeader } from "@/app/[lng]/[inventory]/TabHeader";
+import { undefined } from "zod";
 
 function sortSectors(a: SectorProgress, b: SectorProgress): number {
   const refA = a.sector.referenceNumber;
@@ -35,6 +36,18 @@ function sortSectors(a: SectorProgress, b: SectorProgress): number {
   }
   return 0;
 }
+
+const getSectorProgresses = (
+  inventoryProgress: InventoryProgressResponse | undefined,
+) =>
+  inventoryProgress?.sectorProgress
+    .slice()
+    .filter((sectorProgress) => {
+      return ["I", "II", "III"].includes(
+        sectorProgress.sector.referenceNumber || "",
+      );
+    })
+    .sort(sortSectors) || [];
 
 export default function InventoryCalculationTab({
   lng,
@@ -62,103 +75,90 @@ export default function InventoryCalculationTab({
   return (
     <>
       {inventory && (
-        <>
-          <Box className="h-full" bg="background.backgroundLight" px={8}>
-            <Box className="flex mx-auto max-w-full w-[1090px]">
-              <Box className="flex flex-col gap-[8px] w-full h-300">
-                <TabHeader
-                  t={t}
-                  year={inventory?.year}
-                  title={"tab-emission-inventory-calculation-title"}
-                />
-                <Box className="flex w-full justify-between items-center mt-2 gap-6">
-                  <SegmentedProgress
-                    values={[thirdPartyProgress, uploadedProgress]}
-                    colors={["interactive.connected", "interactive.tertiary"]}
-                  />
-                  <Heading
-                    fontWeight="semibold"
-                    fontSize="body.md"
-                    className="whitespace-nowrap"
-                  >
-                    {formatPercent(totalProgress)}%{" "}
-                    <Trans t={t}>completed</Trans>
-                  </Heading>
-                </Box>
-                <Box className="flex gap-4 mt-2">
-                  <Tag>
-                    <TagLeftIcon
-                      as={CircleIcon}
-                      boxSize={6}
-                      color="interactive.connected"
-                    />
-                    <TagLabel>
-                      {formatPercent(thirdPartyProgress)}%{" "}
-                      <Trans t={t}>connect-third-party-data</Trans>
-                    </TagLabel>
-                  </Tag>
-                  <Tag>
-                    <TagLeftIcon
-                      as={CircleIcon}
-                      boxSize={6}
-                      color="interactive.tertiary"
-                    />
-                    <TagLabel>
-                      {formatPercent(uploadedProgress)}%{" "}
-                      <Trans t={t}>uploaded-data</Trans>
-                    </TagLabel>
-                  </Tag>
-                </Box>
-                <Box className=" flex flex-col gap-[24px] py-[24px]">
-                  <Text
-                    fontFamily="heading"
-                    fontSize="title.md"
-                    fontWeight="semibold"
-                    lineHeight="24"
-                    my={4}
-                    textColor={"blue"}
-                  >
-                    <Trans t={t}>sector-data</Trans>
-                  </Text>
-                  <Text
-                    fontFamily="heading"
-                    fontSize="title.md"
-                    fontWeight="semibold"
-                    lineHeight="24"
-                  >
-                    <Trans t={t}>sector-emissions</Trans>
-                  </Text>
-                  <Text>
-                    <Trans t={t}>view-progress-in-each-sector</Trans>
-                  </Text>
-                  {isUserInfoLoading || isInventoryProgressLoading ? (
-                    <Center>
-                      <Spinner size="lg" />
-                    </Center>
-                  ) : (
-                    inventoryProgress?.sectorProgress
-                      .slice()
-                      .filter((sectorProgress) => {
-                        return ["I", "II", "III"].includes(
-                          sectorProgress.sector.referenceNumber || "",
-                        );
-                      })
-                      .sort(sortSectors)
-                      .map((sectorProgress, i) => (
-                        <SectorCard
-                          key={i}
-                          sectorProgress={sectorProgress}
-                          stepNumber={i + 1}
-                          t={t}
-                          inventory={inventory?.inventoryId}
-                        />
-                      ))
-                  )}
-                </Box>
-              </Box>
-            </Box>
+        <Box className="flex flex-col gap-[8px] w-full">
+          <TabHeader
+            t={t}
+            year={inventory?.year}
+            title={"tab-emission-inventory-calculation-title"}
+          />
+          <Box className="flex w-full justify-between items-center mt-2 gap-6">
+            <SegmentedProgress
+              values={[thirdPartyProgress, uploadedProgress]}
+              colors={["interactive.connected", "interactive.tertiary"]}
+            />
+            <Heading
+              fontWeight="semibold"
+              fontSize="body.md"
+              className="whitespace-nowrap"
+            >
+              {formatPercent(totalProgress)}% <Trans t={t}>completed</Trans>
+            </Heading>
           </Box>
-        </>
+          <Box className="flex gap-4 mt-2">
+            <Tag>
+              <TagLeftIcon
+                as={CircleIcon}
+                boxSize={6}
+                color="interactive.connected"
+              />
+              <TagLabel>
+                {formatPercent(thirdPartyProgress)}%{" "}
+                <Trans t={t}>connect-third-party-data</Trans>
+              </TagLabel>
+            </Tag>
+            <Tag>
+              <TagLeftIcon
+                as={CircleIcon}
+                boxSize={6}
+                color="interactive.tertiary"
+              />
+              <TagLabel>
+                {formatPercent(uploadedProgress)}%{" "}
+                <Trans t={t}>uploaded-data</Trans>
+              </TagLabel>
+            </Tag>
+          </Box>
+          <Box className=" flex flex-col gap-[24px] py-[24px]">
+            <Text
+              fontFamily="heading"
+              fontSize="title.md"
+              fontWeight="semibold"
+              lineHeight="24"
+              my={4}
+              textColor={"blue"}
+            >
+              <Trans t={t}>sector-data</Trans>
+            </Text>
+            <Text
+              fontFamily="heading"
+              fontSize="title.md"
+              fontWeight="semibold"
+              lineHeight="24"
+            >
+              <Trans t={t}>sector-emissions</Trans>
+            </Text>
+            <Text>
+              <Trans t={t}>view-progress-in-each-sector</Trans>
+            </Text>
+            {isUserInfoLoading || isInventoryProgressLoading ? (
+              <Center>
+                <Spinner size="lg" />
+              </Center>
+            ) : (
+              getSectorProgresses(inventoryProgress).map(
+                (sectorProgress, i) => (
+                  <SectorCard
+                    key={i}
+                    sectorProgress={sectorProgress}
+                    stepNumber={i + 1}
+                    t={t}
+                    inventory={inventory?.inventoryId}
+                  />
+                ),
+              )
+            )}
+          </Box>
+        </Box>
       )}
     </>
   );

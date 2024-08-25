@@ -311,15 +311,9 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                             </Text>
                             <Tooltip
                               hasArrow
-                              label={
-                                <Trans
-                                  i18nKey="total-emissions-tooltip"
-                                  values={{ year: inventory.year }}
-                                  t={t}
-                                >
-                                  {`Here you can see the total emissions in ${inventory.year} when the inventory is completed.`}
-                                </Trans>
-                              }
+                              label={t("total-emissions-tooltip", {
+                                year: inventory.year,
+                              })}
                               placement="bottom-start"
                             >
                               <InfoOutlineIcon
@@ -386,15 +380,9 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                                     {`Source: OpenClimate`}
                                   </Trans>
                                   <br />
-                                  <Trans
-                                    i18nKey="population-year"
-                                    values={{
-                                      year: inventory.city.populationYear,
-                                    }}
-                                    t={t}
-                                  >
-                                    {`Year: ${inventory.city.populationYear}`}
-                                  </Trans>
+                                  {t("population-year", {
+                                    year: inventory.city.populationYear,
+                                  })}
                                 </>
                               }
                               placement="bottom-start"

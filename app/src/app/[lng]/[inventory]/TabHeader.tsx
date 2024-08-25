@@ -1,5 +1,13 @@
 import { TFunction } from "i18next";
-import { Badge, Box, Heading, HStack, Link, Text } from "@chakra-ui/react";
+import {
+  Badge,
+  Box,
+  Flex,
+  Heading,
+  HStack,
+  Link,
+  Text,
+} from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { MdOutlineAccountTree, MdOutlineCalendarToday } from "react-icons/md";
 
@@ -16,39 +24,36 @@ export function TabHeader({
     <>
       <Box className="flex items-center gap-3">
         <Heading fontSize="headline.sm" fontWeight="semibold" lineHeight="32">
-          <Trans t={t}>{title}</Trans>
+          {t(title)}
         </Heading>
       </Box>
       <Box className="flex items-center gap-3">
         <Badge
           borderWidth="1px"
           borderColor="border.neutral"
-          py="4px"
-          px="8px"
+          py={1}
+          px={2}
           borderRadius="full"
           bg="base.light"
         >
-          <Box style={{ display: "flex", flexDirection: "row" }}>
-            <MdOutlineCalendarToday
-              size="20px"
-              style={{ marginRight: "4px" }}
-            />
+          <Flex>
+            <MdOutlineCalendarToday size="20px" style={{ marginRight: 1 }} />
             {t("year")}: {year}
-          </Box>
+          </Flex>
         </Badge>
 
         <Badge
           borderWidth="1px"
           borderColor="border.neutral"
-          py="4px"
-          px="8px"
+          py={1}
+          px={2}
           borderRadius="full"
           bg="base.light"
         >
-          <Box style={{ display: "flex", flexDirection: "row" }}>
-            <MdOutlineAccountTree size="20px" style={{ marginRight: "4px" }} />
+          <Flex>
+            <MdOutlineAccountTree size="20px" style={{ marginRight: 1 }} />
             {t("inventory-format-basic")}
-          </Box>
+          </Flex>
         </Badge>
       </Box>
       <Text

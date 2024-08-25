@@ -26,19 +26,13 @@ export default function InventoryResultTab({
   return (
     <>
       {inventory && (
-        <>
-          <Box className="h-full" bg="background.backgroundLight" px={8}>
-            <Box className="flex mx-auto max-w-full w-[1090px]">
-              <Box className="flex flex-col gap-[8px] w-full h-300">
-                <TabHeader
-                  t={t}
-                  year={inventory?.year}
-                  title={"tab-emission-inventory-results-title"}
-                />
-              </Box>
-            </Box>
-          </Box>
-        </>
+        <Box className="flex flex-col gap-[8px] w-full">
+          <TabHeader
+            t={t}
+            year={inventory?.year}
+            title={"tab-emission-inventory-results-title"}
+          />
+        </Box>
       )}
     </>
   );

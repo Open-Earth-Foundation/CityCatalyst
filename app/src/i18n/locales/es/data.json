@@ -31,7 +31,7 @@
   "select-activity-type": "Selecciona tipo de actividad",
   "scaled-sample-data": "Datos de muestra escalados",
   "scaled-sample-data-desc": "Extrapola las emisiones de una muestra representativa de edificios",
-  "sample-fuel": "Cantidad de combustible de muestra consumido",
+  "sample-fuel": "Cantidad de combustible consumido muestra",
   "scaling-data": "Escalando datos (población, PIB, área, etc.) para muestra y nivel de ciudad",
   "modeled-data": "Datos modelados",
   "modeled-data-desc": "Emisiones estimadas a partir de modelos predictivos",

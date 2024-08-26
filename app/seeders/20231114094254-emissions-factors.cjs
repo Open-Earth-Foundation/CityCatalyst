@@ -6,7 +6,6 @@ const { bulkUpsert } = require("./util/util.cjs");
 
 const folders = [
   "EFDB_2006_IPCC_guidelines",
-  //"EFDB_US",
   // "CarbonFootPrint_2023",
 ];
 

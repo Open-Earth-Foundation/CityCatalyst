@@ -8,7 +8,9 @@ import type { Inventory } from "@/models/Inventory";
 import type { InventoryValue } from "@/models/InventoryValue";
 import createHttpError from "http-errors";
 import { db } from "@/models";
-import { keyBy, getTranslationFromDictionary } from "@/util/helpers";
+import { getTranslationFromDictionary, keyBy } from "@/util/helpers";
+import { Op } from "sequelize";
+import { InventoryResponse } from "@/util/types";
 
 const CIRIS_TEMPLATE_PATH = "./templates/CIRIS_template.xlsm";
 
@@ -54,7 +56,23 @@ export const GET = apiHandler(async (req, { params, session }) => {
       },
     ],
   );
+  const populationYear = await db.models.Population.findOne({
+    attributes: ["year", "population"],
+    where: {
+      cityId: inventory.cityId,
+      year: {
+        [Op.lt]: inventory.year,
+      },
+      population: {
+        [Op.ne]: null,
+      },
+    },
+    order: [["year", "DESC"]],
+  });
 
+  const output: InventoryResponse = inventory.toJSON();
+  output.city.populationYear = populationYear!.year;
+  output.city.population = populationYear!.population!;
   let body: Buffer | null = null;
   let headers: Record<string, string> | null = null;
 
@@ -75,7 +93,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
       break;
     case "json":
     default:
-      body = Buffer.from(JSON.stringify({ data: inventory.toJSON() }), "utf-8");
+      body = Buffer.from(JSON.stringify({ data: output }), "utf-8");
       headers = {
         "Content-Type": "application/json",
       };

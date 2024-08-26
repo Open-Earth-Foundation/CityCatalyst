@@ -159,6 +159,11 @@ describe("Inventory API", () => {
     const res = await createInventory(req, {
       params: { city: city.cityId },
     });
+    await db.models.Population.create({
+      cityId: city.cityId!,
+      year: 2020,
+      population: 1000,
+    });
     assert.equal(res.status, 200);
     const { data } = await res.json();
     assert.equal(data.inventoryName, inventory.inventoryName);

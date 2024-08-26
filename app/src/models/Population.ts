@@ -8,7 +8,7 @@ import type {
 
 export interface PopulationAttributes {
   cityId: string;
-  population?: number;
+  population?: number | null;
   countryPopulation?: number;
   regionPopulation?: number;
   year: number;
@@ -36,7 +36,7 @@ export class Population
   implements PopulationAttributes
 {
   cityId!: string;
-  population?: number;
+  population?: number | null;
   countryPopulation?: number;
   regionPopulation?: number;
   year!: number;

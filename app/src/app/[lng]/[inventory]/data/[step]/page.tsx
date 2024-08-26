@@ -71,7 +71,6 @@ import {
 } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { SourceDrawer } from "./SourceDrawer";
-import { SubsectorDrawer } from "./SubsectorDrawer";
 import type {
   DataSourceWithRelations,
   DataStep,
@@ -1171,15 +1170,6 @@ export default function AddDataSteps({
           onClose={onSourceDrawerClose}
           onConnectClick={() => onConnectClick(selectedSource!)}
           isConnectLoading={isConnectDataSourceLoading}
-          t={t}
-        />
-        <SubsectorDrawer
-          subSector={selectedSubsector}
-          sectorName={currentStep.title}
-          inventoryId={inventoryProgress?.inventory.inventoryId}
-          isOpen={isSubsectorDrawerOpen}
-          onClose={onSubsectorDrawerClose}
-          onSave={onSubsectorSave}
           t={t}
         />
       </div>

@@ -1,21 +1,11 @@
 "use client";
 
-import { SectorCard } from "@/components/Cards/SectorCard";
-import ChatPopover from "@/components/ChatBot/chat-popover";
 import { InventorySelect } from "@/components/InventorySelect";
 import Footer from "@/components/Sections/Footer";
-import { SegmentedProgress } from "@/components/SegmentedProgress";
-import { CircleIcon } from "@/components/icons";
-import { NavigationBar } from "@/components/navigation-bar";
 import { useTranslation } from "@/i18n/client";
 import { api, useGetCityPopulationQuery } from "@/services/api";
 import { CheckUserSession } from "@/util/check-user-session";
-import {
-  formatPercent,
-  getShortenNumberUnit,
-  shortenNumber,
-} from "@/util/helpers";
-import { SectorProgress } from "@/util/types";
+import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -23,24 +13,23 @@ import {
   Card,
   CardBody,
   CardHeader,
-  Center,
   CloseButton,
   Heading,
   Icon,
-  Link,
   Spacer,
   Spinner,
-  Tag,
-  TagLabel,
-  TagLeftIcon,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
   Text,
   Tooltip,
   useToast,
 } from "@chakra-ui/react";
-import { signIn, useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import NextLink from "next/link";
-import { useRouter, useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { CircleFlag } from "react-circle-flags";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { FiDownload } from "react-icons/fi";
@@ -52,6 +41,8 @@ import {
   MdOutlineAspectRatio,
 } from "react-icons/md";
 import MissingInventory from "@/components/missing-inventory";
+import InventoryCalculationTab from "@/app/[lng]/[inventory]/InventoryCalculationTab";
+import InventoryReportTab from "./InventoryResultTab";
 
 enum STATUS {
   INFO = "info",
@@ -62,23 +53,11 @@ enum STATUS {
 // only render map on the client
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
-function sortSectors(a: SectorProgress, b: SectorProgress): number {
-  const refA = a.sector.referenceNumber;
-  const refB = b.sector.referenceNumber;
-  if (!refA || !refB) {
-    return 0;
-  } else if (refA < refB) {
-    return -1;
-  } else if (refA > refB) {
-    return 1;
-  }
-  return 0;
-}
-
 export default function Home({ params: { lng } }: { params: { lng: string } }) {
   const { t } = useTranslation(lng, "dashboard");
   const toast = useToast();
   const router = useRouter();
+
   // Check if user is authenticated otherwise route to login page
   CheckUserSession();
   const { inventory: inventoryParam } = useParams();
@@ -131,16 +110,6 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
     { cityId: inventory?.cityId!, year: inventory?.year! },
     { skip: !inventory?.cityId || !inventory?.year },
   );
-
-  let totalProgress = 0,
-    thirdPartyProgress = 0,
-    uploadedProgress = 0;
-  if (inventoryProgress && inventoryProgress.totalProgress.total > 0) {
-    const { uploaded, thirdParty, total } = inventoryProgress.totalProgress;
-    totalProgress = (uploaded + thirdParty) / total;
-    thirdPartyProgress = thirdParty / total;
-    uploadedProgress = uploaded / total;
-  }
 
   const showToast = (
     title: string,
@@ -281,15 +250,11 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   <Box className="flex gap-[24px] flex-col h-full w-full">
                     <Text
                       fontSize="headline.sm"
-                      color="brandScheme.100"
+                      color="background.overlay"
                       lineHeight="32"
                       fontWeight="semibold"
                     >
-                      {inventory ? (
-                        <>{t("welcome-back")},</>
-                      ) : (
-                        <>{t("welcome")},</>
-                      )}
+                      {!inventory ? <>{t("welcome")},</> : null}
                     </Text>
                     <Box className="flex items-center gap-4">
                       {inventory?.city ? (
@@ -344,15 +309,23 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                                 <>{t("in-progress")}</>
                               )}
                             </Text>
-                            <InfoOutlineIcon
-                              w={3}
-                              h={3}
-                              color="brandScheme.100"
-                            />
+                            <Tooltip
+                              hasArrow
+                              label={t("total-emissions-tooltip", {
+                                year: inventory.year,
+                              })}
+                              placement="bottom-start"
+                            >
+                              <InfoOutlineIcon
+                                w={3}
+                                h={3}
+                                color="background.overlay"
+                              />
+                            </Tooltip>
                           </Box>
                           <Text
                             fontSize="body.md"
-                            color="brandScheme.100"
+                            color="background.overlay"
                             fontStyle="normal"
                             fontWeight={400}
                             lineHeight="20px"
@@ -399,16 +372,31 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                                 N/A
                               </Text>
                             )}
-
-                            <InfoOutlineIcon
-                              w={3}
-                              h={3}
-                              color="brandScheme.100"
-                            />
+                            <Tooltip
+                              hasArrow
+                              label={
+                                <>
+                                  <Trans i18nKey="source-open-climate" t={t}>
+                                    {`Source: OpenClimate`}
+                                  </Trans>
+                                  <br />
+                                  {t("population-year", {
+                                    year: inventory.city.populationYear,
+                                  })}
+                                </>
+                              }
+                              placement="bottom-start"
+                            >
+                              <InfoOutlineIcon
+                                w={3}
+                                h={3}
+                                color="background.overlay"
+                              />
+                            </Tooltip>
                           </Box>
                           <Text
                             fontSize="body.md"
-                            color="brandScheme.100"
+                            color="background.overlay"
                             fontStyle="normal"
                             fontWeight={400}
                             lineHeight="20px"
@@ -449,15 +437,27 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                                 <span className="text-[16px]">km2</span>
                               </Text>
                             )}
-                            <InfoOutlineIcon
-                              w={3}
-                              h={3}
-                              color="brandScheme.100"
-                            />
+                            <Tooltip
+                              hasArrow
+                              label={
+                                <>
+                                  <Trans i18nKey="source-open-climate" t={t}>
+                                    {`Source: OpenClimate`}
+                                  </Trans>
+                                </>
+                              }
+                              placement="bottom-start"
+                            >
+                              <InfoOutlineIcon
+                                w={3}
+                                h={3}
+                                color="background.overlay"
+                              />
+                            </Tooltip>
                           </Box>
                           <Text
                             fontSize="body.md"
-                            color="brandScheme.100"
+                            color="background.overlay"
                             fontStyle="normal"
                             fontWeight={400}
                             lineHeight="20px"
@@ -576,125 +576,45 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
             bg="background.backgroundLight"
             px={8}
           >
-            <Box className="flex mx-auto max-w-full w-[1090px]">
-              <Box className="flex flex-col gap-[8px] w-full h-300">
-                <Box className="flex items-center gap-3">
-                  <Heading
-                    fontSize="headline.sm"
-                    fontWeight="semibold"
-                    lineHeight="32"
-                  >
-                    <Trans t={t}>
-                      gpc-basic-emissions-inventory-calculations-year
-                    </Trans>{" "}
-                    {inventory?.year}
-                  </Heading>
-                  <Tooltip
-                    hasArrow
-                    label={t("gpc-calculation")}
-                    placement="bottom-start"
-                  >
-                    <InfoOutlineIcon color="interactive.control" />
-                  </Tooltip>
-                </Box>
-                <Text
-                  fontWeight="regular"
-                  fontSize="body.lg"
-                  color="interactive.control"
-                  letterSpacing="wide"
-                >
-                  <Trans
-                    i18nKey="gpc-inventory-description"
-                    values={{ year: inventory?.year }}
-                    t={t}
-                  >
-                    The data you have submitted is now officially incorporated
-                    into your city&apos;s {{ year: inventory?.year }} GHG
-                    Emissions Inventory, compiled according to the GPC Basic
-                    methodology.{" "}
-                    <Link
-                      href="https://ghgprotocol.org/ghg-protocol-cities"
-                      target="_blank"
-                      fontWeight="bold"
-                      color="brand.secondary"
-                    >
-                      Learn more
-                    </Link>{" "}
-                    about GPC Protocol
-                  </Trans>
-                </Text>
-                <Box className="flex w-full justify-between items-center mt-2 gap-6">
-                  <SegmentedProgress
-                    values={[thirdPartyProgress, uploadedProgress]}
-                    colors={["interactive.connected", "interactive.tertiary"]}
-                  />
-                  <Heading
-                    fontWeight="semibold"
-                    fontSize="body.md"
-                    className="whitespace-nowrap"
-                  >
-                    {formatPercent(totalProgress)}%{" "}
-                    <Trans t={t}>completed</Trans>
-                  </Heading>
-                </Box>
-                <Box className="flex gap-4 mt-2">
-                  <Tag>
-                    <TagLeftIcon
-                      as={CircleIcon}
-                      boxSize={6}
-                      color="interactive.connected"
+            <Box className="flex mx-auto max-w-full w-[1090px] css-0">
+              <Tabs align="start" variant="line" isLazy>
+                <TabList>
+                  {[
+                    t("tab-emission-inventory-calculation-title"),
+                    t("tab-emission-inventory-results-title"),
+                  ]?.map((tab, index) => (
+                    <Tab key={index}>
+                      <Text
+                        fontFamily="heading"
+                        fontSize="title.md"
+                        fontWeight="medium"
+                      >
+                        {t(tab)}
+                      </Text>
+                    </Tab>
+                  ))}
+                </TabList>
+                <TabPanels>
+                  <TabPanel>
+                    <InventoryCalculationTab
+                      lng={lng}
+                      inventory={inventory}
+                      inventoryProgress={inventoryProgress}
+                      isUserInfoLoading={isUserInfoLoading}
+                      isInventoryProgressLoading={isInventoryProgressLoading}
                     />
-                    <TagLabel>
-                      {formatPercent(thirdPartyProgress)}%{" "}
-                      <Trans t={t}>connect-third-party-data</Trans>
-                    </TagLabel>
-                  </Tag>
-                  <Tag>
-                    <TagLeftIcon
-                      as={CircleIcon}
-                      boxSize={6}
-                      color="interactive.tertiary"
+                  </TabPanel>
+                  <TabPanel>
+                    <InventoryReportTab
+                      lng={lng}
+                      inventory={inventory}
+                      inventoryProgress={inventoryProgress}
+                      isUserInfoLoading={isUserInfoLoading}
+                      isInventoryProgressLoading={isInventoryProgressLoading}
                     />
-                    <TagLabel>
-                      {formatPercent(uploadedProgress)}%{" "}
-                      <Trans t={t}>uploaded-data</Trans>
-                    </TagLabel>
-                  </Tag>
-                </Box>
-                <Box className=" flex flex-col gap-[24px] py-[48px]">
-                  <Text
-                    fontFamily="heading"
-                    fontSize="title.md"
-                    fontWeight="semibold"
-                    lineHeight="24"
-                  >
-                    <Trans t={t}>sectors-required-from-inventory</Trans>
-                  </Text>
-                  {isUserInfoLoading || isInventoryProgressLoading ? (
-                    <Center>
-                      <Spinner size="lg" />
-                    </Center>
-                  ) : (
-                    inventoryProgress?.sectorProgress
-                      .slice()
-                      .filter((sectorProgress) => {
-                        return ["I", "II", "III"].includes(
-                          sectorProgress.sector.referenceNumber || "",
-                        );
-                      })
-                      .sort(sortSectors)
-                      .map((sectorProgress, i) => (
-                        <SectorCard
-                          key={i}
-                          sectorProgress={sectorProgress}
-                          stepNumber={i + 1}
-                          t={t}
-                          inventory={inventoryId}
-                        />
-                      ))
-                  )}
-                </Box>
-              </Box>
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
             </Box>
           </Box>
           <Footer lng={lng} />

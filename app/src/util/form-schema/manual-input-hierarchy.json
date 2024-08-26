@@ -15,7 +15,6 @@
               "residential-buildings-fuel-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "residential-building-type",
@@ -126,7 +125,6 @@
               "residential-buildings-energy-source"
             ],
             "activity-title": "activity-energy-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "residential-building-type",
@@ -236,7 +234,6 @@
               "commercial-buildings-fuel-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "commercial-building-type",
@@ -373,7 +370,6 @@
               "commercial-buildings-energy-source"
             ],
             "activity-title": "activity-energy-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "commercial-building-type",
@@ -510,7 +506,6 @@
               "manufacturing-and-construction-fuel-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "manufacturing-and-construction-type",
@@ -697,7 +692,6 @@
               "manufacturing-and-construction-energy-source"
             ],
             "activity-title": "activity-energy-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "manufacturing-and-construction-type",
@@ -857,7 +851,6 @@
               "energy-industries-fuel-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "energy-industries-type",
@@ -1023,7 +1016,6 @@
               "energy-industries-energy-source"
             ],
             "activity-title": "activity-energy-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "energy-industries-type",
@@ -1174,7 +1166,6 @@
               "agriculture-forestry-fishing-activities-fuel-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "agriculture-forestry-fishing-activities-type",
@@ -1302,7 +1293,6 @@
               "agriculture-forestry-fishing-activities-energy-source"
             ],
             "activity-title": "activity-energy-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "agriculture-forestry-fishing-activities-type",
@@ -1429,7 +1419,6 @@
               "non-specific-sources-fuel-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "non-specific-sources-type",
@@ -1559,7 +1548,6 @@
               "energy-source"
             ],
             "activity-title": "activity-energy-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "non-specific-sources-type",
@@ -1683,7 +1671,6 @@
               "fugitive-emissions-coal-source"
             ],
             "activity-title": "activity-total-fugitive-emissions",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "fugitive-emissions-coal-type",
@@ -1792,7 +1779,6 @@
               "fugitive-emissions-oil-gas-fugitive-source"
             ],
             "activity-title": "activity-total-fugitive-activity",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "fugitive-emissions-oil-gas-type",
@@ -1906,7 +1892,6 @@
               "on-road-transport-fuel-source"
             ],
             "activity-title": "activity-total-fuel-sales",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "on-road-transport-fuel-type",
@@ -2204,7 +2189,6 @@
               "railways-fuel-source"
             ],
             "activity-title": "activity-total-fuel-sales",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "railways-fuel-type",
@@ -2487,7 +2471,6 @@
               "waterborne-navigation-fuel-source"
             ],
             "activity-title": "activity-total-fuel-sales",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "waterborne-navigation-fuel-type",
@@ -2759,7 +2742,6 @@
               "aviation-fuel-source"
             ],
             "activity-title": "activity-total-fuel-sales",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "aviation-fuel-type",
@@ -3044,7 +3026,6 @@
               "off-road-transport-fuel-source"
             ],
             "activity-title": "activity-total-fuel-sales",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "off-road-transport-fuel-type",

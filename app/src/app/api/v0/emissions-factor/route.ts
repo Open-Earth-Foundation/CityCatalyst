@@ -1,20 +1,65 @@
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { Op } from "sequelize";
+import uniqBy from "lodash/uniqBy";
 
-export const GET = apiHandler(async (_req: Request, _context: {}) => {
-  // don't return emissions factors from specific inventories
-  const emissionsFactors = await db.models.EmissionsFactor.findAll({
-    where: {
-      inventoryId: { [Op.is]: null },
+export const GET = apiHandler(async (req: NextRequest, _context: {}) => {
+  const { searchParams } = new URL(req.url);
+  const inventoryId = searchParams.get("inventoryId");
+  const referenceNumber = searchParams.get("referenceNumber");
+  const methodologyId = searchParams.get("methodologyId");
+
+  const city = await db.models.City.findOne({
+    attributes: ["countryLocode"],
+    include: [
+      {
+        model: db.models.Inventory,
+        as: "inventories",
+        attributes: [],
+        where: {
+          inventoryId: inventoryId,
+        },
+        required: true,
+      },
+    ],
+  });
+
+  let whereClause: { [k: string]: any } = {
+    region: {
+      [Op.or]: ["world", city?.countryLocode],
     },
+  };
+  // don't return emissions factors from specific inventories
+  whereClause.inventoryId = { [Op.is]: null };
+
+  if (methodologyId) {
+    if (methodologyId.includes("fuel-combustion"))
+      whereClause.methodologyName = "fuel-combustion-consumption";
+    if (methodologyId.includes("scaled"))
+      whereClause.methodologyName = "sampling-scaled-data";
+    if (methodologyId.includes("modeled-data"))
+      whereClause.methodologyName = "modeled-data";
+  }
+
+  if (!!referenceNumber) {
+    whereClause.gpcReferenceNumber = referenceNumber;
+  }
+
+  const emissionsFactors = await db.models.EmissionsFactor.findAll({
+    where: whereClause,
     include: [{ model: db.models.DataSource, as: "dataSources" }],
   });
-  if (emissionsFactors.length === 0) {
+
+  let output = emissionsFactors.filter(({ actorId }) =>
+    ["world", city?.countryLocode].includes(actorId as string),
+  );
+
+  output = uniqBy(output, (e) => e.dataSources[0].datasourceId);
+  if (output.length === 0) {
     throw new createHttpError.NotFound("Emissions factors not found");
   }
 
-  return NextResponse.json({ data: emissionsFactors });
+  return NextResponse.json({ data: output });
 });

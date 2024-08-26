@@ -16,11 +16,9 @@
   "completed": "completado",
   "uploaded-data": "Datos subidos",
   "connect-third-party-data": "Datos de terceros conectados",
-  "sectors-required-from-inventory": "Sectores requeridos para el inventario",
-
   "stationary-energy": "Energía Estacionaria",
   "stationary-energy-description": "Este sector trata sobre las emisiones que resultan de la generación y consumo de electricidad, calefacción y vapor",
-  "add-data-to-sector": "Agregar datos al sector",
+  "add-data-to-sector": "Agregar datos",
   "sub-sectors-required": "Subsectores requeridos",
   "scope-required-for-gpc": "Alcance requerido para el inventario básico de GPC",
   "view-more": "VER MAS",

@@ -344,6 +344,7 @@ function SubSectorPage({
                     filteredScope={scope.scope}
                     t={t}
                     inventoryId={inventoryId}
+                    subsectorId={subsector}
                     step={step}
                     activityData={activityData}
                   />

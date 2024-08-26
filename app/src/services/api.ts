@@ -469,6 +469,17 @@ export const api = createApi({
       transformResponse: (response: any) => response.data,
       invalidatesTags: ["ActivityValue"],
     }),
+    deleteAllActivityValues: builder.mutation({
+      query: (data: { inventoryId: string; subSectorId: string }) => ({
+        method: "DELETE",
+        url: `/inventory/${data.inventoryId}/activity-value`,
+        params: {
+          subSectorId: data.subSectorId,
+        },
+      }),
+      transformResponse: (response: any) => response.data,
+      invalidatesTags: ["ActivityValue"],
+    }),
     createThreadId: builder.mutation({
       query: (data: { inventoryId: string; content: string }) => ({
         url: `/assistants/threads/${data.inventoryId}`,
@@ -539,5 +550,7 @@ export const {
   useMockDataQuery,
   useConnectToCDPMutation,
   useCreateThreadIdMutation,
+  useDeleteAllActivityValuesMutation,
+  useDeleteActivityValueMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

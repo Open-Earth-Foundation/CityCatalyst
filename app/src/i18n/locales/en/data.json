@@ -161,6 +161,10 @@
   "delete-activity": "Delete activity",
   "delete-activities-prompt": "Are you sure you want to <2>permanently delete </2> all activities in the commercial and institutional buildings sub-sector from the city's inventory data?",
   "delete-activity-prompt": "Are you sure you want to <2> permanently delete </2> this activity from the city's inventory data?",
+  "delete-activity-success": "Activity deleted successfully",
+  "all-activities-deleted": "All activities deleted successfully",
+  "delete-activity-failed": "Failed to delete activity",
+  "delete-all-activities-failed": "Failed to delete all activities",
 
   "skip-step-button": "Skip this step",
   "save-continue-button": "Save and Continue",

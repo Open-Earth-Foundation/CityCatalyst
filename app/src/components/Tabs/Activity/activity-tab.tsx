@@ -49,6 +49,7 @@ import { ActivityValue } from "@/models/ActivityValue";
 import { DataConnectIcon } from "@/components/icons";
 import { convertKgToTonnes, getInputMethodology } from "@/util/helpers";
 import DirectMeasureTable from "./direct-measure-table";
+import DeleteActivityModal from "@/components/Modals/delete-activity-modal";
 
 interface ActivityTabProps {
   t: TFunction;
@@ -63,6 +64,7 @@ interface ActivityTabProps {
   inventoryId: string;
   step: string;
   activityData: ActivityValue[] | undefined;
+  subsectorId: string;
 }
 
 const ActivityTab: FC<ActivityTabProps> = ({
@@ -76,6 +78,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
   inventoryId,
   step,
   activityData,
+  subsectorId,
 }) => {
   let totalEmissions = 0;
 
@@ -631,6 +634,13 @@ const ActivityTab: FC<ActivityTabProps> = ({
         t={t}
         isOpen={isDeleteActivitiesModalOpen}
         onClose={onDeleteActivitiesModalClose}
+        inventoryId={inventoryId}
+        subsectorId={subsectorId}
+      />
+      <DeleteActivityModal
+        t={t}
+        isOpen={isDeleteActivityModalOpen}
+        onClose={onDeleteActivityModalClose}
       />
     </>
   );

@@ -1,10 +1,13 @@
 import {
   PATCH as updateActivityValue,
   GET as getActivityValue,
-  DELETE,
+  DELETE as deleteActivityValue,
 } from "@/app/api/v0/inventory/[inventory]/activity-value/[id]/route";
 
-import { POST as createActivityValue } from "@/app/api/v0/inventory/[inventory]/activity-value/route";
+import {
+  POST as createActivityValue,
+  DELETE as deleteAllActivitiesInSubsector,
+} from "@/app/api/v0/inventory/[inventory]/activity-value/route";
 
 import { db } from "@/models";
 import { CreateActivityValueRequest } from "@/util/validation";
@@ -243,6 +246,7 @@ describe("Activity Value API", () => {
       inventoryId: inventory.inventoryId,
       id: randomUUID(),
       subCategoryId: subCategory.subcategoryId,
+      subSectorId: subSector.subsectorId,
       co2eq,
       activityUnits,
       inputMethodology: "direct-measure",
@@ -409,7 +413,7 @@ describe("Activity Value API", () => {
   //  test good delete
   it("should delete an activity value", async () => {
     const req = mockRequest();
-    const res = await DELETE(req, {
+    const res = await deleteActivityValue(req, {
       params: {
         inventory: inventory.inventoryId,
         id: createdActivityValue.id,
@@ -420,5 +424,60 @@ describe("Activity Value API", () => {
 
     assert.equal(res.status, 200);
     assert.equal(data, true);
+  });
+
+  // test delete all activities in subsector
+  it("should delete all activities in a subsector", async () => {
+    console.log("subsector", subSector.subsectorId);
+    const findInventory = await db.models.Inventory.findOne({
+      where: {
+        inventoryName: inventoryName,
+      },
+    });
+
+    assert.equal(findInventory?.inventoryId, inventory.inventoryId);
+
+    const req1 = mockRequest({
+      ...validCreateActivity,
+      inventoryValueId: inventoryValue.id,
+      inventoryValue: undefined,
+    });
+
+    const req2 = mockRequest({
+      ...validCreateActivity,
+      inventoryValueId: inventoryValue.id,
+      inventoryValue: undefined,
+    });
+
+    const res1 = await createActivityValue(req1, {
+      params: {
+        inventory: inventory.inventoryId,
+      },
+    });
+
+    const res2 = await createActivityValue(req2, {
+      params: {
+        inventory: inventory.inventoryId,
+      },
+    });
+
+    assert.equal(res1.status, 200);
+    assert.equal(res2.status, 200);
+
+    // delete all activities in subsector
+    const req3 = mockRequest(null, {
+      subSectorId: subSector.subsectorId,
+    });
+
+    // pass subsectorId as query parameter
+    const res3 = await deleteAllActivitiesInSubsector(req3, {
+      params: {
+        inventory: inventory.inventoryId,
+      },
+    });
+
+    const { data } = await res3.json();
+    assert.equal(res3.status, 200);
+    assert.equal(data.deletedCount, 3);
   });
 });

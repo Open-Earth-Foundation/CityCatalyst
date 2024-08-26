@@ -6,7 +6,6 @@ const { bulkUpsert } = require("./util/util.cjs");
 
 const folders = [
   "EFDB_2006_IPCC_guidelines",
-  //"EFDB_US",
   // "CarbonFootPrint_2023",
 ];
 
@@ -19,19 +18,25 @@ const toJson = ({
 }) => {
   const out = { ...row };
 
-  if (!!transformation_description)
+  if (!!transformation_description) {
     out.transformation_description = JSON.stringify({
       user: transformation_description,
     });
-  if (!!dataset_description)
+  }
+  if (!!dataset_description) {
     out.dataset_description = JSON.stringify({ user: dataset_description });
-  if (!!methodology_description)
+  }
+  if (!!methodology_description) {
     out.methodology_description = JSON.stringify({
       user: methodology_description,
     });
-  if (!!dataset_name) out.dataset_name = JSON.stringify({ user: dataset_name });
+  }
+  if (!!dataset_name) {
+    out.dataset_name = JSON.stringify({ user: dataset_name });
+  }
   return out;
 };
+
 async function parseFile(filename, folder) {
   const records = [];
   const parser = fs
@@ -47,7 +52,7 @@ async function parseFile(filename, folder) {
   return records;
 }
 
-/** @type {import('sequelize-cli').Migration} */
+/** @type {import("sequelize-cli").Migration} */
 module.exports = {
   async up(queryInterface) {
     await queryInterface.sequelize.transaction(async (transaction) => {

@@ -550,6 +550,7 @@ export const {
   useMockDataQuery,
   useConnectToCDPMutation,
   useCreateThreadIdMutation,
+  useUpdateActivityValueMutation,
   useDeleteAllActivityValuesMutation,
   useDeleteActivityValueMutation,
 } = api;

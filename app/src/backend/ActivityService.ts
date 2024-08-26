@@ -359,6 +359,7 @@ export default class ActivityService {
               {
                 ...gasValue,
                 id: randomUUID(),
+                emissionsFactorId: emissionsFactor?.id,
                 activityValueId: activityValue.id,
                 inventoryValueId: activityValue?.inventoryValueId,
               },
@@ -392,7 +393,7 @@ export default class ActivityService {
       );
     }
 
-    // TODO: 
+    // TODO:
 
     const count = await db.models.ActivityValue.destroy({
       where: {

@@ -12,15 +12,7 @@ import {
   PopoverTrigger,
   Switch,
   TabPanel,
-  Table,
-  Tag,
-  TagLabel,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
-  Tr,
   useDisclosure,
 } from "@chakra-ui/react";
 import React, { FC, useState } from "react";
@@ -32,7 +24,7 @@ import { TFunction } from "i18next";
 import { FiTrash2 } from "react-icons/fi";
 import { FaNetworkWired } from "react-icons/fa";
 import { Trans } from "react-i18next";
-import AddActivityModal from "../../Modals/add-activity-modal";
+import ActivityFormModal from "../../Modals/activity-modal/activity-form-modal";
 import ChangeMethodology from "../../Modals/change-methodology";
 import DeleteAllActivitiesModal from "../../Modals/delete-all-activities-modal";
 import { api } from "@/services/api";
@@ -50,6 +42,7 @@ import { DataConnectIcon } from "@/components/icons";
 import { convertKgToTonnes, getInputMethodology } from "@/util/helpers";
 import DirectMeasureTable from "./direct-measure-table";
 import DeleteActivityModal from "@/components/Modals/delete-activity-modal";
+import { on } from "events";
 
 interface ActivityTabProps {
   t: TFunction;
@@ -94,6 +87,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const [isUnavailableChecked, setIsChecked] = useState<boolean>(false);
   const [hasActivityData, setHasActivityData] = useState<boolean>(false);
   const [methodology, setMethodology] = useState<Methodology>();
+  const [selectedActivityValue, setSelectedActivityValue] =
+    useState<ActivityValue>();
 
   const refNumberWithScope = referenceNumber + "." + (filteredScope || 1);
 
@@ -191,8 +186,22 @@ const ActivityTab: FC<ActivityTabProps> = ({
     onAddActivityModalOpen();
   };
 
-  const [deleteActivity, isDeleteActivityLoading] =
-    api.useDeleteActivityValueMutation();
+  const onDeleteActivity = (activity: ActivityValue) => {
+    setSelectedActivityValue(activity);
+    onDeleteActivityModalOpen();
+  };
+
+  const onEditActivity = (activity: ActivityValue) => {
+    setSelectedActivityValue(activity);
+    onAddActivityModalOpen();
+  };
+
+  const closeModals = () => {
+    setSelectedActivityValue(undefined);
+    onAddActivityModalClose();
+    onDeleteActivitiesModalClose();
+    onDeleteActivityModalClose();
+  };
 
   // const deleteAllActivities = () => {
   //   if (areActivitiesLoading || userActivities?.length === 0) {
@@ -373,6 +382,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
                           <DirectMeasureTable
                             t={t}
                             activityData={activityValues}
+                            onDeleteActivity={onDeleteActivity}
+                            onEditActivity={onEditActivity}
                           />
                         ) : (
                           <ActivityAccordion
@@ -380,6 +391,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
                             activityData={activityValues}
                             showActivityModal={onAddActivityModalOpen}
                             methodologyId={methodology?.id}
+                            // onDeleteActivity={onDeleteActivity}
+                            // onEditActivity={onEditActivity}
                           />
                         )}
                         <Box
@@ -612,7 +625,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
           </Box>
         )}
       </TabPanel>
-      <AddActivityModal
+      <ActivityFormModal
         t={t}
         isOpen={isAddActivityModalOpen}
         onClose={onAddActivityModalClose}
@@ -622,6 +635,9 @@ const ActivityTab: FC<ActivityTabProps> = ({
         inventoryId={inventoryId}
         selectedActivity={selectedActivity}
         referenceNumber={refNumberWithScope}
+        edit={!!selectedActivityValue}
+        targetActivityValue={selectedActivityValue as ActivityValue}
+        resetSelectedActivityValue={() => setSelectedActivityValue(undefined)}
       />
 
       <ChangeMethodology
@@ -641,6 +657,9 @@ const ActivityTab: FC<ActivityTabProps> = ({
         t={t}
         isOpen={isDeleteActivityModalOpen}
         onClose={onDeleteActivityModalClose}
+        selectedActivityValue={selectedActivityValue as ActivityValue}
+        inventoryId={inventoryId}
+        resetSelectedActivityValue={() => setSelectedActivityValue(undefined)}
       />
     </>
   );

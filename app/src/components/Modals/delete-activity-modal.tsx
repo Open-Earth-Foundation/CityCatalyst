@@ -1,7 +1,7 @@
 "use client";
 
-import { UserFileAttributes } from "@/models/UserFile";
-import { api } from "@/services/api";
+import { ActivityValue } from "@/models/ActivityValue";
+import { useDeleteActivityValueMutation } from "@/services/api";
 import {
   Modal,
   Button,
@@ -14,10 +14,12 @@ import {
   Box,
   Badge,
   ModalFooter,
+  useToast,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC } from "react";
 import { Trans } from "react-i18next";
+import { CheckCircleIcon } from "@chakra-ui/icons";
 
 import { FiTrash2 } from "react-icons/fi";
 
@@ -25,16 +27,70 @@ interface DeleteAllActivitiesModalProps {
   isOpen: boolean;
   onClose: any;
   t: TFunction;
+  selectedActivityValue: ActivityValue;
+  resetSelectedActivityValue: () => void;
+  inventoryId: string;
 }
 
 const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
   isOpen,
   onClose,
   t,
+  selectedActivityValue,
+  resetSelectedActivityValue,
+  inventoryId,
 }) => {
+  const toast = useToast();
+  const [deleteActivityValue, { isLoading }] = useDeleteActivityValueMutation();
+
+  // define the function to delete all activities
+  const handleDeleteActivity = async () => {
+    // call the delete all activities mutation
+    const response = await deleteActivityValue({
+      inventoryId,
+      activityValueId: selectedActivityValue.id,
+    });
+    if (response.data) {
+      // TODO create toast wrapper for success state
+      toast({
+        status: "success",
+        title: t("delete-activity-success"),
+        render: ({ title }) => (
+          <Box
+            h="48px"
+            w="600px"
+            borderRadius="8px"
+            display="flex"
+            alignItems="center"
+            color="white"
+            backgroundColor="interactive.primary"
+            gap="8px"
+            px="16px"
+          >
+            <CheckCircleIcon />
+            <Text>{title}</Text>
+          </Box>
+        ),
+      });
+      onClose();
+      resetSelectedActivityValue();
+    } else {
+      toast({
+        status: "error",
+        title: t("delete-activity-failed"),
+      });
+    }
+  };
   return (
     <>
-      <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
+      <Modal
+        blockScrollOnMount={false}
+        isOpen={isOpen}
+        onClose={() => {
+          onClose();
+          resetSelectedActivityValue();
+        }}
+      >
         <ModalOverlay />
         <ModalContent minH="388px" minW="568px" marginTop="10%">
           <ModalHeader
@@ -112,6 +168,8 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
               w="472px"
               background="sentiment.negativeDefault"
               paddingTop="16px"
+              isLoading={isLoading}
+              onClick={handleDeleteActivity}
               paddingBottom="16px"
               px="24px"
               letterSpacing="widest"

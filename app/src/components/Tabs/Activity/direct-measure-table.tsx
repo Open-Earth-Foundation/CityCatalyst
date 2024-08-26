@@ -28,10 +28,14 @@ import { MdModeEditOutline, MdMoreVert } from "react-icons/md";
 interface DirectMeasureTableProps {
   t: TFunction;
   activityData: ActivityValue[] | undefined;
+  onDeleteActivity: (activity: ActivityValue) => void;
+  onEditActivity: (activity: ActivityValue) => void;
 }
 
 const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
   activityData,
+  onDeleteActivity,
+  onEditActivity,
   t,
 }) => {
   return (
@@ -103,6 +107,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                             cursor: "pointer",
                           }}
                           className="group"
+                          onClick={() => onEditActivity(activity)}
                         >
                           <Icon
                             className="group-hover:text-white"
@@ -128,6 +133,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                             cursor: "pointer",
                           }}
                           className="group"
+                          onClick={() => onDeleteActivity(activity)}
                         >
                           <Icon
                             className="group-hover:text-white"

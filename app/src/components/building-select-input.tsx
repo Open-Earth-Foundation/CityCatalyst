@@ -1,7 +1,7 @@
 import { Box, Select, Text } from "@chakra-ui/react";
 import React, { FC } from "react";
 import { FieldError, FieldErrors, UseFormRegister } from "react-hook-form";
-import { Inputs } from "./Modals/add-activity-modal";
+import { Inputs } from "./Modals/activity-modal/activity-form-modal";
 import { WarningIcon } from "@chakra-ui/icons";
 import { TFunction } from "i18next";
 import type { SuggestedActivity } from "@/util/form-schema";

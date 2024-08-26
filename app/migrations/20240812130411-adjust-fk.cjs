@@ -1,8 +1,6 @@
 "use strict";
 
 const sql_up = `  
-BEGIN;  
-
 -- Drop existing foreign key constraints  
 ALTER TABLE "DataSourceScope" DROP CONSTRAINT "FK_DataSourceScope.datasource_id";  
 ALTER TABLE "Methodology" DROP CONSTRAINT "FK_Methodology.datasource_id";  
@@ -61,8 +59,8 @@ ALTER TABLE "ActivityValue"
     ADD CONSTRAINT "FK_ActivityValue_datasource_id"  
     FOREIGN KEY ("datasource_id") REFERENCES "DataSourceI18n" ("datasource_id");  
 
-COMMIT;  `;
-const sql_down = `BEGIN;  
+`;
+const sql_down = `
 
 -- Drop the foreign key constraints referencing 'DataSourceI18n'  
 ALTER TABLE "DataSourceScope" DROP CONSTRAINT "FK_DataSourceScope.datasource_id";  
@@ -122,7 +120,6 @@ ALTER TABLE "ActivityValue"
     ADD CONSTRAINT "FK_ActivityValue_datasource_id"  
     FOREIGN KEY ("datasource_id") REFERENCES "DataSource" ("datasource_id");  
 
-COMMIT;  
 `;
 /** @type {import("sequelize-cli").Migration} */
 module.exports = {

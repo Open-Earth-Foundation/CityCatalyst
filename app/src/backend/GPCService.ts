@@ -1,5 +1,6 @@
 import { db } from "@/models";
 import createHttpError from "http-errors";
+import { QueryTypes } from "sequelize";
 
 type IDsFromReferenceNumberResult = {
   sectorId: string;
@@ -41,5 +42,20 @@ export default class GPCService {
     }
 
     return { sectorId, subSectorId, subCategoryId };
+  }
+
+  public static async getRequiredScopes(sectorId: string) {
+    const results: { scope_name: string }[] = await db.sequelize!.query(
+      `select distinct(scope_name) from "Sector" s
+        join "SubSector" ss on s.sector_id = ss.sector_id
+        join "SubCategory" sc on ss.subsector_id = sc.subsector_id
+        join "Scope" on "Scope".scope_id = sc.scope_id
+        where s.sector_id = :sectorId `,
+      {
+        replacements: { sectorId: sectorId },
+        type: QueryTypes.SELECT,
+      },
+    );
+    return { requiredScopes: results.map(({ scope_name }) => scope_name) };
   }
 }

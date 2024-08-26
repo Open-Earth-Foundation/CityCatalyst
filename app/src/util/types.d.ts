@@ -17,6 +17,7 @@ import type { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
 type InventoryResponse = InventoryAttributes & {
   city: CityAttributes & {
     populationYear: number;
+    population: number;
   };
 };
 

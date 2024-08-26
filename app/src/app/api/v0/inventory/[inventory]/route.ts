@@ -57,7 +57,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
     ],
   );
   const populationYear = await db.models.Population.findOne({
-    attributes: ["year"],
+    attributes: ["year", "population"],
     where: {
       cityId: inventory.cityId,
       year: {
@@ -69,7 +69,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
 
   const output: InventoryResponse = inventory.toJSON();
   output.city.populationYear = populationYear!.year;
-
+  output.city.population = populationYear!.population!;
   let body: Buffer | null = null;
   let headers: Record<string, string> | null = null;
 

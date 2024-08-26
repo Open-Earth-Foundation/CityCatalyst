@@ -250,7 +250,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   <Box className="flex gap-[24px] flex-col h-full w-full">
                     <Text
                       fontSize="headline.sm"
-                      color="brandScheme.100"
+                      color="background.overlay"
                       lineHeight="32"
                       fontWeight="semibold"
                     >
@@ -319,13 +319,13 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                               <InfoOutlineIcon
                                 w={3}
                                 h={3}
-                                color="brandScheme.100"
+                                color="background.overlay"
                               />
                             </Tooltip>
                           </Box>
                           <Text
                             fontSize="body.md"
-                            color="brandScheme.100"
+                            color="background.overlay"
                             fontStyle="normal"
                             fontWeight={400}
                             lineHeight="20px"
@@ -390,13 +390,13 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                               <InfoOutlineIcon
                                 w={3}
                                 h={3}
-                                color="brandScheme.100"
+                                color="background.overlay"
                               />
                             </Tooltip>
                           </Box>
                           <Text
                             fontSize="body.md"
-                            color="brandScheme.100"
+                            color="background.overlay"
                             fontStyle="normal"
                             fontWeight={400}
                             lineHeight="20px"
@@ -451,13 +451,13 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                               <InfoOutlineIcon
                                 w={3}
                                 h={3}
-                                color="brandScheme.100"
+                                color="background.overlay"
                               />
                             </Tooltip>
                           </Box>
                           <Text
                             fontSize="body.md"
-                            color="brandScheme.100"
+                            color="background.overlay"
                             fontStyle="normal"
                             fontWeight={400}
                             lineHeight="20px"

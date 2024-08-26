@@ -63,6 +63,9 @@ export const GET = apiHandler(async (req, { params, session }) => {
       year: {
         [Op.lt]: inventory.year,
       },
+      population: {
+        [Op.ne]: null,
+      },
     },
     order: [["year", "DESC"]],
   });

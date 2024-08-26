@@ -13,7 +13,7 @@ pydantic-settings==2.*
 pytest==8.3.2
 rioxarray==0.17.*
 scipy==1.14.*
-shapely==2.0.5
+shapely==2.0.6
 SQLAlchemy==2.0.32
 tqdm==4.66.*
 uvicorn==0.30.6

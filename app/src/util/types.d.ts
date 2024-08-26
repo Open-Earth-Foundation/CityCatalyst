@@ -133,3 +133,7 @@ interface UserInviteResponse {
   created: string;
   lastUpdated: string;
 }
+
+interface RequiredScopesResponse {
+  requiredScopes: string[];
+}

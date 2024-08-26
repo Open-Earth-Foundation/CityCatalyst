@@ -6,27 +6,32 @@ const { bulkUpsert } = require("./util/util.cjs");
 
 const folders = [
   "EFDB_2006_IPCC_guidelines",
-  "EFDB_US",
+  //"EFDB_US",
   // "CarbonFootPrint_2023",
 ];
 
 const toJson = ({
-                  transformation_description,
-                  dataset_description,
-                  methodology_description,
-                  dataset_name,
-                  ...row
-                }) => {
-    const out = { ...row };
+  transformation_description,
+  dataset_description,
+  methodology_description,
+  dataset_name,
+  ...row
+}) => {
+  const out = { ...row };
 
-    if (!!transformation_description) out.transformation_description = JSON.stringify({ user: transformation_description });
-    if (!!dataset_description) out.dataset_description = JSON.stringify({ user: dataset_description });
-    if (!!methodology_description) out.methodology_description = JSON.stringify({ user: methodology_description });
-    if (!!dataset_name) out.dataset_name = JSON.stringify({ user: dataset_name });
-    return out;
-  }
-;
-
+  if (!!transformation_description)
+    out.transformation_description = JSON.stringify({
+      user: transformation_description,
+    });
+  if (!!dataset_description)
+    out.dataset_description = JSON.stringify({ user: dataset_description });
+  if (!!methodology_description)
+    out.methodology_description = JSON.stringify({
+      user: methodology_description,
+    });
+  if (!!dataset_name) out.dataset_name = JSON.stringify({ user: dataset_name });
+  return out;
+};
 async function parseFile(filename, folder) {
   const records = [];
   const parser = fs
@@ -53,7 +58,7 @@ module.exports = {
           "DataSourceEmissionsFactor",
           folder,
         );
-
+        const methodologies = await parseFile("Methodology", folder);
         const emissionsFactorsRaw = await parseFile("EmissionsFactor", folder);
         const emissionsFactors = emissionsFactorsRaw.map((ef) => {
           const metadata = (ef.metadata ? ef.metadata : "")
@@ -87,6 +92,14 @@ module.exports = {
           transaction,
         );
         console.info("Finished adding data sources");
+        await bulkUpsert(
+          queryInterface,
+          "Methodology",
+          methodologies,
+          "methodology_id",
+          transaction,
+        );
+        console.info("Finished adding methodologies");
         await bulkUpsert(
           queryInterface,
           "EmissionsFactor",

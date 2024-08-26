@@ -22,6 +22,10 @@ def upgrade() -> None:
     bind = op.get_bind()
     inspector = inspect(bind)
 
+    # Create the 'modelled' schema if it does not exist
+    if 'modelled' not in inspector.get_schema_names():
+        op.execute("CREATE SCHEMA modelled")
+
     # Check if the 'activity_subcategory' table already exists
     if 'activity_subcategory' not in inspector.get_table_names(schema='modelled'):
         op.create_table(

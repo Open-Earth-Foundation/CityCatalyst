@@ -61,24 +61,26 @@ interface AddActivityModalProps {
   referenceNumber: string;
 }
 
+export type ActivityValueData = {
+  activityDataAmount?: number | null | undefined;
+  activityDataUnit?: string | null | undefined;
+  emissionFactorType?: string;
+  CO2EmissionFactor: number;
+  N2OEmissionFactor: number;
+  CH4EmissionFactor: number;
+  dataQuality: string;
+  sourceReference: string;
+  buildingType: string;
+  fuelType: string;
+  totalFuelConsumption?: string | undefined;
+  totalFuelConsumptionUnits: string;
+  co2EmissionFactorUnit: string;
+  n2oEmissionFactorUnit: string;
+  ch4EmissionFactorUnit: string;
+};
+
 export type Inputs = {
-  activity: {
-    activityDataAmount?: number | null | undefined;
-    activityDataUnit?: string | null | undefined;
-    emissionFactorType?: string;
-    CO2EmissionFactor: number;
-    N2OEmissionFactor: number;
-    CH4EmissionFactor: number;
-    dataQuality: string;
-    sourceReference: string;
-    buildingType: string;
-    fuelType: string;
-    totalFuelConsumption?: string | undefined;
-    totalFuelConsumptionUnits: string;
-    co2EmissionFactorUnit: string;
-    n2oEmissionFactorUnit: string;
-    ch4EmissionFactorUnit: string;
-  };
+  activity: ActivityValueData;
   direct: DirectMeasureData;
   subcategoryData: Record<string, SubcategoryData>;
 };
@@ -132,29 +134,30 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   const [createActivityValue, { isLoading }] =
     api.useCreateActivityValueMutation();
 
-  function extractGasesAndUnits(data: any) {
-    const gases = ["CH4", "CO2", "N2O"];
-    const gasArray: { gas: string; factor: number; unit: string }[] = [];
-    gases.forEach((gas) => {
+  function extractGasesAndUnits(
+    activityData: ActivityValueData,
+  ): { gas: string; factor: number; unit: string }[] {
+    const data = activityData as Record<string, string | number>;
+    const gases = ["CO2", "CH4", "N2O"];
+    return gases.map((gas) => {
       const gasFactorKey = `${gas}EmissionFactor`;
       const gasUnitKey = `${gas}EmissionFactorUnit`;
       const gasObject = {
-        gas: gas,
-        factor: data[gasFactorKey],
-        unit: data[gasUnitKey],
+        gas: gas as string,
+        factor: data[gasFactorKey] as number,
+        unit: data[gasUnitKey] as string,
       };
 
-      gasArray.push(gasObject);
+      return gasObject;
     });
-    return gasArray;
   }
 
   const onSubmit: SubmitHandler<Inputs> = async ({ activity }) => {
     const gasValues = extractGasesAndUnits(activity);
     const requestData = {
       activityData: {
-        co2_amount: gasValues[1].factor,
-        ch4_amount: gasValues[0].factor,
+        co2_amount: gasValues[0].factor,
+        ch4_amount: gasValues[1].factor,
         n2o_amount: gasValues[2].factor,
         activity_type: activity.buildingType,
         fuel_type: activity.fuelType,

@@ -101,13 +101,15 @@ const ActivityModalBody = ({
           className="items-start"
           gap="24px"
         >
+          {/* Ideally this should be determined by the manual input json */}
+          
           <FormControl className="w-full">
             <BuildingTypeSelectInput
               options={fields?.[0].options}
               title={fields?.[0].id}
               placeholder={t("select-activity-type")}
               register={register}
-              activity={"activity.buildingType"}
+              activity={`activity.${fields?.[0].id}`} // this needs to change to "on-road-transport-fuel-type"
               errors={errors}
               t={t}
               selectedActivity={selectedActivity}

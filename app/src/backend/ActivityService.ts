@@ -19,6 +19,7 @@ import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 import type { Transaction } from "sequelize";
 import { Op } from "sequelize";
+import ManualInputValidationService from "./ManualnputValidationService";
 
 type GasValueInput = Omit<GasValueCreationAttributes, "id"> & {
   emissionsFactor?: Omit<EmissionsFactorAttributes, "id">;
@@ -239,6 +240,13 @@ export default class ActivityService {
     gasValues: GasValueInput[] | undefined,
     dataSourceParams: Omit<DataSourceAttributes, "datasourceId"> | undefined,
   ): Promise<ActivityValue | undefined> {
+    // validate using the ManualInputValidationService
+    ManualInputValidationService.validateActivity({
+      activityValueParams,
+      inventoryValueParams,
+      inventoryValueId,
+    });
+
     return await db.sequelize?.transaction(
       async (transaction: Transaction): Promise<ActivityValue> => {
         const dataSource = await db.models.DataSource.create(

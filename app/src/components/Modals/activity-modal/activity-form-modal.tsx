@@ -201,6 +201,8 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         values[`${field.id}unit`] = (activity as any)[`${field.id}unit`];
       }
     });
+
+    // so the issue here is that we need to have one inventoryValue for 
     const requestData = {
       activityData: {
         co2_amount: gasValues[1].factor,

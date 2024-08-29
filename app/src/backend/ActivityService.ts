@@ -241,7 +241,7 @@ export default class ActivityService {
     dataSourceParams: Omit<DataSourceAttributes, "datasourceId"> | undefined,
   ): Promise<ActivityValue | undefined> {
     // validate using the ManualInputValidationService
-    ManualInputValidationService.validateActivity({
+    await ManualInputValidationService.validateActivity({
       activityValueParams,
       inventoryValueParams,
       inventoryValueId,

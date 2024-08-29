@@ -14,7 +14,8 @@ import { db } from "@/models";
 import { Sequelize } from "sequelize";
 
 export enum ValidationErrorCodes {
-  EXCLUSIVE_CONFLICT = "EXCLUSIVE_CONFLICT",
+  EXCLUSIVE_CONFLICT = "EXCLUSIVE_CONFLICT", // trying to insert a value when a blanket value like ""
+  EXCLUSIVE_CONFLICT_SECONDARY = "EXCLUSIVE_CONFLICT_SECONDARY",
   UNIQUE_BY_CONFLICT = "UNQUE_BY_CONFLICT",
   REQUIRED_FIELD_MISSING = "REQUIRED_FIELD_MISSING",
 }
@@ -47,8 +48,6 @@ export default class ManualInputValidationService {
         await db.models.InventoryValue.findByPk(inventoryValueId);
     }
 
-    console.log(inventoryValue, activityValueParams, "this is the reference");
-
     // check if the activity has all required fields
     const referenceNumber = inventoryValue?.gpcReferenceNumber as string;
     const methodologyId = inventoryValue?.inputMethodology as string;
@@ -72,6 +71,21 @@ export default class ManualInputValidationService {
       (methodology as DirectMeasure)["extra-fields"];
 
     if (extraFields && extraFields.length > 0) {
+      // handle required fields validation
+      await this.requiredFieldValidation({
+        activityData: activityValueParams.activityData as Record<string, any>,
+        requiredFields: extraFields
+          .filter((field) => !field.required)
+          .map((f) => f.id),
+      });
+
+      // handle exclusive fields validation
+      await this.exclusiveFieldValidation({
+        activityData: activityValueParams.activityData as Record<string, any>,
+        exclusiveFieldValue: extraFields
+          .filter((field) => field.exclusive)
+          .map((f) => ({ id: f.id, value: f.exclusive as string })),
+      });
     }
 
     let activityRules = (methodology as Methodology).activities;
@@ -128,7 +142,7 @@ export default class ManualInputValidationService {
 
     const whereClause = uniqueBy.reduce(
       (acc, field) => {
-        acc[Sequelize.json(`activityData.${field}`) as any] =
+        acc[`activityData.${field}`] =
           activityValueParams.activityData?.[field];
         return acc;
       },
@@ -153,43 +167,49 @@ export default class ManualInputValidationService {
         targetFields: duplicateFields,
       };
 
-      throw new createHttpError.BadRequest(
-        JSON.stringify({ details: errorBody }),
-      );
+      throw errorBody;
     }
     // check if the uniqueBy fields are unique
   }
 
-  private async exclusiveFieldValidation({
+  private static async exclusiveFieldValidation({
     activityData,
     exclusiveFieldValue,
   }: {
     activityData: Record<string, any>;
-    exclusiveFieldValue: { field: string; value: string }[];
+    exclusiveFieldValue: { id: string; value: string }[];
   }) {
-    for (const field of extraFields) {
-      const selectedValue = activityData[field.id];
-      const exclusiveValue = field.exclusive;
+    console.log(
+      "got here",
+      exclusiveFieldValue,
+      activityData,
+      exclusiveFieldValue,
+    );
+    for (const field of exclusiveFieldValue) {
+      const exclusiveValue = field.value;
 
-      if (exclusiveValue && selectedValue === exclusiveValue) {
-        // Check if there is an existing record with the same exclusive value for the same field
-        const existingRecord = await ActivityValue.findOne({
-          where: {
-            [Sequelize.json(`activityData.${field.id}`)]: exclusiveValue,
-          },
-        });
+      if (activityData[field.id] === exclusiveValue) {
+        // check that no other record exists for the same subsector, subsector and methodology
+      }
 
-        if (existingRecord) {
-          const errorBody = {
-            isValid: false,
-            code: ValidationErrorCodes.EXCLUSIVE_CONFLICT,
-            targetField: field.id,
-            targetValue: exclusiveValue,
-          };
-        }
+      const existingRecord = await ActivityValue.findOne({
+        where: {
+          [`activityData.${field.id}`]: exclusiveValue,
+        },
+      });
+
+      if (existingRecord) {
+        const errorBody = {
+          isValid: false,
+          code: ValidationErrorCodes.EXCLUSIVE_CONFLICT,
+          targetField: field.id,
+          targetValue: exclusiveValue,
+        };
+
+        throw new createHttpError.BadRequest(
+          JSON.stringify({ details: errorBody }),
+        );
       }
     }
   }
-
-  private static async exclusiveFieldValidation({}) {}
 }

@@ -513,6 +513,14 @@ export function initModels(sequelize: Sequelize) {
     as: "dataSourceEmissionsFactors",
     foreignKey: "emissionsFactorId",
   });
+  EmissionsFactor.belongsTo(Methodology, {
+    as: "emissionsFactorMethodology",
+    foreignKey: "methodologyId",
+  });
+  Methodology.hasMany(EmissionsFactor, {
+    as: "emissionsFactors",
+    foreignKey: "methodologyId",
+  });
   DataSourceGHGs.belongsTo(GHGs, { as: "ghg", foreignKey: "ghgId" });
   GHGs.hasMany(DataSourceGHGs, { as: "dataSourceGhgs", foreignKey: "ghgId" });
   InventoryValue.belongsTo(Inventory, {

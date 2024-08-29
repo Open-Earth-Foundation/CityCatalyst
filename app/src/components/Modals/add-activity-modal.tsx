@@ -108,25 +108,23 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
 
   let prefix = "";
   let { data: emissionsFactors, isLoading: emissionsFactorsLoading } =
-    api.useGetEmissionsFactorsQuery();
+    api.useGetEmissionsFactorsQuery({
+      referenceNumber,
+      methodologyId: methodology?.id,
+      inventoryId,
+    });
   // extract and deduplicate data sources from emissions factors
   const emissionsFactorTypes = useMemo(() => {
     if (!emissionsFactors) {
       return [];
     }
-    const seen: Record<string, boolean> = {};
-    return emissionsFactors
-      .flatMap((factor) => {
-        return factor.dataSources.map((source) => ({
-          id: source.datasourceId,
-          name: getTranslationFromDict(source.datasetName) ?? "unknown",
-        }));
-      })
-      .filter((source) => {
-        return seen.hasOwnProperty(source.id)
-          ? false
-          : (seen[source.id] = true);
-      });
+
+    return emissionsFactors.flatMap((factor) => {
+      return factor.dataSources.map((source) => ({
+        id: source.datasourceId,
+        name: getTranslationFromDict(source.datasetName) ?? "unknown",
+      }));
+    });
   }, [emissionsFactors]);
 
   const toast = useToast();

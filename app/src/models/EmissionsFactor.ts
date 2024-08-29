@@ -10,6 +10,7 @@ import type {
 } from "./DataSourceEmissionsFactor";
 import type { GasValue, GasValueId } from "./GasValue";
 import { Inventory, InventoryId } from "./Inventory";
+import { Methodology, MethodologyId } from "./Methodology";
 
 export interface EmissionsFactorAttributes {
   id: string;
@@ -22,6 +23,7 @@ export interface EmissionsFactorAttributes {
   region?: string | null;
   actorId?: string | null;
   methodologyName?: string | null;
+  methodologyId?: string | null;
   reference?: string | null;
   created?: Date;
   lastUpdated?: Date;
@@ -39,6 +41,7 @@ export type EmissionsFactorOptionalAttributes =
   | "region"
   | "actorId"
   | "methodologyName"
+  | "methodologyId"
   | "reference"
   | "created"
   | "lastUpdated";
@@ -61,6 +64,7 @@ export class EmissionsFactor
   region?: string | null;
   actorId?: string | null;
   methodologyName?: string | null;
+  methodologyId?: string | null;
   reference?: string | null;
   created?: Date;
   lastUpdated?: Date;
@@ -70,6 +74,16 @@ export class EmissionsFactor
   getInventory!: Sequelize.BelongsToGetAssociationMixin<Inventory>;
   setInventory!: Sequelize.BelongsToSetAssociationMixin<Inventory, InventoryId>;
   createInventory!: Sequelize.BelongsToCreateAssociationMixin<Inventory>;
+
+  // EmissionsFactor belongsTo Methodology via methodologyId
+  methodology!: Methodology;
+  getMethodology!: Sequelize.BelongsToGetAssociationMixin<Methodology>;
+  setMethodology!: Sequelize.BelongsToSetAssociationMixin<
+    Methodology,
+    MethodologyId
+  >;
+  createMethodology!: Sequelize.BelongsToCreateAssociationMixin<Methodology>;
+
   // EmissionsFactor belongsToMany DataSource via emissionsFactorId and datasourceId
   dataSources!: DataSource[];
   getDataSources!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
@@ -207,6 +221,15 @@ export class EmissionsFactor
           type: DataTypes.TEXT,
           allowNull: true,
           field: "methodology_name",
+        },
+        methodologyId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: "Methodology",
+            key: "methodology_id",
+          },
+          field: "methodology_id",
         },
         reference: {
           type: DataTypes.TEXT,

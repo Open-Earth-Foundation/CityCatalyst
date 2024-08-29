@@ -76,7 +76,7 @@ export default class CalculationService {
     let gases: { gas: string; amount: bigint }[] = [];
     switch (formula) {
       case "direct-measure":
-        const result = CalculationService.handleDirectMeasure(
+        const result = CalculationService.handleDirectMeasureFormula(
           activityValue,
           gasToCO2Eqs,
         );
@@ -128,7 +128,7 @@ export default class CalculationService {
     };
   }
 
-  private static handleDirectMeasure(
+  private static handleDirectMeasureFormula(
     activityValue: ActivityValue,
     gasToCO2Eqs: GasToCO2Eq[],
   ): { gases: Gas[]; totalCO2e: bigint; totalCO2eYears: number } {

@@ -14,6 +14,7 @@ import {
   TabPanel,
   Text,
   useDisclosure,
+  
 } from "@chakra-ui/react";
 import React, { FC, useState } from "react";
 import HeadingText from "../../heading-text";
@@ -391,8 +392,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
                             activityData={activityValues}
                             showActivityModal={onAddActivityModalOpen}
                             methodologyId={methodology?.id}
-                            // onDeleteActivity={onDeleteActivity}
-                            // onEditActivity={onEditActivity}
+                            onDeleteActivity={onDeleteActivity}
+                            onEditActivity={onEditActivity}
                           />
                         )}
                         <Box

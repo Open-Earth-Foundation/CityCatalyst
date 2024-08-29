@@ -784,5 +784,13 @@
   "emissions-value-co2": "CO2",
   "emissions-value-n2o": "N2O",
   "inventory-calculation": "Inventory Calculation",
-  "inventory-report": "Inventory Report"
+  "inventory-report": "Inventory Report",
+  "data-quality-form-label": "Please select data quality",
+  "emission-factor-form-label": "Please select an emission factor type",
+  "emission-amount-form-error": "Please enter amount",
+  "activity-value-success": "New activity data successfully added!",
+  "activity-value-error": "Something went wrong",
+  "source-reference-form-label": "Please select a source reference",
+  "gwp-info-prefix": "All calculations consider a",
+  "gwp-info": "GWP value of 28 for CH4 and 265 for N20 (Version AR5)"
 }

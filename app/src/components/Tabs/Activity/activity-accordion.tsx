@@ -20,16 +20,25 @@ import {
   Th,
   Thead,
   Tr,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
+  Icon,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC } from "react";
-import { MdMoreVert } from "react-icons/md";
+import { MdMoreVert, MdModeEditOutline } from "react-icons/md";
+import { FiTrash2 } from "react-icons/fi";
 
 interface ActivityAccordionProps {
   t: TFunction;
   activityData: ActivityValue[] | undefined;
   showActivityModal: () => void;
   methodologyId: string | undefined;
+  onDeleteActivity: (activity: ActivityValue) => void;
+  onEditActivity: (activity: ActivityValue) => void;
 }
 
 const ActivityAccordion: FC<ActivityAccordionProps> = ({
@@ -37,6 +46,8 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
   activityData,
   showActivityModal,
   methodologyId,
+  onDeleteActivity,
+  onEditActivity,
 }) => {
   const methodologyName = getInputMethodology(methodologyId!);
   return (
@@ -125,12 +136,78 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                       <Td>{activity?.fuelConsumption!}</Td>
                       <Td>{convertKgToTonnes(activity?.co2eq)}</Td>
                       <Td>
-                        <IconButton
-                          color="interactive.control"
-                          variant="ghost"
-                          aria-label="activity-data-popover"
-                          icon={<MdMoreVert size="24px" />}
-                        />
+                        <Popover>
+                          <PopoverTrigger>
+                            <IconButton
+                              icon={<MdMoreVert size="24px" />}
+                              aria-label="more-icon"
+                              variant="ghost"
+                              color="content.tertiary"
+                            />
+                          </PopoverTrigger>
+                          <PopoverContent
+                            w="auto"
+                            borderRadius="8px"
+                            shadow="2dp"
+                            px="0"
+                          >
+                            <PopoverArrow />
+                            <PopoverBody p="0px">
+                              <Box
+                                p="16px"
+                                display="flex"
+                                alignItems="center"
+                                gap="16px"
+                                _hover={{
+                                  bg: "content.link",
+                                  cursor: "pointer",
+                                }}
+                                className="group"
+                                onClick={() => onEditActivity(activity)}
+                              >
+                                <Icon
+                                  className="group-hover:text-white"
+                                  color="interactive.control"
+                                  as={MdModeEditOutline}
+                                  h="24px"
+                                  w="24px"
+                                />
+                                <Text
+                                  className="group-hover:text-white"
+                                  color="content.primary"
+                                >
+                                  {t("update-activity")}
+                                </Text>
+                              </Box>
+                              <Box
+                                p="16px"
+                                display="flex"
+                                alignItems="center"
+                                gap="16px"
+                                _hover={{
+                                  bg: "content.link",
+                                  cursor: "pointer",
+                                }}
+                                className="group"
+                                onClick={() => onDeleteActivity(activity)}
+                              >
+                                <Icon
+                                  className="group-hover:text-white"
+                                  color="sentiment.negativeDefault"
+                                  as={FiTrash2}
+                                  h="24px"
+                                  w="24px"
+                                />
+                                <Text
+                                  className="group-hover:text-white"
+                                  color="content.primary"
+                                >
+                                  {t("delete-activity")}
+                                </Text>
+                              </Box>
+                            </PopoverBody>
+                          </PopoverContent>
+                        </Popover>
                       </Td>
                     </Tr>
                   );

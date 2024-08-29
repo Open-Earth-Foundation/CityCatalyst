@@ -190,7 +190,9 @@ const ActivityModalBody = ({
                 {errors.activity?.totalFuelConsumption ? (
                   <Box display="flex" gap="6px" alignItems="center" mt="6px">
                     <WarningIcon color="sentiment.negativeDefault" />
-                    <Text fontSize="body.md">Please enter amount</Text>
+                    <Text fontSize="body.md">
+                      {t("emission-amount-form-error")}
+                    </Text>
                   </Box>
                 ) : (
                   ""
@@ -237,7 +239,7 @@ const ActivityModalBody = ({
                   <Box display="flex" gap="6px" alignItems="center" mt="6px">
                     <WarningIcon color="sentiment.negativeDefault" />
                     <Text fontSize="body.md">
-                      Please select an emission factor type
+                      {t("emission-factor-form-label")}
                     </Text>
                   </Box>
                 ) : (
@@ -538,7 +540,7 @@ const ActivityModalBody = ({
           {errors.activity?.dataQuality ? (
             <Box display="flex" gap="6px" alignItems="center" mt="6px">
               <WarningIcon color="sentiment.negativeDefault" />
-              <Text fontSize="body.md">Please select data quality</Text>
+              <Text fontSize="body.md">{t("data-quality-form-label")}</Text>
             </Box>
           ) : (
             ""
@@ -575,7 +577,7 @@ const ActivityModalBody = ({
           {errors.activity?.sourceReference ? (
             <Box display="flex" gap="6px" alignItems="center" mt="6px">
               <WarningIcon color="sentiment.negativeDefault" />
-              <Text fontSize="body.md">Please select a source reference</Text>
+              <Text fontSize="body.md">{t("source-reference-form-label")}</Text>
             </Box>
           ) : (
             ""
@@ -584,9 +586,9 @@ const ActivityModalBody = ({
         <HStack className="items-start" mb={13}>
           <InfoOutlineIcon mt={1} color="content.link" />
           <Text color="content.tertiary">
-            All calculations consider a{" "}
+            {t("gwp-info-prefix")}{" "}
             <Text as="span" fontWeight="bold">
-              GWP value of 28 for CH4 and 265 for N20 (Version AR5).
+              {t("gwp-info")}
             </Text>
           </Text>
         </HStack>

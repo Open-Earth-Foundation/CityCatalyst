@@ -76,25 +76,13 @@ export default class CalculationService {
     let gases: { gas: string; amount: bigint }[] = [];
     switch (formula) {
       case "direct-measure":
-        gases = GAS_NAMES.map((gasName) => {
-          const data = activityValue.activityData;
-          const key = gasName.toLowerCase() + "_amount";
-          if (!data || !data[key]) {
-            throw new createHttpError.BadRequest(
-              "Missing direct measure form entry " + key,
-            );
-          }
-          // TODO save amount to GasValue entry?
-          const amount = BigInt(data[key]);
-          const { co2eq, co2eqYears } = this.calculateCO2eq(
-            gasToCO2Eqs,
-            gasName,
-            amount,
-          );
-          totalCO2e += co2eq;
-          totalCO2eYears = Math.max(totalCO2eYears, co2eqYears);
-          return { gas: gasName, amount: amount };
-        });
+        const result = CalculationService.handleDirectMeasure(
+          activityValue,
+          gasToCO2Eqs,
+        );
+        gases = result.gases;
+        totalCO2e += result.totalCO2e;
+        totalCO2eYears = Math.max(result.totalCO2eYears, totalCO2eYears);
         break;
       case "activity-amount-times-emissions-factor":
         // TODO add actvityAmount column to ActivityValue
@@ -138,5 +126,32 @@ export default class CalculationService {
       totalCO2eYears,
       gases,
     };
+  }
+
+  private static handleDirectMeasure(
+    activityValue: ActivityValue,
+    gasToCO2Eqs: GasToCO2Eq[],
+  ): { gases: Gas[]; totalCO2e: bigint; totalCO2eYears: number } {
+    const result = { gases: [] as Gas[], totalCO2e: 0n, totalCO2eYears: 0 };
+    result.gases = GAS_NAMES.map((gasName) => {
+      const data = activityValue.activityData;
+      const key = gasName.toLowerCase() + "_amount";
+      if (!data || !data[key]) {
+        throw new createHttpError.BadRequest(
+          "Missing direct measure form entry " + key,
+        );
+      }
+      // TODO save amount to GasValue entry?
+      const amount = BigInt(data[key]);
+      const { co2eq, co2eqYears } = this.calculateCO2eq(
+        gasToCO2Eqs,
+        gasName,
+        amount,
+      );
+      result.totalCO2e += co2eq;
+      result.totalCO2eYears = Math.max(result.totalCO2eYears, co2eqYears);
+      return { gas: gasName, amount: amount };
+    });
+    return result;
   }
 }

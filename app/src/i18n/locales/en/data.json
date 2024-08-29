@@ -161,6 +161,10 @@
   "delete-activity": "Delete activity",
   "delete-activities-prompt": "Are you sure you want to <2>permanently delete </2> all activities in the commercial and institutional buildings sub-sector from the city's inventory data?",
   "delete-activity-prompt": "Are you sure you want to <2> permanently delete </2> this activity from the city's inventory data?",
+  "delete-activity-success": "Activity deleted successfully",
+  "all-activities-deleted": "All activities deleted successfully",
+  "delete-activity-failed": "Failed to delete activity",
+  "delete-all-activities-failed": "Failed to delete all activities",
 
   "skip-step-button": "Skip this step",
   "save-continue-button": "Save and Continue",
@@ -773,11 +777,20 @@
   "add-emission-data-btn": "Add emission data",
   "update-activity": "Update activity",
   "add-emission-data": "Add emission data",
+  "update-emission-data": "Update emission data",
   "co2-emissions": "CO2 emissions",
   "n2o-emissions": "N2O emissions",
   "ch4-emissions": "CH4 emissions",
   "emissions-value-co2": "CO2",
   "emissions-value-n2o": "N2O",
   "inventory-calculation": "Inventory Calculation",
-  "inventory-report": "Inventory Report"
+  "inventory-report": "Inventory Report",
+  "data-quality-form-label": "Please select data quality",
+  "emission-factor-form-label": "Please select an emission factor type",
+  "emission-amount-form-error": "Please enter amount",
+  "activity-value-success": "New activity data successfully added!",
+  "activity-value-error": "Something went wrong",
+  "source-reference-form-label": "Please select a source reference",
+  "gwp-info-prefix": "All calculations consider a",
+  "gwp-info": "GWP value of 28 for CH4 and 265 for N20 (Version AR5)"
 }

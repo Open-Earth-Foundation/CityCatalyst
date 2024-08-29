@@ -1,7 +1,11 @@
 "use client";
 
 import { UserFileAttributes } from "@/models/UserFile";
-import { api } from "@/services/api";
+import {
+  api,
+  useDeleteActivityValueMutation,
+  useDeleteAllActivityValuesMutation,
+} from "@/services/api";
 import {
   Modal,
   Button,
@@ -14,10 +18,12 @@ import {
   Box,
   Badge,
   ModalFooter,
+  useToast,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC } from "react";
 import { Trans } from "react-i18next";
+import { CheckCircleIcon } from "@chakra-ui/icons";
 
 import { FiTrash2 } from "react-icons/fi";
 
@@ -25,13 +31,60 @@ interface DeleteAllActivitiesModalProps {
   isOpen: boolean;
   onClose: any;
   t: TFunction;
+  inventoryId: string;
+  subsectorId: string;
 }
 
 const DeleteAllActivitiesModal: FC<DeleteAllActivitiesModalProps> = ({
   isOpen,
   onClose,
   t,
+  inventoryId,
+  subsectorId,
 }) => {
+  const toast = useToast();
+  const [deleteAllActivityValues, { isLoading }] =
+    useDeleteAllActivityValuesMutation();
+
+  // define the function to delete all activities
+  const handleDeleteAllActivities = async () => {
+    // call the delete all activities mutation
+    const response = await deleteAllActivityValues({
+      inventoryId,
+      subSectorId: subsectorId,
+    });
+    if (response.data) {
+
+      // TODO create toast wrapper for success state
+      toast({
+        status: "success",
+        title: t("all-activities-deleted"),
+        render: ({ title }) => (
+          <Box
+            h="48px"
+            w="600px"
+            borderRadius="8px"
+            display="flex"
+            alignItems="center"
+            color="white"
+            backgroundColor="interactive.primary"
+            gap="8px"
+            px="16px"
+          >
+            <CheckCircleIcon />
+            <Text>{title}</Text>
+          </Box>
+        ),
+      });
+      onClose();
+    } else {
+      toast({
+        status: "error",
+        title: t("delete-all-activities-failed"),
+      });
+    }
+  };
+
   return (
     <>
       <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
@@ -113,11 +166,13 @@ const DeleteAllActivitiesModal: FC<DeleteAllActivitiesModalProps> = ({
               w="472px"
               background="sentiment.negativeDefault"
               paddingTop="16px"
+              isLoading={isLoading}
               paddingBottom="16px"
               px="24px"
               letterSpacing="widest"
               textTransform="uppercase"
               fontWeight="semibold"
+              onClick={handleDeleteAllActivities}
               fontSize="button.md"
               type="button"
               p={0}

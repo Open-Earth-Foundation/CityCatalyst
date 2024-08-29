@@ -15,6 +15,7 @@ interface BuildingTypeSelectInputProps {
   errors: FieldErrors<any>;
   t: TFunction;
   selectedActivity?: SuggestedActivity;
+  multiselect?: boolean;
 }
 
 const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
@@ -25,6 +26,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
   activity,
   errors,
   t,
+  multiselect,
   selectedActivity,
 }) => {
   return (

@@ -6,6 +6,7 @@ import {
   HStack,
   Heading,
   InputGroup,
+  Input,
   InputRightAddon,
   ModalBody,
   NumberInput,
@@ -35,7 +36,7 @@ interface AddActivityModalBodyProps {
   t: TFunction;
   register: UseFormRegister<Inputs>;
   submit: () => void;
-  fields: any[];
+  fields: ExtraField[];
   units: string[];
   errors: FieldErrors<Inputs>;
   emissionsFactorTypes: EmissionFactorTypes;
@@ -53,7 +54,7 @@ export type Inputs = {
     CH4EmissionFactor: number;
     dataQuality: string;
     sourceReference: string;
-    buildingType: string;
+    activityType: string;
     fuelType: string;
     totalFuelConsumption?: string | undefined;
     totalFuelConsumptionUnits: string;
@@ -63,6 +64,15 @@ export type Inputs = {
   };
   direct: DirectMeasureData;
   subcategoryData: Record<string, SubcategoryData>;
+};
+
+export type ExtraField = {
+  id: string;
+  type?: string; // Specifies the type, e.g., 'text', 'number'
+  options?: string[]; // Array of options for selection
+  exclusive?: string; // An option that excludes others
+  multiselect?: boolean; // Whether multiple selections are allowed
+  units?: string[]; // Specifies units, applicable when type is 'number'
 };
 
 const ActivityModalBody = ({
@@ -90,6 +100,8 @@ const ActivityModalBody = ({
     }
   };
 
+  console.log("f", fields);
+
   return (
     <ModalBody p={6} px={12}>
       <form onSubmit={submit}>
@@ -101,15 +113,160 @@ const ActivityModalBody = ({
           className="items-start"
           gap="24px"
         >
-          {/* Ideally this should be determined by the manual input json */}
-          
-          <FormControl className="w-full">
+          {/* handle select, multi-select types, text  */}
+          {fields.map((f) => {
+            return (
+              <>
+                {f.options && (
+                  <FormControl className="w-full">
+                    <BuildingTypeSelectInput
+                      options={f.options}
+                      multiselect={f.multiselect}
+                      title={f.id}
+                      placeholder={t("select-activity-type")}
+                      register={register}
+                      activity={`activity.${f.id}`}
+                      errors={errors}
+                      t={t}
+                      selectedActivity={selectedActivity}
+                    />
+                  </FormControl>
+                )}
+                {f.type === "text" && (
+                  <FormControl className="w-full">
+                    <FormLabel className="truncate">{t(f.id)}</FormLabel>
+                    <InputGroup>
+                      <Input
+                        borderRadius="4px"
+                        
+                        borderRightRadius={0}
+                        h="48px"
+                        shadow="1dp"
+                        borderWidth={errors?.[`activity.${f.id}`] ? "1px" : 0}
+                        border="inputBox"
+                        borderColor={
+                          errors?.activity?.totalFuelConsumption
+                            ? "sentiment.negativeDefault"
+                            : ""
+                        }
+                        background={
+                          errors?.activity?.totalFuelConsumption
+                            ? "sentiment.negativeOverlay"
+                            : ""
+                        }
+                        bgColor="base.light"
+                        _focus={{
+                          borderWidth: "1px",
+                          shadow: "none",
+                          borderColor: "content.link",
+                        }}
+                        {...register(`activity.${f.id}` as any)}
+                      />
+                    </InputGroup>
+                  </FormControl>
+                )}
+                {f.type === "number" && (
+                  <>
+                    <FormControl className="w-full">
+                      <FormLabel className="truncate">{f.id}</FormLabel>
+                      <InputGroup>
+                        <NumberInput defaultValue={0} w="full">
+                          <NumberInputField
+                            borderRadius="4px"
+                            placeholder={t("activity-data-amount-placeholder")}
+                            borderRightRadius={0}
+                            h="48px"
+                            shadow="1dp"
+                            borderWidth={
+                              errors?.[`activity.${f.id}`] ? "1px" : 0
+                            }
+                            border="inputBox"
+                            borderColor={
+                              errors?.activity?.totalFuelConsumption
+                                ? "sentiment.negativeDefault"
+                                : ""
+                            }
+                            background={
+                              errors?.activity?.totalFuelConsumption
+                                ? "sentiment.negativeOverlay"
+                                : ""
+                            }
+                            bgColor="base.light"
+                            _focus={{
+                              borderWidth: "1px",
+                              shadow: "none",
+                              borderColor: "content.link",
+                            }}
+                            {...register(`activity.${f.id}` as any)}
+                          />
+                        </NumberInput>
+                        {f.units && (
+                          <InputRightAddon
+                            className="border-l-2"
+                            pl={4}
+                            pr={0}
+                            bgColor="base.light"
+                            h="48px"
+                            shadow="1dp"
+                          >
+                            <Select
+                              variant="unstyled"
+                              {...register(`activity.${f.id}unit` as any)}
+                            >
+                              {units?.map((item: string) => (
+                                <option key={item} value={item}>
+                                  {item}
+                                </option>
+                              ))}
+                            </Select>
+                          </InputRightAddon>
+                        )}
+                        <InputRightAddon
+                          className="border-l-2"
+                          pl={4}
+                          pr={0}
+                          bgColor="base.light"
+                          h="48px"
+                          shadow="1dp"
+                        >
+                          <Select
+                            variant="unstyled"
+                            {...register(`activity.${f.id}` as any)}
+                          >
+                            {units?.map((item: string) => (
+                              <option key={item} value={item}>
+                                {item}
+                              </option>
+                            ))}
+                          </Select>
+                        </InputRightAddon>
+                      </InputGroup>
+                      {(errors?.[`activity.${f.id}`] as any) ? (
+                        <Box
+                          display="flex"
+                          gap="6px"
+                          alignItems="center"
+                          mt="6px"
+                        >
+                          <WarningIcon color="sentiment.negativeDefault" />
+                          <Text fontSize="body.md">Please enter amount</Text>
+                        </Box>
+                      ) : (
+                        ""
+                      )}
+                    </FormControl>
+                  </>
+                )}
+              </>
+            );
+          })}
+          {/* <FormControl className="w-full">
             <BuildingTypeSelectInput
               options={fields?.[0].options}
               title={fields?.[0].id}
               placeholder={t("select-activity-type")}
               register={register}
-              activity={`activity.${fields?.[0].id}`} // this needs to change to "on-road-transport-fuel-type"
+              activity={`activity.activityType`}
               errors={errors}
               t={t}
               selectedActivity={selectedActivity}
@@ -119,13 +276,13 @@ const ActivityModalBody = ({
             <BuildingTypeSelectInput
               options={fields?.[1].options}
               title={fields?.[1].id}
-              placeholder={t("select-type-of-fuel")}
+              placeholder={t("select-type-of-fuel")} // this needs to be dynamic for each activity field
               register={register}
-              activity={"activity.fuelType"}
+              activity={`activity.fuelType`}
               errors={errors}
               t={t}
             />
-          </FormControl>
+          </FormControl> */}
           {!methodology?.id.includes("direct-measure") ? (
             <Box
               display="flex"
@@ -570,7 +727,7 @@ const ActivityModalBody = ({
               borderColor: "content.link",
             }}
             placeholder={t("source-reference-placeholder")}
-            {...register("activity.sourceReference", {
+            {...register(`activity.sourceReference` as any, {
               required: t("source-reference-required"),
             })}
           />

@@ -20,7 +20,7 @@ import { CheckCircleIcon } from "@chakra-ui/icons";
 import { getInputMethodology } from "@/util/helpers";
 import type { SuggestedActivity } from "@/util/form-schema";
 import { getTranslationFromDict } from "@/i18n";
-import ActivityModalBody from "./activity-modal-body";
+import ActivityModalBody, { ExtraField } from "./activity-modal-body";
 import { Inputs } from "./activity-modal-body";
 import { ActivityValue } from "@/models/ActivityValue";
 
@@ -62,13 +62,21 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     formState: { errors },
   } = useForm<Inputs>();
 
+  let fields: ExtraField[] = [];
+  let units = null;
+  if (methodology?.id.includes("direct-measure")) {
+    fields = methodology.fields;
+  } else {
+    fields = methodology?.fields[0]["extra-fields"];
+    units = methodology?.fields[0].units;
+  }
+
   useEffect(() => {
     // set default values for the form
     if (targetActivityValue) {
       reset({
         activity: {
-          buildingType: targetActivityValue?.activityData?.activity_type,
-          fuelType: targetActivityValue?.activityData?.fuel_type,
+          ...targetActivityValue,
           dataQuality: targetActivityValue?.dataSource?.dataQuality,
           sourceReference: targetActivityValue?.dataSource?.notes,
           CH4EmissionFactor: targetActivityValue?.activityData?.ch4_amount,
@@ -88,7 +96,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       // reset({});
       reset({
         activity: {
-          buildingType: selectedActivity?.id,
+          activityType: selectedActivity?.id,
           fuelType: "",
           dataQuality: "",
           sourceReference: "",
@@ -182,13 +190,23 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
 
   const onSubmit: SubmitHandler<Inputs> = async ({ activity }) => {
     const gasValues = extractGasesAndUnits(activity);
+
+    // extract field values
+    const values: Record<string, any> = {};
+    fields?.forEach((field) => {
+      if (field.id in activity) {
+        values[field.id] = (activity as any)[field.id];
+      }
+      if (field.units) {
+        values[`${field.id}unit`] = (activity as any)[`${field.id}unit`];
+      }
+    });
     const requestData = {
       activityData: {
         co2_amount: gasValues[1].factor,
         ch4_amount: gasValues[0].factor,
         n2o_amount: gasValues[2].factor,
-        activity_type: activity.buildingType,
-        fuel_type: activity.fuelType,
+        ...values,
       },
       metadata: {},
       inventoryValue: {
@@ -260,14 +278,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     }
   };
 
-  let fields = null;
-  let units = null;
-  if (methodology?.id.includes("direct-measure")) {
-    fields = methodology.fields;
-  } else {
-    fields = methodology?.fields[0]["extra-fields"];
-    units = methodology?.fields[0].units;
-  }
+  console.log("methodology", methodology);
 
   return (
     <>

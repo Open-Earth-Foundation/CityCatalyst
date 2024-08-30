@@ -81,33 +81,32 @@ export default class CalculationService {
     const gasToCO2Eqs = await db.models.GasToCO2Eq.findAll();
     let totalCO2e = 0n;
     let totalCO2eYears = 0;
-    let gases: { gas: string; amount: bigint }[] = [];
-    let result: FormulaResult | null = null;
+    let gases: Gas[] = [];
 
     switch (formula) {
       // TODO use Record<string, (activityValue, gasToCO2Eqs) => FormulaResult> for this? To avoid adding new code here for each new formula...
       // basically like a function pointer table in C++...
       case "direct-measure":
-        result = CalculationService.handleDirectMeasureFormula(
+        gases = CalculationService.handleDirectMeasureFormula(
           activityValue,
           gasToCO2Eqs,
         );
         break;
       case "activity-amount-times-emissions-factor":
-        result =
+        gases =
           CalculationService.handleActivityAmountTimesEmissionsFactorFormula(
             activityValue,
             gasToCO2Eqs,
           );
         break;
       case "methane-commitment":
-        result = CalculationService.handleMethaneCommitmentFormula(
+        gases = CalculationService.handleMethaneCommitmentFormula(
           activityValue,
           gasToCO2Eqs,
         );
         break;
-      case "vkt-1":
-        result = CalculationService.handleVkt1Formula(
+      case "induced-activity-1": // TODO or VKT-1? What is it in the hierarchy.json file?
+        gases = CalculationService.handleVkt1Formula(
           activityValue,
           gasToCO2Eqs,
         );
@@ -117,9 +116,15 @@ export default class CalculationService {
         );
     }
 
-    gases = result.gases;
-    totalCO2e += result.totalCO2e;
-    totalCO2eYears = Math.max(result.totalCO2eYears, totalCO2eYears);
+    for (const gas of gases) {
+      const { co2eq, co2eqYears } = this.calculateCO2eq(
+        gasToCO2Eqs,
+        gas.gas,
+        gas.amount,
+      );
+      totalCO2e += co2eq;
+      totalCO2eYears = Math.max(co2eqYears, totalCO2eYears);
+    }
 
     return {
       totalCO2e,
@@ -131,7 +136,7 @@ export default class CalculationService {
   static handleVkt1Formula(
     activityValue: ActivityValue,
     gasToCO2Eqs: GasToCO2Eq[],
-  ): FormulaResult {
+  ): Gas[] {
     const data = activityValue.activityData;
     if (!data) {
       throw new createHttpError.BadRequest(
@@ -140,20 +145,26 @@ export default class CalculationService {
     }
 
     const gases = activityValue.gasValues.map((gasValue) => {
+      if (!gasValue.gas) {
+        throw new createHttpError.BadRequest(
+          "Activity has a GasValue with no `gas` name",
+        );
+      }
       const emissionsFactor = gasValue.emissionsFactor;
       const emissions =
         data["activity-value"] *
         data["intensity"] *
-        (emissionsFactor.emissionsPerActivity ?? 0);
+        (emissionsFactor.emissionsPerActivity ?? 0); // TODO throw BadRequest error if no EF present?
+      return { gas: gasValue.gas, amount: BigInt(emissions) };
     });
 
-    return { gases };
+    return gases;
   }
 
   static handleMethaneCommitmentFormula(
     activityValue: ActivityValue,
     gasToCO2Eqs: GasToCO2Eq[],
-  ): FormulaResult {
+  ): Gas[] {
     const data = activityValue.activityData;
     if (!data) {
       throw new createHttpError.BadRequest(
@@ -213,27 +224,18 @@ export default class CalculationService {
       );
     }
 
-    return {
-      // TODO perform above calculation using BigInt/ BigNumber?
-      totalCO2e: BigInt(ch4Emissions * co2eFactor),
-      totalCO2eYears: ch4CO2e?.co2eqYears ?? DEFAULT_CO2EQ_YEARS,
-      gases: [
-        {
-          gas: "CH4",
-          amount: BigInt(ch4Emissions),
-        },
-      ],
-    };
+    return [{ gas: "CH4", amount: BigInt(ch4Emissions) }];
   }
 
   private static handleActivityAmountTimesEmissionsFactorFormula(
     activityValue: ActivityValue,
     gasToCO2Eqs: GasToCO2Eq[],
-  ): FormulaResult {
+  ): Gas[] {
     let totalCO2e = 0n;
     let totalCO2eYears = 0;
     // TODO add actvityAmount column to ActivityValue
     // const activityAmount = activityValue.activityAmount || 0;
+    // TODO perform these calculations using BigInt/ BigNumber?
     const data = activityValue.activityData;
     const activityAmount = data ? data["activity_amount"] || 0 : 0;
     const gases = activityValue.gasValues.map((gasValue) => {
@@ -252,26 +254,18 @@ export default class CalculationService {
       const amount = BigInt(
         activityAmount * emissionsFactor.emissionsPerActivity,
       );
-      const { co2eq, co2eqYears } = this.calculateCO2eq(
-        gasToCO2Eqs,
-        gasValue.gas!,
-        amount,
-      );
-      totalCO2e += co2eq;
-      totalCO2eYears = Math.max(totalCO2eYears, co2eqYears);
 
       return { gas: gasValue.gas!, amount };
     });
 
-    return { gases, totalCO2e, totalCO2eYears };
+    return gases;
   }
 
   private static handleDirectMeasureFormula(
     activityValue: ActivityValue,
     gasToCO2Eqs: GasToCO2Eq[],
-  ): FormulaResult {
-    const result = { gases: [] as Gas[], totalCO2e: 0n, totalCO2eYears: 0 };
-    result.gases = GAS_NAMES.map((gasName) => {
+  ): Gas[] {
+    const gases = GAS_NAMES.map((gasName) => {
       const data = activityValue.activityData;
       const key = gasName.toLowerCase() + "_amount";
       if (!data || !data[key]) {
@@ -281,15 +275,8 @@ export default class CalculationService {
       }
       // TODO save amount to GasValue entry?
       const amount = BigInt(data[key]);
-      const { co2eq, co2eqYears } = this.calculateCO2eq(
-        gasToCO2Eqs,
-        gasName,
-        amount,
-      );
-      result.totalCO2e += co2eq;
-      result.totalCO2eYears = Math.max(result.totalCO2eYears, co2eqYears);
       return { gas: gasName, amount: amount };
     });
-    return result;
+    return gases;
   }
 }

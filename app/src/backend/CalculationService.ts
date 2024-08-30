@@ -106,6 +106,11 @@ export default class CalculationService {
           gasToCO2Eqs,
         );
         break;
+      case "vkt-1":
+        result = CalculationService.handleVkt1Formula(
+          activityValue,
+          gasToCO2Eqs,
+        );
       default:
         throw new createHttpError.NotImplemented(
           `Formula ${formula} not yet implemented for input methodology ${inventoryValue.inputMethodology}`,
@@ -121,6 +126,28 @@ export default class CalculationService {
       totalCO2eYears,
       gases,
     };
+  }
+
+  static handleVkt1Formula(
+    activityValue: ActivityValue,
+    gasToCO2Eqs: GasToCO2Eq[],
+  ): FormulaResult {
+    const data = activityValue.activityData;
+    if (!data) {
+      throw new createHttpError.BadRequest(
+        "Activity has no data associated, so it can't use the formula",
+      );
+    }
+
+    const gases = activityValue.gasValues.map((gasValue) => {
+      const emissionsFactor = gasValue.emissionsFactor;
+      const emissions =
+        data["activity-value"] *
+        data["intensity"] *
+        (emissionsFactor.emissionsPerActivity ?? 0);
+    });
+
+    return { gases };
   }
 
   static handleMethaneCommitmentFormula(

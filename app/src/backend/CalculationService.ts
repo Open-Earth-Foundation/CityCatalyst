@@ -215,14 +215,6 @@ export default class CalculationService {
       (1 - recoveredMethaneFraction) *
       (1 - oxidationFactor);
 
-    const ch4CO2e = gasToCO2Eqs.find((g) => g.gas === "CH4");
-    const co2eFactor = ch4CO2e?.co2eqPerKg;
-    if (!co2eFactor) {
-      throw new createHttpError.InternalServerError(
-        "No GasToCO2Eq table entry for gas CH4, can't calculate methane commitment formula",
-      );
-    }
-
     return [{ gas: "CH4", amount: BigInt(ch4Emissions) }];
   }
 

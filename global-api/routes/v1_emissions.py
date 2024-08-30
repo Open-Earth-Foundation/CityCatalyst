@@ -191,8 +191,28 @@ def db_query(datasource_name, spatial_granularity, actor_id, gpc_reference_numbe
 
     return result
 
-@api_router.get("/source/{datasource_name}/{spatial_granularity}/{actor_id}/{emissions_year}/{gpc_reference_number}/{gwp}")
-def get_emissions_by_city_and_year(datasource_name: str, spatial_granularity:str, actor_id:str, gpc_reference_number:str, emissions_year: int, gwp: str):
+@api_router.get("/source/{datasource_name}/{spatial_granularity}/{actor_id}/{emissions_year}/{gpc_reference_number}")
+def get_emissions_by_city_and_year(
+    datasource_name: str,  # The name of the data source to query.
+    spatial_granularity: str,  # The level of spatial granularity for the emissions data (e.g., country, region, city).
+    actor_id: str,  # Identifier for the actor (e.g., city, region country) code associated with the emissions data.
+    emissions_year: int,  # The year for which emissions data is requested.
+    gpc_reference_number: str,  # Reference number associated with the Global Protocol for Community-Scale Greenhouse Gas Emission Inventories (GPC).
+    gwp: str = "ar5"  # Global warming potential impact factor, default is 'ar5'. Should be one of: ar2, ar3, ar4, ar5, or ar6.
+    ):
+    """
+    Retrieve emissions data based on specified parameters.
+
+    - `datasource_name`: Specifies the data source for emissions.
+    - `spatial_granularity`: Determines the geographical resolution of the data.
+    - `actor_id`: Unique identifier for the entity contributing to or associated with emissions.
+    - `emissions_year`: Year for which the emissions data is required.
+    - `gpc_reference_number`: GPC reference number related to emissions data.
+    - `gwp`: (optional) Global warming potential to use in calculations. Defaults to "ar5".
+
+    Returns a structured response containing totals and detailed records of emissions for the specified parameters.
+    """
+
     records = db_query_total(datasource_name, spatial_granularity, actor_id, gpc_reference_number, emissions_year, gwp)
 
     if not records:

@@ -133,17 +133,22 @@ export default class CalculationService {
         "Activity has no data associated, so it can't use the formula",
       );
     }
-    const foodFraction = (data.foodFraction || 0) / 100.0;
-    const gardenWasteFraction = (data.gardenWasteFraction || 0) / 100.0;
-    const paperFraction = (data.paperFraction || 0) / 100.0;
-    const woodFraction = (data.woodFraction || 0) / 100.0;
-    const textilesFraction = (data.textilesFraction || 0) / 100.0;
-    const industrialWasteFraction = (data.industrialWasteFraction || 0) / 100.0;
+    const foodFraction = (data["food-fraction"] || 0) / 100.0;
+    const gardenWasteFraction = (data["garden-waste-fraction"] || 0) / 100.0;
+    const paperFraction = (data["paper-fraction"] || 0) / 100.0;
+    const woodFraction = (data["wood-fraction"] || 0) / 100.0;
+    const textilesFraction = (data["textiles-fraction"] || 0) / 100.0;
+    const industrialWasteFraction =
+      (data["industrial-waste-fraction"] || 0) / 100.0;
 
     const landfillType = data["landfill-type"];
-    const recoveredMethaneFraction = data.recoveredMethaneFraction || 0;
-    const oxidationFactor = data.landfillType;
-    const totalSolidWaste = data.solidWaste || 0; // TODO is this MSW_x??
+    // Rewrite the property accesses in data here to use kebab-case instead of camelCase.
+
+    const recoveredMethaneFraction = data["recovered-methane-fraction"] || 0;
+    const oxidationFactor = data["landfill-type"].startsWith("managed-well")
+      ? 0.1
+      : 0;
+    const totalSolidWaste = data["total-solid-waste"] || 0; // TODO is this MSW_x?
 
     // Degradable organic carbon in year of deposition, fraction (tonnes C/tonnes waste)
     const degradableOrganicCarbon =
@@ -155,8 +160,11 @@ export default class CalculationService {
       0.15 * industrialWasteFraction;
 
     const methaneCorrectionFactor = METHANE_CORRECTION_FACTORS[landfillType];
-    const DOC_FRACTION = 0.6; // GPC assumption
-    const METHANE_FRACTION = 0.5; // GPC assumption
+    // GPC assumption, Fraction of degradable organic carbon that is ultimately degraded
+    const DOC_FRACTION = 0.6;
+    // GPC assumption, fraction of methane in landfill gas
+    const METHANE_FRACTION = 0.5;
+    // TODO what does L_0 stand for?
     const L_O =
       methaneCorrectionFactor *
       degradableOrganicCarbon *
@@ -165,13 +173,19 @@ export default class CalculationService {
       (16 / 12.0);
 
     const ch4Emissions =
-      totalSolidWaste *
+      totalSolidWaste * // TODO does MSW_x stand for total solid waste?
       L_O *
       (1 - recoveredMethaneFraction) *
       (1 - oxidationFactor);
 
     const ch4CO2e = gasToCO2Eqs.find((g) => g.gas === "CH4");
-    const co2eFactor = ch4CO2e?.co2eqPerKg ?? 0;
+    const co2eFactor = ch4CO2e?.co2eqPerKg;
+    if (!co2eFactor) {
+      throw new createHttpError.InternalServerError(
+        "No GasToCO2Eq table entry for gas CH4, can't calculate methane commitment formula",
+      );
+    }
+
     return {
       // TODO perform above calculation using BigInt/ BigNumber?
       totalCO2e: BigInt(ch4Emissions * co2eFactor),

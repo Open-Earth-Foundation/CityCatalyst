@@ -17,6 +17,12 @@ export type GasAmountResult = {
   gases: Gas[];
 };
 
+export type FormulaResult = {
+  gases: Gas[];
+  totalCO2e: bigint;
+  totalCO2eYears: number;
+};
+
 const GAS_NAMES = ["CO2", "N2O", "CH4"];
 const DEFAULT_CO2EQ_YEARS = 100;
 
@@ -74,53 +80,34 @@ export default class CalculationService {
     let totalCO2e = 0n;
     let totalCO2eYears = 0;
     let gases: { gas: string; amount: bigint }[] = [];
+    let result: FormulaResult | null = null;
+
     switch (formula) {
+      // TODO use Record<string, (activityValue, gasToCO2Eqs) => FormulaResult> for this? To avoid adding new code here for each new formula...
+      // basically like a function pointer table in C++...
       case "direct-measure":
-        const result = CalculationService.handleDirectMeasureFormula(
+        result = CalculationService.handleDirectMeasureFormula(
           activityValue,
           gasToCO2Eqs,
         );
-        gases = result.gases;
-        totalCO2e += result.totalCO2e;
-        totalCO2eYears = Math.max(result.totalCO2eYears, totalCO2eYears);
         break;
       case "activity-amount-times-emissions-factor":
-        // TODO add actvityAmount column to ActivityValue
-        // const activityAmount = activityValue.activityAmount || 0;
-        const data = activityValue.activityData;
-        const activityAmount = data ? data["activity_amount"] || 0 : 0;
-        gases = activityValue.gasValues.map((gasValue) => {
-          const emissionsFactor = gasValue.emissionsFactor;
-          if (emissionsFactor == null) {
-            throw new createHttpError.BadRequest(
-              "Missing emissions factor for activity",
-            );
-          }
-          if (emissionsFactor.emissionsPerActivity == null) {
-            throw new createHttpError.BadRequest(
-              `Emissions factor ${emissionsFactor.id} has no emissions per activity`,
-            );
-          }
-          // this rounds/ truncates!
-          const amount = BigInt(
-            activityAmount * emissionsFactor.emissionsPerActivity,
-          );
-          const { co2eq, co2eqYears } = this.calculateCO2eq(
+        result =
+          CalculationService.handleActivityAmountTimesEmissionsFactorFormula(
+            activityValue,
             gasToCO2Eqs,
-            gasValue.gas!,
-            amount,
           );
-          totalCO2e += co2eq;
-          totalCO2eYears = Math.max(totalCO2eYears, co2eqYears);
-
-          return { gas: gasValue.gas!, amount };
-        });
         break;
       default:
         throw new createHttpError.NotImplemented(
           `Formula ${formula} not yet implemented for input methodology ${inventoryValue.inputMethodology}`,
         );
     }
+
+    gases = result.gases;
+    totalCO2e += result.totalCO2e;
+    totalCO2eYears = Math.max(result.totalCO2eYears, totalCO2eYears);
+
     return {
       totalCO2e,
       totalCO2eYears,
@@ -128,10 +115,50 @@ export default class CalculationService {
     };
   }
 
+  private static handleActivityAmountTimesEmissionsFactorFormula(
+    activityValue: ActivityValue,
+    gasToCO2Eqs: GasToCO2Eq[],
+  ): FormulaResult {
+    let totalCO2e = 0n;
+    let totalCO2eYears = 0;
+    // TODO add actvityAmount column to ActivityValue
+    // const activityAmount = activityValue.activityAmount || 0;
+    const data = activityValue.activityData;
+    const activityAmount = data ? data["activity_amount"] || 0 : 0;
+    const gases = activityValue.gasValues.map((gasValue) => {
+      const emissionsFactor = gasValue.emissionsFactor;
+      if (emissionsFactor == null) {
+        throw new createHttpError.BadRequest(
+          "Missing emissions factor for activity",
+        );
+      }
+      if (emissionsFactor.emissionsPerActivity == null) {
+        throw new createHttpError.BadRequest(
+          `Emissions factor ${emissionsFactor.id} has no emissions per activity`,
+        );
+      }
+      // this rounds/ truncates!
+      const amount = BigInt(
+        activityAmount * emissionsFactor.emissionsPerActivity,
+      );
+      const { co2eq, co2eqYears } = this.calculateCO2eq(
+        gasToCO2Eqs,
+        gasValue.gas!,
+        amount,
+      );
+      totalCO2e += co2eq;
+      totalCO2eYears = Math.max(totalCO2eYears, co2eqYears);
+
+      return { gas: gasValue.gas!, amount };
+    });
+
+    return { gases, totalCO2e, totalCO2eYears };
+  }
+
   private static handleDirectMeasureFormula(
     activityValue: ActivityValue,
     gasToCO2Eqs: GasToCO2Eq[],
-  ): { gases: Gas[]; totalCO2e: bigint; totalCO2eYears: number } {
+  ): FormulaResult {
     const result = { gases: [] as Gas[], totalCO2e: 0n, totalCO2eYears: 0 };
     result.gases = GAS_NAMES.map((gasName) => {
       const data = activityValue.activityData;

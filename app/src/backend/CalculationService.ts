@@ -11,10 +11,10 @@ export type Gas = {
   amount: bigint;
 };
 
-export type FormulaResult = {
-  gases: Gas[];
+export type GasAmountResult = {
   totalCO2e: bigint;
   totalCO2eYears: number;
+  gases: Gas[];
 };
 
 const GAS_NAMES = ["CO2", "N2O", "CH4"];
@@ -74,7 +74,7 @@ export default class CalculationService {
     inventoryValue: InventoryValue,
     activityValue: ActivityValue,
     inputMethodology: string,
-  ): Promise<FormulaResult> {
+  ): Promise<GasAmountResult> {
     const formula = await CalculationService.getFormula(inputMethodology);
 
     // TODO cache

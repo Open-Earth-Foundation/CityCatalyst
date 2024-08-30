@@ -186,7 +186,7 @@ export default class CalculationService {
     const oxidationFactor = data["landfill-type"].startsWith("managed-well")
       ? 0.1
       : 0;
-    const totalSolidWaste = data["total-solid-waste"] || 0; // TODO is this MSW_x?
+    const totalSolidWaste = data["total-solid-waste"] || 0;
 
     // Degradable organic carbon in year of deposition, fraction (tonnes C/tonnes waste)
     const degradableOrganicCarbon =
@@ -202,8 +202,7 @@ export default class CalculationService {
     const DOC_FRACTION = 0.6;
     // GPC assumption, fraction of methane in landfill gas
     const METHANE_FRACTION = 0.5;
-    // TODO what does L_0 stand for?
-    const L_O =
+    const methaneGenerationPotential =
       methaneCorrectionFactor *
       degradableOrganicCarbon *
       DOC_FRACTION *
@@ -211,8 +210,8 @@ export default class CalculationService {
       (16 / 12.0);
 
     const ch4Emissions =
-      totalSolidWaste * // TODO does MSW_x stand for total solid waste?
-      L_O *
+      totalSolidWaste *
+      methaneGenerationPotential *
       (1 - recoveredMethaneFraction) *
       (1 - oxidationFactor);
 

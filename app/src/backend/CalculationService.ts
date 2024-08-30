@@ -19,6 +19,14 @@ export type FormulaResult = {
 
 const GAS_NAMES = ["CO2", "N2O", "CH4"];
 const DEFAULT_CO2EQ_YEARS = 100;
+const METHANE_CORRECTION_FACTORS: Record<string, number> = {
+  managed: 1.0,
+  "managed-well-semi-aerobic": 0.5,
+  "managed-poorly-active-aeration": 0.4,
+  "unmanaged-5m-more-deep": 0.8,
+  "unmanaged-5m-less-deep": 0.4,
+  uncategorized: 0.6,
+};
 
 export default class CalculationService {
   private static calculateCO2eq(
@@ -92,6 +100,12 @@ export default class CalculationService {
             gasToCO2Eqs,
           );
         break;
+      case "methane-commitment":
+        result = CalculationService.handleMethaneCommitmentFormula(
+          activityValue,
+          gasToCO2Eqs,
+        );
+        break;
       default:
         throw new createHttpError.NotImplemented(
           `Formula ${formula} not yet implemented for input methodology ${inventoryValue.inputMethodology}`,
@@ -106,6 +120,68 @@ export default class CalculationService {
       totalCO2e,
       totalCO2eYears,
       gases,
+    };
+  }
+
+  static handleMethaneCommitmentFormula(
+    activityValue: ActivityValue,
+    gasToCO2Eqs: GasToCO2Eq[],
+  ): FormulaResult {
+    const data = activityValue.activityData;
+    if (!data) {
+      throw new createHttpError.BadRequest(
+        "Activity has no data associated, so it can't use the formula",
+      );
+    }
+    const foodFraction = (data.foodFraction || 0) / 100.0;
+    const gardenWasteFraction = (data.gardenWasteFraction || 0) / 100.0;
+    const paperFraction = (data.paperFraction || 0) / 100.0;
+    const woodFraction = (data.woodFraction || 0) / 100.0;
+    const textilesFraction = (data.textilesFraction || 0) / 100.0;
+    const industrialWasteFraction = (data.industrialWasteFraction || 0) / 100.0;
+
+    const landfillType = data["landfill-type"];
+    const recoveredMethaneFraction = data.recoveredMethaneFraction || 0;
+    const oxidationFactor = data.landfillType;
+    const totalSolidWaste = data.solidWaste || 0; // TODO is this MSW_x??
+
+    // Degradable organic carbon in year of deposition, fraction (tonnes C/tonnes waste)
+    const degradableOrganicCarbon =
+      0.15 * foodFraction +
+      0.2 * gardenWasteFraction +
+      0.4 * paperFraction +
+      0.43 * woodFraction +
+      0.24 * textilesFraction +
+      0.15 * industrialWasteFraction;
+
+    const methaneCorrectionFactor = METHANE_CORRECTION_FACTORS[landfillType];
+    const DOC_FRACTION = 0.6; // GPC assumption
+    const METHANE_FRACTION = 0.5; // GPC assumption
+    const L_O =
+      methaneCorrectionFactor *
+      degradableOrganicCarbon *
+      DOC_FRACTION *
+      METHANE_FRACTION *
+      (16 / 12.0);
+
+    const ch4Emissions =
+      totalSolidWaste *
+      L_O *
+      (1 - recoveredMethaneFraction) *
+      (1 - oxidationFactor);
+
+    const ch4CO2e = gasToCO2Eqs.find((g) => g.gas === "CH4");
+    const co2eFactor = ch4CO2e?.co2eqPerKg ?? 0;
+    return {
+      // TODO perform above calculation using BigInt/ BigNumber?
+      totalCO2e: BigInt(ch4Emissions * co2eFactor),
+      totalCO2eYears: ch4CO2e?.co2eqYears ?? DEFAULT_CO2EQ_YEARS,
+      gases: [
+        {
+          gas: "CH4",
+          amount: BigInt(ch4Emissions),
+        },
+      ],
     };
   }
 

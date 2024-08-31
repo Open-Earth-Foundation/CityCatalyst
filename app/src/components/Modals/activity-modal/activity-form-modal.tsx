@@ -23,6 +23,7 @@ import { getTranslationFromDict } from "@/i18n";
 import ActivityModalBody, { ExtraField } from "./activity-modal-body";
 import { Inputs } from "./activity-modal-body";
 import { ActivityValue } from "@/models/ActivityValue";
+import { InventoryValue } from "@/models/InventoryValue";
 
 interface AddActivityModalProps {
   isOpen: boolean;
@@ -37,6 +38,7 @@ interface AddActivityModalProps {
   referenceNumber: string;
   edit?: boolean;
   targetActivityValue?: ActivityValue;
+  inventoryValue?: InventoryValue | null;
   resetSelectedActivityValue: () => void;
 }
 
@@ -47,6 +49,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   t,
   setHasActivityData,
   hasActivityData,
+  inventoryValue,
   inventoryId,
   methodology,
   selectedActivity,
@@ -202,7 +205,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       }
     });
 
-    // so the issue here is that we need to have one inventoryValue for 
+    // so the issue here is that we need to have one inventoryValue for
     const requestData = {
       activityData: {
         co2_amount: gasValues[1].factor,
@@ -211,12 +214,17 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         ...values,
       },
       metadata: {},
-      inventoryValue: {
-        inputMethodology: getInputMethodology(methodology?.id), // extract methodology name
-        gpcReferenceNumber: referenceNumber,
-        unavailableReason: "",
-        unavailableExplanation: "",
-      },
+      ...(inventoryValue ? { inventoryValueId: inventoryValue.id } : {}),
+      ...(!inventoryValue
+        ? {
+            inventoryValue: {
+              inputMethodology: getInputMethodology(methodology?.id), // extract methodology name
+              gpcReferenceNumber: referenceNumber,
+              unavailableReason: "",
+              unavailableExplanation: "",
+            },
+          }
+        : {}),
       dataSource: {
         sourceType: "",
         dataQuality: activity.dataQuality,
@@ -233,6 +241,8 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         },
       })),
     };
+
+    console.log("requestData", requestData);
 
     let response = null;
 

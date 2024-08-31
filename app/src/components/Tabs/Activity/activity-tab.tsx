@@ -42,7 +42,7 @@ import { DataConnectIcon } from "@/components/icons";
 import { convertKgToTonnes, getInputMethodology } from "@/util/helpers";
 import DirectMeasureTable from "./direct-measure-table";
 import DeleteActivityModal from "@/components/Modals/delete-activity-modal";
-import { on } from "events";
+import { InventoryValue } from "@/models/InventoryValue";
 
 interface ActivityTabProps {
   t: TFunction;
@@ -58,6 +58,7 @@ interface ActivityTabProps {
   step: string;
   activityData: ActivityValue[] | undefined;
   subsectorId: string;
+  inventoryValues: InventoryValue[];
 }
 
 const ActivityTab: FC<ActivityTabProps> = ({
@@ -72,6 +73,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
   step,
   activityData,
   subsectorId,
+  inventoryValues,
 }) => {
   let totalEmissions = 0;
 
@@ -96,6 +98,14 @@ const ActivityTab: FC<ActivityTabProps> = ({
     (activity) =>
       activity.inventoryValue.gpcReferenceNumber === refNumberWithScope,
   );
+
+  const getTargetInventoryValue = (): InventoryValue | null => {
+    return (
+      inventoryValues?.find(
+        (value) => value.gpcReferenceNumber === refNumberWithScope,
+      ) ?? null
+    );
+  };
 
   const getActivityValuesByMethodology = (
     activityValues: ActivityValue[] | undefined,
@@ -633,6 +643,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
         setHasActivityData={setHasActivityData}
         methodology={methodology!}
         inventoryId={inventoryId}
+        inventoryValue={getTargetInventoryValue()}
         selectedActivity={selectedActivity}
         referenceNumber={refNumberWithScope}
         edit={!!selectedActivityValue}

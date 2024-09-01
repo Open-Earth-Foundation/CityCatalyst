@@ -100,7 +100,6 @@ const ActivityModalBody = ({
     }
   };
 
-  console.log("f", fields);
 
   return (
     <ModalBody p={6} px={12}>

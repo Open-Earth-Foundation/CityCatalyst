@@ -27,7 +27,6 @@ export default class ManualInputValidationService {
     activityValueParams: Omit<ActivityValueAttributes, "id">;
     inventoryValueId?: string;
   }) {
-    console.log("activityValueParams", activityValueParams, inventoryValueId);
 
     // we wanna compare the activity data with other exisiting activity datas stored in the database belonging to the same inventoryValue
     if (inventoryValueId) {
@@ -175,7 +174,6 @@ export default class ManualInputValidationService {
     exclusiveFieldValue: { id: string; value: string }[];
     inventoryValueId: string;
   }) {
-    console.log("exclusiveFieldValue", exclusiveFieldValue);
     for (const field of exclusiveFieldValue) {
       const exclusiveValue = field.value;
       let errorBody: ValidationErrorDetails;

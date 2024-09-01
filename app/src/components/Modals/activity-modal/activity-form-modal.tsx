@@ -242,7 +242,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       })),
     };
 
-    console.log("requestData", requestData);
 
     let response = null;
 
@@ -289,8 +288,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       });
     }
   };
-
-  console.log("methodology", methodology);
 
   return (
     <>

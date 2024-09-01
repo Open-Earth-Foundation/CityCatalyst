@@ -428,7 +428,6 @@ describe("Activity Value API", () => {
 
   // test delete all activities in subsector
   it("should delete all activities in a subsector", async () => {
-    console.log("subsector", subSector.subsectorId);
     const findInventory = await db.models.Inventory.findOne({
       where: {
         inventoryName: inventoryName,

@@ -21,7 +21,6 @@ export function findMethodology(
   const foundMethology = methodologies.find(
     (methodology) => methodology.id === methodologyId,
   );
-  console.log("foundMethology", foundMethology);
   return foundMethology;
 }
 

@@ -9,96 +9,88 @@ import {
   MANUAL_INPUT_HIERARCHY,
   Methodology,
 } from "@/util/form-schema";
-import createHttpError from "http-errors";
 import { db } from "@/models";
-import { Sequelize } from "sequelize";
-
-export enum ValidationErrorCodes {
-  EXCLUSIVE_CONFLICT = "EXCLUSIVE_CONFLICT", // trying to insert a value when a blanket value like ""
-  EXCLUSIVE_CONFLICT_SECONDARY = "EXCLUSIVE_CONFLICT_SECONDARY",
-  UNIQUE_BY_CONFLICT = "UNQUE_BY_CONFLICT",
-  REQUIRED_FIELD_MISSING = "REQUIRED_FIELD_MISSING",
-}
+import { Op } from "sequelize";
+import {
+  ManualInputValidationError,
+  ManualInputValidationErrorCodes,
+  ValidationErrorDetails,
+} from "@/lib/custom-errors.ts/manual-input-error";
 
 // validation rules
 
 export default class ManualInputValidationService {
   public static async validateActivity({
     inventoryValueId,
-    inventoryValueParams,
     activityValueParams,
   }: {
     activityValueParams: Omit<ActivityValueAttributes, "id">;
-    inventoryValueParams?: Omit<InventoryValueAttributes, "id">;
     inventoryValueId?: string;
   }) {
-    let inventoryValue;
+    console.log("activityValueParams", activityValueParams, inventoryValueId);
 
-    if (!inventoryValueParams && !inventoryValueId) {
-      throw new createHttpError.BadRequest(
-        "Either inventoryValueId or inventoryValue must be provided",
-      );
-    }
-
-    if (inventoryValueParams) {
-      inventoryValue = inventoryValueParams;
-    } else {
-      // fetch the inventory value from the database
-      inventoryValue =
+    // we wanna compare the activity data with other exisiting activity datas stored in the database belonging to the same inventoryValue
+    if (inventoryValueId) {
+      let inventoryValue: InventoryValueAttributes | null =
         await db.models.InventoryValue.findByPk(inventoryValueId);
-    }
 
-    // check if the activity has all required fields
-    const referenceNumber = inventoryValue?.gpcReferenceNumber as string;
-    const methodologyId = inventoryValue?.inputMethodology as string;
-
-    let methodology: Methodology | DirectMeasure | undefined;
-
-    if (methodologyId === "direct-measure") {
-      methodology = MANUAL_INPUT_HIERARCHY[referenceNumber]
-        ?.directMeasure as DirectMeasure;
-    } else {
-      methodology = findMethodology(methodologyId, referenceNumber);
-      // check if the methodology exists
-      if (!methodology) {
-        throw new Error(`Methodology ${methodologyId} not found`);
+      if (!inventoryValue) {
+        throw new Error("Inventory value not found");
       }
-    }
 
-    // extract extra fields from the methodology
-    let extraFields =
-      (methodology as Methodology)?.activities?.[0]?.["extra-fields"] ||
-      (methodology as DirectMeasure)["extra-fields"];
+      const referenceNumber = inventoryValue.gpcReferenceNumber as string;
+      const methodologyId = inventoryValue.inputMethodology as string;
 
-    if (extraFields && extraFields.length > 0) {
-      // handle required fields validation
-      await this.requiredFieldValidation({
-        activityData: activityValueParams.activityData as Record<string, any>,
-        requiredFields: extraFields
-          .filter((field) => !field.required)
-          .map((f) => f.id),
-      });
+      let methodology: Methodology | DirectMeasure | undefined;
 
-      // handle exclusive fields validation
-      await this.exclusiveFieldValidation({
-        activityData: activityValueParams.activityData as Record<string, any>,
-        exclusiveFieldValue: extraFields
-          .filter((field) => field.exclusive)
-          .map((f) => ({ id: f.id, value: f.exclusive as string })),
-      });
-    }
+      if (methodologyId === "direct-measure") {
+        methodology = MANUAL_INPUT_HIERARCHY[referenceNumber]
+          ?.directMeasure as DirectMeasure;
+      } else {
+        methodology = findMethodology(methodologyId, referenceNumber);
+        // check if the methodology exists
+        if (!methodology) {
+          throw new Error(`Methodology ${methodologyId} not found`);
+        }
+      }
 
-    let activityRules = (methodology as Methodology).activities;
+      // extract extra fields from the methodology
+      let extraFields =
+        (methodology as Methodology)?.activities?.[0]?.["extra-fields"] ||
+        (methodology as DirectMeasure)["extra-fields"];
 
-    // handle non direct measure methodologies
-    if (activityRules && activityRules.length > 0) {
-      let activityRule = activityRules[0];
-      let uniqueBy = activityRule["unique-by"];
-      if (uniqueBy) {
-        await this.uniqueByValidation({
-          uniqueBy,
-          activityValueParams,
+      if (extraFields && extraFields.length > 0) {
+        // handle required fields validation
+        await this.requiredFieldValidation({
+          activityData: activityValueParams.activityData as Record<string, any>,
+          requiredFields: extraFields
+            .filter((field) => "required" in field && !field.required)
+            .map((f) => f.id),
         });
+
+        // handle exclusive fields validation
+        await this.exclusiveFieldValidation({
+          activityData: activityValueParams.activityData as Record<string, any>,
+          exclusiveFieldValue: extraFields
+            .filter((field) => field.exclusive)
+            .map((f) => ({ id: f.id, value: f.exclusive as string })),
+          inventoryValueId,
+        });
+      }
+
+      let activityRules = (methodology as Methodology).activities;
+
+      // handle non direct measure methodologies
+      if (activityRules && activityRules.length > 0) {
+        let activityRule = activityRules[0];
+        let uniqueBy = activityRule["unique-by"];
+        if (uniqueBy) {
+          await this.uniqueByValidation({
+            uniqueBy,
+            activityValueParams,
+            inventoryValueId,
+          });
+        }
       }
     }
   }
@@ -121,22 +113,22 @@ export default class ManualInputValidationService {
     if (missingFields.length > 0) {
       const errorBody = {
         isValid: false,
-        code: ValidationErrorCodes.REQUIRED_FIELD_MISSING,
+        code: ManualInputValidationErrorCodes.REQUIRED_FIELD_MISSING,
         targetFields: missingFields,
       };
 
-      throw new createHttpError.BadRequest(
-        JSON.stringify({ details: errorBody }),
-      );
+      throw new ManualInputValidationError(errorBody);
     }
   }
 
   private static async uniqueByValidation({
     uniqueBy,
     activityValueParams,
+    inventoryValueId,
   }: {
     activityValueParams: Omit<ActivityValueAttributes, "id">;
     uniqueBy: string[];
+    inventoryValueId: string;
   }) {
     let duplicateFields: string[] = [];
 
@@ -151,7 +143,10 @@ export default class ManualInputValidationService {
 
     // Perform the validation
     const existingRecord = await db.models.ActivityValue.findOne({
-      where: whereClause,
+      where: {
+        ...whereClause,
+        inventoryValueId: inventoryValueId,
+      },
     });
 
     if (existingRecord) {
@@ -162,12 +157,11 @@ export default class ManualInputValidationService {
       );
 
       const errorBody = {
-        isValid: false,
-        code: ValidationErrorCodes.UNIQUE_BY_CONFLICT,
+        code: ManualInputValidationErrorCodes.UNIQUE_BY_CONFLICT,
         targetFields: duplicateFields,
       };
 
-      throw errorBody;
+      throw new ManualInputValidationError(errorBody);
     }
     // check if the uniqueBy fields are unique
   }
@@ -175,40 +169,49 @@ export default class ManualInputValidationService {
   private static async exclusiveFieldValidation({
     activityData,
     exclusiveFieldValue,
+    inventoryValueId,
   }: {
     activityData: Record<string, any>;
     exclusiveFieldValue: { id: string; value: string }[];
+    inventoryValueId: string;
   }) {
-    console.log(
-      "got here",
-      exclusiveFieldValue,
-      activityData,
-      exclusiveFieldValue,
-    );
+    console.log("exclusiveFieldValue", exclusiveFieldValue);
     for (const field of exclusiveFieldValue) {
       const exclusiveValue = field.value;
+      let errorBody: ValidationErrorDetails;
+      let existingRecord: ActivityValue | null;
+      let code: ManualInputValidationErrorCodes;
 
       if (activityData[field.id] === exclusiveValue) {
-        // check that no other record exists for the same subsector, subsector and methodology
+        // check that a record exists with the field that is supposed to be exclusive
+        existingRecord = await ActivityValue.findOne({
+          where: {
+            [`activityData.${field.id}`]: { [Op.ne]: null },
+            inventoryValueId: inventoryValueId,
+          },
+        });
+        code = ManualInputValidationErrorCodes.EXCLUSIVE_CONFLICT_SECONDARY;
+      } else {
+        existingRecord = await ActivityValue.findOne({
+          where: {
+            [`activityData.${field.id}`]: exclusiveValue, // Check for the exclusive value
+            inventoryValueId: inventoryValueId,
+          },
+        });
+        code = ManualInputValidationErrorCodes.EXCLUSIVE_CONFLICT;
       }
 
-      const existingRecord = await ActivityValue.findOne({
-        where: {
-          [`activityData.${field.id}`]: exclusiveValue,
-        },
-      });
-
       if (existingRecord) {
-        const errorBody = {
-          isValid: false,
-          code: ValidationErrorCodes.EXCLUSIVE_CONFLICT,
-          targetField: field.id,
-          targetValue: exclusiveValue,
+        errorBody = {
+          code,
+          targetFields: [field.id],
+          meta: {
+            exclusiveFieldValue: exclusiveValue,
+            targetValue: activityData[field.id],
+          },
         };
 
-        throw new createHttpError.BadRequest(
-          JSON.stringify({ details: errorBody }),
-        );
+        throw new ManualInputValidationError(errorBody);
       }
     }
   }

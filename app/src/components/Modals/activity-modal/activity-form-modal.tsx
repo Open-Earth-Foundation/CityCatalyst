@@ -79,7 +79,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     if (targetActivityValue) {
       reset({
         activity: {
-          ...targetActivityValue,
+          ...targetActivityValue.activityData,
           dataQuality: targetActivityValue?.dataSource?.dataQuality,
           sourceReference: targetActivityValue?.dataSource?.notes,
           CH4EmissionFactor: targetActivityValue?.activityData?.ch4_amount,

@@ -10,6 +10,7 @@ import OpenAI from "openai";
 
 import { db } from "@/models";
 import { ValidationError } from "sequelize";
+import { ManualInputValidationError } from "@/lib/custom-errors.ts/manual-input-error";
 
 export type NextHandler = (
   req: NextRequest,
@@ -42,7 +43,17 @@ export function apiHandler(handler: NextHandler) {
 function errorHandler(err: unknown, _req: NextRequest) {
   // TODO log structured request info like route here
   console.error(err);
-  if (createHttpError.isHttpError(err) && err.expose) {
+  if (err instanceof ManualInputValidationError) {
+    return NextResponse.json(
+      {
+        error: {
+          message: "Manual Input Validation Error",
+          details: err.details,
+        },
+      },
+      { status: 400 },
+    );
+  } else if (createHttpError.isHttpError(err) && err.expose) {
     return NextResponse.json(
       { error: { message: err.message } },
       { status: err.statusCode },

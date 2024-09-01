@@ -10,12 +10,13 @@ import {
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
+  SimpleGrid,
   Switch,
   TabPanel,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import React, { FC, useState } from "react";
+import React, { FC, useMemo, useState } from "react";
 import HeadingText from "../../heading-text";
 import { AddIcon } from "@chakra-ui/icons";
 import { MdMoreVert } from "react-icons/md";
@@ -99,13 +100,18 @@ const ActivityTab: FC<ActivityTabProps> = ({
       activity.inventoryValue.gpcReferenceNumber === refNumberWithScope,
   );
 
-  const getTargetInventoryValue = (): InventoryValue | null => {
+  const inventoryValue = useMemo<InventoryValue | null>(() => {
     return (
       inventoryValues?.find(
-        (value) => value.gpcReferenceNumber === refNumberWithScope,
+        (value) =>
+          value.gpcReferenceNumber === refNumberWithScope &&
+          value.inputMethodology ===
+            (methodology?.id.includes("direct-measure")
+              ? "direct-measure"
+              : methodology?.id)
       ) ?? null
     );
-  };
+  }, [inventoryValues, methodology]);
 
   const getActivityValuesByMethodology = (
     activityValues: ActivityValue[] | undefined,
@@ -293,18 +299,22 @@ const ActivityTab: FC<ActivityTabProps> = ({
                       </Text>
                     </Box>
                     <Box display="flex" alignItems="center">
-                      <Button
-                        data-testid="add-emission-data-button"
-                        onClick={onAddActivityModalOpen}
-                        title="Add Activity"
-                        leftIcon={<AddIcon h="16px" w="16px" />}
-                        h="48px"
-                        aria-label="activity-button"
-                        fontSize="button.md"
-                        gap="8px"
-                      >
-                        {t("add-emission-data")}
-                      </Button>
+                      {(activityValues.length > 0 ||
+                        getInputMethodology(methodology?.id!)) !==
+                        "direct-measure" && (
+                        <Button
+                          data-testid="add-emission-data-button"
+                          onClick={onAddActivityModalOpen}
+                          title="Add Activity"
+                          leftIcon={<AddIcon h="16px" w="16px" />}
+                          h="48px"
+                          aria-label="activity-button"
+                          fontSize="button.md"
+                          gap="8px"
+                        >
+                          {t("add-emission-data")}
+                        </Button>
+                      )}
                       <Popover>
                         <PopoverTrigger>
                           <IconButton
@@ -589,11 +599,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                     >
                       {t("select-methodology")}
                     </Text>
-                    <Box
-                      gap="16px"
-                      display="flex"
-                      justifyContent="space-between"
-                    >
+                    <SimpleGrid minChildWidth="250px" spacing={4}>
                       {(methodologies || []).map(
                         ({ id, disabled, activities, inputRequired }) => (
                           <MethodologyCard
@@ -627,7 +633,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                           disabled={false}
                         />
                       ) : null}
-                    </Box>
+                    </SimpleGrid>
                   </Box>
                 )}
               </Box>
@@ -643,7 +649,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
         setHasActivityData={setHasActivityData}
         methodology={methodology!}
         inventoryId={inventoryId}
-        inventoryValue={getTargetInventoryValue()}
+        inventoryValue={inventoryValue}
         selectedActivity={selectedActivity}
         referenceNumber={refNumberWithScope}
         edit={!!selectedActivityValue}

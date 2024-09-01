@@ -138,7 +138,6 @@ const ActivityModalBody = ({
                     <InputGroup>
                       <Input
                         borderRadius="4px"
-                        
                         borderRightRadius={0}
                         h="48px"
                         shadow="1dp"
@@ -213,7 +212,7 @@ const ActivityModalBody = ({
                               variant="unstyled"
                               {...register(`activity.${f.id}unit` as any)}
                             >
-                              {units?.map((item: string) => (
+                              {f.units?.map((item: string) => (
                                 <option key={item} value={item}>
                                   {item}
                                 </option>
@@ -221,25 +220,6 @@ const ActivityModalBody = ({
                             </Select>
                           </InputRightAddon>
                         )}
-                        <InputRightAddon
-                          className="border-l-2"
-                          pl={4}
-                          pr={0}
-                          bgColor="base.light"
-                          h="48px"
-                          shadow="1dp"
-                        >
-                          <Select
-                            variant="unstyled"
-                            {...register(`activity.${f.id}` as any)}
-                          >
-                            {units?.map((item: string) => (
-                              <option key={item} value={item}>
-                                {item}
-                              </option>
-                            ))}
-                          </Select>
-                        </InputRightAddon>
                       </InputGroup>
                       {(errors?.[`activity.${f.id}`] as any) ? (
                         <Box

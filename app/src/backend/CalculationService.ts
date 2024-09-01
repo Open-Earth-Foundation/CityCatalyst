@@ -68,7 +68,6 @@ export default class CalculationService {
     inputMethodology: string,
   ): Promise<GasAmountResult> {
     const formula = await CalculationService.getFormula(inputMethodology);
-
     // TODO cache
     const gasToCO2Eqs = await db.models.GasToCO2Eq.findAll();
     let totalCO2e = 0n;
@@ -101,7 +100,7 @@ export default class CalculationService {
         // const activityAmount = activityValue.activityAmount || 0;
         const data = activityValue.activityData;
         const activityAmount = data ? data["activity_amount"] || 0 : 0;
-        gases = activityValue.gasValues.map((gasValue) => {
+        gases = activityValue.gasValues?.map((gasValue) => {
           const emissionsFactor = gasValue.emissionsFactor;
           if (emissionsFactor == null) {
             throw new createHttpError.BadRequest(

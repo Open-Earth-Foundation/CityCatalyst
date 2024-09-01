@@ -243,7 +243,6 @@ export default class ActivityService {
     // validate using the ManualInputValidationService
     await ManualInputValidationService.validateActivity({
       activityValueParams,
-      inventoryValueParams,
       inventoryValueId,
     });
 

@@ -5,7 +5,7 @@ import HIERARCHY from "./manual-input-hierarchy.json";
 export function findMethodology(
   methodologyId: string,
   refNo: string | null = null, // if null, search all reference numbers (slower)
-): Methodology {
+): Methodology | undefined {
   let methodologies: Methodology[] = [];
   if (refNo) {
     methodologies =
@@ -17,9 +17,12 @@ export function findMethodology(
       },
     );
   }
-  return methodologies.find((methodology) => {
-    methodology.id === methodologyId;
-  }) as Methodology;
+
+  const foundMethology = methodologies.find(
+    (methodology) => methodology.id === methodologyId,
+  );
+  console.log("foundMethology", foundMethology);
+  return foundMethology;
 }
 
 export interface ExtraField {

@@ -769,7 +769,7 @@ export default function AddDataSteps({
       </Box>
       <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
         {/*** Manual data entry section for subsectors ***/}
-        <Card mb={12} mt="350px">
+        <Card mb={12} mt="350px" shadow="none">
           <Heading size="lg" mb={2}>
             {t("add-data-heading")}
           </Heading>
@@ -796,7 +796,7 @@ export default function AddDataSteps({
                     maxHeight="120px"
                     height="120px"
                     w="full"
-                    className="hover:drop-shadow-xl transition-shadow"
+                    className="shadow-none border border-overlay hover:drop-shadow-xl !duration-300 transition-shadow"
                     onClick={() => {
                       router.push(
                         `/${inventory}/data/${getCurrentStepParam(currentStep.title)}/${subSector.subsectorId}`,
@@ -838,7 +838,12 @@ export default function AddDataSteps({
                         />
                       )}
                       <Stack w="full">
-                        <Heading size="xs" noOfLines={3} maxWidth="200px">
+                        <Heading
+                          size="xs"
+                          noOfLines={2}
+                          maxWidth="200px"
+                          title={t(nameToI18NKey(subSector.subsectorName!))}
+                        >
                           {t(nameToI18NKey(subSector.subsectorName!))}
                         </Heading>
                         {subSector.scope && (
@@ -865,7 +870,7 @@ export default function AddDataSteps({
           </SimpleGrid>
         </Card>
         {/*** Third party data source section ***/}
-        <Card mb={12}>
+        <Card mb={12} shadow="none">
           <Flex
             align="center"
             verticalAlign="center"

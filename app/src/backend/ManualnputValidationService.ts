@@ -14,7 +14,7 @@ import { Op } from "sequelize";
 import {
   ManualInputValidationError,
   ManualInputValidationErrorCodes,
-  ValidationErrorDetails,
+  ManualValidationErrorDetails,
 } from "@/lib/custom-errors.ts/manual-input-error";
 
 // validation rules
@@ -85,8 +85,8 @@ export default class ManualInputValidationService {
         await this.requiredFieldValidation({
           activityData: activityValueParams.activityData as Record<string, any>,
           requiredFields: extraFields
-            .filter((field) => "required" in field && !field.required)
-            .map((f) => f.id),
+            .filter((field) => field.required !== false)
+            .map((field) => field.id),
         });
 
         // handle exclusive fields validation
@@ -125,6 +125,7 @@ export default class ManualInputValidationService {
     activityData: Record<string, any>;
     requiredFields: string[];
   }) {
+    console.log("ran the required validation", activityData, requiredFields);
     let missingFields: string[] = [];
 
     for (const field of requiredFields) {
@@ -210,7 +211,7 @@ export default class ManualInputValidationService {
   }) {
     for (const field of exclusiveFieldValue) {
       const exclusiveValue = field.value;
-      let errorBody: ValidationErrorDetails;
+      let errorBody: ManualValidationErrorDetails;
       let existingRecord: ActivityValue | null;
       let code: ManualInputValidationErrorCodes;
 

@@ -47,8 +47,9 @@ function errorHandler(err: unknown, _req: NextRequest) {
     return NextResponse.json(
       {
         error: {
+          type: "ManualInputValidationError",
           message: "Manual Input Validation Error",
-          details: err.details,
+          issues: err.details,
         },
       },
       { status: 400 },

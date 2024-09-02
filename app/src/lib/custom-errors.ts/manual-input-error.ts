@@ -7,7 +7,7 @@ export enum ManualInputValidationErrorCodes {
   REQUIRED_FIELD_MISSING = "REQUIRED_FIELD_MISSING",
 }
 
-export interface ValidationErrorDetails {
+export interface ManualValidationErrorDetails {
   code: ManualInputValidationErrorCodes;
   targetFields: string[];
   meta?: {
@@ -17,9 +17,9 @@ export interface ValidationErrorDetails {
 }
 
 export class ManualInputValidationError {
-  constructor(details: ValidationErrorDetails) {
+  constructor(details: ManualValidationErrorDetails) {
     this.details = details;
   }
 
-  details: ValidationErrorDetails;
+  details: ManualValidationErrorDetails;
 }

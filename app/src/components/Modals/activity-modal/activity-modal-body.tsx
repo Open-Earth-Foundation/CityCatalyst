@@ -38,7 +38,7 @@ interface AddActivityModalBodyProps {
   submit: () => void;
   fields: ExtraField[];
   units: string[];
-  errors: FieldErrors<Inputs>;
+  errors: Record<string, any>;
   emissionsFactorTypes: EmissionFactorTypes;
   methodology: any;
   selectedActivity?: SuggestedActivity;
@@ -73,6 +73,7 @@ export type ExtraField = {
   exclusive?: string; // An option that excludes others
   multiselect?: boolean; // Whether multiple selections are allowed
   units?: string[]; // Specifies units, applicable when type is 'number'
+  required?: boolean; // Whether the field is required
 };
 
 const ActivityModalBody = ({
@@ -100,6 +101,7 @@ const ActivityModalBody = ({
     }
   };
 
+  console.log("errors", errors);
 
   return (
     <ModalBody p={6} px={12}>
@@ -120,6 +122,7 @@ const ActivityModalBody = ({
                   <FormControl className="w-full">
                     <BuildingTypeSelectInput
                       options={f.options}
+                      required={f.required}
                       multiselect={f.multiselect}
                       title={f.id}
                       placeholder={t("select-activity-type")}
@@ -133,22 +136,21 @@ const ActivityModalBody = ({
                 )}
                 {f.type === "text" && (
                   <FormControl className="w-full">
-                    <FormLabel className="truncate">{t(f.id)}</FormLabel>
+                    <FormLabel className="truncate">{t(f.id)}ss</FormLabel>
                     <InputGroup>
                       <Input
                         borderRadius="4px"
-                        borderRightRadius={0}
                         h="48px"
                         shadow="1dp"
-                        borderWidth={errors?.[`activity.${f.id}`] ? "1px" : 0}
+                        borderWidth={errors?.activity?.[f.id] ? "1px" : 0}
                         border="inputBox"
                         borderColor={
-                          errors?.activity?.totalFuelConsumption
+                          errors?.activity?.[f.id]
                             ? "sentiment.negativeDefault"
                             : ""
                         }
                         background={
-                          errors?.activity?.totalFuelConsumption
+                          errors?.activity?.[f.id]
                             ? "sentiment.negativeOverlay"
                             : ""
                         }
@@ -158,9 +160,29 @@ const ActivityModalBody = ({
                           shadow: "none",
                           borderColor: "content.link",
                         }}
-                        {...register(`activity.${f.id}` as any)}
+                        {...register(`activity.${f.id}` as any, {
+                          required:
+                            f.required === false ? false : t("value-required"),
+                        })}
                       />
                     </InputGroup>
+                    {(errors?.activity?.[f.id] as any) ? (
+                      <Box
+                        display="flex"
+                        gap="6px"
+                        alignItems="center"
+                        mt="6px"
+                      >
+                        <WarningIcon color="sentiment.negativeDefault" />
+                        <Text fontSize="body.md">
+                          {" "}
+                          {errors?.activity?.[f.id]?.message}{" "}
+                        </Text>
+                        {/* use ii8n */}
+                      </Box>
+                    ) : (
+                      ""
+                    )}
                   </FormControl>
                 )}
                 {f.type === "number" && (
@@ -172,7 +194,7 @@ const ActivityModalBody = ({
                           <NumberInputField
                             borderRadius="4px"
                             placeholder={t("activity-data-amount-placeholder")}
-                            borderRightRadius={0}
+                            borderRightRadius={f.units ? 0 : "4px"}
                             h="48px"
                             shadow="1dp"
                             borderWidth={
@@ -209,7 +231,12 @@ const ActivityModalBody = ({
                           >
                             <Select
                               variant="unstyled"
-                              {...register(`activity.${f.id}unit` as any)}
+                              {...register(`activity.${f.id}unit` as any, {
+                                required:
+                                  f.required === false
+                                    ? false
+                                    : t("value-required"),
+                              })}
                             >
                               {f.units?.map((item: string) => (
                                 <option key={item} value={item}>
@@ -228,7 +255,9 @@ const ActivityModalBody = ({
                           mt="6px"
                         >
                           <WarningIcon color="sentiment.negativeDefault" />
-                          <Text fontSize="body.md">Please enter amount</Text>
+                          <Text fontSize="body.md">
+                            {errors?.activity?.[f.id]?.message}{" "}
+                          </Text>
                         </Box>
                       ) : (
                         ""
@@ -239,29 +268,6 @@ const ActivityModalBody = ({
               </>
             );
           })}
-          {/* <FormControl className="w-full">
-            <BuildingTypeSelectInput
-              options={fields?.[0].options}
-              title={fields?.[0].id}
-              placeholder={t("select-activity-type")}
-              register={register}
-              activity={`activity.activityType`}
-              errors={errors}
-              t={t}
-              selectedActivity={selectedActivity}
-            />
-          </FormControl>
-          <FormControl>
-            <BuildingTypeSelectInput
-              options={fields?.[1].options}
-              title={fields?.[1].id}
-              placeholder={t("select-type-of-fuel")} // this needs to be dynamic for each activity field
-              register={register}
-              activity={`activity.fuelType`}
-              errors={errors}
-              t={t}
-            />
-          </FormControl> */}
           {!methodology?.id.includes("direct-measure") ? (
             <Box
               display="flex"

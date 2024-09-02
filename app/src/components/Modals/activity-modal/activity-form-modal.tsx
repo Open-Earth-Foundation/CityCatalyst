@@ -4,6 +4,7 @@ import { api, useUpdateActivityValueMutation } from "@/services/api";
 import {
   Box,
   Button,
+  CloseButton,
   Modal,
   ModalCloseButton,
   ModalContent,
@@ -24,6 +25,8 @@ import ActivityModalBody, { ExtraField } from "./activity-modal-body";
 import { Inputs } from "./activity-modal-body";
 import { ActivityValue } from "@/models/ActivityValue";
 import { InventoryValue } from "@/models/InventoryValue";
+import useActivityValueValidation from "@/hooks/activity-value-form/use-activity-validation";
+import useActivityForm from "@/hooks/activity-value-form/use-activity-form";
 
 interface AddActivityModalProps {
   isOpen: boolean;
@@ -57,13 +60,11 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   targetActivityValue,
   resetSelectedActivityValue,
 }) => {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    watch,
-    formState: { errors },
-  } = useForm<Inputs>();
+  const { setError, setFocus, reset, handleSubmit, register, errors } =
+    useActivityForm({
+      targetActivityValue,
+      selectedActivity,
+    });
 
   let fields: ExtraField[] = [];
   let units = null;
@@ -74,52 +75,11 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     units = methodology?.fields[0].units;
   }
 
-  useEffect(() => {
-    // set default values for the form
-    if (targetActivityValue) {
-      reset({
-        activity: {
-          ...targetActivityValue.activityData,
-          dataQuality: targetActivityValue?.dataSource?.dataQuality,
-          sourceReference: targetActivityValue?.dataSource?.notes,
-          CH4EmissionFactor: targetActivityValue?.activityData?.ch4_amount,
-          CO2EmissionFactor: targetActivityValue?.activityData?.co2_amount,
-          N2OEmissionFactor: targetActivityValue?.activityData?.n2o_amount,
-          activityDataAmount: 0,
-          activityDataUnit: null,
-          emissionFactorType: "",
-          totalFuelConsumption: "",
-          totalFuelConsumptionUnits: "",
-          co2EmissionFactorUnit: "",
-          n2oEmissionFactorUnit: "",
-          ch4EmissionFactorUnit: "",
-        },
-      });
-    } else {
-      // reset({});
-      reset({
-        activity: {
-          activityType: selectedActivity?.id,
-          fuelType: "",
-          dataQuality: "",
-          sourceReference: "",
-          CH4EmissionFactor: 0,
-          CO2EmissionFactor: 0,
-          N2OEmissionFactor: 0,
-          activityDataAmount: 0,
-          activityDataUnit: null,
-          emissionFactorType: "",
-          totalFuelConsumption: "",
-          totalFuelConsumptionUnits: "",
-          co2EmissionFactorUnit: "",
-          n2oEmissionFactorUnit: "",
-          ch4EmissionFactorUnit: "",
-        },
-      });
-    }
-  }, [targetActivityValue]);
-
-  const val = watch("activity");
+  const { handleManalInputValidationError } = useActivityValueValidation({
+    t,
+    setError,
+    setFocus,
+  });
 
   const submit = () => {
     handleSubmit(onSubmit)();
@@ -242,7 +202,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       })),
     };
 
-
     let response = null;
 
     if (edit) {
@@ -282,11 +241,39 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       onClose();
       resetSelectedActivityValue();
     } else {
-      toast({
-        status: "error",
-        title: "Something went wrong!",
-      });
+      if (response.error?.data?.error?.type === "ManualInputValidationError") {
+        handleManalInputValidationError(response.error?.data?.error.issues);
+      } else {
+        toast({
+          status: "error",
+          title: "Something went wrong!",
+        });
+      }
     }
+  };
+
+  const closeModalFunc = () => {
+    onClose();
+    resetSelectedActivityValue();
+    reset({
+      activity: {
+        activityType: selectedActivity?.id,
+        fuelType: "",
+        dataQuality: "",
+        sourceReference: "",
+        CH4EmissionFactor: 0,
+        CO2EmissionFactor: 0,
+        N2OEmissionFactor: 0,
+        activityDataAmount: 0,
+        activityDataUnit: null,
+        emissionFactorType: "",
+        totalFuelConsumption: "",
+        totalFuelConsumptionUnits: "",
+        co2EmissionFactorUnit: "",
+        n2oEmissionFactorUnit: "",
+        ch4EmissionFactorUnit: "",
+      },
+    });
   };
 
   return (
@@ -295,8 +282,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         blockScrollOnMount={false}
         isOpen={isOpen}
         onClose={() => {
-          onClose();
-          resetSelectedActivityValue();
+          closeModalFunc();
         }}
       >
         <ModalOverlay />

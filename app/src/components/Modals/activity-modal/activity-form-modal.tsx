@@ -27,6 +27,7 @@ import { ActivityValue } from "@/models/ActivityValue";
 import { InventoryValue } from "@/models/InventoryValue";
 import useActivityValueValidation from "@/hooks/activity-value-form/use-activity-validation";
 import useActivityForm from "@/hooks/activity-value-form/use-activity-form";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 interface AddActivityModalProps {
   isOpen: boolean;
@@ -241,8 +242,10 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       onClose();
       resetSelectedActivityValue();
     } else {
-      if (response.error?.data?.error?.type === "ManualInputValidationError") {
-        handleManalInputValidationError(response.error?.data?.error.issues);
+      const error = response.error as FetchBaseQueryError;
+      const errorData = error.data as any;
+      if (errorData.error?.type === "ManualInputValidationError") {
+        handleManalInputValidationError(errorData.error.issues);
       } else {
         toast({
           status: "error",

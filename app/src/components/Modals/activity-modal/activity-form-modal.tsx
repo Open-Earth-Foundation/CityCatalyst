@@ -219,7 +219,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       toast({
         status: "success",
         duration: 1200,
-        title: "New activity data successfully added!",
+        title: t("activity-value-success"),
         render: ({ title }) => (
           <Box
             h="48px"
@@ -246,7 +246,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       } else {
         toast({
           status: "error",
-          title: "Something went wrong!",
+          title: t("activity-value-error"),
         });
       }
     }

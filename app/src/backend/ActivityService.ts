@@ -407,8 +407,6 @@ export default class ActivityService {
       );
     }
 
-    // TODO:
-
     const count = await db.models.ActivityValue.destroy({
       where: {
         inventoryValueId: {

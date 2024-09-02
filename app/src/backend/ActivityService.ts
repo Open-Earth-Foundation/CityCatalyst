@@ -183,6 +183,13 @@ export default class ActivityService {
 
     let datasourceId = activityValue.datasourceId;
 
+    // validate using the ManualInputValidationService
+    await ManualInputValidationService.validateActivity({
+      activityValueParams: activityValueParams,
+      inventoryValueId,
+      activityValueId: activityValue.id,
+    });
+
     return await db.sequelize?.transaction(
       async (transaction): Promise<ActivityValue> => {
         datasourceId = await this.updateDataSource({

@@ -20,14 +20,36 @@ import {
 // validation rules
 
 export default class ManualInputValidationService {
+  /**
+   * Validate the activity data against the rules defined in the methodology.
+   *
+   * This method checks that the activity data provided meets the required
+   * validation rules before creating or updating an activity. The validation
+   * includes checks for required fields, uniqueness, and exclusivity based on
+   * the associated inventory value's methodology.
+   *
+   * @param {string} [inventoryValueId] - The ID of the inventory value that the activity data is associated with.
+   *                                      This is required for determining the validation rule and existing data
+   *
+   *
+   * @param {Omit<ActivityValueAttributes, "id">} activityValueParams - The activity data that needs to be validated.
+   *                                                                   This includes all the fields of the activityValue
+   *
+   *
+   * @param {string} [activityValueId] - The ID of the existing activity being updated. This is optional and should
+   *                                     be provided only when updating an existing activity. If provided, the service
+   *                                     will exclude this activity from certain validation checks (like uniqueness
+   *                                     and exclusivity) to avoid conflicts with the activity itself.
+   */
   public static async validateActivity({
     inventoryValueId,
     activityValueParams,
+    activityValueId,
   }: {
     activityValueParams: Omit<ActivityValueAttributes, "id">;
     inventoryValueId?: string;
+    activityValueId?: string;
   }) {
-
     // we wanna compare the activity data with other exisiting activity datas stored in the database belonging to the same inventoryValue
     if (inventoryValueId) {
       let inventoryValue: InventoryValueAttributes | null =
@@ -74,6 +96,7 @@ export default class ManualInputValidationService {
             .filter((field) => field.exclusive)
             .map((f) => ({ id: f.id, value: f.exclusive as string })),
           inventoryValueId,
+          activityValueId: activityValueId as string,
         });
       }
 
@@ -88,6 +111,7 @@ export default class ManualInputValidationService {
             uniqueBy,
             activityValueParams,
             inventoryValueId,
+            activityValueId: activityValueId as string,
           });
         }
       }
@@ -124,10 +148,12 @@ export default class ManualInputValidationService {
     uniqueBy,
     activityValueParams,
     inventoryValueId,
+    activityValueId,
   }: {
     activityValueParams: Omit<ActivityValueAttributes, "id">;
     uniqueBy: string[];
     inventoryValueId: string;
+    activityValueId?: string;
   }) {
     let duplicateFields: string[] = [];
 
@@ -139,6 +165,12 @@ export default class ManualInputValidationService {
       },
       {} as { [key: string]: any },
     );
+
+    if (activityValueId) {
+      if (activityValueId) {
+        whereClause["id"] = { [Op.ne]: activityValueId };
+      }
+    }
 
     // Perform the validation
     const existingRecord = await db.models.ActivityValue.findOne({
@@ -169,10 +201,12 @@ export default class ManualInputValidationService {
     activityData,
     exclusiveFieldValue,
     inventoryValueId,
+    activityValueId,
   }: {
     activityData: Record<string, any>;
     exclusiveFieldValue: { id: string; value: string }[];
     inventoryValueId: string;
+    activityValueId?: string;
   }) {
     for (const field of exclusiveFieldValue) {
       const exclusiveValue = field.value;
@@ -186,6 +220,7 @@ export default class ManualInputValidationService {
           where: {
             [`activityData.${field.id}`]: { [Op.ne]: null },
             inventoryValueId: inventoryValueId,
+            ...(activityValueId && { id: { [Op.ne]: activityValueId } }),
           },
         });
         code = ManualInputValidationErrorCodes.EXCLUSIVE_CONFLICT_SECONDARY;
@@ -194,6 +229,7 @@ export default class ManualInputValidationService {
           where: {
             [`activityData.${field.id}`]: exclusiveValue, // Check for the exclusive value
             inventoryValueId: inventoryValueId,
+            ...(activityValueId && { id: { [Op.ne]: activityValueId } }),
           },
         });
         code = ManualInputValidationErrorCodes.EXCLUSIVE_CONFLICT;

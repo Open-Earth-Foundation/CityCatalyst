@@ -15,7 +15,6 @@ import {
   TabPanel,
   Text,
   useDisclosure,
-  
 } from "@chakra-ui/react";
 import React, { FC, useMemo, useState } from "react";
 import HeadingText from "../../heading-text";
@@ -109,7 +108,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
           value.inputMethodology ===
             (methodology?.id.includes("direct-measure")
               ? "direct-measure"
-              : methodology?.id)
+              : methodology?.id),
       ) ?? null
     );
   }, [inventoryValues, methodology]);
@@ -511,6 +510,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                             <Box>
                               <Button
                                 onClick={onAddActivityModalOpen}
+                                data-testid="add-emission-data-button"
                                 title={t("add-emission-data")}
                                 leftIcon={<AddIcon h="16px" w="16px" />}
                                 h="48px"

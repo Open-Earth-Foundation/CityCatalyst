@@ -137,6 +137,7 @@ const ActivityModalBody = ({
                     <FormLabel className="truncate">{t(f.id)}</FormLabel>
                     <InputGroup>
                       <Input
+                        type="text"
                         borderRadius="4px"
                         h="48px"
                         shadow="1dp"
@@ -190,6 +191,7 @@ const ActivityModalBody = ({
                       <InputGroup>
                         <NumberInput defaultValue={0} w="full">
                           <NumberInputField
+                            type="number"
                             borderRadius="4px"
                             placeholder={t("activity-data-amount-placeholder")}
                             borderRightRadius={f.units ? 0 : "4px"}
@@ -560,6 +562,7 @@ const ActivityModalBody = ({
                 <NumberInput w="full" defaultValue={0} min={0}>
                   <NumberInputField
                     data-testid="co2-emission-factor"
+                    type="number"
                     h="48px"
                     placeholder="Enter emissions value"
                     {...register("activity.CO2EmissionFactor")}
@@ -589,6 +592,7 @@ const ActivityModalBody = ({
                 <NumberInput w="full" defaultValue={0} min={0}>
                   <NumberInputField
                     data-testid="n2o-emission-factor"
+                    type="number"
                     h="48px"
                     borderRightRadius={0}
                     placeholder="Enter emissions value"
@@ -619,6 +623,7 @@ const ActivityModalBody = ({
                 {/* TODO translate values and use internal value for checking */}
                 <NumberInput w="full " defaultValue={0} min={0}>
                   <NumberInputField
+                    type="number"
                     data-testid="ch4-emission-factor"
                     h="48px"
                     borderRightRadius={0}

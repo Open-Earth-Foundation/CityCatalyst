@@ -83,6 +83,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                   <Popover>
                     <PopoverTrigger>
                       <IconButton
+                        data-testid="activity-more-icon"
                         icon={<MdMoreVert size="24px" />}
                         aria-label="more-icon"
                         variant="ghost"
@@ -132,6 +133,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                             bg: "content.link",
                             cursor: "pointer",
                           }}
+                          data-testid="delete-activity-button"
                           className="group"
                           onClick={() => onDeleteActivity(activity)}
                         >

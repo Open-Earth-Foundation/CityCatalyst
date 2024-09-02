@@ -214,16 +214,30 @@ export default class ActivityService {
           { transaction },
         );
 
-        // CO2 calculation
         let { totalCO2e, totalCO2eYears, gases } =
           await CalculationService.calculateGasAmount(
             inventoryValue,
-            updatedActivityValue,
+            activityValue,
             inventoryValue.inputMethodology as string,
           );
 
-        inventoryValue.co2eq = totalCO2e;
-        inventoryValue.co2eqYears = Math.max(0, totalCO2eYears);
+        const currentCO2e =
+          BigInt(inventoryValue.co2eq as bigint) -
+            BigInt(activityValue.co2eq as bigint) ?? 0n;
+
+        const calculatedCO2e = BigInt(totalCO2e); // Ensure totalCO2e is BigInt
+
+        inventoryValue.co2eq = currentCO2e + calculatedCO2e;
+        inventoryValue.co2eqYears = Math.max(
+          inventoryValue.co2eqYears ?? 0,
+          totalCO2eYears,
+        );
+
+        await inventoryValue.save({ transaction });
+        activityValue.co2eq = calculatedCO2e;
+        activityValue.co2eqYears = totalCO2eYears;
+        await activityValue.save({ transaction });
+
         await inventoryValue.save({ transaction });
 
         if (gasValues) {
@@ -252,6 +266,8 @@ export default class ActivityService {
       activityValueParams,
       inventoryValueId,
     });
+
+    console.log("passed the validation");
 
     return await db.sequelize?.transaction(
       async (transaction: Transaction): Promise<ActivityValue> => {
@@ -326,12 +342,15 @@ export default class ActivityService {
             inventoryValue.inputMethodology,
           );
 
-        // TODO for PATCH version of this, subtract previous value first
-        inventoryValue.co2eq = (inventoryValue.co2eq ?? 0n) + totalCO2e;
+        const currentCO2e = BigInt(inventoryValue.co2eq ?? 0n);
+        const calculatedCO2e = BigInt(totalCO2e); // Ensure totalCO2e is BigInt
+
+        inventoryValue.co2eq = currentCO2e + calculatedCO2e;
         inventoryValue.co2eqYears = Math.max(
           inventoryValue.co2eqYears ?? 0,
           totalCO2eYears,
         );
+
         await inventoryValue.save({ transaction });
         activityValue.co2eq = totalCO2e;
         activityValue.co2eqYears = totalCO2eYears;
@@ -407,11 +426,12 @@ export default class ActivityService {
       );
     }
 
-    const count = await db.models.ActivityValue.destroy({
+    // delete all the inventory values in subsector
+
+    const count = await db.models.InventoryValue.destroy({
       where: {
-        inventoryValueId: {
-          [Op.in]: inventoryValues.map((iv) => iv.id),
-        },
+        subSectorId: subsectorId,
+        inventoryId,
       },
     });
 

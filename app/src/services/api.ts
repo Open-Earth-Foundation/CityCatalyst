@@ -510,7 +510,7 @@ export const api = createApi({
         },
       }),
       transformResponse: (response: any) => response.data,
-      invalidatesTags: ["ActivityValue"],
+      invalidatesTags: ["ActivityValue", "InventoryValue"],
     }),
     createThreadId: builder.mutation({
       query: (data: { inventoryId: string; content: string }) => ({

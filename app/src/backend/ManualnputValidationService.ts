@@ -10,7 +10,7 @@ import {
   Methodology,
 } from "@/util/form-schema";
 import { db } from "@/models";
-import { Op } from "sequelize";
+import { Op, literal, fn, col, where } from "sequelize";
 import {
   ManualInputValidationError,
   ManualInputValidationErrorCodes,
@@ -125,7 +125,6 @@ export default class ManualInputValidationService {
     activityData: Record<string, any>;
     requiredFields: string[];
   }) {
-    console.log("ran the required validation", activityData, requiredFields);
     let missingFields: string[] = [];
 
     for (const field of requiredFields) {
@@ -158,34 +157,33 @@ export default class ManualInputValidationService {
   }) {
     let duplicateFields: string[] = [];
 
-    const whereClause = uniqueBy.reduce(
-      (acc, field) => {
-        acc[`activityData.${field}`] =
-          activityValueParams.activityData?.[field];
-        return acc;
-      },
-      {} as { [key: string]: any },
+    // using the LOWER function to make the comparison case insensitive
+    const conditions = uniqueBy.map((field) =>
+      where(fn("lower", literal(`activity_data_jsonb->>'${field}'`)), {
+        [Op.eq]: activityValueParams.activityData?.[field].toLowerCase(),
+      }),
     );
 
     if (activityValueId) {
-      if (activityValueId) {
-        whereClause["id"] = { [Op.ne]: activityValueId };
-      }
+      conditions.push(where(col("id"), { [Op.ne]: activityValueId }));
     }
+
+    const whereClause = {
+      [Op.and]: [...conditions, { inventoryValueId: inventoryValueId }],
+    };
 
     // Perform the validation
     const existingRecord = await db.models.ActivityValue.findOne({
       where: {
         ...whereClause,
-        inventoryValueId: inventoryValueId,
       },
     });
 
     if (existingRecord) {
       duplicateFields = uniqueBy.filter(
         (field) =>
-          existingRecord.activityData?.[field] ===
-          activityValueParams.activityData?.[field],
+          existingRecord.activityData?.[field].toLowerCase() ===
+          activityValueParams.activityData?.[field].toLowerCase(),
       );
 
       const errorBody = {

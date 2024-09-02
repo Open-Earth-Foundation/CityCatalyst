@@ -101,8 +101,6 @@ const ActivityModalBody = ({
     }
   };
 
-  console.log("errors", errors);
-
   return (
     <ModalBody p={6} px={12}>
       <form onSubmit={submit}>
@@ -136,7 +134,7 @@ const ActivityModalBody = ({
                 )}
                 {f.type === "text" && (
                   <FormControl className="w-full">
-                    <FormLabel className="truncate">{t(f.id)}ss</FormLabel>
+                    <FormLabel className="truncate">{t(f.id)}</FormLabel>
                     <InputGroup>
                       <Input
                         borderRadius="4px"

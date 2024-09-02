@@ -1,59 +1,88 @@
-import { useToast, Box, CloseButton, Text } from '@chakra-ui/react';
-import { Trans } from 'react-i18next';
+import { useToast, Box, CloseButton, Text } from "@chakra-ui/react";
+import { Trans } from "react-i18next";
 import {
   ManualInputValidationErrorCodes,
   ManualValidationErrorDetails,
-} from '@/lib/custom-errors.ts/manual-input-error';
-import { TFunction } from 'i18next';
-import { UseFormSetError, UseFormSetFocus } from 'react-hook-form';
-import { Inputs } from '@/components/Modals/activity-modal/activity-modal-body';
+} from "@/lib/custom-errors.ts/manual-input-error";
+import { TFunction } from "i18next";
+import { UseFormSetError, UseFormSetFocus } from "react-hook-form";
+import { Inputs } from "@/components/Modals/activity-modal/activity-modal-body";
 
-const useActivityValueValidation = ({t, setError, setFocus}: {
-    t: TFunction,
-    setError: UseFormSetError<Inputs>
-    setFocus: UseFormSetFocus<Inputs>
+const useActivityValueValidation = ({
+  t,
+  setError,
+  setFocus,
+}: {
+  t: TFunction;
+  setError: UseFormSetError<Inputs>;
+  setFocus: UseFormSetFocus<Inputs>;
 }) => {
   const toast = useToast();
 
-  const handleManalInputValidationError = (error: ManualValidationErrorDetails) => {
+  const handleManalInputValidationError = (
+    error: ManualValidationErrorDetails,
+  ) => {
     const { code, meta, targetFields } = error;
     targetFields.forEach((field) => {
       setError(`activity.${field}` as any, {
-        type: 'manual-input-validation',
-        message: 'manual-input-validation',
+        type: "manual-input-validation",
+        message: "manual-input-validation",
       });
       setFocus(`activity.${field}` as any);
     });
     let desciptionValues = null;
-    let key = '';
+    let key = "";
     switch (code) {
       case ManualInputValidationErrorCodes.EXCLUSIVE_CONFLICT_SECONDARY:
-        key = 'manual-input-error-exclusive-secondary';
+        key = "manual-input-error-exclusive-secondary";
         desciptionValues = {
           targetField: t(targetFields[0]),
           exclusiveFieldValue: t(meta?.exclusiveFieldValue as string),
         };
+        targetFields.forEach((field) => {
+          setError(`activity.${field}` as any, {
+            type: "manual-input-validation",
+            message: t("manual-input-error-exclusive-secondary-inline"),
+          });
+          setFocus(`activity.${field}` as any);
+        });
         break;
       case ManualInputValidationErrorCodes.EXCLUSIVE_CONFLICT:
-        key = 'manual-input-error-exclusive';
+        key = "manual-input-error-exclusive";
         desciptionValues = {
           targetField: t(targetFields[0]),
           exclusiveFieldValue: t(meta?.exclusiveFieldValue as string),
         };
+        targetFields.forEach((field) => {
+          setError(`activity.${field}` as any, {
+            type: "manual-input-validation",
+            message: t("manual-input-error-exclusive-inline", {
+              value: t(meta?.exclusiveFieldValue as string),
+            }),
+          });
+          setFocus(`activity.${field}` as any);
+        });
         break;
       case ManualInputValidationErrorCodes.UNIQUE_BY_CONFLICT:
-        key = 'manual-input-error-unique';
+        key = "manual-input-error-unique";
         desciptionValues = {
-          targetField: t(targetFields.join(', ')),
+          targetField: targetFields.map((f) => t(f)).join(", "),
         };
+        targetFields.forEach((field) => {
+          setError(`activity.${field}` as any, {
+            type: "manual-input-validation",
+            message: t("manual-input-error-unique-inline"),
+          });
+          setFocus(`activity.${field}` as any);
+        });
         break;
       case ManualInputValidationErrorCodes.REQUIRED_FIELD_MISSING:
-        key = 'manual-input-error-required';
+        key = "manual-input-error-required";
       default:
         break;
     }
     toast({
-      status: 'error',
+      status: "error",
       render: ({ onClose }) => (
         <Box
           w="600px"

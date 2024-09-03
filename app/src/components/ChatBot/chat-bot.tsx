@@ -277,14 +277,45 @@ export default function ChatBot({
     const runId = event.data.id;
     const toolCalls = event.data.required_action.submit_tool_outputs.tool_calls;
 
-    const toolCallOutputs = await Promise.all(
-      toolCalls.map(async (toolCall: any) => {
-        const result = await functionCallHandler(toolCall);
+    const timeoutDuration = 1000; // Adjust the timeout duration as needed
 
-        return { output: result, tool_call_id: toolCall.id };
-      }),
+    const createFallbackOutputs = (toolCalls: any) => {
+      return toolCalls.map((toolCall: any) => ({
+        output: "Timeout: No response received",
+        tool_call_id: toolCall.id,
+      }));
+    };
+
+    let timeoutId: NodeJS.Timeout | null = null;
+
+    // Create a timeout promise that resolves with a fallback object
+    const timeoutPromise = new Promise(
+      (resolve) =>
+        (timeoutId = setTimeout(() => {
+          handleError(
+            "timeout",
+            "Request has timed out. No input from tool calls received. Please try again.",
+          );
+          resolve(createFallbackOutputs(toolCalls));
+        }, timeoutDuration)),
     );
-    setInputDisabled(true);
+
+    const toolCallOutputs = await Promise.race([
+      Promise.all(
+        toolCalls.map(async (toolCall: any) => {
+          const result = await functionCallHandler(toolCall);
+          return { output: result, tool_call_id: toolCall.id };
+        }),
+      ).then((results) => {
+        // Clear the timeout if the tool calls finish first
+        if (timeoutId !== null) {
+          clearTimeout(timeoutId);
+        }
+        return results;
+      }),
+      timeoutPromise,
+    ]);
+
     submitActionResult(threadId, runId, toolCallOutputs);
   };
 

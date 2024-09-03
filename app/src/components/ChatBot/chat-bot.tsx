@@ -277,7 +277,7 @@ export default function ChatBot({
     const runId = event.data.id;
     const toolCalls = event.data.required_action.submit_tool_outputs.tool_calls;
 
-    const timeoutDuration = 1000; // Adjust the timeout duration as needed
+    const timeoutDuration = 60000; // Adjust the timeout duration as needed
 
     const createFallbackOutputs = (toolCalls: any) => {
       return toolCalls.map((toolCall: any) => ({

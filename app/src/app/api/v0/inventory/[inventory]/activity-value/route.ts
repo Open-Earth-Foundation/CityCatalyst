@@ -98,3 +98,30 @@ export const GET = apiHandler(async (req, { params, session }) => {
 
   return NextResponse.json({ data: activityValues });
 });
+
+export const DELETE = apiHandler(async (req, { params, session }) => {
+  const subSectorId = req.nextUrl.searchParams.get("subSectorId");
+
+  if (!subSectorId) {
+    throw new createHttpError.BadRequest(
+      "Query parameter subSectorId is required!",
+    );
+  }
+
+  const inventory = await UserService.findUserInventory(
+    params.inventory,
+    session,
+  );
+
+  const count = await ActivityService.deleteAllActivitiesInSubsector({
+    inventoryId: inventory.inventoryId,
+    subsectorId: subSectorId,
+  });
+
+  return NextResponse.json({
+    success: true,
+    data: {
+      deletedCount: count,
+    },
+  });
+});

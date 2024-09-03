@@ -31,6 +31,13 @@ import { TFunction } from "i18next";
 import React, { FC } from "react";
 import { MdMoreVert, MdModeEditOutline } from "react-icons/md";
 import { FiTrash2 } from "react-icons/fi";
+import {
+  DirectMeasure,
+  ExtraField,
+  findMethodology,
+  MANUAL_INPUT_HIERARCHY,
+  Methodology,
+} from "@/util/form-schema";
 
 interface ActivityAccordionProps {
   t: TFunction;
@@ -39,6 +46,7 @@ interface ActivityAccordionProps {
   methodologyId: string | undefined;
   onDeleteActivity: (activity: ActivityValue) => void;
   onEditActivity: (activity: ActivityValue) => void;
+  referenceNumber: string;
 }
 
 const ActivityAccordion: FC<ActivityAccordionProps> = ({
@@ -48,17 +56,29 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
   methodologyId,
   onDeleteActivity,
   onEditActivity,
+  referenceNumber,
 }) => {
   const methodologyName = getInputMethodology(methodologyId!);
+  const methodology = findMethodology(methodologyId!, referenceNumber);
+  let extraFields = (methodology as Methodology)?.activities?.[0]?.[
+    "extra-fields"
+  ] as ExtraField[];
+
   return (
     <Accordion defaultIndex={[0]} allowMultiple>
-      <AccordionItem>
+      <AccordionItem
+        backgroundColor="white"
+        borderWidth="1px"
+        padding="0px"
+        borderColor="border.overlay"
+      >
         <h2>
-          <AccordionButton>
+          <AccordionButton padding="0px">
             <Box
               display="flex"
               justifyContent="space-between"
               w="full"
+              padding="24px"
               alignItems="center"
             >
               <Box display="flex" flexDir="column" alignItems="start" gap="8px">
@@ -89,7 +109,10 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                 <IconButton
                   bg="none"
                   pos="relative"
-                  onClick={showActivityModal}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    showActivityModal();
+                  }}
                   _hover={{ bg: "none" }}
                   aria-label="add-activity"
                   icon={<AddIcon color="interactive.control" fontSize="24px" />}
@@ -98,16 +121,24 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
             </Box>
             <AccordionIcon
               color="interactive.control"
+              marginRight="24px"
               style={{ fontSize: "40px" }}
             />
           </AccordionButton>
         </h2>
-        <AccordionPanel pb={4}>
-          <TableContainer>
-            <Table variant="simple" borderWidth="1px" borderRadius="20px">
-              <Thead>
+        <AccordionPanel padding="0px" pb={4}>
+          <TableContainer px={0}>
+            <Table
+              variant="simple"
+              borderLeft="0px"
+              borderBottom="0px"
+              borderRight="0px"
+              borderWidth="1px"
+              borderRadius="20px"
+            >
+              <Thead backgroundColor="background.backgroundLight">
                 <Tr>
-                  <Th>{t("fuel-type")}</Th>
+                  {extraFields?.length! > 0 && <Th>{t(extraFields[0].id)}</Th>}
                   <Th>{t("data-quality")}</Th>
                   <Th>{t("fuel-consumption")}</Th>
                   <Th>{t("emissions")}</Th>
@@ -118,9 +149,11 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                 {activityData?.map((activity: any, i: number) => {
                   return (
                     <Tr key={i}>
-                      <Td className="truncate">
-                        {t(activity.activityData.fuel_type)}
-                      </Td>
+                      {extraFields?.length! > 0 && (
+                        <Td>
+                          {t(activity?.activityData?.[extraFields[0].id])}
+                        </Td>
+                      )}
                       <Td>
                         <Tag
                           size="lg"

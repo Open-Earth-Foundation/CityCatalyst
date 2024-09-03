@@ -219,17 +219,6 @@ const ActivityTab: FC<ActivityTabProps> = ({
     onDeleteActivityModalClose();
   };
 
-  // const deleteAllActivities = () => {
-  //   if (areActivitiesLoading || userActivities?.length === 0) {
-  //     onDeleteActivitiesModalClose();
-  //     return;
-  //   }
-
-  //   for (const activity of userActivities) {
-  //     deleteActivity({ inventoryId, activityValueId: activity.id });
-  //   }
-
-  //   onDeleteActivitiesModalClose();
   function handleCardSelect(
     disabled: boolean | undefined,
     inputRequired: string[] | undefined,
@@ -401,6 +390,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                         "direct-measure" ? (
                           <DirectMeasureTable
                             t={t}
+                            referenceNumber={refNumberWithScope}
                             activityData={activityValues}
                             onDeleteActivity={onDeleteActivity}
                             onEditActivity={onEditActivity}

@@ -398,6 +398,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                         ) : (
                           <ActivityAccordion
                             t={t}
+                            referenceNumber={refNumberWithScope}
                             activityData={activityValues}
                             showActivityModal={onAddActivityModalOpen}
                             methodologyId={methodology?.id}

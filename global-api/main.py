@@ -17,6 +17,7 @@ from routes.city_locode_endpoint_ghgrp import api_router as ghgrp_city_locode_ro
 from routes.region_code_endpoint import api_router as region_code_endpoint_route
 from routes.country_code_endpoint import api_router as country_code_endpoint_route
 from routes.citywide_emission_endpoint import api_router as citywide_route
+from routes.v1_emissions import api_router as actor_emissions_route
 
 """
 Logger instance initialized and configured
@@ -139,6 +140,11 @@ app.include_router(
 app.include_router(
     region_code_endpoint_route,
     tags=["Region"],
+)
+
+app.include_router(
+    actor_emissions_route,
+    tags=["Emissions"],
 )
 
 """

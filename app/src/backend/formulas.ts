@@ -1,6 +1,8 @@
 import type { ActivityValue } from "@/models/ActivityValue";
 import type { Gas } from "./CalculationService";
 import createHttpError from "http-errors";
+import { GasValueCreationAttributes } from "@/models/GasValue";
+import { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
 
 const GAS_NAMES = ["CO2", "N2O", "CH4"];
 const METHANE_CORRECTION_FACTORS: Record<string, number> = {
@@ -20,7 +22,14 @@ const WOOD_FACTOR = 0.43;
 const TEXTILES_FACTOR = 0.24;
 const INDUSTRIAL_WASTE_FACTOR = 0.15;
 
-export function handleVkt1Formula(activityValue: ActivityValue): Gas[] {
+export function handleVkt1Formula(
+  activityValue: ActivityValue,
+  gasValues: (Omit<GasValueCreationAttributes, "id"> & {
+    emissionsFactor?:
+      | EmissionsFactorAttributes
+      | Omit<EmissionsFactorAttributes, "id">;
+  })[],
+): Gas[] {
   const data = activityValue.activityData;
   if (!data) {
     throw new createHttpError.BadRequest(
@@ -28,7 +37,7 @@ export function handleVkt1Formula(activityValue: ActivityValue): Gas[] {
     );
   }
 
-  const gases = activityValue.gasValues.map((gasValue) => {
+  const gases = gasValues?.map((gasValue) => {
     if (!gasValue.gas) {
       throw new createHttpError.BadRequest(
         "Activity has a GasValue with no `gas` name",
@@ -37,7 +46,7 @@ export function handleVkt1Formula(activityValue: ActivityValue): Gas[] {
     const emissionsFactor = gasValue.emissionsFactor;
     if (emissionsFactor?.emissionsPerActivity == null) {
       throw new createHttpError.BadRequest(
-        `Emissions factor ${emissionsFactor.id} has no emissions per activity`,
+        `Emissions factor ${emissionsFactor?.gas} has no emissions per activity`,
       );
     }
     const emissions =
@@ -118,13 +127,18 @@ export function handleMethaneCommitmentFormula(
 
 export function handleActivityAmountTimesEmissionsFactorFormula(
   activityValue: ActivityValue,
+  gasValues: (Omit<GasValueCreationAttributes, "id"> & {
+    emissionsFactor?:
+      | EmissionsFactorAttributes
+      | Omit<EmissionsFactorAttributes, "id">;
+  })[],
 ): Gas[] {
   // TODO add actvityAmount column to ActivityValue
   // const activityAmount = activityValue.activityAmount || 0;
   // TODO perform these calculations using BigInt/ BigNumber?
   const data = activityValue.activityData;
   const activityAmount = data ? data["activity_amount"] || 0 : 0;
-  const gases = activityValue.gasValues.map((gasValue) => {
+  const gases = gasValues?.map((gasValue) => {
     const emissionsFactor = gasValue.emissionsFactor;
     if (emissionsFactor == null) {
       throw new createHttpError.BadRequest(
@@ -133,7 +147,8 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
     }
     if (emissionsFactor.emissionsPerActivity == null) {
       throw new createHttpError.BadRequest(
-        `Emissions factor ${emissionsFactor.id} has no emissions per activity`,
+        // TODO resolve type issues with extracting id
+        `Emissions factor ${emissionsFactor?.gas} has no emissions per activity`,
       );
     }
     // this rounds/ truncates!

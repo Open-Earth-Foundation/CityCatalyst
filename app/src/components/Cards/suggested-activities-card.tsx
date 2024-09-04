@@ -7,6 +7,8 @@ interface SuggestedActivityCardProps {
   t: TFunction;
   id: string;
   isSelected: boolean;
+  prefillKey: string;
+  prefillValue: string;
   onActivityAdded?: () => void;
 }
 
@@ -15,6 +17,8 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
   isSelected,
   id,
   onActivityAdded,
+  prefillValue,
+  prefillKey
 }) => {
   const themeColors = useTheme().colors;
   return (
@@ -72,7 +76,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
           fontWeight="normal"
           color="interactive.control"
         >
-          {t(id + "-description")}
+          {t(prefillKey)}
         </Text>
         <Text
           letterSpacing="wide"
@@ -80,7 +84,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
           fontWeight="medium"
           fontFamily="heading"
         >
-          {t(id)}
+          {t(prefillValue)}
         </Text>
       </Box>
       <Box display="flex" alignItems="center" w="full" justifyContent="end">

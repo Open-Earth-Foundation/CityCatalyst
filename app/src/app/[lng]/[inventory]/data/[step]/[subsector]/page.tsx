@@ -275,7 +275,7 @@ function SubSectorPage({
                   ) : subSectorData?.referenceNumber != undefined ? (
                     subSectorData?.referenceNumber +
                     " " +
-                    subSectorData?.subsectorName
+                    t(toKebabCase(subSectorData?.subsectorName))
                   ) : (
                     ""
                   )}

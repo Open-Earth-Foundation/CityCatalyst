@@ -800,5 +800,6 @@
   "manual-input-error-unique": "Each Activity Value must have a unique combination of <strong>{{targetField}}</strong>",
   "manual-input-error-unique-inline": "This combination of values already exists",
   "manual-input-error-required": "Some required fields are missing",
-  "manul-input-error-required-inline": "This value is required"
+  "manul-input-error-required-inline": "This value is required",
+  "passenger-number-or-cargo-weight": "Number of passengers or weight of cargo"
 }

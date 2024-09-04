@@ -2257,6 +2257,7 @@
       },
       {
         "id": "geographic-railways-methodology",
+        "implemented": false,
         "inputRequired": [
           "total-distance-travelled-in-in-boundary-trips",
           "fuel-intensity"
@@ -2264,15 +2265,9 @@
         "activities": [
           {
             "id": "geographic-railways-activity",
-            "unique-by": [
-              "railways-vehicle-type",
-              "railways-fuel-type"
-            ],
+            "unique-by": ["railways-vehicle-type", "railways-fuel-type"],
             "activity-title": "total-distance-travelled-in-boundary",
-            "units": [
-              "units-kilometers",
-              "units-miles"
-            ],
+            "units": ["units-kilometers", "units-miles"],
             "extra-fields": [
               {
                 "id": "railways-vehicle-type",
@@ -2341,7 +2336,11 @@
       },
       {
         "id": "movement-driver-railways-methodology",
-        "implemented": false
+        "implemented": false,
+        "inputRequired": [
+          "total-fuel-consumed",
+          "passenger-number-or-cargo-weight"
+        ]
       }
     ],
     "directMeasure": {

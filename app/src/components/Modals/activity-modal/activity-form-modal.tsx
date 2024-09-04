@@ -26,7 +26,9 @@ import { Inputs } from "./activity-modal-body";
 import { ActivityValue } from "@/models/ActivityValue";
 import { InventoryValue } from "@/models/InventoryValue";
 import useActivityValueValidation from "@/hooks/activity-value-form/use-activity-validation";
-import useActivityForm from "@/hooks/activity-value-form/use-activity-form";
+import useActivityForm, {
+  generateDefaultActivityFormValues,
+} from "@/hooks/activity-value-form/use-activity-form";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 interface AddActivityModalProps {
@@ -65,6 +67,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     useActivityForm({
       targetActivityValue,
       selectedActivity,
+      methodologyName: methodology?.id,
     });
 
   let fields: ExtraField[] = [];
@@ -129,7 +132,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         const gasObject = {
           ...gasValue,
           gas: gasValue.gas as string,
-          factor: data[`${gasValue.gas}EmissionFactor`],
+          factor: parseInt(data[`${gasValue.gas}EmissionFactor`]),
           unit: gasValue.emissionsFactor.units as string,
         };
         gasArray.push(gasObject);
@@ -143,7 +146,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       const gasUnitKey = `${gas}EmissionFactorUnit`;
       const gasObject = {
         gas: gas,
-        factor: data[gasFactorKey],
+        factor: parseInt(data[gasFactorKey]),
         unit: data[gasUnitKey],
       };
 
@@ -168,13 +171,18 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
 
     // so the issue here is that we need to have one inventoryValue for
     const requestData = {
-      activityData: {
-        co2_amount: gasValues[1].factor,
-        ch4_amount: gasValues[0].factor,
-        n2o_amount: gasValues[2].factor,
-        ...values,
+      activityData: methodology?.id.includes("direct-measure")
+        ? {
+            co2_amount: gasValues[1].factor,
+            ch4_amount: gasValues[0].factor,
+            n2o_amount: gasValues[2].factor,
+            ...values,
+          }
+        : { ...values },
+      metadata: {
+        emissionFactorType: activity.emissionFactorType,
+        totalFuelConsumption: activity.totalFuelConsumption,
       },
-      metadata: {},
       ...(inventoryValue ? { inventoryValueId: inventoryValue.id } : {}),
       ...(!inventoryValue
         ? {
@@ -197,8 +205,9 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         gasAmount: factor,
         emissionsFactor: {
           gas,
-          unit,
+          units: unit ?? "",
           gpcReferenceNumber: referenceNumber,
+          emissionsPerActivity: factor,
         },
       })),
     };
@@ -259,23 +268,9 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     onClose();
     resetSelectedActivityValue();
     reset({
-      activity: {
-        activityType: selectedActivity?.id,
-        fuelType: "",
-        dataQuality: "",
-        sourceReference: "",
-        CH4EmissionFactor: 0,
-        CO2EmissionFactor: 0,
-        N2OEmissionFactor: 0,
-        activityDataAmount: 0,
-        activityDataUnit: null,
-        emissionFactorType: "",
-        totalFuelConsumption: "",
-        totalFuelConsumptionUnits: "",
-        co2EmissionFactorUnit: "",
-        n2oEmissionFactorUnit: "",
-        ch4EmissionFactorUnit: "",
-      },
+      activity: generateDefaultActivityFormValues(
+        selectedActivity as SuggestedActivity,
+      ),
     });
   };
 
@@ -284,9 +279,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       <Modal
         blockScrollOnMount={false}
         isOpen={isOpen}
-        onClose={() => {
-          closeModalFunc();
-        }}
+        onClose={closeModalFunc}
       >
         <ModalOverlay />
         <ModalContent

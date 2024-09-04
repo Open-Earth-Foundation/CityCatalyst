@@ -3,7 +3,7 @@ import { Trans } from "react-i18next";
 import {
   ManualInputValidationErrorCodes,
   ManualValidationErrorDetails,
-} from "@/lib/custom-errors.ts/manual-input-error";
+} from "@/lib/custom-errors/manual-input-error";
 import { TFunction } from "i18next";
 import { UseFormSetError, UseFormSetFocus } from "react-hook-form";
 import { Inputs } from "@/components/Modals/activity-modal/activity-modal-body";

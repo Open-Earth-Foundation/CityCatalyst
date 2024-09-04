@@ -19,7 +19,7 @@ import { useState } from "react";
 import BuildingTypeSelectInput from "../../building-select-input";
 import { InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
 import { TFunction } from "i18next";
-import { FieldErrors, UseFormRegister } from "react-hook-form";
+import { UseFormRegister } from "react-hook-form";
 import type {
   DirectMeasureData,
   SubcategoryData,
@@ -278,6 +278,7 @@ const ActivityModalBody = ({
               <FormControl
                 isInvalid={!!resolve(prefix + "activityDataAmount", errors)}
               >
+                {/*TODO dynamically render required fields*/}
                 <FormLabel className="truncate">{fields?.[2].id}</FormLabel>
                 <InputGroup>
                   <NumberInput defaultValue={0} w="full">
@@ -316,6 +317,7 @@ const ActivityModalBody = ({
                     pr={0}
                     bgColor="base.light"
                     h="48px"
+                    w="100px"
                     shadow="1dp"
                   >
                     <Select
@@ -448,12 +450,13 @@ const ActivityModalBody = ({
                     }
                     color="content.tertiary"
                     h="48px"
+                    fontSize="14px"
                     shadow="1dp"
                     pos="relative"
                     zIndex={10}
                     {...register("activity.co2EmissionFactorUnit")}
                   >
-                    {""}
+                    C02/{""}
                   </InputRightAddon>
                 </InputGroup>
               </FormControl>
@@ -494,12 +497,13 @@ const ActivityModalBody = ({
                     }
                     color="content.tertiary"
                     h="48px"
+                    fontSize="14px"
                     shadow="1dp"
                     pos="relative"
                     zIndex={10}
                     {...register("activity.n2oEmissionFactorUnit")}
                   >
-                    {""}
+                    N2O/{""}
                   </InputRightAddon>
                 </InputGroup>
               </FormControl>
@@ -540,12 +544,14 @@ const ActivityModalBody = ({
                     }
                     color="content.tertiary"
                     h="48px"
+                    fontSize="14px"
                     shadow="1dp"
                     pos="relative"
                     zIndex={10}
                     {...register("activity.ch4EmissionFactorUnit")}
                   >
-                    {""}
+                    CH4/{""}
+                    {/*  TODO input the right units*/}
                   </InputRightAddon>
                 </InputGroup>
               </FormControl>

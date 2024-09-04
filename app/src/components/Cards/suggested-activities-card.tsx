@@ -76,7 +76,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
           fontWeight="normal"
           color="interactive.control"
         >
-          {t(prefillValue)}
+          {t(prefillKey)}
         </Text>
         <Text
           letterSpacing="wide"
@@ -84,7 +84,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
           fontWeight="medium"
           fontFamily="heading"
         >
-          {t(prefillKey)}
+          {t(prefillValue)}
         </Text>
       </Box>
       <Box display="flex" alignItems="center" w="full" justifyContent="end">

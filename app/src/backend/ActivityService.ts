@@ -18,6 +18,7 @@ import type {
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 import type { Transaction } from "sequelize";
+import { Op } from "sequelize";
 
 type GasValueInput = Omit<GasValueCreationAttributes, "id"> & {
   emissionsFactor?: Omit<EmissionsFactorAttributes, "id">;
@@ -358,6 +359,7 @@ export default class ActivityService {
               {
                 ...gasValue,
                 id: randomUUID(),
+                emissionsFactorId: emissionsFactor?.id,
                 activityValueId: activityValue.id,
                 inventoryValueId: activityValue?.inventoryValueId,
               },
@@ -369,5 +371,36 @@ export default class ActivityService {
         return activityValue;
       },
     );
+  }
+
+  public static async deleteAllActivitiesInSubsector({
+    subsectorId,
+    inventoryId,
+  }: {
+    subsectorId: string;
+    inventoryId: string;
+  }): Promise<number> {
+    const inventoryValues = await db.models.InventoryValue.findAll({
+      where: {
+        inventoryId,
+        subSectorId: subsectorId,
+      },
+    });
+
+    if (!inventoryValues) {
+      throw new createHttpError.NotFound(
+        "Inventory values not found for subsector",
+      );
+    }
+
+    const count = await db.models.ActivityValue.destroy({
+      where: {
+        inventoryValueId: {
+          [Op.in]: inventoryValues.map((iv) => iv.id),
+        },
+      },
+    });
+
+    return count;
   }
 }

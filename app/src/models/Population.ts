@@ -1,11 +1,14 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import type { City, CityId } from "./City";
-import type { DataSource, DataSourceId } from "./DataSource";
+import type {
+  DataSourceI18n as DataSource,
+  DataSourceId,
+} from "./DataSourceI18n";
 
 export interface PopulationAttributes {
   cityId: string;
-  population?: number;
+  population?: number | null;
   countryPopulation?: number;
   regionPopulation?: number;
   year: number;
@@ -33,7 +36,7 @@ export class Population
   implements PopulationAttributes
 {
   cityId!: string;
-  population?: number;
+  population?: number | null;
   countryPopulation?: number;
   regionPopulation?: number;
   year!: number;

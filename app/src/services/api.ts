@@ -19,6 +19,7 @@ import type {
   UserFileResponse,
   EmissionsFactorResponse,
   UserInviteResponse,
+  RequiredScopesResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -56,6 +57,11 @@ export const api = createApi({
     getInventory: builder.query<InventoryResponse, string>({
       query: (inventoryId) => `inventory/${inventoryId}`,
       transformResponse: (response: { data: InventoryResponse }) =>
+        response.data,
+    }),
+    getRequiredScopes: builder.query<RequiredScopesResponse, string>({
+      query: (sectorId) => `sector/${sectorId}/required-scopes`,
+      transformResponse: (response: { data: RequiredScopesResponse }) =>
         response.data,
     }),
     getInventoryProgress: builder.query<InventoryProgressResponse, string>({
@@ -140,6 +146,21 @@ export const api = createApi({
         url: `/inventory/${inventoryId}/value`,
         method: "GET",
         params: { subCategoryIds: subCategoryIds.join(",") },
+      }),
+      transformResponse: (response: { data: InventoryValueResponse[] }) =>
+        response.data,
+      providesTags: ["InventoryValue"],
+    }),
+    getInventoryValuesBySubsector: builder.query<
+      InventoryValueResponse[],
+      {
+        inventoryId: string;
+        subSectorId: string;
+      }
+    >({
+      query: ({ inventoryId, subSectorId }) => ({
+        url: `/inventory/${inventoryId}/value/subsector/${subSectorId}`,
+        method: "GET",
       }),
       transformResponse: (response: { data: InventoryValueResponse[] }) =>
         response.data,
@@ -357,10 +378,21 @@ export const api = createApi({
         response.data,
       invalidatesTags: ["FileData"],
     }),
-    getEmissionsFactors: builder.query<EmissionsFactorResponse, void>({
-      query: () => `/emissions-factor`,
-      transformResponse: (response: { data: EmissionsFactorResponse }) =>
-        response.data,
+    getEmissionsFactors: builder.query<
+      EmissionsFactorResponse,
+      {
+        methodologyId: string;
+        inventoryId: string;
+        referenceNumber: string;
+      }
+    >({
+      query: (params) => {
+        const queryString = new URLSearchParams(params).toString();
+        return `/emissions-factor${queryString ? `?${queryString}` : ""}`;
+      },
+      transformResponse: (response: { data: EmissionsFactorResponse }) => {
+        return response.data;
+      },
     }),
     disconnectThirdPartyData: builder.mutation({
       query: ({ inventoryId, subCategoryId }) => ({
@@ -439,10 +471,10 @@ export const api = createApi({
       query: (data) => ({
         method: "POST",
         url: `/inventory/${data.inventoryId}/activity-value`,
-        body: data.data,
+        body: data.requestData,
       }),
       transformResponse: (response: any) => response.data,
-      invalidatesTags: ["ActivityValue"],
+      invalidatesTags: ["ActivityValue", "InventoryValue"],
     }),
     getActivityValue: builder.query({
       query: (data: { inventoryId: string; valueId: string }) => ({
@@ -468,6 +500,17 @@ export const api = createApi({
       }),
       transformResponse: (response: any) => response.data,
       invalidatesTags: ["ActivityValue"],
+    }),
+    deleteAllActivityValues: builder.mutation({
+      query: (data: { inventoryId: string; subSectorId: string }) => ({
+        method: "DELETE",
+        url: `/inventory/${data.inventoryId}/activity-value`,
+        params: {
+          subSectorId: data.subSectorId,
+        },
+      }),
+      transformResponse: (response: any) => response.data,
+      invalidatesTags: ["ActivityValue", "InventoryValue"],
     }),
     createThreadId: builder.mutation({
       query: (data: { inventoryId: string; content: string }) => ({
@@ -539,5 +582,9 @@ export const {
   useMockDataQuery,
   useConnectToCDPMutation,
   useCreateThreadIdMutation,
+  useUpdateActivityValueMutation,
+  useDeleteAllActivityValuesMutation,
+  useDeleteActivityValueMutation,
+  useGetInventoryValuesBySubsectorQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

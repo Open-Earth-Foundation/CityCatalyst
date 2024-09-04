@@ -1,7 +1,7 @@
 import DataSourceService from "@/backend/DataSourceService";
 import { db } from "@/models";
 import { City } from "@/models/City";
-import { DataSource } from "@/models/DataSource";
+import { DataSourceI18n as DataSource } from "@/models/DataSourceI18n";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";

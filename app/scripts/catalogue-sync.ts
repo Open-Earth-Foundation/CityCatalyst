@@ -1,5 +1,5 @@
 import { db } from "@/models";
-import { DataSourceCreationAttributes } from "@/models/DataSource";
+import { DataSourceI18nCreationAttributes as DataSourceCreationAttributes } from "@/models/DataSourceI18n";
 import env from "@next/env";
 import { randomUUID } from "node:crypto";
 import { logger } from "@/services/logger";
@@ -7,10 +7,10 @@ import { logger } from "@/services/logger";
 interface Source {
   datasource_id: string;
   datasource_name: string;
-  dataset_name: string;
+  dataset_name: Record<string, string>;
   source_type: string;
   dataset_url: string;
-  dataset_description: string;
+  dataset_description: Record<string, string>;
   access_type: string;
   geographical_location: string;
   start_year: number;
@@ -24,8 +24,8 @@ interface Source {
   notes: string;
   units: string;
   methodology_url: string;
-  methodology_description: string;
-  transformation_description: string;
+  methodology_description: Record<string, string>;
+  transformation_description: Record<string, string>;
   publisher_id: string;
   retrieval_method: string;
   api_endpoint: string;
@@ -68,10 +68,8 @@ async function syncDataCatalogue() {
     });
   }
   const previousUpdate = catalogue.lastUpdate?.getTime() || 0;
-
-  const lastUpdateResponse = await fetch(
-    `${GLOBAL_API_URL}/api/v0/catalogue/last-update`,
-  );
+  const catalogUrl = `${GLOBAL_API_URL}/api/v0/catalogue`;
+  const lastUpdateResponse = await fetch(`${catalogUrl}/last-update`);
   const lastUpdateData = await lastUpdateResponse.json();
   if (!lastUpdateData?.last_update) {
     throw new Error(
@@ -90,8 +88,7 @@ async function syncDataCatalogue() {
     await db.sequelize?.close();
     return;
   }
-
-  const dataSourcesResponse = await fetch(`${GLOBAL_API_URL}/api/v0/catalogue`);
+  const dataSourcesResponse = await fetch(`${catalogUrl}/i18n`);
   const dataSourcesData = await dataSourcesResponse.json();
   if (!dataSourcesData?.datasources) {
     throw new Error(

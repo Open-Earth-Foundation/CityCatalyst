@@ -13,7 +13,6 @@ import {
   Icon,
   Text,
 } from "@chakra-ui/react";
-import { MdArrowForward } from "react-icons/md";
 import NextLink from "next/link";
 import { BsTruck } from "react-icons/bs";
 import { PiTrashLight } from "react-icons/pi";
@@ -23,6 +22,8 @@ import { SegmentedProgress } from "../SegmentedProgress";
 import { formatPercent } from "@/util/helpers";
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
+import { AddIcon } from "@chakra-ui/icons";
+import { api } from "@/services/api";
 
 export function SectorCard({
   sectorProgress,
@@ -35,8 +36,14 @@ export function SectorCard({
   t: TFunction;
   inventory: string | null;
 }) {
+  const { data: requiredScopes, isLoading: isRequiredScopesLoading } =
+    api.useGetRequiredScopesQuery(sectorProgress.sector.sectorId!);
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const toggleAccordion = () => setAccordionOpen(!isAccordionOpen);
+
+  const sortedRequiredScopes = Array.from(requiredScopes?.requiredScopes || [])
+    .sort()
+    ?.join(", ");
 
   let totalProgress = 0,
     thirdPartyProgress = 0,
@@ -115,7 +122,7 @@ export function SectorCard({
                 className="py-[16px]"
               >
                 <Trans t={t}>scope-required-for-gpc</Trans>:{" "}
-                {sectorScopes?.join(", ") || "none"}
+                {sortedRequiredScopes || "none"}
               </Heading>
             </Box>
             <Box>
@@ -131,10 +138,10 @@ export function SectorCard({
                   color="brand.secondary"
                   ml={2}
                 >
+                  <AddIcon />
                   <Text fontFamily="heading" fontSize="button.md">
                     <Trans t={t}>add-data-to-sector</Trans>
                   </Text>
-                  <MdArrowForward size={24} />
                 </Button>
               </NextLink>
             </Box>

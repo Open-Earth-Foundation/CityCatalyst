@@ -71,7 +71,6 @@ import {
 } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { SourceDrawer } from "./SourceDrawer";
-import { SubsectorDrawer } from "./SubsectorDrawer";
 import type {
   DataSourceWithRelations,
   DataStep,
@@ -81,6 +80,7 @@ import type {
 import AddFileDataModal from "@/components/Modals/add-file-data-modal";
 import { InventoryValueAttributes } from "@/models/InventoryValue";
 import { motion } from "framer-motion";
+import { getTranslationFromDict } from "@/i18n";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -769,7 +769,7 @@ export default function AddDataSteps({
       </Box>
       <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
         {/*** Manual data entry section for subsectors ***/}
-        <Card mb={12} mt="350px">
+        <Card mb={12} mt="350px" shadow="none">
           <Heading size="lg" mb={2}>
             {t("add-data-heading")}
           </Heading>
@@ -792,10 +792,11 @@ export default function AddDataSteps({
               currentStep.subSectors.map(
                 (subSector: SubSectorWithRelations) => (
                   <Card
+                    data-testid="subsector-card"
                     maxHeight="120px"
                     height="120px"
                     w="full"
-                    className="hover:drop-shadow-xl transition-shadow"
+                    className="shadow-none border border-overlay hover:drop-shadow-xl !duration-300 transition-shadow"
                     onClick={() => {
                       router.push(
                         `/${inventory}/data/${getCurrentStepParam(currentStep.title)}/${subSector.subsectorId}`,
@@ -837,7 +838,12 @@ export default function AddDataSteps({
                         />
                       )}
                       <Stack w="full">
-                        <Heading size="xs" noOfLines={3} maxWidth="200px">
+                        <Heading
+                          size="xs"
+                          noOfLines={2}
+                          maxWidth="200px"
+                          title={t(nameToI18NKey(subSector.subsectorName!))}
+                        >
                           {t(nameToI18NKey(subSector.subsectorName!))}
                         </Heading>
                         {subSector.scope && (
@@ -864,7 +870,7 @@ export default function AddDataSteps({
           </SimpleGrid>
         </Card>
         {/*** Third party data source section ***/}
-        <Card mb={12}>
+        <Card mb={12} shadow="none">
           <Flex
             align="center"
             verticalAlign="center"
@@ -936,7 +942,7 @@ export default function AddDataSteps({
                       {/* TODO add icon to DataSource */}
                       <Icon as={MdHomeWork} boxSize={9} mb={6} />
                       <Heading size="sm" noOfLines={2} minHeight={10}>
-                        {source.datasetName}
+                        {getTranslationFromDict(source.datasetName)}
                       </Heading>
                       <Flex direction="row" my={4} wrap="wrap" gap={2}>
                         <Tag>
@@ -968,8 +974,8 @@ export default function AddDataSteps({
                         noOfLines={5}
                         minHeight={120}
                       >
-                        {source.datasetDescription ||
-                          source.methodologyDescription}
+                        {getTranslationFromDict(source.datasetDescription) ||
+                          getTranslationFromDict(source.methodologyDescription)}
                       </Text>
                       <Link
                         className="underline"
@@ -1169,15 +1175,6 @@ export default function AddDataSteps({
           onClose={onSourceDrawerClose}
           onConnectClick={() => onConnectClick(selectedSource!)}
           isConnectLoading={isConnectDataSourceLoading}
-          t={t}
-        />
-        <SubsectorDrawer
-          subSector={selectedSubsector}
-          sectorName={currentStep.title}
-          inventoryId={inventoryProgress?.inventory.inventoryId}
-          isOpen={isSubsectorDrawerOpen}
-          onClose={onSubsectorDrawerClose}
-          onSave={onSubsectorSave}
           t={t}
         />
       </div>

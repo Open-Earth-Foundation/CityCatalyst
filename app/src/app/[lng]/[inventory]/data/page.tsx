@@ -31,6 +31,7 @@ export default function AddDataIntro({
   const SECTORCARD_DATA = [
     {
       sectorName: t("stationary-energy"),
+      testId: "stationary-energy-sector-card",
       descriptionText: t("stationary-energy-details"),
       scope: t("stationary-energy-scope"),
       buttonText: "Add Data",
@@ -39,6 +40,7 @@ export default function AddDataIntro({
     },
     {
       sectorName: t("transportation"),
+      testId: "transportation-sector-card",
       descriptionText: t("transportation-details"),
       scope: t("transportation-scope"),
       buttonText: "Add Data",
@@ -47,6 +49,7 @@ export default function AddDataIntro({
     },
     {
       sectorName: t("waste"),
+      testId: "waste-sector-card",
       descriptionText: t("waste-details"),
       scope: t("waste-scope"),
       buttonText: "Add Data",
@@ -75,6 +78,7 @@ export default function AddDataIntro({
         fontSize="32px"
         lineHeight="40px"
         fontWeight="semibold"
+        data-testid="add-data-step-title"
         mb={6}
         mt={12}
         className="w-full"
@@ -112,6 +116,7 @@ export default function AddDataIntro({
           {SECTORCARD_DATA.map(
             ({
               sectorName,
+              testId,
               descriptionText,
               scope,
               icon,
@@ -119,6 +124,7 @@ export default function AddDataIntro({
               step,
             }) => (
               <AddDataCard
+                testId={testId}
                 key={sectorName}
                 title={sectorName}
                 description={descriptionText}

@@ -11,7 +11,7 @@ import { CreateInventoryRequest } from "@/util/validation";
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, beforeEach, describe, it } from "node:test";
-import { Op } from "sequelize";
+import { literal, Op } from "sequelize";
 import { createRequest, mockRequest, setupTests, testUserID } from "../helpers";
 import { SubSector, SubSectorAttributes } from "@/models/SubSector";
 import { City } from "@/models/City";
@@ -72,7 +72,9 @@ describe("Inventory API", () => {
       where: { inventoryName },
     });
     await db.models.DataSource.destroy({
-      where: { datasetName: { [Op.like]: "XX_INVENTORY_TEST_%" } },
+      where: {
+        [Op.or]: [literal(`dataset_name ->> 'en' LIKE 'XX_INVENTORY_TEST_%'`)],
+      },
     });
     await db.models.Sector.destroy({
       where: { sectorName: { [Op.like]: "XX_INVENTORY_TEST%" } },
@@ -156,6 +158,11 @@ describe("Inventory API", () => {
     const req = mockRequest(inventoryData);
     const res = await createInventory(req, {
       params: { city: city.cityId },
+    });
+    await db.models.Population.create({
+      cityId: city.cityId!,
+      year: 2020,
+      population: 1000,
     });
     assert.equal(res.status, 200);
     const { data } = await res.json();
@@ -292,12 +299,14 @@ describe("Inventory API", () => {
     const userSource = await db.models.DataSource.create({
       datasourceId: randomUUID(),
       sourceType: "user",
-      datasetName: "XX_INVENTORY_TEST_USER",
+      datasetName: {
+        en: "XX_INVENTORY_TEST_USE",
+      },
     });
     const thirdPartySource = await db.models.DataSource.create({
       datasourceId: randomUUID(),
       sourceType: "third_party",
-      datasetName: "XX_INVENTORY_TEST_THIRD_PARTY",
+      datasetName: { en: "XX_INVENTORY_TEST_THIRD_PARTY" },
     });
     const sources = [userSource, thirdPartySource, null];
 

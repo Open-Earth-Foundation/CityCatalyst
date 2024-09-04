@@ -1,10 +1,14 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
-import type { DataSource, DataSourceId } from "./DataSource";
+import type {
+  DataSourceI18n as DataSource,
+  DataSourceId,
+} from "./DataSourceI18n";
 import type {
   DataSourceMethodology,
   DataSourceMethodologyId,
 } from "./DataSourceMethodology";
+import { EmissionsFactor, EmissionsFactorId } from "./EmissionsFactor";
 
 export interface MethodologyAttributes {
   methodologyId: string;
@@ -113,6 +117,19 @@ export class Methodology
     DataSourceMethodologyId
   >;
   countDataSourceMethodologies!: Sequelize.HasManyCountAssociationsMixin;
+
+  // EmissionsFactor belongsTo Methodology via methodologyId
+  getEmissionsFactors!: Sequelize.HasManyGetAssociationsMixin<EmissionsFactor>;
+  addEmissionsFactor!: Sequelize.HasManyAddAssociationMixin<
+    EmissionsFactor,
+    number
+  >;
+  hasEmissionsFactor!: Sequelize.HasManyHasAssociationMixin<
+    EmissionsFactor,
+    number
+  >;
+  countEmissionsFactors!: Sequelize.HasManyCountAssociationsMixin;
+  createEmissionsFactor!: Sequelize.HasManyCreateAssociationMixin<EmissionsFactor>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Methodology {
     return Methodology.init(

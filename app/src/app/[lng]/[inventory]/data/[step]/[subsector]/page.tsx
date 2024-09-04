@@ -5,7 +5,7 @@ import LoadingState from "@/components/loading-state";
 import { useTranslation } from "@/i18n/client";
 import { RootState } from "@/lib/store";
 import { SubSectorAttributes } from "@/models/SubSector";
-import { api } from "@/services/api";
+import { api, useGetInventoryValuesBySubsectorQuery } from "@/services/api";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
 import { ArrowBackIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import {
@@ -37,9 +37,6 @@ function SubSectorPage({
 }) {
   const router = useRouter();
   const { t } = useTranslation(lng, "data");
-
-  const { data: inventory, isLoading: isInventoryLoading } =
-    api.useGetInventoryQuery(inventoryId);
 
   const {
     isOpen: isDeleteActivitiesModalOpen,
@@ -132,7 +129,6 @@ function SubSectorPage({
     };
   }, []);
 
-  const MotionBox = motion(Box);
   const MotionTabList = motion(TabList);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -149,6 +145,19 @@ function SubSectorPage({
   };
   const scrollResizeHeaderThreshold = 50;
   const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
+
+  const { data: activityData, isLoading: isActivityDataLoading } =
+    api.useGetActivityValuesQuery({
+      inventoryId,
+      subSectorId: subSectorData?.subsectorId,
+    });
+
+  // fetch the inventoryValue for the selected scope
+  const { data: inventoryValues, isLoading: isInventoryValueLoading } =
+    useGetInventoryValuesBySubsectorQuery({
+      inventoryId,
+      subSectorId: subSectorData?.subsectorId,
+    });
 
   return (
     <>
@@ -186,7 +195,7 @@ function SubSectorPage({
               >
                 <BreadcrumbItem>
                   <BreadcrumbLink
-                    href={`/${inventory}/data`}
+                    href={`/${inventoryId}/data`}
                     color="content.tertiary"
                   >
                     {t("all-sectors")}
@@ -194,7 +203,7 @@ function SubSectorPage({
                 </BreadcrumbItem>
                 <BreadcrumbItem>
                   <BreadcrumbLink
-                    href={`/${inventory}/data/${step}`}
+                    href={`/${inventoryId}/data/${step}`}
                     color="content.tertiary"
                   >
                     {getSectorName(step)}
@@ -221,7 +230,7 @@ function SubSectorPage({
           <Box display="flex">
             {isExpanded ? (
               <Box>
-                <Link href={`/${inventory}/data`}>
+                <Link href={`/${inventoryId}/data`}>
                   <Icon
                     as={ArrowBackIcon}
                     h="24px"
@@ -342,7 +351,10 @@ function SubSectorPage({
                     filteredScope={scope.scope}
                     t={t}
                     inventoryId={inventoryId}
+                    subsectorId={subsector}
                     step={step}
+                    activityData={activityData}
+                    inventoryValues={inventoryValues ?? []}
                   />
                 ))
               )}

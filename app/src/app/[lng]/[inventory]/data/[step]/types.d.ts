@@ -1,8 +1,4 @@
-import type { DataSourceAttributes } from "@/models/DataSource";
-import type {
-  EmissionsFactor,
-  EmissionsFactorAttributes,
-} from "@/models/EmissionsFactor";
+import type { DataSourceI18nAttributes as DataSourceAttributes } from "@/models/DataSourceI18n";
 import type { GasValueAttributes } from "@/models/GasValue";
 import type { InventoryValueAttributes } from "@/models/InventoryValue";
 import { ScopeAttributes } from "@/models/Scope";

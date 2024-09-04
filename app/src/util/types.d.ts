@@ -5,9 +5,8 @@ import type {
 import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
-import type { DataSourceAttributes } from "@/models/DataSource";
+import type { DataSourceI18nAttributes as DataSourceAttributes } from "@/models/DataSourceI18n";
 import type { InventoryValueAttributes } from "@/models/SubCategoryValue";
-import type { SubSectorValueAttributes } from "@/models/SubSectorValue";
 import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
 import type { CityAttributes } from "@/models/City";
@@ -15,7 +14,12 @@ import type { SubSector } from "@/util/types";
 import type { GasValueAttributes } from "@/models/GasValue";
 import type { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
 
-type InventoryResponse = InventoryAttributes & { city: CityAttributes };
+type InventoryResponse = InventoryAttributes & {
+  city: CityAttributes & {
+    populationYear: number;
+    population: number;
+  };
+};
 
 interface SectorProgress {
   sector: SectorAttributes;
@@ -128,4 +132,8 @@ interface UserInviteResponse {
   status: string;
   created: string;
   lastUpdated: string;
+}
+
+interface RequiredScopesResponse {
+  requiredScopes: string[];
 }

@@ -1,7 +1,30 @@
 import SectorFormSchema from "./sector-form-schema.json";
+export { SectorFormSchema };
 import HIERARCHY from "./manual-input-hierarchy.json";
 
-interface ExtraField {
+export function findMethodology(
+  methodologyId: string,
+  refNo: string | null = null, // if null, search all reference numbers (slower)
+): Methodology | undefined {
+  let methodologies: Methodology[] = [];
+  if (refNo) {
+    methodologies =
+      MANUAL_INPUT_HIERARCHY[refNo]?.methodologies ?? methodologies;
+  } else {
+    methodologies = Object.values(MANUAL_INPUT_HIERARCHY).flatMap(
+      (hierarchy) => {
+        return hierarchy.methodologies ?? [];
+      },
+    );
+  }
+
+  const foundMethology = methodologies.find(
+    (methodology) => methodology.id === methodologyId,
+  );
+  return foundMethology;
+}
+
+export interface ExtraField {
   id: string;
   type?: string;
   options?: string[];
@@ -22,22 +45,33 @@ export interface Activity {
   formula?: string;
 }
 
+export interface Prefill {
+  key: string;
+  value: string;
+}
+
+export interface SuggestedActivity {
+  id: string;
+  prefills: Prefill[];
+}
+
 export interface Methodology {
   id: string;
   disabled?: boolean;
   activities?: Activity[];
   inputRequired?: string[];
-  fields?: []
+  formula?: string;
+  fields?: [];
+  suggestedActivities?: SuggestedActivity[];
   suggestedActivitiesId?: string;
-  suggestedActivities?: Activity[];
 }
 
 export interface DirectMeasure {
+  id: string;
   suggestedActivitiesId?: string;
   suggestedActivities?: Activity[];
   inputRequired?: string[];
-  id?: string;
- "extra-fields"?: ExtraField[];
+  "extra-fields"?: ExtraField[];
 }
 
 interface ManualInputHierarchy {
@@ -47,6 +81,4 @@ interface ManualInputHierarchy {
   };
 }
 
-const MANUAL_INPUT_HIERARCHY = HIERARCHY as ManualInputHierarchy;
-
-export { SectorFormSchema, MANUAL_INPUT_HIERARCHY };
+export const MANUAL_INPUT_HIERARCHY = HIERARCHY as ManualInputHierarchy;

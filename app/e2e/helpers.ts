@@ -13,7 +13,7 @@ export async function signup(
   inviteCode: string = "123456",
   acceptTerms: boolean = true,
 ) {
-  const result = await request.post("/api/v0/auth/signup", {
+  const result = await request.post("/api/v0/auth/register", {
     data: {
       email,
       password,
@@ -21,6 +21,27 @@ export async function signup(
       name,
       inviteCode,
       acceptTerms,
+    },
+  });
+  expect(result.ok()).toBeTruthy();
+  return await result.json();
+}
+
+export async function createInventory(
+  request: APIRequestContext,
+  name: string,
+  description: string,
+  sector: string,
+  subsector: string,
+  methodology: string,
+) {
+  const result = await request.post("/api/v0/inventory", {
+    data: {
+      name,
+      description,
+      sector,
+      subsector,
+      methodology,
     },
   });
   expect(result.ok()).toBeTruthy();

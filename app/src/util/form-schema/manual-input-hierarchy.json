@@ -13,7 +13,6 @@
               "residential-buildings-fuel-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "residential-building-type",
@@ -49,7 +48,12 @@
         "suggestedActivities": [
           {
             "id": "fuel-combustion-residential-buildings-activity",
-            "residential-building-type": "building-type-all"
+            "prefills": [
+              {
+                "key": "residential-building-type",
+                "value": "building-type-all"
+              }
+            ]
           }
         ]
       },
@@ -107,7 +111,6 @@
               "residential-buildings-energy-source"
             ],
             "activity-title": "activity-energy-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "residential-building-type",
@@ -139,7 +142,12 @@
         "suggestedActivities": [
           {
             "id": "energy-consumption-residential-buildings-activity",
-            "residential-building-type": "building-type-all"
+            "prefills": [
+              {
+                "key": "residential-building-type",
+                "value": "building-type-all"
+              }
+            ]
           }
         ]
       },
@@ -197,7 +205,6 @@
               "commercial-buildings-fuel-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "commercial-building-type",
@@ -239,15 +246,30 @@
         "suggestedActivities": [
           {
             "id": "fuel-combustion-commercial-buildings-activity",
-            "commercial-building-type": "type-all"
+            "prefills": [
+              {
+                "key": "commercial-building-type",
+                "value": "type-all"
+              }
+            ]
           },
           {
             "id": "fuel-combustion-commercial-buildings-activity",
-            "commercial-building-type": "type-commercial-buildings"
+            "prefills": [
+              {
+                "key": "commercial-building-type",
+                "value": "type-commercial-buildings"
+              }
+            ]
           },
           {
             "id": "fuel-combustion-commercial-buildings-activity",
-            "commercial-building-type": "type-institutional-buildings"
+            "prefills": [
+              {
+                "key": "commercial-building-type",
+                "value": "type-institutional-buildings"
+              }
+            ]
           }
         ]
       },
@@ -311,7 +333,6 @@
               "commercial-buildings-energy-source"
             ],
             "activity-title": "activity-energy-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "commercial-building-type",
@@ -350,15 +371,30 @@
         "suggestedActivities": [
           {
             "id": "energy-combustion-commercial-buildings-activity",
-            "commercial-building-type": "type-all"
+            "prefills": [
+              {
+                "key": "commercial-building-type",
+                "value": "type-all"
+              }
+            ]
           },
           {
             "id": "energy-combustion-commercial-buildings-activity",
-            "commercial-building-type": "type-commercial-buildings"
+            "prefills": [
+              {
+                "key": "commercial-building-type",
+                "value": "type-commercial-buildings"
+              }
+            ]
           },
           {
             "id": "energy-combustion-commercial-buildings-activity",
-            "commercial-building-type": "type-institutional-buildings"
+            "prefills": [
+              {
+                "key": "commercial-building-type",
+                "value": "type-institutional-buildings"
+              }
+            ]
           }
         ]
       },
@@ -422,7 +458,6 @@
               "manufacturing-and-construction-fuel-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "manufacturing-and-construction-type",
@@ -489,15 +524,30 @@
         "suggestedActivities": [
           {
             "id": "fuel-combustion-manufacturing-and-construction-activity",
-            "manufacturing-and-construction-type": "type-all"
+            "prefills": [
+              {
+                "key": "manufacturing-and-construction-type",
+                "value": "type-all"
+              }
+            ]
           },
           {
             "id": "fuel-combustion-manufacturing-and-construction-activity",
-            "manufacturing-and-construction-type": "type-commercial-buildings"
+            "prefills": [
+              {
+                "key": "manufacturing-and-construction-type",
+                "value": "type-commercial-buildings"
+              }
+            ]
           },
           {
             "id": "fuel-combustion-manufacturing-and-construction-activity",
-            "manufacturing-and-construction-type": "type-institutional-buildings"
+            "prefills": [
+              {
+                "key": "manufacturing-and-construction-type",
+                "value": "type-institutional-buildings"
+              }
+            ]
           }
         ]
       },
@@ -586,7 +636,6 @@
               "manufacturing-and-construction-energy-source"
             ],
             "activity-title": "activity-energy-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "manufacturing-and-construction-type",
@@ -608,7 +657,7 @@
                   "type-textiles-and-leather",
                   "type-unspecified-industry"
                 ],
-                "exclusive": "manufacturing-and-construction-type-all"
+                "exclusive": "type-all"
               },
               {
                 "id": "manufacturing-and-construction-energy-usage",
@@ -636,15 +685,30 @@
         "suggestedActivities": [
           {
             "id": "energy-combustion-manufacturing-and-construction-activity",
-            "manufacturing-and-construction-type": "manufacturing-and-construction-type-all"
+            "prefills": [
+              {
+                "key": "manufacturing-and-construction-type",
+                "value": "manufacturing-and-construction-type-all"
+              }
+            ]
           },
           {
             "id": "energy-combustion-manufacturing-and-construction-activity",
-            "manufacturing-and-construction-type": "manufacturing-and-construction-type-commercial-buildings"
+            "prefills": [
+              {
+                "key": "manufacturing-and-construction-type",
+                "value": "manufacturing-and-construction-type-commercial-buildings"
+              }
+            ]
           },
           {
             "id": "energy-combustion-manufacturing-and-construction-activity",
-            "manufacturing-and-construction-type": "manufacturing-and-construction-type-institutional-buildings"
+            "prefills": [
+              {
+                "key": "manufacturing-and-construction-type",
+                "value": "manufacturing-and-construction-type-institutional-buildings"
+              }
+            ]
           }
         ]
       },
@@ -720,7 +784,6 @@
               "energy-industries-fuel-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "energy-industries-type",
@@ -772,19 +835,39 @@
         "suggestedActivities": [
           {
             "id": "fuel-combustion-energy-industries-activity",
-            "energy-industries-type": "type-all"
+            "prefills": [
+              {
+                "key": "energy-industries-type",
+                "value": "type-all"
+              }
+            ]
           },
           {
             "id": "fuel-combustion-energy-industries-activity",
-            "energy-industries-type": "type-electricity-generation"
+            "prefills": [
+              {
+                "key": "energy-industries-type",
+                "value": "type-electricity-generation"
+              }
+            ]
           },
           {
             "id": "fuel-combustion-energy-industries-activity",
-            "energy-industries-type": "type-combined-heat-and-power-generation"
+            "prefills": [
+              {
+                "key": "energy-industries-type",
+                "value": "type-combined-heat-and-power-generation"
+              }
+            ]
           },
           {
             "id": "fuel-combustion-energy-industries-activity",
-            "energy-industries-type": "type-heat-pants"
+            "prefills": [
+              {
+                "key": "energy-industries-type",
+                "value": "type-heat-pants"
+              }
+            ]
           }
         ]
       },
@@ -858,7 +941,6 @@
               "energy-industries-energy-source"
             ],
             "activity-title": "activity-energy-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "energy-industries-type",
@@ -899,19 +981,39 @@
         "suggestedActivities": [
           {
             "id": "energy-combustion-energy-industries-activity",
-            "energy-industries-type": "type-all"
+            "prefills": [
+              {
+                "key": "energy-industries-type",
+                "value": "type-all"
+              }
+            ]
           },
           {
             "id": "energy-combustion-energy-industries-activity",
-            "energy-industries-type": "type-electricity-generation"
+            "prefills": [
+              {
+                "key": "energy-industries-type",
+                "value": "type-electricity-generation"
+              }
+            ]
           },
           {
             "id": "energy-combustion-energy-industries-activity",
-            "energy-industries-type": "type-combined-heat-and-power-generation"
+            "prefills": [
+              {
+                "key": "energy-industries-type",
+                "value": "type-combined-heat-and-power-generation"
+              }
+            ]
           },
           {
             "id": "energy-combustion-energy-industries-activity",
-            "energy-industries-type": "type-heat-pants"
+            "prefills": [
+              {
+                "key": "energy-industries-type",
+                "value": "type-heat-pants"
+              }
+            ]
           }
         ]
       },
@@ -978,7 +1080,6 @@
               "agriculture-forestry-fishing-activities-fuel-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "agriculture-forestry-fishing-activities-type",
@@ -1020,11 +1121,21 @@
         "suggestedActivities": [
           {
             "id": "fuel-combustion-agriculture-forestry-fishing-activities-activity",
-            "agriculture-forestry-fishing-activities-type": "type-all"
+            "prefills": [
+              {
+                "key": "agriculture-forestry-fishing-activities-type",
+                "value": "type-all"
+              }
+            ]
           },
           {
             "id": "fuel-combustion-agriculture-forestry-fishing-activities-activity",
-            "agriculture-forestry-fishing-activities-type": "type-stationary"
+            "prefills": [
+              {
+                "key": "agriculture-forestry-fishing-activities-type",
+                "value": "type-stationary"
+              }
+            ]
           }
         ]
       },
@@ -1088,7 +1199,6 @@
               "agriculture-forestry-fishing-activities-energy-source"
             ],
             "activity-title": "activity-energy-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "agriculture-forestry-fishing-activities-type",
@@ -1126,11 +1236,21 @@
         "suggestedActivities": [
           {
             "id": "energy-combustion-agriculture-forestry-fishing-activities-activity",
-            "agriculture-forestry-fishing-activities-type": "type-all"
+            "prefills": [
+              {
+                "key": "agriculture-forestry-fishing-activities-type",
+                "value": "type-all"
+              }
+            ]
           },
           {
             "id": "energy-combustion-agriculture-forestry-fishing-activities-activity",
-            "agriculture-forestry-fishing-activities-type": "type-stationary"
+            "prefills": [
+              {
+                "key": "agriculture-forestry-fishing-activities-type",
+                "value": "type-stationary"
+              }
+            ]
           }
         ]
       },
@@ -1194,7 +1314,6 @@
               "non-specific-sources-fuel-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "non-specific-sources-type",
@@ -1237,11 +1356,21 @@
         "suggestedActivities": [
           {
             "id": "fuel-combustion-non-specific-sources-activity",
-            "non-specific-sources-type": "type-all"
+            "prefills": [
+              {
+                "key": "non-specific-sources-type",
+                "value": "type-all"
+              }
+            ]
           },
           {
             "id": "fuel-combustion-non-specific-sources-activity",
-            "non-specific-sources-type": "type-stationary"
+            "prefills": [
+              {
+                "key": "non-specific-sources-type",
+                "value": "type-stationary"
+              }
+            ]
           }
         ]
       },
@@ -1298,7 +1427,6 @@
             "id": "energy-consumption-non-specific-sources-activity",
             "unique-by": ["type", "energy-usage", "energy-source"],
             "activity-title": "activity-energy-consumption",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "non-specific-sources-type",
@@ -1331,11 +1459,21 @@
         "suggestedActivities": [
           {
             "id": "energy-combustion-non-specific-sources-activity",
-            "non-specific-sources-type": "type-all"
+            "prefills": [
+              {
+                "key": "non-specific-sources-type",
+                "value": "type-all"
+              }
+            ]
           },
           {
             "id": "energy-combustion-non-specific-sources-activity",
-            "non-specific-sources-type": "type-stationary"
+            "prefills": [
+              {
+                "key": "non-specific-sources-type",
+                "value": "type-stationary"
+              }
+            ]
           }
         ]
       },
@@ -1393,7 +1531,6 @@
               "fugitive-emissions-coal-source"
             ],
             "activity-title": "activity-total-fugitive-emissions",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "fugitive-emissions-coal-type",
@@ -1430,15 +1567,30 @@
         "suggestedActivities": [
           {
             "id": "fugitive-emissions-coal-activity",
-            "fugitive-emissions-coal-type": "type-all"
+            "prefills": [
+              {
+                "key": "fugitive-emissions-coal-type",
+                "value": "type-all"
+              }
+            ]
           },
           {
             "id": "fugitive-emissions-coal-activity",
-            "fugitive-emissions-coal-type": "type-coal-mining-and-handling"
+            "prefills": [
+              {
+                "key": "fugitive-emissions-coal-type",
+                "value": "type-coal-mining-and-handling"
+              }
+            ]
           },
           {
             "id": "fugitive-emissions-coal-activity",
-            "fugitive-emissions-coal-type": "type-surface-mines"
+            "prefills": [
+              {
+                "key": "fugitive-emissions-coal-type",
+                "value": "type-surface-mines"
+              }
+            ]
           }
         ]
       }
@@ -1485,7 +1637,6 @@
               "fugitive-emissions-oil-gas-fugitive-source"
             ],
             "activity-title": "activity-total-fugitive-activity",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "fugitive-emissions-oil-gas-type",
@@ -1524,15 +1675,30 @@
         "suggestedActivities": [
           {
             "id": "fugitive-emissions-oil-gas-activity",
-            "fugitive-emissions-oil-gas-type": "fugitive-emissions-oil-gas-type-all"
+            "prefills": [
+              {
+                "key": "fugitive-emissions-oil-gas-type",
+                "value": "fugitive-emissions-oil-gas-type-all"
+              }
+            ]
           },
           {
             "id": "fugitive-emissions-oil-gas-activity",
-            "fugitive-emissions-oil-gas-type": "fugitive-emissions-oil-gas-type-oil"
+            "prefills": [
+              {
+                "key": "fugitive-emissions-oil-gas-type",
+                "value": "fugitive-emissions-oil-gas-type-oil"
+              }
+            ]
           },
           {
             "id": "fugitive-emissions-oil-gas-activity",
-            "fugitive-emissions-oil-gas-type": "fugitive-emissions-oil-gas-type-natural-gas"
+            "prefills": [
+              {
+                "key": "fugitive-emissions-oil-gas-type",
+                "value": "fugitive-emissions-oil-gas-type-natural-gas"
+              }
+            ]
           }
         ]
       }
@@ -1582,7 +1748,6 @@
               "on-road-transport-fuel-source"
             ],
             "activity-title": "activity-total-fuel-sales",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "on-road-transport-fuel-type",
@@ -1623,7 +1788,7 @@
             "id": "fuel-sales-on-road-transport-activity",
             "prefills": [
               {
-                "name": "on-road-transport-vehicle-type",
+                "key": "on-road-transport-vehicle-type",
                 "value": "vehicle-type-all"
               }
             ]
@@ -1632,7 +1797,7 @@
             "id": "fuel-sales-on-road-transport-activity",
             "prefills": [
               {
-                "name": "on-road-transport-vehicle-type",
+                "key": "on-road-transport-vehicle-type",
                 "value": "vehicle-type-passenger-vehicles"
               }
             ]
@@ -1641,7 +1806,7 @@
             "id": "fuel-sales-on-road-transport-activity",
             "prefills": [
               {
-                "name": "on-road-transport-vehicle-type",
+                "key": "on-road-transport-vehicle-type",
                 "value": "vehicle-type-public-transport-vehicles"
               }
             ]
@@ -1662,7 +1827,7 @@
         "disabled": true,
         "inputRequired": [
           "total-distance-travelled-in-in-boundary-trips",
-          "distnace-travelled-within-city-transboundary-departing-only",
+          "distance-travelled-within-city-transboundary-departing-only",
           "fuel-intensity"
         ]
       },
@@ -1721,15 +1886,30 @@
         "suggestedActivities": [
           {
             "id": "geographic-on-road-transport-activity",
-            "on-road-transport-vehicle-type": "vehicle-type-all"
+            "prefills": [
+              {
+                "key": "on-road-transport-vehicle-type",
+                "value": "vehicle-type-all"
+              }
+            ]
           },
           {
             "id": "geographic-on-road-transport-activity",
-            "on-road-transport-vehicle-type": "vehicle-type-passenger-vehicles"
+            "prefills": [
+              {
+                "key": "on-road-transport-vehicle-type",
+                "value": "vehicle-type-passenger-vehicles"
+              }
+            ]
           },
           {
             "id": "geographic-on-road-transport-activity",
-            "on-road-transport-vehicle-type": "vehicle-type-public-transport-vehicles"
+            "prefills": [
+              {
+                "key": "on-road-transport-vehicle-type",
+                "value": "vehicle-type-public-transport-vehicles"
+              }
+            ]
           }
         ]
       },
@@ -1809,15 +1989,30 @@
         "suggestedActivities": [
           {
             "id": "electricity-consumption-on-road-transport-activity",
-            "on-road-transport-vehicle-type": "vehicle-type-all"
+            "prefills": [
+              {
+                "key": "on-road-transport-vehicle-type",
+                "value": "vehicle-type-all"
+              }
+            ]
           },
           {
             "id": "electricity-consumption-on-road-transport-activity",
-            "on-road-transport-vehicle-type": "vehicle-type-passenger-vehicles"
+            "prefills": [
+              {
+                "key": "on-road-transport-vehicle-type",
+                "value": "vehicle-type-passenger-vehicles"
+              }
+            ]
           },
           {
             "id": "electricity-consumption-on-road-transport-activity",
-            "on-road-transport-vehicle-type": "vehicle-type-public-transport-vehicles"
+            "prefills": [
+              {
+                "key": "on-road-transport-vehicle-type",
+                "value": "vehicle-type-public-transport-vehicles"
+              }
+            ]
           }
         ]
       }
@@ -1858,7 +2053,6 @@
               "railways-fuel-source"
             ],
             "activity-title": "activity-total-fuel-sales",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "railways-fuel-type",
@@ -1898,20 +2092,36 @@
         "suggestedActivities": [
           {
             "id": "fuel-sales-railways-activity",
-            "railways-vehicle-type": "vehicle-type-all"
+            "prefills": [
+              {
+                "key": "railways-vehicle-type",
+                "value": "vehicle-type-all"
+              }
+            ]
           },
           {
             "id": "fuel-sales-railways-activity",
-            "railways-vehicle-type": "vehicle-type-passenger-trains"
+            "prefills": [
+              {
+                "key": "railways-vehicle-type",
+                "value": "vehicle-type-passenger-trains"
+              }
+            ]
           },
           {
             "id": "fuel-sales-railways-activity",
-            "railways-vehicle-type": "vehicle-type-freight-trains"
+            "prefills": [
+              {
+                "key": "railways-vehicle-type",
+                "value": "vehicle-type-freight-trains"
+              }
+            ]
           }
         ]
       },
       {
         "id": "geographic-railways-methodology",
+        "disabled": true,
         "inputRequired": [
           "total-distance-travelled-in-in-boundary-trips",
           "fuel-intensity"
@@ -1961,21 +2171,40 @@
         "suggestedActivities": [
           {
             "id": "geographic-railways-activity",
-            "railways-vehicle-type": "vehicle-type-all"
+            "prefills": [
+              {
+                "key": "railways-vehicle-type",
+                "value": "vehicle-type-all"
+              }
+            ]
           },
           {
             "id": "geographic-railways-activity",
-            "railways-vehicle-type": "vehicle-type-passenger-trains"
+            "prefills": [
+              {
+                "key": "railways-vehicle-type",
+                "value": "vehicle-type-passenger-trains"
+              }
+            ]
           },
           {
             "id": "geographic-railways-activity",
-            "railways-vehicle-type": "vehicle-type-freight-trains"
+            "prefills": [
+              {
+                "key": "railways-vehicle-type",
+                "value": "vehicle-type-freight-trains"
+              }
+            ]
           }
         ]
       },
       {
         "id": "movement-driver-railways-methodology",
-        "implemented": false
+        "disabled": true,
+        "inputRequired": [
+          "total-fuel-consumed",
+          "passenger-number-or-cargo-weight"
+        ]
       }
     ],
     "directMeasure": {
@@ -2041,15 +2270,30 @@
         "suggestedActivities": [
           {
             "id": "electricity-consumption-railways-activity",
-            "railways-vehicle-type": "vehicle-type-all"
+            "prefills": [
+              {
+                "key": "railways-vehicle-type",
+                "value": "vehicle-type-all"
+              }
+            ]
           },
           {
             "id": "electricity-consumption-railways-activity",
-            "railways-vehicle-type": "vehicle-type-passenger-trains"
+            "prefills": [
+              {
+                "key": "railways-vehicle-type",
+                "value": "vehicle-type-passenger-trains"
+              }
+            ]
           },
           {
             "id": "electricity-consumption-railways-activity",
-            "railways-vehicle-type": "vehicle-type-freight-trains"
+            "prefills": [
+              {
+                "key": "railways-vehicle-type",
+                "value": "vehicle-type-freight-trains"
+              }
+            ]
           }
         ]
       }
@@ -2088,7 +2332,6 @@
               "waterborne-navigation-fuel-source"
             ],
             "activity-title": "activity-total-fuel-sales",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "waterborne-navigation-fuel-type",
@@ -2128,15 +2371,30 @@
         "suggestedActivities": [
           {
             "id": "fuel-sales-waterborne-navigation-activity",
-            "waterborne-navigation-vehicle-type": "vehicle-type-all"
+            "prefills": [
+              {
+                "key": "waterborne-navigation-vehicle-type",
+                "value": "vehicle-type-all"
+              }
+            ]
           },
           {
             "id": "fuel-sales-waterborne-navigation-activity",
-            "waterborne-navigation-vehicle-type": "vehicle-type-ferries"
+            "prefills": [
+              {
+                "key": "waterborne-navigation-vehicle-type",
+                "value": "vehicle-type-ferries"
+              }
+            ]
           },
           {
             "id": "fuel-sales-waterborne-navigation-activity",
-            "waterborne-navigation-vehicle-type": "vehicle-type-boats"
+            "prefills": [
+              {
+                "key": "waterborne-navigation-vehicle-type",
+                "value": "vehicle-type-boats"
+              }
+            ]
           }
         ]
       },
@@ -2190,15 +2448,30 @@
         "suggestedActivities": [
           {
             "id": "geographic-waterborne-navigation-activity",
-            "waterborne-navigation-vehicle-type": "vehicle-type-all"
+            "prefills": [
+              {
+                "key": "waterborne-navigation-vehicle-type",
+                "value": "vehicle-type-all"
+              }
+            ]
           },
           {
             "id": "geographic-waterborne-navigation-activity",
-            "waterborne-navigation-vehicle-type": "vehicle-type-ferries"
+            "prefills": [
+              {
+                "key": "waterborne-navigation-vehicle-type",
+                "value": "vehicle-type-ferries"
+              }
+            ]
           },
           {
             "id": "geographic-waterborne-navigation-activity",
-            "waterborne-navigation-vehicle-type": "vehicle-type-boats"
+            "prefills": [
+              {
+                "key": "waterborne-navigation-vehicle-type",
+                "value": "vehicle-type-boats"
+              }
+            ]
           }
         ]
       }
@@ -2264,15 +2537,30 @@
         "suggestedActivities": [
           {
             "id": "electricity-consumption-waterborne-navigation-activity",
-            "waterborne-navigation-vehicle-type": "vehicle-type-all"
+            "prefills": [
+              {
+                "key": "waterborne-navigation-vehicle-type",
+                "value": "vehicle-type-all"
+              }
+            ]
           },
           {
             "id": "electricity-consumption-waterborne-navigation-activity",
-            "waterborne-navigation-vehicle-type": "vehicle-type-ferries"
+            "prefills": [
+              {
+                "key": "waterborne-navigation-vehicle-type",
+                "value": "vehicle-type-ferries"
+              }
+            ]
           },
           {
             "id": "electricity-consumption-waterborne-navigation-activity",
-            "waterborne-navigation-vehicle-type": "vehicle-type-boats"
+            "prefills": [
+              {
+                "key": "waterborne-navigation-vehicle-type",
+                "value": "vehicle-type-boats"
+              }
+            ]
           }
         ]
       }
@@ -2310,7 +2598,6 @@
               "aviation-fuel-source"
             ],
             "activity-title": "activity-total-fuel-sales",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "aviation-fuel-type",
@@ -2353,15 +2640,30 @@
         "suggestedActivities": [
           {
             "id": "fuel-sales-aviation-activity",
-            "aviation-vehicle-type": "vehicle-type-all"
+            "prefills": [
+              {
+                "key": "aviation-vehicle-type",
+                "value": "vehicle-type-all"
+              }
+            ]
           },
           {
             "id": "fuel-sales-aviation-activity",
-            "aviation-vehicle-type": "vehicle-type-passenger-aircraft"
+            "prefills": [
+              {
+                "key": "aviation-vehicle-type",
+                "value": "vehicle-type-passenger-aircraft"
+              }
+            ]
           },
           {
             "id": "fuel-sales-aviation-activity",
-            "aviation-vehicle-type": "vehicle-type-cargo-aircraft"
+            "prefills": [
+              {
+                "key": "aviation-vehicle-type",
+                "value": "vehicle-type-cargo-aircraft"
+              }
+            ]
           }
         ]
       },
@@ -2415,15 +2717,30 @@
         "suggestedActivities": [
           {
             "id": "geographic-aviation-activity",
-            "aviation-vehicle-type": "vehicle-type-all"
+            "prefills": [
+              {
+                "key": "aviation-vehicle-type",
+                "value": "vehicle-type-all"
+              }
+            ]
           },
           {
             "id": "geographic-aviation-activity",
-            "aviation-vehicle-type": "vehicle-type-passenger-aircraft"
+            "prefills": [
+              {
+                "key": "aviation-vehicle-type",
+                "value": "vehicle-type-passenger-aircraft"
+              }
+            ]
           },
           {
             "id": "geographic-aviation-activity",
-            "aviation-vehicle-type": "vehicle-type-cargo-aircraft"
+            "prefills": [
+              {
+                "key": "aviation-vehicle-type",
+                "value": "vehicle-type-cargo-aircraft"
+              }
+            ]
           }
         ]
       }
@@ -2493,15 +2810,30 @@
         "suggestedActivities": [
           {
             "id": "electricity-consumption-aviation-activity",
-            "aviation-vehicle-type": "vehicle-type-all"
+            "prefills": [
+              {
+                "key": "aviation-vehicle-type",
+                "value": "vehicle-type-all"
+              }
+            ]
           },
           {
             "id": "electricity-consumption-aviation-activity",
-            "aviation-vehicle-type": "vehicle-type-passenger-aircraft"
+            "prefills": [
+              {
+                "key": "aviation-vehicle-type",
+                "value": "vehicle-type-passenger-aircraft"
+              }
+            ]
           },
           {
             "id": "electricity-consumption-aviation-activity",
-            "aviation-vehicle-type": "vehicle-type-cargo-aircraft"
+            "prefills": [
+              {
+                "key": "aviation-vehicle-type",
+                "value": "vehicle-type-cargo-aircraft"
+              }
+            ]
           }
         ]
       }
@@ -2540,7 +2872,6 @@
               "off-road-transport-fuel-source"
             ],
             "activity-title": "activity-total-fuel-sales",
-            "minimum": 1,
             "extra-fields": [
               {
                 "id": "off-road-transport-fuel-type",
@@ -2581,20 +2912,36 @@
         "suggestedActivities": [
           {
             "id": "fuel-sales-off-road-transport-activity",
-            "off-road-transport-vehicle-type": "vehicle-type-all"
+            "prefills": [
+              {
+                "key": "off-road-transport-vehicle-type",
+                "value": "vehicle-type-all"
+              }
+            ]
           },
           {
             "id": "fuel-sales-off-road-transport-activity",
-            "off-road-transport-vehicle-type": "vehicle-type-construction-machinery"
+            "prefills": [
+              {
+                "key": "off-road-transport-vehicle-type",
+                "value": "vehicle-type-construction-machinery"
+              }
+            ]
           },
           {
             "id": "fuel-sales-off-road-transport-activity",
-            "off-road-transport-vehicle-type": "vehicle-type-agricultural-machinery"
+            "prefills": [
+              {
+                "key": "off-road-transport-vehicle-type",
+                "value": "vehicle-type-agricultural-machinery"
+              }
+            ]
           }
         ]
       }
     ],
     "directMeasure": {
+      "id": "fuel-sales-off-road-transport-direct-measure-methodology",
       "extra-fields": [
         {
           "id": "off-road-transport-fuel-type",
@@ -2658,20 +3005,36 @@
         "suggestedActivities": [
           {
             "id": "electricity-consumption-off-road-transport-activity",
-            "off-road-transport-vehicle-type": "vehicle-type-all"
+            "prefills": [
+              {
+                "key": "off-road-transport-vehicle-type",
+                "value": "vehicle-type-all"
+              }
+            ]
           },
           {
             "id": "electricity-consumption-off-road-transport-activity",
-            "off-road-transport-vehicle-type": "vehicle-type-construction-machinery"
+            "prefills": [
+              {
+                "key": "off-road-transport-vehicle-type",
+                "value": "vehicle-type-construction-machinery"
+              }
+            ]
           },
           {
             "id": "electricity-consumption-off-road-transport-activity",
-            "off-road-transport-vehicle-type": "vehicle-type-agricultural-machinery"
+            "prefills": [
+              {
+                "key": "off-road-transport-vehicle-type",
+                "value": "vehicle-type-agricultural-machinery"
+              }
+            ]
           }
         ]
       }
     ],
     "directMeasure": {
+      "id": "electricity-consumption-off-road-transport-direct-measure-methodology",
       "extra-fields": [
         {
           "id": "off-road-transport-vehicle-type",
@@ -2917,6 +3280,26 @@
             ],
             "units": ["units-kilograms", "units-tonnes"]
           }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "biological-treatment-inboundary-activity",
+            "prefills": [
+              {
+                "key": "biological-treatment-inboundary-treatment-type",
+                "value": "treatment-type-composting"
+              }
+            ]
+          },
+          {
+            "id": "biological-treatment-inboundary-activity",
+            "prefills": [
+              {
+                "key": "biological-treatment-inboundary-treatment-type",
+                "value": "treatment-type-anaerobic-digestion"
+              }
+            ]
+          }
         ]
       }
     ],
@@ -2980,6 +3363,26 @@
               }
             ],
             "units": ["units-kilograms", "units-tonnes"]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "biological-treatment-outboundary-activity",
+            "prefills": [
+              {
+                "key": "biological-treatment-outboundary-treatment-type",
+                "value": "treatment-type-composting"
+              }
+            ]
+          },
+          {
+            "id": "biological-treatment-outboundary-activity",
+            "prefills": [
+              {
+                "key": "biological-treatment-outboundary-treatment-type",
+                "value": "treatment-type-anaerobic-digestion"
+              }
+            ]
           }
         ]
       }
@@ -3063,7 +3466,7 @@
       }
     ],
     "directMeasure": {
-      "id": "direct-measure-incineration-waste-inboundary-methodology",
+      "id": "incineration-waste-inboundary-direct-measure-methodology",
       "extra-fields": [
         {
           "id": "incineration-facility-id",
@@ -3147,6 +3550,392 @@
           "id": "incineration-facility-address",
           "type": "text",
           "required": false
+        }
+      ]
+    }
+  },
+  "III.4.1": {
+    "methodologies": [
+      {
+        "id": "wastewater-inside-methodology",
+        "inputRequired": [
+          "wastewater-inside-generated",
+          "total-organic-sludge-removed",
+          "methane-recovered",
+          "population-or-industrial-production"
+        ],
+        "formula": "wastewater-calculator",
+        "activities": [
+          {
+            "id": "wastewater-inside-domestic-calculator-activity",
+            "unique-by": [
+              "wastewater-inside-domestic-calculator-income-group",
+              "wastewater-inside-domestic-calculator-collection-status",
+              "wastewater-inside-domestic-calculator-treatment-status",
+              "wastewater-inside-domestic-calculator-source"
+            ],
+            "activity-title": "total-population",
+            "extra-fields": [
+              {
+                "id": "wastewater-inside-domestic-calculator-income-group",
+                "options": [
+                  "income-group-type-all",
+                  "income-group-type-rural",
+                  "income-group-type-urban-high-income",
+                  "income-group-type-urban-low-income"
+                ]
+              },
+              {
+                "id": "wastewater-inside-domestic-calculator-total-organic-sludge-removed",
+                "type": "number"
+              },
+              {
+                "id": "wastewater-inside-domestic-calculator-methane-recovered",
+                "type": "number"
+              },
+              {
+                "id": "wastewater-inside-domestic-calculator-collection-status",
+                "options": [
+                  "collection-status-type-wastewater-collected",
+                  "collection-status-type-wastewater-not-collected"
+                ]
+              },
+              {
+                "id": "wastewater-inside-domestic-calculator-treatment-status",
+                "options": [
+                  "treatment-status-type-wastewater-treated",
+                  "treatment-status-type-wastewater-untreated"
+                ]
+              },
+              {
+                "id": "wastewater-inside-domestic-calculator-treatment-type-collected-treated",
+                "options": [
+                  "treatment-type-centralized-aerobic-treatment-plan-well-managed",
+                  "treatment-type-centralized-aerobic-treatment-not-plan-well-managed",
+                  "treatment-type-anaerobic-digester-for-sludge",
+                  "treatment-type-anaerobic-reactor",
+                  "treatment-type-anaerobic-shallow-lagoon",
+                  "treatment-type-anaerobic-deep-lagoon",
+                  "treatment-type-septic-system",
+                  "treatment-type-latrine-dry-climate-small-family",
+                  "treatment-type-latrine-dry-climate-communal",
+                  "treatment-type-latrine-wet-climate",
+                  "treatment-type-latrine-regular-sediment"
+                ]
+              },
+              {
+                "id": "wastewater-inside-domestic-calculator-discharge-pathway-untreated",
+                "options": [
+                  "discharge-pathway-sea-river-lake",
+                  "discharge-pathway-stagnant-sewer",
+                  "discharge-pathway-flowing-sewer",
+                  "discharge-pathway-to-ground"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "wastewater-inside-industrial-calculator-activity",
+            "unique-by": [
+              "wastewater-inside-industrial-calculator-industrial-production",
+              "wastewater-inside-industrial-calculator-collection-status",
+              "wastewater-inside-industrial-calculator-treatment-status",
+              "wastewater-inside-industrial-calculator-source"
+            ],
+            "activity-title": "total-industry-production",
+            "extra-fields": [
+              {
+                "id": "wastewater-inside-industrial-calculator-industry-type",
+                "options": [
+                  "industry-type-alcohol-refining",
+                  "industry-type-coffee",
+                  "industry-type-dairy-products",
+                  "industry-type-fish-proccessing",
+                  "industry-type-meat-and-poultry",
+                  "industry-type-organic-chemicals",
+                  "industry-type-petroleum-refineries",
+                  "industry-type-plastics-and-resins",
+                  "industry-type-pulp-and-paper",
+                  "industry-type-soap-and-detergents",
+                  "industry-type-stratch-production",
+                  "industry-type-sugar-refining",
+                  "industry-type-vegetable-oils",
+                  "industry-type-vegetables-fruits-juices",
+                  "industry-type-wine-and-vinegar"
+                ]
+              },
+              {
+                "id": "wastewater-inside-industrial-calculator-total-organic-sludge-removed",
+                "type": "number"
+              },
+              {
+                "id": "wastewater-inside-industrial-calculator-methane-recovered",
+                "type": "number"
+              },
+              {
+                "id": "wastewater-inside-industrial-calculator-wastewater-generated",
+                "type": "number",
+                "required": false
+              },
+              {
+                "id": "wastewater-inside-industrial-calculator-collection-status",
+                "options": [
+                  "collection-status-type-wastewater-collected",
+                  "collection-status-type-wastewater-not-collected"
+                ]
+              },
+              {
+                "id": "wastewater-inside-industrial-calculator-treatment-status",
+                "options": [
+                  "treatment-status-type-wastewater-treated",
+                  "treatment-status-type-wastewater-untreated"
+                ]
+              },
+              {
+                "id": "wastewater-inside-industrial-calculator-treatment-type-collected-treated",
+                "options": [
+                  "treatment-type-centralized-aerobic-treatment-plan-well-managed",
+                  "treatment-type-centralized-aerobic-treatment-not-plan-well-managed",
+                  "treatment-type-anaerobic-digester-for-sludge",
+                  "treatment-type-anaerobic-reactor",
+                  "treatment-type-anaerobic-shallow-lagoon",
+                  "treatment-type-anaerobic-deep-lagoon"
+                ]
+              },
+              {
+                "id": "wastewater-inside-industrial-calculator-discharge-pathway-untreated",
+                "options": [
+                  "discharge-pathway-sea-rivers-lakes, estuaries",
+                  "discharge-pathway-stagnant-sewer"
+                ]
+              }
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "wastewater-inside-domestic-calculator-activity",
+            "prefills": [
+              {
+                "key": "wastewater-inside-source-type",
+                "value": "source-type-domestic-wastewater"
+              }
+            ]
+          },
+          {
+            "id": "wastewater-inside-industrial-calculator-activity",
+            "prefills": [
+              {
+                "key": "wastewater-inside-source-type",
+                "value": "source-type-industrial-wastewater"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "directMeasure": {
+      "id": "direct-measure-wastewater-inside-methodology",
+      "extra-fields": [
+        {
+          "id": "direct-measure-wastewater-inside-source-type",
+          "options": [
+            "source-type-domestic-wastewater",
+            "source-type-industrial-wastewater"
+          ]
+        }
+      ]
+    }
+  },
+  "III.4.3": {
+    "methodologies": [
+      {
+        "id": "wastewater-outside-methodology",
+        "inputRequired": [
+          "wastewater-outside-generated",
+          "total-organic-sludge-removed",
+          "total-of-ch4-recovered",
+          "population-or-industrial-production"
+        ],
+        "formula": "wastewater-calculator",
+        "activities": [
+          {
+            "id": "wastewater-outside-domestic-calculator-activity",
+            "unique-by": [
+              "wastewater-outside-domestic-calculator-income-group",
+              "wastewater-outside-domestic-calculator-collection-status",
+              "wastewater-outside-domestic-calculator-treatment-status",
+              "wastewater-outside-domestic-calculator-source"
+            ],
+            "activity-title": "total-population",
+            "extra-fields": [
+              {
+                "id": "wastewater-outside-domestic-calculator-income-group",
+                "options": [
+                  "income-group-type-all",
+                  "income-group-type-rural",
+                  "income-group-type-urban-high-income",
+                  "income-group-type-urban-low-income"
+                ]
+              },
+              {
+                "id": "wastewater-outside-domestic-calculator-total-organic-sludge-removed",
+                "type": "number"
+              },
+              {
+                "id": "wastewater-outside-domestic-calculator-methane-recovered",
+                "type": "number"
+              },
+              {
+                "id": "wastewater-outside-domestic-calculator-collection-status",
+                "options": [
+                  "collection-status-type-wastewater-collected",
+                  "collection-status-type-wastewater-not-collected"
+                ]
+              },
+              {
+                "id": "wastewater-outside-domestic-calculator-treatment-status",
+                "options": [
+                  "treatment-status-type-wastewater-treated",
+                  "treatment-status-type-wastewater-untreated"
+                ]
+              },
+              {
+                "id": "wastewater-outside-domestic-calculator-treatment-type-collected-treated",
+                "options": [
+                  "treatment-type-centralized-aerobic-treatment-plan-well-managed",
+                  "treatment-type-centralized-aerobic-treatment-not-plan-well-managed",
+                  "treatment-type-anaerobic-digester-for-sludge",
+                  "treatment-type-anaerobic-reactor",
+                  "treatment-type-anaerobic-shallow-lagoon",
+                  "treatment-type-anaerobic-deep-lagoon",
+                  "treatment-type-septic-system",
+                  "treatment-type-latrine-dry-climate-small-family",
+                  "treatment-type-latrine-dry-climate-communal",
+                  "treatment-type-latrine-wet-climate",
+                  "treatment-type-latrine-regular-sediment"
+                ]
+              },
+              {
+                "id": "wastewater-outside-domestic-calculator-discharge-pathway-untreated",
+                "options": [
+                  "discharge-pathway-sea-river-lake",
+                  "discharge-pathway-stagnant-sewer",
+                  "discharge-pathway-flowing-sewer",
+                  "discharge-pathway-to-ground"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "wastewater-outside-industrial-calculator-activity",
+            "unique-by": [
+              "wastewater-outside-industrial-calculator-industrial-production",
+              "wastewater-outside-industrial-calculator-collection-status",
+              "wastewater-outside-industrial-calculator-treatment-status",
+              "wastewater-outside-industrial-calculator-source"
+            ],
+            "activity-title": "total-industry-production",
+            "extra-fields": [
+              {
+                "id": "wastewater-outside-industrial-calculator-industry-type",
+                "options": [
+                  "industry-type-alcohol-refining",
+                  "industry-type-coffee",
+                  "industry-type-dairy-products",
+                  "industry-type-fish-proccessing",
+                  "industry-type-meat-and-poultry",
+                  "industry-type-organic-chemicals",
+                  "industry-type-petroleum-refineries",
+                  "industry-type-plastics-and-resins",
+                  "industry-type-pulp-and-paper",
+                  "industry-type-soap-and-detergents",
+                  "industry-type-stratch-production",
+                  "industry-type-sugar-refining",
+                  "industry-type-vegetable-oils",
+                  "industry-type-vegetables-fruits-juices",
+                  "industry-type-wine-and-vinegar"
+                ]
+              },
+              {
+                "id": "wastewater-outside-industrial-calculator-total-organic-sludge-removed",
+                "type": "number"
+              },
+              {
+                "id": "wastewater-outside-industrial-calculator-methane-recovered",
+                "type": "number"
+              },
+              {
+                "id": "wastewater-outside-industrial-calculator-wastewater-generated",
+                "type": "number",
+                "required": false
+              },
+              {
+                "id": "wastewater-outside-industrial-calculator-collection-status",
+                "options": [
+                  "collection-status-type-wastewater-collected",
+                  "collection-status-type-wastewater-not-collected"
+                ]
+              },
+              {
+                "id": "wastewater-outside-industrial-calculator-treatment-status",
+                "options": [
+                  "treatment-status-type-wastewater-treated",
+                  "treatment-status-type-wastewater-untreated"
+                ]
+              },
+              {
+                "id": "wastewater-outside-industrial-calculator-treatment-type-collected-treated",
+                "options": [
+                  "treatment-type-centralized-aerobic-treatment-plan-well-managed",
+                  "treatment-type-centralized-aerobic-treatment-not-plan-well-managed",
+                  "treatment-type-anaerobic-digester-for-sludge",
+                  "treatment-type-anaerobic-reactor",
+                  "treatment-type-anaerobic-shallow-lagoon",
+                  "treatment-type-anaerobic-deep-lagoon"
+                ]
+              },
+              {
+                "id": "wastewater-outside-industrial-calculator-discharge-pathway-untreated",
+                "options": [
+                  "discharge-pathway-sea-rivers-lakes, estuaries",
+                  "discharge-pathway-stagnant-sewer"
+                ]
+              }
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "wastewater-outside-domestic-calculator-activity",
+            "prefills": [
+              {
+                "key": "wastewater-outside-source-type",
+                "value": "source-type-domestic-wastewater"
+              }
+            ]
+          },
+          {
+            "id": "wastewater-outside-industrial-calculator-activity",
+            "prefills": [
+              {
+                "key": "wastewater-outside-source-type",
+                "value": "source-type-industrial-wastewater"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "directMeasure": {
+      "id": "direct-measure-wastewater-outside-methodology",
+      "extra-fields": [
+        {
+          "id": "direct-measure-wastewater-outside-source-type",
+          "options": [
+            "source-type-domestic-wastewater",
+            "source-type-industrial-wastewater"
+          ]
         }
       ]
     }

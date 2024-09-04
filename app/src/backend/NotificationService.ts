@@ -50,7 +50,6 @@ class NotificationService {
     try {
       const transporter = nodemailer.createTransport({ ...smtpOptions });
       const info = await transporter.sendMail(mailOptions);
-      console.log("Message sent: %s", info.messageId);
       return { success: true, messageId: info.messageId };
     } catch (error) {
       console.error("Error sending email:", error);
@@ -62,10 +61,12 @@ class NotificationService {
     user,
     fileData,
     city,
+    inventoryId,
   }: {
     user: { name: string; email: string };
     fileData: UserFileResponse;
     city: City;
+    inventoryId: string;
   }) {
     await NotificationService.sendEmail({
       to: process.env.ADMIN_EMAILS!,
@@ -80,6 +81,7 @@ class NotificationService {
             email: user?.email!,
             name: user?.name!,
           },
+          inventoryId,
         }),
       ),
     });

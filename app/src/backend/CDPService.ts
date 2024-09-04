@@ -31,7 +31,6 @@ export default class CDPService {
       ],
     });
     if (!response.ok) {
-      console.log(await response.text());
       throw createHttpError.BadRequest(
         `Failed to get city ID from CDP: ${response.statusText}`,
       );

@@ -31,6 +31,7 @@ import {
 import type { DataSourceData, DataSourceWithRelations } from "./types";
 import { DataCheckIcon, ScaleIcon } from "@/components/icons";
 import { FiTarget } from "react-icons/fi";
+import { getTranslationFromDict } from "@/i18n";
 
 export function SourceDrawer({
   source,
@@ -114,7 +115,7 @@ export function SourceDrawer({
                 lineHeight="40px"
                 textTransform="capitalize"
               >
-                {source.datasetName}
+                {getTranslationFromDict(source.datasetName)}
               </Heading>
 
               <Heading size="title.sm">
@@ -254,7 +255,7 @@ export function SourceDrawer({
               <Stack className="space-y-4">
                 <Heading size="title.sm">{t("inside-dataset")}</Heading>
                 <Text color="content.tertiary">
-                  {source.datasetDescription}
+                  {getTranslationFromDict(source.datasetDescription)}
                 </Text>
                 <chakra.hr borderColor="border.neutral" />
                 <Heading
@@ -279,7 +280,7 @@ export function SourceDrawer({
                   </Link>
                 </Heading>
                 <Text color="content.tertiary">
-                  {source.methodologyDescription}
+                  {getTranslationFromDict(source.methodologyDescription)}
                 </Text>
                 <Heading
                   size="title.sm"
@@ -303,7 +304,7 @@ export function SourceDrawer({
                   </Link>
                 </Heading>
                 <Text color="content.tertiary">
-                  {source.transformationDescription}
+                  {getTranslationFromDict(source.transformationDescription)}
                 </Text>
               </Stack>
             </DrawerBody>

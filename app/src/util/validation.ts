@@ -149,8 +149,31 @@ export const createUserInvite = z.object({
 
 export type CreateUserInvite = z.infer<typeof createUserInvite>;
 
-export const createActivityValueRequest = z.object({
+const gasValueSchema = z.object({
+  id: z.string().uuid().optional(),
+  emissionsFactorId: z.string().uuid().optional(),
+  gas: z.string(),
+  gasAmount: z.coerce.bigint().gte(0n).optional(),
+  emissionsFactor: z
+    .object({
+      emissionsPerActivity: z.number().gte(0).optional(),
+      gas: z.string().optional(),
+      units: z.string().optional(),
+      gpcReferenceNumber: z.string().optional(),
+    })
+    .optional(),
+});
+
+export const updateActivityValueRequest = z.object({
   inventoryValueId: z.string().uuid().optional(),
+  inventoryValue: z
+    .object({
+      inputMethodology: z.string(),
+      gpcReferenceNumber: z.string(),
+      unavailableReason: z.string().optional(),
+      unavailableExplanation: z.string().optional(),
+    })
+    .optional(),
   activityData: z.any().optional(),
   metadata: z.any().optional(),
   dataSource: z
@@ -160,22 +183,31 @@ export const createActivityValueRequest = z.object({
       notes: z.string(),
     })
     .optional(),
-  gasValues: z
-    .array(
-      z.object({
-        id: z.string().uuid().optional(),
-        emissionsFactorId: z.string().uuid().optional(),
-        gas: z.string(),
-        gasAmount: z.coerce.bigint().gte(0n).optional(),
-        emissionsFactor: z
-          .object({
-            emissionsPerActivity: z.number().gte(0).optional(),
-            gas: z.string().optional(),
-            units: z.string().optional(),
-            gpcReferenceNumber: z.string().optional(),
-          })
-          .optional(),
-      }),
-    )
-    .optional(),
+  gasValues: z.array(gasValueSchema).optional(),
 });
+
+export const createActivityValueRequest = z.object({
+  activityData: z.record(z.string(), z.any()),
+  metadata: z.record(z.string(), z.any()),
+  inventoryValueId: z.string().uuid().optional(),
+  inventoryValue: z
+    .object({
+      inputMethodology: z.string(),
+      gpcReferenceNumber: z.string(),
+      unavailableReason: z.string().optional(),
+      unavailableExplanation: z.string().optional(),
+    })
+    .optional(),
+  dataSource: z
+    .object({
+      sourceType: z.string(),
+      dataQuality: z.string(),
+      notes: z.string(),
+    })
+    .optional(),
+  gasValues: z.array(gasValueSchema).optional(),
+});
+
+export type CreateActivityValueRequest = z.infer<
+  typeof createActivityValueRequest
+>;

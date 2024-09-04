@@ -1,3 +1,25 @@
+export const getTranslationFromDictionary = (
+  translations: Record<string, string> | string | undefined,
+  lng?: string,
+): string | undefined => {
+  if (!!translations) {
+    if (translations instanceof String) {
+      return translations as string;
+    }
+    if (
+      typeof translations === "object" &&
+      !!Object.keys(translations).length
+    ) {
+      return (
+        (lng && translations[lng]) ||
+        translations["user"] ||
+        translations["en"] ||
+        Object.values(translations).find((t) => !!t)
+      );
+    }
+  }
+};
+
 /** Extract data from a nested object using a string path or array
  * Source: https://stackoverflow.com/a/22129960
  * @param path: string separated by . or an array of keys for each nested object
@@ -190,4 +212,34 @@ export function findClosestYearToInventory(
   }
 
   return null; // In case all entries are outside the maxYearDifference and no closest entry was found
+}
+
+export const getInputMethodology = (methodologyId: string) => {
+  if (methodologyId?.includes("direct-measure")) return "direct-measure";
+  else {
+    return methodologyId;
+  }
+};
+
+export function convertKgToTonnes(valueInTonnes: number) {
+  let result = "";
+
+  if (valueInTonnes >= 1e6) {
+    // Convert to megatonnes if the value is 1,000,000 tonnes or more
+    const megatonnes = (valueInTonnes / 1e6).toFixed(0);
+    result = `${megatonnes} MtCO2`;
+  } else if (valueInTonnes >= 1e3) {
+    // Convert to kilotonnes if the value is 1,000 tonnes or more but less than 1,000,000 tonnes
+    const kilotonnes = (valueInTonnes / 1e3).toFixed(0);
+    result = `${kilotonnes} KtCO2`;
+  } else if (valueInTonnes < 1) {
+    // Convert to kg if the value is less than 1 tonne
+    const kilograms = (valueInTonnes * 1e3).toFixed(0);
+    result = `${kilograms} kgCO2`;
+  } else {
+    // Return as tonnes if the value is less than 1,000 tonnes but more than or equal to 1 tonne
+    result = `${valueInTonnes} tCO2`;
+  }
+
+  return result;
 }

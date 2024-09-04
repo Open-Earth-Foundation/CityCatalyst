@@ -12,6 +12,14 @@ const METHANE_CORRECTION_FACTORS: Record<string, number> = {
   uncategorized: 0.6,
 };
 
+// factors of each fraction of waste type for methane generation formula
+const FOOD_FACTOR = 0.15;
+const GARDEN_WASTE_FACTOR = 0.2;
+const PAPER_FACTOR = 0.4;
+const WOOD_FACTOR = 0.43;
+const TEXTILES_FACTOR = 0.24;
+const INDUSTRIAL_WASTE_FACTOR = 0.15;
+
 export function handleVkt1Formula(activityValue: ActivityValue): Gas[] {
   const data = activityValue.activityData;
   if (!data) {
@@ -80,12 +88,12 @@ export function handleMethaneCommitmentFormula(
 
   // Degradable organic carbon in year of deposition, fraction (tonnes C/tonnes waste)
   const degradableOrganicCarbon =
-    0.15 * foodFraction +
-    0.2 * gardenWasteFraction +
-    0.4 * paperFraction +
-    0.43 * woodFraction +
-    0.24 * textilesFraction +
-    0.15 * industrialWasteFraction;
+    FOOD_FACTOR * foodFraction +
+    GARDEN_WASTE_FACTOR * gardenWasteFraction +
+    PAPER_FACTOR * paperFraction +
+    WOOD_FACTOR * woodFraction +
+    TEXTILES_FACTOR * textilesFraction +
+    INDUSTRIAL_WASTE_FACTOR * industrialWasteFraction;
 
   const methaneCorrectionFactor = METHANE_CORRECTION_FACTORS[landfillType];
   // GPC assumption, Fraction of degradable organic carbon that is ultimately degraded

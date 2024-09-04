@@ -84,19 +84,16 @@ export default class CalculationService {
       // TODO use Record<string, (activityValue, gasToCO2Eqs) => FormulaResult> for this? To avoid adding new code here for each new formula...
       // basically like a function pointer table in C++...
       case "direct-measure":
-        gases = handleDirectMeasureFormula(activityValue, gasToCO2Eqs);
+        gases = handleDirectMeasureFormula(activityValue);
         break;
       case "activity-amount-times-emissions-factor":
-        gases = handleActivityAmountTimesEmissionsFactorFormula(
-          activityValue,
-          gasToCO2Eqs,
-        );
+        gases = handleActivityAmountTimesEmissionsFactorFormula(activityValue);
         break;
       case "methane-commitment":
-        gases = handleMethaneCommitmentFormula(activityValue, gasToCO2Eqs);
+        gases = handleMethaneCommitmentFormula(activityValue);
         break;
       case "induced-activity-1": // TODO or VKT-1? What is it in the hierarchy.json file?
-        gases = handleVkt1Formula(activityValue, gasToCO2Eqs);
+        gases = handleVkt1Formula(activityValue);
       default:
         throw new createHttpError.NotImplemented(
           `Formula ${formula} not yet implemented for input methodology ${inventoryValue.inputMethodology}`,

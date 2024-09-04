@@ -1,5 +1,4 @@
 import type { ActivityValue } from "@/models/ActivityValue";
-import type { GasToCO2Eq } from "@/models/GasToCO2Eq";
 import type { Gas } from "./CalculationService";
 import createHttpError from "http-errors";
 
@@ -13,10 +12,7 @@ const METHANE_CORRECTION_FACTORS: Record<string, number> = {
   uncategorized: 0.6,
 };
 
-export function handleVkt1Formula(
-  activityValue: ActivityValue,
-  gasToCO2Eqs: GasToCO2Eq[],
-): Gas[] {
+export function handleVkt1Formula(activityValue: ActivityValue): Gas[] {
   const data = activityValue.activityData;
   if (!data) {
     throw new createHttpError.BadRequest(
@@ -43,7 +39,6 @@ export function handleVkt1Formula(
 
 export function handleMethaneCommitmentFormula(
   activityValue: ActivityValue,
-  gasToCO2Eqs: GasToCO2Eq[],
 ): Gas[] {
   const data = activityValue.activityData;
   if (!data) {
@@ -100,10 +95,7 @@ export function handleMethaneCommitmentFormula(
 
 export function handleActivityAmountTimesEmissionsFactorFormula(
   activityValue: ActivityValue,
-  gasToCO2Eqs: GasToCO2Eq[],
 ): Gas[] {
-  let totalCO2e = 0n;
-  let totalCO2eYears = 0;
   // TODO add actvityAmount column to ActivityValue
   // const activityAmount = activityValue.activityAmount || 0;
   // TODO perform these calculations using BigInt/ BigNumber?
@@ -134,7 +126,6 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
 
 export function handleDirectMeasureFormula(
   activityValue: ActivityValue,
-  gasToCO2Eqs: GasToCO2Eq[],
 ): Gas[] {
   const gases = GAS_NAMES.map((gasName) => {
     const data = activityValue.activityData;

@@ -723,7 +723,7 @@ const ActivityModalBody = ({
               borderColor: "content.link",
             }}
             placeholder={t("source-reference-placeholder")}
-            {...register(`activity.sourceReference` as any, {
+            {...register(`activity.sourceReference`, {
               required: t("source-reference-required"),
             })}
           />

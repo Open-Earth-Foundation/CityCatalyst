@@ -24,26 +24,38 @@ import { TFunction } from "i18next";
 import React, { FC } from "react";
 import { FiTrash2 } from "react-icons/fi";
 import { MdModeEditOutline, MdMoreVert } from "react-icons/md";
+import {
+  DirectMeasure,
+  ExtraField,
+  MANUAL_INPUT_HIERARCHY,
+} from "@/util/form-schema";
 
 interface DirectMeasureTableProps {
   t: TFunction;
   activityData: ActivityValue[] | undefined;
   onDeleteActivity: (activity: ActivityValue) => void;
   onEditActivity: (activity: ActivityValue) => void;
+  referenceNumber?: string;
 }
 
 const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
   activityData,
   onDeleteActivity,
   onEditActivity,
+  referenceNumber,
   t,
 }) => {
+  const directMeasure = MANUAL_INPUT_HIERARCHY[referenceNumber as string]
+    .directMeasure as DirectMeasure;
+  const extraFields = directMeasure["extra-fields"] as ExtraField[];
   return (
     <Box>
       <Table variant="simple" borderWidth="1px">
         <Thead bg="background.backgroundLight">
           <Tr fontSize="button.sm" fontWeight="bold">
-            <Th isTruncated>{t("building-type")}</Th>
+            {extraFields.length > 0 && (
+              <Th isTruncated>{t(extraFields[0].id)}</Th>
+            )}
             <Th isTruncated>{t("data-quality")}</Th>
             <Th isNumeric isTruncated>
               {t("co2-emissions")}
@@ -62,7 +74,11 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
             const dataQuality = activity?.dataSource?.dataQuality;
             return (
               <Tr key={i}>
-                <Td isTruncated>{t(activity?.activityData?.activity_type!)}</Td>
+                {extraFields.length > 0 && (
+                  <Td isTruncated>
+                    {t(activity?.activityData?.[extraFields[0].id])}
+                  </Td>
+                )}
                 <Td>
                   <Tag p="8px" minW="50px" variant={dataQuality}>
                     <TagLabel textTransform="capitalize">

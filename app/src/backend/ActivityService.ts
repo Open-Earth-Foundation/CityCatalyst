@@ -218,6 +218,7 @@ export default class ActivityService {
             inventoryValue,
             activityValue,
             inventoryValue.inputMethodology as string,
+            gasValues as GasValueInput[],
           );
 
         const currentCO2e =
@@ -335,6 +336,7 @@ export default class ActivityService {
             inventoryValue,
             activityValue,
             inventoryValue.inputMethodology,
+            gasValues as GasValueInput[],
           );
 
         const currentCO2e = BigInt(inventoryValue.co2eq ?? 0n);

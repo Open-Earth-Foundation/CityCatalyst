@@ -96,6 +96,10 @@ const testIds = {
   n2oEmissionInput: "n2o-emission-factor",
   ch4EmissionInput: "ch4-emission-factor",
   sourceReferenceInput: "source-reference",
+  activityMoreButton: "activity-more-icon",
+  deleteActivityButton: "delete-activity-button",
+  deleteActivityModalHeader: "delete-activity-modal-header",
+  deleteActivityModalConfirmButton: "delete-activity-modal-confirm",
 };
 
 const sectorData = [
@@ -235,6 +239,18 @@ test.describe.serial("Manual Input", () => {
           await dropdown.selectOption({ index: 1 });
         }
 
+        const inputElements = await page.locator("input[type='text']");
+        for (let i = 0; i < (await inputElements.count()); i++) {
+          const input = inputElements.nth(i);
+          await input.fill("1");
+        }
+
+        const textInput = await addEmissionModal.getByTestId(
+          testIds.sourceReferenceInput,
+        );
+
+        await textInput.fill("");
+
         // fill in the emission values
         const co2Input = await addEmissionModal.getByTestId(
           testIds.co2EmissionInput,
@@ -269,9 +285,6 @@ test.describe.serial("Manual Input", () => {
         expect(element).toBeTruthy();
 
         // fill in the text fields
-        const textInput = await addEmissionModal.getByTestId(
-          testIds.sourceReferenceInput,
-        );
         await textInput.fill("test");
 
         await submitButton?.click();
@@ -301,6 +314,50 @@ test.describe.serial("Manual Input", () => {
         expect(await cellWithValue?.innerText()).toContain(
           EmissionFactos.CO2.toString(),
         );
+      });
+
+      test(`should delete the activity from the table in in ${sector.sectorName}`, async () => {
+        test.skip(sector.sectorName === "Waste");
+        // wait for the page to load
+        // wait for the table to load
+        const table = await page.locator("table");
+
+        // Ensure the table exists
+        expect(table).not.toBeNull();
+
+        const moreButton = await page.getByTestId(testIds.activityMoreButton);
+
+        expect(moreButton).toBeTruthy();
+
+        await moreButton.click();
+
+        const deleteButton = await page.getByTestId(
+          testIds.deleteActivityButton,
+        );
+
+        expect(deleteButton).toBeTruthy();
+
+        await deleteButton.click();
+
+        // wait for the modal to open
+        await page.waitForTimeout(500);
+        const deleteModal = await page.getByTestId(
+          testIds.deleteActivityModalHeader,
+        );
+
+        expect(deleteModal).toBeVisible();
+
+        const confirmButton = await page.getByTestId(
+          testIds.deleteActivityModalConfirmButton,
+        );
+
+        expect(confirmButton).toBeVisible();
+
+        await confirmButton.click();
+
+        // wait for a 200 response
+        await page.waitForResponse((resp) => resp.status() == 200);
+        await page.waitForTimeout(500);
       });
     });
   });

@@ -10,13 +10,13 @@ import {
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
+  SimpleGrid,
   Switch,
   TabPanel,
   Text,
   useDisclosure,
-  
 } from "@chakra-ui/react";
-import React, { FC, useState } from "react";
+import React, { FC, useMemo, useState } from "react";
 import HeadingText from "../../heading-text";
 import { AddIcon } from "@chakra-ui/icons";
 import { MdMoreVert } from "react-icons/md";
@@ -43,7 +43,7 @@ import { DataConnectIcon } from "@/components/icons";
 import { convertKgToTonnes, getInputMethodology } from "@/util/helpers";
 import DirectMeasureTable from "./direct-measure-table";
 import DeleteActivityModal from "@/components/Modals/delete-activity-modal";
-import { on } from "events";
+import { InventoryValue } from "@/models/InventoryValue";
 
 interface ActivityTabProps {
   t: TFunction;
@@ -59,6 +59,7 @@ interface ActivityTabProps {
   step: string;
   activityData: ActivityValue[] | undefined;
   subsectorId: string;
+  inventoryValues: InventoryValue[];
 }
 
 const ActivityTab: FC<ActivityTabProps> = ({
@@ -73,6 +74,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
   step,
   activityData,
   subsectorId,
+  inventoryValues,
 }) => {
   let totalEmissions = 0;
 
@@ -97,6 +99,19 @@ const ActivityTab: FC<ActivityTabProps> = ({
     (activity) =>
       activity.inventoryValue.gpcReferenceNumber === refNumberWithScope,
   );
+
+  const inventoryValue = useMemo<InventoryValue | null>(() => {
+    return (
+      inventoryValues?.find(
+        (value) =>
+          value.gpcReferenceNumber === refNumberWithScope &&
+          value.inputMethodology ===
+            (methodology?.id.includes("direct-measure")
+              ? "direct-measure"
+              : methodology?.id),
+      ) ?? null
+    );
+  }, [inventoryValues, methodology]);
 
   const getActivityValuesByMethodology = (
     activityValues: ActivityValue[] | undefined,
@@ -284,18 +299,22 @@ const ActivityTab: FC<ActivityTabProps> = ({
                       </Text>
                     </Box>
                     <Box display="flex" alignItems="center">
-                      <Button
-                        data-testid="add-emission-data-button"
-                        onClick={onAddActivityModalOpen}
-                        title="Add Activity"
-                        leftIcon={<AddIcon h="16px" w="16px" />}
-                        h="48px"
-                        aria-label="activity-button"
-                        fontSize="button.md"
-                        gap="8px"
-                      >
-                        {t("add-emission-data")}
-                      </Button>
+                      {(activityValues.length > 0 ||
+                        getInputMethodology(methodology?.id!)) !==
+                        "direct-measure" && (
+                        <Button
+                          data-testid="add-emission-data-button"
+                          onClick={onAddActivityModalOpen}
+                          title="Add Activity"
+                          leftIcon={<AddIcon h="16px" w="16px" />}
+                          h="48px"
+                          aria-label="activity-button"
+                          fontSize="button.md"
+                          gap="8px"
+                        >
+                          {t("add-emission-data")}
+                        </Button>
+                      )}
                       <Popover>
                         <PopoverTrigger>
                           <IconButton
@@ -491,6 +510,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                             <Box>
                               <Button
                                 onClick={onAddActivityModalOpen}
+                                data-testid="add-emission-data-button"
                                 title={t("add-emission-data")}
                                 leftIcon={<AddIcon h="16px" w="16px" />}
                                 h="48px"
@@ -580,11 +600,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                     >
                       {t("select-methodology")}
                     </Text>
-                    <Box
-                      gap="16px"
-                      display="flex"
-                      justifyContent="space-between"
-                    >
+                    <SimpleGrid minChildWidth="250px" spacing={4}>
                       {(methodologies || []).map(
                         ({ id, disabled, activities, inputRequired }) => (
                           <MethodologyCard
@@ -618,7 +634,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                           disabled={false}
                         />
                       ) : null}
-                    </Box>
+                    </SimpleGrid>
                   </Box>
                 )}
               </Box>
@@ -634,6 +650,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
         setHasActivityData={setHasActivityData}
         methodology={methodology!}
         inventoryId={inventoryId}
+        inventoryValue={inventoryValue}
         selectedActivity={selectedActivity}
         referenceNumber={refNumberWithScope}
         edit={!!selectedActivityValue}

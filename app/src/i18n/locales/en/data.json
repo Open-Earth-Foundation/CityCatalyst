@@ -792,5 +792,13 @@
   "activity-value-error": "Something went wrong",
   "source-reference-form-label": "Please select a source reference",
   "gwp-info-prefix": "All calculations consider a",
-  "gwp-info": "GWP value of 28 for CH4 and 265 for N20 (Version AR5)"
+  "gwp-info": "GWP value of 28 for CH4 and 265 for N20 (Version AR5)",
+  "manual-input-error-exclusive-secondary": "You cannot create an Activity value with a <strong>{{targetField}}</strong> of <strong>{{exclusiveFieldValue}}</strong> when another Activity Value exists in this methodology",
+  "manual-input-error-exclusive-secondary-inline": "Please select another value",
+  "manual-input-error-exclusive": "You cannot create an Activity Value when an existing Activity Value has a <strong>{{targetField}}</strong> of <strong>{{exclusiveFieldValue}}</strong>",
+  "manual-input-error-exclusive-inline": "An activity value with \"{{value}}\" already exists",
+  "manual-input-error-unique": "Each Activity Value must have a unique combination of <strong>{{targetField}}</strong>",
+  "manual-input-error-unique-inline": "This combination of values already exists",
+  "manual-input-error-required": "Some required fields are missing",
+  "manul-input-error-required-inline": "This value is required"
 }

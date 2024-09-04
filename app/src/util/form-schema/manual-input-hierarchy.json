@@ -713,7 +713,7 @@
                   "type-textiles-and-leather",
                   "type-unspecified-industry"
                 ],
-                "exclusive": "manufacturing-and-construction-type-all"
+                "exclusive": "type-all"
               },
               {
                 "id": "manufacturing-and-construction-energy-usage",

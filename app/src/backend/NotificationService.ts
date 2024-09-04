@@ -50,7 +50,6 @@ class NotificationService {
     try {
       const transporter = nodemailer.createTransport({ ...smtpOptions });
       const info = await transporter.sendMail(mailOptions);
-      console.log("Message sent: %s", info.messageId);
       return { success: true, messageId: info.messageId };
     } catch (error) {
       console.error("Error sending email:", error);

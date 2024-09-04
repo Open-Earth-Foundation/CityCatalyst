@@ -151,6 +151,21 @@ export const api = createApi({
         response.data,
       providesTags: ["InventoryValue"],
     }),
+    getInventoryValuesBySubsector: builder.query<
+      InventoryValueResponse[],
+      {
+        inventoryId: string;
+        subSectorId: string;
+      }
+    >({
+      query: ({ inventoryId, subSectorId }) => ({
+        url: `/inventory/${inventoryId}/value/subsector/${subSectorId}`,
+        method: "GET",
+      }),
+      transformResponse: (response: { data: InventoryValueResponse[] }) =>
+        response.data,
+      providesTags: ["InventoryValue"],
+    }),
     setInventoryValue: builder.mutation<
       InventoryValueAttributes,
       InventoryValueUpdateQuery
@@ -459,7 +474,7 @@ export const api = createApi({
         body: data.requestData,
       }),
       transformResponse: (response: any) => response.data,
-      invalidatesTags: ["ActivityValue"],
+      invalidatesTags: ["ActivityValue", "InventoryValue"],
     }),
     getActivityValue: builder.query({
       query: (data: { inventoryId: string; valueId: string }) => ({
@@ -495,7 +510,7 @@ export const api = createApi({
         },
       }),
       transformResponse: (response: any) => response.data,
-      invalidatesTags: ["ActivityValue"],
+      invalidatesTags: ["ActivityValue", "InventoryValue"],
     }),
     createThreadId: builder.mutation({
       query: (data: { inventoryId: string; content: string }) => ({
@@ -570,5 +585,6 @@ export const {
   useUpdateActivityValueMutation,
   useDeleteAllActivityValuesMutation,
   useDeleteActivityValueMutation,
+  useGetInventoryValuesBySubsectorQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

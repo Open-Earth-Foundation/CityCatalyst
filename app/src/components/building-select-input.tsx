@@ -12,9 +12,11 @@ interface BuildingTypeSelectInputProps {
   placeholder: string;
   register: UseFormRegister<Inputs>;
   activity: string;
-  errors: FieldErrors<any>;
+  errors: Record<string, any>;
   t: TFunction;
   selectedActivity?: SuggestedActivity;
+  multiselect?: boolean;
+  required?: boolean;
 }
 
 const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
@@ -22,11 +24,14 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
   options,
   placeholder,
   register,
+  required,
   activity,
   errors,
   t,
+  multiselect,
   selectedActivity,
 }) => {
+  const error = activity.split(".").reduce((acc, key) => acc?.[key], errors);
   return (
     <Box display="flex" flexDirection="column" gap="8px">
       <Text
@@ -42,10 +47,10 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
       <Select
         shadow="1dp"
         borderRadius="4px"
-        borderWidth={errors?.[activity] ? "1px" : 0}
+        borderWidth={error ? "1px" : 0}
         border="inputBox"
-        borderColor={errors?.[activity] ? "sentiment.negativeDefault" : ""}
-        background={errors?.[activity] ? "sentiment.negativeOverlay" : ""}
+        borderColor={error ? "sentiment.negativeDefault" : ""}
+        background={error ? "sentiment.negativeOverlay" : ""}
         fontSize="body.lg"
         h="48px"
         placeholder={placeholder}
@@ -54,7 +59,9 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
           borderColor: "content.link",
           shadow: "none",
         }}
-        {...register(activity as any, { required: t("value-required") })}
+        {...register(activity as any, {
+          required: required === false ? false : t("option-required"),
+        })}
       >
         {options?.map((item: string) => (
           <option key={item} value={item}>
@@ -62,12 +69,10 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
           </option>
         ))}
       </Select>
-      {errors?.[activity] ? (
+      {error ? (
         <Box display="flex" gap="6px" alignItems="center">
           <WarningIcon color="sentiment.negativeDefault" />
-          <Text fontSize="body.md">
-            Please select the {title.toLowerCase()}
-          </Text>
+          <Text fontSize="body.md">{error?.message}</Text>
         </Box>
       ) : (
         ""

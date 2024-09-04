@@ -30,7 +30,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
     gasValues,
     dataSourceParams,
   );
-  return NextResponse.json({ success: result != null, data: result });
+  return NextResponse.json({ success: !!result, data: result });
 });
 
 export const GET = apiHandler(async (req, { params, session }) => {

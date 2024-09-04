@@ -1,14 +1,27 @@
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { ActivityValue } from "@/models/ActivityValue";
-import { SuggestedActivity } from "@/util/form-schema";
+import { ExtraField, SuggestedActivity } from "@/util/form-schema";
 import { Inputs } from "@/components/Modals/activity-modal/activity-modal-body";
 
 export const generateDefaultActivityFormValues = (
   selectedActivity: SuggestedActivity,
+  fields: ExtraField[],
 ) => {
   return {
     activityType: selectedActivity?.id,
+    ...(fields
+      ? {
+          ...fields.reduce((acc: Record<string, any>, field) => {
+            acc[field.id] = field.multiselect
+              ? []
+              : field.type === "number"
+                ? 0
+                : "";
+            return acc;
+          }, {}),
+        }
+      : {}),
     fuelType: "",
     dataQuality: "",
     sourceReference: "",
@@ -38,10 +51,12 @@ const useActivityForm = ({
   targetActivityValue,
   selectedActivity,
   methodologyName,
+  fields,
 }: {
   targetActivityValue: ActivityValue | undefined;
   selectedActivity?: SuggestedActivity;
   methodologyName?: string;
+  fields: ExtraField[];
 }) => {
   const {
     register,
@@ -50,6 +65,7 @@ const useActivityForm = ({
     watch,
     setError,
     setFocus,
+    control,
     formState: { errors },
   } = useForm<Inputs>();
 
@@ -89,6 +105,13 @@ const useActivityForm = ({
       reset({
         activity: generateDefaultActivityFormValues(
           selectedActivity as SuggestedActivity,
+          fields,
+        ),
+      });
+      reset({
+        activity: generateDefaultActivityFormValues(
+          selectedActivity as SuggestedActivity,
+          fields,
         ),
       });
     }
@@ -102,6 +125,7 @@ const useActivityForm = ({
     setError,
     setFocus,
     errors,
+    control,
   };
 };
 

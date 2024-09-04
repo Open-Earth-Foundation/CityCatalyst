@@ -1,10 +1,16 @@
 import { Box, Select, Text } from "@chakra-ui/react";
 import React, { FC } from "react";
-import { FieldError, FieldErrors, UseFormRegister } from "react-hook-form";
+import {
+  Control,
+  FieldError,
+  FieldErrors,
+  UseFormRegister,
+} from "react-hook-form";
 import { Inputs } from "./Modals/activity-modal/activity-modal-body";
 import { WarningIcon } from "@chakra-ui/icons";
 import { TFunction } from "i18next";
 import type { SuggestedActivity } from "@/util/form-schema";
+import MultiSelectInput from "@/components/MultiSelectInput";
 
 interface BuildingTypeSelectInputProps {
   title: string;
@@ -15,6 +21,7 @@ interface BuildingTypeSelectInputProps {
   errors: Record<string, any>;
   t: TFunction;
   selectedActivity?: SuggestedActivity;
+  control: Control<Inputs, any>;
   multiselect?: boolean;
   required?: boolean;
 }
@@ -29,8 +36,21 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
   errors,
   t,
   multiselect,
-  selectedActivity,
+  control,
 }) => {
+  if (multiselect) {
+    return (
+      <MultiSelectInput
+        title={title}
+        options={options}
+        placeholder={placeholder}
+        control={control}
+        activity={activity}
+        errors={errors}
+        t={t}
+      />
+    );
+  }
   const error = activity.split(".").reduce((acc, key) => acc?.[key], errors);
   return (
     <Box display="flex" flexDirection="column" gap="8px">

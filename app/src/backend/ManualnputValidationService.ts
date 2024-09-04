@@ -159,12 +159,24 @@ export default class ManualInputValidationService {
   }) {
     let duplicateFields: string[] = [];
 
-    // using the LOWER function to make the comparison case insensitive
-    const conditions = uniqueBy.map((field) =>
-      where(fn("lower", literal(`activity_data_jsonb->>'${field}'`)), {
-        [Op.eq]: activityValueParams.activityData?.[field].toLowerCase(),
-      }),
-    );
+    const conditions = uniqueBy.map((field) => {
+      const value = activityValueParams.activityData?.[field];
+
+      if (Array.isArray(value)) {
+        // we don't need to do case-insesitive checks for the multi-select since the values are controlled
+        return where(
+          literal(
+            `activity_data_jsonb->'${field}' ?| array[${value.map((v) => `'${v}'`).join(",")}]`,
+          ),
+          true,
+        );
+      } else {
+        // using the LOWER function to make the comparison case-insensitive
+        return where(fn("lower", literal(`activity_data_jsonb->>'${field}'`)), {
+          [Op.eq]: value.toLowerCase(),
+        });
+      }
+    });
 
     if (activityValueId) {
       conditions.push(where(col("id"), { [Op.ne]: activityValueId }));
@@ -182,18 +194,28 @@ export default class ManualInputValidationService {
     });
 
     if (existingRecord) {
-      duplicateFields = uniqueBy.filter(
-        (field) =>
-          existingRecord.activityData?.[field].toLowerCase() ===
-          activityValueParams.activityData?.[field].toLowerCase(),
-      );
+      duplicateFields = uniqueBy.filter((field) => {
+        const existingValue = existingRecord.activityData?.[field];
+        const newValue = activityValueParams.activityData?.[field];
 
-      const errorBody = {
-        code: ManualInputValidationErrorCodes.UNIQUE_BY_CONFLICT,
-        targetFields: duplicateFields,
-      };
+        if (Array.isArray(existingValue) && Array.isArray(newValue)) {
+          // For arrays, check for overlap without case sensitivity
+          return existingValue.some((item) => newValue.includes(item));
+        } else {
+          // For single values (strings), do a case-insensitive comparison
+          return existingValue?.toLowerCase() === newValue?.toLowerCase();
+        }
+      });
 
-      throw new ManualInputValidationError(errorBody);
+      // If duplicate fields are found, throw an error
+      if (duplicateFields.length > 0) {
+        const errorBody = {
+          code: ManualInputValidationErrorCodes.UNIQUE_BY_CONFLICT,
+          targetFields: duplicateFields,
+        };
+
+        throw new ManualInputValidationError(errorBody);
+      }
     }
   }
 

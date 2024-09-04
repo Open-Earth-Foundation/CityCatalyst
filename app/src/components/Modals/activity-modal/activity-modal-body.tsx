@@ -19,7 +19,7 @@ import { useState } from "react";
 import BuildingTypeSelectInput from "../../building-select-input";
 import { InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
 import { TFunction } from "i18next";
-import { UseFormRegister } from "react-hook-form";
+import { Control, UseFormRegister } from "react-hook-form";
 import type {
   DirectMeasureData,
   SubcategoryData,
@@ -35,6 +35,7 @@ export type EmissionFactorTypes = {
 interface AddActivityModalBodyProps {
   t: TFunction;
   register: UseFormRegister<Inputs>;
+  control: Control<Inputs, any>;
   submit: () => void;
   fields: ExtraField[];
   units: string[];
@@ -79,6 +80,7 @@ export type ExtraField = {
 const ActivityModalBody = ({
   t,
   register,
+  control,
   submit,
   methodology,
   emissionsFactorTypes,
@@ -121,6 +123,7 @@ const ActivityModalBody = ({
                     <BuildingTypeSelectInput
                       options={f.options}
                       required={f.required}
+                      control={control}
                       multiselect={f.multiselect}
                       title={f.id}
                       placeholder={t("select-activity-type")}

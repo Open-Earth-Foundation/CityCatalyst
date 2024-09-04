@@ -658,7 +658,7 @@ export default function AddDataSteps({
 
                 <BreadcrumbItem>
                   <BreadcrumbLink href="#" color="content.link">
-                    {currentStep.title}
+                    {t(currentStep.title)}
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               </Breadcrumb>

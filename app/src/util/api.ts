@@ -10,7 +10,7 @@ import OpenAI from "openai";
 
 import { db } from "@/models";
 import { ValidationError } from "sequelize";
-import { ManualInputValidationError } from "@/lib/custom-errors.ts/manual-input-error";
+import { ManualInputValidationError } from "@/lib/custom-errors/manual-input-error";
 
 export type NextHandler = (
   req: NextRequest,

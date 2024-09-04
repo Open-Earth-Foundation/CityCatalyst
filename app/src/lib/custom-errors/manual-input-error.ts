@@ -1,5 +1,3 @@
-import createHttpError from "http-errors";
-
 export enum ManualInputValidationErrorCodes {
   EXCLUSIVE_CONFLICT = "EXCLUSIVE_CONFLICT", // trying to insert a value when an existing ActivityValue has an exclusive value
   EXCLUSIVE_CONFLICT_SECONDARY = "EXCLUSIVE_CONFLICT_SECONDARY", // trying to insert an exclusive value when an existing ActivityValue has any value

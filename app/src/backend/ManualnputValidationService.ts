@@ -4,7 +4,6 @@ import { ActivityValue, ActivityValueAttributes } from "@/models/ActivityValue";
 import { InventoryValueAttributes } from "@/models/InventoryValue";
 import {
   DirectMeasure,
-  ExtraField,
   findMethodology,
   MANUAL_INPUT_HIERARCHY,
   Methodology,
@@ -15,7 +14,8 @@ import {
   ManualInputValidationError,
   ManualInputValidationErrorCodes,
   ManualValidationErrorDetails,
-} from "@/lib/custom-errors.ts/manual-input-error";
+} from "@/lib/custom-errors/manual-input-error";
+import createHttpError from "http-errors";
 
 // validation rules
 
@@ -56,7 +56,7 @@ export default class ManualInputValidationService {
         await db.models.InventoryValue.findByPk(inventoryValueId);
 
       if (!inventoryValue) {
-        throw new Error("Inventory value not found");
+        throw new createHttpError.NotFound("Inventory value not found");
       }
 
       const referenceNumber = inventoryValue.gpcReferenceNumber as string;
@@ -71,7 +71,9 @@ export default class ManualInputValidationService {
         methodology = findMethodology(methodologyId, referenceNumber);
         // check if the methodology exists
         if (!methodology) {
-          throw new Error(`Methodology ${methodologyId} not found`);
+          throw new createHttpError.NotFound(
+            `Methodology ${methodologyId} not found`,
+          );
         }
       }
 
@@ -193,7 +195,6 @@ export default class ManualInputValidationService {
 
       throw new ManualInputValidationError(errorBody);
     }
-    // check if the uniqueBy fields are unique
   }
 
   private static async exclusiveFieldValidation({

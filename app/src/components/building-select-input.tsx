@@ -47,7 +47,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
       <Select
         shadow="1dp"
         borderRadius="4px"
-        borderWidth={errors?.[activity] ? "1px" : 0}
+        borderWidth={error ? "1px" : 0}
         border="inputBox"
         borderColor={error ? "sentiment.negativeDefault" : ""}
         background={error ? "sentiment.negativeOverlay" : ""}

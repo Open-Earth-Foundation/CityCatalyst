@@ -18,7 +18,6 @@ import type {
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 import type { Transaction } from "sequelize";
-import { Op } from "sequelize";
 import ManualInputValidationService from "./ManualnputValidationService";
 
 type GasValueInput = Omit<GasValueCreationAttributes, "id"> & {
@@ -238,8 +237,6 @@ export default class ActivityService {
         activityValue.co2eqYears = totalCO2eYears;
         await activityValue.save({ transaction });
 
-        await inventoryValue.save({ transaction });
-
         if (gasValues) {
           await this.updateGasValues({
             gasValues,
@@ -266,8 +263,6 @@ export default class ActivityService {
       activityValueParams,
       inventoryValueId,
     });
-
-    console.log("passed the validation");
 
     return await db.sequelize?.transaction(
       async (transaction: Transaction): Promise<ActivityValue> => {
@@ -428,13 +423,11 @@ export default class ActivityService {
 
     // delete all the inventory values in subsector
 
-    const count = await db.models.InventoryValue.destroy({
+    return await db.models.InventoryValue.destroy({
       where: {
         subSectorId: subsectorId,
         inventoryId,
       },
     });
-
-    return count;
   }
 }

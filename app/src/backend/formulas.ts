@@ -51,13 +51,23 @@ export function handleMethaneCommitmentFormula(
       "Activity has no data associated, so it can't use the formula",
     );
   }
-  const foodFraction = (data["food-fraction"] || 0) / 100.0;
-  const gardenWasteFraction = (data["garden-waste-fraction"] || 0) / 100.0;
-  const paperFraction = (data["paper-fraction"] || 0) / 100.0;
-  const woodFraction = (data["wood-fraction"] || 0) / 100.0;
-  const textilesFraction = (data["textiles-fraction"] || 0) / 100.0;
-  const industrialWasteFraction =
-    (data["industrial-waste-fraction"] || 0) / 100.0;
+
+  const getFraction = (key: string) => (data[key] || 0) / 100.0;
+  const [
+    foodFraction,
+    gardenWasteFraction,
+    paperFraction,
+    woodFraction,
+    textilesFraction,
+    industrialWasteFraction,
+  ] = [
+    "food-fraction",
+    "garden-waste-fraction",
+    "paper-fraction",
+    "wood-fraction",
+    "textiles-fraction",
+    "industrial-waste-fraction",
+  ].map(getFraction);
 
   const landfillType = data["landfill-type"];
   // Rewrite the property accesses in data here to use kebab-case instead of camelCase.

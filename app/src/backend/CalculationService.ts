@@ -92,7 +92,7 @@ export default class CalculationService {
       case "methane-commitment":
         gases = handleMethaneCommitmentFormula(activityValue);
         break;
-      case "induced-activity-1": // TODO or VKT-1? What is it in the hierarchy.json file?
+      case "induced-activity-1":
         gases = handleVkt1Formula(activityValue);
       default:
         throw new createHttpError.NotImplemented(

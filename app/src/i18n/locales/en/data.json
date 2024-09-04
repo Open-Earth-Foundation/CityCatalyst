@@ -26,24 +26,21 @@
   "energy-consumption-description": "From electricity or heat purchased for use in commercial buildings.",
   "add-data-manually-desciption": "To add your inventory data manually, select the methodology used to collect the data and calculate your emissions. <2>Learn more</2> about methodologies",
   "fuel-combustion-consumption-desciption": "Direct recording of fuels combusted in commercial buildings.",
-  "total-fuel-consumed": "Total consumed amount",
+  "total-fuel-consumed": "Total Fuel Consumed",
   "input-required": "Input required",
   "select-activity-type": "Select activity type",
   "scaled-sample-data": "Scaled sample data",
   "scaled-sample-data-desc": "Extrapoles emissions from a representative sample of buildings",
   "sample-fuel": "Sample fuel consumed amount",
-  "scaling-data": "Scaling data (population, GDP, area, etc) for sample and city level",
+  "scaling-data": "Scaling Data",
   "modeled-data": "Modeled data",
   "modeled-data-desc": "Emissions estimated from predictive models",
   "modeled-fuel": "Modeled fuel intensity consumption",
-  "built-area": "Built area",
-
+  "built-area": "Built Area",
   "building-type": "Building type",
   "select-type-of-building": "Select type of building",
-
   "direct-measure-desc": "Direct emission measurements from commercial buildings combustion sources.",
   "emissions-data": "Emissions data",
-
   "scope-unavailable": "Scope Unavailable/Not Applicable to My City",
   "scope-unavailable-description": "Some emissions activities may not be relevant for your city, or maybe they're accounted for in a different section. Check the reason that fits and provide details if needed. This helps keep your inventory accurate and tailored to your city.",
   "select-reason": "Select Reason",
@@ -54,17 +51,14 @@
   "explanation-justification": "Explanation/ Justification",
   "save-changes": "Save Changes",
   "textarea-placeholder-text": "Write in detail why this scope is not included",
-
   "institutional-buildings": "Institutional buildings",
   "street-lighting": "Street lighting",
-
   "all-fuels": "All fuels",
   "natural-gas": "Natural gas",
   "heating-oil": "Heating oil",
   "propane": "Propane",
   "select-type-of-fuel": "Select type of fuel",
-
-  "total-fuel-consumption": "Total fuel consumption",
+  "total-fuel-consumption": "Total fuel consumed amount",
   "gallons": "Gallons",
   "liters": "Liters",
   "cubic-meters": "Cubic meters",
@@ -76,7 +70,6 @@
   "local": "Local",
   "regional": "Regional",
   "national": "National",
-
   "all-energy-uses": "All energy uses",
   "electricity": "Electricity",
   "electricity-chp": "Electricity CHP",
@@ -85,7 +78,6 @@
   "steam": "Steam",
   "refrigiration": "Refrigiration",
   "refrigiration-chp": "Refrigiration CHP",
-
   "stationary-energy": "Stationary energy",
   "stationary-energy-details": "This sector deals with emissions that result from the generation of electricity, heat, and steam, as well as their consumption.",
   "stationary-energy-scope": "Scope Required for Basic GHGI: 1, 2",
@@ -117,11 +109,9 @@
   "edit-subsector": "Edit subsector",
   "more-datasets": "View more datasets",
   "less-datasets": "View less datasets",
-
   "add-data-heading": "Add Data to Your Inventory Data",
   "add-data-details": "These are the subsectors to be completed according to the GPC methodology for the transport sector. Select a sub-sector and fill in the information to complete your inventory.",
   "select-subsector": "Select sub-sector",
-
   "residential-buildings": "Residential buildings",
   "residential-buildings-description": "Includes high rise buildings, landed buildings, workers’ quarters in industrial establishments, residential in agricultural farms.",
   "commercial-and-institutional-buildings-and-facilities": "Commercial and institutional buildings and facilities",
@@ -156,7 +146,6 @@
   "incineration-and-open-burning-description": "This subsector includes emissions from incineration (a controlled, industrial process often with energy recovery where inputs and emissions can be measured and data is often available), and from open burning (an uncontrolled, often illicit process with different emissions and can typically only be estimated based on collection rates). Both generated inside the city.",
   "wastewater-treatment-and-discharge": "Wastewater generated in the city",
   "wastewater-treatment-and-discharge-description": "This sub-sector includes emissions from incineration (a controlled, industrial process often with energy recovery where inputs and emissions can be measured and data is often available), and from open burning (an uncontrolled, often illicit process with different emissions and can typically only be estimated based on collection rates). Both generated inside the city.",
-
   "delete-all-activities": "Delete all activities",
   "delete-activity": "Delete activity",
   "delete-activities-prompt": "Are you sure you want to <2>permanently delete </2> all activities in the commercial and institutional buildings sub-sector from the city's inventory data?",
@@ -165,7 +154,6 @@
   "all-activities-deleted": "All activities deleted successfully",
   "delete-activity-failed": "Failed to delete activity",
   "delete-all-activities-failed": "Failed to delete all activities",
-
   "skip-step-button": "Skip this step",
   "save-continue-button": "Save and Continue",
   "updated-every": "Updated every",
@@ -174,7 +162,6 @@
   "day": "day",
   "sources": "Sources",
   "methodology": "Methodology",
-
   "sector": "Sector",
   "load-failed-subsector-value": "Failed to load sub-sector data!",
   "enter-subsector-data": "Enter the sub-sector data",
@@ -259,7 +246,6 @@
   "file-upload-steps": "Follow the steps in our template and upload the data to calculate your inventory without waiting for CityCatlyst's data review.",
   "add-custom": "Add custom",
   "save-missing-scope-info": "Save or fill in missing information before proceeding.",
-
   "total-emissions-included": "Total emissions that will be included",
   "total-emissions-tooltip": "This is the total and final number that will be added to your GHG inventory",
   "scale": "Scale",
@@ -269,10 +255,8 @@
   "transform-data-heading": "How do we transform this data?",
   "transform-data-description": "Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.",
   "disconnect-data": "Disconnect Data",
-
   "error": "Error",
   "missing-population": "City is missing population/ region population/ country population for a year close to the inventory year",
-
   "file-context": "Tell Us More About This File",
   "file-data-subtitle": "What type of data is contained in it?",
   "file-data-description": " Choose from the options below. This will help us to better identify and include this information in your inventory.",
@@ -287,7 +271,6 @@
   "file-deletion-error": "File deletetion error!",
   "file-deletion-error-description": "Something went wrong during file deletion",
   "file-deletion-success": "file deleted successfully",
-
   "coming-soon": "Coming Soon",
   "intlNumber": "{{val, number}}",
   "fuel-combustion-residential-buildings-direct-measure-methodology": "Direct Measure",
@@ -478,10 +461,7 @@
   "biological-treatment-outboundary-methodology-description": "Emissions from composting and anaerobic digestion of organic waste (waste treated outside the city).",
   "direct-measure-incineration-waste-inboundary-methodology-description": "Emissions from controlled, industrial process of incineration or estimates them from uncontrolled open burning activities (waste treated in the city).",
   "incineration-waste-outboundary-methodology-description": "Emissions from controlled, industrial process of incineration or estimates them from uncontrolled open burning activities (waste treated in the city). ",
-  "sample-fuel": "Sample fuel consumed amount",
-  "modeled-fuel": "Modeled fuel intensity consumption",
   "total-grid-consumption": "Total fuel consumed amount",
-  "total-fuel-consumption": "Total fuel consumed amount",
   "sample-grid-supplied-energy": "Sample grid-supplied energy",
   "total-fugitive-activity": "Total activity volume",
   "total-fuel-sold-in-gas-stations": "Total Fuel sold in gas stations",
@@ -491,7 +471,6 @@
   "distance-travelled-within-city-transboundary-departing-only": "Distance travelled within the city from departing only transboundary trips.",
   "total-distance-travelled-in-in-boundary-trips-residents": "Distance travelled in in-boundary trips for residents.",
   "total-electricity-consumed-in-charging-stations": "Electricity consumed in electric vehicles charging stations.",
-  "total-fuel-consumed": "Total Fuel Consumed",
   "landfill-id": "Landfill ID",
   "landfill-address": "Landfill address",
   "total-municipal-solid-waste-disposed": "Total municipal solid waste disposed",
@@ -509,8 +488,6 @@
   "total-distance-travelled-in-boundary": "Total distance traveled in-boundary trips",
   "total-organic-waste-treated": "Mass of organic waste treated",
   "total-mass-of-waste-incinerated-or-burned": "Incinerated/burned waste",
-  "scaling-data": "Scaling Data",
-  "built-area": "Built Area",
   "agriculture-forestry-fishing-activities-energy-usage": "Energy Usage",
   "agriculture-forestry-fishing-activities-fuel-source": "Fuel Source",
   "agriculture-forestry-fishing-activities-fuel-type": "Fuel Type",

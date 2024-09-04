@@ -27,10 +27,15 @@ export function handleVkt1Formula(activityValue: ActivityValue): Gas[] {
       );
     }
     const emissionsFactor = gasValue.emissionsFactor;
+    if (emissionsFactor?.emissionsPerActivity == null) {
+      throw new createHttpError.BadRequest(
+        `Emissions factor ${emissionsFactor.id} has no emissions per activity`,
+      );
+    }
     const emissions =
       data["activity-value"] *
       data["intensity"] *
-      (emissionsFactor.emissionsPerActivity ?? 0); // TODO throw BadRequest error if no EF present?
+      emissionsFactor.emissionsPerActivity;
     return { gas: gasValue.gas, amount: BigInt(emissions) };
   });
 

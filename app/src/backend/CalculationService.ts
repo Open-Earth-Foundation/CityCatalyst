@@ -73,7 +73,6 @@ export default class CalculationService {
     inputMethodology: string,
   ): Promise<GasAmountResult> {
     const formula = await CalculationService.getFormula(inputMethodology);
-
     // TODO cache
     const gasToCO2Eqs = await db.models.GasToCO2Eq.findAll();
     let totalCO2e = 0n;

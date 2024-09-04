@@ -53,7 +53,6 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
       display="flex"
       opacity={isMethodologyDisabled ? ".7" : ""}
       h="auto"
-      w="248px"
       onClick={handleCardClick}
       _hover={{
         shadow: isMethodologyDisabled ? "none" : "md",
@@ -74,6 +73,8 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
             py="4px"
             px="8px"
             borderRadius="full"
+            textColor={"content.secondary"}
+            fontSize="body.sm"
             bg="base.light"
           >
             {t("coming-soon")}
@@ -82,12 +83,17 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
           ""
         )}
       </Box>
-      <Text data-testid="methodology-card-header" fontWeight="bold" fontSize="title.md" fontFamily="heading">
+      <Text
+        data-testid="methodology-card-header"
+        fontWeight="bold"
+        fontSize="title.md"
+        fontFamily="heading"
+      >
         {t(id)}
       </Text>
       <Text
         letterSpacing="wide"
-        fontSize="body.lg"
+        fontSize="body.md"
         fontWeight="normal"
         color="interactive.control"
       >
@@ -95,7 +101,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
       </Text>
       <Text
         letterSpacing="wide"
-        fontSize="body.lg"
+        fontSize="body.sm"
         fontWeight="medium"
         color="interactive.control"
         fontFamily="heading"
@@ -110,7 +116,17 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
         color="interactive.control"
       >
         {inputRequired?.map((item: string, i: number) => (
-          <li key={i}>{t(item)}</li>
+          <li key={i}>
+            <Text
+              letterSpacing="wide"
+              display="inline"
+              fontSize="body.sm"
+              color="interactive.control"
+              fontFamily="heading"
+            >
+              {t(item)}
+            </Text>
+          </li>
         ))}
       </Box>
     </Card>

@@ -95,6 +95,7 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
         <ModalContent minH="388px" minW="568px" marginTop="10%">
           <ModalHeader
             display="flex"
+            data-testid="delete-activity-modal-header"
             justifyContent="center"
             fontWeight="semibold"
             fontSize="headline.sm"
@@ -168,6 +169,7 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
               w="472px"
               background="sentiment.negativeDefault"
               paddingTop="16px"
+              data-testid="delete-activity-modal-confirm"
               isLoading={isLoading}
               onClick={handleDeleteActivity}
               paddingBottom="16px"

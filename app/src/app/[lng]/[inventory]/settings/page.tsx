@@ -44,7 +44,6 @@ export default function Settings({
 }) {
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
-  console.log(searchParams.get("tabIndex"));
 
   const paramValue = searchParams.get("tabIndex");
   const tabIndex = paramValue ? Number(paramValue) : 0;

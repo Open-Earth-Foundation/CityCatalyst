@@ -45,6 +45,7 @@ function AddDataCard({
         fontWeight="medium"
         color="content.secondary"
         fontFamily="heading"
+        fontSize="12px"
         lineHeight="16px"
         letterSpacing="wide"
       >

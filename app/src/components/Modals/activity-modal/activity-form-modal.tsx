@@ -4,6 +4,7 @@ import { api, useUpdateActivityValueMutation } from "@/services/api";
 import {
   Box,
   Button,
+  CloseButton,
   Modal,
   ModalCloseButton,
   ModalContent,
@@ -20,9 +21,15 @@ import { CheckCircleIcon } from "@chakra-ui/icons";
 import { getInputMethodology } from "@/util/helpers";
 import type { SuggestedActivity } from "@/util/form-schema";
 import { getTranslationFromDict } from "@/i18n";
-import ActivityModalBody from "./activity-modal-body";
+import ActivityModalBody, { ExtraField } from "./activity-modal-body";
 import { Inputs } from "./activity-modal-body";
 import { ActivityValue } from "@/models/ActivityValue";
+import { InventoryValue } from "@/models/InventoryValue";
+import useActivityValueValidation from "@/hooks/activity-value-form/use-activity-validation";
+import useActivityForm, {
+  generateDefaultActivityFormValues,
+} from "@/hooks/activity-value-form/use-activity-form";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 interface AddActivityModalProps {
   isOpen: boolean;
@@ -37,6 +44,7 @@ interface AddActivityModalProps {
   referenceNumber: string;
   edit?: boolean;
   targetActivityValue?: ActivityValue;
+  inventoryValue?: InventoryValue | null;
   resetSelectedActivityValue: () => void;
 }
 
@@ -47,6 +55,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   t,
   setHasActivityData,
   hasActivityData,
+  inventoryValue,
   inventoryId,
   methodology,
   selectedActivity,
@@ -54,61 +63,27 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   targetActivityValue,
   resetSelectedActivityValue,
 }) => {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    watch,
-    formState: { errors },
-  } = useForm<Inputs>();
+  const { setError, setFocus, reset, handleSubmit, register, errors } =
+    useActivityForm({
+      targetActivityValue,
+      selectedActivity,
+      methodologyName: methodology?.id,
+    });
 
-  useEffect(() => {
-    // set default values for the form
-    if (targetActivityValue) {
-      reset({
-        activity: {
-          buildingType: targetActivityValue?.activityData?.activity_type,
-          fuelType: targetActivityValue?.activityData?.fuel_type,
-          dataQuality: targetActivityValue?.dataSource?.dataQuality,
-          sourceReference: targetActivityValue?.dataSource?.notes,
-          CH4EmissionFactor: targetActivityValue?.activityData?.ch4_amount,
-          CO2EmissionFactor: targetActivityValue?.activityData?.co2_amount,
-          N2OEmissionFactor: targetActivityValue?.activityData?.n2o_amount,
-          activityDataAmount: 0,
-          activityDataUnit: null,
-          emissionFactorType: "",
-          totalFuelConsumption: "",
-          totalFuelConsumptionUnits: "",
-          co2EmissionFactorUnit: "",
-          n2oEmissionFactorUnit: "",
-          ch4EmissionFactorUnit: "",
-        },
-      });
-    } else {
-      // reset({});
-      reset({
-        activity: {
-          buildingType: selectedActivity?.id,
-          fuelType: "",
-          dataQuality: "",
-          sourceReference: "",
-          CH4EmissionFactor: 0,
-          CO2EmissionFactor: 0,
-          N2OEmissionFactor: 0,
-          activityDataAmount: 0,
-          activityDataUnit: null,
-          emissionFactorType: "",
-          totalFuelConsumption: "",
-          totalFuelConsumptionUnits: "",
-          co2EmissionFactorUnit: "",
-          n2oEmissionFactorUnit: "",
-          ch4EmissionFactorUnit: "",
-        },
-      });
-    }
-  }, [targetActivityValue]);
+  let fields: ExtraField[] = [];
+  let units = null;
+  if (methodology?.id.includes("direct-measure")) {
+    fields = methodology.fields;
+  } else {
+    fields = methodology?.fields[0]["extra-fields"];
+    units = methodology?.fields[0].units;
+  }
 
-  const val = watch("activity");
+  const { handleManalInputValidationError } = useActivityValueValidation({
+    t,
+    setError,
+    setFocus,
+  });
 
   const submit = () => {
     handleSubmit(onSubmit)();
@@ -157,7 +132,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         const gasObject = {
           ...gasValue,
           gas: gasValue.gas as string,
-          factor: data[`${gasValue.gas}EmissionFactor`],
+          factor: parseInt(data[`${gasValue.gas}EmissionFactor`]),
           unit: gasValue.emissionsFactor.units as string,
         };
         gasArray.push(gasObject);
@@ -171,7 +146,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       const gasUnitKey = `${gas}EmissionFactorUnit`;
       const gasObject = {
         gas: gas,
-        factor: data[gasFactorKey],
+        factor: parseInt(data[gasFactorKey]),
         unit: data[gasUnitKey],
       };
 
@@ -182,21 +157,43 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
 
   const onSubmit: SubmitHandler<Inputs> = async ({ activity }) => {
     const gasValues = extractGasesAndUnits(activity);
+
+    // extract field values
+    const values: Record<string, any> = {};
+    fields?.forEach((field) => {
+      if (field.id in activity) {
+        values[field.id] = (activity as any)[field.id];
+      }
+      if (field.units) {
+        values[`${field.id}unit`] = (activity as any)[`${field.id}unit`];
+      }
+    });
+
+    // so the issue here is that we need to have one inventoryValue for
     const requestData = {
-      activityData: {
-        co2_amount: gasValues[1].factor,
-        ch4_amount: gasValues[0].factor,
-        n2o_amount: gasValues[2].factor,
-        activity_type: activity.buildingType,
-        fuel_type: activity.fuelType,
+      activityData: methodology?.id.includes("direct-measure")
+        ? {
+            co2_amount: gasValues[1].factor,
+            ch4_amount: gasValues[0].factor,
+            n2o_amount: gasValues[2].factor,
+            ...values,
+          }
+        : { ...values },
+      metadata: {
+        emissionFactorType: activity.emissionFactorType,
+        totalFuelConsumption: activity.totalFuelConsumption,
       },
-      metadata: {},
-      inventoryValue: {
-        inputMethodology: getInputMethodology(methodology?.id), // extract methodology name
-        gpcReferenceNumber: referenceNumber,
-        unavailableReason: "",
-        unavailableExplanation: "",
-      },
+      ...(inventoryValue ? { inventoryValueId: inventoryValue.id } : {}),
+      ...(!inventoryValue
+        ? {
+            inventoryValue: {
+              inputMethodology: getInputMethodology(methodology?.id), // extract methodology name
+              gpcReferenceNumber: referenceNumber,
+              unavailableReason: "",
+              unavailableExplanation: "",
+            },
+          }
+        : {}),
       dataSource: {
         sourceType: "",
         dataQuality: activity.dataQuality,
@@ -208,8 +205,9 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         gasAmount: factor,
         emissionsFactor: {
           gas,
-          unit,
+          units: unit ?? "",
           gpcReferenceNumber: referenceNumber,
+          emissionsPerActivity: factor,
         },
       })),
     };
@@ -253,31 +251,35 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       onClose();
       resetSelectedActivityValue();
     } else {
-      toast({
-        status: "error",
-        title: t("activity-value-error"),
-      });
+      const error = response.error as FetchBaseQueryError;
+      const errorData = error.data as any;
+      if (errorData.error?.type === "ManualInputValidationError") {
+        handleManalInputValidationError(errorData.error.issues);
+      } else {
+        toast({
+          status: "error",
+          title: t("activity-value-error"),
+        });
+      }
     }
   };
 
-  let fields = null;
-  let units = null;
-  if (methodology?.id.includes("direct-measure")) {
-    fields = methodology.fields;
-  } else {
-    fields = methodology?.fields[0]["extra-fields"];
-    units = methodology?.fields[0].units;
-  }
+  const closeModalFunc = () => {
+    onClose();
+    resetSelectedActivityValue();
+    reset({
+      activity: generateDefaultActivityFormValues(
+        selectedActivity as SuggestedActivity,
+      ),
+    });
+  };
 
   return (
     <>
       <Modal
         blockScrollOnMount={false}
         isOpen={isOpen}
-        onClose={() => {
-          onClose();
-          resetSelectedActivityValue();
-        }}
+        onClose={closeModalFunc}
       >
         <ModalOverlay />
         <ModalContent

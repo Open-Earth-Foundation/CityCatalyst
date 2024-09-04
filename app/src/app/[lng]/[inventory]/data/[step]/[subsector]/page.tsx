@@ -5,7 +5,7 @@ import LoadingState from "@/components/loading-state";
 import { useTranslation } from "@/i18n/client";
 import { RootState } from "@/lib/store";
 import { SubSectorAttributes } from "@/models/SubSector";
-import { api } from "@/services/api";
+import { api, useGetInventoryValuesBySubsectorQuery } from "@/services/api";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
 import { ArrowBackIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import {
@@ -148,6 +148,13 @@ function SubSectorPage({
 
   const { data: activityData, isLoading: isActivityDataLoading } =
     api.useGetActivityValuesQuery({
+      inventoryId,
+      subSectorId: subSectorData?.subsectorId,
+    });
+
+  // fetch the inventoryValue for the selected scope
+  const { data: inventoryValues, isLoading: isInventoryValueLoading } =
+    useGetInventoryValuesBySubsectorQuery({
       inventoryId,
       subSectorId: subSectorData?.subsectorId,
     });
@@ -347,6 +354,7 @@ function SubSectorPage({
                     subsectorId={subsector}
                     step={step}
                     activityData={activityData}
+                    inventoryValues={inventoryValues ?? []}
                   />
                 ))
               )}

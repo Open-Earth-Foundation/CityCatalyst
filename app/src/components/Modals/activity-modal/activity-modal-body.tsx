@@ -6,6 +6,7 @@ import {
   HStack,
   Heading,
   InputGroup,
+  Input,
   InputRightAddon,
   ModalBody,
   NumberInput,
@@ -18,7 +19,7 @@ import { useState } from "react";
 import BuildingTypeSelectInput from "../../building-select-input";
 import { InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
 import { TFunction } from "i18next";
-import { FieldErrors, UseFormRegister } from "react-hook-form";
+import { UseFormRegister } from "react-hook-form";
 import type {
   DirectMeasureData,
   SubcategoryData,
@@ -35,9 +36,9 @@ interface AddActivityModalBodyProps {
   t: TFunction;
   register: UseFormRegister<Inputs>;
   submit: () => void;
-  fields: any[];
+  fields: ExtraField[];
   units: string[];
-  errors: FieldErrors<Inputs>;
+  errors: Record<string, any>;
   emissionsFactorTypes: EmissionFactorTypes;
   methodology: any;
   selectedActivity?: SuggestedActivity;
@@ -53,7 +54,7 @@ export type Inputs = {
     CH4EmissionFactor: number;
     dataQuality: string;
     sourceReference: string;
-    buildingType: string;
+    activityType: string;
     fuelType: string;
     totalFuelConsumption?: string | undefined;
     totalFuelConsumptionUnits: string;
@@ -63,6 +64,16 @@ export type Inputs = {
   };
   direct: DirectMeasureData;
   subcategoryData: Record<string, SubcategoryData>;
+};
+
+export type ExtraField = {
+  id: string;
+  type?: string; // Specifies the type, e.g., 'text', 'number'
+  options?: string[]; // Array of options for selection
+  exclusive?: string; // An option that excludes others
+  multiselect?: boolean; // Whether multiple selections are allowed
+  units?: string[]; // Specifies units, applicable when type is 'number'
+  required?: boolean; // Whether the field is required
 };
 
 const ActivityModalBody = ({
@@ -101,29 +112,162 @@ const ActivityModalBody = ({
           className="items-start"
           gap="24px"
         >
-          <FormControl className="w-full">
-            <BuildingTypeSelectInput
-              options={fields?.[0].options}
-              title={fields?.[0].id}
-              placeholder={t("select-activity-type")}
-              register={register}
-              activity={"activity.buildingType"}
-              errors={errors}
-              t={t}
-              selectedActivity={selectedActivity}
-            />
-          </FormControl>
-          <FormControl>
-            <BuildingTypeSelectInput
-              options={fields?.[1].options}
-              title={fields?.[1].id}
-              placeholder={t("select-type-of-fuel")}
-              register={register}
-              activity={"activity.fuelType"}
-              errors={errors}
-              t={t}
-            />
-          </FormControl>
+          {/* handle select, multi-select types, text  */}
+          {fields.map((f) => {
+            return (
+              <>
+                {f.options && (
+                  <FormControl className="w-full">
+                    <BuildingTypeSelectInput
+                      options={f.options}
+                      required={f.required}
+                      multiselect={f.multiselect}
+                      title={f.id}
+                      placeholder={t("select-activity-type")}
+                      register={register}
+                      activity={`activity.${f.id}`}
+                      errors={errors}
+                      t={t}
+                      selectedActivity={selectedActivity}
+                    />
+                  </FormControl>
+                )}
+                {f.type === "text" && (
+                  <FormControl className="w-full">
+                    <FormLabel className="truncate">{t(f.id)}</FormLabel>
+                    <InputGroup>
+                      <Input
+                        type="text"
+                        borderRadius="4px"
+                        h="48px"
+                        shadow="1dp"
+                        borderWidth={errors?.activity?.[f.id] ? "1px" : 0}
+                        border="inputBox"
+                        borderColor={
+                          errors?.activity?.[f.id]
+                            ? "sentiment.negativeDefault"
+                            : ""
+                        }
+                        background={
+                          errors?.activity?.[f.id]
+                            ? "sentiment.negativeOverlay"
+                            : ""
+                        }
+                        bgColor="base.light"
+                        _focus={{
+                          borderWidth: "1px",
+                          shadow: "none",
+                          borderColor: "content.link",
+                        }}
+                        {...register(`activity.${f.id}` as any, {
+                          required:
+                            f.required === false ? false : t("value-required"),
+                        })}
+                      />
+                    </InputGroup>
+                    {(errors?.activity?.[f.id] as any) ? (
+                      <Box
+                        display="flex"
+                        gap="6px"
+                        alignItems="center"
+                        mt="6px"
+                      >
+                        <WarningIcon color="sentiment.negativeDefault" />
+                        <Text fontSize="body.md">
+                          {" "}
+                          {errors?.activity?.[f.id]?.message}{" "}
+                        </Text>
+                        {/* use ii8n */}
+                      </Box>
+                    ) : (
+                      ""
+                    )}
+                  </FormControl>
+                )}
+                {f.type === "number" && (
+                  <>
+                    <FormControl className="w-full">
+                      <FormLabel className="truncate">{f.id}</FormLabel>
+                      <InputGroup>
+                        <NumberInput defaultValue={0} w="full">
+                          <NumberInputField
+                            type="number"
+                            borderRadius="4px"
+                            placeholder={t("activity-data-amount-placeholder")}
+                            borderRightRadius={f.units ? 0 : "4px"}
+                            h="48px"
+                            shadow="1dp"
+                            borderWidth={
+                              errors?.[`activity.${f.id}`] ? "1px" : 0
+                            }
+                            border="inputBox"
+                            borderColor={
+                              errors?.activity?.totalFuelConsumption
+                                ? "sentiment.negativeDefault"
+                                : ""
+                            }
+                            background={
+                              errors?.activity?.totalFuelConsumption
+                                ? "sentiment.negativeOverlay"
+                                : ""
+                            }
+                            bgColor="base.light"
+                            _focus={{
+                              borderWidth: "1px",
+                              shadow: "none",
+                              borderColor: "content.link",
+                            }}
+                            {...register(`activity.${f.id}` as any)}
+                          />
+                        </NumberInput>
+                        {f.units && (
+                          <InputRightAddon
+                            className="border-l-2"
+                            pl={4}
+                            pr={0}
+                            bgColor="base.light"
+                            h="48px"
+                            shadow="1dp"
+                          >
+                            <Select
+                              variant="unstyled"
+                              {...register(`activity.${f.id}unit` as any, {
+                                required:
+                                  f.required === false
+                                    ? false
+                                    : t("value-required"),
+                              })}
+                            >
+                              {f.units?.map((item: string) => (
+                                <option key={item} value={item}>
+                                  {item}
+                                </option>
+                              ))}
+                            </Select>
+                          </InputRightAddon>
+                        )}
+                      </InputGroup>
+                      {(errors?.[`activity.${f.id}`] as any) ? (
+                        <Box
+                          display="flex"
+                          gap="6px"
+                          alignItems="center"
+                          mt="6px"
+                        >
+                          <WarningIcon color="sentiment.negativeDefault" />
+                          <Text fontSize="body.md">
+                            {errors?.activity?.[f.id]?.message}{" "}
+                          </Text>
+                        </Box>
+                      ) : (
+                        ""
+                      )}
+                    </FormControl>
+                  </>
+                )}
+              </>
+            );
+          })}
           {!methodology?.id.includes("direct-measure") ? (
             <Box
               display="flex"
@@ -134,6 +278,7 @@ const ActivityModalBody = ({
               <FormControl
                 isInvalid={!!resolve(prefix + "activityDataAmount", errors)}
               >
+                {/*TODO dynamically render required fields*/}
                 <FormLabel className="truncate">{fields?.[2].id}</FormLabel>
                 <InputGroup>
                   <NumberInput defaultValue={0} w="full">
@@ -172,6 +317,7 @@ const ActivityModalBody = ({
                     pr={0}
                     bgColor="base.light"
                     h="48px"
+                    w="100px"
                     shadow="1dp"
                   >
                     <Select
@@ -304,12 +450,13 @@ const ActivityModalBody = ({
                     }
                     color="content.tertiary"
                     h="48px"
+                    fontSize="14px"
                     shadow="1dp"
                     pos="relative"
                     zIndex={10}
                     {...register("activity.co2EmissionFactorUnit")}
                   >
-                    {""}
+                    C02/{""}
                   </InputRightAddon>
                 </InputGroup>
               </FormControl>
@@ -350,12 +497,13 @@ const ActivityModalBody = ({
                     }
                     color="content.tertiary"
                     h="48px"
+                    fontSize="14px"
                     shadow="1dp"
                     pos="relative"
                     zIndex={10}
                     {...register("activity.n2oEmissionFactorUnit")}
                   >
-                    {""}
+                    N2O/{""}
                   </InputRightAddon>
                 </InputGroup>
               </FormControl>
@@ -396,12 +544,14 @@ const ActivityModalBody = ({
                     }
                     color="content.tertiary"
                     h="48px"
+                    fontSize="14px"
                     shadow="1dp"
                     pos="relative"
                     zIndex={10}
                     {...register("activity.ch4EmissionFactorUnit")}
                   >
-                    {""}
+                    CH4/{""}
+                    {/*  TODO input the right units*/}
                   </InputRightAddon>
                 </InputGroup>
               </FormControl>
@@ -418,6 +568,7 @@ const ActivityModalBody = ({
                 <NumberInput w="full" defaultValue={0} min={0}>
                   <NumberInputField
                     data-testid="co2-emission-factor"
+                    type="number"
                     h="48px"
                     placeholder="Enter emissions value"
                     {...register("activity.CO2EmissionFactor")}
@@ -447,6 +598,7 @@ const ActivityModalBody = ({
                 <NumberInput w="full" defaultValue={0} min={0}>
                   <NumberInputField
                     data-testid="n2o-emission-factor"
+                    type="number"
                     h="48px"
                     borderRightRadius={0}
                     placeholder="Enter emissions value"
@@ -477,6 +629,7 @@ const ActivityModalBody = ({
                 {/* TODO translate values and use internal value for checking */}
                 <NumberInput w="full " defaultValue={0} min={0}>
                   <NumberInputField
+                    type="number"
                     data-testid="ch4-emission-factor"
                     h="48px"
                     borderRightRadius={0}
@@ -570,7 +723,7 @@ const ActivityModalBody = ({
               borderColor: "content.link",
             }}
             placeholder={t("source-reference-placeholder")}
-            {...register("activity.sourceReference", {
+            {...register(`activity.sourceReference` as any, {
               required: t("source-reference-required"),
             })}
           />

@@ -187,9 +187,7 @@ export function ActivityDataTab({
               >
                 {scopeUnits.map((unit) => (
                   <option key={unit} value={unit}>
-                    {unit.includes("/")
-                      ? unit.slice(unit.indexOf("/") + 1) // only remove first slash
-                      : unit}
+                    {t(unit)}
                   </option>
                 ))}
               </Select>

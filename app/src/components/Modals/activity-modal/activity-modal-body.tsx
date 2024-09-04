@@ -326,7 +326,7 @@ const ActivityModalBody = ({
                     >
                       {units?.map((item: string) => (
                         <option key={item} value={item}>
-                          {item}
+                          {t(item)}
                         </option>
                       ))}
                     </Select>

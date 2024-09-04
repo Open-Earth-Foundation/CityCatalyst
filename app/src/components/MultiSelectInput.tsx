@@ -15,7 +15,7 @@ interface MultiSelectInputProps {
   t: TFunction;
   multiselect?: boolean;
   required?: boolean;
-  control: Control<Inputs, any>;
+  control: Control<any, any>;
 }
 
 const CustomMultiValue = (props: MultiValueProps<any>) => {
@@ -36,11 +36,9 @@ const CustomMultiValue = (props: MultiValueProps<any>) => {
       <Text fontSize="sm" fontWeight="bold" color="content.alternative" mr={2}>
         {data.label}
       </Text>
-      <CloseButton
-        size="sm"
-        color="content.alternative"
-        onClick={removeProps.onClick}
-      />
+      <div className="" onClick={removeProps.onClick}>
+        <CloseButton size="sm" color="content.alternative" />
+      </div>
     </Box>
   );
 };
@@ -87,7 +85,7 @@ const customStyles = (error: boolean) => ({
       borderColor: "#2351DC",
     },
   }),
-  placeholder: (provided) => ({
+  placeholder: (provided: any) => ({
     ...provided,
     fontSize: "16px",
     color: "#A0AEC0",

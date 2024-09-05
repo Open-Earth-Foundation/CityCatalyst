@@ -148,7 +148,7 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
     if (emissionsFactor.emissionsPerActivity == null) {
       throw new createHttpError.BadRequest(
         // TODO resolve type issues with extracting id
-        `Emissions factor ${emissionsFactor?.gas} has no emissions per activity`,
+        `Emissions factor for ${emissionsFactor?.gas} has no emissions per activity`,
       );
     }
     // this rounds/ truncates!

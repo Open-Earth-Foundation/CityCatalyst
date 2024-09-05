@@ -1786,15 +1786,30 @@
         "suggestedActivities": [
           {
             "id": "fuel-sales-on-road-transport-activity",
-            "prefills": []
+            "prefills": [
+              {
+                "key": "on-road-transport-vehicle-type",
+                "value": "vehicle-type-all"
+              }
+            ]
           },
           {
             "id": "fuel-sales-on-road-transport-activity",
-            "prefills": []
+            "prefills": [
+              {
+                "key": "on-road-transport-vehicle-type",
+                "value": "vehicle-type-passenger-vehicles"
+              }
+            ]
           },
           {
             "id": "fuel-sales-on-road-transport-activity",
-            "prefills": []
+            "prefills": [
+              {
+                "key": "on-road-transport-vehicle-type",
+                "value": "vehicle-type-public-transport-vehicles"
+              }
+            ]
           }
         ]
       },
@@ -2106,7 +2121,7 @@
       },
       {
         "id": "geographic-railways-methodology",
-        "implemented": false,
+        "disabled": true,
         "inputRequired": [
           "total-distance-travelled-in-in-boundary-trips",
           "fuel-intensity"
@@ -2185,7 +2200,7 @@
       },
       {
         "id": "movement-driver-railways-methodology",
-        "implemented": false,
+        "disabled": true,
         "inputRequired": [
           "total-fuel-consumed",
           "passenger-number-or-cargo-weight"

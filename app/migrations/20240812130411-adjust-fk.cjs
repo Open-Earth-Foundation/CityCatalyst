@@ -21,7 +21,11 @@ const NEW_TABLE = "DataSourceI18n";
 
 function fkName(table) {
   if (UNDERSCORES.includes(table)) {
-    return `FK_${table}_datasource_id`;
+    if (table === "InventoryValue") {
+      return `FK_SubCategoryValue_datasource_id`;
+    } else {
+      return `FK_${table}_datasource_id`;
+    }
   } else {
     return `FK_${table}.datasource_id`;
   }

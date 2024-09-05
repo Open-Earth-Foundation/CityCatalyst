@@ -41,10 +41,8 @@ async function addConstraint(queryInterface, table, foreignTable) {
     references: {
       table: foreignTable,
       field: "datasource_id",
-    },
-    onDelete: "cascade",
-    onUpdate: "cascade",
-  });
+    }
+});
 }
 
 async function deleteNonMatching(queryInterface, table, newTable) {

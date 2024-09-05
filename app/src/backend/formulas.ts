@@ -46,7 +46,7 @@ export function handleVkt1Formula(
     const emissionsFactor = gasValue.emissionsFactor;
     if (emissionsFactor?.emissionsPerActivity == null) {
       throw new createHttpError.BadRequest(
-        `Emissions factor ${emissionsFactor?.gas} has no emissions per activity`,
+        `Emissions factor for ${emissionsFactor?.gas} has no emissions per activity`,
       );
     }
     const emissions =

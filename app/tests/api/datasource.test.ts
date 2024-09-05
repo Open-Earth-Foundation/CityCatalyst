@@ -6,7 +6,7 @@ import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, describe, it } from "node:test";
 import { literal, Op } from "sequelize";
-import { mockRequest, setupTests } from "../helpers";
+import { cascadeDeleteDataSource, mockRequest, setupTests } from "../helpers";
 import { City } from "@/models/City";
 import { CreateInventoryRequest } from "@/util/validation";
 import { Sector } from "@/models/Sector";
@@ -62,11 +62,8 @@ describe("DataSource API", () => {
     await db.models.Inventory.destroy({
       where: { year: inventoryData.year },
     });
-    await db.models.DataSource.destroy({
-      where: {
-        [Op.or]: [literal(`dataset_name ->> 'en' LIKE 'XX_INVENTORY_TEST_%'`)],
-      },
-    });
+    await cascadeDeleteDataSource({ [Op.or]: [literal(`dataset_name ->> 'en' LIKE 'XX_INVENTORY_TEST_%'`)] });
+
     await db.models.City.destroy({ where: { locode } });
     city = await db.models.City.create({
       cityId: randomUUID(),

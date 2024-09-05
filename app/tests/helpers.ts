@@ -8,6 +8,9 @@ import { promisify } from "node:util";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { db } from "@/models";
+import { Op, WhereOptions } from "sequelize";
+import { DataSourceI18nAttributes } from "@/models/DataSourceI18n";
 
 const mockUrl = "http://localhost:3000/api/v0";
 
@@ -99,3 +102,30 @@ export function setupTests() {
     };
   });
 }
+
+/** deletes DataSources and their associated InventoryValues **/
+export const cascadeDeleteDataSource = async (where: WhereOptions<DataSourceI18nAttributes>) => {
+  const dataSources = await db.models.DataSource.findAll({
+    where
+  });
+
+  const dataSourceIds = dataSources.map(ds => ds.datasourceId);
+
+  if (dataSourceIds.length > 0) {
+    await db.models.InventoryValue.destroy({
+      where: {
+        datasourceId: {
+          [Op.in]: dataSourceIds
+        }
+      }
+    });
+
+    await db.models.DataSource.destroy({
+      where: {
+        datasourceId: {
+          [Op.in]: dataSourceIds
+        }
+      }
+    });
+  }
+};

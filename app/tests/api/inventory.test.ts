@@ -1,7 +1,7 @@
 import {
   DELETE as deleteInventory,
   GET as findInventory,
-  PATCH as updateInventory,
+  PATCH as updateInventory
 } from "@/app/api/v0/inventory/[inventory]/route";
 import { GET as calculateProgress } from "@/app/api/v0/inventory/[inventory]/progress/route";
 import { POST as createInventory } from "@/app/api/v0/city/[city]/inventory/route";
@@ -12,7 +12,7 @@ import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, beforeEach, describe, it } from "node:test";
 import { literal, Op } from "sequelize";
-import { createRequest, mockRequest, setupTests, testUserID } from "../helpers";
+import { createRequest, cascadeDeleteDataSource, mockRequest, setupTests, testUserID } from "../helpers";
 import { SubSector, SubSectorAttributes } from "@/models/SubSector";
 import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
@@ -71,11 +71,7 @@ describe("Inventory API", () => {
     await db.models.Inventory.destroy({
       where: { inventoryName },
     });
-    await db.models.DataSource.destroy({
-      where: {
-        [Op.or]: [literal(`dataset_name ->> 'en' LIKE 'XX_INVENTORY_TEST_%'`)],
-      },
-    });
+    await cascadeDeleteDataSource({ [Op.or]: [literal(`dataset_name ->> 'en' LIKE 'XX_INVENTORY_TEST_%'`)] });
     await db.models.Sector.destroy({
       where: { sectorName: { [Op.like]: "XX_INVENTORY_TEST%" } },
     });

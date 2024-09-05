@@ -446,8 +446,10 @@ const ActivityTab: FC<ActivityTabProps> = ({
                             <Box className="flex flex-col gap-4">
                               {suggestedActivities.map((suggestedActivity) => {
                                 const { id } = suggestedActivity;
-                                const prefillKey = suggestedActivity.prefills[0].key
-                                const prefillValue = suggestedActivity.prefills[0].value
+                                const prefillKey =
+                                  suggestedActivity.prefills[0]?.key;
+                                const prefillValue =
+                                  suggestedActivity.prefills[0]?.value;
                                 return (
                                   <SuggestedActivityCard
                                     key={id}

@@ -63,21 +63,29 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   targetActivityValue,
   resetSelectedActivityValue,
 }) => {
-  const { setError, setFocus, reset, handleSubmit, register, errors } =
+  const { fields, units } = useMemo(() => {
+    let fields: ExtraField[] = [];
+    let units = null;
+    if (methodology?.id.includes("direct-measure")) {
+      fields = methodology.fields;
+    } else {
+      fields = methodology?.fields[0]["extra-fields"];
+      units = methodology?.fields[0].units;
+    }
+
+    return {
+      fields,
+      units,
+    };
+  }, [methodology]);
+
+  const { setError, setFocus, reset, handleSubmit, register, errors, control } =
     useActivityForm({
       targetActivityValue,
       selectedActivity,
       methodologyName: methodology?.id,
+      fields,
     });
-
-  let fields: ExtraField[] = [];
-  let units = null;
-  if (methodology?.id.includes("direct-measure")) {
-    fields = methodology.fields;
-  } else {
-    fields = methodology?.fields[0]["extra-fields"];
-    units = methodology?.fields[0].units;
-  }
 
   const { handleManalInputValidationError } = useActivityValueValidation({
     t,
@@ -270,6 +278,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     reset({
       activity: generateDefaultActivityFormValues(
         selectedActivity as SuggestedActivity,
+        fields,
       ),
     });
   };
@@ -307,6 +316,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
             emissionsFactorTypes={emissionsFactorTypes}
             submit={submit}
             register={register}
+            control={control}
             fields={fields}
             units={units}
             methodology={methodology}

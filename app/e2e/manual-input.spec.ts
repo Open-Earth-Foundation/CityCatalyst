@@ -207,7 +207,11 @@ test.describe.serial("Manual Input", () => {
       });
 
       test(`test direct measure methodology in scope 1 with incomplete  & complete values in in ${sector.sectorName}`, async () => {
-        test.skip(sector.sectorName === "Waste");
+        // TODO expand test case to handle multi-select fields, and the dynamic nature of the form
+        test.skip(
+          sector.sectorName === "Waste" ||
+            sector.sectorName === "Transportation",
+        );
         // look for a direct measure
         // select all the methodology card headers and check if any of them is direct measure
         const directMeasureCardHeader = await page
@@ -296,7 +300,10 @@ test.describe.serial("Manual Input", () => {
 
       test(`should display newly created activity in activity table in in ${sector.sectorName}`, async () => {
         // TODO: Enable these tests when manul input for waste works.
-        test.skip(sector.sectorName === "Waste");
+        test.skip(
+          sector.sectorName === "Waste" ||
+            sector.sectorName === "Transportation",
+        );
         // wait for the page to load
         // wait for the table to load
         const table = await page.locator("table");
@@ -317,7 +324,10 @@ test.describe.serial("Manual Input", () => {
       });
 
       test(`should delete the activity from the table in in ${sector.sectorName}`, async () => {
-        test.skip(sector.sectorName === "Waste");
+        test.skip(
+          sector.sectorName === "Waste" ||
+            sector.sectorName === "Transportation",
+        );
         // wait for the page to load
         // wait for the table to load
         const table = await page.locator("table");

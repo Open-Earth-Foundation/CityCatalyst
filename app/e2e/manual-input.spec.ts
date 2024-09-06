@@ -120,7 +120,7 @@ const sectorData = [
   },
 ];
 
-const EmissionFactos = {
+const EmissionFactors = {
   CO2: 120,
   N2O: 202,
   CH4: 300,
@@ -153,17 +153,17 @@ test.describe.serial("Manual Input", () => {
     );
 
     // check for sector cards
-    const stationaryEnergySectorCard = await page.getByTestId(
+    const stationaryEnergySectorCard = page.getByTestId(
       testIds.stationaryEnergySectorCard,
     );
     expect(stationaryEnergySectorCard).toBeTruthy();
 
-    const transportationSectorCard = await page.getByTestId(
+    const transportationSectorCard = page.getByTestId(
       testIds.transportationSectorCard,
     );
     expect(transportationSectorCard).toBeTruthy();
 
-    const wasteSectorCard = await page.getByTestId(testIds.wasteSectorCard);
+    const wasteSectorCard = page.getByTestId(testIds.wasteSectorCard);
     expect(wasteSectorCard).toBeTruthy();
   });
 
@@ -174,11 +174,9 @@ test.describe.serial("Manual Input", () => {
         await page.waitForURL(regexForPath("/data/"));
         await expect(page).toHaveURL(regexForPath("/data/"));
         // wait for sector card to load
-        const sectorCard = await page.getByTestId(sector.testId);
+        const sectorCard = page.getByTestId(sector.testId);
         expect(sectorCard).toBeTruthy();
-        const sectorCardBtn = await sectorCard?.getByTestId(
-          testIds.sectorCardButton,
-        );
+        const sectorCardBtn = sectorCard?.getByTestId(testIds.sectorCardButton);
         await sectorCardBtn?.click();
         await page.waitForURL(regexForPath(sector.url1));
         await expect(page).toHaveURL(regexForPath(sector.url1));
@@ -187,7 +185,7 @@ test.describe.serial("Manual Input", () => {
         // wait for 10 seconds
         await page.waitForTimeout(3000);
 
-        const subsectorCards = await page.getByTestId(testIds.subsectorCard);
+        const subsectorCards = page.getByTestId(testIds.subsectorCard);
         expect(await subsectorCards.count()).toBeGreaterThan(0);
 
         // await page response
@@ -214,7 +212,7 @@ test.describe.serial("Manual Input", () => {
         );
         // look for a direct measure
         // select all the methodology card headers and check if any of them is direct measure
-        const directMeasureCardHeader = await page
+        const directMeasureCardHeader = page
           .getByTestId(testIds.methodologyCardHeader)
           .filter({
             hasText: "Direct Measure",
@@ -225,67 +223,51 @@ test.describe.serial("Manual Input", () => {
         // click on the direct measure card
         await directMeasureCardHeader?.click();
 
-        const addEmissionButton = await page.getByTestId(
-          testIds.addEmissionButton,
-        );
-        expect(addEmissionButton).toBeTruthy();
-        await addEmissionButton?.click();
+        await page.getByTestId(testIds.addEmissionButton).click();
 
         // wait for the modal to open;
-        const addEmissionModal = await page.getByTestId(
-          testIds.addEmissionModal,
-        );
+        const addEmissionModal = page.getByTestId(testIds.addEmissionModal);
 
         // fill in the select fields
-        const selectElements = await page.locator("select");
+        const selectElements = page.locator("select");
         for (let i = 0; i < (await selectElements.count()); i++) {
           const dropdown = selectElements.nth(i);
           await dropdown.selectOption({ index: 1 });
         }
 
-        const inputElements = await page.locator("input[type='text']");
+        const inputElements = page.locator("input[type='text']");
         for (let i = 0; i < (await inputElements.count()); i++) {
           const input = inputElements.nth(i);
           await input.fill("1");
         }
 
-        const textInput = await addEmissionModal.getByTestId(
+        const textInput = addEmissionModal.getByTestId(
           testIds.sourceReferenceInput,
         );
 
         await textInput.fill("");
 
         // fill in the emission values
-        const co2Input = await addEmissionModal.getByTestId(
-          testIds.co2EmissionInput,
-        );
+        // TODO wrong. These are total emissions amount, NOT emissions factors
+        const co2Input = addEmissionModal.getByTestId(testIds.co2EmissionInput);
+        await co2Input.fill(EmissionFactors.CO2.toString());
 
-        await co2Input.fill(EmissionFactos.CO2.toString());
+        const n2oInput = addEmissionModal.getByTestId(testIds.n2oEmissionInput);
+        await n2oInput.fill(EmissionFactors.N2O.toString());
 
-        const n2oInput = await addEmissionModal.getByTestId(
-          testIds.n2oEmissionInput,
-        );
-
-        await n2oInput.fill(EmissionFactos.N2O.toString());
-
-        const ch4Input = await addEmissionModal.getByTestId(
-          testIds.ch4EmissionInput,
-        );
-
-        await ch4Input.fill(EmissionFactos.CH4.toString());
+        const ch4Input = addEmissionModal.getByTestId(testIds.ch4EmissionInput);
+        await ch4Input.fill(EmissionFactors.CH4.toString());
 
         // try to submit the form
-        const submitButton = await addEmissionModal.getByTestId(
+        const submitButton = addEmissionModal.getByTestId(
           testIds.addEmissionModalSubmitButton,
         );
 
         await submitButton?.click();
 
         // look for error-text within the modal "please select a source reference"
-        const element = await page.getByText(
-          "Please select a source reference",
-        );
-
+        // TODO this will fail when using i18n, let's not use getByText if at all possible
+        const element = page.getByText("Please select a source reference");
         expect(element).toBeTruthy();
 
         // fill in the text fields
@@ -306,20 +288,20 @@ test.describe.serial("Manual Input", () => {
         );
         // wait for the page to load
         // wait for the table to load
-        const table = await page.locator("table");
+        const table = page.locator("table");
 
         // Ensure the table exists
         expect(table).not.toBeNull();
+        await expect(table).toBeVisible();
 
-        const cellWithValue = await page
-          ?.getByRole("cell", { name: "tCO2" })
-          .first();
-
-        expect(cellWithValue).toBeTruthy();
+        const cellWithValue = page?.getByRole("cell", { name: "tCO2" }).first();
+        expect(cellWithValue).toBeVisible();
 
         // Ensure the cell has the correct value
+        // TODO this is wrong, the final result should be the multiple of activity value and emissions factor
+        // (or the result of the formula if it's using a different formula than activity-times-emissions-factor)
         expect(await cellWithValue?.innerText()).toContain(
-          EmissionFactos.CO2.toString(),
+          EmissionFactors.CO2.toString(),
         );
       });
 
@@ -330,39 +312,21 @@ test.describe.serial("Manual Input", () => {
         );
         // wait for the page to load
         // wait for the table to load
-        const table = await page.locator("table");
-
-        // Ensure the table exists
+        const table = page.locator("table");
         expect(table).not.toBeNull();
 
-        const moreButton = await page.getByTestId(testIds.activityMoreButton);
-
-        expect(moreButton).toBeTruthy();
-
-        await moreButton.click();
-
-        const deleteButton = await page.getByTestId(
-          testIds.deleteActivityButton,
-        );
-
-        expect(deleteButton).toBeTruthy();
-
-        await deleteButton.click();
+        await page.getByTestId(testIds.activityMoreButton).click();
+        await page.getByTestId(testIds.deleteActivityButton).click();
 
         // wait for the modal to open
         await page.waitForTimeout(500);
-        const deleteModal = await page.getByTestId(
-          testIds.deleteActivityModalHeader,
-        );
-
+        const deleteModal = page.getByTestId(testIds.deleteActivityModalHeader);
         expect(deleteModal).toBeVisible();
 
-        const confirmButton = await page.getByTestId(
+        const confirmButton = page.getByTestId(
           testIds.deleteActivityModalConfirmButton,
         );
-
         expect(confirmButton).toBeVisible();
-
         await confirmButton.click();
 
         // wait for a 200 response

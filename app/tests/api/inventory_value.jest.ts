@@ -139,7 +139,7 @@ describe("Inventory Value API", () => {
     if (db.sequelize) await db.sequelize.close();
   });
 
-  it("Should create an inventory value", async () => {
+  it("should create an inventory value", async () => {
     await db.models.InventoryValue.destroy({
       where: { id: inventoryValue.id },
     });
@@ -158,7 +158,7 @@ describe("Inventory Value API", () => {
     expectToBeLooselyEqual(data.co2eq, inventoryValue1.co2eq);
   });
 
-  it.skip("Should not create an inventory value with invalid data", async () => {
+  it.skip("should not create an inventory value with invalid data", async () => {
     const req = mockRequest(invalidInventoryValue);
     const res = await upsertInventoryValue(req, {
       params: {
@@ -173,7 +173,7 @@ describe("Inventory Value API", () => {
     expect(issues.length).toEqual(3);
   });
 
-  it("Should find an inventory value", async () => {
+  it("should find an inventory value", async () => {
     const req = mockRequest();
     const res = await findInventoryValue(req, {
       params: {
@@ -190,7 +190,7 @@ describe("Inventory Value API", () => {
     expectToBeLooselyEqual(data.activityValue, activityValue);
   });
 
-  it("Should find multiple inventory values", async () => {
+  it("should find multiple inventory values", async () => {
     // prepare data
     const subCategory2 = await db.models.SubCategory.create({
       subcategoryId: randomUUID(),
@@ -242,7 +242,7 @@ describe("Inventory Value API", () => {
     );
   });
 
-  it("Should not find a non-existing sub category", async () => {
+  it("should not find a non-existing sub category", async () => {
     const req = mockRequest(invalidInventoryValue);
     const res = await findInventoryValue(req, {
       params: {
@@ -253,7 +253,7 @@ describe("Inventory Value API", () => {
     await expectStatusCode(res, 404);
   });
 
-  it.skip("Should update an inventory value", async () => {
+  it.skip("should update an inventory value", async () => {
     const req = mockRequest(inventoryValue1);
     const res = await upsertInventoryValue(req, {
       params: {
@@ -268,7 +268,7 @@ describe("Inventory Value API", () => {
     expect(data.activityValue).toEqual(inventoryValue1.activityValue);
   });
 
-  it.skip("Should not update an inventory value with invalid data", async () => {
+  it.skip("should not update an inventory value with invalid data", async () => {
     const req = mockRequest(invalidInventoryValue);
     const res = await upsertInventoryValue(req, {
       params: {
@@ -283,7 +283,7 @@ describe("Inventory Value API", () => {
     expect(issues.length).toEqual(3);
   });
 
-  it("Should delete an inventory value", async () => {
+  it("should delete an inventory value", async () => {
     const req = mockRequest(inventoryValue2);
     const res = await deleteInventoryValue(req, {
       params: {
@@ -299,7 +299,7 @@ describe("Inventory Value API", () => {
     expectToBeLooselyEqual(data.activityValue, activityValue);
   });
 
-  it("Should not delete a non-existing inventory value", async () => {
+  it("should not delete a non-existing inventory value", async () => {
     const req = mockRequest(inventoryValue2);
     const res = await deleteInventoryValue(req, {
       params: {

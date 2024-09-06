@@ -127,7 +127,7 @@ describe("Inventory Value API", () => {
     if (db.sequelize) await db.sequelize.close();
   });
 
-  it("Should not create an inventory value with invalid data", async () => {
+  it("should not create an inventory value with invalid data", async () => {
     const req = mockRequest(invalidInventoryValue);
     const res = await upsertInventoryValue(req, {
       params: {
@@ -142,7 +142,7 @@ describe("Inventory Value API", () => {
     assert.equal(issues.length, 3);
   });
 
-  it("Should find an inventory value", async () => {
+  it("should find an inventory value", async () => {
     const req = mockRequest();
     const res = await findInventoryValue(req, {
       params: {
@@ -159,7 +159,7 @@ describe("Inventory Value API", () => {
     assert.equal(data.activityValue, activityValue);
   });
 
-  it("Should find multiple inventory values", async () => {
+  it("should find multiple inventory values", async () => {
     // prepare data
     const subCategory2 = await db.models.SubCategory.create({
       subcategoryId: randomUUID(),
@@ -208,7 +208,7 @@ describe("Inventory Value API", () => {
     assert.equal(data[1].activityValue, inventoryValue2.activityValue);
   });
 
-  it("Should update an inventory value", async () => {
+  it("should update an inventory value", async () => {
     const req = mockRequest(inventoryValue1);
     const res = await upsertInventoryValue(req, {
       params: {
@@ -223,7 +223,7 @@ describe("Inventory Value API", () => {
     assert.equal(data.activityValue, inventoryValue1.activityValue);
   });
 
-  it("Should not update an inventory value with invalid data", async () => {
+  it("should not update an inventory value with invalid data", async () => {
     const req = mockRequest(invalidInventoryValue);
     const res = await upsertInventoryValue(req, {
       params: {
@@ -238,7 +238,7 @@ describe("Inventory Value API", () => {
     assert.equal(issues.length, 3);
   });
 
-  it("Should delete an inventory value", async () => {
+  it("should delete an inventory value", async () => {
     const req = mockRequest(inventoryValue2);
     const res = await deleteInventoryValue(req, {
       params: {

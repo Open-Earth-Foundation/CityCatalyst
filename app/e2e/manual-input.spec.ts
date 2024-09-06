@@ -202,9 +202,7 @@ test.describe.serial("Manual Input", () => {
             sector.sectorName === "Transportation",
         );
         // check on a list of methodologies
-        const methodologyCards = await page.getByTestId(
-          testIds.methodologyCard,
-        );
+        const methodologyCards = page.getByTestId(testIds.methodologyCard);
         expect(await methodologyCards.count()).toBeGreaterThan(0);
       });
 

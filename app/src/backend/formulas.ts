@@ -1,8 +1,15 @@
+import createHttpError from "http-errors";
+
 import type { ActivityValue } from "@/models/ActivityValue";
 import type { Gas } from "./CalculationService";
-import createHttpError from "http-errors";
-import { GasValueCreationAttributes } from "@/models/GasValue";
-import { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
+import type { GasValueCreationAttributes } from "@/models/GasValue";
+import type { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
+
+type GasValueWithEmissionsFactor = Omit<GasValueCreationAttributes, "id"> & {
+  emissionsFactor?:
+    | EmissionsFactorAttributes
+    | Omit<EmissionsFactorAttributes, "id">;
+};
 
 const GAS_NAMES = ["CO2", "N2O", "CH4"];
 const METHANE_CORRECTION_FACTORS: Record<string, number> = {
@@ -22,13 +29,29 @@ const WOOD_FACTOR = 0.43;
 const TEXTILES_FACTOR = 0.24;
 const INDUSTRIAL_WASTE_FACTOR = 0.15;
 
+const DEFAULT_METHANE_PRODUCTION_CAPACITY = 0.25; // kg CH4/kg COD
+
+export function handleDirectMeasureFormula(
+  activityValue: ActivityValue,
+): Gas[] {
+  const gases = GAS_NAMES.map((gasName) => {
+    const data = activityValue.activityData;
+    const key = gasName.toLowerCase() + "_amount";
+    if (!data || !data[key]) {
+      throw new createHttpError.BadRequest(
+        "Missing direct measure form entry " + key,
+      );
+    }
+    // TODO save amount to GasValue entry?
+    const amount = BigInt(data[key]);
+    return { gas: gasName, amount: amount };
+  });
+  return gases;
+}
+
 export function handleVkt1Formula(
   activityValue: ActivityValue,
-  gasValues: (Omit<GasValueCreationAttributes, "id"> & {
-    emissionsFactor?:
-      | EmissionsFactorAttributes
-      | Omit<EmissionsFactorAttributes, "id">;
-  })[],
+  gasValues: GasValueWithEmissionsFactor[],
 ): Gas[] {
   const data = activityValue.activityData;
   if (!data) {
@@ -127,11 +150,7 @@ export function handleMethaneCommitmentFormula(
 
 export function handleActivityAmountTimesEmissionsFactorFormula(
   activityValue: ActivityValue,
-  gasValues: (Omit<GasValueCreationAttributes, "id"> & {
-    emissionsFactor?:
-      | EmissionsFactorAttributes
-      | Omit<EmissionsFactorAttributes, "id">;
-  })[],
+  gasValues: GasValueWithEmissionsFactor[],
 ): Gas[] {
   // TODO add actvityAmount column to ActivityValue
   // const activityAmount = activityValue.activityAmount || 0;
@@ -147,7 +166,6 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
     }
     if (emissionsFactor.emissionsPerActivity == null) {
       throw new createHttpError.BadRequest(
-        // TODO resolve type issues with extracting id
         `Emissions factor for ${emissionsFactor?.gas} has no emissions per activity`,
       );
     }
@@ -162,20 +180,33 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
   return gases;
 }
 
-export function handleDirectMeasureFormula(
+export function handleWastewaterCalculatorFormula(
   activityValue: ActivityValue,
 ): Gas[] {
-  const gases = GAS_NAMES.map((gasName) => {
-    const data = activityValue.activityData;
-    const key = gasName.toLowerCase() + "_amount";
-    if (!data || !data[key]) {
-      throw new createHttpError.BadRequest(
-        "Missing direct measure form entry " + key,
-      );
-    }
-    // TODO save amount to GasValue entry?
-    const amount = BigInt(data[key]);
-    return { gas: gasName, amount: amount };
-  });
-  return gases;
+  const data = activityValue.activityData;
+  if (!data) {
+    throw new createHttpError.BadRequest(
+      "Activity has no data associated, so it can't use the formula",
+    );
+  }
+
+  const totalIndustrialProduction = data["total-industrial-production"];
+  const wastewaterGenerated = data["wastewater-generated"];
+  const degradableOrganicComponents = data["degradable-organic-components"];
+  const methaneProductionCapacity =
+    data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY;
+  const removedSludge = data["removed-sludge"];
+  const methaneCorrectionFactor = data["methane-correction-factor"];
+  const methaneRecovered = data["methane-recovered"];
+
+  // TODO is BigInt/ BigNumber required for these calculations?
+  const totalOrganicWaste =
+    totalIndustrialProduction *
+    wastewaterGenerated *
+    degradableOrganicComponents;
+  const emissionsFactor = methaneProductionCapacity * methaneCorrectionFactor;
+  const totalMethaneProduction =
+    (totalOrganicWaste - removedSludge) * emissionsFactor - methaneRecovered;
+  const amount = BigInt(totalMethaneProduction);
+  return [{ gas: "CH4", amount }];
 }

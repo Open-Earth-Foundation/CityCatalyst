@@ -10,6 +10,7 @@ import {
   handleDirectMeasureFormula,
   handleMethaneCommitmentFormula,
   handleVkt1Formula,
+  handleWastewaterCalculatorFormula,
 } from "./formulas";
 import { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
 import { GasValueCreationAttributes } from "@/models/GasValue";
@@ -103,6 +104,9 @@ export default class CalculationService {
         break;
       case "induced-activity-1":
         gases = handleVkt1Formula(activityValue, gasValues);
+      case "wastewater-calculator":
+        gases = handleWastewaterCalculatorFormula(activityValue);
+        break;
       default:
         throw new createHttpError.NotImplemented(
           `Formula ${formula} not yet implemented for input methodology ${inventoryValue.inputMethodology}`,

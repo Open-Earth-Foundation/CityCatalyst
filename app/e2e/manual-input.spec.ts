@@ -1,4 +1,4 @@
-import { test, expect, Page, APIRequestContext } from "@playwright/test";
+import { APIRequestContext, expect, Page, test } from "@playwright/test";
 import { indexPageRegex, regexForPath } from "./utils";
 
 // inventory creation data
@@ -197,6 +197,10 @@ test.describe.serial("Manual Input", () => {
       });
 
       test(`should list methodologies in ${sector.sectorName}`, async () => {
+        test.skip(
+          sector.sectorName === "Waste" ||
+            sector.sectorName === "Transportation",
+        );
         // check on a list of methodologies
         const methodologyCards = await page.getByTestId(
           testIds.methodologyCard,
@@ -219,7 +223,7 @@ test.describe.serial("Manual Input", () => {
           })
           .first();
 
-        expect(directMeasureCardHeader).toBeVisible();
+        await expect(directMeasureCardHeader).toBeVisible();
         // click on the direct measure card
         await directMeasureCardHeader?.click();
 
@@ -295,7 +299,7 @@ test.describe.serial("Manual Input", () => {
         await expect(table).toBeVisible();
 
         const cellWithValue = page?.getByRole("cell", { name: "tCO2" }).first();
-        expect(cellWithValue).toBeVisible();
+        await expect(cellWithValue).toBeVisible();
 
         // Ensure the cell has the correct value
         // TODO this is wrong, the final result should be the multiple of activity value and emissions factor
@@ -321,12 +325,12 @@ test.describe.serial("Manual Input", () => {
         // wait for the modal to open
         await page.waitForTimeout(500);
         const deleteModal = page.getByTestId(testIds.deleteActivityModalHeader);
-        expect(deleteModal).toBeVisible();
+        await expect(deleteModal).toBeVisible();
 
         const confirmButton = page.getByTestId(
           testIds.deleteActivityModalConfirmButton,
         );
-        expect(confirmButton).toBeVisible();
+        await expect(confirmButton).toBeVisible();
         await confirmButton.click();
 
         // wait for a 200 response

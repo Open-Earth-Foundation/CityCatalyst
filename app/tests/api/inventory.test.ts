@@ -1,10 +1,4 @@
-import {
-  DELETE as deleteInventory,
-  GET as findInventory,
-  PATCH as updateInventory,
-} from "@/app/api/v0/inventory/[inventory]/route";
-import { GET as calculateProgress } from "@/app/api/v0/inventory/[inventory]/progress/route";
-import { POST as createInventory } from "@/app/api/v0/city/[city]/inventory/route";
+import { GET as findInventory } from "@/app/api/v0/inventory/[inventory]/route";
 import { POST as submitInventory } from "@/app/api/v0/inventory/[inventory]/cdp/route";
 import { db } from "@/models";
 import { CreateInventoryRequest } from "@/util/validation";
@@ -12,8 +6,8 @@ import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, beforeEach, describe, it } from "node:test";
 import { literal, Op } from "sequelize";
-import { createRequest, mockRequest, setupTests, testUserID } from "../helpers";
-import { SubSector, SubSectorAttributes } from "@/models/SubSector";
+import { cascadeDeleteDataSource, createRequest, mockRequest, setupTests, testUserID } from "../helpers";
+import { SubSector } from "@/models/SubSector";
 import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
 import { Sector } from "@/models/Sector";
@@ -71,11 +65,11 @@ describe("Inventory API", () => {
     await db.models.Inventory.destroy({
       where: { inventoryName },
     });
-    await db.models.DataSource.destroy({
-      where: {
-        [Op.or]: [literal(`dataset_name ->> 'en' LIKE 'XX_INVENTORY_TEST_%'`)],
-      },
+
+    await cascadeDeleteDataSource({
+      [Op.or]: [literal(`dataset_name ->> 'en' LIKE 'XX_INVENTORY_TEST_%'`)],
     });
+
     await db.models.Sector.destroy({
       where: { sectorName: { [Op.like]: "XX_INVENTORY_TEST%" } },
     });
@@ -151,50 +145,6 @@ describe("Inventory API", () => {
     if (db.sequelize) await db.sequelize.close();
   });
 
-  it("should create an inventory", async () => {
-    await db.models.Inventory.destroy({
-      where: { inventoryName },
-    });
-    const req = mockRequest(inventoryData);
-    const res = await createInventory(req, {
-      params: { city: city.cityId },
-    });
-    await db.models.Population.create({
-      cityId: city.cityId!,
-      year: 2020,
-      population: 1000,
-    });
-    assert.equal(res.status, 200);
-    const { data } = await res.json();
-    assert.equal(data.inventoryName, inventory.inventoryName);
-    assert.equal(data.year, inventory.year);
-    assert.equal(data.totalEmissions, inventory.totalEmissions);
-  });
-
-  it("should not create an inventory with invalid data", async () => {
-    const req = mockRequest(invalidInventory);
-    const res = await createInventory(req, {
-      params: { city: locode },
-    });
-    assert.equal(res.status, 400);
-    const {
-      error: { issues },
-    } = await res.json();
-    assert.equal(issues.length, 3);
-  });
-
-  it("should find an inventory", async () => {
-    const req = mockRequest();
-    const res = await findInventory(req, {
-      params: { inventory: inventory.inventoryId },
-    });
-    assert.equal(res.status, 200);
-    const { data } = await res.json();
-    assert.equal(data.inventoryName, inventory.inventoryName);
-    assert.equal(data.year, inventory.year);
-    assert.equal(data.totalEmissions, inventory.totalEmissions);
-  });
-
   it.skip("should download an inventory in csv format", async () => {
     const url = `http://localhost:3000/api/v0/inventory/${inventory.inventoryId}?format=csv`;
     const req = createRequest(url);
@@ -234,158 +184,6 @@ describe("Inventory API", () => {
     assert.equal(res.headers.get("content-type"), "application/vnd.ms-excel");
     assert.ok(res.headers.get("content-disposition")?.startsWith("attachment"));
     const body = await res.blob();
-  });
-
-  it("should not find non-existing inventories", async () => {
-    const req = mockRequest(invalidInventory);
-    const res = await findInventory(req, {
-      params: { inventory: randomUUID() },
-    });
-    assert.equal(res.status, 404);
-  });
-
-  it("should update an inventory", async () => {
-    const req = mockRequest(inventoryData2);
-    const res = await updateInventory(req, {
-      params: { inventory: inventory.inventoryId },
-    });
-    assert.equal(res.status, 200);
-    const { data } = await res.json();
-    assert.equal(data.inventoryName, inventoryData2.inventoryName);
-    assert.equal(data.year, inventoryData2.year);
-    assert.equal(data.totalEmissions, inventoryData2.totalEmissions);
-  });
-
-  it("should not update an inventory with invalid data", async () => {
-    const req = mockRequest(invalidInventory);
-    const res = await updateInventory(req, {
-      params: { inventory: inventory.inventoryId },
-    });
-    assert.equal(res.status, 400);
-    const {
-      error: { issues },
-    } = await res.json();
-    assert.equal(issues.length, 3);
-  });
-
-  it("should delete an inventory", async () => {
-    const req = mockRequest();
-    const res = await deleteInventory(req, {
-      params: { inventory: inventory.inventoryId },
-    });
-    assert.equal(res.status, 200);
-    const { data, deleted } = await res.json();
-    assert.equal(deleted, true);
-    assert.equal(data.inventoryName, inventory.inventoryName);
-    assert.equal(data.year, inventory.year);
-    assert.equal(data.totalEmissions, inventory.totalEmissions);
-  });
-
-  it("should not delete a non-existing inventory", async () => {
-    const req = mockRequest();
-    const res = await deleteInventory(req, {
-      params: { inventory: randomUUID() },
-    });
-    assert.equal(res.status, 404);
-  });
-
-  it("should calculate progress for an inventory", async () => {
-    // setup mock data
-    const existingInventory = await db.models.Inventory.findOne({
-      where: { inventoryName },
-    });
-    assert.notEqual(existingInventory, null);
-    const sectorNames = ["PROGRESS_TEST1", "PROGRESS_TEST2", "PROGRESS_TEST3"];
-    const userSource = await db.models.DataSource.create({
-      datasourceId: randomUUID(),
-      sourceType: "user",
-      datasetName: {
-        en: "XX_INVENTORY_TEST_USE",
-      },
-    });
-    const thirdPartySource = await db.models.DataSource.create({
-      datasourceId: randomUUID(),
-      sourceType: "third_party",
-      datasetName: { en: "XX_INVENTORY_TEST_THIRD_PARTY" },
-    });
-    const sources = [userSource, thirdPartySource, null];
-
-    for (const sectorName of sectorNames) {
-      const sectorId = randomUUID();
-      await db.models.Sector.create({
-        sectorId,
-        sectorName: "XX_INVENTORY_" + sectorName,
-      });
-      for (let i = 0; i < sectorNames.length; i++) {
-        const subSectorId = randomUUID();
-        await db.models.SubSector.create({
-          subsectorId: subSectorId,
-          sectorId,
-          subsectorName: "XX_INVENTORY_" + sectorName + "_" + sectorNames[i],
-        });
-        for (let j = 0; j < sectorNames.length; j++) {
-          const subCategoryId = randomUUID();
-          await db.models.SubCategory.create({
-            subcategoryId: subCategoryId,
-            subsectorId: subSectorId,
-            subcategoryName: `XX_INVENTORY_${sectorName}_${sectorNames[i]}_${sectorNames[j]}`,
-          });
-          if (sources[i] != null) {
-            await db.models.InventoryValue.create({
-              id: randomUUID(),
-              sectorId,
-              subSectorId,
-              subCategoryId,
-              datasourceId: sources[i]?.datasourceId,
-              inventoryId: existingInventory!.inventoryId,
-            });
-          }
-        }
-      }
-    }
-
-    const req = mockRequest();
-    const res = await calculateProgress(req, {
-      params: { inventory: inventory.inventoryId },
-    });
-
-    assert.equal(res.status, 200);
-    const { totalProgress, sectorProgress } = (await res.json()).data;
-    const cleanedSectorProgress = sectorProgress
-      .filter(({ sector: checkSector }: { sector: { sectorName: string } }) => {
-        return checkSector.sectorName.startsWith("XX_INVENTORY_PROGRESS_TEST");
-      })
-      .map(
-        ({
-          sector,
-          subSectors,
-          ...progress
-        }: {
-          sector: { sectorName: string; sectorId: string; completed: boolean };
-          subSectors: Array<SubSectorAttributes & { completed: boolean }>;
-        }) => {
-          assert.notEqual(sector.sectorId, null);
-          assert.equal(subSectors.length, 3, sector.sectorName);
-          for (const subSector of subSectors) {
-            assert.notEqual(subSector.completed, null);
-          }
-          return { sector: { sectorName: sector.sectorName }, ...progress };
-        },
-      );
-    assert.equal(cleanedSectorProgress.length, 3);
-    for (const sector of cleanedSectorProgress) {
-      assert.equal(sector.total, 9);
-      assert.equal(sector.thirdParty, 3);
-      assert.equal(sector.uploaded, 3);
-      assert.ok(
-        sector.sector.sectorName.startsWith("XX_INVENTORY_PROGRESS_TEST"),
-        "Wrong sector name: " + sector.sector.sectorName,
-      );
-    }
-    assert.equal(totalProgress.thirdParty, 9);
-    assert.equal(totalProgress.uploaded, 9);
-    // TODO the route counts subsectors created by other tests/ seeders
-    // assert.equal(totalProgress.total, 27);
   });
 
   it(

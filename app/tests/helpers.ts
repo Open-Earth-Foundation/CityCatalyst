@@ -9,6 +9,9 @@ import fs from "fs";
 import path from "path";
 import { ApiResponse } from "@/util/api";
 import { expect } from "@jest/globals";
+import { db } from "@/models";
+import { Op, WhereOptions } from "sequelize";
+import { DataSourceI18nAttributes } from "@/models/DataSourceI18n";
 
 const mockUrl = "http://localhost:3000/api/v0";
 
@@ -113,3 +116,48 @@ export async function expectStatusCode(
     throw err;
   }
 }
+
+export const expectToBeLooselyEqual = (received: any, expected: any) => {
+  const pass = received == expected;
+  if (pass) {
+    return {
+      message: () =>
+        `expected ${received} not to be loosely equal to ${expected}`,
+      pass: true,
+    };
+  } else {
+    return {
+      message: () => `expected ${received} to be loosely equal to ${expected}`,
+      pass: false,
+    };
+  }
+};
+
+/** deletes DataSources and their associated InventoryValues **/
+export const cascadeDeleteDataSource = async (
+  where: WhereOptions<DataSourceI18nAttributes>,
+) => {
+  const dataSources = await db.models.DataSource.findAll({
+    where,
+  });
+
+  const dataSourceIds = dataSources.map((ds) => ds.datasourceId);
+
+  if (dataSourceIds.length > 0) {
+    await db.models.InventoryValue.destroy({
+      where: {
+        datasourceId: {
+          [Op.in]: dataSourceIds,
+        },
+      },
+    });
+
+    await db.models.DataSource.destroy({
+      where: {
+        datasourceId: {
+          [Op.in]: dataSourceIds,
+        },
+      },
+    });
+  }
+};

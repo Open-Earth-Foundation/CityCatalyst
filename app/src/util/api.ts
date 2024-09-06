@@ -12,8 +12,6 @@ import { db } from "@/models";
 import { ValidationError } from "sequelize";
 import { ManualInputValidationError } from "@/lib/custom-errors/manual-input-error";
 
-import "@/util/big_int_json.ts";
-
 export type ApiResponse = NextResponse | StreamingTextResponse;
 
 export type NextHandler = (

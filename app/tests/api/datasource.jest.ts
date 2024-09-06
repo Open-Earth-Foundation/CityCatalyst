@@ -1,17 +1,15 @@
 import { GET as getDataSourcesForSector } from "@/app/api/v0/datasource/[inventoryId]/[sectorId]/route";
 import { GET as getAllDataSources } from "@/app/api/v0/datasource/[inventoryId]/route";
-
 import { db } from "@/models";
-import assert from "node:assert";
 import { randomUUID } from "node:crypto";
-import { after, before, describe, it } from "node:test";
 import { literal, Op } from "sequelize";
-import { mockRequest, setupTests } from "../helpers";
+import { cascadeDeleteDataSource, mockRequest, setupTests } from "../helpers";
 import { City } from "@/models/City";
 import { CreateInventoryRequest } from "@/util/validation";
 import { Sector } from "@/models/Sector";
 import { Inventory } from "@/models/Inventory";
 import fetchMock from "fetch-mock";
+import { beforeAll, afterAll, describe, it, expect } from "@jest/globals";
 
 const locode = "XX_DATASOURCE_CITY";
 const sectorName = "XX_DATASOURCE_TEST_1";
@@ -55,17 +53,14 @@ describe("DataSource API", () => {
   let city: City;
   let inventory: Inventory;
   let sector: Sector;
-  before(async () => {
+
+  beforeAll(async () => {
     setupTests();
     await db.initialize();
-    // this also deletes all Sector/SubSectorValue instances associated with it (cascade)
-    await db.models.Inventory.destroy({
-      where: { year: inventoryData.year },
-    });
-    await db.models.DataSource.destroy({
-      where: {
-        [Op.or]: [literal(`dataset_name ->> 'en' LIKE 'XX_INVENTORY_TEST_%'`)],
-      },
+
+    await db.models.Inventory.destroy({ where: { year: inventoryData.year } });
+    await cascadeDeleteDataSource({
+      [Op.or]: [literal(`dataset_name ->> 'en' LIKE 'XX_INVENTORY_TEST_%'`)],
     });
     await db.models.City.destroy({ where: { locode } });
     city = await db.models.City.create({
@@ -73,6 +68,7 @@ describe("DataSource API", () => {
       locode,
       name: "CC_",
     });
+
     await db.models.SubCategory.destroy({ where: { subcategoryName } });
     await db.models.SubSector.destroy({ where: { subsectorName } });
     await db.models.Sector.destroy({ where: { sectorName } });
@@ -82,17 +78,20 @@ describe("DataSource API", () => {
       inventoryId: randomUUID(),
       cityId: city.cityId,
     });
+
     sector = await db.models.Sector.create({
       sectorId: randomUUID(),
       referenceNumber: "X",
       sectorName,
     });
+
     const subSector = await db.models.SubSector.create({
       subsectorId: randomUUID(),
       sectorId: sector.sectorId,
       referenceNumber: "X.9",
       subsectorName,
     });
+
     const subCategory = await db.models.SubCategory.create({
       subcategoryId: randomUUID(),
       subsectorId: subSector.subsectorId,
@@ -120,7 +119,7 @@ describe("DataSource API", () => {
     }
   });
 
-  after(async () => {
+  afterAll(async () => {
     if (db.sequelize) await db.sequelize.close();
   });
 
@@ -129,16 +128,16 @@ describe("DataSource API", () => {
     const res = await getDataSourcesForSector(req, {
       params: { inventoryId: inventory.inventoryId, sectorId: sector.sectorId },
     });
-    assert.equal(res.status, 200);
+    expect(res.status).toBe(200);
     const { data } = await res.json();
-    assert.equal(data.length, 1);
+    expect(data.length).toBe(1);
     const { source } = data[0];
-    assert.equal(source.datasetName.en, "XX_DATASOURCE_TEST_0");
-    assert.equal(source.sectorId, sector.sectorId);
-    assert.equal(source.apiEndpoint, apiEndpoint);
-    assert.equal(source.geographicalLocation, "EARTH");
-    assert.equal(source.startYear, 4000);
-    assert.equal(source.endYear, 4010);
+    expect(source.datasetName.en).toBe("XX_DATASOURCE_TEST_0");
+    expect(source.sectorId).toBe(sector.sectorId);
+    expect(source.apiEndpoint).toBe(apiEndpoint);
+    expect(source.geographicalLocation).toBe("EARTH");
+    expect(source.startYear).toBe(4000);
+    expect(source.endYear).toBe(4010);
   });
 
   it("should get the data sources for all sectors", async () => {
@@ -146,9 +145,9 @@ describe("DataSource API", () => {
     const res = await getAllDataSources(req, {
       params: { inventoryId: inventory.inventoryId },
     });
-    assert.equal(res.status, 200);
+    expect(res.status).toBe(200);
     const { data } = await res.json();
-    assert.equal(data.length, 2);
+    expect(data.length).toBe(2);
   });
 
   it.todo("should apply data sources");

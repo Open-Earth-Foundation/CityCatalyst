@@ -1,20 +1,17 @@
 import {
-  PATCH as updateActivityValue,
-  GET as getActivityValue,
   DELETE as deleteActivityValue,
+  GET as getActivityValue,
+  PATCH as updateActivityValue,
 } from "@/app/api/v0/inventory/[inventory]/activity-value/[id]/route";
 
 import {
-  POST as createActivityValue,
   DELETE as deleteAllActivitiesInSubsector,
+  POST as createActivityValue,
 } from "@/app/api/v0/inventory/[inventory]/activity-value/route";
 
 import { db } from "@/models";
 import { CreateActivityValueRequest } from "@/util/validation";
-import assert from "node:assert";
 import { randomUUID } from "node:crypto";
-import { after, before, describe, it } from "node:test";
-
 import { mockRequest, setupTests, testUserID } from "../helpers";
 import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
@@ -23,6 +20,7 @@ import { SubSector } from "@/models/SubSector";
 import { InventoryValue } from "@/models/InventoryValue";
 import { ActivityValue } from "@/models/ActivityValue";
 import { Sector } from "@/models/Sector";
+import { describe, it, afterAll, beforeAll, expect } from "@jest/globals";
 
 const ReferenceNumber = "I.1.1";
 
@@ -120,6 +118,44 @@ const updatedActivityValue: CreateActivityValueRequest = {
   ],
 };
 
+const invalidCreateActivity: CreateActivityValueRequest = {
+  activityData: {
+    "form-test-input1": 40.4,
+    "form-test-input2": "132894729485739867398473321",
+    "form-test-input3": "agriculture-forestry",
+  },
+  metadata: {
+    "active-selection": "test1",
+  },
+  dataSource: {
+    sourceType: "",
+    dataQuality: "high",
+    notes: "Some notes regarding the data source",
+  },
+  gasValues: [
+    {
+      id: "123e4567-e89b-12d3-a456-426614174001",
+      gas: "CO2",
+      gasAmount: 1000n,
+      emissionsFactor: {
+        emissionsPerActivity: 50.5,
+        gas: "CO2",
+        units: "kg",
+      },
+    },
+    {
+      id: "123e4567-e89b-12d3-a456-426614174003",
+      gas: "CH4",
+      gasAmount: 2000n,
+      emissionsFactor: {
+        emissionsPerActivity: 25.0,
+        gas: "CH4",
+        units: "kg",
+      },
+    },
+  ],
+};
+
 const activityUnits = "UNITS";
 const activityValue = 1000;
 const co2eq = 44000n;
@@ -132,6 +168,7 @@ const sectorName = "XX_INVENTORY_TEST_SECTOR_ACTIVITY_VALUE";
 const subcategoryName = "XX_INVENTORY_TEST_SUBCATEGORY_ACTIVITY_VALUE";
 const subsectorName = "XX_INVENTORY_TEST_SUBSECTOR_1_ACTIVITY_VALUE";
 
+/** skipped tests are running with the with node test runner **/
 describe("Activity Value API", () => {
   let city: City;
   let inventory: Inventory;
@@ -142,33 +179,24 @@ describe("Activity Value API", () => {
   let createdActivityValue: ActivityValue;
   let createdActivityValue2: ActivityValue;
 
-  before(async () => {
+  beforeAll(async () => {
     setupTests();
     await db.initialize();
 
-    await db.models.Sector.destroy({
-      where: { sectorName },
-    });
-
-    await db.models.SubCategory.destroy({
-      where: { subcategoryName },
-    });
-    await db.models.SubSector.destroy({
-      where: { subsectorName },
-    });
+    // Perform model cleanup and creation
+    await db.models.Sector.destroy({ where: { sectorName } });
+    await db.models.SubCategory.destroy({ where: { subcategoryName } });
+    await db.models.SubSector.destroy({ where: { subsectorName } });
     await db.models.City.destroy({ where: { locode } });
 
     const prevInventory = await db.models.Inventory.findOne({
       where: { inventoryName },
     });
-
     if (prevInventory) {
       await db.models.InventoryValue.destroy({
         where: { inventoryId: prevInventory.inventoryId },
       });
-      await db.models.Inventory.destroy({
-        where: { inventoryName },
-      });
+      await db.models.Inventory.destroy({ where: { inventoryName } });
     }
 
     city = await db.models.City.create({
@@ -224,30 +252,17 @@ describe("Activity Value API", () => {
     });
   });
 
-  // clean up after the test suite
-  after(async () => {
+  afterAll(async () => {
     await db.models.City.destroy({ where: { locode } });
-
     await db.models.Inventory.destroy({
       where: { inventoryId: inventory.inventoryId },
     });
-
     await db.models.ActivityValue.destroy({
       where: { id: createdActivityValue2.id },
     });
-
-    await db.models.Sector.destroy({
-      where: { sectorName },
-    });
-
-    await db.models.SubCategory.destroy({
-      where: { subcategoryName },
-    });
-
-    await db.models.SubSector.destroy({
-      where: { subsectorName },
-    });
-
+    await db.models.Sector.destroy({ where: { sectorName } });
+    await db.models.SubCategory.destroy({ where: { subcategoryName } });
+    await db.models.SubSector.destroy({ where: { subsectorName } });
     await db.models.InventoryValue.destroy({
       where: { inventoryId: inventory.inventoryId },
     });
@@ -255,44 +270,39 @@ describe("Activity Value API", () => {
     if (db.sequelize) await db.sequelize.close();
   });
 
-  it("should create an activity, creating an inventory value with inventoryValue params", async () => {
-    const findInventory = await db.models.Inventory.findOne({
-      where: {
-        inventoryName: inventoryName,
-      },
+  it("should not create an activity value with invalid data", async () => {
+    const req = mockRequest(invalidCreateActivity);
+    const res = await createActivityValue(req, {
+      params: { inventory: inventory.inventoryId },
     });
+    expect(res.status).toBe(400);
+  });
 
-    assert.equal(findInventory?.inventoryId, inventory.inventoryId);
+  it.skip("should create an activity, creating an inventory value with inventoryValue params", async () => {
+    const findInventory = await db.models.Inventory.findOne({
+      where: { inventoryName },
+    });
+    expect(findInventory?.inventoryId).toBe(inventory.inventoryId);
 
     const req = mockRequest(validCreateActivity);
     const res = await createActivityValue(req, {
-      params: {
-        inventory: inventory.inventoryId,
-      },
+      params: { inventory: inventory.inventoryId },
     });
 
-    assert.equal(res.status, 200);
+    expect(res.status).toBe(200);
     const { data } = await res.json();
-
     createdActivityValue2 = data;
-
-    assert.equal(
-      data.activityData.co2_amount,
+    expect(data.activityData.co2_amount).toBe(
       validCreateActivity.activityData.co2_amount,
     );
-
-    assert.notEqual(data.inventoryValueId, null);
+    expect(data.inventoryValueId).not.toBeNull();
   });
 
-  it("should create an activity value with inventoryValueId", async () => {
+  it.skip("should create an activity value with inventoryValueId", async () => {
     const findInventory = await db.models.Inventory.findOne({
-      where: {
-        inventoryName: inventoryName,
-      },
+      where: { inventoryName },
     });
-
-    assert.equal(findInventory?.inventoryId, inventory.inventoryId);
-    console.log(subSector, "the value");
+    expect(findInventory?.inventoryId).toBe(inventory.inventoryId);
 
     const req = mockRequest({
       ...validCreateActivity,
@@ -300,25 +310,19 @@ describe("Activity Value API", () => {
       inventoryValue: undefined,
     });
     const res = await createActivityValue(req, {
-      params: {
-        inventory: inventory.inventoryId,
-      },
+      params: { inventory: inventory.inventoryId },
     });
 
-    assert.equal(res.status, 200);
+    expect(res.status).toBe(200);
     const { data } = await res.json();
     createdActivityValue = data;
-
-    assert.equal(
-      data.activityData.co2_amount,
+    expect(data.activityData.co2_amount).toBe(
       validCreateActivity.activityData.co2_amount,
     );
-
-    assert.notEqual(data.inventoryValueId, null);
+    expect(data.inventoryValueId).not.toBeNull();
   });
 
-  // test getting an activity value
-  it("should get an activity value", async () => {
+  it.skip("should get an activity value", async () => {
     const req = mockRequest();
     const res = await getActivityValue(req, {
       params: {
@@ -328,15 +332,24 @@ describe("Activity Value API", () => {
     });
 
     const { data } = await res.json();
-
-    assert.equal(res.status, 200);
-    assert.equal(data.co2eq, createdActivityValue.co2eq);
-    assert.equal(data.co2eqYears, createdActivityValue.co2eqYears);
-    assert.equal(data.inventoryValueId, inventoryValue.id);
+    expect(res.status).toBe(200);
+    expect(data.co2eq).toBe(createdActivityValue.co2eq);
+    expect(data.co2eqYears).toBe(createdActivityValue.co2eqYears);
+    expect(data.inventoryValueId).toBe(inventoryValue.id);
   });
 
-  // test patch, break patch
-  it("should update an activity value", async () => {
+  it("should not get an activity value with invalid id", async () => {
+    const fakeId = randomUUID();
+    const req = mockRequest();
+    const res = await getActivityValue(req, {
+      params: { inventory: inventory.inventoryId, id: fakeId },
+    });
+
+    const { data } = await res.json();
+    expect(data).toBeNull();
+  });
+
+  it.skip("should update an activity value", async () => {
     const req = mockRequest({
       ...createdActivityValue,
       activityData: updatedActivityValue.activityData,
@@ -350,16 +363,13 @@ describe("Activity Value API", () => {
     });
 
     const { data } = await res.json();
-
-    assert.equal(res.status, 200);
-    assert.equal(
-      data.activityData.co2_amount,
+    expect(res.status).toBe(200);
+    expect(data.activityData.co2_amount).toBe(
       updatedActivityValue.activityData.co2_amount,
     );
   });
 
-  //  test good delete
-  it("should delete an activity value", async () => {
+  it.skip("should delete an activity value", async () => {
     const req = mockRequest();
     const res = await deleteActivityValue(req, {
       params: {
@@ -369,27 +379,21 @@ describe("Activity Value API", () => {
     });
 
     const { data } = await res.json();
-
-    assert.equal(res.status, 200);
-    assert.equal(data, true);
+    expect(res.status).toBe(200);
+    expect(data).toBe(true);
   });
 
-  // test delete all activities in subsector
-  it("should delete all activities in a subsector", async () => {
+  it.skip("should delete all activities in a subsector", async () => {
     const findInventory = await db.models.Inventory.findOne({
-      where: {
-        inventoryName: inventoryName,
-      },
+      where: { inventoryName },
     });
-
-    assert.equal(findInventory?.inventoryId, inventory.inventoryId);
+    expect(findInventory?.inventoryId).toBe(inventory.inventoryId);
 
     const req1 = mockRequest({
       ...validCreateActivity,
       inventoryValueId: inventoryValue.id,
       inventoryValue: undefined,
     });
-
     const req2 = mockRequest({
       ...validCreateActivity,
       inventoryValueId: inventoryValue.id,
@@ -397,33 +401,21 @@ describe("Activity Value API", () => {
     });
 
     const res1 = await createActivityValue(req1, {
-      params: {
-        inventory: inventory.inventoryId,
-      },
+      params: { inventory: inventory.inventoryId },
     });
-
     const res2 = await createActivityValue(req2, {
-      params: {
-        inventory: inventory.inventoryId,
-      },
+      params: { inventory: inventory.inventoryId },
     });
 
-    assert.equal(res1.status, 200);
-    assert.equal(res2.status, 200);
+    expect(res1.status).toBe(200);
+    expect(res2.status).toBe(200);
 
-    // delete all activities in subsector
-    const req3 = mockRequest(null, {
-      subSectorId: subSector.subsectorId,
-    });
-
-    // pass subsectorId as query parameter
+    const req3 = mockRequest(null, { subSectorId: subSector.subsectorId });
     const res3 = await deleteAllActivitiesInSubsector(req3, {
-      params: {
-        inventory: inventory.inventoryId,
-      },
+      params: { inventory: inventory.inventoryId },
     });
 
     const { data } = await res3.json();
-    assert.equal(res3.status, 200);
+    expect(res3.status).toBe(200);
   });
 });

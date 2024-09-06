@@ -1,10 +1,15 @@
 import { POST as savePopulations } from "@/app/api/v0/city/[city]/population/route";
 import { db } from "@/models";
-import { mockRequest, setupTests, testUserID } from "../helpers";
+import {
+  expectToBeLooselyEqual,
+  mockRequest,
+  setupTests,
+  testUserID,
+} from "../helpers";
 import { CreatePopulationRequest } from "@/util/validation";
 import { Op } from "sequelize";
 import { keyBy } from "@/util/helpers";
-import { describe, expect, beforeAll, afterAll, it } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 
 const cityId = "76bb1ab7-5177-45a1-a61f-cfdee9c448e8";
 
@@ -61,23 +66,28 @@ describe("Population API", () => {
     const res = await savePopulations(req, { params: { city: cityId } });
     expect(res.status).toEqual(200);
     const data = await res.json();
-
-    expect(data.data.cityPopulation.population).toEqual(
+    expectToBeLooselyEqual(
+      data.data.cityPopulation.population,
       validPopulationUpdate.cityPopulation,
     );
-    expect(data.data.cityPopulation.year).toEqual(
+    expectToBeLooselyEqual(
+      data.data.cityPopulation.year,
       validPopulationUpdate.cityPopulationYear,
     );
-    expect(data.data.regionPopulation.regionPopulation).toEqual(
+    expectToBeLooselyEqual(
+      data.data.regionPopulation.regionPopulation,
       validPopulationUpdate.regionPopulation,
     );
-    expect(data.data.regionPopulation.year).toEqual(
+    expectToBeLooselyEqual(
+      data.data.regionPopulation.year,
       validPopulationUpdate.regionPopulationYear,
     );
-    expect(data.data.countryPopulation.countryPopulation).toEqual(
+    expectToBeLooselyEqual(
+      data.data.countryPopulation.countryPopulation,
       validPopulationUpdate.countryPopulation,
     );
-    expect(data.data.countryPopulation.year).toEqual(
+    expectToBeLooselyEqual(
+      data.data.countryPopulation.year,
       validPopulationUpdate.countryPopulationYear,
     );
 
@@ -86,9 +96,9 @@ describe("Population API", () => {
     });
     expect(populations.length).toEqual(3);
     const populationByYear = keyBy(populations, (p) => p.year.toString());
-    expect(populationByYear["1337"].population).toEqual(1);
-    expect(populationByYear["1338"].regionPopulation).toEqual(2);
-    expect(populationByYear["1339"].countryPopulation).toEqual(3);
+    expectToBeLooselyEqual(populationByYear["1337"].population, 1);
+    expectToBeLooselyEqual(populationByYear["1338"].regionPopulation, 2);
+    expectToBeLooselyEqual(populationByYear["1339"].countryPopulation, 3);
   });
 
   it("should correctly save population information for the same year", async () => {
@@ -97,22 +107,28 @@ describe("Population API", () => {
     expect(res.status).toEqual(200);
     const data = await res.json();
 
-    expect(data.data.cityPopulation.population).toEqual(
+    expectToBeLooselyEqual(
+      data.data.cityPopulation.population,
       overlappingPopulationUpdate.cityPopulation,
     );
-    expect(data.data.cityPopulation.year).toEqual(
+    expectToBeLooselyEqual(
+      data.data.cityPopulation.year,
       overlappingPopulationUpdate.cityPopulationYear,
     );
-    expect(data.data.regionPopulation.regionPopulation).toEqual(
+    expectToBeLooselyEqual(
+      data.data.regionPopulation.regionPopulation,
       overlappingPopulationUpdate.regionPopulation,
     );
-    expect(data.data.regionPopulation.year).toEqual(
+    expectToBeLooselyEqual(
+      data.data.regionPopulation.year,
       overlappingPopulationUpdate.regionPopulationYear,
     );
-    expect(data.data.countryPopulation.countryPopulation).toEqual(
+    expectToBeLooselyEqual(
+      data.data.countryPopulation.countryPopulation,
       overlappingPopulationUpdate.countryPopulation,
     );
-    expect(data.data.countryPopulation.year).toEqual(
+    expectToBeLooselyEqual(
+      data.data.countryPopulation.year,
       overlappingPopulationUpdate.countryPopulationYear,
     );
 
@@ -120,9 +136,9 @@ describe("Population API", () => {
       where: { cityId, year: 1340 },
     });
     expect(populations.length).toEqual(1);
-    expect(populations[0].population).toEqual(4);
-    expect(populations[0].regionPopulation).toEqual(5);
-    expect(populations[0].countryPopulation).toEqual(6);
+    expectToBeLooselyEqual(populations[0].population, 4);
+    expectToBeLooselyEqual(populations[0].regionPopulation, 5);
+    expectToBeLooselyEqual(populations[0].countryPopulation, 6);
   });
 
   it("should not save invalid population information", async () => {

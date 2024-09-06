@@ -1,1 +1,1 @@
-import "@/util/big_int_json.ts";
+import "@/util/big_int_json";

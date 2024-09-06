@@ -169,7 +169,7 @@ const subcategoryName = "XX_INVENTORY_TEST_SUBCATEGORY_ACTIVITY_VALUE";
 const subsectorName = "XX_INVENTORY_TEST_SUBSECTOR_1_ACTIVITY_VALUE";
 
 /** skipped tests are running with the with node test runner **/
-describe("Activity Value API", () => {
+describe.skip("Activity Value API", () => {
   let city: City;
   let inventory: Inventory;
   let sector: Sector;
@@ -278,7 +278,7 @@ describe("Activity Value API", () => {
     expect(res.status).toBe(400);
   });
 
-  it.skip("should create an activity, creating an inventory value with inventoryValue params", async () => {
+  it("should create an activity, creating an inventory value with inventoryValue params", async () => {
     const findInventory = await db.models.Inventory.findOne({
       where: { inventoryName },
     });
@@ -298,7 +298,7 @@ describe("Activity Value API", () => {
     expect(data.inventoryValueId).not.toBeNull();
   });
 
-  it.skip("should create an activity value with inventoryValueId", async () => {
+  it("should create an activity value with inventoryValueId", async () => {
     const findInventory = await db.models.Inventory.findOne({
       where: { inventoryName },
     });
@@ -322,7 +322,7 @@ describe("Activity Value API", () => {
     expect(data.inventoryValueId).not.toBeNull();
   });
 
-  it.skip("should get an activity value", async () => {
+  it("should get an activity value", async () => {
     const req = mockRequest();
     const res = await getActivityValue(req, {
       params: {
@@ -349,7 +349,7 @@ describe("Activity Value API", () => {
     expect(data).toBeNull();
   });
 
-  it.skip("should update an activity value", async () => {
+  it("should update an activity value", async () => {
     const req = mockRequest({
       ...createdActivityValue,
       activityData: updatedActivityValue.activityData,
@@ -369,7 +369,7 @@ describe("Activity Value API", () => {
     );
   });
 
-  it.skip("should delete an activity value", async () => {
+  it("should delete an activity value", async () => {
     const req = mockRequest();
     const res = await deleteActivityValue(req, {
       params: {
@@ -383,7 +383,7 @@ describe("Activity Value API", () => {
     expect(data).toBe(true);
   });
 
-  it.skip("should delete all activities in a subsector", async () => {
+  it("should delete all activities in a subsector", async () => {
     const findInventory = await db.models.Inventory.findOne({
       where: { inventoryName },
     });

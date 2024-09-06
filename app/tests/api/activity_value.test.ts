@@ -120,6 +120,44 @@ const updatedActivityValue: CreateActivityValueRequest = {
   ],
 };
 
+const invalidCreateActivity: CreateActivityValueRequest = {
+  activityData: {
+    "form-test-input1": 40.4,
+    "form-test-input2": "132894729485739867398473321",
+    "form-test-input3": "agriculture-forestry",
+  },
+  metadata: {
+    "active-selection": "test1",
+  },
+  dataSource: {
+    sourceType: "",
+    dataQuality: "high",
+    notes: "Some notes regarding the data source",
+  },
+  gasValues: [
+    {
+      id: "123e4567-e89b-12d3-a456-426614174001",
+      gas: "CO2",
+      gasAmount: 1000n,
+      emissionsFactor: {
+        emissionsPerActivity: 50.5,
+        gas: "CO2",
+        units: "kg",
+      },
+    },
+    {
+      id: "123e4567-e89b-12d3-a456-426614174003",
+      gas: "CH4",
+      gasAmount: 2000n,
+      emissionsFactor: {
+        emissionsPerActivity: 25.0,
+        gas: "CH4",
+        units: "kg",
+      },
+    },
+  ],
+};
+
 const activityUnits = "UNITS";
 const activityValue = 1000;
 const co2eq = 44000n;
@@ -255,6 +293,16 @@ describe("Activity Value API", () => {
     if (db.sequelize) await db.sequelize.close();
   });
 
+  it("should not create an activity value with invalid data", async () => {
+    const req = mockRequest(invalidCreateActivity);
+    const res = await createActivityValue(req, {
+      params: {
+        inventory: inventory.inventoryId,
+      },
+    });
+    assert.equal(res.status, 400);
+  });
+
   it("should create an activity, creating an inventory value with inventoryValue params", async () => {
     const findInventory = await db.models.Inventory.findOne({
       where: {
@@ -333,6 +381,19 @@ describe("Activity Value API", () => {
     assert.equal(data.co2eq, createdActivityValue.co2eq);
     assert.equal(data.co2eqYears, createdActivityValue.co2eqYears);
     assert.equal(data.inventoryValueId, inventoryValue.id);
+  });
+
+  it("should not get an activity value with invalid id", async () => {
+    const fakeId = randomUUID();
+    const req = mockRequest();
+    const res = await getActivityValue(req, {
+      params: {
+        inventory: inventory.inventoryId,
+        id: fakeId,
+      },
+    });
+    const { data } = await res.json();
+    assert.equal(data, null);
   });
 
   // test patch, break patch

@@ -198,9 +198,7 @@ test.describe.serial("Manual Input", () => {
 
       test(`should list methodologies in ${sector.sectorName}`, async () => {
         // check on a list of methodologies
-        const methodologyCards = await page.getByTestId(
-          testIds.methodologyCard,
-        );
+        const methodologyCards = page.getByTestId(testIds.methodologyCard);
         expect(await methodologyCards.count()).toBeGreaterThan(0);
       });
 

@@ -29,6 +29,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MdOutlineHomeWork } from "react-icons/md";
 import { useSelector } from "react-redux";
+import { toKebabCase } from "@/util/helpers";
 
 function SubSectorPage({
   params: { lng, step, inventory: inventoryId, subsector },
@@ -219,7 +220,7 @@ function SubSectorPage({
                           size={"30px"}
                         />
                       ) : (
-                        subSectorData?.subsectorName
+                        t(toKebabCase(subSectorData?.subsectorName))
                       )}
                     </Text>
                   </BreadcrumbLink>
@@ -274,7 +275,7 @@ function SubSectorPage({
                   ) : subSectorData?.referenceNumber != undefined ? (
                     subSectorData?.referenceNumber +
                     " " +
-                    subSectorData?.subsectorName
+                    t(toKebabCase(subSectorData?.subsectorName))
                   ) : (
                     ""
                   )}

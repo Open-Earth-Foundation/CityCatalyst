@@ -1,4 +1,4 @@
-import { expect, type Page, APIRequestContext } from "@playwright/test";
+import { APIRequestContext, expect, type Page } from "@playwright/test";
 
 export async function expectText(page: Page, text: string) {
   await expect(page.getByText(text).first()).toBeVisible();

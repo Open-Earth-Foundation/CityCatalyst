@@ -7,7 +7,11 @@ import { Blob } from "fetch-blob";
 import { promisify } from "node:util";
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
+import { ApiResponse } from "@/util/api";
+import { expect } from "@jest/globals";
+import { db } from "@/models";
+import { Op, WhereOptions } from "sequelize";
+import { DataSourceI18nAttributes } from "@/models/DataSourceI18n";
 
 const mockUrl = "http://localhost:3000/api/v0";
 
@@ -55,7 +59,6 @@ const createTestCsvFile = async (
   fileName: string,
   data: string,
 ): Promise<string> => {
-  const __dirname = path.dirname(fileURLToPath(import.meta.url));
   const filePath = path.join(__dirname, fileName);
 
   await fs.promises.writeFile(filePath, data, "utf8");
@@ -99,3 +102,62 @@ export function setupTests() {
     };
   });
 }
+
+export async function expectStatusCode(
+  response: ApiResponse,
+  statusCode: number,
+) {
+  try {
+    expect(response.status).toBe(statusCode);
+  } catch (err: unknown) {
+    const apiError = await response.text();
+    (err as Error).message =
+      `Expected status code ${statusCode}, got ${response.status}.\nAPI error: ${apiError}`;
+    throw err;
+  }
+}
+
+export const expectToBeLooselyEqual = (received: any, expected: any) => {
+  const pass = received == expected;
+  if (pass) {
+    return {
+      message: () =>
+        `expected ${received} not to be loosely equal to ${expected}`,
+      pass: true,
+    };
+  } else {
+    return {
+      message: () => `expected ${received} to be loosely equal to ${expected}`,
+      pass: false,
+    };
+  }
+};
+
+/** deletes DataSources and their associated InventoryValues **/
+export const cascadeDeleteDataSource = async (
+  where: WhereOptions<DataSourceI18nAttributes>,
+) => {
+  const dataSources = await db.models.DataSource.findAll({
+    where,
+  });
+
+  const dataSourceIds = dataSources.map((ds) => ds.datasourceId);
+
+  if (dataSourceIds.length > 0) {
+    await db.models.InventoryValue.destroy({
+      where: {
+        datasourceId: {
+          [Op.in]: dataSourceIds,
+        },
+      },
+    });
+
+    await db.models.DataSource.destroy({
+      where: {
+        datasourceId: {
+          [Op.in]: dataSourceIds,
+        },
+      },
+    });
+  }
+};

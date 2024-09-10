@@ -156,7 +156,7 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
   // const activityAmount = activityValue.activityAmount || 0;
   // TODO perform these calculations using BigInt/ BigNumber?
   const data = activityValue.activityData;
-  const activityAmount = data ? data["activity_amount"] || 0 : 0;
+  const activityAmount = data ? data["activity-amount"] || 0 : 0;
   const gases = gasValues?.map((gasValue) => {
     const emissionsFactor = gasValue.emissionsFactor;
     if (emissionsFactor == null) {
@@ -194,7 +194,7 @@ export function handleWastewaterCalculatorFormula(
   const wastewaterGenerated = data["wastewater-generated"];
   const degradableOrganicComponents = data["degradable-organic-components"];
   const methaneProductionCapacity =
-    data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY;
+    data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should this only be handled UI-side?
   const removedSludge = data["removed-sludge"];
   const methaneCorrectionFactor = data["methane-correction-factor"];
   const methaneRecovered = data["methane-recovered"];

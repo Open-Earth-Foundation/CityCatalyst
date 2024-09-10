@@ -118,6 +118,8 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_PROD_USER }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_PROD_USER }}
       EKS_PROD_NAME: ${{ secrets.EKS_PROD_NAME }}
+      SHA: ${{ github.sha }}
+      REF: ${{ github.ref }}
     steps:
       - uses: actions/checkout@v4
 
@@ -129,15 +131,16 @@ jobs:
 
       - name: Deploying service
         run: |
-          kubectl create -f k8s/prod/prod/cc-prod-prod-migrate.yml -n default
-          kubectl create -f k8s/prod/prod/cc-prod-prod-seed.yml -n default
-          kubectl apply -f k8s/prod/prod/cc-prod-prod-sync-catalogue.yml -n default
+          export VERSION=${REF#refs/tags/v}
+          kubectl create -f k8s/prod/cc-prod-migrate.yml -n default
+          kubectl create -f k8s/prod/cc-prod-seed.yml -n default
+          kubectl apply -f k8s/prod/cc-prod-sync-catalogue.yml -n default
           kubectl apply -f k8s/cc-web-deploy.yml -n default
           kubectl set image deployment/cc-web-deploy \
-            cc-web=ghcr.io/open-earth-foundation/citycatalyst:stable \
+            cc-web=ghcr.io/open-earth-foundation/citycatalyst:$VERSION \
             -n default
           kubectl set image deployment/cc-web-deploy \
-            cc-web=ghcr.io/open-earth-foundation/citycatalyst:stable \
+            cc-web=ghcr.io/open-earth-foundation/citycatalyst:$VERSION \
             -n default
           kubectl set env deployment/cc-web-deploy \
             SMTP_USER=${{secrets.SMTP_USER}} \

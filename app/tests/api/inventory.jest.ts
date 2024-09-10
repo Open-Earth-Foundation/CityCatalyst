@@ -2,7 +2,7 @@ import {
   DELETE as deleteInventory,
   GET as findInventory,
   PATCH as updateInventory,
-} from "@/app/api/v0/inventory/[inventory]/download/route";
+} from "@/app/api/v0/inventory/[inventory]/route";
 import { GET as calculateProgress } from "@/app/api/v0/inventory/[inventory]/progress/route";
 import { POST as createInventory } from "@/app/api/v0/city/[city]/inventory/route";
 import { POST as submitInventory } from "@/app/api/v0/inventory/[inventory]/cdp/route";
@@ -156,7 +156,7 @@ describe("Inventory API", () => {
       year: inventoryData.year,
       population: 1000,
       countryPopulation: 10000,
-      regionPopulation: 5000
+      regionPopulation: 5000,
     });
   });
 

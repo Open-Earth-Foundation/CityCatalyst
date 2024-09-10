@@ -11,7 +11,12 @@ import type { InventoryValue } from "@/models/InventoryValue";
 import type { InventoryResponse } from "@/util/types";
 import type { EmissionsFactor } from "@/models/EmissionsFactor";
 import { db } from "@/models";
-import { getTranslationFromDictionary, keyBy } from "@/util/helpers";
+import {
+  findClosestYearToInventory,
+  getTranslationFromDictionary,
+  keyBy,
+  PopulationEntry,
+} from "@/util/helpers";
 
 type InventoryValueWithEF = InventoryValue & {
   emissionsFactor?: EmissionsFactor;
@@ -61,12 +66,19 @@ export const GET = apiHandler(async (req, { params, session }) => {
       },
     ],
   );
-  const population = await db.models.Population.findOne({
+  if (!inventory.year) {
+    throw new createHttpError.BadRequest(
+      `Inventory ${inventory.inventoryId} is missing a year number`,
+    );
+  }
+  const MAX_YEARS_DIFFERENCE = 10;
+  const populationEntries = await db.models.Population.findAll({
     attributes: ["year", "population"],
     where: {
       cityId: inventory.cityId,
       year: {
-        [Op.lt]: inventory.year,
+        [Op.gte]: inventory.year - MAX_YEARS_DIFFERENCE,
+        [Op.lte]: inventory.year + MAX_YEARS_DIFFERENCE,
       },
       population: {
         [Op.ne]: null,
@@ -75,6 +87,11 @@ export const GET = apiHandler(async (req, { params, session }) => {
     order: [["year", "DESC"]],
   });
 
+  const population = findClosestYearToInventory(
+    populationEntries as PopulationEntry[],
+    inventory.year,
+    MAX_YEARS_DIFFERENCE,
+  );
   if (!population) {
     throw new createHttpError.NotFound(
       `Population data not found for city ${inventory.cityId} for year ${inventory.year}`,

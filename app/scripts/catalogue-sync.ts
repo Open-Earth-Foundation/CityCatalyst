@@ -49,7 +49,7 @@ function snakeToCamel(str: string): string {
 async function syncDataCatalogue() {
   const projectDir = process.cwd();
   env.loadEnvConfig(projectDir);
-  const SKIP_TIMESTAMP_CHECK = !!process.env.SKIP_TIMESTAMP_CHECK;
+  const SKIP_TIMESTAMP_CHECK = process.env.SKIP_TIMESTAMP_CHECK === "true";
 
   const GLOBAL_API_URL =
     process.env.GLOBAL_API_URL || "http://api.citycatalyst.io";

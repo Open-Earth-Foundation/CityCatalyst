@@ -150,6 +150,14 @@ describe("Inventory API", () => {
       subCategoryId: subCategory.subcategoryId,
       ...inventoryValue,
     });
+
+    await db.models.Population.upsert({
+      cityId: city.cityId!,
+      year: inventoryData.year,
+      population: 1000,
+      countryPopulation: 10000,
+      regionPopulation: 5000
+    });
   });
 
   afterAll(async () => {

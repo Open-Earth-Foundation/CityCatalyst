@@ -43,6 +43,7 @@ jobs:
           createdb -w -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst
           cp env.example .env
           npm run db:migrate
+          npm run db:seed
 
       - name: Run NextJS build
         run: npm run build

@@ -48,6 +48,7 @@ jobs:
           createdb -w -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst
           cp env.example .env
           npm run db:migrate
+          npm run db:seed
 
       - name: Run NextJS build
         run: npm run build
@@ -135,11 +136,11 @@ jobs:
             SMTP_USER=${{secrets.SMTP_USER}} \
             SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}} \
             NEXTAUTH_SECRET=${{secrets.NEXTAUTH_SECRET}} \
-            RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}} \ 
+            RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}} \
             VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}} \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_PROD}} \
             "OPENAI_ASSISTANT_ID=asst_FCZ1wta3NElIFXCxDO1KME9I" \
-            HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}} \ 
+            HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}} \
             "ADMIN_EMAILS=${{secrets.ADMIN_EMAILS}}" \
             "ADMIN_NAMES=${{secrets.ADMIN_NAMES}}" \
             "DEFAULT_ADMIN_EMAIL=${{secrets.DEFAULT_ADMIN_EMAIL}}" \

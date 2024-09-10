@@ -5,8 +5,25 @@ from models.datasource import Datasource
 from typing import Optional
 import csv
 import io
+import json
 
 api_router = APIRouter(prefix="/api/v0")
+
+MIGHT_BE_JSON = [
+    "dataset_name",
+    "methodology_description",
+    "transformation_description",
+    "dataset_description",
+]
+
+
+def fixupattr(datasource, name):
+    if name in MIGHT_BE_JSON:
+        value = getattr(datasource, name)
+        if value[0] == "{":
+            json = json.loads(value)
+            return json["en"]
+    return getattr(datasource, name)
 
 
 @api_router.get("/catalogue")
@@ -27,7 +44,8 @@ def get_datasources(format: Optional[str] = None):
         names = [column.name for column in Datasource.__table__.columns]
         csvwriter.writerow(names)
         for datasource in records:
-            csvwriter.writerow([getattr(datasource, name) for name in names])
+            # Fixup data that might have translation JSON in it
+            csvwriter.writerow([fixupattr(datasource, name) for name in names])
         response = PlainTextResponse(content=output.getvalue(), media_type="text/csv")
     else:
         response = {"datasources": records}

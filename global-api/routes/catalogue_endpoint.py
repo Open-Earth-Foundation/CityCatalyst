@@ -22,11 +22,14 @@ def fixupattr(datasource, name):
         value = getattr(datasource, name)
         if value is None:
             return value
-        elif value[0] == "{":
-            trans = json.loads(value)
-            return trans["en"]
-        else:
-            return value
+        if isinstance(value, dict):
+            return value["en"]
+        elif isinstance(value, str):
+            if value[0] == "{":
+                trans = json.loads(value)
+                return trans["en"]
+            else:
+                return value
     else:
         return getattr(datasource, name)
 

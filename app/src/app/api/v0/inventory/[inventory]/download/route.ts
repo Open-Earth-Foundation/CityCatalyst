@@ -310,24 +310,3 @@ async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
   return buffer;
   // return Buffer.from("Not implemented");
 }
-
-export const DELETE = apiHandler(async (_req, { params, session }) => {
-  const inventory = await UserService.findUserInventory(
-    params.inventory,
-    session,
-  );
-  await inventory.destroy();
-  return NextResponse.json({ data: inventory, deleted: true });
-});
-
-export const PATCH = apiHandler(async (req, context) => {
-  const { params, session } = context;
-  const body = createInventoryRequest.parse(await req.json());
-
-  let inventory = await UserService.findUserInventory(
-    params.inventory,
-    session,
-  );
-  inventory = await inventory.update(body);
-  return NextResponse.json({ data: inventory });
-});

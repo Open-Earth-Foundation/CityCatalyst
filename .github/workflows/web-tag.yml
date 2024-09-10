@@ -139,9 +139,6 @@ jobs:
           kubectl set image deployment/cc-web-deploy \
             cc-web=ghcr.io/open-earth-foundation/citycatalyst:$VERSION \
             -n default
-          kubectl set image deployment/cc-web-deploy \
-            cc-web=ghcr.io/open-earth-foundation/citycatalyst:$VERSION \
-            -n default
           kubectl set env deployment/cc-web-deploy \
             SMTP_USER=${{secrets.SMTP_USER}} \
             SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}} \

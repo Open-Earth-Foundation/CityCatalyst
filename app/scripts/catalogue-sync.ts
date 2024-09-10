@@ -49,6 +49,7 @@ function snakeToCamel(str: string): string {
 async function syncDataCatalogue() {
   const projectDir = process.cwd();
   env.loadEnvConfig(projectDir);
+  const SKIP_TIMESTAMP_CHECK = !!process.env.SKIP_TIMESTAMP_CHECK;
 
   const GLOBAL_API_URL =
     process.env.GLOBAL_API_URL || "http://api.citycatalyst.io";
@@ -67,27 +68,31 @@ async function syncDataCatalogue() {
       lastUpdate: new Date(0), // UNIX epoch as default value
     });
   }
-  const previousUpdate = catalogue.lastUpdate?.getTime() || 0;
-  const catalogUrl = `${GLOBAL_API_URL}/api/v0/catalogue`;
-  const lastUpdateResponse = await fetch(`${catalogUrl}/last-update`);
-  const lastUpdateData = await lastUpdateResponse.json();
-  if (!lastUpdateData?.last_update) {
-    throw new Error(
-      "Failed to query last catalogue update with error " +
-        lastUpdateResponse.status +
-        " " +
-        lastUpdateResponse.statusText,
-    );
-  }
-  // convert to unix timestamp in ms
-  const lastUpdate = lastUpdateData.last_update * 1000;
 
-  console.log(`Last update: DB - ${previousUpdate}, API - ${lastUpdate}`);
-  if (lastUpdate <= previousUpdate) {
-    console.warn("Already on the newest data catalogue version, exiting.");
-    await db.sequelize?.close();
-    return;
+  if (!SKIP_TIMESTAMP_CHECK) {
+    const previousUpdate = catalogue.lastUpdate?.getTime() || 0;
+    const catalogUrl = `${GLOBAL_API_URL}/api/v0/catalogue`;
+    const lastUpdateResponse = await fetch(`${catalogUrl}/last-update`);
+    const lastUpdateData = await lastUpdateResponse.json();
+    if (!lastUpdateData?.last_update) {
+      throw new Error(
+        "Failed to query last catalogue update with error " +
+          lastUpdateResponse.status +
+          " " +
+          lastUpdateResponse.statusText,
+      );
+    }
+    // convert to unix timestamp in ms
+    const lastUpdate = lastUpdateData.last_update * 1000;
+
+    console.log(`Last update: DB - ${previousUpdate}, API - ${lastUpdate}`);
+    if (lastUpdate <= previousUpdate) {
+      console.warn("Already on the newest data catalogue version, exiting.");
+      await db.sequelize?.close();
+      return;
+    }
   }
+
   const dataSourcesResponse = await fetch(`${catalogUrl}/i18n`);
   const dataSourcesData = await dataSourcesResponse.json();
   if (!dataSourcesData?.datasources) {

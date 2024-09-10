@@ -20,10 +20,15 @@ MIGHT_BE_JSON = [
 def fixupattr(datasource, name):
     if name in MIGHT_BE_JSON:
         value = getattr(datasource, name)
-        if value[0] == "{":
-            json = json.loads(value)
-            return json["en"]
-    return getattr(datasource, name)
+        if value is None:
+            return value
+        elif value[0] == "{":
+            trans = json.loads(value)
+            return trans["en"]
+        else:
+            return value
+    else:
+        return getattr(datasource, name)
 
 
 @api_router.get("/catalogue")
@@ -48,6 +53,12 @@ def get_datasources(format: Optional[str] = None):
             csvwriter.writerow([fixupattr(datasource, name) for name in names])
         response = PlainTextResponse(content=output.getvalue(), media_type="text/csv")
     else:
-        response = {"datasources": records}
+        fixed = []
+        for record in records:
+            fr = {}
+            fixed.append(fr)
+            for column in Datasource.__table__.columns:
+                fr[column.name] = fixupattr(record, column.name)
+        response = {"datasources": fixed}
 
     return response

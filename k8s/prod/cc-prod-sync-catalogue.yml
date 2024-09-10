@@ -26,6 +26,8 @@ spec:
               value: "citycatalyst"
             - name: DATABASE_PASSWORD
               value: "development"
+            - name: GLOBAL_API_URL
+              value: "https://api.citycatalyst.io/"
             command: ["npm", "run", "sync-catalogue"]
             resources:
               limits:

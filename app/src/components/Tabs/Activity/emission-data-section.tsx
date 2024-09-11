@@ -24,7 +24,11 @@ import ChangeMethodology from "@/components/Modals/change-methodology";
 import DeleteAllActivitiesModal from "@/components/Modals/delete-all-activities-modal";
 import DeleteActivityModal from "@/components/Modals/delete-activity-modal";
 import { TFunction } from "i18next";
-import { Methodology, SuggestedActivity } from "@/util/form-schema";
+import {
+  DirectMeasure,
+  Methodology,
+  SuggestedActivity,
+} from "@/util/form-schema";
 import { ActivityValue } from "@/models/ActivityValue";
 import { InventoryValue } from "@/models/InventoryValue";
 import HeadingText from "@/components/heading-text";
@@ -34,7 +38,7 @@ import { FiTrash2 } from "react-icons/fi";
 
 interface EmissionDataSectionProps {
   t: TFunction;
-  methodology?: Methodology;
+  methodology?: Methodology | DirectMeasure;
   inventoryId: string;
   subsectorId: string;
   refNumberWithScope: string;

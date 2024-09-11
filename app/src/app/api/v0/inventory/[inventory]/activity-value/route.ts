@@ -122,8 +122,8 @@ export const DELETE = apiHandler(async (req, { params, session }) => {
 
   const count = await ActivityService.deleteAllActivitiesInSubsector({
     inventoryId: inventory.inventoryId,
-    subsectorId: subSectorId,
-    referenceNumber: gpcReferenceNumber,
+    subsectorId: subSectorId as string,
+    referenceNumber: gpcReferenceNumber as string,
   });
 
   return NextResponse.json({

@@ -504,8 +504,8 @@ export const api = createApi({
     deleteAllActivityValues: builder.mutation({
       query: (data: {
         inventoryId: string;
-        subSectorId: string;
-        gpcReferenceNumber: string;
+        subSectorId?: string;
+        gpcReferenceNumber?: string;
       }) => ({
         method: "DELETE",
         url: `/inventory/${data.inventoryId}/activity-value`,

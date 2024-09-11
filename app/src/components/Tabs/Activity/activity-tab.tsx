@@ -51,7 +51,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
     totalEmissions += parseInt(activity?.co2eq);
   });
 
-  const [isMethodologySelected, setIsMethodologySelected] = useState();
+  const [isMethodologySelected, setIsMethodologySelected] =
+    useState<boolean>(false);
   const [selectedMethodology, setSelectedMethodology] = useState("");
   const [isUnavailableChecked, setIsChecked] = useState<boolean>(false);
 
@@ -61,7 +62,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
 
   // extract the methodology used from the filtered scope
 
-  const [methodology, setMethodology] = useState<Methodology>();
+  const [methodology, setMethodology] = useState<Methodology | DirectMeasure>();
 
   const getfilteredActivityValues = useMemo(() => {
     let methodologyId: string | null | undefined = null;
@@ -83,8 +84,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
       if (methodology && methodologyId)
         setMethodology({
           ...methodology,
-          fields: methodology.activities
-            ? methodology.activities
+          fields: (methodology as Methodology).activities
+            ? (methodology as Methodology).activities
             : (methodology as unknown as DirectMeasure)["extra-fields"],
         });
     }

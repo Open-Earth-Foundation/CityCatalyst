@@ -174,12 +174,13 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         values[field.id] = (activity as any)[field.id];
       }
       if (field.units) {
-        values[`${field.id}unit`] = (activity as any)[`${field.id}unit`];
+        values[`${field.id}Unit`] = (activity as any)[`${field.id}Unit`];
       }
     });
 
     if (!methodology?.id.includes("direct-measure")) {
       values[title] = (activity as any)[title];
+      values[`${title}Unit`] = (activity as any)[`${title}Unit`];
     }
 
     // so the issue here is that we need to have one inventoryValue for

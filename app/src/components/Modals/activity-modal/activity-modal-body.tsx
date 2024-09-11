@@ -58,7 +58,6 @@ export type Inputs = {
     sourceReference: string;
     activityType: string;
     fuelType: string;
-    ma;
     co2EmissionFactorUnit: string;
     n2oEmissionFactorUnit: string;
     ch4EmissionFactorUnit: string;
@@ -235,7 +234,7 @@ const ActivityModalBody = ({
                           >
                             <Select
                               variant="unstyled"
-                              {...register(`activity.${f.id}unit` as any, {
+                              {...register(`activity.${f.id}Unit` as any, {
                                 required:
                                   f.required === false
                                     ? false
@@ -326,7 +325,7 @@ const ActivityModalBody = ({
                   >
                     <Select
                       variant="unstyled"
-                      {...register("activity.totalFuelConsumptionUnits")}
+                      {...register(`activity.${title}Units` as any)}
                     >
                       {units?.map((item: string) => (
                         <option key={item} value={item}>

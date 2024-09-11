@@ -86,11 +86,7 @@ const useActivityForm = ({
             methodologyName === "direct-measure"
               ? targetActivityValue?.activityData?.n2o_amount
               : extractGasAmount("N2O", targetActivityValue).amount,
-          emissionFactorType: targetActivityValue.metadata?.emissionFactorType, // TODO confirm the source of this value
-          totalFuelConsumption:
-            targetActivityValue?.metadata?.totalFuelConsumption, // TODO confirm the source of this value
-          totalFuelConsumptionUnits:
-            targetActivityValue?.activityData?.totalFuelConsumptionUnits,
+          emissionFactorType: targetActivityValue.metadata?.emissionFactorType,
           co2EmissionFactorUnit: extractGasAmount("CO2", targetActivityValue)
             .units,
           n2oEmissionFactorUnit: extractGasAmount("N2O", targetActivityValue)

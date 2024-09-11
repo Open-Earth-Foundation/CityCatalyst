@@ -29,8 +29,6 @@ export const generateDefaultActivityFormValues = (
     CO2EmissionFactor: 0,
     N2OEmissionFactor: 0,
     emissionFactorType: "",
-    totalFuelConsumption: "",
-    totalFuelConsumptionUnits: "",
     co2EmissionFactorUnit: "",
     n2oEmissionFactorUnit: "",
     ch4EmissionFactorUnit: "",

@@ -592,13 +592,13 @@ export default function AddDataSteps({
     };
   }, []);
 
-  const getCurrentStepParam = (currentStepName: string) => {
-    switch (currentStepName) {
-      case t("stationary-energy"):
+  const getCurrentStepParam = (referenceNumber: string) => {
+    switch (referenceNumber) {
+      case 'I':
         return 1;
-      case t("transportation"):
+      case 'II':
         return 2;
-      case t("waste"):
+      case 'III':
         return 3;
       default:
         return 1;
@@ -799,7 +799,7 @@ export default function AddDataSteps({
                     className="shadow-none border border-overlay hover:drop-shadow-xl !duration-300 transition-shadow"
                     onClick={() => {
                       router.push(
-                        `/${inventory}/data/${getCurrentStepParam(currentStep.title)}/${subSector.subsectorId}`,
+                        `/${inventory}/data/${getCurrentStepParam(currentStep.referenceNumber)}/${subSector.subsectorId}`,
                       );
                     }}
                     key={subSector.subsectorId}

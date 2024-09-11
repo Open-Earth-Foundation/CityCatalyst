@@ -1,7 +1,7 @@
 import {
   DELETE as deleteInventory,
   GET as findInventory,
-  PATCH as updateInventory
+  PATCH as updateInventory,
 } from "@/app/api/v0/inventory/[inventory]/route";
 import { GET as calculateProgress } from "@/app/api/v0/inventory/[inventory]/progress/route";
 import { POST as createInventory } from "@/app/api/v0/city/[city]/inventory/route";
@@ -16,14 +16,22 @@ import {
   expectStatusCode,
   mockRequest,
   setupTests,
-  testUserID
+  testUserID,
 } from "../helpers";
 import { SubSector, SubSectorAttributes } from "@/models/SubSector";
 import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
 import { Sector } from "@/models/Sector";
 import { SubCategory } from "@/models/SubCategory";
-import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from "@jest/globals";
 
 jest.useFakeTimers();
 
@@ -141,6 +149,14 @@ describe("Inventory API", () => {
       inventoryId: inventory.inventoryId,
       subCategoryId: subCategory.subcategoryId,
       ...inventoryValue,
+    });
+
+    await db.models.Population.upsert({
+      cityId: city.cityId!,
+      year: inventoryData.year,
+      population: 1000,
+      countryPopulation: 10000,
+      regionPopulation: 5000,
     });
   });
 

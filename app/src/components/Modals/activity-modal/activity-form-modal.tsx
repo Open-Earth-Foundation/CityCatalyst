@@ -4,7 +4,6 @@ import { api, useUpdateActivityValueMutation } from "@/services/api";
 import {
   Box,
   Button,
-  CloseButton,
   Modal,
   ModalCloseButton,
   ModalContent,
@@ -14,15 +13,14 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { FC, useEffect, useMemo } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { TFunction, use } from "i18next";
+import { FC, useMemo } from "react";
+import { SubmitHandler } from "react-hook-form";
+import { TFunction } from "i18next";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { getInputMethodology } from "@/util/helpers";
 import type { SuggestedActivity } from "@/util/form-schema";
 import { getTranslationFromDict } from "@/i18n";
-import ActivityModalBody, { ExtraField } from "./activity-modal-body";
-import { Inputs } from "./activity-modal-body";
+import ActivityModalBody, { ExtraField, Inputs } from "./activity-modal-body";
 import { ActivityValue } from "@/models/ActivityValue";
 import { InventoryValue } from "@/models/InventoryValue";
 import useActivityValueValidation from "@/hooks/activity-value-form/use-activity-validation";
@@ -79,13 +77,22 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     };
   }, [methodology]);
 
-  const { setError, setFocus, reset, handleSubmit, register, errors, control } =
-    useActivityForm({
-      targetActivityValue,
-      selectedActivity,
-      methodologyName: methodology?.id,
-      fields,
-    });
+  const {
+    setError,
+    setValue,
+    setFocus,
+    reset,
+    handleSubmit,
+    register,
+    errors,
+    control,
+    getValues,
+  } = useActivityForm({
+    targetActivityValue,
+    selectedActivity,
+    methodologyName: methodology?.id,
+    fields,
+  });
 
   const { handleManalInputValidationError } = useActivityValueValidation({
     t,
@@ -319,10 +326,13 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
             control={control}
             fields={fields}
             units={units}
+            targetActivityValue={targetActivityValue}
             methodology={methodology}
             selectedActivity={selectedActivity}
+            getValues={getValues}
             t={t}
             errors={errors}
+            setValue={setValue}
           />
           <ModalFooter
             borderTopWidth="1px"

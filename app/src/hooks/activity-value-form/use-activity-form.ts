@@ -65,7 +65,9 @@ const useActivityForm = ({
     watch,
     setError,
     setFocus,
+    setValue,
     control,
+    getValues,
     formState: { errors },
   } = useForm<Inputs>();
 
@@ -126,6 +128,8 @@ const useActivityForm = ({
     setFocus,
     errors,
     control,
+    setValue,
+    getValues,
   };
 };
 

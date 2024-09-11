@@ -48,5 +48,7 @@
   "total-emissions": "Total Emissions",
   "total-ghg-emissions-in-year": "Total GHG Emissions in {{year}}",
   "emissions-per-capita-in-year": "Emissions per capita in {{year}}",
-  "%-of-country's-emissions": "% of country's emissions"
+  "%-of-country's-emissions": "% of country's emissions",
+  "top-emissions": "Top Emissions",
+  "by-sub-sector": "BY SUB-SECTOR"
 }

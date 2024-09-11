@@ -1,7 +1,4 @@
-"use client";
-
-import { useTranslation } from "@/i18n/client";
-import { InventoryProgressResponse, InventoryResponse } from "@/util/types";
+import { convertKgToTonnes } from "@/util/helpers";
 import {
   Box,
   Card,
@@ -13,20 +10,19 @@ import {
   Icon,
   Stack,
   StackDivider,
-  Text,
+  Text
 } from "@chakra-ui/react";
-import { TabHeader } from "@/app/[lng]/[inventory]/TabHeader";
-import { MdArrowOutward } from "react-icons/md";
-import { convertKgToTonnes } from "@/util/helpers";
-import { Trans } from "react-i18next/TransWithoutContext";
 import { TFunction } from "i18next";
+import { InventoryResponse } from "@/util/types";
+import { Trans } from "react-i18next/TransWithoutContext";
+import { MdArrowOutward } from "react-icons/md";
 
 const EmissionsWidgetCard = ({
-  icon,
-  value,
-  field,
-  showProgress,
-}: {
+                               icon,
+                               value,
+                               field,
+                               showProgress
+                             }: {
   icon: any;
   value?: number | undefined;
   field: any;
@@ -64,10 +60,11 @@ const EmissionsWidgetCard = ({
     </HStack>
   );
 };
+
 const EmissionsWidget = ({
-  t,
-  inventory,
-}: {
+                                  t,
+                                  inventory
+                                }: {
   t: Function & TFunction<"translation", undefined>;
   inventory?: InventoryResponse;
 }) => {
@@ -76,6 +73,7 @@ const EmissionsWidget = ({
       id: "total-ghg-emissions-in-year",
       field: (
         <Trans
+          size={16}
           i18nKey="total-ghg-emissions-in-year"
           values={{ year: inventory?.year }}
           t={t}
@@ -85,12 +83,13 @@ const EmissionsWidget = ({
       ),
       value: inventory?.totalEmissions,
       icon: MdArrowOutward,
-      showProgress: false,
+      showProgress: false
     },
     {
       id: "emissions-per-capita-in-year",
       field: (
         <Trans
+          size={16}
           i18nKey="emissions-per-capita-in-year"
           values={{ year: inventory?.year }}
           t={t}
@@ -101,24 +100,24 @@ const EmissionsWidget = ({
           ? inventory?.totalEmissions / inventory?.city.population
           : undefined,
       icon: MdArrowOutward,
-      showProgress: false,
+      showProgress: false
     },
     {
       id: "% of country's emissions",
       field: t("%-of-country's-emissions"),
-      showProgress: true,
+      showProgress: true
       // TODO ON-2212 ON-1383 add value when available
-    },
+    }
   ];
   return (
-    <Box width={"25vw"}>
-      <Card>
+    <Box width={"20vw"} >
+      <Card padding={0}>
         <CardHeader>
           <Heading size="sm">{t("total-emissions")}</Heading>
         </CardHeader>
 
         <CardBody>
-          <Stack divider={<StackDivider />} spacing="4">
+          <Stack divider={<StackDivider />} >
             {EmissionsData.map(({ id, field, value, icon, showProgress }) => (
               <EmissionsWidgetCard
                 key={id}
@@ -134,32 +133,5 @@ const EmissionsWidget = ({
     </Box>
   );
 };
-export default function InventoryResultTab({
-  lng,
-  inventory,
-  isUserInfoLoading,
-  isInventoryProgressLoading,
-  inventoryProgress,
-}: {
-  lng: string;
-  inventory?: InventoryResponse;
-  isUserInfoLoading?: boolean;
-  isInventoryProgressLoading?: boolean;
-  inventoryProgress?: InventoryProgressResponse;
-}) {
-  const { t } = useTranslation(lng, "dashboard");
-  return (
-    <>
-      {inventory && (
-        <Box className="flex flex-col gap-[8px] w-full">
-          <TabHeader
-            t={t}
-            year={inventory?.year}
-            title={"tab-emission-inventory-results-title"}
-          />
-          <EmissionsWidget t={t} inventory={inventory} />
-        </Box>
-      )}
-    </>
-  );
-}
+
+export default EmissionsWidget;

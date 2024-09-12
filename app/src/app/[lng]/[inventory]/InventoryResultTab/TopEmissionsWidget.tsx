@@ -1,5 +1,5 @@
 import {
-  Box,
+  Box, Card,
   Center,
   CircularProgress,
   Heading,
@@ -24,7 +24,7 @@ import { SegmentedProgress, SegmentedProgressValues } from "@/components/Segment
 const TitleAndSelector = ({ t }: { t: Function }) => {
   return <HStack justifyContent="space-between">
     <Box>
-      <Heading size="sm">{t("top-emissions")}</Heading>
+      <Heading size="sm" marginTop={10} marginBottom={4}>{t("top-emissions")}</Heading>
     </Box>
     <Select width={"15vw"} my={2}
     >
@@ -97,17 +97,20 @@ const TopEmissionsWidget = ({
 
   return (
     <HStack>
-      <Box width={"45vw"} marginLeft={"4"}>
+      <Card width={"47vw"} marginLeft={"4"} backgroundColor={"white"} p={4}>
         {isTopEmissionsResponseLoading
           ? <Center><CircularProgress isIndeterminate /></Center>
           : <>
-            <TitleAndSelector t={t} />
+            <Box>
+              <Heading size="sm" my={4}>{t("total-emissions")}</Heading>
+            </Box>
             <SegmentedProgress values={getPercentagesForProgress()} total={results!.totalEmissions.total} t={t}
                                showLabels showHover />
+            <TitleAndSelector t={t} />
             <EmissionsTable topEmissions={results!.topEmissions.bySubSector} />
           </>
         }
-      </Box>
+      </Card>
     </HStack>
   );
 };

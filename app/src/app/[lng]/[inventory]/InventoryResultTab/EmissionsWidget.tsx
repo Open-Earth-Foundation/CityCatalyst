@@ -34,7 +34,7 @@ const EmissionsWidgetCard = ({
       : convertKgToTonnes(value)
     : "N/A";
   return (
-    <HStack align="center" height="120px" justify="space-between" key={field}>
+    <HStack align="center" height="123px" justify="space-between" key={field}>
       <Stack w="full">
         <HStack align="start">
           {value && showProgress ? (
@@ -78,7 +78,7 @@ const EmissionsWidget = ({
           values={{ year: inventory?.year }}
           t={t}
         >
-          Total GHG Emissions in 2023
+          Total GHG Emissions in {{ year: inventory?.year }}
         </Trans>
       ),
       value: inventory?.totalEmissions,
@@ -110,7 +110,7 @@ const EmissionsWidget = ({
     }
   ];
   return (
-    <Box width={"20vw"} >
+    <Box width={"18vw"} >
       <Card padding={0}>
         <CardHeader>
           <Heading size="sm">{t("total-emissions")}</Heading>

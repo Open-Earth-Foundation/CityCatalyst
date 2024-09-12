@@ -41,7 +41,7 @@
   "inventory-format-basic": "Inventory format: GPC BASIC",
   "view-progress-in-each-sector": "View the progress of data collection in each GPC-required sector.",
   "sector-emissions": "Sector Emissions",
-  "sector-data": "SECTOR DATA",
+  "sector-data": "Sector Data",
   "total-emissions-tooltip": "Here you can see the total emissions in {{year}} when the inventory is completed.",
   "year": "Year",
   "population-year": "Year: {{year}}",
@@ -50,5 +50,8 @@
   "emissions-per-capita-in-year": "Emissions per capita in {{year}}",
   "%-of-country's-emissions": "% of country's emissions",
   "top-emissions": "Top Emissions",
-  "by-sub-sector": "BY SUB-SECTOR"
+  "by-sub-sector": "BY SUB-SECTOR",
+  "total": "total",
+  "overview": "overview",
+  "see-your-citys-emissions": "See your city's emissions totals for the year"
 }

@@ -61,7 +61,7 @@ export function SegmentedProgress({
             </Tr>
           ))}
           <Tr>
-            <Td><Text color="black" fontWeight="bold" fontSize={"md"}>{t("TOTAL")}</Text></Td>
+            <Td><Text color="black" fontWeight="bold" fontSize={"md"}>{t("total")}</Text></Td>
             <Td></Td>
             <Td><Text color="black" fontWeight="bold" fontSize={"md"}>{convertKgToTonnes(total!)}</Text></Td>
           </Tr>

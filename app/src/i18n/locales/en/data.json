@@ -197,9 +197,6 @@
   "change-methodology": "Change methodology",
   "change-methodology-description-text": "Please be aware that <2>changing methodology may impact your existing inventory data.</2> Are you sure you want to proceed with changing your methodology?",
   "emissions-factor-details": "At least one emission factor is required. Empty values will be computed as 0 and require to be justified.",
-  "source-reference": "Source reference",
-  "source-reference-required": "Add a description of the reference source and justified emission factors, if applicable",
-  "source-reference-placeholder": "Write in detail from which source the entered value comes from",
   "calculations-details": "All calculations use the <2>IPCC AR6 100-year GWPs</2>.",
   "co2-emissions-value": "Emissions value - CO2",
   "ch4-emissions-value": "Emissions value - CH4",
@@ -767,7 +764,6 @@
   "emission-amount-form-error": "Please enter amount",
   "activity-value-success": "New activity data successfully added!",
   "activity-value-error": "Something went wrong",
-  "source-reference-form-label": "Please select a source reference",
   "gwp-info-prefix": "All calculations consider a",
   "gwp-info": "GWP value of 28 for CH4 and 265 for N20 (Version AR5)",
   "manual-input-error-exclusive-secondary": "You cannot create an Activity value with a <strong>{{targetField}}</strong> of <strong>{{exclusiveFieldValue}}</strong> when another Activity Value exists in this methodology",
@@ -783,5 +779,10 @@
   "wastewater-inside-generated": "Quantity of wastewater generated inside the city",
   "total-organic-sludge-removed": "Total organic sludge removed",
   "population-or-industrial-production": "Population or industrial production",
-  "wastewater-outside-generated": "Quantity of wastewater generated outside the city"
+  "wastewater-outside-generated": "Quantity of wastewater generated outside the city",
+  "data-source": "Data source",
+  "data-source-placeholder": "Enter the data source or provider",
+  "data-comments": "Explanatory comments",
+  "data-comments-placeholder": "Describe any relevant context or explanation for the activity data entered",
+  "data-comments-required": "Please add any relevant context or explanation for the activity data entered"
 }

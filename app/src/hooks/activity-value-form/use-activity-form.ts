@@ -24,7 +24,7 @@ export const generateDefaultActivityFormValues = (
       : {}),
     fuelType: "",
     dataQuality: "",
-    sourceReference: "",
+    dataComments: "",
     CH4EmissionFactor: 0,
     CO2EmissionFactor: 0,
     N2OEmissionFactor: 0,
@@ -75,7 +75,7 @@ const useActivityForm = ({
         activity: {
           ...targetActivityValue.activityData,
           dataQuality: targetActivityValue?.dataSource?.dataQuality,
-          sourceReference: targetActivityValue?.dataSource?.notes,
+          dataComments: targetActivityValue?.dataSource?.notes,
           CH4EmissionFactor:
             methodologyName === "direct-measure"
               ? targetActivityValue?.activityData?.ch4_amount

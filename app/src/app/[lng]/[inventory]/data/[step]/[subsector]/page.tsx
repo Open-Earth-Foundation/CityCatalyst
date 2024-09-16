@@ -3,7 +3,6 @@
 import ActivityTab from "@/components/Tabs/Activity/activity-tab";
 import LoadingState from "@/components/loading-state";
 import { useTranslation } from "@/i18n/client";
-import { RootState } from "@/lib/store";
 import { SubSectorAttributes } from "@/models/SubSector";
 import { api, useGetInventoryValuesBySubsectorQuery } from "@/services/api";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
@@ -28,7 +27,6 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MdOutlineHomeWork } from "react-icons/md";
-import { useSelector } from "react-redux";
 import { toKebabCase } from "@/util/helpers";
 
 function SubSectorPage({
@@ -159,6 +157,9 @@ function SubSectorPage({
       inventoryId,
       subSectorId: subSectorData?.subsectorId,
     });
+
+  const loadingState =
+    isActivityDataLoading || isInventoryValueLoading || isLoading;
 
   return (
     <>
@@ -342,7 +343,7 @@ function SubSectorPage({
             </MotionTabList>
 
             <TabPanels>
-              {isLoading ? (
+              {loadingState ? (
                 <LoadingState />
               ) : (
                 scopes?.map((scope) => (

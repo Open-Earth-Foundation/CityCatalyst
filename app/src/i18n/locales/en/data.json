@@ -789,4 +789,7 @@
   "data-comments": "Explanatory comments",
   "data-comments-placeholder": "Describe any relevant context or explanation for the activity data entered",
   "data-comments-required": "Please add any relevant context or explanation for the activity data entered"
+  "wastewater-outside-generated": "Quantity of wastewater generated outside the city",
+  "change-methodology-success": "Methodology successfully changed",
+  "change-methodology-error": "An issue occurred with changing the methodology"
 }

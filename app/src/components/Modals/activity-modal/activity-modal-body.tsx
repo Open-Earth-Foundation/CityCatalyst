@@ -112,7 +112,6 @@ const ActivityModalBody = ({
     const emissionFactorType = e.target.value;
     if (emissionFactorType === "custom") {
       setIsEmissionFactorInputDisabled(false);
-      // set the existing factors to 0
     } else {
       setValue("activity.CO2EmissionFactor", 0);
       setValue("activity.N2OEmissionFactor", 0);

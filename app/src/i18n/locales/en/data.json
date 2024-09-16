@@ -790,5 +790,11 @@
   "data-comments-placeholder": "Describe any relevant context or explanation for the activity data entered",
   "data-comments-required": "Please add any relevant context or explanation for the activity data entered",
   "change-methodology-success": "Methodology successfully changed",
-  "change-methodology-error": "An issue occurred with changing the methodology"
+  "change-methodology-error": "An issue occurred with changing the methodology",
+  "units-cubic-meters": "Cubic meters (m^3)",
+  "units-gallons": "Gallons (gal)",
+  "units-kilowatt-hours": "Kilowatt hours (kWh)",
+  "units-liters": "Liters (l)",
+  "units-other": "Other",
+  "units-terajoules": "Terajoules (TJ)"
 }

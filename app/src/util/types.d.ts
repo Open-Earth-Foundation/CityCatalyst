@@ -137,20 +137,20 @@ interface RequiredScopesResponse {
 }
 
 interface TopEmission {
-  "co2eq": bigint;
-  "sectorName": string;
-  "subsectorName": string;
-  "percentage": number;
+  co2eq: bigint;
+  sectorName: string;
+  subsectorName: string;
+  percentage: number;
 }
 
 interface ResultsResponse {
   totalEmissions: {
-    "bySector": {
-      "sectorName": string,
-      "co2eq": bigint,
-      "percentage": number
-    }
-    "total": bigint
-  },
+    bySector: {
+      sectorName: string;
+      co2eq: bigint;
+      percentage: number;
+    };
+    total: bigint;
+  };
   topEmissions: { bySubSector: TopEmission[] };
 }

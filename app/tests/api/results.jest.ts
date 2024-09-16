@@ -64,19 +64,19 @@ describe("Results API", () => {
           bySubSector: [
             {
               co2eq: "21453",
-              percentage: 53,
+              percentage: 27,
               sectorName: "Transportation",
               subsectorName: "On-road transportation",
             },
             {
               co2eq: "15662",
-              percentage: 70,
+              percentage: 20,
               sectorName: "Stationary Energy",
               subsectorName: "Residential buildings",
             },
             {
               co2eq: "12903",
-              percentage: 32,
+              percentage: 16,
               sectorName: "Transportation",
               subsectorName: "On-road transportation",
             },

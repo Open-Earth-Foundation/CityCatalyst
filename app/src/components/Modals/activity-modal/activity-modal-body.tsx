@@ -3,10 +3,10 @@ import {
   FormControl,
   FormLabel,
   Grid,
-  HStack,
   Heading,
-  InputGroup,
+  HStack,
   Input,
+  InputGroup,
   InputRightAddon,
   ModalBody,
   NumberInput,
@@ -43,6 +43,7 @@ interface AddActivityModalBodyProps {
   emissionsFactorTypes: EmissionFactorTypes;
   methodology: any;
   selectedActivity?: SuggestedActivity;
+  title?: string; // Title of the field
 }
 
 export type Inputs = {
@@ -57,8 +58,6 @@ export type Inputs = {
     sourceReference: string;
     activityType: string;
     fuelType: string;
-    totalFuelConsumption?: string | undefined;
-    totalFuelConsumptionUnits: string;
     co2EmissionFactorUnit: string;
     n2oEmissionFactorUnit: string;
     ch4EmissionFactorUnit: string;
@@ -88,6 +87,7 @@ const ActivityModalBody = ({
   fields,
   units,
   selectedActivity,
+  title,
 }: AddActivityModalBodyProps) => {
   let prefix = "";
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
@@ -234,7 +234,7 @@ const ActivityModalBody = ({
                           >
                             <Select
                               variant="unstyled"
-                              {...register(`activity.${f.id}unit` as any, {
+                              {...register(`activity.${f.id}Unit` as any, {
                                 required:
                                   f.required === false
                                     ? false
@@ -271,7 +271,7 @@ const ActivityModalBody = ({
               </>
             );
           })}
-          {!methodology?.id.includes("direct-measure") ? (
+          {!methodology?.id.includes("direct-measure") && title ? (
             <Box
               display="flex"
               justifyContent="space-between"
@@ -282,7 +282,7 @@ const ActivityModalBody = ({
                 isInvalid={!!resolve(prefix + "activityDataAmount", errors)}
               >
                 {/*TODO dynamically render required fields*/}
-                <FormLabel className="truncate">{fields?.[2].id}</FormLabel>
+                <FormLabel className="truncate">{t(title)}</FormLabel>
                 <InputGroup>
                   <NumberInput defaultValue={0} w="full">
                     <NumberInputField
@@ -292,16 +292,16 @@ const ActivityModalBody = ({
                       h="48px"
                       shadow="1dp"
                       borderWidth={
-                        errors?.activity?.totalFuelConsumption ? "1px" : 0
+                        (errors?.activity?.[title] as any) ? "1px" : 0
                       }
                       border="inputBox"
                       borderColor={
-                        errors?.activity?.totalFuelConsumption
+                        (errors?.activity?.[title] as any)
                           ? "sentiment.negativeDefault"
                           : ""
                       }
                       background={
-                        errors?.activity?.totalFuelConsumption
+                        (errors?.activity?.[title] as any)
                           ? "sentiment.negativeOverlay"
                           : ""
                       }
@@ -311,7 +311,7 @@ const ActivityModalBody = ({
                         shadow: "none",
                         borderColor: "content.link",
                       }}
-                      {...register("activity.totalFuelConsumption")}
+                      {...register(`activity.${title}` as any)}
                     />
                   </NumberInput>
                   <InputRightAddon
@@ -325,7 +325,7 @@ const ActivityModalBody = ({
                   >
                     <Select
                       variant="unstyled"
-                      {...register("activity.totalFuelConsumptionUnits")}
+                      {...register(`activity.${title}Units` as any)}
                     >
                       {units?.map((item: string) => (
                         <option key={item} value={item}>
@@ -336,7 +336,7 @@ const ActivityModalBody = ({
                   </InputRightAddon>
                 </InputGroup>
 
-                {errors.activity?.totalFuelConsumption ? (
+                {(errors?.activity?.[title] as any) ? (
                   <Box display="flex" gap="6px" alignItems="center" mt="6px">
                     <WarningIcon color="sentiment.negativeDefault" />
                     <Text fontSize="body.md">

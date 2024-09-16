@@ -5,24 +5,12 @@ import { SegmentedProgress } from "@/components/SegmentedProgress";
 import { CircleIcon } from "@/components/icons";
 import { useTranslation } from "@/i18n/client";
 import { formatPercent } from "@/util/helpers";
-import {
-  InventoryProgressResponse,
-  InventoryResponse,
-  SectorProgress,
-} from "@/util/types";
-import {
-  Box,
-  Center,
-  Heading,
-  Spinner,
-  Tag,
-  TagLabel,
-  TagLeftIcon,
-  Text,
-} from "@chakra-ui/react";
+import { InventoryProgressResponse, InventoryResponse, SectorProgress } from "@/util/types";
+import { Box, Center, Heading, Spinner, Tag, TagLabel, TagLeftIcon, Text } from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { TabHeader } from "@/app/[lng]/[inventory]/TabHeader";
 import { undefined } from "zod";
+import { BlueSubtitle } from "@/components/blue-subtitle";
 
 function sortSectors(a: SectorProgress, b: SectorProgress): number {
   const refA = a.sector.referenceNumber;
@@ -119,16 +107,7 @@ export default function InventoryCalculationTab({
             </Tag>
           </Box>
           <Box className=" flex flex-col gap-[24px] py-[24px]">
-            <Text
-              fontFamily="heading"
-              fontSize="title.md"
-              fontWeight="semibold"
-              lineHeight="24"
-              my={4}
-              textColor={"blue"}
-            >
-              <Trans t={t}>sector-data</Trans>
-            </Text>
+            <BlueSubtitle t={t} text={"sector-data"} />
             <Text
               fontFamily="heading"
               fontSize="title.md"

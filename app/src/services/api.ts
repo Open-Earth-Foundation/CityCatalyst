@@ -16,10 +16,11 @@ import type {
   InventoryValueResponse,
   InventoryValueUpdateQuery,
   InventoryWithCity,
-  RequiredScopesResponse,
   UserFileResponse,
   UserInfoResponse,
   UserInviteResponse,
+  RequiredScopesResponse,
+  ResultsResponse
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -62,6 +63,11 @@ export const api = createApi({
     getRequiredScopes: builder.query<RequiredScopesResponse, string>({
       query: (sectorId) => `sector/${sectorId}/required-scopes`,
       transformResponse: (response: { data: RequiredScopesResponse }) =>
+        response.data,
+    }),
+    getResults: builder.query<ResultsResponse, string>({
+      query: (inventoryId: string) => `inventory/${inventoryId}/results`,
+      transformResponse: (response: { data: ResultsResponse} ) =>
         response.data,
     }),
     getInventoryProgress: builder.query<InventoryProgressResponse, string>({
@@ -591,5 +597,6 @@ export const {
   useDeleteAllActivityValuesMutation,
   useDeleteActivityValueMutation,
   useGetInventoryValuesBySubsectorQuery,
+  useGetResultsQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

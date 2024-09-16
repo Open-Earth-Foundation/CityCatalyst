@@ -65,7 +65,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const [methodology, setMethodology] = useState<Methodology | DirectMeasure>();
 
   const getfilteredActivityValues = useMemo(() => {
-    let methodologyId: string | null | undefined = null;
+    let methodologyId: string | null | undefined = undefined;
     const filteredValues = activityData?.filter((activity) => {
       let val =
         activity.inventoryValue.gpcReferenceNumber === refNumberWithScope;

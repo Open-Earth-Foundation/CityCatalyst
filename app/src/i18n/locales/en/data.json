@@ -785,5 +785,5 @@
   "population-or-industrial-production": "Population or industrial production",
   "wastewater-outside-generated": "Quantity of wastewater generated outside the city",
   "change-methodology-success": "Methodology successfully changed",
-  "change-methodology-error": "An issue occured with changing the methodology"
+  "change-methodology-error": "An issue occurred with changing the methodology"
 }

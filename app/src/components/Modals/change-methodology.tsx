@@ -40,7 +40,7 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
 }) => {
   const toast = useToast();
 
-  const [deleteAllActivityValues, { isLoading }] =
+  const [deleteAllActivityValues, { isLoading: isDeleteAllLoading }] =
     useDeleteAllActivityValuesMutation();
 
   const handleDeleteAllActivities = async () => {
@@ -150,7 +150,7 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
             <Button
               h="56px"
               w="472px"
-              isLoading={isLoading}
+              isLoading={isDeleteAllLoading}
               paddingTop="16px"
               paddingBottom="16px"
               px="24px"

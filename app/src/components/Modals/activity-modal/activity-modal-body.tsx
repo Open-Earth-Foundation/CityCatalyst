@@ -751,7 +751,6 @@ const ActivityModalBody = ({
                     {" "}
                     {errors?.activity?.[sourceField.id]?.message}{" "}
                   </Text>
-                  {/* use ii8n */}
                 </Box>
               ) : (
                 ""

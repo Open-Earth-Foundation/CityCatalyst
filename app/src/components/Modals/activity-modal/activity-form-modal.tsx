@@ -80,13 +80,22 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     };
   }, [methodology]);
 
-  const { setError, setFocus, reset, handleSubmit, register, errors, control } =
-    useActivityForm({
-      targetActivityValue,
-      selectedActivity,
-      methodologyName: methodology?.id,
-      fields,
-    });
+  const {
+    setError,
+    setValue,
+    setFocus,
+    reset,
+    handleSubmit,
+    register,
+    errors,
+    control,
+    getValues,
+  } = useActivityForm({
+    targetActivityValue,
+    selectedActivity,
+    methodologyName: methodology?.id,
+    fields,
+  });
 
   const { handleManalInputValidationError } = useActivityValueValidation({
     t,
@@ -325,10 +334,13 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
             control={control}
             fields={fields}
             units={units}
+            targetActivityValue={targetActivityValue}
             methodology={methodology}
             selectedActivity={selectedActivity}
+            getValues={getValues}
             t={t}
             errors={errors}
+            setValue={setValue}
           />
           <ModalFooter
             borderTopWidth="1px"

@@ -19,13 +19,19 @@ import { useState } from "react";
 import BuildingTypeSelectInput from "../../building-select-input";
 import { InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
 import { TFunction } from "i18next";
-import { Control, UseFormRegister } from "react-hook-form";
+import {
+  Control,
+  UseFormGetValues,
+  UseFormRegister,
+  UseFormSetValue,
+} from "react-hook-form";
 import type {
   DirectMeasureData,
   SubcategoryData,
 } from "../../../app/[lng]/[inventory]/data/[step]/types";
 import { resolve } from "@/util/helpers";
 import { SuggestedActivity } from "@/util/form-schema";
+import { ActivityValue } from "@/models/ActivityValue";
 
 export type EmissionFactorTypes = {
   id: string;
@@ -43,6 +49,9 @@ interface AddActivityModalBodyProps {
   emissionsFactorTypes: EmissionFactorTypes;
   methodology: any;
   selectedActivity?: SuggestedActivity;
+  targetActivityValue?: ActivityValue;
+  setValue: UseFormSetValue<Inputs>;
+  getValues: UseFormGetValues<Inputs>;
   title?: string; // Title of the field
 }
 
@@ -86,12 +95,17 @@ const ActivityModalBody = ({
   errors,
   fields,
   units,
+  targetActivityValue,
   selectedActivity,
   title,
+  setValue,
+  getValues,
 }: AddActivityModalBodyProps) => {
   let prefix = "";
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
-    useState<boolean>(true);
+    useState<boolean>(
+      !(targetActivityValue?.metadata?.emissionFactorType === "custom"),
+    );
 
   // Adjust function for countries with national emission factors i.e US
   const onEmissionFactorTypeChange = (e: any) => {
@@ -99,6 +113,9 @@ const ActivityModalBody = ({
     if (emissionFactorType === "custom") {
       setIsEmissionFactorInputDisabled(false);
     } else {
+      setValue("activity.CO2EmissionFactor", 0);
+      setValue("activity.N2OEmissionFactor", 0);
+      setValue("activity.CH4EmissionFactor", 0);
       setIsEmissionFactorInputDisabled(true);
     }
   };
@@ -429,6 +446,7 @@ const ActivityModalBody = ({
                     defaultValue={0}
                     min={0}
                     isDisabled={isEmissionFactorInputDisabled}
+                    value={getValues("activity.CO2EmissionFactor")}
                   >
                     <NumberInputField
                       h="48px"
@@ -472,6 +490,7 @@ const ActivityModalBody = ({
                     defaultValue={0}
                     min={0}
                     isDisabled={isEmissionFactorInputDisabled}
+                    value={getValues("activity.N2OEmissionFactor")}
                   >
                     <NumberInputField
                       _focus={{
@@ -519,6 +538,7 @@ const ActivityModalBody = ({
                     defaultValue={0}
                     min={0}
                     isDisabled={isEmissionFactorInputDisabled}
+                    value={getValues("activity.CH4EmissionFactor")}
                   >
                     <NumberInputField
                       _focus={{

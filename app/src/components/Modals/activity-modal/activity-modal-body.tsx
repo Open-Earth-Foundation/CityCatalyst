@@ -103,7 +103,7 @@ const ActivityModalBody = ({
     }
   };
 
-  const filteredfields = fields.filter((f) => {
+  const filteredFields = fields.filter((f) => {
     return !(f.id.includes("-source") && f.type === "text");
   });
 

@@ -1,23 +1,23 @@
 import {
-  type UserAttributes,
   type CityAttributes,
   type InventoryAttributes,
   type InventoryValueAttributes,
   PopulationAttributes,
+  type UserAttributes,
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
 import type {
   ConnectDataSourceQuery,
   ConnectDataSourceResponse,
   DataSourceResponse,
+  EmissionsFactorResponse,
   InventoryProgressResponse,
   InventoryResponse,
-  InventoryValueUpdateQuery,
   InventoryValueResponse,
+  InventoryValueUpdateQuery,
   InventoryWithCity,
-  UserInfoResponse,
   UserFileResponse,
-  EmissionsFactorResponse,
+  UserInfoResponse,
   UserInviteResponse,
   RequiredScopesResponse,
   ResultsResponse
@@ -508,11 +508,16 @@ export const api = createApi({
       invalidatesTags: ["ActivityValue"],
     }),
     deleteAllActivityValues: builder.mutation({
-      query: (data: { inventoryId: string; subSectorId: string }) => ({
+      query: (data: {
+        inventoryId: string;
+        subSectorId?: string;
+        gpcReferenceNumber?: string;
+      }) => ({
         method: "DELETE",
         url: `/inventory/${data.inventoryId}/activity-value`,
         params: {
           subSectorId: data.subSectorId,
+          gpcReferenceNumber: data.gpcReferenceNumber,
         },
       }),
       transformResponse: (response: any) => response.data,

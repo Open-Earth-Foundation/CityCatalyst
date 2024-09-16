@@ -123,7 +123,7 @@ const ActivityModalBody = ({
           gap="24px"
         >
           {/* handle select, multi-select types, text  */}
-          {filteredfields.map((f) => {
+          {filteredFields.map((f) => {
             return (
               <>
                 {f.options && (

@@ -219,7 +219,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       dataSource: {
         sourceType: "",
         dataQuality: activity.dataQuality,
-        notes: activity.sourceReference,
+        notes: activity.dataComments,
       },
       gasValues: gasValues.map(({ gas, factor, unit, ...rest }) => ({
         ...rest,

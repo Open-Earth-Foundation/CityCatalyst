@@ -64,7 +64,7 @@ export type Inputs = {
     N2OEmissionFactor: number;
     CH4EmissionFactor: number;
     dataQuality: string;
-    sourceReference: string;
+    dataComments: string;
     activityType: string;
     fuelType: string;
     co2EmissionFactorUnit: string;
@@ -120,6 +120,14 @@ const ActivityModalBody = ({
     }
   };
 
+  const filteredFields = fields.filter((f) => {
+    return !(f.id.includes("-source") && f.type === "text");
+  });
+
+  const sourceField = fields.find(
+    (f) => f.id.includes("-source") && f.type === "text",
+  );
+
   return (
     <ModalBody p={6} px={12}>
       <form onSubmit={submit}>
@@ -132,7 +140,7 @@ const ActivityModalBody = ({
           gap="24px"
         >
           {/* handle select, multi-select types, text  */}
-          {fields.map((f) => {
+          {filteredFields.map((f) => {
             return (
               <>
                 {f.options && (
@@ -679,86 +687,142 @@ const ActivityModalBody = ({
           </Grid>
         )}
 
-        <FormControl
-          isInvalid={!!resolve(prefix + "dataQuality", errors)}
-          mb={12}
-        >
-          <FormLabel>{t("data-quality")}</FormLabel>
-          <Select
-            borderWidth={errors?.activity?.dataQuality ? "1px" : 0}
-            border="inputBox"
-            borderRadius="4px"
-            borderColor={
-              errors?.activity?.dataQuality ? "sentiment.negativeDefault" : ""
-            }
-            background={
-              errors?.activity?.dataQuality ? "sentiment.negativeOverlay" : ""
-            }
-            _focus={{
-              borderWidth: "1px",
-              shadow: "none",
-              borderColor: "content.link",
-            }}
-            bgColor="base.light"
-            placeholder={t("data-quality-placeholder")}
-            {...register("activity.dataQuality", {
-              required: t("option-required"),
-            })}
-            h="48px"
-            shadow="1dp"
+        <HStack display="flex" flexDirection="column" spacing={4} mb={5}>
+          <FormControl isInvalid={!!resolve(prefix + "dataQuality", errors)}>
+            <FormLabel>{t("data-quality")}</FormLabel>
+            <Select
+              borderWidth={errors?.activity?.dataQuality ? "1px" : 0}
+              border="inputBox"
+              borderRadius="4px"
+              borderColor={
+                errors?.activity?.dataQuality ? "sentiment.negativeDefault" : ""
+              }
+              background={
+                errors?.activity?.dataQuality ? "sentiment.negativeOverlay" : ""
+              }
+              _focus={{
+                borderWidth: "1px",
+                shadow: "none",
+                borderColor: "content.link",
+              }}
+              bgColor="base.light"
+              placeholder={t("data-quality-placeholder")}
+              {...register("activity.dataQuality", {
+                required: t("option-required"),
+              })}
+              h="48px"
+              shadow="1dp"
+            >
+              <option value="high">{t("detailed-activity-data")}</option>
+              <option value="medium">{t("modeled-activity-data")}</option>
+              <option value="low">
+                {t("highly-modeled-uncertain-activity-data")}
+              </option>
+            </Select>
+            {errors.activity?.dataQuality ? (
+              <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                <WarningIcon color="sentiment.negativeDefault" />
+                <Text fontSize="body.md">{t("data-quality-form-label")}</Text>
+              </Box>
+            ) : (
+              ""
+            )}
+          </FormControl>
+          {sourceField && (
+            <FormControl className="w-full">
+              <FormLabel className="truncate">{t("data-source")}</FormLabel>
+              <InputGroup>
+                <Input
+                  type="text"
+                  borderRadius="4px"
+                  placeholder={t("data-source-placeholder")}
+                  h="48px"
+                  shadow="1dp"
+                  borderWidth={errors?.activity?.[sourceField.id] ? "1px" : 0}
+                  border="inputBox"
+                  borderColor={
+                    errors?.activity?.[sourceField.id]
+                      ? "sentiment.negativeDefault"
+                      : ""
+                  }
+                  background={
+                    errors?.activity?.[sourceField.id]
+                      ? "sentiment.negativeOverlay"
+                      : ""
+                  }
+                  bgColor="base.light"
+                  _focus={{
+                    borderWidth: "1px",
+                    shadow: "none",
+                    borderColor: "content.link",
+                  }}
+                  {...register(`activity.${sourceField.id}` as any, {
+                    required:
+                      sourceField.required === false
+                        ? false
+                        : t("value-required"),
+                  })}
+                />
+              </InputGroup>
+              {(errors?.activity?.[sourceField.id] as any) ? (
+                <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                  <WarningIcon color="sentiment.negativeDefault" />
+                  <Text fontSize="body.md">
+                    {" "}
+                    {errors?.activity?.[sourceField.id]?.message}{" "}
+                  </Text>
+                </Box>
+              ) : (
+                ""
+              )}
+            </FormControl>
+          )}
+          <FormControl
+            isInvalid={!!resolve(prefix + "dataComments", errors)}
+            mb={12}
           >
-            <option value="high">{t("detailed-activity-data")}</option>
-            <option value="medium">{t("modeled-activity-data")}</option>
-            <option value="low">
-              {t("highly-modeled-uncertain-activity-data")}
-            </option>
-          </Select>
-          {errors.activity?.dataQuality ? (
-            <Box display="flex" gap="6px" alignItems="center" mt="6px">
-              <WarningIcon color="sentiment.negativeDefault" />
-              <Text fontSize="body.md">{t("data-quality-form-label")}</Text>
-            </Box>
-          ) : (
-            ""
-          )}
-        </FormControl>
-        <FormControl
-          isInvalid={!!resolve(prefix + "sourceReference", errors)}
-          mb={12}
-        >
-          <FormLabel>{t("source-reference")}</FormLabel>
-          <Textarea
-            data-testid="source-reference"
-            borderWidth={errors?.activity?.dataQuality ? "1px" : 0}
-            border="inputBox"
-            borderRadius="4px"
-            shadow="1dp"
-            h="96px"
-            borderColor={
-              errors?.activity?.dataQuality ? "sentiment.negativeDefault" : ""
-            }
-            background={
-              errors?.activity?.dataQuality ? "sentiment.negativeOverlay" : ""
-            }
-            _focus={{
-              borderWidth: "1px",
-              shadow: "none",
-              borderColor: "content.link",
-            }}
-            placeholder={t("source-reference-placeholder")}
-            {...register(`activity.sourceReference`, {
-              required: t("source-reference-required"),
-            })}
-          />
-          {errors.activity?.sourceReference ? (
-            <Box display="flex" gap="6px" alignItems="center" mt="6px">
-              <WarningIcon color="sentiment.negativeDefault" />
-              <Text fontSize="body.md">{t("source-reference-form-label")}</Text>
-            </Box>
-          ) : (
-            ""
-          )}
-        </FormControl>
+            <FormLabel>{t("data-comments")}</FormLabel>
+            <Textarea
+              data-testid="source-reference"
+              borderWidth={errors?.activity?.dataComments ? "1px" : 0}
+              border="inputBox"
+              borderRadius="4px"
+              shadow="1dp"
+              h="96px"
+              borderColor={
+                errors?.activity?.dataComments
+                  ? "sentiment.negativeDefault"
+                  : ""
+              }
+              background={
+                errors?.activity?.dataComments
+                  ? "sentiment.negativeOverlay"
+                  : ""
+              }
+              _focus={{
+                borderWidth: "1px",
+                shadow: "none",
+                borderColor: "content.link",
+              }}
+              placeholder={t("data-comments-placeholder")}
+              {...register(`activity.dataComments`, {
+                required: t("data-comments-required"),
+              })}
+            />
+            {errors.activity?.dataComments ? (
+              <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                <WarningIcon color="sentiment.negativeDefault" />
+                <Text fontSize="body.md">
+                  {" "}
+                  {errors?.activity?.dataComments?.message}{" "}
+                </Text>
+              </Box>
+            ) : (
+              ""
+            )}
+          </FormControl>
+        </HStack>
+
         <HStack className="items-start" mb={13}>
           <InfoOutlineIcon mt={1} color="content.link" />
           <Text color="content.tertiary">

@@ -101,10 +101,17 @@ export const GET = apiHandler(async (req, { params, session }) => {
 
 export const DELETE = apiHandler(async (req, { params, session }) => {
   const subSectorId = req.nextUrl.searchParams.get("subSectorId");
+  const gpcReferenceNumber = req.nextUrl.searchParams.get("gpcReferenceNumber");
 
-  if (!subSectorId) {
+  if (!gpcReferenceNumber && !subSectorId) {
     throw new createHttpError.BadRequest(
-      "Query parameter subSectorId is required!",
+      "Query parameter gpcReferenceNumber or subSectorId is required!",
+    );
+  }
+
+  if (subSectorId && gpcReferenceNumber) {
+    throw new createHttpError.BadRequest(
+      "Query parameter gpcReferenceNumber and subSectorId cannot be used together!",
     );
   }
 
@@ -115,7 +122,8 @@ export const DELETE = apiHandler(async (req, { params, session }) => {
 
   const count = await ActivityService.deleteAllActivitiesInSubsector({
     inventoryId: inventory.inventoryId,
-    subsectorId: subSectorId,
+    subsectorId: subSectorId as string,
+    referenceNumber: gpcReferenceNumber as string,
   });
 
   return NextResponse.json({

@@ -1,6 +1,7 @@
 import SectorFormSchema from "./sector-form-schema.json";
-export { SectorFormSchema };
 import HIERARCHY from "./manual-input-hierarchy.json";
+
+export { SectorFormSchema };
 
 export function findMethodology(
   methodologyId: string,
@@ -61,7 +62,7 @@ export interface Methodology {
   activities?: Activity[];
   inputRequired?: string[];
   formula?: string;
-  fields?: [];
+  fields?: any[];
   suggestedActivities?: SuggestedActivity[];
   suggestedActivitiesId?: string;
 }

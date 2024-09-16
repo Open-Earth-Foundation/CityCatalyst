@@ -1,25 +1,26 @@
 import {
-  type UserAttributes,
   type CityAttributes,
   type InventoryAttributes,
   type InventoryValueAttributes,
   PopulationAttributes,
+  type UserAttributes,
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
 import type {
   ConnectDataSourceQuery,
   ConnectDataSourceResponse,
   DataSourceResponse,
+  EmissionsFactorResponse,
   InventoryProgressResponse,
   InventoryResponse,
-  InventoryValueUpdateQuery,
   InventoryValueResponse,
+  InventoryValueUpdateQuery,
   InventoryWithCity,
-  UserInfoResponse,
   UserFileResponse,
-  EmissionsFactorResponse,
+  UserInfoResponse,
   UserInviteResponse,
   RequiredScopesResponse,
+  ResultsResponse
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -62,6 +63,11 @@ export const api = createApi({
     getRequiredScopes: builder.query<RequiredScopesResponse, string>({
       query: (sectorId) => `sector/${sectorId}/required-scopes`,
       transformResponse: (response: { data: RequiredScopesResponse }) =>
+        response.data,
+    }),
+    getResults: builder.query<ResultsResponse, string>({
+      query: (inventoryId: string) => `inventory/${inventoryId}/results`,
+      transformResponse: (response: { data: ResultsResponse} ) =>
         response.data,
     }),
     getInventoryProgress: builder.query<InventoryProgressResponse, string>({
@@ -502,11 +508,16 @@ export const api = createApi({
       invalidatesTags: ["ActivityValue"],
     }),
     deleteAllActivityValues: builder.mutation({
-      query: (data: { inventoryId: string; subSectorId: string }) => ({
+      query: (data: {
+        inventoryId: string;
+        subSectorId?: string;
+        gpcReferenceNumber?: string;
+      }) => ({
         method: "DELETE",
         url: `/inventory/${data.inventoryId}/activity-value`,
         params: {
           subSectorId: data.subSectorId,
+          gpcReferenceNumber: data.gpcReferenceNumber,
         },
       }),
       transformResponse: (response: any) => response.data,
@@ -586,5 +597,6 @@ export const {
   useDeleteAllActivityValuesMutation,
   useDeleteActivityValueMutation,
   useGetInventoryValuesBySubsectorQuery,
+  useGetResultsQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

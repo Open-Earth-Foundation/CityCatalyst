@@ -61,19 +61,22 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   targetActivityValue,
   resetSelectedActivityValue,
 }) => {
-  const { fields, units } = useMemo(() => {
+  const { fields, units, title } = useMemo(() => {
     let fields: ExtraField[] = [];
     let units = null;
+    let title = null;
     if (methodology?.id.includes("direct-measure")) {
       fields = methodology.fields;
     } else {
       fields = methodology?.fields[0]["extra-fields"];
       units = methodology?.fields[0].units;
+      title = methodology?.fields[0]["activity-title"];
     }
 
     return {
       fields,
       units,
+      title,
     };
   }, [methodology]);
 
@@ -180,9 +183,14 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         values[field.id] = (activity as any)[field.id];
       }
       if (field.units) {
-        values[`${field.id}unit`] = (activity as any)[`${field.id}unit`];
+        values[`${field.id}Unit`] = (activity as any)[`${field.id}Unit`];
       }
     });
+
+    if (!methodology?.id.includes("direct-measure")) {
+      values[title] = (activity as any)[title];
+      values[`${title}Unit`] = (activity as any)[`${title}Unit`];
+    }
 
     // so the issue here is that we need to have one inventoryValue for
     const requestData = {
@@ -196,7 +204,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         : { ...values },
       metadata: {
         emissionFactorType: activity.emissionFactorType,
-        totalFuelConsumption: activity.totalFuelConsumption,
       },
       ...(inventoryValue ? { inventoryValueId: inventoryValue.id } : {}),
       ...(!inventoryValue
@@ -321,6 +328,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
           <ModalCloseButton marginTop="10px" />
           <ActivityModalBody
             emissionsFactorTypes={emissionsFactorTypes}
+            title={title}
             submit={submit}
             register={register}
             control={control}

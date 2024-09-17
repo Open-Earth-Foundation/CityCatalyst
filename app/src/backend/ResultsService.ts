@@ -8,7 +8,7 @@ function calculatePercentage(co2eq: bigint, total: bigint): number {
   }
   const co2eqFloat = Number(co2eq);
   const totalFloat = Number(total);
-  return Number(Number((co2eqFloat * 100 / totalFloat)).toFixed(0));
+  return Number(Number((co2eqFloat * 100) / totalFloat).toFixed(0));
 }
 
 async function getTotalEmissionsWithPercentage(inventory: string) {
@@ -21,21 +21,24 @@ async function getTotalEmissionsWithPercentage(inventory: string) {
         GROUP BY sector_name
         ORDER BY SUM(av.co2eq) DESC`;
 
-  const totalEmissionsBySector: {
-    "co2eq": bigint,
-    "sector_name": string
+  const totalEmissions: {
+    co2eq: bigint;
+    sector_name: string;
   }[] = await db.sequelize!.query(rawQuery, {
     replacements: { inventoryId: inventory },
-    type: QueryTypes.SELECT
+    type: QueryTypes.SELECT,
   });
 
-  const sumOfEmissions = BigInt(sumBy(totalEmissionsBySector, e => Number(e.co2eq)));
+  const sumOfEmissions = BigInt(sumBy(totalEmissions, (e) => Number(e.co2eq)));
 
-  return totalEmissionsBySector.map(({ co2eq, sector_name }) => ({
-    sectorName: sector_name,
-    co2eq,
-    percentage: calculatePercentage(co2eq, sumOfEmissions)
-  }));
+  const totalEmissionsBySector = totalEmissions.map(
+    ({ co2eq, sector_name }) => ({
+      sectorName: sector_name,
+      co2eq,
+      percentage: calculatePercentage(co2eq, sumOfEmissions),
+    }),
+  );
+  return { sumOfEmissions, totalEmissionsBySector };
 }
 
 function getTopEmissions(inventoryId: string) {
@@ -51,26 +54,31 @@ function getTopEmissions(inventoryId: string) {
 
   return db.sequelize!.query(rawQuery, {
     replacements: { inventoryId },
-    type: QueryTypes.SELECT
+    type: QueryTypes.SELECT,
   });
 }
 
 export async function getEmissionResults(inventoryId: string) {
-  const [totalEmissionsWithPercentage, topSubSectorEmissions] = await Promise.all([
-    getTotalEmissionsWithPercentage(inventoryId),
-    getTopEmissions(inventoryId)
-  ]);
-
-  // @ts-ignore
-  const topSubSectorEmissionsWithPercentage = topSubSectorEmissions.map(({ co2eq, sector_name, subsector_name }) => {
-    const sectorTotal = totalEmissionsWithPercentage.find(e => e.sectorName === sector_name)?.co2eq;
-    return {
+  const [{ sumOfEmissions, totalEmissionsBySector }, topSubSectorEmissions] =
+    await Promise.all([
+      getTotalEmissionsWithPercentage(inventoryId),
+      getTopEmissions(inventoryId),
+    ]);
+  const topSubSectorEmissionsWithPercentage = topSubSectorEmissions.map(
+    // @ts-ignore
+    ({ co2eq, sector_name, subsector_name }) => ({
       subsectorName: subsector_name,
       sectorName: sector_name,
       co2eq,
-      percentage: sectorTotal ? calculatePercentage(co2eq, sectorTotal) : 0
-    };
-  });
+      percentage: sumOfEmissions
+        ? calculatePercentage(co2eq, sumOfEmissions)
+        : 0,
+    }),
+  );
 
-  return { totalEmissionsBySector: totalEmissionsWithPercentage, topEmissionsBySubSector: topSubSectorEmissionsWithPercentage };
+  return {
+    totalEmissions: sumOfEmissions,
+    totalEmissionsBySector: totalEmissionsBySector,
+    topEmissionsBySubSector: topSubSectorEmissionsWithPercentage,
+  };
 }

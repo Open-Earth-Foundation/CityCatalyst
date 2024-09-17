@@ -223,7 +223,7 @@ export const getInputMethodology = (methodologyId: string) => {
 
 export function convertKgToTonnes(valueInTonnes: number | bigint) {
   let result = "";
-  const tonnes = Number(valueInTonnes)
+  const tonnes = Number(valueInTonnes);
   if (tonnes >= 1e6) {
     // Convert to megatonnes if the value is 1,000,000 tonnes or more
     const megatonnes = (tonnes / 1e6).toFixed(0);

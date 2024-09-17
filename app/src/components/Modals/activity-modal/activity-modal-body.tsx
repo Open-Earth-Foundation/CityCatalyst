@@ -174,6 +174,7 @@ const ActivityModalBody = ({
                     label={t(f.id)}
                     register={register}
                     error={errors?.activity?.[f.id]}
+                    t={t}
                   />
                 )}
                 {f.type === "text" && (

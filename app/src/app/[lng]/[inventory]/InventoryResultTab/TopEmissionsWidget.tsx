@@ -97,7 +97,7 @@ const TopEmissionsWidget = ({
 
   return (
     <HStack>
-      <Card width={"47vw"} marginLeft={"4"} backgroundColor={"white"} p={4}>
+      <Card  marginLeft={"4"} backgroundColor={"white"} p={4}>
         {isTopEmissionsResponseLoading
           ? <Center><CircularProgress isIndeterminate /></Center>
           : <>

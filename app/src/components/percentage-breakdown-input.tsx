@@ -125,7 +125,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                   <HStack key={category.id}>
                     <Icon as={category.icon} mr={4} />
                     <Text
-                      fontSize="body.md"
+                      fontSize="14px"
                       fontWeight="normal"
                       letterSpacing="wide"
                       flexGrow={1}
@@ -162,19 +162,12 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                   <Text
                     flexGrow={1}
                     casing="uppercase"
-                    fontSize="body.md"
-                    fontWeight={700}
+                    fontWeight={600}
                     letterSpacing="wide"
                   >
                     {t("total")}
                   </Text>
-                  <Text
-                    fontSize="body.md"
-                    fontWeight={700}
-                    w="116px"
-                    pl={6}
-                    letterSpacing="wide"
-                  >
+                  <Text fontWeight={600} w="116px" pl={4} letterSpacing="wide">
                     {totalPercent}%
                   </Text>
                 </HStack>

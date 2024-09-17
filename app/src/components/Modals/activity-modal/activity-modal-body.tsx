@@ -92,7 +92,6 @@ export type ExtraField = {
 const ActivityModalBody = ({
   t,
   register,
-  watch,
   control,
   submit,
   methodology,
@@ -175,7 +174,7 @@ const ActivityModalBody = ({
                     id={f.id}
                     label={t(f.id)}
                     register={register}
-                    watch={watch}
+                    getValues={getValues}
                     error={errors?.activity?.[f.id]}
                     t={t}
                   />

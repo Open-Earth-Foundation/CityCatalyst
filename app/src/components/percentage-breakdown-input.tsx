@@ -28,7 +28,6 @@ import {
   WoodIcon,
 } from "./icons";
 import type { TFunction } from "i18next";
-import { m } from "framer-motion";
 
 const breakdownCategories = [
   { id: "food", icon: FoodIcon },
@@ -45,7 +44,7 @@ interface FormInputProps {
   isDisabled?: boolean;
   error: FieldError | undefined;
   register: Function;
-  watch: Function;
+  getValues: Function;
   id: string;
   t: TFunction;
 }
@@ -55,7 +54,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
   isDisabled,
   error,
   register,
-  watch,
+  getValues,
   id,
   t,
 }) => {
@@ -68,17 +67,17 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
     background = "background.default";
   }
 
-  /*const categoryAmounts = Object.fromEntries(
-    breakdownCategories.map((c) => [c.id, watch(id + "." + c.id)]),
-  );*/
-  const categoryAmounts: Record<string, string | number> = {
-    food: watch(id + ".food"),
-    garden: watch(id + ".garden"),
-    paper: watch(id + ".paper"),
-    wood: watch(id + ".wood"),
-    textiles: watch(id + ".textiles"),
-    industrial: watch(id + ".industrial"),
-  };
+  const categoryAmounts = Object.fromEntries(
+    breakdownCategories.map((c) => [c.id, getValues(id + "." + c.id)]),
+  );
+  /*const categoryAmounts: Record<string, string | number> = {
+    food: getValues(id + ".food"),
+    garden: getValues(id + ".garden"),
+    paper: getValues(id + ".paper"),
+    wood: getValues(id + ".wood"),
+    textiles: getValues(id + ".textiles"),
+    industrial: getValues(id + ".industrial"),
+  };*/
   const totalPercent = Object.values(categoryAmounts).reduce(
     (a, b) => +a + +b, // convert eacn to int using unary + operator, then add
     0,

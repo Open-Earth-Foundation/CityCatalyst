@@ -158,7 +158,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                     />
                   </HStack>
                 ))}
-                <HStack color="content.link">
+                <HStack color="content.link" fontSize="22px">
                   <Text
                     flexGrow={1}
                     casing="uppercase"

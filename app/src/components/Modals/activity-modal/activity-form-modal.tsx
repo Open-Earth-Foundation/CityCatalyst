@@ -186,13 +186,11 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         values[`${field.id}Unit`] = (activity as any)[`${field.id}Unit`];
       }
     });
-
     if (!methodology?.id.includes("direct-measure")) {
       values[title] = (activity as any)[title];
       values[`${title}Unit`] = (activity as any)[`${title}Unit`];
     }
 
-    // so the issue here is that we need to have one inventoryValue for
     const requestData = {
       activityData: methodology?.id.includes("direct-measure")
         ? {

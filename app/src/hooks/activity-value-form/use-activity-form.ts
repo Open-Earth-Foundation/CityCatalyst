@@ -22,6 +22,7 @@ export const generateDefaultActivityFormValues = (
           }, {}),
         }
       : {}),
+
     fuelType: "",
     dataQuality: "",
     dataComments: "",

@@ -796,5 +796,6 @@
   "units-kilowatt-hours": "Kilowatt hours (kWh)",
   "units-liters": "Liters (l)",
   "units-other": "Other",
-  "units-terajoules": "Terajoules (TJ)"
+  "units-terajoules": "Terajoules (TJ)",
+  "select-unit": "Select Unit"
 }

@@ -1,5 +1,5 @@
 import * as Sequelize from "sequelize";
-import { CreateOptions, DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
 import type { GasValue, GasValueId } from "./GasValue";
 import type { InventoryValue, InventoryValueId } from "./InventoryValue";
 import type {

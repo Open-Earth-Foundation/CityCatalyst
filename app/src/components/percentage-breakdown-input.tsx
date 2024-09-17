@@ -4,6 +4,8 @@ import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 import {
   FormControl,
   FormLabel,
+  HStack,
+  Icon,
   Input,
   InputGroup,
   InputRightElement,
@@ -16,8 +18,10 @@ import {
   PopoverTrigger,
   Text,
 } from "@chakra-ui/react";
+import { Row } from "@react-email/components";
 import React, { FC, useEffect, useState } from "react";
 import { FieldError } from "react-hook-form";
+import { FoodIcon } from "./icons";
 
 interface FormInputProps {
   label: string;
@@ -67,7 +71,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
       >
         {label}
       </FormLabel>
-      <Popover>
+      <Popover matchWidth>
         {({ isOpen, onClose }) => (
           <>
             <PopoverTrigger>
@@ -101,12 +105,46 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                 </InputRightElement>
               </InputGroup>
             </PopoverTrigger>
-            <PopoverContent>
+            <PopoverContent w="full">
               <PopoverArrow />
               <PopoverCloseButton />
-              <PopoverHeader>Confirmation!</PopoverHeader>
-              <PopoverBody>
-                Are you sure you want to have that milkshake?
+              <PopoverHeader>Percentage breakdown</PopoverHeader>
+              <PopoverBody w="full">
+                <HStack>
+                  <Icon as={FoodIcon} mr={4} />
+                  <Text
+                    fontSize="body.md"
+                    fontWeight="normal"
+                    letterSpacing="wide"
+                    flexGrow={1}
+                  >
+                    {label}
+                  </Text>
+                  <Input
+                    type="text"
+                    shadow="1dp"
+                    name={id}
+                    borderRadius="4px"
+                    border="inputBox"
+                    background={background}
+                    color={
+                      isDisabled ? "content.tertiary" : "content.secondary"
+                    }
+                    placeholder="10%"
+                    value={inputValue ?? ""}
+                    onChange={onInputChange}
+                    minW={16}
+                    maxW={32}
+                    borderWidth={error ? "1px" : 0}
+                    borderColor={error ? "sentiment.negativeDefault" : ""}
+                    bgColor="base.light"
+                    _focus={{
+                      borderWidth: "1px",
+                      shadow: "none",
+                      borderColor: "content.link",
+                    }}
+                  />
+                </HStack>
               </PopoverBody>
             </PopoverContent>
           </>

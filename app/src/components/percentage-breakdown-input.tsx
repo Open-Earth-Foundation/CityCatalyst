@@ -8,17 +8,16 @@ import {
   Icon,
   Input,
   InputGroup,
+  InputRightAddon,
   InputRightElement,
   Popover,
   PopoverArrow,
   PopoverBody,
-  PopoverCloseButton,
   PopoverContent,
-  PopoverHeader,
   PopoverTrigger,
   Text,
 } from "@chakra-ui/react";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC } from "react";
 import { FieldError } from "react-hook-form";
 import {
   FoodIcon,
@@ -29,6 +28,7 @@ import {
   WoodIcon,
 } from "./icons";
 import type { TFunction } from "i18next";
+import { m } from "framer-motion";
 
 const breakdownCategories = [
   { id: "food", icon: FoodIcon },
@@ -45,6 +45,7 @@ interface FormInputProps {
   isDisabled?: boolean;
   error: FieldError | undefined;
   register: Function;
+  watch: Function;
   id: string;
   t: TFunction;
 }
@@ -54,6 +55,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
   isDisabled,
   error,
   register,
+  watch,
   id,
   t,
 }) => {
@@ -66,9 +68,26 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
     background = "background.default";
   }
 
-  const totalPercent = 100;
+  /*const categoryAmounts = Object.fromEntries(
+    breakdownCategories.map((c) => [c.id, watch(id + "." + c.id)]),
+  );*/
+  const categoryAmounts: Record<string, string | number> = {
+    food: watch(id + ".food"),
+    garden: watch(id + ".garden"),
+    paper: watch(id + ".paper"),
+    wood: watch(id + ".wood"),
+    textiles: watch(id + ".textiles"),
+    industrial: watch(id + ".industrial"),
+  };
+  const totalPercent = Object.values(categoryAmounts).reduce(
+    (a, b) => +a + +b, // convert eacn to int using unary + operator, then add
+    0,
+  );
+  const isValid = totalPercent === 100;
   const breakdownSummary = breakdownCategories
-    .map((category) => `${t(category.id)} 10%`)
+    .map(
+      (category) => `${t(category.id)} ${categoryAmounts[category.id] ?? 0}%`,
+    )
     .join(", ");
 
   return (
@@ -126,39 +145,53 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                     <Icon as={category.icon} mr={4} />
                     <Text
                       fontSize="14px"
+                      w="full"
                       fontWeight="normal"
                       letterSpacing="wide"
                       flexGrow={1}
                     >
                       {t(category.id)}
                     </Text>
-                    <Input
-                      type="text"
-                      {...register(id + "." + category.id, { required: true })}
-                      shadow="1dp"
-                      name={id}
-                      borderRadius="4px"
-                      border="inputBox"
-                      background={background}
-                      color={
-                        isDisabled ? "content.tertiary" : "content.secondary"
-                      }
-                      placeholder="10%"
-                      w="116px"
-                      px={4}
-                      py={3}
-                      borderWidth={error ? "1px" : 0}
-                      borderColor={error ? "sentiment.negativeDefault" : ""}
-                      bgColor="base.light"
-                      _focus={{
-                        borderWidth: "1px",
-                        shadow: "none",
-                        borderColor: "content.link",
-                      }}
-                    />
+                    <InputGroup w="116px">
+                      <Input
+                        type="text"
+                        {...register(id + "." + category.id, {
+                          required: true,
+                          min: 0,
+                          max: 100,
+                        })}
+                        shadow="1dp"
+                        name={id}
+                        borderRadius="4px"
+                        border="inputBox"
+                        background={background}
+                        color={
+                          isDisabled ? "content.tertiary" : "content.secondary"
+                        }
+                        placeholder="0"
+                        w="116px"
+                        px={4}
+                        py={3}
+                        min={0}
+                        max={100}
+                        defaultValue={0}
+                        borderWidth={error ? "1px" : 0}
+                        borderColor={error ? "sentiment.negativeDefault" : ""}
+                        bgColor="base.light"
+                        _focus={{
+                          borderWidth: "1px",
+                          shadow: "none",
+                          borderColor: "content.link",
+                        }}
+                      />
+                      <InputRightAddon>%</InputRightAddon>
+                    </InputGroup>
                   </HStack>
                 ))}
-                <HStack color="content.link" fontSize="22px">
+                <HStack
+                  color={isValid ? "content.link" : "sentiment.negativeDefault"}
+                  fontSize="22px"
+                >
                   <Text
                     flexGrow={1}
                     casing="uppercase"

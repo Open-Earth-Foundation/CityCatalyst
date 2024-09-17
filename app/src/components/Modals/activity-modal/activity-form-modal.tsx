@@ -87,6 +87,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     reset,
     handleSubmit,
     register,
+    watch,
     errors,
     control,
     getValues,
@@ -329,6 +330,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
             title={title}
             submit={submit}
             register={register}
+            watch={watch}
             control={control}
             fields={fields}
             units={units}

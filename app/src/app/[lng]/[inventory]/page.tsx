@@ -187,7 +187,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
       true, // animated gradient
     );
     const format = "csv";
-    fetch(`/api/v0/inventory/${inventoryId}?format=${format}`)
+    fetch(`/api/v0/inventory/${inventoryId}/download?format=${format}`)
       .then((res) => {
         if (!res.ok) {
           throw new Error("Network response was not ok");

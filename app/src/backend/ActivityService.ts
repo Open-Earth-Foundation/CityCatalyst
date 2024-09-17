@@ -218,6 +218,7 @@ export default class ActivityService {
             inventoryValue,
             activityValue,
             inventoryValue.inputMethodology as string,
+            gasValues as GasValueInput[],
           );
 
         const currentCO2e =
@@ -335,6 +336,7 @@ export default class ActivityService {
             inventoryValue,
             activityValue,
             inventoryValue.inputMethodology,
+            gasValues as GasValueInput[],
           );
 
         const currentCO2e = BigInt(inventoryValue.co2eq ?? 0n);
@@ -404,9 +406,11 @@ export default class ActivityService {
   public static async deleteAllActivitiesInSubsector({
     subsectorId,
     inventoryId,
+    referenceNumber,
   }: {
-    subsectorId: string;
+    subsectorId?: string;
     inventoryId: string;
+    referenceNumber?: string;
   }): Promise<number> {
     const inventoryValues = await db.models.InventoryValue.findAll({
       where: {
@@ -425,8 +429,10 @@ export default class ActivityService {
 
     return await db.models.InventoryValue.destroy({
       where: {
-        subSectorId: subsectorId,
         inventoryId,
+        ...(referenceNumber
+          ? { gpcReferenceNumber: referenceNumber }
+          : { subSectorId: subsectorId }),
       },
     });
   }

@@ -704,6 +704,10 @@
   "type-uncontrolled-combustion-and-burning-coal-dumps": "Combustión y quema no controlada de vertederos de carbón",
   "type-unspecified-industry": "Industria no especificada",
   "type-wood-and-wood-products": "Madera y productos de madera",
+  "units-kilometers": "Kilómetro (km)",
+  "units-miles": "Milla (mi)",
+  "units-tonnes": "Toneladas (T)",
+  "units-kilograms": "Kilogramos (kg)",
   "units-grams-per-kilometer": "gramos por kilómetro (g/km)",
   "units-kilograms-per-kilometer": "kilogramos por kilómetro (kg/km)",
   "vehicle-type-agricultural-machinery": "Maquinaria agrícola (Tractores, Cosechadoras, etc.)",
@@ -754,5 +758,9 @@
   "n2o-emissions": "Emisiones de N2O",
   "ch4-emissions": "Emisiones de CH4",
   "emissions-value-co2": "CO2",
-  "emissions-value-n2o": "N2O"
+  "emissions-value-n2o": "N2O",
+  "data-comments": "Comentarios explicativos",
+  "data-source-placeholder": "Ingrese la fuente de datos o proveedor",
+  "data-comments-placeholder": "Describa cualquier contexto relevante o explicación para los datos de actividad ingresados",
+  "data-comments-required": "Por favor, agregue cualquier contexto relevante o explicación para los datos de actividad ingresados"
 }

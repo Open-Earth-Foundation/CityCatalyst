@@ -72,6 +72,7 @@ jobs:
       - name: Deploying service
         run: |
           export VERSION=${REF#refs/tags/v}
+          export VERSION=${REF#refs/tags/v}
           kubectl create -f k8s/cc-global-api-migrate.yml -n default
           kubectl apply -f k8s/cc-global-api-deploy.yml -n default
           kubectl set image deployment/cc-global-api-deploy \

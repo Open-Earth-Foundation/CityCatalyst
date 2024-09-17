@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: cc-prod-global-api-import-everything-
+spec:
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: cc-global-api
+        image: ghcr.io/open-earth-foundation/citycatalyst-global-api:stable
+        env:
+        - name: CC_GLOBAL_API_DB_HOST
+          value: "cc-global-api-db"
+        - name: CC_GLOBAL_API_DB_NAME
+          value: "ccglobal"
+        - name: CC_GLOBAL_API_DB_USER
+          value: "ccglobal"
+        - name: CC_GLOBAL_API_DB_PASSWORD
+          value: "ccglobal"
+        - name: CC_GLOBAL_API_BASE
+          value: "https://openclimate.openearth.dev"
+        command: ["/usr/bin/bash", "./import_everything.sh"]
+        volumeMounts:
+        - name: cc-global-api-input-data
+          mountPath: /var/local/input-data
+          readOnly: true
+      volumes:
+      - name: cc-global-api-input-data
+        persistentVolumeClaim:
+          claimName: cc-global-api-input-data-pvc

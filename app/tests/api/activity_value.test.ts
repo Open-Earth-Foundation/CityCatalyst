@@ -1,16 +1,15 @@
 import {
-  PATCH as updateActivityValue,
-  GET as getActivityValue,
   DELETE as deleteActivityValue,
+  GET as getActivityValue,
+  PATCH as updateActivityValue
 } from "@/app/api/v0/inventory/[inventory]/activity-value/[id]/route";
 
 import {
-  POST as createActivityValue,
   DELETE as deleteAllActivitiesInSubsector,
+  POST as createActivityValue
 } from "@/app/api/v0/inventory/[inventory]/activity-value/route";
 
 import { db } from "@/models";
-import { CreateActivityValueRequest } from "@/util/validation";
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, describe, it } from "node:test";
@@ -23,152 +22,22 @@ import { SubSector } from "@/models/SubSector";
 import { InventoryValue } from "@/models/InventoryValue";
 import { ActivityValue } from "@/models/ActivityValue";
 import { Sector } from "@/models/Sector";
-
-const ReferenceNumber = "I.1.1";
-
-const validCreateActivity: CreateActivityValueRequest = {
-  activityData: {
-    co2_amount: 100,
-    ch4_amount: 100,
-    n2o_amount: 100,
-    "residential-building-type": "building-type-all",
-    "residential-building-fuel-type": "fuel-type-charcoal",
-    "residential-buildings-fuel-source": "source",
-  },
-  metadata: {
-    active_selection: "test1",
-  },
-  inventoryValue: {
-    inputMethodology: "direct-measure",
-    gpcReferenceNumber: ReferenceNumber,
-    unavailableReason: "Reason for unavailability",
-    unavailableExplanation: "Explanation for unavailability",
-  },
-  dataSource: {
-    sourceType: "",
-    dataQuality: "high",
-    notes: "Some notes regarding the data source",
-  },
-  gasValues: [
-    {
-      id: "123e4567-e89b-12d3-a456-426614174001",
-      gas: "CO2",
-      gasAmount: 1000n,
-      emissionsFactor: {
-        emissionsPerActivity: 50.5,
-        gas: "CO2",
-        units: "kg",
-      },
-    },
-    {
-      id: "123e4567-e89b-12d3-a456-426614174003",
-      gas: "CH4",
-      gasAmount: 2000n,
-      emissionsFactor: {
-        emissionsPerActivity: 25.0,
-        gas: "CH4",
-        units: "kg",
-      },
-    },
-  ],
-};
-
-const updatedActivityValue: CreateActivityValueRequest = {
-  activityData: {
-    co2_amount: 120,
-    ch4_amount: 160,
-    n2o_amount: 100,
-    "residential-building-type": "building-type-all",
-    "residential-building-fuel-type": "fuel-type-anthracite",
-    "residential-buildings-fuel-source": "source-edit",
-  },
-  metadata: {
-    "active-selection": "test1",
-  },
-  inventoryValue: {
-    inputMethodology: "direct-measure",
-    gpcReferenceNumber: ReferenceNumber,
-    unavailableReason: "Reason for unavailability",
-    unavailableExplanation: "Explanation for unavailability",
-  },
-  dataSource: {
-    sourceType: "updated-type",
-    dataQuality: "high",
-    notes: "Some notes regarding the data source",
-  },
-  gasValues: [
-    {
-      id: "123e4567-e89b-12d3-a456-426614174001",
-      gas: "CO2",
-      gasAmount: 1000n,
-      emissionsFactor: {
-        emissionsPerActivity: 50.5,
-        gas: "CO2",
-        units: "kg",
-      },
-    },
-    {
-      id: "123e4567-e89b-12d3-a456-426614174003",
-      gas: "CH4",
-      gasAmount: 4000n,
-      emissionsFactor: {
-        emissionsPerActivity: 25.0,
-        gas: "CH4",
-        units: "kg",
-      },
-    },
-  ],
-};
-
-const invalidCreateActivity: CreateActivityValueRequest = {
-  activityData: {
-    "form-test-input1": 40.4,
-    "form-test-input2": "132894729485739867398473321",
-    "form-test-input3": "agriculture-forestry",
-  },
-  metadata: {
-    "active-selection": "test1",
-  },
-  dataSource: {
-    sourceType: "",
-    dataQuality: "high",
-    notes: "Some notes regarding the data source",
-  },
-  gasValues: [
-    {
-      id: "123e4567-e89b-12d3-a456-426614174001",
-      gas: "CO2",
-      gasAmount: 1000n,
-      emissionsFactor: {
-        emissionsPerActivity: 50.5,
-        gas: "CO2",
-        units: "kg",
-      },
-    },
-    {
-      id: "123e4567-e89b-12d3-a456-426614174003",
-      gas: "CH4",
-      gasAmount: 2000n,
-      emissionsFactor: {
-        emissionsPerActivity: 25.0,
-        gas: "CH4",
-        units: "kg",
-      },
-    },
-  ],
-};
-
-const activityUnits = "UNITS";
-const activityValue = 1000;
-const co2eq = 44000n;
-const locode = "XX_INVENTORY_CITY_ACTIVITY_VALUE";
-// Matches name given by CDP for API testing
-const cityName = "Open Earth Foundation API City Discloser activity value";
-const cityCountry = "United Kingdom of Great Britain and Northern Ireland";
-const inventoryName = "TEST_INVENTORY_INVENTORY_ACTIVITY_VALUE";
-const sectorName = "XX_INVENTORY_TEST_SECTOR_ACTIVITY_VALUE";
-const subcategoryName = "XX_INVENTORY_TEST_SUBCATEGORY_ACTIVITY_VALUE";
-const subsectorName = "XX_INVENTORY_TEST_SUBSECTOR_1_ACTIVITY_VALUE";
+import {
+  activityUnits,
+  activityValue,
+  cityCountry,
+  cityName,
+  co2eq,
+  invalidCreateActivity,
+  inventoryName,
+  locode,
+  ReferenceNumber,
+  sectorName,
+  subcategoryName,
+  subsectorName,
+  updatedActivityValue,
+  validCreateActivity
+} from "./activity_value_data";
 
 describe("Activity Value API", () => {
   let city: City;

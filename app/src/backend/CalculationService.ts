@@ -11,6 +11,8 @@ import {
   handleMethaneCommitmentFormula,
   handleVkt1Formula,
 } from "./formulas";
+import { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
+import { GasValueCreationAttributes } from "@/models/GasValue";
 
 export type Gas = {
   gas: string;
@@ -71,6 +73,11 @@ export default class CalculationService {
     inventoryValue: InventoryValue,
     activityValue: ActivityValue,
     inputMethodology: string,
+    gasValues: (Omit<GasValueCreationAttributes, "id"> & {
+      emissionsFactor?:
+        | EmissionsFactorAttributes
+        | Omit<EmissionsFactorAttributes, "id">;
+    })[],
   ): Promise<GasAmountResult> {
     const formula = await CalculationService.getFormula(inputMethodology);
     // TODO cache
@@ -86,13 +93,16 @@ export default class CalculationService {
         gases = handleDirectMeasureFormula(activityValue);
         break;
       case "activity-amount-times-emissions-factor":
-        gases = handleActivityAmountTimesEmissionsFactorFormula(activityValue);
+        gases = handleActivityAmountTimesEmissionsFactorFormula(
+          activityValue,
+          gasValues,
+        );
         break;
       case "methane-commitment":
         gases = handleMethaneCommitmentFormula(activityValue);
         break;
       case "induced-activity-1":
-        gases = handleVkt1Formula(activityValue);
+        gases = handleVkt1Formula(activityValue, gasValues);
       default:
         throw new createHttpError.NotImplemented(
           `Formula ${formula} not yet implemented for input methodology ${inventoryValue.inputMethodology}`,

@@ -1,7 +1,14 @@
 import { POST as changeRole } from "@/app/api/v0/auth/role/route";
 import { db } from "@/models";
-import assert from "node:assert";
-import { after, before, beforeEach, describe, it, mock } from "node:test";
+import {
+  beforeAll,
+  afterAll,
+  beforeEach,
+  describe,
+  it,
+  expect,
+  jest,
+} from "@jest/globals";
 import { mockRequest, setupTests, testUserData, testUserID } from "../helpers";
 import { AppSession, Auth, Roles } from "@/lib/auth";
 
@@ -17,18 +24,18 @@ const mockAdminSession: AppSession = {
 describe("Admin API", () => {
   let prevGetServerSession = Auth.getServerSession;
 
-  before(async () => {
+  beforeAll(async () => {
     setupTests();
     await db.initialize();
   });
 
-  after(async () => {
+  afterAll(async () => {
     Auth.getServerSession = prevGetServerSession;
     if (db.sequelize) await db.sequelize.close();
   });
 
   beforeEach(async () => {
-    Auth.getServerSession = mock.fn(() => Promise.resolve(mockSession));
+    Auth.getServerSession = jest.fn(() => Promise.resolve(mockSession));
     await db.models.User.upsert({
       userId: testUserID,
       name: testUserData.name,
@@ -39,27 +46,27 @@ describe("Admin API", () => {
 
   it("should change the user role when logged in as admin", async () => {
     const req = mockRequest({ email: testUserData.email, role: Roles.Admin });
-    Auth.getServerSession = mock.fn(() => Promise.resolve(mockAdminSession));
+    Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
     const res = await changeRole(req, { params: {} });
-    assert.equal(res.status, 200);
+    expect(res.status).toBe(200);
     const body = await res.json();
-    assert.equal(body.success, true);
+    expect(body.success).toBe(true);
 
     const user = await db.models.User.findOne({
       where: { email: testUserData.email },
     });
-    assert.equal(user?.role, Roles.Admin);
+    expect(user?.role).toBe(Roles.Admin);
   });
 
   it("should not change the user role when logged in as normal user", async () => {
     const req = mockRequest({ email: testUserData.email, role: Roles.Admin });
     const res = await changeRole(req, { params: {} });
-    assert.equal(res.status, 403);
+    expect(res.status).toBe(403);
 
     const user = await db.models.User.findOne({
       where: { email: testUserData.email },
     });
-    assert.equal(user?.role, Roles.User);
+    expect(user?.role).toBe(Roles.User);
   });
 
   it("should return a 404 error when user does not exist", async () => {
@@ -67,24 +74,24 @@ describe("Admin API", () => {
       email: "not-existing@example.com",
       role: Roles.Admin,
     });
-    Auth.getServerSession = mock.fn(() => Promise.resolve(mockAdminSession));
+    Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
     const res = await changeRole(req, { params: {} });
-    assert.equal(res.status, 404);
+    expect(res.status).toBe(404);
   });
 
   it("should validate the request", async () => {
-    Auth.getServerSession = mock.fn(() => Promise.resolve(mockAdminSession));
+    Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
 
     const req = mockRequest({ email: testUserData.email, role: "invalid" });
     const res = await changeRole(req, { params: {} });
-    assert.equal(res.status, 400);
+    expect(res.status).toBe(400);
 
     const req2 = mockRequest({ email: "not-an-email", role: "Admin" });
     const res2 = await changeRole(req2, { params: {} });
-    assert.equal(res2.status, 400);
+    expect(res2.status).toBe(400);
 
     const req3 = mockRequest({});
     const res3 = await changeRole(req3, { params: {} });
-    assert.equal(res3.status, 400);
+    expect(res3.status).toBe(400);
   });
 });

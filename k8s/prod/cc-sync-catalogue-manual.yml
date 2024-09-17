@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: cc-sync-catalogue-manual-
+spec:
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: cc-sync-catalogue
+          image: ghcr.io/open-earth-foundation/citycatalyst:0.9.10
+          imagePullPolicy: Always
+          env:
+            - name: NODE_ENV
+              value: development
+            - name: DATABASE_NAME
+              value: "citycatalyst"
+            - name: DATABASE_HOST
+              value: "cc-db"
+            - name: DATABASE_USER
+              value: "citycatalyst"
+            - name: DATABASE_PASSWORD
+              value: "development"
+            - name: GLOBAL_API_URL
+              value: "https://api.citycatalyst.io"
+          command: ["npm", "run", "sync-catalogue"]
+          resources:
+            limits:
+              memory: "1024Mi"
+              cpu: "1000m"

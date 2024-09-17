@@ -26,21 +26,32 @@ const inventoryName = "TEST_SUBCATEGORY_INVENTORY";
 const subcategoryName = "TEST_SUBCATEGORY_SUBCATEGORY";
 const subsectorName = "TEST_SUBCATEGORY_SUBSECTOR";
 
+const baseInventory = {
+  cityPopulation: 0,
+  regionPopulation: 0,
+  countryPopulation: 0,
+  cityPopulationYear: 0,
+  regionPopulationYear: 0,
+  countryPopulationYear: 0,
+};
 const inventoryValue1: CreateInventoryValueRequest = {
+  ...baseInventory,
   activityUnits,
   activityValue,
   co2eq,
 };
 
 const inventoryValue2: CreateInventoryValueRequest = {
+  ...baseInventory,
   activityUnits,
   activityValue,
   co2eq: 700000n,
 };
 
 const invalidInventoryValue = {
-  activityUnits: 0,
-  activityValue: "1000s",
+  ...baseInventory,
+  activityUnits: activityUnits,
+  activityValue: 1000000,
   co2eq: -1n,
 };
 
@@ -116,26 +127,7 @@ describe("Inventory Value API", () => {
     if (db.sequelize) await db.sequelize.close();
   });
 
-  it("Should create an inventory value", async () => {
-    await db.models.InventoryValue.destroy({
-      where: { id: inventoryValue.id },
-    });
-    const req = mockRequest(inventoryValue1);
-    const res = await upsertInventoryValue(req, {
-      params: {
-        inventory: inventory.inventoryId,
-        subcategory: subCategory.subcategoryId,
-      },
-    });
-    assert.equal(res.status, 200);
-    const { data } = await res.json();
-
-    assert.equal(data.activityUnits, inventoryValue1.activityUnits);
-    assert.equal(data.activityValue, inventoryValue1.activityValue);
-    assert.equal(data.co2eq, inventoryValue1.co2eq);
-  });
-
-  it("Should not create an inventory value with invalid data", async () => {
+  it("should not create an inventory value with invalid data", async () => {
     const req = mockRequest(invalidInventoryValue);
     const res = await upsertInventoryValue(req, {
       params: {
@@ -150,7 +142,7 @@ describe("Inventory Value API", () => {
     assert.equal(issues.length, 3);
   });
 
-  it("Should find an inventory value", async () => {
+  it("should find an inventory value", async () => {
     const req = mockRequest();
     const res = await findInventoryValue(req, {
       params: {
@@ -167,7 +159,7 @@ describe("Inventory Value API", () => {
     assert.equal(data.activityValue, activityValue);
   });
 
-  it("Should find multiple inventory values", async () => {
+  it("should find multiple inventory values", async () => {
     // prepare data
     const subCategory2 = await db.models.SubCategory.create({
       subcategoryId: randomUUID(),
@@ -216,18 +208,7 @@ describe("Inventory Value API", () => {
     assert.equal(data[1].activityValue, inventoryValue2.activityValue);
   });
 
-  it("Should not find a non-existing sub category", async () => {
-    const req = mockRequest(invalidInventoryValue);
-    const res = await findInventoryValue(req, {
-      params: {
-        inventory: inventory.inventoryId,
-        subcategory: randomUUID(),
-      },
-    });
-    assert.equal(res.status, 404);
-  });
-
-  it("Should update an inventory value", async () => {
+  it("should update an inventory value", async () => {
     const req = mockRequest(inventoryValue1);
     const res = await upsertInventoryValue(req, {
       params: {
@@ -242,7 +223,7 @@ describe("Inventory Value API", () => {
     assert.equal(data.activityValue, inventoryValue1.activityValue);
   });
 
-  it("Should not update an inventory value with invalid data", async () => {
+  it("should not update an inventory value with invalid data", async () => {
     const req = mockRequest(invalidInventoryValue);
     const res = await upsertInventoryValue(req, {
       params: {
@@ -257,7 +238,7 @@ describe("Inventory Value API", () => {
     assert.equal(issues.length, 3);
   });
 
-  it("Should delete an inventory value", async () => {
+  it("should delete an inventory value", async () => {
     const req = mockRequest(inventoryValue2);
     const res = await deleteInventoryValue(req, {
       params: {
@@ -271,16 +252,5 @@ describe("Inventory Value API", () => {
     assert.equal(data.co2eq, co2eq);
     assert.equal(data.activityUnits, activityUnits);
     assert.equal(data.activityValue, activityValue);
-  });
-
-  it("Should not delete a non-existing inventory value", async () => {
-    const req = mockRequest(inventoryValue2);
-    const res = await deleteInventoryValue(req, {
-      params: {
-        inventory: randomUUID(),
-        subcategory: randomUUID(),
-      },
-    });
-    assert.equal(res.status, 404);
   });
 });

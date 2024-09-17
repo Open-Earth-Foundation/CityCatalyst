@@ -4,7 +4,6 @@ import { api, useUpdateActivityValueMutation } from "@/services/api";
 import {
   Box,
   Button,
-  CloseButton,
   Modal,
   ModalCloseButton,
   ModalContent,
@@ -14,15 +13,14 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { FC, useEffect, useMemo } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { TFunction, use } from "i18next";
+import { FC, useMemo } from "react";
+import { SubmitHandler } from "react-hook-form";
+import { TFunction } from "i18next";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { getInputMethodology } from "@/util/helpers";
 import type { SuggestedActivity } from "@/util/form-schema";
 import { getTranslationFromDict } from "@/i18n";
-import ActivityModalBody, { ExtraField } from "./activity-modal-body";
-import { Inputs } from "./activity-modal-body";
+import ActivityModalBody, { ExtraField, Inputs } from "./activity-modal-body";
 import { ActivityValue } from "@/models/ActivityValue";
 import { InventoryValue } from "@/models/InventoryValue";
 import useActivityValueValidation from "@/hooks/activity-value-form/use-activity-validation";
@@ -63,21 +61,41 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   targetActivityValue,
   resetSelectedActivityValue,
 }) => {
-  const { setError, setFocus, reset, handleSubmit, register, errors } =
-    useActivityForm({
-      targetActivityValue,
-      selectedActivity,
-      methodologyName: methodology?.id,
-    });
+  const { fields, units, title } = useMemo(() => {
+    let fields: ExtraField[] = [];
+    let units = null;
+    let title = null;
+    if (methodology?.id.includes("direct-measure")) {
+      fields = methodology.fields;
+    } else {
+      fields = methodology?.fields[0]["extra-fields"];
+      units = methodology?.fields[0].units;
+      title = methodology?.fields[0]["activity-title"];
+    }
 
-  let fields: ExtraField[] = [];
-  let units = null;
-  if (methodology?.id.includes("direct-measure")) {
-    fields = methodology.fields;
-  } else {
-    fields = methodology?.fields[0]["extra-fields"];
-    units = methodology?.fields[0].units;
-  }
+    return {
+      fields,
+      units,
+      title,
+    };
+  }, [methodology]);
+
+  const {
+    setError,
+    setValue,
+    setFocus,
+    reset,
+    handleSubmit,
+    register,
+    errors,
+    control,
+    getValues,
+  } = useActivityForm({
+    targetActivityValue,
+    selectedActivity,
+    methodologyName: methodology?.id,
+    fields,
+  });
 
   const { handleManalInputValidationError } = useActivityValueValidation({
     t,
@@ -165,11 +183,14 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         values[field.id] = (activity as any)[field.id];
       }
       if (field.units) {
-        values[`${field.id}unit`] = (activity as any)[`${field.id}unit`];
+        values[`${field.id}Unit`] = (activity as any)[`${field.id}Unit`];
       }
     });
+    if (!methodology?.id.includes("direct-measure")) {
+      values[title] = (activity as any)[title];
+      values[`${title}Unit`] = (activity as any)[`${title}Unit`];
+    }
 
-    // so the issue here is that we need to have one inventoryValue for
     const requestData = {
       activityData: methodology?.id.includes("direct-measure")
         ? {
@@ -181,7 +202,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         : { ...values },
       metadata: {
         emissionFactorType: activity.emissionFactorType,
-        totalFuelConsumption: activity.totalFuelConsumption,
       },
       ...(inventoryValue ? { inventoryValueId: inventoryValue.id } : {}),
       ...(!inventoryValue
@@ -197,7 +217,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       dataSource: {
         sourceType: "",
         dataQuality: activity.dataQuality,
-        notes: activity.sourceReference,
+        notes: activity.dataComments,
       },
       gasValues: gasValues.map(({ gas, factor, unit, ...rest }) => ({
         ...rest,
@@ -270,6 +290,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     reset({
       activity: generateDefaultActivityFormValues(
         selectedActivity as SuggestedActivity,
+        fields,
       ),
     });
   };
@@ -305,14 +326,19 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
           <ModalCloseButton marginTop="10px" />
           <ActivityModalBody
             emissionsFactorTypes={emissionsFactorTypes}
+            title={title}
             submit={submit}
             register={register}
+            control={control}
             fields={fields}
             units={units}
+            targetActivityValue={targetActivityValue}
             methodology={methodology}
             selectedActivity={selectedActivity}
+            getValues={getValues}
             t={t}
             errors={errors}
+            setValue={setValue}
           />
           <ModalFooter
             borderTopWidth="1px"

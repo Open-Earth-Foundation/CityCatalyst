@@ -133,6 +133,7 @@ jobs:
       - name: Deploying service
         run: |
           export VERSION=${REF#refs/tags/v}
+          export VERSION=${REF#refs/tags/v}
           kubectl create -f k8s/prod/cc-prod-migrate.yml -n default
           kubectl create -f k8s/prod/cc-prod-seed.yml -n default
           kubectl apply -f k8s/prod/cc-prod-sync-catalogue.yml -n default

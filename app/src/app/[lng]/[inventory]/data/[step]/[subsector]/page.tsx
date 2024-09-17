@@ -3,7 +3,6 @@
 import ActivityTab from "@/components/Tabs/Activity/activity-tab";
 import LoadingState from "@/components/loading-state";
 import { useTranslation } from "@/i18n/client";
-import { RootState } from "@/lib/store";
 import { SubSectorAttributes } from "@/models/SubSector";
 import { api, useGetInventoryValuesBySubsectorQuery } from "@/services/api";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
@@ -28,7 +27,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MdOutlineHomeWork } from "react-icons/md";
-import { useSelector } from "react-redux";
+import { toKebabCase } from "@/util/helpers";
 
 function SubSectorPage({
   params: { lng, step, inventory: inventoryId, subsector },
@@ -143,7 +142,7 @@ function SubSectorPage({
       clearTimeout(timer);
     };
   };
-  const scrollResizeHeaderThreshold = 50;
+  const scrollResizeHeaderThreshold = 170;
   const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
 
   const { data: activityData, isLoading: isActivityDataLoading } =
@@ -158,6 +157,9 @@ function SubSectorPage({
       inventoryId,
       subSectorId: subSectorData?.subsectorId,
     });
+
+  const loadingState =
+    isActivityDataLoading || isInventoryValueLoading || isLoading;
 
   return (
     <>
@@ -219,7 +221,7 @@ function SubSectorPage({
                           size={"30px"}
                         />
                       ) : (
-                        subSectorData?.subsectorName
+                        t(toKebabCase(subSectorData?.subsectorName))
                       )}
                     </Text>
                   </BreadcrumbLink>
@@ -230,7 +232,7 @@ function SubSectorPage({
           <Box display="flex">
             {isExpanded ? (
               <Box>
-                <Link href={`/${inventoryId}/data`}>
+                <Link href={`/${inventoryId}/data/${step}`}>
                   <Icon
                     as={ArrowBackIcon}
                     h="24px"
@@ -274,7 +276,7 @@ function SubSectorPage({
                   ) : subSectorData?.referenceNumber != undefined ? (
                     subSectorData?.referenceNumber +
                     " " +
-                    subSectorData?.subsectorName
+                    t(toKebabCase(subSectorData?.subsectorName))
                   ) : (
                     ""
                   )}
@@ -341,7 +343,7 @@ function SubSectorPage({
             </MotionTabList>
 
             <TabPanels>
-              {isLoading ? (
+              {loadingState ? (
                 <LoadingState />
               ) : (
                 scopes?.map((scope) => (

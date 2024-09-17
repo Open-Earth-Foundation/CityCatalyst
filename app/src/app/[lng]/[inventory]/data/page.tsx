@@ -34,7 +34,6 @@ export default function AddDataIntro({
       testId: "stationary-energy-sector-card",
       descriptionText: t("stationary-energy-details"),
       scope: t("stationary-energy-scope"),
-      buttonText: "Add Data",
       icon: MdOutlineHomeWork,
       step: 1,
     },
@@ -43,7 +42,6 @@ export default function AddDataIntro({
       testId: "transportation-sector-card",
       descriptionText: t("transportation-details"),
       scope: t("transportation-scope"),
-      buttonText: "Add Data",
       icon: FiTruck,
       step: 2,
     },
@@ -52,7 +50,6 @@ export default function AddDataIntro({
       testId: "waste-sector-card",
       descriptionText: t("waste-details"),
       scope: t("waste-scope"),
-      buttonText: "Add Data",
       icon: FiTrash2,
       step: 3,
     },
@@ -114,15 +111,7 @@ export default function AddDataIntro({
         <Text color="content.tertiary">{t("data-view-details")}</Text>
         <Flex className="space-x-4" mt={12}>
           {SECTORCARD_DATA.map(
-            ({
-              sectorName,
-              testId,
-              descriptionText,
-              scope,
-              icon,
-              buttonText,
-              step,
-            }) => (
+            ({ sectorName, testId, descriptionText, scope, icon, step }) => (
               <AddDataCard
                 testId={testId}
                 key={sectorName}
@@ -130,7 +119,7 @@ export default function AddDataIntro({
                 description={descriptionText}
                 icon={icon}
                 scopeText={scope}
-                buttonText={buttonText}
+                buttonText={t("add-data")}
                 step={step}
                 inventory={inventory}
               />

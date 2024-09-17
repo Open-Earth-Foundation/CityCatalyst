@@ -1,23 +1,35 @@
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { ActivityValue } from "@/models/ActivityValue";
-import { SuggestedActivity } from "@/util/form-schema";
+import { ExtraField, SuggestedActivity } from "@/util/form-schema";
 import { Inputs } from "@/components/Modals/activity-modal/activity-modal-body";
 
 export const generateDefaultActivityFormValues = (
   selectedActivity: SuggestedActivity,
+  fields: ExtraField[],
 ) => {
   return {
     activityType: selectedActivity?.id,
+    ...(fields
+      ? {
+          ...fields.reduce((acc: Record<string, any>, field) => {
+            acc[field.id] = field.multiselect
+              ? []
+              : field.type === "number"
+                ? 0
+                : "";
+            return acc;
+          }, {}),
+        }
+      : {}),
+
     fuelType: "",
     dataQuality: "",
-    sourceReference: "",
+    dataComments: "",
     CH4EmissionFactor: 0,
     CO2EmissionFactor: 0,
     N2OEmissionFactor: 0,
     emissionFactorType: "",
-    totalFuelConsumption: "",
-    totalFuelConsumptionUnits: "",
     co2EmissionFactorUnit: "",
     n2oEmissionFactorUnit: "",
     ch4EmissionFactorUnit: "",
@@ -38,10 +50,12 @@ const useActivityForm = ({
   targetActivityValue,
   selectedActivity,
   methodologyName,
+  fields,
 }: {
   targetActivityValue: ActivityValue | undefined;
   selectedActivity?: SuggestedActivity;
   methodologyName?: string;
+  fields: ExtraField[];
 }) => {
   const {
     register,
@@ -50,6 +64,9 @@ const useActivityForm = ({
     watch,
     setError,
     setFocus,
+    setValue,
+    control,
+    getValues,
     formState: { errors },
   } = useForm<Inputs>();
 
@@ -59,7 +76,7 @@ const useActivityForm = ({
         activity: {
           ...targetActivityValue.activityData,
           dataQuality: targetActivityValue?.dataSource?.dataQuality,
-          sourceReference: targetActivityValue?.dataSource?.notes,
+          dataComments: targetActivityValue?.dataSource?.notes,
           CH4EmissionFactor:
             methodologyName === "direct-measure"
               ? targetActivityValue?.activityData?.ch4_amount
@@ -72,11 +89,7 @@ const useActivityForm = ({
             methodologyName === "direct-measure"
               ? targetActivityValue?.activityData?.n2o_amount
               : extractGasAmount("N2O", targetActivityValue).amount,
-          emissionFactorType: targetActivityValue.metadata?.emissionFactorType, // TODO confirm the source of this value
-          totalFuelConsumption:
-            targetActivityValue?.metadata?.totalFuelConsumption, // TODO confirm the source of this value
-          totalFuelConsumptionUnits:
-            targetActivityValue?.activityData?.totalFuelConsumptionUnits,
+          emissionFactorType: targetActivityValue.metadata?.emissionFactorType,
           co2EmissionFactorUnit: extractGasAmount("CO2", targetActivityValue)
             .units,
           n2oEmissionFactorUnit: extractGasAmount("N2O", targetActivityValue)
@@ -89,6 +102,13 @@ const useActivityForm = ({
       reset({
         activity: generateDefaultActivityFormValues(
           selectedActivity as SuggestedActivity,
+          fields,
+        ),
+      });
+      reset({
+        activity: generateDefaultActivityFormValues(
+          selectedActivity as SuggestedActivity,
+          fields,
         ),
       });
     }
@@ -102,6 +122,9 @@ const useActivityForm = ({
     setError,
     setFocus,
     errors,
+    control,
+    setValue,
+    getValues,
   };
 };
 

@@ -34,6 +34,7 @@ import type {
 import { resolve } from "@/util/helpers";
 import { SuggestedActivity } from "@/util/form-schema";
 import { ActivityValue } from "@/models/ActivityValue";
+import PercentageBreakdownInput from "@/components/percentage-breakdown-input";
 
 export type EmissionFactorTypes = {
   id: string;
@@ -166,6 +167,14 @@ const ActivityModalBody = ({
                       selectedActivity={selectedActivity}
                     />
                   </FormControl>
+                )}
+                {f.type === "percentage-breakdown" && (
+                  <PercentageBreakdownInput
+                    id={f.id}
+                    label={t(f.id)}
+                    register={register}
+                    error={errors?.activity?.[f.id]}
+                  />
                 )}
                 {f.type === "text" && (
                   <FormControl className="w-full">

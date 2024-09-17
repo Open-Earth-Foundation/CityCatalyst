@@ -108,8 +108,13 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                   pointerEvents="none"
                   color="content.tertiary"
                   pr="16px"
+                  mt={1}
                 >
-                  {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                  {isOpen ? (
+                    <ChevronUpIcon boxSize="6" />
+                  ) : (
+                    <ChevronDownIcon boxSize="6" />
+                  )}
                 </InputRightElement>
               </InputGroup>
             </PopoverTrigger>
@@ -141,8 +146,9 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                         isDisabled ? "content.tertiary" : "content.secondary"
                       }
                       placeholder="10%"
-                      minW={16}
-                      maxW={32}
+                      w="116px"
+                      px={4}
+                      py={3}
                       borderWidth={error ? "1px" : 0}
                       borderColor={error ? "sentiment.negativeDefault" : ""}
                       bgColor="base.light"
@@ -154,17 +160,25 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                     />
                   </HStack>
                 ))}
-                <HStack>
+                <HStack color="content.link">
                   <Text
+                    flexGrow={1}
                     casing="uppercase"
                     fontSize="body.md"
-                    fontWeight="normal"
+                    fontWeight={700}
                     letterSpacing="wide"
-                    flexGrow={1}
                   >
-                    Total
+                    {t("total")}
                   </Text>
-                  <Text>{totalPercent}%</Text>
+                  <Text
+                    fontSize="body.md"
+                    fontWeight={700}
+                    w="116px"
+                    pl={6}
+                    letterSpacing="wide"
+                  >
+                    {totalPercent}%
+                  </Text>
                 </HStack>
               </PopoverBody>
             </PopoverContent>

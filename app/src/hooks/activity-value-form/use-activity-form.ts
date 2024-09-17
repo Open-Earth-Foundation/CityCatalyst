@@ -104,14 +104,9 @@ const useActivityForm = ({
           fields,
         ),
       });
-      reset({
-        activity: generateDefaultActivityFormValues(
-          selectedActivity as SuggestedActivity,
-          fields,
-        ),
-      });
     }
-  }, [targetActivityValue, selectedActivity]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetActivityValue, selectedActivity, methodologyName]);
 
   return {
     register,

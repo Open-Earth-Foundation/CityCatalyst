@@ -797,5 +797,12 @@
   "units-liters": "Liters (l)",
   "units-other": "Other",
   "units-terajoules": "Terajoules (TJ)",
-  "select-unit": "Select Unit"
+  "select-unit": "Select Unit",
+
+  "food": "Food",
+  "garden": "Garden",
+  "paper": "Paper",
+  "wood": "Wood",
+  "textiles": "Textiles",
+  "industrial": "Industrial"
 }

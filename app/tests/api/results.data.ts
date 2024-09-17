@@ -13,7 +13,6 @@ export const inventoryValues = [
     co2eq: BigInt(40399),
     subCategoryId: "58a9822a-fae0-3831-9f8b-4ec1fb48a54f",
     inventoryId: inventoryId,
-    datasourceId: "814d43fd-42bf-49f9-a10f-2c5486cf0344",
     co2eqYears: 100,
     gpcReferenceNumber: "I.1.1",
     sectorId: "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",

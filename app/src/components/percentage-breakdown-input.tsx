@@ -120,8 +120,6 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
             </PopoverTrigger>
             <PopoverContent w="full">
               <PopoverArrow />
-              <PopoverCloseButton />
-              <PopoverHeader>Percentage breakdown</PopoverHeader>
               <PopoverBody w="full" className="space-y-6 py-6">
                 {breakdownCategories.map((category) => (
                   <HStack key={category.id}>

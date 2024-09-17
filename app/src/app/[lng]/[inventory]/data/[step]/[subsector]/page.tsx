@@ -142,7 +142,7 @@ function SubSectorPage({
       clearTimeout(timer);
     };
   };
-  const scrollResizeHeaderThreshold = 50;
+  const scrollResizeHeaderThreshold = 170;
   const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
 
   const { data: activityData, isLoading: isActivityDataLoading } =
@@ -232,7 +232,7 @@ function SubSectorPage({
           <Box display="flex">
             {isExpanded ? (
               <Box>
-                <Link href={`/${inventoryId}/data`}>
+                <Link href={`/${inventoryId}/data/${step}`}>
                   <Icon
                     as={ArrowBackIcon}
                     h="24px"

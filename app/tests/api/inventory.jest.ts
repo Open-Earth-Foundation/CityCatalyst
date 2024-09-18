@@ -144,14 +144,10 @@ describe("Inventory API", () => {
       subCategoryId: subCategory.subcategoryId,
       ...inventoryValue,
     });
-    console.log("inventoryValueDb.id", JSON.stringify(inventoryValueDb.id)) // TODO NINA
-    try {
-      await db.models.ActivityValue.bulkCreate(activityValues.map(i => ({
+
+    await db.models.ActivityValue.bulkCreate(activityValues.map(i => ({
         ...i, inventoryValueId: inventoryValueDb.id, inventoryId: inventory.inventoryId, id: randomUUID(),
       })));
-    } catch (e) {
-      console.log("e", JSON.stringify(e)) // TODO NINA
-    }
     await db.models.Population.upsert({
       cityId: city.cityId!,
       year: inventoryData.year,

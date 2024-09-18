@@ -18,8 +18,8 @@ export const GET = apiHandler(async (req, { params }) => {
     throw new createHttpError.NotFound("Inventory not found");
   }
 
-  // @ts-ignore
-  const { totalEmissions } = await ActivityValue.findOne({
+  // TODO [ON-2429]: Save total emissions for inventory every time activity data is modified
+  const result = (await ActivityValue.findOne({
     attributes: [
       [fn("SUM", col("ActivityValue.co2eq")), "totalEmissions"]
     ],
@@ -33,9 +33,9 @@ export const GET = apiHandler(async (req, { params }) => {
       required: true
     }],
     raw: true
-  });
+  }))! as unknown as {totalEmissions: number};
 
-  inventory.totalEmissions = totalEmissions;
+  inventory.totalEmissions = result.totalEmissions;
   return NextResponse.json({ data: inventory });
 });
 

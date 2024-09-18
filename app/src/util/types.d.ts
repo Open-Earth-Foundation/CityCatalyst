@@ -137,6 +137,7 @@ interface RequiredScopesResponse {
 }
 
 interface TopEmission {
+  scopeName: string;
   co2eq: bigint;
   sectorName: string;
   subsectorName: string;

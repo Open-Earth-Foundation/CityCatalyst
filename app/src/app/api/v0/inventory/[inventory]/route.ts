@@ -5,6 +5,9 @@ import { db } from "@/models";
 import createHttpError from "http-errors";
 import UserService from "@/backend/UserService";
 import { createInventoryRequest } from "@/util/validation";
+import { ActivityValue } from "@/models/ActivityValue";
+import { col, fn } from "sequelize";
+import { InventoryValue } from "@/models/InventoryValue";
 
 export const GET = apiHandler(async (req, { params }) => {
   const { inventory: inventoryId } = params;
@@ -15,6 +18,24 @@ export const GET = apiHandler(async (req, { params }) => {
     throw new createHttpError.NotFound("Inventory not found");
   }
 
+  // @ts-ignore
+  const { totalEmissions } = await ActivityValue.findOne({
+    attributes: [
+      [fn("SUM", col("ActivityValue.co2eq")), "totalEmissions"]
+    ],
+    include: [{
+      model: InventoryValue,
+      as: "inventoryValue",
+      attributes: [],
+      where: {
+        inventory_id: params.inventory
+      },
+      required: true
+    }],
+    raw: true
+  });
+
+  inventory.totalEmissions = totalEmissions;
   return NextResponse.json({ data: inventory });
 });
 

@@ -6,7 +6,7 @@ import createHttpError from "http-errors";
 import UserService from "@/backend/UserService";
 import { createInventoryRequest } from "@/util/validation";
 import { ActivityValue } from "@/models/ActivityValue";
-import { col, fn } from "sequelize";
+import { col, fn, QueryTypes } from "sequelize";
 import { InventoryValue } from "@/models/InventoryValue";
 
 export const GET = apiHandler(async (req, { params }) => {
@@ -19,23 +19,20 @@ export const GET = apiHandler(async (req, { params }) => {
   }
 
   // TODO [ON-2429]: Save total emissions for inventory every time activity data is modified
-  const result = (await ActivityValue.findOne({
-    attributes: [
-      [fn("SUM", col("ActivityValue.co2eq")), "totalEmissions"]
-    ],
-    include: [{
-      model: InventoryValue,
-      as: "inventoryValue",
-      attributes: [],
-      where: {
-        inventory_id: params.inventory
-      },
-      required: true
-    }],
-    raw: true
-  }))! as unknown as {totalEmissions: number};
+  const rawQuery = `  
+    SELECT SUM(av.co2eq)  
+    FROM "ActivityValue" av  
+    INNER JOIN "InventoryValue" iv ON av.inventory_value_id = iv.id  
+    WHERE iv.inventory_id = :inventoryId  
+  `;
 
-  inventory.totalEmissions = result.totalEmissions;
+  const [{sum}] = await db.sequelize!.query(rawQuery, {
+    replacements: { inventoryId: params.inventory },
+    type: QueryTypes.SELECT,
+    raw: true,
+  }) as unknown as { sum: number }[];
+
+  inventory.totalEmissions = sum;
   return NextResponse.json({ data: inventory });
 });
 

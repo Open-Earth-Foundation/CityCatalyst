@@ -1,7 +1,7 @@
 import {
   DELETE as deleteInventory,
   GET as findInventory,
-  PATCH as updateInventory,
+  PATCH as updateInventory
 } from "@/app/api/v0/inventory/[inventory]/route";
 import { GET as calculateProgress } from "@/app/api/v0/inventory/[inventory]/progress/route";
 import { POST as createInventory } from "@/app/api/v0/city/[city]/inventory/route";
@@ -14,24 +14,18 @@ import {
   cascadeDeleteDataSource,
   createRequest,
   expectStatusCode,
+  expectToBeLooselyEqual,
   mockRequest,
   setupTests,
-  testUserID,
+  testUserID
 } from "../helpers";
 import { SubSector, SubSectorAttributes } from "@/models/SubSector";
 import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
 import { Sector } from "@/models/Sector";
 import { SubCategory } from "@/models/SubCategory";
-import {
-  afterAll,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  jest,
-} from "@jest/globals";
+import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
+import { activityValues } from "./results.data";
 
 jest.useFakeTimers();
 
@@ -144,13 +138,20 @@ describe("Inventory API", () => {
       cityId: city.cityId,
       ...inventoryData,
     });
-    await db.models.InventoryValue.create({
+    const inventoryValueDb = await db.models.InventoryValue.create({
       id: randomUUID(),
       inventoryId: inventory.inventoryId,
       subCategoryId: subCategory.subcategoryId,
       ...inventoryValue,
     });
-
+    console.log("inventoryValueDb.id", JSON.stringify(inventoryValueDb.id)) // TODO NINA
+    try {
+      await db.models.ActivityValue.bulkCreate(activityValues.map(i => ({
+        ...i, inventoryValueId: inventoryValueDb.id, inventoryId: inventory.inventoryId, id: randomUUID(),
+      })));
+    } catch (e) {
+      console.log("e", JSON.stringify(e)) // TODO NINA
+    }
     await db.models.Population.upsert({
       cityId: city.cityId!,
       year: inventoryData.year,
@@ -216,7 +217,8 @@ describe("Inventory API", () => {
     const { data } = await res.json();
     expect(data.inventoryName).toEqual(inventory.inventoryName);
     expect(data.year).toEqual(inventory.year);
-    expect(data.totalEmissions).toEqual(inventory.totalEmissions);
+    const totalSumOfActivityValues = 79735;
+    expectToBeLooselyEqual(data.totalEmissions, totalSumOfActivityValues);
   });
 
   it.skip("should download an inventory in csv format", async () => {

@@ -10,7 +10,7 @@
             "unique-by": [
               "residential-building-type",
               "residential-building-fuel-type",
-              "residential-buildings-fuel-source"
+              "data-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
             "extra-fields": [
@@ -32,7 +32,7 @@
                 ]
               },
               {
-                "id": "residential-buildings-fuel-source",
+                "id": "data-source",
                 "type": "text"
               }
             ],
@@ -91,7 +91,7 @@
           "exclusive": "fuel-type-all"
         },
         {
-          "id": "residential-buildings-fuel-source",
+          "id": "data-source",
           "type": "text"
         }
       ]
@@ -108,7 +108,7 @@
             "unique-by": [
               "residential-building-type",
               "residential-building-energy-usage",
-              "residential-buildings-energy-source"
+              "data-source"
             ],
             "activity-title": "activity-energy-consumption",
             "extra-fields": [
@@ -132,7 +132,7 @@
                 "exclusive": "energy-usage-all"
               },
               {
-                "id": "residential-buildings-energy-source",
+                "id": "data-source",
                 "type": "text"
               }
             ],
@@ -185,7 +185,7 @@
           "exclusive": "energy-usage-all"
         },
         {
-          "id": "residential-buildings-energy-source",
+          "id": "data-source",
           "type": "text"
         }
       ]
@@ -202,7 +202,7 @@
             "unique-by": [
               "commercial-building-type",
               "commercial-building-fuel-type",
-              "commercial-buildings-fuel-source"
+              "data-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
             "extra-fields": [
@@ -230,7 +230,7 @@
                 ]
               },
               {
-                "id": "commercial-buildings-fuel-source",
+                "id": "data-source",
                 "type": "text"
               }
             ],
@@ -313,7 +313,7 @@
           "exclusive": "fuel-type-all"
         },
         {
-          "id": "commercial-buildings-fuel-source",
+          "id": "data-source",
           "type": "text"
         }
       ]
@@ -330,7 +330,7 @@
             "unique-by": [
               "commercial-building-type",
               "commercial-building-energy-usage",
-              "commercial-buildings-energy-source"
+              "data-source"
             ],
             "activity-title": "activity-energy-consumption",
             "extra-fields": [
@@ -361,7 +361,7 @@
                 "exclusive": "energy-usage-all"
               },
               {
-                "id": "commercial-buildings-energy-source",
+                "id": "data-source",
                 "type": "text"
               }
             ],
@@ -438,7 +438,7 @@
           ]
         },
         {
-          "id": "commercial-buildings-energy-source",
+          "id": "data-source",
           "type": "text"
         }
       ]
@@ -455,7 +455,7 @@
             "unique-by": [
               "manufacturing-and-construction-type",
               "manufacturing-and-construction-fuel-type",
-              "manufacturing-and-construction-fuel-source"
+              "data-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
             "extra-fields": [
@@ -508,7 +508,7 @@
                 ]
               },
               {
-                "id": "fuel-source",
+                "id": "data-source",
                 "type": "text"
               }
             ],
@@ -616,7 +616,7 @@
           "exclusive": "fuel-type-all"
         },
         {
-          "id": "manufacturing-and-construction-fuel-source",
+          "id": "data-source",
           "type": "text"
         }
       ]
@@ -633,7 +633,7 @@
             "unique-by": [
               "manufacturing-and-construction-type",
               "manufacturing-and-construction-energy-usage",
-              "manufacturing-and-construction-energy-source"
+              "data-source"
             ],
             "activity-title": "activity-energy-consumption",
             "extra-fields": [
@@ -675,7 +675,7 @@
                 "exclusive": "energy-usage-all"
               },
               {
-                "id": "manufacturing-and-construction-energy-source",
+                "id": "data-source",
                 "type": "text"
               }
             ],
@@ -764,7 +764,7 @@
           "exclusive": "energy-usage-all"
         },
         {
-          "id": "manufacturing-and-construction-energy-source",
+          "id": "data-source",
           "type": "text"
         }
       ]
@@ -781,7 +781,7 @@
             "unique-by": [
               "energy-industries-type",
               "energy-industries-fuel-type",
-              "energy-industries-fuel-source"
+              "data-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
             "extra-fields": [
@@ -819,7 +819,7 @@
                 ]
               },
               {
-                "id": "fuel-source",
+                "id": "data-source",
                 "type": "text"
               }
             ],
@@ -921,7 +921,7 @@
           "exclusive": "fuel-type-all"
         },
         {
-          "id": "energy-industries-fuel-source",
+          "id": "data-source",
           "type": "text"
         }
       ]
@@ -938,7 +938,7 @@
             "unique-by": [
               "energy-industries-type",
               "energy-industries-energy-usage",
-              "energy-industries-energy-source"
+              "data-source"
             ],
             "activity-title": "activity-energy-consumption",
             "extra-fields": [
@@ -971,7 +971,7 @@
                 "exclusive": "energy-usage-all"
               },
               {
-                "id": "energy-industries-energy-source",
+                "id": "data-source",
                 "type": "text"
               }
             ],
@@ -1060,7 +1060,7 @@
           "exclusive": "energy-usage-all"
         },
         {
-          "id": "energy-industries-energy-source",
+          "id": "data-source",
           "type": "text"
         }
       ]
@@ -1077,7 +1077,7 @@
             "unique-by": [
               "agriculture-forestry-fishing-activities-type",
               "agriculture-forestry-fishing-activities-fuel-type",
-              "agriculture-forestry-fishing-activities-fuel-source"
+              "data-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
             "extra-fields": [
@@ -1105,7 +1105,7 @@
                 ]
               },
               {
-                "id": "agriculture-forestry-fishing-activities-fuel-source",
+                "id": "data-source",
                 "type": "text"
               }
             ],
@@ -1179,7 +1179,7 @@
           "exclusive": "fuel-type-all"
         },
         {
-          "id": "agriculture-forestry-fishing-activities-fuel-source",
+          "id": "data-source",
           "type": "text"
         }
       ]
@@ -1196,7 +1196,7 @@
             "unique-by": [
               "agriculture-forestry-fishing-activities-type",
               "agriculture-forestry-fishing-activities-energy-usage",
-              "agriculture-forestry-fishing-activities-energy-source"
+              "data-source"
             ],
             "activity-title": "activity-energy-consumption",
             "extra-fields": [
@@ -1226,7 +1226,7 @@
                 "exclusive": "energy-usage-all"
               },
               {
-                "id": "agriculture-forestry-fishing-activities-energy-source",
+                "id": "data-source",
                 "type": "text"
               }
             ],
@@ -1294,7 +1294,7 @@
           "exclusive": "energy-usage-all"
         },
         {
-          "id": "agriculture-forestry-fishing-activities-energy-source",
+          "id": "data-source",
           "type": "text"
         }
       ]
@@ -1311,7 +1311,7 @@
             "unique-by": [
               "non-specific-sources-type",
               "non-specific-sources-fuel-type",
-              "non-specific-sources-fuel-source"
+              "data-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
             "extra-fields": [
@@ -1340,7 +1340,7 @@
                 ]
               },
               {
-                "id": "non-specific-sources-fuel-source",
+                "id": "data-source",
                 "type": "text"
               }
             ],
@@ -1411,7 +1411,7 @@
           "exclusive": "fuel-type-all"
         },
         {
-          "id": "non-specific-sources-fuel-source",
+          "id": "data-source",
           "type": "text"
         }
       ]
@@ -1425,7 +1425,7 @@
         "activities": [
           {
             "id": "energy-consumption-non-specific-sources-activity",
-            "unique-by": ["type", "energy-usage", "energy-source"],
+            "unique-by": ["type", "energy-usage", "data-source"],
             "activity-title": "activity-energy-consumption",
             "extra-fields": [
               {
@@ -1449,7 +1449,7 @@
                 "exclusive": "energy-usage-all"
               },
               {
-                "id": "non-specific-sources-energy-source",
+                "id": "data-source",
                 "type": "text"
               }
             ],
@@ -1512,7 +1512,7 @@
           "exclusive": "energy-usage-all"
         },
         {
-          "id": "non-specific-sources-energy-source",
+          "id": "data-source",
           "type": "text"
         }
       ]
@@ -1745,7 +1745,7 @@
             "unique-by": [
               "on-road-transport-vehicle-type",
               "on-road-transport-fuel-type",
-              "on-road-transport-fuel-source"
+              "data-source"
             ],
             "activity-title": "activity-total-fuel-sales",
             "extra-fields": [
@@ -1771,7 +1771,7 @@
                 "multiselect": true
               },
               {
-                "id": "on-road-transport-fuel-source",
+                "id": "data-source",
                 "type": "text"
               }
             ],
@@ -1843,7 +1843,7 @@
             "id": "geographic-on-road-transport-activity",
             "unique-by": [
               "on-road-transport-vehicle-type",
-              "on-road-transport-fuel-source"
+              "data-source"
             ],
             "activity-title": "total-distance-travelled-in-boundary",
             "units": ["units-kilometers", "units-miles"],
@@ -1950,7 +1950,7 @@
           "multiselect": true
         },
         {
-          "id": "on-road-transport-fuel-source",
+          "id": "data-source",
           "type": "text"
         }
       ]
@@ -2051,7 +2051,7 @@
             "unique-by": [
               "railways-vehicle-type",
               "railways-fuel-type",
-              "railways-fuel-source"
+              "data-source"
             ],
             "activity-title": "activity-total-fuel-sales",
             "extra-fields": [
@@ -2077,7 +2077,7 @@
                 "exclusive": "vehicle-type-all"
               },
               {
-                "id": "railways-fuel-source",
+                "id": "data-source",
                 "type": "text"
               }
             ],
@@ -2232,7 +2232,7 @@
           "multiselect": true
         },
         {
-          "id": "railways-fuel-source",
+          "id": "data-source",
           "type": "text"
         }
       ]
@@ -2330,7 +2330,7 @@
             "unique-by": [
               "waterborne-navigation-vehicle-type",
               "waterborne-navigation-fuel-type",
-              "waterborne-navigation-fuel-source"
+              "data-source"
             ],
             "activity-title": "activity-total-fuel-sales",
             "extra-fields": [
@@ -2355,7 +2355,7 @@
                 "exclusive": "vehicle-type-all"
               },
               {
-                "id": "waterborne-navigation-fuel-source",
+                "id": "data-source",
                 "type": "text"
               }
             ],
@@ -2501,7 +2501,7 @@
           "multiselect": true
         },
         {
-          "id": "waterborne-navigation-fuel-source",
+          "id": "data-source",
           "type": "text"
         }
       ]
@@ -2597,7 +2597,7 @@
             "unique-by": [
               "aviation-vehicle-type",
               "aviation-fuel-type",
-              "aviation-fuel-source"
+              "data-source"
             ],
             "activity-title": "activity-total-fuel-sales",
             "extra-fields": [
@@ -2625,7 +2625,7 @@
                 "exclusive": "vehicle-type-all"
               },
               {
-                "id": "aviation-fuel-source",
+                "id": "data-source",
                 "type": "text"
               }
             ],
@@ -2773,7 +2773,7 @@
           "multiselect": true
         },
         {
-          "id": "aviation-fuel-source",
+          "id": "data-source",
           "type": "text"
         }
       ]
@@ -2872,7 +2872,7 @@
             "unique-by": [
               "off-road-transport-vehicle-type",
               "off-road-transport-fuel-type",
-              "off-road-transport-fuel-source"
+              "data-source"
             ],
             "activity-title": "activity-total-fuel-sales",
             "extra-fields": [
@@ -2898,7 +2898,7 @@
                 "exclusive": "vehicle-type-all"
               },
               {
-                "id": "off-road-transport-fuel-source",
+                "id": "data-source",
                 "type": "text"
               }
             ],
@@ -2968,7 +2968,7 @@
           "multiselect": true
         },
         {
-          "id": "off-road-transport-fuel-source",
+          "id": "data-source",
           "type": "text"
         }
       ]

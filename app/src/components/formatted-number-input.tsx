@@ -5,22 +5,31 @@ import {
   InputRightAddon,
   NumberInput,
   NumberInputField,
+  NumberInputProps,
 } from "@chakra-ui/react";
 
-function FormattedNumberInput({
-  control,
-  name,
-  defaultValue = 0,
-  isDisabled = false,
-  children, // Accepts children for InputRightAddon
-  ...rest
-}: {
+interface FormattedNumberInputProps extends NumberInputProps {
   control: Control<any, any>;
   name: string;
   defaultValue?: number;
   isDisabled?: boolean;
+  placeholder?: string;
   children?: React.ReactNode;
-}) {
+  miniAddon?: boolean;
+  testId?: string;
+}
+
+function FormattedNumberInput({
+  control,
+  testId,
+  name,
+  defaultValue = 0,
+  isDisabled = false,
+  children, // Accepts children for InputRightAddon
+  placeholder,
+  miniAddon,
+  ...rest
+}: FormattedNumberInputProps) {
   const format = (nval: number | string) => {
     let val = parseInt(nval as string);
     if (val === undefined || val === null || isNaN(val)) return "";
@@ -48,6 +57,8 @@ function FormattedNumberInput({
             {...rest}
           >
             <NumberInputField
+              data-testId={testId}
+              placeholder={placeholder}
               h="48px"
               type="text" // Use text type to allow formatted input
               shadow="1dp"
@@ -68,9 +79,8 @@ function FormattedNumberInput({
               zIndex={10}
               pr={2}
               pl={2}
-              w="auto"
-              maxW="100px"
-              overflowX="hidden"
+              w={miniAddon ? "100px" : "auto"}
+              overflowX={miniAddon ? "hidden" : "visible"}
             >
               {children}
             </InputRightAddon>

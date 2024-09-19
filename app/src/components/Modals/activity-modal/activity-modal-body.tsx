@@ -7,10 +7,7 @@ import {
   HStack,
   Input,
   InputGroup,
-  InputRightAddon,
   ModalBody,
-  NumberInput,
-  NumberInputField,
   Select,
   Text,
   Textarea,
@@ -224,65 +221,30 @@ const ActivityModalBody = ({
                   <>
                     <FormControl className="w-full">
                       <FormLabel className="truncate">{f.id}</FormLabel>
-                      <InputGroup>
-                        <NumberInput defaultValue={0} w="full">
-                          <NumberInputField
-                            type="number"
-                            borderRadius="4px"
-                            placeholder={t("activity-data-amount-placeholder")}
-                            borderRightRadius={f.units ? 0 : "4px"}
-                            h="48px"
-                            shadow="1dp"
-                            borderWidth={
-                              errors?.[`activity.${f.id}`] ? "1px" : 0
-                            }
-                            border="inputBox"
-                            borderColor={
-                              errors?.activity?.totalFuelConsumption
-                                ? "sentiment.negativeDefault"
-                                : ""
-                            }
-                            background={
-                              errors?.activity?.totalFuelConsumption
-                                ? "sentiment.negativeOverlay"
-                                : ""
-                            }
-                            bgColor="base.light"
-                            _focus={{
-                              borderWidth: "1px",
-                              shadow: "none",
-                              borderColor: "content.link",
-                            }}
-                            {...register(`activity.${f.id}` as any)}
-                          />
-                        </NumberInput>
+                      <FormattedNumberInput
+                        placeholder={t("activity-data-amount-placeholder")}
+                        control={control}
+                        name={`activity.${f.id}`}
+                        w="full"
+                      >
                         {f.units && (
-                          <InputRightAddon
-                            className="border-l-2"
-                            pl={4}
-                            pr={0}
-                            bgColor="base.light"
-                            h="48px"
-                            shadow="1dp"
+                          <Select
+                            variant="unstyled"
+                            {...register(`activity.${f.id}Unit` as any, {
+                              required:
+                                f.required === false
+                                  ? false
+                                  : t("value-required"),
+                            })}
                           >
-                            <Select
-                              variant="unstyled"
-                              {...register(`activity.${f.id}Unit` as any, {
-                                required:
-                                  f.required === false
-                                    ? false
-                                    : t("value-required"),
-                              })}
-                            >
-                              {f.units?.map((item: string) => (
-                                <option key={item} value={item}>
-                                  {t(item)}
-                                </option>
-                              ))}
-                            </Select>
-                          </InputRightAddon>
+                            {f.units?.map((item: string) => (
+                              <option key={item} value={item}>
+                                {t(item)}
+                              </option>
+                            ))}
+                          </Select>
                         )}
-                      </InputGroup>
+                      </FormattedNumberInput>
                       {(errors?.[`activity.${f.id}`] as any) ? (
                         <Box
                           display="flex"
@@ -320,6 +282,7 @@ const ActivityModalBody = ({
                     control={control}
                     name={`activity.${title}`}
                     defaultValue={0}
+                    miniAddon
                   >
                     <Controller
                       control={control}
@@ -340,65 +303,6 @@ const ActivityModalBody = ({
                       )}
                     />
                   </FormattedNumberInput>
-                  {/*  <NumberInput defaultValue={0} w="full">*/}
-                  {/*    <NumberInputField*/}
-                  {/*      borderRadius="4px"*/}
-                  {/*      placeholder={t("activity-data-amount-placeholder")}*/}
-                  {/*      borderRightRadius={0}*/}
-                  {/*      h="48px"*/}
-                  {/*      shadow="1dp"*/}
-                  {/*      borderWidth={*/}
-                  {/*        (errors?.activity?.[title] as any) ? "1px" : 0*/}
-                  {/*      }*/}
-                  {/*      border="inputBox"*/}
-                  {/*      borderColor={*/}
-                  {/*        (errors?.activity?.[title] as any)*/}
-                  {/*          ? "sentiment.negativeDefault"*/}
-                  {/*          : ""*/}
-                  {/*      }*/}
-                  {/*      background={*/}
-                  {/*        (errors?.activity?.[title] as any)*/}
-                  {/*          ? "sentiment.negativeOverlay"*/}
-                  {/*          : ""*/}
-                  {/*      }*/}
-                  {/*      bgColor="base.light"*/}
-                  {/*      _focus={{*/}
-                  {/*        borderWidth: "1px",*/}
-                  {/*        shadow: "none",*/}
-                  {/*        borderColor: "content.link",*/}
-                  {/*      }}*/}
-                  {/*      {...register(`activity.${title}` as any)}*/}
-                  {/*    />*/}
-                  {/*  </NumberInput>*/}
-                  {/*  <InputRightAddon*/}
-                  {/*    className="border-l-2"*/}
-                  {/*    pl={4}*/}
-                  {/*    pr={0}*/}
-                  {/*    w="100px"*/}
-                  {/*    bgColor="base.light"*/}
-                  {/*    h="48px"*/}
-                  {/*    overflowX="hidden"*/}
-                  {/*    shadow="1dp"*/}
-                  {/*  >*/}
-                  {/*    <Controller*/}
-                  {/*      control={control}*/}
-                  {/*      name={`activity.${title}Unit` as any}*/}
-                  {/*      render={({ field }) => (*/}
-                  {/*        <Select*/}
-                  {/*          placeholder={t("select-unit")}*/}
-                  {/*          variant="unstyled"*/}
-                  {/*          {...field}*/}
-                  {/*          onChange={(e) => field.onChange(e.target.value)}*/}
-                  {/*        >*/}
-                  {/*          {units?.map((item: string) => (*/}
-                  {/*            <option key={item} value={item}>*/}
-                  {/*              {t(item)}*/}
-                  {/*            </option>*/}
-                  {/*          ))}*/}
-                  {/*        </Select>*/}
-                  {/*      )}*/}
-                  {/*    />*/}
-                  {/*  </InputRightAddon>*/}
                 </InputGroup>
 
                 {(errors?.activity?.[title] as any) ? (
@@ -490,6 +394,7 @@ const ActivityModalBody = ({
                     {t("co2-emission-factor")}
                   </FormLabel>
                   <FormattedNumberInput
+                    miniAddon
                     control={control}
                     name={`activity.CO2EmissionFactor`}
                     defaultValue={0}
@@ -511,6 +416,7 @@ const ActivityModalBody = ({
                   {t("n2o-emission-factor")}
                 </FormLabel>
                 <FormattedNumberInput
+                  miniAddon
                   control={control}
                   name={`activity.N2OEmissionFactor`}
                   defaultValue={0}
@@ -532,6 +438,7 @@ const ActivityModalBody = ({
                 </FormLabel>
                 <FormattedNumberInput
                   control={control}
+                  miniAddon
                   name={`activity.CH4EmissionFactor`}
                   defaultValue={0}
                   isDisabled={isEmissionFactorInputDisabled}
@@ -554,95 +461,142 @@ const ActivityModalBody = ({
               <FormLabel color="content.secondary">
                 {t("emissions-value-co2")}
               </FormLabel>
-              <InputGroup w="full" shadow="1dp" borderRadius={"8px"}>
-                {/* TODO translate values and use internal value for checking */}
-                <NumberInput w="full" defaultValue={0} min={0}>
-                  <NumberInputField
-                    data-testid="co2-emission-factor"
-                    type="number"
-                    h="48px"
-                    placeholder="Enter emissions value"
-                    {...register("activity.CO2EmissionFactor")}
-                    bgColor="base.light"
-                    pos="relative"
-                    zIndex={999}
-                  />
-                </NumberInput>
-                <InputRightAddon
-                  bgColor="base.light"
-                  color="content.tertiary"
-                  h="48px"
-                  pos="relative"
-                  zIndex={10}
-                  {...register("activity.co2EmissionFactorUnit")}
+              <FormattedNumberInput
+                testId="co2-emission-factor"
+                control={control}
+                miniAddon
+                name={`activity.CO2EmissionFactor`}
+                defaultValue={0}
+              >
+                <Text
+                  isTruncated // Truncate the text with an ellipsis
+                  noOfLines={1}
+                  w="full"
+                  textAlign="center"
                 >
                   tCO2
-                </InputRightAddon>
-              </InputGroup>
+                </Text>
+              </FormattedNumberInput>
+              {/*<InputGroup w="full" shadow="1dp" borderRadius={"8px"}>*/}
+              {/*  <NumberInput w="full" defaultValue={0} min={0}>*/}
+              {/*    <NumberInputField*/}
+              {/*      data-testid="co2-emission-factor"*/}
+              {/*      type="number"*/}
+              {/*      h="48px"*/}
+              {/*      placeholder="Enter emissions value"*/}
+              {/*      {...register("activity.CO2EmissionFactor")}*/}
+              {/*      bgColor="base.light"*/}
+              {/*      pos="relative"*/}
+              {/*      zIndex={999}*/}
+              {/*    />*/}
+              {/*  </NumberInput>*/}
+              {/*  <InputRightAddon*/}
+              {/*    bgColor="base.light"*/}
+              {/*    color="content.tertiary"*/}
+              {/*    h="48px"*/}
+              {/*    pos="relative"*/}
+              {/*    zIndex={10}*/}
+              {/*    {...register("activity.co2EmissionFactorUnit")}*/}
+              {/*  >*/}
+              {/*    tCO2*/}
+              {/*  </InputRightAddon>*/}
+              {/*</InputGroup>*/}
             </FormControl>
             <FormControl w="full">
               <FormLabel color="content.secondary">
                 {t("emissions-value-n2o")}
               </FormLabel>
-              <InputGroup w="full" shadow="1dp" borderRadius={"8px"}>
-                {/* TODO translate values and use internal value for checking */}
-                <NumberInput w="full" defaultValue={0} min={0}>
-                  <NumberInputField
-                    data-testid="n2o-emission-factor"
-                    type="number"
-                    h="48px"
-                    borderRightRadius={0}
-                    placeholder="Enter emissions value"
-                    {...register("activity.N2OEmissionFactor")}
-                    bgColor="base.light"
-                    pos="relative"
-                    zIndex={999}
-                  />
-                </NumberInput>
-                <InputRightAddon
-                  bgColor="base.light"
-                  color="content.tertiary"
-                  borderLeft={"none"}
-                  h="48px"
-                  pos="relative"
-                  zIndex={10}
-                  {...register("activity.n2oEmissionFactorUnit")}
+              <FormattedNumberInput
+                testId="co2-emission-factor"
+                control={control}
+                miniAddon
+                name={`activity.N2OEmissionFactor`}
+                defaultValue={0}
+              >
+                <Text
+                  isTruncated // Truncate the text with an ellipsis
+                  noOfLines={1}
+                  w="full"
+                  textAlign="center"
                 >
                   tN2O
-                </InputRightAddon>
-              </InputGroup>
+                </Text>
+              </FormattedNumberInput>
+              {/*<InputGroup w="full" shadow="1dp" borderRadius={"8px"}>*/}
+              {/*  /!* TODO translate values and use internal value for checking *!/*/}
+              {/*  <NumberInput w="full" defaultValue={0} min={0}>*/}
+              {/*    <NumberInputField*/}
+              {/*      data-testid="n2o-emission-factor"*/}
+              {/*      type="number"*/}
+              {/*      h="48px"*/}
+              {/*      borderRightRadius={0}*/}
+              {/*      placeholder="Enter emissions value"*/}
+              {/*      {...register("activity.N2OEmissionFactor")}*/}
+              {/*      bgColor="base.light"*/}
+              {/*      pos="relative"*/}
+              {/*      zIndex={999}*/}
+              {/*    />*/}
+              {/*  </NumberInput>*/}
+              {/*  <InputRightAddon*/}
+              {/*    bgColor="base.light"*/}
+              {/*    color="content.tertiary"*/}
+              {/*    borderLeft={"none"}*/}
+              {/*    h="48px"*/}
+              {/*    pos="relative"*/}
+              {/*    zIndex={10}*/}
+              {/*    {...register("activity.n2oEmissionFactorUnit")}*/}
+              {/*  >*/}
+              {/*    tN2O*/}
+              {/*  </InputRightAddon>*/}
+              {/*</InputGroup>*/}
             </FormControl>
             <FormControl w="full">
               <FormLabel color="content.secondary">
                 {t("emissions-value-ch4")}
               </FormLabel>
-              <InputGroup w="full" shadow="1dp" borderRadius={"8px"}>
-                {/* TODO translate values and use internal value for checking */}
-                <NumberInput w="full " defaultValue={0} min={0}>
-                  <NumberInputField
-                    type="number"
-                    data-testid="ch4-emission-factor"
-                    h="48px"
-                    borderRightRadius={0}
-                    placeholder="Enter emissions value"
-                    {...register("activity.CH4EmissionFactor")}
-                    bgColor="base.light"
-                    pos="relative"
-                    zIndex={999}
-                  />
-                </NumberInput>
-                <InputRightAddon
-                  bgColor="base.light"
-                  color="content.tertiary"
-                  borderLeft={"none"}
-                  h="48px"
-                  pos="relative"
-                  zIndex={10}
-                  {...register("activity.ch4EmissionFactorUnit")}
+              <FormattedNumberInput
+                testId="co2-emission-factor"
+                control={control}
+                miniAddon
+                name={`activity.CH4EmissionFactor`}
+                defaultValue={0}
+              >
+                <Text
+                  isTruncated // Truncate the text with an ellipsis
+                  noOfLines={1}
+                  w="full"
+                  textAlign="center"
                 >
                   tCH4
-                </InputRightAddon>
-              </InputGroup>
+                </Text>
+              </FormattedNumberInput>
+              {/*<InputGroup w="full" shadow="1dp" borderRadius={"8px"}>*/}
+              {/*  /!* TODO translate values and use internal value for checking *!/*/}
+              {/*  <NumberInput w="full " defaultValue={0} min={0}>*/}
+              {/*    <NumberInputField*/}
+              {/*      type="number"*/}
+              {/*      data-testid="ch4-emission-factor"*/}
+              {/*      h="48px"*/}
+              {/*      borderRightRadius={0}*/}
+              {/*      placeholder="Enter emissions value"*/}
+              {/*      {...register("activity.CH4EmissionFactor")}*/}
+              {/*      bgColor="base.light"*/}
+              {/*      pos="relative"*/}
+              {/*      zIndex={999}*/}
+              {/*    />*/}
+              {/*  </NumberInput>*/}
+              {/*  <InputRightAddon*/}
+              {/*    bgColor="base.light"*/}
+              {/*    color="content.tertiary"*/}
+              {/*    borderLeft={"none"}*/}
+              {/*    h="48px"*/}
+              {/*    pos="relative"*/}
+              {/*    zIndex={10}*/}
+              {/*    {...register("activity.ch4EmissionFactorUnit")}*/}
+              {/*  >*/}
+              {/*    tCH4*/}
+              {/*  </InputRightAddon>*/}
+              {/*</InputGroup>*/}
             </FormControl>
           </Grid>
         )}

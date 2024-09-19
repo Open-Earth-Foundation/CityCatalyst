@@ -477,30 +477,6 @@ const ActivityModalBody = ({
                   tCO2
                 </Text>
               </FormattedNumberInput>
-              {/*<InputGroup w="full" shadow="1dp" borderRadius={"8px"}>*/}
-              {/*  <NumberInput w="full" defaultValue={0} min={0}>*/}
-              {/*    <NumberInputField*/}
-              {/*      data-testid="co2-emission-factor"*/}
-              {/*      type="number"*/}
-              {/*      h="48px"*/}
-              {/*      placeholder="Enter emissions value"*/}
-              {/*      {...register("activity.CO2EmissionFactor")}*/}
-              {/*      bgColor="base.light"*/}
-              {/*      pos="relative"*/}
-              {/*      zIndex={999}*/}
-              {/*    />*/}
-              {/*  </NumberInput>*/}
-              {/*  <InputRightAddon*/}
-              {/*    bgColor="base.light"*/}
-              {/*    color="content.tertiary"*/}
-              {/*    h="48px"*/}
-              {/*    pos="relative"*/}
-              {/*    zIndex={10}*/}
-              {/*    {...register("activity.co2EmissionFactorUnit")}*/}
-              {/*  >*/}
-              {/*    tCO2*/}
-              {/*  </InputRightAddon>*/}
-              {/*</InputGroup>*/}
             </FormControl>
             <FormControl w="full">
               <FormLabel color="content.secondary">
@@ -522,33 +498,6 @@ const ActivityModalBody = ({
                   tN2O
                 </Text>
               </FormattedNumberInput>
-              {/*<InputGroup w="full" shadow="1dp" borderRadius={"8px"}>*/}
-              {/*  /!* TODO translate values and use internal value for checking *!/*/}
-              {/*  <NumberInput w="full" defaultValue={0} min={0}>*/}
-              {/*    <NumberInputField*/}
-              {/*      data-testid="n2o-emission-factor"*/}
-              {/*      type="number"*/}
-              {/*      h="48px"*/}
-              {/*      borderRightRadius={0}*/}
-              {/*      placeholder="Enter emissions value"*/}
-              {/*      {...register("activity.N2OEmissionFactor")}*/}
-              {/*      bgColor="base.light"*/}
-              {/*      pos="relative"*/}
-              {/*      zIndex={999}*/}
-              {/*    />*/}
-              {/*  </NumberInput>*/}
-              {/*  <InputRightAddon*/}
-              {/*    bgColor="base.light"*/}
-              {/*    color="content.tertiary"*/}
-              {/*    borderLeft={"none"}*/}
-              {/*    h="48px"*/}
-              {/*    pos="relative"*/}
-              {/*    zIndex={10}*/}
-              {/*    {...register("activity.n2oEmissionFactorUnit")}*/}
-              {/*  >*/}
-              {/*    tN2O*/}
-              {/*  </InputRightAddon>*/}
-              {/*</InputGroup>*/}
             </FormControl>
             <FormControl w="full">
               <FormLabel color="content.secondary">
@@ -570,33 +519,6 @@ const ActivityModalBody = ({
                   tCH4
                 </Text>
               </FormattedNumberInput>
-              {/*<InputGroup w="full" shadow="1dp" borderRadius={"8px"}>*/}
-              {/*  /!* TODO translate values and use internal value for checking *!/*/}
-              {/*  <NumberInput w="full " defaultValue={0} min={0}>*/}
-              {/*    <NumberInputField*/}
-              {/*      type="number"*/}
-              {/*      data-testid="ch4-emission-factor"*/}
-              {/*      h="48px"*/}
-              {/*      borderRightRadius={0}*/}
-              {/*      placeholder="Enter emissions value"*/}
-              {/*      {...register("activity.CH4EmissionFactor")}*/}
-              {/*      bgColor="base.light"*/}
-              {/*      pos="relative"*/}
-              {/*      zIndex={999}*/}
-              {/*    />*/}
-              {/*  </NumberInput>*/}
-              {/*  <InputRightAddon*/}
-              {/*    bgColor="base.light"*/}
-              {/*    color="content.tertiary"*/}
-              {/*    borderLeft={"none"}*/}
-              {/*    h="48px"*/}
-              {/*    pos="relative"*/}
-              {/*    zIndex={10}*/}
-              {/*    {...register("activity.ch4EmissionFactorUnit")}*/}
-              {/*  >*/}
-              {/*    tCH4*/}
-              {/*  </InputRightAddon>*/}
-              {/*</InputGroup>*/}
             </FormControl>
           </Grid>
         )}

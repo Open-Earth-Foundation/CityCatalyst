@@ -1833,6 +1833,7 @@
       },
       {
         "id": "geographic-on-road-transport-methodology",
+        "disabled": true,
         "inputRequired": [
           "total-distance-travelled-in-in-boundary-trips",
           "fuel-intensity"
@@ -2400,6 +2401,7 @@
       },
       {
         "id": "geographic-waterborne-navigation-methodology",
+        "disabled": true,
         "inputRequired": [
           "total-distance-travelled-in-in-boundary-trips",
           "fuel-intensity"
@@ -2669,6 +2671,7 @@
       },
       {
         "id": "geographic-aviation-methodology",
+        "disabled": true,
         "inputRequired": [
           "total-distance-travelled-in-in-boundary-trips",
           "fuel-intensity"

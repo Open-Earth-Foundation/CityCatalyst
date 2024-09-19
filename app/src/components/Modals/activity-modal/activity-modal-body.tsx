@@ -34,6 +34,7 @@ import type {
 import { resolve } from "@/util/helpers";
 import { SuggestedActivity } from "@/util/form-schema";
 import { ActivityValue } from "@/models/ActivityValue";
+import FormattedNumberInput from "@/components/formatted-number-input";
 
 export type EmissionFactorTypes = {
   id: string;
@@ -315,45 +316,10 @@ const ActivityModalBody = ({
               >
                 <FormLabel className="truncate">{t(title)}</FormLabel>
                 <InputGroup>
-                  <NumberInput defaultValue={0} w="full">
-                    <NumberInputField
-                      borderRadius="4px"
-                      placeholder={t("activity-data-amount-placeholder")}
-                      borderRightRadius={0}
-                      h="48px"
-                      shadow="1dp"
-                      borderWidth={
-                        (errors?.activity?.[title] as any) ? "1px" : 0
-                      }
-                      border="inputBox"
-                      borderColor={
-                        (errors?.activity?.[title] as any)
-                          ? "sentiment.negativeDefault"
-                          : ""
-                      }
-                      background={
-                        (errors?.activity?.[title] as any)
-                          ? "sentiment.negativeOverlay"
-                          : ""
-                      }
-                      bgColor="base.light"
-                      _focus={{
-                        borderWidth: "1px",
-                        shadow: "none",
-                        borderColor: "content.link",
-                      }}
-                      {...register(`activity.${title}` as any)}
-                    />
-                  </NumberInput>
-                  <InputRightAddon
-                    className="border-l-2"
-                    pl={4}
-                    pr={0}
-                    w="100px"
-                    bgColor="base.light"
-                    h="48px"
-                    overflowX="hidden"
-                    shadow="1dp"
+                  <FormattedNumberInput
+                    control={control}
+                    name={`activity.${title}`}
+                    defaultValue={0}
                   >
                     <Controller
                       control={control}
@@ -373,7 +339,66 @@ const ActivityModalBody = ({
                         </Select>
                       )}
                     />
-                  </InputRightAddon>
+                  </FormattedNumberInput>
+                  {/*  <NumberInput defaultValue={0} w="full">*/}
+                  {/*    <NumberInputField*/}
+                  {/*      borderRadius="4px"*/}
+                  {/*      placeholder={t("activity-data-amount-placeholder")}*/}
+                  {/*      borderRightRadius={0}*/}
+                  {/*      h="48px"*/}
+                  {/*      shadow="1dp"*/}
+                  {/*      borderWidth={*/}
+                  {/*        (errors?.activity?.[title] as any) ? "1px" : 0*/}
+                  {/*      }*/}
+                  {/*      border="inputBox"*/}
+                  {/*      borderColor={*/}
+                  {/*        (errors?.activity?.[title] as any)*/}
+                  {/*          ? "sentiment.negativeDefault"*/}
+                  {/*          : ""*/}
+                  {/*      }*/}
+                  {/*      background={*/}
+                  {/*        (errors?.activity?.[title] as any)*/}
+                  {/*          ? "sentiment.negativeOverlay"*/}
+                  {/*          : ""*/}
+                  {/*      }*/}
+                  {/*      bgColor="base.light"*/}
+                  {/*      _focus={{*/}
+                  {/*        borderWidth: "1px",*/}
+                  {/*        shadow: "none",*/}
+                  {/*        borderColor: "content.link",*/}
+                  {/*      }}*/}
+                  {/*      {...register(`activity.${title}` as any)}*/}
+                  {/*    />*/}
+                  {/*  </NumberInput>*/}
+                  {/*  <InputRightAddon*/}
+                  {/*    className="border-l-2"*/}
+                  {/*    pl={4}*/}
+                  {/*    pr={0}*/}
+                  {/*    w="100px"*/}
+                  {/*    bgColor="base.light"*/}
+                  {/*    h="48px"*/}
+                  {/*    overflowX="hidden"*/}
+                  {/*    shadow="1dp"*/}
+                  {/*  >*/}
+                  {/*    <Controller*/}
+                  {/*      control={control}*/}
+                  {/*      name={`activity.${title}Unit` as any}*/}
+                  {/*      render={({ field }) => (*/}
+                  {/*        <Select*/}
+                  {/*          placeholder={t("select-unit")}*/}
+                  {/*          variant="unstyled"*/}
+                  {/*          {...field}*/}
+                  {/*          onChange={(e) => field.onChange(e.target.value)}*/}
+                  {/*        >*/}
+                  {/*          {units?.map((item: string) => (*/}
+                  {/*            <option key={item} value={item}>*/}
+                  {/*              {t(item)}*/}
+                  {/*            </option>*/}
+                  {/*          ))}*/}
+                  {/*        </Select>*/}
+                  {/*      )}*/}
+                  {/*    />*/}
+                  {/*  </InputRightAddon>*/}
                 </InputGroup>
 
                 {(errors?.activity?.[title] as any) ? (
@@ -464,188 +489,62 @@ const ActivityModalBody = ({
                   <FormLabel color="content.tertiary">
                     {t("co2-emission-factor")}
                   </FormLabel>
-                  <Controller
+                  <FormattedNumberInput
                     control={control}
-                    name="activity.CO2EmissionFactor"
+                    name={`activity.CO2EmissionFactor`}
                     defaultValue={0}
-                    render={({ field }) => (
-                      <InputGroup>
-                        <NumberInput
-                          min={0}
-                          isDisabled={isEmissionFactorInputDisabled}
-                          {...field}
-                          onChange={(valueAsString, valueAsNumber) =>
-                            field.onChange(valueAsNumber)
-                          }
-                        >
-                          <NumberInputField
-                            h="48px"
-                            type="number"
-                            shadow="1dp"
-                            borderRightRadius={0}
-                            bgColor={
-                              isEmissionFactorInputDisabled
-                                ? "background.neutral"
-                                : "base.light"
-                            }
-                            pos="relative"
-                            zIndex={999}
-                          />
-                        </NumberInput>
-                        <InputRightAddon
-                          bgColor={
-                            isEmissionFactorInputDisabled
-                              ? "background.neutral"
-                              : "base.light"
-                          }
-                          color="content.tertiary"
-                          h="48px"
-                          fontSize="14px"
-                          shadow="1dp"
-                          pos="relative"
-                          zIndex={10}
-                          pr={2}
-                          pl={2}
-                          w="100px"
-                          overflowX="hidden"
-                        >
-                          <Text
-                            isTruncated // Truncate the text with an ellipsis
-                            noOfLines={1}
-                            w="full"
-                            textAlign="center"
-                          >
-                            CO2/{t(unitValue)}
-                          </Text>
-                        </InputRightAddon>
-                      </InputGroup>
-                    )}
-                  />
+                    isDisabled={isEmissionFactorInputDisabled}
+                  >
+                    <Text
+                      isTruncated // Truncate the text with an ellipsis
+                      noOfLines={1}
+                      w="full"
+                      textAlign="center"
+                    >
+                      CO2/{t(unitValue)}
+                    </Text>
+                  </FormattedNumberInput>
                 </FormControl>
               </FormControl>
               <FormControl>
                 <FormLabel color="content.tertiary">
                   {t("n2o-emission-factor")}
                 </FormLabel>
-                <Controller
+                <FormattedNumberInput
                   control={control}
-                  name="activity.N2OEmissionFactor"
+                  name={`activity.N2OEmissionFactor`}
                   defaultValue={0}
-                  render={({ field }) => (
-                    <InputGroup>
-                      <NumberInput
-                        min={0}
-                        isDisabled={isEmissionFactorInputDisabled}
-                        {...field}
-                        onChange={(valueAsString, valueAsNumber) =>
-                          field.onChange(valueAsNumber)
-                        }
-                      >
-                        <NumberInputField
-                          h="48px"
-                          type="number"
-                          shadow="1dp"
-                          borderRightRadius={0}
-                          bgColor={
-                            isEmissionFactorInputDisabled
-                              ? "background.neutral"
-                              : "base.light"
-                          }
-                          pos="relative"
-                          zIndex={999}
-                        />
-                      </NumberInput>
-                      <InputRightAddon
-                        bgColor={
-                          isEmissionFactorInputDisabled
-                            ? "background.neutral"
-                            : "base.light"
-                        }
-                        color="content.tertiary"
-                        h="48px"
-                        fontSize="14px"
-                        shadow="1dp"
-                        pos="relative"
-                        zIndex={10}
-                        pr={2}
-                        pl={2}
-                        w="100px"
-                        overflowX="hidden"
-                      >
-                        <Text
-                          isTruncated // Truncate the text with an ellipsis
-                          noOfLines={1}
-                          w="full"
-                          textAlign="center"
-                        >
-                          N2O/{t(unitValue)}
-                        </Text>
-                      </InputRightAddon>
-                    </InputGroup>
-                  )}
-                />
+                  isDisabled={isEmissionFactorInputDisabled}
+                >
+                  <Text
+                    isTruncated // Truncate the text with an ellipsis
+                    noOfLines={1}
+                    w="full"
+                    textAlign="center"
+                  >
+                    N20/{t(unitValue)}
+                  </Text>
+                </FormattedNumberInput>
               </FormControl>
               <FormControl>
                 <FormLabel color="content.tertiary">
                   {t("ch4-emission-factor")}
                 </FormLabel>
-                <Controller
+                <FormattedNumberInput
                   control={control}
-                  name="activity.CH4EmissionFactor"
+                  name={`activity.CH4EmissionFactor`}
                   defaultValue={0}
-                  render={({ field }) => (
-                    <InputGroup>
-                      <NumberInput
-                        min={0}
-                        isDisabled={isEmissionFactorInputDisabled}
-                        {...field}
-                        onChange={(valueAsString, valueAsNumber) =>
-                          field.onChange(valueAsNumber)
-                        }
-                      >
-                        <NumberInputField
-                          h="48px"
-                          type="number"
-                          shadow="1dp"
-                          borderRightRadius={0}
-                          bgColor={
-                            isEmissionFactorInputDisabled
-                              ? "background.neutral"
-                              : "base.light"
-                          }
-                          pos="relative"
-                          zIndex={999}
-                        />
-                      </NumberInput>
-                      <InputRightAddon
-                        bgColor={
-                          isEmissionFactorInputDisabled
-                            ? "background.neutral"
-                            : "base.light"
-                        }
-                        color="content.tertiary"
-                        h="48px"
-                        fontSize="14px"
-                        shadow="1dp"
-                        pos="relative"
-                        zIndex={10}
-                        pr={2}
-                        pl={2}
-                        w="100px"
-                        overflowX="hidden"
-                      >
-                        <Text
-                          isTruncated // Truncate the text with an ellipsis
-                          noOfLines={1}
-                          w="full"
-                          textAlign="center"
-                        >
-                          CH4/{t(unitValue)}
-                        </Text>
-                      </InputRightAddon>
-                    </InputGroup>
-                  )}
-                />
+                  isDisabled={isEmissionFactorInputDisabled}
+                >
+                  <Text
+                    isTruncated // Truncate the text with an ellipsis
+                    noOfLines={1}
+                    w="full"
+                    textAlign="center"
+                  >
+                    CH4/{t(unitValue)}
+                  </Text>
+                </FormattedNumberInput>
               </FormControl>
             </HStack>{" "}
           </>

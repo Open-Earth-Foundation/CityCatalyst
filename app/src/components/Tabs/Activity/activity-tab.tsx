@@ -33,14 +33,9 @@ interface ActivityTabProps {
 
 const ActivityTab: FC<ActivityTabProps> = ({
   t,
-  userActivities,
   referenceNumber,
-  areActivitiesLoading,
-  totalConsumption,
-  totalConsumptionUnit,
   filteredScope,
   inventoryId,
-  step,
   activityData,
   subsectorId,
   inventoryValues,

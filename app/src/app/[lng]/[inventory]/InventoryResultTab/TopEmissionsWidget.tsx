@@ -55,11 +55,13 @@ const EmissionsTable = ({ topEmissions, t }: { topEmissions: TopEmission[], t: T
             <Tr key={index}>
               <Td>
                 <Text
-                  className="font-['Poppins'] text-sm leading-5 tracking-[0.5px]"
+                  fontFamily="heading"
+                  className="text-sm leading-5 tracking-[0.5px]"
                 >{emission.subsectorName}</Text>
                 <Text
-                  color="#4B4C63"
-                  className="font-['Poppins'] text-xs leading-4 tracking-[0.5px] "
+                  fontFamily="heading"
+                  color="content.tertiary"
+                  className="text-xs leading-4 tracking-[0.5px] "
                   >{capitalizeFirstLetter(t("scope"))} {emission.scopeName} - {emission.sectorName} </Text>
               </Td>
               <Td>{convertKgToTonnes(emission.co2eq)}</Td>

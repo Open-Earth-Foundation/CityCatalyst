@@ -10,6 +10,14 @@ lerna-debug.log*
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
+# MacOS
+.DS_Store
+
+# vim temporary files
+*~
+.*.sw?
+.cache
+
 # Runtime data
 pids
 *.pid
@@ -129,30 +137,12 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# Python stuff
-__pycache__
-
 # react-email
 .react-email
 values-*.yml
 
-# Data coverage output
-global-api/data-coverage/*.csv
-
 # Test coverage output from ci:test
 lcov.info
-
-# Data files created by importers
-global-api/importer/IEA_energy/IEA_energy.csv
-global-api/importer/ghgrp_epa/epa.csv
-global-api/importer/mendoza_arg/data/**
-global-api/importer/osm/cache/**
-global-api/importer/osm/data/**
-global-api/data/**
-
-
-#Python virtual env
-global-api/env
 
 #Intellij
 /.idea/**

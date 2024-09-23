@@ -55,18 +55,21 @@ describe("Results API", () => {
             {
               co2eq: "21453",
               percentage: 27,
+              scopeName: "1",
               sectorName: "Transportation",
               subsectorName: "On-road transportation"
             },
             {
               co2eq: "15662",
               percentage: 20,
+              scopeName: "1",
               sectorName: "Stationary Energy",
               subsectorName: "Residential buildings"
             },
             {
               co2eq: "12903",
               percentage: 16,
+              scopeName: "1",
               sectorName: "Transportation",
               subsectorName: "On-road transportation"
             }

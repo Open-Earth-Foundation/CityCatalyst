@@ -1,5 +1,6 @@
 import {
-  Box, Card,
+  Box,
+  Card,
   Center,
   CircularProgress,
   Heading,
@@ -16,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { InventoryResponse, TopEmission } from "@/util/types";
-import { convertKgToTonnes } from "@/util/helpers";
+import { capitalizeFirstLetter, convertKgToTonnes } from "@/util/helpers";
 import { api } from "@/services/api";
 import groupBy from "lodash/groupBy";
 import { SegmentedProgress, SegmentedProgressValues } from "@/components/SegmentedProgress";
@@ -38,23 +39,30 @@ const TitleAndSelector = ({ t }: { t: Function }) => {
 };
 
 
-const EmissionsTable = ({ topEmissions }: { topEmissions: TopEmission[] }) => {
+const EmissionsTable = ({ topEmissions, t }: { topEmissions: TopEmission[], t: TFunction }) => {
   return (
     <TableContainer my={4}>
       <Table variant="simple">
         <Thead>
           <Tr>
-            <Th sx={{ "font": "bold", color: "black" }}>Subsector</Th>
-            <Th sx={{ "font": "bold", color: "black" }}>Total Emissions (CO2eq)</Th>
-            <Th sx={{ "font": "bold", color: "black" }}>% of Emissions</Th>
+            <Th sx={{ "font": "bold", color: "black" }}>{t("subsector")}</Th>
+            <Th sx={{ "font": "bold", color: "black" }}>{t("total-emissions-CO2eq")}</Th>
+            <Th sx={{ "font": "bold", color: "black" }}>{t("%-of-emissions")}</Th>
           </Tr>
         </Thead>
         <Tbody>
           {(topEmissions || []).map((emission, index) => (
             <Tr key={index}>
               <Td>
-                <Text fontSize="xl">{emission.subsectorName}</Text>
-                <Text fontSize="sm" color={"gray"}>{emission.sectorName}</Text>
+                <Text
+                  fontFamily="heading"
+                  className="text-sm leading-5 tracking-[0.5px]"
+                >{emission.subsectorName}</Text>
+                <Text
+                  fontFamily="heading"
+                  color="content.tertiary"
+                  className="text-xs leading-4 tracking-[0.5px] "
+                  >{capitalizeFirstLetter(t("scope"))} {emission.scopeName} - {emission.sectorName} </Text>
               </Td>
               <Td>{convertKgToTonnes(emission.co2eq)}</Td>
               <Td>{emission.percentage}%</Td>
@@ -107,7 +115,7 @@ const TopEmissionsWidget = ({
             <SegmentedProgress values={getPercentagesForProgress()} total={results!.totalEmissions.total} t={t}
                                showLabels showHover />
             <TitleAndSelector t={t} />
-            <EmissionsTable topEmissions={results!.topEmissions.bySubSector} />
+            <EmissionsTable topEmissions={results!.topEmissions.bySubSector} t={t} />
           </>
         }
       </Card>

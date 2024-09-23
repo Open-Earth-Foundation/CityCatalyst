@@ -251,3 +251,5 @@ export const toKebabCase = (input: string | undefined): string => {
     .replace(/^-+|-+$/g, "")
     .toLowerCase();
 };
+
+export const capitalizeFirstLetter = (string: string) => string.charAt(0).toUpperCase() + string.slice(1);

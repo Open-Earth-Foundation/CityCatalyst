@@ -31,7 +31,7 @@ function FormattedNumberInput({
   miniAddon,
   ...rest
 }: FormattedNumberInputProps) {
-  const { lng } = useParams(); // Assume "lng" is your locale param, like 'en', 'de', 'es'
+  const { lng } = useParams();
 
   // Format the number according to the locale
   const format = (nval: number | string) => {
@@ -47,7 +47,7 @@ function FormattedNumberInput({
       new RegExp(`[^0-9${localeDecimalSeparator}-]`, "g"),
       "",
     ); // Keep only numbers and separators
-    const normalizedNumber = normalizedVal.replace(localeDecimalSeparator, "."); // Normalize to JS decimal
+    const normalizedNumber = normalizedVal.replace(localeDecimalSeparator, ".");
     return isNaN(parseFloat(normalizedNumber))
       ? ""
       : parseFloat(normalizedNumber).toString();

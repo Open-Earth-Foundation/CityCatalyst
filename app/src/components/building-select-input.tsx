@@ -1,5 +1,5 @@
 import { Box, Select, Text } from "@chakra-ui/react";
-import React, { FC } from "react";
+import React, { FC, use, useEffect, useRef, useState } from "react";
 import {
   Control,
   FieldError,
@@ -37,7 +37,18 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
   t,
   multiselect,
   control,
+  selectedActivity,
 }) => {
+  const prefilledValue = selectedActivity?.prefills?.[0].value;
+  const [selectedActivityValue, setSelectedActivityValue] = useState<
+    string | undefined
+  >();
+  useEffect(() => {
+    if (prefilledValue) {
+      setSelectedActivityValue(prefilledValue);
+    }
+  }, [prefilledValue]);
+
   if (multiselect) {
     return (
       <MultiSelectInput
@@ -48,9 +59,13 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
         activity={activity}
         errors={errors}
         t={t}
+        selectedActivity={selectedActivityValue}
       />
     );
   }
+
+  console.log("seleted activity", selectedActivity);
+  console.log("prefiled value", prefilledValue);
   const error = activity.split(".").reduce((acc, key) => acc?.[key], errors);
   return (
     <Box display="flex" flexDirection="column" gap="8px">
@@ -82,6 +97,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
         {...register(activity as any, {
           required: required === false ? false : t("option-required"),
         })}
+        value={selectedActivityValue}
       >
         {options?.map((item: string) => (
           <option key={item} value={item}>

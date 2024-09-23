@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Select, { components, MultiValueProps, OptionProps } from "react-select";
 import { Checkbox, Box, Text, CloseButton } from "@chakra-ui/react";
 import { TFunction } from "i18next";
@@ -16,6 +16,7 @@ interface MultiSelectInputProps {
   multiselect?: boolean;
   required?: boolean;
   control: Control<any, any>;
+  selectedActivity?: string;
 }
 
 const CustomMultiValue = (props: MultiValueProps<any>) => {
@@ -101,8 +102,15 @@ const MultiSelectWithCheckbox = ({
   errors,
   t,
   control,
+  selectedActivity,
 }: MultiSelectInputProps) => {
   const error = activity.split(".").reduce((acc, key) => acc?.[key], errors);
+  console.log(selectedActivity);
+  console.log(options);
+
+  let preselectedValue = [];
+  preselectedValue.push(selectedActivity!);
+
   return (
     <Box display="flex" flexDirection="column" gap="8px">
       <Text
@@ -126,6 +134,7 @@ const MultiSelectWithCheckbox = ({
             <Select
               {...field}
               isMulti
+              defaultValue="Option"
               options={options.map((option) => ({
                 label: t(option),
                 value: option,
@@ -137,10 +146,15 @@ const MultiSelectWithCheckbox = ({
                 Option: CustomOption,
               }}
               value={
-                field.value?.map((val: string) => ({
-                  label: t(val),
-                  value: val,
-                })) || []
+                field.value.length === 0
+                  ? preselectedValue.map((val: string) => ({
+                      label: t(val),
+                      value: val,
+                    }))
+                  : field.value?.map((val: string) => ({
+                      label: t(val),
+                      value: val,
+                    }))
               }
               onChange={(selected) => {
                 const values = selected?.map((option) => option.value) || [];

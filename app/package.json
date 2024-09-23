@@ -38,7 +38,7 @@
     "@next/env": "^14.2.5",
     "@react-email/components": "^0.0.19",
     "@reduxjs/toolkit": "^2.2.7",
-    "@storybook/cli": "^8.2.9",
+    "@storybook/cli": "^8.3.2",
     "@storybook/react": "^8.2.9",
     "@storybook/testing-library": "^0.2.2",
     "@types/bcrypt": "^5.0.2",

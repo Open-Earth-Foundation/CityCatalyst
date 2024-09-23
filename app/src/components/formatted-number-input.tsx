@@ -7,6 +7,7 @@ import {
   NumberInputField,
   NumberInputProps,
 } from "@chakra-ui/react";
+import { useParams } from "next/navigation";
 
 interface FormattedNumberInputProps extends NumberInputProps {
   control: Control<any, any>;
@@ -25,18 +26,32 @@ function FormattedNumberInput({
   name,
   defaultValue = 0,
   isDisabled = false,
-  children, // Accepts children for InputRightAddon
+  children,
   placeholder,
   miniAddon,
   ...rest
 }: FormattedNumberInputProps) {
+  const { lng } = useParams(); // Assume "lng" is your locale param, like 'en', 'de', 'es'
+
+  // Format the number according to the locale
   const format = (nval: number | string) => {
-    let val = parseInt(nval as string);
-    if (val === undefined || val === null || isNaN(val)) return "";
-    return val.toLocaleString();
+    let val = parseFloat(nval as string);
+    if (isNaN(val)) return "";
+    return new Intl.NumberFormat(lng).format(val);
   };
 
-  const parse = (val: string) => val.replace(/,/g, "");
+  // Parse the formatted string into a raw number
+  const parse = (val: string) => {
+    const localeDecimalSeparator = (1.1).toLocaleString(lng).substring(1, 2); // Get the decimal separator for the current locale
+    const normalizedVal = val.replace(
+      new RegExp(`[^0-9${localeDecimalSeparator}-]`, "g"),
+      "",
+    ); // Keep only numbers and separators
+    const normalizedNumber = normalizedVal.replace(localeDecimalSeparator, "."); // Normalize to JS decimal
+    return isNaN(parseFloat(normalizedNumber))
+      ? ""
+      : parseFloat(normalizedNumber).toString();
+  };
 
   return (
     <Controller
@@ -51,9 +66,9 @@ function FormattedNumberInput({
             value={format(field.value)}
             onChange={(valueAsString) => {
               const parsedValue = parse(valueAsString);
-              const numberValue = parseFloat(parsedValue);
-              field.onChange(isNaN(numberValue) ? "" : numberValue);
+              field.onChange(parsedValue);
             }}
+            onBlur={(e) => e.preventDefault()}
             {...rest}
           >
             <NumberInputField
@@ -65,7 +80,7 @@ function FormattedNumberInput({
               borderRightRadius={children ? 0 : "md"} // Adjust border radius
               bgColor={isDisabled ? "background.neutral" : "base.light"}
               pos="relative"
-              zIndex={999}
+              zIndex={3}
             />
           </NumberInput>
           {children && (

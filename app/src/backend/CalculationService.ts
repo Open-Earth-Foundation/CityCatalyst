@@ -8,9 +8,10 @@ import { findMethodology } from "@/util/form-schema";
 import {
   handleActivityAmountTimesEmissionsFactorFormula,
   handleDirectMeasureFormula,
+  handleDomesticWasteWaterFormula,
+  handleIndustrialWasteWaterFormula,
   handleMethaneCommitmentFormula,
   handleVkt1Formula,
-  handleWastewaterCalculatorFormula,
 } from "./formulas";
 import { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
 import { GasValueCreationAttributes } from "@/models/GasValue";
@@ -105,7 +106,18 @@ export default class CalculationService {
       case "induced-activity-1":
         gases = handleVkt1Formula(activityValue, gasValues);
       case "wastewater-calculator":
-        gases = handleWastewaterCalculatorFormula(activityValue);
+        const activityId = activityValue.activityData?.activityId;
+        if (activityId === "wastewater-inside-domestic-calculator-activity") {
+          gases = handleDomesticWasteWaterFormula(activityValue);
+        } else if (
+          activityId === "wastewater-inside-industrial-calculator-activity"
+        ) {
+          gases = handleIndustrialWasteWaterFormula(activityValue);
+        } else {
+          throw new createHttpError.BadRequest(
+            `Unknown activity ID ${activityId} for wastewater calculator formula in activity value ${activityValue.id}`,
+          );
+        }
         break;
       default:
         throw new createHttpError.NotImplemented(

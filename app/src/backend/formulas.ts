@@ -180,7 +180,38 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
   return gases;
 }
 
-export function handleWastewaterCalculatorFormula(
+export function handleIndustrialWasteWaterFormula(
+  activityValue: ActivityValue,
+): Gas[] {
+  const data = activityValue.activityData;
+  if (!data) {
+    throw new createHttpError.BadRequest(
+      "Activity has no data associated, so it can't use the formula",
+    );
+  }
+
+  const totalIndustrialProduction = data["total-industrial-production"];
+  const wastewaterGenerated = data["wastewater-generated"];
+  const degradableOrganicComponents = data["degradable-organic-components"];
+  const methaneProductionCapacity =
+    data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should this only be handled UI-side?
+  const removedSludge = data["removed-sludge"];
+  const methaneCorrectionFactor = data["methane-correction-factor"];
+  const methaneRecovered = data["methane-recovered"];
+
+  // TODO is BigInt/ BigNumber required for these calculations?
+  const totalOrganicWaste =
+    totalIndustrialProduction *
+    wastewaterGenerated *
+    degradableOrganicComponents;
+  const emissionsFactor = methaneProductionCapacity * methaneCorrectionFactor;
+  const totalMethaneProduction =
+    (totalOrganicWaste - removedSludge) * emissionsFactor - methaneRecovered;
+  const amount = BigInt(totalMethaneProduction);
+  return [{ gas: "CH4", amount }];
+}
+
+export function handleDomesticWasteWaterFormula(
   activityValue: ActivityValue,
 ): Gas[] {
   const data = activityValue.activityData;

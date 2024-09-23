@@ -154,7 +154,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                     <InputGroup w="116px">
                       <Input
                         type="text"
-                        {...register(id + "." + category.id, {
+                        {...register(`activity.${id}.${category.id}`, {
                           required: true,
                           min: 0,
                           max: 100,

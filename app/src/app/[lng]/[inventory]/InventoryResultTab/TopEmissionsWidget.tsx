@@ -5,7 +5,6 @@ import {
   CircularProgress,
   Heading,
   HStack,
-  Select,
   Table,
   TableContainer,
   Tbody,
@@ -15,29 +14,12 @@ import {
   Thead,
   Tr
 } from "@chakra-ui/react";
-import { TFunction } from "i18next";
-import { InventoryResponse, TopEmission } from "@/util/types";
-import { capitalizeFirstLetter, convertKgToTonnes } from "@/util/helpers";
-import { api } from "@/services/api";
+import {TFunction} from "i18next";
+import {InventoryResponse, TopEmission} from "@/util/types";
+import {capitalizeFirstLetter, convertKgToTonnes} from "@/util/helpers";
+import {api} from "@/services/api";
 import groupBy from "lodash/groupBy";
-import { SegmentedProgress, SegmentedProgressValues } from "@/components/SegmentedProgress";
-
-const TitleAndSelector = ({ t }: { t: Function }) => {
-  return <HStack justifyContent="space-between">
-    <Box>
-      <Heading size="sm" marginTop={10} marginBottom={4}>{t("top-emissions")}</Heading>
-    </Box>
-    <Select width={"15vw"} my={2}
-    >
-      {["by-sub-sector"].map((grouping) => (
-        <option key={grouping} value={grouping}>
-          {t(grouping)}
-        </option>
-      ))}
-    </Select>
-  </HStack>;
-};
-
+import {SegmentedProgress, SegmentedProgressValues} from "@/components/SegmentedProgress";
 
 const EmissionsTable = ({ topEmissions, t }: { topEmissions: TopEmission[], t: TFunction }) => {
   return (
@@ -114,7 +96,9 @@ const TopEmissionsWidget = ({
             </Box>
             <SegmentedProgress values={getPercentagesForProgress()} total={results!.totalEmissions.total} t={t}
                                showLabels showHover />
-            <TitleAndSelector t={t} />
+              <Box>
+                <Heading size="sm" marginTop={10} marginBottom={4}>{t("top-emissions")}</Heading>
+              </Box>
             <EmissionsTable topEmissions={results!.topEmissions.bySubSector} t={t} />
           </>
         }

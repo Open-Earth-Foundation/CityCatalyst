@@ -221,21 +221,30 @@ export function handleDomesticWasteWaterFormula(
     );
   }
 
-  const totalIndustrialProduction = data["total-industrial-production"];
-  const wastewaterGenerated = data["wastewater-generated"];
-  const degradableOrganicComponents = data["degradable-organic-components"];
   const methaneProductionCapacity =
     data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should this only be handled UI-side?
   const removedSludge = data["removed-sludge"];
   const methaneCorrectionFactor = data["methane-correction-factor"];
   const methaneRecovered = data["methane-recovered"];
 
-  // TODO is BigInt/ BigNumber required for these calculations?
+  const totalCityPopulation = data["total-city-population"]; // TODO not in form - get from City/ Population table?
+  const bodPerCapita = data["bod-per-capita"]; // TODO not in form?
+  const isCollectedWasteWater =
+    data["wastewater-inside-industrial-calculator-collection-status"] ===
+    "collection-status-type-wastewater-collected";
+  const industrialBodFactor = isCollectedWasteWater ? 1.0 : 1.25;
   const totalOrganicWaste =
-    totalIndustrialProduction *
-    wastewaterGenerated *
-    degradableOrganicComponents;
-  const emissionsFactor = methaneProductionCapacity * methaneCorrectionFactor;
+    totalCityPopulation * bodPerCapita * industrialBodFactor * 365;
+
+  const incomeGroupFraction = data["income-group-fraction"];
+  const dischargeSystemUtulizationRatio =
+    data["discharge-system-utilization-ratio"];
+
+  const emissionsFactor =
+    methaneProductionCapacity *
+    methaneCorrectionFactor *
+    incomeGroupFraction *
+    dischargeSystemUtulizationRatio;
   const totalMethaneProduction =
     (totalOrganicWaste - removedSludge) * emissionsFactor - methaneRecovered;
   const amount = BigInt(totalMethaneProduction);

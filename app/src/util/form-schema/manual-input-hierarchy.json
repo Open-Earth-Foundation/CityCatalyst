@@ -3,7 +3,11 @@
     "methodologies": [
       {
         "id": "fuel-combustion-residential-buildings-methodology",
-        "inputRequired": ["total-fuel-consumption"],
+        "activityTypeField": "residential-building-fuel-type",
+        "activityDataField": "total-grid-consumption",
+        "inputRequired": [
+          "total-fuel-consumption"
+        ],
         "activities": [
           {
             "id": "fuel-combustion-residential-buildings-activity",
@@ -16,7 +20,9 @@
             "extra-fields": [
               {
                 "id": "residential-building-type",
-                "options": ["building-type-all"]
+                "options": [
+                  "building-type-all"
+                ]
               },
               {
                 "id": "residential-building-fuel-type",
@@ -59,21 +65,30 @@
       },
       {
         "id": "scaled-sample-fuel-combustion-residential-buildings-methodology",
-        "inputRequired": ["sample-fuel", "scaling-data"],
+        "inputRequired": [
+          "sample-fuel",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
         "id": "modeled-data-fuel-consumption-residential-buildings-methodology",
-        "inputRequired": ["modeled-fuel", "built-area"],
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
       "id": "fuel-combustion-residential-buildings-direct-measure-methodology",
+      "activityTypeField": "residential-building-fuel-type",
       "extra-fields": [
         {
           "id": "residential-building-type",
-          "options": ["residential-building-type-all"]
+          "options": [
+            "residential-building-type-all"
+          ]
         },
         {
           "id": "residential-building-fuel-type",
@@ -101,7 +116,11 @@
     "methodologies": [
       {
         "id": "energy-consumption-residential-buildings-methodology",
-        "inputRequired": ["total-grid-consumption"],
+        "activityTypeField": "residential-building-energy-usage",
+        "activityDataField": "total-grid-consumption",
+        "inputRequired": [
+          "total-grid-consumption"
+        ],
         "activities": [
           {
             "id": "energy-consumption-residential-buildings-activity",
@@ -114,7 +133,9 @@
             "extra-fields": [
               {
                 "id": "residential-building-type",
-                "options": ["residential-building-type-all"]
+                "options": [
+                  "residential-building-type-all"
+                ]
               },
               {
                 "id": "residential-building-energy-usage",
@@ -136,7 +157,10 @@
                 "type": "text"
               }
             ],
-            "units": ["units-kilowatt-hours", "units-terajoules"]
+            "units": [
+              "units-kilowatt-hours",
+              "units-terajoules"
+            ]
           }
         ],
         "suggestedActivities": [
@@ -153,21 +177,30 @@
       },
       {
         "id": "scaled-sample-energy-usage-residential-buildings-methodology",
-        "inputRequired": ["sample-fuel", "scaling-data"],
+        "inputRequired": [
+          "sample-fuel",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
         "id": "modeled-data-energy-usage-residential-buildings-methodology",
-        "inputRequired": ["sample-fuel", "scaling-data"],
+        "inputRequired": [
+          "sample-fuel",
+          "scaling-data"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
       "id": "energy-consumption-residential-buildings-direct-measure-methodology",
+      "activityTypeField": "residential-building-energy-usage",
       "extra-fields": [
         {
           "id": "residential-building-type",
-          "options": ["building-type-all"]
+          "options": [
+            "building-type-all"
+          ]
         },
         {
           "id": "residential-building-energy-usage",
@@ -195,7 +228,11 @@
     "methodologies": [
       {
         "id": "fuel-combustion-commercial-buildings-methodology",
-        "inputRequired": ["total-fuel-consumption"],
+        "activityTypeField": "commercial-building-fuel-type",
+        "activityDataField": "total-fuel-consumption",
+        "inputRequired": [
+          "total-fuel-consumption"
+        ],
         "activities": [
           {
             "id": "fuel-combustion-commercial-buildings-activity",
@@ -275,17 +312,24 @@
       },
       {
         "id": "scaled-sample-fuel-combustion-commercial-buildings-methodology",
-        "inputRequired": ["sample-fuel", "scaling-data"],
+        "inputRequired": [
+          "sample-fuel",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
         "id": "modeled-data-fuel-consumption-commercial-buildings-methodology",
-        "inputRequired": ["modeled-fuel", "built-area"],
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
       "id": "fuel-consumption-commercial-buildings-direct-measure-methodology",
+      "activityTypeField": "commercial-building-fuel-type",
       "extra-fields": [
         {
           "id": "commercial-building-type",
@@ -323,7 +367,11 @@
     "methodologies": [
       {
         "id": "energy-consumption-commercial-buildings-methodology",
-        "inputRequired": ["total-grid-consumption"],
+        "activityTypeField": "commercial-building-energy-usage",
+        "activityDataField": "total-grid-consumption",
+        "inputRequired": [
+          "total-grid-consumption"
+        ],
         "activities": [
           {
             "id": "energy-consumption-commercial-buildings-activity",
@@ -365,7 +413,10 @@
                 "type": "text"
               }
             ],
-            "units": ["units-kilowatt-hours", "units-terajoules"]
+            "units": [
+              "units-kilowatt-hours",
+              "units-terajoules"
+            ]
           }
         ],
         "suggestedActivities": [
@@ -400,17 +451,24 @@
       },
       {
         "id": "scaled-sample-energy-usage-commercial-buildings-methodology",
-        "inputRequired": ["sample-grid-supplied-energy", "scaling-data"],
+        "inputRequired": [
+          "sample-grid-supplied-energy",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
         "id": "modeled-data-energy-usage-commercial-buildings-methodology",
-        "inputRequired": ["modeled-fuel", "built-area"],
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
       "id": "energy-consumption-commercial-buildings-direct-measure-methodology",
+      "activityTypeField": "commercial-building-energy-usage",
       "extra-fields": [
         {
           "id": "commercial-building-type",
@@ -448,7 +506,11 @@
     "methodologies": [
       {
         "id": "fuel-combustion-manufacturing-and-construction-methodology",
-        "inputRequired": ["total-fuel-consumption"],
+        "activityTypeField": "manufacturing-and-construction-fuel-type",
+        "activityDataField": "total-fuel-consumption",
+        "inputRequired": [
+          "total-fuel-consumption"
+        ],
         "activities": [
           {
             "id": "fuel-combustion-manufacturing-and-construction-activity",
@@ -553,17 +615,24 @@
       },
       {
         "id": "scaled-sample-fuel-combustion-manufacturing-and-construction-methodology",
-        "inputRequired": ["sample-grid-supplied-energy", "scaling-data"],
+        "inputRequired": [
+          "sample-grid-supplied-energy",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
         "id": "modeled-data-fuel-combustion-manufacturing-and-construction-methodology",
-        "inputRequired": ["modeled-fuel", "built-area"],
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
       "id": "fuel-consumption-manufacturing-and-construction-direct-measure-methodology",
+      "activityTypeField": "manufacturing-and-construction-fuel-type",
       "extra-fields": [
         {
           "id": "manufacturing-and-construction-type",
@@ -626,7 +695,11 @@
     "methodologies": [
       {
         "id": "energy-consumption-manufacturing-and-construction-methodology",
-        "inputRequired": ["total-grid-consumption"],
+        "activityTypeField": "manufacturing-and-construction-energy-usage",
+        "activityDataField": "total-grid-consumption",
+        "inputRequired": [
+          "total-grid-consumption"
+        ],
         "activities": [
           {
             "id": "energy-consumption-manufacturing-and-construction-activity",
@@ -679,7 +752,10 @@
                 "type": "text"
               }
             ],
-            "units": ["units-kilowatt-hours", "units-terajoules"]
+            "units": [
+              "units-kilowatt-hours",
+              "units-terajoules"
+            ]
           }
         ],
         "suggestedActivities": [
@@ -714,17 +790,24 @@
       },
       {
         "id": "scaled-sample-energy-usage-manufacturing-and-construction-methodology",
-        "inputRequired": ["sample-grid-supplied-energy", "scaling-data"],
+        "inputRequired": [
+          "sample-grid-supplied-energy",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
         "id": "modeled-data-energy-usage-manufacturing-and-construction-methodology",
-        "inputRequired": ["modeled-fuel", "built-area"],
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
       "id": "energy-consumption-manufacturing-and-construction-direct-measure-methodology",
+      "activityTypeField": "manufacturing-and-construction-energy-usage",
       "extra-fields": [
         {
           "id": "manufacturing-and-construction-type",
@@ -774,7 +857,11 @@
     "methodologies": [
       {
         "id": "fuel-combustion-energy-industries-methodology",
-        "inputRequired": ["total-fuel-consumption"],
+        "activityTypeField": "energy-industries-fuel-type",
+        "activityDataField": "total-fuel-consumption",
+        "inputRequired": [
+          "total-fuel-consumption"
+        ],
         "activities": [
           {
             "id": "fuel-combustion-energy-industries-activity",
@@ -873,17 +960,24 @@
       },
       {
         "id": "scaled-sample-fuel-combustion-energy-industries-methodology",
-        "inputRequired": ["sample-grid-supplied-energy", "scaling-data"],
+        "inputRequired": [
+          "sample-grid-supplied-energy",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
         "id": "modeled-data-fuel-combustion-energy-industries-methodology",
-        "inputRequired": ["modeled-fuel", "built-area"],
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
       "id": "fuel-consumption-energy-industries-direct-measure-methodology",
+      "activityTypeField": "energy-industries-fuel-type",
       "extra-fields": [
         {
           "id": "energy-industries-type",
@@ -931,7 +1025,11 @@
     "methodologies": [
       {
         "id": "energy-consumption-energy-industries-methodology",
-        "inputRequired": ["total-grid-consumption"],
+        "activityTypeField": "energy-industries-type",
+        "activityDataField": "total-grid-consumption",
+        "inputRequired": [
+          "total-grid-consumption"
+        ],
         "activities": [
           {
             "id": "energy-consumption-energy-industries-activity",
@@ -975,7 +1073,10 @@
                 "type": "text"
               }
             ],
-            "units": ["units-kilowatt-hours", "units-terajoules"]
+            "units": [
+              "units-kilowatt-hours",
+              "units-terajoules"
+            ]
           }
         ],
         "suggestedActivities": [
@@ -1019,17 +1120,24 @@
       },
       {
         "id": "scaled-sample-energy-usage-energy-industries-methodology",
-        "inputRequired": ["sample-grid-supplied-energy", "scaling-data"],
+        "inputRequired": [
+          "sample-grid-supplied-energy",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
         "id": "modeled-data-energy-usage-energy-industries-methodology",
-        "inputRequired": ["modeled-fuel", "built-area"],
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
       "id": "energy-consumption-energy-industries-direct-measure-methodology",
+      "activityTypeField": "energy-industries-type",
       "extra-fields": [
         {
           "id": "energy-industries-type",
@@ -1070,7 +1178,11 @@
     "methodologies": [
       {
         "id": "fuel-combustion-agriculture-forestry-fishing-activities-methodology",
-        "inputRequired": ["total-fuel-consumption"],
+        "activityTypeField": "agriculture-forestry-fishing-activities-fuel-type",
+        "activityDataField": "total-fuel-consumption",
+        "inputRequired": [
+          "total-fuel-consumption"
+        ],
         "activities": [
           {
             "id": "fuel-combustion-agriculture-forestry-fishing-activities-activity",
@@ -1141,17 +1253,24 @@
       },
       {
         "id": "scaled-sample-fuel-combustion-agriculture-forestry-fishing-activities-methodology",
-        "inputRequired": ["sample-grid-supplied-energy", "scaling-data"],
+        "inputRequired": [
+          "sample-grid-supplied-energy",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
         "id": "modeled-data-fuel-combustion-agriculture-forestry-fishing-activities-methodology",
-        "inputRequired": ["modeled-fuel", "built-area"],
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
       "id": "fuel-consumption-agriculture-forestry-fishing-activities-direct-measure-methodology",
+      "activityTypeField": "agriculture-forestry-fishing-activities-fuel-type",
       "extra-fields": [
         {
           "id": "agriculture-forestry-fishing-activities-type",
@@ -1189,7 +1308,11 @@
     "methodologies": [
       {
         "id": "energy-consumption-agriculture-forestry-fishing-activities-methodology",
-        "inputRequired": ["total-grid-consumption"],
+        "activityTypeField": "agriculture-forestry-fishing-activities-energy-usage",
+        "activityDataField": "total-grid-consumption",
+        "inputRequired": [
+          "total-grid-consumption"
+        ],
         "activities": [
           {
             "id": "energy-consumption-agriculture-forestry-fishing-activities-activity",
@@ -1230,7 +1353,10 @@
                 "type": "text"
               }
             ],
-            "units": ["units-kilowatt-hours", "units-terajoules"]
+            "units": [
+              "units-kilowatt-hours",
+              "units-terajoules"
+            ]
           }
         ],
         "suggestedActivities": [
@@ -1256,17 +1382,24 @@
       },
       {
         "id": "scaled-sample-energy-usage-agriculture-forestry-fishing-activities-methodology",
-        "inputRequired": ["sample-grid-supplied-energy", "scaling-data"],
+        "inputRequired": [
+          "sample-grid-supplied-energy",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
         "id": "modeled-data-energy-usage-agriculture-forestry-fishing-activities-methodology",
-        "inputRequired": ["modeled-fuel", "built-area"],
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
       "id": "energy-consumption-agriculture-forestry-fishing-activities-direct-measure-methodology",
+      "activityTypeField": "agriculture-forestry-fishing-activities-energy-usage",
       "extra-fields": [
         {
           "id": "agriculture-forestry-fishing-activities-type",
@@ -1304,7 +1437,11 @@
     "methodologies": [
       {
         "id": "fuel-combustion-non-specific-sources-methodology",
-        "inputRequired": ["total-fuel-consumption"],
+        "activityTypeField": "non-specific-sources-fuel-type",
+        "activityDataField": "total-fuel-consumption",
+        "inputRequired": [
+          "total-fuel-consumption"
+        ],
         "activities": [
           {
             "id": "fuel-combustion-non-specific-sources-activity",
@@ -1376,21 +1513,32 @@
       },
       {
         "id": "scaled-sample-fuel-combustion-non-specific-sources-methodology",
-        "inputRequired": ["sample-grid-supplied-energy", "scaling-data"],
+        "inputRequired": [
+          "sample-grid-supplied-energy",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
         "id": "modeled-data-fuel-combustion-non-specific-sources-methodology",
-        "inputRequired": ["modeled-fuel", "built-area"],
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
       "id": "fuel-consumption-non-specific-sources-direct-measure-methodology",
+      "activityTypeField": "non-specific-sources-fuel-type",
       "extra-fields": [
         {
           "id": "non-specific-sources-type",
-          "options": ["type-all", "type-stationary", "type-mobile"],
+          "options": [
+            "type-all",
+            "type-stationary",
+            "type-mobile"
+          ],
           "exclusive": "type-all"
         },
         {
@@ -1421,16 +1569,28 @@
     "methodologies": [
       {
         "id": "energy-consumption-non-specific-sources-methodology",
-        "inputRequired": ["total-grid-consumption"],
+        "activityTypeField": "non-specific-sources-energy-usage",
+        "activityDataField": "total-grid-consumption",
+        "inputRequired": [
+          "total-grid-consumption"
+        ],
         "activities": [
           {
             "id": "energy-consumption-non-specific-sources-activity",
-            "unique-by": ["type", "energy-usage", "data-source"],
+            "unique-by": [
+              "type",
+              "energy-usage",
+              "data-source"
+            ],
             "activity-title": "activity-energy-consumption",
             "extra-fields": [
               {
                 "id": "non-specific-sources-type",
-                "options": ["type-all", "type-stationary", "type-mobile"],
+                "options": [
+                  "type-all",
+                  "type-stationary",
+                  "type-mobile"
+                ],
                 "exclusive": "type-all"
               },
               {
@@ -1453,7 +1613,10 @@
                 "type": "text"
               }
             ],
-            "units": ["units-kilowatt-hours", "units-terajoules"]
+            "units": [
+              "units-kilowatt-hours",
+              "units-terajoules"
+            ]
           }
         ],
         "suggestedActivities": [
@@ -1479,21 +1642,32 @@
       },
       {
         "id": "scaled-sample-energy-usage-non-specific-sources-methodology",
-        "inputRequired": ["sample-grid-supplied-energy", "scaling-data"],
+        "inputRequired": [
+          "sample-grid-supplied-energy",
+          "scaling-data"
+        ],
         "disabled": true
       },
       {
         "id": "modeled-data-energy-usage-non-specific-sources-methodology",
-        "inputRequired": ["modeled-fuel", "built-area"],
+        "inputRequired": [
+          "modeled-fuel",
+          "built-area"
+        ],
         "disabled": true
       }
     ],
     "directMeasure": {
       "id": "energy-consumption-non-specific-sources-direct-measure-methodology",
+      "activityTypeField": "non-specific-sources-energy-usage",
       "extra-fields": [
         {
           "id": "non-specific-sources-type",
-          "options": ["type-all", "type-stationary", "type-mobile"],
+          "options": [
+            "type-all",
+            "type-stationary",
+            "type-mobile"
+          ],
           "exclusive": "type-all"
         },
         {
@@ -1522,7 +1696,11 @@
     "methodologies": [
       {
         "id": "fugitive-emissions-coal-methodology",
-        "inputRequired": ["total-fugitive-activity"],
+        "activityTypeField": "fugitive-emissions-coal-type",
+        "activityDataField": "total-fugitive-activity",
+        "inputRequired": [
+          "total-fugitive-activity"
+        ],
         "activities": [
           {
             "id": "fugitive-emissions-coal-activity",
@@ -1597,6 +1775,7 @@
     ],
     "directMeasure": {
       "id": "fugitive-emissions-coal-direct-measure-methodology",
+      "activityTypeField": "fugitive-emissions-coal-type",
       "extra-fields": [
         {
           "id": "fugitive-emissions-coal-type",
@@ -1627,7 +1806,11 @@
     "methodologies": [
       {
         "id": "fugitive-emissions-oil-gas-methodology",
-        "inputRequired": ["total-fugitive-activity"],
+        "activityTypeField": "fugitive-emissions-oil-gas-type",
+        "activityDataField": "total-fugitive-activity",
+        "inputRequired": [
+          "total-fugitive-activity"
+        ],
         "activities": [
           {
             "id": "fugitive-emissions-oil-gas-activity",
@@ -1705,6 +1888,7 @@
     ],
     "directMeasure": {
       "id": "fugitive-emissions-oil-gas-direct-measure-methodology",
+      "activityTypeField": "fugitive-emissions-oil-gas-type",
       "extra-fields": [
         {
           "id": "fugitive-emissions-oil-gas-type",
@@ -1737,8 +1921,11 @@
     "methodologies": [
       {
         "id": "fuel-sales-on-road-transport-methodology",
+        "activityTypeField": "on-road-transport-fuel-type",
         "mostUsed": true,
-        "inputRequired": ["total-fuel-sold-in-gas-stations"],
+        "inputRequired": [
+          "total-fuel-sold-in-gas-stations"
+        ],
         "activities": [
           {
             "id": "fuel-sales-on-road-transport-activity",
@@ -1846,7 +2033,10 @@
               "data-source"
             ],
             "activity-title": "total-distance-travelled-in-boundary",
-            "units": ["units-kilometers", "units-miles"],
+            "units": [
+              "units-kilometers",
+              "units-miles"
+            ],
             "extra-fields": [
               {
                 "id": "on-road-transport-vehicle-type",
@@ -1925,6 +2115,7 @@
     ],
     "directMeasure": {
       "id": "on-road-transport-direct-measure-methodology",
+      "activityTypeField": "on-road-transport-fuel-type",
       "extra-fields": [
         {
           "id": "on-road-transport-fuel-type",
@@ -1960,7 +2151,10 @@
     "methodologies": [
       {
         "id": "electricity-consumption-on-road-transport-methodology",
-        "inputRequired": ["total-electricity-consumed-in-charging-stations"],
+        "activityTypeField": "electricity",
+        "inputRequired": [
+          "total-electricity-consumed-in-charging-stations"
+        ],
         "activities": [
           {
             "id": "electricity-consumption-on-road-transport-activity",
@@ -2020,6 +2214,7 @@
     ],
     "directMeasure": {
       "id": "on-road-transport-direct-measure-energy-consumption-methodology",
+      "activityTypeField": "electricity",
       "extra-fields": [
         {
           "id": "on-road-transport-vehicle-type",
@@ -2043,8 +2238,11 @@
     "methodologies": [
       {
         "id": "fuel-sales-railways-methodology",
+        "activityTypeField": "railways-fuel-type",
         "mostUsed": true,
-        "inputRequired": ["total-fuel-consumed"],
+        "inputRequired": [
+          "total-fuel-consumed"
+        ],
         "activities": [
           {
             "id": "fuel-sales-railways-activity",
@@ -2122,6 +2320,7 @@
       },
       {
         "id": "geographic-railways-methodology",
+        "activityTypeField": "railways-fuel-type",
         "disabled": true,
         "inputRequired": [
           "total-distance-travelled-in-in-boundary-trips",
@@ -2130,9 +2329,15 @@
         "activities": [
           {
             "id": "geographic-railways-activity",
-            "unique-by": ["railways-vehicle-type", "railways-fuel-type"],
+            "unique-by": [
+              "railways-vehicle-type",
+              "railways-fuel-type"
+            ],
             "activity-title": "total-distance-travelled-in-boundary",
-            "units": ["units-kilometers", "units-miles"],
+            "units": [
+              "units-kilometers",
+              "units-miles"
+            ],
             "extra-fields": [
               {
                 "id": "railways-vehicle-type",
@@ -2201,6 +2406,7 @@
       },
       {
         "id": "movement-driver-railways-methodology",
+        "activityTypeField": "railways-fuel-type",
         "disabled": true,
         "inputRequired": [
           "total-fuel-consumed",
@@ -2210,6 +2416,7 @@
     ],
     "directMeasure": {
       "id": "railways-direct-measure-methodology",
+      "activityTypeField": "railways-fuel-type",
       "extra-fields": [
         {
           "id": "railways-fuel-type",
@@ -2242,6 +2449,7 @@
     "methodologies": [
       {
         "id": "electricity-consumption-railways-methodology",
+        "activityTypeField": "electricity",
         "activities": [
           {
             "id": "electricity-consumption-railways-activity",
@@ -2301,6 +2509,7 @@
     ],
     "directMeasure": {
       "id": "railways-direct-measure-energy-consumption-methodology",
+      "activityTypeField": "electricity",
       "extra-fields": [
         {
           "id": "railways-vehicle-type",
@@ -2323,7 +2532,10 @@
     "methodologies": [
       {
         "id": "fuel-sales-waterborne-navigation-methodology",
-        "inputRequired": ["total-fuel-sold-in-gas-stations"],
+        "activityTypeField": "waterborne-navigation-fuel-type",
+        "inputRequired": [
+          "total-fuel-sold-in-gas-stations"
+        ],
         "activities": [
           {
             "id": "fuel-sales-waterborne-navigation-activity",
@@ -2402,6 +2614,7 @@
       {
         "id": "geographic-waterborne-navigation-methodology",
         "disabled": true,
+        "activityTypeField": "waterborne-navigation-fuel-type",
         "inputRequired": [
           "total-distance-travelled-in-in-boundary-trips",
           "fuel-intensity"
@@ -2414,7 +2627,10 @@
               "waterborne-navigation-fuel-type"
             ],
             "activity-title": "total-distance-travelled-in-boundary",
-            "units": ["units-kilometers", "units-miles"],
+            "units": [
+              "units-kilometers",
+              "units-miles"
+            ],
             "extra-fields": [
               {
                 "id": "waterborne-navigation-vehicle-type",
@@ -2480,6 +2696,7 @@
     ],
     "directMeasure": {
       "id": "waterborne-navigation-direct-measure-methodology",
+      "activityTypeField": "waterborne-navigation-fuel-type",
       "extra-fields": [
         {
           "id": "waterborne-navigation-fuel-type",
@@ -2511,6 +2728,7 @@
     "methodologies": [
       {
         "id": "electricity-consumption-waterborne-navigation-methodology",
+        "activityTypeField": "electricity",
         "activities": [
           {
             "id": "electricity-consumption-waterborne-navigation-activity",
@@ -2569,6 +2787,7 @@
     ],
     "directMeasure": {
       "id": "waterborne-navigation-direct-measure-energy-consumption-methodology",
+      "activityTypeField": "electricity",
       "extra-fields": [
         {
           "id": "waterborne-navigation-vehicle-type",
@@ -2590,7 +2809,10 @@
     "methodologies": [
       {
         "id": "fuel-sales-aviation-methodology",
-        "inputRequired": ["total-fuel-sold-in-gas-stations"],
+        "activityTypeField": "aviation-fuel-type",
+        "inputRequired": [
+          "total-fuel-sold-in-gas-stations"
+        ],
         "activities": [
           {
             "id": "fuel-sales-aviation-activity",
@@ -2672,6 +2894,7 @@
       {
         "id": "geographic-aviation-methodology",
         "disabled": true,
+        "activityTypeField": "aviation-fuel-type",
         "inputRequired": [
           "total-distance-travelled-in-in-boundary-trips",
           "fuel-intensity"
@@ -2679,9 +2902,15 @@
         "activities": [
           {
             "id": "geographic-aviation-activity",
-            "unique-by": ["aviation-vehicle-type", "aviation-fuel-type"],
+            "unique-by": [
+              "aviation-vehicle-type",
+              "aviation-fuel-type"
+            ],
             "activity-title": "total-distance-travelled-in-boundary",
-            "units": ["units-kilometers", "units-miles"],
+            "units": [
+              "units-kilometers",
+              "units-miles"
+            ],
             "extra-fields": [
               {
                 "id": "aviation-vehicle-type",
@@ -2750,6 +2979,7 @@
     ],
     "directMeasure": {
       "id": "aviation-direct-measure-methodology",
+      "activityTypeField": "aviation-fuel-type",
       "extra-fields": [
         {
           "id": "aviation-fuel-type",
@@ -2783,7 +3013,10 @@
     "methodologies": [
       {
         "id": "electricity-consumption-aviation-methodology",
-        "inputRequired": ["total-electricity-consumed-in-charging-stations"],
+        "activityTypeField": "electricity",
+        "inputRequired": [
+          "total-electricity-consumed-in-charging-stations"
+        ],
         "activities": [
           {
             "id": "electricity-consumption-aviation-activity",
@@ -2843,6 +3076,7 @@
     ],
     "directMeasure": {
       "id": "aviation-direct-measure-energy-consumption-methodology",
+      "activityTypeField": "electricity",
       "extra-fields": [
         {
           "id": "aviation-vehicle-type",
@@ -2865,7 +3099,10 @@
     "methodologies": [
       {
         "id": "fuel-sales-off-road-transport-methodology",
-        "inputRequired": ["total-fuel-sold-in-gas-stations"],
+        "activityTypeField": "off-road-transport-fuel-type",
+        "inputRequired": [
+          "total-fuel-sold-in-gas-stations"
+        ],
         "activities": [
           {
             "id": "fuel-sales-off-road-transport-activity",
@@ -2945,6 +3182,7 @@
     ],
     "directMeasure": {
       "id": "fuel-sales-off-road-transport-direct-measure-methodology",
+      "activityTypeField": "off-road-transport-fuel-type",
       "extra-fields": [
         {
           "id": "off-road-transport-fuel-type",
@@ -2978,7 +3216,10 @@
     "methodologies": [
       {
         "id": "electricity-consumption-off-road-transport-methodology",
-        "inputRequired": ["total-electricity-consumed-in-charging-stations"],
+        "activityTypeField": "electricity",
+        "inputRequired": [
+          "total-electricity-consumed-in-charging-stations"
+        ],
         "activities": [
           {
             "id": "electricity-consumption-off-road-transport-activity",
@@ -3038,6 +3279,7 @@
     ],
     "directMeasure": {
       "id": "electricity-consumption-off-road-transport-direct-measure-methodology",
+      "activityTypeField": "electricity",
       "extra-fields": [
         {
           "id": "off-road-transport-vehicle-type",
@@ -3060,6 +3302,7 @@
     "methodologies": [
       {
         "id": "methane-commitment-solid-waste-inboundary-methodology",
+        "activityTypeField": "landfill-id",
         "inputRequired": [
           "landfill-id",
           "landfill-address",
@@ -3114,12 +3357,16 @@
                 "type": "text"
               }
             ],
-            "units": ["units-kilograms", "units-tonnes"]
+            "units": [
+              "units-kilograms",
+              "units-tonnes"
+            ]
           }
         ]
       },
       {
         "id": "first-order-of-decay-solid-waste-inboundary-methodology",
+        "activityTypeField": "total-municipal-solid-waste-disposed",
         "inputRequired": [
           "landfill-id",
           "landfill-address",
@@ -3133,7 +3380,10 @@
     ],
     "directMeasure": {
       "id": "direct-measure-solid-waste-inboundary-methodology",
-      "inputRequired": ["emissions-value-ch4"],
+      "activityTypeField": "landfill-id",
+      "inputRequired": [
+        "emissions-value-ch4"
+      ],
       "extra-fields": [
         {
           "id": "landfill-id",
@@ -3152,9 +3402,11 @@
     }
   },
   "III.1.3": {
+    "activityTypeField": "total-municipal-solid-waste-disposed",
     "methodologies": [
       {
         "id": "methane-commitment-solid-waste-outboundary-methodology",
+        "activityTypeField": "landfill-id",
         "inputRequired": [
           "landfill-id",
           "landfill-address",
@@ -3205,7 +3457,10 @@
                 ]
               }
             ],
-            "units": ["units-kilograms", "units-tonnes"]
+            "units": [
+              "units-kilograms",
+              "units-tonnes"
+            ]
           }
         ]
       },
@@ -3224,6 +3479,7 @@
     ],
     "directMeasure": {
       "id": "direct-measure-solid-waste-outboundary-methodology",
+      "activityTypeField": "landfill-id",
       "extra-fields": [
         {
           "id": "landfill-id",
@@ -3245,6 +3501,7 @@
     "methodologies": [
       {
         "id": "biological-treatment-inboundary-methodology",
+        "activityTypeField": "biological-treatment-inboundary-treatment-type",
         "inputRequired": [
           "mass-of-organic-waste-treated",
           "total-of-ch4-recovered"
@@ -3270,7 +3527,10 @@
               },
               {
                 "id": "biological-treatment-inboundary-waste-state",
-                "options": ["waste-state-dry-waste", "waste-state-wet-waste"]
+                "options": [
+                  "waste-state-dry-waste",
+                  "waste-state-wet-waste"
+                ]
               },
               {
                 "id": "biological-treatment-inboundary-total-of-ch4-recovered",
@@ -3281,7 +3541,10 @@
                 "type": "text"
               }
             ],
-            "units": ["units-kilograms", "units-tonnes"]
+            "units": [
+              "units-kilograms",
+              "units-tonnes"
+            ]
           }
         ],
         "suggestedActivities": [
@@ -3308,6 +3571,7 @@
     ],
     "directMeasure": {
       "id": "direct-measure-biological-treatment-inboundary-methodology",
+      "activityTypeField": "biological-treatment-inboundary-treatment-type",
       "extra-fields": [
         {
           "id": "biological-treatment-inboundary-treatment-type",
@@ -3329,6 +3593,7 @@
     "methodologies": [
       {
         "id": "biological-treatment-outboundary-methodology",
+        "activityTypeField": "biological-treatment-outboundary-treatment-type",
         "inputRequired": [
           "mass-of-organic-waste-treated",
           "total-of-ch4-recovered"
@@ -3354,7 +3619,10 @@
               },
               {
                 "id": "biological-treatment-outboundary-waste-state",
-                "options": ["waste-state-dry-waste", "waste-state-wet-waste"]
+                "options": [
+                  "waste-state-dry-waste",
+                  "waste-state-wet-waste"
+                ]
               },
               {
                 "id": "biological-treatment-outboundary-total-of-ch4-recovered",
@@ -3365,7 +3633,10 @@
                 "type": "text"
               }
             ],
-            "units": ["units-kilograms", "units-tonnes"]
+            "units": [
+              "units-kilograms",
+              "units-tonnes"
+            ]
           }
         ],
         "suggestedActivities": [
@@ -3392,6 +3663,7 @@
     ],
     "directMeasure": {
       "id": "direct-measure-biological-treatment-outboundary-methodology",
+      "activityTypeField": "biological-treatment-outboundary-treatment-type",
       "extra-fields": [
         {
           "id": "biological-treatment-outboundary-treatment-type",
@@ -3413,6 +3685,7 @@
     "methodologies": [
       {
         "id": "incineration-waste-inboundary-methodology",
+        "activityTypeField": "incineration-facility-id",
         "inputRequired": [
           "incineration-facility-id",
           "incineration-facility-address",
@@ -3460,16 +3733,23 @@
               },
               {
                 "id": "incineration-waste-inboundary-boiler-type",
-                "options": ["boiler-type-stoker", "boiler-type-fluidised-bed"]
+                "options": [
+                  "boiler-type-stoker",
+                  "boiler-type-fluidised-bed"
+                ]
               }
             ],
-            "units": ["units-kilograms", "units-tonnes"]
+            "units": [
+              "units-kilograms",
+              "units-tonnes"
+            ]
           }
         ]
       }
     ],
     "directMeasure": {
       "id": "incineration-waste-inboundary-direct-measure-methodology",
+      "activityTypeField": "incineration-facility-id",
       "extra-fields": [
         {
           "id": "incineration-facility-id",
@@ -3487,6 +3767,7 @@
     "methodologies": [
       {
         "id": "incineration-waste-outboundary-methodology",
+        "activityTypeField": "incineration-facility-id",
         "inputRequired": [
           "incineration-facility-id",
           "incineration-facility-address",
@@ -3534,16 +3815,23 @@
               },
               {
                 "id": "incineration-waste-outboundary-boiler-type",
-                "options": ["boiler-type-stoker", "boiler-type-fluidised-bed"]
+                "options": [
+                  "boiler-type-stoker",
+                  "boiler-type-fluidised-bed"
+                ]
               }
             ],
-            "units": ["units-kilograms", "units-tonnes"]
+            "units": [
+              "units-kilograms",
+              "units-tonnes"
+            ]
           }
         ]
       }
     ],
     "directMeasure": {
       "id": "direct-measure-incineration-waste-boundary-methodology",
+      "activityTypeField": "incineration-facility-id",
       "extra-fields": [
         {
           "id": "incineration-facility-id",
@@ -3561,6 +3849,7 @@
     "methodologies": [
       {
         "id": "wastewater-inside-methodology",
+        "activityTypeField": "population-or-industrial-production",
         "inputRequired": [
           "wastewater-inside-generated",
           "total-organic-sludge-removed",
@@ -3738,6 +4027,7 @@
       }
     ],
     "directMeasure": {
+      "activityTypeField": "direct-measure-wastewater-inside-source-type",
       "id": "direct-measure-wastewater-inside-methodology",
       "extra-fields": [
         {
@@ -3754,6 +4044,7 @@
     "methodologies": [
       {
         "id": "wastewater-outside-methodology",
+        "activityTypeField": "population-or-industrial-production",
         "inputRequired": [
           "wastewater-outside-generated",
           "total-organic-sludge-removed",
@@ -3931,6 +4222,7 @@
       }
     ],
     "directMeasure": {
+      "activityTypeField": "direct-measure-wastewater-outside-source-type",
       "id": "direct-measure-wastewater-outside-methodology",
       "extra-fields": [
         {

@@ -105,9 +105,6 @@ const MultiSelectWithCheckbox = ({
   selectedActivity,
 }: MultiSelectInputProps) => {
   const error = activity.split(".").reduce((acc, key) => acc?.[key], errors);
-  console.log(selectedActivity);
-  console.log(options);
-
   let preselectedValue = [];
   preselectedValue.push(selectedActivity!);
 

@@ -65,7 +65,9 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
   }
 
   console.log("seleted activity", selectedActivity);
-  console.log("prefiled value", prefilledValue);
+  console.log("activity value", selectedActivityValue);
+  console.log(options);
+
   const error = activity.split(".").reduce((acc, key) => acc?.[key], errors);
   return (
     <Box display="flex" flexDirection="column" gap="8px">
@@ -98,6 +100,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
           required: required === false ? false : t("option-required"),
         })}
         value={selectedActivityValue}
+        onChange={(e) => setSelectedActivityValue(e.target.value)}
       >
         {options?.map((item: string) => (
           <option key={item} value={item}>

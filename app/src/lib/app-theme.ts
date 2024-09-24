@@ -10,7 +10,7 @@ export const appTheme = extendTheme({
     content: {
       primary: "#00001F",
       secondary: "#00001F",
-      tertiary: "#7A7B9A",
+      tertiary: "#4B4C63",
       link: "#2351DC",
       alternative: "#001EA7",
     },

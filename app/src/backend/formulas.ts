@@ -3,6 +3,7 @@ import type { Gas } from "./CalculationService";
 import createHttpError from "http-errors";
 import { GasValueCreationAttributes } from "@/models/GasValue";
 import { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
+import * as console from "node:console";
 
 const GAS_NAMES = ["CO2", "N2O", "CH4"];
 const METHANE_CORRECTION_FACTORS: Record<string, number> = {
@@ -134,10 +135,11 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
   })[],
 ): Gas[] {
   // TODO add actvityAmount column to ActivityValue
-  // const activityAmount = activityValue.activityAmount || 0;
+
   // TODO perform these calculations using BigInt/ BigNumber?
   const data = activityValue.activityData;
-  const activityAmount = data ? data["activity_amount"] || 0 : 0;
+  const activityAmountKey = activityValue.metadata?.["activityTitle"];
+  const activityAmount = data?.[activityAmountKey] || 0;
   const gases = gasValues?.map((gasValue) => {
     const emissionsFactor = gasValue.emissionsFactor;
     if (emissionsFactor == null) {
@@ -152,6 +154,7 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
       );
     }
     // this rounds/ truncates!
+    console.log(emissionsFactor.emissionsPerActivity, "an activity count");
     const amount = BigInt(
       activityAmount * emissionsFactor.emissionsPerActivity,
     );

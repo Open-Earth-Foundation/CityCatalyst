@@ -61,22 +61,26 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   targetActivityValue,
   resetSelectedActivityValue,
 }) => {
-  const { fields, units, title } = useMemo(() => {
+  const { fields, units, title, activityId } = useMemo(() => {
     let fields: ExtraField[] = [];
     let units = null;
     let title = null;
+    let activityId = null;
+
     if (methodology?.id.includes("direct-measure")) {
       fields = methodology.fields;
     } else {
       fields = methodology?.fields[0]["extra-fields"];
       units = methodology?.fields[0].units;
       title = methodology?.fields[0]["activity-title"];
+      activityId = methodology?.fields[0]["id"];
     }
 
     return {
       fields,
       units,
       title,
+      activityId,
     };
   }, [methodology]);
 
@@ -115,7 +119,14 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     });
 
   // extract and deduplicate data sources from emissions factors
-  const emissionsFactorTypes = useMemo(() => {
+  const emissionsFactorTypes = useMemo<
+    {
+      id: string;
+      name: string;
+      gas: string;
+      value: number;
+    }[]
+  >(() => {
     if (!emissionsFactors) {
       return [];
     }
@@ -124,6 +135,8 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       return factor.dataSources.map((source) => ({
         id: source.datasourceId,
         name: getTranslationFromDict(source.datasetName) ?? "unknown",
+        gas: factor.gas,
+        value: factor.emissionsPerActivity,
       }));
     });
   }, [emissionsFactors]);
@@ -202,6 +215,8 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         : { ...values },
       metadata: {
         emissionFactorType: activity.emissionFactorType,
+        activityId: activityId,
+        activityTitle: title,
       },
       ...(inventoryValue ? { inventoryValueId: inventoryValue.id } : {}),
       ...(!inventoryValue

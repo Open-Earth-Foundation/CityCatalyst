@@ -116,6 +116,10 @@ const ActivityModalBody = ({
 
   // Adjust function for countries with national emission factors i.e US
   const onEmissionFactorTypeChange = (e: any) => {
+    // somehow extract the gas and the emissions perActivity for each gas
+    const emissionFactor = emissionsFactorTypes.find(
+      (factor) => factor.id === e.target.value,
+    );
     const emissionFactorType = e.target.value;
     if (emissionFactorType === "custom") {
       setIsEmissionFactorInputDisabled(false);

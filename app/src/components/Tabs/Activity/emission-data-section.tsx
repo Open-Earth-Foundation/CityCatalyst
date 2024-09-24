@@ -71,6 +71,7 @@ const EmissionDataSection = ({
   );
 
   console.log(activityValues, "the values");
+  console.log(inventoryValue, "the inventoryValue");
 
   const {
     isOpen: isAddActivityModalOpen,
@@ -358,7 +359,7 @@ const EmissionDataSection = ({
                       fontWeight="semibold"
                       fontSize="headline.md"
                     >
-                      {convertKgToTonnes(totalEmissions)}
+                      {convertKgToTonnes(inventoryValue?.co2eq as bigint)}
                     </Text>
                   </Box>
                 </Box>

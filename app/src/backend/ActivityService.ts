@@ -342,6 +342,12 @@ export default class ActivityService {
         const currentCO2e = BigInt(inventoryValue.co2eq ?? 0n);
         const calculatedCO2e = BigInt(totalCO2e); // Ensure totalCO2e is BigInt
 
+        console.log(
+          "currentCO2e",
+          currentCO2e,
+          calculatedCO2e,
+          calculatedCO2e + currentCO2e,
+        );
         inventoryValue.co2eq = currentCO2e + calculatedCO2e;
         inventoryValue.co2eqYears = Math.max(
           inventoryValue.co2eqYears ?? 0,

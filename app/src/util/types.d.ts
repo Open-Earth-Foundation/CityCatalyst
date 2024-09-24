@@ -144,13 +144,15 @@ interface TopEmission {
   percentage: number;
 }
 
-interface ResultsResponse {
-  totalEmissions: {
-    bySector: {
+interface SectorEmission {
       sectorName: string;
       co2eq: bigint;
       percentage: number;
-    };
+}
+
+interface ResultsResponse {
+  totalEmissions: {
+    bySector: SectorEmission[];
     total: bigint;
   };
   topEmissions: { bySubSector: TopEmission[] };

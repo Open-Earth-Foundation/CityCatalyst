@@ -64,10 +64,6 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
     );
   }
 
-  console.log("seleted activity", selectedActivity);
-  console.log("activity value", selectedActivityValue);
-  console.log(options);
-
   const error = activity.split(".").reduce((acc, key) => acc?.[key], errors);
   return (
     <Box display="flex" flexDirection="column" gap="8px">

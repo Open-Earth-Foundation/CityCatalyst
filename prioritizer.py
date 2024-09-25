@@ -1,7 +1,6 @@
 import os
 import csv
 
-
 def read_cities(city_file):
     cities = []
     with open(city_file, "r") as f:
@@ -61,12 +60,46 @@ def qualitative_score(city, action):
 # equal weighting per property
 
 SCORE_MAX = 100/6
+MAX_EMISSIONS_REDUCTIONS = 500000
+scale_scores = {
+    "Very High": 1.0,
+    "High": 0.75,
+    "Medium": 0.5,
+    "Low": 0.25,
+    "Very Low": 0.0,
+}
+MAX_TIME_IN_YEARS = 20
+MAX_COST = 60000000
 
 def quantitative_score(city, action):
     score = 0
-    score += (1 / action.cost) * SCORE_MAX
+    # Add score for emissions_reduction
+    score += (
+        min(action.emission_reductions, MAX_EMISSIONS_REDUCTIONS)
+        / MAX_EMISSIONS_REDUCTIONS
+    ) * SCORE_MAX
+    # Add score for risk_reduction
+    score += scale_scores[action.risk] * SCORE_MAX
+    # Add score for environment
+    score += SCORE_MAX if (action.environment == city.environment) else 0.0
+    # Add score for population
+    if action.population is None:
+        score += SCORE_MAX / 2.0
+    else:
+        score += (
+            min(city.population / abs(action.population - city.population), 1.0)
+            * SCORE_MAX
+        )
+    # Add score for time_in_years
+    score += (
+        1 - (min(action.time_in_years, MAX_TIME_IN_YEARS) / MAX_TIME_IN_YEARS)
+    ) * SCORE_MAX
+    # Add score for cost
+    # TODO: we are treating the budget as if all of it can be devoted
+    # to climate actions. check this!
+    score += (1 - (min(action.cost, city.budget) / city.budget)) * SCORE_MAX
     # scores added
-    pass
+    return score
 
 
 # score one-by-one

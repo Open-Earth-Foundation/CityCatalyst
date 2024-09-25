@@ -1,4 +1,4 @@
-Name,Description,Emissions reduction,Risk reduction,Environment,Population,Cost,Time (years)
+name,description,emissions_reduction,risk_reduction,environment,population,cost,time_in_years
 Sea wall,Defend agains the sea,0,high,coastal,,"10,000,000",5
 Bike lanes,Build bike lanes,"100,000",,,,"1,000,000",1
 Green Roofs,Install vegetation on rooftops,"50,000",Low,Urban,"500,000","2,000,000",3

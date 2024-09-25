@@ -1,12 +1,31 @@
 import os
+import csv
 
 
-def read_cities(args):
-    pass
+def read_cities(city_file):
+    cities = []
+    with open(city_file, "r") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            cities.append(row)
+    return cities
 
 
-def read_actions(args):
-    pass
+def read_actions(action_file):
+    actions = []
+    with open(action_file, "r") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            actions.append(row)
+    return actions
+
+
+def write_output(output_file, top_actions):
+    with open(output_file, "w") as f:
+        writer = csv.DictWriter(f, fieldnames=["city", "action", "score"])
+        writer.writeheader()
+        for city, action, score in top_actions:
+            writer.writerow({"city": city, "action": action, "score": score})
 
 
 # TODO: maybe prefilter actions that are not applicable to a city
@@ -24,11 +43,11 @@ def qualitative_score(city, action):
     - Actions that match the population are better than those that don't
     - Actions that take less time are better than those that take more time
 
-    Given these rules, how would you prioritize the following actions for the city of {city} with name {city.Name}, population {city.population},
+    Given these rules, how would you prioritize the following action for the city of {city} with name {city.Name}, population {city.population},
     area {city.area}, environment	{city.environment}, budget {city.budget}, total GHG emissions in CO2eq {city.total_emission} energy {city.energy_emissions}, transportation emissions {city.transportation_emissions}, waste emissions {city.waste_emissions} and risk
     {city.risk}?
 
-    Action: {action.Name}, cost {action.cost}, GHG emissions in CO2eq {action.emissions}, risk {action.risk}, environment {action.environment}, population {action.population}, time {action.time}
+    Action: {action.Name}, cost {action.cost}, GHG emissions in CO2eq {action.emissions}, risk {action.risk}, environment {action.environment}, population {action.population}, time {action.time_in_years}
 
     Please return a score from 0 to 100, where 0 is the worst possible action and 100 is the best possible action.
 
@@ -51,38 +70,58 @@ def quantitative_score(city, action):
 
 
 # score one-by-one
-def qualitative_prioritizer(cities, actions):
-    score = {}
+def qualitative_prioritizer(cities, actions, number_of_actions=5):
+    top_actions = []
     for city in cities:
-        score[city] = {}
+        scores = {}
         for action in actions:
-            score[city][action] = qualitative_score(city, action)
-    # Get actions with maximum score
+            scores[action] = qualitative_score(city, action)
+        actions = scores.keys()
+        actions = sorted(actions, key=lambda x: scores[x], reverse=True)
+        top_action_names = actions[:number_of_actions]
+        top_actions.extend(
+            [
+                {
+                    "city": city,
+                    "action": action,
+                    "score": scores[action],
+                }
+                for action in top_action_names
+            ]
+        )
+    return top_actions
+
+
+def quantitative_prioritizer(cities, actions, number_of_actions=5):
+    top_actions = []
+    for city in cities:
+        scores = {}
+        for action in actions:
+            scores[action] = quantitative_score(city, action)
+        actions = scores.keys()
+        actions = sorted(actions, key=lambda x: scores[x], reverse=True)
+        top_action_names = actions[:number_of_actions]
+        top_actions.extend(
+            [
+                {
+                    "city": city,
+                    "action": action,
+                    "score": scores[action],
+                }
+                for action in top_action_names
+            ]
+        )
     pass
 
 
-def quantitative_prioritizer(cities, actions):
-    score = {}
-    for city in cities:
-        score[city] = {}
-        for action in actions:
-            score[city][action] = quantitative_score(city, action)
-    # Get actions with maximum score
-    pass
-
-
-def prioritized_actions(cities, actions, args):
-    if quantitative_prioritizer(args):
-        return prioritize_by_quantitative(cities, actions)
+def main(city_file, action_file, output_file, quantitative, number_of_actions):
+    cities = read_cities(city_file)
+    actions = read_actions(action_file)
+    if quantitative:
+        top_actions = quantitative_prioritizer(cities, actions, number_of_actions)
     else:
-        return prioritize_by_qualitative(cities, actions)
-
-
-def main(args):
-    cities = read_cities(args)
-    actions = read_actions(args)
-    top_actions = prioritized_actions(cities, actions, args)
-    write_output(top_actions, args)
+        top_actions = qualitative_prioritizer(cities, actions, number_of_actions)
+    write_output(top_actions, output_file)
 
 
 if __name__ == "__main__":
@@ -93,5 +132,12 @@ if __name__ == "__main__":
     parser.add_argument("--action-file", required=True)
     parser.add_argument("--output-file", required=True)
     parser.add_argument("--quantitative", action="store_true")
+    parser.add_argument("--number-of-actions", type=int, default=5)
     args = parser.parse_args()
-    main(args)
+    main(
+        args.city_file,
+        args.action_file,
+        args.output_file,
+        args.quantitative,
+        args.number_of_actions,
+    )

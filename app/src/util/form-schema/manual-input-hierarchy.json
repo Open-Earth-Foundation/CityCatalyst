@@ -4,7 +4,7 @@
       {
         "id": "fuel-combustion-residential-buildings-methodology",
         "activityTypeField": "residential-building-fuel-type",
-        "activityDataField": "total-grid-consumption",
+        "activityUnitsField": "total-grid-consumption",
         "inputRequired": [
           "total-fuel-consumption"
         ],
@@ -117,7 +117,7 @@
       {
         "id": "energy-consumption-residential-buildings-methodology",
         "activityTypeField": "residential-building-energy-usage",
-        "activityDataField": "total-grid-consumption",
+        "activityUnitsField": "total-grid-consumption",
         "inputRequired": [
           "total-grid-consumption"
         ],
@@ -229,7 +229,7 @@
       {
         "id": "fuel-combustion-commercial-buildings-methodology",
         "activityTypeField": "commercial-building-fuel-type",
-        "activityDataField": "total-fuel-consumption",
+        "activityUnitsField": "total-fuel-consumption",
         "inputRequired": [
           "total-fuel-consumption"
         ],
@@ -368,7 +368,7 @@
       {
         "id": "energy-consumption-commercial-buildings-methodology",
         "activityTypeField": "commercial-building-energy-usage",
-        "activityDataField": "total-grid-consumption",
+        "activityUnitsField": "total-grid-consumption",
         "inputRequired": [
           "total-grid-consumption"
         ],
@@ -507,7 +507,7 @@
       {
         "id": "fuel-combustion-manufacturing-and-construction-methodology",
         "activityTypeField": "manufacturing-and-construction-fuel-type",
-        "activityDataField": "total-fuel-consumption",
+        "activityUnitsField": "total-fuel-consumption",
         "inputRequired": [
           "total-fuel-consumption"
         ],
@@ -696,7 +696,7 @@
       {
         "id": "energy-consumption-manufacturing-and-construction-methodology",
         "activityTypeField": "manufacturing-and-construction-energy-usage",
-        "activityDataField": "total-grid-consumption",
+        "activityUnitsField": "total-grid-consumption",
         "inputRequired": [
           "total-grid-consumption"
         ],
@@ -858,7 +858,7 @@
       {
         "id": "fuel-combustion-energy-industries-methodology",
         "activityTypeField": "energy-industries-fuel-type",
-        "activityDataField": "total-fuel-consumption",
+        "activityUnitsField": "total-fuel-consumption",
         "inputRequired": [
           "total-fuel-consumption"
         ],
@@ -1026,7 +1026,7 @@
       {
         "id": "energy-consumption-energy-industries-methodology",
         "activityTypeField": "energy-industries-type",
-        "activityDataField": "total-grid-consumption",
+        "activityUnitsField": "total-grid-consumption",
         "inputRequired": [
           "total-grid-consumption"
         ],
@@ -1179,7 +1179,7 @@
       {
         "id": "fuel-combustion-agriculture-forestry-fishing-activities-methodology",
         "activityTypeField": "agriculture-forestry-fishing-activities-fuel-type",
-        "activityDataField": "total-fuel-consumption",
+        "activityUnitsField": "total-fuel-consumption",
         "inputRequired": [
           "total-fuel-consumption"
         ],
@@ -1309,7 +1309,7 @@
       {
         "id": "energy-consumption-agriculture-forestry-fishing-activities-methodology",
         "activityTypeField": "agriculture-forestry-fishing-activities-energy-usage",
-        "activityDataField": "total-grid-consumption",
+        "activityUnitsField": "total-grid-consumption",
         "inputRequired": [
           "total-grid-consumption"
         ],
@@ -1438,7 +1438,7 @@
       {
         "id": "fuel-combustion-non-specific-sources-methodology",
         "activityTypeField": "non-specific-sources-fuel-type",
-        "activityDataField": "total-fuel-consumption",
+        "activityUnitsField": "total-fuel-consumption",
         "inputRequired": [
           "total-fuel-consumption"
         ],
@@ -1570,7 +1570,7 @@
       {
         "id": "energy-consumption-non-specific-sources-methodology",
         "activityTypeField": "non-specific-sources-energy-usage",
-        "activityDataField": "total-grid-consumption",
+        "activityUnitsField": "total-grid-consumption",
         "inputRequired": [
           "total-grid-consumption"
         ],
@@ -1697,7 +1697,7 @@
       {
         "id": "fugitive-emissions-coal-methodology",
         "activityTypeField": "fugitive-emissions-coal-type",
-        "activityDataField": "total-fugitive-activity",
+        "activityUnitsField": "total-fugitive-activity",
         "inputRequired": [
           "total-fugitive-activity"
         ],
@@ -1807,7 +1807,7 @@
       {
         "id": "fugitive-emissions-oil-gas-methodology",
         "activityTypeField": "fugitive-emissions-oil-gas-type",
-        "activityDataField": "total-fugitive-activity",
+        "activityUnitsField": "total-fugitive-activity",
         "inputRequired": [
           "total-fugitive-activity"
         ],
@@ -2729,6 +2729,7 @@
       {
         "id": "electricity-consumption-waterborne-navigation-methodology",
         "activityTypeField": "electricity",
+        "activityUnitsField": "electricity-consumption-waterborne-navigation-activity",
         "activities": [
           {
             "id": "electricity-consumption-waterborne-navigation-activity",

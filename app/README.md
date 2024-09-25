@@ -93,7 +93,7 @@ If necessary, you can undo individual migrations with `npm run db:migrate:undo` 
 
 To download the current set of data sources from the global API, run the following command:
 ```bash
-npm run sync-catalogue`
+npm run sync-catalogue
 ```
 
 ### Environment

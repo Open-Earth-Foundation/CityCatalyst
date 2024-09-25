@@ -125,7 +125,7 @@ npm run dev
 
 The standard port is 3000 and the application can be opend at http://localhost:3000. Please check the log outputs, if a different port has been used.
 
-Use `johndeo@example.com` and `password` to login.
+Use `johndoe@example.com` and `password` to login.
 
 ### Docker
 

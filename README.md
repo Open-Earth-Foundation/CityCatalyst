@@ -1,2 +1,2 @@
 # toy-prioritizer
-Toy prioritizer for 
+Toy prioritizer for climate actions

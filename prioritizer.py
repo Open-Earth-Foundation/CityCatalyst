@@ -1,5 +1,40 @@
 import os
 import csv
+from dotenv import load_dotenv
+from openai import OpenAI
+
+load_dotenv()
+
+api_key = os.getenv("OPENAI_API_KEY")
+
+client = OpenAI(api_key=api_key)
+
+
+def send_to_llm(prompt):
+
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {
+                "role": "system",
+                "content": """
+            You are a climate action expert, tasked to prioritize climate actions for cities.
+             
+            These are the rules to use for prioritizing a climate action for a city:
+             
+            - lower cost actions are better than higher cost actions
+            - High emissions reductions are better than low emissions reductions
+            - High risk reduction is better than low risk reduction
+            - Actions that match the environment are better than those that don't
+            - Actions that match the population are better than those that don't
+            - Actions that take less time are better than those that take more time
+            """,
+            },
+            {"role": "user", "content": prompt},
+        ],
+    )
+    return response.choices[0].message.content
+
 
 def read_cities(city_file):
     cities = []
@@ -32,23 +67,16 @@ def write_output(output_file, top_actions):
 
 def qualitative_score(city, action):
 
-    prompt = """
-    here are the rules for prioritizing a climate action for a city:
+    prompt = f"""
+    According to the rules given, how would you prioritize the following action for the city of with name {city["name"]}, population {city["population"]},
+    area {city["area"]}, environment {city["environment"]}, budget {city["budget"]}, total GHG emissions in CO2eq {city["total_emission"]} energy {city["energy_emissions"]}, transportation emissions {city["transportation_emissions"]}, waste emissions {city["waste_emissions"]} and risk
+    {city["risk"]}?
 
-    - lower cost actions are better than higher cost actions
-    - High emissions reductions are better than low emissions reductions
-    - High risk reduction is better than low risk reduction
-    - Actions that match the environment are better than those that don't
-    - Actions that match the population are better than those that don't
-    - Actions that take less time are better than those that take more time
-
-    Given these rules, how would you prioritize the following action for the city of {city} with name {city.Name}, population {city.population},
-    area {city.area}, environment	{city.environment}, budget {city.budget}, total GHG emissions in CO2eq {city.total_emission} energy {city.energy_emissions}, transportation emissions {city.transportation_emissions}, waste emissions {city.waste_emissions} and risk
-    {city.risk}?
-
-    Action: {action.Name}, cost {action.cost}, GHG emissions in CO2eq {action.emissions}, risk {action.risk}, environment {action.environment}, population {action.population}, time {action.time_in_years}
+    Action: {action["name"]}, cost {action["cost"]}, GHG emissions in CO2eq {action["emissions"]}, risk {action["risk"]}, environment {action["environment"]}, population {action["population"]}, time {action["time_in_years"]}
 
     Please return a score from 0 to 100, where 0 is the worst possible action and 100 is the best possible action.
+
+    Response format: [SCORE]
 
     """
 
@@ -59,7 +87,7 @@ def qualitative_score(city, action):
 # return a score from 0 to 100, each property counts for 16.67 "points"
 # equal weighting per property
 
-SCORE_MAX = 100/6
+SCORE_MAX = 100 / 6
 MAX_EMISSIONS_REDUCTIONS = 500000
 scale_scores = {
     "Very High": 1.0,
@@ -71,33 +99,36 @@ scale_scores = {
 MAX_TIME_IN_YEARS = 20
 MAX_COST = 60000000
 
+
 def quantitative_score(city, action):
     score = 0
     # Add score for emissions_reduction
     score += (
-        min(action.emission_reductions, MAX_EMISSIONS_REDUCTIONS)
+        min(action["emissions_reduction"], MAX_EMISSIONS_REDUCTIONS)
         / MAX_EMISSIONS_REDUCTIONS
     ) * SCORE_MAX
     # Add score for risk_reduction
-    score += scale_scores[action.risk] * SCORE_MAX
+    score += scale_scores[action["risk"]] * SCORE_MAX
     # Add score for environment
-    score += SCORE_MAX if (action.environment == city.environment) else 0.0
+    score += SCORE_MAX if (action["environment"] == city["environment"]) else 0.0
     # Add score for population
-    if action.population is None:
+    if action["population"] is None:
         score += SCORE_MAX / 2.0
     else:
         score += (
-            min(city.population / abs(action.population - city.population), 1.0)
+            min(
+                city["population"] / abs(action["population"] - city["population"]), 1.0
+            )
             * SCORE_MAX
         )
     # Add score for time_in_years
     score += (
-        1 - (min(action.time_in_years, MAX_TIME_IN_YEARS) / MAX_TIME_IN_YEARS)
+        1 - (min(action["time_in_years"], MAX_TIME_IN_YEARS) / MAX_TIME_IN_YEARS)
     ) * SCORE_MAX
     # Add score for cost
     # TODO: we are treating the budget as if all of it can be devoted
     # to climate actions. check this!
-    score += (1 - (min(action.cost, city.budget) / city.budget)) * SCORE_MAX
+    score += (1 - (min(action["cost"], city["budget"]) / city["budget"])) * SCORE_MAX
     # scores added
     return score
 

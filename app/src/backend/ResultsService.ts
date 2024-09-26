@@ -41,7 +41,7 @@ async function getTotalEmissionsWithPercentage(inventory: string) {
   return { sumOfEmissions, totalEmissionsBySector };
 }
 
-function getTopEmissions(inventoryId: string) {
+async function getTopEmissions(inventoryId: string) {
   const rawQuery = `
       SELECT av.co2eq, sector_name, subsector_name, scope_name
         FROM "ActivityValue" av
@@ -54,10 +54,10 @@ function getTopEmissions(inventoryId: string) {
         ORDER BY av.co2eq DESC
         LIMIT 3; `;
 
-  return db.sequelize!.query(rawQuery, {
+  return (await db.sequelize!.query(rawQuery, {
     replacements: { inventoryId },
     type: QueryTypes.SELECT,
-  });
+  })) as {co2eq: bigint, sector_name: string, subsector_name: string, scope_name: string}[];
 }
 
 export async function getEmissionResults(inventoryId: string) {
@@ -67,7 +67,6 @@ export async function getEmissionResults(inventoryId: string) {
       getTopEmissions(inventoryId),
     ]);
   const topSubSectorEmissionsWithPercentage = topSubSectorEmissions.map(
-    // @ts-ignore
     ({ co2eq, sector_name, subsector_name, scope_name }) => ({
       subsectorName: subsector_name,
       sectorName: sector_name,

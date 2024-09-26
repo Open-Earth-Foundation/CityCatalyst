@@ -8,14 +8,13 @@ import EmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/Emission
 import TopEmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/TopEmissionsWidget";
 import { BlueSubtitle } from "@/components/blue-subtitle";
 
-
 export default function InventoryResultTab({
-                                             lng,
-                                             inventory,
-                                             isUserInfoLoading,
-                                             isInventoryProgressLoading,
-                                             inventoryProgress
-                                           }: {
+  lng,
+  inventory,
+  isUserInfoLoading,
+  isInventoryProgressLoading,
+  inventoryProgress,
+}: {
   lng: string;
   inventory?: InventoryResponse;
   isUserInfoLoading?: boolean;
@@ -33,14 +32,17 @@ export default function InventoryResultTab({
             title={"tab-emission-inventory-results-title"}
           />
           <BlueSubtitle t={t} text={"overview"} />
-          <Heading fontSize="headline.sm" fontWeight="semibold"
-                   lineHeight="32">{t("Total Emissions in {{year}}", { year: inventory?.year })}</Heading>
+          <Heading fontSize="headline.sm" fontWeight="semibold" lineHeight="32">
+            {t("Total Emissions in {{year}}", { year: inventory?.year })}
+          </Heading>
           <Text
             fontWeight="regular"
             fontSize="body.lg"
             color="interactive.control"
             letterSpacing="wide"
-          >{t("see-your-citys-emissions")}</Text>
+          >
+            {t("see-your-citys-emissions")}
+          </Text>
           <HStack my={4} alignItems={"start"}>
             <EmissionsWidget t={t} inventory={inventory} />
             <TopEmissionsWidget t={t} inventory={inventory} />

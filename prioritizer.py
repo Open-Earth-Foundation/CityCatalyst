@@ -2,6 +2,8 @@ import os
 import csv
 from dotenv import load_dotenv
 from openai import OpenAI
+import argparse
+import re
 
 load_dotenv()
 
@@ -41,6 +43,12 @@ def read_cities(city_file):
     with open(city_file, "r") as f:
         reader = csv.DictReader(f)
         for row in reader:
+            # Convert appropriate fields to integers, if not blank
+            for field in ["population", "area", "budget", "total_emission", "energy_emissions", "transportation_emissions", "waste_emissions"]:
+                if row[field]:
+                    row[field] = int(row[field].replace(',', ''))
+                else:
+                    row[field] = ''
             cities.append(row)
     return cities
 
@@ -50,37 +58,51 @@ def read_actions(action_file):
     with open(action_file, "r") as f:
         reader = csv.DictReader(f)
         for row in reader:
+            # Convert appropriate fields to integers, if not blank
+            for field in ["emissions_reduction", "population", "time_in_years", "cost"]:
+                if row[field]:
+                    row[field] = int(row[field].replace(',', ''))
+                else:
+                    row[field] = ''
             actions.append(row)
     return actions
 
 
 def write_output(output_file, top_actions):
-    with open(output_file, "w") as f:
+    print(top_actions)  # Debugging print statement
+    with open(output_file, "w", newline='') as f:
         writer = csv.DictWriter(f, fieldnames=["city", "action", "score"])
         writer.writeheader()
-        for city, action, score in top_actions:
-            writer.writerow({"city": city, "action": action, "score": score})
+        for action in top_actions:
+            writer.writerow({"city": action['city']['name'], "action": action['action'], "score": action['score']})
 
 
 # TODO: maybe prefilter actions that are not applicable to a city
 
 
 def qualitative_score(city, action):
-
     prompt = f"""
-    According to the rules given, how would you prioritize the following action for the city of with name {city["name"]}, population {city["population"]},
-    area {city["area"]}, environment {city["environment"]}, budget {city["budget"]}, total GHG emissions in CO2eq {city["total_emission"]} energy {city["energy_emissions"]}, transportation emissions {city["transportation_emissions"]}, waste emissions {city["waste_emissions"]} and risk
-    {city["risk"]}?
+    According to the rules given, how would you prioritize the following action for the city with name {city["name"]},
+    population {city["population"]}, area {city["area"]}, environment {city["environment"]}, budget {city["budget"]},
+    total GHG emissions in CO2eq {city["total_emission"]} energy {city["energy_emissions"]}, 
+    transportation emissions {city["transportation_emissions"]}, waste emissions {city["waste_emissions"]} and risk {city["risk"]}?
 
-    Action: {action["name"]}, cost {action["cost"]}, GHG emissions in CO2eq {action["emissions"]}, risk {action["risk"]}, environment {action["environment"]}, population {action["population"]}, time {action["time_in_years"]}
+    Action: {action["name"]}, cost {action["cost"]}, GHG emissions in CO2eq {action["emissions_reduction"]}, risk {action["risk_reduction"]}, environment {action["environment"]}, population {action["population"]}, time {action["time_in_years"]}
 
     Please return a score from 0 to 100, where 0 is the worst possible action and 100 is the best possible action.
 
     Response format: [SCORE]
-
     """
 
     score = send_to_llm(prompt)
+    # Extract the score from the response
+    match = re.search(r'\[(\d+)\]', score)
+    if match:
+        score = int(match.group(1))
+    else:
+        print("No match found")
+        score = 0  # Default score if no match is found
+    print(score)
     return score
 
 
@@ -102,34 +124,65 @@ MAX_COST = 60000000
 
 def quantitative_score(city, action):
     score = 0
+
     # Add score for emissions_reduction
-    score += (
-        min(action["emissions_reduction"], MAX_EMISSIONS_REDUCTIONS)
-        / MAX_EMISSIONS_REDUCTIONS
-    ) * SCORE_MAX
+    if action["emissions_reduction"] == '':
+        score += 0
+    else:
+        action_emissions_reduction = action["emissions_reduction"]
+        score += (
+            min(action_emissions_reduction, MAX_EMISSIONS_REDUCTIONS)
+            / MAX_EMISSIONS_REDUCTIONS
+        ) * SCORE_MAX
+
     # Add score for risk_reduction
-    score += scale_scores[action["risk"]] * SCORE_MAX
+    if action["risk_reduction"] == '':
+        score += 0
+    else:
+        score += scale_scores.get(action["risk_reduction"], 0) * SCORE_MAX
+
     # Add score for environment
-    score += SCORE_MAX if (action["environment"] == city["environment"]) else 0.0
+    if action["environment"] == '':
+        score += SCORE_MAX 
+    else:
+        score += SCORE_MAX if (action["environment"] == city["environment"]) else 0.0
+
     # Add score for population
-    if action["population"] is None:
+    if action["population"] == '' or city["population"] == '':
         score += SCORE_MAX / 2.0
     else:
-        score += (
-            min(
-                city["population"] / abs(action["population"] - city["population"]), 1.0
-            )
-            * SCORE_MAX
-        )
+        city_population = city["population"]
+        action_population = action["population"]
+        if action_population == city_population:
+            score += SCORE_MAX
+        else:
+            diff = abs(action_population - city_population)
+            if diff == 0:
+                ratio = 1.0
+            else:
+                ratio = min(city_population / diff, 1.0)
+            score += ratio * SCORE_MAX
+
     # Add score for time_in_years
-    score += (
-        1 - (min(action["time_in_years"], MAX_TIME_IN_YEARS) / MAX_TIME_IN_YEARS)
-    ) * SCORE_MAX
+    if action["time_in_years"] == '':
+        score += 0
+    else:
+        score += (
+            1 - (min(action["time_in_years"], MAX_TIME_IN_YEARS) / MAX_TIME_IN_YEARS)
+        ) * SCORE_MAX
+
     # Add score for cost
-    # TODO: we are treating the budget as if all of it can be devoted
-    # to climate actions. check this!
-    score += (1 - (min(action["cost"], city["budget"]) / city["budget"])) * SCORE_MAX
-    # scores added
+    if city["budget"] == '' or action["cost"] == '':
+        score += 0
+    else:
+        city_budget = city["budget"]
+        action_cost = action["cost"]
+        if city_budget == 0:
+            ratio = 1.0  # Avoid division by zero
+        else:
+            ratio = min(action_cost, city_budget) / city_budget
+        score += (1 - ratio) * SCORE_MAX
+
     return score
 
 
@@ -139,10 +192,10 @@ def qualitative_prioritizer(cities, actions, number_of_actions=5):
     for city in cities:
         scores = {}
         for action in actions:
-            scores[action] = qualitative_score(city, action)
-        actions = scores.keys()
-        actions = sorted(actions, key=lambda x: scores[x], reverse=True)
-        top_action_names = actions[:number_of_actions]
+            scores[action["name"]] = qualitative_score(city, action)
+        actions_keys = scores.keys()
+        actions_keys = sorted(actions_keys, key=lambda x: scores[x], reverse=True)
+        top_action_names = actions_keys[:number_of_actions]
         top_actions.extend(
             [
                 {
@@ -161,10 +214,10 @@ def quantitative_prioritizer(cities, actions, number_of_actions=5):
     for city in cities:
         scores = {}
         for action in actions:
-            scores[action] = quantitative_score(city, action)
-        actions = scores.keys()
-        actions = sorted(actions, key=lambda x: scores[x], reverse=True)
-        top_action_names = actions[:number_of_actions]
+            scores[action['name']] = quantitative_score(city, action)
+        actions_keys = scores.keys()
+        actions_keys = sorted(actions_keys, key=lambda x: scores[x], reverse=True)
+        top_action_names = actions_keys[:number_of_actions]
         top_actions.extend(
             [
                 {
@@ -175,7 +228,7 @@ def quantitative_prioritizer(cities, actions, number_of_actions=5):
                 for action in top_action_names
             ]
         )
-    pass
+    return top_actions
 
 
 def main(city_file, action_file, output_file, quantitative, number_of_actions):
@@ -185,19 +238,18 @@ def main(city_file, action_file, output_file, quantitative, number_of_actions):
         top_actions = quantitative_prioritizer(cities, actions, number_of_actions)
     else:
         top_actions = qualitative_prioritizer(cities, actions, number_of_actions)
-    write_output(top_actions, output_file)
+    write_output(output_file, top_actions)
 
 
 if __name__ == "__main__":
-    import argparse
-
     parser = argparse.ArgumentParser()
-    parser.add_argument("--city-file", required=True)
-    parser.add_argument("--action-file", required=True)
-    parser.add_argument("--output-file", required=True)
-    parser.add_argument("--quantitative", action="store_true")
-    parser.add_argument("--number-of-actions", type=int, default=5)
+    parser.add_argument("city_file")  # First positional argument
+    parser.add_argument("action_file")  # Second positional argument
+    parser.add_argument("output_file")  # Third positional argument
+    parser.add_argument("--quantitative", action="store_true")  # Optional flag
+    parser.add_argument("number_of_actions", type=int)  # Fourth positional argument
     args = parser.parse_args()
+
     main(
         args.city_file,
         args.action_file,

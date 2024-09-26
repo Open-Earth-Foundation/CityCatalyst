@@ -1,0 +1,26 @@
+city,action,score
+Santa Vitória,Bike lanes,88
+Santa Vitória,Green Roofs,75
+Santa Vitória,Sea wall,65
+Santa Vitória,Solar Panels,53
+Santa Vitória,Electric Bus Fleet,50
+Novo Horizonte,Bike lanes,100
+Novo Horizonte,Electric Bus Fleet,75
+Novo Horizonte,Water Recycling,60
+Novo Horizonte,Urban Tree Planting,55
+Novo Horizonte,Green Roofs,48
+Porto Verde,Wind Energy Farms,73
+Porto Verde,Solar Panels,60
+Porto Verde,Electric Bus Fleet,55
+Porto Verde,Urban Cooling Centers,53
+Porto Verde,Sea wall,50
+Serra Branca,Bike lanes,100
+Serra Branca,Sea wall,95
+Serra Branca,Urban Cooling Centers,65
+Serra Branca,Green Roofs,50
+Serra Branca,Urban Tree Planting,45
+Vila Esperança,Bike lanes,100
+Vila Esperança,Green Roofs,85
+Vila Esperança,Electric Bus Fleet,45
+Vila Esperança,Wind Energy Farms,21
+Vila Esperança,Flood Barriers,20

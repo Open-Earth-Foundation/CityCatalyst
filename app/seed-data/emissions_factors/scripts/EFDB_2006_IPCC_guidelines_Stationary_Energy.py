@@ -415,12 +415,13 @@ if __name__ == "__main__":
     df_filt = df_filt.loc[filt_desc].reset_index(drop=True)
 
     # delete the other EF values we don't need
-    filt_NCV = df_filt["Description"].str.contains("NCV", case=False, na=False)
-    EF_df = df_filt.loc[~filt_desc].reset_index(drop=True)
+    #filt_NCV = df_filt["Description"].str.contains("NCV", case=False, na=False)
+    #EF_df = df_filt.loc[~filt_desc].reset_index(drop=True)
+
 
     output_list = []
 
-    for _, row in EF_df.iterrows():
+    for _, row in df_filt.iterrows():
         # get min, max, and median value
         value = row.pop("Value")
         value_dic = separate_min_max_median(value)

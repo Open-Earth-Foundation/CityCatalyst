@@ -54,8 +54,6 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
     }
   }, [prefilledValue]);
 
-  console.log("selectedActivityValue", selectedActivityValue);
-
   if (multiselect) {
     return (
       <MultiSelectInput

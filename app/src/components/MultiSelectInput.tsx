@@ -105,8 +105,14 @@ const MultiSelectWithCheckbox = ({
   selectedActivity,
 }: MultiSelectInputProps) => {
   const error = activity.split(".").reduce((acc, key) => acc?.[key], errors);
-  let preselectedValue = [];
-  preselectedValue.push(selectedActivity!);
+  let preselectedValue = selectedActivity
+    ? {
+        label: t(selectedActivity),
+        value: selectedActivity,
+      }
+    : null;
+
+  console.log(preselectedValue);
 
   return (
     <Box display="flex" flexDirection="column" gap="8px">
@@ -127,11 +133,13 @@ const MultiSelectWithCheckbox = ({
           required: required === false ? false : t("option-required"),
         }}
         render={({ field }) => {
+          console.log(field.value);
+          const currentValue = Array.isArray(field.value) ? field.value : []; // Ensure field.value is an array
+
           return (
             <Select
               {...field}
               isMulti
-              defaultValue="Option"
               options={options.map((option) => ({
                 label: t(option),
                 value: option,
@@ -143,17 +151,17 @@ const MultiSelectWithCheckbox = ({
                 Option: CustomOption,
               }}
               value={
-                field.value.length === 0
-                  ? preselectedValue.map((val: string) => ({
+                currentValue.length > 0
+                  ? currentValue.map((val: string) => ({
                       label: t(val),
                       value: val,
                     }))
-                  : field.value?.map((val: string) => ({
-                      label: t(val),
-                      value: val,
-                    }))
+                  : preselectedValue
+                    ? [preselectedValue]
+                    : []
               }
               onChange={(selected) => {
+                preselectedValue = null;
                 const values = selected?.map((option) => option.value) || [];
                 field.onChange(values);
               }}

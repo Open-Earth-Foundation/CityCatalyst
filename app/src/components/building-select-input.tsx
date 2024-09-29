@@ -2,9 +2,11 @@ import { Box, Select, Text } from "@chakra-ui/react";
 import React, { FC, use, useEffect, useRef, useState } from "react";
 import {
   Control,
+  Controller,
   FieldError,
   FieldErrors,
   UseFormRegister,
+  UseFormSetValue,
 } from "react-hook-form";
 import { Inputs } from "./Modals/activity-modal/activity-modal-body";
 import { WarningIcon } from "@chakra-ui/icons";
@@ -24,6 +26,7 @@ interface BuildingTypeSelectInputProps {
   control: Control<Inputs, any>;
   multiselect?: boolean;
   required?: boolean;
+  setValue: UseFormSetValue<Inputs>;
 }
 
 const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
@@ -38,6 +41,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
   multiselect,
   control,
   selectedActivity,
+  setValue,
 }) => {
   const prefilledValue = selectedActivity?.prefills?.[0].value;
   const [selectedActivityValue, setSelectedActivityValue] = useState<
@@ -46,8 +50,11 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
   useEffect(() => {
     if (prefilledValue) {
       setSelectedActivityValue(prefilledValue);
+      setValue(activity as any, prefilledValue);
     }
   }, [prefilledValue]);
+
+  console.log("selectedActivityValue", selectedActivityValue);
 
   if (multiselect) {
     return (
@@ -77,33 +84,44 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
       >
         {t(title)}
       </Text>
-      <Select
-        shadow="1dp"
-        borderRadius="4px"
-        borderWidth={error ? "1px" : 0}
-        border="inputBox"
-        borderColor={error ? "sentiment.negativeDefault" : ""}
-        background={error ? "sentiment.negativeOverlay" : ""}
-        fontSize="body.lg"
-        h="48px"
-        placeholder={placeholder}
-        _focus={{
-          borderWidth: "1px",
-          borderColor: "content.link",
-          shadow: "none",
+      <Controller
+        name={activity as any}
+        control={control}
+        defaultValue={selectedActivityValue}
+        rules={{ required: required === false ? false : t("option-required") }}
+        render={({ field }) => {
+          return (
+            <Select
+              {...field}
+              shadow="1dp"
+              borderRadius="4px"
+              borderWidth={error ? "1px" : 0}
+              border="inputBox"
+              borderColor={error ? "sentiment.negativeDefault" : ""}
+              background={error ? "sentiment.negativeOverlay" : ""}
+              fontSize="body.lg"
+              h="48px"
+              placeholder={placeholder}
+              _focus={{
+                borderWidth: "1px",
+                borderColor: "content.link",
+                shadow: "none",
+              }}
+              onChange={(e) => {
+                field.onChange(e.target.value);
+                setValue(activity as any, e.target.value);
+              }}
+              value={field.value}
+            >
+              {options?.map((item: string) => (
+                <option key={item} value={item}>
+                  {t(item)}
+                </option>
+              ))}
+            </Select>
+          );
         }}
-        {...register(activity as any, {
-          required: required === false ? false : t("option-required"),
-        })}
-        value={selectedActivityValue}
-        onChange={(e) => setSelectedActivityValue(e.target.value)}
-      >
-        {options?.map((item: string) => (
-          <option key={item} value={item}>
-            {t(item)}
-          </option>
-        ))}
-      </Select>
+      />
       {error ? (
         <Box display="flex" gap="6px" alignItems="center">
           <WarningIcon color="sentiment.negativeDefault" />

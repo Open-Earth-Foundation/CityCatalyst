@@ -1,8 +1,8 @@
 import { randomUUID } from "node:crypto";
 
-const inventoryValueId = randomUUID();
-const inventoryValueId1 = randomUUID();
-const inventoryValueId2 = randomUUID();
+export const inventoryValueId = randomUUID();
+export const inventoryValueId1 = randomUUID();
+export const inventoryValueId2 = randomUUID();
 export const inventoryId = randomUUID();
 
 export const inventoryValues = [
@@ -19,7 +19,7 @@ export const inventoryValues = [
     unavailableReason: "",
     unavailableExplanation: "",
     subSectorId: "abe4c7b0-242d-3ed2-a146-48885d6fb38d",
-    inputMethodology: "direct-measure",
+    inputMethodology: "fuel-combustion-residential-buildings-methodology",
   },
   {
     id: inventoryValueId1,

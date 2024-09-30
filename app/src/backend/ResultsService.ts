@@ -1,6 +1,10 @@
 import { db } from "@/models";
 import { QueryTypes } from "sequelize";
 import sumBy from "lodash/sumBy";
+import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
+import groupBy from "lodash/groupBy";
+import mapValues from "lodash/mapValues";
+import { toKebabCase } from "@/util/helpers";
 
 function calculatePercentage(co2eq: bigint, total: bigint): number {
   if (total <= 0n) {
@@ -57,7 +61,12 @@ async function getTopEmissions(inventoryId: string) {
   return (await db.sequelize!.query(rawQuery, {
     replacements: { inventoryId },
     type: QueryTypes.SELECT,
-  })) as {co2eq: bigint, sector_name: string, subsector_name: string, scope_name: string}[];
+  })) as {
+    co2eq: bigint;
+    sector_name: string;
+    subsector_name: string;
+    scope_name: string;
+  }[];
 }
 
 export async function getEmissionResults(inventoryId: string) {
@@ -84,3 +93,177 @@ export async function getEmissionResults(inventoryId: string) {
     topEmissionsBySubSector: topSubSectorEmissionsWithPercentage,
   };
 }
+
+interface ActivityForSectorBreakdown {
+  reference_number: string;
+  input_methodology: string;
+  activity_data_jsonb: Record<string, any>;
+  co2eq: string;
+  subsector_name: string;
+  scope_name: string;
+}
+
+interface UngroupedActivityData {
+  activityTitle: string;
+  activityValue: string;
+  activityUnits: string;
+  activityEmissions: bigint;
+  emissionsPercentage: number;
+  subsectorName: string;
+  scopeName: string;
+}
+
+interface GroupedActivity {
+  activityValue: string;
+  activityUnits: string;
+  totalActivityEmissions: string; // Using string to avoid jest's "Don't know how to serialize Bigint" error
+  totalEmissionsPercentage: number;
+}
+
+const getActivitiesForSectorBreakdown = async (
+  inventoryId: string,
+  sectorName: string,
+): Promise<ActivityForSectorBreakdown[]> => {
+  const rawQuery = `
+        SELECT av.activity_data_jsonb, sc.reference_number, input_methodology, av.co2eq, s.sector_name, ss.subsector_name, scope.scope_name
+        FROM "ActivityValue" av
+            JOIN "InventoryValue" iv ON av.inventory_value_id = iv.id
+            JOIN "Sector" s ON iv.sector_id = s.sector_id
+            JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
+            JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
+            JOIN "Scope" scope ON scope.scope_id = sc.scope_id OR ss.scope_id = scope.scope_id
+        WHERE inventory_id = :inventoryId
+            AND s.sector_name ilike :sectorName
+    `;
+
+  try {
+    return (await db.sequelize!.query(rawQuery, {
+      replacements: { inventoryId, sectorName: sectorName.replace("-", " ") },
+      type: QueryTypes.SELECT,
+    })) as ActivityForSectorBreakdown[];
+  } catch (e) {
+    console.error("Error in getActivitiesForSectorBreakdown:", e);
+    throw e;
+  }
+};
+
+const getActivityDataValues = (
+  activity: ActivityForSectorBreakdown,
+  sumOfEmissions: bigint,
+): UngroupedActivityData | null => {
+  const {
+    reference_number,
+    input_methodology,
+    activity_data_jsonb,
+    co2eq,
+    subsector_name,
+    scope_name,
+  } = activity;
+  const manualInputHierarchyElement = MANUAL_INPUT_HIERARCHY[reference_number];
+  const isDirectMeasure = input_methodology === "direct-measure";
+  const methodologyFields = isDirectMeasure
+    ? manualInputHierarchyElement.directMeasure
+    : manualInputHierarchyElement.methodologies?.find(
+        (m) => m.id === input_methodology,
+      );
+
+  if (!methodologyFields) {
+    console.error(
+      `Methodology fields not found for ${reference_number}, ${input_methodology}`,
+    );
+    return null;
+  }
+
+  const { activityTypeField, activityUnitsField } = methodologyFields;
+  const activityPrefix = isDirectMeasure ? "" : "activity-";
+
+  return {
+    activityTitle: activityTypeField
+      ? toKebabCase(activity_data_jsonb[activityTypeField])
+      : "N/A",
+    activityValue: activityUnitsField
+      ? activity_data_jsonb[activityPrefix + activityUnitsField]
+      : "N/A",
+    activityUnits: activityUnitsField
+      ? activity_data_jsonb[activityPrefix + activityUnitsField + "-unit"]
+      : "N/A",
+    activityEmissions: BigInt(co2eq),
+    emissionsPercentage: calculatePercentage(BigInt(co2eq), sumOfEmissions),
+    subsectorName: toKebabCase(subsector_name),
+    scopeName: scope_name,
+  };
+};
+
+const groupActivitiesBy = (
+  groupedBySubsector: Record<string, UngroupedActivityData[]>,
+  groupingFn: (activity: UngroupedActivityData) => string,
+): Record<string, Record<string, Record<string, GroupedActivity>>> =>
+  mapValues(groupedBySubsector, (subsectorActivities) => {
+    const groupedByActivity = groupBy(subsectorActivities, groupingFn);
+
+    return mapValues(groupedByActivity, (activityGroup) => {
+      const groupedByUnit = groupBy(activityGroup, "activityUnits");
+
+      return mapValues(groupedByUnit, (unitGroup) =>
+        unitGroup.reduce<GroupedActivity>(
+          (acc, current) => ({
+            activityValue: current.activityValue,
+            activityUnits: current.activityUnits,
+            totalActivityEmissions: (
+              BigInt(acc.totalActivityEmissions) + current.activityEmissions
+            ).toString(),
+            totalEmissionsPercentage:
+              acc.totalEmissionsPercentage + current.emissionsPercentage,
+          }),
+          {
+            activityValue: "",
+            activityUnits: "",
+            totalActivityEmissions: "0",
+            totalEmissionsPercentage: 0,
+          },
+        ),
+      );
+    });
+  });
+
+const groupActivities = (
+  activitiesForSectorBreakdown: UngroupedActivityData[],
+): { byActivity: any; byScope: any } => {
+  const groupedBySubsector = groupBy(
+    activitiesForSectorBreakdown,
+    "subsectorName",
+  );
+  return {
+    byActivity: groupActivitiesBy(groupedBySubsector, (e) =>
+      toKebabCase(e.activityTitle),
+    ),
+    byScope: groupActivitiesBy(groupedBySubsector, (e) => e.scopeName),
+  };
+};
+
+export const getEmissionsBreakdown = async (
+  inventory: string,
+  sectorName: string,
+) => {
+  try {
+    const activitiesForSectorBreakdown = await getActivitiesForSectorBreakdown(
+      inventory,
+      sectorName,
+    );
+    const sumOfEmissions = activitiesForSectorBreakdown.reduce(
+      (sum, activity) => sum + BigInt(activity.co2eq || 0),
+      0n,
+    );
+
+    const activityValues = activitiesForSectorBreakdown
+      .map((activity) => getActivityDataValues(activity, sumOfEmissions))
+      .filter(
+        (activity): activity is UngroupedActivityData => activity !== null,
+      );
+
+    return groupActivities(activityValues);
+  } catch (error) {
+    console.error("Error in getEmissionsBreakdown:", error);
+    throw error;
+  }
+};

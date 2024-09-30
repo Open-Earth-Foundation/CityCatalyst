@@ -4,7 +4,7 @@ import type { GasToCO2Eq } from "@/models/GasToCO2Eq";
 import type { InventoryValue } from "@/models/InventoryValue";
 import { multiplyBigIntFloat } from "@/util/big_int";
 import createHttpError from "http-errors";
-import { findMethodology, Methodology } from "@/util/form-schema";
+import { findMethodology } from "@/util/form-schema";
 import {
   handleActivityAmountTimesEmissionsFactorFormula,
   handleDirectMeasureFormula,
@@ -67,18 +67,6 @@ export default class CalculationService {
       );
     }
     return methodology.formula ?? formula;
-  }
-
-  private static async getActivityTitle(
-    activityValue: ActivityValue,
-    methodology: Methodology,
-  ): Promise<string> {
-    // extract the activityId from the activityValue metadata
-
-    // search the methodology for the activity
-    // return the activity title Id
-
-    return "";
   }
 
   public static async calculateGasAmount(

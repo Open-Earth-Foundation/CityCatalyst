@@ -4,6 +4,9 @@ import type { ActivityValue } from "@/models/ActivityValue";
 import type { Gas } from "./CalculationService";
 import type { GasValueCreationAttributes } from "@/models/GasValue";
 import type { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
+import { findClosestCityPopulation } from "@/util/population";
+import { db } from "@/models";
+import type { Inventory } from "@/models/Inventory";
 
 type GasValueWithEmissionsFactor = Omit<GasValueCreationAttributes, "id"> & {
   emissionsFactor?:
@@ -211,9 +214,10 @@ export function handleIndustrialWasteWaterFormula(
   return [{ gas: "CH4", amount }];
 }
 
-export function handleDomesticWasteWaterFormula(
+export async function handleDomesticWasteWaterFormula(
   activityValue: ActivityValue,
-): Gas[] {
+  inventory: Inventory,
+): Promise<Gas[]> {
   const data = activityValue.activityData;
   if (!data) {
     throw new createHttpError.BadRequest(
@@ -227,7 +231,14 @@ export function handleDomesticWasteWaterFormula(
   const methaneCorrectionFactor = data["methane-correction-factor"];
   const methaneRecovered = data["methane-recovered"];
 
-  const totalCityPopulation = data["total-city-population"]; // TODO not in form - get from City/ Population table?
+  const totalCityPopulationEntry = await findClosestCityPopulation(inventory);
+  if (!totalCityPopulationEntry) {
+    throw new createHttpError.BadRequest(
+      "No recent city population entry was found.",
+    );
+  }
+  const totalCityPopulation = totalCityPopulationEntry.population;
+
   const bodPerCapita = data["bod-per-capita"]; // TODO not in form?
   const isCollectedWasteWater =
     data["wastewater-inside-industrial-calculator-collection-status"] ===

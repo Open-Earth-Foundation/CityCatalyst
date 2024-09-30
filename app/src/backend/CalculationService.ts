@@ -108,7 +108,16 @@ export default class CalculationService {
       case "wastewater-calculator":
         const activityId = activityValue.activityData?.activityId;
         if (activityId === "wastewater-inside-domestic-calculator-activity") {
-          gases = handleDomesticWasteWaterFormula(activityValue);
+          const inventory = await db.models.Inventory.findByPk(
+            inventoryValue.inventoryId,
+          );
+          if (!inventory) {
+            throw new createHttpError.NotFound("Inventory not found");
+          }
+          gases = await handleDomesticWasteWaterFormula(
+            activityValue,
+            inventory,
+          );
         } else if (
           activityId === "wastewater-inside-industrial-calculator-activity"
         ) {

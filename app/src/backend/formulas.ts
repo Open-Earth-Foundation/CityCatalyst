@@ -3,7 +3,6 @@ import type { Gas } from "./CalculationService";
 import createHttpError from "http-errors";
 import { GasValueCreationAttributes } from "@/models/GasValue";
 import { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
-import * as console from "node:console";
 
 const GAS_NAMES = ["CO2", "N2O", "CH4"];
 const METHANE_CORRECTION_FACTORS: Record<string, number> = {
@@ -154,9 +153,8 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
       );
     }
     // this rounds/ truncates!
-    console.log(emissionsFactor.emissionsPerActivity, "an activity count");
     const amount = BigInt(
-      activityAmount * emissionsFactor.emissionsPerActivity,
+      Math.ceil(activityAmount * emissionsFactor.emissionsPerActivity),
     );
 
     return { gas: gasValue.gas!, amount };

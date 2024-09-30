@@ -28,6 +28,7 @@ import useActivityForm, {
   generateDefaultActivityFormValues,
 } from "@/hooks/activity-value-form/use-activity-form";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { EmissionsFactorResponse } from "@/util/types";
 
 interface AddActivityModalProps {
   isOpen: boolean;
@@ -118,27 +119,43 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       inventoryId,
     });
 
-  // extract and deduplicate data sources from emissions factors
-  const emissionsFactorTypes = useMemo<
-    {
-      id: string;
-      name: string;
-      gas: string;
-      value: number;
-    }[]
-  >(() => {
+  const reduceEmissionsToUniqueSources = (
+    emissionsFactors: EmissionsFactorResponse,
+  ) => {
+    const reducedMap: {
+      [key: string]: {
+        id: string;
+        name: string;
+        gasValues: { gas: string; emissionsPerActivity: number }[];
+      };
+    } = {};
+
+    emissionsFactors.forEach((factor) => {
+      factor.dataSources.forEach((source) => {
+        if (!reducedMap[source.datasourceId]) {
+          reducedMap[source.datasourceId] = {
+            id: source.datasourceId,
+            name: getTranslationFromDict(source.datasetName) ?? "unknown",
+            gasValues: [],
+          };
+        }
+        reducedMap[source.datasourceId].gasValues.push({
+          gas: factor.gas as string,
+          emissionsPerActivity: factor.emissionsPerActivity as number,
+        });
+      });
+    });
+
+    return Object.values(reducedMap);
+  };
+
+  const emissionsFactorTypes = useMemo(() => {
     if (!emissionsFactors) {
       return [];
     }
 
-    return emissionsFactors.flatMap((factor) => {
-      return factor.dataSources.map((source) => ({
-        id: source.datasourceId,
-        name: getTranslationFromDict(source.datasetName) ?? "unknown",
-        gas: factor.gas,
-        value: factor.emissionsPerActivity,
-      }));
-    });
+    // now that we have three or more emission factors, we want to reduce it down to a collection of gases per dataset
+    return reduceEmissionsToUniqueSources(emissionsFactors);
   }, [emissionsFactors]);
 
   const toast = useToast();
@@ -163,7 +180,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         const gasObject = {
           ...gasValue,
           gas: gasValue.gas as string,
-          factor: parseInt(data[`${gasValue.gas}EmissionFactor`]),
+          factor: parseFloat(data[`${gasValue.gas}EmissionFactor`]),
           unit: gasValue.emissionsFactor.units as string,
         };
         gasArray.push(gasObject);
@@ -177,7 +194,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       const gasUnitKey = `${gas}EmissionFactorUnit`;
       const gasObject = {
         gas: gas,
-        factor: parseInt(data[gasFactorKey]),
+        factor: parseFloat(data[gasFactorKey]),
         unit: data[gasUnitKey],
       };
 
@@ -196,12 +213,12 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         values[field.id] = (activity as any)[field.id];
       }
       if (field.units) {
-        values[`${field.id}Unit`] = (activity as any)[`${field.id}Unit`];
+        values[`${field.id}Unit`] = (activity as any)[`${field.id}-unit`];
       }
     });
     if (!methodology?.id.includes("direct-measure")) {
       values[title] = (activity as any)[title];
-      values[`${title}Unit`] = (activity as any)[`${title}Unit`];
+      values[`${title}-unit`] = (activity as any)[`${title}Unit`];
     }
 
     const requestData = {
@@ -237,7 +254,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       gasValues: gasValues.map(({ gas, factor, unit, ...rest }) => ({
         ...rest,
         gas,
-        gasAmount: factor,
         emissionsFactor: {
           gas,
           units: unit ?? "",

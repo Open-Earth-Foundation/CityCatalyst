@@ -13,7 +13,6 @@ import {
 } from "./formulas";
 import { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
 import { GasValueCreationAttributes } from "@/models/GasValue";
-import * as console from "node:console";
 
 export type Gas = {
   gas: string;
@@ -94,7 +93,6 @@ export default class CalculationService {
   ): Promise<GasAmountResult> {
     const formula = await CalculationService.getFormula(inputMethodology);
 
-    console.log("formula", formula);
     // TODO cache
     const gasToCO2Eqs = await db.models.GasToCO2Eq.findAll();
     let totalCO2e = 0n;

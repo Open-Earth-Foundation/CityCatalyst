@@ -38,6 +38,7 @@ import { ActivityValue } from "@/models/ActivityValue";
 export type EmissionFactorTypes = {
   id: string;
   name: string;
+  gasValues: { gas: string; emissionsPerActivity: number }[];
 }[];
 
 interface AddActivityModalBodyProps {
@@ -124,9 +125,19 @@ const ActivityModalBody = ({
     if (emissionFactorType === "custom") {
       setIsEmissionFactorInputDisabled(false);
     } else {
-      setValue("activity.CO2EmissionFactor", 0);
-      setValue("activity.N2OEmissionFactor", 0);
-      setValue("activity.CH4EmissionFactor", 0);
+      let co2Val = emissionFactor?.gasValues.find(
+        (g) => g.gas === "CO2",
+      )?.emissionsPerActivity;
+      let n2oVal = emissionFactor?.gasValues.find(
+        (g) => g.gas === "N2O",
+      )?.emissionsPerActivity;
+      let ch4Val = emissionFactor?.gasValues.find(
+        (g) => g.gas === "CH4",
+      )?.emissionsPerActivity;
+
+      setValue("activity.CO2EmissionFactor", co2Val ? co2Val : 0);
+      setValue("activity.N2OEmissionFactor", n2oVal ? n2oVal : 0);
+      setValue("activity.CH4EmissionFactor", ch4Val ? ch4Val : 0);
       setIsEmissionFactorInputDisabled(true);
     }
   };
@@ -361,7 +372,7 @@ const ActivityModalBody = ({
                   >
                     <Controller
                       control={control}
-                      name={`activity.${title}Unit` as any}
+                      name={`activity.${title}-unit` as any}
                       render={({ field }) => (
                         <Select
                           placeholder={t("select-unit")}

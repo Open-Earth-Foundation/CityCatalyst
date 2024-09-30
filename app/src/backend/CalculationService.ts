@@ -25,6 +25,12 @@ export type GasAmountResult = {
   gases: Gas[];
 };
 
+export type GasValue = Omit<GasValueCreationAttributes, "id"> & {
+  emissionsFactor?:
+    | EmissionsFactorAttributes
+    | Omit<EmissionsFactorAttributes, "id">;
+};
+
 const DEFAULT_CO2EQ_YEARS = 100;
 
 export default class CalculationService {
@@ -73,11 +79,7 @@ export default class CalculationService {
     inventoryValue: InventoryValue,
     activityValue: ActivityValue,
     inputMethodology: string,
-    gasValues: (Omit<GasValueCreationAttributes, "id"> & {
-      emissionsFactor?:
-        | EmissionsFactorAttributes
-        | Omit<EmissionsFactorAttributes, "id">;
-    })[],
+    gasValues: GasValue[],
   ): Promise<GasAmountResult> {
     const formula = await CalculationService.getFormula(inputMethodology);
 
@@ -87,28 +89,26 @@ export default class CalculationService {
     let totalCO2eYears = 0;
     let gases: Gas[] = [];
 
-    switch (formula) {
-      // TODO use Record<string, (activityValue, gasToCO2Eqs) => FormulaResult> for this? To avoid adding new code here for each new formula...
-      // basically like a function pointer table in C++...
-      case "direct-measure":
-        gases = handleDirectMeasureFormula(activityValue);
-        break;
-      case "activity-amount-times-emissions-factor":
-        gases = handleActivityAmountTimesEmissionsFactorFormula(
-          activityValue,
-          gasValues,
-        );
-        break;
-      case "methane-commitment":
-        gases = handleMethaneCommitmentFormula(activityValue);
-        break;
-      case "induced-activity-1":
-        gases = handleVkt1Formula(activityValue, gasValues);
-      default:
-        throw new createHttpError.NotImplemented(
-          `Formula ${formula} not yet implemented for input methodology ${inventoryValue.inputMethodology}`,
-        );
+    // TODO use Record<string, (activityValue, gasToCO2Eqs) => FormulaResult> for this? To avoid adding new code here for each new formula...
+    const formulaHandlers: Record<
+      string,
+      (activityValue: ActivityValue, gasValues: GasValue[]) => Gas[]
+    > = {
+      "direct-measure": handleDirectMeasureFormula,
+      "activity-amount-times-emissions-factor":
+        handleActivityAmountTimesEmissionsFactorFormula,
+      "methane-commitment": handleMethaneCommitmentFormula,
+      "induced-activity-1": handleVkt1Formula,
+    };
+
+    const handler = formulaHandlers[formula];
+    if (!handler) {
+      throw new createHttpError.NotImplemented(
+        `Formula ${formula} not yet implemented for input methodology ${inventoryValue.inputMethodology}`,
+      );
     }
+
+    gases = handler(activityValue, gasValues);
 
     for (const gas of gases) {
       const { co2eq, co2eqYears } = this.calculateCO2eq(

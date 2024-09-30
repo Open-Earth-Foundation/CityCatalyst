@@ -3502,6 +3502,7 @@
     "methodologies": [
       {
         "id": "biological-treatment-inboundary-methodology",
+        "disabled": true,
         "activityTypeField": "biological-treatment-inboundary-treatment-type",
         "inputRequired": [
           "mass-of-organic-waste-treated",
@@ -3686,6 +3687,7 @@
     "methodologies": [
       {
         "id": "incineration-waste-inboundary-methodology",
+        "disabled": true,
         "activityTypeField": "incineration-facility-id",
         "inputRequired": [
           "incineration-facility-id",
@@ -3850,6 +3852,7 @@
     "methodologies": [
       {
         "id": "wastewater-inside-methodology",
+        "disabled": true,
         "activityTypeField": "population-or-industrial-production",
         "inputRequired": [
           "wastewater-inside-generated",

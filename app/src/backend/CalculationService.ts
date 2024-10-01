@@ -109,7 +109,7 @@ export default class CalculationService {
       case "induced-activity-1":
         gases = handleVkt1Formula(activityValue, gasValues);
       case "wastewater-calculator":
-        const activityId = activityValue.activityData?.activityId;
+        const activityId = activityValue.metadata?.activityId;
 
         // TODO handle outside activities as well!
         if (activityId === "wastewater-inside-domestic-calculator-activity") {

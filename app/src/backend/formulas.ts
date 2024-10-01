@@ -237,9 +237,7 @@ export async function handleDomesticWasteWaterFormula(
 
   const methaneProductionCapacity = DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should this only be handled UI-side?
   const removedSludge =
-    data[
-      "wastewater-inside-industrial-calculator-total-organic-sludge-removed"
-    ];
+    data["wastewater-inside-domestic-calculator-total-organic-sludge-removed"];
   // TODO get MCF from seed-data/formula_values
   const methaneCorrectionFactor = DEFAULT_METHANE_CORRECTION_FACTOR;
   const methaneRecovered =
@@ -266,15 +264,16 @@ export async function handleDomesticWasteWaterFormula(
     "income-group-type-all";
   const incomeGroupFraction = DEFAULT_INCOME_GROUP_FRACTIONS[incomeGroup];
   const dischargeSystemUtulizationRatio =
-    data["discharge-system-utilization-ratio"];
+    data["discharge-system-utilization-ratio"] ?? 0.5; // TODO wrong key!
 
   const emissionsFactor =
     methaneProductionCapacity *
     methaneCorrectionFactor *
     incomeGroupFraction *
     dischargeSystemUtulizationRatio;
+
   const totalMethaneProduction =
     (totalOrganicWaste - removedSludge) * emissionsFactor - methaneRecovered;
-  const amount = BigInt(totalMethaneProduction);
+  const amount = BigInt(Math.round(totalMethaneProduction)); // TODO round right or is ceil/ floor more correct?
   return [{ gas: "CH4", amount }];
 }

@@ -404,7 +404,7 @@ export default class ActivityService {
   }
 
   public static async deleteActivity(id: string): Promise<number> {
-    return await db.sequelize?.transaction(async (transaction) => {
+    return (await db.sequelize?.transaction(async (transaction) => {
       const activityValue = await db.models.ActivityValue.findByPk(id, {
         include: {
           model: db.models.InventoryValue,
@@ -432,7 +432,7 @@ export default class ActivityService {
       return await db.models.ActivityValue.destroy({
         where: { id },
       });
-    });
+    })) as number;
   }
 
   public static async deleteAllActivitiesInSubsector({

@@ -107,6 +107,8 @@ export default class CalculationService {
         gases = handleVkt1Formula(activityValue, gasValues);
       case "wastewater-calculator":
         const activityId = activityValue.activityData?.activityId;
+
+        // TODO handle outside activities as well!
         if (activityId === "wastewater-inside-domestic-calculator-activity") {
           const inventory = await db.models.Inventory.findByPk(
             inventoryValue.inventoryId,

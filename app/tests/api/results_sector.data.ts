@@ -1,9 +1,9 @@
 import { randomUUID } from "node:crypto";
 
 export const inventoryId = randomUUID();
-const inventoryValueId1 = randomUUID();
-const inventoryValueId2 = randomUUID();
-const inventoryValueId3 = randomUUID();
+export const inventoryValueId1 = randomUUID();
+export const inventoryValueId2 = randomUUID();
+export const inventoryValueId3 = randomUUID();
 
 export const inventoryValues = [
   {

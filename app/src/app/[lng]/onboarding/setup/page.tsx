@@ -74,6 +74,7 @@ type Inputs = {
   regionPopulationYear: number;
   countryPopulation: number;
   countryPopulationYear: number;
+  totalCountryEmissions: number;
 };
 
 type PopulationEntry = {
@@ -170,6 +171,7 @@ function SetupStep({
     setValue("regionYear", null);
     setValue("countryPopulation", null);
     setValue("countryYear", null);
+    setValue("totalCountryEmissions", null);
   }, [locode, setValue]);
 
   const { data: cityData } = useGetOCCityDataQuery(locode!, {
@@ -232,6 +234,14 @@ function SetupStep({
       }
       setValue("countryPopulation", population.population);
       setValue("countryPopulationYear", population.year);
+      const keys = Object.keys(countryData.emissions)
+      const id = keys.find(id => id.startsWith('UNFCCC'))
+      if (id) {
+        const emissionsData = countryData.emissions[id].data
+        const emissions =
+        emissionsData.find((e: any) => e.year === year)?.total_emissions
+        setValue("totalCountryEmissions", emissions)
+      }
     }
   }, [countryData, year, setValue]);
 
@@ -767,6 +777,7 @@ export default function OnboardingSetup({
         cityId: city?.cityId!,
         year: data.year,
         inventoryName: `${data.name} - ${data.year}`,
+        totalCountryEmissions: getValues("totalCountryEmissions"),
       }).unwrap();
       await setUserInfo({
         cityId: city?.cityId!,

@@ -168,7 +168,8 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
   // const activityAmount = activityValue.activityAmount || 0;
   // TODO perform these calculations using BigInt/ BigNumber?
   const data = activityValue.activityData;
-  const activityAmount = data ? data["activity-amount"] || 0 : 0;
+  const activityAmountKey = activityValue.metadata?.["activityTitle"];
+  const activityAmount = data?.[activityAmountKey] || 0;
   const gases = gasValues?.map((gasValue) => {
     const emissionsFactor = gasValue.emissionsFactor;
     if (emissionsFactor == null) {
@@ -183,7 +184,7 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
     }
     // this rounds/ truncates!
     const amount = BigInt(
-      activityAmount * emissionsFactor.emissionsPerActivity,
+      Math.ceil(activityAmount * emissionsFactor.emissionsPerActivity),
     );
 
     return { gas: gasValue.gas!, amount };

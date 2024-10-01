@@ -38,6 +38,7 @@ import { ActivityValue } from "@/models/ActivityValue";
 export type EmissionFactorTypes = {
   id: string;
   name: string;
+  gasValues: { gas: string; emissionsPerActivity: number }[];
 }[];
 
 interface AddActivityModalBodyProps {
@@ -116,13 +117,27 @@ const ActivityModalBody = ({
 
   // Adjust function for countries with national emission factors i.e US
   const onEmissionFactorTypeChange = (e: any) => {
+    // somehow extract the gas and the emissions perActivity for each gas
+    const emissionFactor = emissionsFactorTypes.find(
+      (factor) => factor.id === e.target.value,
+    );
     const emissionFactorType = e.target.value;
     if (emissionFactorType === "custom") {
       setIsEmissionFactorInputDisabled(false);
     } else {
-      setValue("activity.CO2EmissionFactor", 0);
-      setValue("activity.N2OEmissionFactor", 0);
-      setValue("activity.CH4EmissionFactor", 0);
+      let co2Val = emissionFactor?.gasValues.find(
+        (g) => g.gas === "CO2",
+      )?.emissionsPerActivity;
+      let n2oVal = emissionFactor?.gasValues.find(
+        (g) => g.gas === "N2O",
+      )?.emissionsPerActivity;
+      let ch4Val = emissionFactor?.gasValues.find(
+        (g) => g.gas === "CH4",
+      )?.emissionsPerActivity;
+
+      setValue("activity.CO2EmissionFactor", co2Val ? co2Val : 0);
+      setValue("activity.N2OEmissionFactor", n2oVal ? n2oVal : 0);
+      setValue("activity.CH4EmissionFactor", ch4Val ? ch4Val : 0);
       setIsEmissionFactorInputDisabled(true);
     }
   };
@@ -267,7 +282,7 @@ const ActivityModalBody = ({
                           >
                             <Select
                               variant="unstyled"
-                              {...register(`activity.${f.id}Unit` as any, {
+                              {...register(`activity.${f.id}-unit` as any, {
                                 required:
                                   f.required === false
                                     ? false
@@ -358,7 +373,7 @@ const ActivityModalBody = ({
                   >
                     <Controller
                       control={control}
-                      name={`activity.${title}Unit` as any}
+                      name={`activity.${title}-unit` as any}
                       render={({ field }) => (
                         <Select
                           placeholder={t("select-unit")}

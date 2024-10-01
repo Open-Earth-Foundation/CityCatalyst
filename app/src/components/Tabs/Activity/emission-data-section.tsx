@@ -323,6 +323,7 @@ const EmissionDataSection = ({
                     activityData={activityValues}
                     onDeleteActivity={onDeleteActivity}
                     onEditActivity={onEditActivity}
+                    showActivityModal={onAddActivityModalOpen}
                   />
                 ) : (
                   <ActivityAccordion
@@ -356,7 +357,7 @@ const EmissionDataSection = ({
                       fontWeight="semibold"
                       fontSize="headline.md"
                     >
-                      {convertKgToTonnes(totalEmissions)}
+                      {convertKgToTonnes(inventoryValue?.co2eq as bigint)}
                     </Text>
                   </Box>
                 </Box>

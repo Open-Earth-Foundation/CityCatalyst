@@ -27,6 +27,12 @@ export type GasAmountResult = {
   gases: Gas[];
 };
 
+export type GasValue = Omit<GasValueCreationAttributes, "id"> & {
+  emissionsFactor?:
+    | EmissionsFactorAttributes
+    | Omit<EmissionsFactorAttributes, "id">;
+};
+
 const DEFAULT_CO2EQ_YEARS = 100;
 
 export default class CalculationService {
@@ -75,13 +81,10 @@ export default class CalculationService {
     inventoryValue: InventoryValue,
     activityValue: ActivityValue,
     inputMethodology: string,
-    gasValues: (Omit<GasValueCreationAttributes, "id"> & {
-      emissionsFactor?:
-        | EmissionsFactorAttributes
-        | Omit<EmissionsFactorAttributes, "id">;
-    })[],
+    gasValues: GasValue[],
   ): Promise<GasAmountResult> {
     const formula = await CalculationService.getFormula(inputMethodology);
+
     // TODO cache
     const gasToCO2Eqs = await db.models.GasToCO2Eq.findAll();
     let totalCO2e = 0n;

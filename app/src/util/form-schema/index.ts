@@ -72,6 +72,7 @@ export interface Methodology {
 
 export interface DirectMeasure {
   id: string;
+  "group-by"?: string;
   suggestedActivitiesId?: string;
   suggestedActivities?: Activity[];
   inputRequired?: string[];

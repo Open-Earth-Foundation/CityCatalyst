@@ -631,7 +631,7 @@ export default function AddDataSteps({
               variant="ghost"
               fontSize="14px"
               leftIcon={<ArrowBackIcon boxSize={6} />}
-              onClick={() => router.back()}
+              onClick={() => router.push(`/${inventory}/data`)}
             >
               {t("go-back")}
             </Button>

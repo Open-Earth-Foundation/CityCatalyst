@@ -74,6 +74,7 @@ export interface DirectMeasure {
   suggestedActivities?: Activity[];
   inputRequired?: string[];
   "extra-fields"?: ExtraField[];
+  "group-by"?: string;
 }
 
 interface ManualInputHierarchy {

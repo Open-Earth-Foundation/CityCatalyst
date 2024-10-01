@@ -1753,7 +1753,7 @@
                 "exclusive": "type-all"
               },
               {
-                "id": "fugitive-emissions-coal-source",
+                "id": "data-source",
                 "type": "text"
               }
             ],
@@ -1800,7 +1800,6 @@
     "directMeasure": {
       "id": "fugitive-emissions-coal-direct-measure-methodology",
       "activityTypeField": "fugitive-emissions-coal-type",
-      "group-by": "",
       "extra-fields": [
         {
           "id": "fugitive-emissions-coal-type",
@@ -1821,7 +1820,7 @@
           "exclusive": "type-all"
         },
         {
-          "id": "fugitive-emissions-coal-source",
+          "id": "data-source",
           "type": "text"
         }
       ]
@@ -1868,7 +1867,7 @@
                 "exclusive": "type-all"
               },
               {
-                "id": "fugitive-emissions-oil-gas-fugitive-source",
+                "id": "data-source",
                 "type": "text"
               }
             ],
@@ -1938,7 +1937,7 @@
           "exclusive": "type-all"
         },
         {
-          "id": "fugitive-emissions-oil-gas-fugitive-source",
+          "id": "data-source",
           "type": "text"
         }
       ]

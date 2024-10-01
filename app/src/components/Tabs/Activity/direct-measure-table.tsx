@@ -1,7 +1,11 @@
 import { ActivityValue } from "@/models/ActivityValue";
 import { convertKgToTonnes } from "@/util/helpers";
-import { EditIcon } from "@chakra-ui/icons";
 import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   Box,
   Icon,
   IconButton,
@@ -21,7 +25,7 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import React, { FC } from "react";
+import React, { FC, useMemo } from "react";
 import { FiTrash2 } from "react-icons/fi";
 import { MdModeEditOutline, MdMoreVert } from "react-icons/md";
 import {
@@ -29,6 +33,7 @@ import {
   ExtraField,
   MANUAL_INPUT_HIERARCHY,
 } from "@/util/form-schema";
+import { AddIcon } from "@chakra-ui/icons";
 
 interface DirectMeasureTableProps {
   t: TFunction;
@@ -36,6 +41,7 @@ interface DirectMeasureTableProps {
   onDeleteActivity: (activity: ActivityValue) => void;
   onEditActivity: (activity: ActivityValue) => void;
   referenceNumber?: string;
+  showActivityModal: () => void;
 }
 
 const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
@@ -44,19 +50,49 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
   onEditActivity,
   referenceNumber,
   t,
+  showActivityModal,
 }) => {
   const directMeasure = MANUAL_INPUT_HIERARCHY[referenceNumber as string]
     .directMeasure as DirectMeasure;
   const extraFields = directMeasure["extra-fields"] as ExtraField[];
-  return (
-    <Box>
+
+  let groupBy = directMeasure?.["group-by"] as string;
+
+  const activityGroups = useMemo<Record<string, ActivityValue[]>>(() => {
+    if (!groupBy) return {};
+    return activityData?.reduce((acc: any, activity: any) => {
+      // TODO extend for groupby with multiple values
+      const key = activity.activityData[groupBy];
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(activity);
+      return acc;
+    }, {});
+  }, [activityData, groupBy]);
+
+  const sourceField = extraFields.find(
+    (f) => f.id.includes("-source") && f.type === "text",
+  )?.id;
+
+  const filteredFields = extraFields.filter((f) => {
+    console.log(f.id, groupBy);
+    return !f.id.includes(groupBy as string);
+  });
+
+  console.log(filteredFields, groupBy, extraFields);
+
+  const renderTable = (list: ActivityValue[]) => {
+    return (
       <Table variant="simple" borderWidth="1px">
         <Thead bg="background.backgroundLight">
           <Tr fontSize="button.sm" fontWeight="bold">
-            {extraFields.length > 0 && (
-              <Th isTruncated>{t(extraFields[0].id)}</Th>
+            {filteredFields.length > 0 && (
+              <Th isTruncated>{t(filteredFields[0].id)}</Th>
             )}
+
             <Th isTruncated>{t("data-quality")}</Th>
+            <Th isTruncated>{t(sourceField as string)}</Th>
             <Th isNumeric isTruncated>
               {t("co2-emissions")}
             </Th>
@@ -70,13 +106,17 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
           </Tr>
         </Thead>
         <Tbody>
-          {activityData?.map((activity: ActivityValue, i: number) => {
+          {list?.map((activity: ActivityValue, i: number) => {
             const dataQuality = activity?.dataSource?.dataQuality;
             return (
               <Tr key={i}>
-                {extraFields.length > 0 && (
-                  <Td isTruncated>
-                    {t(activity?.activityData?.[extraFields[0].id])}
+                {filteredFields.length > 0 && (
+                  <Td
+                    title={t(activity?.activityData?.[filteredFields[0].id])}
+                    isTruncated
+                    maxWidth="200px"
+                  >
+                    {t(activity?.activityData?.[filteredFields[0].id])}
                   </Td>
                 )}
                 <Td>
@@ -86,14 +126,19 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                     </TagLabel>
                   </Tag>
                 </Td>
+                <Td>
+                  <Text maxWidth="100px" isTruncated>
+                    {activity?.activityData?.[sourceField as string]}
+                  </Text>
+                </Td>
                 <Td isNumeric isTruncated>
                   {convertKgToTonnes(activity?.activityData?.co2_amount)}
                 </Td>
                 <Td isNumeric isTruncated>
-                  {convertKgToTonnes(activity?.activityData?.n2o_amount)}
+                  {convertKgToTonnes(activity?.activityData?.n2o_amount, "N2O")}
                 </Td>
                 <Td isNumeric isTruncated>
-                  {convertKgToTonnes(activity?.activityData?.ch4_amount)}
+                  {convertKgToTonnes(activity?.activityData?.ch4_amount, "CH4")}
                 </Td>
                 <Td>
                   <Popover>
@@ -176,7 +221,117 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
           })}
         </Tbody>
       </Table>
-    </Box>
+    );
+  };
+
+  return (
+    <>
+      {!!groupBy ? (
+        Object.keys(activityGroups)
+          .sort()
+          .map((key) => (
+            <Accordion key={key} defaultIndex={[0]} allowMultiple>
+              <AccordionItem
+                backgroundColor="white"
+                borderWidth="1px"
+                padding="0px"
+                borderColor="border.overlay"
+              >
+                <h2>
+                  <AccordionButton padding="0px">
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      w="full"
+                      padding="24px"
+                      alignItems="center"
+                    >
+                      <Box
+                        display="flex"
+                        flexDir="column"
+                        alignItems="start"
+                        gap="8px"
+                      >
+                        <Text
+                          fontFamily="heading"
+                          fontSize="title.md"
+                          fontWeight="semibold"
+                        >
+                          {t(key)}
+                        </Text>
+                        <Text
+                          color="content.tertiary"
+                          letterSpacing="wide"
+                          fontSize="body.md"
+                        >
+                          {activityGroups[key]?.length} {t("activities-added")}
+                        </Text>
+                      </Box>
+                      <Box display="flex" alignItems="center" gap="6">
+                        <Box
+                          alignItems="start"
+                          display="flex"
+                          fontFamily="heading"
+                        >
+                          <Text fontWeight="medium">
+                            {t("emissions")}:&nbsp;
+                          </Text>
+                          <Text fontWeight="normal">
+                            {" "}
+                            {convertKgToTonnes(
+                              activityGroups[key]?.reduce(
+                                (acc, curr) =>
+                                  acc + BigInt(curr.co2eq as bigint),
+                                0n,
+                              ),
+                            )}{" "}
+                          </Text>
+                        </Box>
+                        <Box pr="56px">
+                          <IconButton
+                            bg="none"
+                            pos="relative"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              showActivityModal();
+                            }}
+                            _hover={{ bg: "none" }}
+                            aria-label="add-activity"
+                            icon={
+                              <AddIcon
+                                color="interactive.control"
+                                fontSize="24px"
+                              />
+                            }
+                          />
+                        </Box>
+                      </Box>
+                    </Box>
+                    <AccordionIcon
+                      color="interactive.control"
+                      marginRight="24px"
+                      style={{ fontSize: "40px" }}
+                    />
+                  </AccordionButton>
+                </h2>
+                <AccordionPanel padding="0px" pb={4}>
+                  {renderTable(activityGroups[key])}
+                </AccordionPanel>
+              </AccordionItem>
+            </Accordion>
+          ))
+      ) : (
+        <Box
+          borderTopRadius="md"
+          borderColor="border.overlay"
+          borderWidth={1}
+          marginBottom="7"
+          overflow="hidden"
+        >
+          {renderTable(activityData as ActivityValue[])}
+        </Box>
+      )}
+    </>
   );
 };
 

@@ -85,7 +85,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
 
   // if there is no groupBy, return the activityData as is a regular table.
 
-  const renderTable = (list) => {
+  const renderTable = (list: ActivityValue[]) => {
     return (
       <TableContainer px={0}>
         <Table
@@ -109,9 +109,14 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
             </Tr>
           </Thead>
           <Tbody>
-            {list.map((activity: any, i: number) => {
+            {list?.map((activity: any, i: number) => {
               return (
-                <Tr key={i}>
+                <Tr
+                  title={t(activity.activityData?.[filteredFields[0].id])}
+                  maxWidth="200px"
+                  key={i}
+                  isTruncated
+                >
                   {filteredFields?.length! > 0 && (
                     <Td>{t(activity.activityData?.[filteredFields[0].id])}</Td>
                   )}
@@ -125,7 +130,9 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                       <TagLabel>{t(activity?.dataSource.dataQuality)}</TagLabel>
                     </Tag>
                   </Td>
-                  <Td>{activity?.activityData[sourceField as string]}</Td>
+                  <Td maxWidth="100px" isTruncated>
+                    {activity?.activityData[sourceField as string]}
+                  </Td>
                   <Td>
                     {parseFloat(activity?.activityData[title])}{" "}
                     {t(activity?.activityData[title + "-unit"])}
@@ -327,7 +334,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
           marginBottom="7"
           overflow="hidden"
         >
-          {renderTable(activityData)}
+          {renderTable(activityData as ActivityValue[])}
         </Box>
       )}
     </>

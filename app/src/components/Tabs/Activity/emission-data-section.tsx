@@ -323,6 +323,7 @@ const EmissionDataSection = ({
                     activityData={activityValues}
                     onDeleteActivity={onDeleteActivity}
                     onEditActivity={onEditActivity}
+                    showActivityModal={onAddActivityModalOpen}
                   />
                 ) : (
                   <ActivityAccordion

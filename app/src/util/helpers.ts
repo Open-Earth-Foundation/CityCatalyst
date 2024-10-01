@@ -67,6 +67,7 @@ export function getShortenNumberUnit(number: number): string {
     return "";
   }
 }
+
 export async function resolvePromisesSequentially(promises: Promise<any>[]) {
   const results = [];
   for (const promise of promises) {
@@ -221,24 +222,28 @@ export const getInputMethodology = (methodologyId: string) => {
   }
 };
 
-export function convertKgToTonnes(valueInTonnes: number | bigint) {
+export function convertKgToTonnes(
+  valueInTonnes: number | bigint,
+  gas?: string,
+) {
   let result = "";
+  let gasSuffix = gas ? ` ${gas}` : "CO2";
   const tonnes = Number(valueInTonnes);
   if (tonnes >= 1e6) {
     // Convert to megatonnes if the value is 1,000,000 tonnes or more
     const megatonnes = (tonnes / 1e6).toFixed(0);
-    result = `${megatonnes} MtCO2`;
+    result = `${megatonnes} Mt${gasSuffix}`;
   } else if (tonnes >= 1e3) {
     // Convert to kilotonnes if the value is 1,000 tonnes or more but less than 1,000,000 tonnes
     const kilotonnes = (tonnes / 1e3).toFixed(0);
-    result = `${kilotonnes} KtCO2`;
+    result = `${kilotonnes} Kt${gasSuffix}`;
   } else if (tonnes < 1) {
     // Convert to kg if the value is less than 1 tonne
     const kilograms = (tonnes * 1e3).toFixed(0);
-    result = `${kilograms} kgCO2`;
+    result = `${kilograms} kg${gasSuffix}`;
   } else {
     // Return as tonnes if the value is less than 1,000 tonnes but more than or equal to 1 tonne
-    result = `${tonnes} tCO2`;
+    result = `${tonnes} t${gasSuffix}`;
   }
 
   return result;
@@ -252,4 +257,5 @@ export const toKebabCase = (input: string | undefined): string => {
     .toLowerCase();
 };
 
-export const capitalizeFirstLetter = (string: string) => string.charAt(0).toUpperCase() + string.slice(1);
+export const capitalizeFirstLetter = (string: string) =>
+  string.charAt(0).toUpperCase() + string.slice(1);

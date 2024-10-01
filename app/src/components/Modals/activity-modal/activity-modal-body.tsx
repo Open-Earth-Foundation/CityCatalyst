@@ -179,6 +179,7 @@ const ActivityModalBody = ({
                       errors={errors}
                       t={t}
                       selectedActivity={selectedActivity}
+                      setValue={setValue}
                     />
                   </FormControl>
                 )}

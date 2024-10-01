@@ -8,6 +8,8 @@ import { findMethodology } from "@/util/form-schema";
 import {
   handleActivityAmountTimesEmissionsFactorFormula,
   handleDirectMeasureFormula,
+  handleDomesticWasteWaterFormula,
+  handleIndustrialWasteWaterFormula,
   handleMethaneCommitmentFormula,
   handleVkt1Formula,
 } from "./formulas";
@@ -89,26 +91,53 @@ export default class CalculationService {
     let totalCO2eYears = 0;
     let gases: Gas[] = [];
 
-    // TODO use Record<string, (activityValue, gasToCO2Eqs) => FormulaResult> for this? To avoid adding new code here for each new formula...
-    const formulaHandlers: Record<
-      string,
-      (activityValue: ActivityValue, gasValues: GasValue[]) => Gas[]
-    > = {
-      "direct-measure": handleDirectMeasureFormula,
-      "activity-amount-times-emissions-factor":
-        handleActivityAmountTimesEmissionsFactorFormula,
-      "methane-commitment": handleMethaneCommitmentFormula,
-      "induced-activity-1": handleVkt1Formula,
-    };
+    switch (formula) {
+      // TODO use Record<string, (activityValue, gasToCO2Eqs) => FormulaResult> for this? To avoid adding new code here for each new formula...
+      // basically like a function pointer table in C++...
+      case "direct-measure":
+        gases = handleDirectMeasureFormula(activityValue);
+        break;
+      case "activity-amount-times-emissions-factor":
+        gases = handleActivityAmountTimesEmissionsFactorFormula(
+          activityValue,
+          gasValues,
+        );
+        break;
+      case "methane-commitment":
+        gases = handleMethaneCommitmentFormula(activityValue);
+        break;
+      case "induced-activity-1":
+        gases = handleVkt1Formula(activityValue, gasValues);
+      case "wastewater-calculator":
+        const activityId = activityValue.activityData?.activityId;
 
-    const handler = formulaHandlers[formula];
-    if (!handler) {
-      throw new createHttpError.NotImplemented(
-        `Formula ${formula} not yet implemented for input methodology ${inventoryValue.inputMethodology}`,
-      );
+        // TODO handle outside activities as well!
+        if (activityId === "wastewater-inside-domestic-calculator-activity") {
+          const inventory = await db.models.Inventory.findByPk(
+            inventoryValue.inventoryId,
+          );
+          if (!inventory) {
+            throw new createHttpError.NotFound("Inventory not found");
+          }
+          gases = await handleDomesticWasteWaterFormula(
+            activityValue,
+            inventory,
+          );
+        } else if (
+          activityId === "wastewater-inside-industrial-calculator-activity"
+        ) {
+          gases = handleIndustrialWasteWaterFormula(activityValue);
+        } else {
+          throw new createHttpError.BadRequest(
+            `Unknown activity ID ${activityId} for wastewater calculator formula in activity value ${activityValue.id}`,
+          );
+        }
+        break;
+      default:
+        throw new createHttpError.NotImplemented(
+          `Formula ${formula} not yet implemented for input methodology ${inventoryValue.inputMethodology}`,
+        );
     }
-
-    gases = handler(activityValue, gasValues);
 
     for (const gas of gases) {
       const { co2eq, co2eqYears } = this.calculateCO2eq(

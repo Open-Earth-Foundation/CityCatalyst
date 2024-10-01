@@ -16,8 +16,8 @@ import { Publisher } from "@/models/Publisher";
 import { PopulationEntry, findClosestYear } from "@/util/helpers";
 import { PopulationAttributes } from "@/models/Population";
 import { Inventory } from "@/models/Inventory";
+import { maxPopulationYearDifference } from "@/util/constants";
 
-const maxPopulationYearDifference = 5;
 const downscaledByCountryPopulation = "global_api_downscaled_by_population";
 const downscaledByRegionPopulation =
   "global_api_downscaled_by_region_population";

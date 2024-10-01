@@ -100,7 +100,13 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
           <Thead backgroundColor="background.backgroundLight">
             <Tr>
               {filteredFields?.length! > 0 && (
-                <Th>{t(filteredFields[0].id)}</Th>
+                <Th
+                  title={t(filteredFields[0].id)}
+                  maxWidth="200px"
+                  isTruncated
+                >
+                  {t(filteredFields[0].id)}
+                </Th>
               )}
               <Th>{t("data-quality")}</Th>
               <Th>{t(sourceField as string)}</Th>

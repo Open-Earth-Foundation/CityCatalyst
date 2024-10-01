@@ -28,6 +28,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MdOutlineHomeWork } from "react-icons/md";
 import { toKebabCase } from "@/util/helpers";
+import { throttle } from "lodash";
 
 function SubSectorPage({
   params: { lng, step, inventory: inventoryId, subsector },
@@ -117,14 +118,17 @@ function SubSectorPage({
 
   const handleScroll = () => {
     const position = window.scrollY;
-    setScrollPosition(position);
+
+    setIsExpanded(window.scrollY > scrollResizeHeaderThreshold);
+    // setScrollPosition(position);
   };
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    const throttledHandle = throttle(handleScroll, 500);
+    window.addEventListener("scroll", throttledHandle, { passive: true });
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", throttledHandle);
     };
   }, []);
 
@@ -143,7 +147,24 @@ function SubSectorPage({
     };
   };
   const scrollResizeHeaderThreshold = 170;
-  const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  // const throtthledFunc = useCallback(throttle( => {
+  //   console.log("throttled");
+  //   if (scrollPosition > scrollResizeHeaderThreshold) {
+  //     setIsExpanded(true);
+  //   } else {
+  //     setIsExpanded(false);
+  //   }
+  // }, 2500), []);
+
+  // useEffect(() => {
+  //   throtthledFunc();
+  // }, [scrollPosition]);
+
+  // const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
+
+  console.log("scroll position", scrollPosition);
 
   const { data: activityData, isLoading: isActivityDataLoading } =
     api.useGetActivityValuesQuery({
@@ -309,7 +330,7 @@ function SubSectorPage({
           </Box>
         </Box>
       </Box>
-      <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4 mt-[240px]">
+      <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4 pb-[100px] mt-[240px]">
         <Box mt="48px">
           <Tabs>
             <MotionTabList
@@ -320,6 +341,7 @@ function SubSectorPage({
               top={isExpanded ? "170px" : "50px"}
               animate={{
                 y: isExpanded ? 0 : -50,
+                delay: 200,
               }}
               transition={{ duration: 0.2 }}
             >

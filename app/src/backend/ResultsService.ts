@@ -114,9 +114,9 @@ interface UngroupedActivityData {
 }
 
 interface GroupedActivity {
-  activityValue: string;
+  activityValue: string | bigint; // Using string to avoid jest's "Don't know how to serialize Bigint" error
   activityUnits: string;
-  totalActivityEmissions: string; // Using string to avoid jest's "Don't know how to serialize Bigint" error
+  totalActivityEmissions: string | bigint; // Using string to avoid jest's "Don't know how to serialize Bigint" error
   totalEmissionsPercentage: number;
 }
 
@@ -204,25 +204,48 @@ const groupActivitiesBy = (
     return mapValues(groupedByActivity, (activityGroup) => {
       const groupedByUnit = groupBy(activityGroup, "activityUnits");
 
-      return mapValues(groupedByUnit, (unitGroup) =>
-        unitGroup.reduce<GroupedActivity>(
-          (acc, current) => ({
-            activityValue: current.activityValue,
-            activityUnits: current.activityUnits,
-            totalActivityEmissions: (
-              BigInt(acc.totalActivityEmissions) + current.activityEmissions
-            ).toString(),
-            totalEmissionsPercentage:
-              acc.totalEmissionsPercentage + current.emissionsPercentage,
-          }),
+      return mapValues(groupedByUnit, (unitGroup) => {
+        const isActivityValueNa = unitGroup.some(
+          (e) => e.activityValue === "N/A",
+        );
+        const output = unitGroup.reduce<GroupedActivity>(
+          (acc, current) => {
+            const currentActivityValue =
+              current.activityValue === "N/A"
+                ? "N/A"
+                : BigInt(current.activityValue);
+            const newActivityValue =
+              isActivityValueNa ||
+              acc.activityValue === "N/A" ||
+              currentActivityValue === "N/A"
+                ? "N/A"
+                : (acc.activityValue as bigint) +
+                  (currentActivityValue as bigint);
+
+            return {
+              activityValue: newActivityValue,
+              activityUnits: current.activityUnits,
+              totalActivityEmissions:
+                BigInt(acc.totalActivityEmissions) +
+                BigInt(current.activityEmissions),
+              totalEmissionsPercentage:
+                acc.totalEmissionsPercentage + current.emissionsPercentage,
+            };
+          },
           {
-            activityValue: "",
+            activityValue: isActivityValueNa ? "N/A" : 0n,
             activityUnits: "",
-            totalActivityEmissions: "0",
+            totalActivityEmissions: 0n,
             totalEmissionsPercentage: 0,
           },
-        ),
-      );
+        );
+
+        return {
+          ...output,
+          activityValue: output.activityValue.toString(),
+          totalActivityEmissions: output.totalActivityEmissions.toString(),
+        };
+      });
     });
   });
 

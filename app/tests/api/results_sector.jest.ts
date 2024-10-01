@@ -15,13 +15,11 @@ import {
   activityValues as activityValuesData,
   baseInventory,
   inventoryId,
-  inventoryValues as inventoryValuesData,
-} from "./results_sector.data";
-import {
-  inventoryValueId,
   inventoryValueId1,
   inventoryValueId2,
-} from "./results.data";
+  inventoryValueId3,
+  inventoryValues as inventoryValuesData,
+} from "./results_sector.data";
 import { Op } from "sequelize";
 import { City } from "@/models/City";
 
@@ -55,7 +53,7 @@ describe("Results API", () => {
     await db.models.ActivityValue.destroy({
       where: {
         inventoryValueId: {
-          [Op.in]: [inventoryValueId, inventoryValueId1, inventoryValueId2],
+          [Op.in]: [inventoryValueId3, inventoryValueId1, inventoryValueId2],
         },
       },
     });

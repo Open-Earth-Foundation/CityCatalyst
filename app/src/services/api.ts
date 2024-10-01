@@ -97,7 +97,12 @@ export const api = createApi({
     }),
     addInventory: builder.mutation<
       InventoryAttributes,
-      { cityId: string; year: number; inventoryName: string }
+      {
+        cityId: string;
+        year: number;
+        inventoryName: string;
+        totalCountryEmissions: number
+      }
     >({
       query: (data) => ({
         url: `/city/${data.cityId}/inventory`,

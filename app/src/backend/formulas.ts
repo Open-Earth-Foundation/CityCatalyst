@@ -264,15 +264,16 @@ export async function handleDomesticWasteWaterFormula(
     "income-group-type-all";
   const incomeGroupFraction = DEFAULT_INCOME_GROUP_FRACTIONS[incomeGroup];
   const dischargeSystemUtulizationRatio =
-    data["discharge-system-utilization-ratio"];
+    data["discharge-system-utilization-ratio"] ?? 0.5; // TODO wrong key!
 
   const emissionsFactor =
     methaneProductionCapacity *
     methaneCorrectionFactor *
     incomeGroupFraction *
     dischargeSystemUtulizationRatio;
+
   const totalMethaneProduction =
     (totalOrganicWaste - removedSludge) * emissionsFactor - methaneRecovered;
-  const amount = BigInt(totalMethaneProduction);
+  const amount = BigInt(Math.round(totalMethaneProduction)); // TODO round right or is ceil/ floor more correct?
   return [{ gas: "CH4", amount }];
 }

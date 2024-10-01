@@ -66,7 +66,7 @@ export default function ChatBot({
   t: TFunction;
   inventoryId: string;
 }) {
-  const [threadId, setThreadId] = useState("");
+  const threadIdRef = useRef("");
   const [userInput, setUserInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputDisabled, setInputDisabled] = useState(false);
@@ -104,42 +104,30 @@ export default function ChatBot({
         content: t("initial-message"),
       }).unwrap();
       console.log("Thread initialized with ID:", result);
-      setThreadId(result);
-      return result;
+
+      // Set the threadIdRef which gets set synchronously
+      threadIdRef.current = result;
     } catch (error) {
       handleError(
         error,
         "Failed to initialize thread. Please try again to send a message.",
       );
-      return null;
     }
   };
 
   // TODO: Convert to Redux #ON-2137
   const sendMessage = async (text: string) => {
-    let currentThreadId = threadId || null;
-    // move create thread over here
     // If no thread Id is set, create a thread.
-    if (!threadId) {
-      console.log("threadId not set, initializing thread");
-      currentThreadId = await initializeThread();
+    if (!threadIdRef.current) {
+      await initializeThread();
     }
-    console.log("threadId", threadId);
-
-    // Check again in case threadId is still not set
-    // if (!threadId) {
-    //   handleError(
-    //     new Error("Thread is not available"),
-    //     "Failed to initialize thread. Please try again.",
-    //   );
-    //   return;
-    // }
 
     try {
       const response = await fetch(`/api/v0/assistants/threads/messages`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          threadId: currentThreadId, //threadId,
+          threadId: threadIdRef.current,
           content: text,
         }),
       });
@@ -203,11 +191,7 @@ export default function ChatBot({
     }
   };
 
-  const submitActionResult = async (
-    threadId: string,
-    runId: string,
-    toolCallOutputs: object,
-  ) => {
+  const submitActionResult = async (runId: string, toolCallOutputs: object) => {
     try {
       const response = await fetch(`/api/v0/assistants/threads/actions`, {
         method: "POST",
@@ -215,7 +199,7 @@ export default function ChatBot({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          threadId: threadId,
+          threadId: threadIdRef.current,
           runId: runId,
           toolCallOutputs: toolCallOutputs,
         }),
@@ -331,7 +315,7 @@ export default function ChatBot({
       timeoutPromise,
     ]);
 
-    submitActionResult(threadId, runId, toolCallOutputs);
+    submitActionResult(runId, toolCallOutputs);
   };
 
   // Here all the streaming events get processed

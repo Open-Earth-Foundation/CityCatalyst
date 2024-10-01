@@ -36,8 +36,9 @@ function FormattedNumberInput({
   // Format the number according to the locale
   const format = (nval: number | string) => {
     let val = parseFloat(nval as string);
+    const lastItemDot = nval.toString().slice(-1) === ".";
     if (isNaN(val)) return "";
-    return new Intl.NumberFormat(lng).format(val);
+    return new Intl.NumberFormat(lng).format(val) + (lastItemDot ? "." : "");
   };
 
   // Parse the formatted string into a raw number
@@ -50,7 +51,7 @@ function FormattedNumberInput({
     const normalizedNumber = normalizedVal.replace(localeDecimalSeparator, ".");
     return isNaN(parseFloat(normalizedNumber))
       ? ""
-      : parseFloat(normalizedNumber).toString();
+      : normalizedNumber.toString();
   };
 
   return (
@@ -68,7 +69,11 @@ function FormattedNumberInput({
               const parsedValue = parse(valueAsString);
               field.onChange(parsedValue);
             }}
-            onBlur={(e) => e.preventDefault()}
+            onBlur={(e) => {
+              e.preventDefault();
+              const parsedValue = parse(e.target.value);
+              field.onChange(parseFloat(parsedValue));
+            }}
             {...rest}
           >
             <NumberInputField

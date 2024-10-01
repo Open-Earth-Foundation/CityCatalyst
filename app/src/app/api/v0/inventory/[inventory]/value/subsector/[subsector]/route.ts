@@ -13,7 +13,15 @@ export const GET = apiHandler(async (_req, { params, session }) => {
       subSectorId: params.subsector,
       inventoryId: inventory.inventoryId,
     },
-    include: [{ model: db.models.DataSource, as: "dataSource" }],
+    include: [
+      { model: db.models.DataSource, as: "dataSource" },
+      {
+        model: db.models.SubCategory,
+        as: "subCategory",
+      },
+      { model: db.models.Sector, as: "sector" },
+      { model: db.models.SubSector, as: "subSector" },
+    ],
   });
 
   return NextResponse.json({ data: inventoryValues });

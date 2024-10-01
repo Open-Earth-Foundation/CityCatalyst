@@ -13,7 +13,7 @@ import { Op } from "sequelize";
 import { z } from "zod";
 import { logger } from "@/services/logger";
 import { Publisher } from "@/models/Publisher";
-import { PopulationEntry, findClosestYear } from "@/util/helpers";
+import { findClosestYear, PopulationEntry } from "@/util/helpers";
 import { PopulationAttributes } from "@/models/Population";
 import { Inventory } from "@/models/Inventory";
 import { maxPopulationYearDifference } from "@/util/constants";
@@ -138,6 +138,8 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const sources = sectorSources
     .concat(subSectorSources)
     .concat(subCategorySources);
+
+  console.log("sources", sources);
   const { applicableSources, removedSources } = DataSourceService.filterSources(
     inventory,
     sources,

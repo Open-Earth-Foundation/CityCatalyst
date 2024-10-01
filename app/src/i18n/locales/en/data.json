@@ -7,7 +7,7 @@
   "all-sectors": "All sectors",
   "commercial-and-institutional-buildings": "Commercial and Institutional Buildings",
   "commercial-and-institutional-building-description": "Includes all emissions from energy use in commercial buildings and in institutional public buildings such as schools, hospitals, government offices, highway street lighting, and other public facilities.",
-  "add-data-manually": "Add Data Manually to Your Inventory",
+  "add-data-manually": "Add data to sub-sector",
   "scope-not-applicable": "This scope is not applicable to my city",
   "fuel-combustion-consumption": "Fuel Combustion Consumption",
   "fuel-combustion-consumption-description": "Direct recording of fuels combusted in commercial buildings.",
@@ -797,5 +797,8 @@
   "units-liters": "Liters (l)",
   "units-other": "Other",
   "units-terajoules": "Terajoules (TJ)",
-  "select-unit": "Select Unit"
+  "select-unit": "Select Unit",
+  "external-dataset-integrated": "External dataset integrated",
+  "external-dataset-description": "External dataset integrated emissions data from external providers directly into your GHG emissions inventory",
+  "disconnected-data-source": "Disconnected data source"
 }

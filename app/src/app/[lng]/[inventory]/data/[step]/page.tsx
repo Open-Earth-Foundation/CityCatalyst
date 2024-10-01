@@ -10,11 +10,10 @@ import {
   WorldSearchIcon,
 } from "@/components/icons";
 import {
-  InventoryUserFileAttributes,
   clear,
+  InventoryUserFileAttributes,
   removeFile,
 } from "@/features/city/inventoryDataSlice";
-import { setSubsector } from "@/features/city/subsectorSlice";
 import { useTranslation } from "@/i18n/client";
 import { RootState } from "@/lib/store";
 import { api } from "@/services/api";
@@ -37,8 +36,8 @@ import {
   Center,
   CircularProgress,
   Flex,
-  HStack,
   Heading,
+  HStack,
   Icon,
   IconButton,
   Link,

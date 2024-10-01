@@ -237,9 +237,7 @@ export async function handleDomesticWasteWaterFormula(
 
   const methaneProductionCapacity = DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should this only be handled UI-side?
   const removedSludge =
-    data[
-      "wastewater-inside-industrial-calculator-total-organic-sludge-removed"
-    ];
+    data["wastewater-inside-domestic-calculator-total-organic-sludge-removed"];
   // TODO get MCF from seed-data/formula_values
   const methaneCorrectionFactor = DEFAULT_METHANE_CORRECTION_FACTOR;
   const methaneRecovered =

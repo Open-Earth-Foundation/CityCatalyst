@@ -10,6 +10,7 @@ export interface InventoryAttributes {
   year?: number;
   totalEmissions?: number;
   cityId?: string;
+  totalCountryEmissions?: number;
 }
 
 export type InventoryPk = "inventoryId";
@@ -18,7 +19,8 @@ export type InventoryOptionalAttributes =
   | "inventoryName"
   | "year"
   | "totalEmissions"
-  | "cityId";
+  | "cityId"
+  | "totalCountryEmissions";
 export type InventoryCreationAttributes = Optional<
   InventoryAttributes,
   InventoryOptionalAttributes
@@ -33,6 +35,7 @@ export class Inventory
   year?: number;
   totalEmissions?: number;
   cityId?: string;
+  totalCountryEmissions?: number;
 
   // Inventory belongsTo City via cityId
   city!: City;
@@ -116,6 +119,11 @@ export class Inventory
             key: "city_id",
           },
           field: "city_id",
+        },
+        totalCountryEmissions: {
+          type: DataTypes.BIGINT,
+          allowNull: true,
+          field: "total_country_emissions",
         },
       },
       {

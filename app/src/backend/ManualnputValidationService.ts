@@ -9,7 +9,7 @@ import {
   Methodology,
 } from "@/util/form-schema";
 import { db } from "@/models";
-import { Op, literal, fn, col, where } from "sequelize";
+import { col, fn, literal, Op, where } from "sequelize";
 import {
   ManualInputValidationError,
   ManualInputValidationErrorCodes,
@@ -173,7 +173,7 @@ export default class ManualInputValidationService {
       } else {
         // using the LOWER function to make the comparison case-insensitive
         return where(fn("lower", literal(`activity_data_jsonb->>'${field}'`)), {
-          [Op.eq]: value.toLowerCase(),
+          [Op.eq]: value?.toLowerCase(),
         });
       }
     });

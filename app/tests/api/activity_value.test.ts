@@ -1,12 +1,12 @@
 import {
   DELETE as deleteActivityValue,
   GET as getActivityValue,
-  PATCH as updateActivityValue
+  PATCH as updateActivityValue,
 } from "@/app/api/v0/inventory/[inventory]/activity-value/[id]/route";
 
 import {
   DELETE as deleteAllActivitiesInSubsector,
-  POST as createActivityValue
+  POST as createActivityValue,
 } from "@/app/api/v0/inventory/[inventory]/activity-value/route";
 
 import { db } from "@/models";
@@ -36,7 +36,7 @@ import {
   subcategoryName,
   subsectorName,
   updatedActivityValue,
-  validCreateActivity
+  validCreateActivity,
 } from "./activity_value_data";
 
 describe("Activity Value API", () => {
@@ -209,7 +209,6 @@ describe("Activity Value API", () => {
     });
 
     assert.equal(findInventory?.inventoryId, inventory.inventoryId);
-    console.log(subSector, "the value");
 
     const req = mockRequest({
       ...validCreateActivity,

@@ -38,6 +38,7 @@ export interface ExtraField {
 
 export interface Activity {
   id: string;
+  "group-by"?: string;
   "unique-by"?: string[];
   "activity-title"?: string;
   minimum?: number;
@@ -73,6 +74,7 @@ export interface DirectMeasure {
   suggestedActivities?: Activity[];
   inputRequired?: string[];
   "extra-fields"?: ExtraField[];
+  "group-by"?: string;
 }
 
 interface ManualInputHierarchy {

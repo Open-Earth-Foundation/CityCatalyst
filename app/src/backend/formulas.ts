@@ -1,8 +1,17 @@
+import createHttpError from "http-errors";
+
 import type { ActivityValue } from "@/models/ActivityValue";
 import type { Gas } from "./CalculationService";
-import createHttpError from "http-errors";
-import { GasValueCreationAttributes } from "@/models/GasValue";
-import { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
+import type { GasValueCreationAttributes } from "@/models/GasValue";
+import type { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
+import { findClosestCityPopulation } from "@/util/population";
+import type { Inventory } from "@/models/Inventory";
+
+type GasValueWithEmissionsFactor = Omit<GasValueCreationAttributes, "id"> & {
+  emissionsFactor?:
+    | EmissionsFactorAttributes
+    | Omit<EmissionsFactorAttributes, "id">;
+};
 
 const GAS_NAMES = ["CO2", "N2O", "CH4"];
 const METHANE_CORRECTION_FACTORS: Record<string, number> = {
@@ -22,13 +31,39 @@ const WOOD_FACTOR = 0.43;
 const TEXTILES_FACTOR = 0.24;
 const INDUSTRIAL_WASTE_FACTOR = 0.15;
 
+const DEFAULT_METHANE_PRODUCTION_CAPACITY = 0.25; // kg CH4/kg COD
+const DEFAULT_METHANE_CORRECTION_FACTOR = 1.0; // TODO get correct one from FormulaInputs/ FormulaValues once that is loaded
+const DEFAULT_BOD_PER_CAPITA = 40; // TODO this is a placeholder, get the actual value from IPCC!!!
+
+// TODO get actual values for each contry from IPCC
+const DEFAULT_INCOME_GROUP_FRACTIONS: Record<string, number> = {
+  "income-group-type-all": 1.0,
+  "income-group-type-rural": 0.23,
+  "income-group-type-urban-high-income": 0.5,
+  "income-group-type-urban-low-income": 0.27,
+};
+
+export function handleDirectMeasureFormula(
+  activityValue: ActivityValue,
+): Gas[] {
+  const gases = GAS_NAMES.map((gasName) => {
+    const data = activityValue.activityData;
+    const key = gasName.toLowerCase() + "_amount";
+    if (!data || !data[key]) {
+      throw new createHttpError.BadRequest(
+        "Missing direct measure form entry " + key,
+      );
+    }
+    // TODO save amount to GasValue entry?
+    const amount = BigInt(data[key]);
+    return { gas: gasName, amount: amount };
+  });
+  return gases;
+}
+
 export function handleVkt1Formula(
   activityValue: ActivityValue,
-  gasValues: (Omit<GasValueCreationAttributes, "id"> & {
-    emissionsFactor?:
-      | EmissionsFactorAttributes
-      | Omit<EmissionsFactorAttributes, "id">;
-  })[],
+  gasValues: GasValueWithEmissionsFactor[],
 ): Gas[] {
   const data = activityValue.activityData;
   if (!data) {
@@ -127,17 +162,14 @@ export function handleMethaneCommitmentFormula(
 
 export function handleActivityAmountTimesEmissionsFactorFormula(
   activityValue: ActivityValue,
-  gasValues: (Omit<GasValueCreationAttributes, "id"> & {
-    emissionsFactor?:
-      | EmissionsFactorAttributes
-      | Omit<EmissionsFactorAttributes, "id">;
-  })[],
+  gasValues: GasValueWithEmissionsFactor[],
 ): Gas[] {
   // TODO add actvityAmount column to ActivityValue
   // const activityAmount = activityValue.activityAmount || 0;
   // TODO perform these calculations using BigInt/ BigNumber?
   const data = activityValue.activityData;
-  const activityAmount = data ? data["activity_amount"] || 0 : 0;
+  const activityAmountKey = activityValue.metadata?.["activityTitle"];
+  const activityAmount = data?.[activityAmountKey] || 0;
   const gases = gasValues?.map((gasValue) => {
     const emissionsFactor = gasValue.emissionsFactor;
     if (emissionsFactor == null) {
@@ -147,13 +179,12 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
     }
     if (emissionsFactor.emissionsPerActivity == null) {
       throw new createHttpError.BadRequest(
-        // TODO resolve type issues with extracting id
         `Emissions factor for ${emissionsFactor?.gas} has no emissions per activity`,
       );
     }
     // this rounds/ truncates!
     const amount = BigInt(
-      activityAmount * emissionsFactor.emissionsPerActivity,
+      Math.ceil(activityAmount * emissionsFactor.emissionsPerActivity),
     );
 
     return { gas: gasValue.gas!, amount };
@@ -162,20 +193,87 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
   return gases;
 }
 
-export function handleDirectMeasureFormula(
+export function handleIndustrialWasteWaterFormula(
   activityValue: ActivityValue,
 ): Gas[] {
-  const gases = GAS_NAMES.map((gasName) => {
-    const data = activityValue.activityData;
-    const key = gasName.toLowerCase() + "_amount";
-    if (!data || !data[key]) {
-      throw new createHttpError.BadRequest(
-        "Missing direct measure form entry " + key,
-      );
-    }
-    // TODO save amount to GasValue entry?
-    const amount = BigInt(data[key]);
-    return { gas: gasName, amount: amount };
-  });
-  return gases;
+  const data = activityValue.activityData;
+  if (!data) {
+    throw new createHttpError.BadRequest(
+      "Activity has no data associated, so it can't use the formula",
+    );
+  }
+
+  const totalIndustrialProduction = data["total-industrial-production"];
+  const wastewaterGenerated = data["wastewater-generated"];
+  const degradableOrganicComponents = data["degradable-organic-components"];
+  const methaneProductionCapacity =
+    data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should this only be handled UI-side?
+  const removedSludge = data["removed-sludge"];
+  const methaneCorrectionFactor = data["methane-correction-factor"];
+  const methaneRecovered = data["methane-recovered"];
+
+  // TODO is BigInt/ BigNumber required for these calculations?
+  const totalOrganicWaste =
+    totalIndustrialProduction *
+    wastewaterGenerated *
+    degradableOrganicComponents;
+  const emissionsFactor = methaneProductionCapacity * methaneCorrectionFactor;
+  const totalMethaneProduction =
+    (totalOrganicWaste - removedSludge) * emissionsFactor - methaneRecovered;
+  const amount = BigInt(totalMethaneProduction);
+  return [{ gas: "CH4", amount }];
+}
+
+export async function handleDomesticWasteWaterFormula(
+  activityValue: ActivityValue,
+  inventory: Inventory,
+): Promise<Gas[]> {
+  const data = activityValue.activityData;
+  if (!data) {
+    throw new createHttpError.BadRequest(
+      "Activity has no data associated, so it can't use the formula",
+    );
+  }
+
+  const methaneProductionCapacity = DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should this only be handled UI-side?
+  const removedSludge =
+    data["wastewater-inside-domestic-calculator-total-organic-sludge-removed"];
+  // TODO get MCF from seed-data/formula_values
+  const methaneCorrectionFactor = DEFAULT_METHANE_CORRECTION_FACTOR;
+  const methaneRecovered =
+    data["wastewater-inside-domestic-calculator-methane-recovered"];
+
+  const totalCityPopulationEntry = await findClosestCityPopulation(inventory);
+  if (!totalCityPopulationEntry) {
+    throw new createHttpError.BadRequest(
+      "No recent city population entry was found.",
+    );
+  }
+  const totalCityPopulation = totalCityPopulationEntry.population;
+
+  const bodPerCapita = DEFAULT_BOD_PER_CAPITA;
+  const isCollectedWasteWater =
+    data["wastewater-inside-industrial-calculator-collection-status"] ===
+    "collection-status-type-wastewater-collected";
+  const industrialBodFactor = isCollectedWasteWater ? 1.0 : 1.25;
+  const totalOrganicWaste =
+    totalCityPopulation * bodPerCapita * industrialBodFactor * 365;
+
+  const incomeGroup =
+    data["wastewater-inside-domestic-calculator-income-group"] ??
+    "income-group-type-all";
+  const incomeGroupFraction = DEFAULT_INCOME_GROUP_FRACTIONS[incomeGroup];
+  const dischargeSystemUtulizationRatio =
+    data["discharge-system-utilization-ratio"] ?? 0.5; // TODO wrong key!
+
+  const emissionsFactor =
+    methaneProductionCapacity *
+    methaneCorrectionFactor *
+    incomeGroupFraction *
+    dischargeSystemUtulizationRatio;
+
+  const totalMethaneProduction =
+    (totalOrganicWaste - removedSludge) * emissionsFactor - methaneRecovered;
+  const amount = BigInt(Math.round(totalMethaneProduction)); // TODO round right or is ceil/ floor more correct?
+  return [{ gas: "CH4", amount }];
 }

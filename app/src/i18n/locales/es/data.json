@@ -762,5 +762,8 @@
   "data-comments": "Comentarios explicativos",
   "data-source-placeholder": "Ingrese la fuente de datos o proveedor",
   "data-comments-placeholder": "Describa cualquier contexto relevante o explicación para los datos de actividad ingresados",
-  "data-comments-required": "Por favor, agregue cualquier contexto relevante o explicación para los datos de actividad ingresados"
+  "data-comments-required": "Por favor, agregue cualquier contexto relevante o explicación para los datos de actividad ingresados",
+  "external-dataset-integrated": "Conjunto de datos externo integrado",
+  "external-dataset-description": "Conjunto de datos externo integrado directamente en tu inventario de emisiones de GEI desde proveedores externos",
+  "disconnected-data-source": "Fuente de datos desconectada"
 }

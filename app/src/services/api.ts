@@ -16,11 +16,11 @@ import type {
   InventoryValueResponse,
   InventoryValueUpdateQuery,
   InventoryWithCity,
+  RequiredScopesResponse,
+  ResultsResponse,
   UserFileResponse,
   UserInfoResponse,
   UserInviteResponse,
-  RequiredScopesResponse,
-  ResultsResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -97,7 +97,12 @@ export const api = createApi({
     }),
     addInventory: builder.mutation<
       InventoryAttributes,
-      { cityId: string; year: number; inventoryName: string }
+      {
+        cityId: string;
+        year: number;
+        inventoryName: string;
+        totalCountryEmissions: number
+      }
     >({
       query: (data) => ({
         url: `/city/${data.cityId}/inventory`,
@@ -496,7 +501,7 @@ export const api = createApi({
         body: data.data,
       }),
       transformResponse: (response: any) => response.data,
-      invalidatesTags: ["ActivityValue"],
+      invalidatesTags: ["ActivityValue", "InventoryValue"],
     }),
     deleteActivityValue: builder.mutation({
       query: (data: { activityValueId: string; inventoryId: string }) => ({
@@ -504,7 +509,7 @@ export const api = createApi({
         url: `/inventory/${data.inventoryId}/activity-value/${data.activityValueId}`,
       }),
       transformResponse: (response: any) => response.data,
-      invalidatesTags: ["ActivityValue"],
+      invalidatesTags: ["ActivityValue", "InventoryValue"],
     }),
     deleteAllActivityValues: builder.mutation({
       query: (data: {

@@ -13,6 +13,7 @@ import { ActivityValue } from "@/models/ActivityValue";
 import { InventoryValue } from "@/models/InventoryValue";
 import EmissionDataSection from "@/components/Tabs/Activity/emission-data-section";
 import SelectMethodology from "@/components/Tabs/Activity/select-methodology";
+import ExternalDataSection from "@/components/Tabs/Activity/external-data-section";
 
 interface ActivityTabProps {
   t: TFunction;
@@ -33,14 +34,9 @@ interface ActivityTabProps {
 
 const ActivityTab: FC<ActivityTabProps> = ({
   t,
-  userActivities,
   referenceNumber,
-  areActivitiesLoading,
-  totalConsumption,
-  totalConsumptionUnit,
   filteredScope,
   inventoryId,
-  step,
   activityData,
   subsectorId,
   inventoryValues,
@@ -75,6 +71,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
       return val;
     });
 
+    // you can extract the selected methodology for the inventory value for this scope
+
     if (methodologyId) {
       let methodology =
         methodologies.find((methodology) => methodology.id === methodologyId) ??
@@ -100,6 +98,14 @@ const ActivityTab: FC<ActivityTabProps> = ({
       MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.directMeasure;
     return { methodologies, directMeasure };
   }
+
+  const externalInventoryValue = useMemo(() => {
+    return inventoryValues?.find(
+      (value) =>
+        value.gpcReferenceNumber === refNumberWithScope &&
+        value.dataSource.sourceType === "third_party",
+    );
+  }, [inventoryValues, refNumberWithScope]);
 
   const inventoryValue = useMemo<InventoryValue | null>(() => {
     return (
@@ -174,14 +180,30 @@ const ActivityTab: FC<ActivityTabProps> = ({
             title={t("add-data-manually")}
           />
           <Box display="flex" gap="16px" fontSize="label.lg">
-            <Switch isChecked={isUnavailableChecked} onChange={handleSwitch} />
-            <Text fontFamily="heading" fontWeight="medium">
+            <Switch
+              disabled={!!externalInventoryValue}
+              isChecked={isUnavailableChecked}
+              onChange={handleSwitch}
+            />
+            <Text
+              opacity={!!externalInventoryValue ? 0.4 : 1}
+              fontFamily="heading"
+              fontWeight="medium"
+            >
               {t("scope-not-applicable")}
             </Text>
           </Box>
         </Box>
         {isUnavailableChecked && <ScopeUnavailable t={t} />}
-        {!isUnavailableChecked && (
+        {!isUnavailableChecked && externalInventoryValue && (
+          <Box h="auto" px="24px" py="32px" bg="base.light" borderRadius="8px">
+            <ExternalDataSection
+              t={t}
+              inventoryValue={externalInventoryValue}
+            />
+          </Box>
+        )}
+        {!isUnavailableChecked && !externalInventoryValue && (
           <>
             {isMethodologySelected ? (
               <Box

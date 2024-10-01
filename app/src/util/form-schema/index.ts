@@ -58,33 +58,33 @@ export interface SuggestedActivity {
 }
 
 export interface Methodology {
-    id: string;
-    disabled?: boolean;
-    activities?: Activity[];
-    inputRequired?: string[];
-    formula?: string;
-    fields?: any[];
-    suggestedActivities?: SuggestedActivity[];
-    suggestedActivitiesId?: string;
-    activityTypeField?: string,
-    activityUnitsField?: string,
+  id: string;
+  disabled?: boolean;
+  activities?: Activity[];
+  inputRequired?: string[];
+  formula?: string;
+  fields?: any[];
+  suggestedActivities?: SuggestedActivity[];
+  suggestedActivitiesId?: string;
+  activityTypeField?: string;
+  activityUnitsField?: string;
 }
 
 export interface DirectMeasure {
-    id: string;
-    suggestedActivitiesId?: string;
-    suggestedActivities?: Activity[];
-    inputRequired?: string[];
-    "extra-fields"?: ExtraField[];
-    activityTypeField: string,
-    activityUnitsField?: string,
+  id: string;
+  suggestedActivitiesId?: string;
+  suggestedActivities?: Activity[];
+  inputRequired?: string[];
+  "extra-fields"?: ExtraField[];
+  activityTypeField: string;
+  activityUnitsField?: string;
 }
 
 interface ManualInputHierarchy {
-    [key: string]: {
-        methodologies?: Methodology[];
-        directMeasure?: DirectMeasure;
-    };
+  [key: string]: {
+    methodologies?: Methodology[];
+    directMeasure?: DirectMeasure;
+  };
 }
 
 export const MANUAL_INPUT_HIERARCHY = HIERARCHY as ManualInputHierarchy;

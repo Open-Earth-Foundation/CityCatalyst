@@ -213,12 +213,12 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         values[field.id] = (activity as any)[field.id];
       }
       if (field.units) {
-        values[`${field.id}Unit`] = (activity as any)[`${field.id}-unit`];
+        values[`${field.id}-unit`] = (activity as any)[`${field.id}-unit`];
       }
     });
     if (!methodology?.id.includes("direct-measure")) {
       values[title] = (activity as any)[title];
-      values[`${title}-unit`] = (activity as any)[`${title}Unit`];
+      values[`${title}-unit`] = (activity as any)[`${title}-unit`];
     }
 
     const requestData = {

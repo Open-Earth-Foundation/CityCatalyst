@@ -327,7 +327,6 @@ const EmissionDataSection = ({
                 ) : (
                   <ActivityAccordion
                     t={t}
-                    groupBy={methodology?.groupBy}
                     referenceNumber={refNumberWithScope}
                     activityData={activityValues}
                     showActivityModal={onAddActivityModalOpen}

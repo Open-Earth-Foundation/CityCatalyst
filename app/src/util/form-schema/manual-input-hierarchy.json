@@ -1690,7 +1690,6 @@
         "activities": [
           {
             "id": "fugitive-emissions-coal-activity",
-            "group-by": "coal",
             "unique-by": [
               "fugitive-emissions-coal-type",
               "fugitive-emissions-coal-source"

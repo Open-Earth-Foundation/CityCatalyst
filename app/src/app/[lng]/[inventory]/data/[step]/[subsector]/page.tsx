@@ -149,23 +149,6 @@ function SubSectorPage({
   const scrollResizeHeaderThreshold = 170;
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // const throtthledFunc = useCallback(throttle( => {
-  //   console.log("throttled");
-  //   if (scrollPosition > scrollResizeHeaderThreshold) {
-  //     setIsExpanded(true);
-  //   } else {
-  //     setIsExpanded(false);
-  //   }
-  // }, 2500), []);
-
-  // useEffect(() => {
-  //   throtthledFunc();
-  // }, [scrollPosition]);
-
-  // const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
-
-  console.log("scroll position", scrollPosition);
-
   const { data: activityData, isLoading: isActivityDataLoading } =
     api.useGetActivityValuesQuery({
       inventoryId,

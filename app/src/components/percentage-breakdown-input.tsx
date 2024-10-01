@@ -29,6 +29,7 @@ import {
 } from "./icons";
 import type { TFunction } from "i18next";
 
+// TODO pass this into the component in the future to make it more flexible
 const breakdownCategories = [
   { id: "food", icon: FoodIcon },
   { id: "garden", icon: GardenIcon },

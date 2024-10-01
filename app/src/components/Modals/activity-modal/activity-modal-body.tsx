@@ -499,7 +499,7 @@ const ActivityModalBody = ({
                 {t("emissions-value-n2o")}
               </FormLabel>
               <FormattedNumberInput
-                testId="co2-emission-factor"
+                testId="n2o-emission-factor"
                 control={control}
                 miniAddon
                 name={`activity.N2OEmissionFactor`}
@@ -520,7 +520,7 @@ const ActivityModalBody = ({
                 {t("emissions-value-ch4")}
               </FormLabel>
               <FormattedNumberInput
-                testId="co2-emission-factor"
+                testId="ch4-emission-factor"
                 control={control}
                 miniAddon
                 name={`activity.CH4EmissionFactor`}

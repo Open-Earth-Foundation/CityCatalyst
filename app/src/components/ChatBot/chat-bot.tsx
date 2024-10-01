@@ -103,7 +103,6 @@ export default function ChatBot({
         inventoryId: inventoryId,
         content: t("initial-message"),
       }).unwrap();
-      console.log("Thread initialized with ID:", result);
 
       // Set the threadIdRef which gets set synchronously
       threadIdRef.current = result;

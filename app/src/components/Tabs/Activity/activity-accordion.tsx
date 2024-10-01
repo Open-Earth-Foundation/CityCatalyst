@@ -59,6 +59,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
 
   let groupBy = methodology?.activities?.[0]["group-by"];
   const title = methodology?.activities?.[0]["activity-title"] as string;
+  const tag = referenceNumber.includes("II") ? "-transport-types" : "";
 
   const activityGroups = useMemo<Record<string, ActivityValue[]>>(() => {
     if (!groupBy) return {};
@@ -254,7 +255,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                           fontSize="title.md"
                           fontWeight="semibold"
                         >
-                          {t(key)}
+                          {key.includes(",") ? t(`mixed${tag}`) : t(key)}
                         </Text>
                         <Text
                           color="content.tertiary"

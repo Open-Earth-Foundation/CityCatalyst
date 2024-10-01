@@ -712,7 +712,7 @@
   "units-grams-per-kilometer": "grams per kilometer (g/km)",
   "units-kilograms-per-kilometer": "kilograms per kilometer (kg/km)",
   "vehicle-type-agricultural-machinery": "Agricultural machinery (Tractors, Harvesters, etc.)",
-  "vehicle-type-all": "Select all type of transport",
+  "vehicle-type-all": "All types of transport",
   "vehicle-type-boats": "Boats",
   "vehicle-type-cargo-aircraft": "Cargo aircraft",
   "vehicle-type-commercial-vehicles": "Commercial vehicles (Trucks, Delivery Vans, etc.)",
@@ -797,5 +797,7 @@
   "units-liters": "Liters (l)",
   "units-other": "Other",
   "units-terajoules": "Terajoules (TJ)",
-  "select-unit": "Select Unit"
+  "select-unit": "Select Unit",
+  "mixed-transport-types": "Mixed transport types",
+  "mixed": "Mixed"
 }

@@ -55,6 +55,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
   const directMeasure = MANUAL_INPUT_HIERARCHY[referenceNumber as string]
     .directMeasure as DirectMeasure;
   const extraFields = directMeasure["extra-fields"] as ExtraField[];
+  const tag = referenceNumber?.includes("II") ? "-transport-types" : "";
 
   let groupBy = directMeasure?.["group-by"] as string;
 
@@ -257,7 +258,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                           fontSize="title.md"
                           fontWeight="semibold"
                         >
-                          {t(key)}
+                          {key.includes(",") ? t(`mixed${tag}`) : t(key)}
                         </Text>
                         <Text
                           color="content.tertiary"

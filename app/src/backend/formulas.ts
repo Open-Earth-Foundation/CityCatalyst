@@ -5,7 +5,6 @@ import type { Gas } from "./CalculationService";
 import type { GasValueCreationAttributes } from "@/models/GasValue";
 import type { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
 import { findClosestCityPopulation } from "@/util/population";
-import { db } from "@/models";
 import type { Inventory } from "@/models/Inventory";
 
 type GasValueWithEmissionsFactor = Omit<GasValueCreationAttributes, "id"> & {
@@ -33,6 +32,16 @@ const TEXTILES_FACTOR = 0.24;
 const INDUSTRIAL_WASTE_FACTOR = 0.15;
 
 const DEFAULT_METHANE_PRODUCTION_CAPACITY = 0.25; // kg CH4/kg COD
+const DEFAULT_METHANE_CORRECTION_FACTOR = 1.0; // TODO get correct one from FormulaInputs/ FormulaValues once that is loaded
+const DEFAULT_BOD_PER_CAPITA = 40; // TODO this is a placeholder, get the actual value from IPCC!!!
+
+// TODO get actual values for each contry from IPCC
+const DEFAULT_INCOME_GROUP_FRACTIONS: Record<string, number> = {
+  "income-group-type-all": 1.0,
+  "income-group-type-rural": 0.23,
+  "income-group-type-urban-high-income": 0.5,
+  "income-group-type-urban-low-income": 0.27,
+};
 
 export function handleDirectMeasureFormula(
   activityValue: ActivityValue,
@@ -225,11 +234,15 @@ export async function handleDomesticWasteWaterFormula(
     );
   }
 
-  const methaneProductionCapacity =
-    data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should this only be handled UI-side?
-  const removedSludge = data["removed-sludge"];
-  const methaneCorrectionFactor = data["methane-correction-factor"];
-  const methaneRecovered = data["methane-recovered"];
+  const methaneProductionCapacity = DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should this only be handled UI-side?
+  const removedSludge =
+    data[
+      "wastewater-inside-industrial-calculator-total-organic-sludge-removed"
+    ];
+  // TODO get MCF from seed-data/formula_values
+  const methaneCorrectionFactor = DEFAULT_METHANE_CORRECTION_FACTOR;
+  const methaneRecovered =
+    data["wastewater-inside-domestic-calculator-methane-recovered"];
 
   const totalCityPopulationEntry = await findClosestCityPopulation(inventory);
   if (!totalCityPopulationEntry) {
@@ -239,7 +252,7 @@ export async function handleDomesticWasteWaterFormula(
   }
   const totalCityPopulation = totalCityPopulationEntry.population;
 
-  const bodPerCapita = data["bod-per-capita"]; // TODO not in form?
+  const bodPerCapita = DEFAULT_BOD_PER_CAPITA;
   const isCollectedWasteWater =
     data["wastewater-inside-industrial-calculator-collection-status"] ===
     "collection-status-type-wastewater-collected";
@@ -247,7 +260,10 @@ export async function handleDomesticWasteWaterFormula(
   const totalOrganicWaste =
     totalCityPopulation * bodPerCapita * industrialBodFactor * 365;
 
-  const incomeGroupFraction = data["income-group-fraction"];
+  const incomeGroup =
+    data["wastewater-inside-domestic-calculator-income-group"] ??
+    "income-group-type-all";
+  const incomeGroupFraction = DEFAULT_INCOME_GROUP_FRACTIONS[incomeGroup];
   const dischargeSystemUtulizationRatio =
     data["discharge-system-utilization-ratio"];
 

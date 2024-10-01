@@ -87,28 +87,6 @@ export default function ChatBot({
     });
   };
 
-  // Creating the thread id for the given inventory on initial render
-  useEffect(() => {
-    // Function to create the threadId with initial message
-    const initializeThread = async () => {
-      try {
-        const result = await createThreadId({
-          inventoryId: inventoryId,
-          content: t("initial-message"),
-        }).unwrap();
-        setThreadId(result);
-      } catch (error) {
-        handleError(
-          error,
-          "Failed to initialize chat. Please refresh the page.",
-        );
-      }
-    };
-    if (!threadId) {
-      initializeThread();
-    }
-  }, []); // Empty dependency array means this effect runs only once
-
   // Automatically scroll to bottom of chat
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const scrollToBottom = () => {
@@ -118,13 +96,50 @@ export default function ChatBot({
     scrollToBottom();
   }, [messages]);
 
+  // Took function out of useEffect
+  const initializeThread = async () => {
+    try {
+      const result = await createThreadId({
+        inventoryId: inventoryId,
+        content: t("initial-message"),
+      }).unwrap();
+      console.log("Thread initialized with ID:", result);
+      setThreadId(result);
+      return result;
+    } catch (error) {
+      handleError(
+        error,
+        "Failed to initialize thread. Please try again to send a message.",
+      );
+      return null;
+    }
+  };
+
   // TODO: Convert to Redux #ON-2137
   const sendMessage = async (text: string) => {
+    let currentThreadId = threadId || null;
+    // move create thread over here
+    // If no thread Id is set, create a thread.
+    if (!threadId) {
+      console.log("threadId not set, initializing thread");
+      currentThreadId = await initializeThread();
+    }
+    console.log("threadId", threadId);
+
+    // Check again in case threadId is still not set
+    // if (!threadId) {
+    //   handleError(
+    //     new Error("Thread is not available"),
+    //     "Failed to initialize thread. Please try again.",
+    //   );
+    //   return;
+    // }
+
     try {
       const response = await fetch(`/api/v0/assistants/threads/messages`, {
         method: "POST",
         body: JSON.stringify({
-          threadId: threadId,
+          threadId: currentThreadId, //threadId,
           content: text,
         }),
       });

@@ -10,7 +10,7 @@ import {
   Icon,
   Stack,
   StackDivider,
-  Text
+  Text,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { InventoryResponse } from "@/util/types";
@@ -18,11 +18,11 @@ import { Trans } from "react-i18next/TransWithoutContext";
 import { MdArrowOutward } from "react-icons/md";
 
 const EmissionsWidgetCard = ({
-                               icon,
-                               value,
-                               field,
-                               showProgress
-                             }: {
+  icon,
+  value,
+  field,
+  showProgress,
+}: {
   icon: any;
   value?: number | undefined;
   field: any;
@@ -62,9 +62,9 @@ const EmissionsWidgetCard = ({
 };
 
 const EmissionsWidget = ({
-                                  t,
-                                  inventory
-                                }: {
+  t,
+  inventory,
+}: {
   t: Function & TFunction<"translation", undefined>;
   inventory?: InventoryResponse;
 }) => {
@@ -83,7 +83,7 @@ const EmissionsWidget = ({
       ),
       value: inventory?.totalEmissions,
       icon: MdArrowOutward,
-      showProgress: false
+      showProgress: false,
     },
     {
       id: "emissions-per-capita-in-year",
@@ -100,24 +100,24 @@ const EmissionsWidget = ({
           ? inventory?.totalEmissions / inventory?.city.population
           : undefined,
       icon: MdArrowOutward,
-      showProgress: false
+      showProgress: false,
     },
     {
       id: "% of country's emissions",
       field: t("%-of-country's-emissions"),
-      showProgress: true
+      showProgress: true,
       // TODO ON-2212 ON-1383 add value when available
-    }
+    },
   ];
   return (
-    <Box width={"18vw"} >
+    <Box width={"18vw"}>
       <Card padding={0}>
         <CardHeader>
           <Heading size="sm">{t("total-emissions")}</Heading>
         </CardHeader>
 
         <CardBody>
-          <Stack divider={<StackDivider />} >
+          <Stack divider={<StackDivider />}>
             {EmissionsData.map(({ id, field, value, icon, showProgress }) => (
               <EmissionsWidgetCard
                 key={id}

@@ -91,6 +91,11 @@ npm run db:seed
 
 If necessary, you can undo individual migrations with `npm run db:migrate:undo` and seeders with `npm run db:seed:undo`.
 
+To download the current set of data sources from the global API, run the following command:
+```bash
+npm run sync-catalogue
+```
+
 ### Environment
 
 Copy `env.example` to a file called `.env`.  

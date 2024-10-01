@@ -202,6 +202,8 @@ test.describe.serial("Manual Input", () => {
             sector.sectorName === "Transportation",
         );
         // check on a list of methodologies
+
+        await page.waitForTimeout(3000);
         const methodologyCards = page.getByTestId(testIds.methodologyCard);
         expect(await methodologyCards.count()).toBeGreaterThan(0);
       });

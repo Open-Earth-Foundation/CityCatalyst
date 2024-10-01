@@ -8,6 +8,8 @@ import { findMethodology } from "@/util/form-schema";
 import {
   handleActivityAmountTimesEmissionsFactorFormula,
   handleDirectMeasureFormula,
+  handleDomesticWasteWaterFormula,
+  handleIndustrialWasteWaterFormula,
   handleMethaneCommitmentFormula,
   handleVkt1Formula,
 } from "./formulas";
@@ -103,6 +105,29 @@ export default class CalculationService {
         break;
       case "induced-activity-1":
         gases = handleVkt1Formula(activityValue, gasValues);
+      case "wastewater-calculator":
+        const activityId = activityValue.activityData?.activityId;
+        if (activityId === "wastewater-inside-domestic-calculator-activity") {
+          const inventory = await db.models.Inventory.findByPk(
+            inventoryValue.inventoryId,
+          );
+          if (!inventory) {
+            throw new createHttpError.NotFound("Inventory not found");
+          }
+          gases = await handleDomesticWasteWaterFormula(
+            activityValue,
+            inventory,
+          );
+        } else if (
+          activityId === "wastewater-inside-industrial-calculator-activity"
+        ) {
+          gases = handleIndustrialWasteWaterFormula(activityValue);
+        } else {
+          throw new createHttpError.BadRequest(
+            `Unknown activity ID ${activityId} for wastewater calculator formula in activity value ${activityValue.id}`,
+          );
+        }
+        break;
       default:
         throw new createHttpError.NotImplemented(
           `Formula ${formula} not yet implemented for input methodology ${inventoryValue.inputMethodology}`,

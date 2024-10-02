@@ -31,9 +31,10 @@ const EmissionsWidgetCard = ({
 }) => {
   const finalValue = value
     ? showProgress
-      ? `${value}%`
+      ? `${value.toFixed(1)}%`
       : convertKgToTonnes(value)
     : "N/A";
+
   return (
     <HStack align="center" height="123px" justify="space-between" key={field}>
       <Stack w="full">
@@ -45,7 +46,7 @@ const EmissionsWidgetCard = ({
               mr="4"
               color="interactive.secondary"
               trackColor="background.neutral"
-              value={value}
+              value={Math.round(value)}
             />
           ) : (
             <Icon color={"red"} as={icon} boxSize={8} />

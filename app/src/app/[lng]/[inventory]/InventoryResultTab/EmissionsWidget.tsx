@@ -16,6 +16,7 @@ import { TFunction } from "i18next";
 import { InventoryResponse } from "@/util/types";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { MdArrowOutward } from "react-icons/md";
+import { PopulationAttributes } from "@/models/Population";
 
 const EmissionsWidgetCard = ({
   icon,
@@ -64,10 +65,20 @@ const EmissionsWidgetCard = ({
 const EmissionsWidget = ({
   t,
   inventory,
+  population,
 }: {
   t: Function & TFunction<"translation", undefined>;
   inventory?: InventoryResponse;
+  population?: PopulationAttributes;
 }) => {
+  const percentageOfCountrysEmissions =
+    inventory?.totalEmissions && inventory?.totalCountryEmissions
+      ? (inventory.totalEmissions / inventory.totalCountryEmissions) * 100
+      : undefined;
+  const emissionsPerCapita =
+    inventory?.totalEmissions && population?.population
+      ? inventory.totalEmissions / population.population
+      : undefined;
   const EmissionsData = [
     {
       id: "total-ghg-emissions-in-year",
@@ -95,10 +106,7 @@ const EmissionsWidget = ({
           t={t}
         ></Trans>
       ),
-      value:
-        inventory?.totalEmissions && inventory?.city.population
-          ? inventory?.totalEmissions / inventory?.city.population
-          : undefined,
+      value: emissionsPerCapita,
       icon: MdArrowOutward,
       showProgress: false,
     },
@@ -106,7 +114,7 @@ const EmissionsWidget = ({
       id: "% of country's emissions",
       field: t("%-of-country's-emissions"),
       showProgress: true,
-      // TODO ON-2212 ON-1383 add value when available
+      value: percentageOfCountrysEmissions,
     },
   ];
   return (

@@ -20,10 +20,9 @@ export const GET = apiHandler(async (req, { params }) => {
 
   // TODO [ON-2429]: Save total emissions for inventory every time activity data is modified
   const rawQuery = `  
-    SELECT SUM(av.co2eq)  
-    FROM "ActivityValue" av  
-    INNER JOIN "InventoryValue" iv ON av.inventory_value_id = iv.id  
-    WHERE iv.inventory_id = :inventoryId  
+    SELECT SUM(co2eq)  
+    FROM "InventoryValue"  
+    WHERE inventory_id = :inventoryId  
   `;
 
   const [{sum}] = await db.sequelize!.query(rawQuery, {

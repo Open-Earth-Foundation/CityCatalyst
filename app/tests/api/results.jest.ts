@@ -14,24 +14,18 @@ import {
   activityValues as activityValuesData,
   baseInventory,
   inventoryId,
-  inventoryValueId,
-  inventoryValueId1,
-  inventoryValueId2,
   inventoryValues as inventoryValuesData,
 } from "./results.data";
-import { Op } from "sequelize";
-import { City } from "@/models/City";
 
 const locode = "XX_SUBCATEGORY_CITY";
 
 describe("Results API", () => {
   let inventory: Inventory;
-  let city: City;
 
   beforeAll(async () => {
     setupTests();
     await db.initialize();
-    city = await db.models.City.create({
+    const city = await db.models.City.create({
       cityId: randomUUID(),
       locode,
     });
@@ -49,16 +43,6 @@ describe("Results API", () => {
   });
 
   afterAll(async () => {
-    await db.models.ActivityValue.destroy({
-      where: {
-        inventoryValueId: {
-          [Op.in]: [inventoryValueId, inventoryValueId1, inventoryValueId2],
-        },
-      },
-    });
-    await db.models.InventoryValue.destroy({ where: { inventoryId } });
-    await db.models.Inventory.destroy({ where: { inventoryId } });
-    await db.models.City.destroy({ where: { cityId: city.cityId } });
     if (db.sequelize) await db.sequelize.close();
   });
 

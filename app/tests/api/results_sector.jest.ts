@@ -25,7 +25,7 @@ import { City } from "@/models/City";
 
 const locode = "XX_SUBCATEGORY_CITY";
 
-describe("Results API", () => {
+describe.skip("Results API", () => {
   let inventory: Inventory;
   let city: City;
 

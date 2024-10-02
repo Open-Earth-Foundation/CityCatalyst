@@ -96,7 +96,14 @@ export default function ChatBot({
     scrollToBottom();
   }, [messages]);
 
-  // Took function out of useEffect
+  // Create function here to store the threadIdRef in an database
+  const storeThreadId = async (threadId: string) => {
+    // Store the threadId in the database
+    console.log("Storing threadId in database", threadId);
+
+    // Implement logic here to store the threadId in the database
+  };
+
   const initializeThread = async () => {
     try {
       const result = await createThreadId({

@@ -29,6 +29,7 @@ import { api, useCreateThreadIdMutation } from "@/services/api";
 import { AssistantStream } from "openai/lib/AssistantStream";
 // @ts-expect-error - no types for this yet
 import { AssistantStreamEvent } from "openai/resources/beta/assistants/assistants";
+import { exportThreadIdtoDB } from "@/util/helpers";
 
 interface Message {
   role: "user" | "assistant" | "code";
@@ -96,7 +97,10 @@ export default function ChatBot({
     scrollToBottom();
   }, [messages]);
 
+<<<<<<< Updated upstream
   // Took function out of useEffect
+=======
+>>>>>>> Stashed changes
   const initializeThread = async () => {
     try {
       const result = await createThreadId({
@@ -106,6 +110,9 @@ export default function ChatBot({
 
       // Set the threadIdRef which gets set synchronously
       threadIdRef.current = result;
+
+      // Export threadId to database
+      exportThreadIdtoDB(threadIdRef.current);
     } catch (error) {
       handleError(
         error,

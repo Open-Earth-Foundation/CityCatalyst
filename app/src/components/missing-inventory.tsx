@@ -13,7 +13,7 @@ const MissingInventory = ({ lng }: { lng: string }) => {
   const router = useRouter();
   const { t } = useTranslation(lng, "inventory-not-found");
   return (
-    <Box className="flex w-full justify-center relative h-[100vh] z-20">
+    <Box className="flex w-full justify-center relative h-[100vh] z-10">
       <Image
         src="/assets/not-found-background.svg"
         layout="fill"

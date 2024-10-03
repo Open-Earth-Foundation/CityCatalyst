@@ -97,10 +97,6 @@ export default function ChatBot({
     scrollToBottom();
   }, [messages]);
 
-<<<<<<< Updated upstream
-  // Took function out of useEffect
-=======
->>>>>>> Stashed changes
   const initializeThread = async () => {
     try {
       const result = await createThreadId({

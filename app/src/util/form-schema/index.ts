@@ -66,15 +66,19 @@ export interface Methodology {
   fields?: any[];
   suggestedActivities?: SuggestedActivity[];
   suggestedActivitiesId?: string;
+  activityTypeField?: string;
+  activityUnitsField?: string;
 }
 
 export interface DirectMeasure {
   id: string;
+  "group-by"?: string;
   suggestedActivitiesId?: string;
   suggestedActivities?: Activity[];
   inputRequired?: string[];
   "extra-fields"?: ExtraField[];
-  "group-by"?: string;
+  activityTypeField: string;
+  activityUnitsField?: string;
 }
 
 interface ManualInputHierarchy {

@@ -31,6 +31,8 @@ import { AssistantStream } from "openai/lib/AssistantStream";
 import { AssistantStreamEvent } from "openai/resources/beta/assistants/assistants";
 import { exportThreadIdtoDB } from "@/util/helpers";
 
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 interface Message {
   role: "user" | "assistant" | "code";
   text: string;
@@ -96,6 +98,14 @@ export default function ChatBot({
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Create function here to store the threadIdRef in an database
+  const storeThreadId = async (threadId: string) => {
+    // Store the threadId in the database
+    console.log("Storing threadId in database", threadId);
+
+    // Implement logic here to store the threadId in the database
+  };
 
   const initializeThread = async () => {
     try {
@@ -462,7 +472,9 @@ export default function ChatBot({
                   lineHeight="24px"
                   fontSize="16px"
                 >
-                  {m.text}
+                  <ReactMarkdown rehypePlugins={[remarkGfm]}>
+                    {m.text}
+                  </ReactMarkdown>
                 </Text>
                 {!isUser &&
                   i === messages.length - 1 &&

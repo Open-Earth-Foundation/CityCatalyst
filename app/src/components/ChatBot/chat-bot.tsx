@@ -29,7 +29,8 @@ import { api, useCreateThreadIdMutation } from "@/services/api";
 import { AssistantStream } from "openai/lib/AssistantStream";
 // @ts-expect-error - no types for this yet
 import { AssistantStreamEvent } from "openai/resources/beta/assistants/assistants";
-
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 interface Message {
   role: "user" | "assistant" | "code";
   text: string;
@@ -461,7 +462,9 @@ export default function ChatBot({
                   lineHeight="24px"
                   fontSize="16px"
                 >
-                  {m.text}
+                  <ReactMarkdown rehypePlugins={[remarkGfm]}>
+                    {m.text}
+                  </ReactMarkdown>
                 </Text>
                 {!isUser &&
                   i === messages.length - 1 &&

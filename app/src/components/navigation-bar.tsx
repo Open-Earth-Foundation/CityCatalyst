@@ -81,11 +81,24 @@ export function NavigationBar({
       </NextLink>
       <div className="w-full" />
       {showNav && (
-        <NextLink href="/">
-          <Heading color="base.light" size="sm" className="opacity-75" ml={6}>
-            {t("dashboard")}
-          </Heading>
-        </NextLink>
+        <>
+          {" "}
+          <NextLink href="/">
+            <Heading color="base.light" size="sm" className="opacity-75" ml={6}>
+              {t("dashboard")}
+            </Heading>
+          </NextLink>
+          <NextLink href="/">
+            <Heading
+              color="base.light"
+              size="sm"
+              className="opacity-75 !text-nowrap"
+              ml={6}
+            >
+              {t("learning-hub")}
+            </Heading>
+          </NextLink>
+        </>
       )}
       <NextLink href="/help">
         <Heading color="base.light" size="sm" className="opacity-75" ml={6}>

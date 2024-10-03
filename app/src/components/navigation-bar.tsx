@@ -88,7 +88,11 @@ export function NavigationBar({
               {t("dashboard")}
             </Heading>
           </NextLink>
-          <NextLink href="/">
+          <NextLink
+            target="_blank"
+            rel="help noopener noreferrer"
+            href="https://citycatalyst.openearth.org/learning-hub"
+          >
             <Heading
               color="base.light"
               size="sm"

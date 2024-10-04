@@ -112,8 +112,6 @@ const MultiSelectWithCheckbox = ({
       }
     : null;
 
-  console.log(preselectedValue);
-
   return (
     <Box display="flex" flexDirection="column" gap="8px">
       <Text
@@ -133,7 +131,6 @@ const MultiSelectWithCheckbox = ({
           required: required === false ? false : t("option-required"),
         }}
         render={({ field }) => {
-          console.log(field.value);
           const currentValue = Array.isArray(field.value) ? field.value : []; // Ensure field.value is an array
 
           return (

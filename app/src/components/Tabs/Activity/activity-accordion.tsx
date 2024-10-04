@@ -78,14 +78,11 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
     (f) => f.id.includes("-source") && f.type === "text",
   )?.id;
 
-  console.log("sourceField", sourceField);
-
   const filteredFields = extraFields.filter(
     (f) => !f.id.includes(groupBy as string),
   );
 
   // if there is no groupBy, return the activityData as is a regular table.
-
   const renderTable = (list: ActivityValue[]) => {
     return (
       <TableContainer px={0}>

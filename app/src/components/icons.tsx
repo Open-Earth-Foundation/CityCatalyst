@@ -338,3 +338,399 @@ export const DataConnectIcon = () => (
     </g>
   </svg>
 );
+
+export const FoodIcon = () => (
+  <svg
+    width="26"
+    height="20"
+    viewBox="0 0 26 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <g id="Group">
+      <g id="Regular">
+        <path
+          id="Shape"
+          d="M7.375 5.126C7.52677 5.126 7.66357 5.21748 7.72155 5.35773C7.77953 5.49798 7.74727 5.65935 7.63981 5.76652C7.53235 5.87369 7.3709 5.90553 7.2308 5.84717C7.09071 5.78881 6.9996 5.65177 7 5.5C6.99973 5.40046 7.03916 5.30493 7.10954 5.23454C7.17993 5.16416 7.27546 5.12473 7.375 5.125"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_2"
+          d="M11.3984 6.25098C11.6055 6.25098 11.7734 6.41887 11.7734 6.62598C11.7734 6.83308 11.6055 7.00098 11.3984 7.00098C11.1913 7.00098 11.0234 6.83308 11.0234 6.62598C11.0232 6.52644 11.0626 6.4309 11.133 6.36052C11.2034 6.29013 11.2989 6.25071 11.3984 6.25098"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_3"
+          d="M18.625 6.25098C18.8321 6.25098 19 6.41887 19 6.62598C19 6.83308 18.8321 7.00098 18.625 7.00098C18.4179 7.00098 18.25 6.83308 18.25 6.62598C18.2497 6.52644 18.2892 6.4309 18.3595 6.36052C18.4299 6.29013 18.5255 6.25071 18.625 6.25098"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_4"
+          d="M15.1523 4.75098C15.3595 4.75098 15.5273 4.91887 15.5273 5.12598C15.5273 5.33308 15.3595 5.50098 15.1523 5.50098C14.9452 5.50098 14.7773 5.33308 14.7773 5.12598C14.7771 5.02644 14.8165 4.9309 14.8869 4.86052C14.9573 4.79013 15.0528 4.75071 15.1523 4.75098"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Rectangle-path"
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M1.75 11.501C1.75 10.2583 2.75736 9.25098 4 9.25098H22C23.2426 9.25098 24.25 10.2583 24.25 11.501V11.501C24.25 12.7436 23.2426 13.751 22 13.751H4C2.75736 13.751 1.75 12.7436 1.75 11.501V11.501Z"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_5"
+          d="M22.75 9.37998V7.93998C22.75 6.29838 22.0978 4.72403 20.9369 3.56334C19.7761 2.40265 18.2016 1.75071 16.56 1.75098H9.44C7.7984 1.75071 6.22395 2.40265 5.06307 3.56334C3.90219 4.72403 3.25 6.29838 3.25 7.93998V9.37998"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_6"
+          d="M22.75 13.623V15.251C22.75 16.9079 21.4069 18.251 19.75 18.251H6.25C4.59315 18.251 3.25 16.9079 3.25 15.251V13.623"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+    </g>
+  </svg>
+);
+
+export const GardenIcon = () => (
+  <svg
+    width="21"
+    height="26"
+    viewBox="0 0 21 26"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <g id="Group">
+      <g id="Regular">
+        <path
+          id="Shape"
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M12.3733 6.64111C12.2241 8.48226 11.4248 10.2103 10.1183 11.5161C8.81179 10.2103 8.01246 8.48226 7.86328 6.64111C8.01281 4.80005 8.81208 3.07214 10.1183 1.76611C11.4245 3.07214 12.2238 4.80005 12.3733 6.64111Z"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_2"
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M15.482 15.6762C13.7066 16.186 11.8078 16.0477 10.125 15.2862C10.8861 13.6028 12.2209 12.245 13.891 11.4552C15.6665 10.9454 17.5654 11.084 19.248 11.8462C18.4872 13.5295 17.1522 14.8871 15.482 15.6762Z"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_3"
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M15.482 23.1762C13.7066 23.686 11.8078 23.5477 10.125 22.7862C10.8861 21.1028 12.2209 19.745 13.891 18.9552C15.6665 18.4454 17.5654 18.584 19.248 19.3462C18.4872 21.0295 17.1522 22.3871 15.482 23.1762Z"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_4"
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M4.763 15.6761C6.53837 16.1859 8.43719 16.0476 10.12 15.2861C9.35946 13.6027 8.02491 12.2448 6.355 11.4551C4.58012 10.9462 2.68213 11.0847 1 11.8461C1.76053 13.5285 3.09422 14.886 4.763 15.6761V15.6761Z"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_5"
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M4.763 23.1761C6.53837 23.6859 8.43719 23.5476 10.12 22.7861C9.35946 21.1027 8.02491 19.7448 6.355 18.9551C4.58012 18.4462 2.68213 18.5847 1 19.3461C1.76053 21.0285 3.09422 22.386 4.763 23.1761V23.1761Z"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_6"
+          d="M10.1172 11.5161L10.1252 24.2661"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+    </g>
+  </svg>
+);
+
+export const PaperIcon = () => (
+  <svg
+    width="22"
+    height="26"
+    viewBox="0 0 22 26"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <g id="Group">
+      <g id="common-file-double-1">
+        <path
+          id="Shape"
+          d="M16.25 24.25H2.75C1.92157 24.25 1.25 23.5784 1.25 22.75V6.25"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Rectangle-path"
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M4.25 2.75C4.25 2.19772 4.69772 1.75 5.25 1.75H19.75C20.3023 1.75 20.75 2.19772 20.75 2.75V20.25C20.75 20.8023 20.3023 21.25 19.75 21.25H5.25C4.69772 21.25 4.25 20.8023 4.25 20.25V2.75Z"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+    </g>
+  </svg>
+);
+
+export const WoodIcon = () => (
+  <svg
+    width="26"
+    height="18"
+    viewBox="0 0 26 18"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <g id="Group">
+      <g id="Regular">
+        <path
+          id="Oval"
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M5.5 16.5C7.57107 16.5 9.25 14.8211 9.25 12.75C9.25 10.6789 7.57107 9 5.5 9C3.42893 9 1.75 10.6789 1.75 12.75C1.75 14.8211 3.42893 16.5 5.5 16.5Z"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Oval_2"
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M13 16.5C15.0711 16.5 16.75 14.8211 16.75 12.75C16.75 10.6789 15.0711 9 13 9C10.9289 9 9.25 10.6789 9.25 12.75C9.25 14.8211 10.9289 16.5 13 16.5Z"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape"
+          d="M13 9H20.5C22.5711 9 24.25 10.6789 24.25 12.75C24.25 14.8211 22.5711 16.5 20.5 16.5H13"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_2"
+          d="M5.5 12.375C5.70711 12.375 5.875 12.5429 5.875 12.75"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_3"
+          d="M5.125 12.75C5.125 12.5429 5.29289 12.375 5.5 12.375"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_4"
+          d="M5.5 13.125C5.29289 13.125 5.125 12.9571 5.125 12.75"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_5"
+          d="M5.875 12.75C5.875 12.9571 5.70711 13.125 5.5 13.125"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_6"
+          d="M13 12.375C13.2071 12.375 13.375 12.5429 13.375 12.75"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_7"
+          d="M12.625 12.75C12.625 12.5429 12.7929 12.375 13 12.375"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_8"
+          d="M13 13.125C12.7929 13.125 12.625 12.9571 12.625 12.75"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_9"
+          d="M13.375 12.75C13.375 12.9571 13.2071 13.125 13 13.125"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_10"
+          d="M6.56018 6.74495C5.87809 5.17306 6.34823 3.33878 7.70231 2.28877C9.05639 1.23876 10.95 1.24014 12.3025 2.29211C13.6551 3.34409 14.1225 5.17906 13.4382 6.74995"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_11"
+          d="M10 1.5H17.5C18.7647 1.50067 19.944 2.13845 20.6369 3.1965C21.3297 4.25454 21.4429 5.59045 20.938 6.75"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_12"
+          d="M10 4.875C10.2071 4.875 10.375 5.04289 10.375 5.25"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_13"
+          d="M9.625 5.25C9.625 5.04289 9.79289 4.875 10 4.875"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_14"
+          d="M10 5.625C9.79289 5.625 9.625 5.45711 9.625 5.25"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          id="Shape_15"
+          d="M10.375 5.25C10.375 5.45711 10.2071 5.625 10 5.625"
+          stroke="#7A7B9A"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+    </g>
+  </svg>
+);
+
+export const TextilesIcon = () => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <g id="Icons">
+      <mask
+        id="mask0_4581_38062"
+        style={{ maskType: "alpha" }}
+        maskUnits="userSpaceOnUse"
+        x="0"
+        y="0"
+        width="24"
+        height="24"
+      >
+        <rect id="Bounding box" width="24" height="24" fill="#D9D9D9" />
+      </mask>
+      <g mask="url(#mask0_4581_38062)">
+        <path
+          id="apparel"
+          d="M5.99896 10.95L4.99896 11.5C4.76562 11.6333 4.51562 11.6667 4.24896 11.6C3.98229 11.5333 3.78229 11.3833 3.64896 11.15L1.64896 7.65C1.51562 7.41667 1.48229 7.16667 1.54896 6.9C1.61563 6.63333 1.76562 6.43333 1.99896 6.3L7.74896 3H9.49896C9.64896 3 9.76979 3.04583 9.86146 3.1375C9.95312 3.22917 9.99896 3.35 9.99896 3.5V4C9.99896 4.55 10.1948 5.02083 10.5865 5.4125C10.9781 5.80417 11.449 6 11.999 6C12.549 6 13.0198 5.80417 13.4115 5.4125C13.8031 5.02083 13.999 4.55 13.999 4V3.5C13.999 3.35 14.0448 3.22917 14.1365 3.1375C14.2281 3.04583 14.349 3 14.499 3H16.249L21.999 6.3C22.2323 6.43333 22.3823 6.63333 22.449 6.9C22.5156 7.16667 22.4823 7.41667 22.349 7.65L20.349 11.15C20.2156 11.3833 20.0198 11.5292 19.7615 11.5875C19.5031 11.6458 19.249 11.6083 18.999 11.475L17.999 10.975V20C17.999 20.2833 17.9031 20.5208 17.7115 20.7125C17.5198 20.9042 17.2823 21 16.999 21H6.99896C6.71562 21 6.47813 20.9042 6.28646 20.7125C6.09479 20.5208 5.99896 20.2833 5.99896 20V10.95ZM7.99896 7.6V19H15.999V7.6L19.099 9.3L20.149 7.55L15.849 5.05C15.599 5.9 15.1281 6.60417 14.4365 7.1625C13.7448 7.72083 12.9323 8 11.999 8C11.0656 8 10.2531 7.72083 9.56146 7.1625C8.86979 6.60417 8.39896 5.9 8.14896 5.05L3.84896 7.55L4.89896 9.3L7.99896 7.6Z"
+          fill="#7A7B9A"
+        />
+      </g>
+    </g>
+  </svg>
+);
+
+export const IndustrialIcon = () => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <g id="Icons">
+      <mask
+        id="mask0_4581_38062"
+        style={{ maskType: "alpha" }}
+        maskUnits="userSpaceOnUse"
+        x="0"
+        y="0"
+        width="24"
+        height="24"
+      >
+        <rect id="Bounding box" width="24" height="24" fill="#D9D9D9" />
+      </mask>
+      <g mask="url(#mask0_4581_38062)">
+        <path
+          id="apparel"
+          d="M5.99896 10.95L4.99896 11.5C4.76562 11.6333 4.51562 11.6667 4.24896 11.6C3.98229 11.5333 3.78229 11.3833 3.64896 11.15L1.64896 7.65C1.51562 7.41667 1.48229 7.16667 1.54896 6.9C1.61563 6.63333 1.76562 6.43333 1.99896 6.3L7.74896 3H9.49896C9.64896 3 9.76979 3.04583 9.86146 3.1375C9.95312 3.22917 9.99896 3.35 9.99896 3.5V4C9.99896 4.55 10.1948 5.02083 10.5865 5.4125C10.9781 5.80417 11.449 6 11.999 6C12.549 6 13.0198 5.80417 13.4115 5.4125C13.8031 5.02083 13.999 4.55 13.999 4V3.5C13.999 3.35 14.0448 3.22917 14.1365 3.1375C14.2281 3.04583 14.349 3 14.499 3H16.249L21.999 6.3C22.2323 6.43333 22.3823 6.63333 22.449 6.9C22.5156 7.16667 22.4823 7.41667 22.349 7.65L20.349 11.15C20.2156 11.3833 20.0198 11.5292 19.7615 11.5875C19.5031 11.6458 19.249 11.6083 18.999 11.475L17.999 10.975V20C17.999 20.2833 17.9031 20.5208 17.7115 20.7125C17.5198 20.9042 17.2823 21 16.999 21H6.99896C6.71562 21 6.47813 20.9042 6.28646 20.7125C6.09479 20.5208 5.99896 20.2833 5.99896 20V10.95ZM7.99896 7.6V19H15.999V7.6L19.099 9.3L20.149 7.55L15.849 5.05C15.599 5.9 15.1281 6.60417 14.4365 7.1625C13.7448 7.72083 12.9323 8 11.999 8C11.0656 8 10.2531 7.72083 9.56146 7.1625C8.86979 6.60417 8.39896 5.9 8.14896 5.05L3.84896 7.55L4.89896 9.3L7.99896 7.6Z"
+          fill="#7A7B9A"
+        />
+      </g>
+    </g>
+  </svg>
+);

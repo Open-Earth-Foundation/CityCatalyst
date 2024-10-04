@@ -1,0 +1,4 @@
+methodology_id,methodology,methodology_url,datasource_id
+184659b1-a727-317a-b6fe-23ecd984e557,electricity_consumption,,a78c573a-4f75-3637-92aa-8ca717a3e830
+bd131712-2211-3458-a19b-0c20ec182438,energy_consumptionsampling_scaled_data,,a78c573a-4f75-3637-92aa-8ca717a3e830
+66d20744-0d7d-3d88-b05b-5209c653162d,modeled_data,,a78c573a-4f75-3637-92aa-8ca717a3e830

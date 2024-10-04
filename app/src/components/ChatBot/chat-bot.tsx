@@ -118,7 +118,17 @@ export default function ChatBot({
       threadIdRef.current = result;
 
       // Export threadId to database
-      exportThreadIdtoDB(threadIdRef.current);
+      //exportThreadIdtoDB(threadIdRef.current);
+
+      // TODO: Make this async?
+      const response = await fetch(`/api/v0/threads/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          threadId: threadIdRef.current,
+        }),
+      });
+      console.log(response);
     } catch (error) {
       handleError(
         error,

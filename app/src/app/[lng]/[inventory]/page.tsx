@@ -5,7 +5,11 @@ import Footer from "@/components/Sections/Footer";
 import { useTranslation } from "@/i18n/client";
 import { api, useGetCityPopulationQuery } from "@/services/api";
 import { CheckUserSession } from "@/util/check-user-session";
-import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
+import {
+  formatEmissions,
+  getShortenNumberUnit,
+  shortenNumber,
+} from "@/util/helpers";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -228,6 +232,9 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
         );
       });
   };
+  const formattedEmissions = inventory?.totalEmissions
+    ? formatEmissions(inventory.totalEmissions)
+    : { value: t("not-available"), unit: "" };
 
   return (
     <>
@@ -300,14 +307,12 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                               fontWeight="semibold"
                               lineHeight="32"
                             >
-                              {inventory?.totalEmissions ? (
-                                <>
-                                  {inventory.totalEmissions}{" "}
-                                  <span className="text-[16px]">Mtco2e</span>
-                                </>
-                              ) : (
-                                <>{t("in-progress")}</>
-                              )}
+                              <>
+                                {formattedEmissions.value}{" "}
+                                <span className="text-[16px]">
+                                  {formattedEmissions.unit}CO2e
+                                </span>
+                              </>
                             </Text>
                             <Tooltip
                               hasArrow

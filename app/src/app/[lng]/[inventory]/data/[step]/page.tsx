@@ -10,11 +10,10 @@ import {
   WorldSearchIcon,
 } from "@/components/icons";
 import {
-  InventoryUserFileAttributes,
   clear,
+  InventoryUserFileAttributes,
   removeFile,
 } from "@/features/city/inventoryDataSlice";
-import { setSubsector } from "@/features/city/subsectorSlice";
 import { useTranslation } from "@/i18n/client";
 import { RootState } from "@/lib/store";
 import { api } from "@/services/api";
@@ -37,8 +36,8 @@ import {
   Center,
   CircularProgress,
   Flex,
-  HStack,
   Heading,
+  HStack,
   Icon,
   IconButton,
   Link,
@@ -594,11 +593,11 @@ export default function AddDataSteps({
 
   const getCurrentStepParam = (referenceNumber: string) => {
     switch (referenceNumber) {
-      case 'I':
+      case "I":
         return 1;
-      case 'II':
+      case "II":
         return 2;
-      case 'III':
+      case "III":
         return 3;
       default:
         return 1;
@@ -632,7 +631,7 @@ export default function AddDataSteps({
               variant="ghost"
               fontSize="14px"
               leftIcon={<ArrowBackIcon boxSize={6} />}
-              onClick={() => router.back()}
+              onClick={() => router.push(`/${inventory}/data`)}
             >
               {t("go-back")}
             </Button>

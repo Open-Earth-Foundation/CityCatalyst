@@ -8,10 +8,21 @@ import { promisify } from "node:util";
 import fs from "fs";
 import path from "path";
 import { ApiResponse } from "@/util/api";
-import { expect } from "@jest/globals";
 import { db } from "@/models";
 import { Op, WhereOptions } from "sequelize";
 import { DataSourceI18nAttributes } from "@/models/DataSourceI18n";
+
+// TODO re-enable when migration to Jest is finished
+// import { expect } from "@jest/globals";
+import assert from "node:assert";
+
+function expect(received: any) {
+  return {
+    toBe: (expected: any) => {
+      assert.strictEqual(received, expected);
+    },
+  };
+}
 
 const mockUrl = "http://localhost:3000/api/v0";
 

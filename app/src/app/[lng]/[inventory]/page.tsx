@@ -607,6 +607,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                   <TabPanel>
                     <InventoryReportTab
                       lng={lng}
+                      population={population}
                       inventory={inventory}
                       inventoryProgress={inventoryProgress}
                       isUserInfoLoading={isUserInfoLoading}

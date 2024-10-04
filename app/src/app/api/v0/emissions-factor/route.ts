@@ -2,8 +2,8 @@ import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
-import { Op } from "sequelize";
 import uniqBy from "lodash/uniqBy";
+import { Op } from "sequelize";
 
 export const GET = apiHandler(async (req: NextRequest, _context: {}) => {
   const { searchParams } = new URL(req.url);
@@ -56,7 +56,10 @@ export const GET = apiHandler(async (req: NextRequest, _context: {}) => {
     ["world", city?.countryLocode].includes(actorId as string),
   );
 
-  output = uniqBy(output, (e) => e.dataSources[0].datasourceId);
+  // make unique by gas not by datasource id
+  // output = uniqBy(output, (e) => e.dataSources[0].datasourceId);
+  output = uniqBy(output, (e) => e.gas);
+
   if (output.length === 0) {
     throw new createHttpError.NotFound("Emissions factors not found");
   }

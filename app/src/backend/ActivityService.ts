@@ -403,6 +403,38 @@ export default class ActivityService {
     );
   }
 
+  public static async deleteActivity(id: string): Promise<number> {
+    return (await db.sequelize?.transaction(async (transaction) => {
+      const activityValue = await db.models.ActivityValue.findByPk(id, {
+        include: {
+          model: db.models.InventoryValue,
+          as: "inventoryValue",
+        },
+      });
+
+      if (!activityValue) {
+        throw new createHttpError.NotFound(
+          `Activity value with ID ${id} not found`,
+        );
+      }
+
+      const inventoryValue = activityValue?.inventoryValue;
+
+      inventoryValue.co2eq =
+        BigInt(inventoryValue.co2eq ?? 0n) - BigInt(activityValue.co2eq ?? 0n);
+      // Todo figure out a way to update the co2eqYears when deleting an activity valye
+      // inventoryValue.co2eqYears = Math.max(
+      //   inventoryValue.co2eqYears ?? 0,
+      //   totalCO2eYears,
+      // );
+
+      await inventoryValue.save({ transaction });
+      return await db.models.ActivityValue.destroy({
+        where: { id },
+      });
+    })) as number;
+  }
+
   public static async deleteAllActivitiesInSubsector({
     subsectorId,
     inventoryId,

@@ -341,7 +341,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
           minW="768px"
           marginTop="2%"
         >
-          <p>Pairs programming</p>
           <ModalHeader
             display="flex"
             justifyContent="center"

@@ -8,10 +8,19 @@ create table if not exists public."AssistantMessage"
     thread_id             text not null,
     role                  role_enum not null,
     timestamp             timestamp not null,    
-    content               text
+    content               text,
+    created               timestamp,
+    last_updated          timestamp,
+    CONSTRAINT fk_thread  
+      FOREIGN KEY(thread_id)   
+      REFERENCES public."AssistantThread"(assistant_thread_id)  
+      ON DELETE CASCADE
 );
+
+CREATE INDEX idx_assistant_message_thread_id ON public."AssistantMessage" (thread_id);  
 `;
-const sql_down = `drop table if exists public."AssistantMessages";`;
+const sql_down = `drop table if exists public."AssistantMessages";
+DROP TYPE IF EXISTS role_enum;`;
 
 /** @type {import("sequelize-cli").Migration} */
 module.exports = {

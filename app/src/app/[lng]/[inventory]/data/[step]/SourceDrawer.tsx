@@ -2,13 +2,14 @@ import type { SectorAttributes } from "@/models/Sector";
 import { ArrowBackIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import {
   Button,
+  chakra,
   Drawer,
   DrawerBody,
   DrawerContent,
   DrawerOverlay,
   Flex,
-  HStack,
   Heading,
+  HStack,
   Icon,
   Link,
   Stack,
@@ -17,7 +18,6 @@ import {
   TagLeftIcon,
   Text,
   Tooltip,
-  chakra,
 } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { RefObject } from "react";
@@ -43,15 +43,19 @@ export function SourceDrawer({
   finalFocusRef,
   isConnectLoading,
   t,
+  hideActions,
+  totalEmissionsData,
 }: {
+  hideActions?: boolean;
   source?: DataSourceWithRelations;
-  sourceData?: DataSourceData;
+  sourceData?: DataSourceData | null;
   sector?: SectorAttributes;
   isOpen: boolean;
   onClose: () => void;
   onConnectClick: () => void;
   finalFocusRef?: RefObject<any>;
   isConnectLoading: boolean;
+  totalEmissionsData?: string;
   t: TFunction;
 }) {
   const emissionsData = sourceData?.totals?.emissions?.co2eq_100yr;
@@ -163,7 +167,7 @@ export function SourceDrawer({
               <HStack align="baseline">
                 <Heading fontSize="57px" lineHeight="64px">
                   {t("intlNumber", {
-                    val: totalEmissions,
+                    val: totalEmissionsData ?? totalEmissions,
                   })}
                 </Heading>
                 <Text
@@ -309,20 +313,22 @@ export function SourceDrawer({
               </Stack>
             </DrawerBody>
           )}
-          <Stack
-            w="full"
-            className="drop-shadow-top border-t-2 justify-center items-center"
-          >
-            <Button
-              onClick={onConnectClick}
-              w="543px"
-              h={16}
-              my={6}
-              isLoading={isConnectLoading}
+          {hideActions ? null : (
+            <Stack
+              w="full"
+              className="drop-shadow-top border-t-2 justify-center items-center"
             >
-              {t("connect-data")}
-            </Button>
-          </Stack>
+              <Button
+                onClick={onConnectClick}
+                w="543px"
+                h={16}
+                my={6}
+                isLoading={isConnectLoading}
+              >
+                {t("connect-data")}
+              </Button>
+            </Stack>
+          )}
         </Stack>
       </DrawerContent>
     </Drawer>

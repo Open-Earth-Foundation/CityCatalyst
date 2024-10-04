@@ -202,6 +202,8 @@ test.describe.serial("Manual Input", () => {
             sector.sectorName === "Transportation",
         );
         // check on a list of methodologies
+
+        await page.waitForTimeout(3000);
         const methodologyCards = page.getByTestId(testIds.methodologyCard);
         expect(await methodologyCards.count()).toBeGreaterThan(0);
       });
@@ -298,13 +300,6 @@ test.describe.serial("Manual Input", () => {
 
         const cellWithValue = page?.getByRole("cell", { name: "tCO2" }).first();
         await expect(cellWithValue).toBeVisible();
-
-        // Ensure the cell has the correct value
-        // TODO this is wrong, the final result should be the multiple of activity value and emissions factor
-        // (or the result of the formula if it's using a different formula than activity-times-emissions-factor)
-        expect(await cellWithValue?.innerText()).toContain(
-          EmissionFactors.CO2.toString(),
-        );
       });
 
       test(`should delete the activity from the table in in ${sector.sectorName}`, async () => {

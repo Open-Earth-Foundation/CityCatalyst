@@ -1,4 +1,4 @@
-import { GET as findInventory } from "@/app/api/v0/inventory/[inventory]/route";
+import { GET as findInventory } from "@/app/api/v0/inventory/[inventory]/download/route";
 import { POST as submitInventory } from "@/app/api/v0/inventory/[inventory]/cdp/route";
 import { db } from "@/models";
 import { CreateInventoryRequest } from "@/util/validation";
@@ -6,7 +6,13 @@ import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { after, before, beforeEach, describe, it } from "node:test";
 import { literal, Op } from "sequelize";
-import { cascadeDeleteDataSource, createRequest, mockRequest, setupTests, testUserID } from "../helpers";
+import {
+  cascadeDeleteDataSource,
+  createRequest,
+  mockRequest,
+  setupTests,
+  testUserID,
+} from "../helpers";
 import { SubSector } from "@/models/SubSector";
 import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";

@@ -3,7 +3,6 @@
 import ActivityTab from "@/components/Tabs/Activity/activity-tab";
 import LoadingState from "@/components/loading-state";
 import { useTranslation } from "@/i18n/client";
-import { RootState } from "@/lib/store";
 import { SubSectorAttributes } from "@/models/SubSector";
 import { api, useGetInventoryValuesBySubsectorQuery } from "@/services/api";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
@@ -28,8 +27,8 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MdOutlineHomeWork } from "react-icons/md";
-import { useSelector } from "react-redux";
 import { toKebabCase } from "@/util/helpers";
+import { throttle } from "lodash";
 
 function SubSectorPage({
   params: { lng, step, inventory: inventoryId, subsector },
@@ -119,14 +118,17 @@ function SubSectorPage({
 
   const handleScroll = () => {
     const position = window.scrollY;
-    setScrollPosition(position);
+
+    setIsExpanded(window.scrollY > scrollResizeHeaderThreshold);
+    // setScrollPosition(position);
   };
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    const throttledHandle = throttle(handleScroll, 500);
+    window.addEventListener("scroll", throttledHandle, { passive: true });
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", throttledHandle);
     };
   }, []);
 
@@ -144,8 +146,8 @@ function SubSectorPage({
       clearTimeout(timer);
     };
   };
-  const scrollResizeHeaderThreshold = 50;
-  const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
+  const scrollResizeHeaderThreshold = 170;
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const { data: activityData, isLoading: isActivityDataLoading } =
     api.useGetActivityValuesQuery({
@@ -159,6 +161,9 @@ function SubSectorPage({
       inventoryId,
       subSectorId: subSectorData?.subsectorId,
     });
+
+  const loadingState =
+    isActivityDataLoading || isInventoryValueLoading || isLoading;
 
   return (
     <>
@@ -231,7 +236,7 @@ function SubSectorPage({
           <Box display="flex">
             {isExpanded ? (
               <Box>
-                <Link href={`/${inventoryId}/data`}>
+                <Link href={`/${inventoryId}/data/${step}`}>
                   <Icon
                     as={ArrowBackIcon}
                     h="24px"
@@ -308,7 +313,7 @@ function SubSectorPage({
           </Box>
         </Box>
       </Box>
-      <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4 mt-[240px]">
+      <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4 pb-[100px] mt-[240px]">
         <Box mt="48px">
           <Tabs>
             <MotionTabList
@@ -319,6 +324,7 @@ function SubSectorPage({
               top={isExpanded ? "170px" : "50px"}
               animate={{
                 y: isExpanded ? 0 : -50,
+                delay: 200,
               }}
               transition={{ duration: 0.2 }}
             >
@@ -342,7 +348,7 @@ function SubSectorPage({
             </MotionTabList>
 
             <TabPanels>
-              {isLoading ? (
+              {loadingState ? (
                 <LoadingState />
               ) : (
                 scopes?.map((scope) => (

@@ -14,6 +14,7 @@ import {
   cascadeDeleteDataSource,
   createRequest,
   expectStatusCode,
+  expectToBeLooselyEqual,
   mockRequest,
   setupTests,
   testUserID
@@ -24,6 +25,7 @@ import { Inventory } from "@/models/Inventory";
 import { Sector } from "@/models/Sector";
 import { SubCategory } from "@/models/SubCategory";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
+import { activityValues } from "./results.data";
 
 jest.useFakeTimers();
 
@@ -136,11 +138,22 @@ describe("Inventory API", () => {
       cityId: city.cityId,
       ...inventoryData,
     });
-    await db.models.InventoryValue.create({
+    const inventoryValueDb = await db.models.InventoryValue.create({
       id: randomUUID(),
       inventoryId: inventory.inventoryId,
       subCategoryId: subCategory.subcategoryId,
       ...inventoryValue,
+    });
+
+    await db.models.ActivityValue.bulkCreate(activityValues.map(i => ({
+        ...i, inventoryValueId: inventoryValueDb.id, inventoryId: inventory.inventoryId, id: randomUUID(),
+      })));
+    await db.models.Population.upsert({
+      cityId: city.cityId!,
+      year: inventoryData.year,
+      population: 1000,
+      countryPopulation: 10000,
+      regionPopulation: 5000,
     });
   });
 
@@ -200,7 +213,8 @@ describe("Inventory API", () => {
     const { data } = await res.json();
     expect(data.inventoryName).toEqual(inventory.inventoryName);
     expect(data.year).toEqual(inventory.year);
-    expect(data.totalEmissions).toEqual(inventory.totalEmissions);
+    const totalSumOfActivityValues = 79735;
+    expectToBeLooselyEqual(data.totalEmissions, totalSumOfActivityValues);
   });
 
   it.skip("should download an inventory in csv format", async () => {

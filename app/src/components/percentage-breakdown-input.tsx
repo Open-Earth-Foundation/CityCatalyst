@@ -52,8 +52,6 @@ interface FormInputProps {
   t: TFunction;
 }
 
-console.log("what is log");
-
 const PercentageBreakdownInput: FC<FormInputProps> = ({
   label,
   isDisabled,
@@ -74,14 +72,15 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
     background = "background.default";
   }
 
-  const breakDownValues = useWatch({
+  const breakDownValues: Record<string, string> = useWatch({
     control,
     name: `activity.${id}`,
+    defaultValue: {},
   });
 
   const totalPercent = useMemo(() => {
-    return Object.values(breakDownValues).reduce(
-      (acc, val) => acc + parseFloat(val),
+    return Object.values(breakDownValues).reduce<number>(
+      (acc: number, val) => acc + parseFloat(val as string),
       0,
     );
   }, [breakDownValues]);
@@ -91,11 +90,11 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
     return Object.entries(breakDownValues)
       .map(([key, value]) => {
         const category = breakdownCategories.find((c) => c.id === key);
-        return `${t(category?.id)} ${value}%`;
+        return `${t(category?.id ?? "")} ${value}%`;
       })
       .join(", ");
     // breakdownCategories
-  }, [breakDownValues]);
+  }, [breakDownValues, t]);
 
   return (
     <FormControl display="flex" flexDirection="column" isInvalid={!!error}>
@@ -164,7 +163,6 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                         type="text"
                         value={getValues(`activity.${id}.${category.id}`)}
                         onChange={(e) => {
-                          console.log(e);
                           setValue(
                             `activity.${id}.${category.id}`,
                             e.target.value,

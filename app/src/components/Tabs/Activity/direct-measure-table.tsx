@@ -77,11 +77,8 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
   )?.id;
 
   const filteredFields = extraFields.filter((f) => {
-    console.log(f.id, groupBy);
     return !f.id.includes(groupBy as string);
   });
-
-  console.log(filteredFields, groupBy, extraFields);
 
   const renderTable = (list: ActivityValue[]) => {
     return (

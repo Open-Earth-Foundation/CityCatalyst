@@ -139,7 +139,6 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
     .concat(subSectorSources)
     .concat(subCategorySources);
 
-  console.log("sources", sources);
   const { applicableSources, removedSources } = DataSourceService.filterSources(
     inventory,
     sources,

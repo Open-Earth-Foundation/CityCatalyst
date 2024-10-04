@@ -109,22 +109,13 @@ const ActivityModalBody = ({
     name: `activity.${title}Unit` as any,
   });
 
-  const activityValue = useWatch({
-    control,
-    name: `activity` as any,
-  });
-
-  useEffect(() => {
-    console.log(activityValue, "activityValye");
-  }, [activityValue]);
-
   let prefix = "";
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
     useState<boolean>(
       !(targetActivityValue?.metadata?.emissionFactorType === "custom"),
     );
 
-  // Adjust function for countries with national emission factors i.e US
+  // Adjust function for countries with national emission factors i.e. US
   const onEmissionFactorTypeChange = (e: any) => {
     // somehow extract the gas and the emissions perActivity for each gas
     const emissionFactor = emissionsFactorTypes.find(
@@ -158,8 +149,6 @@ const ActivityModalBody = ({
   const sourceField = fields.find(
     (f) => f.id.includes("-source") && f.type === "text",
   );
-
-  console.log("rendered modal");
 
   return (
     <ModalBody p={6} px={12}>

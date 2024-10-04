@@ -49,6 +49,7 @@ function snakeToCamel(str: string): string {
 async function syncDataCatalogue() {
   const projectDir = process.cwd();
   env.loadEnvConfig(projectDir);
+  const SKIP_TIMESTAMP_CHECK = process.env.SKIP_TIMESTAMP_CHECK === "true";
 
   const GLOBAL_API_URL =
     process.env.GLOBAL_API_URL || "http://api.citycatalyst.io";
@@ -67,35 +68,47 @@ async function syncDataCatalogue() {
       lastUpdate: new Date(0), // UNIX epoch as default value
     });
   }
-  const previousUpdate = catalogue.lastUpdate?.getTime() || 0;
-  const catalogUrl = `${GLOBAL_API_URL}/api/v0/catalogue`;
-  const lastUpdateResponse = await fetch(`${catalogUrl}/last-update`);
-  const lastUpdateData = await lastUpdateResponse.json();
-  if (!lastUpdateData?.last_update) {
-    throw new Error(
-      "Failed to query last catalogue update with error " +
-        lastUpdateResponse.status +
-        " " +
-        lastUpdateResponse.statusText,
+  const catalogueUrl = `${GLOBAL_API_URL}/api/v0/catalogue`;
+  let lastUpdate = 0;
+
+  // check last updated time from global API to not fetch data catalogue if it's not been updated
+  if (!SKIP_TIMESTAMP_CHECK) {
+    const previousUpdate = catalogue.lastUpdate?.getTime() || 0;
+    console.log(`Fetching ${catalogueUrl}/last-update`);
+    const lastUpdateResponse = await fetch(`${catalogueUrl}/last-update`);
+    const lastUpdateData = await lastUpdateResponse.json();
+    if (!lastUpdateData?.last_update) {
+      throw new Error(
+        "Failed to query last catalogue update with error " +
+          lastUpdateResponse.status +
+          " " +
+          lastUpdateResponse.statusText,
+      );
+    }
+    // convert to unix timestamp in ms
+    lastUpdate = lastUpdateData.last_update * 1000;
+
+    console.log(`Last update: DB - ${previousUpdate}, API - ${lastUpdate}`);
+    if (lastUpdate <= previousUpdate) {
+      console.warn("Already on the newest data catalogue version, exiting.");
+      await db.sequelize?.close();
+      return;
+    }
+  } else {
+    console.warn(
+      "Skipping timestamp check because env var SKIP_TIMESTAMP_CHECK is true, fetching data catalogue anyway.",
     );
   }
-  // convert to unix timestamp in ms
-  const lastUpdate = lastUpdateData.last_update * 1000;
 
-  console.log(`Last update: DB - ${previousUpdate}, API - ${lastUpdate}`);
-  if (lastUpdate <= previousUpdate) {
-    console.warn("Already on the newest data catalogue version, exiting.");
-    await db.sequelize?.close();
-    return;
-  }
-  const dataSourcesResponse = await fetch(`${catalogUrl}/i18n`);
+  console.log(`Fetching ${catalogueUrl}/i18n`);
+  const dataSourcesResponse = await fetch(`${catalogueUrl}/i18n`);
   const dataSourcesData = await dataSourcesResponse.json();
   if (!dataSourcesData?.datasources) {
     throw new Error(
       "Failed to query data source catalogue with error " +
-        lastUpdateResponse.status +
+        dataSourcesResponse.status +
         " " +
-        lastUpdateResponse.statusText,
+        dataSourcesResponse.statusText,
     );
   }
 

@@ -1,33 +1,23 @@
 "use client";
 
-import { UserDetails } from "@/app/[lng]/[inventory]/settings/page";
 import {
-  Modal,
+  Box,
   Button,
+  Icon,
+  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Text,
-  Box,
-  Badge,
   useToast,
-  ModalFooter,
-  Icon,
 } from "@chakra-ui/react";
-import React, { FC, useState } from "react";
-
-import { FiTrash2 } from "react-icons/fi";
-import PasswordInput from "../password-input";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { useTranslation } from "@/i18n/client";
+import React, { FC } from "react";
 import { TFunction } from "i18next";
-import { InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
-import { UserAttributes } from "@/models/User";
-import { api } from "@/services/api";
-import { CityAttributes } from "@/models/City";
-import { MdCheckCircleOutline } from "react-icons/md";
+import { CheckCircleIcon } from "@chakra-ui/icons";
+import { useDeleteAllActivityValuesMutation } from "@/services/api";
 import { ChangeMethodologyIcon } from "../icons";
 import { Trans } from "react-i18next";
 
@@ -36,6 +26,8 @@ interface ChangeMethodologyProps {
   onClose: () => void;
   onChangeClicked: () => void;
   t: TFunction;
+  gpcReferenceNumber: string;
+  inventoryId: string;
 }
 
 const ChangeMethodology: FC<ChangeMethodologyProps> = ({
@@ -43,7 +35,54 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
   onClose,
   onChangeClicked,
   t,
+  gpcReferenceNumber,
+  inventoryId,
 }) => {
+  const toast = useToast();
+
+  const [deleteAllActivityValues, { isLoading: isDeleteAllLoading }] =
+    useDeleteAllActivityValuesMutation();
+
+  const handleDeleteAllActivities = async () => {
+    // call the delete all activities mutation
+    const response = await deleteAllActivityValues({
+      inventoryId,
+      gpcReferenceNumber: gpcReferenceNumber,
+    });
+    if (response.data) {
+      // TODO create toast wrapper for success state
+      toast({
+        status: "success",
+        title: t("change-methodology-success"),
+        render: ({ title }) => (
+          <Box
+            h="48px"
+            w="600px"
+            borderRadius="8px"
+            display="flex"
+            alignItems="center"
+            color="white"
+            backgroundColor="interactive.primary"
+            gap="8px"
+            px="16px"
+          >
+            <CheckCircleIcon />
+            <Text>{title}</Text>
+          </Box>
+        ),
+      });
+      onChangeClicked();
+      onClose();
+    } else {
+      toast({
+        status: "error",
+        title: t("change-methodology-error"),
+      });
+    }
+  };
+
+  // when the user clicks the change methodology button we will call the handleDeleteAllActivities function
+
   return (
     <>
       <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
@@ -111,6 +150,7 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
             <Button
               h="56px"
               w="472px"
+              isLoading={isDeleteAllLoading}
               paddingTop="16px"
               paddingBottom="16px"
               px="24px"
@@ -122,7 +162,7 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
               type="submit"
               p={0}
               m={0}
-              onClick={onChangeClicked}
+              onClick={handleDeleteAllActivities}
             >
               {t("change-methodology")}
             </Button>

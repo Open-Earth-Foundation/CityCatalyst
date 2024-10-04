@@ -1,10 +1,10 @@
 import { PATCH as updateUser } from "@/app/api/v0/user/route";
 import { db } from "@/models";
 import { UserAttributes } from "@/models/User";
-import assert from "node:assert";
-import { after, before, describe, it } from "node:test";
+import { beforeAll, afterAll, describe, it, expect } from "@jest/globals";
 import { mockRequest, setupTests, testUserID } from "../helpers";
 
+// Test Data
 const inventoryId = "dab66377-a4fc-46d2-9782-5a87282d39fa";
 
 const userData: UserAttributes = {
@@ -21,7 +21,7 @@ const invalidUserUpdate = {
 };
 
 describe("User API", () => {
-  before(async () => {
+  beforeAll(async () => {
     setupTests();
     await db.initialize();
     await db.models.Inventory.destroy({
@@ -34,33 +34,32 @@ describe("User API", () => {
     });
   });
 
-  after(async () => {
+  afterAll(async () => {
     if (db.sequelize) await db.sequelize.close();
   });
 
   it("should update a user", async () => {
     const req = mockRequest(userUpdate);
     const res = await updateUser(req, { params: {} });
-    assert.equal(res.status, 200);
+    expect(res.status).toBe(200);
     const data = await res.json();
-    assert.ok(data.success);
+    expect(data.success).toBeTruthy();
     const user = await db.models.User.findOne({
       where: { userId: userData.userId },
     });
-    assert.ok(user != null);
-    assert.equal(user.defaultInventoryId, inventoryId);
+    expect(user).not.toBeNull();
+    expect(user!.defaultInventoryId).toBe(inventoryId);
   });
 
   it("should not update a user with invalid data", async () => {
     const req = mockRequest(invalidUserUpdate);
     const res = await updateUser(req, { params: {} });
-    assert.equal(res.status, 400);
+    expect(res.status).toBe(400);
     const user = await db.models.User.findOne({
       where: { userId: userData.userId },
     });
-    assert.ok(user != null);
-    assert.notEqual(
-      user.defaultInventoryId,
+    expect(user).not.toBeNull();
+    expect(user!.defaultInventoryId).not.toBe(
       invalidUserUpdate.defaultInventoryId,
     );
   });

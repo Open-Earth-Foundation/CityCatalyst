@@ -1,6 +1,7 @@
 import SectorFormSchema from "./sector-form-schema.json";
-export { SectorFormSchema };
 import HIERARCHY from "./manual-input-hierarchy.json";
+
+export { SectorFormSchema };
 
 export function findMethodology(
   methodologyId: string,
@@ -37,6 +38,7 @@ export interface ExtraField {
 
 export interface Activity {
   id: string;
+  "group-by"?: string;
   "unique-by"?: string[];
   "activity-title"?: string;
   minimum?: number;
@@ -61,17 +63,22 @@ export interface Methodology {
   activities?: Activity[];
   inputRequired?: string[];
   formula?: string;
-  fields?: [];
+  fields?: any[];
   suggestedActivities?: SuggestedActivity[];
   suggestedActivitiesId?: string;
+  activityTypeField?: string;
+  activityUnitsField?: string;
 }
 
 export interface DirectMeasure {
   id: string;
+  "group-by"?: string;
   suggestedActivitiesId?: string;
   suggestedActivities?: Activity[];
   inputRequired?: string[];
   "extra-fields"?: ExtraField[];
+  activityTypeField: string;
+  activityUnitsField?: string;
 }
 
 interface ManualInputHierarchy {

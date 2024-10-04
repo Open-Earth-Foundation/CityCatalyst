@@ -10,11 +10,10 @@ import {
   WorldSearchIcon,
 } from "@/components/icons";
 import {
-  InventoryUserFileAttributes,
   clear,
+  InventoryUserFileAttributes,
   removeFile,
 } from "@/features/city/inventoryDataSlice";
-import { setSubsector } from "@/features/city/subsectorSlice";
 import { useTranslation } from "@/i18n/client";
 import { RootState } from "@/lib/store";
 import { api } from "@/services/api";
@@ -37,8 +36,8 @@ import {
   Center,
   CircularProgress,
   Flex,
-  HStack,
   Heading,
+  HStack,
   Icon,
   IconButton,
   Link,
@@ -214,8 +213,8 @@ export default function AddDataSteps({
 
   const [steps, setSteps] = useState<DataStep[]>([
     {
-      title: t("stationary-energy"),
-      details: t("stationary-energy-details"),
+      title: "stationary-energy",
+      details: "stationary-energy-details",
       icon: MdOutlineHomeWork,
       connectedProgress: 0,
       addedProgress: 0,
@@ -225,8 +224,8 @@ export default function AddDataSteps({
       subSectors: null,
     },
     {
-      title: t("transportation"),
-      details: t("transportation-details"),
+      title: "transportation",
+      details: "transportation-details",
       icon: FiTruck,
       connectedProgress: 0,
       addedProgress: 0,
@@ -236,8 +235,8 @@ export default function AddDataSteps({
       subSectors: null,
     },
     {
-      title: t("waste"),
-      details: t("waste-details"),
+      title: "waste",
+      details: "waste-details",
       icon: FiTrash2,
       connectedProgress: 0,
       addedProgress: 0,
@@ -532,7 +531,7 @@ export default function AddDataSteps({
       setDisconnectingDataSourceId(null);
       onSearchDataSourcesClicked();
     } else {
-      console.log("Something went wrong");
+      console.error("Something went wrong when disconnecting data source");
     }
   };
 
@@ -592,13 +591,13 @@ export default function AddDataSteps({
     };
   }, []);
 
-  const getCurrentStepParam = (currentStepName: string) => {
-    switch (currentStepName) {
-      case t("stationary-energy"):
+  const getCurrentStepParam = (referenceNumber: string) => {
+    switch (referenceNumber) {
+      case "I":
         return 1;
-      case t("transportation"):
+      case "II":
         return 2;
-      case t("waste"):
+      case "III":
         return 3;
       default:
         return 1;
@@ -632,7 +631,7 @@ export default function AddDataSteps({
               variant="ghost"
               fontSize="14px"
               leftIcon={<ArrowBackIcon boxSize={6} />}
-              onClick={() => router.back()}
+              onClick={() => router.push(`/${inventory}/data`)}
             >
               {t("go-back")}
             </Button>
@@ -658,7 +657,7 @@ export default function AddDataSteps({
 
                 <BreadcrumbItem>
                   <BreadcrumbLink href="#" color="content.link">
-                    {currentStep.title}
+                    {t(currentStep.title)}
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               </Breadcrumb>
@@ -705,10 +704,10 @@ export default function AddDataSteps({
                   className="transition-all duration-50 ease-linear"
                   fontSize={isExpanded ? "headline.sm" : "headline.md"}
                 >
-                  {currentStep.title}
+                  {t(currentStep.title)}
                 </Heading>
                 {scrollPosition <= 0 ? (
-                  <Text color="content.tertiary">{currentStep.details}</Text>
+                  <Text color="content.tertiary">{t(currentStep.details)}</Text>
                 ) : (
                   <Box w="800px"></Box>
                 )}
@@ -799,7 +798,7 @@ export default function AddDataSteps({
                     className="shadow-none border border-overlay hover:drop-shadow-xl !duration-300 transition-shadow"
                     onClick={() => {
                       router.push(
-                        `/${inventory}/data/${getCurrentStepParam(currentStep.title)}/${subSector.subsectorId}`,
+                        `/${inventory}/data/${getCurrentStepParam(currentStep.referenceNumber)}/${subSector.subsectorId}`,
                       );
                     }}
                     key={subSector.subsectorId}

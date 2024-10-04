@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Select, { components, MultiValueProps, OptionProps } from "react-select";
 import { Checkbox, Box, Text, CloseButton } from "@chakra-ui/react";
 import { TFunction } from "i18next";
@@ -16,6 +16,7 @@ interface MultiSelectInputProps {
   multiselect?: boolean;
   required?: boolean;
   control: Control<any, any>;
+  selectedActivity?: string;
 }
 
 const CustomMultiValue = (props: MultiValueProps<any>) => {
@@ -101,8 +102,16 @@ const MultiSelectWithCheckbox = ({
   errors,
   t,
   control,
+  selectedActivity,
 }: MultiSelectInputProps) => {
   const error = activity.split(".").reduce((acc, key) => acc?.[key], errors);
+  let preselectedValue = selectedActivity
+    ? {
+        label: t(selectedActivity),
+        value: selectedActivity,
+      }
+    : null;
+
   return (
     <Box display="flex" flexDirection="column" gap="8px">
       <Text
@@ -122,6 +131,8 @@ const MultiSelectWithCheckbox = ({
           required: required === false ? false : t("option-required"),
         }}
         render={({ field }) => {
+          const currentValue = Array.isArray(field.value) ? field.value : []; // Ensure field.value is an array
+
           return (
             <Select
               {...field}
@@ -137,12 +148,17 @@ const MultiSelectWithCheckbox = ({
                 Option: CustomOption,
               }}
               value={
-                field.value?.map((val: string) => ({
-                  label: t(val),
-                  value: val,
-                })) || []
+                currentValue.length > 0
+                  ? currentValue.map((val: string) => ({
+                      label: t(val),
+                      value: val,
+                    }))
+                  : preselectedValue
+                    ? [preselectedValue]
+                    : []
               }
               onChange={(selected) => {
+                preselectedValue = null;
                 const values = selected?.map((option) => option.value) || [];
                 field.onChange(values);
               }}

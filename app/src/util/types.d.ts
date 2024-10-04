@@ -1,7 +1,4 @@
-import type {
-  DataSourceWithRelations,
-  InventoryValueData,
-} from "@/app/[lng]/[inventory]/data/[step]/types";
+import type { DataSourceWithRelations, InventoryValueData } from "@/app/[lng]/[inventory]/data/[step]/types";
 import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
@@ -109,6 +106,7 @@ type fileContentValues = {
   size: number;
   fileType: string;
 };
+
 interface UserFileResponse {
   id: string;
   userId: string;
@@ -136,4 +134,26 @@ interface UserInviteResponse {
 
 interface RequiredScopesResponse {
   requiredScopes: string[];
+}
+
+interface TopEmission {
+  scopeName: string;
+  co2eq: bigint;
+  sectorName: string;
+  subsectorName: string;
+  percentage: number;
+}
+
+interface SectorEmission {
+      sectorName: string;
+      co2eq: bigint;
+      percentage: number;
+}
+
+interface ResultsResponse {
+  totalEmissions: {
+    bySector: SectorEmission[];
+    total: bigint;
+  };
+  topEmissions: { bySubSector: TopEmission[] };
 }

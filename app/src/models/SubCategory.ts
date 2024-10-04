@@ -13,7 +13,8 @@ import type { SubSector, SubSectorId } from "./SubSector";
 export interface SubCategoryAttributes {
   subcategoryId: string;
   subcategoryName?: string;
-  activityName?: string;
+  /** @deprecated never used and this would need to be an array since one subcategory can have multiple activities */
+  activityName?: string; // TODO remove
   referenceNumber?: string;
   subsectorId?: string;
   scopeId?: string;

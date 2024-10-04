@@ -1,4 +1,4 @@
-import { useToast, Box, CloseButton, Text } from "@chakra-ui/react";
+import { Box, CloseButton, Text, useToast } from "@chakra-ui/react";
 import { Trans } from "react-i18next";
 import {
   ManualInputValidationErrorCodes,
@@ -66,7 +66,9 @@ const useActivityValueValidation = ({
       case ManualInputValidationErrorCodes.UNIQUE_BY_CONFLICT:
         key = "manual-input-error-unique";
         desciptionValues = {
-          targetField: targetFields.map((f) => t(f)).join(", "),
+          targetField: targetFields
+            .map((f) => (f.includes("-source") ? t("data-source") : t(f)))
+            .join(", "),
         };
         targetFields.forEach((field) => {
           setError(`activity.${field}` as any, {

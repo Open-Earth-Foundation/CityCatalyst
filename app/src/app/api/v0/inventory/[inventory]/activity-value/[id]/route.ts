@@ -4,8 +4,9 @@ import { apiHandler } from "@/util/api";
 import { createActivityValueRequest } from "@/util/validation";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import ActivityService from "@/backend/ActivityService";
-import { UpdateGasValueInput } from "@/backend/ActivityService";
+import ActivityService, {
+  UpdateGasValueInput,
+} from "@/backend/ActivityService";
 
 export const PATCH = apiHandler(async (req, { params, session }) => {
   const id = z.string().uuid().parse(params.id);
@@ -40,9 +41,8 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
 
   await UserService.findUserInventory(params.inventory, session);
 
-  const result = await db.models.ActivityValue.destroy({
-    where: { id },
-  });
+  const result = await ActivityService.deleteActivity(id);
+
   return NextResponse.json({ success: true, data: result });
 });
 

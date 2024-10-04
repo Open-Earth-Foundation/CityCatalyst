@@ -1,9 +1,4 @@
-import {
-  test as setup,
-  expect,
-  test,
-  APIRequestContext,
-} from "@playwright/test";
+import { expect, test as setup, test } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { expectText, signup } from "./helpers";
 

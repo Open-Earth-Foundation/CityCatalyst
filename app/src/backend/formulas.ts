@@ -104,7 +104,9 @@ export function handleMethaneCommitmentFormula(
     );
   }
 
-  const getFraction = (key: string) => (data[key] || 0) / 100.0;
+  const percentageBreakdown =
+    data["methane-commitment-solid-waste-inboundary-waste-composition"] ?? {};
+  const getFraction = (key: string) => (percentageBreakdown[key] || 0) / 100.0;
   const [
     foodFraction,
     gardenWasteFraction,
@@ -113,22 +115,27 @@ export function handleMethaneCommitmentFormula(
     textilesFraction,
     industrialWasteFraction,
   ] = [
-    "food-fraction",
-    "garden-waste-fraction",
-    "paper-fraction",
-    "wood-fraction",
-    "textiles-fraction",
-    "industrial-waste-fraction",
+    "food",
+    "garden-waste",
+    "paper",
+    "wood",
+    "textiles",
+    "industrial-waste",
   ].map(getFraction);
 
+  // TODO this dropdown input is not part of manual input spec for III.1.1
   const landfillType = data["landfill-type"];
-  // Rewrite the property accesses in data here to use kebab-case instead of camelCase.
 
-  const recoveredMethaneFraction = data["recovered-methane-fraction"] || 0;
-  const oxidationFactor = data["landfill-type"].startsWith("managed-well")
-    ? 0.1
-    : 0;
-  const totalSolidWaste = data["total-solid-waste"] || 0;
+  const recoveredMethaneFraction =
+    data[
+      "methane-commitment-solid-waste-inboundary-methane-collected-and-removed"
+    ] || 0;
+  const oxidationFactor =
+    data["methane-commitment-solid-waste-inboundary-oxidation-factor"] ===
+    "oxidation-factor-well-managed-landfill"
+      ? 0.1
+      : 0;
+  const totalSolidWaste = data["methane-commitment-solid-waste-disposed"] || 0;
 
   // Degradable organic carbon in year of deposition, fraction (tonnes C/tonnes waste)
   const degradableOrganicCarbon =
@@ -139,7 +146,8 @@ export function handleMethaneCommitmentFormula(
     TEXTILES_FACTOR * textilesFraction +
     INDUSTRIAL_WASTE_FACTOR * industrialWasteFraction;
 
-  const methaneCorrectionFactor = METHANE_CORRECTION_FACTORS[landfillType];
+  const methaneCorrectionFactor =
+    METHANE_CORRECTION_FACTORS[landfillType] ?? 0.6;
   // GPC assumption, Fraction of degradable organic carbon that is ultimately degraded
   const DOC_FRACTION = 0.6;
   // GPC assumption, fraction of methane in landfill gas
@@ -150,12 +158,20 @@ export function handleMethaneCommitmentFormula(
     DOC_FRACTION *
     METHANE_FRACTION *
     (16 / 12.0);
+  console.log("long fong", methaneCorrectionFactor, degradableOrganicCarbon);
 
   const ch4Emissions =
     totalSolidWaste *
     methaneGenerationPotential *
     (1 - recoveredMethaneFraction) *
     (1 - oxidationFactor);
+  console.log(
+    "SAW",
+    totalSolidWaste,
+    methaneGenerationPotential,
+    recoveredMethaneFraction,
+    oxidationFactor,
+  );
 
   return [{ gas: "CH4", amount: BigInt(ch4Emissions) }];
 }

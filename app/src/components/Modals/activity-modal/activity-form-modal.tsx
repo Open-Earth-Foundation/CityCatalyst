@@ -86,7 +86,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   }, [methodology]);
 
   const {
-    setError,
     setValue,
     setFocus,
     reset,
@@ -94,6 +93,8 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     register,
     watch,
     errors,
+    setError,
+    clearErrors,
     control,
     getValues,
   } = useActivityForm({
@@ -371,6 +372,8 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
             getValues={getValues}
             t={t}
             errors={errors}
+            setError={setError}
+            clearErrors={clearErrors}
             setValue={setValue}
           />
           <ModalFooter

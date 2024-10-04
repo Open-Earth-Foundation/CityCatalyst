@@ -55,6 +55,8 @@ interface FormInputProps {
   control: Control<any, any>;
   isDisabled?: boolean;
   error: FieldError | undefined;
+  setError: Function;
+  clearErrors: Function;
   register: Function;
   getValues: Function;
   setValue: Function;
@@ -66,7 +68,8 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
   label,
   isDisabled,
   error,
-  register,
+  setError,
+  clearErrors,
   getValues,
   control,
   setValue,
@@ -92,10 +95,19 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
   }
 
   const totalPercent = useMemo(() => {
-    return Object.values(breakDownValues).reduce<number>(
+    const total = Object.values(breakDownValues).reduce<number>(
       (acc: number, val) => acc + parseFloat(val as string),
       0,
     );
+    if (total === 100) {
+      clearErrors(`activity.${id}`);
+    } else {
+      setError(`activity.${id}`, {
+        message: "percentages-not-100",
+      });
+    }
+    return total;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [breakDownValues]);
   const isValid = totalPercent === 100;
   const breakdownSummary = useMemo(() => {
@@ -156,9 +168,6 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                   )}
                 </InputRightElement>
               </InputGroup>
-              {!isValid && (
-                <FormErrorMessage>{t("percentages-not-100")}</FormErrorMessage>
-              )}
             </PopoverTrigger>
             <PopoverContent w="full">
               <PopoverArrow />
@@ -234,16 +243,8 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
           </>
         )}
       </Popover>
-      {error && (
-        <Text
-          color="sentiment.negativeDefault"
-          fontFamily="heading"
-          fontSize="body.md"
-          fontWeight="normal"
-          letterSpacing="wide"
-        >
-          {error.message}
-        </Text>
+      {error?.message && (
+        <FormErrorMessage>{t(error.message)}</FormErrorMessage>
       )}
     </FormControl>
   );

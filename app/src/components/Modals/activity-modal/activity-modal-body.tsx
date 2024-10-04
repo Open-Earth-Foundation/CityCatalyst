@@ -49,6 +49,8 @@ interface AddActivityModalBodyProps {
   fields: ExtraField[];
   units: string[];
   errors: Record<string, any>;
+  setError: Function;
+  clearErrors: Function;
   emissionsFactorTypes: EmissionFactorTypes;
   methodology: any;
   selectedActivity?: SuggestedActivity;
@@ -96,6 +98,8 @@ const ActivityModalBody = ({
   methodology,
   emissionsFactorTypes,
   errors,
+  setError,
+  clearErrors,
   fields,
   units,
   targetActivityValue,
@@ -191,6 +195,8 @@ const ActivityModalBody = ({
                     getValues={getValues}
                     control={control}
                     setValue={setValue}
+                    setError={setError}
+                    clearErrors={clearErrors}
                     error={errors?.activity?.[f.id]}
                     t={t}
                   />

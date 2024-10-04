@@ -139,6 +139,29 @@ if __name__ == "__main__":
     write_dic_to_csv(output_dir, "DataSource", datasource_data)
 
     # =================================================================
+    # Methodology
+    # =================================================================
+    methodologies = [
+    "electricity_consumption",
+    "energy_consumption" "sampling_scaled_data",
+    "modeled_data",
+    ]
+
+    methodology_data_list = []
+
+    for methodology in methodologies:
+        methodology_data = {
+            "methodology_id": uuid_generate_v3(methodology),
+            "methodology": methodology,
+            "methodology_url": "",  
+            "datasource_id": datasource_data.get("datasource_id")
+        }
+        methodology_data_list.append(methodology_data)
+
+    # Write data to CSV
+    write_dic_to_csv(output_dir, "Methodology", methodology_data_list)
+
+    # =================================================================
     # EmissionsFactors
     # =================================================================
 

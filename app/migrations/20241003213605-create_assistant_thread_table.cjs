@@ -2,7 +2,7 @@
 
 const sql_up = `create table if not exists public."AssistantThread"
 (
-    assistant_thread_id text primary key,
+    assistant_thread_id text not null primary key,
     assistant_id        text     
 );
 `;

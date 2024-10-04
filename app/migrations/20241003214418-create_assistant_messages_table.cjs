@@ -2,12 +2,12 @@
 
 const sql_up = `create type role_enum as enum('user', 'assistant');
 
-create table if not exists public."AssistantMessages"
+create table if not exists public."AssistantMessage"
 (
     assistant_message_id  text not null primary key,
-    thread_id             text references "AssistantThread"(assistant_thread_id),
-    role                  role_enum,
-    created_at            timestamp,    
+    thread_id             text not null,
+    role                  role_enum not null,
+    timestamp             timestamp not null,    
     content               text
 );
 `;

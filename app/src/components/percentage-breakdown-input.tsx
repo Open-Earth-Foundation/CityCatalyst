@@ -111,7 +111,6 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
   }, [breakDownValues]);
   const isValid = totalPercent === 100;
   const breakdownSummary = useMemo(() => {
-    console.log(breakDownValues, "what are our breakdown values");
     return Object.entries(breakDownValues)
       .map(([key, value]) => {
         const category = breakdownCategories.find((c) => c.id === key);

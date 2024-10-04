@@ -3,6 +3,7 @@
 import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 import {
   FormControl,
+  FormErrorMessage,
   FormLabel,
   HStack,
   Icon,
@@ -38,6 +39,15 @@ const breakdownCategories = [
   { id: "textiles", icon: TextilesIcon },
   { id: "industrial", icon: IndustrialIcon },
 ];
+
+const defaultValues = {
+  food: 0,
+  garden: 0,
+  paper: 0,
+  wood: 0,
+  textiles: 0,
+  industrial: 0,
+};
 
 interface FormInputProps {
   label: string;
@@ -77,6 +87,9 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
     name: `activity.${id}`,
     defaultValue: {},
   });
+  if (Object.keys(breakDownValues).length === 0) {
+    setValue(`activity.${id}`, defaultValues);
+  }
 
   const totalPercent = useMemo(() => {
     return Object.values(breakDownValues).reduce<number>(
@@ -114,6 +127,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
               <InputGroup>
                 <Input
                   type="text"
+                  isInvalid={!isValid}
                   value={breakdownSummary}
                   shadow="1dp"
                   name={id}
@@ -142,6 +156,9 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                   )}
                 </InputRightElement>
               </InputGroup>
+              {!isValid && (
+                <FormErrorMessage>{t("percentages-not-100")}</FormErrorMessage>
+              )}
             </PopoverTrigger>
             <PopoverContent w="full">
               <PopoverArrow />

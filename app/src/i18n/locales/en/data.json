@@ -808,5 +808,6 @@
   "paper": "Paper",
   "wood": "Wood",
   "textiles": "Textiles",
-  "industrial": "Industrial"
+  "industrial": "Industrial",
+  "percentages-not-100": "Percentages must add up to 100%"
 }

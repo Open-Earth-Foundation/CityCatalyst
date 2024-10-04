@@ -17,8 +17,8 @@ import {
   PopoverTrigger,
   Text,
 } from "@chakra-ui/react";
-import React, { FC } from "react";
-import { FieldError } from "react-hook-form";
+import React, { FC, useMemo } from "react";
+import { Control, FieldError, useWatch } from "react-hook-form";
 import {
   FoodIcon,
   GardenIcon,
@@ -42,13 +42,17 @@ const breakdownCategories = [
 interface FormInputProps {
   label: string;
   value?: string | null | undefined;
+  control: Control<any, any>;
   isDisabled?: boolean;
   error: FieldError | undefined;
   register: Function;
   getValues: Function;
+  setValue: Function;
   id: string;
   t: TFunction;
 }
+
+console.log("what is log");
 
 const PercentageBreakdownInput: FC<FormInputProps> = ({
   label,
@@ -56,6 +60,8 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
   error,
   register,
   getValues,
+  control,
+  setValue,
   id,
   t,
 }) => {
@@ -68,27 +74,28 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
     background = "background.default";
   }
 
-  const categoryAmounts = Object.fromEntries(
-    breakdownCategories.map((c) => [c.id, getValues(id + "." + c.id)]),
-  );
-  /*const categoryAmounts: Record<string, string | number> = {
-    food: getValues(id + ".food"),
-    garden: getValues(id + ".garden"),
-    paper: getValues(id + ".paper"),
-    wood: getValues(id + ".wood"),
-    textiles: getValues(id + ".textiles"),
-    industrial: getValues(id + ".industrial"),
-  };*/
-  const totalPercent = Object.values(categoryAmounts).reduce(
-    (a, b) => +a + +b, // convert eacn to int using unary + operator, then add
-    0,
-  );
+  const breakDownValues = useWatch({
+    control,
+    name: `activity.${id}`,
+  });
+
+  const totalPercent = useMemo(() => {
+    return Object.values(breakDownValues).reduce(
+      (acc, val) => acc + parseFloat(val),
+      0,
+    );
+  }, [breakDownValues]);
   const isValid = totalPercent === 100;
-  const breakdownSummary = breakdownCategories
-    .map(
-      (category) => `${t(category.id)} ${categoryAmounts[category.id] ?? 0}%`,
-    )
-    .join(", ");
+  const breakdownSummary = useMemo(() => {
+    console.log(breakDownValues, "what are our breakdown values");
+    return Object.entries(breakDownValues)
+      .map(([key, value]) => {
+        const category = breakdownCategories.find((c) => c.id === key);
+        return `${t(category?.id)} ${value}%`;
+      })
+      .join(", ");
+    // breakdownCategories
+  }, [breakDownValues]);
 
   return (
     <FormControl display="flex" flexDirection="column" isInvalid={!!error}>
@@ -155,11 +162,14 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                     <InputGroup w="116px">
                       <Input
                         type="text"
-                        {...register(`activity.${id}.${category.id}`, {
-                          required: true,
-                          min: 0,
-                          max: 100,
-                        })}
+                        value={getValues(`activity.${id}.${category.id}`)}
+                        onChange={(e) => {
+                          console.log(e);
+                          setValue(
+                            `activity.${id}.${category.id}`,
+                            e.target.value,
+                          );
+                        }}
                         shadow="1dp"
                         name={id}
                         borderRadius="4px"
@@ -201,7 +211,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                     {t("total")}
                   </Text>
                   <Text fontWeight={600} w="116px" pl={4} letterSpacing="wide">
-                    {totalPercent}%
+                    {totalPercent as number}%
                   </Text>
                 </HStack>
               </PopoverBody>

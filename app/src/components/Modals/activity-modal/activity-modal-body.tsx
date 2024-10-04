@@ -12,7 +12,7 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BuildingTypeSelectInput from "../../building-select-input";
 import { InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
 import { TFunction } from "i18next";
@@ -109,6 +109,15 @@ const ActivityModalBody = ({
     name: `activity.${title}Unit` as any,
   });
 
+  const activityValue = useWatch({
+    control,
+    name: `activity` as any,
+  });
+
+  useEffect(() => {
+    console.log(activityValue, "activityValye");
+  }, [activityValue]);
+
   let prefix = "";
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
     useState<boolean>(
@@ -150,6 +159,8 @@ const ActivityModalBody = ({
     (f) => f.id.includes("-source") && f.type === "text",
   );
 
+  console.log("rendered modal");
+
   return (
     <ModalBody p={6} px={12}>
       <form onSubmit={submit}>
@@ -162,11 +173,11 @@ const ActivityModalBody = ({
           gap="24px"
         >
           {/* handle select, multi-select types, text  */}
-          {filteredFields.map((f) => {
+          {filteredFields.map((f, idx) => {
             return (
               <>
                 {f.options && (
-                  <FormControl className="w-full">
+                  <FormControl key={idx} className="w-full">
                     <BuildingTypeSelectInput
                       options={f.options}
                       required={f.required}
@@ -189,6 +200,8 @@ const ActivityModalBody = ({
                     label={t(f.id)}
                     register={register}
                     getValues={getValues}
+                    control={control}
+                    setValue={setValue}
                     error={errors?.activity?.[f.id]}
                     t={t}
                   />

@@ -158,20 +158,12 @@ export function handleMethaneCommitmentFormula(
     DOC_FRACTION *
     METHANE_FRACTION *
     (16 / 12.0);
-  console.log("long fong", methaneCorrectionFactor, degradableOrganicCarbon);
 
   const ch4Emissions =
     totalSolidWaste *
     methaneGenerationPotential *
     (1 - recoveredMethaneFraction) *
     (1 - oxidationFactor);
-  console.log(
-    "SAW",
-    totalSolidWaste,
-    methaneGenerationPotential,
-    recoveredMethaneFraction,
-    oxidationFactor,
-  );
 
   return [{ gas: "CH4", amount: BigInt(ch4Emissions) }];
 }

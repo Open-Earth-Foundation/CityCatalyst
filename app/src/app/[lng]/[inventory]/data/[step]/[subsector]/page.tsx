@@ -14,8 +14,6 @@ import {
   BreadcrumbLink,
   Button,
   CircularProgress,
-  Icon,
-  Link,
   Tab,
   TabList,
   TabPanels,
@@ -23,12 +21,14 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { motion } from "framer-motion";
+
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MdOutlineHomeWork } from "react-icons/md";
 import { toKebabCase } from "@/util/helpers";
-import { throttle } from "lodash";
+import { motion, useMotionValue, useTransform } from "framer-motion";
+
+const MotionBox = motion(Box);
 
 function SubSectorPage({
   params: { lng, step, inventory: inventoryId, subsector },
@@ -37,6 +37,53 @@ function SubSectorPage({
 }) {
   const router = useRouter();
   const { t } = useTranslation(lng, "data");
+
+  const [animationPercent, setAnimationPercent] = useState(0); // 0 to 100
+
+  // Create motion value
+  const animationPercentValue = useMotionValue(animationPercent);
+
+  useEffect(() => {
+    animationPercentValue.set(animationPercent);
+  }, [animationPercent]);
+
+  // Map animationPercentValue to styles
+  const height = useTransform(
+    animationPercentValue,
+    [0, 100],
+    ["400px", "200px"],
+  );
+  const paddingTop = useTransform(
+    animationPercentValue,
+    [0, 100],
+    ["100px", "50px"],
+  );
+  const contentOpacity = useTransform(
+    animationPercentValue,
+    [0, 50, 100],
+    [1, 0, 0],
+  );
+  const expandedContentOpacity = useTransform(
+    animationPercentValue,
+    [0, 50, 100],
+    [0, 0, 1],
+  );
+  const fontSize = useTransform(
+    animationPercentValue,
+    [0, 100],
+    ["24px", "20px"],
+  );
+  const leftPosition = useTransform(
+    animationPercentValue,
+    [0, 100],
+    ["0px", "30px"],
+  );
+
+  const topPosition = useTransform(
+    animationPercentValue,
+    [0, 100],
+    ["50px", "170px"],
+  );
 
   const {
     isOpen: isDeleteActivitiesModalOpen,
@@ -112,21 +159,16 @@ function SubSectorPage({
 
   const scopes = getFilteredSubsectorScopes();
 
-  // calculate total consumption and emissions
-
-  const [scrollPosition, setScrollPosition] = useState<number>(0);
-
   const handleScroll = () => {
     const position = window.scrollY;
-
+    console.log(position, "position");
     setIsExpanded(window.scrollY > scrollResizeHeaderThreshold);
     // setScrollPosition(position);
   };
 
   useEffect(() => {
-    const throttledHandle = throttle(handleScroll, 500);
-    window.addEventListener("scroll", throttledHandle, { passive: true });
-
+    // const throttledHandle = throttle(handleScroll, 500);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", throttledHandle);
     };
@@ -167,18 +209,24 @@ function SubSectorPage({
 
   return (
     <>
-      <Box
+      <MotionBox
         bg="background.backgroundLight"
-        className={`fixed z-10 top-0 w-full ${isExpanded ? "pt-[50px] h-[200px]" : "pt-[100px] h-[400px]"} transition-all duration-50 ease-linear`}
+        className="fixed z-10 top-0 w-full"
+        style={{
+          height: height,
+          paddingTop: paddingTop,
+        }}
       >
-        <Box className=" w-[1090px]  max-w-full mx-auto px-4">
-          <Box
+        <MotionBox className="w-[1090px] max-w-full mx-auto px-4">
+          <MotionBox
             w="full"
             display="flex"
             alignItems="center"
             gap="16px"
             mb="64px"
-            className={` ${isExpanded ? "hidden" : "flex"} transition-all duration-50 ease-linear`}
+            style={{
+              opacity: contentOpacity,
+            }}
           >
             <Button
               variant="ghost"
@@ -232,87 +280,215 @@ function SubSectorPage({
                 </BreadcrumbItem>
               </Breadcrumb>
             </Box>
-          </Box>
-          <Box display="flex">
-            {isExpanded ? (
-              <Box>
-                <Link href={`/${inventoryId}/data/${step}`}>
-                  <Icon
-                    as={ArrowBackIcon}
-                    h="24px"
-                    w="24px"
-                    mt="24px"
-                    color="content.link"
-                  />
-                </Link>
-              </Box>
-            ) : (
-              ""
-            )}
-            <Box display="flex" gap="16px">
-              <Box
-                color="content.link"
-                pt="5px"
-                pos="relative"
-                left={isExpanded ? "30px" : ""}
-              >
-                <MdOutlineHomeWork size="32px" />
-              </Box>
-              <Box
-                display="flex"
-                gap={isExpanded ? "8px" : "16px"}
-                flexDirection="column"
-              >
-                <Text
-                  fontFamily="heading"
-                  fontSize={isExpanded ? "headline.sm" : "headline.md"}
-                  fontWeight="bold"
-                  pos="relative"
-                  left={isExpanded ? "30px" : ""}
-                  className="transition-all duration-50 ease-linear"
-                >
-                  {!subSectorData ? (
-                    <CircularProgress
-                      isIndeterminate
-                      color="content.tertiary"
-                      size={"30px"}
-                    />
-                  ) : subSectorData?.referenceNumber != undefined ? (
-                    subSectorData?.referenceNumber +
-                    " " +
-                    t(toKebabCase(subSectorData?.subsectorName))
-                  ) : (
-                    ""
-                  )}
-                </Text>
-                <Text
-                  fontFamily="heading"
-                  letterSpacing="wide"
-                  fontSize="label.lg"
-                  fontWeight="medium"
-                  pos="relative"
-                  left={isExpanded ? "-15px" : ""}
-                >
-                  {t("sector")}: {getSectorName(step)} | {t("inventory-year")}:{" "}
-                  {inventoryProgress?.inventory.year}
-                </Text>
-                {isExpanded ? (
-                  ""
-                ) : (
-                  <Text
-                    letterSpacing="wide"
-                    fontSize="body.lg"
-                    fontWeight="normal"
-                    color="interactive.control"
-                  >
-                    {t("commercial-and-institutional-building-description")}
-                  </Text>
-                )}
-              </Box>
+          </MotionBox>
+          <MotionBox display="flex" gap="16px">
+            <Box
+              color="content.link"
+              pt="5px"
+              pos="relative"
+              style={{
+                left: leftPosition.get(),
+              }}
+            >
+              <MdOutlineHomeWork size="32px" />
             </Box>
-          </Box>
-        </Box>
-      </Box>
+            <MotionBox display="flex" gap="16px" flexDirection="column">
+              <Text
+                fontFamily="heading"
+                fontSize={fontSize.get()}
+                fontWeight="bold"
+                pos="relative"
+                style={{
+                  left: leftPosition.get(),
+                }}
+              >
+                {!subSectorData ? (
+                  <CircularProgress
+                    isIndeterminate
+                    color="content.tertiary"
+                    size={"30px"}
+                  />
+                ) : subSectorData?.referenceNumber != undefined ? (
+                  subSectorData?.referenceNumber +
+                  " " +
+                  t(toKebabCase(subSectorData?.subsectorName))
+                ) : (
+                  ""
+                )}
+              </Text>
+              <Text
+                fontFamily="heading"
+                letterSpacing="wide"
+                fontSize="label.lg"
+                fontWeight="medium"
+                pos="relative"
+                style={{
+                  left: leftPosition.get(),
+                }}
+              >
+                {t("sector")}: {getSectorName(step)} | {t("inventory-year")}:{" "}
+                {/*            {inventoryProgress?.inventory.year}*/}
+              </Text>
+              {animationPercent < 50 && (
+                <Text
+                  letterSpacing="wide"
+                  fontSize="body.lg"
+                  fontWeight="normal"
+                  color="interactive.control"
+                >
+                  {t("commercial-and-institutional-building-description")}
+                </Text>
+              )}
+            </MotionBox>
+          </MotionBox>
+        </MotionBox>
+      </MotionBox>
+      {/*<Box*/}
+      {/*  bg="background.backgroundLight"*/}
+      {/*  className={`fixed z-10 top-0 w-full ${isExpanded ? "pt-[50px] h-[200px]" : "pt-[100px] h-[400px]"} transition-all duration-50 ease-linear`}*/}
+      {/*>*/}
+      {/*  <Box className=" w-[1090px]  max-w-full mx-auto px-4">*/}
+      {/*    <Box*/}
+      {/*      w="full"*/}
+      {/*      display="flex"*/}
+      {/*      alignItems="center"*/}
+      {/*      gap="16px"*/}
+      {/*      mb="64px"*/}
+      {/*      className={` ${isExpanded ? "hidden" : "flex"} transition-all duration-50 ease-linear`}*/}
+      {/*    >*/}
+      {/*      <Button*/}
+      {/*        variant="ghost"*/}
+      {/*        fontSize="14px"*/}
+      {/*        leftIcon={<ArrowBackIcon boxSize={6} />}*/}
+      {/*        onClick={() => router.back()}*/}
+      {/*      >*/}
+      {/*        {t("go-back")}*/}
+      {/*      </Button>*/}
+      {/*      <Box borderRightWidth="1px" borderColor="border.neutral" h="24px" />*/}
+      {/*      <Box>*/}
+      {/*        <Breadcrumb*/}
+      {/*          spacing="8px"*/}
+      {/*          fontFamily="heading"*/}
+      {/*          fontWeight="bold"*/}
+      {/*          fontSize="14px"*/}
+      {/*          letterSpacing="widest"*/}
+      {/*          textTransform="uppercase"*/}
+      {/*          separator={<ChevronRightIcon color="gray.500" h="24px" />}*/}
+      {/*        >*/}
+      {/*          <BreadcrumbItem>*/}
+      {/*            <BreadcrumbLink*/}
+      {/*              href={`/${inventoryId}/data`}*/}
+      {/*              color="content.tertiary"*/}
+      {/*            >*/}
+      {/*              {t("all-sectors")}*/}
+      {/*            </BreadcrumbLink>*/}
+      {/*          </BreadcrumbItem>*/}
+      {/*          <BreadcrumbItem>*/}
+      {/*            <BreadcrumbLink*/}
+      {/*              href={`/${inventoryId}/data/${step}`}*/}
+      {/*              color="content.tertiary"*/}
+      {/*            >*/}
+      {/*              {getSectorName(step)}*/}
+      {/*            </BreadcrumbLink>*/}
+      {/*          </BreadcrumbItem>*/}
+      {/*          <BreadcrumbItem>*/}
+      {/*            <BreadcrumbLink href="#" color="content.link">*/}
+      {/*              <Text noOfLines={1}>*/}
+      {/*                {!subSectorData ? (*/}
+      {/*                  <CircularProgress*/}
+      {/*                    isIndeterminate*/}
+      {/*                    color="content.tertiary"*/}
+      {/*                    size={"30px"}*/}
+      {/*                  />*/}
+      {/*                ) : (*/}
+      {/*                  t(toKebabCase(subSectorData?.subsectorName))*/}
+      {/*                )}*/}
+      {/*              </Text>*/}
+      {/*            </BreadcrumbLink>*/}
+      {/*          </BreadcrumbItem>*/}
+      {/*        </Breadcrumb>*/}
+      {/*      </Box>*/}
+      {/*    </Box>*/}
+      {/*    <Box display="flex">*/}
+      {/*      {isExpanded ? (*/}
+      {/*        <Box>*/}
+      {/*          <Link href={`/${inventoryId}/data/${step}`}>*/}
+      {/*            <Icon*/}
+      {/*              as={ArrowBackIcon}*/}
+      {/*              h="24px"*/}
+      {/*              w="24px"*/}
+      {/*              mt="24px"*/}
+      {/*              color="content.link"*/}
+      {/*            />*/}
+      {/*          </Link>*/}
+      {/*        </Box>*/}
+      {/*      ) : (*/}
+      {/*        ""*/}
+      {/*      )}*/}
+      {/*      <Box display="flex" gap="16px">*/}
+      {/*        <Box*/}
+      {/*          color="content.link"*/}
+      {/*          pt="5px"*/}
+      {/*          pos="relative"*/}
+      {/*          left={isExpanded ? "30px" : ""}*/}
+      {/*        >*/}
+      {/*          <MdOutlineHomeWork size="32px" />*/}
+      {/*        </Box>*/}
+      {/*        <Box*/}
+      {/*          display="flex"*/}
+      {/*          gap={isExpanded ? "8px" : "16px"}*/}
+      {/*          flexDirection="column"*/}
+      {/*        >*/}
+      {/*          <Text*/}
+      {/*            fontFamily="heading"*/}
+      {/*            fontSize={isExpanded ? "headline.sm" : "headline.md"}*/}
+      {/*            fontWeight="bold"*/}
+      {/*            pos="relative"*/}
+      {/*            left={isExpanded ? "30px" : ""}*/}
+      {/*            className="transition-all duration-50 ease-linear"*/}
+      {/*          >*/}
+      {/*            {!subSectorData ? (*/}
+      {/*              <CircularProgress*/}
+      {/*                isIndeterminate*/}
+      {/*                color="content.tertiary"*/}
+      {/*                size={"30px"}*/}
+      {/*              />*/}
+      {/*            ) : subSectorData?.referenceNumber != undefined ? (*/}
+      {/*              subSectorData?.referenceNumber +*/}
+      {/*              " " +*/}
+      {/*              t(toKebabCase(subSectorData?.subsectorName))*/}
+      {/*            ) : (*/}
+      {/*              ""*/}
+      {/*            )}*/}
+      {/*          </Text>*/}
+      {/*          <Text*/}
+      {/*            fontFamily="heading"*/}
+      {/*            letterSpacing="wide"*/}
+      {/*            fontSize="label.lg"*/}
+      {/*            fontWeight="medium"*/}
+      {/*            pos="relative"*/}
+      {/*            left={isExpanded ? "-15px" : ""}*/}
+      {/*          >*/}
+      {/*            {t("sector")}: {getSectorName(step)} | {t("inventory-year")}:{" "}*/}
+      {/*            {inventoryProgress?.inventory.year}*/}
+      {/*          </Text>*/}
+      {/*          {isExpanded ? (*/}
+      {/*            ""*/}
+      {/*          ) : (*/}
+      {/*            <Text*/}
+      {/*              letterSpacing="wide"*/}
+      {/*              fontSize="body.lg"*/}
+      {/*              fontWeight="normal"*/}
+      {/*              color="interactive.control"*/}
+      {/*            >*/}
+      {/*              {t("commercial-and-institutional-building-description")}*/}
+      {/*            </Text>*/}
+      {/*          )}*/}
+      {/*        </Box>*/}
+      {/*      </Box>*/}
+      {/*    </Box>*/}
+      {/*  </Box>*/}
+      {/*</Box>*/}
       <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4 pb-[100px] mt-[240px]">
         <Box mt="48px">
           <Tabs>
@@ -320,12 +496,12 @@ function SubSectorPage({
               className="w-[1090px] z-10"
               bg="background.backgroundLight"
               h="80px"
-              pos={isExpanded ? "fixed" : "relative"}
-              top={isExpanded ? "170px" : "50px"}
-              animate={{
-                y: isExpanded ? 0 : -50,
-                delay: 200,
-              }}
+              // pos={isExpanded ? "fixed" : "relative"}
+              top={topPosition.get()}
+              // animate={{
+              //   y: isExpanded ? 0 : -50,
+              //   delay: 200,
+              // }}
               transition={{ duration: 0.2 }}
             >
               {scopes?.map((scope, index) => (

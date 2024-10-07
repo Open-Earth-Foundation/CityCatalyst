@@ -110,7 +110,7 @@ export default function ChatBot({
       threadIdRef.current = result;
 
       // Attempt to save threadId in the database asynchronously
-      fetch(`/api/v0/threads/`, {
+      fetch(`/api/v0/assistants/threads/export`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

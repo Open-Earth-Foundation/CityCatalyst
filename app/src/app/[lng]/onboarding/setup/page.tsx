@@ -4,7 +4,7 @@ import RecentSearches from "@/components/recent-searches";
 import WizardSteps from "@/components/wizard-steps";
 import { set } from "@/features/city/openclimateCitySlice";
 import { useTranslation } from "@/i18n/client";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { useAppDispatch } from "@/lib/hooks";
 import type { CityAttributes } from "@/models/City";
 import {
   api,
@@ -74,12 +74,18 @@ type Inputs = {
   regionPopulationYear: number;
   countryPopulation: number;
   countryPopulationYear: number;
+  totalCountryEmissions: number;
 };
 
 type PopulationEntry = {
   year: number;
   population: number;
   datasource_id: string;
+};
+
+type CountryEmissionsEntry = {
+  year: number;
+  total_emissions: number;
 };
 
 type OnboardingData = {
@@ -170,6 +176,7 @@ function SetupStep({
     setValue("regionYear", null);
     setValue("countryPopulation", null);
     setValue("countryYear", null);
+    setValue("totalCountryEmissions", null);
   }, [locode, setValue]);
 
   const { data: cityData } = useGetOCCityDataQuery(locode!, {
@@ -232,6 +239,20 @@ function SetupStep({
       }
       setValue("countryPopulation", population.population);
       setValue("countryPopulationYear", population.year);
+      const keys = Object.keys(countryData.emissions);
+      const sourceId = keys.find((id) => id.startsWith("UNFCCC"));
+
+      if (sourceId) {
+        const emissionsData: CountryEmissionsEntry[] =
+          countryData.emissions[sourceId].data;
+        const emissions = emissionsData.find(
+          (e) => e.year === year,
+        )?.total_emissions;
+        if (emissions == null) {
+          console.error("Failed to find country emissions for ", year);
+        }
+        setValue("totalCountryEmissions", emissions);
+      }
     }
   }, [countryData, year, setValue]);
 
@@ -767,6 +788,7 @@ export default function OnboardingSetup({
         cityId: city?.cityId!,
         year: data.year,
         inventoryName: `${data.name} - ${data.year}`,
+        totalCountryEmissions: getValues("totalCountryEmissions"),
       }).unwrap();
       await setUserInfo({
         cityId: city?.cityId!,

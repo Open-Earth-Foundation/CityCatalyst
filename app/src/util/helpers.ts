@@ -149,6 +149,37 @@ export function keyBy<T>(
   );
 }
 
+/** Format an amount of emissions in kg to a human-readable string
+ * @param totalEmissions total amount of emissions in kg
+ * @return formatted string with the amount of emissions in kg, t, kt, Mt or Gt (gas name needs to be appanded by the caller)
+ */
+export function formatEmissions(totalEmissions: number): {
+  value: string;
+  unit: string;
+} {
+  let unit = "";
+  let scale = 1;
+
+  if (totalEmissions >= 1e12) {
+    unit = "Gt";
+    scale = 1e12;
+  } else if (totalEmissions >= 1e9) {
+    unit = "Mt";
+    scale = 1e9;
+  } else if (totalEmissions >= 1e6) {
+    unit = "kt";
+    scale = 1e6;
+  } else if (totalEmissions >= 1e3) {
+    unit = "t";
+    scale = 1e3;
+  } else {
+    unit = "kg ";
+    scale = 1;
+  }
+  const value = (totalEmissions / scale).toFixed(1);
+  return { value, unit };
+}
+
 export interface PopulationEntry {
   year: number;
   population: number;

@@ -12,7 +12,7 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BuildingTypeSelectInput from "../../building-select-input";
 import { InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
 import { TFunction } from "i18next";
@@ -32,6 +32,7 @@ import { resolve } from "@/util/helpers";
 import { SuggestedActivity } from "@/util/form-schema";
 import { ActivityValue } from "@/models/ActivityValue";
 import FormattedNumberInput from "@/components/formatted-number-input";
+import PercentageBreakdownInput from "@/components/percentage-breakdown-input";
 
 export type EmissionFactorTypes = {
   id: string;
@@ -42,11 +43,14 @@ export type EmissionFactorTypes = {
 interface AddActivityModalBodyProps {
   t: TFunction;
   register: UseFormRegister<Inputs>;
+  watch: Function;
   control: Control<Inputs, any>;
   submit: () => void;
   fields: ExtraField[];
   units: string[];
   errors: Record<string, any>;
+  setError: Function;
+  clearErrors: Function;
   emissionsFactorTypes: EmissionFactorTypes;
   methodology: any;
   selectedActivity?: SuggestedActivity;
@@ -94,6 +98,8 @@ const ActivityModalBody = ({
   methodology,
   emissionsFactorTypes,
   errors,
+  setError,
+  clearErrors,
   fields,
   units,
   targetActivityValue,
@@ -113,7 +119,7 @@ const ActivityModalBody = ({
       !(targetActivityValue?.metadata?.emissionFactorType === "custom"),
     );
 
-  // Adjust function for countries with national emission factors i.e US
+  // Adjust function for countries with national emission factors i.e. US
   const onEmissionFactorTypeChange = (e: any) => {
     // somehow extract the gas and the emissions perActivity for each gas
     const emissionFactor = emissionsFactorTypes.find(
@@ -160,11 +166,11 @@ const ActivityModalBody = ({
           gap="24px"
         >
           {/* handle select, multi-select types, text  */}
-          {filteredFields.map((f) => {
+          {filteredFields.map((f, idx) => {
             return (
               <>
                 {f.options && (
-                  <FormControl className="w-full">
+                  <FormControl key={idx} className="w-full">
                     <BuildingTypeSelectInput
                       options={f.options}
                       required={f.required}
@@ -180,6 +186,20 @@ const ActivityModalBody = ({
                       setValue={setValue}
                     />
                   </FormControl>
+                )}
+                {f.type === "percentage-breakdown" && (
+                  <PercentageBreakdownInput
+                    id={f.id}
+                    label={t(f.id)}
+                    register={register}
+                    getValues={getValues}
+                    control={control}
+                    setValue={setValue}
+                    setError={setError}
+                    clearErrors={clearErrors}
+                    error={errors?.activity?.[f.id]}
+                    t={t}
+                  />
                 )}
                 {f.type === "text" && (
                   <FormControl className="w-full">

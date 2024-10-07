@@ -4,10 +4,7 @@ const fs = require("node:fs");
 const { parse } = require("csv-parse");
 const { bulkUpsert } = require("./util/util.cjs");
 
-const folders = [
-  "EFDB_2006_IPCC_guidelines",
-  // "CarbonFootPrint_2023",
-];
+const folders = ["EFDB_2006_IPCC_guidelines", "CarbonFootPrint_2023"];
 
 const toJson = ({
   transformation_description,

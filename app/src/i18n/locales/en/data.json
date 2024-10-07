@@ -802,5 +802,12 @@
   "mixed": "Mixed",
   "external-dataset-integrated": "External dataset integrated",
   "external-dataset-description": "External dataset integrated emissions data from external providers directly into your GHG emissions inventory",
-  "disconnected-data-source": "Disconnected data source"
+  "disconnected-data-source": "Disconnected data source",
+  "food": "Food",
+  "garden": "Garden",
+  "paper": "Paper",
+  "wood": "Wood",
+  "textiles": "Textiles",
+  "industrial": "Industrial",
+  "percentages-not-100": "Percentages must add up to 100%"
 }

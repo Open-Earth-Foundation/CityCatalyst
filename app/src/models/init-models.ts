@@ -1,135 +1,145 @@
 import type { Sequelize } from "sequelize";
-import { ActivityValue as _ActivityValue } from "./ActivityValue";
 import type {
   ActivityValueAttributes,
   ActivityValueCreationAttributes,
 } from "./ActivityValue";
-import { ActivityData as _ActivityData } from "./ActivityData";
+import { ActivityValue as _ActivityValue } from "./ActivityValue";
 import type {
   ActivityDataAttributes,
   ActivityDataCreationAttributes,
 } from "./ActivityData";
-import { Catalogue as _Catalogue } from "./Catalogue";
+import { ActivityData as _ActivityData } from "./ActivityData";
 import type {
   CatalogueAttributes,
   CatalogueCreationAttributes,
 } from "./Catalogue";
-import { City as _City } from "./City";
+import { Catalogue as _Catalogue } from "./Catalogue";
 import type { CityAttributes, CityCreationAttributes } from "./City";
-import { CityUser as _CityUser } from "./CityUser";
+import { City as _City } from "./City";
 import type {
   CityUserAttributes,
   CityUserCreationAttributes,
 } from "./CityUser";
-import { DataSourceI18n as _DataSource } from "./DataSourceI18n";
+import { CityUser as _CityUser } from "./CityUser";
 import type {
   DataSourceI18nAttributes as DataSourceAttributes,
   DataSourceI18nCreationAttributes as DataSourceCreationAttributes,
 } from "./DataSourceI18n";
-import { DataSourceActivityData as _DataSourceActivityData } from "./DataSourceActivityData";
+import { DataSourceI18n as _DataSource } from "./DataSourceI18n";
 import type {
   DataSourceActivityDataAttributes,
   DataSourceActivityDataCreationAttributes,
 } from "./DataSourceActivityData";
-import { DataSourceEmissionsFactor as _DataSourceEmissionsFactor } from "./DataSourceEmissionsFactor";
+import { DataSourceActivityData as _DataSourceActivityData } from "./DataSourceActivityData";
 import type {
   DataSourceEmissionsFactorAttributes,
   DataSourceEmissionsFactorCreationAttributes,
 } from "./DataSourceEmissionsFactor";
-import { DataSourceGHGs as _DataSourceGHGs } from "./DataSourceGHGs";
+import { DataSourceEmissionsFactor as _DataSourceEmissionsFactor } from "./DataSourceEmissionsFactor";
 import type {
   DataSourceGHGsAttributes,
   DataSourceGHGsCreationAttributes,
 } from "./DataSourceGHGs";
-import { DataSourceMethodology as _DataSourceMethodology } from "./DataSourceMethodology";
+import { DataSourceGHGs as _DataSourceGHGs } from "./DataSourceGHGs";
 import type {
   DataSourceMethodologyAttributes,
   DataSourceMethodologyCreationAttributes,
 } from "./DataSourceMethodology";
-import { DataSourceReportingLevel as _DataSourceReportingLevel } from "./DataSourceReportingLevel";
+import { DataSourceMethodology as _DataSourceMethodology } from "./DataSourceMethodology";
 import type {
   DataSourceReportingLevelAttributes,
   DataSourceReportingLevelCreationAttributes,
 } from "./DataSourceReportingLevel";
-import { DataSourceScope as _DataSourceScope } from "./DataSourceScope";
+import { DataSourceReportingLevel as _DataSourceReportingLevel } from "./DataSourceReportingLevel";
 import type {
   DataSourceScopeAttributes,
   DataSourceScopeCreationAttributes,
 } from "./DataSourceScope";
-import { EmissionsFactor as _EmissionsFactor } from "./EmissionsFactor";
+import { DataSourceScope as _DataSourceScope } from "./DataSourceScope";
 import type {
   EmissionsFactorAttributes,
   EmissionsFactorCreationAttributes,
 } from "./EmissionsFactor";
-import { GasValue as _GasValue } from "./GasValue";
+import { EmissionsFactor as _EmissionsFactor } from "./EmissionsFactor";
 import type {
   GasValueAttributes,
   GasValueCreationAttributes,
 } from "./GasValue";
-import { GasToCO2Eq as _GasToCO2Eq } from "./GasToCO2Eq";
+import { GasValue as _GasValue } from "./GasValue";
 import type {
   GasToCO2EqAttributes,
   GasToCO2EqCreationAttributes,
 } from "./GasToCO2Eq";
-import { GDP as _GDP } from "./GDP";
+import { GasToCO2Eq as _GasToCO2Eq } from "./GasToCO2Eq";
 import type { GDPAttributes, GDPCreationAttributes } from "./GDP";
-import { GHGs as _GHGs } from "./GHGs";
+import { GDP as _GDP } from "./GDP";
 import type { GHGsAttributes, GHGsCreationAttributes } from "./GHGs";
-import { Inventory as _Inventory } from "./Inventory";
+import { GHGs as _GHGs } from "./GHGs";
 import type {
   InventoryAttributes,
   InventoryCreationAttributes,
 } from "./Inventory";
-import { Methodology as _Methodology } from "./Methodology";
+import { Inventory as _Inventory } from "./Inventory";
 import type {
   MethodologyAttributes,
   MethodologyCreationAttributes,
 } from "./Methodology";
-import { Population as _Population } from "./Population";
+import { Methodology as _Methodology } from "./Methodology";
 import type {
   PopulationAttributes,
   PopulationCreationAttributes,
 } from "./Population";
-import { Publisher as _Publisher } from "./Publisher";
+import { Population as _Population } from "./Population";
 import type {
   PublisherAttributes,
   PublisherCreationAttributes,
 } from "./Publisher";
-import { ReportingLevel as _ReportingLevel } from "./ReportingLevel";
+import { Publisher as _Publisher } from "./Publisher";
 import type {
   ReportingLevelAttributes,
   ReportingLevelCreationAttributes,
 } from "./ReportingLevel";
-import { Scope as _Scope } from "./Scope";
+import { ReportingLevel as _ReportingLevel } from "./ReportingLevel";
 import type { ScopeAttributes, ScopeCreationAttributes } from "./Scope";
-import { Sector as _Sector } from "./Sector";
+import { Scope as _Scope } from "./Scope";
 import type { SectorAttributes, SectorCreationAttributes } from "./Sector";
-import { SubCategory as _SubCategory } from "./SubCategory";
+import { Sector as _Sector } from "./Sector";
 import type {
   SubCategoryAttributes,
   SubCategoryCreationAttributes,
 } from "./SubCategory";
-import { InventoryValue as _InventoryValue } from "./InventoryValue";
+import { SubCategory as _SubCategory } from "./SubCategory";
 import type {
   InventoryValueAttributes,
   InventoryValueCreationAttributes,
 } from "./InventoryValue";
-import { SubSector as _SubSector } from "./SubSector";
+import { InventoryValue as _InventoryValue } from "./InventoryValue";
 import type {
   SubSectorAttributes,
   SubSectorCreationAttributes,
 } from "./SubSector";
-import { SubSectorReportingLevel as _SubSectorReportingLevel } from "./SubSectorReportingLevel";
+import { SubSector as _SubSector } from "./SubSector";
 import type {
   SubSectorReportingLevelAttributes,
   SubSectorReportingLevelCreationAttributes,
 } from "./SubSectorReportingLevel";
-import { User as _User } from "./User";
+import { SubSectorReportingLevel as _SubSectorReportingLevel } from "./SubSectorReportingLevel";
 import type { UserAttributes, UserCreationAttributes } from "./User";
-import { Version as _Version } from "./Version";
+import { User as _User } from "./User";
 import type { VersionAttributes, VersionCreationAttributes } from "./Version";
+import { Version as _Version } from "./Version";
 import { UserFile as _UserFile } from "./UserFile";
 import { CityInvite as _CityInvite } from "./CityInvite";
+import type {
+  AssistantMessageAttributes,
+  AssistantMessageCreationAttributes,
+} from "./AssistantMessage";
+import { AssistantMessage as _AssistantMessage } from "./AssistantMessage";
+import type {
+  AssistantThreadAttributes,
+  AssistantThreadCreationAttributes,
+} from "./AssistantThread";
+import { AssistantThread as _AssistantThread } from "./AssistantThread";
 
 export {
   _ActivityData as ActivityData,
@@ -140,8 +150,8 @@ export {
   _DataSource as DataSource,
   _DataSourceActivityData as DataSourceActivityData,
   _DataSourceEmissionsFactor as DataSourceEmissionsFactor,
-  _DataSourceGHGs as DataSourceGHGs,
   _DataSourceMethodology as DataSourceMethodology,
+  _DataSourceGHGs as DataSourceGHGs,
   _DataSourceReportingLevel as DataSourceReportingLevel,
   _DataSourceScope as DataSourceScope,
   _EmissionsFactor as EmissionsFactor,
@@ -164,6 +174,8 @@ export {
   _Version as Version,
   _UserFile as UserFile,
   _CityInvite as CityInvite,
+  _AssistantMessage as AssistantMessage,
+  _AssistantThread as AssistantThread,
 };
 
 export type {
@@ -227,6 +239,10 @@ export type {
   UserCreationAttributes,
   VersionAttributes,
   VersionCreationAttributes,
+  AssistantMessageAttributes,
+  AssistantMessageCreationAttributes,
+  AssistantThreadAttributes,
+  AssistantThreadCreationAttributes,
 };
 
 export function initModels(sequelize: Sequelize) {
@@ -264,7 +280,8 @@ export function initModels(sequelize: Sequelize) {
   const Version = _Version.initModel(sequelize);
   const UserFile = _UserFile.initModel(sequelize);
   const CityInvite = _CityInvite.initModel(sequelize);
-
+  const AssistantMessage = _AssistantMessage.initModel(sequelize);
+  const AssistantThread = _AssistantThread.initModel(sequelize);
   ActivityData.belongsToMany(DataSource, {
     as: "datasourceIdDataSources",
     through: DataSourceActivityData,
@@ -670,6 +687,14 @@ export function initModels(sequelize: Sequelize) {
     as: "inventory",
     foreignKey: "inventoryId",
   });
+  AssistantMessage.belongsTo(AssistantThread, {
+    as: "assistantThread",
+    foreignKey: "threadId",
+  });
+  AssistantThread.hasMany(AssistantMessage, {
+    as: "assistantMessages",
+    foreignKey: "threadId",
+  });
 
   return {
     ActivityData: ActivityData,
@@ -704,5 +729,7 @@ export function initModels(sequelize: Sequelize) {
     Version: Version,
     UserFile: UserFile,
     CityInvite: CityInvite,
+    AssistantMessage: AssistantMessage,
+    AssistantThread: AssistantThread,
   };
 }

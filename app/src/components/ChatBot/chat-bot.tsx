@@ -29,6 +29,7 @@ import { api, useCreateThreadIdMutation } from "@/services/api";
 import { AssistantStream } from "openai/lib/AssistantStream";
 // @ts-expect-error - no types for this yet
 import { AssistantStreamEvent } from "openai/resources/beta/assistants/assistants";
+
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 interface Message {
@@ -97,24 +98,39 @@ export default function ChatBot({
     scrollToBottom();
   }, [messages]);
 
-  // Create function here to store the threadIdRef in an database
-  const storeThreadId = async (threadId: string) => {
-    // Store the threadId in the database
-    console.log("Storing threadId in database", threadId);
-
-    // Implement logic here to store the threadId in the database
-  };
-
   const initializeThread = async () => {
     try {
+      // Create the thread ID via an API call
       const result = await createThreadId({
         inventoryId: inventoryId,
         content: t("initial-message"),
       }).unwrap();
 
-      // Set the threadIdRef which gets set synchronously
+      // Set the threadIdRef synchronously
       threadIdRef.current = result;
+
+      // Attempt to save threadId in the database asynchronously
+      fetch(`/api/v0/assistants/threads/export`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          threadId: threadIdRef.current,
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to save thread to the database.");
+          }
+          return response.json();
+        })
+        .catch((error) => {
+          handleError(
+            error,
+            "Thread initialized, but saving thread ID to the database failed. Please check later.",
+          );
+        });
     } catch (error) {
+      // Handle errors related to thread initialization
       handleError(
         error,
         "Failed to initialize thread. Please try again to send a message.",

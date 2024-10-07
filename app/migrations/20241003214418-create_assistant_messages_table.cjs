@@ -1,6 +1,8 @@
 "use strict";
 
-const sql_up = `create type role_enum as enum('user', 'assistant');
+const sql_up = `
+BEGIN;
+create type role_enum as enum('user', 'assistant');
 
 create table if not exists public."AssistantMessage"
 (
@@ -17,7 +19,8 @@ create table if not exists public."AssistantMessage"
       ON DELETE CASCADE
 );
 
-CREATE INDEX idx_assistant_message_thread_id ON public."AssistantMessage" (thread_id);  
+CREATE INDEX idx_assistant_message_thread_id ON public."AssistantMessage" (thread_id);
+COMMIT;  
 `;
 const sql_down = `drop table if exists public."AssistantMessages";
 DROP TYPE IF EXISTS role_enum;`;

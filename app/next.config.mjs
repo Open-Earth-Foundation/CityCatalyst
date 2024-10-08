@@ -14,10 +14,10 @@ const nextConfig = {
   env: {
     APP_VERSION: packageInfo.version,
   },
-  async headers() {
+   async headers() {
     return [
       {
-        source: "/:path*", // Apply to all paths
+        source: "/", 
         headers: [
           {
             key: "Cache-Control",

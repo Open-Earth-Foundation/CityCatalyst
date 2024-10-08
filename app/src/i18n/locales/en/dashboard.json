@@ -55,5 +55,19 @@
   "overview": "overview",
   "see-your-citys-emissions": "See your city's emissions totals for the year",
   "total-emissions-CO2eq": "Total emissions (CO2eq)",
-  "%-of-emissions": "% of emissions"
+  "%-of-emissions": "% of emissions",
+  "of-total-emissions": "of total emissions",
+  "view-total-emissions-data-by-GPC-required-sectors": "View total emissions data by GPC required sectors",
+  "breakdown-of-sub-sector-emissions": "Breakdown of sub-sector emissions",
+  "N/A": "N/A",
+  "activity-type": "activity type",
+  "consumption": "consumption",
+  "emissions": "emissions",
+  "%-of-sub-sector-emissions": "% of sub-sector emissions",
+  "mass-of-waste": "mass of waste",
+  "by-activity": "BY ACTIVITY",
+  "by-scope": "BY SCOPE",
+  "%-of-sector-emissions": "% of sector emissions",
+  "emissions-scope": "Emissions - scope ",
+  "subsector": "Sub-sector"
 }

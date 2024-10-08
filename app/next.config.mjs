@@ -14,6 +14,19 @@ const nextConfig = {
   env: {
     APP_VERSION: packageInfo.version,
   },
+  async headers() {
+    return [
+      {
+        source: "/:path*", // Apply to all paths
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-store, no-cache, must-revalidate, proxy-revalidate",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

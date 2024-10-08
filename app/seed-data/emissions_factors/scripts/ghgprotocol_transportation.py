@@ -418,12 +418,12 @@ if __name__ == "__main__":
     # Methodology
     # =================================================================
     methodologies = [
-        "fuel_sales",
+        "fuel-sales",
         "geographic",
-        "induced_activity_1",
-        "induced_activity_2",
-        "resident_activity",
-        "movement_driver",
+        "induced-activity-1",
+        "induced-activity-2",
+        "resident-activity",
+        "movement-driver",
         "TBD",
     ]
 

@@ -95,7 +95,7 @@ mapping_ipcc_to_gpc = {
         "I.6.1",
     ],
     "1.A - Fuel Combustion Activities\n1.A.1.b - Petroleum Refining\n": ["I.7.1"],
-    "1.A.1 - Energy Industries\n": ["1.4.4"],
+    "1.A.1 - Energy Industries\n": ["I.4.4"],
     "1.A.1 - Energy Industries\n1.A.4.a - Commercial/Institutional\n1.A.4.b - Residential\n1.A.4.c - Agriculture/Forestry/Fishing/Fish Farms\n1.A.4.c.i - Stationary\n": [
         "I.4.4"
     ],
@@ -106,7 +106,7 @@ mapping_ipcc_to_gpc = {
     "1.A.1.a.i - Electricity Generation\n": ["I.4.4"],
     "1.A.1.a.ii - Combined Heat and Power Generation (CHP)\n": ["I.4.4"],
     "1.A.1.a.iii - Heat Plants\n": ["I.4.4"],
-    "1.A.1.c.ii - Other Energy Industries\n": ["1.4.4"],
+    "1.A.1.c.ii - Other Energy Industries\n": ["I.4.4"],
     "1.A.2 - Manufacturing Industries and Construction\n": ["I.3.1"],
     "1.A.2 - Manufacturing Industries and Construction\n1.A.4.a - Commercial/Institutional\n": [
         "I.3.1",

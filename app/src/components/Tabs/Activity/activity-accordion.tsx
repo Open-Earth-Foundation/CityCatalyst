@@ -127,11 +127,11 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                   <Td>
                     <Tag
                       size="lg"
-                      variant={activity?.dataSource.dataQuality}
+                      variant={activity?.metadata?.dataQuality}
                       colorScheme="blue"
                       borderRadius="full"
                     >
-                      <TagLabel>{t(activity?.dataSource.dataQuality)}</TagLabel>
+                      <TagLabel>{t(activity?.metadata?.dataQuality)}</TagLabel>
                     </Tag>
                   </Td>
                   <Td maxWidth="100px" isTruncated>

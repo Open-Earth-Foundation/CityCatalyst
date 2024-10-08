@@ -58,6 +58,7 @@ export function NavigationBar({
     history.replaceState(null, "", newPath);
   };
 
+  // Checks if language is set in cookie and updates URL if not
   window.addEventListener("popstate", () => {
     const cookieLanguage = Cookies.get("i18next");
     if (cookieLanguage) {
@@ -69,7 +70,6 @@ export function NavigationBar({
           `/${cookieLanguage}`,
         );
         history.replaceState(null, "", newPath);
-        // i18next.changeLanguage(cookieLanguage);
       }
     }
   });

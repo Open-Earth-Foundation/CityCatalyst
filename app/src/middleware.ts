@@ -22,8 +22,6 @@ export async function middleware(req: NextRequestWithAuth) {
 
   if (req.cookies.has(cookieName)) {
     lng = acceptLanguage.get(req.cookies.get(cookieName)?.value);
-    console.log("lng from cookie", lng);
-    console.log(req.nextUrl.pathname);
   }
   if (!lng) {
     lng = acceptLanguage.get(req.headers.get("Accept-Language"));

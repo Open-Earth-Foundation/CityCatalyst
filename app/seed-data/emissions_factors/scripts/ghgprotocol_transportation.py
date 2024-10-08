@@ -358,7 +358,7 @@ gpc_to_methodologies = {
     "II.2.1": ["geographic"],
     "II.3.1": ["geographic", "movement_driver"],
     "II.4.1": ["geographic"],
-    "II.5.1": ["TBD"],
+    #"II.5.1": ["TBD"],
 }
 
 # units_CC
@@ -418,13 +418,13 @@ if __name__ == "__main__":
     # Methodology
     # =================================================================
     methodologies = [
-        "fuel_sales",
+        "fuel-sales",
         "geographic",
-        "induced_activity_1",
-        "induced_activity_2",
-        "resident_activity",
-        "movement_driver",
-        "TBD",
+        "induced-activity-1",
+        "induced-activity-2",
+        "resident-activity",
+        "movement-driver",
+        #"TBD",
     ]
 
     methodology_data_list = []
@@ -1048,6 +1048,9 @@ if __name__ == "__main__":
 
     # Apply the replacement to the 'units' column
     final_df["units"] = final_df["units"].replace(unit_replacements)
+
+    # ensure there are no mull methdologies
+    final_df = final_df[final_df["methodology_name"].notnull() & (final_df["methodology_name"] != "")]
 
     # methodology_name
     final_df["methodology_name"] = final_df["methodology_name"].str.replace("_", "-")

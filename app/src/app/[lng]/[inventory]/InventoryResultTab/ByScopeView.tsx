@@ -47,10 +47,12 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
             {data.map((item, index) => (
               <Tr key={index}>
                 <Td>{tData(item.activityTitle)}</Td>
-                <Td>{convertKgToTonnes(item.totalEmissions)}</Td>
+                <Td>{convertKgToTonnes(BigInt(item.totalEmissions))}</Td>
                 <Td>{item.percentage}%</Td>
                 {scopes.map((s) => (
-                  <Td key={s}>{convertKgToTonnes(item.scopes[s] || 0)}</Td>
+                  <Td key={s}>
+                    {convertKgToTonnes(BigInt(item.scopes[s]) || 0)}
+                  </Td>
                 ))}
               </Tr>
             ))}

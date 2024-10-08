@@ -194,6 +194,23 @@ const getActivityDataValues = (
   };
 };
 
+function convertEmissionsToStrings(
+  input: ActivityDataByScope,
+): ActivityDataByScope {
+  return {
+    activityTitle: input.activityTitle,
+    scopes: Object.entries(input.scopes).reduce(
+      (acc, [key, value]) => {
+        acc[key] = value.toString();
+        return acc;
+      },
+      {} as { [key: string]: string },
+    ),
+    totalEmissions: input.totalEmissions.toString(),
+    percentage: input.percentage,
+  };
+}
+
 function calculateEmissionsByScope(
   activityValues: UngroupedActivityData[],
 ): ActivityDataByScope[] {
@@ -218,20 +235,22 @@ function calculateEmissionsByScope(
       activities[activityTitle].scopes[scopeName] = 0n;
     }
 
-    activities[activityTitle].scopes[scopeName] += emissions;
-    activities[activityTitle].totalEmissions += emissions;
+    activities[activityTitle].scopes[scopeName] =
+      BigInt(activities[activityTitle].scopes[scopeName]) + BigInt(emissions);
+    activities[activityTitle].totalEmissions =
+      BigInt(activities[activityTitle].totalEmissions) + BigInt(emissions);
     total += BigInt(emissions);
   });
 
   // Second pass: calculate percentages
   Object.values(activities).forEach((activity) => {
     activity.percentage = Number(
-      BigInt(activity.totalEmissions * 100n) / BigInt(total),
+      (BigInt(activity.totalEmissions) * 100n) / BigInt(total),
     );
   });
 
   // Convert the activities object to an array
-  return Object.values(activities);
+  return Object.values(activities).map(convertEmissionsToStrings);
 }
 
 const groupActivities = (

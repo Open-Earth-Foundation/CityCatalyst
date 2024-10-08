@@ -194,8 +194,8 @@ interface BreakdownByActivity {
 
 interface ActivityDataByScope {
   activityTitle: string;
-  scopes: { [key: string]: bigint };
-  totalEmissions: bigint;
+  scopes: { [key: string]: bigint | string };
+  totalEmissions: bigint | string;
   percentage: number;
 }
 

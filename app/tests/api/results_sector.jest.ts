@@ -110,28 +110,24 @@ describe.skip("Results API", () => {
             },
           },
         },
-        byScope: {
-          "commercial-and-institutional-buildings-and-facilities": {
-            "1": {
-              "units-gallons": {
-                activityUnits: "units-gallons",
-                activityValue: "200000200",
-                totalActivityEmissions: "700",
-                totalEmissionsPercentage: 100,
-              },
+        byScope: [
+          {
+            activityTitle: "fuel-type-natural-gas",
+            percentage: 70,
+            scopes: {
+              "1": "700",
             },
+            totalEmissions: "700",
           },
-          "residential-buildings": {
-            "1": {
-              "N/A": {
-                activityUnits: "N/A",
-                activityValue: "N/A",
-                totalActivityEmissions: "300",
-                totalEmissionsPercentage: 100,
-              },
+          {
+            activityTitle: "fuel-type-gasoline",
+            percentage: 30,
+            scopes: {
+              "1": "300",
             },
+            totalEmissions: "300",
           },
-        },
+        ],
       },
     });
   });

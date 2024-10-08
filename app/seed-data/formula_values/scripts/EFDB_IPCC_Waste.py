@@ -60,6 +60,38 @@ if __name__ == "__main__":
     write_dic_to_csv(output_dir, "DataSource", datasource_data)
 
     # =================================================================
+    # Methodology
+    # =================================================================
+    methodologies = [
+            "methane-commitment-solid-waste-inboundary-methodology",
+            "first-order-of-decay-solid-waste-inboundary-methodology",
+            "methane-commitment-solid-waste-outboundary-methodology",
+            "first-order-of-decay-solid-waste-outboundary-methodology",
+            "biological-treatment-inboundary-methodology",
+            "biological-treatment-outboundary-methodology",
+            "incineration-waste-inboundary-methodology",
+            "incineration-waste-outboundary-methodology",
+            "wastewater-inside-domestic-calculator-activity",
+            "wastewater-outside-domestic-calculator-activity",
+            "wastewater-inside-industrial-calculator-activity",
+            "wastewater-outside-industrial-calculator-activity"
+        ]
+
+    methodology_data_list = []
+
+    for methodology in methodologies:
+            methodology_data = {
+                "methodology_id": uuid_generate_v3(methodology),
+                "methodology": methodology,
+                "methodology_url": "",  # Add the URL if needed
+                "datasource_id": datasource_data.get("datasource_id")
+            }
+            methodology_data_list.append(methodology_data)
+
+    # Write data to CSV
+    write_dic_to_csv(output_dir, "Methodology", methodology_data_list)
+
+    # =================================================================
     # Formula Input Values
     # =================================================================
     conn = duckdb.connect(':memory:')
@@ -584,7 +616,9 @@ if __name__ == "__main__":
             ON
                 a.sector = b.gpc_sector
                 AND a.parameter = b.parameter_code
-                AND COALESCE(b.gpc_subsector, 'unk') = COALESCE(a.gpc_subsector, 'unk'))
+                AND COALESCE(b.gpc_subsector, 'unk') = COALESCE(a.gpc_subsector, 'unk')
+            ),
+            waste_formula_input_1 AS (
             SELECT 	DISTINCT gas,
                     parameter_code,
                     parameter_name,
@@ -600,7 +634,32 @@ if __name__ == "__main__":
                         when region = 'Brazil' then 'BR'
                     else actor_id end as actor_id,
                     datasource
-            FROM waste_formula_input;
+            FROM waste_formula_input),
+            waste_formula_input_2 AS (
+            SELECT 	gas,parameter_code,parameter_name,
+					CASE WHEN methodology = 'methane-commitment' THEN 'methane-commitment-solid-waste-inboundary-methodology, methane-commitment-solid-waste-outboundary-methodology'
+					WHEN methodology = 'first-order-decay' THEN 'first-order-of-decay-solid-waste-inboundary-methodology, first-order-of-decay-solid-waste-outboundary-methodology'
+					WHEN methodology =  'domestic-wastewater' THEN 'wastewater-inside-domestic-calculator-activity, wastewater-outside-domestic-calculator-activity'
+					WHEN methodology =  'industrial-wastewater'THEN 'wastewater-inside-industrial-calculator-activity, wastewater-outside-industrial-calculator-activity'
+					ELSE NULL END AS methodology,
+					gpc_refno,year,
+					formula_input_value,formula_input_units,
+					methodology as formula_name,metadata,region,actor_id,datasource
+            FROM waste_formula_input_1)
+            SELECT 	gas,
+            		parameter_code,
+            		parameter_name,
+            		TRIM(UNNEST(STRING_SPLIT(methodology,','))) AS methodology,
+            		gpc_refno,
+            		year,
+            		formula_input_value,
+            		formula_input_units,
+            		formula_name,
+            		metadata,
+            		region,
+            		actor_id,
+            		datasource
+            FROM waste_formula_input_2
             """
     conn.execute(query)
 
@@ -936,7 +995,7 @@ if __name__ == "__main__":
             WHERE (LENGTH(actor_id) = 2 OR actor_id = 'world')
             AND formula_input_value > 0;
 
-            CREATE TABLE waste_formula_input_incineration AS
+            CREATE OR REPLACE TABLE waste_formula_input_incineration AS
             WITH waste_formula_input AS (
             SELECT 	gas,
                     parameter_code,
@@ -956,7 +1015,9 @@ if __name__ == "__main__":
                     NULL AS region,
                     actor_id,
                     datasource
-            FROM waste_default_values_rnk)
+            FROM waste_default_values_rnk
+            ),
+            waste_formula_input_1 AS (
             SELECT 	gas,
                     parameter_code,
                     parameter_name,
@@ -970,14 +1031,30 @@ if __name__ == "__main__":
                     region,
                     actor_id,
                     datasource
-            FROM waste_formula_input;
+            FROM waste_formula_input)
+            SELECT 	gas,
+            		parameter_code,
+            		parameter_name,
+            		TRIM(UNNEST(STRING_SPLIT('incineration-waste-inboundary-methodology, incineration-waste-outboundary-methodology', ','))) AS methodology,
+            		gpc_refno,
+            		year,
+            		formula_input_value,
+            		formula_input_units,
+            		methodology as formula_name,
+            		metadata,region,
+            		actor_id,
+            		datasource
+            FROM waste_formula_input_1;
             """
     conn.execute(query2)
     df2 = conn.execute("SELECT * FROM waste_formula_input_incineration").fetchdf()
 
     df = pd.concat([df, df2]).drop_duplicates().reset_index(drop=True)
 
+    df['methodology_id'] = df['methodology'].apply(uuid_generate_v3)
+
     df["formulainput_id"] = df.apply(lambda row: uuid_generate_v4(), axis=1)
+
     df.to_csv(
         f"{output_dir}/FormulaInputs.csv", index=False
     )

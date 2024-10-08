@@ -15,7 +15,11 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import type {InventoryResponse, SectorEmission, TopEmission} from "@/util/types";
+import type {
+  InventoryResponse,
+  SectorEmission,
+  TopEmission,
+} from "@/util/types";
 import { capitalizeFirstLetter, convertKgToTonnes } from "@/util/helpers";
 import { api } from "@/services/api";
 import {
@@ -82,15 +86,14 @@ const TopEmissionsWidget = ({
     api.useGetResultsQuery(inventory!.inventoryId!);
 
   function getPercentagesForProgress(): SegmentedProgressValues[] {
-    const bySector: SectorEmission[] = results?.totalEmissions.bySector ??  [];
-    return bySector.map(({sectorName, co2eq, percentage}) => {
+    const bySector: SectorEmission[] = results?.totalEmissions.bySector ?? [];
+    return bySector.map(({ sectorName, co2eq, percentage }) => {
       return {
         name: sectorName,
         value: co2eq,
-        percentage: percentage
+        percentage: percentage,
       } as SegmentedProgressValues;
     });
-
   }
 
   return (
@@ -98,7 +101,7 @@ const TopEmissionsWidget = ({
       <Card marginLeft={"4"} backgroundColor={"white"} p={4}>
         {isTopEmissionsResponseLoading ? (
           <Center>
-            <CircularProgress isIndeterminate />
+            <CircularProgress />
           </Center>
         ) : (
           <>
@@ -109,7 +112,7 @@ const TopEmissionsWidget = ({
             </Box>
             <SegmentedProgress
               values={getPercentagesForProgress()}
-              total={results!.totalEmissions.total}
+              total={results?.totalEmissions.total}
               t={t}
               showLabels
               showHover

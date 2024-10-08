@@ -50,7 +50,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
                 <Td>{convertKgToTonnes(item.totalEmissions)}</Td>
                 <Td>{item.percentage}%</Td>
                 {scopes.map((s) => (
-                  <Td>{convertKgToTonnes(item.scopes[s] || 0)}</Td>
+                  <Td key={s}>{convertKgToTonnes(item.scopes[s] || 0)}</Td>
                 ))}
               </Tr>
             ))}

@@ -112,7 +112,7 @@ function SectorTabs({
       </TabList>
 
       <TabPanels>
-        {SECTORS.map(({ icon, sectorName }, index) => (
+        {SECTORS.map(({ icon, sectorName }) => (
           <TabPanel key={sectorName}>
             {isTopEmissionsResponseLoading ? (
               <CircularProgress />

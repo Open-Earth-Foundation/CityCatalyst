@@ -50,7 +50,8 @@ export default function ChatPopover({
         </PopoverTrigger>
         <PopoverContent
           p={0}
-          w={533}
+          w="57vw"
+          h="72vh"
           bg="background.neutral"
           className="drop-shadow-md"
         >

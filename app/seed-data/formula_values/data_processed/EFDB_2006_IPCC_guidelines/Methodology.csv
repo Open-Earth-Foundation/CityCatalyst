@@ -1,0 +1,13 @@
+methodology_id,methodology,methodology_url,datasource_id
+10ea106b-deb3-32b6-846e-391de358537f,methane-commitment-solid-waste-inboundary-methodology,,6a508faa-80a8-3246-9941-90d8cc8dec85
+2e1d51d1-7d64-3f8e-9f5e-3e439a52daaf,first-order-of-decay-solid-waste-inboundary-methodology,,6a508faa-80a8-3246-9941-90d8cc8dec85
+a1ce69bc-b300-3a67-880f-488bfcb70af3,methane-commitment-solid-waste-outboundary-methodology,,6a508faa-80a8-3246-9941-90d8cc8dec85
+30e63a9d-8f04-31f2-ba39-f2aa487b2f4a,first-order-of-decay-solid-waste-outboundary-methodology,,6a508faa-80a8-3246-9941-90d8cc8dec85
+c4aff90f-4a55-338f-91ce-40d3ef34f426,biological-treatment-inboundary-methodology,,6a508faa-80a8-3246-9941-90d8cc8dec85
+7c2c69c2-6cf6-3a0a-9352-2953e52772b6,biological-treatment-outboundary-methodology,,6a508faa-80a8-3246-9941-90d8cc8dec85
+e4508774-ab32-3827-aa3a-8cdf9d943631,incineration-waste-inboundary-methodology,,6a508faa-80a8-3246-9941-90d8cc8dec85
+1476388c-6b05-3514-ac87-78236ecc6416,incineration-waste-outboundary-methodology,,6a508faa-80a8-3246-9941-90d8cc8dec85
+4025beed-cbe5-301d-8cd6-f706531cba42,wastewater-inside-domestic-calculator-activity,,6a508faa-80a8-3246-9941-90d8cc8dec85
+b0da6b28-c5e0-3f8a-859f-96bac5ff7f6c,wastewater-outside-domestic-calculator-activity,,6a508faa-80a8-3246-9941-90d8cc8dec85
+a6c1fa15-4405-3900-b649-966c8c7aeae6,wastewater-inside-industrial-calculator-activity,,6a508faa-80a8-3246-9941-90d8cc8dec85
+946471de-43e5-39f4-ae8a-befa344bfaee,wastewater-outside-industrial-calculator-activity,,6a508faa-80a8-3246-9941-90d8cc8dec85

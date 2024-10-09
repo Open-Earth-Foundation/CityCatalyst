@@ -277,6 +277,47 @@ transport_type_from_source_to_cc = {
     "Average Ferry": {"II.3.1": ["Marine vessels", "Ferries"]},
 }
 
+fuel_to_fuel_ids_mapping = {
+    'Anthracite': 'fuel-type-anthracite', 
+    'Aviation Gasoline': 'fuel-type-aviation-gasoline', 
+    'Jet Fuel': 'fuel-type-jet-gasoline', 
+    'Jet Kerosene': 'fuel-type-jet-kerosene', 
+    'Compressed Natural Gas (CNG)': 'fuel-type-cng', 
+    'Kerosene': 'fuel-type-kerosene', 
+    'E85 Ethanol': 'fuel-type-e85-ethanol', 
+    'B20 Biodiesel': 'fuel-type-b20-biodiesel', 
+    'Natural Gas': 'fuel-type-natural-gas', 
+    'Ethanol': 'fuel-type-ethanol', 
+    'Biodiesel': 'fuel-type-biodiesel', 
+    'Bioethanol': 'fuel-type-bioethanol', 
+    'Diesel': 'fuel-type-diesel', 
+    'Residual Fuel Oil': 'fuel-type-residual-fuel-oil', 
+    'Liquefied Petroleum Gas (LPG)': 'fuel-type-lpg',
+    'Petrol': 'fuel-type-petrol', 
+    'CNG': 'fuel-type-cng', 
+    'LPG': 'fuel-type-lpg'
+}
+
+transport_type_to_transport_ids_mapping = {
+    'Agricultural machinery': 'vehicle-type-agricultural-machinery', 
+    'Forestry equipment': 'vehicle-type-forestry-equipment',
+    'Mining equipments': 'vehicle-type-mining-equipment', 
+    'Construction maquinery': 'vehicle-type-construction-machinery',
+    'Household equipment': 'vehicle-type-household-equipment', 
+    'Boast': 'vehicle-type-boats', 
+    'Marine Vessels': 'vehicle-type-marine-vessels',
+    'Airport equipment': 'vehicle-type-airport-equipment', 
+    'Railroad equipment': 'vehicle-type-railroad-equipment',
+    'Cargo aircraft': 'vehicle-type-cargo-aircraft', 
+    'Passenger vehicles': 'vehicle-type-passenger-vehicles',
+    'Commercial vehicles': 'vehicle-type-commercial-vehicles', 
+    'Service vehicles': 'vehicle-type-service-vehicles', 
+    'Emergency vehicles': 'vehicle-type-emergency-vehicles',
+    'Marine vessels': 'vehicle-type-marine-vessels',
+    'Ferries': 'vehicle-type-ferries',
+    'Public transport vehicles': 'vehicle-type-public-transport-vehicles'
+}
+
 # mapping actor it to region name
 actor_id_to_region = {"world": "world", "US": "United States", "UK": "United Kingdom"}
 
@@ -641,9 +682,13 @@ if __name__ == "__main__":
 
     df1 = df1[df1["emissions_per_activity"] != 0]
 
+    # add 'transport_id' and 'fuel_id' 
+    df1['fuel_id'] = df1['fuel_type'].map(fuel_to_fuel_ids_mapping)
+    df1['transport_id'] = df1['transport_type'].map(transport_type_to_transport_ids_mapping)
+
     # create a 'metadata' column
     df1["metadata"] = df1.apply(
-        lambda row: f"fuel_type:{row['fuel_type']}, transport_type:{'all'}, subcategory_type:{row['subcategory_type']}, 'enginee_type':{row['enginee_type']}, 'calculation_type':{row['calculation_type']}",
+        lambda row: f"fuel_type:{row['fuel_id']}, transport_type:{row['transport_id']}, subcategory_type:{row['subcategory_type']}, 'enginee_type':{row['enginee_type']}, 'calculation_type':{row['calculation_type']}",
         axis=1,
     )
 
@@ -657,6 +702,8 @@ if __name__ == "__main__":
             "fuel_type",
             "NCV",
             "density",
+            'fuel_id', 
+            'transport_id'
         ],
         inplace=True,
     )
@@ -835,9 +882,13 @@ if __name__ == "__main__":
     # year column
     df2["year"] = ""
 
+    # add 'transport_id' and 'fuel_id'
+    df2['fuel_id'] = df2['fuel_type'].map(fuel_to_fuel_ids_mapping)
+    df2['transport_id'] = df2['transport_type'].map(transport_type_to_transport_ids_mapping)
+
     # create a 'metadata' column
     df2["metadata"] = df2.apply(
-        lambda row: f"fuel_type:{row['fuel_type']}, transport_type:{row['transport_type']}, subcategory_type:{row['subcategory_type']}, 'weight':{row['weight']}, 'calculation_type':{row['calculation_type']}",
+        lambda row: f"fuel_type:{row['fuel_id']}, transport_type:{row['transport_id']}, subcategory_type:{row['subcategory_type']}, 'weight':{row['weight']}, 'calculation_type':{row['calculation_type']}",
         axis=1,
     )
 
@@ -850,6 +901,8 @@ if __name__ == "__main__":
             "calculation_type",
             "fuel_type",
             "subcategory_type2",
+            "fuel_id",
+            "transport_id"
         ],
         inplace=True,
     )
@@ -1024,9 +1077,12 @@ if __name__ == "__main__":
         ["transport_type", "subcategory_type", "weight", "fuel_type"]
     ].fillna("all")
 
+    # add 'transport_id' and 'fuel_id'
+    df3['transport_id'] = df3['transport_type'].map(transport_type_to_transport_ids_mapping)
+
     # create a 'metadata' column
     df3["metadata"] = df3.apply(
-        lambda row: f"fuel_type:{row['fuel_type']}, transport_type:{row['transport_type']}, subcategory_type:{row['subcategory_type']}, 'weight':{row['weight']}, 'calculation_type':{row['calculation_type']}",
+        lambda row: f"fuel_type:{row['fuel_type']}, transport_type:{row['transport_id']}, subcategory_type:{row['subcategory_type']}, 'weight':{row['weight']}, 'calculation_type':{row['calculation_type']}",
         axis=1,
     )
 
@@ -1039,6 +1095,7 @@ if __name__ == "__main__":
             "weight",
             "calculation_type",
             "fuel_type",
+            "transport_id"
         ],
         inplace=True,
     )

@@ -23,7 +23,9 @@ export const SectorHeader = ({
         {capitalizeFirstLetter(t(sectorName))}
       </Text>
       <Text fontWeight={"600"} fontSize={"28px"} color={"content.secondary"}>
-        {dataForSector?.co2eq ? convertKgToTonnes(dataForSector!.co2eq) : null}
+        {dataForSector?.co2eq
+          ? convertKgToTonnes(dataForSector!.co2eq)
+          : t("N/A")}
       </Text>
       <Text
         fontWeight={"400"}
@@ -31,9 +33,9 @@ export const SectorHeader = ({
         color={"content.secondary"}
         opacity={"60%"}
       >
-        {dataForSector?.percentage
-          ? dataForSector!.percentage + "% " + t("of-total-emissions")
-          : null}
+        {(dataForSector?.percentage || t("N/A") + " ") +
+          "% " +
+          t("of-total-emissions")}
       </Text>
     </VStack>
   </HStack>

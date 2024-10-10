@@ -1,5 +1,36 @@
 [
   {
+    "sectorId": "86a70970-6559-4d31-bafc-fcd1b51bc8e3",
+    "sectorName": "XX_DATASOURCE_TEST_1",
+    "referenceNumber": "X",
+    "created": "2024-10-10T21:40:11.800Z",
+    "last_updated": "2024-10-10T21:40:11.800Z",
+    "subSectors": [
+      {
+        "subsectorId": "60c0b6c9-7208-439b-a27a-44599297cc1c",
+        "subsectorName": "XX_DATASOURCE_TEST_1",
+        "sectorId": "86a70970-6559-4d31-bafc-fcd1b51bc8e3",
+        "referenceNumber": "X.9",
+        "scopeId": null,
+        "created": "2024-10-10T21:40:11.803Z",
+        "last_updated": "2024-10-10T21:40:11.803Z",
+        "subCategories": [
+          {
+            "subcategoryId": "ed24c944-118c-427b-9dd2-c6d0bab0959b",
+            "subcategoryName": "XX_DATASOURCE_TEST_1",
+            "activityName": null,
+            "referenceNumber": "X.9.9",
+            "subsectorId": "60c0b6c9-7208-439b-a27a-44599297cc1c",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:11.807Z",
+            "last_updated": "2024-10-10T21:40:11.807Z"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "sectorId": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
     "sectorName": "Stationary Energy",
     "referenceNumber": "I",
@@ -814,6 +845,429 @@
         "created": null,
         "last_updated": null,
         "subCategories": []
+      }
+    ]
+  },
+  {
+    "sectorId": "47243e5f-15c3-4ff3-8b8f-388c2da11ca6",
+    "sectorName": "XX_INVENTORY_PROGRESS_TEST1",
+    "referenceNumber": null,
+    "created": "2024-10-10T21:40:13.305Z",
+    "last_updated": "2024-10-10T21:40:13.305Z",
+    "subSectors": [
+      {
+        "subsectorId": "2a0c2005-f99e-4773-b26c-2f326525b6f6",
+        "subsectorName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST1",
+        "sectorId": "47243e5f-15c3-4ff3-8b8f-388c2da11ca6",
+        "referenceNumber": null,
+        "scopeId": null,
+        "created": "2024-10-10T21:40:13.305Z",
+        "last_updated": "2024-10-10T21:40:13.305Z",
+        "subCategories": [
+          {
+            "subcategoryId": "de03ffb9-6e5e-41ba-88d8-f3fd177d242b",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST1_PROGRESS_TEST1",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "2a0c2005-f99e-4773-b26c-2f326525b6f6",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          },
+          {
+            "subcategoryId": "75a796d3-1347-4125-bb4f-91315e8a0694",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST1_PROGRESS_TEST2",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "2a0c2005-f99e-4773-b26c-2f326525b6f6",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          },
+          {
+            "subcategoryId": "0388cd47-33fc-4474-85bf-fded6f9b1408",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST1_PROGRESS_TEST3",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "2a0c2005-f99e-4773-b26c-2f326525b6f6",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          }
+        ]
+      },
+      {
+        "subsectorId": "2d4f4d8b-631f-4b57-8a27-d0e045706dcf",
+        "subsectorName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST2",
+        "sectorId": "47243e5f-15c3-4ff3-8b8f-388c2da11ca6",
+        "referenceNumber": null,
+        "scopeId": null,
+        "created": "2024-10-10T21:40:13.305Z",
+        "last_updated": "2024-10-10T21:40:13.305Z",
+        "subCategories": [
+          {
+            "subcategoryId": "f96ffb73-acc2-42c0-9b24-89f4090b4544",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST2_PROGRESS_TEST1",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "2d4f4d8b-631f-4b57-8a27-d0e045706dcf",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          },
+          {
+            "subcategoryId": "832191ff-34c9-41a8-a2d1-d7e5327a6755",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST2_PROGRESS_TEST2",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "2d4f4d8b-631f-4b57-8a27-d0e045706dcf",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          },
+          {
+            "subcategoryId": "346fbaec-8d8a-4d89-90cc-2445e56356d4",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST2_PROGRESS_TEST3",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "2d4f4d8b-631f-4b57-8a27-d0e045706dcf",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          }
+        ]
+      },
+      {
+        "subsectorId": "18d600c7-7402-4f4c-9be1-cf89cfd550af",
+        "subsectorName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST3",
+        "sectorId": "47243e5f-15c3-4ff3-8b8f-388c2da11ca6",
+        "referenceNumber": null,
+        "scopeId": null,
+        "created": "2024-10-10T21:40:13.305Z",
+        "last_updated": "2024-10-10T21:40:13.305Z",
+        "subCategories": [
+          {
+            "subcategoryId": "5cd03560-fec2-4665-a04f-be725c4a74c4",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST3_PROGRESS_TEST1",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "18d600c7-7402-4f4c-9be1-cf89cfd550af",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          },
+          {
+            "subcategoryId": "2e5ef0f5-9ad5-473c-bb2c-b80a9cb09f1a",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST3_PROGRESS_TEST2",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "18d600c7-7402-4f4c-9be1-cf89cfd550af",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          },
+          {
+            "subcategoryId": "fdaee7b8-8807-46dd-8b29-0deb45735969",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST3_PROGRESS_TEST3",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "18d600c7-7402-4f4c-9be1-cf89cfd550af",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "sectorId": "00f4189c-dfe0-4b5b-9ddb-820b268588d7",
+    "sectorName": "XX_INVENTORY_PROGRESS_TEST2",
+    "referenceNumber": null,
+    "created": "2024-10-10T21:40:13.305Z",
+    "last_updated": "2024-10-10T21:40:13.305Z",
+    "subSectors": [
+      {
+        "subsectorId": "22baab3a-e970-426e-90ea-e2d45a5aed91",
+        "subsectorName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST1",
+        "sectorId": "00f4189c-dfe0-4b5b-9ddb-820b268588d7",
+        "referenceNumber": null,
+        "scopeId": null,
+        "created": "2024-10-10T21:40:13.305Z",
+        "last_updated": "2024-10-10T21:40:13.305Z",
+        "subCategories": [
+          {
+            "subcategoryId": "cd2ffdd5-0ef9-49b0-adb6-e8cb5f824861",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST1_PROGRESS_TEST1",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "22baab3a-e970-426e-90ea-e2d45a5aed91",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          },
+          {
+            "subcategoryId": "3df3954c-316d-4add-8968-c55b285b50c7",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST1_PROGRESS_TEST2",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "22baab3a-e970-426e-90ea-e2d45a5aed91",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          },
+          {
+            "subcategoryId": "c61ad9dd-8023-4e0c-9a4f-b16fc633da30",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST1_PROGRESS_TEST3",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "22baab3a-e970-426e-90ea-e2d45a5aed91",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          }
+        ]
+      },
+      {
+        "subsectorId": "c9769b66-b5d3-4c07-b72d-e44884f0223a",
+        "subsectorName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST2",
+        "sectorId": "00f4189c-dfe0-4b5b-9ddb-820b268588d7",
+        "referenceNumber": null,
+        "scopeId": null,
+        "created": "2024-10-10T21:40:13.305Z",
+        "last_updated": "2024-10-10T21:40:13.305Z",
+        "subCategories": [
+          {
+            "subcategoryId": "c6d844d5-1f4d-4229-970f-06bc208f1c11",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST2_PROGRESS_TEST1",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "c9769b66-b5d3-4c07-b72d-e44884f0223a",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          },
+          {
+            "subcategoryId": "1e1b5268-c85c-45af-8d3f-159ae6ae1019",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST2_PROGRESS_TEST2",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "c9769b66-b5d3-4c07-b72d-e44884f0223a",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          },
+          {
+            "subcategoryId": "1e704b39-dcbe-49f8-8b6f-4fafa5d9e4eb",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST2_PROGRESS_TEST3",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "c9769b66-b5d3-4c07-b72d-e44884f0223a",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          }
+        ]
+      },
+      {
+        "subsectorId": "9289e347-ae37-4bcd-8666-4559efb01347",
+        "subsectorName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST3",
+        "sectorId": "00f4189c-dfe0-4b5b-9ddb-820b268588d7",
+        "referenceNumber": null,
+        "scopeId": null,
+        "created": "2024-10-10T21:40:13.305Z",
+        "last_updated": "2024-10-10T21:40:13.305Z",
+        "subCategories": [
+          {
+            "subcategoryId": "30b4c0b3-826e-4cfc-ad7f-8cc30b7ea527",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST3_PROGRESS_TEST1",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "9289e347-ae37-4bcd-8666-4559efb01347",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          },
+          {
+            "subcategoryId": "fbe3bdc0-010b-4421-a353-a46f5173548e",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST3_PROGRESS_TEST2",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "9289e347-ae37-4bcd-8666-4559efb01347",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          },
+          {
+            "subcategoryId": "7568b861-400c-4212-926c-a2f0501797c1",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST3_PROGRESS_TEST3",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "9289e347-ae37-4bcd-8666-4559efb01347",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "sectorId": "e800e0e1-951b-4310-abf6-bc400cfd3841",
+    "sectorName": "XX_INVENTORY_PROGRESS_TEST3",
+    "referenceNumber": null,
+    "created": "2024-10-10T21:40:13.305Z",
+    "last_updated": "2024-10-10T21:40:13.305Z",
+    "subSectors": [
+      {
+        "subsectorId": "7cf66270-0a07-4aec-ab58-f18d952ff527",
+        "subsectorName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST1",
+        "sectorId": "e800e0e1-951b-4310-abf6-bc400cfd3841",
+        "referenceNumber": null,
+        "scopeId": null,
+        "created": "2024-10-10T21:40:13.305Z",
+        "last_updated": "2024-10-10T21:40:13.305Z",
+        "subCategories": [
+          {
+            "subcategoryId": "ecc73418-aec2-48f0-bf1c-bb190d5b1ea3",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST1_PROGRESS_TEST1",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "7cf66270-0a07-4aec-ab58-f18d952ff527",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          },
+          {
+            "subcategoryId": "42e6c302-a59b-408f-b07a-15a6da7dfbf8",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST1_PROGRESS_TEST2",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "7cf66270-0a07-4aec-ab58-f18d952ff527",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          },
+          {
+            "subcategoryId": "8fc19aee-f948-4670-95a4-4c66312fd074",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST1_PROGRESS_TEST3",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "7cf66270-0a07-4aec-ab58-f18d952ff527",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          }
+        ]
+      },
+      {
+        "subsectorId": "ba30d625-0585-47dc-8d01-ec9f91eab138",
+        "subsectorName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST2",
+        "sectorId": "e800e0e1-951b-4310-abf6-bc400cfd3841",
+        "referenceNumber": null,
+        "scopeId": null,
+        "created": "2024-10-10T21:40:13.305Z",
+        "last_updated": "2024-10-10T21:40:13.305Z",
+        "subCategories": [
+          {
+            "subcategoryId": "b5a15cd5-dbe5-422e-b168-faa3142f4c44",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST2_PROGRESS_TEST1",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "ba30d625-0585-47dc-8d01-ec9f91eab138",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          },
+          {
+            "subcategoryId": "59238fba-9a3e-439c-ba32-e174d002bb59",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST2_PROGRESS_TEST2",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "ba30d625-0585-47dc-8d01-ec9f91eab138",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          },
+          {
+            "subcategoryId": "fb77061d-6094-4c2d-b0bd-a09e0f452318",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST2_PROGRESS_TEST3",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "ba30d625-0585-47dc-8d01-ec9f91eab138",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          }
+        ]
+      },
+      {
+        "subsectorId": "cc605439-431e-4597-9233-6d3868d76a3e",
+        "subsectorName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST3",
+        "sectorId": "e800e0e1-951b-4310-abf6-bc400cfd3841",
+        "referenceNumber": null,
+        "scopeId": null,
+        "created": "2024-10-10T21:40:13.305Z",
+        "last_updated": "2024-10-10T21:40:13.305Z",
+        "subCategories": [
+          {
+            "subcategoryId": "dbb85828-4636-4b6b-ac3b-3f3ec5158356",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST3_PROGRESS_TEST1",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "cc605439-431e-4597-9233-6d3868d76a3e",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          },
+          {
+            "subcategoryId": "0395f3e3-6a4f-4f90-abf2-d16c2e3e3691",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST3_PROGRESS_TEST2",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "cc605439-431e-4597-9233-6d3868d76a3e",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          },
+          {
+            "subcategoryId": "b624c18d-9c07-48db-a1d0-b268d1c0d70f",
+            "subcategoryName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST3_PROGRESS_TEST3",
+            "activityName": null,
+            "referenceNumber": null,
+            "subsectorId": "cc605439-431e-4597-9233-6d3868d76a3e",
+            "scopeId": null,
+            "reportinglevelId": null,
+            "created": "2024-10-10T21:40:13.305Z",
+            "last_updated": "2024-10-10T21:40:13.305Z"
+          }
+        ]
       }
     ]
   }

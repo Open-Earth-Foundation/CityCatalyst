@@ -1,7 +1,7 @@
 import {
   DELETE as deleteInventory,
   GET as findInventory,
-  PATCH as updateInventory
+  PATCH as updateInventory,
 } from "@/app/api/v0/inventory/[inventory]/route";
 import { GET as calculateProgress } from "@/app/api/v0/inventory/[inventory]/progress/route";
 import { POST as createInventory } from "@/app/api/v0/city/[city]/inventory/route";
@@ -17,14 +17,22 @@ import {
   expectToBeLooselyEqual,
   mockRequest,
   setupTests,
-  testUserID
+  testUserID,
 } from "../helpers";
 import { SubSector, SubSectorAttributes } from "@/models/SubSector";
 import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
 import { Sector } from "@/models/Sector";
 import { SubCategory } from "@/models/SubCategory";
-import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from "@jest/globals";
 import { activityValues } from "./results.data";
 
 jest.useFakeTimers();
@@ -145,9 +153,14 @@ describe("Inventory API", () => {
       ...inventoryValue,
     });
 
-    await db.models.ActivityValue.bulkCreate(activityValues.map(i => ({
-        ...i, inventoryValueId: inventoryValueDb.id, inventoryId: inventory.inventoryId, id: randomUUID(),
-      })));
+    await db.models.ActivityValue.bulkCreate(
+      activityValues.map((i) => ({
+        ...i,
+        inventoryValueId: inventoryValueDb.id,
+        inventoryId: inventory.inventoryId,
+        id: randomUUID(),
+      })),
+    );
     await db.models.Population.upsert({
       cityId: city.cityId!,
       year: inventoryData.year,
@@ -379,6 +392,7 @@ describe("Inventory API", () => {
 
     expect(res.status).toEqual(200);
     const { totalProgress, sectorProgress } = (await res.json()).data;
+    console.log(totalProgress, sectorProgress, "values");
     const cleanedSectorProgress = sectorProgress
       .filter(({ sector: checkSector }: { sector: { sectorName: string } }) => {
         return checkSector.sectorName.startsWith("XX_INVENTORY_PROGRESS_TEST");

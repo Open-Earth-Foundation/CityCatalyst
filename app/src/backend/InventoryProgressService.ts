@@ -4,7 +4,8 @@ import INVENTORY_STRUCTURE from "../data/inventory-structure.json";
 import fs from "fs";
 import { logger } from "@/services/logger";
 import { Inventory } from "@/models/Inventory";
-import * as path from "path"; // Construct the absolute path to your JSON file
+import * as path from "path";
+import * as process from "node:process";
 
 const romanTable: Record<string, number> = {
   I: 1,
@@ -39,30 +40,44 @@ export default class InventoryProgressService {
       })
       .map((sector) => ({
         id: sector.sectorId,
+        sectorId: sector.sectorId,
         referenceNumber: sector.referenceNumber,
         sectorName: sector.sectorName,
-        ...sector,
         subSectors: sector.subSectors.map((subsector) => ({
-          ...subsector,
+          sectorId: subsector.sectorId, // optional string defaults to empty string
+          referenceNumber: subsector.referenceNumber, // optional string defaults to empty string
+          scopeId: subsector.scopeId,
           subsectorId: subsector.subsectorId,
           subsectorName: subsector.subsectorName,
-          subCategories: subsector.subCategories.filter((subCategory) => {
-            const lastDigit = parseInt(
-              subCategory.referenceNumber?.split(".")[2] as string,
-            );
-            if (
-              sector.referenceNumber === "I" ||
-              sector.referenceNumber === "II"
-            ) {
-              return lastDigit < 3;
-              // return subcategories with reference numbers that end in 1 and 2
-            } else if (sector.referenceNumber === "III") {
-              return [1, 3].includes(lastDigit);
-              // return subcategories ending with 1 and 3
-            }
-          }),
+          subCategories: subsector.subCategories
+            .map((subcategory) => ({
+              subcategoryId: subcategory.subcategoryId,
+              subcategoryName: subcategory.subcategoryName,
+              activityName: subcategory.activityName,
+              referenceNumber: subcategory.referenceNumber,
+              subsectorId: subcategory.subsectorId,
+              scopeId: subcategory.scopeId,
+              reportinglevelId: subcategory.reportinglevelId,
+              created: new Date(0),
+              lastUpdated: new Date(0),
+            }))
+            .filter((subCategory) => {
+              const lastDigit = parseInt(
+                subCategory.referenceNumber?.split(".")[2] as string,
+              );
+              if (
+                sector.referenceNumber === "I" ||
+                sector.referenceNumber === "II"
+              ) {
+                return lastDigit < 3;
+                // return subcategories with reference numbers that end in 1 and 2
+              } else if (sector.referenceNumber === "III") {
+                return [1, 3].includes(lastDigit);
+                // return subcategories ending with 1 and 3
+              }
+            }),
         })),
-      })) as unknown as Sector[];
+      }));
 
     const sectorTotals: Record<string, number> = filteredOutSectors.reduce(
       (acc, sector) => {
@@ -75,7 +90,7 @@ export default class InventoryProgressService {
       {} as Record<string, number>,
     );
 
-    const sectorProgress = filteredOutSectors.map((sector: Sector) => {
+    const sectorProgress = filteredOutSectors.map((sector) => {
       const inventoryValues = inventory.inventoryValues.filter(
         (inventoryValue) => sector.sectorId === inventoryValue.sectorId,
       );
@@ -121,7 +136,15 @@ export default class InventoryProgressService {
           completed,
           completedCount,
           totalCount,
-          ...subSector,
+          ...{
+            sectorId: subSector.sectorId, // optional string defaults to empty string
+            referenceNumber: subSector.referenceNumber, // optional string defaults to empty string
+            scopeId: subSector.scopeId,
+            subsectorId: subSector.subsectorId,
+            subsectorName: subSector.subsectorName,
+            subCategories: subSector.subCategories,
+          },
+          // ...subSector,
         };
       });
 
@@ -166,10 +189,12 @@ export default class InventoryProgressService {
   }
 
   private static async getSortedInventoryStructure() {
-    if (Inventory_Sector_Hierarchy.length > 0) {
+    if (
+      Inventory_Sector_Hierarchy.length > 0 &&
+      process.env.NODE_ENV !== "test"
+    ) {
       return Inventory_Sector_Hierarchy;
     }
-
     let sectors: Sector[] = await db.models.Sector.findAll({
       include: [
         {
@@ -201,7 +226,9 @@ export default class InventoryProgressService {
       }
     }
 
-    this.writeHierarchyToCache(sectors);
+    if (process.env.NODE_ENV !== "test") {
+      this.writeHierarchyToCache(sectors);
+    }
     return sectors;
   }
 }

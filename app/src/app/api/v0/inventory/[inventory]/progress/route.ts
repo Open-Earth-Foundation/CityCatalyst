@@ -5,7 +5,6 @@ import { NextResponse } from "next/server";
 
 import type { Sector } from "@/models/Sector";
 import InventoryProgressService from "@/backend/InventoryProgressService";
-import createHttpError from "http-errors";
 
 // sort whole inventory by GPC reference number
 function romanNumeralComparison(sectorA: Sector, sectorB: Sector) {
@@ -44,10 +43,6 @@ export const GET = apiHandler(async (_req, { session, params }) => {
       },
     ],
   );
-
-  if (!inventory) {
-    throw new createHttpError.NotFound("Inventory not found");
-  }
 
   const progressData =
     await InventoryProgressService.getInventoryProgress(inventory);

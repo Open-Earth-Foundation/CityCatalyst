@@ -18,6 +18,7 @@ import type {
   InventoryWithCity,
   RequiredScopesResponse,
   ResultsResponse,
+  SectorBreakdownResponse,
   UserFileResponse,
   UserInfoResponse,
   UserInviteResponse,
@@ -38,6 +39,7 @@ export const api = createApi({
     "FileData",
     "CityData",
     "ReportResults",
+    "SectorBreakdown",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
@@ -70,6 +72,26 @@ export const api = createApi({
       query: (inventoryId: string) => `inventory/${inventoryId}/results`,
       transformResponse: (response: { data: ResultsResponse }) => response.data,
       providesTags: ["ReportResults"],
+    }),
+    getSectorBreakdown: builder.query<
+      SectorBreakdownResponse,
+      {
+        inventoryId: string;
+        sector: string;
+      }
+    >({
+      query: ({
+        inventoryId,
+        sector,
+      }: {
+        inventoryId: string;
+        sector: string;
+      }) => {
+        return `inventory/${inventoryId}/results/${sector}`;
+      },
+      transformResponse: (response: { data: SectorBreakdownResponse }) =>
+        response.data,
+      providesTags: ["SectorBreakdown"],
     }),
     getInventoryProgress: builder.query<InventoryProgressResponse, string>({
       query: (inventoryId) => `inventory/${inventoryId}/progress`,
@@ -491,6 +513,7 @@ export const api = createApi({
         "InventoryValue",
         "InventoryProgress",
         "ReportResults",
+        "SectorBreakdown",
       ],
     }),
     getActivityValue: builder.query({
@@ -513,6 +536,8 @@ export const api = createApi({
         "InventoryValue",
         "InventoryProgress",
         "ReportResults",
+
+        "SectorBreakdown",
       ],
     }),
     deleteActivityValue: builder.mutation({
@@ -526,6 +551,7 @@ export const api = createApi({
         "InventoryValue",
         "InventoryProgress",
         "ReportResults",
+        "SectorBreakdown",
       ],
     }),
     deleteAllActivityValues: builder.mutation({
@@ -547,6 +573,7 @@ export const api = createApi({
         "InventoryValue",
         "InventoryProgress",
         "ReportResults",
+        "SectorBreakdown",
       ],
     }),
     createThreadId: builder.mutation({

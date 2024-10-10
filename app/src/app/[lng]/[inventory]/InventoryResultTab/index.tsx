@@ -115,7 +115,7 @@ function SectorTabs({
         {SECTORS.map(({ icon, sectorName }) => (
           <TabPanel key={sectorName}>
             {isTopEmissionsResponseLoading ? (
-              <CircularProgress />
+              <CircularProgress isIndeterminate />
             ) : (
               <Card>
                 <SectorHeader
@@ -161,7 +161,7 @@ function SectorTabs({
                     </Select>
                   </Box>
                 </HStack>
-                {isResultsLoading && <CircularProgress />}
+                {isResultsLoading && <CircularProgress isIndeterminate />}
                 {!isResultsLoading &&
                   selectedTableView === TableView.BY_ACTIVITY && (
                     <ByActivityView

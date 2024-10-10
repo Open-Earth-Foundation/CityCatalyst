@@ -36,8 +36,8 @@ const EmissionsWidgetCard = ({
     : "N/A";
 
   return (
-    <HStack align="center" height="123px" justify="space-between" key={field}>
-      <Stack w="full">
+    <HStack align="center" marginY={"9px"} justify="space-between" key={field}>
+      <Stack w="full" height={"82.67px"}>
         <HStack align="start">
           {value && showProgress ? (
             <CircularProgress
@@ -119,8 +119,8 @@ const EmissionsWidget = ({
     },
   ];
   return (
-    <Box width={"18vw"}>
-      <Card padding={0}>
+    <Box>
+      <Card padding={0} height="448px" width={"353px"}>
         <CardHeader>
           <Heading size="sm">{t("total-emissions")}</Heading>
         </CardHeader>

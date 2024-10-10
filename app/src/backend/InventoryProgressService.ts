@@ -6,6 +6,16 @@ import { logger } from "@/services/logger";
 import { Inventory } from "@/models/Inventory";
 import * as path from "path"; // Construct the absolute path to your JSON file
 
+const romanTable: Record<string, number> = {
+  I: 1,
+  II: 2,
+  III: 3,
+  IV: 4,
+  V: 5,
+  VI: 6,
+  VII: 7,
+  "": 1337,
+};
 // Construct the absolute path to your JSON file
 const filePath = path.join(
   process.cwd(),
@@ -21,7 +31,40 @@ export default class InventoryProgressService {
   public static async getInventoryProgress(inventory: Inventory) {
     const sectors = await this.getSortedInventoryStructure();
 
-    const sectorTotals: Record<string, number> = sectors.reduce(
+    const filteredOutSectors = sectors
+      .filter((sector) => {
+        if (sector.referenceNumber && romanTable[sector.referenceNumber] < 4) {
+          return true;
+        }
+      })
+      .map((sector) => ({
+        id: sector.sectorId,
+        referenceNumber: sector.referenceNumber,
+        sectorName: sector.sectorName,
+        ...sector,
+        subSectors: sector.subSectors.map((subsector) => ({
+          ...subsector,
+          subsectorId: subsector.subsectorId,
+          subsectorName: subsector.subsectorName,
+          subCategories: subsector.subCategories.filter((subCategory) => {
+            const lastDigit = parseInt(
+              subCategory.referenceNumber?.split(".")[2] as string,
+            );
+            if (
+              sector.referenceNumber === "I" ||
+              sector.referenceNumber === "II"
+            ) {
+              return lastDigit < 3;
+              // return subcategories with reference numbers that end in 1 and 2
+            } else if (sector.referenceNumber === "III") {
+              return [1, 3].includes(lastDigit);
+              // return subcategories ending with 1 and 3
+            }
+          }),
+        })),
+      })) as unknown as Sector[];
+
+    const sectorTotals: Record<string, number> = filteredOutSectors.reduce(
       (acc, sector) => {
         const subCategoryCount = sector.subSectors
           .map((s) => s.subCategories.length)
@@ -32,10 +75,11 @@ export default class InventoryProgressService {
       {} as Record<string, number>,
     );
 
-    const sectorProgress = sectors.map((sector: Sector) => {
+    const sectorProgress = filteredOutSectors.map((sector: Sector) => {
       const inventoryValues = inventory.inventoryValues.filter(
         (inventoryValue) => sector.sectorId === inventoryValue.sectorId,
       );
+
       let sectorCounts = { thirdParty: 0, uploaded: 0 };
       if (inventoryValues) {
         sectorCounts = inventoryValues.reduce(
@@ -49,18 +93,11 @@ export default class InventoryProgressService {
             }
 
             const sourceType = inventoryValue.dataSource.sourceType;
-            if (sourceType === "user") {
-              acc.uploaded++;
-            } else if (sourceType === "third_party") {
+
+            if (sourceType === "third_party") {
               acc.thirdParty++;
             } else {
-              console.error(
-                "Invalid value for InventoryValue.dataSource.sourceType of inventory value",
-                inventoryValue.id,
-                "in its data source",
-                inventoryValue.dataSource.datasourceId + ":",
-                inventoryValue.dataSource.sourceType,
-              );
+              acc.uploaded++;
             }
             return acc;
           },
@@ -117,17 +154,6 @@ export default class InventoryProgressService {
     const a = sectorA.referenceNumber || "";
     const b = sectorB.referenceNumber || "";
 
-    const romanTable: Record<string, number> = {
-      I: 1,
-      II: 2,
-      III: 3,
-      IV: 4,
-      V: 5,
-      VI: 6,
-      VII: 7,
-      "": 1337,
-    };
-
     return romanTable[a] - romanTable[b];
   }
 
@@ -158,8 +184,6 @@ export default class InventoryProgressService {
         },
       ],
     });
-
-    console.log(sectors, "the sectors");
 
     sectors = sectors.sort(this.romanNumeralComparison);
     for (const sector of sectors) {

@@ -10,7 +10,6 @@ import {
   Heading,
   HStack,
   Icon,
-  Select,
   Tab,
   TabList,
   TabPanel,
@@ -24,13 +23,14 @@ import TopEmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/TopEm
 import { BlueSubtitle } from "@/components/blue-subtitle";
 import { PopulationAttributes } from "@/models/Population";
 import type { TFunction } from "i18next";
-import { SECTORS } from "@/app/sectors";
 import { capitalizeFirstLetter, toKebabCase } from "@/util/helpers";
 import React, { ChangeEvent, useState } from "react";
 import { api } from "@/services/api";
 import ByScopeView from "@/app/[lng]/[inventory]/InventoryResultTab/ByScopeView";
 import { SectorHeader } from "@/app/[lng]/[inventory]/InventoryResultTab/SectorHeader";
 import { ByActivityView } from "@/app/[lng]/[inventory]/InventoryResultTab/ByActivityView";
+import { SECTORS } from "@/util/constants";
+import { Selector } from "@/components/selector";
 
 enum TableView {
   BY_ACTIVITY = "by-activity",
@@ -67,15 +67,6 @@ function SectorTabs({
     });
   const handleViewChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setSelectedTableView(event.target.value as TableView);
-  };
-
-  const selectStyles = {
-    fontFamily: "Poppins",
-    fontSize: "button.md",
-    fontWeight: 600,
-    lineHeight: "16px",
-    letterSpacing: "1.25px",
-    textTransform: "uppercase",
   };
 
   return (
@@ -138,27 +129,12 @@ function SectorTabs({
                     {t("breakdown-of-sub-sector-emissions")}
                   </Text>
                   <Box paddingBottom={"12px"}>
-                    <Select
-                      width="162px"
+                    <Selector
+                      options={[TableView.BY_ACTIVITY, TableView.BY_SCOPE]}
                       value={selectedTableView}
                       onChange={handleViewChange}
-                      sx={{
-                        ...selectStyles,
-                        "& option": {
-                          ...selectStyles,
-                          textAlign: "left",
-                          padding: "8px",
-                        },
-                      }}
-                    >
-                      {[TableView.BY_ACTIVITY, TableView.BY_SCOPE].map(
-                        (opt) => (
-                          <option key={opt} value={opt}>
-                            {t(opt)}
-                          </option>
-                        ),
-                      )}
-                    </Select>
+                      t={t}
+                    />
                   </Box>
                 </HStack>
                 {isResultsLoading && <CircularProgress />}

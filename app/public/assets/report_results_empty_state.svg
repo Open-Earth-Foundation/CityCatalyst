@@ -1,0 +1,10 @@
+<svg width="101" height="100" viewBox="0 0 101 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icons">
+<mask id="mask0_4900_7928" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="101" height="100">
+<rect id="Bounding box" x="0.5" width="100" height="100" fill="#D9D9D9"/>
+</mask>
+<g mask="url(#mask0_4900_7928)">
+<path id="bar_chart" d="M70.5 90V55H90.5V90H70.5ZM40.5 90V10H60.5V90H40.5ZM10.5 90V35H30.5V90H10.5Z" fill="#E8EAFB"/>
+</g>
+</g>
+</svg>

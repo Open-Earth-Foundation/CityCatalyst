@@ -69,5 +69,7 @@
   "by-scope": "BY SCOPE",
   "%-of-sector-emissions": "% of sector emissions",
   "emissions-scope": "Emissions - scope ",
-  "subsector": "Sub-sector"
+  "subsector": "Sub-sector",
+  "start-adding-data": "Start Adding Data to your inventory to see your city's inventory emissions results.",
+  "no-data-for-inventory-yet": "No data for inventory yet"
 }

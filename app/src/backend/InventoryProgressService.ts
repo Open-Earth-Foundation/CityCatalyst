@@ -4,7 +4,7 @@ import INVENTORY_STRUCTURE from "../data/inventory-structure.json";
 import fs from "fs";
 import { logger } from "@/services/logger";
 import { Inventory } from "@/models/Inventory";
-import * as path from "path";
+import * as path from "path"; // Construct the absolute path to your JSON file
 
 // Construct the absolute path to your JSON file
 const filePath = path.join(
@@ -132,7 +132,6 @@ export default class InventoryProgressService {
   }
 
   private static writeHierarchyToCache(sortedSectorData: Sector[]) {
-    console.log("writing to cache", sortedSectorData.length);
     fs.writeFileSync(
       filePath,
       JSON.stringify(sortedSectorData, null, 2),

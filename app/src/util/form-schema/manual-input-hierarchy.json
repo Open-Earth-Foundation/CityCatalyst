@@ -35,7 +35,8 @@
                   "fuel-type-peat",
                   "fuel-type-anthracite",
                   "fuel-type-gasoline",
-                  "fuel-type-diesel"
+                  "fuel-type-diesel",
+                  "fuel-type-petrol"
                 ]
               },
               {
@@ -1970,7 +1971,13 @@
                   "fuel-type-diesel",
                   "fuel-type-lpg",
                   "fuel-type-cng",
-                  "fuel-type-biofuel"
+                  "fuel-type-biofuel",
+                  "fuel-type-e85-ethanol",
+                  "fuel-type-b20-biodiesel",
+                  "fuel-type-natural-gas",
+                  "fuel-type-ethanol",
+                  "fuel-type-biodiesel",
+                  "fuel-type-bioethanol"
                 ]
               },
               {
@@ -2296,7 +2303,13 @@
                   "fuel-type-diesel",
                   "fuel-type-lpg",
                   "fuel-type-cng",
-                  "fuel-type-biofuel"
+                  "fuel-type-biofuel",
+                  "fuel-type-e85-ethanol",
+                  "fuel-type-b20-biodiesel",
+                  "fuel-type-natural-gas",
+                  "fuel-type-ethanol",
+                  "fuel-type-biodiesel",
+                  "fuel-type-bioethanol"
                 ]
               },
               {
@@ -2598,7 +2611,13 @@
                   "fuel-type-diesel",
                   "fuel-type-lpg",
                   "fuel-type-cng",
-                  "fuel-type-biofuel"
+                  "fuel-type-biofuel",
+                  "fuel-type-e85-ethanol",
+                  "fuel-type-b20-biodiesel",
+                  "fuel-type-natural-gas",
+                  "fuel-type-ethanol",
+                  "fuel-type-biodiesel",
+                  "fuel-type-bioethanol"
                 ]
               },
               {
@@ -2887,7 +2906,8 @@
                   "fuel-type-jet-kerosene",
                   "fuel-type-lpg",
                   "fuel-type-gasoline",
-                  "fuel-type-natural-gas-liquids"
+                  "fuel-type-natural-gas-liquids",
+                  "fuel-type-natural-kerosene"
                 ]
               },
               {
@@ -3184,7 +3204,13 @@
                   "fuel-type-diesel",
                   "fuel-type-lpg",
                   "fuel-type-cng",
-                  "fuel-type-biofuel"
+                  "fuel-type-biofuel",
+                  "fuel-type-e85-ethanol",
+                  "fuel-type-b20-biodiesel",
+                  "fuel-type-natural-gas",
+                  "fuel-type-ethanol",
+                  "fuel-type-biodiesel",
+                  "fuel-type-bioethanol"
                 ]
               },
               {
@@ -3194,7 +3220,10 @@
                   "vehicle-type-construction-machinery",
                   "vehicle-type-agricultural-machinery",
                   "vehicle-type-mining-equipment",
-                  "vehicle-type-forestry-equipment"
+                  "vehicle-type-forestry-equipment",
+                  "vehicle-type-household-equipment",
+                  "vehicle-type-airport-equipment",
+                  "vehicle-type-railroad-equipment"
                 ],
                 "exclusive": "vehicle-type-all"
               },
@@ -3263,10 +3292,14 @@
         {
           "id": "off-road-transport-vehicle-type",
           "options": [
+            "vehicle-type-all",
             "vehicle-type-construction-machinery",
             "vehicle-type-agricultural-machinery",
             "vehicle-type-mining-equipment",
-            "vehicle-type-forestry-equipment"
+            "vehicle-type-forestry-equipment",
+            "vehicle-type-household-equipment",
+            "vehicle-type-airport-equipment",
+            "vehicle-type-railroad-equipment"
           ],
           "multiselect": true
         },
@@ -3301,7 +3334,10 @@
                   "vehicle-type-construction-machinery",
                   "vehicle-type-agricultural-machinery",
                   "vehicle-type-mining-equipment",
-                  "vehicle-type-forestry-equipment"
+                  "vehicle-type-forestry-equipment",
+                  "vehicle-type-household-equipment",
+                  "vehicle-type-airport-equipment",
+                  "vehicle-type-railroad-equipment"
                 ],
                 "exclusive": "vehicle-type-all"
               },
@@ -3356,10 +3392,14 @@
         {
           "id": "off-road-transport-vehicle-type",
           "options": [
+            "vehicle-type-all",
             "vehicle-type-construction-machinery",
             "vehicle-type-agricultural-machinery",
             "vehicle-type-mining-equipment",
-            "vehicle-type-forestry-equipment"
+            "vehicle-type-forestry-equipment",
+            "vehicle-type-household-equipment",
+            "vehicle-type-airport-equipment",
+            "vehicle-type-railroad-equipment"
           ],
           "multiselect": true
         },

@@ -17,13 +17,12 @@ function calculatePercentage(co2eq: bigint, total: bigint): number {
 
 async function getTotalEmissionsWithPercentage(inventory: string) {
   const rawQuery = `
-      SELECT SUM(av.co2eq) AS co2eq, sector_name 
-        FROM "ActivityValue" av
-        JOIN "InventoryValue" iv ON av.inventory_value_id = iv.id
+      SELECT SUM(iv.co2eq) AS co2eq, sector_name 
+        FROM "InventoryValue" iv
         JOIN "Sector" s ON iv.sector_id = s.sector_id
         WHERE inventory_id = :inventoryId
         GROUP BY sector_name
-        ORDER BY SUM(av.co2eq) DESC`;
+        ORDER BY SUM(iv.co2eq) DESC`;
 
   const totalEmissions: {
     co2eq: bigint;
@@ -47,15 +46,14 @@ async function getTotalEmissionsWithPercentage(inventory: string) {
 
 async function getTopEmissions(inventoryId: string) {
   const rawQuery = `
-      SELECT av.co2eq, sector_name, subsector_name, scope_name
-        FROM "ActivityValue" av
-        JOIN "InventoryValue" iv ON av.inventory_value_id = iv.id
+      SELECT iv.co2eq, sector_name, subsector_name, scope_name
+        FROM "InventoryValue" iv
         JOIN "Sector" s ON iv.sector_id = s.sector_id
         JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
         JOIN "SubCategory" sc on iv.sub_category_id = sc.subcategory_id
         JOIN "Scope" scope on scope.scope_id = sc.scope_id or ss.scope_id = scope.scope_id
-        WHERE inventory_id = :inventoryId
-        ORDER BY av.co2eq DESC
+        WHERE inventory_id = :inventoryId AND iv.co2eq IS NOT NULL
+        ORDER BY iv.co2eq DESC
         LIMIT 3; `;
 
   return (await db.sequelize!.query(rawQuery, {

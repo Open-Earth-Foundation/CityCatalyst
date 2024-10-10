@@ -13,7 +13,6 @@ export const POST = apiHandler(async (req, { params, session }) => {
   const body = createActivityValueRequest.parse(await req.json());
   const {
     gasValues,
-    dataSource: dataSourceParams,
     inventoryValue: inventoryValueParams,
     inventoryValueId,
     ...data
@@ -28,7 +27,6 @@ export const POST = apiHandler(async (req, { params, session }) => {
     inventoryValueId,
     inventoryValueParams,
     gasValues,
-    dataSourceParams,
   );
   return NextResponse.json({ success: !!result, data: result });
 });

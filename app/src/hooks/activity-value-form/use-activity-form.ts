@@ -76,8 +76,8 @@ const useActivityForm = ({
       reset({
         activity: {
           ...targetActivityValue.activityData,
-          dataQuality: targetActivityValue?.dataSource?.dataQuality,
-          dataComments: targetActivityValue?.dataSource?.notes,
+          dataQuality: targetActivityValue?.metadata?.dataQuality,
+          dataComments: targetActivityValue?.metadata?.sourceExplanation,
           CH4EmissionFactor:
             methodologyName === "direct-measure"
               ? targetActivityValue?.activityData?.ch4_amount

@@ -88,6 +88,9 @@ function getMailURI(locode?: string, sector?: string, year?: number): string {
   return `mailto://${emails}?subject=Missing third party data sources&body=City: ${locode}%0ASector: ${sector}%0AYear: ${year}`;
 }
 
+const kebab = (str: string) =>
+  str.replaceAll(/\s+/g, '-').replaceAll(/[^0-9A-Za-z\-\_]/g, '').toLowerCase()
+
 function SearchDataSourcesPrompt({
   t,
   isSearching,
@@ -657,7 +660,7 @@ export default function AddDataSteps({
 
                 <BreadcrumbItem>
                   <BreadcrumbLink href="#" color="content.link">
-                    {t(currentStep.title)}
+                    {t(kebab(currentStep.title))}
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               </Breadcrumb>
@@ -704,7 +707,7 @@ export default function AddDataSteps({
                   className="transition-all duration-50 ease-linear"
                   fontSize={isExpanded ? "headline.sm" : "headline.md"}
                 >
-                  {t(currentStep.title)}
+                  {t(kebab(currentStep.title))}
                 </Heading>
                 {scrollPosition <= 0 ? (
                   <Text color="content.tertiary">{t(currentStep.details)}</Text>

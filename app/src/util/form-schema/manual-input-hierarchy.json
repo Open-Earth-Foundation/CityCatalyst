@@ -601,24 +601,6 @@
                 "value": "type-all"
               }
             ]
-          },
-          {
-            "id": "fuel-combustion-manufacturing-and-construction-activity",
-            "prefills": [
-              {
-                "key": "manufacturing-and-construction-type",
-                "value": "type-commercial-buildings"
-              }
-            ]
-          },
-          {
-            "id": "fuel-combustion-manufacturing-and-construction-activity",
-            "prefills": [
-              {
-                "key": "manufacturing-and-construction-type",
-                "value": "type-institutional-buildings"
-              }
-            ]
           }
         ]
       },

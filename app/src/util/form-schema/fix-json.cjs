@@ -8,7 +8,7 @@ Object.entries(hierarchy).forEach(([key, value]) => {
     methodology.activities = methodology.activities?.map((activity) => {
       activity["extra-fields"] = activity["extra-fields"]?.map((field) => {
         field["title"] = field["id"];
-        field["id"] = field["id"].split("-").slice(2).join("-");
+        field["id"] = field["id"].split("-").slice(-2).join("-");
         return field;
       });
       return activity;

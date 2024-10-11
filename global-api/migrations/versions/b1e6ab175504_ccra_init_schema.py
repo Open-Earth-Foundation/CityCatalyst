@@ -22,18 +22,6 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     conn = op.get_bind()
 
-    # Execute raw SQL using the text() construct
-    conn.execute(text("""
-    CREATE TABLE IF NOT EXISTS modelled.city_profile (
-      city_id UUID PRIMARY KEY,
-      actor_id VARCHAR,
-      city_boundary BYTEA,
-      country_code VARCHAR,
-      region_code VARCHAR,
-      area NUMERIC
-    );
-    """))
-
     conn.execute(text("""
     CREATE TABLE IF NOT EXISTS modelled.dim_ccra_components (
       component_id UUID PRIMARY KEY,
@@ -58,7 +46,7 @@ def upgrade() -> None:
     """))
 
     conn.execute(text("""
-    CREATE TABLE IF NOT EXISTS modelled.city_ccra_riskassessment (
+    CREATE TABLE IF NOT EXISTS modelled.ccra_city_riskassessment (
       assessment_id UUID PRIMARY KEY,
       risk_score NUMERIC,
       risk_scorename VARCHAR,
@@ -78,8 +66,8 @@ def upgrade() -> None:
     """))
 
     conn.execute(text("""
-    CREATE TABLE IF NOT EXISTS modelled.city_ccra_indicator (
-      city_id UUID PRIMARY KEY,
+    CREATE TABLE IF NOT EXISTS modelled.ccra_city_indicator (
+      city_id UUID,
       indicator_id UUID,
       indicator_score NUMERIC,
       indicator_normalized_score NUMERIC,
@@ -91,8 +79,8 @@ def upgrade() -> None:
     """))
 
     conn.execute(text("""
-    CREATE TABLE IF NOT EXISTS modelled.city_ccra_hazardindicator (
-      assessment_id UUID PRIMARY KEY,
+    CREATE TABLE IF NOT EXISTS modelled.ccra_city_hazardindicator (
+      assessment_id UUID,
       indicator_id UUID,
       hazardindicator_weight NUMERIC,
       hazardindicator_score NUMERIC,
@@ -101,8 +89,8 @@ def upgrade() -> None:
     """))
 
     conn.execute(text("""
-    CREATE TABLE IF NOT EXISTS modelled.city_ccra_exposureindicator (
-      assessment_id UUID PRIMARY KEY,
+    CREATE TABLE IF NOT EXISTS modelled.ccra_city_exposureindicator (
+      assessment_id UUID,
       indicator_id UUID,
       exposureindicator_weight NUMERIC,
       exposureindicator_score NUMERIC,
@@ -111,8 +99,8 @@ def upgrade() -> None:
     """))
 
     conn.execute(text("""
-    CREATE TABLE IF NOT EXISTS modelled.city_ccra_vulnerablityindicator (
-      assessment_id UUID PRIMARY KEY,
+    CREATE TABLE IF NOT EXISTS modelled.ccra_city_vulnerablityindicator (
+      assessment_id UUID,
       vulnerablity_subcategory VARCHAR,
       indicator_id UUID,
       vulnerablityindicator_weight NUMERIC,
@@ -140,11 +128,10 @@ def upgrade() -> None:
 def downgrade() -> None:
     op.drop_table('ccra_time_period', schema='modelled')
     op.drop_table('ccra_scenario', schema='modelled')
-    op.drop_table('city_ccra_vulnerablityindicator', schema='modelled')
-    op.drop_table('city_ccra_exposureindicator', schema='modelled')
-    op.drop_table('city_ccra_hazardindicator', schema='modelled')
-    op.drop_table('city_ccra_indicator', schema='modelled')
-    op.drop_table('city_ccra_riskassessment', schema='modelled')
+    op.drop_table('ccra_city_vulnerablityindicator', schema='modelled')
+    op.drop_table('ccra_city_exposureindicator', schema='modelled')
+    op.drop_table('ccra_city_hazardindicator', schema='modelled')
+    op.drop_table('ccra_city_indicator', schema='modelled')
+    op.drop_table('ccra_city_riskassessment', schema='modelled')
     op.drop_table('ccra_impact_chain_assessment', schema='modelled')
     op.drop_table('dim_ccra_components', schema='modelled')
-    op.drop_table('city_profile', schema='modelled')

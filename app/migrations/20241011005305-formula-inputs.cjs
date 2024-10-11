@@ -16,6 +16,10 @@ module.exports = {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      methodology_name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       methodology_id: {
         type: DataTypes.UUID,
         allowNull: true,
@@ -31,7 +35,7 @@ module.exports = {
       },
       year: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       formula_input_value: {
         type: DataTypes.FLOAT,

@@ -8,7 +8,7 @@ export interface FormulaInputAttributes {
   parameterCode: string;
   parameterName: string;
   gpcRefno: string;
-  year: number;
+  year?: number;
   formulaInputValue: number;
   formulaInputUnits: string;
   formulaName: string;
@@ -17,6 +17,7 @@ export interface FormulaInputAttributes {
   actorId: string;
   datasource: string;
   rnk: number;
+  methodologyName: string;
   methodologyId: string;
   formulaInputId: string;
   createdAt?: Date;
@@ -43,7 +44,7 @@ export class FormulaInput
   parameterCode!: string;
   parameterName!: string;
   gpcRefno!: string;
-  year!: number;
+  year?: number;
   formulaInputValue!: number;
   formulaInputUnits!: string;
   formulaName!: string;
@@ -52,6 +53,7 @@ export class FormulaInput
   actorId!: string;
   datasource!: string;
   rnk!: number;
+  methodologyName!: string;
   methodologyId!: string;
   formulaInputId!: string;
   createdAt?: Date;
@@ -93,6 +95,11 @@ export class FormulaInput
           allowNull: false,
           field: "parameter_name",
         },
+        methodologyName: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          field: "methodology_name",
+        },
         methodologyId: {
           type: DataTypes.UUID,
           allowNull: true,
@@ -109,7 +116,7 @@ export class FormulaInput
         },
         year: {
           type: DataTypes.INTEGER,
-          allowNull: false,
+          allowNull: true,
         },
         formulaInputValue: {
           type: DataTypes.FLOAT,

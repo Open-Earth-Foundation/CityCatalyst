@@ -66,6 +66,8 @@ module.exports = {
             .split(", ")
             .map((entry) => entry.split(":"));
           fi.metadata = JSON.stringify(Object.fromEntries(metadata));
+          fi.year = !!fi.year ? parseInt(fi.year) : null;
+          return fi;
         });
 
         const publishers = await parseFile("Publisher", folder);
@@ -98,39 +100,50 @@ module.exports = {
         console.info("Finished adding methodologies");
         await bulkUpsert(
           queryInterface,
-          "FormulaInputs",
+          "FormulaInput",
           formulaInputs,
-          "id",
+          "formulainput_id",
           transaction,
         );
         console.info("Finished adding formula inputs");
         await bulkUpsert(
           queryInterface,
-          "DataSourceEmissionsFactor",
-          dataSourceEmissionsFactors,
-          "formulainput_id", // TODO handle multiple primary keys
+          "DataSourceFormulaInput",
+          dataSourceFormulaInput,
+          "formulainput_id",
           transaction,
         );
         console.info("Done, have a nice day ✨");
       }
     });
-    /**
-     * Add seed commands here.
-     *
-     * Example:
-     * await queryInterface.bulkInsert('People', [{
-     *   name: 'John Doe',
-     *   isBetaMember: false
-     * }], {});
-     */
   },
 
   async down(queryInterface, Sequelize) {
-    /**
-     * Add commands to revert seed here.
-     *
-     * Example:
-     * await queryInterface.bulkDelete('People', null, {});
-     */
+    await queryInterface.sequelize.transaction(async (transaction) => {
+      await queryInterface.bulkDelete("DataSourceFormulaInput", null, {
+        transaction,
+      });
+
+      await queryInterface.bulkDelete("FormulaInput", null, { transaction });
+
+      for (const folder of folders) {
+        const dataSources = await parseFile("DataSource", folder);
+        const publishers = await parseFile("Publisher", folder);
+
+        const dataSourceIds = dataSources.map((s) => s.datasource_id);
+        const publisherIds = publishers.map((p) => p.publisher_id);
+
+        await queryInterface.bulkDelete(
+          "DataSourceI18n",
+          { datasource_id: { [Sequelize.Op.in]: dataSourceIds } },
+          { transaction },
+        );
+        await queryInterface.bulkDelete(
+          "Publisher",
+          { publisher_id: { [Sequelize.Op.in]: publisherIds } },
+          { transaction },
+        );
+      }
+    });
   },
 };

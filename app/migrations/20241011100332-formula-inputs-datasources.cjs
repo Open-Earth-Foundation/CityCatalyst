@@ -4,12 +4,12 @@ const { DataTypes } = require("sequelize");
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("DatasourceFormulaInput", {
+    await queryInterface.createTable("DataSourceFormulaInput", {
       datasource_id: {
         type: DataTypes.UUID,
         allowNull: true,
         references: {
-          model: "DataSource",
+          model: "DataSourceI18n",
           key: "datasource_id",
         },
         field: "datasource_id",

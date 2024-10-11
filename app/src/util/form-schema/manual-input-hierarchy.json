@@ -18,11 +18,12 @@
             "activity-title": "activity-total-fuel-consumption",
             "extra-fields": [
               {
-                "id": "residential-building-type",
-                "options": ["building-type-all"]
+                "id": "building-type",
+                "options": ["building-type-all"],
+                "title": "residential-building-type"
               },
               {
-                "id": "residential-building-fuel-type",
+                "id": "fuel-type",
                 "options": [
                   "fuel-type-propane",
                   "fuel-type-natural-gas",
@@ -33,11 +34,13 @@
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
                   "fuel-type-petrol"
-                ]
+                ],
+                "title": "residential-building-fuel-type"
               },
               {
                 "id": "data-source",
-                "type": "text"
+                "type": "text",
+                "title": "data-source"
               }
             ],
             "units": [
@@ -122,11 +125,12 @@
             "activity-title": "activity-energy-consumption",
             "extra-fields": [
               {
-                "id": "residential-building-type",
-                "options": ["residential-building-type-all"]
+                "id": "building-type",
+                "options": ["residential-building-type-all"],
+                "title": "residential-building-type"
               },
               {
-                "id": "residential-building-energy-usage",
+                "id": "energy-usage",
                 "options": [
                   "energy-usage-all",
                   "energy-usage-electricity",
@@ -138,11 +142,13 @@
                   "energy-usage-refrigeration",
                   "energy-usage-refrigeration-chp"
                 ],
-                "exclusive": "energy-usage-all"
+                "exclusive": "energy-usage-all",
+                "title": "residential-building-energy-usage"
               },
               {
                 "id": "data-source",
-                "type": "text"
+                "type": "text",
+                "title": "data-source"
               }
             ],
             "units": ["units-kilowatt-hours", "units-terajoules"]
@@ -221,7 +227,7 @@
             "activity-title": "activity-total-fuel-consumption",
             "extra-fields": [
               {
-                "id": "commercial-building-type",
+                "id": "building-type",
                 "options": [
                   "type-all",
                   "type-commercial-institutional",
@@ -229,10 +235,11 @@
                   "type-institutional-buildings",
                   "type-street-lighting"
                 ],
-                "exclusive": "type-all"
+                "exclusive": "type-all",
+                "title": "commercial-building-type"
               },
               {
-                "id": "commercial-building-fuel-type",
+                "id": "fuel-type",
                 "options": [
                   "fuel-type-propane",
                   "fuel-type-wood/wood-waste",
@@ -241,11 +248,13 @@
                   "fuel-type-anthracite",
                   "fuel-type-gasoline",
                   "fuel-type-diesel"
-                ]
+                ],
+                "title": "commercial-building-fuel-type"
               },
               {
                 "id": "data-source",
-                "type": "text"
+                "type": "text",
+                "title": "data-source"
               }
             ],
             "units": [
@@ -354,7 +363,7 @@
             "activity-title": "activity-energy-consumption",
             "extra-fields": [
               {
-                "id": "commercial-building-type",
+                "id": "building-type",
                 "options": [
                   "type-all",
                   "type-commercial-institutional",
@@ -362,10 +371,11 @@
                   "type-institutional-buildings",
                   "type-street-lighting"
                 ],
-                "exclusive": "type-all"
+                "exclusive": "type-all",
+                "title": "commercial-building-type"
               },
               {
-                "id": "commercial-building-energy-usage",
+                "id": "energy-usage",
                 "options": [
                   "energy-usage-all",
                   "energy-usage-electricity",
@@ -377,11 +387,13 @@
                   "energy-usage-refrigeration",
                   "energy-usage-refrigeration-chp"
                 ],
-                "exclusive": "energy-usage-all"
+                "exclusive": "energy-usage-all",
+                "title": "commercial-building-energy-usage"
               },
               {
                 "id": "data-source",
-                "type": "text"
+                "type": "text",
+                "title": "data-source"
               }
             ],
             "units": ["units-kilowatt-hours", "units-terajoules"]
@@ -484,7 +496,7 @@
             "activity-title": "activity-total-fuel-consumption",
             "extra-fields": [
               {
-                "id": "manufacturing-and-construction-type",
+                "id": "construction-type",
                 "options": [
                   "type-all",
                   "type-manufacturing-industries-and-construction",
@@ -503,10 +515,11 @@
                   "type-textiles-and-leather",
                   "type-unspecified-industry"
                 ],
-                "exclusive": "type-all"
+                "exclusive": "type-all",
+                "title": "manufacturing-and-construction-type"
               },
               {
-                "id": "manufacturing-and-construction-fuel-type",
+                "id": "fuel-type",
                 "options": [
                   "fuel-type-anthracite",
                   "fuel-type-natural-other-bituminous-coal",
@@ -529,11 +542,13 @@
                   "fuel-type-waste-oils",
                   "fuel-type-bitumen",
                   "fuel-type-municipal-wastes"
-                ]
+                ],
+                "title": "manufacturing-and-construction-fuel-type"
               },
               {
                 "id": "data-source",
-                "type": "text"
+                "type": "text",
+                "title": "data-source"
               }
             ],
             "units": [
@@ -667,7 +682,7 @@
             "activity-title": "activity-energy-consumption",
             "extra-fields": [
               {
-                "id": "manufacturing-and-construction-type",
+                "id": "construction-type",
                 "options": [
                   "type-all",
                   "type-manufacturing-industries-and-construction",
@@ -686,10 +701,11 @@
                   "type-textiles-and-leather",
                   "type-unspecified-industry"
                 ],
-                "exclusive": "type-all"
+                "exclusive": "type-all",
+                "title": "manufacturing-and-construction-type"
               },
               {
-                "id": "manufacturing-and-construction-energy-usage",
+                "id": "energy-usage",
                 "options": [
                   "energy-usage-all",
                   "energy-usage-electricity",
@@ -701,11 +717,13 @@
                   "energy-usage-refrigeration",
                   "energy-usage-refrigeration-chp"
                 ],
-                "exclusive": "energy-usage-all"
+                "exclusive": "energy-usage-all",
+                "title": "manufacturing-and-construction-energy-usage"
               },
               {
                 "id": "data-source",
-                "type": "text"
+                "type": "text",
+                "title": "data-source"
               }
             ],
             "units": ["units-kilowatt-hours", "units-terajoules"]
@@ -820,7 +838,7 @@
             "activity-title": "activity-total-fuel-consumption",
             "extra-fields": [
               {
-                "id": "energy-industries-type",
+                "id": "industries-type",
                 "options": [
                   "type-all",
                   "type-electricity-generation",
@@ -830,10 +848,11 @@
                   "type-non-ferrous-manufacture-of-solid-fuels",
                   "type-chemical-other-energy-industries"
                 ],
-                "exclusive": "type-all"
+                "exclusive": "type-all",
+                "title": "energy-industries-type"
               },
               {
-                "id": "energy-industries-fuel-type",
+                "id": "fuel-type",
                 "options": [
                   "fuel-type-anthracite",
                   "fuel-type-natural-other-bituminous-coal",
@@ -850,11 +869,13 @@
                   "fuel-type-natural-gas-liquids",
                   "fuel-type-jet-kerosene",
                   "fuel-type-municipal-wastes"
-                ]
+                ],
+                "title": "energy-industries-fuel-type"
               },
               {
                 "id": "data-source",
-                "type": "text"
+                "type": "text",
+                "title": "data-source"
               }
             ],
             "units": [
@@ -982,7 +1003,7 @@
             "activity-title": "activity-energy-consumption",
             "extra-fields": [
               {
-                "id": "energy-industries-type",
+                "id": "industries-type",
                 "options": [
                   "type-all",
                   "type-electricity-generation",
@@ -992,10 +1013,11 @@
                   "type-non-ferrous-manufacture-of-solid-fuels",
                   "type-chemical-other-energy-industries"
                 ],
-                "exclusive": "type-all"
+                "exclusive": "type-all",
+                "title": "energy-industries-type"
               },
               {
-                "id": "energy-industries-energy-usage",
+                "id": "energy-usage",
                 "options": [
                   "energy-usage-all",
                   "energy-usage-electricity",
@@ -1007,11 +1029,13 @@
                   "energy-usage-refrigeration",
                   "energy-usage-refrigeration-chp"
                 ],
-                "exclusive": "energy-usage-all"
+                "exclusive": "energy-usage-all",
+                "title": "energy-industries-energy-usage"
               },
               {
                 "id": "data-source",
-                "type": "text"
+                "type": "text",
+                "title": "data-source"
               }
             ],
             "units": ["units-kilowatt-hours", "units-terajoules"]
@@ -1126,17 +1150,18 @@
             "activity-title": "activity-total-fuel-consumption",
             "extra-fields": [
               {
-                "id": "agriculture-forestry-fishing-activities-type",
+                "id": "activities-type",
                 "options": [
                   "type-all",
                   "type-stationary",
                   "type-off-road-vehicles-and-machinery",
                   "type-fishing-mobile-combustion"
                 ],
-                "exclusive": "type-all"
+                "exclusive": "type-all",
+                "title": "agriculture-forestry-fishing-activities-type"
               },
               {
-                "id": "agriculture-forestry-fishing-activities-fuel-type",
+                "id": "fuel-type",
                 "options": [
                   "fuel-type-diesel-oil",
                   "fuel-type-natural-gas",
@@ -1146,11 +1171,13 @@
                   "fuel-type-natural-charcoal",
                   "fuel-type-gas-oil",
                   "fuel-type-peat"
-                ]
+                ],
+                "title": "agriculture-forestry-fishing-activities-fuel-type"
               },
               {
                 "id": "data-source",
-                "type": "text"
+                "type": "text",
+                "title": "data-source"
               }
             ],
             "units": [
@@ -1250,17 +1277,18 @@
             "activity-title": "activity-energy-consumption",
             "extra-fields": [
               {
-                "id": "agriculture-forestry-fishing-activities-type",
+                "id": "activities-type",
                 "options": [
                   "type-all",
                   "type-stationary",
                   "type-off-road-vehicles-and-machinery",
                   "type-fishing-mobile-combustion"
                 ],
-                "exclusive": "type-all"
+                "exclusive": "type-all",
+                "title": "agriculture-forestry-fishing-activities-type"
               },
               {
-                "id": "agriculture-forestry-fishing-activities-energy-usage",
+                "id": "energy-usage",
                 "options": [
                   "energy-usage-all",
                   "energy-usage-electricity",
@@ -1272,11 +1300,13 @@
                   "energy-usage-refrigeration",
                   "energy-usage-refrigeration-chp"
                 ],
-                "exclusive": "energy-usage-all"
+                "exclusive": "energy-usage-all",
+                "title": "agriculture-forestry-fishing-activities-energy-usage"
               },
               {
                 "id": "data-source",
-                "type": "text"
+                "type": "text",
+                "title": "data-source"
               }
             ],
             "units": ["units-kilowatt-hours", "units-terajoules"]
@@ -1370,16 +1400,17 @@
             "activity-title": "activity-total-fuel-consumption",
             "extra-fields": [
               {
-                "id": "non-specific-sources-type",
+                "id": "sources-type",
                 "options": [
                   "non-specific-sources-type-all",
                   "non-specific-sources-type-stationary",
                   "non-specific-sources-type-mobile"
                 ],
-                "exclusive": "non-specific-sources-type-all"
+                "exclusive": "non-specific-sources-type-all",
+                "title": "non-specific-sources-type"
               },
               {
-                "id": "non-specific-sources-fuel-type",
+                "id": "fuel-type",
                 "options": [
                   "fuel-type-gas-oil",
                   "fuel-type-naphtha",
@@ -1391,11 +1422,13 @@
                   "fuel-type-charcoal",
                   "fuel-type-natural-gas-oil",
                   "fuel-type-peat"
-                ]
+                ],
+                "title": "non-specific-sources-fuel-type"
               },
               {
                 "id": "data-source",
-                "type": "text"
+                "type": "text",
+                "title": "data-source"
               }
             ],
             "units": [
@@ -1488,12 +1521,13 @@
             "activity-title": "activity-energy-consumption",
             "extra-fields": [
               {
-                "id": "non-specific-sources-type",
+                "id": "sources-type",
                 "options": ["type-all", "type-stationary", "type-mobile"],
-                "exclusive": "type-all"
+                "exclusive": "type-all",
+                "title": "non-specific-sources-type"
               },
               {
-                "id": "non-specific-sources-energy-usage",
+                "id": "energy-usage",
                 "options": [
                   "energy-usage-all",
                   "energy-usage-electricity",
@@ -1505,11 +1539,13 @@
                   "energy-usage-refrigeration",
                   "energy-usage-refrigeration-chp"
                 ],
-                "exclusive": "energy-usage-all"
+                "exclusive": "energy-usage-all",
+                "title": "non-specific-sources-energy-usage"
               },
               {
                 "id": "data-source",
-                "type": "text"
+                "type": "text",
+                "title": "data-source"
               }
             ],
             "units": ["units-kilowatt-hours", "units-terajoules"]
@@ -1596,7 +1632,7 @@
             "activity-title": "activity-total-fugitive-emissions",
             "extra-fields": [
               {
-                "id": "fugitive-emissions-coal-type",
+                "id": "coal-type",
                 "options": [
                   "type-all",
                   "type-coal-mining-and-handling",
@@ -1611,11 +1647,13 @@
                   "type-uncontrolled-combustion-and-burning-coal-dumps",
                   "type-solid-fuel-transformation"
                 ],
-                "exclusive": "type-all"
+                "exclusive": "type-all",
+                "title": "fugitive-emissions-coal-type"
               },
               {
                 "id": "data-source",
-                "type": "text"
+                "type": "text",
+                "title": "data-source"
               }
             ],
             "units": [
@@ -1706,16 +1744,17 @@
             "activity-title": "activity-total-fugitive-activity",
             "extra-fields": [
               {
-                "id": "fugitive-emissions-oil-gas-type",
+                "id": "gas-type",
                 "options": [
                   "fugitive-emissions-oil-gas-type-all",
                   "fugitive-emissions-oil-gas-type-oil",
                   "fugitive-emissions-oil-gas-type-natural-gas"
                 ],
-                "exclusive": "fugitive-emissions-oil-gas-type-all"
+                "exclusive": "fugitive-emissions-oil-gas-type-all",
+                "title": "fugitive-emissions-oil-gas-type"
               },
               {
-                "id": "fugitive-emissions-oil-gas-fugitive-type",
+                "id": "fugitive-type",
                 "options": [
                   "type-all",
                   "type-extraction",
@@ -1723,11 +1762,13 @@
                   "type-storage",
                   "type-distribution"
                 ],
-                "exclusive": "type-all"
+                "exclusive": "type-all",
+                "title": "fugitive-emissions-oil-gas-fugitive-type"
               },
               {
                 "id": "data-source",
-                "type": "text"
+                "type": "text",
+                "title": "data-source"
               }
             ],
             "units": [
@@ -1821,7 +1862,7 @@
             "activity-title": "activity-total-fuel-sales",
             "extra-fields": [
               {
-                "id": "on-road-transport-fuel-type",
+                "id": "fuel-type",
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
@@ -1834,10 +1875,11 @@
                   "fuel-type-ethanol",
                   "fuel-type-biodiesel",
                   "fuel-type-bioethanol"
-                ]
+                ],
+                "title": "on-road-transport-fuel-type"
               },
               {
-                "id": "on-road-transport-vehicle-type",
+                "id": "vehicle-type",
                 "options": [
                   "vehicle-type-passenger-vehicles",
                   "vehicle-type-commercial-vehicles",
@@ -1845,11 +1887,13 @@
                   "vehicle-type-emergency-vehicles",
                   "vehicle-type-service-vehicles"
                 ],
-                "multiselect": true
+                "multiselect": true,
+                "title": "on-road-transport-vehicle-type"
               },
               {
                 "id": "data-source",
-                "type": "text"
+                "type": "text",
+                "title": "data-source"
               }
             ],
             "units": [
@@ -1923,7 +1967,7 @@
             "units": ["units-kilometers", "units-miles"],
             "extra-fields": [
               {
-                "id": "on-road-transport-vehicle-type",
+                "id": "vehicle-type",
                 "options": [
                   "vehicle-type-passenger-vehicles",
                   "vehicle-type-commercial-vehicles",
@@ -1931,20 +1975,22 @@
                   "vehicle-type-emergency-vehicles",
                   "vehicle-type-service-vehicles"
                 ],
-                "multiselect": true
+                "multiselect": true,
+                "title": "on-road-transport-vehicle-type"
               },
               {
-                "id": "on-road-transport-fuel-type",
+                "id": "fuel-type",
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
                   "fuel-type-lpg",
                   "fuel-type-cng",
                   "fuel-type-biofuel"
-                ]
+                ],
+                "title": "on-road-transport-fuel-type"
               },
               {
-                "id": "on-road-transport-fuel-intensity",
+                "id": "fuel-intensity",
                 "type": "number",
                 "units": [
                   "tonnes-per-kilometer",
@@ -1953,7 +1999,8 @@
                   "tonnes-per-miles",
                   "gallons-per-miles",
                   "cubic-meters-per-miles"
-                ]
+                ],
+                "title": "on-road-transport-fuel-intensity"
               }
             ]
           }
@@ -2048,7 +2095,7 @@
             ],
             "extra-fields": [
               {
-                "id": "on-road-transport-vehicle-type",
+                "id": "vehicle-type",
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-vehicles",
@@ -2056,11 +2103,13 @@
                   "vehicle-type-public-transport-vehicles",
                   "vehicle-type-emergency-vehicles",
                   "vehicle-type-service-vehicles"
-                ]
+                ],
+                "title": "on-road-transport-vehicle-type"
               },
               {
-                "id": "on-road-transport-electricity-source",
-                "type": "text"
+                "id": "electricity-source",
+                "type": "text",
+                "title": "on-road-transport-electricity-source"
               }
             ],
             "activity-title": "activity-energy-consumption",
@@ -2140,7 +2189,7 @@
             "activity-title": "activity-total-fuel-sales",
             "extra-fields": [
               {
-                "id": "railways-fuel-type",
+                "id": "fuel-type",
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
@@ -2153,10 +2202,11 @@
                   "fuel-type-ethanol",
                   "fuel-type-biodiesel",
                   "fuel-type-bioethanol"
-                ]
+                ],
+                "title": "railways-fuel-type"
               },
               {
-                "id": "railways-vehicle-type",
+                "id": "vehicle-type",
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-trains",
@@ -2164,11 +2214,13 @@
                   "vehicle-type-high-speed-trains",
                   "vehicle-type-tourist-trains"
                 ],
-                "exclusive": "vehicle-type-all"
+                "exclusive": "vehicle-type-all",
+                "title": "railways-vehicle-type"
               },
               {
                 "id": "data-source",
-                "type": "text"
+                "type": "text",
+                "title": "data-source"
               }
             ],
             "units": [
@@ -2226,27 +2278,29 @@
             "units": ["units-kilometers", "units-miles"],
             "extra-fields": [
               {
-                "id": "railways-vehicle-type",
+                "id": "vehicle-type",
                 "options": [
                   "vehicle-type-passenger-trains",
                   "vehicle-type-freight-trains",
                   "vehicle-type-high-speed-trains",
                   "vehicle-type-tourist-trains"
                 ],
-                "multiselect": true
+                "multiselect": true,
+                "title": "railways-vehicle-type"
               },
               {
-                "id": "railways-fuel-type",
+                "id": "fuel-type",
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
                   "fuel-type-lpg",
                   "fuel-type-cng",
                   "fuel-type-biofuel"
-                ]
+                ],
+                "title": "railways-fuel-type"
               },
               {
-                "id": "railways-fuel-intensity",
+                "id": "fuel-intensity",
                 "type": "number",
                 "units": [
                   "tonnes-per-kilometer",
@@ -2255,7 +2309,8 @@
                   "tonnes-per-miles",
                   "gallons-per-miles",
                   "cubic-meters-per-miles"
-                ]
+                ],
+                "title": "railways-fuel-intensity"
               }
             ]
           }
@@ -2347,7 +2402,7 @@
             ],
             "extra-fields": [
               {
-                "id": "railways-vehicle-type",
+                "id": "vehicle-type",
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-trains",
@@ -2355,11 +2410,13 @@
                   "vehicle-type-high-speed-trains",
                   "vehicle-type-tourist-trains"
                 ],
-                "exclusive": "vehicle-type-all"
+                "exclusive": "vehicle-type-all",
+                "title": "railways-vehicle-type"
               },
               {
-                "id": "railways-electricity-source",
-                "type": "text"
+                "id": "electricity-source",
+                "type": "text",
+                "title": "railways-electricity-source"
               }
             ],
             "activity-title": "activity-energy-consumption",
@@ -2437,7 +2494,7 @@
             "activity-title": "activity-total-fuel-sales",
             "extra-fields": [
               {
-                "id": "waterborne-navigation-fuel-type",
+                "id": "fuel-type",
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
@@ -2450,21 +2507,24 @@
                   "fuel-type-ethanol",
                   "fuel-type-biodiesel",
                   "fuel-type-bioethanol"
-                ]
+                ],
+                "title": "waterborne-navigation-fuel-type"
               },
               {
-                "id": "waterborne-navigation-vehicle-type",
+                "id": "vehicle-type",
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-ferries",
                   "vehicle-type-boats",
                   "vehicle-type-marine-vessels"
                 ],
-                "exclusive": "vehicle-type-all"
+                "exclusive": "vehicle-type-all",
+                "title": "waterborne-navigation-vehicle-type"
               },
               {
                 "id": "data-source",
-                "type": "text"
+                "type": "text",
+                "title": "data-source"
               }
             ],
             "units": [
@@ -2526,32 +2586,35 @@
             "units": ["units-kilometers", "units-miles"],
             "extra-fields": [
               {
-                "id": "waterborne-navigation-vehicle-type",
+                "id": "vehicle-type",
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-ferries",
                   "vehicle-type-boats",
                   "vehicle-type-marine-vessels"
                 ],
-                "exclusive": "vehicle-type-all"
+                "exclusive": "vehicle-type-all",
+                "title": "waterborne-navigation-vehicle-type"
               },
               {
-                "id": "waterborne-navigation-fuel-type",
+                "id": "fuel-type",
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
                   "fuel-type-lpg",
                   "fuel-type-cng",
                   "fuel-type-biofuel"
-                ]
+                ],
+                "title": "waterborne-navigation-fuel-type"
               },
               {
-                "id": "waterborne-navigation-fuel-intensity",
+                "id": "fuel-intensity",
                 "type": "number",
                 "units": [
                   "units-grams-per-kilometer",
                   "units-kilograms-per-kilometer"
-                ]
+                ],
+                "title": "waterborne-navigation-fuel-intensity"
               }
             ]
           }
@@ -2634,18 +2697,20 @@
             ],
             "extra-fields": [
               {
-                "id": "waterborne-navigation-vehicle-type",
+                "id": "vehicle-type",
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-ferries",
                   "vehicle-type-boats",
                   "vehicle-type-marine-vessels"
                 ],
-                "exclusive": "vehicle-type-all"
+                "exclusive": "vehicle-type-all",
+                "title": "waterborne-navigation-vehicle-type"
               },
               {
-                "id": "waterborne-navigation-electricity-source",
-                "type": "text"
+                "id": "electricity-source",
+                "type": "text",
+                "title": "waterborne-navigation-electricity-source"
               }
             ],
             "activity-title": "activity-energy-consumption",
@@ -2722,7 +2787,7 @@
             "activity-title": "activity-total-fuel-sales",
             "extra-fields": [
               {
-                "id": "aviation-fuel-type",
+                "id": "fuel-type",
                 "options": [
                   "fuel-type-aviation-gasoline",
                   "fuel-type-diesel",
@@ -2732,10 +2797,11 @@
                   "fuel-type-gasoline",
                   "fuel-type-natural-gas-liquids",
                   "fuel-type-natural-kerosene"
-                ]
+                ],
+                "title": "aviation-fuel-type"
               },
               {
-                "id": "aviation-vehicle-type",
+                "id": "vehicle-type",
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-aircraft",
@@ -2743,11 +2809,13 @@
                   "vehicle-type-private-and-business-aircraft",
                   "vehicle-type-helicopters"
                 ],
-                "exclusive": "vehicle-type-all"
+                "exclusive": "vehicle-type-all",
+                "title": "aviation-vehicle-type"
               },
               {
                 "id": "data-source",
-                "type": "text"
+                "type": "text",
+                "title": "data-source"
               }
             ],
             "units": [
@@ -2806,7 +2874,7 @@
             "units": ["units-kilometers", "units-miles"],
             "extra-fields": [
               {
-                "id": "aviation-vehicle-type",
+                "id": "vehicle-type",
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-aircraft",
@@ -2814,10 +2882,11 @@
                   "vehicle-type-private-and-business-aircraft",
                   "vehicle-type-helicopters"
                 ],
-                "exclusive": "vehicle-type-all"
+                "exclusive": "vehicle-type-all",
+                "title": "aviation-vehicle-type"
               },
               {
-                "id": "aviation-fuel-type",
+                "id": "fuel-type",
                 "options": [
                   "fuel-type-aviation-gasoline",
                   "fuel-type-diesel",
@@ -2826,15 +2895,17 @@
                   "fuel-type-lpg",
                   "fuel-type-gasoline",
                   "fuel-type-natural-gas-liquids"
-                ]
+                ],
+                "title": "aviation-fuel-type"
               },
               {
-                "id": "aviation-fuel-intensity",
+                "id": "fuel-intensity",
                 "type": "number",
                 "units": [
                   "units-grams-per-kilometer",
                   "units-kilograms-per-kilometer"
-                ]
+                ],
+                "title": "aviation-fuel-intensity"
               }
             ]
           }
@@ -2919,7 +2990,7 @@
             ],
             "extra-fields": [
               {
-                "id": "aviation-vehicle-type",
+                "id": "vehicle-type",
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-aircraft",
@@ -2927,11 +2998,13 @@
                   "vehicle-type-private-and-business-aircraft",
                   "vehicle-type-helicopters"
                 ],
-                "exclusive": "vehicle-type-all"
+                "exclusive": "vehicle-type-all",
+                "title": "aviation-vehicle-type"
               },
               {
-                "id": "aviation-electricity-source",
-                "type": "text"
+                "id": "electricity-source",
+                "type": "text",
+                "title": "aviation-electricity-source"
               }
             ],
             "activity-title": "activity-energy-consumption",
@@ -3009,7 +3082,7 @@
             "activity-title": "activity-total-fuel-sales",
             "extra-fields": [
               {
-                "id": "off-road-transport-fuel-type",
+                "id": "fuel-type",
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
@@ -3022,10 +3095,11 @@
                   "fuel-type-ethanol",
                   "fuel-type-biodiesel",
                   "fuel-type-bioethanol"
-                ]
+                ],
+                "title": "off-road-transport-fuel-type"
               },
               {
-                "id": "off-road-transport-vehicle-type",
+                "id": "vehicle-type",
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-construction-machinery",
@@ -3036,11 +3110,13 @@
                   "vehicle-type-airport-equipment",
                   "vehicle-type-railroad-equipment"
                 ],
-                "exclusive": "vehicle-type-all"
+                "exclusive": "vehicle-type-all",
+                "title": "off-road-transport-vehicle-type"
               },
               {
                 "id": "data-source",
-                "type": "text"
+                "type": "text",
+                "title": "data-source"
               }
             ],
             "units": [
@@ -3137,7 +3213,7 @@
             ],
             "extra-fields": [
               {
-                "id": "off-road-transport-vehicle-type",
+                "id": "vehicle-type",
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-construction-machinery",
@@ -3148,11 +3224,13 @@
                   "vehicle-type-airport-equipment",
                   "vehicle-type-railroad-equipment"
                 ],
-                "exclusive": "vehicle-type-all"
+                "exclusive": "vehicle-type-all",
+                "title": "off-road-transport-vehicle-type"
               },
               {
-                "id": "off-road-transport-electricity-source",
-                "type": "text"
+                "id": "electricity-source",
+                "type": "text",
+                "title": "off-road-transport-electricity-source"
               }
             ],
             "activity-title": "activity-energy-consumption",
@@ -3238,27 +3316,31 @@
             "activity-title": "total-municipal-solid-waste-disposed",
             "extra-fields": [
               {
-                "id": "methane-commitment-solid-waste-inboundary-landfill-id",
-                "type": "text"
-              },
-              {
-                "id": "methane-commitment-solid-waste-inboundary-landfill-address",
+                "id": "landfill-id",
                 "type": "text",
-                "required": false
+                "title": "methane-commitment-solid-waste-inboundary-landfill-id"
               },
               {
-                "id": "methane-commitment-solid-waste-inboundary-oxidation-factor",
+                "id": "landfill-address",
+                "type": "text",
+                "required": false,
+                "title": "methane-commitment-solid-waste-inboundary-landfill-address"
+              },
+              {
+                "id": "oxidation-factor",
                 "options": [
                   "oxidation-factor-well-managed-landfill",
                   "oxidation-factor-unmanaged-landfill"
-                ]
+                ],
+                "title": "methane-commitment-solid-waste-inboundary-oxidation-factor"
               },
               {
-                "id": "methane-commitment-solid-waste-inboundary-methane-collected-and-removed",
-                "type": "number"
+                "id": "and-removed",
+                "type": "number",
+                "title": "methane-commitment-solid-waste-inboundary-methane-collected-and-removed"
               },
               {
-                "id": "methane-commitment-solid-waste-inboundary-waste-composition",
+                "id": "waste-composition",
                 "type": "percentage-breakdown",
                 "total-required": 100,
                 "subtypes": [
@@ -3268,11 +3350,13 @@
                   "waste-composition-wood",
                   "waste-composition-textiles",
                   "waste-composition-industrial"
-                ]
+                ],
+                "title": "methane-commitment-solid-waste-inboundary-waste-composition"
               },
               {
-                "id": "methane-commitment-solid-waste-inboundary-source",
-                "type": "text"
+                "id": "inboundary-source",
+                "type": "text",
+                "title": "methane-commitment-solid-waste-inboundary-source"
               }
             ],
             "units": ["units-kilograms", "units-tonnes"]
@@ -3337,27 +3421,31 @@
             "activity-title": "total-municipal-solid-waste-disposed",
             "extra-fields": [
               {
-                "id": "methane-commitment-solid-waste-outboundary-landfill-id",
-                "type": "text"
-              },
-              {
-                "id": "methane-commitment-solid-waste-outboundary-landfill-address",
+                "id": "landfill-id",
                 "type": "text",
-                "required": false
+                "title": "methane-commitment-solid-waste-outboundary-landfill-id"
               },
               {
-                "id": "methane-commitment-solid-waste-outboundary-oxidation-factor",
+                "id": "landfill-address",
+                "type": "text",
+                "required": false,
+                "title": "methane-commitment-solid-waste-outboundary-landfill-address"
+              },
+              {
+                "id": "oxidation-factor",
                 "options": [
                   "oxidation-factor-well-managed-landfill",
                   "oxidation-factor-unmanaged-landfill"
-                ]
+                ],
+                "title": "methane-commitment-solid-waste-outboundary-oxidation-factor"
               },
               {
-                "id": "methane-commitment-solid-waste-outboundary-methane-collected-and-removed",
-                "type": "number"
+                "id": "and-removed",
+                "type": "number",
+                "title": "methane-commitment-solid-waste-outboundary-methane-collected-and-removed"
               },
               {
-                "id": "methane-commitment-solid-waste-outboundary-waste-composition",
+                "id": "waste-composition",
                 "type": "percentage-breakdown",
                 "total-required": 100,
                 "subtypes": [
@@ -3367,7 +3455,8 @@
                   "waste-composition-wood",
                   "waste-composition-textiles",
                   "waste-composition-industrial"
-                ]
+                ],
+                "title": "methane-commitment-solid-waste-outboundary-waste-composition"
               }
             ],
             "units": ["units-kilograms", "units-tonnes"]
@@ -3427,25 +3516,29 @@
             "activity-title": "total-organic-waste-treated",
             "extra-fields": [
               {
-                "id": "biological-treatment-inboundary-treatment-type",
+                "id": "treatment-type",
                 "options": [
                   "treatment-type-all-organic-waste",
                   "treatment-type-composting",
                   "treatment-type-anaerobic-digestion"
                 ],
-                "exclusive": "treatment-type-all-organic-waste"
+                "exclusive": "treatment-type-all-organic-waste",
+                "title": "biological-treatment-inboundary-treatment-type"
               },
               {
-                "id": "biological-treatment-inboundary-waste-state",
-                "options": ["waste-state-dry-waste", "waste-state-wet-waste"]
+                "id": "waste-state",
+                "options": ["waste-state-dry-waste", "waste-state-wet-waste"],
+                "title": "biological-treatment-inboundary-waste-state"
               },
               {
-                "id": "biological-treatment-inboundary-total-of-ch4-recovered",
-                "type": "number"
+                "id": "ch4-recovered",
+                "type": "number",
+                "title": "biological-treatment-inboundary-total-of-ch4-recovered"
               },
               {
-                "id": "biological-treatment-inboundary-source",
-                "type": "text"
+                "id": "inboundary-source",
+                "type": "text",
+                "title": "biological-treatment-inboundary-source"
               }
             ],
             "units": ["units-kilograms", "units-tonnes"]
@@ -3513,25 +3606,29 @@
             "activity-title": "total-organic-waste-treated",
             "extra-fields": [
               {
-                "id": "biological-treatment-outboundary-treatment-type",
+                "id": "treatment-type",
                 "options": [
                   "treatment-type-all-organic-waste",
                   "treatment-type-composting",
                   "treatment-type-anaerobic-digestion"
                 ],
-                "exclusive": "treatment-type-all-organic-waste"
+                "exclusive": "treatment-type-all-organic-waste",
+                "title": "biological-treatment-outboundary-treatment-type"
               },
               {
-                "id": "biological-treatment-outboundary-waste-state",
-                "options": ["waste-state-dry-waste", "waste-state-wet-waste"]
+                "id": "waste-state",
+                "options": ["waste-state-dry-waste", "waste-state-wet-waste"],
+                "title": "biological-treatment-outboundary-waste-state"
               },
               {
-                "id": "biological-treatment-outboundary-total-of-ch4-recovered",
-                "type": "number"
+                "id": "ch4-recovered",
+                "type": "number",
+                "title": "biological-treatment-outboundary-total-of-ch4-recovered"
               },
               {
-                "id": "biological-treatment-outboundary-source",
-                "type": "text"
+                "id": "outboundary-source",
+                "type": "text",
+                "title": "biological-treatment-outboundary-source"
               }
             ],
             "units": ["units-kilograms", "units-tonnes"]
@@ -3602,16 +3699,18 @@
             "activity-title": "total-mass-of-waste-incinerated-or-burned",
             "extra-fields": [
               {
-                "id": "incineration-waste-inboundary-incineration-facility-id",
-                "type": "text"
-              },
-              {
-                "id": "incineration-waste-inboundary-incineration-facility-address",
+                "id": "facility-id",
                 "type": "text",
-                "required": false
+                "title": "incineration-waste-inboundary-incineration-facility-id"
               },
               {
-                "id": "incineration-waste-inboundary-waste-composition",
+                "id": "facility-address",
+                "type": "text",
+                "required": false,
+                "title": "incineration-waste-inboundary-incineration-facility-address"
+              },
+              {
+                "id": "waste-composition",
                 "type": "percentage-breakdown",
                 "total-required": 100,
                 "subtypes": [
@@ -3620,19 +3719,22 @@
                   "waste-composition-hazardous-waste",
                   "waste-composition-clinical-waste",
                   "waste-composition-sewage-sludge"
-                ]
+                ],
+                "title": "incineration-waste-inboundary-waste-composition"
               },
               {
-                "id": "incineration-waste-inboundary-technology",
+                "id": "inboundary-technology",
                 "options": [
                   "technology-continuous-incineration",
                   "technology-semi-continuous-incineration",
                   "technology-batch-type-incineration"
-                ]
+                ],
+                "title": "incineration-waste-inboundary-technology"
               },
               {
-                "id": "incineration-waste-inboundary-boiler-type",
-                "options": ["boiler-type-stoker", "boiler-type-fluidised-bed"]
+                "id": "boiler-type",
+                "options": ["boiler-type-stoker", "boiler-type-fluidised-bed"],
+                "title": "incineration-waste-inboundary-boiler-type"
               }
             ],
             "units": ["units-kilograms", "units-tonnes"]
@@ -3678,16 +3780,18 @@
             "activity-title": "total-mass-of-waste-incinerated-or-burned",
             "extra-fields": [
               {
-                "id": "incineration-waste-outboundary-incineration-facility-id",
-                "type": "text"
-              },
-              {
-                "id": "incineration-waste-outboundary-incineration-facility-address",
+                "id": "facility-id",
                 "type": "text",
-                "required": false
+                "title": "incineration-waste-outboundary-incineration-facility-id"
               },
               {
-                "id": "incineration-waste-outboundary-waste-composition",
+                "id": "facility-address",
+                "type": "text",
+                "required": false,
+                "title": "incineration-waste-outboundary-incineration-facility-address"
+              },
+              {
+                "id": "waste-composition",
                 "type": "percentage-breakdown",
                 "total-required": 100,
                 "subtypes": [
@@ -3696,19 +3800,22 @@
                   "waste-composition-hazardous-waste",
                   "waste-composition-clinical-waste",
                   "waste-composition-sewage-sludge"
-                ]
+                ],
+                "title": "incineration-waste-outboundary-waste-composition"
               },
               {
-                "id": "incineration-waste-outboundary-technology",
+                "id": "outboundary-technology",
                 "options": [
                   "technology-continuous-incineration",
                   "technology-semi-continuous-incineration",
                   "technology-batch-type-incineration"
-                ]
+                ],
+                "title": "incineration-waste-outboundary-technology"
               },
               {
-                "id": "incineration-waste-outboundary-boiler-type",
-                "options": ["boiler-type-stoker", "boiler-type-fluidised-bed"]
+                "id": "boiler-type",
+                "options": ["boiler-type-stoker", "boiler-type-fluidised-bed"],
+                "title": "incineration-waste-outboundary-boiler-type"
               }
             ],
             "units": ["units-kilograms", "units-tonnes"]
@@ -3757,38 +3864,43 @@
             "activity-title": "total-population",
             "extra-fields": [
               {
-                "id": "wastewater-inside-domestic-calculator-income-group",
+                "id": "income-group",
                 "options": [
                   "income-group-type-all",
                   "income-group-type-rural",
                   "income-group-type-urban-high-income",
                   "income-group-type-urban-low-income"
-                ]
+                ],
+                "title": "wastewater-inside-domestic-calculator-income-group"
               },
               {
-                "id": "wastewater-inside-domestic-calculator-total-organic-sludge-removed",
-                "type": "number"
+                "id": "sludge-removed",
+                "type": "number",
+                "title": "wastewater-inside-domestic-calculator-total-organic-sludge-removed"
               },
               {
-                "id": "wastewater-inside-domestic-calculator-methane-recovered",
-                "type": "number"
+                "id": "methane-recovered",
+                "type": "number",
+                "title": "wastewater-inside-domestic-calculator-methane-recovered"
               },
               {
-                "id": "wastewater-inside-domestic-calculator-collection-status",
+                "id": "collection-status",
                 "options": [
                   "collection-status-type-wastewater-collected",
                   "collection-status-type-wastewater-not-collected"
-                ]
+                ],
+                "title": "wastewater-inside-domestic-calculator-collection-status"
               },
               {
-                "id": "wastewater-inside-domestic-calculator-treatment-status",
+                "id": "treatment-status",
                 "options": [
                   "treatment-status-type-wastewater-treated",
                   "treatment-status-type-wastewater-untreated"
-                ]
+                ],
+                "title": "wastewater-inside-domestic-calculator-treatment-status"
               },
               {
-                "id": "wastewater-inside-domestic-calculator-treatment-type-collected-treated",
+                "id": "collected-treated",
                 "options": [
                   "treatment-type-centralized-aerobic-treatment-plan-well-managed",
                   "treatment-type-centralized-aerobic-treatment-not-plan-well-managed",
@@ -3801,16 +3913,18 @@
                   "treatment-type-latrine-dry-climate-communal",
                   "treatment-type-latrine-wet-climate",
                   "treatment-type-latrine-regular-sediment"
-                ]
+                ],
+                "title": "wastewater-inside-domestic-calculator-treatment-type-collected-treated"
               },
               {
-                "id": "wastewater-inside-domestic-calculator-discharge-pathway-untreated",
+                "id": "pathway-untreated",
                 "options": [
                   "discharge-pathway-sea-river-lake",
                   "discharge-pathway-stagnant-sewer",
                   "discharge-pathway-flowing-sewer",
                   "discharge-pathway-to-ground"
-                ]
+                ],
+                "title": "wastewater-inside-domestic-calculator-discharge-pathway-untreated"
               }
             ]
           },
@@ -3825,7 +3939,7 @@
             "activity-title": "total-industry-production",
             "extra-fields": [
               {
-                "id": "wastewater-inside-industrial-calculator-industry-type",
+                "id": "industry-type",
                 "options": [
                   "industry-type-alcohol-refining",
                   "industry-type-coffee",
@@ -3842,37 +3956,43 @@
                   "industry-type-vegetable-oils",
                   "industry-type-vegetables-fruits-juices",
                   "industry-type-wine-and-vinegar"
-                ]
+                ],
+                "title": "wastewater-inside-industrial-calculator-industry-type"
               },
               {
-                "id": "wastewater-inside-industrial-calculator-total-organic-sludge-removed",
-                "type": "number"
-              },
-              {
-                "id": "wastewater-inside-industrial-calculator-methane-recovered",
-                "type": "number"
-              },
-              {
-                "id": "wastewater-inside-industrial-calculator-wastewater-generated",
+                "id": "sludge-removed",
                 "type": "number",
-                "required": false
+                "title": "wastewater-inside-industrial-calculator-total-organic-sludge-removed"
               },
               {
-                "id": "wastewater-inside-industrial-calculator-collection-status",
+                "id": "methane-recovered",
+                "type": "number",
+                "title": "wastewater-inside-industrial-calculator-methane-recovered"
+              },
+              {
+                "id": "wastewater-generated",
+                "type": "number",
+                "required": false,
+                "title": "wastewater-inside-industrial-calculator-wastewater-generated"
+              },
+              {
+                "id": "collection-status",
                 "options": [
                   "collection-status-type-wastewater-collected",
                   "collection-status-type-wastewater-not-collected"
-                ]
+                ],
+                "title": "wastewater-inside-industrial-calculator-collection-status"
               },
               {
-                "id": "wastewater-inside-industrial-calculator-treatment-status",
+                "id": "treatment-status",
                 "options": [
                   "treatment-status-type-wastewater-treated",
                   "treatment-status-type-wastewater-untreated"
-                ]
+                ],
+                "title": "wastewater-inside-industrial-calculator-treatment-status"
               },
               {
-                "id": "wastewater-inside-industrial-calculator-treatment-type-collected-treated",
+                "id": "collected-treated",
                 "options": [
                   "treatment-type-centralized-aerobic-treatment-plan-well-managed",
                   "treatment-type-centralized-aerobic-treatment-not-plan-well-managed",
@@ -3880,14 +4000,16 @@
                   "treatment-type-anaerobic-reactor",
                   "treatment-type-anaerobic-shallow-lagoon",
                   "treatment-type-anaerobic-deep-lagoon"
-                ]
+                ],
+                "title": "wastewater-inside-industrial-calculator-treatment-type-collected-treated"
               },
               {
-                "id": "wastewater-inside-industrial-calculator-discharge-pathway-untreated",
+                "id": "pathway-untreated",
                 "options": [
                   "discharge-pathway-sea-rivers-lakes, estuaries",
                   "discharge-pathway-stagnant-sewer"
-                ]
+                ],
+                "title": "wastewater-inside-industrial-calculator-discharge-pathway-untreated"
               }
             ]
           }
@@ -3953,38 +4075,43 @@
             "activity-title": "total-population",
             "extra-fields": [
               {
-                "id": "wastewater-outside-domestic-calculator-income-group",
+                "id": "income-group",
                 "options": [
                   "income-group-type-all",
                   "income-group-type-rural",
                   "income-group-type-urban-high-income",
                   "income-group-type-urban-low-income"
-                ]
+                ],
+                "title": "wastewater-outside-domestic-calculator-income-group"
               },
               {
-                "id": "wastewater-outside-domestic-calculator-total-organic-sludge-removed",
-                "type": "number"
+                "id": "sludge-removed",
+                "type": "number",
+                "title": "wastewater-outside-domestic-calculator-total-organic-sludge-removed"
               },
               {
-                "id": "wastewater-outside-domestic-calculator-methane-recovered",
-                "type": "number"
+                "id": "methane-recovered",
+                "type": "number",
+                "title": "wastewater-outside-domestic-calculator-methane-recovered"
               },
               {
-                "id": "wastewater-outside-domestic-calculator-collection-status",
+                "id": "collection-status",
                 "options": [
                   "collection-status-type-wastewater-collected",
                   "collection-status-type-wastewater-not-collected"
-                ]
+                ],
+                "title": "wastewater-outside-domestic-calculator-collection-status"
               },
               {
-                "id": "wastewater-outside-domestic-calculator-treatment-status",
+                "id": "treatment-status",
                 "options": [
                   "treatment-status-type-wastewater-treated",
                   "treatment-status-type-wastewater-untreated"
-                ]
+                ],
+                "title": "wastewater-outside-domestic-calculator-treatment-status"
               },
               {
-                "id": "wastewater-outside-domestic-calculator-treatment-type-collected-treated",
+                "id": "collected-treated",
                 "options": [
                   "treatment-type-centralized-aerobic-treatment-plan-well-managed",
                   "treatment-type-centralized-aerobic-treatment-not-plan-well-managed",
@@ -3997,16 +4124,18 @@
                   "treatment-type-latrine-dry-climate-communal",
                   "treatment-type-latrine-wet-climate",
                   "treatment-type-latrine-regular-sediment"
-                ]
+                ],
+                "title": "wastewater-outside-domestic-calculator-treatment-type-collected-treated"
               },
               {
-                "id": "wastewater-outside-domestic-calculator-discharge-pathway-untreated",
+                "id": "pathway-untreated",
                 "options": [
                   "discharge-pathway-sea-river-lake",
                   "discharge-pathway-stagnant-sewer",
                   "discharge-pathway-flowing-sewer",
                   "discharge-pathway-to-ground"
-                ]
+                ],
+                "title": "wastewater-outside-domestic-calculator-discharge-pathway-untreated"
               }
             ]
           },
@@ -4021,7 +4150,7 @@
             "activity-title": "total-industry-production",
             "extra-fields": [
               {
-                "id": "wastewater-outside-industrial-calculator-industry-type",
+                "id": "industry-type",
                 "options": [
                   "industry-type-alcohol-refining",
                   "industry-type-coffee",
@@ -4038,37 +4167,43 @@
                   "industry-type-vegetable-oils",
                   "industry-type-vegetables-fruits-juices",
                   "industry-type-wine-and-vinegar"
-                ]
+                ],
+                "title": "wastewater-outside-industrial-calculator-industry-type"
               },
               {
-                "id": "wastewater-outside-industrial-calculator-total-organic-sludge-removed",
-                "type": "number"
-              },
-              {
-                "id": "wastewater-outside-industrial-calculator-methane-recovered",
-                "type": "number"
-              },
-              {
-                "id": "wastewater-outside-industrial-calculator-wastewater-generated",
+                "id": "sludge-removed",
                 "type": "number",
-                "required": false
+                "title": "wastewater-outside-industrial-calculator-total-organic-sludge-removed"
               },
               {
-                "id": "wastewater-outside-industrial-calculator-collection-status",
+                "id": "methane-recovered",
+                "type": "number",
+                "title": "wastewater-outside-industrial-calculator-methane-recovered"
+              },
+              {
+                "id": "wastewater-generated",
+                "type": "number",
+                "required": false,
+                "title": "wastewater-outside-industrial-calculator-wastewater-generated"
+              },
+              {
+                "id": "collection-status",
                 "options": [
                   "collection-status-type-wastewater-collected",
                   "collection-status-type-wastewater-not-collected"
-                ]
+                ],
+                "title": "wastewater-outside-industrial-calculator-collection-status"
               },
               {
-                "id": "wastewater-outside-industrial-calculator-treatment-status",
+                "id": "treatment-status",
                 "options": [
                   "treatment-status-type-wastewater-treated",
                   "treatment-status-type-wastewater-untreated"
-                ]
+                ],
+                "title": "wastewater-outside-industrial-calculator-treatment-status"
               },
               {
-                "id": "wastewater-outside-industrial-calculator-treatment-type-collected-treated",
+                "id": "collected-treated",
                 "options": [
                   "treatment-type-centralized-aerobic-treatment-plan-well-managed",
                   "treatment-type-centralized-aerobic-treatment-not-plan-well-managed",
@@ -4076,14 +4211,16 @@
                   "treatment-type-anaerobic-reactor",
                   "treatment-type-anaerobic-shallow-lagoon",
                   "treatment-type-anaerobic-deep-lagoon"
-                ]
+                ],
+                "title": "wastewater-outside-industrial-calculator-treatment-type-collected-treated"
               },
               {
-                "id": "wastewater-outside-industrial-calculator-discharge-pathway-untreated",
+                "id": "pathway-untreated",
                 "options": [
                   "discharge-pathway-sea-rivers-lakes, estuaries",
                   "discharge-pathway-stagnant-sewer"
-                ]
+                ],
+                "title": "wastewater-outside-industrial-calculator-discharge-pathway-untreated"
               }
             ]
           }

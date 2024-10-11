@@ -62,10 +62,8 @@ module.exports = {
         const methodologies = await parseFile("Methodology", folder);
         const formulaInputsRaw = await parseFile("FormulaInputs", folder);
         const formulaInputs = formulaInputsRaw.map((fi) => {
-          const metadata = (fi.metadata ? fi.metadata : "")
-            .split(", ")
-            .map((entry) => entry.split(":"));
-          fi.metadata = JSON.stringify(Object.fromEntries(metadata));
+          const metadata = fi.metadata ? fi.metadata : "{}";
+          fi.metadata = metadata.replace(/'/g, '"');
           fi.year = !!fi.year ? parseInt(fi.year) : null;
           return fi;
         });

@@ -3613,7 +3613,6 @@
     "methodologies": [
       {
         "id": "biological-treatment-inboundary-methodology",
-        "disabled": true,
         "activityTypeField": "biological-treatment-inboundary-treatment-type",
         "inputRequired": [
           "mass-of-organic-waste-treated",

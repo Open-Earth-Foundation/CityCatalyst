@@ -1,4 +1,4 @@
-gas,parameter_code,parameter_name,methodology,gpc_refno,year,formula_input_value,formula_input_units,formula_name,metadata,Region,actor_id,datasource,RNK,methodology_id,formulainput_id
+gas,parameter_code,parameter_name,methodology_name,gpc_refno,year,formula_input_value,formula_input_units,formula_name,metadata,region,actor_id,datasource,rnk,methodology_id,formulainput_id
 CH4,BOD,degradable-organic-component,wastewater-inside-domestic-calculator-activity,III.4.1,94,13.505,g/person/day,domestic-wastewater,,Region: Africa,AO,IPCC,1,4025beed-cbe5-301d-8cd6-f706531cba42,f67b1cb5-24d0-4f89-a34b-009f88e22c08
 CH4,BOD,degradable-organic-component,wastewater-inside-domestic-calculator-activity,III.4.1,94,13.505,g/person/day,domestic-wastewater,,Region: Africa,GM,IPCC,1,4025beed-cbe5-301d-8cd6-f706531cba42,620dfc30-774a-4b59-b1fe-2a9034ee5683
 CH4,BOD,degradable-organic-component,wastewater-inside-domestic-calculator-activity,III.4.1,94,13.505,g/person/day,domestic-wastewater,,Region: Africa,KM,IPCC,1,4025beed-cbe5-301d-8cd6-f706531cba42,f9b50987-a3d4-49ea-9fe5-daf399c1c4d7

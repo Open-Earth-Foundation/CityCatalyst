@@ -20,6 +20,7 @@
     "db:migrate": "sequelize-cli db:migrate",
     "db:migrate:undo": "sequelize-cli db:migrate:undo",
     "db:seed": "sequelize-cli db:seed:all --debug",
+    "db:seed:one": "sequelize-cli db:seed --debug --seed",
     "db:seed:undo": "sequelize-cli db:seed:undo --debug",
     "db:seed:undo:all": "sequelize-cli db:seed:undo:all --debug",
     "db:gen-migration": "sequelize-cli migration:generate --name",

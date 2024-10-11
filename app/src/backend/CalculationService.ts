@@ -109,8 +109,10 @@ export default class CalculationService {
         break;
       case "induced-activity-1":
         gases = handleVkt1Formula(activityValue, gasValues);
+        break;
       case "biological-treatment":
         gases = await handleBiologicalTreatmentFormula(activityValue);
+        break;
       case "wastewater-calculator":
         const activityId = activityValue.metadata?.activityId;
 

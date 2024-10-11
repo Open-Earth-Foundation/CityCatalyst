@@ -3,7 +3,7 @@ const hierarchy = require("./manual-input-hierarchy.json");
 // call this script using:
 // node fix-json.cjs > manual-input-hierarchy-fixed.json
 
-Object.entries(hierarchy).forEach(([key, value]) => {
+Object.values(hierarchy).forEach((value) => {
   value.methodologies = value.methodologies.map((methodology) => {
     methodology.activities = methodology.activities?.map((activity) => {
       activity["extra-fields"] = activity["extra-fields"]?.map((field) => {

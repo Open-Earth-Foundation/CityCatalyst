@@ -3,7 +3,6 @@ import { DataTypes, Model, Optional } from "sequelize";
 import { Methodology, MethodologyId } from "./Methodology";
 
 export interface FormulaInputAttributes {
-  id: string;
   gas: string;
   parameterCode: string;
   parameterName: string;
@@ -24,7 +23,7 @@ export interface FormulaInputAttributes {
   updatedAt?: Date;
 }
 
-export type FormulaInputPk = "id";
+export type FormulaInputPk = "formulaInputId";
 export type FormulaInputId = FormulaInput[FormulaInputPk];
 export type FormulaInputOptionalAttributes =
   | "metadata"
@@ -39,7 +38,6 @@ export class FormulaInput
   extends Model<FormulaInputAttributes, FormulaInputCreationAttributes>
   implements FormulaInputAttributes
 {
-  id!: string;
   gas!: string;
   parameterCode!: string;
   parameterName!: string;
@@ -75,12 +73,6 @@ export class FormulaInput
   static initModel(sequelize: Sequelize.Sequelize): typeof FormulaInput {
     return FormulaInput.init(
       {
-        id: {
-          type: DataTypes.UUID,
-          allowNull: false,
-          primaryKey: true,
-          defaultValue: DataTypes.UUIDV4,
-        },
         gas: {
           type: DataTypes.STRING,
           allowNull: false,
@@ -160,6 +152,8 @@ export class FormulaInput
           type: DataTypes.UUID,
           allowNull: false,
           field: "formulainput_id",
+          primaryKey: true,
+          defaultValue: DataTypes.UUIDV4,
         },
         createdAt: {
           type: DataTypes.DATE,

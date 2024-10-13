@@ -3810,11 +3810,11 @@
                 "type": "percentage-breakdown",
                 "total-required": 100,
                 "subtypes": [
-                  "waste-type-municipal-solid-waste",
-                  "waste-type-industrial",
-                  "waste-type-hazardous",
-                  "waste-type-clinical",
-                  "waste-type-sewage"
+                  "waste-composition-clinical-waste",
+                  "waste-composition-hazardous-waste",
+                  "waste-composition-industrial-solid-waste",
+                  "waste-composition-municipal-solid-waste",
+                  "waste-composition-sewage-sludge"
                 ]
               },
               {
@@ -3892,11 +3892,11 @@
                 "type": "percentage-breakdown",
                 "total-required": 100,
                 "subtypes": [
-                  "waste-type-municipal-solid-waste",
-                  "waste-type-industrial",
-                  "waste-type-hazardous",
-                  "waste-type-clinical",
-                  "waste-type-sewage"
+                  "waste-composition-clinical-waste",
+                  "waste-composition-hazardous-waste",
+                  "waste-composition-industrial-solid-waste",
+                  "waste-composition-municipal-solid-waste",
+                  "waste-composition-sewage-sludge"
                 ]
               },
               {

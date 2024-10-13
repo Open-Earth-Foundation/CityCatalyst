@@ -10,6 +10,7 @@ import {
   handleBiologicalTreatmentFormula,
   handleDirectMeasureFormula,
   handleDomesticWasteWaterFormula,
+  handleIncinerationWasteFormula,
   handleIndustrialWasteWaterFormula,
   handleMethaneCommitmentFormula,
   handleVkt1Formula,
@@ -107,6 +108,11 @@ export default class CalculationService {
       case "methane-commitment":
         gases = handleMethaneCommitmentFormula(activityValue);
         break;
+      case "incineration-waste":
+        gases = await handleIncinerationWasteFormula(
+          activityValue,
+          inventoryValue,
+        );
       case "induced-activity-1":
         gases = handleVkt1Formula(activityValue, gasValues);
         break;

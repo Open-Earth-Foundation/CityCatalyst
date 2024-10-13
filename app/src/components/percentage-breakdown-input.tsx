@@ -21,32 +21,32 @@ import {
 import React, { FC, useMemo } from "react";
 import { Control, FieldError, useWatch } from "react-hook-form";
 import {
+  ClinicalWasteIcon,
   FoodIcon,
   GardenIcon,
+  HazardousWasteIcon,
   IndustrialIcon,
+  IndustrialSolidWasteIcon,
+  MunicipalSolidWasteIcon,
   PaperIcon,
+  SewageWasteIcon,
   TextilesIcon,
   WoodIcon,
 } from "./icons";
 import type { TFunction } from "i18next";
 
-// TODO pass this into the component in the future to make it more flexible
-const breakdownCategories = [
-  { id: "food", icon: FoodIcon },
-  { id: "garden", icon: GardenIcon },
-  { id: "paper", icon: PaperIcon },
-  { id: "wood", icon: WoodIcon },
-  { id: "textiles", icon: TextilesIcon },
-  { id: "industrial", icon: IndustrialIcon },
-];
-
-const defaultValues = {
-  food: 0,
-  garden: 0,
-  paper: 0,
-  wood: 0,
-  textiles: 0,
-  industrial: 0,
+const categoryIconMapping: Record<string, any> = {
+  "waste-type-municipal-solid-waste": MunicipalSolidWasteIcon,
+  "waste-type-industrial": IndustrialSolidWasteIcon,
+  "waste-type-hazardous": HazardousWasteIcon,
+  "waste-type-clinical": ClinicalWasteIcon,
+  "waste-type-sewage": SewageWasteIcon,
+  "waste-composition-food": FoodIcon,
+  "waste-composition-garden": GardenIcon,
+  "waste-composition-paper": PaperIcon,
+  "waste-composition-wood": WoodIcon,
+  "waste-composition-textiles": TextilesIcon,
+  "waste-composition-industrial": IndustrialIcon,
 };
 
 interface FormInputProps {
@@ -62,6 +62,7 @@ interface FormInputProps {
   setValue: Function;
   id: string;
   t: TFunction;
+  breakdownCategories: string[];
 }
 
 const PercentageBreakdownInput: FC<FormInputProps> = ({
@@ -75,6 +76,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
   setValue,
   id,
   t,
+  breakdownCategories,
 }) => {
   let background = "";
   if (error) {
@@ -91,7 +93,16 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
     defaultValue: {},
   });
   if (Object.keys(breakDownValues).length === 0) {
-    setValue(`activity.${id}`, defaultValues);
+    setValue(
+      `activity.${id}`,
+      breakdownCategories.reduce(
+        (acc, curr) => {
+          acc[curr] = 0;
+          return acc;
+        },
+        {} as Record<string, number>,
+      ),
+    );
   }
 
   const totalPercent = useMemo(() => {
@@ -113,12 +124,15 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
   const breakdownSummary = useMemo(() => {
     return Object.entries(breakDownValues)
       .map(([key, value]) => {
-        const category = breakdownCategories.find((c) => c.id === key);
-        return `${t(category?.id ?? "")} ${value}%`;
+        console.log(key, value);
+        const category = breakdownCategories.find((c) => c === key);
+        return `${t(category ?? "")} ${value}%`;
       })
       .join(", ");
     // breakdownCategories
   }, [breakDownValues, t]);
+
+  console.log(breakdownSummary, "the summary");
 
   return (
     <FormControl display="flex" flexDirection="column" isInvalid={!!error}>
@@ -172,8 +186,8 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
               <PopoverArrow />
               <PopoverBody w="full" className="space-y-6 py-6">
                 {breakdownCategories.map((category) => (
-                  <HStack key={category.id}>
-                    <Icon as={category.icon} mr={4} />
+                  <HStack key={category}>
+                    <Icon as={categoryIconMapping[category]} mr={4} />
                     <Text
                       fontSize="14px"
                       w="full"
@@ -181,15 +195,15 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                       letterSpacing="wide"
                       flexGrow={1}
                     >
-                      {t(category.id)}
+                      {t(category)}
                     </Text>
                     <InputGroup w="116px">
                       <Input
                         type="text"
-                        value={getValues(`activity.${id}.${category.id}`)}
+                        value={getValues(`activity.${id}.${category}`)}
                         onChange={(e) => {
                           setValue(
-                            `activity.${id}.${category.id}`,
+                            `activity.${id}.${category}`,
                             e.target.value,
                           );
                         }}

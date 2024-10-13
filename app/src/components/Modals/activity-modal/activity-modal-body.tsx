@@ -12,7 +12,7 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import BuildingTypeSelectInput from "../../building-select-input";
 import { InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
 import { TFunction } from "i18next";
@@ -88,6 +88,7 @@ export type ExtraField = {
   multiselect?: boolean; // Whether multiple selections are allowed
   units?: string[]; // Specifies units, applicable when type is 'number'
   required?: boolean; // Whether the field is required
+  subtypes?: string[];
 };
 
 const ActivityModalBody = ({
@@ -197,6 +198,7 @@ const ActivityModalBody = ({
                     setValue={setValue}
                     setError={setError}
                     clearErrors={clearErrors}
+                    breakdownCategories={f.subtypes as string[]}
                     error={errors?.activity?.[f.id]}
                     t={t}
                   />

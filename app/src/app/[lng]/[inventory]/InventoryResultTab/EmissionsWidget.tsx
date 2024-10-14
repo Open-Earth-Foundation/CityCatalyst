@@ -37,7 +37,7 @@ const EmissionsWidgetCard = ({
 
   return (
     <HStack align="center" marginY={"9px"} justify="space-between" key={field}>
-      <Stack w="full" height={"82.67px"}>
+      <Stack w="full" height={"83px"}>
         <HStack align="start">
           {value && showProgress ? (
             <CircularProgress

@@ -35,7 +35,7 @@ async function getTotalEmissionsWithPercentage(inventory: string) {
 
   const sumOfEmissions = totalEmissions.reduce((sum, emission) => {
     return sum + BigInt(emission.co2eq);
-  }, BigInt(0));
+  }, 0n);
 
   const totalEmissionsBySector = totalEmissions.map(
     ({ co2eq, sector_name }) => ({

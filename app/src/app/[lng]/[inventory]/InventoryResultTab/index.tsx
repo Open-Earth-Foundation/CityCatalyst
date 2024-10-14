@@ -141,7 +141,6 @@ function SectorTabs({
                   >
                     {t("breakdown-of-sub-sector-emissions")}
                   </Text>
-                  (
                   <Box paddingBottom={"12px"}>
                     <Select
                       width="162px"
@@ -165,7 +164,6 @@ function SectorTabs({
                       )}
                     </Select>
                   </Box>
-                  )
                 </HStack>
                 {isResultsLoading && <CircularProgress isIndeterminate />}
                 {isEmptyInventory && (

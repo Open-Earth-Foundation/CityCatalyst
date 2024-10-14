@@ -15,13 +15,18 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import type {InventoryResponse, SectorEmission, TopEmission} from "@/util/types";
+import type {
+  InventoryResponse,
+  SectorEmission,
+  TopEmission,
+} from "@/util/types";
 import { capitalizeFirstLetter, convertKgToTonnes } from "@/util/helpers";
 import { api } from "@/services/api";
 import {
   SegmentedProgress,
   SegmentedProgressValues,
 } from "@/components/SegmentedProgress";
+import { EmptyStateCardContent } from "@/app/[lng]/[inventory]/InventoryResultTab/EmptyStateCardContent";
 
 const EmissionsTable = ({
   topEmissions,
@@ -82,52 +87,75 @@ const TopEmissionsWidget = ({
     api.useGetResultsQuery(inventory!.inventoryId!);
 
   function getPercentagesForProgress(): SegmentedProgressValues[] {
-    const bySector: SectorEmission[] = results?.totalEmissions.bySector ??  [];
-    return bySector.map(({sectorName, co2eq, percentage}) => {
+    const bySector: SectorEmission[] = results?.totalEmissions.bySector ?? [];
+    return bySector.map(({ sectorName, co2eq, percentage }) => {
       return {
         name: sectorName,
         value: co2eq,
-        percentage: percentage
+        percentage: percentage,
       } as SegmentedProgressValues;
     });
-
   }
 
-  return (
-    <HStack>
-      <Card marginLeft={"4"} backgroundColor={"white"} p={4}>
-        {isTopEmissionsResponseLoading ? (
-          <Center>
-            <CircularProgress isIndeterminate />
-          </Center>
-        ) : (
-          <>
-            <Box>
-              <Heading size="sm" my={4}>
-                {t("total-emissions")}
-              </Heading>
-            </Box>
-            <SegmentedProgress
-              values={getPercentagesForProgress()}
-              total={results!.totalEmissions.total}
-              t={t}
-              showLabels
-              showHover
-            />
-            <Box>
-              <Heading size="sm" marginTop={10} marginBottom={4}>
-                {t("top-emissions")}
-              </Heading>
-            </Box>
-            <EmissionsTable
-              topEmissions={results!.topEmissions.bySubSector}
-              t={t}
-            />
-          </>
-        )}
-      </Card>
-    </HStack>
-  );
+  if (isTopEmissionsResponseLoading) {
+    return (
+      <HStack>
+        <Card marginLeft={"4"} backgroundColor={"white"} p={4}>
+          {
+            <Center>
+              <CircularProgress isIndeterminate />
+            </Center>
+          }
+        </Card>
+      </HStack>
+    );
+  } else if (results!.totalEmissions.total <= 0) {
+    return (
+      <>
+        <Card width={"713px"} height={"448px"}>
+          <Heading size="sm">{t("top-emissions")}</Heading>
+          <EmptyStateCardContent
+            width={"665px"}
+            height={"344px"}
+            t={t}
+            inventoryId={inventory?.inventoryId}
+          />
+        </Card>
+      </>
+    );
+  } else {
+    return (
+      <HStack>
+        <Card marginLeft={"4"} backgroundColor={"white"} p={4}>
+          {
+            <>
+              <Box>
+                <Heading size="sm" my={4}>
+                  {t("total-emissions")}
+                </Heading>
+              </Box>
+              <SegmentedProgress
+                values={getPercentagesForProgress()}
+                total={results?.totalEmissions.total}
+                t={t}
+                showLabels
+                showHover
+              />
+              <Box>
+                <Heading size="sm" marginTop={10} marginBottom={4}>
+                  {t("top-emissions")}
+                </Heading>
+              </Box>
+              <EmissionsTable
+                topEmissions={results!.topEmissions.bySubSector}
+                t={t}
+              />
+            </>
+          }
+        </Card>
+      </HStack>
+    );
+  }
 };
 
 export default TopEmissionsWidget;

@@ -26,9 +26,7 @@ export const GET = apiHandler(
       sectorName,
     );
     return NextResponse.json({
-      data: {
-        activitiesForSectorBreakdown: emissionsBreakdown,
-      },
+      data: emissionsBreakdown,
     });
   },
 );

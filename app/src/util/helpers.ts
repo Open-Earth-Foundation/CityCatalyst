@@ -257,9 +257,12 @@ export function convertKgToTonnes(
   valueInTonnes: number | bigint,
   gas?: string,
 ) {
+  let locale = "en-US";
   let result = "";
   let gasSuffix = gas ? ` ${gas}` : "CO2";
   const tonnes = Number(valueInTonnes);
+  const formatter = new Intl.NumberFormat(locale, { maximumFractionDigits: 0 });
+
   if (tonnes >= 1e6) {
     // Convert to megatonnes if the value is 1,000,000 tonnes or more
     const megatonnes = (tonnes / 1e6).toFixed(2);
@@ -274,7 +277,7 @@ export function convertKgToTonnes(
     result = `${kilograms} kg${gasSuffix}`;
   } else {
     // Return as tonnes if the value is less than 1,000 tonnes but more than or equal to 1 tonne
-    result = `${tonnes} t${gasSuffix}`;
+    result = `${formatter.format(tonnes)} t${gasSuffix}`;
   }
 
   return result;
@@ -288,5 +291,4 @@ export const toKebabCase = (input: string | undefined): string => {
     .toLowerCase();
 };
 
-export const capitalizeFirstLetter = (string: string) =>
-  string.charAt(0).toUpperCase() + string.slice(1);
+export const capitalizeFirstLetter = (string: string) => string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();

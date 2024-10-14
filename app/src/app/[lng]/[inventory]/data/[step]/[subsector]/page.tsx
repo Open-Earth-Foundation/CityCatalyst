@@ -15,20 +15,32 @@ import {
   Button,
   CircularProgress,
   Icon,
-  Link,
   Tab,
   TabList,
   TabPanels,
   Tabs,
   Text,
-  useDisclosure,
 } from "@chakra-ui/react";
-import { motion } from "framer-motion";
+
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MdOutlineHomeWork } from "react-icons/md";
-import { toKebabCase } from "@/util/helpers";
-import { throttle } from "lodash";
+import {
+  AnimatePresence,
+  easeInOut,
+  motion,
+  useMotionValueEvent,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+import Link from "next/link";
+
+const MotionBox = motion(Box);
+
+const kebab = (str: string|undefined): string =>
+  (str)
+    ? str.replaceAll(/\s+/g, '-').replaceAll(/[^0-9A-Za-z\-\_]/g, '').toLowerCase()
+    : '';
 
 function SubSectorPage({
   params: { lng, step, inventory: inventoryId, subsector },
@@ -37,16 +49,37 @@ function SubSectorPage({
 }) {
   const router = useRouter();
   const { t } = useTranslation(lng, "data");
+  const { scrollY } = useScroll();
 
-  const {
-    isOpen: isDeleteActivitiesModalOpen,
-    onOpen: onDeleteActivitiesModalOpen,
-    onClose: onDeleteActivitiesModalClose,
-  } = useDisclosure();
+  const paddingTop = useTransform(scrollY, [0, 100], ["100px", "50px"], {
+    ease: easeInOut,
+  });
 
-  const [selectedTab, setSelectedTab] = useState(1); // sector ID (1/2/3)
-  const [selectedScope, setSelectedScope] = useState(1);
-  const [refNumber, setRefNumber] = useState();
+  const fontSize = useTransform(scrollY, [0, 100], ["28px", "24px"], {
+    ease: easeInOut,
+    clamp: true,
+  });
+  const leftPosition = useTransform(scrollY, [0, 100], ["0px", "30px"], {
+    ease: easeInOut,
+  });
+
+  const [isVisible, setIsVisible] = useState(true);
+
+  const scrollStart = 0;
+  const scrollEnd = 200;
+  const animationPercent = useTransform(
+    scrollY,
+    [scrollStart, scrollEnd],
+    [0, 100],
+    {
+      clamp: true, // Ensure the output stays within [0, 100]
+    },
+  );
+
+  useMotionValueEvent(animationPercent, "change", (latest) => {
+    setIsVisible(latest < 50);
+  });
+
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
   const defaultInventoryId = userInfo?.defaultInventoryId;
@@ -112,26 +145,6 @@ function SubSectorPage({
 
   const scopes = getFilteredSubsectorScopes();
 
-  // calculate total consumption and emissions
-
-  const [scrollPosition, setScrollPosition] = useState<number>(0);
-
-  const handleScroll = () => {
-    const position = window.scrollY;
-
-    setIsExpanded(window.scrollY > scrollResizeHeaderThreshold);
-    // setScrollPosition(position);
-  };
-
-  useEffect(() => {
-    const throttledHandle = throttle(handleScroll, 500);
-    window.addEventListener("scroll", throttledHandle, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", throttledHandle);
-    };
-  }, []);
-
   const MotionTabList = motion(TabList);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -146,8 +159,6 @@ function SubSectorPage({
       clearTimeout(timer);
     };
   };
-  const scrollResizeHeaderThreshold = 170;
-  const [isExpanded, setIsExpanded] = useState(false);
 
   const { data: activityData, isLoading: isActivityDataLoading } =
     api.useGetActivityValuesQuery({
@@ -166,110 +177,150 @@ function SubSectorPage({
     isActivityDataLoading || isInventoryValueLoading || isLoading;
 
   return (
-    <>
-      <Box
+    <Tabs>
+      <MotionBox
         bg="background.backgroundLight"
-        className={`fixed z-10 top-0 w-full ${isExpanded ? "pt-[50px] h-[200px]" : "pt-[100px] h-[400px]"} transition-all duration-50 ease-linear`}
+        className="fixed z-10 top-0 w-full transition-all"
+        style={{
+          paddingTop: paddingTop,
+        }}
+        borderColor="border.neutral"
+        borderBottomWidth={true ? "1px" : ""}
       >
-        <Box className=" w-[1090px]  max-w-full mx-auto px-4">
-          <Box
-            w="full"
-            display="flex"
-            alignItems="center"
-            gap="16px"
-            mb="64px"
-            className={` ${isExpanded ? "hidden" : "flex"} transition-all duration-50 ease-linear`}
-          >
-            <Button
-              variant="ghost"
-              fontSize="14px"
-              leftIcon={<ArrowBackIcon boxSize={6} />}
-              onClick={() => router.back()}
-            >
-              {t("go-back")}
-            </Button>
-            <Box borderRightWidth="1px" borderColor="border.neutral" h="24px" />
-            <Box>
-              <Breadcrumb
-                spacing="8px"
-                fontFamily="heading"
-                fontWeight="bold"
-                fontSize="14px"
-                letterSpacing="widest"
-                textTransform="uppercase"
-                separator={<ChevronRightIcon color="gray.500" h="24px" />}
+        <MotionBox className="w-[1090px] max-w-full mx-auto px-4">
+          <AnimatePresence>
+            {isVisible && (
+              <MotionBox
+                key="bread-crumb"
+                w="full"
+                display="flex"
+                alignItems="center"
+                gap="16px"
+                initial="collapsed"
+                animate="open"
+                exit="collapsed"
+                variants={{
+                  open: { opacity: 1, height: "auto", marginBottom: "64px" },
+                  collapsed: { opacity: 0, height: 0, marginBottom: 0 },
+                }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
               >
-                <BreadcrumbItem>
-                  <BreadcrumbLink
-                    href={`/${inventoryId}/data`}
-                    color="content.tertiary"
+                <Button
+                  variant="ghost"
+                  fontSize="14px"
+                  leftIcon={<ArrowBackIcon boxSize={6} />}
+                  onClick={() => router.back()}
+                >
+                  {t("go-back")}
+                </Button>
+                <Box
+                  borderRightWidth="1px"
+                  borderColor="border.neutral"
+                  h="24px"
+                />
+                <Box>
+                  <Breadcrumb
+                    spacing="8px"
+                    fontFamily="heading"
+                    fontWeight="bold"
+                    fontSize="14px"
+                    letterSpacing="widest"
+                    textTransform="uppercase"
+                    separator={<ChevronRightIcon color="gray.500" h="24px" />}
                   >
-                    {t("all-sectors")}
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbItem>
-                  <BreadcrumbLink
-                    href={`/${inventoryId}/data/${step}`}
-                    color="content.tertiary"
-                  >
-                    {getSectorName(step)}
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbItem>
-                  <BreadcrumbLink href="#" color="content.link">
-                    <Text noOfLines={1}>
-                      {!subSectorData ? (
-                        <CircularProgress
-                          isIndeterminate
-                          color="content.tertiary"
-                          size={"30px"}
-                        />
-                      ) : (
-                        t(toKebabCase(subSectorData?.subsectorName))
-                      )}
-                    </Text>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </Breadcrumb>
-            </Box>
-          </Box>
-          <Box display="flex">
-            {isExpanded ? (
-              <Box>
-                <Link href={`/${inventoryId}/data/${step}`}>
-                  <Icon
-                    as={ArrowBackIcon}
-                    h="24px"
-                    w="24px"
-                    mt="24px"
-                    color="content.link"
-                  />
-                </Link>
-              </Box>
-            ) : (
-              ""
+                    <BreadcrumbItem>
+                      <BreadcrumbLink
+                        href={`/${inventoryId}/data`}
+                        color="content.tertiary"
+                      >
+                        {t("all-sectors")}
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbItem>
+                      <BreadcrumbLink
+                        href={`/${inventoryId}/data/${step}`}
+                        color="content.tertiary"
+                      >
+                        {getSectorName(step)}
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbItem>
+                      <BreadcrumbLink href="#" color="content.link">
+                        <Text noOfLines={1}>
+                          {!subSectorData ? (
+                            <CircularProgress
+                              isIndeterminate
+                              color="content.tertiary"
+                              size={"30px"}
+                            />
+                          ) : (
+                            t(kebab(subSectorData?.subsectorName))
+                          )}
+                        </Text>
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                  </Breadcrumb>
+                </Box>
+              </MotionBox>
             )}
-            <Box display="flex" gap="16px">
-              <Box
+          </AnimatePresence>
+          <MotionBox display="flex" gap="16px">
+            <AnimatePresence mode="popLayout">
+              {!isVisible && (
+                <MotionBox
+                  layout
+                  w="full"
+                  key="back-arrow"
+                  initial="collapsed"
+                  animate="open"
+                  exit="collapsed"
+                  variants={{
+                    open: { opacity: 1, width: "24px" },
+                    collapsed: { opacity: 0, width: 0 },
+                  }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                >
+                  <Link href={`/${inventoryId}/data/${step}`}>
+                    <Icon
+                      as={ArrowBackIcon}
+                      h="24px"
+                      w="24px"
+                      mt="24px"
+                      color="content.link"
+                    />
+                  </Link>
+                </MotionBox>
+              )}
+              <MotionBox
+                layout
+                key="icon"
                 color="content.link"
+                flexGrow={0}
+                width="32px"
                 pt="5px"
                 pos="relative"
-                left={isExpanded ? "30px" : ""}
+                style={{
+                  left: leftPosition.get(),
+                }}
               >
                 <MdOutlineHomeWork size="32px" />
-              </Box>
-              <Box
+              </MotionBox>
+              <MotionBox
+                layout
+                key="text-section"
                 display="flex"
-                gap={isExpanded ? "8px" : "16px"}
+                flexGrow={1}
+                gap="16px"
                 flexDirection="column"
               >
                 <Text
                   fontFamily="heading"
-                  fontSize={isExpanded ? "headline.sm" : "headline.md"}
                   fontWeight="bold"
                   pos="relative"
-                  left={isExpanded ? "30px" : ""}
-                  className="transition-all duration-50 ease-linear"
+                  style={{
+                    left: leftPosition.get(),
+                    fontSize: fontSize.get(),
+                  }}
                 >
                   {!subSectorData ? (
                     <CircularProgress
@@ -280,7 +331,7 @@ function SubSectorPage({
                   ) : subSectorData?.referenceNumber != undefined ? (
                     subSectorData?.referenceNumber +
                     " " +
-                    t(toKebabCase(subSectorData?.subsectorName))
+                    t(kebab(subSectorData?.subsectorName))
                   ) : (
                     ""
                   )}
@@ -291,85 +342,97 @@ function SubSectorPage({
                   fontSize="label.lg"
                   fontWeight="medium"
                   pos="relative"
-                  left={isExpanded ? "-15px" : ""}
-                >
-                  {t("sector")}: {getSectorName(step)} | {t("inventory-year")}:{" "}
-                  {inventoryProgress?.inventory.year}
-                </Text>
-                {isExpanded ? (
-                  ""
-                ) : (
-                  <Text
-                    letterSpacing="wide"
-                    fontSize="body.lg"
-                    fontWeight="normal"
-                    color="interactive.control"
-                  >
-                    {t("commercial-and-institutional-building-description")}
-                  </Text>
-                )}
-              </Box>
-            </Box>
-          </Box>
-        </Box>
-      </Box>
-      <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4 pb-[100px] mt-[240px]">
-        <Box mt="48px">
-          <Tabs>
-            <MotionTabList
-              className="w-[1090px] z-10"
-              bg="background.backgroundLight"
-              h="80px"
-              pos={isExpanded ? "fixed" : "relative"}
-              top={isExpanded ? "170px" : "50px"}
-              animate={{
-                y: isExpanded ? 0 : -50,
-                delay: 200,
-              }}
-              transition={{ duration: 0.2 }}
-            >
-              {scopes?.map((scope, index) => (
-                <Tab
-                  key={index}
-                  onClick={() => {
-                    setSelectedScope(scope.scope);
-                    triggerMochLoading();
+                  style={{
+                    left: leftPosition.get(),
                   }}
                 >
-                  <Text
-                    fontFamily="heading"
-                    fontSize="title.md"
-                    fontWeight="medium"
-                  >
-                    {t("scope")} {scope.scope}
-                  </Text>
-                </Tab>
-              ))}
-            </MotionTabList>
-
-            <TabPanels>
-              {loadingState ? (
-                <LoadingState />
-              ) : (
-                scopes?.map((scope) => (
-                  <ActivityTab
-                    referenceNumber={subSectorData?.referenceNumber!}
-                    key={subSectorData?.referenceNumber}
-                    filteredScope={scope.scope}
-                    t={t}
-                    inventoryId={inventoryId}
-                    subsectorId={subsector}
-                    step={step}
-                    activityData={activityData}
-                    inventoryValues={inventoryValues ?? []}
-                  />
-                ))
-              )}
-            </TabPanels>
-          </Tabs>
+                  {t("sector")}: {getSectorName(step)} | {t("inventory-year")}:{" "}
+                  {/*            {inventoryProgress?.inventory.year}*/}
+                </Text>
+                <AnimatePresence key="description-layout">
+                  {isVisible && (
+                    <MotionBox
+                      key="description-text"
+                      w="full"
+                      display="flex"
+                      alignItems="center"
+                      gap="16px"
+                      initial="collapsed"
+                      animate="open"
+                      exit="collapsed"
+                      variants={{
+                        open: { opacity: 1, height: "auto" },
+                        collapsed: { opacity: 0, height: 0 },
+                      }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                    >
+                      <Text
+                        letterSpacing="wide"
+                        fontSize="body.lg"
+                        fontWeight="normal"
+                        color="interactive.control"
+                      >
+                        {t("commercial-and-institutional-building-description")}
+                      </Text>
+                    </MotionBox>
+                  )}
+                </AnimatePresence>
+              </MotionBox>
+            </AnimatePresence>
+          </MotionBox>
+        </MotionBox>
+        <Box className="w-[1090px] max-w-full mx-auto px-4">
+          <MotionTabList
+            className="w-[1090px] z-10"
+            layout
+            bg="background.backgroundLight"
+            borderBottomWidth="0px"
+            h="80px"
+          >
+            {scopes?.map((scope, index) => (
+              <Tab
+                key={index}
+                onClick={() => {
+                  triggerMochLoading();
+                }}
+                className="[&[aria-selected='false']]:border-[transparent]"
+              >
+                <Text
+                  fontFamily="heading"
+                  fontSize="title.md"
+                  fontWeight="medium"
+                >
+                  {t("scope")} {scope.scope}
+                </Text>
+              </Tab>
+            ))}
+          </MotionTabList>
+        </Box>
+      </MotionBox>
+      <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4 pb-[100px] mt-[240px]">
+        <Box mt="48px">
+          <TabPanels>
+            {loadingState ? (
+              <LoadingState />
+            ) : (
+              scopes?.map((scope) => (
+                <ActivityTab
+                  referenceNumber={subSectorData?.referenceNumber!}
+                  key={subSectorData?.referenceNumber}
+                  filteredScope={scope.scope}
+                  t={t}
+                  inventoryId={inventoryId}
+                  subsectorId={subsector}
+                  step={step}
+                  activityData={activityData}
+                  inventoryValues={inventoryValues ?? []}
+                />
+              ))
+            )}
+          </TabPanels>
         </Box>
       </div>
-    </>
+    </Tabs>
   );
 }
 

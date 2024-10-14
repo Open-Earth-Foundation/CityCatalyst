@@ -5,6 +5,7 @@ import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
 import groupBy from "lodash/groupBy";
 import mapValues from "lodash/mapValues";
 import { toKebabCase } from "@/util/helpers";
+import { ActivityDataByScope, GroupedActivity } from "@/util/types";
 
 function calculatePercentage(co2eq: bigint, total: bigint): number {
   if (total <= 0n) {
@@ -17,13 +18,12 @@ function calculatePercentage(co2eq: bigint, total: bigint): number {
 
 async function getTotalEmissionsWithPercentage(inventory: string) {
   const rawQuery = `
-      SELECT SUM(av.co2eq) AS co2eq, sector_name 
-        FROM "ActivityValue" av
-        JOIN "InventoryValue" iv ON av.inventory_value_id = iv.id
+      SELECT SUM(iv.co2eq) AS co2eq, sector_name 
+        FROM "InventoryValue" iv
         JOIN "Sector" s ON iv.sector_id = s.sector_id
         WHERE inventory_id = :inventoryId
         GROUP BY sector_name
-        ORDER BY SUM(av.co2eq) DESC`;
+        ORDER BY SUM(iv.co2eq) DESC`;
 
   const totalEmissions: {
     co2eq: bigint;
@@ -33,7 +33,9 @@ async function getTotalEmissionsWithPercentage(inventory: string) {
     type: QueryTypes.SELECT,
   });
 
-  const sumOfEmissions = BigInt(sumBy(totalEmissions, (e) => Number(e.co2eq)));
+  const sumOfEmissions = totalEmissions.reduce((sum, emission) => {
+    return sum + BigInt(emission.co2eq);
+  }, 0n);
 
   const totalEmissionsBySector = totalEmissions.map(
     ({ co2eq, sector_name }) => ({
@@ -47,15 +49,14 @@ async function getTotalEmissionsWithPercentage(inventory: string) {
 
 async function getTopEmissions(inventoryId: string) {
   const rawQuery = `
-      SELECT av.co2eq, sector_name, subsector_name, scope_name
-        FROM "ActivityValue" av
-        JOIN "InventoryValue" iv ON av.inventory_value_id = iv.id
+      SELECT iv.co2eq, sector_name, subsector_name, scope_name
+        FROM "InventoryValue" iv
         JOIN "Sector" s ON iv.sector_id = s.sector_id
         JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
         JOIN "SubCategory" sc on iv.sub_category_id = sc.subcategory_id
         JOIN "Scope" scope on scope.scope_id = sc.scope_id or ss.scope_id = scope.scope_id
-        WHERE inventory_id = :inventoryId
-        ORDER BY av.co2eq DESC
+        WHERE inventory_id = :inventoryId AND iv.co2eq IS NOT NULL
+        ORDER BY iv.co2eq DESC
         LIMIT 3; `;
 
   return (await db.sequelize!.query(rawQuery, {
@@ -113,11 +114,12 @@ interface UngroupedActivityData {
   scopeName: string;
 }
 
-interface GroupedActivity {
-  activityValue: string | bigint; // Using string to avoid jest's "Don't know how to serialize Bigint" error
-  activityUnits: string;
-  totalActivityEmissions: string | bigint; // Using string to avoid jest's "Don't know how to serialize Bigint" error
-  totalEmissionsPercentage: number;
+interface ResponseWithoutTotals {
+  [activity: string]: {
+    [key: string]: {
+      [units: string]: GroupedActivity;
+    };
+  };
 }
 
 const getActivitiesForSectorBreakdown = async (
@@ -194,12 +196,77 @@ const getActivityDataValues = (
   };
 };
 
-const groupActivitiesBy = (
-  groupedBySubsector: Record<string, UngroupedActivityData[]>,
-  groupingFn: (activity: UngroupedActivityData) => string,
-): Record<string, Record<string, Record<string, GroupedActivity>>> =>
-  mapValues(groupedBySubsector, (subsectorActivities) => {
-    const groupedByActivity = groupBy(subsectorActivities, groupingFn);
+function convertEmissionsToStrings(
+  input: ActivityDataByScope,
+): ActivityDataByScope {
+  return {
+    activityTitle: input.activityTitle,
+    scopes: Object.entries(input.scopes).reduce(
+      (acc, [key, value]) => {
+        acc[key] = value.toString();
+        return acc;
+      },
+      {} as { [key: string]: string },
+    ),
+    totalEmissions: input.totalEmissions.toString(),
+    percentage: input.percentage,
+  };
+}
+
+function calculateEmissionsByScope(
+  activityValues: UngroupedActivityData[],
+): ActivityDataByScope[] {
+  const activities: { [key: string]: ActivityDataByScope } = {};
+  let total = 0n;
+
+  // First pass: sum up emissions by activity and scope
+  activityValues.forEach((item) => {
+    const emissions = BigInt(item.activityEmissions);
+    const { activityTitle, scopeName } = item;
+
+    if (!activities[activityTitle]) {
+      activities[activityTitle] = {
+        activityTitle,
+        scopes: {},
+        totalEmissions: 0n,
+        percentage: 0,
+      };
+    }
+
+    if (!(scopeName in activities[activityTitle].scopes)) {
+      activities[activityTitle].scopes[scopeName] = 0n;
+    }
+
+    activities[activityTitle].scopes[scopeName] =
+      BigInt(activities[activityTitle].scopes[scopeName]) + BigInt(emissions);
+    activities[activityTitle].totalEmissions =
+      BigInt(activities[activityTitle].totalEmissions) + BigInt(emissions);
+    total += BigInt(emissions);
+  });
+
+  // Second pass: calculate percentages
+  Object.values(activities).forEach((activity) => {
+    activity.percentage = Number(
+      (BigInt(activity.totalEmissions) * 100n) / BigInt(total),
+    );
+  });
+
+  // Convert the activities object to an array
+  return Object.values(activities).map(convertEmissionsToStrings);
+}
+
+const groupActivities = (
+  activitiesForSectorBreakdown: UngroupedActivityData[],
+) => {
+  const groupedBySubsector = groupBy(
+    activitiesForSectorBreakdown,
+    "subsectorName",
+  );
+
+  return mapValues(groupedBySubsector, (subsectorActivities) => {
+    const groupedByActivity = groupBy(subsectorActivities, (e) =>
+      toKebabCase(e.activityTitle),
+    );
 
     return mapValues(groupedByActivity, (activityGroup) => {
       const groupedByUnit = groupBy(activityGroup, "activityUnits");
@@ -208,7 +275,7 @@ const groupActivitiesBy = (
         const isActivityValueNa = unitGroup.some(
           (e) => e.activityValue === "N/A",
         );
-        const output = unitGroup.reduce<GroupedActivity>(
+        return unitGroup.reduce<GroupedActivity>(
           (acc, current) => {
             const currentActivityValue =
               current.activityValue === "N/A"
@@ -219,15 +286,17 @@ const groupActivitiesBy = (
               acc.activityValue === "N/A" ||
               currentActivityValue === "N/A"
                 ? "N/A"
-                : (acc.activityValue as bigint) +
-                  (currentActivityValue as bigint);
+                : (
+                    BigInt(acc.activityValue) + (currentActivityValue as bigint)
+                  ).toString();
 
             return {
               activityValue: newActivityValue,
               activityUnits: current.activityUnits,
-              totalActivityEmissions:
+              totalActivityEmissions: (
                 BigInt(acc.totalActivityEmissions) +
-                BigInt(current.activityEmissions),
+                BigInt(current.activityEmissions)
+              ).toString(),
               totalEmissionsPercentage:
                 acc.totalEmissionsPercentage + current.emissionsPercentage,
             };
@@ -239,30 +308,75 @@ const groupActivitiesBy = (
             totalEmissionsPercentage: 0,
           },
         );
-
-        return {
-          ...output,
-          activityValue: output.activityValue.toString(),
-          totalActivityEmissions: output.totalActivityEmissions.toString(),
-        };
       });
     });
   });
-
-const groupActivities = (
-  activitiesForSectorBreakdown: UngroupedActivityData[],
-): { byActivity: any; byScope: any } => {
-  const groupedBySubsector = groupBy(
-    activitiesForSectorBreakdown,
-    "subsectorName",
-  );
-  return {
-    byActivity: groupActivitiesBy(groupedBySubsector, (e) =>
-      toKebabCase(e.activityTitle),
-    ),
-    byScope: groupActivitiesBy(groupedBySubsector, (e) => e.scopeName),
-  };
 };
+
+function calculateActivityTotals(grouped: ResponseWithoutTotals) {
+  const byActivity = grouped;
+  for (const activity in byActivity) {
+    const activityData: any = byActivity[activity];
+    const totalActivityValueByUnit: any = {};
+    let totalActivityEmissions = BigInt(0);
+
+    for (const fuelType in activityData) {
+      // Skip 'totals' key if it exists
+      if (fuelType === "totals") continue;
+
+      const fuelTypeData = activityData[fuelType];
+
+      for (const unit in fuelTypeData) {
+        const data = fuelTypeData[unit];
+
+        const activityValueStr = data.activityValue;
+        const activityUnits = data.activityUnits;
+        const totalActivityEmissionsStr = data.totalActivityEmissions;
+
+        let activityEmissions = BigInt(0);
+
+        // Handle totalActivityEmissions
+        if (totalActivityEmissionsStr !== "N/A") {
+          activityEmissions = BigInt(totalActivityEmissionsStr);
+        }
+        totalActivityEmissions += activityEmissions;
+
+        // Handle activityValue by unit
+        if (!totalActivityValueByUnit[activityUnits]) {
+          totalActivityValueByUnit[activityUnits] = {
+            totalActivityValue: BigInt(0),
+            hasNA: false,
+          };
+        }
+
+        if (activityValueStr === "N/A") {
+          totalActivityValueByUnit[activityUnits].hasNA = true;
+        } else {
+          const activityValue = BigInt(activityValueStr);
+          totalActivityValueByUnit[activityUnits].totalActivityValue +=
+            activityValue;
+        }
+      }
+    }
+
+    // Prepare totalActivityValueByUnit for output
+    const totalActivityValueByUnitOutput: any = {};
+    for (const unit in totalActivityValueByUnit) {
+      const { totalActivityValue, hasNA } = totalActivityValueByUnit[unit];
+      totalActivityValueByUnitOutput[unit] = hasNA
+        ? "N/A"
+        : totalActivityValue.toString();
+    }
+
+    // Add totals to activityData
+    activityData.totals = {
+      totalActivityValueByUnit: totalActivityValueByUnitOutput,
+      totalActivityEmissions: totalActivityEmissions.toString(),
+    };
+  }
+
+  return grouped;
+}
 
 export const getEmissionsBreakdown = async (
   inventory: string,
@@ -273,18 +387,29 @@ export const getEmissionsBreakdown = async (
       inventory,
       sectorName,
     );
-    const sumOfEmissions = activitiesForSectorBreakdown.reduce(
-      (sum, activity) => sum + BigInt(activity.co2eq || 0),
-      0n,
-    );
+    const bySubsector = groupBy(activitiesForSectorBreakdown, "subsector_name");
+    const emissionsBySubSector: any = {};
+    Object.entries(bySubsector).forEach(([subsectorName, values]) => {
+      emissionsBySubSector[subsectorName] = values.reduce(
+        (sum, activity) => sum + BigInt(activity.co2eq || 0),
+        0n,
+      );
+    });
 
     const activityValues = activitiesForSectorBreakdown
-      .map((activity) => getActivityDataValues(activity, sumOfEmissions))
+      .map((activity) =>
+        getActivityDataValues(
+          activity,
+          emissionsBySubSector[activity.subsector_name],
+        ),
+      )
       .filter(
         (activity): activity is UngroupedActivityData => activity !== null,
       );
-
-    return groupActivities(activityValues);
+    const grouped = groupActivities(activityValues);
+    const byActivity = calculateActivityTotals(grouped);
+    const byScope = calculateEmissionsByScope(activityValues);
+    return { byActivity, byScope };
   } catch (error) {
     console.error("Error in getEmissionsBreakdown:", error);
     throw error;

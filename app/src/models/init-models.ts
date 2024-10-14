@@ -37,6 +37,11 @@ import type {
 } from "./DataSourceEmissionsFactor";
 import { DataSourceEmissionsFactor as _DataSourceEmissionsFactor } from "./DataSourceEmissionsFactor";
 import type {
+  DataSourceFormulaInputAttributes,
+  DataSourceFormulaInputCreationAttributes,
+} from "./DataSourceFormulaInput";
+import { DataSourceFormulaInput as _DataSourceFormulaInput } from "./DataSourceFormulaInput";
+import type {
   DataSourceGHGsAttributes,
   DataSourceGHGsCreationAttributes,
 } from "./DataSourceGHGs";
@@ -61,6 +66,11 @@ import type {
   EmissionsFactorCreationAttributes,
 } from "./EmissionsFactor";
 import { EmissionsFactor as _EmissionsFactor } from "./EmissionsFactor";
+import {
+  FormulaInput as _FormulaInput,
+  FormulaInputAttributes,
+  FormulaInputCreationAttributes,
+} from "@/models/FormulaInput";
 import type {
   GasValueAttributes,
   GasValueCreationAttributes,
@@ -150,11 +160,13 @@ export {
   _DataSource as DataSource,
   _DataSourceActivityData as DataSourceActivityData,
   _DataSourceEmissionsFactor as DataSourceEmissionsFactor,
+  _DataSourceFormulaInput as DataSourceFormulaInput,
   _DataSourceMethodology as DataSourceMethodology,
   _DataSourceGHGs as DataSourceGHGs,
   _DataSourceReportingLevel as DataSourceReportingLevel,
   _DataSourceScope as DataSourceScope,
   _EmissionsFactor as EmissionsFactor,
+  _FormulaInput as FormulaInput,
   _GasValue as GasValue,
   _GasToCO2Eq as GasToCO2Eq,
   _GDP as GDP,
@@ -195,6 +207,8 @@ export type {
   DataSourceActivityDataCreationAttributes,
   DataSourceEmissionsFactorAttributes,
   DataSourceEmissionsFactorCreationAttributes,
+  DataSourceFormulaInputAttributes,
+  DataSourceFormulaInputCreationAttributes,
   DataSourceGHGsAttributes,
   DataSourceGHGsCreationAttributes,
   DataSourceMethodologyAttributes,
@@ -243,6 +257,8 @@ export type {
   AssistantMessageCreationAttributes,
   AssistantThreadAttributes,
   AssistantThreadCreationAttributes,
+  FormulaInputAttributes,
+  FormulaInputCreationAttributes,
 };
 
 export function initModels(sequelize: Sequelize) {
@@ -255,12 +271,14 @@ export function initModels(sequelize: Sequelize) {
   const DataSourceActivityData = _DataSourceActivityData.initModel(sequelize);
   const DataSourceEmissionsFactor =
     _DataSourceEmissionsFactor.initModel(sequelize);
+  const DataSourceFormulaInput = _DataSourceFormulaInput.initModel(sequelize);
   const DataSourceGHGs = _DataSourceGHGs.initModel(sequelize);
   const DataSourceMethodology = _DataSourceMethodology.initModel(sequelize);
   const DataSourceReportingLevel =
     _DataSourceReportingLevel.initModel(sequelize);
   const DataSourceScope = _DataSourceScope.initModel(sequelize);
   const EmissionsFactor = _EmissionsFactor.initModel(sequelize);
+  const FormulaInput = _FormulaInput.initModel(sequelize);
   const GasValue = _GasValue.initModel(sequelize);
   const GasToCO2Eq = _GasToCO2Eq.initModel(sequelize);
   const GDP = _GDP.initModel(sequelize);
@@ -323,6 +341,12 @@ export function initModels(sequelize: Sequelize) {
     through: DataSourceEmissionsFactor,
     foreignKey: "datasourceId",
     otherKey: "emissionsFactorId",
+  });
+  DataSource.belongsToMany(FormulaInput, {
+    as: "formulaInputIdFormulaInputs",
+    through: DataSourceFormulaInput,
+    foreignKey: "datasourceId",
+    otherKey: "formulaInputId",
   });
   DataSource.belongsToMany(GHGs, {
     as: "ghgIdGhgs",
@@ -468,6 +492,14 @@ export function initModels(sequelize: Sequelize) {
     as: "dataSourceEmissionsFactors",
     foreignKey: "datasourceId",
   });
+  DataSourceFormulaInput.belongsTo(DataSource, {
+    as: "datasource",
+    foreignKey: "datasourceId",
+  });
+  DataSource.hasMany(DataSourceFormulaInput, {
+    as: "dataSourceFormulaInputs",
+    foreignKey: "datasourceId",
+  });
   DataSourceGHGs.belongsTo(DataSource, {
     as: "datasource",
     foreignKey: "datasourceId",
@@ -530,12 +562,28 @@ export function initModels(sequelize: Sequelize) {
     as: "dataSourceEmissionsFactors",
     foreignKey: "emissionsFactorId",
   });
+  DataSourceFormulaInput.belongsTo(FormulaInput, {
+    as: "formulaInput",
+    foreignKey: "formulaInputId",
+  });
+  FormulaInput.hasMany(DataSourceFormulaInput, {
+    as: "dataSourceFormulaInput",
+    foreignKey: "formulaInputId",
+  });
   EmissionsFactor.belongsTo(Methodology, {
     as: "emissionsFactorMethodology",
     foreignKey: "methodologyId",
   });
+  FormulaInput.belongsTo(Methodology, {
+    as: "formulaValueMethodology",
+    foreignKey: "methodologyId",
+  });
   Methodology.hasMany(EmissionsFactor, {
     as: "emissionsFactors",
+    foreignKey: "methodologyId",
+  });
+  Methodology.hasMany(FormulaInput, {
+    as: "formulaValues",
     foreignKey: "methodologyId",
   });
   DataSourceGHGs.belongsTo(GHGs, { as: "ghg", foreignKey: "ghgId" });
@@ -705,6 +753,7 @@ export function initModels(sequelize: Sequelize) {
     DataSource: DataSource,
     DataSourceActivityData: DataSourceActivityData,
     DataSourceEmissionsFactor: DataSourceEmissionsFactor,
+    DataSourceFormulaInput: DataSourceFormulaInput,
     DataSourceGHGs: DataSourceGHGs,
     DataSourceMethodology: DataSourceMethodology,
     DataSourceReportingLevel: DataSourceReportingLevel,
@@ -731,5 +780,6 @@ export function initModels(sequelize: Sequelize) {
     CityInvite: CityInvite,
     AssistantMessage: AssistantMessage,
     AssistantThread: AssistantThread,
+    FormulaInput: FormulaInput,
   };
 }

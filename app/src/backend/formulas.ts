@@ -285,3 +285,53 @@ export async function handleDomesticWasteWaterFormula(
   const amount = BigInt(Math.round(totalMethaneProduction)); // TODO round right or is ceil/ floor more correct?
   return [{ gas: "CH4", amount }];
 }
+
+/**
+ * Handles the biological treatment formula for calculating emissions of gases.
+ * @param activityValue - The activity value to calculate emissions for.
+ * @returns The calculated emissions of gases.
+ * @throws {createHttpError.BadRequest} If the activity value has no data associated.
+ */
+export async function handleBiologicalTreatmentFormula(
+  activityValue: ActivityValue,
+): Promise<Gas[]> {
+  const data = activityValue.activityData;
+  if (!data) {
+    throw new createHttpError.BadRequest(
+      "Activity has no data associated, so it can't use the formula",
+    );
+  }
+  const wasteState =
+    data["biological-treatment-inboundary-waste-state"] ??
+    data["biological-treatment-outboundary-waste-state"] ??
+    "invalid";
+  const treatmentType =
+    data["biological-treatment-inboundary-treatment-type"] ??
+    data["biological-treatment-outboundary-treatment-type"] ??
+    "invalid";
+
+  if (treatmentType === "invalid") {
+    throw createHttpError.BadRequest("Invalid waste state type");
+  }
+  if (wasteState === "invalid") {
+    throw createHttpError.BadRequest("Invalid treatment type");
+  }
+
+  let emissionsFactor = NaN;
+  if (treatmentType === "treatment-type-composting") {
+    emissionsFactor = wasteState === "waste-state-dry-waste" ? 10 : 4;
+  } else if (treatmentType === "treatment-type-anaerobic-digestion") {
+    emissionsFactor = wasteState === "waste-state-dry-waste" ? 2 : 0.8;
+  } else if (treatmentType === "treatment-type-all-organic-waste") {
+    throw createHttpError.BadRequest("Treatment type all not supported yet!");
+  }
+
+  const organicWasteMass = data["total-organic-waste-treated"] ?? 0;
+  const totalCH4Emitted = (organicWasteMass * emissionsFactor) / 1000;
+  const totalCH4Recovered =
+    data["biological-treatment-inboundary-total-of-ch4-recovered"] ?? 0;
+  // TODO improve this using decimal/ big number library
+  const resultCH4 =
+    BigInt(Math.round(totalCH4Emitted)) - BigInt(totalCH4Recovered);
+  return [{ gas: "CH4", amount: resultCH4 }];
+}

@@ -260,7 +260,6 @@ export function convertKgToTonnes(
   let result = "";
   let gasSuffix = gas ? ` ${gas}` : "CO2";
   const tonnes = Number(valueInTonnes);
-  console.log(tonnes, valueInTonnes, "tonnes");
   if (tonnes >= 1e6) {
     // Convert to megatonnes if the value is 1,000,000 tonnes or more
     const megatonnes = (tonnes / 1e6).toFixed(2);

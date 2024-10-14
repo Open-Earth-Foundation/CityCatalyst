@@ -326,21 +326,19 @@ const ActivityModalBody = ({
                       control={control}
                       name={`activity.${title}-unit` as any}
                       render={({ field }) => (
-                        <>
-                          <Select
-                            placeholder={t("select-unit")}
-                            variant="unstyled"
-                            {...field}
-                            required
-                            onChange={(e) => field.onChange(e.target.value)}
-                          >
-                            {units?.map((item: string) => (
-                              <option key={item} value={item}>
-                                {t(item)}
-                              </option>
-                            ))}
-                          </Select>
-                        </>
+                        <Select
+                          placeholder={t("select-unit")}
+                          variant="unstyled"
+                          {...field}
+                          required
+                          onChange={(e) => field.onChange(e.target.value)}
+                        >
+                          {units?.map((item: string) => (
+                            <option key={item} value={item}>
+                              {t(item)}
+                            </option>
+                          ))}
+                        </Select>
                       )}
                     />
                   </FormattedNumberInput>

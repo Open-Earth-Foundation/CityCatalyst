@@ -104,7 +104,7 @@ export async function handleIncinerationWasteFormula(
     "waste-composition-municipal-solid-waste": {
       "technology-continuous-incineration": 50,
       "technology-semi-continuous-incineration": 50,
-      "technology-batch-type-incineration": 0,
+      "technology-batch-type-incineration": 50,
       "technology-open-burning": 150,
     },
     "waste-composition-industrial-solid-waste": {
@@ -114,16 +114,16 @@ export async function handleIncinerationWasteFormula(
       "technology-open-burning": 100,
     },
     "waste-composition-clinical-waste": {
-      "technology-continuous-incineration": 0,
-      "technology-semi-continuous-incineration": 0,
-      "technology-batch-type-incineration": 0,
-      "technology-open-burning": 0,
+      "technology-continuous-incineration": 100,
+      "technology-semi-continuous-incineration": 100,
+      "technology-batch-type-incineration": 100,
+      "technology-open-burning": 100,
     },
     "waste-composition-hazardous-waste": {
-      "technology-continuous-incineration": 0,
-      "technology-semi-continuous-incineration": 0,
-      "technology-batch-type-incineration": 0,
-      "technology-open-burning": 0,
+      "technology-continuous-incineration": 100,
+      "technology-semi-continuous-incineration": 100,
+      "technology-batch-type-incineration": 100,
+      "technology-open-burning": 100,
     },
     "waste-composition-sewage-sludge": {
       "technology-continuous-incineration": 900,

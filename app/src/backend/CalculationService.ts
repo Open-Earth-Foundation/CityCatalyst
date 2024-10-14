@@ -113,6 +113,7 @@ export default class CalculationService {
           activityValue,
           inventoryValue,
         );
+        break;
       case "induced-activity-1":
         gases = handleVkt1Formula(activityValue, gasValues);
         break;

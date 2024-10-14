@@ -8,6 +8,7 @@ import { findClosestCityPopulation } from "@/util/population";
 import type { Inventory } from "@/models/Inventory";
 import { db } from "@/models";
 import { InventoryValue } from "@/models/InventoryValue";
+import { Decimal } from "decimal.js";
 
 type GasValueWithEmissionsFactor = Omit<GasValueCreationAttributes, "id"> & {
   emissionsFactor?:
@@ -77,7 +78,14 @@ export async function handleIncinerationWasteFormula(
 ): Promise<Gas[]> {
   const data = activityValue.activityData;
 
-  const CH4EmissionFactor = {
+  const CO2OxidationFactor: Record<string, number> = {
+    "technology-continuous-incineration": 1,
+    "technology-semi-continuous-incineration": 1,
+    "technology-batch-type-incineration": 1,
+    "technology-open-burning": 0.58,
+  };
+
+  const CH4EmissionFactor: Record<string, Record<string, number>> = {
     "technology-continuous-incineration": {
       "boiler-type-stoker": 0.2,
       "boiler-type-fluidised-bed": 0,
@@ -92,14 +100,14 @@ export async function handleIncinerationWasteFormula(
     },
   };
 
-  const NO2EmissionFactor = {
+  const NO2EmissionFactor: Record<string, Record<string, number>> = {
     "waste-composition-municipal-solid-waste": {
       "technology-continuous-incineration": 50,
       "technology-semi-continuous-incineration": 50,
       "technology-batch-type-incineration": 0,
       "technology-open-burning": 150,
     },
-    "waste-composition-hazardous-waste": {
+    "waste-composition-industrial-solid-waste": {
       "technology-continuous-incineration": 100,
       "technology-semi-continuous-incineration": 100,
       "technology-batch-type-incineration": 100,
@@ -111,17 +119,17 @@ export async function handleIncinerationWasteFormula(
       "technology-batch-type-incineration": 0,
       "technology-open-burning": 0,
     },
-    "waste-composition-industrial-solid-waste": {
+    "waste-composition-hazardous-waste": {
       "technology-continuous-incineration": 0,
       "technology-semi-continuous-incineration": 0,
       "technology-batch-type-incineration": 0,
       "technology-open-burning": 0,
     },
     "waste-composition-sewage-sludge": {
-      "technology-continuous-incineration": 0,
-      "technology-semi-continuous-incineration": 0,
-      "technology-batch-type-incineration": 0,
-      "technology-open-burning": 0,
+      "technology-continuous-incineration": 900,
+      "technology-semi-continuous-incineration": 900,
+      "technology-batch-type-incineration": 900,
+      "technology-open-burning": 900,
     },
   };
 
@@ -132,81 +140,119 @@ export async function handleIncinerationWasteFormula(
   }
 
   const activityTitle = activityValue.metadata?.["activityTitle"];
-  const massOfIncineratedWaste = data[activityTitle];
-  const wasteComposition =
-    data["incineration-waste-inboundary-waste-composition"];
+  const massOfIncineratedWaste = data[activityTitle] as number;
+  const wasteComposition = data["waste-composition"];
 
-  let totalCO2Emissions = 0;
-  let totalCH4Emission = 0;
-  let totalNO2Emissions = 0;
+  const technology = data["technology"] as string;
+  const boilerType = data["boiler-type"] as string;
+
+  let totalCH4Emission: number = 0;
+  let totalN2OEmissions: number = 0;
+  let totalPartialCO2Emissions: number = 0;
 
   for (const wasteType of Object.keys(wasteComposition)) {
     const WasteFractionI = wasteComposition[wasteType] / 100;
-    // get the dry matter state by searching the db
+
+    const AmountOfWasteForWasteTypeI = massOfIncineratedWaste * WasteFractionI;
+
+    const CH4EmissionFactorForWasteTypeI =
+      CH4EmissionFactor[technology]?.[boilerType];
+
+    const NO2EmissionFactorForWasteTypeI =
+      NO2EmissionFactor[wasteType]?.[technology];
+
+    if (CH4EmissionFactorForWasteTypeI == null) {
+      throw new createHttpError.BadRequest(
+        `No CH4 emission factor found for ${technology}, ${boilerType}`,
+      );
+    }
+
+    if (NO2EmissionFactorForWasteTypeI == null) {
+      throw new createHttpError.BadRequest(
+        `No NO2 emission factor found for ${wasteType}, ${technology}`,
+      );
+    }
+
+    (totalCH4Emission +=
+      AmountOfWasteForWasteTypeI * CH4EmissionFactorForWasteTypeI * 10 ** -3),
+      (totalN2OEmissions +=
+        AmountOfWasteForWasteTypeI * NO2EmissionFactorForWasteTypeI * 10 ** -3);
+
+    // calculate CO2 emissions
+
     const formulaInputs = await db.models.FormulaInput.findAll({
       where: {
         [`metadata.waste-type`]: formulaInputsMapping[wasteType] as string,
+        gas: "CO2",
         formulaName: "incineration-waste",
         gpcRefno: inventoryValue.gpcReferenceNumber,
+        region: "world",
       },
     });
 
-    console.log("formula-inputs", formulaInputs, wasteType);
+    const dryMatterInput = formulaInputs.find(
+      (input) => input.parameterCode === "dmi",
+    )?.formulaInputValue;
+
+    const fractionOfCarbonInput = formulaInputs.find(
+      (input) => input.parameterCode === "CFi",
+    )?.formulaInputValue;
+
+    const fractionOfFossilCarbonInput = formulaInputs.find(
+      (input) => input.parameterCode === "FCFi",
+    )?.formulaInputValue;
+
+    const fractionOfFossilCarbonI = fractionOfFossilCarbonInput ?? 1;
+
+    const dryMatterContentI = dryMatterInput ?? 1;
+
+    const fractionOfCarbonI = fractionOfCarbonInput ?? 1;
+
+    if (!dryMatterInput) {
+      console.warn(
+        `dryMatterContentI is missing for ${wasteType} a default of 1 used`,
+      );
+    }
+
+    if (!fractionOfCarbonInput) {
+      console.warn(
+        `fractionOfCarbonI is missing for ${wasteType} a default of 1 used`,
+      );
+    }
+
+    if (!fractionOfFossilCarbonInput) {
+      console.warn(
+        `fractionOfFossilCarbonI is missing for ${wasteType} a default of 1 used`,
+      );
+    }
+
+    const oxidationFactorI = CO2OxidationFactor[technology];
+
+    totalPartialCO2Emissions +=
+      WasteFractionI *
+      dryMatterContentI *
+      fractionOfCarbonI *
+      fractionOfFossilCarbonI *
+      oxidationFactorI;
   }
 
-  throw createHttpError.BadRequest("not yet ready");
+  const totalCO2Emissions =
+    massOfIncineratedWaste * totalPartialCO2Emissions * (44 / 12);
 
-  return [];
-
-  // {
-  //   "id": "incineration-waste-inboundary-activity",
-  //     "unique-by": [
-  //   "incineration-waste-inboundary-incineration-facility-id"
-  // ],
-  //     "activity-title": "total-mass-of-waste-incinerated-or-burned",
-  //     "extra-fields": [
-  //   {
-  //     "id": "incineration-waste-inboundary-incineration-facility-id",
-  //     "type": "text"
-  //   },
-  //   {
-  //     "id": "incineration-waste-inboundary-incineration-facility-address",
-  //     "type": "text",
-  //     "required": false
-  //   },
-  //   {
-  //     "id": "incineration-waste-inboundary-waste-composition",
-  //     "type": "percentage-breakdown",
-  //     "total-required": 100,
-  //     "subtypes": [
-  //       "waste-composition-municipal-solid-waste",
-  //       "waste-composition-industrial-solid-waste",
-  //       "waste-composition-hazardous-waste",
-  //       "waste-composition-clinical-waste",
-  //       "waste-composition-sewage-sludge"
-  //     ]
-  //   },
-  //   {
-  //     "id": "incineration-waste-inboundary-technology",
-  //     "options": [
-  //       "technology-continuous-incineration",
-  //       "technology-semi-continuous-incineration",
-  //       "technology-batch-type-incineration"
-  //     ]
-  //   },
-  //   {
-  //     "id": "incineration-waste-inboundary-boiler-type",
-  //     "options": [
-  //       "boiler-type-stoker",
-  //       "boiler-type-fluidised-bed"
-  //     ]
-  //   }
-  // ],
-  //     "units": [
-  //   "units-kilograms",
-  //   "units-tonnes"
-  // ]
-  // }
+  return [
+    {
+      gas: "CH4",
+      amount: BigInt(new Decimal(totalCH4Emission).trunc().toString()),
+    },
+    {
+      gas: "N2O",
+      amount: BigInt(new Decimal(totalN2OEmissions).trunc().toString()),
+    },
+    {
+      gas: "CO2",
+      amount: BigInt(new Decimal(totalCO2Emissions).trunc().toString()),
+    },
+  ];
 }
 
 export function handleVkt1Formula(

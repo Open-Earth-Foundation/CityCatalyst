@@ -12,7 +12,7 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import BuildingTypeSelectInput from "../../building-select-input";
 import { InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
 import { TFunction } from "i18next";
@@ -108,6 +108,8 @@ const ActivityModalBody = ({
   setValue,
   getValues,
 }: AddActivityModalBodyProps) => {
+  //
+
   const unitValue = useWatch({
     control,
     name: `activity.${title}Unit` as any,

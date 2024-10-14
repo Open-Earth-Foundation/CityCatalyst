@@ -3953,9 +3953,17 @@
           "population-or-industrial-production"
         ],
         "formula": "wastewater-calculator",
+        "activitySelectionField": {
+          "id": "wastewater-inside-source-type",
+          "options": [
+            "source-type-domestic-wastewater",
+            "source-type-industrial-wastewater"
+          ]
+        },
         "activities": [
           {
             "id": "wastewater-inside-domestic-calculator-activity",
+            "activitySelectedOption": "source-type-domestic-wastewater",
             "unique-by": [
               "wastewater-inside-domestic-calculator-income-group",
               "wastewater-inside-domestic-calculator-collection-status",
@@ -4024,6 +4032,7 @@
           },
           {
             "id": "wastewater-inside-industrial-calculator-activity",
+            "activitySelectedOption": "source-type-industrial-wastewater",
             "unique-by": [
               "wastewater-inside-industrial-calculator-industrial-production",
               "wastewater-inside-industrial-calculator-collection-status",
@@ -4149,9 +4158,17 @@
           "population-or-industrial-production"
         ],
         "formula": "wastewater-calculator",
+        "activitySelectionField": {
+          "id": "wastewater-outside-source-type",
+          "options": [
+            "source-type-domestic-wastewater",
+            "source-type-industrial-wastewater"
+          ]
+        },
         "activities": [
           {
             "id": "wastewater-outside-domestic-calculator-activity",
+            "activitySelectedOption": "source-type-domestic-wastewater",
             "unique-by": [
               "wastewater-outside-domestic-calculator-income-group",
               "wastewater-outside-domestic-calculator-collection-status",
@@ -4220,6 +4237,7 @@
           },
           {
             "id": "wastewater-outside-industrial-calculator-activity",
+            "activitySelectedOption": "source-type-industrial-wastewater",
             "unique-by": [
               "wastewater-outside-industrial-calculator-industrial-production",
               "wastewater-outside-industrial-calculator-collection-status",

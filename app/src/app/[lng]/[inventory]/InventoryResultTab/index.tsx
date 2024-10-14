@@ -31,6 +31,7 @@ import { api } from "@/services/api";
 import ByScopeView from "@/app/[lng]/[inventory]/InventoryResultTab/ByScopeView";
 import { SectorHeader } from "@/app/[lng]/[inventory]/InventoryResultTab/SectorHeader";
 import { ByActivityView } from "@/app/[lng]/[inventory]/InventoryResultTab/ByActivityView";
+import { EmptyStateCardContent } from "@/app/[lng]/[inventory]/InventoryResultTab/EmptyStateCardContent";
 
 enum TableView {
   BY_ACTIVITY = "by-activity",
@@ -65,10 +66,13 @@ function SectorTabs({
       inventoryId: inventory!.inventoryId!,
       sector: SECTORS[selectedIndex].sectorName,
     });
+
   const handleViewChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setSelectedTableView(event.target.value as TableView);
   };
 
+  const isEmptyInventory =
+    Object.entries(sectorBreakdown?.byActivity || {}).length === 0;
   const selectStyles = {
     fontFamily: "Poppins",
     fontSize: "button.md",
@@ -115,7 +119,7 @@ function SectorTabs({
         {SECTORS.map(({ icon, sectorName }) => (
           <TabPanel key={sectorName}>
             {isTopEmissionsResponseLoading ? (
-              <CircularProgress />
+              <CircularProgress isIndeterminate />
             ) : (
               <Card>
                 <SectorHeader
@@ -161,8 +165,17 @@ function SectorTabs({
                     </Select>
                   </Box>
                 </HStack>
-                {isResultsLoading && <CircularProgress />}
-                {!isResultsLoading &&
+                {isResultsLoading && <CircularProgress isIndeterminate />}
+                {isEmptyInventory && (
+                  <EmptyStateCardContent
+                    t={t}
+                    inventoryId={inventory.inventoryId}
+                    width={"1042px"}
+                    height={"592px"}
+                  />
+                )}
+                {!isEmptyInventory &&
+                  !isResultsLoading &&
                   selectedTableView === TableView.BY_ACTIVITY && (
                     <ByActivityView
                       sectorBreakdown={sectorBreakdown!}
@@ -171,7 +184,8 @@ function SectorTabs({
                       sectorName={sectorName}
                     />
                   )}
-                {!isResultsLoading &&
+                {!isEmptyInventory &&
+                  !isResultsLoading &&
                   selectedTableView === TableView.BY_SCOPE && (
                     <ByScopeView
                       data={sectorBreakdown!.byScope}

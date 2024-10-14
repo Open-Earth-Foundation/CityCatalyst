@@ -82,7 +82,7 @@
     "next": "14.2.12",
     "next-auth": "^4.24.7",
     "nodemailer": "^6.9.13",
-    "openai": "^4.52.7",
+    "openai": "^4.67.3",
     "pg": "^8.13.0",
     "pg-hstore": "^2.3.4",
     "pigeon-maps": "^0.21.6",

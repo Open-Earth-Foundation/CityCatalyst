@@ -386,7 +386,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                                   </Trans>
                                   <br />
                                   {t("population-year", {
-                                    year: inventory.city.populationYear,
+                                    year: population?.year,
                                   })}
                                 </>
                               }

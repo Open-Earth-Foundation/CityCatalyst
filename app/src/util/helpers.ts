@@ -265,16 +265,16 @@ export function convertKgToTonnes(
 
   if (tonnes >= 1e6) {
     // Convert to megatonnes if the value is 1,000,000 tonnes or more
-    const megatonnes = tonnes / 1e6;
-    result = `${formatter.format(megatonnes)} Mt${gasSuffix}`;
+    const megatonnes = (tonnes / 1e6).toFixed(2);
+    result = `${megatonnes} Mt${gasSuffix}`;
   } else if (tonnes >= 1e3) {
     // Convert to kilotonnes if the value is 1,000 tonnes or more but less than 1,000,000 tonnes
-    const kilotonnes = tonnes / 1e3;
-    result = `${formatter.format(kilotonnes)} Kt${gasSuffix}`;
+    const kilotonnes = (tonnes / 1e3).toFixed(2);
+    result = `${kilotonnes} Kt${gasSuffix}`;
   } else if (tonnes < 1) {
     // Convert to kg if the value is less than 1 tonne
-    const kilograms = tonnes * 1e3;
-    result = `${formatter.format(kilograms)} kg${gasSuffix}`;
+    const kilograms = (tonnes * 1e3).toFixed(2);
+    result = `${kilograms} kg${gasSuffix}`;
   } else {
     // Return as tonnes if the value is less than 1,000 tonnes but more than or equal to 1 tonne
     result = `${formatter.format(tonnes)} t${gasSuffix}`;

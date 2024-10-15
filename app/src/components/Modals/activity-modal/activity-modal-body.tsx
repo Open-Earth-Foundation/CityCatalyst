@@ -12,7 +12,7 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import BuildingTypeSelectInput from "../../building-select-input";
 import { InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
 import { TFunction } from "i18next";
@@ -321,6 +321,8 @@ const ActivityModalBody = ({
                     miniAddon
                   >
                     <Controller
+                      rules={{ required: t("option-required") }}
+                      defaultValue=""
                       control={control}
                       name={`activity.${title}-unit` as any}
                       render={({ field }) => (
@@ -328,6 +330,7 @@ const ActivityModalBody = ({
                           placeholder={t("select-unit")}
                           variant="unstyled"
                           {...field}
+                          required
                           onChange={(e) => field.onChange(e.target.value)}
                         >
                           {units?.map((item: string) => (
@@ -346,6 +349,17 @@ const ActivityModalBody = ({
                     <WarningIcon color="sentiment.negativeDefault" />
                     <Text fontSize="body.md">
                       {t("emission-amount-form-error")}
+                    </Text>
+                  </Box>
+                ) : (
+                  ""
+                )}
+                {(errors?.activity?.[`${title}-unit`] as any) &&
+                !errors?.activity?.[title] ? (
+                  <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                    <WarningIcon color="sentiment.negativeDefault" />
+                    <Text fontSize="body.md">
+                      {errors?.activity?.[`${title}-unit`]?.message}{" "}
                     </Text>
                   </Box>
                 ) : (
@@ -375,10 +389,15 @@ const ActivityModalBody = ({
                     shadow: "none",
                     borderColor: "content.link",
                   }}
-                  {...register("activity.emissionFactorType")}
+                  {...register("activity.emissionFactorType", {
+                    required: t("value-required"),
+                  })}
                   bgColor="base.light"
-                  placeholder="Select emission factor type"
-                  onChange={(e: any) => onEmissionFactorTypeChange(e)}
+                  placeholder={t("emissions-factor-type-placeholder")}
+                  onChange={(e: any) => {
+                    clearErrors("activity.emissionFactorType");
+                    onEmissionFactorTypeChange(e);
+                  }}
                 >
                   {emissionsFactorTypes.map(({ id, name }) => (
                     <option key={id} value={id}>

@@ -30,7 +30,17 @@ export async function middleware(req: NextRequestWithAuth) {
     lng = fallbackLng;
   }
 
+  if (req.nextUrl.pathname === `/${lng}`) {
+    return NextResponse.redirect(new URL(`/${lng}/`, req.url));
+  }
+
   // redirect for paths that don't have lng at the start
+  if (!req.cookies.has(cookieName)) {
+    response?.headers.set(
+      "Set-Cookie",
+      `${cookieName}=${lng}; Path=/; HttpOnly; SameSite=Strict`,
+    );
+  }
   if (
     !languages.some((loc) => req.nextUrl.pathname.startsWith(`/${loc}`)) &&
     !req.nextUrl.pathname.startsWith("/_next")

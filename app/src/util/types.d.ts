@@ -1,4 +1,7 @@
-import type { DataSourceWithRelations, InventoryValueData } from "@/app/[lng]/[inventory]/data/[step]/types";
+import type {
+  DataSourceWithRelations,
+  InventoryValueData,
+} from "@/app/[lng]/[inventory]/data/[step]/types";
 import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
@@ -145,9 +148,9 @@ interface TopEmission {
 }
 
 interface SectorEmission {
-      sectorName: string;
-      co2eq: bigint;
-      percentage: number;
+  sectorName: string;
+  co2eq: bigint;
+  percentage: number;
 }
 
 interface ResultsResponse {
@@ -156,4 +159,47 @@ interface ResultsResponse {
     total: bigint;
   };
   topEmissions: { bySubSector: TopEmission[] };
+}
+
+interface SubsectorTotals {
+  totalActivityValueByUnit: {
+    [activityUnit: string]: bigint | string;
+  };
+  totalActivityEmissions: bigint | string;
+}
+
+interface GroupedActivity {
+  activityValue: string | bigint; // Using string to avoid jest's "Don't know how to serialize Bigint" error
+  activityUnits: string;
+  totalActivityEmissions: string | bigint; // Using string to avoid jest's "Don't know how to serialize Bigint" error
+  totalEmissionsPercentage: number;
+}
+
+interface ActivityBreakdown {
+  [subSector: string]:
+    | {
+        [activity: string]: GroupedActivity;
+      }
+    | SubsectorTotals;
+}
+
+interface BreakdownByActivity {
+  [activityName: string]: {
+    [fuelType: string]: {
+      [unit: string]: GroupedActivity;
+    };
+    totals: SubsectorTotals;
+  };
+}
+
+interface ActivityDataByScope {
+  activityTitle: string;
+  scopes: { [key: string]: bigint | string };
+  totalEmissions: bigint | string;
+  percentage: number;
+}
+
+interface SectorBreakdownResponse extends BreakdownByActivity {
+  byActivity: BreakdownByActivity;
+  byScope: ActivityDataByScope[];
 }

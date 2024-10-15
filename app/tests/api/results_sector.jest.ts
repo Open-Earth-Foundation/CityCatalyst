@@ -76,52 +76,58 @@ describe.skip("Results API", () => {
     await expectStatusCode(res, 200);
     expect(await res.json()).toEqual({
       data: {
-        activitiesForSectorBreakdown: {
-          byActivity: {
-            "commercial-and-institutional-buildings-and-facilities": {
-              "fuel-type-natural-gas": {
-                "units-gallons": {
-                  activityUnits: "units-gallons",
-                  activityValue: "200000200",
-                  totalActivityEmissions: "700",
-                  totalEmissionsPercentage: 70,
-                },
+        byActivity: {
+          "commercial-and-institutional-buildings-and-facilities": {
+            "fuel-type-natural-gas": {
+              "units-gallons": {
+                activityUnits: "units-gallons",
+                activityValue: "200000200",
+                totalActivityEmissions: "700",
+                totalEmissionsPercentage: 100,
               },
             },
-            "residential-buildings": {
-              "fuel-type-gasoline": {
-                "N/A": {
-                  activityUnits: "N/A",
-                  activityValue: "N/A",
-                  totalActivityEmissions: "300",
-                  totalEmissionsPercentage: 30,
-                },
+            totals: {
+              totalActivityEmissions: "700",
+              totalActivityValueByUnit: {
+                "units-gallons": "200000200",
               },
             },
           },
-          byScope: {
-            "commercial-and-institutional-buildings-and-facilities": {
-              "1": {
-                "units-gallons": {
-                  activityUnits: "units-gallons",
-                  activityValue: "200000200",
-                  totalActivityEmissions: "700",
-                  totalEmissionsPercentage: 70,
-                },
+          "residential-buildings": {
+            "fuel-type-gasoline": {
+              "N/A": {
+                activityUnits: "N/A",
+                activityValue: "N/A",
+                totalActivityEmissions: "300",
+                totalEmissionsPercentage: 100,
               },
             },
-            "residential-buildings": {
-              "1": {
-                "N/A": {
-                  activityUnits: "N/A",
-                  activityValue: "N/A",
-                  totalActivityEmissions: "300",
-                  totalEmissionsPercentage: 30,
-                },
+            totals: {
+              totalActivityEmissions: "300",
+              totalActivityValueByUnit: {
+                "N/A": "N/A",
               },
             },
           },
         },
+        byScope: [
+          {
+            activityTitle: "fuel-type-natural-gas",
+            percentage: 70,
+            scopes: {
+              "1": "700",
+            },
+            totalEmissions: "700",
+          },
+          {
+            activityTitle: "fuel-type-gasoline",
+            percentage: 30,
+            scopes: {
+              "1": "300",
+            },
+            totalEmissions: "300",
+          },
+        ],
       },
     });
   });

@@ -71,8 +71,6 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   });
   const gasValuesData = body.gasValues;
   delete body.gasValues;
-  const sourceData = body.dataSource;
-  delete body.dataSource;
 
   const subCategory = await db.models.SubCategory.findOne({
     where: { subcategoryId: params.subcategory },

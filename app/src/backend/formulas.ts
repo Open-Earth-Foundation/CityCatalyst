@@ -216,10 +216,9 @@ export function handleIndustrialWasteWaterFormula(
   const degradableOrganicComponents = data["degradable-organic-components"];
   const methaneProductionCapacity =
     data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should this only be handled UI-side?
-  const removedSludge = data["total-organic-sludge-removed"];
-  const methaneCorrectionFactor = data["methane-correction-factor"]; // TODO @lemilonkh is this correct? it doesn't exist on the ui
-  const methaneRecovered =
-    data["wastewater-inside-industrial-calculator-methane-recovered"];
+  const removedSludge = data["removed-sludge"];
+  const methaneCorrectionFactor = data["methane-correction-factor"];
+  const methaneRecovered = data["methane-recovered"];
 
   // TODO is BigInt/ BigNumber required for these calculations?
   const totalOrganicWaste =

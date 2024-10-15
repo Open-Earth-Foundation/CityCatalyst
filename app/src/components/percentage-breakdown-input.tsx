@@ -124,7 +124,6 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
   const breakdownSummary = useMemo(() => {
     return Object.entries(breakDownValues)
       .map(([key, value]) => {
-        console.log(key, value);
         const category = breakdownCategories.find((c) => c === key);
         return `${t(category ?? "")} ${value}%`;
       })

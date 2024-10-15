@@ -217,7 +217,7 @@ export function handleIndustrialWasteWaterFormula(
   const methaneProductionCapacity =
     data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should this only be handled UI-side?
   const removedSludge = data["total-organic-sludge-removed"];
-  const methaneCorrectionFactor = data["methane-correction-factor"]; // TODO @leminkoh is this correct? it doesn't exist on the ui
+  const methaneCorrectionFactor = 1; // TODO fetch this from formula values csv
   const methaneRecovered =
     data["wastewater-inside-industrial-calculator-methane-recovered"];
 

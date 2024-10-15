@@ -88,13 +88,6 @@ export const createInventoryValue = z.object({
       }),
     )
     .optional(),
-  dataSource: z
-    .object({
-      sourceType: z.string(),
-      dataQuality: z.string(),
-      notes: z.string(),
-    })
-    .optional(),
 });
 
 export type CreateInventoryValueRequest = z.infer<typeof createInventoryValue>;
@@ -177,13 +170,6 @@ export const updateActivityValueRequest = z.object({
     .optional(),
   activityData: z.any().optional(),
   metadata: z.any().optional(),
-  dataSource: z
-    .object({
-      sourceType: z.string(),
-      dataQuality: z.string(),
-      notes: z.string(),
-    })
-    .optional(),
   gasValues: z.array(gasValueSchema).optional(),
 });
 
@@ -197,13 +183,6 @@ export const createActivityValueRequest = z.object({
       gpcReferenceNumber: z.string(),
       unavailableReason: z.string().optional(),
       unavailableExplanation: z.string().optional(),
-    })
-    .optional(),
-  dataSource: z
-    .object({
-      sourceType: z.string(),
-      dataQuality: z.string(),
-      notes: z.string(),
     })
     .optional(),
   gasValues: z.array(gasValueSchema).optional(),

@@ -104,7 +104,7 @@ export class InventoryValue
   >;
   createSubcategory!: Sequelize.BelongsToCreateAssociationMixin<SubCategory>;
   // InventoryValue belongsTo DataSource via datasourceId
-  dataSource!: DataSource;
+  dataSource?: DataSource;
   getDataSource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
   setDataSource!: Sequelize.BelongsToSetAssociationMixin<
     DataSource,

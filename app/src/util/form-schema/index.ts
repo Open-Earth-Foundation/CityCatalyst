@@ -47,6 +47,7 @@ export interface Activity {
   "extra-fields"?: ExtraField[];
   units?: string[];
   formula?: string;
+  "formula-mapping"?: Record<string, string>;
 }
 
 export interface Prefill {

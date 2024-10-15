@@ -6,6 +6,9 @@ import type { GasValueCreationAttributes } from "@/models/GasValue";
 import type { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
 import { findClosestCityPopulation } from "@/util/population";
 import type { Inventory } from "@/models/Inventory";
+import { db } from "@/models";
+import { InventoryValue } from "@/models/InventoryValue";
+import { Decimal } from "decimal.js";
 
 type GasValueWithEmissionsFactor = Omit<GasValueCreationAttributes, "id"> & {
   emissionsFactor?:
@@ -21,6 +24,75 @@ const METHANE_CORRECTION_FACTORS: Record<string, number> = {
   "unmanaged-5m-more-deep": 0.8,
   "unmanaged-5m-less-deep": 0.4,
   uncategorized: 0.6,
+};
+
+const formulaInputsMapping: Record<string, string> = {
+  "waste-composition-clinical-waste": "waste-type-clinical",
+  "waste-composition-hazardous-waste": "waste-type-hazardous",
+  "waste-composition-industrial-solid-waste": "waste-type-industrial",
+  "waste-composition-municipal-solid-waste": "waste-type-municipal-solid-waste",
+  "waste-composition-sewage-sludge": "waste-type-sludge",
+};
+
+const IncinerationWasteCO2OxidationFactor: Record<string, number> = {
+  "technology-continuous-incineration": 1,
+  "technology-semi-continuous-incineration": 1,
+  "technology-batch-type-incineration": 1,
+  "technology-open-burning": 0.58,
+};
+
+const IncinerationWasteCH4EmissionFactor: Record<
+  string,
+  Record<string, number>
+> = {
+  "technology-continuous-incineration": {
+    "boiler-type-stoker": 0.2,
+    "boiler-type-fluidised-bed": 0,
+  },
+  "technology-semi-continuous-incineration": {
+    "boiler-type-stoker": 6,
+    "boiler-type-fluidised-bed": 188,
+  },
+  "technology-batch-type-incineration": {
+    "boiler-type-stoker": 60,
+    "boiler-type-fluidised-bed": 237,
+  },
+};
+
+const IncinerationWasteN2OEmissionFactor: Record<
+  string,
+  Record<string, number>
+> = {
+  "waste-composition-municipal-solid-waste": {
+    "technology-continuous-incineration": 50,
+    "technology-semi-continuous-incineration": 50,
+    "technology-batch-type-incineration": 50,
+    "technology-open-burning": 150,
+  },
+  "waste-composition-industrial-solid-waste": {
+    "technology-continuous-incineration": 100,
+    "technology-semi-continuous-incineration": 100,
+    "technology-batch-type-incineration": 100,
+    "technology-open-burning": 100,
+  },
+  "waste-composition-clinical-waste": {
+    "technology-continuous-incineration": 100,
+    "technology-semi-continuous-incineration": 100,
+    "technology-batch-type-incineration": 100,
+    "technology-open-burning": 100,
+  },
+  "waste-composition-hazardous-waste": {
+    "technology-continuous-incineration": 100,
+    "technology-semi-continuous-incineration": 100,
+    "technology-batch-type-incineration": 100,
+    "technology-open-burning": 100,
+  },
+  "waste-composition-sewage-sludge": {
+    "technology-continuous-incineration": 900,
+    "technology-semi-continuous-incineration": 900,
+    "technology-batch-type-incineration": 900,
+    "technology-open-burning": 900,
+  },
 };
 
 // factors of each fraction of waste type for methane generation formula
@@ -59,6 +131,137 @@ export function handleDirectMeasureFormula(
     return { gas: gasName, amount: amount };
   });
   return gases;
+}
+
+export async function handleIncinerationWasteFormula(
+  activityValue: ActivityValue,
+  inventoryValue: InventoryValue,
+  formulaMapping: Record<string, string>,
+): Promise<Gas[]> {
+  const data = activityValue.activityData;
+
+  if (!data) {
+    throw new createHttpError.BadRequest(
+      "Activity has no data associated, so it can't use 'incineration-waste' formula",
+    );
+  }
+
+  const activityTitle = activityValue.metadata?.["activityTitle"];
+  const massOfIncineratedWaste = data[activityTitle] as number;
+  const wastCompositionKey = formulaMapping["waste-composition"];
+  const wasteComposition = data[wastCompositionKey];
+  const technologyKey = formulaMapping["technology"];
+  const technology = data[technologyKey] as string;
+  const boilerTypeKey = formulaMapping["boiler-type"];
+  const boilerType = data[boilerTypeKey] as string;
+
+  let totalCH4Emission: number = 0;
+  let totalN2OEmissions: number = 0;
+  let totalPartialCO2Emissions: number = 0;
+
+  for (const wasteType of Object.keys(wasteComposition)) {
+    const WasteFractionI = wasteComposition[wasteType] / 100;
+
+    const AmountOfWasteForWasteTypeI = massOfIncineratedWaste * WasteFractionI;
+
+    const CH4EmissionFactorForWasteTypeI =
+      IncinerationWasteCH4EmissionFactor[technology]?.[boilerType];
+
+    const NO2EmissionFactorForWasteTypeI =
+      IncinerationWasteN2OEmissionFactor[wasteType]?.[technology];
+
+    if (CH4EmissionFactorForWasteTypeI == null) {
+      throw new createHttpError.BadRequest(
+        `No CH4 emission factor found for ${technology}, ${boilerType}`,
+      );
+    }
+
+    if (NO2EmissionFactorForWasteTypeI == null) {
+      throw new createHttpError.BadRequest(
+        `No NO2 emission factor found for ${wasteType}, ${technology}`,
+      );
+    }
+
+    (totalCH4Emission +=
+      AmountOfWasteForWasteTypeI * CH4EmissionFactorForWasteTypeI * 10 ** -3),
+      (totalN2OEmissions +=
+        AmountOfWasteForWasteTypeI * NO2EmissionFactorForWasteTypeI * 10 ** -3);
+
+    // calculate CO2 emissions
+
+    const formulaInputs = await db.models.FormulaInput.findAll({
+      where: {
+        [`metadata.waste-type`]: formulaInputsMapping[wasteType] as string,
+        gas: "CO2",
+        formulaName: "incineration-waste",
+        gpcRefno: inventoryValue.gpcReferenceNumber,
+        region: "world",
+      },
+    });
+
+    const dryMatterInput = formulaInputs.find(
+      (input) => input.parameterCode === "dmi",
+    )?.formulaInputValue;
+
+    const fractionOfCarbonInput = formulaInputs.find(
+      (input) => input.parameterCode === "CFi",
+    )?.formulaInputValue;
+
+    const fractionOfFossilCarbonInput = formulaInputs.find(
+      (input) => input.parameterCode === "FCFi",
+    )?.formulaInputValue;
+
+    const fractionOfFossilCarbonI = fractionOfFossilCarbonInput ?? 1;
+
+    const dryMatterContentI = dryMatterInput ?? 1;
+
+    const fractionOfCarbonI = fractionOfCarbonInput ?? 1;
+
+    if (!dryMatterInput) {
+      console.warn(
+        `dryMatterContentI is missing for ${wasteType} a default of 1 used`,
+      );
+    }
+
+    if (!fractionOfCarbonInput) {
+      console.warn(
+        `fractionOfCarbonI is missing for ${wasteType} a default of 1 used`,
+      );
+    }
+
+    if (!fractionOfFossilCarbonInput) {
+      console.warn(
+        `fractionOfFossilCarbonI is missing for ${wasteType} a default of 1 used`,
+      );
+    }
+
+    const oxidationFactorI = IncinerationWasteCO2OxidationFactor[technology];
+
+    totalPartialCO2Emissions +=
+      WasteFractionI *
+      dryMatterContentI *
+      fractionOfCarbonI *
+      fractionOfFossilCarbonI *
+      oxidationFactorI;
+  }
+
+  const totalCO2Emissions =
+    massOfIncineratedWaste * totalPartialCO2Emissions * (44 / 12);
+
+  return [
+    {
+      gas: "CH4",
+      amount: BigInt(new Decimal(totalCH4Emission).trunc().toString()),
+    },
+    {
+      gas: "N2O",
+      amount: BigInt(new Decimal(totalN2OEmissions).trunc().toString()),
+    },
+    {
+      gas: "CO2",
+      amount: BigInt(new Decimal(totalCO2Emissions).trunc().toString()),
+    },
+  ];
 }
 
 export function handleVkt1Formula(

@@ -3779,7 +3779,6 @@
     "methodologies": [
       {
         "id": "incineration-waste-inboundary-methodology",
-        "disabled": true,
         "activityTypeField": "incineration-facility-id",
         "inputRequired": [
           "incineration-facility-id",
@@ -3795,6 +3794,11 @@
             "unique-by": [
               "incineration-waste-inboundary-incineration-facility-id"
             ],
+            "formula-mapping": {
+              "technology": "incineration-waste-inboundary-technology",
+              "boiler-type": "incineration-waste-inboundary-boiler-type",
+              "waste-composition": "incineration-waste-inboundary-waste-composition"
+            },
             "activity-title": "total-mass-of-waste-incinerated-or-burned",
             "extra-fields": [
               {
@@ -3811,10 +3815,10 @@
                 "type": "percentage-breakdown",
                 "total-required": 100,
                 "subtypes": [
-                  "waste-composition-municipal-solid-waste",
-                  "waste-composition-industrial-solid-waste",
-                  "waste-composition-hazardous-waste",
                   "waste-composition-clinical-waste",
+                  "waste-composition-hazardous-waste",
+                  "waste-composition-industrial-solid-waste",
+                  "waste-composition-municipal-solid-waste",
                   "waste-composition-sewage-sludge"
                 ]
               },
@@ -3877,6 +3881,11 @@
             "unique-by": [
               "incineration-waste-outboundary-incineration-facility-id"
             ],
+            "formula-mapping": {
+              "technology": "incineration-waste-outboundary-technology",
+              "boiler-type": "incineration-waste-outboundary-boiler-type",
+              "waste-composition": "incineration-waste-outboundary-waste-composition"
+            },
             "activity-title": "total-mass-of-waste-incinerated-or-burned",
             "extra-fields": [
               {
@@ -3893,10 +3902,10 @@
                 "type": "percentage-breakdown",
                 "total-required": 100,
                 "subtypes": [
-                  "waste-composition-municipal-solid-waste",
-                  "waste-composition-industrial-solid-waste",
-                  "waste-composition-hazardous-waste",
                   "waste-composition-clinical-waste",
+                  "waste-composition-hazardous-waste",
+                  "waste-composition-industrial-solid-waste",
+                  "waste-composition-municipal-solid-waste",
                   "waste-composition-sewage-sludge"
                 ]
               },

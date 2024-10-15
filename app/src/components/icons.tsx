@@ -734,3 +734,282 @@ export const IndustrialIcon = () => (
     </g>
   </svg>
 );
+
+export const MunicipalSolidWasteIcon = () => {
+  return (
+    <svg
+      width="26"
+      height="24"
+      viewBox="0 0 26 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M7.375 7.126C7.52677 7.126 7.66357 7.21748 7.72155 7.35773C7.77953 7.49798 7.74727 7.65935 7.63981 7.76652C7.53235 7.87369 7.3709 7.90553 7.2308 7.84717C7.09071 7.78881 6.9996 7.65177 7 7.5C6.99973 7.40046 7.03916 7.30493 7.10954 7.23454C7.17993 7.16416 7.27546 7.12473 7.375 7.125"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M11.3984 8.25098C11.6055 8.25098 11.7734 8.41887 11.7734 8.62598C11.7734 8.83308 11.6055 9.00098 11.3984 9.00098C11.1913 9.00098 11.0234 8.83308 11.0234 8.62598C11.0232 8.52644 11.0626 8.4309 11.133 8.36052C11.2034 8.29013 11.2989 8.25071 11.3984 8.25098"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M18.625 8.25098C18.8321 8.25098 19 8.41887 19 8.62598C19 8.83308 18.8321 9.00098 18.625 9.00098C18.4179 9.00098 18.25 8.83308 18.25 8.62598C18.2497 8.52644 18.2892 8.4309 18.3595 8.36052C18.4299 8.29013 18.5255 8.25071 18.625 8.25098"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M15.1523 6.75098C15.3595 6.75098 15.5273 6.91887 15.5273 7.12598C15.5273 7.33308 15.3595 7.50098 15.1523 7.50098C14.9452 7.50098 14.7773 7.33308 14.7773 7.12598C14.7771 7.02644 14.8165 6.9309 14.8869 6.86052C14.9573 6.79013 15.0528 6.75071 15.1523 6.75098"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M1.75 13.501C1.75 12.2583 2.75736 11.251 4 11.251H22C23.2426 11.251 24.25 12.2583 24.25 13.501V13.501C24.25 14.7436 23.2426 15.751 22 15.751H4C2.75736 15.751 1.75 14.7436 1.75 13.501V13.501Z"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M22.75 11.38V9.93998C22.75 8.29838 22.0978 6.72403 20.9369 5.56334C19.7761 4.40265 18.2016 3.75071 16.56 3.75098H9.44C7.7984 3.75071 6.22395 4.40265 5.06307 5.56334C3.90219 6.72403 3.25 8.29838 3.25 9.93998V11.38"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M22.75 15.623V17.251C22.75 18.9079 21.4069 20.251 19.75 20.251H6.25C4.59315 20.251 3.25 18.9079 3.25 17.251V15.623"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const IndustrialSolidWasteIcon = () => {
+  return (
+    <svg
+      width="24"
+      height="26"
+      viewBox="0 0 24 26"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M15 14.5L19.915 12.043C20.1475 11.9269 20.4235 11.9395 20.6445 12.0762C20.8655 12.2128 21 12.4542 21 12.714V22.75C21 23.5784 20.3284 24.25 19.5 24.25H3C2.17157 24.25 1.5 23.5784 1.5 22.75V14.5L3.623 4.593C3.69701 4.24727 4.00243 4.00018 4.356 4H6.144C6.49757 4.00018 6.80299 4.24727 6.877 4.593L9 14.5L13.915 12.043C14.1475 11.9269 14.4235 11.9395 14.6445 12.0762C14.8655 12.2128 15 12.4542 15 12.714V14.5"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M9 18.25H12"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M9 21.25H12"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M15 18.25H18"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M15 21.25H18"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M9.00391 1.869C10.036 1.85147 11.0591 2.06394 11.9989 2.491C19.4279 5.662 22.4989 1.75 22.4989 1.75"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const HazardousWasteIcon = () => {
+  return (
+    <svg
+      width="26"
+      height="26"
+      viewBox="0 0 26 26"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M13 19.75C12.7929 19.75 12.625 19.9179 12.625 20.125C12.625 20.3321 12.7929 20.5 13 20.5C13.2071 20.5 13.375 20.3321 13.375 20.125C13.375 19.9179 13.2071 19.75 13 19.75V19.75"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M13 16.75V9.25"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+      />
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M14.621 2.75976C14.3174 2.14165 13.6887 1.75 13 1.75C12.3114 1.75 11.6826 2.14165 11.379 2.75976L1.90601 22.0578C1.67419 22.5294 1.70221 23.0872 1.98014 23.5332C2.25807 23.9792 2.74652 24.2501 3.27201 24.2498H22.728C23.2535 24.2501 23.742 23.9792 24.0199 23.5332C24.2978 23.0872 24.3258 22.5294 24.094 22.0578L14.621 2.75976Z"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const ClinicalWasteIcon = () => {
+  return (
+    <svg
+      width="26"
+      height="25"
+      viewBox="0 0 26 25"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M13 23.2797C19.2132 23.2797 24.25 18.4444 24.25 12.4797C24.25 6.51501 19.2132 1.67969 13 1.67969C6.7868 1.67969 1.75 6.51501 1.75 12.4797C1.75 18.4444 6.7868 23.2797 13 23.2797Z"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M13 16.0799C15.0711 16.0799 16.75 14.4681 16.75 12.4799C16.75 10.4917 15.0711 8.87988 13 8.87988C10.9289 8.87988 9.25 10.4917 9.25 12.4799C9.25 14.4681 10.9289 16.0799 13 16.0799Z"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M15.6501 5.61426C16.7236 6.6435 17.0453 8.19227 16.4651 9.53805C15.8849 10.8838 14.5173 11.7614 13.0001 11.7614C11.483 11.7614 10.1153 10.8838 9.53512 9.53805C8.95496 8.19227 9.27665 6.6435 10.3501 5.61426"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M5.48047 13.709C5.87283 12.3023 7.10926 11.2611 8.61313 11.071C10.117 10.8808 11.5921 11.5791 12.3505 12.8402C13.1089 14.1014 13.0012 15.6769 12.0776 16.8321C11.1541 17.9872 9.59656 18.4945 8.13147 18.1173"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M17.8698 18.1173C16.4047 18.4945 14.8472 17.9872 13.9237 16.8321C13.0001 15.6769 12.8924 14.1014 13.6508 12.8402C14.4092 11.5791 15.8843 10.8808 17.3882 11.071C18.892 11.2611 20.1285 12.3023 20.5208 13.709"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const SewageWasteIcon = () => {
+  return (
+    <svg
+      width="26"
+      height="25"
+      viewBox="0 0 26 25"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M1.75 23C3.39945 23.2041 5.05293 22.653 6.25 21.5C7.11214 22.4549 8.33846 22.9999 9.625 22.9999C10.9115 22.9999 12.1379 22.4549 13 21.5C13.8621 22.4549 15.0885 22.9999 16.375 22.9999C17.6615 22.9999 18.8879 22.4549 19.75 21.5C20.9471 22.653 22.6006 23.2041 24.25 23"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M8.5 13.25H1.75"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M1.75 5.75H8.5"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <rect
+        x="8.5"
+        y="4.25"
+        width="4.5"
+        height="10.5"
+        rx="1"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M16.184 13.8899C15.2326 13.4921 14.215 13.2766 13.184 13.2549H13"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M18.957 15.7998C19.6699 16.544 20.2374 17.415 20.63 18.3678"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M16.0547 8.35547C17.0639 8.59031 18.0419 8.94307 18.9687 9.40647"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M21.8125 11.2822C22.597 11.9591 23.2998 12.7253 23.9065 13.5652"
+        stroke="#7A7B9A"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+};

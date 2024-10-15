@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Card,
+  Center,
   Flex,
   Heading,
   Icon,
@@ -44,7 +45,7 @@ const ExternalDataSection = ({
     onClose: onSourceDrawerClose,
     onOpen: onSourceDrawerOpen,
   } = useDisclosure();
-  const onSourceClick = (source: DataSourceWithRelations, data: any) => {
+  const onSourceClick = (_source: DataSourceWithRelations, _data: any) => {
     // setSelectedSource(source);
     // setSelectedSourceData(data);
     onSourceDrawerOpen();
@@ -61,7 +62,7 @@ const ExternalDataSection = ({
   const variant = hovered ? "danger" : "solidPrimary";
 
   const onDisconnectThirdPartyData = async (
-    source: DataSourceWithRelations,
+    _source: DataSourceWithRelations,
   ) => {
     await disconnectThirdPartyData({
       inventoryId: inventoryValue.inventoryId,
@@ -72,6 +73,23 @@ const ExternalDataSection = ({
       title: t("disconnected-data-source"),
     });
   };
+
+  if (!source) {
+    return (
+      <Center>
+        <Text
+          fontFamily="heading"
+          fontSize="10px"
+          fontWeight="semibold"
+          letterSpacing="widest"
+          textTransform="uppercase"
+          color="content.tertiary"
+        >
+          {t("source-not-found")}
+        </Text>
+      </Center>
+    );
+  }
 
   return (
     <Box>

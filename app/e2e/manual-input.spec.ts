@@ -215,7 +215,8 @@ test.describe.serial("Manual Input", () => {
           sector.sectorName === "Waste" ||
             sector.sectorName === "Transportation",
         );
-        // look for a direct measure
+
+        // look for a direct measure card
         // select all the methodology card headers and check if any of them is direct measure
         const directMeasureCardHeader = page
           .getByTestId(testIds.methodologyCardHeader)
@@ -224,9 +225,13 @@ test.describe.serial("Manual Input", () => {
           })
           .first();
 
-        await expect(directMeasureCardHeader).toBeVisible();
+        // TODO sometimes we are already on the direct measure page here
+        //await expect(directMeasureCardHeader).toBeVisible();
+
         // click on the direct measure card
-        await directMeasureCardHeader?.click();
+        if (await directMeasureCardHeader?.isVisible()) {
+          await directMeasureCardHeader?.click();
+        }
 
         await page.getByTestId(testIds.addEmissionButton).click();
 
@@ -237,7 +242,9 @@ test.describe.serial("Manual Input", () => {
         const selectElements = page.locator("select");
         for (let i = 0; i < (await selectElements.count()); i++) {
           const dropdown = selectElements.nth(i);
-          await dropdown.selectOption({ index: 1 });
+          const optionCount = await dropdown.locator("option").count();
+          const index = optionCount >= 3 ? 2 : 1; // for dropdowns with many options, select the third one so we don't use the "All" option that leads to validation errors
+          await dropdown.selectOption({ index });
         }
 
         const inputElements = page.locator("input[type='text']");
@@ -250,7 +257,7 @@ test.describe.serial("Manual Input", () => {
           testIds.sourceReferenceInput,
         );
 
-        await textInput.fill("");
+        await textInput.fill("Created by e2e test");
 
         // fill in the emission values
         // TODO wrong. These are total emissions amount, NOT emissions factors
@@ -278,6 +285,7 @@ test.describe.serial("Manual Input", () => {
         // fill in the text fields
         await textInput.fill("test");
 
+        //const submitButton2 = page.getByTestId(testIds.addEmissionModalSubmitButton);
         await submitButton?.click();
 
         // wait for a 200 response

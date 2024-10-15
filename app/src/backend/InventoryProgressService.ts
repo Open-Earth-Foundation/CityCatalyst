@@ -99,15 +99,7 @@ export default class InventoryProgressService {
       if (inventoryValues) {
         sectorCounts = inventoryValues.reduce(
           (acc, inventoryValue) => {
-            if (!inventoryValue.dataSource) {
-              logger.warn(
-                "Missing data source for inventory value",
-                inventoryValue.id,
-              );
-              return acc;
-            }
-
-            const sourceType = inventoryValue.dataSource.sourceType;
+            const sourceType = inventoryValue.dataSource?.sourceType;
 
             if (sourceType === "third_party") {
               acc.thirdParty++;

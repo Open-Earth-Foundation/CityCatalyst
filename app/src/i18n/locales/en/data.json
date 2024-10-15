@@ -835,5 +835,6 @@
   "textiles": "Textiles",
   "industrial": "Industrial",
   "percentages-not-100": "Percentages must add up to 100%",
-  "emissions-factor-type-placeholder": "Select emission factor type"
+  "emissions-factor-type-placeholder": "Select emission factor type",
+  "source-not-found": "Source not found"
 }

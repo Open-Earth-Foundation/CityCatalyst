@@ -74,12 +74,6 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   const sourceData = body.dataSource;
   delete body.dataSource;
 
-  const newDataSource = {
-    ...sourceData,
-    sourceType: "user",
-    datasourceId: randomUUID(),
-  };
-
   const subCategory = await db.models.SubCategory.findOne({
     where: { subcategoryId: params.subcategory },
     include: [{ model: db.models.SubSector, as: "subsector" }],
@@ -91,31 +85,11 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   }
 
   if (inventoryValue) {
-    // update or replace data source if necessary
-    let datasourceId: string | undefined = undefined;
-    if (inventoryValue.datasourceId) {
-      if (inventoryValue.dataSource.sourceType === "user") {
-        if (sourceData) {
-          await inventoryValue.dataSource.update(sourceData);
-        }
-        datasourceId = inventoryValue.datasourceId;
-      } else {
-        const source = await db.models.DataSource.create(newDataSource);
-        datasourceId = source.datasourceId;
-      }
-    } else {
-      const source = await db.models.DataSource.create(newDataSource);
-      datasourceId = source.datasourceId;
-    }
-
     inventoryValue = await inventoryValue.update({
       ...body,
       id: inventoryValue.id,
-      datasourceId,
     });
   } else {
-    const source = await db.models.DataSource.create(newDataSource);
-
     inventoryValue = await db.models.InventoryValue.create({
       ...body,
       id: randomUUID(),
@@ -123,7 +97,6 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
       subSectorId: subCategory.subsectorId,
       sectorId: subCategory.subsector.sectorId,
       inventoryId: params.inventory,
-      datasourceId: source.datasourceId,
       gpcReferenceNumber: subCategory.referenceNumber,
     });
   }

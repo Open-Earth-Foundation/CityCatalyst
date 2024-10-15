@@ -37,6 +37,7 @@
   "download-failed": "Download failed",
   "download-error": "There was an error during download",
   "tab-emission-inventory-calculation-title": "Inventory Calculation",
+  "emission-inventory-calculation-title": "Emission Inventory Calculation",
   "tab-emission-inventory-results-title": "Inventory Results",
   "inventory-format-basic": "Inventory format: GPC BASIC",
   "view-progress-in-each-sector": "View the progress of data collection in each GPC-required sector.",
@@ -69,5 +70,7 @@
   "by-scope": "BY SCOPE",
   "%-of-sector-emissions": "% of sector emissions",
   "emissions-scope": "Emissions - scope ",
-  "subsector": "Sub-sector"
+  "subsector": "Sub-sector",
+  "start-adding-data": "Start Adding Data to your inventory to see your city's inventory emissions results.",
+  "no-data-for-inventory-yet": "No data for inventory yet"
 }

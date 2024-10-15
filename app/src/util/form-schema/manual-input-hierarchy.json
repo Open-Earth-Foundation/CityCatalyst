@@ -602,24 +602,6 @@
                 "value": "type-all"
               }
             ]
-          },
-          {
-            "id": "fuel-combustion-manufacturing-and-construction-activity",
-            "prefills": [
-              {
-                "key": "manufacturing-and-construction-type",
-                "value": "type-commercial-buildings"
-              }
-            ]
-          },
-          {
-            "id": "fuel-combustion-manufacturing-and-construction-activity",
-            "prefills": [
-              {
-                "key": "manufacturing-and-construction-type",
-                "value": "type-institutional-buildings"
-              }
-            ]
           }
         ]
       },
@@ -785,7 +767,7 @@
             "prefills": [
               {
                 "key": "manufacturing-and-construction-type",
-                "value": "manufacturing-and-construction-type-commercial-buildings"
+                "value": "commercial-buildings"
               }
             ]
           },
@@ -794,7 +776,7 @@
             "prefills": [
               {
                 "key": "manufacturing-and-construction-type",
-                "value": "manufacturing-and-construction-type-institutional-buildings"
+                "value": "institutional-buildings"
               }
             ]
           }
@@ -966,7 +948,7 @@
             "prefills": [
               {
                 "key": "energy-industries-type",
-                "value": "type-heat-pants"
+                "value": "type-heat-plants"
               }
             ]
           }
@@ -1128,7 +1110,7 @@
             "prefills": [
               {
                 "key": "energy-industries-type",
-                "value": "type-heat-pants"
+                "value": "type-heat-plants"
               }
             ]
           }
@@ -3448,7 +3430,7 @@
                 ]
               },
               {
-                "id": "methane-commitment-solid-waste-inboundary-methane-collected-and-removed",
+                "id": "methane-collected-and-removed",
                 "type": "number"
               },
               {
@@ -3552,7 +3534,7 @@
                 ]
               },
               {
-                "id": "methane-commitment-solid-waste-outboundary-methane-collected-and-removed",
+                "id": "methane-collected-and-removed",
                 "type": "number"
               },
               {
@@ -3613,7 +3595,6 @@
     "methodologies": [
       {
         "id": "biological-treatment-inboundary-methodology",
-        "disabled": true,
         "activityTypeField": "biological-treatment-inboundary-treatment-type",
         "inputRequired": [
           "mass-of-organic-waste-treated",
@@ -3646,7 +3627,7 @@
                 ]
               },
               {
-                "id": "biological-treatment-inboundary-total-of-ch4-recovered",
+                "id": "total-of-ch4-recovered",
                 "type": "number"
               },
               {
@@ -3738,7 +3719,7 @@
                 ]
               },
               {
-                "id": "biological-treatment-outboundary-total-of-ch4-recovered",
+                "id": "total-of-ch4-recovered",
                 "type": "number"
               },
               {
@@ -3972,9 +3953,17 @@
           "population-or-industrial-production"
         ],
         "formula": "wastewater-calculator",
+        "activitySelectionField": {
+          "id": "wastewater-inside-source-type",
+          "options": [
+            "source-type-domestic-wastewater",
+            "source-type-industrial-wastewater"
+          ]
+        },
         "activities": [
           {
             "id": "wastewater-inside-domestic-calculator-activity",
+            "activitySelectedOption": "source-type-domestic-wastewater",
             "unique-by": [
               "wastewater-inside-domestic-calculator-income-group",
               "wastewater-inside-domestic-calculator-collection-status",
@@ -3993,7 +3982,7 @@
                 ]
               },
               {
-                "id": "wastewater-inside-domestic-calculator-total-organic-sludge-removed",
+                "id": "total-organic-sludge-removed",
                 "type": "number"
               },
               {
@@ -4043,6 +4032,7 @@
           },
           {
             "id": "wastewater-inside-industrial-calculator-activity",
+            "activitySelectedOption": "source-type-industrial-wastewater",
             "unique-by": [
               "wastewater-inside-industrial-calculator-industrial-production",
               "wastewater-inside-industrial-calculator-collection-status",
@@ -4072,7 +4062,7 @@
                 ]
               },
               {
-                "id": "wastewater-inside-industrial-calculator-total-organic-sludge-removed",
+                "id": "total-organic-sludge-removed",
                 "type": "number"
               },
               {
@@ -4168,9 +4158,17 @@
           "population-or-industrial-production"
         ],
         "formula": "wastewater-calculator",
+        "activitySelectionField": {
+          "id": "wastewater-outside-source-type",
+          "options": [
+            "source-type-domestic-wastewater",
+            "source-type-industrial-wastewater"
+          ]
+        },
         "activities": [
           {
             "id": "wastewater-outside-domestic-calculator-activity",
+            "activitySelectedOption": "source-type-domestic-wastewater",
             "unique-by": [
               "wastewater-outside-domestic-calculator-income-group",
               "wastewater-outside-domestic-calculator-collection-status",
@@ -4189,7 +4187,7 @@
                 ]
               },
               {
-                "id": "wastewater-outside-domestic-calculator-total-organic-sludge-removed",
+                "id": "total-organic-sludge-removed",
                 "type": "number"
               },
               {
@@ -4239,6 +4237,7 @@
           },
           {
             "id": "wastewater-outside-industrial-calculator-activity",
+            "activitySelectedOption": "source-type-industrial-wastewater",
             "unique-by": [
               "wastewater-outside-industrial-calculator-industrial-production",
               "wastewater-outside-industrial-calculator-collection-status",
@@ -4268,7 +4267,7 @@
                 ]
               },
               {
-                "id": "wastewater-outside-industrial-calculator-total-organic-sludge-removed",
+                "id": "total-organic-sludge-removed",
                 "type": "number"
               },
               {

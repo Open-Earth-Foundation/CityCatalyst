@@ -80,7 +80,7 @@ export default function InventoryCalculationTab({
           <TabHeader
             t={t}
             year={inventory?.year}
-            title={"tab-emission-inventory-calculation-title"}
+            title={"emission-inventory-calculation-title"}
           />
           <Box className="flex w-full justify-between items-center mt-2 gap-6">
             <SegmentedProgress

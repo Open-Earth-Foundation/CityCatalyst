@@ -263,18 +263,23 @@ export function convertKgToTonnes(
   const formatter = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 });
 
   if (kg >= 1e12) {
+    // Convert to gigatonnes if the value is 1,000,000,000,000 kg or more
     const gigatonnes = kg / 1e12;
     return `${formatter.format(gigatonnes)} Gt${gasSuffix}`;
   } else if (kg >= 1e9) {
+    // Convert to megatonnes if the value is 1,000,000,000 kg or more but less than 1,000,000,000,000 kg
     const megatonnes = kg / 1e9;
     return `${formatter.format(megatonnes)} Mt${gasSuffix}`;
   } else if (kg >= 1e6) {
-    const kilotonnes = kg / 1e3;
+    // Convert to kilotonnes if the value is 1,000,000 kg or more but less than 1,000,000,000 kg
+    const kilotonnes = kg / 1e6;
     return `${formatter.format(kilotonnes)} kt${gasSuffix}`;
   } else if (kg >= 1e3) {
+    // Convert to tonnes if the value is 1,000 kg or more but less than 1,000,000 kg
     const tonnes = kg / 1e3;
     return `${formatter.format(tonnes)} t${gasSuffix}`;
   } else {
+    // Return as kg if the value is less than 1,000 kg
     return `${formatter.format(kg)} kg${gasSuffix}`;
   }
 }

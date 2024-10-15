@@ -20,7 +20,7 @@ import { CheckCircleIcon } from "@chakra-ui/icons";
 import { getInputMethodology } from "@/util/helpers";
 import type { SuggestedActivity } from "@/util/form-schema";
 import { getTranslationFromDict } from "@/i18n";
-import ActivityModalBody, { ExtraField, Inputs } from "./activity-modal-body";
+import ActivityModalBody, { Inputs } from "./activity-modal-body";
 import { ActivityValue } from "@/models/ActivityValue";
 import { InventoryValue } from "@/models/InventoryValue";
 import useActivityValueValidation from "@/hooks/activity-value-form/use-activity-validation";
@@ -62,30 +62,11 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   targetActivityValue,
   resetSelectedActivityValue,
 }) => {
-  const { fields, units, title, activityId } = useMemo(() => {
-    let fields: ExtraField[] = [];
-    let units = null;
-    let title = null;
-    let activityId = null;
-
-    if (methodology?.id.includes("direct-measure")) {
-      fields = methodology.fields;
-    } else {
-      fields = methodology?.fields[0]["extra-fields"];
-      units = methodology?.fields[0].units;
-      title = methodology?.fields[0]["activity-title"];
-      activityId = methodology?.fields[0]["id"];
-    }
-
-    return {
-      fields,
-      units,
-      title,
-      activityId,
-    };
-  }, [methodology]);
-
   const {
+    fields,
+    units,
+    title,
+    activityId,
     setValue,
     setFocus,
     reset,
@@ -100,8 +81,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   } = useActivityForm({
     targetActivityValue,
     selectedActivity,
-    methodologyName: methodology?.id,
-    fields,
+    methodology: methodology,
   });
 
   const { handleManalInputValidationError } = useActivityValueValidation({
@@ -236,6 +216,13 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         emissionFactorType: activity.emissionFactorType,
         activityId: activityId,
         activityTitle: title,
+        ...(methodology.activitySelectionField && {
+          [methodology.activitySelectionField.id]: (activity as any)[
+            methodology.activitySelectionField.id
+          ],
+        }),
+        dataQuality: activity.dataQuality,
+        sourceExplanation: activity.dataComments,
       },
       ...(inventoryValue ? { inventoryValueId: inventoryValue.id } : {}),
       ...(!inventoryValue
@@ -248,11 +235,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
             },
           }
         : {}),
-      dataSource: {
-        sourceType: "",
-        dataQuality: activity.dataQuality,
-        notes: activity.dataComments,
-      },
       gasValues: gasValues.map(({ gas, factor, unit, ...rest }) => ({
         ...rest,
         gas,
@@ -324,6 +306,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       activity: generateDefaultActivityFormValues(
         selectedActivity as SuggestedActivity,
         fields,
+        methodology,
       ),
     });
   };

@@ -25,7 +25,6 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { MdOutlineHomeWork } from "react-icons/md";
-import { toKebabCase } from "@/util/helpers";
 import {
   AnimatePresence,
   easeInOut,
@@ -37,6 +36,11 @@ import {
 import Link from "next/link";
 
 const MotionBox = motion(Box);
+
+const kebab = (str: string|undefined): string =>
+  (str)
+    ? str.replaceAll(/\s+/g, '-').replaceAll(/[^0-9A-Za-z\-\_]/g, '').toLowerCase()
+    : '';
 
 function SubSectorPage({
   params: { lng, step, inventory: inventoryId, subsector },
@@ -250,7 +254,7 @@ function SubSectorPage({
                               size={"30px"}
                             />
                           ) : (
-                            t(toKebabCase(subSectorData?.subsectorName))
+                            t(kebab(subSectorData?.subsectorName))
                           )}
                         </Text>
                       </BreadcrumbLink>
@@ -327,7 +331,7 @@ function SubSectorPage({
                   ) : subSectorData?.referenceNumber != undefined ? (
                     subSectorData?.referenceNumber +
                     " " +
-                    t(toKebabCase(subSectorData?.subsectorName))
+                    t(kebab(subSectorData?.subsectorName))
                   ) : (
                     ""
                   )}

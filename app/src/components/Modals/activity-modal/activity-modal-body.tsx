@@ -11,14 +11,16 @@ import {
   Select,
   Text,
   Textarea,
+  useRadioGroup,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import BuildingTypeSelectInput from "../../building-select-input";
 import { InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
 import { TFunction } from "i18next";
 import {
   Control,
   Controller,
+  useController,
   UseFormGetValues,
   UseFormRegister,
   UseFormSetValue,
@@ -29,10 +31,11 @@ import type {
   SubcategoryData,
 } from "../../../app/[lng]/[inventory]/data/[step]/types";
 import { resolve } from "@/util/helpers";
-import { SuggestedActivity } from "@/util/form-schema";
+import { Methodology, SuggestedActivity } from "@/util/form-schema";
 import { ActivityValue } from "@/models/ActivityValue";
 import FormattedNumberInput from "@/components/formatted-number-input";
 import PercentageBreakdownInput from "@/components/percentage-breakdown-input";
+import { RadioButton } from "@/components/radio-button";
 
 export type EmissionFactorTypes = {
   id: string;
@@ -44,20 +47,20 @@ interface AddActivityModalBodyProps {
   t: TFunction;
   register: UseFormRegister<Inputs>;
   watch: Function;
-  control: Control<Inputs, any>;
+  control: Control<any, any>;
   submit: () => void;
   fields: ExtraField[];
-  units: string[];
+  units?: string[];
   errors: Record<string, any>;
   setError: Function;
   clearErrors: Function;
   emissionsFactorTypes: EmissionFactorTypes;
-  methodology: any;
+  methodology: Methodology;
   selectedActivity?: SuggestedActivity;
   targetActivityValue?: ActivityValue;
   setValue: UseFormSetValue<Inputs>;
   getValues: UseFormGetValues<Inputs>;
-  title?: string; // Title of the field
+  title: string; // Title of the field
 }
 
 export type Inputs = {
@@ -108,10 +111,19 @@ const ActivityModalBody = ({
   setValue,
   getValues,
 }: AddActivityModalBodyProps) => {
+  //
+
   const unitValue = useWatch({
     control,
     name: `activity.${title}Unit` as any,
   });
+
+  const { field } = useController({
+    name: `activity.${methodology.activitySelectionField?.id}`,
+    control,
+    defaultValue: selectedActivity?.prefills?.[0].value,
+  });
+  const { getRootProps, getRadioProps, value } = useRadioGroup(field);
 
   let prefix = "";
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
@@ -157,6 +169,34 @@ const ActivityModalBody = ({
   return (
     <ModalBody p={6} px={12}>
       <form onSubmit={submit}>
+        {methodology.activitySelectionField && (
+          <HStack
+            spacing={4}
+            mb="24px"
+            display="flex"
+            flexDirection="column"
+            className="items-start"
+            gap="24px"
+          >
+            <FormControl className="w-full">
+              <FormLabel>{t(methodology.activitySelectionField.id)}</FormLabel>
+              <HStack
+                display="flex"
+                flexDirection="row"
+                className="items-start"
+              >
+                {methodology.activitySelectionField.options?.map((option) => (
+                  <RadioButton
+                    key={option}
+                    {...getRadioProps({ value: option })}
+                  >
+                    {t(option)}
+                  </RadioButton>
+                ))}
+              </HStack>
+            </FormControl>
+          </HStack>
+        )}
         <HStack
           spacing={4}
           mb="24px"
@@ -321,6 +361,8 @@ const ActivityModalBody = ({
                     miniAddon
                   >
                     <Controller
+                      rules={{ required: t("option-required") }}
+                      defaultValue=""
                       control={control}
                       name={`activity.${title}-unit` as any}
                       render={({ field }) => (
@@ -328,6 +370,7 @@ const ActivityModalBody = ({
                           placeholder={t("select-unit")}
                           variant="unstyled"
                           {...field}
+                          required
                           onChange={(e) => field.onChange(e.target.value)}
                         >
                           {units?.map((item: string) => (
@@ -346,6 +389,17 @@ const ActivityModalBody = ({
                     <WarningIcon color="sentiment.negativeDefault" />
                     <Text fontSize="body.md">
                       {t("emission-amount-form-error")}
+                    </Text>
+                  </Box>
+                ) : (
+                  ""
+                )}
+                {(errors?.activity?.[`${title}-unit`] as any) &&
+                !errors?.activity?.[title] ? (
+                  <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                    <WarningIcon color="sentiment.negativeDefault" />
+                    <Text fontSize="body.md">
+                      {errors?.activity?.[`${title}-unit`]?.message}{" "}
                     </Text>
                   </Box>
                 ) : (
@@ -375,10 +429,15 @@ const ActivityModalBody = ({
                     shadow: "none",
                     borderColor: "content.link",
                   }}
-                  {...register("activity.emissionFactorType")}
+                  {...register("activity.emissionFactorType", {
+                    required: t("value-required"),
+                  })}
                   bgColor="base.light"
-                  placeholder="Select emission factor type"
-                  onChange={(e: any) => onEmissionFactorTypeChange(e)}
+                  placeholder={t("emissions-factor-type-placeholder")}
+                  onChange={(e: any) => {
+                    clearErrors("activity.emissionFactorType");
+                    onEmissionFactorTypeChange(e);
+                  }}
                 >
                   {emissionsFactorTypes.map(({ id, name }) => (
                     <option key={id} value={id}>

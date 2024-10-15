@@ -31,6 +31,7 @@ import { SectorHeader } from "@/app/[lng]/[inventory]/InventoryResultTab/SectorH
 import { ByActivityView } from "@/app/[lng]/[inventory]/InventoryResultTab/ByActivityView";
 import { SECTORS } from "@/util/constants";
 import { Selector } from "@/components/selector";
+import { EmptyStateCardContent } from "@/app/[lng]/[inventory]/InventoryResultTab/EmptyStateCardContent";
 
 enum TableView {
   BY_ACTIVITY = "by-activity",
@@ -65,9 +66,13 @@ function SectorTabs({
       inventoryId: inventory!.inventoryId!,
       sector: SECTORS[selectedIndex].sectorName,
     });
+
   const handleViewChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setSelectedTableView(event.target.value as TableView);
   };
+
+  const isEmptyInventory =
+    Object.entries(sectorBreakdown?.byActivity || {}).length === 0;
 
   return (
     <Tabs
@@ -103,43 +108,59 @@ function SectorTabs({
       </TabList>
 
       <TabPanels>
-        {SECTORS.map(({ icon, sectorName }) => (
-          <TabPanel key={sectorName}>
-            {isTopEmissionsResponseLoading ? (
-              <CircularProgress />
-            ) : (
-              <Card>
-                <SectorHeader
-                  icon={icon}
-                  sectorName={t(sectorName)}
-                  dataForSector={getDataForSector(sectorName)}
-                  t={t}
-                />
-                <Divider
-                  borderColor="border.overlay"
-                  borderWidth="1px"
-                  my={"24px"}
-                />
-                <HStack justifyContent="space-between" width="100%">
-                  <Text
-                    fontFamily="heading"
-                    fontSize="title.md"
-                    fontWeight="medium"
-                  >
-                    {t("breakdown-of-sub-sector-emissions")}
-                  </Text>
-                  <Box paddingBottom={"12px"}>
-                    <Selector
-                      options={[TableView.BY_ACTIVITY, TableView.BY_SCOPE]}
-                      value={selectedTableView}
-                      onChange={handleViewChange}
+        {SECTORS.map(({ icon, sectorName }) => {
+          const shouldShowTableByActivity =
+            !isEmptyInventory &&
+            !isResultsLoading &&
+            selectedTableView === TableView.BY_ACTIVITY;
+          const shouldShowTableByScope =
+            !isEmptyInventory &&
+            !isResultsLoading &&
+            selectedTableView === TableView.BY_SCOPE;
+          return (
+            <TabPanel key={sectorName}>
+              {isTopEmissionsResponseLoading ? (
+                <CircularProgress isIndeterminate />
+              ) : (
+                <Card>
+                  <SectorHeader
+                    icon={icon}
+                    sectorName={t(sectorName)}
+                    dataForSector={getDataForSector(sectorName)}
+                    t={t}
+                  />
+                  <Divider
+                    borderColor="border.overlay"
+                    borderWidth="1px"
+                    my={"24px"}
+                  />
+                  <HStack justifyContent="space-between" width="100%">
+                    <Text
+                      fontFamily="heading"
+                      fontSize="title.md"
+                      fontWeight="medium"
+                    >
+                      {t("breakdown-of-sub-sector-emissions")}
+                    </Text>
+                    <Box paddingBottom={"12px"}>
+                      <Selector
+                        options={[TableView.BY_ACTIVITY, TableView.BY_SCOPE]}
+                        value={selectedTableView}
+                        onChange={handleViewChange}
+                        t={t}
+                      />
+                    </Box>
+                  </HStack>
+                  {isResultsLoading && <CircularProgress isIndeterminate />}
+                  {isEmptyInventory && (
+                    <EmptyStateCardContent
                       t={t}
+                      inventoryId={inventory.inventoryId}
+                      width={"1042px"}
+                      height={"592px"}
                     />
-                  </Box>
-                </HStack>
-                {isResultsLoading && <CircularProgress />}
-                {!isResultsLoading &&
-                  selectedTableView === TableView.BY_ACTIVITY && (
+                  )}
+                  {shouldShowTableByActivity && (
                     <ByActivityView
                       sectorBreakdown={sectorBreakdown!}
                       tData={tData}
@@ -147,8 +168,7 @@ function SectorTabs({
                       sectorName={sectorName}
                     />
                   )}
-                {!isResultsLoading &&
-                  selectedTableView === TableView.BY_SCOPE && (
+                  {shouldShowTableByScope && (
                     <ByScopeView
                       data={sectorBreakdown!.byScope}
                       tData={tData}
@@ -156,10 +176,11 @@ function SectorTabs({
                       sectorName={sectorName}
                     />
                   )}
-              </Card>
-            )}
-          </TabPanel>
-        ))}
+                </Card>
+              )}
+            </TabPanel>
+          );
+        })}
       </TabPanels>
     </Tabs>
   );

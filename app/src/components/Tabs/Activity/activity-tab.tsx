@@ -71,8 +71,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
       return val;
     });
 
-    // you can extract the selected methodology for the inventory value for this scope
-
+    // TODO remove this. Only extract the methodology from the inventory value if it exists
     if (methodologyId) {
       let methodology =
         methodologies.find((methodology) => methodology.id === methodologyId) ??
@@ -149,7 +148,9 @@ const ActivityTab: FC<ActivityTabProps> = ({
     return (methodology?.suggestedActivities ?? []) as SuggestedActivity[];
   };
 
-  const handleMethodologySelected = (methodology: Methodology) => {
+  const handleMethodologySelected = (
+    methodology: Methodology | DirectMeasure,
+  ) => {
     setSelectedMethodology(methodology.id);
     setIsMethodologySelected(!isMethodologySelected);
     setMethodology(methodology);

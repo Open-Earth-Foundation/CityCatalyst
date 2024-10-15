@@ -105,7 +105,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
         </Thead>
         <Tbody>
           {list?.map((activity: ActivityValue, i: number) => {
-            const dataQuality = activity?.dataSource?.dataQuality;
+            const dataQuality = activity?.metadata?.dataQuality;
             return (
               <Tr key={i}>
                 {filteredFields.length > 0 && (

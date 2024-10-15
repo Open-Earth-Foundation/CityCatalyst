@@ -234,7 +234,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
   };
   const formattedEmissions = inventory?.totalEmissions
     ? formatEmissions(inventory.totalEmissions)
-    : { value: t("not-available"), unit: "" };
+    : { value: t("N/A"), unit: "" };
 
   return (
     <>
@@ -386,7 +386,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                                   </Trans>
                                   <br />
                                   {t("population-year", {
-                                    year: inventory.city.populationYear,
+                                    year: population?.year,
                                   })}
                                 </>
                               }

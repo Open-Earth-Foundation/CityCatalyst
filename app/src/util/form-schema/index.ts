@@ -34,10 +34,12 @@ export interface ExtraField {
   required?: boolean;
   totalRequired?: number;
   subtypes?: string[];
+  units?: string[];
 }
 
 export interface Activity {
   id: string;
+  activitySelectedOption?: string;
   "group-by"?: string;
   "unique-by"?: string[];
   "activity-title"?: string;
@@ -60,6 +62,10 @@ export interface SuggestedActivity {
 export interface Methodology {
   id: string;
   disabled?: boolean;
+  activitySelectionField?: {
+    id: string;
+    options: string[];
+  };
   activities?: Activity[];
   inputRequired?: string[];
   formula?: string;

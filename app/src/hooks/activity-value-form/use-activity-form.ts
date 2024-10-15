@@ -129,8 +129,8 @@ const useActivityForm = ({
                 methodology.activitySelectionField.id
               ],
           }),
-          dataQuality: targetActivityValue?.dataSource?.dataQuality,
-          dataComments: targetActivityValue?.dataSource?.notes,
+          dataQuality: targetActivityValue?.metadata?.dataQuality,
+          dataComments: targetActivityValue?.metadata?.sourceExplanation,
           CH4EmissionFactor:
             methodology.id === "direct-measure"
               ? targetActivityValue?.activityData?.ch4_amount

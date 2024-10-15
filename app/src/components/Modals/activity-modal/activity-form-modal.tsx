@@ -221,6 +221,8 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
             methodology.activitySelectionField.id
           ],
         }),
+        dataQuality: activity.dataQuality,
+        sourceExplanation: activity.dataComments,
       },
       ...(inventoryValue ? { inventoryValueId: inventoryValue.id } : {}),
       ...(!inventoryValue
@@ -233,11 +235,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
             },
           }
         : {}),
-      dataSource: {
-        sourceType: "",
-        dataQuality: activity.dataQuality,
-        notes: activity.dataComments,
-      },
       gasValues: gasValues.map(({ gas, factor, unit, ...rest }) => ({
         ...rest,
         gas,

@@ -834,5 +834,6 @@
   "wood": "Wood",
   "textiles": "Textiles",
   "industrial": "Industrial",
-  "percentages-not-100": "Percentages must add up to 100%"
+  "percentages-not-100": "Percentages must add up to 100%",
+  "emissions-factor-type-placeholder": "Select emission factor type"
 }

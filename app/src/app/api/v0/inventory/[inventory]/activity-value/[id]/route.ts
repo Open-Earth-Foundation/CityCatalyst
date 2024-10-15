@@ -14,7 +14,6 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 
   const {
     gasValues,
-    dataSource: dataSourceParams,
     inventoryValue: inventoryValueParams,
     inventoryValueId,
     ...data
@@ -29,7 +28,6 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     inventoryValueId,
     inventoryValueParams,
     gasValues: gasValues as UpdateGasValueInput[],
-    dataSourceParams,
   });
 
   return NextResponse.json({ success: true, data: result });
@@ -60,6 +58,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
         where: { inventoryId: params.inventory },
         required: true,
       },
+      // TODO can this join be removed? This was previously only used for data quality and explanation
       { model: db.models.DataSource, as: "dataSource" },
       {
         model: db.models.GasValue,

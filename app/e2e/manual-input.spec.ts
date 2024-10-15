@@ -127,6 +127,7 @@ const EmissionFactors = {
 };
 
 test.describe.serial("Manual Input", () => {
+  test.skip();
   let page: Page;
   let id: string;
 

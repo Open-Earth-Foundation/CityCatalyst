@@ -51,7 +51,6 @@ export default function ChatPopover({
         <PopoverContent
           p={0}
           w="57vw"
-          h="72vh"
           bg="background.neutral"
           className="drop-shadow-md"
         >

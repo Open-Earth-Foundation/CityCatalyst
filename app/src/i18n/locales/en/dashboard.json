@@ -37,6 +37,7 @@
   "download-failed": "Download failed",
   "download-error": "There was an error during download",
   "tab-emission-inventory-calculation-title": "Inventory Calculation",
+  "emission-inventory-calculation-title": "Emission Inventory Calculation",
   "tab-emission-inventory-results-title": "Inventory Results",
   "inventory-format-basic": "Inventory format: GPC BASIC",
   "view-progress-in-each-sector": "View the progress of data collection in each GPC-required sector.",

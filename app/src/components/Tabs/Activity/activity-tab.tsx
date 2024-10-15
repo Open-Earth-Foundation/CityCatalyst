@@ -102,7 +102,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
     return inventoryValues?.find(
       (value) =>
         value.gpcReferenceNumber === refNumberWithScope &&
-        value.dataSource.sourceType === "third_party",
+        value.dataSource?.sourceType === "third_party",
     );
   }, [inventoryValues, refNumberWithScope]);
 

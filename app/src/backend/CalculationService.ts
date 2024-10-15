@@ -79,6 +79,23 @@ export default class CalculationService {
     return methodology.formula ?? formula;
   }
 
+  public static getFormulaMapping(
+    inputMethodology: string,
+  ): Record<string, string> {
+    const methodology = findMethodology(inputMethodology);
+    if (!methodology) {
+      throw new createHttpError.NotFound(
+        `Could not find methodology ${inputMethodology} in manual-input-hierarchy.json`,
+      );
+    }
+
+    // TODO map to the right activity object based on the activity value
+    return methodology.activities?.[0]?.["formula-mapping"] as Record<
+      string,
+      string
+    >;
+  }
+
   public static async calculateGasAmount(
     inventoryValue: InventoryValue,
     activityValue: ActivityValue,
@@ -109,9 +126,12 @@ export default class CalculationService {
         gases = handleMethaneCommitmentFormula(activityValue);
         break;
       case "incineration-waste":
+        let formulaMapping =
+          CalculationService.getFormulaMapping(inputMethodology);
         gases = await handleIncinerationWasteFormula(
           activityValue,
           inventoryValue,
+          formulaMapping,
         );
         break;
       case "induced-activity-1":

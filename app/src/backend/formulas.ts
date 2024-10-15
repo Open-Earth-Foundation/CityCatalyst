@@ -34,6 +34,67 @@ const formulaInputsMapping: Record<string, string> = {
   "waste-composition-sewage-sludge": "waste-type-sludge",
 };
 
+const IncinerationWasteCO2OxidationFactor: Record<string, number> = {
+  "technology-continuous-incineration": 1,
+  "technology-semi-continuous-incineration": 1,
+  "technology-batch-type-incineration": 1,
+  "technology-open-burning": 0.58,
+};
+
+const IncinerationWasteCH4EmissionFactor: Record<
+  string,
+  Record<string, number>
+> = {
+  "technology-continuous-incineration": {
+    "boiler-type-stoker": 0.2,
+    "boiler-type-fluidised-bed": 0,
+  },
+  "technology-semi-continuous-incineration": {
+    "boiler-type-stoker": 6,
+    "boiler-type-fluidised-bed": 188,
+  },
+  "technology-batch-type-incineration": {
+    "boiler-type-stoker": 60,
+    "boiler-type-fluidised-bed": 237,
+  },
+};
+
+const IncinerationWasteN2OEmissionFactor: Record<
+  string,
+  Record<string, number>
+> = {
+  "waste-composition-municipal-solid-waste": {
+    "technology-continuous-incineration": 50,
+    "technology-semi-continuous-incineration": 50,
+    "technology-batch-type-incineration": 50,
+    "technology-open-burning": 150,
+  },
+  "waste-composition-industrial-solid-waste": {
+    "technology-continuous-incineration": 100,
+    "technology-semi-continuous-incineration": 100,
+    "technology-batch-type-incineration": 100,
+    "technology-open-burning": 100,
+  },
+  "waste-composition-clinical-waste": {
+    "technology-continuous-incineration": 100,
+    "technology-semi-continuous-incineration": 100,
+    "technology-batch-type-incineration": 100,
+    "technology-open-burning": 100,
+  },
+  "waste-composition-hazardous-waste": {
+    "technology-continuous-incineration": 100,
+    "technology-semi-continuous-incineration": 100,
+    "technology-batch-type-incineration": 100,
+    "technology-open-burning": 100,
+  },
+  "waste-composition-sewage-sludge": {
+    "technology-continuous-incineration": 900,
+    "technology-semi-continuous-incineration": 900,
+    "technology-batch-type-incineration": 900,
+    "technology-open-burning": 900,
+  },
+};
+
 // factors of each fraction of waste type for methane generation formula
 const FOOD_FACTOR = 0.15;
 const GARDEN_WASTE_FACTOR = 0.2;
@@ -75,63 +136,9 @@ export function handleDirectMeasureFormula(
 export async function handleIncinerationWasteFormula(
   activityValue: ActivityValue,
   inventoryValue: InventoryValue,
+  formulaMapping: Record<string, string>,
 ): Promise<Gas[]> {
   const data = activityValue.activityData;
-
-  const CO2OxidationFactor: Record<string, number> = {
-    "technology-continuous-incineration": 1,
-    "technology-semi-continuous-incineration": 1,
-    "technology-batch-type-incineration": 1,
-    "technology-open-burning": 0.58,
-  };
-
-  const CH4EmissionFactor: Record<string, Record<string, number>> = {
-    "technology-continuous-incineration": {
-      "boiler-type-stoker": 0.2,
-      "boiler-type-fluidised-bed": 0,
-    },
-    "technology-semi-continuous-incineration": {
-      "boiler-type-stoker": 6,
-      "boiler-type-fluidised-bed": 188,
-    },
-    "technology-batch-type-incineration": {
-      "boiler-type-stoker": 60,
-      "boiler-type-fluidised-bed": 237,
-    },
-  };
-
-  const NO2EmissionFactor: Record<string, Record<string, number>> = {
-    "waste-composition-municipal-solid-waste": {
-      "technology-continuous-incineration": 50,
-      "technology-semi-continuous-incineration": 50,
-      "technology-batch-type-incineration": 50,
-      "technology-open-burning": 150,
-    },
-    "waste-composition-industrial-solid-waste": {
-      "technology-continuous-incineration": 100,
-      "technology-semi-continuous-incineration": 100,
-      "technology-batch-type-incineration": 100,
-      "technology-open-burning": 100,
-    },
-    "waste-composition-clinical-waste": {
-      "technology-continuous-incineration": 100,
-      "technology-semi-continuous-incineration": 100,
-      "technology-batch-type-incineration": 100,
-      "technology-open-burning": 100,
-    },
-    "waste-composition-hazardous-waste": {
-      "technology-continuous-incineration": 100,
-      "technology-semi-continuous-incineration": 100,
-      "technology-batch-type-incineration": 100,
-      "technology-open-burning": 100,
-    },
-    "waste-composition-sewage-sludge": {
-      "technology-continuous-incineration": 900,
-      "technology-semi-continuous-incineration": 900,
-      "technology-batch-type-incineration": 900,
-      "technology-open-burning": 900,
-    },
-  };
 
   if (!data) {
     throw new createHttpError.BadRequest(
@@ -141,10 +148,12 @@ export async function handleIncinerationWasteFormula(
 
   const activityTitle = activityValue.metadata?.["activityTitle"];
   const massOfIncineratedWaste = data[activityTitle] as number;
-  const wasteComposition = data["waste-composition"];
-
-  const technology = data["technology"] as string;
-  const boilerType = data["boiler-type"] as string;
+  const wastCompositionKey = formulaMapping["waste-composition"];
+  const wasteComposition = data[wastCompositionKey];
+  const technologyKey = formulaMapping["technology"];
+  const technology = data[technologyKey] as string;
+  const boilerTypeKey = formulaMapping["boiler-type"];
+  const boilerType = data[boilerTypeKey] as string;
 
   let totalCH4Emission: number = 0;
   let totalN2OEmissions: number = 0;
@@ -156,10 +165,10 @@ export async function handleIncinerationWasteFormula(
     const AmountOfWasteForWasteTypeI = massOfIncineratedWaste * WasteFractionI;
 
     const CH4EmissionFactorForWasteTypeI =
-      CH4EmissionFactor[technology]?.[boilerType];
+      IncinerationWasteCH4EmissionFactor[technology]?.[boilerType];
 
     const NO2EmissionFactorForWasteTypeI =
-      NO2EmissionFactor[wasteType]?.[technology];
+      IncinerationWasteN2OEmissionFactor[wasteType]?.[technology];
 
     if (CH4EmissionFactorForWasteTypeI == null) {
       throw new createHttpError.BadRequest(
@@ -226,7 +235,7 @@ export async function handleIncinerationWasteFormula(
       );
     }
 
-    const oxidationFactorI = CO2OxidationFactor[technology];
+    const oxidationFactorI = IncinerationWasteCO2OxidationFactor[technology];
 
     totalPartialCO2Emissions +=
       WasteFractionI *

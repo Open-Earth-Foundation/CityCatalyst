@@ -3794,6 +3794,11 @@
             "unique-by": [
               "incineration-waste-inboundary-incineration-facility-id"
             ],
+            "formula-mapping": {
+              "technology": "incineration-waste-inboundary-technology",
+              "boiler-type": "incineration-waste-inboundary-boiler-type",
+              "waste-composition": "incineration-waste-inboundary-waste-composition"
+            },
             "activity-title": "total-mass-of-waste-incinerated-or-burned",
             "extra-fields": [
               {
@@ -3806,7 +3811,7 @@
                 "required": false
               },
               {
-                "id": "waste-composition",
+                "id": "incineration-waste-inboundary-waste-composition",
                 "type": "percentage-breakdown",
                 "total-required": 100,
                 "subtypes": [
@@ -3818,7 +3823,7 @@
                 ]
               },
               {
-                "id": "technology",
+                "id": "incineration-waste-inboundary-technology",
                 "options": [
                   "technology-continuous-incineration",
                   "technology-semi-continuous-incineration",
@@ -3826,7 +3831,7 @@
                 ]
               },
               {
-                "id": "boiler-type",
+                "id": "incineration-waste-inboundary-boiler-type",
                 "options": [
                   "boiler-type-stoker",
                   "boiler-type-fluidised-bed"
@@ -3876,6 +3881,11 @@
             "unique-by": [
               "incineration-waste-outboundary-incineration-facility-id"
             ],
+            "formula-mapping": {
+              "technology": "incineration-waste-outboundary-technology",
+              "boiler-type": "incineration-waste-outboundary-boiler-type",
+              "waste-composition": "incineration-waste-outboundary-waste-composition"
+            },
             "activity-title": "total-mass-of-waste-incinerated-or-burned",
             "extra-fields": [
               {
@@ -3888,7 +3898,7 @@
                 "required": false
               },
               {
-                "id": "waste-composition",
+                "id": "incineration-waste-outboundary-waste-composition",
                 "type": "percentage-breakdown",
                 "total-required": 100,
                 "subtypes": [
@@ -3900,7 +3910,7 @@
                 ]
               },
               {
-                "id": "technology",
+                "id": "incineration-waste-outboundary-technology",
                 "options": [
                   "technology-continuous-incineration",
                   "technology-semi-continuous-incineration",
@@ -3908,7 +3918,7 @@
                 ]
               },
               {
-                "id": "boiler-type",
+                "id": "incineration-waste-outboundary-boiler-type",
                 "options": [
                   "boiler-type-stoker",
                   "boiler-type-fluidised-bed"

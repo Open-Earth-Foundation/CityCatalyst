@@ -31,7 +31,7 @@ const formulaInputsMapping: Record<string, string> = {
   "waste-composition-hazardous-waste": "waste-type-hazardous",
   "waste-composition-industrial-solid-waste": "waste-type-industrial",
   "waste-composition-municipal-solid-waste": "waste-type-municipal-solid-waste",
-  "waste-composition-sewage-sludge": "waste-type-sludge",
+  "waste-composition-sewage-sludge": "waste-type-sewage-sludge",
 };
 
 const IncinerationWasteCO2OxidationFactor: Record<string, number> = {
@@ -211,25 +211,35 @@ export async function handleIncinerationWasteFormula(
       (input) => input.parameterCode === "FCFi",
     )?.formulaInputValue;
 
-    const fractionOfFossilCarbonI = fractionOfFossilCarbonInput ?? 1;
+    const fractionOfFossilCarbonI =
+      fractionOfFossilCarbonInput === null ||
+      fractionOfFossilCarbonInput === undefined
+        ? 1
+        : fractionOfFossilCarbonInput;
 
-    const dryMatterContentI = dryMatterInput ?? 1;
+    const dryMatterContentI =
+      dryMatterInput === null || dryMatterInput === undefined
+        ? 1
+        : dryMatterInput;
 
-    const fractionOfCarbonI = fractionOfCarbonInput ?? 1;
+    const fractionOfCarbonI =
+      fractionOfCarbonInput === null || fractionOfCarbonInput === undefined
+        ? 1
+        : fractionOfCarbonInput;
 
-    if (!dryMatterInput) {
+    if (dryMatterInput == null) {
       console.warn(
         `dryMatterContentI is missing for ${wasteType} a default of 1 used`,
       );
     }
 
-    if (!fractionOfCarbonInput) {
+    if (fractionOfCarbonInput == null) {
       console.warn(
         `fractionOfCarbonI is missing for ${wasteType} a default of 1 used`,
       );
     }
 
-    if (!fractionOfFossilCarbonInput) {
+    if (fractionOfFossilCarbonInput == null) {
       console.warn(
         `fractionOfFossilCarbonI is missing for ${wasteType} a default of 1 used`,
       );
@@ -414,9 +424,11 @@ export function handleIndustrialWasteWaterFormula(
     );
   }
 
-  const totalIndustrialProduction = data["total-industrial-production"];
-  const wastewaterGenerated = data["wastewater-generated"];
-  const degradableOrganicComponents = data["degradable-organic-components"];
+  const totalIndustrialProduction = data["total-industry-production"];
+  const wastewaterGenerated =
+    data["wastewater-inside-industrial-calculator-wastewater-generated"];
+  const degradableOrganicComponents =
+    data["degradable-organic-components"] ?? 38; // TODO get this from formula values csv;
   const methaneProductionCapacity =
     data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should this only be handled UI-side?
   const removedSludge = data["total-organic-sludge-removed"];
@@ -433,7 +445,7 @@ export function handleIndustrialWasteWaterFormula(
   const totalMethaneProduction =
     (totalOrganicWaste - removedSludge) * emissionsFactor - methaneRecovered;
 
-  const amount = BigInt(totalMethaneProduction);
+  const amount = BigInt(Math.ceil(totalMethaneProduction));
   return [{ gas: "CH4", amount }];
 }
 

@@ -77,6 +77,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     setError,
     clearErrors,
     control,
+    hideEmissionFactors,
     getValues,
   } = useActivityForm({
     targetActivityValue,
@@ -291,9 +292,10 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       if (errorData.error?.type === "ManualInputValidationError") {
         handleManalInputValidationError(errorData.error.issues);
       } else {
+        const error = response.error as FetchBaseQueryError;
         toast({
           status: "error",
-          title: t("activity-value-error"),
+          title: errorData.error?.message || t("activity-value-error"),
         });
       }
     }
@@ -343,6 +345,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
           <ActivityModalBody
             emissionsFactorTypes={emissionsFactorTypes}
             title={title}
+            hideEmissionFactors={hideEmissionFactors}
             submit={submit}
             register={register}
             watch={watch}

@@ -78,45 +78,44 @@ const useActivityForm = ({
     `activity.${methodology.activitySelectionField?.id as string}`,
   );
 
-  const { fields, units, title, activityId } = useMemo(() => {
-    let fields: ExtraField[] = [];
-    let units = null;
-    let title = "";
-    let activityId = null;
+  const { fields, units, title, activityId, hideEmissionFactors } =
+    useMemo(() => {
+      let fields: ExtraField[] = [];
+      let units = null;
+      let title = "";
+      let activityId = null;
+      let hideEmissionFactors = false;
 
-    if (methodology?.id.includes("direct-measure")) {
-      fields = methodology.fields as ExtraField[];
-    } else {
-      const foundIndex =
-        methodology.fields?.findIndex(
-          (ac) => ac.activitySelectedOption === selectedActivityOption,
-        ) ?? 0;
+      if (methodology?.id.includes("direct-measure")) {
+        fields = methodology.fields as ExtraField[];
+      } else {
+        const foundIndex =
+          methodology.fields?.findIndex(
+            (ac) => ac.activitySelectedOption === selectedActivityOption,
+          ) ?? 0;
 
-      const selectedActivityIndex = foundIndex >= 0 ? foundIndex : 0;
+        const selectedActivityIndex = foundIndex >= 0 ? foundIndex : 0;
 
-      console.log(
-        selectedActivityOption,
-        selectedActivityIndex,
-        "the selected option",
-      );
+        hideEmissionFactors =
+          methodology?.fields?.[selectedActivityIndex].hideEmissionFactorsInput;
+        fields = methodology?.fields?.[selectedActivityIndex][
+          "extra-fields"
+        ] as ExtraField[];
+        units = methodology?.fields?.[selectedActivityIndex].units;
+        title = methodology?.fields?.[selectedActivityIndex][
+          "activity-title"
+        ] as string;
+        activityId = methodology?.fields?.[selectedActivityIndex]["id"];
+      }
 
-      fields = methodology?.fields?.[selectedActivityIndex][
-        "extra-fields"
-      ] as ExtraField[];
-      units = methodology?.fields?.[selectedActivityIndex].units;
-      title = methodology?.fields?.[selectedActivityIndex][
-        "activity-title"
-      ] as string;
-      activityId = methodology?.fields?.[selectedActivityIndex]["id"];
-    }
-
-    return {
-      fields,
-      units,
-      title,
-      activityId,
-    };
-  }, [methodology, selectedActivityOption]);
+      return {
+        fields,
+        units,
+        title,
+        hideEmissionFactors,
+        activityId,
+      };
+    }, [methodology, selectedActivityOption]);
 
   useEffect(() => {
     if (targetActivityValue) {
@@ -180,6 +179,7 @@ const useActivityForm = ({
     units,
     title,
     activityId,
+    hideEmissionFactors,
   };
 };
 

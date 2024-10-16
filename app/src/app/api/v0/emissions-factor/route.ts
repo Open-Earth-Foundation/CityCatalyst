@@ -12,7 +12,7 @@ export const GET = apiHandler(async (req: NextRequest, _context: {}) => {
   const methodologyId = searchParams.get("methodologyId");
 
   const city = await db.models.City.findOne({
-    attributes: ["countryLocode"],
+    attributes: ["regionLocode"],
     include: [
       {
         model: db.models.Inventory,
@@ -26,11 +26,7 @@ export const GET = apiHandler(async (req: NextRequest, _context: {}) => {
     ],
   });
 
-  let whereClause: { [k: string]: any } = {
-    region: {
-      [Op.or]: ["world", city?.countryLocode],
-    },
-  };
+  let whereClause: { [k: string]: any } = {};
   // don't return emissions factors from specific inventories
   whereClause.inventoryId = { [Op.is]: null };
 
@@ -52,8 +48,10 @@ export const GET = apiHandler(async (req: NextRequest, _context: {}) => {
     include: [{ model: db.models.DataSource, as: "dataSources" }],
   });
 
+  console.log(city?.regionLocode, "city?.regionLocode");
+
   let output = emissionsFactors.filter(({ actorId }) =>
-    ["world", city?.countryLocode].includes(actorId as string),
+    ["world", city?.regionLocode].includes(actorId as string),
   );
 
   // make unique by gas not by datasource id

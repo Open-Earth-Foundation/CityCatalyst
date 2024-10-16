@@ -46,6 +46,7 @@ export interface Activity {
   minimum?: number;
   "extra-fields"?: ExtraField[];
   units?: string[];
+  hideEmissionFactorsInput?: boolean;
   formula?: string;
   "formula-mapping"?: Record<string, string>;
 }

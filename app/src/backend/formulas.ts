@@ -414,9 +414,11 @@ export function handleIndustrialWasteWaterFormula(
     );
   }
 
-  const totalIndustrialProduction = data["total-industrial-production"];
-  const wastewaterGenerated = data["wastewater-generated"];
-  const degradableOrganicComponents = data["degradable-organic-components"];
+  const totalIndustrialProduction = data["total-industry-production"];
+  const wastewaterGenerated =
+    data["wastewater-inside-industrial-calculator-wastewater-generated"];
+  const degradableOrganicComponents =
+    data["degradable-organic-components"] ?? 38; // TODO get this from formula values csv;
   const methaneProductionCapacity =
     data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should this only be handled UI-side?
   const removedSludge = data["total-organic-sludge-removed"];
@@ -433,7 +435,7 @@ export function handleIndustrialWasteWaterFormula(
   const totalMethaneProduction =
     (totalOrganicWaste - removedSludge) * emissionsFactor - methaneRecovered;
 
-  const amount = BigInt(totalMethaneProduction);
+  const amount = BigInt(Math.ceil(totalMethaneProduction));
   return [{ gas: "CH4", amount }];
 }
 

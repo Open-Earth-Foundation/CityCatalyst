@@ -18,7 +18,8 @@ def split_name(tmp, name_col, country_id):
     Function to separate the jurisdiction name from the ID
     """
     # Extract actor_id and region
-    tmp[["region", "actor_id"]] = tmp[name_col].str.split(" \(", expand=True)
+    tmp[["region", "actor_id"]] = tmp[name_col].str.split(r" \(", expand=True)
+    #tmp[["region", "actor_id"]] = tmp[name_col].str.split(" \(", expand=True)
 
     # Remove the closing parenthesis from the 'actor_id' column
     tmp["actor_id"] = tmp["actor_id"].str.replace(")", "")
@@ -342,7 +343,7 @@ if __name__ == "__main__":
             new_rows.append(new_row)
 
     df_final = pd.DataFrame(new_rows)
-    df_final = df_final[df_final["emissions_per_activity"] > 0].head(1)
+    #df_final = df_final[df_final["emissions_per_activity"] > 0].head(1)
 
     # assign GPC_refno
     df_final["gpc_reference_number"] = df_final["emission_factor_type"].map(GPC_refno_dic)

@@ -27,6 +27,8 @@ import {
   cityName,
   co2eq,
   invalidCreateActivity,
+  invalidCreateActivityTimesEmissionsFactor,
+  invalidupdatedActivityValueWithFormula,
   inventoryName,
   locode,
   ReferenceNumber,
@@ -34,7 +36,9 @@ import {
   subcategoryName,
   subsectorName,
   updatedActivityValue,
+  updatedActivityValueWithFormula,
   validCreateActivity,
+  validCreateActivityTimesEmissionsFactor,
 } from "./activity_value_data";
 
 /** skipped tests are running with the with node test runner **/
@@ -144,6 +148,90 @@ describe.skip("Activity Value API", () => {
     const res = await createActivityValue(req, {
       params: { inventory: inventory.inventoryId },
     });
+    expect(res.status).toBe(400);
+  });
+
+  it("should not create an activity value with with formulas", async () => {
+    const findInventory = await db.models.Inventory.findOne({
+      where: {
+        inventoryName: inventoryName,
+      },
+    });
+
+    expect(findInventory?.inventoryId).toBe(inventory.inventoryId);
+
+    const req = mockRequest(invalidCreateActivityTimesEmissionsFactor);
+    const res = await createActivityValue(req, {
+      params: {
+        inventory: inventory.inventoryId,
+      },
+    });
+
+    expect(res.status).toBe(400);
+  });
+
+  it("should create an activity value with activity times emissions factor", async () => {
+    const findInventory = await db.models.Inventory.findOne({
+      where: {
+        inventoryName: inventoryName,
+      },
+    });
+
+    expect(findInventory?.inventoryId).toBe(inventory.inventoryId);
+
+    const req = mockRequest(validCreateActivityTimesEmissionsFactor);
+    const res = await createActivityValue(req, {
+      params: {
+        inventory: inventory.inventoryId,
+      },
+    });
+
+    expect(res.status).toBe(200);
+    const { data } = await res.json();
+
+    createdActivityValue2 = data;
+
+    expect(data.activityData.co2_amount).toBe(
+      validCreateActivityTimesEmissionsFactor.activityData.co2_amount,
+    );
+
+    expect(data.inventoryValueId).toBe(null);
+  });
+
+  it("should update an activity value and test formulas", async () => {
+    const req = mockRequest({
+      ...createdActivityValue,
+      activityData: updatedActivityValueWithFormula.activityData,
+      metaData: updatedActivityValueWithFormula.metadata,
+    });
+    const res = await updateActivityValue(req, {
+      params: {
+        inventory: inventory.inventoryId,
+        id: createdActivityValue.id,
+      },
+    });
+
+    const { data } = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data.activityData.co2_amount).toBe(
+      updatedActivityValueWithFormula.activityData.co2_amount,
+    );
+  });
+
+  it("should not update an activity value and test formulas with invalid data", async () => {
+    const req = mockRequest({
+      ...createdActivityValue,
+      activityData: invalidupdatedActivityValueWithFormula.activityData,
+      metaData: invalidupdatedActivityValueWithFormula.metadata,
+    });
+    const res = await updateActivityValue(req, {
+      params: {
+        inventory: inventory.inventoryId,
+        id: createdActivityValue.id,
+      },
+    });
+
     expect(res.status).toBe(400);
   });
 

@@ -254,33 +254,34 @@ export const getInputMethodology = (methodologyId: string) => {
 };
 
 export function convertKgToTonnes(
-  valueInTonnes: number | bigint,
+  valueInKg: number | bigint,
   gas?: string,
-) {
-  let locale = "en-US";
-  let result = "";
-  let gasSuffix = gas ? ` ${gas}` : "CO2";
-  const tonnes = Number(valueInTonnes);
-  const formatter = new Intl.NumberFormat(locale, { maximumFractionDigits: 0 });
+): string {
+  const locale = "en-US";
+  const gasSuffix = gas ? ` ${gas}` : " CO2";
+  const kg = Number(valueInKg);
+  const formatter = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 });
 
-  if (tonnes >= 1e6) {
-    // Convert to megatonnes if the value is 1,000,000 tonnes or more
-    const megatonnes = tonnes / 1e6;
-    result = `${formatter.format(megatonnes)} Mt${gasSuffix}`;
-  } else if (tonnes >= 1e3) {
-    // Convert to kilotonnes if the value is 1,000 tonnes or more but less than 1,000,000 tonnes
-    const kilotonnes = tonnes / 1e3;
-    result = `${formatter.format(kilotonnes)} Kt${gasSuffix}`;
-  } else if (tonnes < 1) {
-    // Convert to kg if the value is less than 1 tonne
-    const kilograms = tonnes * 1e3;
-    result = `${formatter.format(kilograms)} kg${gasSuffix}`;
+  if (kg >= 1e12) {
+    // Convert to gigatonnes if the value is 1,000,000,000,000 kg or more
+    const gigatonnes = kg / 1e12;
+    return `${formatter.format(gigatonnes)} Gt${gasSuffix}`;
+  } else if (kg >= 1e9) {
+    // Convert to megatonnes if the value is 1,000,000,000 kg or more but less than 1,000,000,000,000 kg
+    const megatonnes = kg / 1e9;
+    return `${formatter.format(megatonnes)} Mt${gasSuffix}`;
+  } else if (kg >= 1e6) {
+    // Convert to kilotonnes if the value is 1,000,000 kg or more but less than 1,000,000,000 kg
+    const kilotonnes = kg / 1e6;
+    return `${formatter.format(kilotonnes)} kt${gasSuffix}`;
+  } else if (kg >= 1e3) {
+    // Convert to tonnes if the value is 1,000 kg or more but less than 1,000,000 kg
+    const tonnes = kg / 1e3;
+    return `${formatter.format(tonnes)} t${gasSuffix}`;
   } else {
-    // Return as tonnes if the value is less than 1,000 tonnes but more than or equal to 1 tonne
-    result = `${formatter.format(tonnes)} t${gasSuffix}`;
+    // Return as kg if the value is less than 1,000 kg
+    return `${formatter.format(kg)} kg${gasSuffix}`;
   }
-
-  return result;
 }
 
 export const toKebabCase = (input: string | undefined): string => {
@@ -292,4 +293,4 @@ export const toKebabCase = (input: string | undefined): string => {
 };
 
 export const capitalizeFirstLetter = (string: string) =>
-  string.charAt(0).toUpperCase() + string.slice(1);
+  string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();

@@ -21,11 +21,6 @@ export const validCreateActivity: CreateActivityValueRequest = {
     unavailableReason: "Reason for unavailability",
     unavailableExplanation: "Explanation for unavailability",
   },
-  dataSource: {
-    sourceType: "",
-    dataQuality: "high",
-    notes: "Some notes regarding the data source",
-  },
   gasValues: [
     {
       id: "123e4567-e89b-12d3-a456-426614174001",
@@ -67,11 +62,6 @@ export const updatedActivityValue: CreateActivityValueRequest = {
     unavailableReason: "Reason for unavailability",
     unavailableExplanation: "Explanation for unavailability",
   },
-  dataSource: {
-    sourceType: "updated-type",
-    dataQuality: "high",
-    notes: "Some notes regarding the data source",
-  },
   gasValues: [
     {
       id: "123e4567-e89b-12d3-a456-426614174001",
@@ -103,11 +93,6 @@ export const invalidCreateActivity: CreateActivityValueRequest = {
   },
   metadata: {
     "active-selection": "test1",
-  },
-  dataSource: {
-    sourceType: "",
-    dataQuality: "high",
-    notes: "Some notes regarding the data source",
   },
   gasValues: [
     {

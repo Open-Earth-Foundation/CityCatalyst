@@ -161,14 +161,12 @@ export default class ActivityService {
     inventoryValueParams,
     activityValueParams,
     gasValues,
-    dataSourceParams,
   }: {
     id: string;
     activityValueParams: Omit<ActivityValueAttributes, "id">;
     inventoryValueId: string | undefined;
     inventoryValueParams: Omit<InventoryValueAttributes, "id"> | undefined;
     gasValues: UpdateGasValueInput[] | undefined;
-    dataSourceParams: Omit<DataSourceAttributes, "datasourceId"> | undefined;
   }): Promise<ActivityValue | undefined> {
     const activityValue = await db.models.ActivityValue.findOne({
       where: { id },
@@ -190,13 +188,7 @@ export default class ActivityService {
     });
 
     return await db.sequelize?.transaction(
-      async (transaction): Promise<ActivityValue> => {
-        datasourceId = await this.updateDataSource({
-          activityValue,
-          dataSourceParams,
-          transaction,
-        });
-
+      async (transaction: Transaction): Promise<ActivityValue> => {
         const inventoryValue = await this.updateInventoryValue({
           activityValue,
           inventoryValueParams,
@@ -257,7 +249,6 @@ export default class ActivityService {
     inventoryValueId: string | undefined,
     inventoryValueParams: Omit<InventoryValueAttributes, "id"> | undefined,
     gasValues: GasValueInput[] | undefined,
-    dataSourceParams: Omit<DataSourceAttributes, "datasourceId"> | undefined,
   ): Promise<ActivityValue | undefined> {
     // validate using the ManualInputValidationService
     await ManualInputValidationService.validateActivity({
@@ -267,14 +258,6 @@ export default class ActivityService {
 
     return await db.sequelize?.transaction(
       async (transaction: Transaction): Promise<ActivityValue> => {
-        const dataSource = await db.models.DataSource.create(
-          {
-            ...dataSourceParams,
-            datasourceId: randomUUID(),
-          },
-          { transaction },
-        );
-
         if (inventoryValueId && inventoryValueParams) {
           throw new createHttpError.BadRequest(
             "Can't use both inventoryValueId and inventoryValue",
@@ -297,7 +280,6 @@ export default class ActivityService {
               subSectorId,
               subCategoryId,
               gpcReferenceNumber: inventoryValueParams.gpcReferenceNumber,
-              datasourceId: dataSource.datasourceId,
             },
             { transaction },
           );
@@ -324,7 +306,6 @@ export default class ActivityService {
         const activityValue = await db.models.ActivityValue.create(
           {
             ...activityValueParams,
-            datasourceId: dataSource.datasourceId,
             inventoryValueId: inventoryValue.id,
             id: randomUUID(),
           },

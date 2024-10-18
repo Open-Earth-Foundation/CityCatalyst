@@ -1,4 +1,4 @@
-import { Box, Flex, HStack, Icon, Text, useRadio } from "@chakra-ui/react";
+import { Box, Flex, Icon, Text, useRadio } from "@chakra-ui/react";
 import { MdCheck } from "react-icons/md";
 
 export function RadioButton(props: any) {
@@ -8,7 +8,7 @@ export function RadioButton(props: any) {
   const checkbox = getRadioProps();
 
   return (
-    <Box as="label">
+    <Box as="label" className="!mb-0">
       <input {...input} />
       <Box
         {...checkbox}
@@ -30,9 +30,15 @@ export function RadioButton(props: any) {
         }}
         px={5}
         py={4}
+        height={"40px"}
         minHeight={12}
       >
-        <Flex direction="row" alignItems="center" className="h-full" verticalAlign="center">
+        <Flex
+          direction="row"
+          alignItems="center"
+          className="h-full"
+          verticalAlign="center"
+        >
           {state.isChecked && <Icon as={MdCheck} boxSize={5} mr={2} />}
           <Text fontSize="13px">{props.children}</Text>
         </Flex>

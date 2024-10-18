@@ -4,6 +4,7 @@ import { ActivityValue, ActivityValueAttributes } from "@/models/ActivityValue";
 import { InventoryValueAttributes } from "@/models/InventoryValue";
 import {
   DirectMeasure,
+  ExtraField,
   findMethodology,
   MANUAL_INPUT_HIERARCHY,
   Methodology,
@@ -78,9 +79,30 @@ export default class ManualInputValidationService {
       }
 
       // extract extra fields from the methodology
-      let extraFields =
-        (methodology as Methodology)?.activities?.[0]?.["extra-fields"] ||
-        (methodology as DirectMeasure)["extra-fields"];
+      let extraFields: ExtraField[] = [];
+
+      if (methodologyId === "direct-measure") {
+        extraFields = (methodology as DirectMeasure)[
+          "extra-fields"
+        ] as ExtraField[];
+      } else {
+        let scopedMethodology = methodology as Methodology;
+        let selectedActivityOption =
+          activityValueParams.metadata?.[
+            scopedMethodology.activitySelectionField?.id as string
+          ];
+
+        const foundIndex =
+          scopedMethodology.activities?.findIndex(
+            (ac) => ac.activitySelectedOption === selectedActivityOption,
+          ) ?? 0;
+
+        const selectedActivityIndex = foundIndex >= 0 ? foundIndex : 0;
+
+        extraFields = scopedMethodology.activities?.[selectedActivityIndex][
+          "extra-fields"
+        ] as ExtraField[];
+      }
 
       if (extraFields && extraFields.length > 0) {
         // handle required fields validation

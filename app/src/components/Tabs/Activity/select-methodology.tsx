@@ -14,24 +14,13 @@ const SelectMethodology = ({
 }: {
   t: TFunction;
   methodologies: Methodology[];
-  handleMethodologySelected: (methodology: Methodology) => void;
+  handleMethodologySelected: (methodology: Methodology | DirectMeasure) => void;
   directMeasure?: DirectMeasure;
 }) => {
   const [selectedMethodology, setSelectedMethodology] = useState("");
 
-  function handleCardSelect(
-    disabled: boolean | undefined,
-    inputRequired: string[] | undefined,
-    id: string,
-    fields: any,
-  ) {
-    return () =>
-      handleMethodologySelected({
-        disabled: !!disabled,
-        inputRequired,
-        id,
-        fields,
-      });
+  function handleCardSelect(selectedOption: Methodology | DirectMeasure) {
+    return () => handleMethodologySelected(selectedOption);
   }
 
   return (
@@ -78,7 +67,7 @@ const SelectMethodology = ({
         </Text>
         <SimpleGrid minChildWidth="250px" spacing={4}>
           {(methodologies || []).map(
-            ({ id, disabled, activities, inputRequired }) => (
+            ({ id, disabled, activities, inputRequired, ...rest }) => (
               <MethodologyCard
                 id={id}
                 key={id}
@@ -86,12 +75,13 @@ const SelectMethodology = ({
                 isSelected={selectedMethodology === id}
                 disabled={!!disabled}
                 t={t}
-                handleCardSelect={handleCardSelect(
+                handleCardSelect={handleCardSelect({
                   disabled,
                   inputRequired,
                   id,
-                  activities,
-                )}
+                  fields: activities,
+                  ...rest,
+                })}
               />
             ),
           )}
@@ -101,12 +91,12 @@ const SelectMethodology = ({
               key={directMeasure.id}
               isSelected={selectedMethodology === directMeasure.id}
               t={t}
-              handleCardSelect={handleCardSelect(
-                false,
-                ["emissions-data"],
-                directMeasure.id,
-                directMeasure["extra-fields"],
-              )}
+              handleCardSelect={handleCardSelect({
+                disabled: false,
+                inputRequired: ["emissions-data"],
+                fields: directMeasure["extra-fields"],
+                ...directMeasure,
+              })}
               disabled={false}
             />
           )}

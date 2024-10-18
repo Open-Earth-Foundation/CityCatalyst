@@ -1,5 +1,5 @@
 import { ActivityValue } from "@/models/ActivityValue";
-import { convertKgToTonnes, getInputMethodology } from "@/util/helpers";
+import { convertKgToTonnes } from "@/util/helpers";
 import { AddIcon } from "@chakra-ui/icons";
 import {
   Accordion,
@@ -32,6 +32,16 @@ import { MdModeEditOutline, MdMoreVert } from "react-icons/md";
 import { FiTrash2 } from "react-icons/fi";
 import { ExtraField, findMethodology, Methodology } from "@/util/form-schema";
 
+interface IActivityGroup {
+  activityData: ActivityValue[];
+  extraFields: ExtraField[];
+  groupBy: string | undefined;
+  sourceField: string | undefined;
+  filteredFields: ExtraField[];
+  title: string;
+  tag: string;
+}
+
 interface ActivityAccordionProps {
   t: TFunction;
   activityData: ActivityValue[] | undefined;
@@ -51,39 +61,134 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
   onEditActivity,
   referenceNumber,
 }) => {
-  const methodologyName = getInputMethodology(methodologyId!);
+  // perform the group by logic when there's more than one activity.
+  // split the data into groups
+  // for each table group by the group by field
+
   const methodology = findMethodology(methodologyId!, referenceNumber);
-  let extraFields = (methodology as Methodology)?.activities?.[0]?.[
-    "extra-fields"
-  ] as ExtraField[];
 
-  let groupBy = methodology?.activities?.[0]["group-by"];
-  const title = methodology?.activities?.[0]["activity-title"] as string;
-  const tag = referenceNumber.includes("II") ? "-transport-types" : "";
+  const { activityGroups } = useMemo<{
+    activityGroups: Record<string, IActivityGroup>;
+  }>(() => {
+    if (methodology?.activitySelectionField) {
+      // create a map of everything else except activityData
+      const activityGroups = methodology.activities?.reduce(
+        (acc, curr) => {
+          let key = curr.activitySelectedOption as string;
+          acc[key] = {
+            activityData: activityData?.filter(
+              (activity) =>
+                activity?.metadata?.[
+                  methodology?.activitySelectionField?.id as string
+                ] === key,
+            ) as ActivityValue[],
+            extraFields: curr["extra-fields"] as ExtraField[],
+            groupBy: curr["group-by"],
+            sourceField: curr["extra-fields"]?.find(
+              (f) => f.id.includes("-source") && f.type === "text",
+            )?.id,
+            filteredFields: curr["extra-fields"]?.filter(
+              (f) => !f.id.includes(curr["group-by"] as string),
+            ) as ExtraField[],
+            title: curr["activity-title"] as string,
+            tag: "",
+          };
+          return acc;
+        },
+        {} as Record<string, IActivityGroup>,
+      );
 
-  const activityGroups = useMemo<Record<string, ActivityValue[]>>(() => {
-    if (!groupBy) return {};
-    return activityData?.reduce((acc: any, activity: any) => {
-      // TODO extend for groupby with multiple values
-      const key = activity.activityData[groupBy];
-      if (!acc[key]) {
-        acc[key] = [];
-      }
-      acc[key].push(activity);
-      return acc;
-    }, {});
-  }, [activityData, groupBy]);
+      return {
+        activityGroups,
+      };
+    }
 
-  const sourceField = extraFields.find(
-    (f) => f.id.includes("-source") && f.type === "text",
-  )?.id;
+    let groupBy = methodology?.activities?.[0]["group-by"];
+    let extraFields = (methodology as Methodology)?.activities?.[0]?.[
+      "extra-fields"
+    ] as ExtraField[];
 
-  const filteredFields = extraFields.filter(
-    (f) => !f.id.includes(groupBy as string),
-  );
+    const sourceField = extraFields.find(
+      (f) => f.id.includes("-source") && f.type === "text",
+    )?.id;
+
+    const filteredFields = extraFields.filter(
+      (f) => !f.id.includes(groupBy as string),
+    );
+
+    const title = methodology?.activities?.[0]["activity-title"] as string;
+    const tag = referenceNumber.includes("II") ? "-transport-types" : "";
+    let activityGroups = null;
+    if (!groupBy) {
+      activityGroups = {
+        "default-key": {
+          activityData,
+          extraFields,
+          sourceField,
+          filteredFields,
+          title,
+          tag,
+        },
+      };
+    } else {
+      activityGroups = activityData?.reduce((acc: any, activity: any) => {
+        // TODO extend for groupby with multiple values
+        const key = activity.activityData[groupBy];
+        if (!acc[key]) {
+          acc[key] = {
+            activityData: [],
+            extraFields,
+            sourceField,
+            filteredFields,
+            title,
+            tag,
+          };
+        }
+        acc[key].activityData.push(activity);
+        return acc;
+      }, {});
+    }
+    return {
+      activityGroups,
+    };
+  }, [activityData, methodology]);
+
+  // let extraFields = (methodology as Methodology)?.activities?.[0]?.[
+  //   "extra-fields"
+  // ] as ExtraField[];
+  //
+  // let groupBy = methodology?.activities?.[0]["group-by"];
+  // const title = methodology?.activities?.[0]["activity-title"] as string;
+  // const tag = referenceNumber.includes("II") ? "-transport-types" : "";
+  //
+  // const activityGroups = useMemo<Record<string, ActivityValue[]>>(() => {
+  //   if (!groupBy) return {};
+  //   return activityData?.reduce((acc: any, activity: any) => {
+  //     // TODO extend for groupby with multiple values
+  //     const key = activity.activityData[groupBy];
+  //     if (!acc[key]) {
+  //       acc[key] = [];
+  //     }
+  //     acc[key].push(activity);
+  //     return acc;
+  //   }, {});
+  // }, [activityData, groupBy]);
+  //
+  // const sourceField = extraFields.find(
+  //   (f) => f.id.includes("-source") && f.type === "text",
+  // )?.id;
+  //
+  // const filteredFields = extraFields.filter(
+  //   (f) => !f.id.includes(groupBy as string),
+  // );
 
   // if there is no groupBy, return the activityData as is a regular table.
-  const renderTable = (list: ActivityValue[]) => {
+  const renderTable = (
+    list: ActivityValue[],
+    filteredFields: ExtraField[],
+    sourceField: string,
+    title: string,
+  ) => {
     return (
       <TableContainer px={0}>
         <Table
@@ -127,11 +232,11 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                   <Td>
                     <Tag
                       size="lg"
-                      variant={activity?.dataSource.dataQuality}
+                      variant={activity?.metadata?.dataQuality}
                       colorScheme="blue"
                       borderRadius="full"
                     >
-                      <TagLabel>{t(activity?.dataSource.dataQuality)}</TagLabel>
+                      <TagLabel>{t(activity?.metadata?.dataQuality)}</TagLabel>
                     </Tag>
                   </Td>
                   <Td maxWidth="100px" isTruncated>
@@ -227,7 +332,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
 
   return (
     <>
-      {!!groupBy ? (
+      {!("default-key" in activityGroups) ? (
         Object.keys(activityGroups)
           .sort()
           .map((key) => (
@@ -258,14 +363,17 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                           fontSize="title.md"
                           fontWeight="semibold"
                         >
-                          {key.includes(",") ? t(`mixed${tag}`) : t(key)}
+                          {key.includes(",")
+                            ? t(`mixed${activityGroups[key].tag}`)
+                            : t(key)}
                         </Text>
                         <Text
                           color="content.tertiary"
                           letterSpacing="wide"
                           fontSize="body.md"
                         >
-                          {activityGroups[key]?.length} {t("activities-added")}
+                          {activityGroups[key]?.activityData.length}{" "}
+                          {t("activities-added")}
                         </Text>
                       </Box>
                       {/*Todo find a way to sum all consumptions regardless of their units*/}
@@ -289,7 +397,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                           <Text fontWeight="normal">
                             {" "}
                             {convertKgToTonnes(
-                              activityGroups[key]?.reduce(
+                              activityGroups[key].activityData?.reduce(
                                 (acc, curr) =>
                                   acc + BigInt(curr.co2eq as bigint),
                                 0n,
@@ -325,7 +433,12 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                   </AccordionButton>
                 </h2>
                 <AccordionPanel padding="0px" pb={4}>
-                  {renderTable(activityGroups[key])}
+                  {renderTable(
+                    activityGroups[key].activityData as ActivityValue[],
+                    activityGroups[key].filteredFields as ExtraField[],
+                    activityGroups[key].sourceField as string,
+                    activityGroups[key].title as string,
+                  )}
                 </AccordionPanel>
               </AccordionItem>
             </Accordion>
@@ -338,7 +451,12 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
           marginBottom="7"
           overflow="hidden"
         >
-          {renderTable(activityData as ActivityValue[])}
+          {renderTable(
+            activityGroups["default-key"].activityData as ActivityValue[],
+            activityGroups["default-key"].filteredFields as ExtraField[],
+            activityGroups["default-key"].sourceField as string,
+            activityGroups["default-key"].title as string,
+          )}
         </Box>
       )}
     </>

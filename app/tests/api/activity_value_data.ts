@@ -181,7 +181,7 @@ export const invalidCreateActivityTimesEmissionsFactor: CreateActivityValueReque
       unavailableReason: "Reason for unavailability",
       unavailableExplanation: "Explanation for unavailability",
     },
-    gasValues: "invalid",
+    gasValues: [],
   };
 
 export const updatedActivityValueWithFormula: CreateActivityValueRequest = {
@@ -245,7 +245,7 @@ export const invalidupdatedActivityValueWithFormula: CreateActivityValueRequest 
       unavailableReason: "Reason for unavailability",
       unavailableExplanation: "Explanation for unavailability",
     },
-    gasValues: "invalid",
+    gasValues: [],
   };
 
 export const activityUnits = "UNITS";

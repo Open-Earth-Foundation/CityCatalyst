@@ -138,11 +138,6 @@ export const validCreateActivityTimesEmissionsFactor: CreateActivityValueRequest
       unavailableReason: "Reason for unavailability",
       unavailableExplanation: "Explanation for unavailability",
     },
-    dataSource: {
-      sourceType: "",
-      dataQuality: "high",
-      notes: "Some notes regarding the data source",
-    },
     gasValues: [
       {
         id: "123e4567-e89b-12d3-a456-426614174001",
@@ -186,11 +181,6 @@ export const invalidCreateActivityTimesEmissionsFactor: CreateActivityValueReque
       unavailableReason: "Reason for unavailability",
       unavailableExplanation: "Explanation for unavailability",
     },
-    dataSource: {
-      sourceType: "",
-      dataQuality: "high",
-      notes: "Some notes regarding the data source",
-    },
     gasValues: "invalid",
   };
 
@@ -211,11 +201,6 @@ export const updatedActivityValueWithFormula: CreateActivityValueRequest = {
     gpcReferenceNumber: ReferenceNumber,
     unavailableReason: "Reason for unavailability",
     unavailableExplanation: "Explanation for unavailability",
-  },
-  dataSource: {
-    sourceType: "updated-type",
-    dataQuality: "high",
-    notes: "Some notes regarding the data source",
   },
   gasValues: [
     {
@@ -259,11 +244,6 @@ export const invalidupdatedActivityValueWithFormula: CreateActivityValueRequest 
       gpcReferenceNumber: "X.1.1",
       unavailableReason: "Reason for unavailability",
       unavailableExplanation: "Explanation for unavailability",
-    },
-    dataSource: {
-      sourceType: "updated-type",
-      dataQuality: "high",
-      notes: "Some notes regarding the data source",
     },
     gasValues: "invalid",
   };

@@ -122,11 +122,6 @@ export function NavigationBar({
           </NextLink>
         </>
       )}
-      <NextLink href="/help">
-        <Heading color="base.light" size="sm" className="opacity-75" ml={6}>
-          {t("help")}
-        </Heading>
-      </NextLink>
       <Divider orientation="vertical" h={6} />
       <Menu>
         {({ isOpen }) => (

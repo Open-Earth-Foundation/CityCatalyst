@@ -151,7 +151,7 @@ describe.skip("Activity Value API", () => {
     expect(res.status).toBe(400);
   });
 
-  it("should not create an activity value with with formulas", async () => {
+  it("should not create an activity value with with formulas with invalid data", async () => {
     const findInventory = await db.models.Inventory.findOne({
       where: {
         inventoryName: inventoryName,

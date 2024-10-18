@@ -77,11 +77,8 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
   )?.id;
 
   const filteredFields = extraFields.filter((f) => {
-    console.log(f.id, groupBy);
     return !f.id.includes(groupBy as string);
   });
-
-  console.log(filteredFields, groupBy, extraFields);
 
   const renderTable = (list: ActivityValue[]) => {
     return (
@@ -108,7 +105,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
         </Thead>
         <Tbody>
           {list?.map((activity: ActivityValue, i: number) => {
-            const dataQuality = activity?.dataSource?.dataQuality;
+            const dataQuality = activity?.metadata?.dataQuality;
             return (
               <Tr key={i}>
                 {filteredFields.length > 0 && (

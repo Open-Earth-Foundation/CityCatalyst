@@ -1,25 +1,13 @@
 "use client";
 
 import { useTranslation } from "@/i18n/client";
-import { ArrowBackIcon, ArrowForwardIcon, LinkIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import { Link } from "@chakra-ui/next-js";
-import {
-  Box,
-  Button,
-  Card,
-  Divider,
-  Flex,
-  Heading,
-  Icon,
-  Text,
-} from "@chakra-ui/react";
-import NextLink from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { Box, Card, Flex, Heading, Text } from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { MdOutlineHomeWork } from "react-icons/md";
-import { FiTrash2, FiTruck } from "react-icons/fi";
-import { BsPlus } from "react-icons/bs";
 import AddDataCard from "@/components/Cards/add-data-card";
+
+import { SECTORS } from "@/util/constants";
 
 export default function AddDataIntro({
   params: { lng, inventory },
@@ -27,33 +15,6 @@ export default function AddDataIntro({
   params: { lng: string; inventory: string };
 }) {
   const { t } = useTranslation(lng, "data");
-
-  const SECTORCARD_DATA = [
-    {
-      sectorName: t("stationary-energy"),
-      testId: "stationary-energy-sector-card",
-      descriptionText: t("stationary-energy-details"),
-      scope: t("stationary-energy-scope"),
-      icon: MdOutlineHomeWork,
-      step: 1,
-    },
-    {
-      sectorName: t("transportation"),
-      testId: "transportation-sector-card",
-      descriptionText: t("transportation-details"),
-      scope: t("transportation-scope"),
-      icon: FiTruck,
-      step: 2,
-    },
-    {
-      sectorName: t("waste"),
-      testId: "waste-sector-card",
-      descriptionText: t("waste-details"),
-      scope: t("waste-scope"),
-      icon: FiTrash2,
-      step: 3,
-    },
-  ];
 
   return (
     <Box className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
@@ -110,15 +71,15 @@ export default function AddDataIntro({
         </Heading>
         <Text color="content.tertiary">{t("data-view-details")}</Text>
         <Flex className="space-x-4" mt={12}>
-          {SECTORCARD_DATA.map(
+          {SECTORS.map(
             ({ sectorName, testId, descriptionText, scope, icon, step }) => (
               <AddDataCard
                 testId={testId}
                 key={sectorName}
-                title={sectorName}
-                description={descriptionText}
+                title={t(sectorName)}
+                description={t(descriptionText)}
                 icon={icon}
-                scopeText={scope}
+                scopeText={t(scope)}
                 buttonText={t("add-data")}
                 step={step}
                 inventory={inventory}

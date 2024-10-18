@@ -534,7 +534,7 @@ export default function AddDataSteps({
       setDisconnectingDataSourceId(null);
       onSearchDataSourcesClicked();
     } else {
-      console.log("Something went wrong");
+      console.error("Something went wrong when disconnecting data source");
     }
   };
 

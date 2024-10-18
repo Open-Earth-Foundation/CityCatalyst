@@ -18,6 +18,7 @@ import type {
   InventoryWithCity,
   RequiredScopesResponse,
   ResultsResponse,
+  SectorBreakdownResponse,
   UserFileResponse,
   UserInfoResponse,
   UserInviteResponse,
@@ -37,6 +38,8 @@ export const api = createApi({
     "UserData",
     "FileData",
     "CityData",
+    "ReportResults",
+    "SectorBreakdown",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
@@ -68,6 +71,27 @@ export const api = createApi({
     getResults: builder.query<ResultsResponse, string>({
       query: (inventoryId: string) => `inventory/${inventoryId}/results`,
       transformResponse: (response: { data: ResultsResponse }) => response.data,
+      providesTags: ["ReportResults"],
+    }),
+    getSectorBreakdown: builder.query<
+      SectorBreakdownResponse,
+      {
+        inventoryId: string;
+        sector: string;
+      }
+    >({
+      query: ({
+        inventoryId,
+        sector,
+      }: {
+        inventoryId: string;
+        sector: string;
+      }) => {
+        return `inventory/${inventoryId}/results/${sector}`;
+      },
+      transformResponse: (response: { data: SectorBreakdownResponse }) =>
+        response.data,
+      providesTags: ["SectorBreakdown"],
     }),
     getInventoryProgress: builder.query<InventoryProgressResponse, string>({
       query: (inventoryId) => `inventory/${inventoryId}/progress`,
@@ -101,7 +125,7 @@ export const api = createApi({
         cityId: string;
         year: number;
         inventoryName: string;
-        totalCountryEmissions: number
+        totalCountryEmissions: number;
       }
     >({
       query: (data) => ({
@@ -484,7 +508,13 @@ export const api = createApi({
         body: data.requestData,
       }),
       transformResponse: (response: any) => response.data,
-      invalidatesTags: ["ActivityValue", "InventoryValue"],
+      invalidatesTags: [
+        "ActivityValue",
+        "InventoryValue",
+        "InventoryProgress",
+        "ReportResults",
+        "SectorBreakdown",
+      ],
     }),
     getActivityValue: builder.query({
       query: (data: { inventoryId: string; valueId: string }) => ({
@@ -501,7 +531,14 @@ export const api = createApi({
         body: data.data,
       }),
       transformResponse: (response: any) => response.data,
-      invalidatesTags: ["ActivityValue", "InventoryValue"],
+      invalidatesTags: [
+        "ActivityValue",
+        "InventoryValue",
+        "InventoryProgress",
+        "ReportResults",
+
+        "SectorBreakdown",
+      ],
     }),
     deleteActivityValue: builder.mutation({
       query: (data: { activityValueId: string; inventoryId: string }) => ({
@@ -509,7 +546,13 @@ export const api = createApi({
         url: `/inventory/${data.inventoryId}/activity-value/${data.activityValueId}`,
       }),
       transformResponse: (response: any) => response.data,
-      invalidatesTags: ["ActivityValue", "InventoryValue"],
+      invalidatesTags: [
+        "ActivityValue",
+        "InventoryValue",
+        "InventoryProgress",
+        "ReportResults",
+        "SectorBreakdown",
+      ],
     }),
     deleteAllActivityValues: builder.mutation({
       query: (data: {
@@ -525,7 +568,13 @@ export const api = createApi({
         },
       }),
       transformResponse: (response: any) => response.data,
-      invalidatesTags: ["ActivityValue", "InventoryValue"],
+      invalidatesTags: [
+        "ActivityValue",
+        "InventoryValue",
+        "InventoryProgress",
+        "ReportResults",
+        "SectorBreakdown",
+      ],
     }),
     createThreadId: builder.mutation({
       query: (data: { inventoryId: string; content: string }) => ({

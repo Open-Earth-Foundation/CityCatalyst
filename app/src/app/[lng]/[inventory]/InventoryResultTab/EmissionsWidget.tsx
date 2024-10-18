@@ -16,6 +16,7 @@ import { TFunction } from "i18next";
 import { InventoryResponse } from "@/util/types";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { MdArrowOutward } from "react-icons/md";
+import { PopulationAttributes } from "@/models/Population";
 
 const EmissionsWidgetCard = ({
   icon,
@@ -30,12 +31,13 @@ const EmissionsWidgetCard = ({
 }) => {
   const finalValue = value
     ? showProgress
-      ? `${value}%`
+      ? `${value.toFixed(1)}%`
       : convertKgToTonnes(value)
     : "N/A";
+
   return (
-    <HStack align="center" height="123px" justify="space-between" key={field}>
-      <Stack w="full">
+    <HStack align="center" marginY={"9px"} justify="space-between" key={field}>
+      <Stack w="full" height={"83px"}>
         <HStack align="start">
           {value && showProgress ? (
             <CircularProgress
@@ -44,7 +46,7 @@ const EmissionsWidgetCard = ({
               mr="4"
               color="interactive.secondary"
               trackColor="background.neutral"
-              value={value}
+              value={Math.round(value)}
             />
           ) : (
             <Icon color={"red"} as={icon} boxSize={8} />
@@ -64,10 +66,20 @@ const EmissionsWidgetCard = ({
 const EmissionsWidget = ({
   t,
   inventory,
+  population,
 }: {
   t: Function & TFunction<"translation", undefined>;
   inventory?: InventoryResponse;
+  population?: PopulationAttributes;
 }) => {
+  const percentageOfCountrysEmissions =
+    inventory?.totalEmissions && inventory?.totalCountryEmissions
+      ? (inventory.totalEmissions / inventory.totalCountryEmissions) * 100
+      : undefined;
+  const emissionsPerCapita =
+    inventory?.totalEmissions && population?.population
+      ? inventory.totalEmissions / population.population
+      : undefined;
   const EmissionsData = [
     {
       id: "total-ghg-emissions-in-year",
@@ -95,10 +107,7 @@ const EmissionsWidget = ({
           t={t}
         ></Trans>
       ),
-      value:
-        inventory?.totalEmissions && inventory?.city.population
-          ? inventory?.totalEmissions / inventory?.city.population
-          : undefined,
+      value: emissionsPerCapita,
       icon: MdArrowOutward,
       showProgress: false,
     },
@@ -106,12 +115,12 @@ const EmissionsWidget = ({
       id: "% of country's emissions",
       field: t("%-of-country's-emissions"),
       showProgress: true,
-      // TODO ON-2212 ON-1383 add value when available
+      value: percentageOfCountrysEmissions,
     },
   ];
   return (
-    <Box width={"18vw"}>
-      <Card padding={0}>
+    <Box>
+      <Card padding={0} height="448px" width={"353px"}>
         <CardHeader>
           <Heading size="sm">{t("total-emissions")}</Heading>
         </CardHeader>

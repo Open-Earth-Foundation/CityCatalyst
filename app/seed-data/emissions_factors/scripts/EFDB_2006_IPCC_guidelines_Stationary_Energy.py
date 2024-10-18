@@ -95,7 +95,7 @@ mapping_ipcc_to_gpc = {
         "I.6.1",
     ],
     "1.A - Fuel Combustion Activities\n1.A.1.b - Petroleum Refining\n": ["I.7.1"],
-    "1.A.1 - Energy Industries\n": ["1.4.4"],
+    "1.A.1 - Energy Industries\n": ["I.4.4"],
     "1.A.1 - Energy Industries\n1.A.4.a - Commercial/Institutional\n1.A.4.b - Residential\n1.A.4.c - Agriculture/Forestry/Fishing/Fish Farms\n1.A.4.c.i - Stationary\n": [
         "I.4.4"
     ],
@@ -106,7 +106,7 @@ mapping_ipcc_to_gpc = {
     "1.A.1.a.i - Electricity Generation\n": ["I.4.4"],
     "1.A.1.a.ii - Combined Heat and Power Generation (CHP)\n": ["I.4.4"],
     "1.A.1.a.iii - Heat Plants\n": ["I.4.4"],
-    "1.A.1.c.ii - Other Energy Industries\n": ["1.4.4"],
+    "1.A.1.c.ii - Other Energy Industries\n": ["I.4.4"],
     "1.A.2 - Manufacturing Industries and Construction\n": ["I.3.1"],
     "1.A.2 - Manufacturing Industries and Construction\n1.A.4.a - Commercial/Institutional\n": [
         "I.3.1",
@@ -307,6 +307,51 @@ extraction_fugitive_dic = {
     'Tier 1 CH4 emission factor for undeground post-mining': 'undeground post-mining',
     'Tier 1 CO2 Emission Factors for underground mining': 'underground mining',
     'Tier 1 CO2 emission factor for surface mining': 'surface mining'
+}
+
+fuel_to_fuel_ids_mapping = {
+    'Anthracite': 'fuel-type-anthracite', 
+    'Other Bituminous Coal': 'fuel-type-other-bituminous-coal', 
+    'Lignite': 'fuel-type-lignite',  
+    'Peat': 'fuel-type-peat',
+    'Crude Oil': 'fuel-type-crude-oil', 
+    'Motor Gasoline': 'fuel-type-gasoline', 
+    'Other Kerosene': 'fuel-type-other-kerosene', 
+    'Gas Oil': 'fuel-type-natural-gas-oil',
+    'Diesel Oil': 'fuel-type-diesel-oil', 
+    'Residual Fuel Oil': 'fuel-type-residual-fuel-oil', 
+    'Natural Gas': 'fuel-type-natural-gas',
+    'Other Primary Solid Biomass': 'fuel-type-other-primary-solid-biomass', 
+    'Wood/Wood Waste': 'fuel-type-wood-wood-waste', 
+    'Charcoal': 'fuel-type-charcoal',
+    'Sub-Bituminous Coal': 'fuel-type-sub-bituminous-coal', 
+    'Refinery Gas': 'fuel-type-refinery-gas', 
+    'Coking Coal': 'fuel-type-coking-coal',
+    'Liquefied Petroleum Gases': 'fuel-type-liquefied-petroleum-gases', 
+    'Coke Oven Coke and Lignite Coke': 'fuel-type-coke-oven-coke-lignite-coke',
+    'Industrial Wastes': 'fuel-type-industrial-wastes', 
+    'Waste Oils': 'fuel-type-waste-oils', 
+    'Naphtha': 'fuel-type-naphtha',
+    'Municipal Wastes (non-biomass fraction)': 'fuel-type-municipal-wastes',
+}
+
+fuggitive_activity_type_mapping = {
+    'underground mines': 'type-coal-mining-and-handling-underground-mines', 
+    'surface mining': 'type-surface-mines', 
+    'refinery gas combustion': 'type-solid-fuel-transformation',
+    'underground post-mining': 'type-coal-mining-and-handling-underground-mines-mining-post-mining-seam-gas-emissions', 
+    'surface post-mining': 'type-surface-mines-post-mining-seam-gas-emissions',
+    'Well drilling - flaring and venting': 'type-extraction',
+    'Well testing - flaring and venting': 'type-extraction',
+    'Well servicing - flaring and venting': 'type-extraction',
+    'Gas production - flaring': 'type-extraction',
+    'Gas processing - flaring': 'type-processing',
+    'Gas processing - venting': 'type-processing',
+    'Gas Transmission & Storage - venting': 'type-storage',
+    'Gas Transmission & Storage': 'type-storage',
+    'Oil production - venting': 'type-extraction',
+    'Oil production - flaring': 'type-extraction',
+    'Oil transport - venting': 'type-distribution'
 }
 
 if __name__ == "__main__":
@@ -826,9 +871,12 @@ if __name__ == "__main__":
     EF_df["methodology_name"] = [mapping_gpc_to_methodologies] * len(EF_df)
     EF_df = EF_df.explode("methodology_name", ignore_index=True)
 
+    # assign "fuel_type_ids" using the fuel_to_fuel_ids_mapping dic
+    EF_df["fuel_type_id"] = EF_df["fuel"].map(fuel_to_fuel_ids_mapping)
+
     # create a 'metadata' column based on density values, density units, NCV values and NCV units
     EF_df["metadata"] = EF_df.apply(
-        lambda row: f"fuel_type:{row['fuel']}, density_value:{row['density_value']}, density_units:{row['density_units']}, NCV_value:{row['NCV_value']}, NCV_units:{row['NCV_units']}",
+        lambda row: f"fuel_type:{row['fuel_type_id']}, density_value:{row['density_value']}, density_units:{row['density_units']}, NCV_value:{row['NCV_value']}, NCV_units:{row['NCV_units']}",
         axis=1,
     )
 
@@ -850,6 +898,7 @@ if __name__ == "__main__":
             "density_units",
             "NCV_value",
             "NCV_units",
+            "fuel_type_id"
         ]
     )
 
@@ -920,9 +969,18 @@ if __name__ == "__main__":
     }
     EF_df_fugitive['parameters'] = EF_df_fugitive['parameters'].replace(mapping_parameters)
 
+    EF_df_fugitive['extra'] = EF_df_fugitive['extra'].replace({
+        'undeground mines': 'underground mines', 
+        'undeground mining': 'underground mines', 
+        'underground mining': 'underground mines',
+        'undeground post-mining': 'underground post-mining'
+        })
+    
+    EF_df_fugitive['activity_type_id'] = EF_df_fugitive['extra'].map(fuggitive_activity_type_mapping)
+
     # create a 'metadata' column based on density values, density units, NCV values and NCV units
     EF_df_fugitive["metadata"] = EF_df_fugitive.apply(
-        lambda row: f"activity_description_1:{row['extra']}, activity_description_2:{row['parameters']}, density_value:{row['density_value']}, density_units:{row['density_units']}",
+        lambda row: f"activity_name:{row['activity_type_id']}, activity_description_1:{row['extra']}, activity_description_2:{row['parameters']}, density_value:{row['density_value']}, density_units:{row['density_units']}",
         axis=1,
     )
 
@@ -948,7 +1006,8 @@ if __name__ == "__main__":
             "value_max",
             "density_value",
             "density_units",
-            "extra"
+            "extra",
+            "activity_type_id"
         ]
     )
 

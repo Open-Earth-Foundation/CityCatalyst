@@ -18,7 +18,8 @@ def split_name(tmp, name_col, country_id):
     Function to separate the jurisdiction name from the ID
     """
     # Extract actor_id and region
-    tmp[["region", "actor_id"]] = tmp[name_col].str.split(" \(", expand=True)
+    tmp[["region", "actor_id"]] = tmp[name_col].str.split(r" \(", expand=True)
+    #tmp[["region", "actor_id"]] = tmp[name_col].str.split(" \(", expand=True)
 
     # Remove the closing parenthesis from the 'actor_id' column
     tmp["actor_id"] = tmp["actor_id"].str.replace(")", "")
@@ -90,7 +91,8 @@ GPC_refno_dic = {
 # methodologies for Stationary Energy
 mapping_gpc_to_methodologies = [
     "electricity_consumption",
-    "energy_consumption" "sampling_scaled_data",
+    "energy_consumption",
+    "sampling_scaled_data",
     "modeled_data",
 ]
 
@@ -137,6 +139,30 @@ if __name__ == "__main__":
     )
 
     write_dic_to_csv(output_dir, "DataSource", datasource_data)
+
+    # =================================================================
+    # Methodology
+    # =================================================================
+    methodologies = [
+    "electricity-consumption",
+    "energy-consumption",
+    "sampling-scaled-data",
+    "modeled-data",
+    ]
+
+    methodology_data_list = []
+
+    for methodology in methodologies:
+        methodology_data = {
+            "methodology_id": uuid_generate_v3(methodology),
+            "methodology": methodology,
+            "methodology_url": "",
+            "datasource_id": datasource_data.get("datasource_id")
+        }
+        methodology_data_list.append(methodology_data)
+
+    # Write data to CSV
+    write_dic_to_csv(output_dir, "Methodology", methodology_data_list)
 
     # =================================================================
     # EmissionsFactors
@@ -317,7 +343,7 @@ if __name__ == "__main__":
             new_rows.append(new_row)
 
     df_final = pd.DataFrame(new_rows)
-    df_final = df_final[df_final["emissions_per_activity"] > 0].head(1)
+    #df_final = df_final[df_final["emissions_per_activity"] > 0].head(1)
 
     # assign GPC_refno
     df_final["gpc_reference_number"] = df_final["emission_factor_type"].map(GPC_refno_dic)
@@ -337,9 +363,30 @@ if __name__ == "__main__":
         columns=["CO2e", "datasource_name", "emission_factor_type"]
     )
 
+    df_final['methodology_name'] = df_final['methodology_name'].str.replace('_', '-')
+
+    df_final['methodology_id'] = df_final['methodology_name'].apply(uuid_generate_v3)
+
     df_final["id"] = df_final.apply(
         lambda row: uuid_generate_v4(), axis=1
     )
+
+    column_order = [
+        'gas',
+        'region',
+        'units',
+        'reference',
+        'gpc_reference_number',
+        'actor_id',
+        'emissions_per_activity',
+        'methodology_name',
+        'metadata',
+        'year',
+        'methodology_id',
+        'id'
+    ]
+
+    df_final = df_final[column_order]
 
     df_final.to_csv(
         f"{output_dir}/EmissionsFactor.csv", index=False

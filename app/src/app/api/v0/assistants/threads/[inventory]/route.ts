@@ -94,8 +94,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
     const numInventoryValues = inventory.inventoryValues?.length;
     const userName = session?.user.name;
 
-    return `
-  ###### BEGINNING OF CONTEXT ######
+    return `<context>
   + Name of the currently logged in user: ${userName},
   + Name of city name that the inventory is being created for: ${cityName},
   + Name of the corresponding region: ${regionName},
@@ -107,8 +106,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
   + Area of the city ${cityName} in km\u00B2: ${cityArea},
   + Year for which the the inventory is being created: ${inventoryYear},
   + Current number of inventory values for this city: ${numInventoryValues}.
-  ###### END OF CONTEXT ######
-  `;
+  </context>`;
   }
 
   const context = createContext(inventory);

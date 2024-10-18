@@ -291,11 +291,11 @@ async function inventoryXLS(inventory: Inventory): Promise<Buffer> {
 
       // TODO calculate
       // row.getCell("AL").value = converKgToTons(inventoryValue.co2eq);
-      row.getCell("AD").value = inventoryValue.dataSource.dataQuality
+      row.getCell("AD").value = inventoryValue.dataSource?.dataQuality
         ?.slice(0, 1)
         .toUpperCase();
       row.getCell("AP").value = getTranslationFromDictionary(
-        inventoryValue.dataSource.datasetName,
+        inventoryValue.dataSource?.datasetName,
       ); // TODO add source to Data sources sheet (ID 20)
 
       row.commit();

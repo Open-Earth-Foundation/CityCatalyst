@@ -24,6 +24,7 @@ export const GET = apiHandler(
 
     const { totalEmissionsBySector, topEmissionsBySubSector } =
       await getEmissionResults(inventory);
+
     return NextResponse.json({
       data: {
         totalEmissions: {

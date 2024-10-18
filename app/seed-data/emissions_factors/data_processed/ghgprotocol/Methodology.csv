@@ -1,0 +1,7 @@
+methodology_id,methodology,methodology_url,datasource_id
+2d45024e-1249-3dd8-aa82-8c0de525d2a7,fuel-sales,,7be963c9-53d7-3d95-a590-ad2bf5dac4d2
+a087f13a-d777-334c-b32c-e03a04a20857,geographic,,7be963c9-53d7-3d95-a590-ad2bf5dac4d2
+3c57bbef-b08f-3a63-8416-341240554ac7,induced-activity-1,,7be963c9-53d7-3d95-a590-ad2bf5dac4d2
+324ce10e-d0ae-36a1-9bc6-217687c0971b,induced-activity-2,,7be963c9-53d7-3d95-a590-ad2bf5dac4d2
+7e538dba-f7ce-3ce2-8528-403cc3a15e3e,resident-activity,,7be963c9-53d7-3d95-a590-ad2bf5dac4d2
+b3bd9f3f-1db4-3d57-b9cd-1305ec097db0,movement-driver,,7be963c9-53d7-3d95-a590-ad2bf5dac4d2

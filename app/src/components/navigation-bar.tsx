@@ -26,6 +26,7 @@ import { MdLogout } from "react-icons/md";
 import Cookies from "js-cookie";
 import { useParams } from "next/navigation";
 import { api } from "@/services/api";
+import { useEffect } from "react";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -56,6 +57,23 @@ export function NavigationBar({
     const newPath = location.pathname.replace(/^\/[A-Za-z]+/, `/${language}`);
     history.replaceState(null, "", newPath);
   };
+
+  // Checks if language is set in cookie and updates URL if not
+  window.addEventListener("popstate", () => {
+    const cookieLanguage = Cookies.get("i18next");
+    if (cookieLanguage) {
+      const currentPath = location.pathname;
+
+      if (!currentPath.startsWith(`/${cookieLanguage}`)) {
+        const newPath = currentPath.replace(
+          /^\/[A-Za-z]+/,
+          `/${cookieLanguage}`,
+        );
+        history.replaceState(null, "", newPath);
+      }
+    }
+  });
+
   const { data: session, status } = useSession();
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
@@ -81,17 +99,29 @@ export function NavigationBar({
       </NextLink>
       <div className="w-full" />
       {showNav && (
-        <NextLink href="/">
-          <Heading color="base.light" size="sm" className="opacity-75" ml={6}>
-            {t("dashboard")}
-          </Heading>
-        </NextLink>
+        <>
+          {" "}
+          <NextLink href={`/${inventory ? inventory : currentInventoryId}`}>
+            <Heading color="base.light" size="sm" className="opacity-75" ml={6}>
+              {t("dashboard")}
+            </Heading>
+          </NextLink>
+          <NextLink
+            target="_blank"
+            rel="help noopener noreferrer"
+            href="https://citycatalyst.openearth.org/learning-hub"
+          >
+            <Heading
+              color="base.light"
+              size="sm"
+              className="opacity-75 !text-nowrap"
+              ml={6}
+            >
+              {t("learning-hub")}
+            </Heading>
+          </NextLink>
+        </>
       )}
-      <NextLink href="/help">
-        <Heading color="base.light" size="sm" className="opacity-75" ml={6}>
-          {t("help")}
-        </Heading>
-      </NextLink>
       <Divider orientation="vertical" h={6} />
       <Menu>
         {({ isOpen }) => (

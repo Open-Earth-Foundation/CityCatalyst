@@ -11,6 +11,7 @@ import {
   Select,
   Text,
   Textarea,
+  useRadioGroup,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import BuildingTypeSelectInput from "../../building-select-input";
@@ -19,6 +20,7 @@ import { TFunction } from "i18next";
 import {
   Control,
   Controller,
+  useController,
   UseFormGetValues,
   UseFormRegister,
   UseFormSetValue,
@@ -29,9 +31,11 @@ import type {
   SubcategoryData,
 } from "../../../app/[lng]/[inventory]/data/[step]/types";
 import { resolve } from "@/util/helpers";
-import { SuggestedActivity } from "@/util/form-schema";
+import { Methodology, SuggestedActivity } from "@/util/form-schema";
 import { ActivityValue } from "@/models/ActivityValue";
 import FormattedNumberInput from "@/components/formatted-number-input";
+import PercentageBreakdownInput from "@/components/percentage-breakdown-input";
+import { RadioButton } from "@/components/radio-button";
 
 export type EmissionFactorTypes = {
   id: string;
@@ -42,18 +46,22 @@ export type EmissionFactorTypes = {
 interface AddActivityModalBodyProps {
   t: TFunction;
   register: UseFormRegister<Inputs>;
-  control: Control<Inputs, any>;
+  watch: Function;
+  control: Control<any, any>;
   submit: () => void;
   fields: ExtraField[];
-  units: string[];
+  hideEmissionFactors?: boolean;
+  units?: string[];
   errors: Record<string, any>;
+  setError: Function;
+  clearErrors: Function;
   emissionsFactorTypes: EmissionFactorTypes;
-  methodology: any;
+  methodology: Methodology;
   selectedActivity?: SuggestedActivity;
   targetActivityValue?: ActivityValue;
   setValue: UseFormSetValue<Inputs>;
   getValues: UseFormGetValues<Inputs>;
-  title?: string; // Title of the field
+  title: string; // Title of the field
 }
 
 export type Inputs = {
@@ -84,6 +92,7 @@ export type ExtraField = {
   multiselect?: boolean; // Whether multiple selections are allowed
   units?: string[]; // Specifies units, applicable when type is 'number'
   required?: boolean; // Whether the field is required
+  subtypes?: string[];
 };
 
 const ActivityModalBody = ({
@@ -94,18 +103,30 @@ const ActivityModalBody = ({
   methodology,
   emissionsFactorTypes,
   errors,
+  setError,
+  clearErrors,
   fields,
   units,
   targetActivityValue,
   selectedActivity,
   title,
+  hideEmissionFactors,
   setValue,
   getValues,
 }: AddActivityModalBodyProps) => {
+  //
+
   const unitValue = useWatch({
     control,
     name: `activity.${title}Unit` as any,
   });
+
+  const { field } = useController({
+    name: `activity.${methodology.activitySelectionField?.id}`,
+    control,
+    defaultValue: selectedActivity?.prefills?.[0].value,
+  });
+  const { getRootProps, getRadioProps, value } = useRadioGroup(field);
 
   let prefix = "";
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
@@ -113,7 +134,7 @@ const ActivityModalBody = ({
       !(targetActivityValue?.metadata?.emissionFactorType === "custom"),
     );
 
-  // Adjust function for countries with national emission factors i.e US
+  // Adjust function for countries with national emission factors i.e. US
   const onEmissionFactorTypeChange = (e: any) => {
     // somehow extract the gas and the emissions perActivity for each gas
     const emissionFactor = emissionsFactorTypes.find(
@@ -151,6 +172,34 @@ const ActivityModalBody = ({
   return (
     <ModalBody p={6} px={12}>
       <form onSubmit={submit}>
+        {methodology.activitySelectionField && (
+          <HStack
+            spacing={4}
+            mb="24px"
+            display="flex"
+            flexDirection="column"
+            className="items-start"
+            gap="24px"
+          >
+            <FormControl className="w-full">
+              <FormLabel>{t(methodology.activitySelectionField.id)}</FormLabel>
+              <HStack
+                display="flex"
+                flexDirection="row"
+                className="items-start"
+              >
+                {methodology.activitySelectionField.options?.map((option) => (
+                  <RadioButton
+                    key={option}
+                    {...getRadioProps({ value: option })}
+                  >
+                    {t(option)}
+                  </RadioButton>
+                ))}
+              </HStack>
+            </FormControl>
+          </HStack>
+        )}
         <HStack
           spacing={4}
           mb="24px"
@@ -160,11 +209,11 @@ const ActivityModalBody = ({
           gap="24px"
         >
           {/* handle select, multi-select types, text  */}
-          {filteredFields.map((f) => {
+          {filteredFields.map((f, idx) => {
             return (
               <>
                 {f.options && (
-                  <FormControl className="w-full">
+                  <FormControl key={idx} className="w-full">
                     <BuildingTypeSelectInput
                       options={f.options}
                       required={f.required}
@@ -180,6 +229,21 @@ const ActivityModalBody = ({
                       setValue={setValue}
                     />
                   </FormControl>
+                )}
+                {f.type === "percentage-breakdown" && (
+                  <PercentageBreakdownInput
+                    id={f.id}
+                    label={t(f.id)}
+                    register={register}
+                    getValues={getValues}
+                    control={control}
+                    setValue={setValue}
+                    setError={setError}
+                    clearErrors={clearErrors}
+                    breakdownCategories={f.subtypes as string[]}
+                    error={errors?.activity?.[f.id]}
+                    t={t}
+                  />
                 )}
                 {f.type === "text" && (
                   <FormControl className="w-full">
@@ -300,24 +364,29 @@ const ActivityModalBody = ({
                     defaultValue={0}
                     miniAddon
                   >
-                    <Controller
-                      control={control}
-                      name={`activity.${title}-unit` as any}
-                      render={({ field }) => (
-                        <Select
-                          placeholder={t("select-unit")}
-                          variant="unstyled"
-                          {...field}
-                          onChange={(e) => field.onChange(e.target.value)}
-                        >
-                          {units?.map((item: string) => (
-                            <option key={item} value={item}>
-                              {t(item)}
-                            </option>
-                          ))}
-                        </Select>
-                      )}
-                    />
+                    {(units?.length as number) > 0 && (
+                      <Controller
+                        rules={{ required: t("option-required") }}
+                        defaultValue=""
+                        control={control}
+                        name={`activity.${title}-unit` as any}
+                        render={({ field }) => (
+                          <Select
+                            placeholder={t("select-unit")}
+                            variant="unstyled"
+                            {...field}
+                            required
+                            onChange={(e) => field.onChange(e.target.value)}
+                          >
+                            {units?.map((item: string) => (
+                              <option key={item} value={item}>
+                                {t(item)}
+                              </option>
+                            ))}
+                          </Select>
+                        )}
+                      />
+                    )}
                   </FormattedNumberInput>
                 </InputGroup>
 
@@ -331,147 +400,79 @@ const ActivityModalBody = ({
                 ) : (
                   ""
                 )}
-              </FormControl>
-              <FormControl>
-                <FormLabel>{t("emission-factor-type")}</FormLabel>
-                <Select
-                  borderRadius="4px"
-                  borderWidth={errors?.activity?.emissionFactorType ? "1px" : 0}
-                  border="inputBox"
-                  h="48px"
-                  shadow="1dp"
-                  borderColor={
-                    errors?.activity?.emissionFactorType
-                      ? "sentiment.negativeDefault"
-                      : ""
-                  }
-                  background={
-                    errors?.activity?.emissionFactorType
-                      ? "sentiment.negativeOverlay"
-                      : ""
-                  }
-                  _focus={{
-                    borderWidth: "1px",
-                    shadow: "none",
-                    borderColor: "content.link",
-                  }}
-                  {...register("activity.emissionFactorType")}
-                  bgColor="base.light"
-                  placeholder="Select emission factor type"
-                  onChange={(e: any) => onEmissionFactorTypeChange(e)}
-                >
-                  {emissionsFactorTypes.map(({ id, name }) => (
-                    <option key={id} value={id}>
-                      {t(name)}
-                    </option>
-                  ))}
-                  <option key="custom" value="custom">
-                    {t("add-custom")}
-                  </option>
-                </Select>
-                {errors.activity?.emissionFactorType ? (
+                {(errors?.activity?.[`${title}-unit`] as any) &&
+                !errors?.activity?.[title] ? (
                   <Box display="flex" gap="6px" alignItems="center" mt="6px">
                     <WarningIcon color="sentiment.negativeDefault" />
                     <Text fontSize="body.md">
-                      {t("emission-factor-form-label")}
+                      {errors?.activity?.[`${title}-unit`]?.message}{" "}
                     </Text>
                   </Box>
                 ) : (
                   ""
                 )}
               </FormControl>
+              {!hideEmissionFactors && (
+                <FormControl>
+                  <FormLabel>{t("emission-factor-type")}</FormLabel>
+                  <Select
+                    borderRadius="4px"
+                    borderWidth={
+                      errors?.activity?.emissionFactorType ? "1px" : 0
+                    }
+                    border="inputBox"
+                    h="48px"
+                    shadow="1dp"
+                    borderColor={
+                      errors?.activity?.emissionFactorType
+                        ? "sentiment.negativeDefault"
+                        : ""
+                    }
+                    background={
+                      errors?.activity?.emissionFactorType
+                        ? "sentiment.negativeOverlay"
+                        : ""
+                    }
+                    _focus={{
+                      borderWidth: "1px",
+                      shadow: "none",
+                      borderColor: "content.link",
+                    }}
+                    {...register("activity.emissionFactorType", {
+                      required: t("value-required"),
+                    })}
+                    bgColor="base.light"
+                    placeholder={t("emissions-factor-type-placeholder")}
+                    onChange={(e: any) => {
+                      clearErrors("activity.emissionFactorType");
+                      onEmissionFactorTypeChange(e);
+                    }}
+                  >
+                    {emissionsFactorTypes.map(({ id, name }) => (
+                      <option key={id} value={id}>
+                        {t(name)}
+                      </option>
+                    ))}
+                    <option key="custom" value="custom">
+                      {t("add-custom")}
+                    </option>
+                  </Select>
+                  {errors.activity?.emissionFactorType ? (
+                    <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                      <WarningIcon color="sentiment.negativeDefault" />
+                      <Text fontSize="body.md">
+                        {t("emission-factor-form-label")}
+                      </Text>
+                    </Box>
+                  ) : (
+                    ""
+                  )}
+                </FormControl>
+              )}
             </Box>
           ) : null}
         </HStack>
-        {!methodology?.id.includes("direct-measure") ? (
-          <>
-            <Heading
-              size="sm"
-              mb={4}
-              className="font-normal"
-              display="flex"
-              alignItems="center"
-            >
-              <FormLabel
-                variant="label"
-                fontSize="label.lg"
-                fontStyle="normal"
-                fontWeight="medium"
-                letterSpacing="wide"
-                fontFamily="heading"
-              >
-                {t("emissions-factor-values")}
-              </FormLabel>
-            </Heading>
-            <HStack spacing={4} mb={5}>
-              <FormControl>
-                <FormControl>
-                  <FormLabel color="content.tertiary">
-                    {t("co2-emission-factor")}
-                  </FormLabel>
-                  <FormattedNumberInput
-                    miniAddon
-                    control={control}
-                    name={`activity.CO2EmissionFactor`}
-                    defaultValue={0}
-                    isDisabled={isEmissionFactorInputDisabled}
-                  >
-                    <Text
-                      isTruncated // Truncate the text with an ellipsis
-                      noOfLines={1}
-                      w="full"
-                      textAlign="center"
-                    >
-                      CO2/{t(unitValue)}
-                    </Text>
-                  </FormattedNumberInput>
-                </FormControl>
-              </FormControl>
-              <FormControl>
-                <FormLabel color="content.tertiary">
-                  {t("n2o-emission-factor")}
-                </FormLabel>
-                <FormattedNumberInput
-                  miniAddon
-                  control={control}
-                  name={`activity.N2OEmissionFactor`}
-                  defaultValue={0}
-                  isDisabled={isEmissionFactorInputDisabled}
-                >
-                  <Text
-                    isTruncated // Truncate the text with an ellipsis
-                    noOfLines={1}
-                    w="full"
-                    textAlign="center"
-                  >
-                    N20/{t(unitValue)}
-                  </Text>
-                </FormattedNumberInput>
-              </FormControl>
-              <FormControl>
-                <FormLabel color="content.tertiary">
-                  {t("ch4-emission-factor")}
-                </FormLabel>
-                <FormattedNumberInput
-                  control={control}
-                  miniAddon
-                  name={`activity.CH4EmissionFactor`}
-                  defaultValue={0}
-                  isDisabled={isEmissionFactorInputDisabled}
-                >
-                  <Text
-                    isTruncated // Truncate the text with an ellipsis
-                    noOfLines={1}
-                    w="full"
-                    textAlign="center"
-                  >
-                    CH4/{t(unitValue)}
-                  </Text>
-                </FormattedNumberInput>
-              </FormControl>
-            </HStack>{" "}
-          </>
-        ) : (
+        {methodology?.id.includes("direct-measure") && (
           <Grid templateColumns="repeat(2, 1fr)" gap={4} mb={5}>
             <FormControl w="full">
               <FormLabel color="content.secondary">
@@ -538,6 +539,96 @@ const ActivityModalBody = ({
             </FormControl>
           </Grid>
         )}
+        {!methodology?.id.includes("direct-measure") &&
+          !hideEmissionFactors && (
+            <>
+              <Heading
+                size="sm"
+                mb={4}
+                className="font-normal"
+                display="flex"
+                alignItems="center"
+              >
+                <FormLabel
+                  variant="label"
+                  fontSize="label.lg"
+                  fontStyle="normal"
+                  fontWeight="medium"
+                  letterSpacing="wide"
+                  fontFamily="heading"
+                >
+                  {t("emissions-factor-values")}
+                </FormLabel>
+              </Heading>
+              <HStack spacing={4} mb={5}>
+                <FormControl>
+                  <FormControl>
+                    <FormLabel color="content.tertiary">
+                      {t("co2-emission-factor")}
+                    </FormLabel>
+                    <FormattedNumberInput
+                      miniAddon
+                      control={control}
+                      name={`activity.CO2EmissionFactor`}
+                      defaultValue={0}
+                      isDisabled={isEmissionFactorInputDisabled}
+                    >
+                      <Text
+                        isTruncated // Truncate the text with an ellipsis
+                        noOfLines={1}
+                        w="full"
+                        textAlign="center"
+                      >
+                        CO2/{t(unitValue)}
+                      </Text>
+                    </FormattedNumberInput>
+                  </FormControl>
+                </FormControl>
+                <FormControl>
+                  <FormLabel color="content.tertiary">
+                    {t("n2o-emission-factor")}
+                  </FormLabel>
+                  <FormattedNumberInput
+                    miniAddon
+                    control={control}
+                    name={`activity.N2OEmissionFactor`}
+                    defaultValue={0}
+                    isDisabled={isEmissionFactorInputDisabled}
+                  >
+                    <Text
+                      isTruncated // Truncate the text with an ellipsis
+                      noOfLines={1}
+                      w="full"
+                      textAlign="center"
+                    >
+                      N20/{t(unitValue)}
+                    </Text>
+                  </FormattedNumberInput>
+                </FormControl>
+                <FormControl>
+                  <FormLabel color="content.tertiary">
+                    {t("ch4-emission-factor")}
+                  </FormLabel>
+                  <FormattedNumberInput
+                    control={control}
+                    miniAddon
+                    name={`activity.CH4EmissionFactor`}
+                    defaultValue={0}
+                    isDisabled={isEmissionFactorInputDisabled}
+                  >
+                    <Text
+                      isTruncated // Truncate the text with an ellipsis
+                      noOfLines={1}
+                      w="full"
+                      textAlign="center"
+                    >
+                      CH4/{t(unitValue)}
+                    </Text>
+                  </FormattedNumberInput>
+                </FormControl>
+              </HStack>{" "}
+            </>
+          )}
 
         <HStack display="flex" flexDirection="column" spacing={4} mb={5}>
           <FormControl isInvalid={!!resolve(prefix + "dataQuality", errors)}>

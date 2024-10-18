@@ -30,6 +30,8 @@ import { AssistantStream } from "openai/lib/AssistantStream";
 // @ts-expect-error - no types for this yet
 import { AssistantStreamEvent } from "openai/resources/beta/assistants/assistants";
 
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 interface Message {
   role: "user" | "assistant" | "code";
   text: string;
@@ -66,7 +68,7 @@ export default function ChatBot({
   t: TFunction;
   inventoryId: string;
 }) {
-  const [threadId, setThreadId] = useState("");
+  const threadIdRef = useRef("");
   const [userInput, setUserInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputDisabled, setInputDisabled] = useState(false);
@@ -87,28 +89,6 @@ export default function ChatBot({
     });
   };
 
-  // Creating the thread id for the given inventory on initial render
-  useEffect(() => {
-    // Function to create the threadId with initial message
-    const initializeThread = async () => {
-      try {
-        const result = await createThreadId({
-          inventoryId: inventoryId,
-          content: t("initial-message"),
-        }).unwrap();
-        setThreadId(result);
-      } catch (error) {
-        handleError(
-          error,
-          "Failed to initialize chat. Please refresh the page.",
-        );
-      }
-    };
-    if (!threadId) {
-      initializeThread();
-    }
-  }, []); // Empty dependency array means this effect runs only once
-
   // Automatically scroll to bottom of chat
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const scrollToBottom = () => {
@@ -118,13 +98,59 @@ export default function ChatBot({
     scrollToBottom();
   }, [messages]);
 
+  const initializeThread = async () => {
+    try {
+      // Create the thread ID via an API call
+      const result = await createThreadId({
+        inventoryId: inventoryId,
+        content: t("initial-message"),
+      }).unwrap();
+
+      // Set the threadIdRef synchronously
+      threadIdRef.current = result;
+
+      // Attempt to save threadId in the database asynchronously
+      fetch(`/api/v0/assistants/threads/export`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          threadId: threadIdRef.current,
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to save thread to the database.");
+          }
+          return response.json();
+        })
+        .catch((error) => {
+          handleError(
+            error,
+            "Thread initialized, but saving thread ID to the database failed. Please check later.",
+          );
+        });
+    } catch (error) {
+      // Handle errors related to thread initialization
+      handleError(
+        error,
+        "Failed to initialize thread. Please try again to send a message.",
+      );
+    }
+  };
+
   // TODO: Convert to Redux #ON-2137
   const sendMessage = async (text: string) => {
+    // If no thread Id is set, create a thread.
+    if (!threadIdRef.current) {
+      await initializeThread();
+    }
+
     try {
       const response = await fetch(`/api/v0/assistants/threads/messages`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          threadId: threadId,
+          threadId: threadIdRef.current,
           content: text,
         }),
       });
@@ -188,11 +214,7 @@ export default function ChatBot({
     }
   };
 
-  const submitActionResult = async (
-    threadId: string,
-    runId: string,
-    toolCallOutputs: object,
-  ) => {
+  const submitActionResult = async (runId: string, toolCallOutputs: object) => {
     try {
       const response = await fetch(`/api/v0/assistants/threads/actions`, {
         method: "POST",
@@ -200,7 +222,7 @@ export default function ChatBot({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          threadId: threadId,
+          threadId: threadIdRef.current,
           runId: runId,
           toolCallOutputs: toolCallOutputs,
         }),
@@ -316,7 +338,7 @@ export default function ChatBot({
       timeoutPromise,
     ]);
 
-    submitActionResult(threadId, runId, toolCallOutputs);
+    submitActionResult(runId, toolCallOutputs);
   };
 
   // Here all the streaming events get processed
@@ -461,7 +483,9 @@ export default function ChatBot({
                   lineHeight="24px"
                   fontSize="16px"
                 >
-                  {m.text}
+                  <ReactMarkdown rehypePlugins={[remarkGfm]}>
+                    {m.text}
+                  </ReactMarkdown>
                 </Text>
                 {!isUser &&
                   i === messages.length - 1 &&

@@ -149,6 +149,37 @@ export function keyBy<T>(
   );
 }
 
+/** Format an amount of emissions in kg to a human-readable string
+ * @param totalEmissions total amount of emissions in kg
+ * @return formatted string with the amount of emissions in kg, t, kt, Mt or Gt (gas name needs to be appanded by the caller)
+ */
+export function formatEmissions(totalEmissions: number): {
+  value: string;
+  unit: string;
+} {
+  let unit = "";
+  let scale = 1;
+
+  if (totalEmissions >= 1e12) {
+    unit = "Gt";
+    scale = 1e12;
+  } else if (totalEmissions >= 1e9) {
+    unit = "Mt";
+    scale = 1e9;
+  } else if (totalEmissions >= 1e6) {
+    unit = "kt";
+    scale = 1e6;
+  } else if (totalEmissions >= 1e3) {
+    unit = "t";
+    scale = 1e3;
+  } else {
+    unit = "kg ";
+    scale = 1;
+  }
+  const value = (totalEmissions / scale).toFixed(1);
+  return { value, unit };
+}
+
 export interface PopulationEntry {
   year: number;
   population: number;
@@ -223,30 +254,34 @@ export const getInputMethodology = (methodologyId: string) => {
 };
 
 export function convertKgToTonnes(
-  valueInTonnes: number | bigint,
+  valueInKg: number | bigint,
   gas?: string,
-) {
-  let result = "";
-  let gasSuffix = gas ? ` ${gas}` : "CO2";
-  const tonnes = Number(valueInTonnes);
-  if (tonnes >= 1e6) {
-    // Convert to megatonnes if the value is 1,000,000 tonnes or more
-    const megatonnes = (tonnes / 1e6).toFixed(0);
-    result = `${megatonnes} Mt${gasSuffix}`;
-  } else if (tonnes >= 1e3) {
-    // Convert to kilotonnes if the value is 1,000 tonnes or more but less than 1,000,000 tonnes
-    const kilotonnes = (tonnes / 1e3).toFixed(0);
-    result = `${kilotonnes} Kt${gasSuffix}`;
-  } else if (tonnes < 1) {
-    // Convert to kg if the value is less than 1 tonne
-    const kilograms = (tonnes * 1e3).toFixed(0);
-    result = `${kilograms} kg${gasSuffix}`;
-  } else {
-    // Return as tonnes if the value is less than 1,000 tonnes but more than or equal to 1 tonne
-    result = `${tonnes} t${gasSuffix}`;
-  }
+): string {
+  const locale = "en-US";
+  const gasSuffix = gas ? ` ${gas}` : " CO2";
+  const kg = Number(valueInKg);
+  const formatter = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 });
 
-  return result;
+  if (kg >= 1e12) {
+    // Convert to gigatonnes if the value is 1,000,000,000,000 kg or more
+    const gigatonnes = kg / 1e12;
+    return `${formatter.format(gigatonnes)} Gt${gasSuffix}`;
+  } else if (kg >= 1e9) {
+    // Convert to megatonnes if the value is 1,000,000,000 kg or more but less than 1,000,000,000,000 kg
+    const megatonnes = kg / 1e9;
+    return `${formatter.format(megatonnes)} Mt${gasSuffix}`;
+  } else if (kg >= 1e6) {
+    // Convert to kilotonnes if the value is 1,000,000 kg or more but less than 1,000,000,000 kg
+    const kilotonnes = kg / 1e6;
+    return `${formatter.format(kilotonnes)} kt${gasSuffix}`;
+  } else if (kg >= 1e3) {
+    // Convert to tonnes if the value is 1,000 kg or more but less than 1,000,000 kg
+    const tonnes = kg / 1e3;
+    return `${formatter.format(tonnes)} t${gasSuffix}`;
+  } else {
+    // Return as kg if the value is less than 1,000 kg
+    return `${formatter.format(kg)} kg${gasSuffix}`;
+  }
 }
 
 export const toKebabCase = (input: string | undefined): string => {
@@ -258,4 +293,4 @@ export const toKebabCase = (input: string | undefined): string => {
 };
 
 export const capitalizeFirstLetter = (string: string) =>
-  string.charAt(0).toUpperCase() + string.slice(1);
+  string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();

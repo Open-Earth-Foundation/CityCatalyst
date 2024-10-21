@@ -134,7 +134,11 @@ export function NavigationBar({
               minW="120px"
               leftIcon={
                 <CircleFlag
-                  countryCode={countryFromLanguage(i18next.language)}
+                  countryCode={
+                    countryFromLanguage(i18next.language) === "pt"
+                      ? "br"
+                      : countryFromLanguage(i18next.language)
+                  }
                   width="24"
                 />
               }
@@ -156,7 +160,11 @@ export function NavigationBar({
                   key={language}
                 >
                   <CircleFlag
-                    countryCode={countryFromLanguage(language)}
+                    countryCode={
+                      countryFromLanguage(language) === "pt"
+                        ? "br"
+                        : countryFromLanguage(language)
+                    }
                     width="24"
                     className="mr-4"
                   />

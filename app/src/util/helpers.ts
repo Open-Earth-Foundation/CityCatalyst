@@ -1,3 +1,5 @@
+import Decimal from "decimal.js";
+
 export const getTranslationFromDictionary = (
   translations: Record<string, string> | string | undefined,
   lng?: string,
@@ -253,34 +255,54 @@ export const getInputMethodology = (methodologyId: string) => {
   }
 };
 
+function toDecimal(
+  value: Decimal | string | bigint | number | undefined,
+): Decimal | undefined {
+  if (!value) return undefined;
+  if (value instanceof Decimal) {
+    return value;
+  }
+  if (typeof value === "bigint") {
+    return new Decimal(value.toString());
+  }
+  return new Decimal(value);
+}
+
 export function convertKgToTonnes(
-  valueInKg: number | bigint,
+  valueInKg: number | Decimal | bigint,
   gas?: string,
 ): string {
   const locale = "en-US";
   const gasSuffix = gas ? ` ${gas}` : " CO2";
-  const kg = Number(valueInKg);
+
+  const kg = toDecimal(valueInKg);
+  if (!kg) return "";
   const formatter = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 });
 
-  if (kg >= 1e12) {
+  const gigaTonne = new Decimal("1e12");
+  const megaTonne = new Decimal("1e9");
+  const kiloTonne = new Decimal("1e6");
+  const tonne = new Decimal("1e3");
+
+  if (kg.gte(gigaTonne)) {
     // Convert to gigatonnes if the value is 1,000,000,000,000 kg or more
-    const gigatonnes = kg / 1e12;
-    return `${formatter.format(gigatonnes)} Gt${gasSuffix}`;
-  } else if (kg >= 1e9) {
+    const gigatonnes = kg.div(gigaTonne);
+    return `${formatter.format(gigatonnes.toNumber())} Gt${gasSuffix}`;
+  } else if (kg.gte(megaTonne)) {
     // Convert to megatonnes if the value is 1,000,000,000 kg or more but less than 1,000,000,000,000 kg
-    const megatonnes = kg / 1e9;
-    return `${formatter.format(megatonnes)} Mt${gasSuffix}`;
-  } else if (kg >= 1e6) {
+    const megatonnes = kg.div(megaTonne);
+    return `${formatter.format(megatonnes.toNumber())} Mt${gasSuffix}`;
+  } else if (kg.gte(kiloTonne)) {
     // Convert to kilotonnes if the value is 1,000,000 kg or more but less than 1,000,000,000 kg
-    const kilotonnes = kg / 1e6;
-    return `${formatter.format(kilotonnes)} kt${gasSuffix}`;
-  } else if (kg >= 1e3) {
+    const kilotonnes = kg.div(kiloTonne);
+    return `${formatter.format(kilotonnes.toNumber())} kt${gasSuffix}`;
+  } else if (kg.gte(tonne)) {
     // Convert to tonnes if the value is 1,000 kg or more but less than 1,000,000 kg
-    const tonnes = kg / 1e3;
-    return `${formatter.format(tonnes)} t${gasSuffix}`;
+    const tonnes = kg.div(tonne);
+    return `${formatter.format(tonnes.toNumber())} t${gasSuffix}`;
   } else {
     // Return as kg if the value is less than 1,000 kg
-    return `${formatter.format(kg)} kg${gasSuffix}`;
+    return `${formatter.format(kg.toNumber())} kg${gasSuffix}`;
   }
 }
 

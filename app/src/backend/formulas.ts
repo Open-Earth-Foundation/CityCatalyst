@@ -127,7 +127,7 @@ export function handleDirectMeasureFormula(
       );
     }
     // TODO save amount to GasValue entry?
-    const amount = BigInt(data[key]);
+    const amount = new Decimal(data[key]);
     return { gas: gasName, amount: amount };
   });
   return gases;
@@ -155,9 +155,9 @@ export async function handleIncinerationWasteFormula(
   const boilerTypeKey = formulaMapping["boiler-type"];
   const boilerType = data[boilerTypeKey] as string;
 
-  let totalCH4Emission: number = 0;
-  let totalN2OEmissions: number = 0;
-  let totalPartialCO2Emissions: number = 0;
+  let totalCH4Emission: Decimal = new Decimal(0);
+  let totalN2OEmissions: Decimal = new Decimal(0);
+  let totalPartialCO2Emissions: Decimal = new Decimal(0);
 
   for (const wasteType of Object.keys(wasteComposition)) {
     const WasteFractionI = wasteComposition[wasteType] / 100;
@@ -182,10 +182,20 @@ export async function handleIncinerationWasteFormula(
       );
     }
 
-    (totalCH4Emission +=
-      AmountOfWasteForWasteTypeI * CH4EmissionFactorForWasteTypeI * 10 ** -3),
-      (totalN2OEmissions +=
-        AmountOfWasteForWasteTypeI * NO2EmissionFactorForWasteTypeI * 10 ** -3);
+    totalCH4Emission = Decimal.sum(
+      totalCH4Emission,
+      Decimal.mul(
+        AmountOfWasteForWasteTypeI,
+        CH4EmissionFactorForWasteTypeI,
+      ).mul(10 ** -3),
+    );
+    totalN2OEmissions = Decimal.sum(
+      totalN2OEmissions,
+      Decimal.mul(
+        AmountOfWasteForWasteTypeI,
+        NO2EmissionFactorForWasteTypeI,
+      ).mul(10 ** -3),
+    );
 
     // calculate CO2 emissions
 
@@ -247,29 +257,31 @@ export async function handleIncinerationWasteFormula(
 
     const oxidationFactorI = IncinerationWasteCO2OxidationFactor[technology];
 
-    totalPartialCO2Emissions +=
-      WasteFractionI *
-      dryMatterContentI *
-      fractionOfCarbonI *
-      fractionOfFossilCarbonI *
-      oxidationFactorI;
+    totalPartialCO2Emissions = Decimal.sum(
+      totalPartialCO2Emissions,
+      Decimal.mul(WasteFractionI, dryMatterContentI)
+        .mul(fractionOfCarbonI)
+        .mul(fractionOfFossilCarbonI)
+        .mul(oxidationFactorI),
+    );
   }
 
-  const totalCO2Emissions =
-    massOfIncineratedWaste * totalPartialCO2Emissions * (44 / 12);
+  const totalCO2Emissions = totalPartialCO2Emissions.mul(
+    massOfIncineratedWaste * (44 / 12),
+  );
 
   return [
     {
       gas: "CH4",
-      amount: BigInt(new Decimal(totalCH4Emission).trunc().toString()),
+      amount: new Decimal(totalCH4Emission).trunc(),
     },
     {
       gas: "N2O",
-      amount: BigInt(new Decimal(totalN2OEmissions).trunc().toString()),
+      amount: new Decimal(totalN2OEmissions).trunc(),
     },
     {
       gas: "CO2",
-      amount: BigInt(new Decimal(totalCO2Emissions).trunc().toString()),
+      amount: new Decimal(totalCO2Emissions).trunc(),
     },
   ];
 }
@@ -297,11 +309,11 @@ export function handleVkt1Formula(
         `Emissions factor for ${emissionsFactor?.gas} has no emissions per activity`,
       );
     }
-    const emissions =
-      data["activity-value"] *
-      data["intensity"] *
-      emissionsFactor.emissionsPerActivity;
-    return { gas: gasValue.gas, amount: BigInt(emissions) };
+    const emissions = Decimal.mul(
+      data["activity-value"] * data["intensity"],
+      emissionsFactor.emissionsPerActivity,
+    );
+    return { gas: gasValue.gas, amount: emissions };
   });
 
   return gases;
@@ -372,13 +384,16 @@ export function handleMethaneCommitmentFormula(
     METHANE_FRACTION *
     (16 / 12.0);
 
-  const ch4Emissions =
-    totalSolidWaste *
-    methaneGenerationPotential *
-    (1 - recoveredMethaneFraction) *
-    (1 - oxidationFactor);
+  const ch4Emissions = Decimal.mul(
+    totalSolidWaste,
+    methaneGenerationPotential,
+  ).mul(
+    Decimal.sub(1, recoveredMethaneFraction).mul(
+      Decimal.sub(1, oxidationFactor),
+    ),
+  );
 
-  return [{ gas: "CH4", amount: BigInt(ch4Emissions) }];
+  return [{ gas: "CH4", amount: ch4Emissions }];
 }
 
 export function handleActivityAmountTimesEmissionsFactorFormula(
@@ -387,7 +402,6 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
 ): Gas[] {
   // TODO add actvityAmount column to ActivityValue
   // const activityAmount = activityValue.activityAmount || 0;
-  // TODO perform these calculations using BigInt/ BigNumber?
   const data = activityValue.activityData;
   const activityAmountKey = activityValue.metadata?.["activityTitle"];
   const activityAmount = data?.[activityAmountKey] || 0;
@@ -404,9 +418,10 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
       );
     }
     // this rounds/ truncates!
-    const amount = BigInt(
-      Math.ceil(activityAmount * emissionsFactor.emissionsPerActivity),
-    );
+    const amount = Decimal.mul(
+      activityAmount,
+      emissionsFactor.emissionsPerActivity,
+    ).ceil();
 
     return { gas: gasValue.gas!, amount };
   });
@@ -436,16 +451,18 @@ export function handleIndustrialWasteWaterFormula(
   const methaneRecovered =
     data["wastewater-inside-industrial-calculator-methane-recovered"];
 
-  // TODO is BigInt/ BigNumber required for these calculations?
-  const totalOrganicWaste =
-    totalIndustrialProduction *
-    wastewaterGenerated *
-    degradableOrganicComponents;
+  // TODO is new Decimal/ BigNumber required for these calculations?
+  const totalOrganicWaste = Decimal.mul(
+    totalIndustrialProduction,
+    wastewaterGenerated,
+  ).mul(degradableOrganicComponents);
   const emissionsFactor = methaneProductionCapacity * methaneCorrectionFactor;
-  const totalMethaneProduction =
-    (totalOrganicWaste - removedSludge) * emissionsFactor - methaneRecovered;
+  const totalMethaneProduction = totalOrganicWaste
+    .sub(removedSludge)
+    .mul(emissionsFactor)
+    .sub(methaneRecovered);
 
-  const amount = BigInt(Math.ceil(totalMethaneProduction));
+  const amount = totalMethaneProduction.ceil();
   return [{ gas: "CH4", amount }];
 }
 
@@ -480,8 +497,9 @@ export async function handleDomesticWasteWaterFormula(
     data["wastewater-inside-industrial-calculator-collection-status"] ===
     "collection-status-type-wastewater-collected";
   const industrialBodFactor = isCollectedWasteWater ? 1.0 : 1.25;
-  const totalOrganicWaste =
-    totalCityPopulation * bodPerCapita * industrialBodFactor * 365;
+  const totalOrganicWaste = new Decimal(
+    totalCityPopulation * bodPerCapita * industrialBodFactor * 365,
+  );
 
   const incomeGroup =
     data["wastewater-inside-domestic-calculator-income-group"] ??
@@ -496,10 +514,12 @@ export async function handleDomesticWasteWaterFormula(
     incomeGroupFraction *
     dischargeSystemUtulizationRatio;
 
-  const totalMethaneProduction =
-    (totalOrganicWaste - removedSludge) * emissionsFactor - methaneRecovered;
+  const totalMethaneProduction = totalOrganicWaste
+    .sub(removedSludge)
+    .mul(emissionsFactor)
+    .sub(methaneRecovered);
 
-  const amount = BigInt(Math.round(totalMethaneProduction)); // TODO round right or is ceil/ floor more correct?
+  const amount = totalMethaneProduction.round(); // TODO round right or is ceil/ floor more correct?
   return [{ gas: "CH4", amount }];
 }
 
@@ -544,11 +564,11 @@ export async function handleBiologicalTreatmentFormula(
   }
 
   const organicWasteMass = data["total-organic-waste-treated"] ?? 0;
-  const totalCH4Emitted = (organicWasteMass * emissionsFactor) / 1000;
+  const totalCH4Emitted = Decimal.mul(organicWasteMass, emissionsFactor).div(
+    1000,
+  );
   const totalCH4Recovered =
     data["biological-treatment-inboundary-total-of-ch4-recovered"] ?? 0;
-  // TODO improve this using decimal/ big number library
-  const resultCH4 =
-    BigInt(Math.round(totalCH4Emitted)) - BigInt(totalCH4Recovered);
+  const resultCH4 = totalCH4Emitted.round().sub(totalCH4Recovered);
   return [{ gas: "CH4", amount: resultCH4 }];
 }

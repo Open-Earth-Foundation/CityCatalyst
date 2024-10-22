@@ -13,6 +13,7 @@ import type { CityAttributes } from "@/models/City";
 import type { SubSector } from "@/util/types";
 import type { GasValueAttributes } from "@/models/GasValue";
 import type { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
+import Decimal from "decimal.js";
 
 type InventoryResponse = InventoryAttributes & {
   city: CityAttributes & {
@@ -169,9 +170,9 @@ interface SubsectorTotals {
 }
 
 interface GroupedActivity {
-  activityValue: string | bigint; // Using string to avoid jest's "Don't know how to serialize Bigint" error
+  activityValue: string | Decimal; // Using string for "N/A"
   activityUnits: string;
-  totalActivityEmissions: string | bigint; // Using string to avoid jest's "Don't know how to serialize Bigint" error
+  totalActivityEmissions: string | Decimal; // Using string  for "N/A"
   totalEmissionsPercentage: number;
 }
 
@@ -194,8 +195,8 @@ interface BreakdownByActivity {
 
 interface ActivityDataByScope {
   activityTitle: string;
-  scopes: { [key: string]: bigint | string };
-  totalEmissions: bigint | string;
+  scopes: { [key: string]: Decimal };
+  totalEmissions: Decimal;
   percentage: number;
 }
 

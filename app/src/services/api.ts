@@ -421,8 +421,11 @@ export const api = createApi({
       }
     >({
       query: (params) => {
-        const queryString = new URLSearchParams(params).toString();
-        return `/emissions-factor${queryString ? `?${queryString}` : ""}`;
+        return {
+          url: `/emissions-factor`,
+          method: "POST",
+          body: params,
+        };
       },
       transformResponse: (response: { data: EmissionsFactorResponse }) => {
         return response.data;

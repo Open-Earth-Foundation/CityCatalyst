@@ -191,3 +191,11 @@ export const createActivityValueRequest = z.object({
 export type CreateActivityValueRequest = z.infer<
   typeof createActivityValueRequest
 >;
+
+export const fetchEmissionsFactorRequest = z.object({
+  inventoryId: z.string().optional(),
+  referenceNumber: z.string().optional(),
+  methodologyId: z.string().optional(),
+  regionLocode: z.string().optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
+});

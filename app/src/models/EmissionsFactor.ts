@@ -16,6 +16,7 @@ export interface EmissionsFactorAttributes {
   id: string;
   gpcReferenceNumber?: string;
   emissionsPerActivity?: number;
+  metadata?: Record<string, any>;
   url?: string;
   gas?: string;
   units?: string;
@@ -41,6 +42,7 @@ export type EmissionsFactorOptionalAttributes =
   | "region"
   | "actorId"
   | "methodologyName"
+  | "metadata"
   | "methodologyId"
   | "reference"
   | "created"
@@ -65,6 +67,7 @@ export class EmissionsFactor
   actorId?: string | null;
   methodologyName?: string | null;
   methodologyId?: string | null;
+  metadata?: Record<string, any>;
   reference?: string | null;
   created?: Date;
   lastUpdated?: Date;
@@ -207,6 +210,10 @@ export class EmissionsFactor
             key: "inventory_id",
           },
           field: "inventory_id",
+        },
+        metadata: {
+          type: DataTypes.JSONB,
+          allowNull: true,
         },
         region: {
           type: DataTypes.TEXT,

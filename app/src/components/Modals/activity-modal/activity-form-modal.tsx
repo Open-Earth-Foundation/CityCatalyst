@@ -95,6 +95,10 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     handleSubmit(onSubmit)();
   };
 
+  // the idea is to take the current data
+  // given the target metafields
+  // check if any of those values changed
+
   let { data: emissionsFactors, isLoading: emissionsFactorsLoading } =
     api.useGetEmissionsFactorsQuery({
       referenceNumber,

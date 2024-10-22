@@ -37,7 +37,8 @@
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
                   "fuel-type-petrol"
-                ]
+                ],
+                "emission-factor-dependency": true
               },
               {
                 "id": "data-source",
@@ -270,7 +271,8 @@
                   "fuel-type-anthracite",
                   "fuel-type-gasoline",
                   "fuel-type-diesel"
-                ]
+                ],
+                "emission-factor-dependency": true
               },
               {
                 "id": "data-source",
@@ -555,6 +557,7 @@
               },
               {
                 "id": "manufacturing-and-construction-fuel-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "fuel-type-anthracite",
                   "fuel-type-natural-other-bituminous-coal",
@@ -883,6 +886,7 @@
               },
               {
                 "id": "energy-industries-fuel-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "fuel-type-anthracite",
                   "fuel-type-natural-other-bituminous-coal",
@@ -1205,6 +1209,7 @@
               },
               {
                 "id": "agriculture-forestry-fishing-activities-fuel-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "fuel-type-diesel-oil",
                   "fuel-type-natural-gas",
@@ -1467,6 +1472,7 @@
               },
               {
                 "id": "non-specific-sources-fuel-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "fuel-type-gas-oil",
                   "fuel-type-naphtha",
@@ -1719,6 +1725,7 @@
             "extra-fields": [
               {
                 "id": "fugitive-emissions-coal-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "type-all",
                   "type-coal-mining-and-handling",
@@ -1840,6 +1847,7 @@
               },
               {
                 "id": "fugitive-emissions-oil-gas-fugitive-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "type-all",
                   "type-extraction",
@@ -1948,6 +1956,7 @@
             "extra-fields": [
               {
                 "id": "on-road-transport-fuel-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
@@ -1964,6 +1973,7 @@
               },
               {
                 "id": "on-road-transport-vehicle-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-passenger-vehicles",
                   "vehicle-type-commercial-vehicles",
@@ -2056,6 +2066,7 @@
             "extra-fields": [
               {
                 "id": "on-road-transport-vehicle-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-passenger-vehicles",
                   "vehicle-type-commercial-vehicles",
@@ -2067,6 +2078,7 @@
               },
               {
                 "id": "on-road-transport-fuel-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
@@ -2183,6 +2195,7 @@
             "extra-fields": [
               {
                 "id": "on-road-transport-vehicle-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-vehicles",
@@ -2280,6 +2293,7 @@
             "extra-fields": [
               {
                 "id": "railways-fuel-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
@@ -2296,6 +2310,7 @@
               },
               {
                 "id": "railways-vehicle-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-trains",
@@ -2372,6 +2387,7 @@
             "extra-fields": [
               {
                 "id": "railways-vehicle-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-passenger-trains",
                   "vehicle-type-freight-trains",
@@ -2382,6 +2398,7 @@
               },
               {
                 "id": "railways-fuel-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
@@ -2493,6 +2510,7 @@
             "extra-fields": [
               {
                 "id": "railways-vehicle-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-trains",
@@ -2588,6 +2606,7 @@
             "extra-fields": [
               {
                 "id": "waterborne-navigation-fuel-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
@@ -2604,6 +2623,7 @@
               },
               {
                 "id": "waterborne-navigation-vehicle-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-ferries",
@@ -2680,6 +2700,7 @@
             "extra-fields": [
               {
                 "id": "waterborne-navigation-vehicle-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-ferries",
@@ -2690,6 +2711,7 @@
               },
               {
                 "id": "waterborne-navigation-fuel-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
@@ -2788,6 +2810,7 @@
             "extra-fields": [
               {
                 "id": "waterborne-navigation-vehicle-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-ferries",
@@ -2881,6 +2904,7 @@
             "extra-fields": [
               {
                 "id": "aviation-fuel-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "fuel-type-aviation-gasoline",
                   "fuel-type-diesel",
@@ -2894,6 +2918,7 @@
               },
               {
                 "id": "aviation-vehicle-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-aircraft",
@@ -2971,6 +2996,7 @@
             "extra-fields": [
               {
                 "id": "aviation-vehicle-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-aircraft",
@@ -2982,6 +3008,7 @@
               },
               {
                 "id": "aviation-fuel-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "fuel-type-aviation-gasoline",
                   "fuel-type-diesel",
@@ -3086,6 +3113,7 @@
             "extra-fields": [
               {
                 "id": "aviation-vehicle-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-aircraft",
@@ -3181,6 +3209,7 @@
             "extra-fields": [
               {
                 "id": "off-road-transport-fuel-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "fuel-type-gasoline",
                   "fuel-type-diesel",
@@ -3197,6 +3226,7 @@
               },
               {
                 "id": "off-road-transport-vehicle-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-construction-machinery",
@@ -3311,6 +3341,7 @@
             "extra-fields": [
               {
                 "id": "off-road-transport-vehicle-type",
+                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-construction-machinery",

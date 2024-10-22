@@ -122,11 +122,6 @@ export function NavigationBar({
           </NextLink>
         </>
       )}
-      <NextLink href="/help">
-        <Heading color="base.light" size="sm" className="opacity-75" ml={6}>
-          {t("help")}
-        </Heading>
-      </NextLink>
       <Divider orientation="vertical" h={6} />
       <Menu>
         {({ isOpen }) => (
@@ -139,7 +134,11 @@ export function NavigationBar({
               minW="120px"
               leftIcon={
                 <CircleFlag
-                  countryCode={countryFromLanguage(i18next.language)}
+                  countryCode={
+                    countryFromLanguage(i18next.language) === "pt"
+                      ? "br"
+                      : countryFromLanguage(i18next.language)
+                  }
                   width="24"
                 />
               }
@@ -161,7 +160,11 @@ export function NavigationBar({
                   key={language}
                 >
                   <CircleFlag
-                    countryCode={countryFromLanguage(language)}
+                    countryCode={
+                      countryFromLanguage(language) === "pt"
+                        ? "br"
+                        : countryFromLanguage(language)
+                    }
                     width="24"
                     className="mr-4"
                   />

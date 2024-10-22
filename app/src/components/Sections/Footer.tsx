@@ -26,32 +26,46 @@ const Footer = ({ lng }: { lng: string }) => {
             fontFamily="heading"
             className="text-white text-[14px] w-[60%] grid grid-cols-3  gap-6 font-poppins"
           >
-            <FooterLink url="/" title={t("about-citycatalyst")} />
-            <FooterLink url="/" title={t("contribution-guide")} />
+            <FooterLink
+              url="https://citycatalyst.openearth.org/"
+              title={t("about-citycatalyst")}
+            />
+            <FooterLink
+              url="https://github.com/Open-Earth-Foundation/OpenClimate/blob/develop/CONTRIBUTING.md"
+              title={t("contribution-guide")}
+            />
             <FooterLink
               url="https://github.com/Open-Earth-Foundation/CityCatalyst"
               title={t("goto-gh")}
             />
-            <FooterLink url="/" title={t("cad")} />
-            <FooterLink url="/" title={t("read-the-docs")} />
+            <FooterLink
+              url="https://wiki.climatedata.network/"
+              title={t("cad")}
+            />
+            <FooterLink
+              url="https://github.com/Open-Earth-Foundation/CityCatalyst/wiki"
+              title={t("read-the-docs")}
+            />
             <FooterLink url="./cdp" title={t("submit-to-cdp")} />
           </Box>
           <Box>
-            <Button
-              variant="solid"
-              className="h-[48px] w-[150px] gap-3 rounded-full"
-            >
-              <Text
-                color="base.light"
-                fontFamily="heading"
-                fontSize="button.md"
-                fontWeight="medium"
-                letterSpacing="wider"
-                textTransform="uppercase"
+            <Link href="mailto:info@openearth.org">
+              <Button
+                variant="solid"
+                className="h-[48px] w-[150px] gap-3 rounded-full"
               >
-                {t("contact-us")}
-              </Text>
-            </Button>
+                <Text
+                  color="base.light"
+                  fontFamily="heading"
+                  fontSize="button.md"
+                  fontWeight="medium"
+                  letterSpacing="wider"
+                  textTransform="uppercase"
+                >
+                  {t("contact-us")}
+                </Text>
+              </Button>
+            </Link>
           </Box>
         </Box>
         <Box backgroundColor="body" className="h-[1px]" />

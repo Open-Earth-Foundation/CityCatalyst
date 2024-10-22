@@ -2,33 +2,58 @@ import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
-import uniqBy from "lodash/uniqBy";
 import { Op } from "sequelize";
+import { fetchEmissionsFactorRequest } from "@/util/validation";
 
-export const GET = apiHandler(async (req: NextRequest, _context: {}) => {
-  const { searchParams } = new URL(req.url);
-  const inventoryId = searchParams.get("inventoryId");
-  const referenceNumber = searchParams.get("referenceNumber");
-  const methodologyId = searchParams.get("methodologyId");
+const filterMappings: Record<string, any> = {
+  "fuel-type-wood/wood-waste": "fuel-type-wood-wood-waste",
+};
 
-  const city = await db.models.City.findOne({
-    attributes: ["regionLocode"],
-    include: [
-      {
-        model: db.models.Inventory,
-        as: "inventories",
-        attributes: [],
-        where: {
-          inventoryId: inventoryId,
+export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
+  const body = fetchEmissionsFactorRequest.parse(await req.json());
+  const {
+    inventoryId,
+    referenceNumber,
+    methodologyId,
+    regionLocode,
+    metadata,
+  } = body;
+
+  if (inventoryId && regionLocode) {
+    throw new createHttpError.BadRequest(
+      "Cannot have both inventoryID and regionLocode as part of request params",
+    );
+  }
+
+  let parsedLocode = null;
+
+  if (regionLocode) {
+    parsedLocode = regionLocode;
+  }
+
+  if (inventoryId && !regionLocode) {
+    let city = await db.models.City.findOne({
+      attributes: ["regionLocode"],
+      include: [
+        {
+          model: db.models.Inventory,
+          as: "inventories",
+          attributes: [],
+          where: {
+            inventoryId: inventoryId,
+          },
+          required: true,
         },
-        required: true,
-      },
-    ],
-  });
+      ],
+    });
+    parsedLocode = city?.regionLocode;
+  }
+
+  // use units from the emission factors first
+  // if custom
 
   let whereClause: { [k: string]: any } = {};
   // don't return emissions factors from specific inventories
-  whereClause.inventoryId = { [Op.is]: null };
 
   if (methodologyId) {
     if (methodologyId.includes("fuel-combustion"))
@@ -39,6 +64,39 @@ export const GET = apiHandler(async (req: NextRequest, _context: {}) => {
       whereClause.methodologyName = "modeled-data";
   }
 
+  if (!!metadata) {
+    let andCondition = [];
+    for (let key in metadata) {
+      let clause = {
+        [Op.or]: [
+          {
+            [`metadata.${key}`]: "nan",
+          },
+        ],
+      };
+      let orConditions = clause[Op.or];
+      if (Array.isArray(metadata[key])) {
+        metadata[key].forEach((value) => {
+          orConditions.push({
+            [`metadata.${key}`]: filterMappings[value] || value,
+          });
+        });
+      } else {
+        orConditions.push({
+          [`metadata.${key}`]:
+            (filterMappings[metadata[key]] as string) || metadata[key], // we need to have some mapping
+        });
+      }
+      andCondition.push(clause);
+    }
+
+    whereClause = {
+      [Op.and]: andCondition,
+    };
+  }
+
+  whereClause.inventoryId = { [Op.is]: null };
+
   if (!!referenceNumber) {
     whereClause.gpcReferenceNumber = referenceNumber;
   }
@@ -48,15 +106,9 @@ export const GET = apiHandler(async (req: NextRequest, _context: {}) => {
     include: [{ model: db.models.DataSource, as: "dataSources" }],
   });
 
-  console.log(city?.regionLocode, "city?.regionLocode");
-
   let output = emissionsFactors.filter(({ actorId }) =>
-    ["world", city?.regionLocode].includes(actorId as string),
+    ["world", parsedLocode].includes(actorId as string),
   );
-
-  // make unique by gas not by datasource id
-  // output = uniqBy(output, (e) => e.dataSources[0].datasourceId);
-  output = uniqBy(output, (e) => e.gas);
 
   if (output.length === 0) {
     throw new createHttpError.NotFound("Emissions factors not found");

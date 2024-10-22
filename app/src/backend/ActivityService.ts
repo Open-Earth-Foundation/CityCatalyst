@@ -219,7 +219,7 @@ export default class ActivityService {
           BigInt(inventoryValue.co2eq as bigint) -
             BigInt(activityValue.co2eq as bigint) ?? 0n;
 
-        const calculatedCO2e = BigInt(totalCO2e.toNumber()); // Ensure totalCO2e is BigInt
+        const calculatedCO2e = BigInt(totalCO2e.toString()); // Ensure totalCO2e is BigInt
 
         inventoryValue.co2eq = currentCO2e + calculatedCO2e;
         inventoryValue.co2eqYears = Math.max(
@@ -323,7 +323,7 @@ export default class ActivityService {
           );
 
         const currentCO2e = BigInt(inventoryValue.co2eq ?? 0n);
-        const calculatedCO2e = BigInt(totalCO2e.toNumber()); // Ensure totalCO2e is BigInt
+        const calculatedCO2e = BigInt(totalCO2e.toString()); // Ensure totalCO2e is BigInt
 
         inventoryValue.co2eq = currentCO2e + calculatedCO2e;
         inventoryValue.co2eqYears = Math.max(
@@ -332,7 +332,7 @@ export default class ActivityService {
         );
 
         await inventoryValue.save({ transaction });
-        activityValue.co2eq = BigInt(totalCO2e.toNumber());
+        activityValue.co2eq = BigInt(totalCO2e.toString());
         activityValue.co2eqYears = totalCO2eYears;
         await activityValue.save({ transaction });
 

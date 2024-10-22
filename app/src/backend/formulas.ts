@@ -184,11 +184,17 @@ export async function handleIncinerationWasteFormula(
 
     totalCH4Emission = Decimal.sum(
       totalCH4Emission,
-      AmountOfWasteForWasteTypeI * CH4EmissionFactorForWasteTypeI * 10 ** -3,
+      Decimal.mul(
+        AmountOfWasteForWasteTypeI,
+        CH4EmissionFactorForWasteTypeI,
+      ).mul(10 ** -3),
     );
     totalN2OEmissions = Decimal.sum(
       totalN2OEmissions,
-      AmountOfWasteForWasteTypeI * NO2EmissionFactorForWasteTypeI * 10 ** -3,
+      Decimal.mul(
+        AmountOfWasteForWasteTypeI,
+        NO2EmissionFactorForWasteTypeI,
+      ).mul(10 ** -3),
     );
 
     // calculate CO2 emissions
@@ -253,11 +259,10 @@ export async function handleIncinerationWasteFormula(
 
     totalPartialCO2Emissions = Decimal.sum(
       totalPartialCO2Emissions,
-      WasteFractionI *
-        dryMatterContentI *
-        fractionOfCarbonI *
-        fractionOfFossilCarbonI *
-        oxidationFactorI,
+      Decimal.mul(WasteFractionI, dryMatterContentI)
+        .mul(fractionOfCarbonI)
+        .mul(fractionOfFossilCarbonI)
+        .mul(oxidationFactorI),
     );
   }
 
@@ -381,9 +386,11 @@ export function handleMethaneCommitmentFormula(
 
   const ch4Emissions = Decimal.mul(
     totalSolidWaste,
-    methaneGenerationPotential *
-      (1 - recoveredMethaneFraction) *
-      (1 - oxidationFactor),
+    methaneGenerationPotential,
+  ).mul(
+    Decimal.sub(1, recoveredMethaneFraction).mul(
+      Decimal.sub(1, oxidationFactor),
+    ),
   );
 
   return [{ gas: "CH4", amount: ch4Emissions }];

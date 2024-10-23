@@ -13,7 +13,8 @@ export const config = {
   session: { strategy: "jwt" },
 };
 
-const authMatcher = /^\/[a-z]{0,2}[\/]?auth\//;
+const authMatcher = /^\/[a-z]{0,2}(?!\/public)[\/]?auth\//;
+const publicMatcher = /^\/[a-z]{0,2}\/public\//;
 const cookieName = "i18next";
 
 export async function middleware(req: NextRequestWithAuth) {
@@ -73,9 +74,17 @@ export async function middleware(req: NextRequestWithAuth) {
 
 async function next(req: NextRequestWithAuth): Promise<NextMiddlewareResult> {
   const basePath = new URL(req.url).pathname;
-  if (!authMatcher.test(basePath)) {
-    return await withAuth(req, config);
-  } else {
+
+  // Allow public routes to pass through without authentication
+  if (publicMatcher.test(basePath)) {
     return NextResponse.next();
   }
+
+  // Handle auth routes
+  if (authMatcher.test(basePath)) {
+    return NextResponse.next();
+  }
+
+  // Apply authentication to all other routes
+  return await withAuth(req, config);
 }

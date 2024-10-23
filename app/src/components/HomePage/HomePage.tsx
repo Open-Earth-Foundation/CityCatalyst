@@ -69,7 +69,7 @@ export default function HomePage({
   const router = useRouter();
 
   // Check if user is authenticated otherwise route to login page
-  CheckUserSession();
+  isPublic || CheckUserSession();
   const { inventory: inventoryParam } = useParams();
   let inventoryId = inventoryParam as string | null;
   if (inventoryId === "null" || inventoryId === "undefined") {

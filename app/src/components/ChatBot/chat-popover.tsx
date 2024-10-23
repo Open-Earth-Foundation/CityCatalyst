@@ -62,7 +62,7 @@ export default function ChatPopover({
           p={0}
           w="57vw"
           bg="background.neutral"
-          className="drop-shadow-md relative"
+          className="drop-shadow-md"
           zIndex={9999}
         >
           <PopoverHeader

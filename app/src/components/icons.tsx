@@ -1013,3 +1013,40 @@ export const SewageWasteIcon = () => {
     </svg>
   );
 };
+
+export const AskAiIcon = () => {
+  return (
+    <svg
+      width="19"
+      height="23"
+      viewBox="0 0 19 23"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g id="Group">
+        <g id="music-genre-stars">
+          <path
+            id="Shape"
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M13.5 1C13.4892 3.8272 14.868 5.44 18 5.5C15.0924 5.4892 13.6476 7.0492 13.5 10C13.4748 7.216 12.228 5.5 9 5.5C11.8884 5.4604 13.4892 4.066 13.5 1Z"
+            stroke="white"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <path
+            id="Shape_2"
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M7.00057 9C6.9858 13.0827 8.81789 15.3985 13 15.5006C9.12115 15.4846 7.19707 17.7376 7.00057 22C6.96309 17.9788 5.30364 15.4945 1 15.5006C4.85045 15.4416 6.9858 13.4285 7.00057 9Z"
+            stroke="white"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </g>
+      </g>
+    </svg>
+  );
+};

@@ -44,7 +44,7 @@ export default function ChatPopover({
             enabled: true,
             phase: "write",
             fn: ({ state }) => {
-              state.elements.popper.style.zIndex = "9999"; // Set z-index here
+              state.elements.popper.style.zIndex = "9999";
             },
           },
         ]}

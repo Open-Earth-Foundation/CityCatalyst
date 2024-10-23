@@ -38,6 +38,16 @@ export default function ChatPopover({
         placement="top-end"
         closeOnBlur={false}
         strategy="fixed"
+        modifiers={[
+          {
+            name: "zIndex",
+            enabled: true,
+            phase: "write",
+            fn: ({ state }) => {
+              state.elements.popper.style.zIndex = "9999"; // Set z-index here
+            },
+          },
+        ]}
       >
         <PopoverTrigger>
           <IconButton
@@ -52,7 +62,8 @@ export default function ChatPopover({
           p={0}
           w="57vw"
           bg="background.neutral"
-          className="drop-shadow-md"
+          className="drop-shadow-md relative"
+          zIndex={9999}
         >
           <PopoverHeader
             bg="background.overlay"

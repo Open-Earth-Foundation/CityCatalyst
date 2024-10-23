@@ -438,7 +438,9 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                                 fontWeight="semibold"
                                 lineHeight="32"
                               >
-                                {Math.round(inventory?.city.area!)}
+                                {Math.round(
+                                  inventory?.city.area!,
+                                ).toLocaleString()}
                                 <span className="text-[16px]">km2</span>
                               </Text>
                             )}

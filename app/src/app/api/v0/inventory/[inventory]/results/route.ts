@@ -8,19 +8,24 @@ import sumBy from "lodash/sumBy";
 export const GET = apiHandler(
   async (_req, { session, params: { inventory } }) => {
     // ensure inventory belongs to user
-    await UserService.findUserInventory(inventory, session, [
-      {
-        model: db.models.InventoryValue,
-        as: "inventoryValues",
-        include: [
-          {
-            model: db.models.DataSource,
-            attributes: ["datasourceId", "sourceType"],
-            as: "dataSource",
-          },
-        ],
-      },
-    ]);
+    await UserService.findUserInventory(
+      inventory,
+      session,
+      [
+        {
+          model: db.models.InventoryValue,
+          as: "inventoryValues",
+          include: [
+            {
+              model: db.models.DataSource,
+              attributes: ["datasourceId", "sourceType"],
+              as: "dataSource",
+            },
+          ],
+        },
+      ],
+      true,
+    );
 
     const { totalEmissionsBySector, topEmissionsBySubSector } =
       await getEmissionResults(inventory);

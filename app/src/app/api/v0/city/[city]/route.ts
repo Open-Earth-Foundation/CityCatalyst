@@ -4,7 +4,7 @@ import { createCityRequest } from "@/util/validation";
 import { NextResponse } from "next/server";
 
 export const GET = apiHandler(async (_req, { params, session }) => {
-  const city = await UserService.findUserCity(params.city, session);
+  const city = await UserService.findUserCity(params.city, session, true);
   return NextResponse.json({ data: city });
 });
 

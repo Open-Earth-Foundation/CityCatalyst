@@ -10,7 +10,7 @@ import { z } from "zod";
 const maxPopulationYearDifference = 5;
 
 export const GET = apiHandler(async (_req: Request, { session, params }) => {
-  const city = await UserService.findUserCity(params.city, session);
+  const city = await UserService.findUserCity(params.city, session, true);
   const year = z.coerce.number().parse(params.year);
   const populations = await db.models.Population.findAll({
     where: {

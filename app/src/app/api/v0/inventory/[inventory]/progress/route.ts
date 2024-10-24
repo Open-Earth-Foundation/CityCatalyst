@@ -42,6 +42,7 @@ export const GET = apiHandler(async (_req, { session, params }) => {
         ],
       },
     ],
+    true,
   );
 
   const progressData =

@@ -39,9 +39,11 @@ function logOut() {
 export function NavigationBar({
   lng,
   showNav = true,
+  isPublic = false,
 }: {
   lng: string;
   showNav?: boolean;
+  isPublic?: boolean;
 }) {
   const { t } = useTranslation(lng, "navigation");
   const { inventory } = useParams();
@@ -98,7 +100,7 @@ export function NavigationBar({
         </Heading>
       </NextLink>
       <div className="w-full" />
-      {showNav && (
+      {showNav && !isPublic && (
         <>
           {" "}
           <NextLink href={`/${inventory ? inventory : currentInventoryId}`}>
@@ -120,9 +122,9 @@ export function NavigationBar({
               {t("learning-hub")}
             </Heading>
           </NextLink>
+          <Divider orientation="vertical" h={6} />
         </>
       )}
-      <Divider orientation="vertical" h={6} />
       <Menu>
         {({ isOpen }) => (
           <>
@@ -175,7 +177,7 @@ export function NavigationBar({
           </>
         )}
       </Menu>
-      {status === "authenticated" && session.user && (
+      {!isPublic && status === "authenticated" && session.user && (
         <Menu>
           {({ isOpen }) => (
             <>

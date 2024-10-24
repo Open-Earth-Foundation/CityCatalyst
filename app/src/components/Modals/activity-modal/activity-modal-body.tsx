@@ -154,9 +154,9 @@ const ActivityModalBody = ({
         (g) => g.gas === "CH4",
       )?.emissionsPerActivity;
 
-      setValue("activity.CO2EmissionFactor", co2Val ? co2Val : 0);
-      setValue("activity.N2OEmissionFactor", n2oVal ? n2oVal : 0);
-      setValue("activity.CH4EmissionFactor", ch4Val ? ch4Val : 0);
+      setValue("activity.CO2EmissionFactor", co2Val ? co2Val : null);
+      setValue("activity.N2OEmissionFactor", n2oVal ? n2oVal : null);
+      setValue("activity.CH4EmissionFactor", ch4Val ? ch4Val : null);
       setIsEmissionFactorInputDisabled(true);
     }
   };

@@ -34,6 +34,7 @@ export interface ExtraField {
   required?: boolean;
   totalRequired?: number;
   subtypes?: string[];
+  "emission-factor-dependency"?: boolean;
   units?: string[];
 }
 

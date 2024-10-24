@@ -55,15 +55,6 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
   let whereClause: { [k: string]: any } = {};
   // don't return emissions factors from specific inventories
 
-  if (methodologyId) {
-    if (methodologyId.includes("fuel-combustion"))
-      whereClause.methodologyName = "fuel-combustion-consumption";
-    if (methodologyId.includes("scaled"))
-      whereClause.methodologyName = "sampling-scaled-data";
-    if (methodologyId.includes("modeled-data"))
-      whereClause.methodologyName = "modeled-data";
-  }
-
   if (!!metadata) {
     let andCondition = [];
     for (let key in metadata) {
@@ -100,6 +91,17 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
   if (!!referenceNumber) {
     whereClause.gpcReferenceNumber = referenceNumber;
   }
+
+  if (methodologyId) {
+    if (methodologyId.includes("fuel-combustion"))
+      whereClause.methodologyName = "fuel-combustion-consumption";
+    if (methodologyId.includes("scaled"))
+      whereClause.methodologyName = "sampling-scaled-data";
+    if (methodologyId.includes("modeled-data"))
+      whereClause.methodologyName = "modeled-data";
+  }
+
+  console.log(whereClause, "where");
 
   const emissionsFactors = await db.models.EmissionsFactor.findAll({
     where: whereClause,

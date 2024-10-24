@@ -55,6 +55,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type {
+  Control,
   FieldErrors,
   SubmitHandler,
   UseFormRegister,
@@ -62,6 +63,7 @@ import type {
 import { useForm } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { MdOutlineAspectRatio, MdOutlinePeopleAlt } from "react-icons/md";
+import FormattedThousandsNumberInput from "@/app/[lng]/onboarding/setup/FormattedThousandsNumberInput";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -94,11 +96,10 @@ type OnboardingData = {
   year: number;
 };
 
-const numberOfYearsDisplayed = 10;
-
 function SetupStep({
   errors,
   register,
+  control,
   t,
   setValue,
   watch,
@@ -108,6 +109,7 @@ function SetupStep({
 }: {
   errors: FieldErrors<Inputs>;
   register: UseFormRegister<Inputs>;
+  control: Control<Inputs>;
   t: TFunction;
   setValue: any;
   watch: Function;
@@ -116,10 +118,12 @@ function SetupStep({
   setData: (data: OnboardingData) => void;
 }) {
   const currentYear = new Date().getFullYear();
+  const numberOfYearsDisplayed = 10;
   const years = Array.from(
     { length: numberOfYearsDisplayed },
     (_x, i) => currentYear - i,
   );
+
   const dispatch = useAppDispatch();
 
   const [onInputClicked, setOnInputClicked] = useState<boolean>(false);
@@ -262,7 +266,7 @@ function SetupStep({
     isLoading,
     isSuccess,
   } = useGetOCCityQuery(cityInputQuery, {
-    skip: cityInputQuery?.length <= 2 ? true : false,
+    skip: cityInputQuery?.length <= 2,
   });
 
   const renderParentPath = (path: []) => {
@@ -410,14 +414,14 @@ function SetupStep({
             <HStack spacing={6} align="start">
               <FormControl isInvalid={!!errors.cityPopulation}>
                 <FormLabel>{t("city-population-title")}</FormLabel>
-                <Input
-                  type="number"
+                <FormattedThousandsNumberInput<Inputs>
+                  name="cityPopulation"
+                  control={control}
+                  rules={{
+                    required: t("population-required"),
+                  }}
                   placeholder={t("city-population-placeholder")}
                   size="lg"
-                  {...register("cityPopulation", {
-                    required: t("population-required"),
-                    valueAsNumber: true,
-                  })}
                 />
                 <FormErrorMessage
                   color="content.tertiary"
@@ -469,14 +473,18 @@ function SetupStep({
             <HStack spacing={6} align="start">
               <FormControl isInvalid={!!errors.regionPopulation}>
                 <FormLabel>{t("region-population-title")}</FormLabel>
-                <Input
-                  type="number"
+                <FormattedThousandsNumberInput<Inputs>
+                  control={control}
+                  rules={{
+                    required: t("population-required"),
+                  }}
                   placeholder={t("region-population-placeholder")}
                   size="lg"
                   {...register("regionPopulation", {
                     required: t("population-required"),
                     valueAsNumber: true,
                   })}
+                  name="regionPopulation"
                 />
                 <FormErrorMessage
                   color="content.tertiary"
@@ -527,14 +535,14 @@ function SetupStep({
             <HStack spacing={6} align="start">
               <FormControl isInvalid={!!errors.countryPopulation}>
                 <FormLabel>{t("country-population-title")}</FormLabel>
-                <Input
-                  type="number"
+                <FormattedThousandsNumberInput<Inputs>
+                  name="countryPopulation"
+                  control={control}
+                  rules={{
+                    required: t("population-required"),
+                  }}
                   placeholder={t("country-population-placeholder")}
                   size="lg"
-                  {...register("countryPopulation", {
-                    required: t("population-required"),
-                    valueAsNumber: true,
-                  })}
                 />
                 <FormErrorMessage
                   color="content.tertiary"
@@ -697,6 +705,7 @@ export default function OnboardingSetup({
     getValues,
     setValue,
     watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<Inputs>();
 
@@ -854,6 +863,7 @@ export default function OnboardingSetup({
               ocCityData={ocCityData}
               setOcCityData={setOcCityData}
               setData={setData}
+              control={control}
               t={t}
             />
           )}

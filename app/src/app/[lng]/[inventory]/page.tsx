@@ -234,7 +234,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
   };
   const formattedEmissions = inventory?.totalEmissions
     ? formatEmissions(inventory.totalEmissions)
-    : { value: t("not-available"), unit: "" };
+    : { value: t("N/A"), unit: "" };
 
   return (
     <>
@@ -386,7 +386,7 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                                   </Trans>
                                   <br />
                                   {t("population-year", {
-                                    year: inventory.city.populationYear,
+                                    year: population?.year,
                                   })}
                                 </>
                               }
@@ -438,7 +438,9 @@ export default function Home({ params: { lng } }: { params: { lng: string } }) {
                                 fontWeight="semibold"
                                 lineHeight="32"
                               >
-                                {Math.round(inventory?.city.area!)}
+                                {Math.round(
+                                  inventory?.city.area!,
+                                ).toLocaleString()}
                                 <span className="text-[16px]">km2</span>
                               </Text>
                             )}

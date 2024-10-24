@@ -1,3 +1,5 @@
+import Decimal from "decimal.js";
+
 export const getTranslationFromDictionary = (
   translations: Record<string, string> | string | undefined,
   lng?: string,
@@ -253,34 +255,55 @@ export const getInputMethodology = (methodologyId: string) => {
   }
 };
 
-export function convertKgToTonnes(
-  valueInTonnes: number | bigint,
-  gas?: string,
-) {
-  let locale = "en-US";
-  let result = "";
-  let gasSuffix = gas ? ` ${gas}` : "CO2";
-  const tonnes = Number(valueInTonnes);
-  const formatter = new Intl.NumberFormat(locale, { maximumFractionDigits: 0 });
-
-  if (tonnes >= 1e6) {
-    // Convert to megatonnes if the value is 1,000,000 tonnes or more
-    const megatonnes = tonnes / 1e6;
-    result = `${formatter.format(megatonnes)} Mt${gasSuffix}`;
-  } else if (tonnes >= 1e3) {
-    // Convert to kilotonnes if the value is 1,000 tonnes or more but less than 1,000,000 tonnes
-    const kilotonnes = tonnes / 1e3;
-    result = `${formatter.format(kilotonnes)} Kt${gasSuffix}`;
-  } else if (tonnes < 1) {
-    // Convert to kg if the value is less than 1 tonne
-    const kilograms = tonnes * 1e3;
-    result = `${formatter.format(kilograms)} kg${gasSuffix}`;
-  } else {
-    // Return as tonnes if the value is less than 1,000 tonnes but more than or equal to 1 tonne
-    result = `${formatter.format(tonnes)} t${gasSuffix}`;
+function toDecimal(
+  value: Decimal | string | bigint | number | undefined,
+): Decimal | undefined {
+  if (!value) return undefined;
+  if (value instanceof Decimal) {
+    return value;
   }
+  if (typeof value === "bigint") {
+    return new Decimal(value.toString());
+  }
+  return new Decimal(value);
+}
 
-  return result;
+export function convertKgToTonnes(
+  valueInKg: number | Decimal | bigint,
+  gas?: string,
+): string {
+  const locale = "en-US";
+  const gasSuffix = gas ? ` ${gas}` : " CO2";
+
+  const kg = toDecimal(valueInKg);
+  if (!kg) return "";
+  const formatter = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 });
+
+  const gigaTonne = new Decimal("1e12");
+  const megaTonne = new Decimal("1e9");
+  const kiloTonne = new Decimal("1e6");
+  const tonne = new Decimal("1e3");
+
+  if (kg.gte(gigaTonne)) {
+    // Convert to gigatonnes if the value is 1,000,000,000,000 kg or more
+    const gigatonnes = kg.div(gigaTonne);
+    return `${formatter.format(gigatonnes.toNumber())} Gt${gasSuffix}`;
+  } else if (kg.gte(megaTonne)) {
+    // Convert to megatonnes if the value is 1,000,000,000 kg or more but less than 1,000,000,000,000 kg
+    const megatonnes = kg.div(megaTonne);
+    return `${formatter.format(megatonnes.toNumber())} Mt${gasSuffix}`;
+  } else if (kg.gte(kiloTonne)) {
+    // Convert to kilotonnes if the value is 1,000,000 kg or more but less than 1,000,000,000 kg
+    const kilotonnes = kg.div(kiloTonne);
+    return `${formatter.format(kilotonnes.toNumber())} kt${gasSuffix}`;
+  } else if (kg.gte(tonne)) {
+    // Convert to tonnes if the value is 1,000 kg or more but less than 1,000,000 kg
+    const tonnes = kg.div(tonne);
+    return `${formatter.format(tonnes.toNumber())} t${gasSuffix}`;
+  } else {
+    // Return as kg if the value is less than 1,000 kg
+    return `${formatter.format(kg.toNumber())} kg${gasSuffix}`;
+  }
 }
 
 export const toKebabCase = (input: string | undefined): string => {
@@ -291,4 +314,5 @@ export const toKebabCase = (input: string | undefined): string => {
     .toLowerCase();
 };
 
-export const capitalizeFirstLetter = (string: string) => string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+export const capitalizeFirstLetter = (string: string) =>
+  string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();

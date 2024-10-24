@@ -1,12 +1,13 @@
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { ActivityValue } from "@/models/ActivityValue";
-import { ExtraField, SuggestedActivity } from "@/util/form-schema";
+import { ExtraField, Methodology, SuggestedActivity } from "@/util/form-schema";
 import { Inputs } from "@/components/Modals/activity-modal/activity-modal-body";
 
 export const generateDefaultActivityFormValues = (
   selectedActivity: SuggestedActivity,
   fields: ExtraField[],
+  methodology: Methodology,
 ) => {
   return {
     activityType: selectedActivity?.id,
@@ -22,7 +23,11 @@ export const generateDefaultActivityFormValues = (
           }, {}),
         }
       : {}),
-
+    ...(methodology.activitySelectionField && {
+      [methodology.activitySelectionField.id]:
+        selectedActivity?.prefills?.[0].value ||
+        methodology.activitySelectionField.options[0], // TODO using the selected activity's first prefill value should be more dynamic
+    }),
     fuelType: "",
     dataQuality: "",
     dataComments: "",
@@ -49,13 +54,11 @@ const extractGasAmount = (gas: string, activity: ActivityValue) => {
 const useActivityForm = ({
   targetActivityValue,
   selectedActivity,
-  methodologyName,
-  fields,
+  methodology,
 }: {
   targetActivityValue: ActivityValue | undefined;
   selectedActivity?: SuggestedActivity;
-  methodologyName?: string;
-  fields: ExtraField[];
+  methodology: Methodology;
 }) => {
   const {
     register,
@@ -69,25 +72,74 @@ const useActivityForm = ({
     control,
     getValues,
     formState: { errors },
-  } = useForm<Inputs>();
+  } = useForm<Inputs | any>();
+
+  const selectedActivityOption = watch(
+    `activity.${methodology.activitySelectionField?.id as string}`,
+  );
+
+  const { fields, units, title, activityId, hideEmissionFactors } =
+    useMemo(() => {
+      let fields: ExtraField[] = [];
+      let units = null;
+      let title = "";
+      let activityId = null;
+      let hideEmissionFactors = false;
+
+      if (methodology?.id.includes("direct-measure")) {
+        fields = methodology.fields as ExtraField[];
+      } else {
+        const foundIndex =
+          methodology.fields?.findIndex(
+            (ac) => ac.activitySelectedOption === selectedActivityOption,
+          ) ?? 0;
+
+        const selectedActivityIndex = foundIndex >= 0 ? foundIndex : 0;
+
+        hideEmissionFactors =
+          methodology?.fields?.[selectedActivityIndex].hideEmissionFactorsInput;
+        fields = methodology?.fields?.[selectedActivityIndex][
+          "extra-fields"
+        ] as ExtraField[];
+        units = methodology?.fields?.[selectedActivityIndex].units;
+        title = methodology?.fields?.[selectedActivityIndex][
+          "activity-title"
+        ] as string;
+        activityId = methodology?.fields?.[selectedActivityIndex]["id"];
+      }
+
+      return {
+        fields,
+        units,
+        title,
+        hideEmissionFactors,
+        activityId,
+      };
+    }, [methodology, selectedActivityOption]);
 
   useEffect(() => {
     if (targetActivityValue) {
       reset({
         activity: {
           ...targetActivityValue.activityData,
-          dataQuality: targetActivityValue?.dataSource?.dataQuality,
-          dataComments: targetActivityValue?.dataSource?.notes,
+          ...(methodology.activitySelectionField && {
+            [methodology.activitySelectionField.id]:
+              targetActivityValue.metadata?.[
+                methodology.activitySelectionField.id
+              ],
+          }),
+          dataQuality: targetActivityValue?.metadata?.dataQuality,
+          dataComments: targetActivityValue?.metadata?.sourceExplanation,
           CH4EmissionFactor:
-            methodologyName === "direct-measure"
+            methodology.id === "direct-measure"
               ? targetActivityValue?.activityData?.ch4_amount
               : extractGasAmount("CH4", targetActivityValue).amount,
           CO2EmissionFactor:
-            methodologyName === "direct-measure"
+            methodology.id === "direct-measure"
               ? targetActivityValue?.activityData?.co2_amount
               : extractGasAmount("CO2", targetActivityValue).amount,
           N2OEmissionFactor:
-            methodologyName === "direct-measure"
+            methodology.id === "direct-measure"
               ? targetActivityValue?.activityData?.n2o_amount
               : extractGasAmount("N2O", targetActivityValue).amount,
           emissionFactorType: targetActivityValue.metadata?.emissionFactorType,
@@ -104,11 +156,12 @@ const useActivityForm = ({
         activity: generateDefaultActivityFormValues(
           selectedActivity as SuggestedActivity,
           fields,
+          methodology as Methodology,
         ),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetActivityValue, selectedActivity, methodologyName]);
+  }, [targetActivityValue, selectedActivity, methodology]);
 
   return {
     register,
@@ -122,6 +175,11 @@ const useActivityForm = ({
     control,
     setValue,
     getValues,
+    fields,
+    units,
+    title,
+    activityId,
+    hideEmissionFactors,
   };
 };
 

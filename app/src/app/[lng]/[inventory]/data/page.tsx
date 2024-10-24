@@ -6,7 +6,8 @@ import { Link } from "@chakra-ui/next-js";
 import { Box, Card, Flex, Heading, Text } from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import AddDataCard from "@/components/Cards/add-data-card";
-import { SECTORS } from "@/app/sectors";
+
+import { SECTORS } from "@/util/constants";
 
 export default function AddDataIntro({
   params: { lng, inventory },

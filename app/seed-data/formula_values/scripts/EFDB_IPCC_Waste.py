@@ -832,22 +832,31 @@ if __name__ == "__main__":
        WITH dmi_raw AS (
        SELECT *,
        CASE
-         WHEN LOWER(technologies_paractises) LIKE '%food%' THEN 'waste-type-food'
-         WHEN LOWER(technologies_paractises) LIKE '%garden%' OR LOWER(technologies_paractises) LIKE '%park%' THEN 'waste-type-garden'
-         WHEN LOWER(technologies_paractises) LIKE '%paper%' OR LOWER(technologies_paractises) LIKE '%cardboard%' THEN 'waste-type-paper'
-         WHEN LOWER(technologies_paractises) LIKE '%wood%' THEN 'waste-type-wood'
-         WHEN LOWER(technologies_paractises) LIKE '%textile%' OR LOWER(technologies_paractises) LIKE '%textiles%' THEN 'waste-type-textiles'
-         WHEN LOWER(technologies_paractises) LIKE '%glass%' THEN 'waste-type-glass'
-         WHEN LOWER(technologies_paractises) LIKE '%metal%' THEN 'waste-type-metal'
-         WHEN LOWER(technologies_paractises) LIKE '%plastics%' THEN 'waste-type-plastics'
-         WHEN LOWER(technologies_paractises) LIKE '%rubber%leather%' THEN 'waste-type-rubber-and-leather'
-         WHEN LOWER(technologies_paractises) LIKE '%rubber%leather%' THEN 'waste-type-rubber-and-leather'
-         WHEN LOWER(technologies_paractises) LIKE '%other%' THEN 'waste-type-other-inert'
-         WHEN LOWER(technologies_paractises) LIKE '%nappies%' THEN 'waste-type-nappies'
+         WHEN LOWER(emissionfactor_details) LIKE '%food%' THEN 'waste-type-food'
+         WHEN LOWER(emissionfactor_details) LIKE '%garden%' OR LOWER(emissionfactor_details) LIKE '%park%' THEN 'waste-type-garden'
+         WHEN LOWER(emissionfactor_details) LIKE '%paper%' OR LOWER(emissionfactor_details) LIKE '%cardboard%' THEN 'waste-type-paper'
+         WHEN LOWER(emissionfactor_details) LIKE '%wood%' THEN 'waste-type-wood'
+         WHEN LOWER(emissionfactor_details) LIKE '%textile%' OR LOWER(emissionfactor_details) LIKE '%textiles%' THEN 'waste-type-textiles'
+         WHEN LOWER(emissionfactor_details) LIKE '%glass%' THEN 'waste-type-glass'
+         WHEN LOWER(emissionfactor_details) LIKE '%metal%' THEN 'waste-type-metal'
+         WHEN LOWER(emissionfactor_details) LIKE '%plastics%' THEN 'waste-type-plastics'
+         WHEN LOWER(emissionfactor_details) LIKE '%rubber%leather%' THEN 'waste-type-rubber-and-leather'
+         WHEN LOWER(emissionfactor_details) LIKE '%rubber%leather%' THEN 'waste-type-rubber-and-leather'
+         WHEN LOWER(emissionfactor_details) LIKE '%other%' THEN 'waste-type-other-inert'
+         WHEN LOWER(emissionfactor_details) LIKE '%nappies%' THEN 'waste-type-nappies'
+         WHEN (emissionfactor_details LIKE '%MSW%' OR lower(emissionfactor_details) LIKE '%municipal%') THEN 'waste-type-muncipal-solid-waste'
+         WHEN lower(emissionfactor_details) LIKE '%sewage sludge%' THEN 'waste-type-sewage-sludge'
+         WHEN lower(emissionfactor_details) LIKE '%sludge%' THEN 'waste-type-sludge'
+         WHEN lower(emissionfactor_details) LIKE '%industrial%' THEN 'waste-type-industrial'
+         WHEN lower(emissionfactor_details) LIKE '%clinical%' THEN 'waste-type-clinical'
+         WHEN lower(emissionfactor_details) LIKE '%sewage%' THEN 'waste-type-sewage'
+         WHEN lower(emissionfactor_details) LIKE '%hazardous%' THEN 'waste-type-hazardous'
      	END AS waste_composition
        FROM waste_emissionfactor_clean
        WHERE gpc_sector = 'III.3.1 + III.3.2 + III.3.3'
-       AND lower(Description) like '%dry%matter%'),
+       AND lower(Description) like '%dry%matter%'
+       AND emissionsfactor_value not like 'Paper%'
+       ),
        dmi_1 AS (
        SELECT gas_name as gas,
        		 'dmi' as parameter_code,
@@ -869,7 +878,7 @@ if __name__ == "__main__":
        			parameter_code,
        			parameter_name,
        			case when gpc_refno IN ('III.3.1', 'III.3.3') then 'incineration-waste-inboundary-methodology'
-        			else 'incineration-waste-outside-methodology' end as methodology,
+        			else 'incineration-waste-outboundary-methodology' end as methodology,
        			gpc_refno,
        			year,
        			formula_input_value,
@@ -880,6 +889,68 @@ if __name__ == "__main__":
        			actor_id,
        			datasource
        FROM 		dmi_1;
+
+       CREATE OR REPLACE TABLE incineration_water_content AS
+              WITH dmi_raw AS (
+              SELECT *,
+              CASE
+                WHEN LOWER(emissionfactor_details) LIKE '%food%' THEN 'waste-type-food'
+                WHEN LOWER(emissionfactor_details) LIKE '%garden%' OR LOWER(emissionfactor_details) LIKE '%park%' THEN 'waste-type-garden'
+                WHEN LOWER(emissionfactor_details) LIKE '%paper%' OR LOWER(emissionfactor_details) LIKE '%cardboard%' THEN 'waste-type-paper'
+                WHEN LOWER(emissionfactor_details) LIKE '%wood%' THEN 'waste-type-wood'
+                WHEN LOWER(emissionfactor_details) LIKE '%textile%' OR LOWER(emissionfactor_details) LIKE '%textiles%' THEN 'waste-type-textiles'
+                WHEN LOWER(emissionfactor_details) LIKE '%glass%' THEN 'waste-type-glass'
+                WHEN LOWER(emissionfactor_details) LIKE '%metal%' THEN 'waste-type-metal'
+                WHEN LOWER(emissionfactor_details) LIKE '%plastics%' THEN 'waste-type-plastics'
+                WHEN LOWER(emissionfactor_details) LIKE '%rubber%leather%' THEN 'waste-type-rubber-and-leather'
+                WHEN LOWER(emissionfactor_details) LIKE '%rubber%leather%' THEN 'waste-type-rubber-and-leather'
+                WHEN LOWER(emissionfactor_details) LIKE '%other%' THEN 'waste-type-other-inert'
+                WHEN LOWER(emissionfactor_details) LIKE '%nappies%' THEN 'waste-type-nappies'
+                WHEN (emissionfactor_details LIKE '%MSW%' OR lower(emissionfactor_details) LIKE '%municipal%') THEN 'waste-type-muncipal-solid-waste'
+                WHEN lower(emissionfactor_details) LIKE '%sewage sludge%' THEN 'waste-type-sewage-sludge'
+                WHEN lower(emissionfactor_details) LIKE '%sludge%' THEN 'waste-type-sludge'
+                WHEN lower(emissionfactor_details) LIKE '%industrial%' THEN 'waste-type-industrial'
+                WHEN lower(emissionfactor_details) LIKE '%clinical%' THEN 'waste-type-clinical'
+                WHEN lower(emissionfactor_details) LIKE '%sewage%' THEN 'waste-type-sewage'
+                WHEN lower(emissionfactor_details) LIKE '%hazardous%' THEN 'waste-type-hazardous'
+            	END AS waste_composition
+              FROM waste_emissionfactor_clean
+              WHERE gpc_sector = 'III.3.1 + III.3.2 + III.3.3'
+              AND (lower(Description) like '%water%content%')
+              AND emissionsfactor_value not like 'Paper%'
+              ),
+              dmi_1 AS (
+              SELECT gas_name as gas,
+              		 'wc' as parameter_code,
+              		 'water-content' as parameter_name,
+              		  TRIM(UNNEST(STRING_SPLIT(gpc_sector, '+'))) as gpc_refno,
+              		  technical_reference_year as year,
+              		  emissionsfactor_value::numeric/ 100 as formula_input_value,
+              		  'fraction' as formula_input_units,
+              		  'incineration-waste' as formula_name,
+              		  json_object(
+              		  		'waste-type', waste_composition
+              		  ) as metadata,
+              		  region as region,
+              		  country_code as actor_id,
+              		  'IPCC' as datasource
+              FROM 	dmi_raw
+              WHERE waste_composition IS NOT NULL)
+              SELECT 	gas,
+              			parameter_code,
+              			parameter_name,
+              			case when gpc_refno IN ('III.3.1', 'III.3.3') then 'incineration-waste-inboundary-methodology'
+               			else 'incineration-waste-outboundary-methodology' end as methodology,
+              			gpc_refno,
+              			year,
+              			formula_input_value,
+              			formula_input_units,
+              			formula_name,
+              			metadata,
+              			region,
+              			actor_id,
+              			datasource
+              FROM 	dmi_1;
 
        -- CFi fraction of fossil carbon in dry matter
        CREATE OR REPLACE TABLE incineration_cfi_fossil AS
@@ -909,6 +980,7 @@ if __name__ == "__main__":
          WHEN LOWER(emissionfactor_details) LIKE '%other%' THEN 'waste-type-other-inert'
          WHEN LOWER(emissionfactor_details) LIKE '%nappies%' THEN 'waste-type-nappies'
          WHEN (emissionfactor_details LIKE '%MSW%' OR lower(emissionfactor_details) LIKE '%municipal%') THEN 'waste-type-muncipal-solid-waste'
+         WHEN lower(emissionfactor_details) LIKE '%sewage sludge%' THEN 'waste-type-sewage-sludge'
          WHEN lower(emissionfactor_details) LIKE '%sludge%' THEN 'waste-type-sludge'
          WHEN lower(emissionfactor_details) LIKE '%industrial%' THEN 'waste-type-industrial'
          WHEN lower(emissionfactor_details) LIKE '%clinical%' THEN 'waste-type-clinical'
@@ -939,7 +1011,7 @@ if __name__ == "__main__":
        		parameter_code,
        		parameter_name,
        		case when gpc_refno IN ('III.3.1', 'III.3.3') then 'incineration-waste-inboundary-methodology'
-        			else 'incineration-waste-outside-methodology' end as methodology,
+        			else 'incineration-waste-outboundary-methodology' end as methodology,
        		gpc_refno,
        		year,
        		formula_input_value,
@@ -980,6 +1052,7 @@ if __name__ == "__main__":
          WHEN LOWER(emissionfactor_details) LIKE '%other%' THEN 'waste-type-other-inert'
          WHEN LOWER(emissionfactor_details) LIKE '%nappies%' THEN 'waste-type-nappies'
          WHEN (emissionfactor_details LIKE '%MSW%' OR lower(emissionfactor_details) LIKE '%municipal%') THEN 'waste-type-muncipal-solid-waste'
+         WHEN lower(emissionfactor_details) LIKE '%sewage sludge%' THEN 'waste-type-sewage-sludge'
          WHEN lower(emissionfactor_details) LIKE '%sludge%' THEN 'waste-type-sludge'
          WHEN lower(emissionfactor_details) LIKE '%industrial%' THEN 'waste-type-industrial'
          WHEN lower(emissionfactor_details) LIKE '%clinical%' THEN 'waste-type-clinical'
@@ -1011,7 +1084,7 @@ if __name__ == "__main__":
       		parameter_code,
       		parameter_name,
       		case when gpc_refno IN ('III.3.1', 'III.3.3') then 'incineration-waste-inboundary-methodology'
-        			else 'incineration-waste-outside-methodology' end as methodology,
+        			else 'incineration-waste-outboundary-methodology' end as methodology,
       		gpc_refno,
       		year,
       		formula_input_value,
@@ -1024,11 +1097,24 @@ if __name__ == "__main__":
       FROM fraction_carbon_1;
 
         CREATE OR REPLACE TABLE waste_formula_input_all AS
-        SELECT *
+        SELECT 	gas,
+              	parameter_code,
+              	parameter_name,
+              	methodology as methodology_name,
+              	gpc_refno,
+              	year,
+              	formula_input_value,
+              	formula_input_units,
+              	formula_name,
+              	metadata,
+              	Region as region,
+              	actor_id,
+              	datasource,
+              	rnk
         FROM (
         SELECT *,
          	 	ROW_NUMBER() OVER (PARTITION BY gas,parameter_code,parameter_name,methodology,gpc_refno,formula_input_value,formula_input_units,formula_name,metadata,Region,actor_id,datasource
-        	 						ORDER BY year DESC) AS RNK
+        	 						ORDER BY year DESC) AS rnk
         FROM (
         SELECT *
         FROM waterwater_income_group
@@ -1058,14 +1144,17 @@ if __name__ == "__main__":
         FROM incineration_cfi
         UNION
         SELECT *
-        FROM incineration_cfi_fossil)
+        FROM incineration_cfi_fossil
+        UNION
+        SELECT *
+        FROM incineration_water_content)
         )
-        WHERE RNK = 1;
+        WHERE rnk = 1;
             """
     conn.execute(query)
-    df = conn.execute("SELECT * FROM waste_formula_input_all").fetchdf()
+    df = conn.execute("SELECT gas,parameter_code,parameter_name,methodology_name,gpc_refno,year,formula_input_value,formula_input_units,formula_name,metadata,region,actor_id,datasource,rnk FROM waste_formula_input_all").fetchdf()
 
-    df['methodology_id'] = df['methodology'].apply(uuid_generate_v3)
+    df['methodology_id'] = df['methodology_name'].apply(uuid_generate_v3)
 
     df["formulainput_id"] = df.apply(lambda row: uuid_generate_v4(), axis=1)
 

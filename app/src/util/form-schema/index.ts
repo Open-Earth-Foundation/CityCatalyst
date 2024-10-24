@@ -34,17 +34,21 @@ export interface ExtraField {
   required?: boolean;
   totalRequired?: number;
   subtypes?: string[];
+  units?: string[];
 }
 
 export interface Activity {
   id: string;
+  activitySelectedOption?: string;
   "group-by"?: string;
   "unique-by"?: string[];
   "activity-title"?: string;
   minimum?: number;
   "extra-fields"?: ExtraField[];
   units?: string[];
+  hideEmissionFactorsInput?: boolean;
   formula?: string;
+  "formula-mapping"?: Record<string, string>;
 }
 
 export interface Prefill {
@@ -60,6 +64,10 @@ export interface SuggestedActivity {
 export interface Methodology {
   id: string;
   disabled?: boolean;
+  activitySelectionField?: {
+    id: string;
+    options: string[];
+  };
   activities?: Activity[];
   inputRequired?: string[];
   formula?: string;

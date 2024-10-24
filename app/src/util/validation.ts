@@ -88,13 +88,6 @@ export const createInventoryValue = z.object({
       }),
     )
     .optional(),
-  dataSource: z
-    .object({
-      sourceType: z.string(),
-      dataQuality: z.string(),
-      notes: z.string(),
-    })
-    .optional(),
 });
 
 export type CreateInventoryValueRequest = z.infer<typeof createInventoryValue>;
@@ -177,13 +170,6 @@ export const updateActivityValueRequest = z.object({
     .optional(),
   activityData: z.any().optional(),
   metadata: z.any().optional(),
-  dataSource: z
-    .object({
-      sourceType: z.string(),
-      dataQuality: z.string(),
-      notes: z.string(),
-    })
-    .optional(),
   gasValues: z.array(gasValueSchema).optional(),
 });
 
@@ -199,16 +185,17 @@ export const createActivityValueRequest = z.object({
       unavailableExplanation: z.string().optional(),
     })
     .optional(),
-  dataSource: z
-    .object({
-      sourceType: z.string(),
-      dataQuality: z.string(),
-      notes: z.string(),
-    })
-    .optional(),
   gasValues: z.array(gasValueSchema).optional(),
 });
 
 export type CreateActivityValueRequest = z.infer<
   typeof createActivityValueRequest
 >;
+
+export const fetchEmissionsFactorRequest = z.object({
+  inventoryId: z.string().optional(),
+  referenceNumber: z.string().optional(),
+  methodologyId: z.string().optional(),
+  regionLocode: z.string().optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
+});

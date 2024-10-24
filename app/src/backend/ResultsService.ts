@@ -1,19 +1,18 @@
 import { db } from "@/models";
 import { QueryTypes } from "sequelize";
-import sumBy from "lodash/sumBy";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
 import groupBy from "lodash/groupBy";
 import mapValues from "lodash/mapValues";
 import { toKebabCase } from "@/util/helpers";
 import { ActivityDataByScope, GroupedActivity } from "@/util/types";
+import Decimal from "decimal.js";
+import { bigIntToDecimal } from "@/util/big_int";
 
-function calculatePercentage(co2eq: bigint, total: bigint): number {
-  if (total <= 0n) {
+function calculatePercentage(co2eq: Decimal, total: Decimal): number {
+  if (total <= new Decimal(0)) {
     return 0;
   }
-  const co2eqFloat = Number(co2eq);
-  const totalFloat = Number(total);
-  return Number(Number((co2eqFloat * 100) / totalFloat).toFixed(0));
+  return co2eq.times(100).div(total).round().toNumber();
 }
 
 async function getTotalEmissionsWithPercentage(inventory: string) {
@@ -25,7 +24,7 @@ async function getTotalEmissionsWithPercentage(inventory: string) {
         GROUP BY sector_name
         ORDER BY SUM(iv.co2eq) DESC`;
 
-  const totalEmissions: {
+  const totalEmissionsBigInt: {
     co2eq: bigint;
     sector_name: string;
   }[] = await db.sequelize!.query(rawQuery, {
@@ -33,7 +32,13 @@ async function getTotalEmissionsWithPercentage(inventory: string) {
     type: QueryTypes.SELECT,
   });
 
-  const sumOfEmissions = BigInt(sumBy(totalEmissions, (e) => Number(e.co2eq)));
+  const totalEmissions = totalEmissionsBigInt.map(({ co2eq, ...rest }) => ({
+    ...rest,
+    co2eq: bigIntToDecimal(co2eq),
+  }));
+  const sumOfEmissions = totalEmissions.reduce((sum, emission) => {
+    return sum.plus(emission.co2eq);
+  }, new Decimal(0));
 
   const totalEmissionsBySector = totalEmissions.map(
     ({ co2eq, sector_name }) => ({
@@ -57,7 +62,7 @@ async function getTopEmissions(inventoryId: string) {
         ORDER BY iv.co2eq DESC
         LIMIT 3; `;
 
-  return (await db.sequelize!.query(rawQuery, {
+  const resultBigInt = (await db.sequelize!.query(rawQuery, {
     replacements: { inventoryId },
     type: QueryTypes.SELECT,
   })) as {
@@ -66,6 +71,11 @@ async function getTopEmissions(inventoryId: string) {
     subsector_name: string;
     scope_name: string;
   }[];
+
+  return resultBigInt.map(({ co2eq, ...rest }) => ({
+    ...rest,
+    co2eq: bigIntToDecimal(co2eq),
+  }));
 }
 
 export async function getEmissionResults(inventoryId: string) {
@@ -97,16 +107,16 @@ interface ActivityForSectorBreakdown {
   reference_number: string;
   input_methodology: string;
   activity_data_jsonb: Record<string, any>;
-  co2eq: string;
+  co2eq: Decimal;
   subsector_name: string;
   scope_name: string;
 }
 
 interface UngroupedActivityData {
   activityTitle: string;
-  activityValue: string;
+  activityValue: Decimal | string;
   activityUnits: string;
-  activityEmissions: bigint;
+  activityEmissions: Decimal;
   emissionsPercentage: number;
   subsectorName: string;
   scopeName: string;
@@ -120,6 +130,7 @@ interface ResponseWithoutTotals {
   };
 }
 
+// type ActivityForSectorBreakdownBigInt =
 const getActivitiesForSectorBreakdown = async (
   inventoryId: string,
   sectorName: string,
@@ -137,10 +148,17 @@ const getActivitiesForSectorBreakdown = async (
     `;
 
   try {
-    return (await db.sequelize!.query(rawQuery, {
-      replacements: { inventoryId, sectorName: sectorName.replace("-", " ") },
-      type: QueryTypes.SELECT,
-    })) as ActivityForSectorBreakdown[];
+    const activitiesForSectorBreakdownBigint = (await db.sequelize!.query(
+      rawQuery,
+      {
+        replacements: { inventoryId, sectorName: sectorName.replace("-", " ") },
+        type: QueryTypes.SELECT,
+      },
+    )) as Omit<ActivityForSectorBreakdown, "co2eq"> & { co2eq: bigint }[];
+    return activitiesForSectorBreakdownBigint.map(({ co2eq, ...rest }) => ({
+      ...rest,
+      co2eq: bigIntToDecimal(co2eq),
+    })) as unknown as ActivityForSectorBreakdown[];
   } catch (e) {
     console.error("Error in getActivitiesForSectorBreakdown:", e);
     throw e;
@@ -149,7 +167,7 @@ const getActivitiesForSectorBreakdown = async (
 
 const getActivityDataValues = (
   activity: ActivityForSectorBreakdown,
-  sumOfEmissions: bigint,
+  sumOfEmissions: Decimal,
 ): UngroupedActivityData | null => {
   const {
     reference_number,
@@ -187,8 +205,8 @@ const getActivityDataValues = (
     activityUnits: activityUnitsField
       ? activity_data_jsonb[activityPrefix + activityUnitsField + "-unit"]
       : "N/A",
-    activityEmissions: BigInt(co2eq),
-    emissionsPercentage: calculatePercentage(BigInt(co2eq), sumOfEmissions),
+    activityEmissions: co2eq,
+    emissionsPercentage: calculatePercentage(co2eq, sumOfEmissions),
     subsectorName: toKebabCase(subsector_name),
     scopeName: scope_name,
   };
@@ -199,14 +217,8 @@ function convertEmissionsToStrings(
 ): ActivityDataByScope {
   return {
     activityTitle: input.activityTitle,
-    scopes: Object.entries(input.scopes).reduce(
-      (acc, [key, value]) => {
-        acc[key] = value.toString();
-        return acc;
-      },
-      {} as { [key: string]: string },
-    ),
-    totalEmissions: input.totalEmissions.toString(),
+    scopes: input.scopes,
+    totalEmissions: input.totalEmissions,
     percentage: input.percentage,
   };
 }
@@ -215,38 +227,36 @@ function calculateEmissionsByScope(
   activityValues: UngroupedActivityData[],
 ): ActivityDataByScope[] {
   const activities: { [key: string]: ActivityDataByScope } = {};
-  let total = 0n;
+  let total = new Decimal(0);
 
   // First pass: sum up emissions by activity and scope
   activityValues.forEach((item) => {
-    const emissions = BigInt(item.activityEmissions);
+    const emissions = item.activityEmissions;
     const { activityTitle, scopeName } = item;
 
     if (!activities[activityTitle]) {
       activities[activityTitle] = {
         activityTitle,
         scopes: {},
-        totalEmissions: 0n,
+        totalEmissions: new Decimal(0),
         percentage: 0,
       };
     }
 
     if (!(scopeName in activities[activityTitle].scopes)) {
-      activities[activityTitle].scopes[scopeName] = 0n;
+      activities[activityTitle].scopes[scopeName] = new Decimal(0);
     }
 
     activities[activityTitle].scopes[scopeName] =
-      BigInt(activities[activityTitle].scopes[scopeName]) + BigInt(emissions);
+      activities[activityTitle].scopes[scopeName].plus(emissions);
     activities[activityTitle].totalEmissions =
-      BigInt(activities[activityTitle].totalEmissions) + BigInt(emissions);
-    total += BigInt(emissions);
+      activities[activityTitle].totalEmissions.plus(emissions);
+    total = total.plus(emissions);
   });
 
   // Second pass: calculate percentages
   Object.values(activities).forEach((activity) => {
-    activity.percentage = Number(
-      (BigInt(activity.totalEmissions) * 100n) / BigInt(total),
-    );
+    activity.percentage = calculatePercentage(activity.totalEmissions, total);
   });
 
   // Convert the activities object to an array
@@ -278,31 +288,27 @@ const groupActivities = (
             const currentActivityValue =
               current.activityValue === "N/A"
                 ? "N/A"
-                : BigInt(current.activityValue);
+                : new Decimal(current.activityValue);
             const newActivityValue =
               isActivityValueNa ||
               acc.activityValue === "N/A" ||
               currentActivityValue === "N/A"
                 ? "N/A"
-                : (
-                    BigInt(acc.activityValue) + (currentActivityValue as bigint)
-                  ).toString();
-
+                : Decimal.sum(acc.activityValue, currentActivityValue);
             return {
               activityValue: newActivityValue,
               activityUnits: current.activityUnits,
               totalActivityEmissions: (
-                BigInt(acc.totalActivityEmissions) +
-                BigInt(current.activityEmissions)
-              ).toString(),
+                acc.totalActivityEmissions as Decimal
+              ).plus(current.activityEmissions),
               totalEmissionsPercentage:
                 acc.totalEmissionsPercentage + current.emissionsPercentage,
             };
           },
           {
-            activityValue: isActivityValueNa ? "N/A" : 0n,
+            activityValue: isActivityValueNa ? "N/A" : new Decimal(0),
             activityUnits: "",
-            totalActivityEmissions: 0n,
+            totalActivityEmissions: new Decimal(0),
             totalEmissionsPercentage: 0,
           },
         );
@@ -316,10 +322,9 @@ function calculateActivityTotals(grouped: ResponseWithoutTotals) {
   for (const activity in byActivity) {
     const activityData: any = byActivity[activity];
     const totalActivityValueByUnit: any = {};
-    let totalActivityEmissions = BigInt(0);
+    let totalActivityEmissions = new Decimal(0);
 
     for (const fuelType in activityData) {
-      // Skip 'totals' key if it exists
       if (fuelType === "totals") continue;
 
       const fuelTypeData = activityData[fuelType];
@@ -327,55 +332,54 @@ function calculateActivityTotals(grouped: ResponseWithoutTotals) {
       for (const unit in fuelTypeData) {
         const data = fuelTypeData[unit];
 
-        const activityValueStr = data.activityValue;
+        const activityValue = data.activityValue;
         const activityUnits = data.activityUnits;
-        const totalActivityEmissionsStr = data.totalActivityEmissions;
+        const activityEmissions = data.totalActivityEmissions;
 
-        let activityEmissions = BigInt(0);
-
-        // Handle totalActivityEmissions
-        if (totalActivityEmissionsStr !== "N/A") {
-          activityEmissions = BigInt(totalActivityEmissionsStr);
+        if (activityEmissions !== "N/A") {
+          const emissionsToAdd =
+            activityEmissions instanceof Decimal
+              ? activityEmissions
+              : new Decimal(activityEmissions);
+          totalActivityEmissions = totalActivityEmissions.plus(emissionsToAdd);
         }
-        totalActivityEmissions += activityEmissions;
 
-        // Handle activityValue by unit
         if (!totalActivityValueByUnit[activityUnits]) {
           totalActivityValueByUnit[activityUnits] = {
-            totalActivityValue: BigInt(0),
+            totalActivityValue: new Decimal(0),
             hasNA: false,
           };
         }
 
-        if (activityValueStr === "N/A") {
+        if (activityValue === "N/A") {
           totalActivityValueByUnit[activityUnits].hasNA = true;
         } else {
-          const activityValue = BigInt(activityValueStr);
-          totalActivityValueByUnit[activityUnits].totalActivityValue +=
-            activityValue;
+          const decimalActivityValue =
+            activityValue instanceof Decimal
+              ? activityValue
+              : new Decimal(activityValue);
+          totalActivityValueByUnit[activityUnits].totalActivityValue =
+            totalActivityValueByUnit[activityUnits].totalActivityValue.plus(
+              decimalActivityValue,
+            );
         }
       }
     }
 
-    // Prepare totalActivityValueByUnit for output
     const totalActivityValueByUnitOutput: any = {};
     for (const unit in totalActivityValueByUnit) {
       const { totalActivityValue, hasNA } = totalActivityValueByUnit[unit];
-      totalActivityValueByUnitOutput[unit] = hasNA
-        ? "N/A"
-        : totalActivityValue.toString();
+      totalActivityValueByUnitOutput[unit] = hasNA ? "N/A" : totalActivityValue;
     }
 
-    // Add totals to activityData
     activityData.totals = {
       totalActivityValueByUnit: totalActivityValueByUnitOutput,
-      totalActivityEmissions: totalActivityEmissions.toString(),
+      totalActivityEmissions,
     };
   }
 
   return grouped;
 }
-
 export const getEmissionsBreakdown = async (
   inventory: string,
   sectorName: string,
@@ -389,8 +393,8 @@ export const getEmissionsBreakdown = async (
     const emissionsBySubSector: any = {};
     Object.entries(bySubsector).forEach(([subsectorName, values]) => {
       emissionsBySubSector[subsectorName] = values.reduce(
-        (sum, activity) => sum + BigInt(activity.co2eq || 0),
-        0n,
+        (sum, activity) => new Decimal(activity.co2eq || 0).plus(sum),
+        new Decimal(0),
       );
     });
 

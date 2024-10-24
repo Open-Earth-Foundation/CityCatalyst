@@ -138,8 +138,10 @@ export default class ActivityService {
       delete gasValue.emissionsFactor;
 
       if (gasValue.gasAmount == null) {
-        gasValue.gasAmount =
-          gases.find((gas) => gas.gas === gasValue.gas)?.amount ?? 0n;
+        gasValue.gasAmount = BigInt(
+          gases.find((gas) => gas.gas === gasValue.gas)?.amount?.toNumber() ??
+            0,
+        );
       }
 
       await db.models.GasValue.upsert(
@@ -161,14 +163,12 @@ export default class ActivityService {
     inventoryValueParams,
     activityValueParams,
     gasValues,
-    dataSourceParams,
   }: {
     id: string;
     activityValueParams: Omit<ActivityValueAttributes, "id">;
     inventoryValueId: string | undefined;
     inventoryValueParams: Omit<InventoryValueAttributes, "id"> | undefined;
     gasValues: UpdateGasValueInput[] | undefined;
-    dataSourceParams: Omit<DataSourceAttributes, "datasourceId"> | undefined;
   }): Promise<ActivityValue | undefined> {
     const activityValue = await db.models.ActivityValue.findOne({
       where: { id },
@@ -190,13 +190,7 @@ export default class ActivityService {
     });
 
     return await db.sequelize?.transaction(
-      async (transaction): Promise<ActivityValue> => {
-        datasourceId = await this.updateDataSource({
-          activityValue,
-          dataSourceParams,
-          transaction,
-        });
-
+      async (transaction: Transaction): Promise<ActivityValue> => {
         const inventoryValue = await this.updateInventoryValue({
           activityValue,
           inventoryValueParams,
@@ -225,7 +219,7 @@ export default class ActivityService {
           BigInt(inventoryValue.co2eq as bigint) -
             BigInt(activityValue.co2eq as bigint) ?? 0n;
 
-        const calculatedCO2e = BigInt(totalCO2e); // Ensure totalCO2e is BigInt
+        const calculatedCO2e = BigInt(totalCO2e.toString()); // Ensure totalCO2e is BigInt
 
         inventoryValue.co2eq = currentCO2e + calculatedCO2e;
         inventoryValue.co2eqYears = Math.max(
@@ -257,7 +251,6 @@ export default class ActivityService {
     inventoryValueId: string | undefined,
     inventoryValueParams: Omit<InventoryValueAttributes, "id"> | undefined,
     gasValues: GasValueInput[] | undefined,
-    dataSourceParams: Omit<DataSourceAttributes, "datasourceId"> | undefined,
   ): Promise<ActivityValue | undefined> {
     // validate using the ManualInputValidationService
     await ManualInputValidationService.validateActivity({
@@ -267,14 +260,6 @@ export default class ActivityService {
 
     return await db.sequelize?.transaction(
       async (transaction: Transaction): Promise<ActivityValue> => {
-        const dataSource = await db.models.DataSource.create(
-          {
-            ...dataSourceParams,
-            datasourceId: randomUUID(),
-          },
-          { transaction },
-        );
-
         if (inventoryValueId && inventoryValueParams) {
           throw new createHttpError.BadRequest(
             "Can't use both inventoryValueId and inventoryValue",
@@ -297,7 +282,6 @@ export default class ActivityService {
               subSectorId,
               subCategoryId,
               gpcReferenceNumber: inventoryValueParams.gpcReferenceNumber,
-              datasourceId: dataSource.datasourceId,
             },
             { transaction },
           );
@@ -324,7 +308,6 @@ export default class ActivityService {
         const activityValue = await db.models.ActivityValue.create(
           {
             ...activityValueParams,
-            datasourceId: dataSource.datasourceId,
             inventoryValueId: inventoryValue.id,
             id: randomUUID(),
           },
@@ -340,7 +323,7 @@ export default class ActivityService {
           );
 
         const currentCO2e = BigInt(inventoryValue.co2eq ?? 0n);
-        const calculatedCO2e = BigInt(totalCO2e); // Ensure totalCO2e is BigInt
+        const calculatedCO2e = BigInt(totalCO2e.toString()); // Ensure totalCO2e is BigInt
 
         inventoryValue.co2eq = currentCO2e + calculatedCO2e;
         inventoryValue.co2eqYears = Math.max(
@@ -349,7 +332,7 @@ export default class ActivityService {
         );
 
         await inventoryValue.save({ transaction });
-        activityValue.co2eq = totalCO2e;
+        activityValue.co2eq = BigInt(totalCO2e.toString());
         activityValue.co2eqYears = totalCO2eYears;
         await activityValue.save({ transaction });
 
@@ -381,8 +364,11 @@ export default class ActivityService {
             delete gasValue.emissionsFactor;
 
             if (gasValue.gasAmount == null) {
-              gasValue.gasAmount =
-                gases.find((gas) => gas.gas === gasValue.gas)?.amount ?? 0n;
+              gasValue.gasAmount = BigInt(
+                gases
+                  .find((gas) => gas.gas === gasValue.gas)
+                  ?.amount?.toNumber() ?? 0,
+              );
             }
 
             await db.models.GasValue.create(

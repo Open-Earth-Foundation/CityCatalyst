@@ -18,6 +18,7 @@
               "data-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
+            "default-units": "units-cubic-meters",
             "extra-fields": [
               {
                 "id": "residential-building-type",
@@ -135,6 +136,7 @@
               "data-source"
             ],
             "activity-title": "activity-energy-consumption",
+            "default-units": "units-kilowatt-hours",
             "extra-fields": [
               {
                 "id": "residential-building-type",
@@ -249,6 +251,7 @@
               "data-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
+            "default-units": "units-cubic-meters",
             "extra-fields": [
               {
                 "id": "commercial-building-type",
@@ -391,6 +394,7 @@
               "data-source"
             ],
             "activity-title": "activity-energy-consumption",
+            "default-units": "units-kilowatt-hours",
             "extra-fields": [
               {
                 "id": "commercial-building-type",
@@ -532,6 +536,7 @@
               "data-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
+            "default-units": "units-cubic-meters",
             "extra-fields": [
               {
                 "id": "manufacturing-and-construction-type",
@@ -706,6 +711,7 @@
               "data-source"
             ],
             "activity-title": "activity-energy-consumption",
+            "default-units": "units-kilowatt-hours",
             "extra-fields": [
               {
                 "id": "manufacturing-and-construction-type",
@@ -870,6 +876,7 @@
               "data-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
+            "default-units": "units-cubic-meters",
             "extra-fields": [
               {
                 "id": "energy-industries-type",
@@ -1041,6 +1048,7 @@
               "data-source"
             ],
             "activity-title": "activity-energy-consumption",
+            "default-units": "units-kilowatt-hours",
             "extra-fields": [
               {
                 "id": "energy-industries-type",
@@ -1196,6 +1204,7 @@
               "data-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
+            "default-units": "units-cubic-meters",
             "extra-fields": [
               {
                 "id": "agriculture-forestry-fishing-activities-type",
@@ -1329,6 +1338,7 @@
               "data-source"
             ],
             "activity-title": "activity-energy-consumption",
+            "default-units": "units-kilowatt-hours",
             "extra-fields": [
               {
                 "id": "agriculture-forestry-fishing-activities-type",
@@ -1460,6 +1470,7 @@
               "data-source"
             ],
             "activity-title": "activity-total-fuel-consumption",
+            "default-units": "units-cubic-meters",
             "extra-fields": [
               {
                 "id": "non-specific-sources-type",
@@ -1595,6 +1606,7 @@
               "data-source"
             ],
             "activity-title": "activity-energy-consumption",
+            "default-units": "units-kilowatt-hours",
             "extra-fields": [
               {
                 "id": "non-specific-sources-type",
@@ -1953,6 +1965,7 @@
               "data-source"
             ],
             "activity-title": "activity-total-fuel-sales",
+            "default-units": "units-cubic-meters",
             "extra-fields": [
               {
                 "id": "on-road-transport-fuel-type",
@@ -2214,7 +2227,8 @@
             "units": [
               "units-kilowatt-hours",
               "units-terajoules"
-            ]
+            ],
+            "default-units": "units-kilowatt-hours"
           }
         ],
         "suggestedActivities": [
@@ -2290,6 +2304,7 @@
               "data-source"
             ],
             "activity-title": "activity-total-fuel-sales",
+            "default-units": "units-cubic-meters",
             "extra-fields": [
               {
                 "id": "railways-fuel-type",
@@ -2529,7 +2544,8 @@
             "units": [
               "units-kilowatt-hours",
               "units-terajoules"
-            ]
+            ],
+            "default-units": "units-kilowatt-hours"
           }
         ],
         "suggestedActivities": [
@@ -2603,6 +2619,7 @@
               "data-source"
             ],
             "activity-title": "activity-total-fuel-sales",
+            "default-units": "units-cubic-meters",
             "extra-fields": [
               {
                 "id": "waterborne-navigation-fuel-type",
@@ -2828,7 +2845,8 @@
             "units": [
               "units-kilowatt-hours",
               "units-terajoules"
-            ]
+            ],
+            "default-units": "units-kilowatt-hours"
           }
         ],
         "suggestedActivities": [
@@ -2901,6 +2919,7 @@
               "data-source"
             ],
             "activity-title": "activity-total-fuel-sales",
+            "default-units": "units-cubic-meters",
             "extra-fields": [
               {
                 "id": "aviation-fuel-type",
@@ -3132,7 +3151,8 @@
             "units": [
               "units-kilowatt-hours",
               "units-terajoules"
-            ]
+            ],
+            "default-units": "units-kilowatt-hours"
           }
         ],
         "suggestedActivities": [
@@ -3206,6 +3226,7 @@
               "data-source"
             ],
             "activity-title": "activity-total-fuel-sales",
+            "default-units": "units-cubic-meters",
             "extra-fields": [
               {
                 "id": "off-road-transport-fuel-type",
@@ -3363,7 +3384,8 @@
             "units": [
               "units-kilowatt-hours",
               "units-terajoules"
-            ]
+            ],
+            "default-units": "units-kilowatt-hours"
           }
         ],
         "suggestedActivities": [
@@ -3444,6 +3466,7 @@
               "methane-commitment-solid-waste-inboundary-landfill-id"
             ],
             "activity-title": "total-municipal-solid-waste-disposed",
+            "default-units": "units-tonnes",
             "extra-fields": [
               {
                 "id": "methane-commitment-solid-waste-inboundary-landfill-id",
@@ -3463,7 +3486,9 @@
               },
               {
                 "id": "methane-collected-and-removed",
-                "type": "number"
+                "type": "number",
+                "min": 0,
+                "max": 1
               },
               {
                 "id": "methane-commitment-solid-waste-inboundary-waste-composition",
@@ -3549,6 +3574,7 @@
               "methane-commitment-solid-waste-outboundary-landfill-id"
             ],
             "activity-title": "total-municipal-solid-waste-disposed",
+            "default-units": "units-tonnes",
             "extra-fields": [
               {
                 "id": "methane-commitment-solid-waste-outboundary-landfill-id",
@@ -3568,7 +3594,9 @@
               },
               {
                 "id": "methane-collected-and-removed",
-                "type": "number"
+                "type": "number",
+                "min": 0,
+                "max": 1
               },
               {
                 "id": "methane-commitment-solid-waste-outboundary-waste-composition",
@@ -3643,6 +3671,7 @@
               "biological-treatment-inboundary-source"
             ],
             "activity-title": "total-organic-waste-treated",
+            "default-units": "units-kilograms",
             "extra-fields": [
               {
                 "id": "biological-treatment-inboundary-treatment-type",
@@ -3662,7 +3691,12 @@
               },
               {
                 "id": "total-of-ch4-recovered",
-                "type": "number"
+                "type": "number",
+                "units": [
+                  "units-kilograms",
+                  "units-tonnes"
+                ],
+                "default-units": "units-kilograms"
               },
               {
                 "id": "biological-treatment-inboundary-source",
@@ -3736,6 +3770,7 @@
               "biological-treatment-outboundary-source"
             ],
             "activity-title": "total-organic-waste-treated",
+            "default-units": "units-kilograms",
             "extra-fields": [
               {
                 "id": "biological-treatment-outboundary-treatment-type",
@@ -3755,7 +3790,12 @@
               },
               {
                 "id": "total-of-ch4-recovered",
-                "type": "number"
+                "type": "number",
+                "units": [
+                  "units-kilograms",
+                  "units-tonnes"
+                ],
+                "default-units": "units-kilograms"
               },
               {
                 "id": "biological-treatment-outboundary-source",
@@ -3836,6 +3876,7 @@
               "waste-composition": "incineration-waste-inboundary-waste-composition"
             },
             "activity-title": "total-mass-of-waste-incinerated-or-burned",
+            "default-units": "units-kilograms",
             "extra-fields": [
               {
                 "id": "incineration-waste-inboundary-incineration-facility-id",
@@ -3924,6 +3965,7 @@
               "waste-composition": "incineration-waste-outboundary-waste-composition"
             },
             "activity-title": "total-mass-of-waste-incinerated-or-burned",
+            "default-units": "units-kilograms",
             "extra-fields": [
               {
                 "id": "incineration-waste-outboundary-incineration-facility-id",
@@ -4029,11 +4071,15 @@
               },
               {
                 "id": "total-organic-sludge-removed",
-                "type": "number"
+                "type": "number",
+                "units": "units-kilograms-BOD",
+                "default-units": "units-kilograms-BOD"
               },
               {
                 "id": "wastewater-inside-domestic-calculator-methane-recovered",
-                "type": "number"
+                "type": "number",
+                "units": "units-kilograms",
+                "default-units": "units-kilograms"
               },
               {
                 "id": "wastewater-inside-domestic-calculator-collection-status",
@@ -4087,6 +4133,11 @@
               "wastewater-inside-industrial-calculator-source"
             ],
             "activity-title": "total-industry-production",
+            "units": [
+              "units-kilograms",
+              "units-tonnes"
+            ],
+            "default-units": "units-tonnes",
             "extra-fields": [
               {
                 "id": "wastewater-inside-industrial-calculator-industry-type",
@@ -4110,11 +4161,18 @@
               },
               {
                 "id": "total-organic-sludge-removed",
-                "type": "number"
+                "type": "number",
+                "units": "units-kilograms-COD",
+                "default-units": "units-kilograms-COD"
               },
               {
                 "id": "wastewater-inside-industrial-calculator-methane-recovered",
-                "type": "number"
+                "type": "number",
+                "units": [
+                  "units-kilograms",
+                  "units-tonnes"
+              ],
+                "default-units": "units-kilograms"
               },
               {
                 "id": "wastewater-inside-industrial-calculator-wastewater-generated",
@@ -4235,11 +4293,15 @@
               },
               {
                 "id": "total-organic-sludge-removed",
-                "type": "number"
+                "type": "number",
+                "units": "units-kilograms-BOD",
+                "default-units": "units-kilograms-BOD"
               },
               {
                 "id": "wastewater-outside-domestic-calculator-methane-recovered",
-                "type": "number"
+                "type": "number",
+                "units": "units-kilograms",
+                "default-units": "units-kilograms"
               },
               {
                 "id": "wastewater-outside-domestic-calculator-collection-status",
@@ -4293,6 +4355,11 @@
               "wastewater-outside-industrial-calculator-source"
             ],
             "activity-title": "total-industry-production",
+            "units": [
+              "units-kilograms",
+              "units-tonnes"
+            ],
+            "default-units": "units-tonnes",
             "extra-fields": [
               {
                 "id": "wastewater-outside-industrial-calculator-industry-type",
@@ -4316,11 +4383,18 @@
               },
               {
                 "id": "total-organic-sludge-removed",
-                "type": "number"
+                "type": "number",
+                "units": "units-kilograms-COD",
+                "default-units": "units-kilograms-COD"
               },
               {
                 "id": "wastewater-outside-industrial-calculator-methane-recovered",
-                "type": "number"
+                "type": "number",
+                "units": [
+                  "units-kilograms",
+                  "units-tonnes"
+              ],
+                "default-units": "units-kilograms"
               },
               {
                 "id": "wastewater-outside-industrial-calculator-wastewater-generated",

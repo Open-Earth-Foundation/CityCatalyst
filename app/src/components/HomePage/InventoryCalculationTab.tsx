@@ -21,7 +21,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { TabHeader } from "@/app/[lng]/[inventory]/TabHeader";
+import { TabHeader } from "@/components/HomePage/TabHeader";
 import { undefined } from "zod";
 import { BlueSubtitle } from "@/components/blue-subtitle";
 

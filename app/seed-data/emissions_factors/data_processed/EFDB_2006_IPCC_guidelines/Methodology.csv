@@ -1,6 +1,7 @@
 methodology_id,methodology,methodology_url,datasource_id
 c2458f7f-f309-3eb6-829c-5a635ad30de0,fugitive-emissions-coal,,6a508faa-80a8-3246-9941-90d8cc8dec85
-3f02ca39-70fb-3728-8d53-d4f66e8b30ef,sampling-scaled-data,,6a508faa-80a8-3246-9941-90d8cc8dec85
+7b574768-107a-3fb9-9447-a5f10a52e6a6,fugitive-emissions-oil-gassampling-scaled-data,,6a508faa-80a8-3246-9941-90d8cc8dec85
 f766b3fc-e2e8-3a8a-90a9-b24b0074e4f7,fuel-combustion-consumption,,6a508faa-80a8-3246-9941-90d8cc8dec85
 8ac51911-476e-3427-bb93-6057b733eee0,modeled-data,,6a508faa-80a8-3246-9941-90d8cc8dec85
-a1f5eab0-e857-3c02-be57-887181b2fc38,fugitive-emissions-oil-gas,,6a508faa-80a8-3246-9941-90d8cc8dec85
+d988344f-c104-31f5-8be8-09f99b74f202,movement_driver,,6a508faa-80a8-3246-9941-90d8cc8dec85
+124a0b62-3ed3-3812-98cc-612385665fcc,fuel_sales,,6a508faa-80a8-3246-9941-90d8cc8dec85

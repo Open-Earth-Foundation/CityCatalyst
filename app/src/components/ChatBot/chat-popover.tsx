@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  Button,
+  Icon,
   IconButton,
   Popover,
   PopoverArrow,
@@ -15,6 +17,7 @@ import React from "react";
 import { BsStars } from "react-icons/bs";
 import ChatBot from "./chat-bot";
 import { useTranslation } from "@/i18n/client";
+import { AskAiIcon } from "../icons";
 
 export default function ChatPopover({
   lng = "en",
@@ -38,21 +41,39 @@ export default function ChatPopover({
         placement="top-end"
         closeOnBlur={false}
         strategy="fixed"
+        modifiers={[
+          {
+            name: "zIndex",
+            enabled: true,
+            phase: "write",
+            fn: ({ state }) => {
+              state.elements.popper.style.zIndex = "9999";
+            },
+          },
+        ]}
       >
         <PopoverTrigger>
-          <IconButton
-            p={4}
-            icon={<BsStars />}
+          <Button
+            leftIcon={<Icon as={AskAiIcon} h={24} w={24} />}
             className="fixed z-30 bottom-16 right-16"
-            size="lg"
+            fontSize="button.md"
+            fontStyle="normal"
+            fontWeight="600"
+            letterSpacing="wider"
+            fontFamily="heading"
             aria-label={t("ai-expert")}
-          />
+            w="116px"
+            h="56px"
+          >
+            {t("ask-ai")}
+          </Button>
         </PopoverTrigger>
         <PopoverContent
           p={0}
           w="57vw"
           bg="background.neutral"
           className="drop-shadow-md"
+          zIndex={9999}
         >
           <PopoverHeader
             bg="background.overlay"

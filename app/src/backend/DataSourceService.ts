@@ -1,9 +1,10 @@
 import { db } from "@/models";
 import type { DataSourceI18n as DataSource } from "@/models/DataSourceI18n";
 import { Inventory } from "@/models/Inventory";
-import { multiplyBigIntFloat } from "@/util/big_int";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
+import Decimal from "decimal.js";
+import { decimalToBigInt } from "@/util/big_int";
 
 const EARTH_LOCATION = "EARTH";
 
@@ -131,18 +132,18 @@ export default class DataSourceService {
     }
 
     const emissions = data.totals.emissions;
-    let co2eq, co2Amount, n2oAmount, ch4Amount: bigint;
+    let co2eq, co2Amount, n2oAmount, ch4Amount: Decimal;
 
     if (scaleFactor !== 1.0) {
-      co2eq = multiplyBigIntFloat(BigInt(emissions.co2eq_100yr), scaleFactor);
-      co2Amount = multiplyBigIntFloat(BigInt(emissions.co2_mass), scaleFactor);
-      n2oAmount = multiplyBigIntFloat(BigInt(emissions.n2o_mass), scaleFactor);
-      ch4Amount = multiplyBigIntFloat(BigInt(emissions.ch4_mass), scaleFactor);
+      co2eq = new Decimal(emissions.co2eq_100yr).times(scaleFactor);
+      co2Amount = new Decimal(emissions.co2_mass).times(scaleFactor);
+      n2oAmount = new Decimal(emissions.n2o_mass).times(scaleFactor);
+      ch4Amount = new Decimal(emissions.ch4_mass).times(scaleFactor);
     } else {
-      co2eq = BigInt(emissions.co2eq_100yr);
-      co2Amount = BigInt(emissions.co2_mass);
-      n2oAmount = BigInt(emissions.n2o_mass);
-      ch4Amount = BigInt(emissions.ch4_mass);
+      co2eq = new Decimal(emissions.co2eq_100yr);
+      co2Amount = new Decimal(emissions.co2_mass);
+      n2oAmount = new Decimal(emissions.n2o_mass);
+      ch4Amount = new Decimal(emissions.ch4_mass);
     }
 
     const subCategory = await db.models.SubCategory.findOne({
@@ -160,7 +161,7 @@ export default class DataSourceService {
     const inventoryValue = await db.models.InventoryValue.create({
       datasourceId: source.datasourceId,
       inventoryId: inventory.inventoryId,
-      co2eq,
+      co2eq: decimalToBigInt(co2eq),
       co2eqYears: 100,
       id: randomUUID(),
       subCategoryId: source.subcategoryId,
@@ -174,19 +175,19 @@ export default class DataSourceService {
       id: randomUUID(),
       inventoryValueId: inventoryValue.id,
       gas: "CO2",
-      gasAmount: co2Amount,
+      gasAmount: decimalToBigInt(co2Amount),
     });
     await db.models.GasValue.create({
       id: randomUUID(),
       inventoryValueId: inventoryValue.id,
       gas: "N2O",
-      gasAmount: n2oAmount,
+      gasAmount: decimalToBigInt(n2oAmount),
     });
     await db.models.GasValue.create({
       id: randomUUID(),
       inventoryValueId: inventoryValue.id,
       gas: "CH4",
-      gasAmount: ch4Amount,
+      gasAmount: decimalToBigInt(ch4Amount),
     });
 
     return true;

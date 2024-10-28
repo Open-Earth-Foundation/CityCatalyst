@@ -268,7 +268,7 @@
                 "id": "commercial-building-fuel-type",
                 "options": [
                   "fuel-type-propane",
-                  "fuel-type-wood/wood-waste",
+                  "fuel-type-wood-wood-waste",
                   "fuel-type-natural-gas",
                   "fuel-type-liquefied-petroleum-gases",
                   "fuel-type-anthracite",
@@ -359,7 +359,7 @@
           "options": [
             "fuel-type-all",
             "fuel-type-propane",
-            "fuel-type-wood/wood-waste",
+            "fuel-type-wood-wood-waste",
             "fuel-type-natural-gas",
             "fuel-type-liquefied-petroleum-gases",
             "fuel-type-anthracite",
@@ -1223,7 +1223,7 @@
                   "fuel-type-diesel-oil",
                   "fuel-type-natural-gas",
                   "fuel-type-liquefied-petroleum-gases",
-                  "fuel-type-wood/wood-waste",
+                  "fuel-type-wood-wood-waste",
                   "fuel-type-other-primary-solid-biomass",
                   "fuel-type-natural-charcoal",
                   "fuel-type-gas-oil",
@@ -1304,7 +1304,7 @@
             "fuel-type-diesel-oil",
             "fuel-type-natural-gas",
             "fuel-type-liquefied-petroleum-gases",
-            "fuel-type-wood/wood-waste",
+            "fuel-type-wood-wood-waste",
             "fuel-type-other-primary-solid-biomass",
             "fuel-type-charcoal",
             "fuel-type-gas-oil",
@@ -1490,7 +1490,7 @@
                   "fuel-type-diesel-oil",
                   "fuel-type-natural-gas",
                   "fuel-type-liquefied-petroleum-gases",
-                  "fuel-type-wood/wood-waste",
+                  "fuel-type-wood-wood-waste",
                   "fuel-type-other-primary-solid-biomass",
                   "fuel-type-charcoal",
                   "fuel-type-natural-gas-oil",
@@ -1572,7 +1572,7 @@
             "fuel-type-diesel-oil",
             "fuel-type-natural-gas",
             "fuel-type-liquefied-petroleum-gases",
-            "fuel-type-wood/wood-waste",
+            "fuel-type-wood-wood-waste",
             "fuel-type-other-primary-solid-biomass",
             "fuel-type-charcoal",
             "fuel-type-natural-gas-oil",
@@ -1601,8 +1601,8 @@
             "id": "energy-consumption-non-specific-sources-activity",
             "group-by": "non-specific-sources-type",
             "unique-by": [
-              "type",
-              "energy-usage",
+              "non-specific-sources-type",
+              "non-specific-sources-energy-usage",
               "data-source"
             ],
             "activity-title": "activity-energy-consumption",
@@ -1975,13 +1975,7 @@
                   "fuel-type-diesel",
                   "fuel-type-lpg",
                   "fuel-type-cng",
-                  "fuel-type-biofuel",
-                  "fuel-type-e85-ethanol",
-                  "fuel-type-b20-biodiesel",
-                  "fuel-type-natural-gas",
-                  "fuel-type-ethanol",
-                  "fuel-type-biodiesel",
-                  "fuel-type-bioethanol"
+                  "fuel-type-biofuel"
                 ]
               },
               {
@@ -2314,13 +2308,7 @@
                   "fuel-type-diesel",
                   "fuel-type-lpg",
                   "fuel-type-cng",
-                  "fuel-type-biofuel",
-                  "fuel-type-e85-ethanol",
-                  "fuel-type-b20-biodiesel",
-                  "fuel-type-natural-gas",
-                  "fuel-type-ethanol",
-                  "fuel-type-biodiesel",
-                  "fuel-type-bioethanol"
+                  "fuel-type-biofuel"
                 ]
               },
               {
@@ -2629,13 +2617,7 @@
                   "fuel-type-diesel",
                   "fuel-type-lpg",
                   "fuel-type-cng",
-                  "fuel-type-biofuel",
-                  "fuel-type-e85-ethanol",
-                  "fuel-type-b20-biodiesel",
-                  "fuel-type-natural-gas",
-                  "fuel-type-ethanol",
-                  "fuel-type-biodiesel",
-                  "fuel-type-bioethanol"
+                  "fuel-type-biofuel"
                 ]
               },
               {
@@ -2931,8 +2913,7 @@
                   "fuel-type-jet-kerosene",
                   "fuel-type-lpg",
                   "fuel-type-gasoline",
-                  "fuel-type-natural-gas-liquids",
-                  "fuel-type-natural-kerosene"
+                  "fuel-type-natural-gas-liquids"
                 ]
               },
               {
@@ -3088,11 +3069,13 @@
         {
           "id": "aviation-fuel-type",
           "options": [
-            "fuel-type-gasoline",
+            "fuel-type-aviation-gasoline",
             "fuel-type-diesel",
+            "fuel-type-jet-gasoline",
+            "fuel-type-jet-kerosene",
             "fuel-type-lpg",
-            "fuel-type-cng",
-            "fuel-type-biofuel"
+            "fuel-type-gasoline",
+            "fuel-type-natural-gas-liquids"
           ],
           "multiselect": true
         },
@@ -3236,13 +3219,7 @@
                   "fuel-type-diesel",
                   "fuel-type-lpg",
                   "fuel-type-cng",
-                  "fuel-type-biofuel",
-                  "fuel-type-e85-ethanol",
-                  "fuel-type-b20-biodiesel",
-                  "fuel-type-natural-gas",
-                  "fuel-type-ethanol",
-                  "fuel-type-biodiesel",
-                  "fuel-type-bioethanol"
+                  "fuel-type-biofuel"
                 ]
               },
               {

@@ -71,6 +71,7 @@ export default function ChatPopover({
         <PopoverContent
           p={0}
           w="57vw"
+          maxHeight={"76vh"}
           bg="background.neutral"
           className="drop-shadow-md"
           zIndex={9999}
@@ -95,7 +96,7 @@ export default function ChatPopover({
               mt={6}
             />
           </PopoverHeader>
-          <PopoverBody maxH={650} w="full" p={6} borderRadius={4}>
+          <PopoverBody w="full" p={6} borderRadius={4}>
             <ChatBot inputRef={inputRef} t={t} inventoryId={inventoryId} />
           </PopoverBody>
         </PopoverContent>

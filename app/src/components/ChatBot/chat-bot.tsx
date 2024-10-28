@@ -501,7 +501,7 @@ export default function ChatBot({
   return (
     <div className="flex flex-col w-full stretch">
       <div
-        className="overflow-y-auto max-h-96 space-y-4"
+        className="overflow-y-auto max-h-[35vh] space-y-4"
         ref={messagesWrapperRef}
       >
         {messages.map((m, i) => {

@@ -36,8 +36,7 @@
                   "fuel-type-peat",
                   "fuel-type-anthracite",
                   "fuel-type-gasoline",
-                  "fuel-type-diesel",
-                  "fuel-type-petrol"
+                  "fuel-type-diesel"
                 ],
                 "emission-factor-dependency": true
               },

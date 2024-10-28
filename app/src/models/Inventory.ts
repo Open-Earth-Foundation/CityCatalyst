@@ -139,7 +139,7 @@ export class Inventory
         publishedAt: {
           type: DataTypes.DATE,
           allowNull: true,
-          field: "publishedAt",
+          field: "published_at",
         },
       },
       {

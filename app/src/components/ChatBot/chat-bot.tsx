@@ -33,6 +33,7 @@ import { AssistantStreamEvent } from "openai/resources/beta/assistants/assistant
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { set } from "zod";
 interface Message {
   role: "user" | "assistant" | "code";
   text: string;
@@ -302,6 +303,7 @@ export default function ChatBot({
   // Create new assistant message
   const handleTextCreated = () => {
     appendMessage("assistant", "");
+    setIsGenerating(true);
   };
 
   // Append text to last assistant message
@@ -319,6 +321,8 @@ export default function ChatBot({
   const handleRunCompleted = () => {
     setInputDisabled(false);
   };
+
+  console.log(inputDisabled);
 
   const handleRequiresAction = async (
     event: AssistantStreamEvent.ThreadRunRequiresAction,
@@ -409,6 +413,7 @@ export default function ChatBot({
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
       setIsGenerating(false); // Reset generation state when stopped
+      setInputDisabled(false);
     }
   };
 
@@ -635,24 +640,26 @@ export default function ChatBot({
             onChange={(e) => setUserInput(e.target.value)}
             onKeyDown={onKeyDown}
           />
-          <IconButton
-            type="submit"
-            variant="ghost"
-            icon={<MdOutlineSend size={24} />}
-            color="content.tertiary"
-            aria-label="Send message"
-            isDisabled={inputDisabled}
-          />
+          {!isGenerating ? (
+            <IconButton
+              type="submit"
+              variant="ghost"
+              icon={<MdOutlineSend size={24} />}
+              color="content.tertiary"
+              aria-label="Send message"
+              isDisabled={inputDisabled}
+            />
+          ) : (
+            <IconButton
+              onClick={stopGeneration}
+              icon={<MdStop />}
+              colorScheme="red"
+              aria-label="Stop generation"
+              isDisabled={!isGenerating} // Disable button when not generating
+            />
+          )}
         </HStack>
       </form>
-      <Button
-        onClick={stopGeneration}
-        leftIcon={<MdStop />}
-        colorScheme="red"
-        isDisabled={isGenerating} // Disable button when not generating
-      >
-        Stop Generation
-      </Button>
     </div>
   );
 }

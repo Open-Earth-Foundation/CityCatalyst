@@ -322,8 +322,6 @@ export default function ChatBot({
     setInputDisabled(false);
   };
 
-  console.log(inputDisabled);
-
   const handleRequiresAction = async (
     event: AssistantStreamEvent.ThreadRunRequiresAction,
   ) => {
@@ -640,13 +638,12 @@ export default function ChatBot({
             onChange={(e) => setUserInput(e.target.value)}
             onKeyDown={onKeyDown}
           />
-          {isGenerating ? (
+          {inputDisabled ? (
             <IconButton
               onClick={stopGeneration}
               icon={<MdStop />}
               colorScheme="red"
               aria-label="Stop generation"
-              isDisabled={!isGenerating} // Disable button when not generating
             />
           ) : (
             <IconButton

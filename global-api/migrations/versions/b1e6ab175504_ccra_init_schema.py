@@ -23,115 +23,64 @@ def upgrade() -> None:
     conn = op.get_bind()
 
     conn.execute(text("""
-    CREATE TABLE IF NOT EXISTS modelled.dim_ccra_components (
-      component_id UUID PRIMARY KEY,
-      component_type VARCHAR,
-      component_typename VARCHAR,
-      compenent_descripton VARCHAR
-    );
+        CREATE TABLE IF NOT EXISTS modelled.ccra_indicator (
+          "id" uuid,
+          "actor_id" varchar,
+          "indicator_name" varchar,
+          "indicator_score" numeric,
+          "indicator_units" varchar,
+          "indicator_normalized_score" numeric,
+          "indicator_year" int,
+          "scenario_name" varchar,
+          "datasource" varchar,
+          CONSTRAINT unique_indicator UNIQUE (id)
+        );
     """))
 
     conn.execute(text("""
-    CREATE TABLE IF NOT EXISTS modelled.ccra_impact_chain_assessment (
-      assessment_id UUID PRIMARY KEY,
-      city_id UUID,
-      key_impact_id UUID,
-      hazard_id UUID,
-      exposure_id UUID,
-      vulnerablity_id UUID,
-      risk_id UUID,
-      time_period_id UUID,
-      scenario_id UUID
-    );
+        CREATE TABLE IF NOT EXISTS modelled.ccra_impactchain (
+          id UUID,
+          keyimpact_name VARCHAR,
+          hazard_name VARCHAR,
+          latest_year INT,
+          scenario_name VARCHAR,
+          CONSTRAINT unique_impactchain UNIQUE (id)
+        );
     """))
 
     conn.execute(text("""
-    CREATE TABLE IF NOT EXISTS modelled.ccra_city_riskassessment (
-      assessment_id UUID PRIMARY KEY,
-      risk_score NUMERIC,
-      risk_scorename VARCHAR,
-      hazard_score NUMERIC,
-      hazard_scorename VARCHAR,
-      exposure_score NUMERIC,
-      exposure_scorename VARCHAR,
-      vulnerablity_score NUMERIC,
-      vulnerablity_scorename VARCHAR,
-      adaptive_capacity_score NUMERIC,
-      adaptive_capacity_scorename VARCHAR,
-      sensitivity_score NUMERIC,
-      sensitivity_scorename VARCHAR,
-      scenario_name VARCHAR,
-      time_period INT
-    );
-    """))
-
-    conn.execute(text("""
-    CREATE TABLE IF NOT EXISTS modelled.ccra_city_indicator (
-      city_id UUID,
+    CREATE TABLE IF NOT EXISTS modelled.ccra_impactchain_indicator (
+      impact_id UUID,
       indicator_id UUID,
+      actor_id VARCHAR,
+      category VARCHAR,
+      subcategory VARCHAR,
       indicator_score NUMERIC,
-      indicator_normalized_score NUMERIC,
-      indicator_scorename VARCHAR,
-      scenario_name VARCHAR,
-      time_period INT,
-      datasource VARCHAR
+      indicator_weight NUMERIC,
+      datasource VARCHAR,
+      CONSTRAINT unique_impactchain_indicator UNIQUE (impact_id, indicator_id, category, subcategory)
     );
     """))
 
     conn.execute(text("""
-    CREATE TABLE IF NOT EXISTS modelled.ccra_city_hazardindicator (
-      assessment_id UUID,
-      indicator_id UUID,
-      hazardindicator_weight NUMERIC,
-      hazardindicator_score NUMERIC,
-      hazardindicator_scorename VARCHAR
-    );
-    """))
-
-    conn.execute(text("""
-    CREATE TABLE IF NOT EXISTS modelled.ccra_city_exposureindicator (
-      assessment_id UUID,
-      indicator_id UUID,
-      exposureindicator_weight NUMERIC,
-      exposureindicator_score NUMERIC,
-      exposureindicator_scorename VARCHAR
-    );
-    """))
-
-    conn.execute(text("""
-    CREATE TABLE IF NOT EXISTS modelled.ccra_city_vulnerablityindicator (
-      assessment_id UUID,
-      vulnerablity_subcategory VARCHAR,
-      indicator_id UUID,
-      vulnerablityindicator_weight NUMERIC,
-      vulnerablityindicator_score NUMERIC,
-      vulnerablityindicator_scorename VARCHAR
-    );
-    """))
-
-    conn.execute(text("""
-    CREATE TABLE IF NOT EXISTS modelled.ccra_scenario (
-      scenario_id UUID PRIMARY KEY,
-      scenario_name VARCHAR
-    );
-    """))
-
-    conn.execute(text("""
-    CREATE TABLE IF NOT EXISTS modelled.ccra_time_period (
-      time_period_id UUID PRIMARY KEY,
-      start_year DATE,
-      end_year DATE
+    CREATE TABLE IF NOT EXISTS modelled.ccra_riskassessment (
+      "impact_id" uuid,
+      "actor_id" varchar,
+      "city_name" varchar,
+      "region_code" varchar,
+      "risk_score" numeric,
+      "hazard_score" numeric,
+      "exposure_score" numeric,
+      "vulnerablity_score" numeric,
+      "adaptive_capacity_score" numeric,
+      "sensitivity_score" numeric,
+      CONSTRAINT unique_risk UNIQUE (impact_id, actor_id)
     );
     """))
 
 
 def downgrade() -> None:
-    op.drop_table('ccra_time_period', schema='modelled')
-    op.drop_table('ccra_scenario', schema='modelled')
-    op.drop_table('ccra_city_vulnerablityindicator', schema='modelled')
-    op.drop_table('ccra_city_exposureindicator', schema='modelled')
-    op.drop_table('ccra_city_hazardindicator', schema='modelled')
-    op.drop_table('ccra_city_indicator', schema='modelled')
-    op.drop_table('ccra_city_riskassessment', schema='modelled')
-    op.drop_table('ccra_impact_chain_assessment', schema='modelled')
-    op.drop_table('dim_ccra_components', schema='modelled')
+    op.drop_table('ccra_indicator', schema='modelled')
+    op.drop_table('ccra_impactchain', schema='modelled')
+    op.drop_table('ccra_impactchain_indicator', schema='modelled')
+    op.drop_table('ccra_riskassessment', schema='modelled')

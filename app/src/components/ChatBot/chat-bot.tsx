@@ -33,7 +33,6 @@ import { AssistantStreamEvent } from "openai/resources/beta/assistants/assistant
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { set } from "zod";
 interface Message {
   role: "user" | "assistant" | "code";
   text: string;

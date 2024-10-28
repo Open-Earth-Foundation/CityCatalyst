@@ -3229,10 +3229,7 @@
                   "vehicle-type-construction-machinery",
                   "vehicle-type-agricultural-machinery",
                   "vehicle-type-mining-equipment",
-                  "vehicle-type-forestry-equipment",
-                  "vehicle-type-household-equipment",
-                  "vehicle-type-airport-equipment",
-                  "vehicle-type-railroad-equipment"
+                  "vehicle-type-forestry-equipment"
                 ],
                 "exclusive": "vehicle-type-all"
               },
@@ -3305,10 +3302,7 @@
             "vehicle-type-construction-machinery",
             "vehicle-type-agricultural-machinery",
             "vehicle-type-mining-equipment",
-            "vehicle-type-forestry-equipment",
-            "vehicle-type-household-equipment",
-            "vehicle-type-airport-equipment",
-            "vehicle-type-railroad-equipment"
+            "vehicle-type-forestry-equipment"
           ],
           "multiselect": true
         },
@@ -3344,10 +3338,7 @@
                   "vehicle-type-construction-machinery",
                   "vehicle-type-agricultural-machinery",
                   "vehicle-type-mining-equipment",
-                  "vehicle-type-forestry-equipment",
-                  "vehicle-type-household-equipment",
-                  "vehicle-type-airport-equipment",
-                  "vehicle-type-railroad-equipment"
+                  "vehicle-type-forestry-equipment"
                 ],
                 "exclusive": "vehicle-type-all"
               },
@@ -3407,10 +3398,7 @@
             "vehicle-type-construction-machinery",
             "vehicle-type-agricultural-machinery",
             "vehicle-type-mining-equipment",
-            "vehicle-type-forestry-equipment",
-            "vehicle-type-household-equipment",
-            "vehicle-type-airport-equipment",
-            "vehicle-type-railroad-equipment"
+            "vehicle-type-forestry-equipment"
           ],
           "multiselect": true
         },
@@ -4032,7 +4020,7 @@
               "wastewater-inside-domestic-calculator-income-group",
               "wastewater-inside-domestic-calculator-collection-status",
               "wastewater-inside-domestic-calculator-treatment-status",
-              "wastewater-inside-domestic-calculator-source"
+              "data-source"
             ],
             "activity-title": "total-population",
             "extra-fields": [
@@ -4048,13 +4036,17 @@
               {
                 "id": "total-organic-sludge-removed",
                 "type": "number",
-                "units": "units-kilograms-BOD",
+                "units": [
+                  "units-kilograms-BOD"
+                ],
                 "default-units": "units-kilograms-BOD"
               },
               {
                 "id": "wastewater-inside-domestic-calculator-methane-recovered",
                 "type": "number",
-                "units": "units-kilograms",
+                "units": [
+                  "units-kilograms"
+                ],
                 "default-units": "units-kilograms"
               },
               {
@@ -4103,10 +4095,10 @@
             "activitySelectedOption": "source-type-industrial-wastewater",
             "hideEmissionFactorsInput": true,
             "unique-by": [
-              "wastewater-inside-industrial-calculator-industrial-production",
+              "wastewater-inside-industrial-calculator-industry-type",
               "wastewater-inside-industrial-calculator-collection-status",
               "wastewater-inside-industrial-calculator-treatment-status",
-              "wastewater-inside-industrial-calculator-source"
+              "data-source"
             ],
             "activity-title": "total-industry-production",
             "units": [
@@ -4121,14 +4113,14 @@
                   "industry-type-alcohol-refining",
                   "industry-type-coffee",
                   "industry-type-dairy-products",
-                  "industry-type-fish-proccessing",
+                  "industry-type-fish-processing",
                   "industry-type-meat-and-poultry",
                   "industry-type-organic-chemicals",
                   "industry-type-petroleum-refineries",
                   "industry-type-plastics-and-resins",
                   "industry-type-pulp-and-paper",
                   "industry-type-soap-and-detergents",
-                  "industry-type-stratch-production",
+                  "industry-type-starch-production",
                   "industry-type-sugar-refining",
                   "industry-type-vegetable-oils",
                   "industry-type-vegetables-fruits-juices",
@@ -4138,7 +4130,9 @@
               {
                 "id": "total-organic-sludge-removed",
                 "type": "number",
-                "units": "units-kilograms-COD",
+                "units": [
+                  "units-kilograms-COD"
+                ],
                 "default-units": "units-kilograms-COD"
               },
               {
@@ -4183,7 +4177,7 @@
               {
                 "id": "wastewater-inside-industrial-calculator-discharge-pathway-untreated",
                 "options": [
-                  "discharge-pathway-sea-rivers-lakes, estuaries",
+                  "discharge-pathway-sea-rivers-lakes-estuaries",
                   "discharge-pathway-stagnant-sewer"
                 ]
               }
@@ -4270,13 +4264,17 @@
               {
                 "id": "total-organic-sludge-removed",
                 "type": "number",
-                "units": "units-kilograms-BOD",
+                "units": [
+                  "units-kilograms-BOD"
+                ],
                 "default-units": "units-kilograms-BOD"
               },
               {
                 "id": "wastewater-outside-domestic-calculator-methane-recovered",
                 "type": "number",
-                "units": "units-kilograms",
+                "units": [
+                  "units-kilograms"
+                ],
                 "default-units": "units-kilograms"
               },
               {
@@ -4325,10 +4323,10 @@
             "activitySelectedOption": "source-type-industrial-wastewater",
             "hideEmissionFactorsInput": true,
             "unique-by": [
-              "wastewater-outside-industrial-calculator-industrial-production",
+              "wastewater-outside-industrial-calculator-industry-type",
               "wastewater-outside-industrial-calculator-collection-status",
               "wastewater-outside-industrial-calculator-treatment-status",
-              "wastewater-outside-industrial-calculator-source"
+              "data-source"
             ],
             "activity-title": "total-industry-production",
             "units": [
@@ -4343,14 +4341,14 @@
                   "industry-type-alcohol-refining",
                   "industry-type-coffee",
                   "industry-type-dairy-products",
-                  "industry-type-fish-proccessing",
+                  "industry-type-fish-processing",
                   "industry-type-meat-and-poultry",
                   "industry-type-organic-chemicals",
                   "industry-type-petroleum-refineries",
                   "industry-type-plastics-and-resins",
                   "industry-type-pulp-and-paper",
                   "industry-type-soap-and-detergents",
-                  "industry-type-stratch-production",
+                  "industry-type-starch-production",
                   "industry-type-sugar-refining",
                   "industry-type-vegetable-oils",
                   "industry-type-vegetables-fruits-juices",
@@ -4360,7 +4358,9 @@
               {
                 "id": "total-organic-sludge-removed",
                 "type": "number",
-                "units": "units-kilograms-COD",
+                "units": [
+                  "units-kilograms-COD"
+                ],
                 "default-units": "units-kilograms-COD"
               },
               {
@@ -4405,7 +4405,7 @@
               {
                 "id": "wastewater-outside-industrial-calculator-discharge-pathway-untreated",
                 "options": [
-                  "discharge-pathway-sea-rivers-lakes, estuaries",
+                  "discharge-pathway-sea-rivers-lakes-estuaries",
                   "discharge-pathway-stagnant-sewer"
                 ]
               }

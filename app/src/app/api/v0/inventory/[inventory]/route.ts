@@ -7,6 +7,19 @@ import UserService from "@/backend/UserService";
 import { upsertInventoryRequest } from "@/util/validation";
 import { QueryTypes } from "sequelize";
 
+function hasIsPublicProperty(
+  inventory:
+    | {
+        inventoryName: string;
+        year: number;
+        totalEmissions?: number;
+        totalCountryEmissions?: number;
+      }
+    | { isPublic?: boolean },
+): inventory is { isPublic: boolean } {
+  return (inventory as { isPublic: boolean }).isPublic !== undefined;
+}
+
 export const GET = apiHandler(async (req, { params }) => {
   const { inventory: inventoryId } = params;
   const inventory = await db.models.Inventory.findByPk(inventoryId, {
@@ -49,6 +62,18 @@ export const PATCH = apiHandler(async (req, context) => {
     params.inventory,
     session,
   );
+
+  if (hasIsPublicProperty(body)) {
+    const publishBody: { isPublic: boolean; publishedAt?: Date | null } = {
+      ...body,
+    };
+    if (publishBody.isPublic) {
+      publishBody.publishedAt = new Date();
+    } else if (!publishBody.isPublic) {
+      publishBody.publishedAt = null;
+    }
+    await inventory.update(publishBody);
+  }
   inventory = await inventory.update(body);
   return NextResponse.json({ data: inventory });
 });

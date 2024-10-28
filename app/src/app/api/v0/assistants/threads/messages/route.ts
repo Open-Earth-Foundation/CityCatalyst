@@ -20,7 +20,7 @@ export const POST = apiHandler(async (req) => {
   const threadId = input.threadId;
 
   // Add a user message on the thread
-  await openai.beta.threads.messages.create(threadId, {
+  const createdMessage = await openai.beta.threads.messages.create(threadId, {
     role: "user",
     content: input.content,
   });
@@ -37,17 +37,16 @@ export const POST = apiHandler(async (req) => {
         signal,
       },
     );
+
+    // TODO: prevent a new thread from being added to current run when active
+
     return new NextResponse(stream.toReadableStream());
   } catch (error: any) {
-    if (
-      error.name === "AbortError" ||
-      error.message === "Request was aborted."
-    ) {
-      console.log("Request was aborted by the client.");
-      // Optionally, end the response without sending data
-      return new NextResponse(null, { status: 499 });
+    if (error.name === "AbortError") {
+      console.log("OpenAI API request was aborted");
+      return new NextResponse(null, { status: 499 }); // 499 Client Closed Request
     } else {
-      console.error("An error occurred:", error);
+      console.error("Error:", error);
       return new NextResponse("Internal Server Error", { status: 500 });
     }
   }

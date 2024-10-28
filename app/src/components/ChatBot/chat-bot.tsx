@@ -640,7 +640,15 @@ export default function ChatBot({
             onChange={(e) => setUserInput(e.target.value)}
             onKeyDown={onKeyDown}
           />
-          {!isGenerating ? (
+          {isGenerating ? (
+            <IconButton
+              onClick={stopGeneration}
+              icon={<MdStop />}
+              colorScheme="red"
+              aria-label="Stop generation"
+              isDisabled={!isGenerating} // Disable button when not generating
+            />
+          ) : (
             <IconButton
               type="submit"
               variant="ghost"
@@ -648,14 +656,6 @@ export default function ChatBot({
               color="content.tertiary"
               aria-label="Send message"
               isDisabled={inputDisabled}
-            />
-          ) : (
-            <IconButton
-              onClick={stopGeneration}
-              icon={<MdStop />}
-              colorScheme="red"
-              aria-label="Stop generation"
-              isDisabled={!isGenerating} // Disable button when not generating
             />
           )}
         </HStack>

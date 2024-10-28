@@ -220,6 +220,7 @@ export default function InventoryResultTab({
   isUserInfoLoading,
   isInventoryProgressLoading,
   inventoryProgress,
+  isPublic,
   population,
 }: {
   lng: string;
@@ -228,6 +229,7 @@ export default function InventoryResultTab({
   isInventoryProgressLoading?: boolean;
   inventoryProgress?: InventoryProgressResponse;
   population?: PopulationAttributes;
+  isPublic?: boolean;
 }) {
   const { t } = useTranslation(lng, "dashboard");
   return (
@@ -238,6 +240,7 @@ export default function InventoryResultTab({
             t={t}
             year={inventory?.year}
             title={"tab-emission-inventory-results-title"}
+            isPublic={isPublic}
           />
           <BlueSubtitle t={t} text={"overview"} />
           <Heading fontSize="headline.sm" fontWeight="semibold" lineHeight="32">

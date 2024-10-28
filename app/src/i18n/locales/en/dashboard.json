@@ -13,7 +13,7 @@
   "inventory-calculations-title": "Emission inventory calculation",
   "inventory-results-title": "Emission inventory results",
   "gpc-inventory-description": "Track and review your {{year}} GHG Emission inventory data, prepared according to the Greenhouse Gas Protocol for Cities (GPC) Framework. <4>Learn more</4> about the GPC framework for the inventory calculation.",
-  "gpc-inventory-description-public": "Track and review your {{year}} GHG Emission inventory data, prepared according to the Greenhouse Gas Protocol for Cities (GPC) Framework. <4>Learn more</4> about the GPC framework for the inventory calculation.",
+  "gpc-inventory-description-public": "Review the results of {{year}} GHG Emission Inventory, prepared according to the GPC Framework. <4>Learn more</4> about the GPC framework.",
   "learn-more": "Learn more",
   "completed": "completed",
   "uploaded-data": "Uploaded data",

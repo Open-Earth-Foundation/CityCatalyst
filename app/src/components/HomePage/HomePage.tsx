@@ -641,6 +641,7 @@ export default function HomePage({
                   inventoryProgress={inventoryProgress}
                   isUserInfoLoading={isUserInfoLoading}
                   isInventoryProgressLoading={isInventoryProgressLoading}
+                  isPublic={isPublic}
                 />
               )}
             </Box>

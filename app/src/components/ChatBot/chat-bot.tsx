@@ -79,9 +79,9 @@ export default function ChatBot({
   const [getInventory] = api.useLazyGetInventoryQuery();
   const toast = useToast();
 
-  // initialize abort controller
-  const [abortController, setAbortController] =
-    useState<AbortController | null>(null);
+  // AbortController reference
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false); // Track generation state
 
   const handleError = (error: any, errorMessage: string) => {
     // Display error to user
@@ -150,8 +150,13 @@ export default function ChatBot({
       await initializeThread();
     }
 
-    const controller = new AbortController();
-    setAbortController(controller);
+    // Abort previous request if any
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const abortController = new AbortController(); // New abort controller for current request
+    abortControllerRef.current = abortController;
 
     try {
       const response = await fetch(`/api/v0/assistants/threads/messages`, {
@@ -161,7 +166,7 @@ export default function ChatBot({
           threadId: threadIdRef.current,
           content: text,
         }),
-        signal: controller.signal,
+        signal: abortController.signal,
       });
 
       if (!response.ok) {
@@ -178,13 +183,11 @@ export default function ChatBot({
       handleReadableStream(stream);
     } catch (error: any) {
       if (error.name === "AbortError") {
-        console.log("Fetch aborted by the user");
+        console.log("Request was aborted");
       } else {
         handleError(error, "Failed to send message. Please try again.");
       }
-      setInputDisabled(false); // Re-enable the input
-    } finally {
-      setAbortController(null); // Reset the controller
+      setInputDisabled(false);
     }
   };
 
@@ -255,8 +258,17 @@ export default function ChatBot({
 
       const stream = AssistantStream.fromReadableStream(response.body);
       handleReadableStream(stream);
-    } catch (error) {
-      handleError(error, "Failed to submit tool output. Please try again.");
+      console.log("Tool output submitted successfully");
+    } catch (error: any) {
+      if (
+        error.name === "AbortError" ||
+        error.name === "Request was aborted."
+      ) {
+        console.log("Fetch aborted by the user");
+      } else {
+        handleError(error, "Failed to submit tool output. Please try again.");
+      }
+    } finally {
       setInputDisabled(false);
     }
   };
@@ -359,15 +371,26 @@ export default function ChatBot({
   // Here all the streaming events get processed
   const handleReadableStream = (stream: AssistantStream) => {
     // Messages
-    stream.on("textCreated", handleTextCreated);
-    stream.on("textDelta", handleTextDelta);
+    try {
+      stream.on("textCreated", handleTextCreated);
+      stream.on("textDelta", handleTextDelta);
 
-    // Events without helpers yet (e.g. requires_action and run.done)
-    stream.on("event", (event) => {
-      if (event.event === "thread.run.requires_action")
-        handleRequiresAction(event);
-      if (event.event === "thread.run.completed") handleRunCompleted();
-    });
+      // Events without helpers yet (e.g. requires_action and run.done)
+      stream.on("event", (event) => {
+        if (event.event === "thread.run.requires_action")
+          handleRequiresAction(event);
+        if (event.event === "thread.run.completed") handleRunCompleted();
+      });
+    } catch (error: any) {
+      if (
+        error.name === "APIUserAbortError" ||
+        error.message === "Request was aborted."
+      ) {
+        console.log("Stream processing was aborted.");
+      } else {
+        console.error("An error occurred while processing the stream:", error);
+      }
+    }
   };
 
   // Setting the initial message to display for the user
@@ -382,6 +405,12 @@ export default function ChatBot({
       },
     ]);
   }, []);
+  const stopGeneration = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      setIsGenerating(false); // Reset generation state when stopped
+    }
+  };
 
   const { copyToClipboard, isCopied } = useCopyToClipboard({});
   const { formRef, onKeyDown } = useEnterSubmit();
@@ -606,32 +635,24 @@ export default function ChatBot({
             onChange={(e) => setUserInput(e.target.value)}
             onKeyDown={onKeyDown}
           />
-          {abortController ? (
-            <IconButton
-              onClick={() => {
-                if (abortController) {
-                  abortController.abort();
-                  setAbortController(null);
-                }
-              }}
-              variant="ghost"
-              icon={<MdStop size={24} />}
-              color="content.tertiary"
-              aria-label="Stop message"
-              isDisabled={!inputDisabled}
-            />
-          ) : (
-            <IconButton
-              type="submit"
-              variant="ghost"
-              icon={<MdOutlineSend size={24} />}
-              color="content.tertiary"
-              aria-label="Send message"
-              isDisabled={inputDisabled}
-            />
-          )}
+          <IconButton
+            type="submit"
+            variant="ghost"
+            icon={<MdOutlineSend size={24} />}
+            color="content.tertiary"
+            aria-label="Send message"
+            isDisabled={inputDisabled}
+          />
         </HStack>
       </form>
+      <Button
+        onClick={stopGeneration}
+        leftIcon={<MdStop />}
+        colorScheme="red"
+        isDisabled={isGenerating} // Disable button when not generating
+      >
+        Stop Generation
+      </Button>
     </div>
   );
 }

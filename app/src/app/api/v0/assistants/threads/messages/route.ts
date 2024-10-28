@@ -39,11 +39,15 @@ export const POST = apiHandler(async (req) => {
     );
     return new NextResponse(stream.toReadableStream());
   } catch (error: any) {
-    if (error.name === "AbortError") {
-      console.log("OpenAI API request was aborted");
-      return new NextResponse(null, { status: 499 }); // 499 Client Closed Request
+    if (
+      error.name === "AbortError" ||
+      error.message === "Request was aborted."
+    ) {
+      console.log("Request was aborted by the client.");
+      // Optionally, end the response without sending data
+      return new NextResponse(null, { status: 499 });
     } else {
-      console.error("Error:", error);
+      console.error("An error occurred:", error);
       return new NextResponse("Internal Server Error", { status: 500 });
     }
   }

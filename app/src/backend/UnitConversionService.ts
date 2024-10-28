@@ -12,7 +12,7 @@ export default class UnitConversionService {
       },
       "units-kilowatt-hours": {
         "units-kilowatt-hours": 1, // 1 kWh = 1 kWh (identity)
-        "units-terajoules": 0.0000036, // 1 terajoule = 277777.78 kWh (converting down to 1 kWh)
+        "units-terajoules": 277777.78, // 1 terajoule = 277777.78 kWh (converting down to 1 kWh)
       },
     };
 

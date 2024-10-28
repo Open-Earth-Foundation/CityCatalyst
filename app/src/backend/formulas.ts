@@ -188,7 +188,6 @@ function convertDataToDefaultUnit(
     });
   }
 
-  console.log("the ata I am returning", data);
   return data;
 }
 

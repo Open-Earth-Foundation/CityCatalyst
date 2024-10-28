@@ -118,7 +118,7 @@ const ActivityModalBody = ({
 
   const unitValue = useWatch({
     control,
-    name: `activity.${title}Unit` as any,
+    name: `activity.${title}-unit` as any,
   });
 
   const { field } = useController({

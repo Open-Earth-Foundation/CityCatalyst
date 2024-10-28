@@ -117,10 +117,11 @@ export default class CalculationService {
         gases = handleActivityAmountTimesEmissionsFactorFormula(
           activityValue,
           gasValues,
+          inventoryValue,
         );
         break;
       case "methane-commitment":
-        gases = handleMethaneCommitmentFormula(activityValue);
+        gases = handleMethaneCommitmentFormula(activityValue, inventoryValue);
         break;
       case "incineration-waste":
         let formulaMapping =
@@ -132,10 +133,13 @@ export default class CalculationService {
         );
         break;
       case "induced-activity-1":
-        gases = handleVkt1Formula(activityValue, gasValues);
+        gases = handleVkt1Formula(activityValue, gasValues, inventoryValue);
         break;
       case "biological-treatment":
-        gases = await handleBiologicalTreatmentFormula(activityValue);
+        gases = await handleBiologicalTreatmentFormula(
+          activityValue,
+          inventoryValue,
+        );
         break;
       case "wastewater-calculator":
         const activityId = activityValue.metadata?.activityId;
@@ -151,11 +155,15 @@ export default class CalculationService {
           gases = await handleDomesticWasteWaterFormula(
             activityValue,
             inventory,
+            inventoryValue,
           );
         } else if (
           activityId === "wastewater-inside-industrial-calculator-activity"
         ) {
-          gases = handleIndustrialWasteWaterFormula(activityValue);
+          gases = handleIndustrialWasteWaterFormula(
+            activityValue,
+            inventoryValue,
+          );
         } else {
           throw new createHttpError.BadRequest(
             `Unknown activity ID ${activityId} for wastewater calculator formula in activity value ${activityValue.id}`,

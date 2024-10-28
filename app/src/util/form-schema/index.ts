@@ -31,6 +31,7 @@ export interface ExtraField {
   options?: string[];
   exclusive?: string;
   multiselect?: boolean;
+  "default-units"?: string;
   required?: boolean;
   totalRequired?: number;
   subtypes?: string[];
@@ -44,6 +45,7 @@ export interface Activity {
   "group-by"?: string;
   "unique-by"?: string[];
   "activity-title"?: string;
+  "default-units"?: string;
   minimum?: number;
   "extra-fields"?: ExtraField[];
   units?: string[];

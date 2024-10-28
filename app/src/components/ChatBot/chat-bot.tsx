@@ -23,6 +23,7 @@ import {
   MdOutlineThumbDown,
   MdOutlineThumbUp,
   MdRefresh,
+  MdStop,
 } from "react-icons/md";
 import { RefObject, useRef } from "react";
 import { api, useCreateThreadIdMutation } from "@/services/api";
@@ -77,6 +78,10 @@ export default function ChatBot({
   const [getUserInventories] = api.useLazyGetUserInventoriesQuery();
   const [getInventory] = api.useLazyGetInventoryQuery();
   const toast = useToast();
+
+  // initialize abort controller
+  const [abortController, setAbortController] =
+    useState<AbortController | null>(null);
 
   const handleError = (error: any, errorMessage: string) => {
     // Display error to user
@@ -145,6 +150,9 @@ export default function ChatBot({
       await initializeThread();
     }
 
+    const controller = new AbortController();
+    setAbortController(controller);
+
     try {
       const response = await fetch(`/api/v0/assistants/threads/messages`, {
         method: "POST",
@@ -153,6 +161,7 @@ export default function ChatBot({
           threadId: threadIdRef.current,
           content: text,
         }),
+        signal: controller.signal,
       });
 
       if (!response.ok) {
@@ -167,9 +176,15 @@ export default function ChatBot({
 
       const stream = AssistantStream.fromReadableStream(response.body);
       handleReadableStream(stream);
-    } catch (error) {
-      handleError(error, "Failed to send message. Please try again.");
-      setInputDisabled(false);
+    } catch (error: any) {
+      if (error.name === "AbortError") {
+        console.log("Fetch aborted by the user");
+      } else {
+        handleError(error, "Failed to send message. Please try again.");
+      }
+      setInputDisabled(false); // Re-enable the input
+    } finally {
+      setAbortController(null); // Reset the controller
     }
   };
 
@@ -591,14 +606,30 @@ export default function ChatBot({
             onChange={(e) => setUserInput(e.target.value)}
             onKeyDown={onKeyDown}
           />
-          <IconButton
-            type="submit"
-            variant="ghost"
-            icon={<MdOutlineSend size={24} />}
-            color="content.tertiary"
-            aria-label="Send message"
-            isDisabled={inputDisabled}
-          />
+          {abortController ? (
+            <IconButton
+              onClick={() => {
+                if (abortController) {
+                  abortController.abort();
+                  setAbortController(null);
+                }
+              }}
+              variant="ghost"
+              icon={<MdStop size={24} />}
+              color="content.tertiary"
+              aria-label="Stop message"
+              isDisabled={!inputDisabled}
+            />
+          ) : (
+            <IconButton
+              type="submit"
+              variant="ghost"
+              icon={<MdOutlineSend size={24} />}
+              color="content.tertiary"
+              aria-label="Send message"
+              isDisabled={inputDisabled}
+            />
+          )}
         </HStack>
       </form>
     </div>

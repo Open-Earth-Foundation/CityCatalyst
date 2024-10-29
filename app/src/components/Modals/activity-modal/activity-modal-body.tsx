@@ -67,7 +67,7 @@ interface AddActivityModalBodyProps {
   setValue: UseFormSetValue<Inputs>;
   getValues: UseFormGetValues<Inputs>;
   title: string; // Title of the field
-  loadingEmissionFactors: boolean;
+  areEmissionFactorsLoading: boolean;
 }
 
 export type Inputs = {
@@ -119,7 +119,7 @@ const ActivityModalBody = ({
   hideEmissionFactors,
   setValue,
   getValues,
-  loadingEmissionFactors,
+  areEmissionFactorsLoading,
 }: AddActivityModalBodyProps) => {
   //
 
@@ -130,7 +130,7 @@ const ActivityModalBody = ({
 
   const emissionFactorTypeValue = useWatch({
     control,
-    name: `activity.emissionFactorType` as any,
+    name: "activity.emissionFactorType",
   });
 
   const { field } = useController({
@@ -156,17 +156,17 @@ const ActivityModalBody = ({
         setIsEmissionFactorInputDisabled(false);
       } else {
         let co2Val =
-          emissionFactor?.gasValuesByGas["CO2"].gasValues.length > 0
+          (emissionFactor?.gasValuesByGas["CO2"].gasValues.length as number) > 0
             ? emissionFactor?.gasValuesByGas["CO2"].gasValues[0]
                 .emissionsPerActivity
             : "";
         let n2oVal =
-          emissionFactor?.gasValuesByGas["N2O"].gasValues.length > 0
+          (emissionFactor?.gasValuesByGas["N2O"].gasValues.length as number) > 0
             ? emissionFactor?.gasValuesByGas["N2O"].gasValues[0]
                 .emissionsPerActivity
             : "";
         let ch4Val =
-          emissionFactor?.gasValuesByGas["CH4"].gasValues.length > 0
+          (emissionFactor?.gasValuesByGas["CH4"].gasValues.length as number) > 0
             ? emissionFactor?.gasValuesByGas["CH4"].gasValues[0]
                 .emissionsPerActivity
             : "";
@@ -628,7 +628,7 @@ const ActivityModalBody = ({
                       defaultValue={0}
                       isDisabled={isEmissionFactorInputDisabled}
                     >
-                      {loadingEmissionFactors ? (
+                      {areEmissionFactorsLoading ? (
                         <Spinner size="sm" color="border.neutral" />
                       ) : (
                         <Text
@@ -674,7 +674,7 @@ const ActivityModalBody = ({
                     defaultValue={0}
                     isDisabled={isEmissionFactorInputDisabled}
                   >
-                    {loadingEmissionFactors ? (
+                    {areEmissionFactorsLoading ? (
                       <Spinner size="sm" color="border.neutral" />
                     ) : (
                       <Text
@@ -719,7 +719,7 @@ const ActivityModalBody = ({
                     defaultValue={0}
                     isDisabled={isEmissionFactorInputDisabled}
                   >
-                    {loadingEmissionFactors ? (
+                    {areEmissionFactorsLoading ? (
                       <Spinner size="sm" color="border.neutral" />
                     ) : (
                       <Text

@@ -1,8 +1,6 @@
-// take the methodology selected,
-
 import { api } from "@/services/api";
 import { ExtraField } from "@/util/form-schema";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { Control, UseFormSetValue, useWatch } from "react-hook-form";
 import { EmissionsFactorResponse } from "@/util/types";
 import { getTranslationFromDict } from "@/i18n";
@@ -137,14 +135,6 @@ const useEmissionFactors = ({
     // now that we have three or more emission factors, we want to reduce it down to a collection of gases per dataset
     return reduceEmissionsToUniqueSourcesAndUnits(emissionsFactors);
   }, [emissionsFactors]);
-
-  // when the data changes we wanna set the emissions factor types to the first selection that exists.
-  useEffect(() => {
-    console.log(emissionsFactorTypes, "they changed");
-    // if (emissionsFactorTypes.length > 0) {
-    //   setValue("activity.emissionFactorType", emissionsFactorTypes[0].id);
-    // }
-  }, [emissionsFactorTypes]);
 
   return {
     emissionsFactorTypes,

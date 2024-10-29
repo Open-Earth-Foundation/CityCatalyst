@@ -162,13 +162,13 @@ function convertDataToDefaultUnit(
       key.includes("fuel-type"),
     );
     const fuelType = data[fuelTypeKey as string];
+    const fromUnit = data[`${activity?.["activity-title"]}-unit`];
     data[activity?.["activity-title"] as string] = new Decimal(
       UnitConversionService.convertUnits(
         val,
-        data[`${activity?.["activity-title"]}-unit`],
+        fromUnit,
         activity["default-units"],
         fuelType,
-        // extract the fuel type from the data
       ),
     );
   }

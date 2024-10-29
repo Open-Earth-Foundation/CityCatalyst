@@ -84,7 +84,10 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     methodology: methodology,
   });
 
-  const { emissionsFactorTypes, emissionsFactorsLoading } = useEmissionFactors({
+  const {
+    emissionsFactorTypes,
+    emissionsFactorsLoading: areEmissionFactorsLoading,
+  } = useEmissionFactors({
     control,
     setValue,
     methodologyId: methodology?.id,
@@ -306,7 +309,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
           <ModalCloseButton marginTop="10px" />
           <ActivityModalBody
             emissionsFactorTypes={emissionsFactorTypes}
-            loadingEmissionFactors={emissionsFactorsLoading}
+            areEmissionFactorsLoading={areEmissionFactorsLoading}
             title={title}
             hideEmissionFactors={hideEmissionFactors}
             submit={submit}

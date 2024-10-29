@@ -27,27 +27,17 @@ export const POST = apiHandler(async (req) => {
 
   // Run the thread with streaming output
 
-  try {
-    const stream = openai.beta.threads.runs.stream(
-      threadId,
-      {
-        assistant_id: assistantId,
-      },
-      {
-        signal,
-      },
-    );
+  const stream = openai.beta.threads.runs.stream(
+    threadId,
+    {
+      assistant_id: assistantId,
+    },
+    {
+      signal,
+    },
+  );
 
-    // TODO: prevent a new thread from being added to current run when active
+  // TODO: prevent a new thread from being added to current run when active
 
-    return new NextResponse(stream.toReadableStream());
-  } catch (error: any) {
-    if (error.name === "AbortError") {
-      console.log("OpenAI API request was aborted");
-      return new NextResponse(null, { status: 499 }); // 499 Client Closed Request
-    } else {
-      console.error("Error:", error);
-      return new NextResponse("Internal Server Error", { status: 500 });
-    }
-  }
+  return new NextResponse(stream.toReadableStream());
 });

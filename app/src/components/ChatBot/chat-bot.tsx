@@ -642,7 +642,7 @@ export default function ChatBot({
               onClick={stopGeneration}
               icon={<MdStop />}
               colorScheme="red"
-              aria-label="Stop generation"
+              aria-label={t("stop-generation")}
             />
           ) : (
             <IconButton
@@ -650,7 +650,7 @@ export default function ChatBot({
               variant="ghost"
               icon={<MdOutlineSend size={24} />}
               color="content.tertiary"
-              aria-label="Send message"
+              aria-label={t("send-message")}
               isDisabled={inputDisabled}
             />
           )}

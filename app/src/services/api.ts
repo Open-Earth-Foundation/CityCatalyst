@@ -418,6 +418,7 @@ export const api = createApi({
         methodologyId: string;
         inventoryId: string;
         referenceNumber: string;
+        metadata?: Record<string, any>;
       }
     >({
       query: (params) => {

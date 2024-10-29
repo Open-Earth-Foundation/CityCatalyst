@@ -18,6 +18,7 @@ interface FormattedNumberInputProps extends NumberInputProps {
   children?: React.ReactNode;
   miniAddon?: boolean;
   testId?: string;
+  t: Function;
 }
 
 function FormattedNumberInput({
@@ -29,6 +30,7 @@ function FormattedNumberInput({
   children,
   placeholder,
   miniAddon,
+  t,
   ...rest
 }: FormattedNumberInputProps) {
   const { lng } = useParams();
@@ -57,6 +59,12 @@ function FormattedNumberInput({
   return (
     <Controller
       control={control}
+      rules={{
+        required: t("value-required"),
+        validate: (value) => {
+          return (value !== "" && !isNaN(value)) || t("value-required");
+        },
+      }}
       name={name}
       defaultValue={defaultValue}
       render={({ field }) => (

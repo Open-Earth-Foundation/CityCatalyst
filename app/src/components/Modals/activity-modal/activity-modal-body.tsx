@@ -9,11 +9,12 @@ import {
   InputGroup,
   ModalBody,
   Select,
+  Spinner,
   Text,
   Textarea,
   useRadioGroup,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BuildingTypeSelectInput from "../../building-select-input";
 import { InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
 import { TFunction } from "i18next";
@@ -40,7 +41,11 @@ import { RadioButton } from "@/components/radio-button";
 export type EmissionFactorTypes = {
   id: string;
   name: string;
-  gasValues: { gas: string; emissionsPerActivity: number }[];
+  gasValuesByGas: {
+    [gas: string]: {
+      gasValues: Record<string, any>[];
+    };
+  };
 }[];
 
 interface AddActivityModalBodyProps {
@@ -62,6 +67,7 @@ interface AddActivityModalBodyProps {
   setValue: UseFormSetValue<Inputs>;
   getValues: UseFormGetValues<Inputs>;
   title: string; // Title of the field
+  loadingEmissionFactors: boolean;
 }
 
 export type Inputs = {
@@ -113,12 +119,18 @@ const ActivityModalBody = ({
   hideEmissionFactors,
   setValue,
   getValues,
+  loadingEmissionFactors,
 }: AddActivityModalBodyProps) => {
   //
 
   const unitValue = useWatch({
     control,
     name: `activity.${title}-unit` as any,
+  });
+
+  const emissionFactorTypeValue = useWatch({
+    control,
+    name: `activity.emissionFactorType` as any,
   });
 
   const { field } = useController({
@@ -134,32 +146,38 @@ const ActivityModalBody = ({
       !(targetActivityValue?.metadata?.emissionFactorType === "custom"),
     );
 
-  // Adjust function for countries with national emission factors i.e. US
-  const onEmissionFactorTypeChange = (e: any) => {
-    // somehow extract the gas and the emissions perActivity for each gas
-    const emissionFactor = emissionsFactorTypes.find(
-      (factor) => factor.id === e.target.value,
-    );
-    const emissionFactorType = e.target.value;
-    if (emissionFactorType === "custom") {
-      setIsEmissionFactorInputDisabled(false);
-    } else {
-      let co2Val = emissionFactor?.gasValues.find(
-        (g) => g.gas === "CO2",
-      )?.emissionsPerActivity;
-      let n2oVal = emissionFactor?.gasValues.find(
-        (g) => g.gas === "N2O",
-      )?.emissionsPerActivity;
-      let ch4Val = emissionFactor?.gasValues.find(
-        (g) => g.gas === "CH4",
-      )?.emissionsPerActivity;
+  useEffect(() => {
+    if (emissionsFactorTypes.length > 0 && emissionFactorTypeValue) {
+      const emissionFactor = emissionsFactorTypes.find(
+        (factor) => factor.id === emissionFactorTypeValue,
+      );
+      const emissionFactorType = emissionFactorTypeValue;
+      if (emissionFactorType === "custom") {
+        setIsEmissionFactorInputDisabled(false);
+      } else {
+        let co2Val =
+          emissionFactor?.gasValuesByGas["CO2"].gasValues.length > 0
+            ? emissionFactor?.gasValuesByGas["CO2"].gasValues[0]
+                .emissionsPerActivity
+            : "";
+        let n2oVal =
+          emissionFactor?.gasValuesByGas["N2O"].gasValues.length > 0
+            ? emissionFactor?.gasValuesByGas["N2O"].gasValues[0]
+                .emissionsPerActivity
+            : "";
+        let ch4Val =
+          emissionFactor?.gasValuesByGas["CH4"].gasValues.length > 0
+            ? emissionFactor?.gasValuesByGas["CH4"].gasValues[0]
+                .emissionsPerActivity
+            : "";
 
-      setValue("activity.CO2EmissionFactor", co2Val ? co2Val : null);
-      setValue("activity.N2OEmissionFactor", n2oVal ? n2oVal : null);
-      setValue("activity.CH4EmissionFactor", ch4Val ? ch4Val : null);
-      setIsEmissionFactorInputDisabled(true);
+        setValue("activity.CO2EmissionFactor", co2Val ? co2Val : "");
+        setValue("activity.N2OEmissionFactor", n2oVal ? n2oVal : "");
+        setValue("activity.CH4EmissionFactor", ch4Val ? ch4Val : "");
+        setIsEmissionFactorInputDisabled(true);
+      }
     }
-  };
+  }, [emissionsFactorTypes, emissionFactorTypeValue]);
 
   const filteredFields = fields.filter((f) => {
     return !(f.id.includes("-source") && f.type === "text");
@@ -305,6 +323,7 @@ const ActivityModalBody = ({
                         placeholder={t("activity-data-amount-placeholder")}
                         control={control}
                         name={`activity.${f.id}`}
+                        t={t}
                         w="full"
                       >
                         {f.units && (
@@ -362,6 +381,7 @@ const ActivityModalBody = ({
                     control={control}
                     name={`activity.${title}`}
                     defaultValue={0}
+                    t={t}
                     miniAddon
                   >
                     {(units?.length as number) > 0 && (
@@ -443,10 +463,6 @@ const ActivityModalBody = ({
                     })}
                     bgColor="base.light"
                     placeholder={t("emissions-factor-type-placeholder")}
-                    onChange={(e: any) => {
-                      clearErrors("activity.emissionFactorType");
-                      onEmissionFactorTypeChange(e);
-                    }}
                   >
                     {emissionsFactorTypes.map(({ id, name }) => (
                       <option key={id} value={id}>
@@ -465,7 +481,12 @@ const ActivityModalBody = ({
                       </Text>
                     </Box>
                   ) : (
-                    ""
+                    <Box
+                      display="flex"
+                      gap="6px"
+                      alignItems="center"
+                      mt="6px"
+                    ></Box>
                   )}
                 </FormControl>
               )}
@@ -480,6 +501,7 @@ const ActivityModalBody = ({
               </FormLabel>
               <FormattedNumberInput
                 testId="co2-emission-factor"
+                t={t}
                 control={control}
                 miniAddon
                 name={`activity.CO2EmissionFactor`}
@@ -494,6 +516,16 @@ const ActivityModalBody = ({
                   tCO2
                 </Text>
               </FormattedNumberInput>
+              {(errors?.activity?.["CO2EmissionFactor"] as any) ? (
+                <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                  <WarningIcon color="sentiment.negativeDefault" />
+                  <Text fontSize="body.md">
+                    {t("emission-amount-form-error")}
+                  </Text>
+                </Box>
+              ) : (
+                ""
+              )}
             </FormControl>
             <FormControl w="full">
               <FormLabel color="content.secondary">
@@ -501,6 +533,7 @@ const ActivityModalBody = ({
               </FormLabel>
               <FormattedNumberInput
                 testId="n2o-emission-factor"
+                t={t}
                 control={control}
                 miniAddon
                 name={`activity.N2OEmissionFactor`}
@@ -515,6 +548,16 @@ const ActivityModalBody = ({
                   tN2O
                 </Text>
               </FormattedNumberInput>
+              {(errors?.activity?.["N2OEmissionFactor"] as any) ? (
+                <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                  <WarningIcon color="sentiment.negativeDefault" />
+                  <Text fontSize="body.md">
+                    {t("emission-amount-form-error")}
+                  </Text>
+                </Box>
+              ) : (
+                ""
+              )}
             </FormControl>
             <FormControl w="full">
               <FormLabel color="content.secondary">
@@ -522,6 +565,7 @@ const ActivityModalBody = ({
               </FormLabel>
               <FormattedNumberInput
                 testId="ch4-emission-factor"
+                t={t}
                 control={control}
                 miniAddon
                 name={`activity.CH4EmissionFactor`}
@@ -536,6 +580,16 @@ const ActivityModalBody = ({
                   tCH4
                 </Text>
               </FormattedNumberInput>
+              {(errors?.activity?.["CH4EmissionFactor"] as any) ? (
+                <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                  <WarningIcon color="sentiment.negativeDefault" />
+                  <Text fontSize="body.md">
+                    {t("emission-amount-form-error")}
+                  </Text>
+                </Box>
+              ) : (
+                ""
+              )}
             </FormControl>
           </Grid>
         )}
@@ -560,7 +614,7 @@ const ActivityModalBody = ({
                   {t("emissions-factor-values")}
                 </FormLabel>
               </Heading>
-              <HStack spacing={4} mb={5}>
+              <HStack className="items-start" spacing={4} mb={5}>
                 <FormControl>
                   <FormControl>
                     <FormLabel color="content.tertiary">
@@ -568,21 +622,45 @@ const ActivityModalBody = ({
                     </FormLabel>
                     <FormattedNumberInput
                       miniAddon
+                      t={t}
                       control={control}
                       name={`activity.CO2EmissionFactor`}
                       defaultValue={0}
                       isDisabled={isEmissionFactorInputDisabled}
                     >
-                      <Text
-                        isTruncated // Truncate the text with an ellipsis
-                        noOfLines={1}
-                        w="full"
-                        textAlign="center"
-                      >
-                        CO2/{t(unitValue)}
-                      </Text>
+                      {loadingEmissionFactors ? (
+                        <Spinner size="sm" color="border.neutral" />
+                      ) : (
+                        <Text
+                          isTruncated // Truncate the text with an ellipsis
+                          noOfLines={1}
+                          w="full"
+                          textAlign="center"
+                        >
+                          kg/
+                          {methodology.id.includes("energy-consumption")
+                            ? t("kWh")
+                            : t("m3")}
+                        </Text>
+                      )}
                     </FormattedNumberInput>
                   </FormControl>
+                  {(errors?.activity?.["CO2EmissionFactor"] as any) ? (
+                    <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                      <WarningIcon color="sentiment.negativeDefault" />
+                      <Text fontSize="body.md">
+                        {t("emission-amount-form-error")}
+                      </Text>
+                    </Box>
+                  ) : (
+                    <Box
+                      display="flex"
+                      gap="6px"
+                      alignItems="center"
+                      mt="6px"
+                      h="16px"
+                    ></Box>
+                  )}
                 </FormControl>
                 <FormControl>
                   <FormLabel color="content.tertiary">
@@ -590,20 +668,44 @@ const ActivityModalBody = ({
                   </FormLabel>
                   <FormattedNumberInput
                     miniAddon
+                    t={t}
                     control={control}
                     name={`activity.N2OEmissionFactor`}
                     defaultValue={0}
                     isDisabled={isEmissionFactorInputDisabled}
                   >
-                    <Text
-                      isTruncated // Truncate the text with an ellipsis
-                      noOfLines={1}
-                      w="full"
-                      textAlign="center"
-                    >
-                      N20/{t(unitValue)}
-                    </Text>
+                    {loadingEmissionFactors ? (
+                      <Spinner size="sm" color="border.neutral" />
+                    ) : (
+                      <Text
+                        isTruncated // Truncate the text with an ellipsis
+                        noOfLines={1}
+                        w="full"
+                        textAlign="center"
+                      >
+                        kg/
+                        {methodology.id.includes("energy-consumption")
+                          ? t("kWh")
+                          : t("m3")}
+                      </Text>
+                    )}
                   </FormattedNumberInput>
+                  {(errors?.activity?.["N2OEmissionFactor"] as any) ? (
+                    <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                      <WarningIcon color="sentiment.negativeDefault" />
+                      <Text fontSize="body.md">
+                        {t("emission-amount-form-error")}
+                      </Text>
+                    </Box>
+                  ) : (
+                    <Box
+                      display="flex"
+                      gap="6px"
+                      alignItems="center"
+                      mt="6px"
+                      h="16px"
+                    ></Box>
+                  )}
                 </FormControl>
                 <FormControl>
                   <FormLabel color="content.tertiary">
@@ -612,19 +714,43 @@ const ActivityModalBody = ({
                   <FormattedNumberInput
                     control={control}
                     miniAddon
+                    t={t}
                     name={`activity.CH4EmissionFactor`}
                     defaultValue={0}
                     isDisabled={isEmissionFactorInputDisabled}
                   >
-                    <Text
-                      isTruncated // Truncate the text with an ellipsis
-                      noOfLines={1}
-                      w="full"
-                      textAlign="center"
-                    >
-                      CH4/{t(unitValue)}
-                    </Text>
+                    {loadingEmissionFactors ? (
+                      <Spinner size="sm" color="border.neutral" />
+                    ) : (
+                      <Text
+                        isTruncated // Truncate the text with an ellipsis
+                        noOfLines={1}
+                        w="full"
+                        textAlign="center"
+                      >
+                        kg/
+                        {methodology.id.includes("energy-consumption")
+                          ? t("kWh")
+                          : t("m3")}
+                      </Text>
+                    )}
                   </FormattedNumberInput>
+                  {(errors?.activity?.["CH4EmissionFactor"] as any) ? (
+                    <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                      <WarningIcon color="sentiment.negativeDefault" />
+                      <Text fontSize="body.md">
+                        {t("emission-amount-form-error")}
+                      </Text>
+                    </Box>
+                  ) : (
+                    <Box
+                      display="flex"
+                      gap="6px"
+                      alignItems="center"
+                      mt="6px"
+                      h="16px"
+                    ></Box>
+                  )}
                 </FormControl>
               </HStack>{" "}
             </>

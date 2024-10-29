@@ -6,6 +6,7 @@ import { useEffect, useMemo } from "react";
 import { Control, UseFormSetValue, useWatch } from "react-hook-form";
 import { EmissionsFactorResponse } from "@/util/types";
 import { getTranslationFromDict } from "@/i18n";
+import { uniqBy } from "lodash";
 
 const reduceEmissionsToUniqueSourcesAndUnits = (
   emissionsFactors: EmissionsFactorResponse,
@@ -14,9 +15,8 @@ const reduceEmissionsToUniqueSourcesAndUnits = (
     [key: string]: {
       id: string;
       name: string;
-      gasValuesByUnits: {
-        [unit: string]: {
-          unit: string;
+      gasValuesByGas: {
+        [gas: string]: {
           gasValues: Record<string, any>[];
         };
       };
@@ -30,20 +30,19 @@ const reduceEmissionsToUniqueSourcesAndUnits = (
         reducedMap[source.datasourceId] = {
           id: source.datasourceId,
           name: getTranslationFromDict(source.datasetName) ?? "unknown",
-          gasValuesByUnits: {},
+          gasValuesByGas: {},
         };
       }
 
-      if (factor.units) {
-        if (!reducedMap[source.datasourceId].gasValuesByUnits[factor.units]) {
-          reducedMap[source.datasourceId].gasValuesByUnits[factor.units] = {
-            unit: factor.units,
+      if (factor.gas) {
+        if (!reducedMap[source.datasourceId].gasValuesByGas[factor.gas]) {
+          reducedMap[source.datasourceId].gasValuesByGas[factor.gas] = {
             gasValues: [],
           };
         }
 
-        reducedMap[source.datasourceId].gasValuesByUnits[
-          factor.units
+        reducedMap[source.datasourceId].gasValuesByGas[
+          factor.gas
         ].gasValues.push({
           ...factor,
           gas: factor.gas as string,
@@ -57,9 +56,23 @@ const reduceEmissionsToUniqueSourcesAndUnits = (
   // Return the array of unique data sources with gas values grouped by units
   return Object.values(reducedMap).map((source) => ({
     ...source,
-    gasValuesByUnits: Object.values(source.gasValuesByUnits),
+    gasValuesByGas: Object.keys(source.gasValuesByGas).reduce(
+      (acc, currentValue) => {
+        return {
+          ...acc,
+          [currentValue]: {
+            gasValues: uniqBy(
+              source.gasValuesByGas[currentValue].gasValues,
+              "emissionsPerActivity",
+            ).filter((factor) => ["kg/m3", "kg/kWh"].includes(factor.units)), // filter only emissions that have kg/m3 or kg/kWh as the unit
+          },
+        };
+      },
+      {},
+    ),
   }));
 };
+
 const generateMetadataKey = (key: string) => {
   if (key.includes("fuel-type")) {
     return "fuel_type";
@@ -124,8 +137,6 @@ const useEmissionFactors = ({
     // now that we have three or more emission factors, we want to reduce it down to a collection of gases per dataset
     return reduceEmissionsToUniqueSourcesAndUnits(emissionsFactors);
   }, [emissionsFactors]);
-
-  console.log(emissionsFactorTypes, "emission factor types");
 
   // when the data changes we wanna set the emissions factor types to the first selection that exists.
   useEffect(() => {

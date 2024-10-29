@@ -62,7 +62,6 @@ function FormattedNumberInput({
       rules={{
         required: t("value-required"),
         validate: (value) => {
-          console.log(value, "the value to validate");
           return (value !== "" && !isNaN(value)) || t("value-required");
         },
       }}

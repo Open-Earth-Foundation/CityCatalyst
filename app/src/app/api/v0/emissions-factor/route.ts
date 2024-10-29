@@ -101,8 +101,6 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
       whereClause.methodologyName = "modeled-data";
   }
 
-  console.log(whereClause, "where");
-
   const emissionsFactors = await db.models.EmissionsFactor.findAll({
     where: whereClause,
     include: [{ model: db.models.DataSource, as: "dataSources" }],

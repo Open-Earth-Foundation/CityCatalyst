@@ -84,7 +84,7 @@ export function TabHeader({
             t={t}
           >
             Review the results of {{ year: year }} GHG Emission Inventory,
-            prepared according to the GPC Framework.
+            prepared according to the GPC Framework.{" "}
             <Link
               href="https://ghgprotocol.org/ghg-protocol-cities"
               target="_blank"

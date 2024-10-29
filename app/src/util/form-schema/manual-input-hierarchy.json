@@ -36,8 +36,7 @@
                   "fuel-type-peat",
                   "fuel-type-anthracite",
                   "fuel-type-gasoline",
-                  "fuel-type-diesel",
-                  "fuel-type-petrol"
+                  "fuel-type-diesel"
                 ],
                 "emission-factor-dependency": true
               },
@@ -268,7 +267,7 @@
                 "id": "commercial-building-fuel-type",
                 "options": [
                   "fuel-type-propane",
-                  "fuel-type-wood/wood-waste",
+                  "fuel-type-wood-wood-waste",
                   "fuel-type-natural-gas",
                   "fuel-type-liquefied-petroleum-gases",
                   "fuel-type-anthracite",
@@ -359,7 +358,7 @@
           "options": [
             "fuel-type-all",
             "fuel-type-propane",
-            "fuel-type-wood/wood-waste",
+            "fuel-type-wood-wood-waste",
             "fuel-type-natural-gas",
             "fuel-type-liquefied-petroleum-gases",
             "fuel-type-anthracite",
@@ -1223,7 +1222,7 @@
                   "fuel-type-diesel-oil",
                   "fuel-type-natural-gas",
                   "fuel-type-liquefied-petroleum-gases",
-                  "fuel-type-wood/wood-waste",
+                  "fuel-type-wood-wood-waste",
                   "fuel-type-other-primary-solid-biomass",
                   "fuel-type-natural-charcoal",
                   "fuel-type-gas-oil",
@@ -1304,7 +1303,7 @@
             "fuel-type-diesel-oil",
             "fuel-type-natural-gas",
             "fuel-type-liquefied-petroleum-gases",
-            "fuel-type-wood/wood-waste",
+            "fuel-type-wood-wood-waste",
             "fuel-type-other-primary-solid-biomass",
             "fuel-type-charcoal",
             "fuel-type-gas-oil",
@@ -1490,7 +1489,7 @@
                   "fuel-type-diesel-oil",
                   "fuel-type-natural-gas",
                   "fuel-type-liquefied-petroleum-gases",
-                  "fuel-type-wood/wood-waste",
+                  "fuel-type-wood-wood-waste",
                   "fuel-type-other-primary-solid-biomass",
                   "fuel-type-charcoal",
                   "fuel-type-natural-gas-oil",
@@ -1572,7 +1571,7 @@
             "fuel-type-diesel-oil",
             "fuel-type-natural-gas",
             "fuel-type-liquefied-petroleum-gases",
-            "fuel-type-wood/wood-waste",
+            "fuel-type-wood-wood-waste",
             "fuel-type-other-primary-solid-biomass",
             "fuel-type-charcoal",
             "fuel-type-natural-gas-oil",
@@ -1601,8 +1600,8 @@
             "id": "energy-consumption-non-specific-sources-activity",
             "group-by": "non-specific-sources-type",
             "unique-by": [
-              "type",
-              "energy-usage",
+              "non-specific-sources-type",
+              "non-specific-sources-energy-usage",
               "data-source"
             ],
             "activity-title": "activity-energy-consumption",
@@ -1975,13 +1974,7 @@
                   "fuel-type-diesel",
                   "fuel-type-lpg",
                   "fuel-type-cng",
-                  "fuel-type-biofuel",
-                  "fuel-type-e85-ethanol",
-                  "fuel-type-b20-biodiesel",
-                  "fuel-type-natural-gas",
-                  "fuel-type-ethanol",
-                  "fuel-type-biodiesel",
-                  "fuel-type-bioethanol"
+                  "fuel-type-biofuel"
                 ]
               },
               {
@@ -2314,13 +2307,7 @@
                   "fuel-type-diesel",
                   "fuel-type-lpg",
                   "fuel-type-cng",
-                  "fuel-type-biofuel",
-                  "fuel-type-e85-ethanol",
-                  "fuel-type-b20-biodiesel",
-                  "fuel-type-natural-gas",
-                  "fuel-type-ethanol",
-                  "fuel-type-biodiesel",
-                  "fuel-type-bioethanol"
+                  "fuel-type-biofuel"
                 ]
               },
               {
@@ -2629,13 +2616,7 @@
                   "fuel-type-diesel",
                   "fuel-type-lpg",
                   "fuel-type-cng",
-                  "fuel-type-biofuel",
-                  "fuel-type-e85-ethanol",
-                  "fuel-type-b20-biodiesel",
-                  "fuel-type-natural-gas",
-                  "fuel-type-ethanol",
-                  "fuel-type-biodiesel",
-                  "fuel-type-bioethanol"
+                  "fuel-type-biofuel"
                 ]
               },
               {
@@ -2931,8 +2912,7 @@
                   "fuel-type-jet-kerosene",
                   "fuel-type-lpg",
                   "fuel-type-gasoline",
-                  "fuel-type-natural-gas-liquids",
-                  "fuel-type-natural-kerosene"
+                  "fuel-type-natural-gas-liquids"
                 ]
               },
               {
@@ -3088,11 +3068,13 @@
         {
           "id": "aviation-fuel-type",
           "options": [
-            "fuel-type-gasoline",
+            "fuel-type-aviation-gasoline",
             "fuel-type-diesel",
+            "fuel-type-jet-gasoline",
+            "fuel-type-jet-kerosene",
             "fuel-type-lpg",
-            "fuel-type-cng",
-            "fuel-type-biofuel"
+            "fuel-type-gasoline",
+            "fuel-type-natural-gas-liquids"
           ],
           "multiselect": true
         },
@@ -3236,13 +3218,7 @@
                   "fuel-type-diesel",
                   "fuel-type-lpg",
                   "fuel-type-cng",
-                  "fuel-type-biofuel",
-                  "fuel-type-e85-ethanol",
-                  "fuel-type-b20-biodiesel",
-                  "fuel-type-natural-gas",
-                  "fuel-type-ethanol",
-                  "fuel-type-biodiesel",
-                  "fuel-type-bioethanol"
+                  "fuel-type-biofuel"
                 ]
               },
               {
@@ -3253,10 +3229,7 @@
                   "vehicle-type-construction-machinery",
                   "vehicle-type-agricultural-machinery",
                   "vehicle-type-mining-equipment",
-                  "vehicle-type-forestry-equipment",
-                  "vehicle-type-household-equipment",
-                  "vehicle-type-airport-equipment",
-                  "vehicle-type-railroad-equipment"
+                  "vehicle-type-forestry-equipment"
                 ],
                 "exclusive": "vehicle-type-all"
               },
@@ -3329,10 +3302,7 @@
             "vehicle-type-construction-machinery",
             "vehicle-type-agricultural-machinery",
             "vehicle-type-mining-equipment",
-            "vehicle-type-forestry-equipment",
-            "vehicle-type-household-equipment",
-            "vehicle-type-airport-equipment",
-            "vehicle-type-railroad-equipment"
+            "vehicle-type-forestry-equipment"
           ],
           "multiselect": true
         },
@@ -3368,10 +3338,7 @@
                   "vehicle-type-construction-machinery",
                   "vehicle-type-agricultural-machinery",
                   "vehicle-type-mining-equipment",
-                  "vehicle-type-forestry-equipment",
-                  "vehicle-type-household-equipment",
-                  "vehicle-type-airport-equipment",
-                  "vehicle-type-railroad-equipment"
+                  "vehicle-type-forestry-equipment"
                 ],
                 "exclusive": "vehicle-type-all"
               },
@@ -3431,10 +3398,7 @@
             "vehicle-type-construction-machinery",
             "vehicle-type-agricultural-machinery",
             "vehicle-type-mining-equipment",
-            "vehicle-type-forestry-equipment",
-            "vehicle-type-household-equipment",
-            "vehicle-type-airport-equipment",
-            "vehicle-type-railroad-equipment"
+            "vehicle-type-forestry-equipment"
           ],
           "multiselect": true
         },
@@ -4056,7 +4020,7 @@
               "wastewater-inside-domestic-calculator-income-group",
               "wastewater-inside-domestic-calculator-collection-status",
               "wastewater-inside-domestic-calculator-treatment-status",
-              "wastewater-inside-domestic-calculator-source"
+              "data-source"
             ],
             "activity-title": "total-population",
             "extra-fields": [
@@ -4072,13 +4036,17 @@
               {
                 "id": "total-organic-sludge-removed",
                 "type": "number",
-                "units": "units-kilograms-BOD",
+                "units": [
+                  "units-kilograms-BOD"
+                ],
                 "default-units": "units-kilograms-BOD"
               },
               {
                 "id": "wastewater-inside-domestic-calculator-methane-recovered",
                 "type": "number",
-                "units": "units-kilograms",
+                "units": [
+                  "units-kilograms"
+                ],
                 "default-units": "units-kilograms"
               },
               {
@@ -4127,10 +4095,10 @@
             "activitySelectedOption": "source-type-industrial-wastewater",
             "hideEmissionFactorsInput": true,
             "unique-by": [
-              "wastewater-inside-industrial-calculator-industrial-production",
+              "wastewater-inside-industrial-calculator-industry-type",
               "wastewater-inside-industrial-calculator-collection-status",
               "wastewater-inside-industrial-calculator-treatment-status",
-              "wastewater-inside-industrial-calculator-source"
+              "data-source"
             ],
             "activity-title": "total-industry-production",
             "units": [
@@ -4145,14 +4113,14 @@
                   "industry-type-alcohol-refining",
                   "industry-type-coffee",
                   "industry-type-dairy-products",
-                  "industry-type-fish-proccessing",
+                  "industry-type-fish-processing",
                   "industry-type-meat-and-poultry",
                   "industry-type-organic-chemicals",
                   "industry-type-petroleum-refineries",
                   "industry-type-plastics-and-resins",
                   "industry-type-pulp-and-paper",
                   "industry-type-soap-and-detergents",
-                  "industry-type-stratch-production",
+                  "industry-type-starch-production",
                   "industry-type-sugar-refining",
                   "industry-type-vegetable-oils",
                   "industry-type-vegetables-fruits-juices",
@@ -4162,7 +4130,9 @@
               {
                 "id": "total-organic-sludge-removed",
                 "type": "number",
-                "units": "units-kilograms-COD",
+                "units": [
+                  "units-kilograms-COD"
+                ],
                 "default-units": "units-kilograms-COD"
               },
               {
@@ -4207,7 +4177,7 @@
               {
                 "id": "wastewater-inside-industrial-calculator-discharge-pathway-untreated",
                 "options": [
-                  "discharge-pathway-sea-rivers-lakes, estuaries",
+                  "discharge-pathway-sea-rivers-lakes-estuaries",
                   "discharge-pathway-stagnant-sewer"
                 ]
               }
@@ -4294,13 +4264,17 @@
               {
                 "id": "total-organic-sludge-removed",
                 "type": "number",
-                "units": "units-kilograms-BOD",
+                "units": [
+                  "units-kilograms-BOD"
+                ],
                 "default-units": "units-kilograms-BOD"
               },
               {
                 "id": "wastewater-outside-domestic-calculator-methane-recovered",
                 "type": "number",
-                "units": "units-kilograms",
+                "units": [
+                  "units-kilograms"
+                ],
                 "default-units": "units-kilograms"
               },
               {
@@ -4349,10 +4323,10 @@
             "activitySelectedOption": "source-type-industrial-wastewater",
             "hideEmissionFactorsInput": true,
             "unique-by": [
-              "wastewater-outside-industrial-calculator-industrial-production",
+              "wastewater-outside-industrial-calculator-industry-type",
               "wastewater-outside-industrial-calculator-collection-status",
               "wastewater-outside-industrial-calculator-treatment-status",
-              "wastewater-outside-industrial-calculator-source"
+              "data-source"
             ],
             "activity-title": "total-industry-production",
             "units": [
@@ -4367,14 +4341,14 @@
                   "industry-type-alcohol-refining",
                   "industry-type-coffee",
                   "industry-type-dairy-products",
-                  "industry-type-fish-proccessing",
+                  "industry-type-fish-processing",
                   "industry-type-meat-and-poultry",
                   "industry-type-organic-chemicals",
                   "industry-type-petroleum-refineries",
                   "industry-type-plastics-and-resins",
                   "industry-type-pulp-and-paper",
                   "industry-type-soap-and-detergents",
-                  "industry-type-stratch-production",
+                  "industry-type-starch-production",
                   "industry-type-sugar-refining",
                   "industry-type-vegetable-oils",
                   "industry-type-vegetables-fruits-juices",
@@ -4384,7 +4358,9 @@
               {
                 "id": "total-organic-sludge-removed",
                 "type": "number",
-                "units": "units-kilograms-COD",
+                "units": [
+                  "units-kilograms-COD"
+                ],
                 "default-units": "units-kilograms-COD"
               },
               {
@@ -4429,7 +4405,7 @@
               {
                 "id": "wastewater-outside-industrial-calculator-discharge-pathway-untreated",
                 "options": [
-                  "discharge-pathway-sea-rivers-lakes, estuaries",
+                  "discharge-pathway-sea-rivers-lakes-estuaries",
                   "discharge-pathway-stagnant-sewer"
                 ]
               }

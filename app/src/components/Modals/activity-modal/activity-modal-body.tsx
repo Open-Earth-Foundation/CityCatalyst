@@ -318,7 +318,7 @@ const ActivityModalBody = ({
                 {f.type === "number" && (
                   <>
                     <FormControl className="w-full">
-                      <FormLabel className="truncate">{f.id}</FormLabel>
+                      <FormLabel className="truncate">{t(f.id)}</FormLabel>
                       <FormattedNumberInput
                         placeholder={t("activity-data-amount-placeholder")}
                         control={control}

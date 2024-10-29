@@ -329,6 +329,7 @@ const ActivityModalBody = ({
                         {f.units && (
                           <Select
                             variant="unstyled"
+                            placeholder={t("select-unit")}
                             {...register(`activity.${f.id}-unit` as any, {
                               required:
                                 f.required === false

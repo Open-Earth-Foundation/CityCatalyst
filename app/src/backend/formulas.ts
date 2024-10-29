@@ -180,7 +180,7 @@ function convertDataToDefaultUnit(
         data[field.id] = new Decimal(
           UnitConversionService.convertUnits(
             val,
-            data[`${field.id}-units`],
+            data[`${field.id}-unit`],
             field?.["default-units"],
           ),
         );
@@ -531,6 +531,7 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
 export function handleIndustrialWasteWaterFormula(
   activityValue: ActivityValue,
   inventoryValue: InventoryValue,
+  prefixKey: string,
 ): Gas[] {
   const data = convertDataToDefaultUnit(
     // use convert all the values
@@ -545,16 +546,14 @@ export function handleIndustrialWasteWaterFormula(
   }
 
   const totalIndustrialProduction = data["total-industry-production"];
-  const wastewaterGenerated =
-    data["wastewater-inside-industrial-calculator-wastewater-generated"];
+  const wastewaterGenerated = data[`${prefixKey}-wastewater-generated`];
   const degradableOrganicComponents =
     data["degradable-organic-components"] ?? 38; // TODO get this from formula values csv;
   const methaneProductionCapacity =
     data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should this only be handled UI-side?
   const removedSludge = data["total-organic-sludge-removed"];
   const methaneCorrectionFactor = 1; // TODO fetch this from formula values csv
-  const methaneRecovered =
-    data["wastewater-inside-industrial-calculator-methane-recovered"];
+  const methaneRecovered = data[`${prefixKey}-methane-recovered`];
 
   // TODO is new Decimal/ BigNumber required for these calculations?
   const totalOrganicWaste = Decimal.mul(
@@ -576,6 +575,7 @@ export async function handleDomesticWasteWaterFormula(
   activityValue: ActivityValue,
   inventory: Inventory,
   inventoryValue: InventoryValue,
+  prefixKey: string,
 ): Promise<Gas[]> {
   const data = convertDataToDefaultUnit(
     // use convert all the values
@@ -593,8 +593,7 @@ export async function handleDomesticWasteWaterFormula(
   const removedSludge = data["total-organic-sludge-removed"];
   // TODO get MCF from seed-data/formula_values
   const methaneCorrectionFactor = DEFAULT_METHANE_CORRECTION_FACTOR;
-  const methaneRecovered =
-    data["wastewater-inside-domestic-calculator-methane-recovered"];
+  const methaneRecovered = data[`${prefixKey}-methane-recovered`];
 
   const totalCityPopulationEntry = await findClosestCityPopulation(inventory);
   if (!totalCityPopulationEntry) {
@@ -606,7 +605,7 @@ export async function handleDomesticWasteWaterFormula(
 
   const bodPerCapita = DEFAULT_BOD_PER_CAPITA;
   const isCollectedWasteWater =
-    data["wastewater-inside-industrial-calculator-collection-status"] ===
+    data[`${prefixKey}-collection-status`] ===
     "collection-status-type-wastewater-collected";
   const industrialBodFactor = isCollectedWasteWater ? 1.0 : 1.25;
   const totalOrganicWaste = new Decimal(
@@ -614,8 +613,7 @@ export async function handleDomesticWasteWaterFormula(
   );
 
   const incomeGroup =
-    data["wastewater-inside-domestic-calculator-income-group"] ??
-    "income-group-type-all";
+    data[`${prefixKey}-income-group`] ?? "income-group-type-all";
   const incomeGroupFraction = DEFAULT_INCOME_GROUP_FRACTIONS[incomeGroup];
   const dischargeSystemUtulizationRatio =
     data["discharge-system-utilization-ratio"] ?? 0.5; // TODO wrong key!

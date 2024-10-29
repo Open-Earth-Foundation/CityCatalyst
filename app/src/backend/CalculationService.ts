@@ -145,7 +145,11 @@ export default class CalculationService {
         const activityId = activityValue.metadata?.activityId;
 
         // TODO handle outside activities as well!
-        if (activityId === "wastewater-inside-domestic-calculator-activity") {
+        if (
+          activityId === "wastewater-inside-domestic-calculator-activity" ||
+          activityId === "wastewater-outside-domestic-calculator-activity"
+        ) {
+          let prefixKey = activityId.split("-").slice(0, -1).join("-");
           const inventory = await db.models.Inventory.findByPk(
             inventoryValue.inventoryId,
           );
@@ -156,13 +160,17 @@ export default class CalculationService {
             activityValue,
             inventory,
             inventoryValue,
+            prefixKey,
           );
         } else if (
-          activityId === "wastewater-inside-industrial-calculator-activity"
+          activityId === "wastewater-inside-industrial-calculator-activity" ||
+          activityId === "wastewater-outside-industrial-calculator-activity"
         ) {
+          let prefixKey = activityId.split("-").slice(0, -1).join("-");
           gases = handleIndustrialWasteWaterFormula(
             activityValue,
             inventoryValue,
+            prefixKey,
           );
         } else {
           throw new createHttpError.BadRequest(

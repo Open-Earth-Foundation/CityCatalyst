@@ -64,6 +64,7 @@ export default class ManualInputValidationService {
       const methodologyId = inventoryValue.inputMethodology as string;
 
       let methodology: Methodology | DirectMeasure | undefined;
+      let selectedActivityIndex = 0;
 
       if (methodologyId === "direct-measure") {
         methodology = MANUAL_INPUT_HIERARCHY[referenceNumber]
@@ -97,7 +98,7 @@ export default class ManualInputValidationService {
             (ac) => ac.activitySelectedOption === selectedActivityOption,
           ) ?? 0;
 
-        const selectedActivityIndex = foundIndex >= 0 ? foundIndex : 0;
+        selectedActivityIndex = foundIndex >= 0 ? foundIndex : 0;
 
         extraFields = scopedMethodology.activities?.[selectedActivityIndex][
           "extra-fields"
@@ -128,7 +129,7 @@ export default class ManualInputValidationService {
 
       // handle non direct measure methodologies
       if (activityRules && activityRules.length > 0) {
-        let activityRule = activityRules[0];
+        let activityRule = activityRules[selectedActivityIndex];
         let uniqueBy = activityRule["unique-by"];
         if (uniqueBy) {
           await this.uniqueByValidation({

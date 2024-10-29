@@ -4080,6 +4080,10 @@
                 ]
               },
               {
+                "id": "data-source",
+                "type": "text"
+              },
+              {
                 "id": "wastewater-inside-domestic-calculator-discharge-pathway-untreated",
                 "options": [
                   "discharge-pathway-sea-river-lake",
@@ -4141,8 +4145,12 @@
                 "units": [
                   "units-kilograms",
                   "units-tonnes"
-              ],
+                ],
                 "default-units": "units-kilograms"
+              },
+              {
+                "id": "data-source",
+                "type": "text"
               },
               {
                 "id": "wastewater-inside-industrial-calculator-wastewater-generated",
@@ -4364,12 +4372,16 @@
                 "default-units": "units-kilograms-COD"
               },
               {
+                "id": "data-source",
+                "type": "text"
+              },
+              {
                 "id": "wastewater-outside-industrial-calculator-methane-recovered",
                 "type": "number",
                 "units": [
                   "units-kilograms",
                   "units-tonnes"
-              ],
+                ],
                 "default-units": "units-kilograms"
               },
               {

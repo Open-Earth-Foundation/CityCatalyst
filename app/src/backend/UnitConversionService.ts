@@ -14,6 +14,10 @@ export default class UnitConversionService {
         "units-kilowatt-hours": 1, // 1 kWh = 1 kWh (identity)
         "units-terajoules": 277777.78, // 1 terajoule = 277777.78 kWh (converting down to 1 kWh)
       },
+      "units-tonnes": {
+        "units-kilograms": 0.001, // 1 tonne = 1000 kilograms
+        "units-tonnes": 1, // 1 tonne = 1 tonne (identity)
+      },
     };
 
   private static fuelDensities: Record<string, number> = {
@@ -46,6 +50,10 @@ export default class UnitConversionService {
     toUnit: string,
     fuelType?: string,
   ): number {
+    if (fromUnit === toUnit) {
+      return value;
+    }
+
     if (
       fromUnit === "units-kilograms" &&
       toUnit === "units-cubic-meters" &&

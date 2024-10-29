@@ -372,11 +372,16 @@ export function handleVkt1Formula(
   gasValues: GasValueWithEmissionsFactor[],
   inventoryValue: InventoryValue,
 ): Gas[] {
+  if (!inventoryValue.inputMethodology || !inventoryValue.gpcReferenceNumber) {
+    throw new createHttpError.BadRequest(
+      "InventoryValue has no inputMethodology or gpcReferenceNumber associated",
+    );
+  }
   const data = convertDataToDefaultUnit(
     // use convert all the values
     activityValue,
-    inventoryValue.inputMethodology as string,
-    inventoryValue.gpcReferenceNumber as string,
+    inventoryValue.inputMethodology,
+    inventoryValue.gpcReferenceNumber,
   );
   if (!data) {
     throw new createHttpError.BadRequest(
@@ -410,11 +415,16 @@ export function handleMethaneCommitmentFormula(
   activityValue: ActivityValue,
   inventoryValue: InventoryValue,
 ): Gas[] {
+  if (!inventoryValue.inputMethodology || !inventoryValue.gpcReferenceNumber) {
+    throw new createHttpError.BadRequest(
+      "InventoryValue has no inputMethodology or gpcReferenceNumber associated",
+    );
+  }
   const data = convertDataToDefaultUnit(
     // use convert all the values
     activityValue,
-    inventoryValue.inputMethodology as string,
-    inventoryValue.gpcReferenceNumber as string,
+    inventoryValue.inputMethodology,
+    inventoryValue.gpcReferenceNumber,
   );
   if (!data) {
     throw new createHttpError.BadRequest(
@@ -496,11 +506,16 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
 ): Gas[] {
   // TODO add actvityAmount column to ActivityValue
   // const activityAmount = activityValue.activityAmount || 0;
+  if (!inventoryValue.inputMethodology || !inventoryValue.gpcReferenceNumber) {
+    throw new createHttpError.BadRequest(
+      "InventoryValue has no inputMethodology or gpcReferenceNumber associated",
+    );
+  }
   const data = convertDataToDefaultUnit(
     // use convert all the values
     activityValue,
-    inventoryValue.inputMethodology as string,
-    inventoryValue.gpcReferenceNumber as string,
+    inventoryValue.inputMethodology,
+    inventoryValue.gpcReferenceNumber,
   );
   const activityAmountKey = activityValue.metadata?.["activityTitle"];
   const activityAmount = data?.[activityAmountKey] || 0;
@@ -533,11 +548,16 @@ export function handleIndustrialWasteWaterFormula(
   inventoryValue: InventoryValue,
   prefixKey: string,
 ): Gas[] {
+  if (!inventoryValue.inputMethodology || !inventoryValue.gpcReferenceNumber) {
+    throw new createHttpError.BadRequest(
+      "InventoryValue has no inputMethodology or gpcReferenceNumber associated",
+    );
+  }
   const data = convertDataToDefaultUnit(
     // use convert all the values
     activityValue,
-    inventoryValue.inputMethodology as string,
-    inventoryValue.gpcReferenceNumber as string,
+    inventoryValue.inputMethodology,
+    inventoryValue.gpcReferenceNumber,
   );
   if (!data) {
     throw new createHttpError.BadRequest(
@@ -577,11 +597,16 @@ export async function handleDomesticWasteWaterFormula(
   inventoryValue: InventoryValue,
   prefixKey: string,
 ): Promise<Gas[]> {
+  if (!inventoryValue.inputMethodology || !inventoryValue.gpcReferenceNumber) {
+    throw new createHttpError.BadRequest(
+      "InventoryValue has no inputMethodology or gpcReferenceNumber associated",
+    );
+  }
   const data = convertDataToDefaultUnit(
     // use convert all the values
     activityValue,
-    inventoryValue.inputMethodology as string,
-    inventoryValue.gpcReferenceNumber as string,
+    inventoryValue.inputMethodology,
+    inventoryValue.gpcReferenceNumber,
   );
   if (!data) {
     throw new createHttpError.BadRequest(
@@ -644,11 +669,16 @@ export async function handleBiologicalTreatmentFormula(
   activityValue: ActivityValue,
   inventoryValue: InventoryValue,
 ): Promise<Gas[]> {
+  if (!inventoryValue.inputMethodology || !inventoryValue.gpcReferenceNumber) {
+    throw new createHttpError.BadRequest(
+      "InventoryValue has no inputMethodology or gpcReferenceNumber associated",
+    );
+  }
   const data = convertDataToDefaultUnit(
     // use convert all the values
     activityValue,
-    inventoryValue.inputMethodology as string,
-    inventoryValue.gpcReferenceNumber as string,
+    inventoryValue.inputMethodology,
+    inventoryValue.gpcReferenceNumber,
   );
   if (!data) {
     throw new createHttpError.BadRequest(

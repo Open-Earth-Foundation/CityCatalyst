@@ -71,7 +71,7 @@ def upgrade() -> None:
       "risk_score" numeric,
       "hazard_score" numeric,
       "exposure_score" numeric,
-      "vulnerablity_score" numeric,
+      "vulnerability_score" numeric,
       "adaptive_capacity_score" numeric,
       "sensitivity_score" numeric,
       CONSTRAINT unique_risk UNIQUE (impact_id, actor_id)

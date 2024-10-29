@@ -67,7 +67,7 @@ export const PATCH = apiHandler(async (req, context) => {
     const publishBody: { isPublic: boolean; publishedAt?: Date | null } = {
       ...body,
     };
-    if (publishBody.isPublic) {
+    if (publishBody.isPublic && !inventory.isPublic) {
       publishBody.publishedAt = new Date();
     } else if (!publishBody.isPublic) {
       publishBody.publishedAt = null;

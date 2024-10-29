@@ -12,7 +12,7 @@ export interface InventoryAttributes {
   cityId?: string;
   totalCountryEmissions?: number;
   isPublic?: boolean;
-  publishedAt?: Date;
+  publishedAt?: Date | null;
 }
 
 export type InventoryPk = "inventoryId";
@@ -42,7 +42,7 @@ export class Inventory
   cityId?: string;
   totalCountryEmissions?: number;
   isPublic?: boolean;
-  publishedAt?: Date;
+  publishedAt?: Date | null;
   // Inventory belongsTo City via cityId
   city!: City;
   getCity!: Sequelize.BelongsToGetAssociationMixin<City>;

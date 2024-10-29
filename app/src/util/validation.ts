@@ -34,7 +34,18 @@ export const createInventoryRequest = z.object({
   totalEmissions: z.number().int().optional(),
   totalCountryEmissions: z.number().int().optional(),
 });
+
 export type CreateInventoryRequest = z.infer<typeof createInventoryRequest>;
+
+export const upsertInventoryRequest = z.union([
+  createInventoryRequest.strict(),
+  z
+    .object({
+      isPublic: z.boolean().optional(),
+    })
+    .strict(),
+]);
+export type UpsertInventoryRequest = z.infer<typeof upsertInventoryRequest>;
 
 // enforces: min one upper- and lowercase charater and one number, min length 4 characters
 export const passwordRegex =

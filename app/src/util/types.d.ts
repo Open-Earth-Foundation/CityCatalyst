@@ -78,6 +78,11 @@ interface InventoryValueUpdateQuery {
   data: InventoryValueData;
 }
 
+interface InventoryUpdateQuery {
+  inventoryId: string;
+  data: { isPublic: boolean };
+}
+
 type EmissionsFactorWithDataSources = EmissionsFactorAttributes & {
   dataSources: DataSourceAttributes[];
 };

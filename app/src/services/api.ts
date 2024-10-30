@@ -13,6 +13,7 @@ import type {
   EmissionsFactorResponse,
   InventoryProgressResponse,
   InventoryResponse,
+  InventoryUpdateQuery,
   InventoryValueResponse,
   InventoryValueUpdateQuery,
   InventoryWithCity,
@@ -40,6 +41,7 @@ export const api = createApi({
     "CityData",
     "ReportResults",
     "SectorBreakdown",
+    "Inventory",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
@@ -62,6 +64,7 @@ export const api = createApi({
       query: (inventoryId) => `inventory/${inventoryId}`,
       transformResponse: (response: { data: InventoryResponse }) =>
         response.data,
+      providesTags: ["Inventory"],
     }),
     getRequiredScopes: builder.query<RequiredScopesResponse, string>({
       query: (sectorId) => `sector/${sectorId}/required-scopes`,
@@ -593,6 +596,19 @@ export const api = createApi({
       }),
       transformResponse: (response: { threadId: string }) => response.threadId,
     }),
+    updateInventory: builder.mutation<
+      InventoryAttributes,
+      InventoryUpdateQuery
+    >({
+      query: (data) => ({
+        url: `/inventory/${data.inventoryId}`,
+        method: "PATCH",
+        body: data.data,
+      }),
+      transformResponse: (response: { data: InventoryAttributes }) =>
+        response.data,
+      invalidatesTags: ["Inventory"],
+    }),
   }),
 });
 
@@ -655,5 +671,6 @@ export const {
   useDeleteActivityValueMutation,
   useGetInventoryValuesBySubsectorQuery,
   useGetResultsQuery,
+  useUpdateInventoryMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

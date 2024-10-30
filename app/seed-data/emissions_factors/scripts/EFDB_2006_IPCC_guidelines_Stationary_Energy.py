@@ -1,6 +1,7 @@
 import csv
 import math
 import os
+import json
 import pandas as pd
 import numpy as np
 from pathlib import Path
@@ -936,6 +937,8 @@ if __name__ == "__main__":
         axis=1,
     )
 
+    df_v2["metadata"] = df_v2["metadata"].apply(json.dumps)
+
     ## ------------------------------------------
     # Emissions for subsectors I.7 and I.8
     ## ------------------------------------------
@@ -1071,17 +1074,20 @@ if __name__ == "__main__":
         'undeground post-mining': 'underground post-mining'
         })
 
+    # map the extra column to the activity type
     EF_df['activity_type_id'] = EF_df['extra'].map(activity_type_mapping)
 
-    # create a 'metadata' column based on density values, density units, NCV values and NCV units
+    # Create a 'metadata' column based on density values, density units, NCV values and NCV units
     EF_df["metadata"] = EF_df.apply(
         lambda row: {
-            "activity_name_1":row['activity_type_id'],
-            "activity_description_1":row['extra'],
-            "activity_description_2":row['parameters']
+            "activity_name_1": row['activity_type_id'] if not pd.isna(row['activity_type_id']) else None,
+            "activity_description_1": row['extra'] if not pd.isna(row['extra']) else None,
+            "activity_description_2": row['parameters'] if not pd.isna(row['parameters']) else None,
         },
         axis=1,
     )
+
+    EF_df["metadata"] = EF_df["metadata"].apply(json.dumps)
 
     # assign "GPC_refno" using the mapping dic
     EF_df["gpc_refno"] = EF_df["ipcc_2006_category"].map(mapping_ipcc_to_gpc)

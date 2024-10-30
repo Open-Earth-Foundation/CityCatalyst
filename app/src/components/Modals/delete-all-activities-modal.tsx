@@ -54,7 +54,6 @@ const DeleteAllActivitiesModal: FC<DeleteAllActivitiesModalProps> = ({
       subSectorId: subsectorId,
     });
     if (response.data) {
-
       // TODO create toast wrapper for success state
       toast({
         status: "success",

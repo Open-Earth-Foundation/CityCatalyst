@@ -47,6 +47,7 @@ import {
 import MissingInventory from "@/components/missing-inventory";
 import InventoryCalculationTab from "@/components/HomePage/InventoryCalculationTab";
 import InventoryReportTab from "../../app/[lng]/[inventory]/InventoryResultTab";
+import NotAvailable from "@/components/NotAvailable";
 
 enum STATUS {
   INFO = "info",
@@ -245,7 +246,11 @@ export default function HomePage({
     <>
       {!inventory && !isInventoryLoading && (
         <>
-          <MissingInventory lng={lng} />
+          {isPublic ? (
+            <NotAvailable lng={lng} />
+          ) : (
+            <MissingInventory lng={lng} />
+          )}
           <Footer lng={lng} />
         </>
       )}

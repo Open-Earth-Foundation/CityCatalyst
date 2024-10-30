@@ -38,13 +38,13 @@ const ModalDownloadShare = ({
       <ModalContent maxW="container.md">
         <ModalHeader>
           <Center>
-            <Text fontSize={"headline.sm"} mx={"8px"}>
+            <Text fontSize="headline.sm" mx="8px">
               {t("download-and-share")}
             </Text>
           </Center>
         </ModalHeader>
         <ModalCloseButton />
-        <Divider my={"24px"} />
+        <Divider my="24px" />
         <ModalBody>
           <DownloadButtons
             t={t}
@@ -52,7 +52,7 @@ const ModalDownloadShare = ({
             cityLocode={cityLocode}
             inventoryYear={inventory.year}
           />
-          <Divider my={"12px"} />
+          <Divider my="12px" />
           <ModalPublishButtons
             t={t}
             onClose={onDownloadShareClose}

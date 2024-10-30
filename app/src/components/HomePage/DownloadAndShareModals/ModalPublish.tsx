@@ -50,18 +50,18 @@ const ModalPublish = ({
         <ModalHeader>
           <HStack>
             <Img
-              src={"/assets/publish.svg"}
-              alt={"publish-to-web"}
-              width={"24px"}
-              height={"24px"}
-            />{" "}
-            <Text fontSize={"headline.sm"} mx={"8px"}>
+              src="/assets/publish.svg"
+              alt="publish-to-web"
+              width="24px"
+              height="24px"
+            />
+            <Text fontSize="headline.sm" mx="8px">
               {t("publish-to-web")}
             </Text>
           </HStack>
         </ModalHeader>
         <ModalCloseButton />
-        <Divider my={"24px"} />
+        <Divider my="24px" />
         {!inventory.isPublic ? (
           <UnpublishedView
             t={t}

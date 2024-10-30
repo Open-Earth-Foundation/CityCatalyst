@@ -50,17 +50,17 @@ export function PublishedView({
   const URL = `${process.env.NEXT_PUBLIC_HOST}/${lng}/public/${inventoryId}`;
   return (
     <ModalBody>
-      <Text fontWeight="600" fontSize={"title.lg"}>
+      <Text fontWeight="600" fontSize="title.lg">
         {t("public-city-inventory")}
       </Text>
       <Text>{t("manage-public-inventory-description")}</Text>
-      <Divider my={"24px"} />
-      <HStack justify={"space-between"}>
-        <VStack align={"left"}>
-          <Text fontWeight="600" fontSize={"title.md"}>
+      <Divider my="24px" />
+      <HStack justify="space-between">
+        <VStack align="left">
+          <Text fontWeight="600" fontSize="title.md">
             {URL}
           </Text>
-          <Text fontWeight={"400"} fontSize={"body.md"}>
+          <Text fontWeight="400" fontSize="body.md">
             {t("published") + " " + relativeTime}
           </Text>
         </VStack>
@@ -71,9 +71,9 @@ export function PublishedView({
             target="_blank"
             rel="noopener noreferrer"
             variant="ghost"
-            rightIcon={<ExternalLinkIcon fontSize={"24px"} />}
+            rightIcon={<ExternalLinkIcon fontSize="24px" />}
           >
-            <BlueSubtitle t={t} text={"view-site"} />
+            <BlueSubtitle t={t} text="view-site" />
           </Button>
         </Box>
       </HStack>

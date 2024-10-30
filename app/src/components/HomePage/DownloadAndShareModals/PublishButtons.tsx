@@ -35,27 +35,23 @@ const PublishButtons = ({
       {PUBLISH_BUTTONS.map(({ title, src, isAvailable, onClick }) => (
         <Button
           key={title}
-          my={"24px"}
-          mx={"24px"}
-          variant={"ghost"}
-          leftIcon={
-            <Img src={src} alt={title} width={"32px"} height={"32px"} />
-          }
-          rightIcon={
-            <ChevronRightIcon width={"24px"} height={"24px"} mx={"16px"} />
-          }
+          my="24px"
+          mx="24px"
+          variant="ghost"
+          leftIcon={<Img src={src} alt={title} width="32px" height="32px" />}
+          rightIcon={<ChevronRightIcon width="24px" height="24px" mx="16px" />}
           isDisabled={!isAvailable}
           style={{
             backgroundColor: "white",
             color: "black",
             opacity: isAvailable ? 1 : 0.5,
           }}
-          textTransform={"none"}
+          textTransform="none"
           justifyContent="flex-start"
           w="full"
           onClick={onClick}
         >
-          <VStack align="flex-start" w="full" mx={"16px"}>
+          <VStack align="flex-start" w="full" mx="16px">
             <HStack w="full" justify="flex-start">
               <Text
                 fontSize="body.lg"
@@ -66,13 +62,13 @@ const PublishButtons = ({
               </Text>
               {!isAvailable && (
                 <Badge
-                  mx={"16px"}
+                  mx="16px"
                   borderWidth="1px"
                   borderColor="border.neutral"
                   py="4px"
                   px="8px"
                   borderRadius="full"
-                  textColor={"content.secondary"}
+                  textColor="content.secondary"
                   fontSize="body.sm"
                   bg="base.light"
                 >
@@ -88,7 +84,7 @@ const PublishButtons = ({
                 overflow: "hidden",
                 textOverflow: "ellipsis",
               }}
-              align={"left"}
+              align="left"
             >
               {t(`${title}-description`)}
             </Text>

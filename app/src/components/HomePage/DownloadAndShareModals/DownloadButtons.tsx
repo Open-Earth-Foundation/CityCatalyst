@@ -163,16 +163,16 @@ const DownloadButtons = ({
       {Object.entries(DOWNLOAD_BUTTONS).map(([format, { isAvailable }]) => (
         <Button
           key={format}
-          my={"16px"}
-          mx={"24px"}
-          variant={"ghost"}
+          my="16px"
+          mx="24px"
+          variant="ghost"
           leftIcon={<FiDownload fontSize="32px" />}
           isDisabled={!isAvailable}
           style={{
             backgroundColor: "white",
             color: "black",
           }}
-          textTransform={"none"}
+          textTransform="none"
           justifyContent="flex-start"
           onClick={() => handleDownload(format)}
         >
@@ -180,19 +180,19 @@ const DownloadButtons = ({
             fontSize="body.lg"
             color="body"
             opacity={isAvailable ? 1 : 0.5}
-            mx={"16px"}
+            mx="16px"
           >
             {t(`download-${format}`)}
           </Text>
           {!isAvailable && (
             <Badge
-              mx={"16px"}
+              mx="16px"
               borderWidth="1px"
               borderColor="border.neutral"
               py="4px"
               px="8px"
               borderRadius="full"
-              textColor={"content.secondary"}
+              textColor="content.secondary"
               fontSize="body.sm"
               bg="base.light"
             >

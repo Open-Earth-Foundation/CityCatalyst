@@ -12,11 +12,11 @@ export function UnpublishedView({
 }) {
   return (
     <ModalBody>
-      <Text fontWeight="600" fontSize={"title.lg"}>
+      <Text fontWeight="600" fontSize="title.lg">
         {t("make-public")}
       </Text>
       <Text>{t("make-public-description")}</Text>
-      <Checkbox my={"16px"} isChecked={checked} onChange={onAuthorizeChange}>
+      <Checkbox my="16px" isChecked={checked} onChange={onAuthorizeChange}>
         {t("i-authorize")}
       </Checkbox>
     </ModalBody>

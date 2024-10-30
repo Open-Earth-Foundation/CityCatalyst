@@ -20,11 +20,14 @@ function hasIsPublicProperty(
   return (inventory as { isPublic: boolean }).isPublic !== undefined;
 }
 
-export const GET = apiHandler(async (req, { params }) => {
+export const GET = apiHandler(async (req, { session, params }) => {
   const { inventory: inventoryId } = params;
-  const inventory = await db.models.Inventory.findByPk(inventoryId, {
-    include: [{ model: db.models.City, as: "city" }],
-  });
+  const inventory = await UserService.findUserInventory(
+    inventoryId,
+    session,
+    [{ model: db.models.City, as: "city" }],
+    true,
+  );
   if (!inventory) {
     throw new createHttpError.NotFound("Inventory not found");
   }

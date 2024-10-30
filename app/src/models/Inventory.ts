@@ -4,6 +4,11 @@ import type { City, CityId } from "./City";
 import type { InventoryValue, InventoryValueId } from "./InventoryValue";
 import type { Version, VersionId } from "./Version";
 
+export enum InventoryType {
+  GPC_BASIC = "gpc_basic",
+  GPC_BASIC_PLUS = "gpc_basic_plus",
+}
+
 export interface InventoryAttributes {
   inventoryId: string;
   inventoryName?: string;
@@ -13,6 +18,7 @@ export interface InventoryAttributes {
   totalCountryEmissions?: number;
   isPublic?: boolean;
   publishedAt?: Date | null;
+  inventoryType?: InventoryType;
 }
 
 export type InventoryPk = "inventoryId";
@@ -24,7 +30,8 @@ export type InventoryOptionalAttributes =
   | "cityId"
   | "totalCountryEmissions"
   | "isPublic"
-  | "publishedAt";
+  | "publishedAt"
+  | "inventoryType";
 
 export type InventoryCreationAttributes = Optional<
   InventoryAttributes,
@@ -43,6 +50,7 @@ export class Inventory
   totalCountryEmissions?: number;
   isPublic?: boolean;
   publishedAt?: Date | null;
+  inventoryType?: InventoryType;
   // Inventory belongsTo City via cityId
   city!: City;
   getCity!: Sequelize.BelongsToGetAssociationMixin<City>;
@@ -140,6 +148,11 @@ export class Inventory
           type: DataTypes.DATE,
           allowNull: true,
           field: "published_at",
+        },
+        inventoryType: {
+          type: DataTypes.ENUM(...Object.values(InventoryType)),
+          allowNull: true,
+          field: "inventory_type",
         },
       },
       {

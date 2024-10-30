@@ -108,10 +108,10 @@ mapping_ipcc_to_gpc = {
   '1.A.1.a.iii - Heat Plants\n': ['I.4.4'],
   '1.A.1.c.ii - Other Energy Industries\n': ['I.4.4'],
   '1.A.2 - Manufacturing Industries and Construction\n': ['I.3.1'],
-  '1.A.2 - Manufacturing Industries and Construction\n1.A.4.a - Commercial/Institutional\n': ['I.3.1', 
+  '1.A.2 - Manufacturing Industries and Construction\n1.A.4.a - Commercial/Institutional\n': ['I.3.1',
                                                                                               'I.2.1'],
-  '1.A.2 - Manufacturing Industries and Construction\n1.A.4.a - Commercial/Institutional\n1.A.4.b - Residential\n1.A.4.c.ii - Off-road Vehicles and Other Machinery\n': ['I.3.1', 
-                                                                                                                                                                         'I.2.1', 
+  '1.A.2 - Manufacturing Industries and Construction\n1.A.4.a - Commercial/Institutional\n1.A.4.b - Residential\n1.A.4.c.ii - Off-road Vehicles and Other Machinery\n': ['I.3.1',
+                                                                                                                                                                         'I.2.1',
                                                                                                                                                                          'I.1.1'],
   '1.A.2.a - Iron and Steel\n': ['I.3.1'],
   '1.A.2.b - Non-Ferrous Metals\n': ['I.3.1'],
@@ -181,42 +181,42 @@ ref_density_dic = {
 # dictionary with density values
 densities_dic = {
     'Motor Gasoline': {
-        'value': 740, 
+        'value': 740,
         'units': 'kg/m3',
         'reference': 'EF_GHG_protocol'
-    }, 
+    },
     'Diesel Oil': {
-        'value': 840, 
+        'value': 840,
         'units': 'kg/m3',
         'reference': 'EF_GHG_protocol'
-    }, 
+    },
     'Natural Gas': {
-        'value': 0.7, 
+        'value': 0.7,
         'units': 'kg/m3',
         'reference': 'EF_GHG_protocol'
     },
     'Liquefied Petroleum Gases': {
-        'value': 540, 
+        'value': 540,
         'units': 'kg/m3',
         'reference': 'EF_GHG_protocol'
-    }, 
+    },
     'Natural Gas Liquids\n(NGLs)': {
-        'value': 500, 
+        'value': 500,
         'units': 'kg/m3',
         'reference': 'Aqua_Calc_tool'
     },
     'Jet Kerosene': {
-        'value': 790, 
+        'value': 790,
         'units': 'kg/m3',
         'reference': 'EF_GHG_protocol'
     },
     'Aviation Gasoline': {
-        'value': 710, 
+        'value': 710,
         'units': 'kg/m3',
         'reference': 'EF_GHG_protocol'
-    }, 
+    },
     'Residual Fuel Oil': {
-        'value': 940, 
+        'value': 940,
         'units': 'kg/m3',
         'reference': 'EF_GHG_protocol'
     },
@@ -231,33 +231,33 @@ densities_dic = {
         "reference": "Aqua_Calc_tool",
     },
     "Lignite": {
-        "value": 400, 
-        "units": "kg/m3", 
+        "value": 400,
+        "units": "kg/m3",
         "reference": "Aqua_Calc_tool"
     },
     "Peat": {
-        "value": 400, 
-        "units": "kg/m3", 
+        "value": 400,
+        "units": "kg/m3",
         "reference": "Aqua_Calc_tool"
     },
     "Crude Oil": {
-        "value": 800, 
-        "units": "kg/m3", 
+        "value": 800,
+        "units": "kg/m3",
         "reference": "EF_GHG_protocol"
     },
     "Other Kerosene": {
-        "value": 800, 
-        "units": "kg/m3", 
+        "value": 800,
+        "units": "kg/m3",
         "reference": "EF_GHG_protocol"
     },
     "Gas Oil": {
-        "value": 840, 
-        "units": "kg/m3", 
+        "value": 840,
+        "units": "kg/m3",
         "reference": "EF_GHG_protocol"
     },
     "Charcoal": {
-        "value": 208, 
-        "units": "kg/m3", 
+        "value": 208,
+        "units": "kg/m3",
         "reference": "Aqua_Calc_tool"
     },
     "Sub-Bituminous Coal": {
@@ -271,8 +271,8 @@ densities_dic = {
         "reference": "EF_GHG_protocol",
     },
     "Coking Coal": {
-        "value": 829.76, 
-        "units": "kg/m3", 
+        "value": 829.76,
+        "units": "kg/m3",
         "reference": "Aqua_Calc_tool"
     },
     "Coke Oven Coke and Lignite Coke": {
@@ -281,8 +281,8 @@ densities_dic = {
         "reference": "Aqua_Calc_tool",
     },
     "Naphtha": {
-        "value": 770, 
-        "units": "kg/m3", 
+        "value": 770,
+        "units": "kg/m3",
         "reference": "EF_GHG_protocol"
     },
     "Coke Oven Gas": {
@@ -291,8 +291,8 @@ densities_dic = {
         "reference": "engineering_tool_box",
     },
     "Bitumen": {
-        "value": 1346, 
-        "units": "kg/m3", 
+        "value": 1346,
+        "units": "kg/m3",
         "reference": "Aqua_Calc_tool"},
     'Bio-Alcohol': {
         'value': 789,  # Typical density for ethanol
@@ -305,17 +305,17 @@ densities_dic = {
         'reference': 'Biomass Energy Handbook'
     },
     'Refinery Gas': {
-        'value': 0.7, 
+        'value': 0.7,
         'units': 'kg/m3',
         'reference': 'Engineering ToolBox'
     },
     'Ethane': {
-        'value': 1.34, 
+        'value': 1.34,
         'units': 'kg/m3',
         'reference': 'Matmake'
     },
     'Jet Gasoline': {
-        'value': 804, 
+        'value': 804,
         'units': 'kg/m3',
         'reference': 'The Engineering Mindset'
     },
@@ -325,37 +325,37 @@ densities_dic = {
         'reference': 'Engineering ToolBox'
     },
     'Coal Tar': {
-        'value': 1150, 
+        'value': 1150,
         'units': 'kg/m3',
         'reference': 'The Engineering Mindset'
     },
     'Blast Furnace Gas': {
-        'value': 1.3, 
+        'value': 1.3,
         'units': 'kg/m3',
         'reference': 'Engineering ToolBox'
     },
     'Petroleum Coke': {
-        'value': 850, 
+        'value': 850,
         'units': 'kg/m3',
         'reference': 'US Department of Energy'
     },
     'Municipal Wastes (non-biomass fraction)': {
-        'value': 400, 
+        'value': 400,
         'units': 'kg/m3',
         'reference': 'EPA Municipal Solid Waste Report'
     },
     'Municipal Wastes (biomass fraction)': {
-        'value': 500, 
+        'value': 500,
         'units': 'kg/m3',
         'reference': 'EPA Municipal Solid Waste Report'
     },
     'Biodiesels': {
-        'value': 880, 
+        'value': 880,
         'units': 'kg/m3',
         'reference': 'EF GHG Protocol'
     },
     'Landfill Gas': {
-        'value': 1.2, 
+        'value': 1.2,
         'units': 'kg/m3',
         'reference': 'Engineering ToolBox'
     },
@@ -365,12 +365,12 @@ densities_dic = {
         'reference': 'Biofuels Technology Handbook'
     },
     'Lubricants': {
-        'value': 900, 
+        'value': 900,
         'units': 'kg/m3',
         'reference': 'EF GHG Protocol'
     },
     'Waste Oils': {
-        'value': 920, 
+        'value': 920,
         'units': 'kg/m3',
         'reference': 'Engineering ToolBox'
     }
@@ -522,76 +522,76 @@ extraction_fugitive_dic = {
 }
 
 fuel_to_fuel_ids_mapping = {
-    'Anthracite': 'fuel-type-anthracite', 
-    'Other Bituminous Coal': 'fuel-type-other-bituminous-coal', 
-    'Lignite': 'fuel-type-lignite',  
+    'Anthracite': 'fuel-type-anthracite',
+    'Other Bituminous Coal': 'fuel-type-other-bituminous-coal',
+    'Lignite': 'fuel-type-lignite',
     'Peat': 'fuel-type-peat',
-    'Crude Oil': 'fuel-type-crude-oil', 
-    'Motor Gasoline': 'fuel-type-gasoline', 
-    'Other Kerosene': 'fuel-type-other-kerosene', 
+    'Crude Oil': 'fuel-type-crude-oil',
+    'Motor Gasoline': 'fuel-type-gasoline',
+    'Other Kerosene': 'fuel-type-other-kerosene',
     'Gas Oil': 'fuel-type-natural-gas-oil',
-    'Diesel Oil': 'fuel-type-diesel-oil', 
-    'Residual Fuel Oil': 'fuel-type-residual-fuel-oil', 
+    'Diesel Oil': 'fuel-type-diesel-oil',
+    'Residual Fuel Oil': 'fuel-type-residual-fuel-oil',
     'Natural Gas': 'fuel-type-natural-gas',
-    'Other Primary Solid Biomass': 'fuel-type-other-primary-solid-biomass', 
-    'Wood/Wood Waste': 'fuel-type-wood-wood-waste', 
+    'Other Primary Solid Biomass': 'fuel-type-other-primary-solid-biomass',
+    'Wood/Wood Waste': 'fuel-type-wood-wood-waste',
     'Charcoal': 'fuel-type-charcoal',
-    'Sub-Bituminous Coal': 'fuel-type-sub-bituminous-coal', 
-    'Refinery Gas': 'fuel-type-refinery-gas', 
+    'Sub-Bituminous Coal': 'fuel-type-sub-bituminous-coal',
+    'Refinery Gas': 'fuel-type-refinery-gas',
     'Coking Coal': 'fuel-type-coking-coal',
-    'Liquefied Petroleum Gases': 'fuel-type-liquefied-petroleum-gases', 
+    'Liquefied Petroleum Gases': 'fuel-type-liquefied-petroleum-gases',
     'Coke Oven Coke and Lignite Coke': 'fuel-type-coke-oven-coke-lignite-coke',
-    'Industrial Wastes': 'fuel-type-industrial-wastes', 
-    'Waste Oils': 'fuel-type-waste-oils', 
+    'Industrial Wastes': 'fuel-type-industrial-wastes',
+    'Waste Oils': 'fuel-type-waste-oils',
     'Naphtha': 'fuel-type-naphtha',
     'Municipal Wastes (non-biomass fraction)': 'fuel-type-municipal-wastes',
-    'Aviation Gasoline': 'fuel-type-aviation-gasoline', 
+    'Aviation Gasoline': 'fuel-type-aviation-gasoline',
     'Jet Fuel': 'fuel-type-jet-gasoline',
     'Jet Kerosene': 'fuel-type-jet-kerosene',
-    'Compressed Natural Gas (CNG)': 'fuel-type-cng', 
-    'Kerosene': 'fuel-type-kerosene', 
-    'E85 Ethanol': 'fuel-type-e85-ethanol', 
-    'B20 Biodiesel': 'fuel-type-b20-biodiesel', 
-    'Natural Gas': 'fuel-type-natural-gas', 
-    'Ethanol': 'fuel-type-ethanol', 
-    'Biodiesel': 'fuel-type-biodiesel', 
-    'Bioethanol': 'fuel-type-bioethanol', 
-    'Diesel': 'fuel-type-diesel', 
-    'Residual Fuel Oil': 'fuel-type-residual-fuel-oil', 
+    'Compressed Natural Gas (CNG)': 'fuel-type-cng',
+    'Kerosene': 'fuel-type-kerosene',
+    'E85 Ethanol': 'fuel-type-e85-ethanol',
+    'B20 Biodiesel': 'fuel-type-b20-biodiesel',
+    'Natural Gas': 'fuel-type-natural-gas',
+    'Ethanol': 'fuel-type-ethanol',
+    'Biodiesel': 'fuel-type-biodiesel',
+    'Bioethanol': 'fuel-type-bioethanol',
+    'Diesel': 'fuel-type-diesel',
+    'Residual Fuel Oil': 'fuel-type-residual-fuel-oil',
     'Liquefied Petroleum Gas (LPG)': 'fuel-type-lpg',
-    'Petrol': 'fuel-type-petrol', 
-    'CNG': 'fuel-type-cng', 
+    'Petrol': 'fuel-type-petrol',
+    'CNG': 'fuel-type-cng',
     'LPG': 'fuel-type-lpg',
-    'Bio-Alcohol': 'fuel-type-bio-alcohol', 
-    'Orimulsion': 'fuel-type-orimulsion', 
+    'Bio-Alcohol': 'fuel-type-bio-alcohol',
+    'Orimulsion': 'fuel-type-orimulsion',
     'Natural Gas Liquids\n(NGLs)': 'fuel-type-natural-gas-liquids',
-    'Shale Oil': 'fuel-type-shale-oil', 
-    'Ethane': 'fuel-type-ethane', 
-    'Bitumen': 'fuel-type-bitumen', 
-    'Petroleum Coke': 'fuel-type-petroleum-coke', 
-    'Coke Oven Gas': 'fuel-type-coke-oven-gas', 
-    'Blast Furnace Gas': 'fuel-type-blast-furnace-gas', 
+    'Shale Oil': 'fuel-type-shale-oil',
+    'Ethane': 'fuel-type-ethane',
+    'Bitumen': 'fuel-type-bitumen',
+    'Petroleum Coke': 'fuel-type-petroleum-coke',
+    'Coke Oven Gas': 'fuel-type-coke-oven-gas',
+    'Blast Furnace Gas': 'fuel-type-blast-furnace-gas',
     'Other Liquid Biofuels': 'fuel-type-biofuel',
-    'Other Biogas': 'fuel-type-biogas', 
-    'Jet Gasoline': 'fuel-type-jet-gasoline', 
-    'Brown Coal Briquettes': 'fuel-type-brown-coal-briquettes', 
-    'Gas Coke': 'fuel-type-gas-coke', 
-    'Coal Tar': 'fuel-type-coal-tar', 
-    'Oxygen Steel Furnace Gas': 'fuel-type-oxygen-steel-furnace-gas', 
-    'Biogasoline': 'fuel-type-bioethanol', 
-    'Biodiesels': 'fuel-type-biodiesel', 
-    'Landfill Gas': 'fuel-type-landfill-gas', 
-    'Sludge Gas': 'fuel-type-sludge-gas', 
-    'Municipal Wastes (biomass fraction)': 'fuel-type-municipal-waste', 
-    'Fuel mixtures (fossil and biomass)': 'fuel-type-fuel-mixtures', 
-    'Lubricants': 'fuel-type-lubricants' 
+    'Other Biogas': 'fuel-type-biogas',
+    'Jet Gasoline': 'fuel-type-jet-gasoline',
+    'Brown Coal Briquettes': 'fuel-type-brown-coal-briquettes',
+    'Gas Coke': 'fuel-type-gas-coke',
+    'Coal Tar': 'fuel-type-coal-tar',
+    'Oxygen Steel Furnace Gas': 'fuel-type-oxygen-steel-furnace-gas',
+    'Biogasoline': 'fuel-type-bioethanol',
+    'Biodiesels': 'fuel-type-biodiesel',
+    'Landfill Gas': 'fuel-type-landfill-gas',
+    'Sludge Gas': 'fuel-type-sludge-gas',
+    'Municipal Wastes (biomass fraction)': 'fuel-type-municipal-waste',
+    'Fuel mixtures (fossil and biomass)': 'fuel-type-fuel-mixtures',
+    'Lubricants': 'fuel-type-lubricants'
 }
 
 fuggitive_activity_type_mapping = {
-    'underground mines': 'type-coal-mining-and-handling-underground-mines', 
-    'surface mining': 'type-surface-mines', 
+    'underground mines': 'type-coal-mining-and-handling-underground-mines',
+    'surface mining': 'type-surface-mines',
     'refinery gas combustion': 'type-solid-fuel-transformation',
-    'underground post-mining': 'type-coal-mining-and-handling-underground-mines-mining-post-mining-seam-gas-emissions', 
+    'underground post-mining': 'type-coal-mining-and-handling-underground-mines-mining-post-mining-seam-gas-emissions',
     'surface post-mining': 'type-surface-mines-post-mining-seam-gas-emissions',
     'Well drilling - flaring and venting': 'type-extraction',
     'Well testing - flaring and venting': 'type-extraction',
@@ -630,10 +630,10 @@ mapping_parameters = {
 }
 
 activity_type_mapping = {
-    'underground mines': 'type-coal-mining-and-handling-underground-mines', 
-    'surface mining': 'type-surface-mines', 
+    'underground mines': 'type-coal-mining-and-handling-underground-mines',
+    'surface mining': 'type-surface-mines',
     'refinery gas combustion': 'type-solid-fuel-transformation',
-    'underground post-mining': 'type-coal-mining-and-handling-underground-mines-mining-post-mining-seam-gas-emissions', 
+    'underground post-mining': 'type-coal-mining-and-handling-underground-mines-mining-post-mining-seam-gas-emissions',
     'surface post-mining': 'type-surface-mines-post-mining-seam-gas-emissions',
     'Well drilling - flaring and venting': 'type-extraction',
     'Well testing - flaring and venting': 'type-extraction',
@@ -695,12 +695,12 @@ if __name__ == "__main__":
     # =================================================================
     methodologies = [
         "fugitive-emissions-coal",
-        "fugitive-emissions-oil-gas"
+        "fugitive-emissions-oil-gas",
         "sampling-scaled-data",
         "fuel-combustion-consumption",
         "modeled-data",
-        "movement_driver", 
-        "fuel_sales",
+        "movement-driver",
+        "fuel-sales",
     ]
 
     methodology_data_list = []
@@ -819,35 +819,35 @@ if __name__ == "__main__":
         ('tC/TJ', 't/TJ', 44/12),
         ('g/km', 'kg/km', 0.001),
         ('g/kg fuel', 'kg/kg', 0.001),
-        ('g/MJ', 'kg/TJ', 1000), 
-        ('KG/TJ','kg/TJ', 1), 
-        ('g/kgl', 'kg/L', 0.001), 
-        ('kg/t fuel', 'kg/t', 1), 
+        ('g/MJ', 'kg/TJ', 1000),
+        ('KG/TJ','kg/TJ', 1),
+        ('g/kgl', 'kg/L', 0.001),
+        ('kg/t fuel', 'kg/t', 1),
         ('tonne-C/Terajoule', 't/TJ', 44/12),
         ('g/GJ', 'kg/TJ', 1000),
-        ('t CO2/TJ', 't/TJ', 1), 
+        ('t CO2/TJ', 't/TJ', 1),
         ('tonne CO2/tonne coke produced', 't/t', 1),
         ('g CH4/tonne coke produced', 'kg/t', 0.001),
-        ('Mg/TJ', 'kg/TJ', 1000), 
+        ('Mg/TJ', 'kg/TJ', 1000),
         ('g CH4/GJ', 'kg/TJ', 1000),
-        ('tonne/1000m3', 't/m3', 0.001), 
+        ('tonne/1000m3', 't/m3', 0.001),
         ('gC/GJ Gross', 'kg/TJ', 1000*44/12),
         ('kg C/t', 'kg/t', 44/12),
-        ('tonne/tonne waste', 't/t', 1), 
+        ('tonne/tonne waste', 't/t', 1),
         ('kg/tonne', 'kg/t', 1),
-        ('kt/Mt', 't/t', 0.001), 
+        ('kt/Mt', 't/t', 0.001),
         ('g/litre', 'kg/L', 0.001),
         ('kg/GJ', 'kg/TJ', 1000),
-        ('mg/MJ', 'kg/TJ', 1), 
+        ('mg/MJ', 'kg/TJ', 1),
         ('CO2 kg/GJ', 'kg/TJ', 1e6),
         ('ng/J of Fuel', 'kg/TJ', 1),
-        ('kg/tonnes product', 'kg/t', 1), 
+        ('kg/tonnes product', 'kg/t', 1),
         ('g/tonnes fuel', 'kg/t', 0.001),
-        ('g/tonne', 'kg/t', 0.001), 
-        ('g/kg-fuel', 'kg/kg', 0.001), 
-        ('mg/km', 'kg/km', 1e-6), 
+        ('g/tonne', 'kg/t', 0.001),
+        ('g/kg-fuel', 'kg/kg', 0.001),
+        ('mg/km', 'kg/km', 1e-6),
         ('mg/kWh', 'kg/kWh', 1e-6),
-        ('gC/MJ', 'kg/TJ', 1000*44/12), 
+        ('gC/MJ', 'kg/TJ', 1000*44/12),
         ('kg CO2/GJ', 'kg/TJ', 1000),
         ('kg/kWh', 'kg/TJ', 1/0.0000036)
     ]
@@ -920,11 +920,11 @@ if __name__ == "__main__":
 
     df_v2['methodology_name'] = df_v2.apply(
         lambda row: (
-            stationary_energy_meth if row['gpc_refno'] in stationary_energy_no 
-            else 'fuel_sales' if row['gpc_refno'] in transportation_no and row['units'] in units 
+            stationary_energy_meth if row['gpc_refno'] in stationary_energy_no
+            else 'fuel_sales' if row['gpc_refno'] in transportation_no and row['units'] in units
             else 'movement_driver' if row['gpc_refno'] in transportation_no and row['units'] in ['kg/km']
             else None
-        ), 
+        ),
         axis=1
     )
 
@@ -1009,7 +1009,7 @@ if __name__ == "__main__":
         ('m3 CH4/tonne of coal produced', 'm3/t', 1),
         ('m3/tonne of coal', 'm3/t', 1),
         ('KG/TJ', 'kg/TJ', 1),
-        ('m3/tonne', 'm3/t', 1), 
+        ('m3/tonne', 'm3/t', 1),
         ('kg/PJ of oil produced', 'kg/TJ', 1e-3),
         ('kg/PJ of gas produced', 'kg/TJ', 1e-3),
         ('kg/PJ of oil and gas produced', 'kg/TJ', 1e-3),
@@ -1066,8 +1066,8 @@ if __name__ == "__main__":
     EF_df['parameters'] = EF_df['parameters'].map(mapping_parameters)
 
     EF_df['extra'] = EF_df['extra'].replace({
-        'undeground mining': 'underground mines', 
-        'underground mining': 'underground mines', 
+        'undeground mining': 'underground mines',
+        'underground mining': 'underground mines',
         'undeground post-mining': 'underground post-mining'
         })
 
@@ -1076,8 +1076,8 @@ if __name__ == "__main__":
     # create a 'metadata' column based on density values, density units, NCV values and NCV units
     EF_df["metadata"] = EF_df.apply(
         lambda row: {
-            "activity_name_1":row['activity_type_id'], 
-            "activity_description_1":row['extra'], 
+            "activity_name_1":row['activity_type_id'],
+            "activity_description_1":row['extra'],
             "activity_description_2":row['parameters']
         },
         axis=1,
@@ -1125,9 +1125,9 @@ if __name__ == "__main__":
             "parameters",
             "properties",
             "equation",
-            'fuel_type_id', 
-            'user_type', 
-            'extra', 
+            'fuel_type_id',
+            'user_type',
+            'extra',
             'activity_type_id'
         ]
     )
@@ -1165,4 +1165,3 @@ if __name__ == "__main__":
     write_dic_to_csv(
         output_dir, "DataSourceEmissionsFactor", datasource_emissions_factor_data
     )
-

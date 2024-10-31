@@ -40,5 +40,8 @@
   "region-population-title": "Region population",
   "region-population-placeholder": "Region population number",
   "country-population-title": "Country population",
-  "country-population-placeholder": "Country population number"
+  "country-population-placeholder": "Country population number",
+  "create-inventory": "Create Inventory",
+  "create-ghg-inventory": "Create your GHG Inventory",
+  "inventory-creation-description": "In this step, configure your city's GHG emissions inventory by selecting the inventory year, setting the target, and adding contextual data such as population."
 }

@@ -26,7 +26,7 @@ export default function Onboarding({
             color="content.tertiary"
             fontSize="title.sm"
           >
-            create inventory
+            {t("create-inventory")}
           </Text>
           <Heading
             as="h1"
@@ -36,7 +36,7 @@ export default function Onboarding({
             fontWeight="600"
             fontStyle="normal"
           >
-            Create your GHG emission inventory
+            {t("create-ghg-inventory")}
           </Heading>
           <Text
             color="content.tertiary"
@@ -45,9 +45,7 @@ export default function Onboarding({
             fontWeight="400"
             letterSpacing="wide"
           >
-            In this step, configure your city's GHG emissions inventory by
-            selecting the inventory year, setting the target, and adding
-            contextual data such as population.
+            {t("inventory-creation-description")}
           </Text>
         </Box>
         <Box>

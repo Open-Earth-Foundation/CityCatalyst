@@ -306,7 +306,7 @@ describe("Inventory API", () => {
     const {
       error: { issues },
     } = await res.json();
-    expect(issues.length).toEqual(3);
+    expect(issues.length).toEqual(1);
   });
 
   it("should delete an inventory", async () => {

@@ -9,6 +9,8 @@ import type { Inventory } from "@/models/Inventory";
 import { db } from "@/models";
 import { InventoryValue } from "@/models/InventoryValue";
 import { Decimal } from "decimal.js";
+import { findMethodology } from "@/util/form-schema";
+import UnitConversionService from "@/backend/UnitConversionService";
 
 type GasValueWithEmissionsFactor = Omit<GasValueCreationAttributes, "id"> & {
   emissionsFactor?:
@@ -115,6 +117,80 @@ const DEFAULT_INCOME_GROUP_FRACTIONS: Record<string, number> = {
   "income-group-type-urban-low-income": 0.27,
 };
 
+// check if an extra field has a unit.
+// if yes. take the selected unit, convert it to the default unit and return the value
+
+// take in the activityData and the methodology
+//
+function convertDataToDefaultUnit(
+  activityValue: ActivityValue,
+  methodologyId: string,
+  referenceNumber: string,
+): Record<string, any> {
+  const methododology = findMethodology(methodologyId, referenceNumber);
+  if (!methododology) {
+    throw new createHttpError.NotFound(
+      `Could not find methodology for reference number ${referenceNumber}`,
+    );
+  }
+
+  let activity = methododology.activities?.[0];
+
+  // if methodologyId is !direct measure, and number of activities === 1 use the Oth activity
+  if ((methododology.activities?.length as number) > 1) {
+    let selectedActivityOption =
+      activityValue.metadata?.[
+        methododology.activitySelectionField?.id as string
+      ];
+
+    const foundIndex =
+      methododology.activities?.findIndex(
+        (ac) => ac.activitySelectedOption === selectedActivityOption,
+      ) ?? 0;
+
+    const selectedActivityIndex = foundIndex >= 0 ? foundIndex : 0;
+
+    activity = methododology.activities?.[selectedActivityIndex];
+  }
+  // deal with activity title value
+
+  let data: Record<string, any> = { ...activityValue.activityData };
+  // check if it has a default unit property
+  if (activity?.["default-units"]) {
+    const val = data[activity?.["activity-title"] as string];
+    const fuelTypeKey = Object.keys(data).find((key) =>
+      key.includes("fuel-type"),
+    );
+    const fuelType = data[fuelTypeKey as string];
+    const fromUnit = data[`${activity?.["activity-title"]}-unit`];
+    data[activity?.["activity-title"] as string] = new Decimal(
+      UnitConversionService.convertUnits(
+        val,
+        fromUnit,
+        activity["default-units"],
+        fuelType,
+      ),
+    );
+  }
+
+  if (activity?.["extra-fields"]) {
+    activity["extra-fields"].forEach((field) => {
+      let val = data[field.id];
+      if (field.units && field["default-units"]) {
+        data[field.id] = new Decimal(
+          UnitConversionService.convertUnits(
+            val,
+            data[`${field.id}-unit`],
+            field?.["default-units"],
+          ),
+        );
+      }
+    });
+  }
+
+  return data;
+}
+
 export function handleDirectMeasureFormula(
   activityValue: ActivityValue,
 ): Gas[] {
@@ -127,7 +203,7 @@ export function handleDirectMeasureFormula(
       );
     }
     // TODO save amount to GasValue entry?
-    const amount = BigInt(data[key]);
+    const amount = new Decimal(data[key]);
     return { gas: gasName, amount: amount };
   });
   return gases;
@@ -138,7 +214,12 @@ export async function handleIncinerationWasteFormula(
   inventoryValue: InventoryValue,
   formulaMapping: Record<string, string>,
 ): Promise<Gas[]> {
-  const data = activityValue.activityData;
+  const data = convertDataToDefaultUnit(
+    // use convert all the values
+    activityValue,
+    inventoryValue.inputMethodology as string,
+    inventoryValue.gpcReferenceNumber as string,
+  );
 
   if (!data) {
     throw new createHttpError.BadRequest(
@@ -155,9 +236,9 @@ export async function handleIncinerationWasteFormula(
   const boilerTypeKey = formulaMapping["boiler-type"];
   const boilerType = data[boilerTypeKey] as string;
 
-  let totalCH4Emission: number = 0;
-  let totalN2OEmissions: number = 0;
-  let totalPartialCO2Emissions: number = 0;
+  let totalCH4Emission: Decimal = new Decimal(0);
+  let totalN2OEmissions: Decimal = new Decimal(0);
+  let totalPartialCO2Emissions: Decimal = new Decimal(0);
 
   for (const wasteType of Object.keys(wasteComposition)) {
     const WasteFractionI = wasteComposition[wasteType] / 100;
@@ -182,10 +263,20 @@ export async function handleIncinerationWasteFormula(
       );
     }
 
-    (totalCH4Emission +=
-      AmountOfWasteForWasteTypeI * CH4EmissionFactorForWasteTypeI * 10 ** -3),
-      (totalN2OEmissions +=
-        AmountOfWasteForWasteTypeI * NO2EmissionFactorForWasteTypeI * 10 ** -3);
+    totalCH4Emission = Decimal.sum(
+      totalCH4Emission,
+      Decimal.mul(
+        AmountOfWasteForWasteTypeI,
+        CH4EmissionFactorForWasteTypeI,
+      ).mul(10 ** -3),
+    );
+    totalN2OEmissions = Decimal.sum(
+      totalN2OEmissions,
+      Decimal.mul(
+        AmountOfWasteForWasteTypeI,
+        NO2EmissionFactorForWasteTypeI,
+      ).mul(10 ** -3),
+    );
 
     // calculate CO2 emissions
 
@@ -247,29 +338,31 @@ export async function handleIncinerationWasteFormula(
 
     const oxidationFactorI = IncinerationWasteCO2OxidationFactor[technology];
 
-    totalPartialCO2Emissions +=
-      WasteFractionI *
-      dryMatterContentI *
-      fractionOfCarbonI *
-      fractionOfFossilCarbonI *
-      oxidationFactorI;
+    totalPartialCO2Emissions = Decimal.sum(
+      totalPartialCO2Emissions,
+      Decimal.mul(WasteFractionI, dryMatterContentI)
+        .mul(fractionOfCarbonI)
+        .mul(fractionOfFossilCarbonI)
+        .mul(oxidationFactorI),
+    );
   }
 
-  const totalCO2Emissions =
-    massOfIncineratedWaste * totalPartialCO2Emissions * (44 / 12);
+  const totalCO2Emissions = totalPartialCO2Emissions.mul(
+    massOfIncineratedWaste * (44 / 12),
+  );
 
   return [
     {
       gas: "CH4",
-      amount: BigInt(new Decimal(totalCH4Emission).trunc().toString()),
+      amount: new Decimal(totalCH4Emission).trunc(),
     },
     {
       gas: "N2O",
-      amount: BigInt(new Decimal(totalN2OEmissions).trunc().toString()),
+      amount: new Decimal(totalN2OEmissions).trunc(),
     },
     {
       gas: "CO2",
-      amount: BigInt(new Decimal(totalCO2Emissions).trunc().toString()),
+      amount: new Decimal(totalCO2Emissions).trunc(),
     },
   ];
 }
@@ -277,8 +370,19 @@ export async function handleIncinerationWasteFormula(
 export function handleVkt1Formula(
   activityValue: ActivityValue,
   gasValues: GasValueWithEmissionsFactor[],
+  inventoryValue: InventoryValue,
 ): Gas[] {
-  const data = activityValue.activityData;
+  if (!inventoryValue.inputMethodology || !inventoryValue.gpcReferenceNumber) {
+    throw new createHttpError.BadRequest(
+      "InventoryValue has no inputMethodology or gpcReferenceNumber associated",
+    );
+  }
+  const data = convertDataToDefaultUnit(
+    // use convert all the values
+    activityValue,
+    inventoryValue.inputMethodology,
+    inventoryValue.gpcReferenceNumber,
+  );
   if (!data) {
     throw new createHttpError.BadRequest(
       "Activity has no data associated, so it can't use the formula",
@@ -297,11 +401,11 @@ export function handleVkt1Formula(
         `Emissions factor for ${emissionsFactor?.gas} has no emissions per activity`,
       );
     }
-    const emissions =
-      data["activity-value"] *
-      data["intensity"] *
-      emissionsFactor.emissionsPerActivity;
-    return { gas: gasValue.gas, amount: BigInt(emissions) };
+    const emissions = Decimal.mul(
+      data["activity-value"] * data["intensity"],
+      emissionsFactor.emissionsPerActivity,
+    );
+    return { gas: gasValue.gas, amount: emissions };
   });
 
   return gases;
@@ -309,8 +413,19 @@ export function handleVkt1Formula(
 
 export function handleMethaneCommitmentFormula(
   activityValue: ActivityValue,
+  inventoryValue: InventoryValue,
 ): Gas[] {
-  const data = activityValue.activityData;
+  if (!inventoryValue.inputMethodology || !inventoryValue.gpcReferenceNumber) {
+    throw new createHttpError.BadRequest(
+      "InventoryValue has no inputMethodology or gpcReferenceNumber associated",
+    );
+  }
+  const data = convertDataToDefaultUnit(
+    // use convert all the values
+    activityValue,
+    inventoryValue.inputMethodology,
+    inventoryValue.gpcReferenceNumber,
+  );
   if (!data) {
     throw new createHttpError.BadRequest(
       "Activity has no data associated, so it can't use the formula",
@@ -372,23 +487,36 @@ export function handleMethaneCommitmentFormula(
     METHANE_FRACTION *
     (16 / 12.0);
 
-  const ch4Emissions =
-    totalSolidWaste *
-    methaneGenerationPotential *
-    (1 - recoveredMethaneFraction) *
-    (1 - oxidationFactor);
+  const ch4Emissions = Decimal.mul(
+    totalSolidWaste,
+    methaneGenerationPotential,
+  ).mul(
+    Decimal.sub(1, recoveredMethaneFraction).mul(
+      Decimal.sub(1, oxidationFactor),
+    ),
+  );
 
-  return [{ gas: "CH4", amount: BigInt(ch4Emissions) }];
+  return [{ gas: "CH4", amount: ch4Emissions }];
 }
 
 export function handleActivityAmountTimesEmissionsFactorFormula(
   activityValue: ActivityValue,
   gasValues: GasValueWithEmissionsFactor[],
+  inventoryValue: InventoryValue,
 ): Gas[] {
   // TODO add actvityAmount column to ActivityValue
   // const activityAmount = activityValue.activityAmount || 0;
-  // TODO perform these calculations using BigInt/ BigNumber?
-  const data = activityValue.activityData;
+  if (!inventoryValue.inputMethodology || !inventoryValue.gpcReferenceNumber) {
+    throw new createHttpError.BadRequest(
+      "InventoryValue has no inputMethodology or gpcReferenceNumber associated",
+    );
+  }
+  const data = convertDataToDefaultUnit(
+    // use convert all the values
+    activityValue,
+    inventoryValue.inputMethodology,
+    inventoryValue.gpcReferenceNumber,
+  );
   const activityAmountKey = activityValue.metadata?.["activityTitle"];
   const activityAmount = data?.[activityAmountKey] || 0;
   const gases = gasValues?.map((gasValue) => {
@@ -404,9 +532,10 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
       );
     }
     // this rounds/ truncates!
-    const amount = BigInt(
-      Math.ceil(activityAmount * emissionsFactor.emissionsPerActivity),
-    );
+    const amount = Decimal.mul(
+      activityAmount,
+      emissionsFactor.emissionsPerActivity,
+    ).ceil();
 
     return { gas: gasValue.gas!, amount };
   });
@@ -416,8 +545,20 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
 
 export function handleIndustrialWasteWaterFormula(
   activityValue: ActivityValue,
+  inventoryValue: InventoryValue,
+  prefixKey: string,
 ): Gas[] {
-  const data = activityValue.activityData;
+  if (!inventoryValue.inputMethodology || !inventoryValue.gpcReferenceNumber) {
+    throw new createHttpError.BadRequest(
+      "InventoryValue has no inputMethodology or gpcReferenceNumber associated",
+    );
+  }
+  const data = convertDataToDefaultUnit(
+    // use convert all the values
+    activityValue,
+    inventoryValue.inputMethodology,
+    inventoryValue.gpcReferenceNumber,
+  );
   if (!data) {
     throw new createHttpError.BadRequest(
       "Activity has no data associated, so it can't use the formula",
@@ -425,35 +566,48 @@ export function handleIndustrialWasteWaterFormula(
   }
 
   const totalIndustrialProduction = data["total-industry-production"];
-  const wastewaterGenerated =
-    data["wastewater-inside-industrial-calculator-wastewater-generated"];
+  const wastewaterGenerated = data[`${prefixKey}-wastewater-generated`];
   const degradableOrganicComponents =
     data["degradable-organic-components"] ?? 38; // TODO get this from formula values csv;
   const methaneProductionCapacity =
     data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should this only be handled UI-side?
   const removedSludge = data["total-organic-sludge-removed"];
   const methaneCorrectionFactor = 1; // TODO fetch this from formula values csv
-  const methaneRecovered =
-    data["wastewater-inside-industrial-calculator-methane-recovered"];
+  const methaneRecovered = data[`${prefixKey}-methane-recovered`];
 
-  // TODO is BigInt/ BigNumber required for these calculations?
-  const totalOrganicWaste =
-    totalIndustrialProduction *
-    wastewaterGenerated *
-    degradableOrganicComponents;
+  // TODO is new Decimal/ BigNumber required for these calculations?
+  const totalOrganicWaste = Decimal.mul(
+    totalIndustrialProduction,
+    wastewaterGenerated,
+  ).mul(degradableOrganicComponents);
   const emissionsFactor = methaneProductionCapacity * methaneCorrectionFactor;
-  const totalMethaneProduction =
-    (totalOrganicWaste - removedSludge) * emissionsFactor - methaneRecovered;
+  const totalMethaneProduction = totalOrganicWaste
+    .sub(removedSludge)
+    .mul(emissionsFactor)
+    .sub(methaneRecovered);
 
-  const amount = BigInt(Math.ceil(totalMethaneProduction));
+  const amount = totalMethaneProduction.ceil();
   return [{ gas: "CH4", amount }];
 }
 
+// TODO how correct is this formula ?
 export async function handleDomesticWasteWaterFormula(
   activityValue: ActivityValue,
   inventory: Inventory,
+  inventoryValue: InventoryValue,
+  prefixKey: string,
 ): Promise<Gas[]> {
-  const data = activityValue.activityData;
+  if (!inventoryValue.inputMethodology || !inventoryValue.gpcReferenceNumber) {
+    throw new createHttpError.BadRequest(
+      "InventoryValue has no inputMethodology or gpcReferenceNumber associated",
+    );
+  }
+  const data = convertDataToDefaultUnit(
+    // use convert all the values
+    activityValue,
+    inventoryValue.inputMethodology,
+    inventoryValue.gpcReferenceNumber,
+  );
   if (!data) {
     throw new createHttpError.BadRequest(
       "Activity has no data associated, so it can't use the formula",
@@ -464,8 +618,7 @@ export async function handleDomesticWasteWaterFormula(
   const removedSludge = data["total-organic-sludge-removed"];
   // TODO get MCF from seed-data/formula_values
   const methaneCorrectionFactor = DEFAULT_METHANE_CORRECTION_FACTOR;
-  const methaneRecovered =
-    data["wastewater-inside-domestic-calculator-methane-recovered"];
+  const methaneRecovered = data[`${prefixKey}-methane-recovered`];
 
   const totalCityPopulationEntry = await findClosestCityPopulation(inventory);
   if (!totalCityPopulationEntry) {
@@ -477,15 +630,15 @@ export async function handleDomesticWasteWaterFormula(
 
   const bodPerCapita = DEFAULT_BOD_PER_CAPITA;
   const isCollectedWasteWater =
-    data["wastewater-inside-industrial-calculator-collection-status"] ===
+    data[`${prefixKey}-collection-status`] ===
     "collection-status-type-wastewater-collected";
   const industrialBodFactor = isCollectedWasteWater ? 1.0 : 1.25;
-  const totalOrganicWaste =
-    totalCityPopulation * bodPerCapita * industrialBodFactor * 365;
+  const totalOrganicWaste = new Decimal(
+    totalCityPopulation * bodPerCapita * industrialBodFactor * 365,
+  );
 
   const incomeGroup =
-    data["wastewater-inside-domestic-calculator-income-group"] ??
-    "income-group-type-all";
+    data[`${prefixKey}-income-group`] ?? "income-group-type-all";
   const incomeGroupFraction = DEFAULT_INCOME_GROUP_FRACTIONS[incomeGroup];
   const dischargeSystemUtulizationRatio =
     data["discharge-system-utilization-ratio"] ?? 0.5; // TODO wrong key!
@@ -496,23 +649,37 @@ export async function handleDomesticWasteWaterFormula(
     incomeGroupFraction *
     dischargeSystemUtulizationRatio;
 
-  const totalMethaneProduction =
-    (totalOrganicWaste - removedSludge) * emissionsFactor - methaneRecovered;
+  const totalMethaneProduction = totalOrganicWaste
+    .sub(removedSludge)
+    .mul(emissionsFactor)
+    .sub(methaneRecovered);
 
-  const amount = BigInt(Math.round(totalMethaneProduction)); // TODO round right or is ceil/ floor more correct?
+  const amount = totalMethaneProduction.round(); // TODO round right or is ceil/ floor more correct?
   return [{ gas: "CH4", amount }];
 }
 
 /**
  * Handles the biological treatment formula for calculating emissions of gases.
  * @param activityValue - The activity value to calculate emissions for.
+ * @param inventoryValue
  * @returns The calculated emissions of gases.
  * @throws {createHttpError.BadRequest} If the activity value has no data associated.
  */
 export async function handleBiologicalTreatmentFormula(
   activityValue: ActivityValue,
+  inventoryValue: InventoryValue,
 ): Promise<Gas[]> {
-  const data = activityValue.activityData;
+  if (!inventoryValue.inputMethodology || !inventoryValue.gpcReferenceNumber) {
+    throw new createHttpError.BadRequest(
+      "InventoryValue has no inputMethodology or gpcReferenceNumber associated",
+    );
+  }
+  const data = convertDataToDefaultUnit(
+    // use convert all the values
+    activityValue,
+    inventoryValue.inputMethodology,
+    inventoryValue.gpcReferenceNumber,
+  );
   if (!data) {
     throw new createHttpError.BadRequest(
       "Activity has no data associated, so it can't use the formula",
@@ -544,11 +711,11 @@ export async function handleBiologicalTreatmentFormula(
   }
 
   const organicWasteMass = data["total-organic-waste-treated"] ?? 0;
-  const totalCH4Emitted = (organicWasteMass * emissionsFactor) / 1000;
+  const totalCH4Emitted = Decimal.mul(organicWasteMass, emissionsFactor).div(
+    1000,
+  );
   const totalCH4Recovered =
     data["biological-treatment-inboundary-total-of-ch4-recovered"] ?? 0;
-  // TODO improve this using decimal/ big number library
-  const resultCH4 =
-    BigInt(Math.round(totalCH4Emitted)) - BigInt(totalCH4Recovered);
+  const resultCH4 = totalCH4Emitted.round().sub(totalCH4Recovered);
   return [{ gas: "CH4", amount: resultCH4 }];
 }

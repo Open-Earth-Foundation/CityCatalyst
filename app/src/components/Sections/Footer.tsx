@@ -42,7 +42,10 @@ const Footer = ({ lng }: { lng: string }) => {
               url="https://wiki.climatedata.network/"
               title={t("cad")}
             />
-            <FooterLink url="/" title={t("read-the-docs")} />
+            <FooterLink
+              url="https://github.com/Open-Earth-Foundation/CityCatalyst/wiki"
+              title={t("read-the-docs")}
+            />
             <FooterLink url="./cdp" title={t("submit-to-cdp")} />
           </Box>
           <Box>

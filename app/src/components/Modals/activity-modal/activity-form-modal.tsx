@@ -13,13 +13,12 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { FC, useMemo } from "react";
+import { FC } from "react";
 import { SubmitHandler } from "react-hook-form";
 import { TFunction } from "i18next";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { getInputMethodology } from "@/util/helpers";
 import type { SuggestedActivity } from "@/util/form-schema";
-import { getTranslationFromDict } from "@/i18n";
 import ActivityModalBody, { Inputs } from "./activity-modal-body";
 import { ActivityValue } from "@/models/ActivityValue";
 import { InventoryValue } from "@/models/InventoryValue";
@@ -28,7 +27,7 @@ import useActivityForm, {
   generateDefaultActivityFormValues,
 } from "@/hooks/activity-value-form/use-activity-form";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { EmissionsFactorResponse } from "@/util/types";
+import useEmissionFactors from "@/hooks/activity-value-form/use-emission-factors";
 
 interface AddActivityModalProps {
   isOpen: boolean;
@@ -85,6 +84,18 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     methodology: methodology,
   });
 
+  const {
+    emissionsFactorTypes,
+    emissionsFactorsLoading: areEmissionFactorsLoading,
+  } = useEmissionFactors({
+    control,
+    setValue,
+    methodologyId: methodology?.id,
+    referenceNumber,
+    inventoryId,
+    fields: fields,
+  });
+
   const { handleManalInputValidationError } = useActivityValueValidation({
     t,
     setError,
@@ -94,52 +105,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   const submit = () => {
     handleSubmit(onSubmit)();
   };
-
-  let { data: emissionsFactors, isLoading: emissionsFactorsLoading } =
-    api.useGetEmissionsFactorsQuery({
-      referenceNumber,
-      methodologyId: methodology?.id,
-      inventoryId,
-    });
-
-  const reduceEmissionsToUniqueSources = (
-    emissionsFactors: EmissionsFactorResponse,
-  ) => {
-    const reducedMap: {
-      [key: string]: {
-        id: string;
-        name: string;
-        gasValues: { gas: string; emissionsPerActivity: number }[];
-      };
-    } = {};
-
-    emissionsFactors.forEach((factor) => {
-      factor.dataSources.forEach((source) => {
-        if (!reducedMap[source.datasourceId]) {
-          reducedMap[source.datasourceId] = {
-            id: source.datasourceId,
-            name: getTranslationFromDict(source.datasetName) ?? "unknown",
-            gasValues: [],
-          };
-        }
-        reducedMap[source.datasourceId].gasValues.push({
-          gas: factor.gas as string,
-          emissionsPerActivity: factor.emissionsPerActivity as number,
-        });
-      });
-    });
-
-    return Object.values(reducedMap);
-  };
-
-  const emissionsFactorTypes = useMemo(() => {
-    if (!emissionsFactors) {
-      return [];
-    }
-
-    // now that we have three or more emission factors, we want to reduce it down to a collection of gases per dataset
-    return reduceEmissionsToUniqueSources(emissionsFactors);
-  }, [emissionsFactors]);
 
   const toast = useToast();
 
@@ -344,6 +309,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
           <ModalCloseButton marginTop="10px" />
           <ActivityModalBody
             emissionsFactorTypes={emissionsFactorTypes}
+            areEmissionFactorsLoading={areEmissionFactorsLoading}
             title={title}
             hideEmissionFactors={hideEmissionFactors}
             submit={submit}

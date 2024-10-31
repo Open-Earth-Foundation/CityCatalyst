@@ -1,7 +1,10 @@
 {
   "ask-ai-expert": "Ask An AI Expert",
   "ai-expert": "AI Expert",
+  "ask-ai": "Ask AI",
   "ask-assistant": "Ask assistant anything...",
   "initial-message": "Hello! I'm Clima, your virtual assistant. I'm here to guide you through the process of accurately measuring and reporting your city's greenhouse gas emissions. How can I assist you today?",
-  "regenerate": "Regenerate"
+  "regenerate": "Regenerate",
+  "send-message": "Send Message",
+  "stop-generation": "Stop Generation"
 }

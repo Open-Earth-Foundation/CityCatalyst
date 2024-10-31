@@ -24,7 +24,9 @@ spec:
               value: "development"
             - name: GLOBAL_API_URL
               value: "https://ccglobal.openearth.dev"
-          command: ["npm", "run", "sync-catalogue"]
+            - name: npm_config_yes
+              value: "true"
+          command: ["npx", "tsx", "scripts/catalogue-sync.ts"]
           resources:
             limits:
               memory: "1024Mi"

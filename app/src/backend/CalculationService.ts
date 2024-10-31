@@ -2,7 +2,6 @@ import { db } from "@/models";
 import type { ActivityValue } from "@/models/ActivityValue";
 import type { GasToCO2Eq } from "@/models/GasToCO2Eq";
 import type { InventoryValue } from "@/models/InventoryValue";
-import { multiplyBigIntFloat } from "@/util/big_int";
 import createHttpError from "http-errors";
 import { findMethodology } from "@/util/form-schema";
 import {
@@ -17,14 +16,15 @@ import {
 } from "./formulas";
 import { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
 import { GasValueCreationAttributes } from "@/models/GasValue";
+import { Decimal } from "decimal.js";
 
 export type Gas = {
   gas: string;
-  amount: bigint;
+  amount: Decimal;
 };
 
 export type GasAmountResult = {
-  totalCO2e: bigint;
+  totalCO2e: Decimal;
   totalCO2eYears: number;
   gases: Gas[];
 };
@@ -41,8 +41,8 @@ export default class CalculationService {
   private static calculateCO2eq(
     gasToCO2Eqs: GasToCO2Eq[],
     gasName: string,
-    amount: bigint,
-  ): { co2eq: bigint; co2eqYears: number } {
+    amount: Decimal,
+  ): { co2eq: Decimal; co2eqYears: number } {
     // TODO the rest of this could be shared for all formulas?
     const globalWarmingPotential = gasToCO2Eqs.find(
       (entry) => entry.gas === gasName,
@@ -53,10 +53,7 @@ export default class CalculationService {
       );
     }
 
-    const co2eq = multiplyBigIntFloat(
-      amount,
-      globalWarmingPotential.co2eqPerKg || 0,
-    );
+    const co2eq = Decimal.mul(amount, globalWarmingPotential.co2eqPerKg || 0);
     const co2eqYears = globalWarmingPotential.co2eqYears || DEFAULT_CO2EQ_YEARS;
     return { co2eq, co2eqYears };
   }
@@ -106,7 +103,7 @@ export default class CalculationService {
 
     // TODO cache
     const gasToCO2Eqs = await db.models.GasToCO2Eq.findAll();
-    let totalCO2e = 0n;
+    let totalCO2e = new Decimal(0);
     let totalCO2eYears = 0;
     let gases: Gas[] = [];
 
@@ -120,10 +117,11 @@ export default class CalculationService {
         gases = handleActivityAmountTimesEmissionsFactorFormula(
           activityValue,
           gasValues,
+          inventoryValue,
         );
         break;
       case "methane-commitment":
-        gases = handleMethaneCommitmentFormula(activityValue);
+        gases = handleMethaneCommitmentFormula(activityValue, inventoryValue);
         break;
       case "incineration-waste":
         let formulaMapping =
@@ -135,16 +133,23 @@ export default class CalculationService {
         );
         break;
       case "induced-activity-1":
-        gases = handleVkt1Formula(activityValue, gasValues);
+        gases = handleVkt1Formula(activityValue, gasValues, inventoryValue);
         break;
       case "biological-treatment":
-        gases = await handleBiologicalTreatmentFormula(activityValue);
+        gases = await handleBiologicalTreatmentFormula(
+          activityValue,
+          inventoryValue,
+        );
         break;
       case "wastewater-calculator":
         const activityId = activityValue.metadata?.activityId;
 
         // TODO handle outside activities as well!
-        if (activityId === "wastewater-inside-domestic-calculator-activity") {
+        if (
+          activityId === "wastewater-inside-domestic-calculator-activity" ||
+          activityId === "wastewater-outside-domestic-calculator-activity"
+        ) {
+          let prefixKey = activityId.split("-").slice(0, -1).join("-");
           const inventory = await db.models.Inventory.findByPk(
             inventoryValue.inventoryId,
           );
@@ -154,11 +159,19 @@ export default class CalculationService {
           gases = await handleDomesticWasteWaterFormula(
             activityValue,
             inventory,
+            inventoryValue,
+            prefixKey,
           );
         } else if (
-          activityId === "wastewater-inside-industrial-calculator-activity"
+          activityId === "wastewater-inside-industrial-calculator-activity" ||
+          activityId === "wastewater-outside-industrial-calculator-activity"
         ) {
-          gases = handleIndustrialWasteWaterFormula(activityValue);
+          let prefixKey = activityId.split("-").slice(0, -1).join("-");
+          gases = handleIndustrialWasteWaterFormula(
+            activityValue,
+            inventoryValue,
+            prefixKey,
+          );
         } else {
           throw new createHttpError.BadRequest(
             `Unknown activity ID ${activityId} for wastewater calculator formula in activity value ${activityValue.id}`,
@@ -177,7 +190,7 @@ export default class CalculationService {
         gas.gas,
         gas.amount,
       );
-      totalCO2e += co2eq;
+      totalCO2e = Decimal.sum(totalCO2e, co2eq);
       totalCO2eYears = Math.max(co2eqYears, totalCO2eYears);
     }
 

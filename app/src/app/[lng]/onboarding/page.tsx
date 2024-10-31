@@ -1,7 +1,8 @@
 "use client";
 
 import { useTranslation } from "@/i18n/client";
-import { Button, Heading, Text } from "@chakra-ui/react";
+import { Box, Button, Heading, Text } from "@chakra-ui/react";
+import Image from "next/image";
 import NextLink from "next/link";
 import { Trans } from "react-i18next/TransWithoutContext";
 
@@ -13,18 +14,51 @@ export default function Onboarding({
   const { t } = useTranslation(lng, "onboarding");
 
   return (
-    <div className="pt-[148px] w-[750px] max-w-full mx-auto px-4">
-      <Heading size="xl" color="brand" mb={6}>
-        {t("onboarding-heading")}
-      </Heading>
-      <Text color="tertiary">
-        <Trans i18nKey="onboarding-details" t={t} />
-      </Text>
-      <NextLink href="/onboarding/setup" passHref legacyBehavior>
-        <Button as="a" h={16} px={6} mt={8}>
-          {t("start-button")}
-        </Button>
-      </NextLink>
-    </div>
+    <Box className="pt-[100px] w-[1050px] max-w-full mx-auto">
+      <Box display="flex" gap="55px" alignItems="center">
+        <Box w="full" h="full" display="flex" flexDir="column" gap="24px">
+          <Text
+            fontFamily="heading"
+            fontWeight="600"
+            lineHeight="16px"
+            letterSpacing="1.5px"
+            textTransform="uppercase"
+            color="content.tertiary"
+            fontSize="title.sm"
+          >
+            create inventory
+          </Text>
+          <Heading
+            as="h1"
+            color="content.alternative"
+            fontSize="display.sm"
+            lineHeight="44px"
+            fontWeight="600"
+            fontStyle="normal"
+          >
+            Create your GHG emission inventory
+          </Heading>
+          <Text
+            color="content.tertiary"
+            fontSize="body.lg"
+            lineHeight="24px"
+            fontWeight="400"
+            letterSpacing="wide"
+          >
+            In this step, configure your city's GHG emissions inventory by
+            selecting the inventory year, setting the target, and adding
+            contextual data such as population.
+          </Text>
+        </Box>
+        <Box>
+          <Image
+            src="/assets/onboarding-buildings-image.png"
+            alt="buildings.png"
+            height={420}
+            width={900}
+          />
+        </Box>
+      </Box>
+    </Box>
   );
 }

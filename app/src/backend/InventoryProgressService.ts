@@ -2,8 +2,7 @@ import type { Sector } from "@/models/Sector";
 import { db } from "@/models";
 import INVENTORY_STRUCTURE from "../data/inventory-structure.json";
 import fs from "fs";
-import { logger } from "@/services/logger";
-import { Inventory } from "@/models/Inventory";
+import { Inventory, InventoryTypeEnum } from "@/models/Inventory";
 import * as path from "path";
 import * as process from "node:process";
 
@@ -34,7 +33,10 @@ export default class InventoryProgressService {
 
     const filteredOutSectors = sectors
       .filter((sector) => {
-        if (sector.referenceNumber && romanTable[sector.referenceNumber] < 4) {
+        if (
+          inventory.inventoryType === InventoryTypeEnum.GPC_BASIC_PLUS ||
+          (sector.referenceNumber && romanTable[sector.referenceNumber] < 4)
+        ) {
           return true;
         }
       })

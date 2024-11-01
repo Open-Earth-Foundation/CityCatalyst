@@ -1,6 +1,6 @@
 {
   "name": "city-catalyst",
-  "version": "0.19.0-dev.0",
+  "version": "0.20.0-dev.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -63,6 +63,8 @@
     "chakra-react-select": "^4.9.1",
     "char-regex": "^2.0.1",
     "csv-parse": "^5.5.6",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "decimal.js": "^10.4.3",
     "dotenv": "^16.4.5",
     "eslint": "8.57.0",

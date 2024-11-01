@@ -16,7 +16,7 @@ const SubSectorCard: FC<SubSectorCardProps> = ({
   isCompleted,
 }) => {
   return (
-    <Card className="flex flex-row h-[100px] items-center px-4 gap-4 border border-[#E6E7FF] shadow-none">
+    <Card className="flex flex-row h-[120px] items-center px-4 gap-4 border border-[#E6E7FF] shadow-none">
       <Icon
         as={isCompleted ? MdOutlineCheckCircle : DataAlertIcon}
         boxSize={8}

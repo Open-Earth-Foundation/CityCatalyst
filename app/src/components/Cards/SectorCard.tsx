@@ -53,9 +53,9 @@ export function SectorCard({
   const sectorIcon = sectorIcons[stepNumber - 1];
   // TODO get from API or use i18n strings
   const sectorDescriptions = [
-    "This sector deals with emissions that result from the generation of electricity, heat, and steam, as well as their consumption.",
-    "This sector deals with emissions from the transportation of goods and people within the city boundary.",
-    "This sector covers emissions generated from waste management processes.",
+    "stationary-energy-description",
+    "transportation-description",
+    "waste-and-wastewater-description",
   ];
   const sectorDescription = sectorDescriptions[stepNumber - 1];
   const sectorScopesList = [
@@ -106,7 +106,7 @@ export function SectorCard({
                 lineHeight="24"
                 letterSpacing="wide"
               >
-                {sectorDescription}
+                {t(sectorDescription)}
               </Text>
               <Heading
                 fontWeight="semibold"
@@ -168,8 +168,8 @@ export function SectorCard({
                 {sectorProgress.subSectors.map((subSector, i) => (
                   <SubSectorCard
                     key={i}
-                    title={subSector.subsectorName || t("unnamed-sector")}
-                    scopes="1, 2"
+                    title={t(subSector.subsectorName) || t("unnamed-sector")}
+                    scopes={sectorScopes.join(", ")}
                     isCompleted={subSector.completed}
                   />
                 ))}

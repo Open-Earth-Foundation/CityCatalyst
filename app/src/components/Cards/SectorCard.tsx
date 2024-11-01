@@ -21,7 +21,7 @@ import { formatPercent } from "@/util/helpers";
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { AddIcon } from "@chakra-ui/icons";
-import { InventoryType, ISector } from "@/data/types";
+import { InventoryType, ISector } from "@/util/constants";
 
 export function SectorCard({
   sectorProgress,

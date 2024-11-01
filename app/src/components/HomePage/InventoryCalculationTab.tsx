@@ -19,7 +19,11 @@ import {
 import { Trans } from "react-i18next/TransWithoutContext";
 import { TabHeader } from "@/components/HomePage/TabHeader";
 import { BlueSubtitle } from "@/components/blue-subtitle";
-import { InventoryType, sectors } from "@/data/types";
+import {
+  getSectorsForInventory,
+  InventoryType,
+  SECTORS,
+} from "@/util/constants";
 
 const getSectorProgresses = (
   inventoryProgress: InventoryProgressResponse,
@@ -55,12 +59,7 @@ export default function InventoryCalculationTab({
   }
 
   const sectorsForInventory = inventory
-    ? sectors.filter((sector) => {
-        const scopesForInventoryType = (
-          sector.inventoryTypes as Record<InventoryType, { scopes: number[] }>
-        )[inventory.inventoryType as InventoryType];
-        return scopesForInventoryType?.scopes.length > 0;
-      })
+    ? getSectorsForInventory(inventory.inventoryType)
     : [];
   return (
     <>
@@ -133,7 +132,7 @@ export default function InventoryCalculationTab({
                     inventoryProgress!,
                     sector.referenceNumber,
                   )}
-                  sector={sectors[i]}
+                  sector={SECTORS[i]}
                   t={t}
                   inventory={inventory}
                 />

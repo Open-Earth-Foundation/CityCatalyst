@@ -3,11 +3,11 @@
 import { useTranslation } from "@/i18n/client";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { Link } from "@chakra-ui/next-js";
-import { Box, Card, Flex, Heading, Text } from "@chakra-ui/react";
+import { Box, Card, Grid, GridItem, Heading, Text } from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import AddDataCard from "@/components/Cards/add-data-card";
-
-import { SECTORS } from "@/util/constants";
+import { getSectorsForInventory } from "@/util/constants";
+import { api } from "@/services/api";
 
 export default function AddDataIntro({
   params: { lng, inventory },
@@ -15,6 +15,8 @@ export default function AddDataIntro({
   params: { lng: string; inventory: string };
 }) {
   const { t } = useTranslation(lng, "data");
+
+  const { data: inventoryData } = api.useGetInventoryQuery(inventory);
 
   return (
     <Box className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
@@ -70,23 +72,25 @@ export default function AddDataIntro({
           {t("data-view-heading")}
         </Heading>
         <Text color="content.tertiary">{t("data-view-details")}</Text>
-        <Flex className="space-x-4" mt={12}>
-          {SECTORS.map(
-            ({ sectorName, testId, descriptionText, scope, icon, step }) => (
-              <AddDataCard
-                testId={testId}
-                key={sectorName}
-                title={t(sectorName)}
-                description={t(descriptionText)}
-                icon={icon}
-                scopeText={t(scope)}
-                buttonText={t("add-data")}
-                step={step}
-                inventory={inventory}
-              />
-            ),
-          )}
-        </Flex>
+        <Grid templateColumns="repeat(3, 1fr)" gap={4} mt={12}>
+          {inventoryData &&
+            getSectorsForInventory(inventoryData.inventoryType).map(
+              ({ name, testId, description, scope, icon, step }) => (
+                <GridItem key={name}>
+                  <AddDataCard
+                    testId={testId}
+                    title={t(name)}
+                    description={t(description)}
+                    icon={icon}
+                    scopeText={t(scope)}
+                    buttonText={t("add-data")}
+                    step={step}
+                    inventory={inventory}
+                  />
+                </GridItem>
+              ),
+            )}
+        </Grid>
       </Card>
     </Box>
   );

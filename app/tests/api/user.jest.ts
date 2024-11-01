@@ -6,7 +6,8 @@ import { mockRequest, setupTests, testUserID } from "../helpers";
 
 // Test Data
 const inventoryId = "dab66377-a4fc-46d2-9782-5a87282d39fa";
-
+const cityId = "1962df0f-8280-4ac8-aa32-c1e7184b3b38";
+const cityUserId = "95e7c4e7-fc82-49bd-869b-480363677e99";
 const userData: UserAttributes = {
   userId: testUserID,
   name: "TEST_USER_USER",
@@ -27,10 +28,15 @@ describe("User API", () => {
     await db.models.Inventory.destroy({
       where: { inventoryId },
     });
+    await db.models.City.destroy({ where: { cityId } });
+    await db.models.CityUser.destroy({ where: { cityUserId } });
     await db.models.User.upsert(userData);
+    await db.models.City.create({ cityId });
+    await db.models.CityUser.create({ cityUserId, cityId, userId: testUserID });
     await db.models.Inventory.create({
       inventoryId,
       year: 3000,
+      cityId,
     });
   });
 

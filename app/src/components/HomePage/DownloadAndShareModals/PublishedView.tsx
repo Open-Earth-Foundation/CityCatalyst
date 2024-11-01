@@ -15,7 +15,6 @@ import { formatDistance } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 import { BlueSubtitle } from "@/components/blue-subtitle";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import "dotenv/config";
 
 export function PublishedView({
   inventoryId,

@@ -1,6 +1,5 @@
 import { expect, describe, beforeAll, afterAll, it } from "@jest/globals";
 import { randomUUID } from "node:crypto";
-import "dotenv/config";
 
 import { db } from "@/models";
 

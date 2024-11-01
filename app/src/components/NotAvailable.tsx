@@ -4,7 +4,6 @@ import { Button, Heading } from "@chakra-ui/react";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import React from "react";
 import { useTranslation } from "@/i18n/client";
-import "dotenv/config";
 
 const NotAvailable = ({ lng }: { lng: string }) => {
   const { t } = useTranslation(lng, "inventory-not-found");

@@ -67,14 +67,9 @@ module.exports = {
         const methodologies = await parseFile("Methodology", folder);
         const emissionsFactorsRaw = await parseFile("EmissionsFactor", folder);
         const emissionsFactors = emissionsFactorsRaw.map((ef) => {
-          const metadata = (ef.metadata ? ef.metadata : "")
-            .split(", ")
-            .map((entry) => entry.split(":"));
-          ef.metadata = JSON.stringify(Object.fromEntries(metadata));
-          if (!ef.year) {
-            ef.year = null;
-          }
-
+          const metadata = ef.metadata ? ef.metadata : "{}";
+          ef.metadata = metadata.replace(/'/g, '"');
+          ef.year = !!ef.year ? parseInt(ef.year) : null;
           return ef;
         });
 

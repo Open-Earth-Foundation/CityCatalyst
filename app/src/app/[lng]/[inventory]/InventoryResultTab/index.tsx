@@ -32,6 +32,7 @@ import { ByActivityView } from "@/app/[lng]/[inventory]/InventoryResultTab/ByAct
 import { SECTORS } from "@/util/constants";
 import { Selector } from "@/components/selector";
 import { EmptyStateCardContent } from "@/app/[lng]/[inventory]/InventoryResultTab/EmptyStateCardContent";
+import { Trans } from "react-i18next/TransWithoutContext";
 
 enum TableView {
   BY_ACTIVITY = "by-activity",
@@ -199,7 +200,11 @@ function EmissionsBreakdown({
     <>
       <BlueSubtitle t={t} text={"sector-data"} />
       <Heading fontSize="headline.sm" fontWeight="semibold" lineHeight="32">
-        {t("Sector emissions in {{year}}", { year: inventory?.year })}
+        <Trans
+          i18nKey="sector-emissions-in"
+          values={{ year: inventory?.year }}
+          t={t}
+        />
       </Heading>
       <Text
         fontWeight="regular"
@@ -244,7 +249,11 @@ export default function InventoryResultTab({
           />
           <BlueSubtitle t={t} text={"overview"} />
           <Heading fontSize="headline.sm" fontWeight="semibold" lineHeight="32">
-            {t("Total Emissions in {{year}}", { year: inventory?.year })}
+            <Trans
+              i18nKey="total-emissions-in"
+              values={{ year: inventory?.year }}
+              t={t}
+            ></Trans>
           </Heading>
           <Text
             fontWeight="regular"

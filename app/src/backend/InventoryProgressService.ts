@@ -30,11 +30,6 @@ export const Inventory_Sector_Hierarchy =
 export default class InventoryProgressService {
   public static async getInventoryProgress(inventory: Inventory) {
     const sectors = await this.getSortedInventoryStructure();
-    console.log(
-      "inventory.inventoryType",
-      JSON.stringify(inventory.inventoryType),
-    ); // TODO NINA
-    console.log("inventory.inventoryId", JSON.stringify(inventory.inventoryId)); // TODO NINA
     const filteredOutSectors = sectors
       .filter((sector) => {
         if (
@@ -100,7 +95,6 @@ export default class InventoryProgressService {
       },
       {} as Record<string, number>,
     );
-    // console.log("filteredOutSectors", JSON.stringify(filteredOutSectors)); // TODO NINA
     const sectorProgress = filteredOutSectors.map((sector) => {
       const inventoryValues = inventory.inventoryValues.filter(
         (inventoryValue) => sector.sectorId === inventoryValue.sectorId,

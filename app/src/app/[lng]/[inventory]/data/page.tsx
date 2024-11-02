@@ -75,7 +75,7 @@ export default function AddDataIntro({
         <Grid templateColumns="repeat(3, 1fr)" gap={4} mt={12}>
           {inventoryData &&
             getSectorsForInventory(inventoryData.inventoryType).map(
-              ({ name, testId, description, scope, icon, step }) => (
+              ({ name, testId, description, scope, icon, number }) => (
                 <GridItem key={name}>
                   <AddDataCard
                     testId={testId}
@@ -84,7 +84,7 @@ export default function AddDataIntro({
                     icon={icon}
                     scopeText={t(scope)}
                     buttonText={t("add-data")}
-                    step={step}
+                    number={number}
                     inventory={inventory}
                   />
                 </GridItem>

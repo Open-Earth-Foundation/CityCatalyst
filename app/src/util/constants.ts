@@ -78,10 +78,10 @@ export const SECTORS: ISector[] = [
   {
     referenceNumber: "IV",
     number: 4,
-    name: "IPPU",
-    description: "IPPU-description",
+    name: "ippu",
+    description: "ippu-description",
     icon: TbBuildingFactory2,
-    testId: "IPPU-sector-card",
+    testId: "ippu-sector-card",
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [] },
       [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1] },
@@ -90,10 +90,10 @@ export const SECTORS: ISector[] = [
   {
     referenceNumber: "V",
     number: 5,
-    name: "AFOLU",
-    description: "AFOLU-description",
+    name: "afolu",
+    description: "afolu-description",
     icon: TbPlant2,
-    testId: "AFOLU-sector-card",
+    testId: "afolu-sector-card",
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [] },
       [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1] },

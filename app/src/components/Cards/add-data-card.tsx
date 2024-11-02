@@ -19,7 +19,7 @@ interface AddDataCardProps {
   title: string;
   description: string;
   scopeText: string;
-  step: number;
+  number: number;
   buttonText: string;
   testId?: string;
   inventory: string;
@@ -30,7 +30,7 @@ function AddDataCard({
   description,
   testId,
   scopeText,
-  step,
+  number,
   buttonText,
   title,
   inventory,
@@ -68,7 +68,7 @@ function AddDataCard({
         </Box>
         <Button
           data-testid="sector-card-button"
-          onClick={() => router.push(`/${inventory}/data/${step}`)}
+          onClick={() => router.push(`/${inventory}/data/${number}`)}
           leftIcon={<BsPlus size={32} />}
           variant="ghost"
           h="48px"

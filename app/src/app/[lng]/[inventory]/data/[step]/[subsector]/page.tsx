@@ -34,13 +34,17 @@ import {
   useTransform,
 } from "framer-motion";
 import Link from "next/link";
+import { SECTORS } from "@/util/constants";
 
 const MotionBox = motion(Box);
 
-const kebab = (str: string|undefined): string =>
-  (str)
-    ? str.replaceAll(/\s+/g, '-').replaceAll(/[^0-9A-Za-z\-\_]/g, '').toLowerCase()
-    : '';
+const kebab = (str: string | undefined): string =>
+  str
+    ? str
+        .replaceAll(/\s+/g, "-")
+        .replaceAll(/[^0-9A-Za-z\-\_]/g, "")
+        .toLowerCase()
+    : "";
 
 function SubSectorPage({
   params: { lng, step, inventory: inventoryId, subsector },
@@ -102,6 +106,11 @@ function SubSectorPage({
         return t("II");
       case "3":
         return t("III");
+      case "4":
+        return t("IV");
+      case "5":
+        return t("V");
+
       default:
         return t("I");
     }
@@ -114,17 +123,8 @@ function SubSectorPage({
   const subSectorData: SubSectorAttributes = sectorData?.subSectors.find(
     (subsectorItem) => subsectorItem.subsectorId === subsector,
   );
-  const getSectorName = (currentStep: string) => {
-    switch (currentStep) {
-      case "1":
-        return t("stationary-energy");
-      case "2":
-        return t("transportation");
-      case "3":
-        return t("waste");
-      default:
-        return t("stationary-energy");
-    }
+  const getSectorName = (currentScope: string) => {
+    return SECTORS[parseInt(currentScope) - 1].name;
   };
 
   const getFilteredSubsectorScopes = () => {
@@ -241,7 +241,7 @@ function SubSectorPage({
                         href={`/${inventoryId}/data/${step}`}
                         color="content.tertiary"
                       >
-                        {getSectorName(step)}
+                        {t(getSectorName(step))}
                       </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbItem>
@@ -346,8 +346,8 @@ function SubSectorPage({
                     left: leftPosition.get(),
                   }}
                 >
-                  {t("sector")}: {getSectorName(step)} | {t("inventory-year")}:{" "}
-                  {/*            {inventoryProgress?.inventory.year}*/}
+                  {t("sector")}: {t(getSectorName(step))} |{" "}
+                  {t("inventory-year")}: {inventoryProgress?.inventory.year}
                 </Text>
                 <AnimatePresence key="description-layout">
                   {isVisible && (

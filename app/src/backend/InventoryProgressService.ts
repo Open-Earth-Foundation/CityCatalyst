@@ -30,7 +30,11 @@ export const Inventory_Sector_Hierarchy =
 export default class InventoryProgressService {
   public static async getInventoryProgress(inventory: Inventory) {
     const sectors = await this.getSortedInventoryStructure();
-
+    console.log(
+      "inventory.inventoryType",
+      JSON.stringify(inventory.inventoryType),
+    ); // TODO NINA
+    console.log("inventory.inventoryId", JSON.stringify(inventory.inventoryId)); // TODO NINA
     const filteredOutSectors = sectors
       .filter((sector) => {
         if (
@@ -76,6 +80,11 @@ export default class InventoryProgressService {
               } else if (sector.referenceNumber === "III") {
                 return [1, 3].includes(lastDigit);
                 // return subcategories ending with 1 and 3
+              } else if (
+                sector.referenceNumber === "IV" ||
+                sector.referenceNumber === "V"
+              ) {
+                return [1].includes(lastDigit);
               }
             }),
         })),
@@ -91,7 +100,7 @@ export default class InventoryProgressService {
       },
       {} as Record<string, number>,
     );
-
+    // console.log("filteredOutSectors", JSON.stringify(filteredOutSectors)); // TODO NINA
     const sectorProgress = filteredOutSectors.map((sector) => {
       const inventoryValues = inventory.inventoryValues.filter(
         (inventoryValue) => sector.sectorId === inventoryValue.sectorId,

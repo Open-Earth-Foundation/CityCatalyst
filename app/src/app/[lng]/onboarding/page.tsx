@@ -88,18 +88,24 @@ export default function Onboarding({
           py="32px"
           px="175px"
         >
-          <Button
-            w="auto"
-            gap="8px"
-            py="16px"
-            px="24px"
-            h="64px"
-            rightIcon={<ArrowForwardIcon h="24px" w="24px" />}
-          >
-            <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
-              {t("start-inventory")}
-            </Text>
-          </Button>
+          <NextLink href="/onboarding/setup">
+            <Button
+              w="auto"
+              gap="8px"
+              py="16px"
+              px="24px"
+              h="64px"
+              rightIcon={<ArrowForwardIcon h="24px" w="24px" />}
+            >
+              <Text
+                fontFamily="button.md"
+                fontWeight="600"
+                letterSpacing="wider"
+              >
+                {t("start-inventory")}
+              </Text>
+            </Button>
+          </NextLink>
         </Box>
       </Box>
     </>

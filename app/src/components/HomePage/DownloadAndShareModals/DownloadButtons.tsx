@@ -26,6 +26,7 @@ const DownloadButtons = ({
 }) => {
   const DOWNLOAD_BUTTONS = {
     ciris: { isAvailable: false },
+    ecrf: { isAvailable: false },
     csv: { isAvailable: true },
     pdf: { isAvailable: false },
   };

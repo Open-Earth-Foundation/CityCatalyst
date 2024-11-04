@@ -303,7 +303,7 @@ function SelectCityStep({
         </Text>
       </Box>
       <Box w="full">
-        <Card p={6}>
+        <Card p={6} shadow="none">
           <form className="space-y-8">
             <FormControl isInvalid={!!errors.city}>
               <FormLabel>{t("select-city")}</FormLabel>

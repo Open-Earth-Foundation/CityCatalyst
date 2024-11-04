@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/i18n/client";
+import { ArrowForwardIcon, ArrowRightIcon } from "@chakra-ui/icons";
 import { Box, Button, Heading, HStack, Text, VStack } from "@chakra-ui/react";
 import Image from "next/image";
 import NextLink from "next/link";
@@ -78,8 +79,28 @@ export default function Onboarding({
               borderRadius="8px"
             ></Box>
           ))}
-          <Box h="full" w="full"></Box>
         </HStack>
+        <Box
+          h="full"
+          w="full"
+          display="flex"
+          justifyContent="end"
+          py="32px"
+          px="175px"
+        >
+          <Button
+            w="auto"
+            gap="8px"
+            py="16px"
+            px="24px"
+            h="64px"
+            rightIcon={<ArrowForwardIcon h="24px" w="24px" />}
+          >
+            <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
+              {t("start-inventory")}
+            </Text>
+          </Button>
+        </Box>
       </Box>
     </>
   );

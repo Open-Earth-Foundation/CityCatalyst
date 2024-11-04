@@ -96,7 +96,7 @@ type OnboardingData = {
   year: number;
 };
 
-function SetupStep({
+function SelectCityStep({
   errors,
   register,
   control,
@@ -295,11 +295,11 @@ function SetupStep({
   });
 
   return (
-    <>
+    <Box>
       <Box minW={400}>
-        <Heading size="xl">{t("setup-heading")}</Heading>
+        <Heading size="xl">{t("setup-city-heading")}</Heading>
         <Text className="my-4" color="tertiary">
-          {t("setup-details")}
+          {t("setup-city-details")}
         </Text>
       </Box>
       <Box w="full">
@@ -606,7 +606,7 @@ function SetupStep({
           {t("gpc-basic-message")}
         </Text>
       </Box>
-    </>
+    </Box>
   );
 }
 
@@ -709,7 +709,12 @@ export default function OnboardingSetup({
     formState: { errors, isSubmitting },
   } = useForm<Inputs>();
 
-  const steps = [{ title: t("setup-step") }, { title: t("confirm-step") }];
+  const steps = [
+    { title: t("setup-step") },
+    { title: t("confirm-step") },
+    { title: t("done-step") },
+    { title: t("done-step") },
+  ];
   const { activeStep, goToNext, goToPrevious } = useSteps({
     index: 0,
     count: steps.length,
@@ -848,14 +853,9 @@ export default function OnboardingSetup({
         >
           Go Back
         </Button>
-        <div className="w-full flex justify-center">
-          <div className="w-[800px]">
-            <WizardSteps steps={steps} currentStep={activeStep} />
-          </div>
-        </div>
         <div className="flex flex-col md:flex-row md:space-x-12 md:space-y-0 space-y-12 align-top mt-8 md:mt-16 mb-48">
           {activeStep === 0 && (
-            <SetupStep
+            <SelectCityStep
               errors={errors}
               setValue={setValue}
               register={register}
@@ -877,48 +877,51 @@ export default function OnboardingSetup({
             />
           )}
         </div>
-        <div className="bg-white w-full fixed z-[9999] bottom-0 left-0 border-t-4 border-brand flex flex-row py-8 px-8 drop-shadow-2xl hover:drop-shadow-4xl transition-all">
-          <Box className="w-full">
-            <Text fontSize="sm">Step {activeStep + 1}</Text>
-            <Text fontSize="2xl" as="b">
-              {steps[activeStep]?.title}
-            </Text>
+        <div className="bg-white w-full fixed z-[9999] bottom-0 left-0  pb-8 px-1 transition-all">
+          <Box w="full" display="flex" flexDir="column" gap="32px">
+            <Box className="w-full">
+              <div className="w-full">
+                <WizardSteps steps={steps} currentStep={activeStep} />
+              </div>
+            </Box>
+            <Box w="full" display="flex" justifyContent="end">
+              {activeStep == 0 ? (
+                <Button
+                  h={16}
+                  isLoading={isSubmitting}
+                  onClick={() => handleSubmit(onSubmit)()}
+                  px={12}
+                  size="sm"
+                >
+                  {t("save-button")}
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    h={16}
+                    onClick={() => goToPrevious()}
+                    w={400}
+                    variant="ghost"
+                    leftIcon={<SearchIcon />}
+                    size="sm"
+                    px={12}
+                    mr={6}
+                  >
+                    {t("search-city-button")}
+                  </Button>
+                  <Button
+                    h={16}
+                    isLoading={isConfirming}
+                    px={16}
+                    onClick={onConfirm}
+                    size="sm"
+                  >
+                    {t("confirm-button")}
+                  </Button>
+                </>
+              )}
+            </Box>
           </Box>
-          {activeStep == 0 ? (
-            <Button
-              h={16}
-              isLoading={isSubmitting}
-              onClick={() => handleSubmit(onSubmit)()}
-              px={12}
-              size="sm"
-            >
-              {t("save-button")}
-            </Button>
-          ) : (
-            <>
-              <Button
-                h={16}
-                onClick={() => goToPrevious()}
-                w={400}
-                variant="ghost"
-                leftIcon={<SearchIcon />}
-                size="sm"
-                px={12}
-                mr={6}
-              >
-                {t("search-city-button")}
-              </Button>
-              <Button
-                h={16}
-                isLoading={isConfirming}
-                px={16}
-                onClick={onConfirm}
-                size="sm"
-              >
-                {t("confirm-button")}
-              </Button>
-            </>
-          )}
         </div>
       </div>
     </>

@@ -1,10 +1,9 @@
 import { BsTruck } from "react-icons/bs";
 import { PiTrashLight } from "react-icons/pi";
-import {
-  TbBuildingCommunity,
-  TbBuildingFactory2,
-  TbPlant2,
-} from "react-icons/tb";
+import { TbBuildingCommunity } from "react-icons/tb";
+import { PiPlant } from "react-icons/pi";
+import { IconBaseProps } from "react-icons";
+import { LiaIndustrySolid } from "react-icons/lia";
 
 export const maxPopulationYearDifference = 5;
 
@@ -17,7 +16,7 @@ export enum InventoryTypeEnum {
 export interface ISector {
   number: number;
   referenceNumber: string;
-  icon: React.ElementType;
+  icon: React.ElementType<IconBaseProps>;
   description: string;
   name: string;
   testId: string;
@@ -31,12 +30,14 @@ export interface ISector {
   };
 }
 
-export const getSectorsForInventory = (inventoryType: InventoryType) =>
-  SECTORS.filter((sector) => {
+export const getSectorsForInventory = (inventoryType?: InventoryType) => {
+  if (!inventoryType) return [];
+  return SECTORS.filter((sector) => {
     const scopesForInventoryType =
       sector.inventoryTypes[inventoryType as InventoryType];
     return scopesForInventoryType?.scopes.length > 0;
   });
+};
 
 export const SECTORS: ISector[] = [
   {
@@ -80,7 +81,7 @@ export const SECTORS: ISector[] = [
     number: 4,
     name: "ippu",
     description: "ippu-description",
-    icon: TbBuildingFactory2,
+    icon: LiaIndustrySolid,
     testId: "ippu-sector-card",
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [] },
@@ -92,7 +93,7 @@ export const SECTORS: ISector[] = [
     number: 5,
     name: "afolu",
     description: "afolu-description",
-    icon: TbPlant2,
+    icon: PiPlant,
     testId: "afolu-sector-card",
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [] },

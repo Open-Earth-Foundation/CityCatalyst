@@ -21,7 +21,7 @@ import { formatPercent } from "@/util/helpers";
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { AddIcon } from "@chakra-ui/icons";
-import { InventoryType, ISector } from "@/util/constants";
+import { InventoryType, InventoryTypeEnum, ISector } from "@/util/constants";
 
 export function SectorCard({
   sectorProgress,
@@ -93,7 +93,10 @@ export function SectorCard({
                 letterSpacing="wide"
                 className="py-[16px]"
               >
-                <Trans t={t}>scope-required-for-gpc</Trans>:{" "}
+                {InventoryTypeEnum.GPC_BASIC_PLUS === inventory?.inventoryType
+                  ? t("scope-required-for-gpc+")
+                  : t("scope-required-for-gpc")}
+                {": "}
                 {(sectorScopes || [])?.join(", ") || "none"}
               </Heading>
             </Box>

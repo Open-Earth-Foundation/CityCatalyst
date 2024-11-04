@@ -245,7 +245,7 @@ export default function InventoryResultTab({
         <Box className="flex flex-col gap-[8px] w-full">
           <TabHeader
             t={t}
-            year={inventory?.year}
+            inventory={inventory}
             title={"tab-emission-inventory-results-title"}
             isPublic={isPublic}
           />

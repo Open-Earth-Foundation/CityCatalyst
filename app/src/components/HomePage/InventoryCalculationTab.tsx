@@ -67,7 +67,7 @@ export default function InventoryCalculationTab({
         <Box className="flex flex-col gap-[8px] w-full">
           <TabHeader
             t={t}
-            year={inventory?.year}
+            inventory={inventory}
             title={"emission-inventory-calculation-title"}
           />
           <Box className="flex w-full justify-between items-center mt-2 gap-6">

@@ -38,10 +38,24 @@ def db_query(locode, year, reference_number):
     return result
 
 
-@api_router.get("/climatetrace/city/{locode}/{year}/{gpcReferenceNumber}")
+@api_router.get("/climatetrace/city/{locode}/{year}/{gpcReferenceNumber}",
+                summary="Get emissions from ClimateTRACE",
+                description = "DEPRECATED WARNING: This endpoint will be migrated to a new endpoint /api/v1/source/climatetrace/city/{locode}/{year}/{gpcReferenceNumber} in the near future.")
 def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: str):
-    gases = ["co2", "ch4", "n2o"]
+    """
+        Retrieves data on greenhouse gas emissions for a specific city identified by locode, for a given year and GPC reference number.
 
+        - **locode**: Location code identifying the city.
+        - **year**: Year for which the emissions data is retrieved.
+        - **gpcReferenceNumber**: Unique reference number for the sector/subsector.
+
+        Returns:
+            dict: A dictionary containing total emissions summary and detailed asset-level data.
+
+        Raises:
+            HTTPException: 404 error if no emissions data is found for the given parameters.
+    """
+    gases = ["co2", "ch4", "n2o"]
     records = db_query(locode, year, gpcReferenceNumber)
 
     if not records:

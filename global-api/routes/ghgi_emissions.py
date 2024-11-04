@@ -191,7 +191,7 @@ def db_query(datasource_name, spatial_granularity, actor_id, gpc_reference_numbe
 
     return result
 
-@api_router.get("/source/{datasource_name}/{spatial_granularity}/{actor_id}/{emissions_year}/{gpc_reference_number}")
+@api_router.get("/source/{datasource_name}/{spatial_granularity}/{actor_id}/{emissions_year}/{gpc_reference_number}", summary="Get emissions for any spatial granularity")
 def get_emissions_by_city_and_year(
     datasource_name: str,  # The name of the data source to query.
     spatial_granularity: str,  # The level of spatial granularity for the emissions data (e.g., country, region, city).

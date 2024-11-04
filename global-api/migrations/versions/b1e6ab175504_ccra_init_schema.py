@@ -55,8 +55,10 @@ def upgrade() -> None:
       actor_id VARCHAR,
       category VARCHAR,
       subcategory VARCHAR,
+      indicator_name VARCHAR,
       indicator_score NUMERIC,
       indicator_weight NUMERIC,
+      relationship VARCHAR,
       datasource VARCHAR,
       CONSTRAINT unique_impactchain_indicator UNIQUE (impact_id, indicator_id, category, subcategory)
     );
@@ -66,14 +68,14 @@ def upgrade() -> None:
     CREATE TABLE IF NOT EXISTS modelled.ccra_riskassessment (
       "impact_id" uuid,
       "actor_id" varchar,
-      "city_name" varchar,
-      "region_code" varchar,
       "risk_score" numeric,
       "hazard_score" numeric,
       "exposure_score" numeric,
       "vulnerability_score" numeric,
       "adaptive_capacity_score" numeric,
       "sensitivity_score" numeric,
+      "risk_lower_limit" numeric,
+      "risk_upper_limit" numeric,
       CONSTRAINT unique_risk UNIQUE (impact_id, actor_id)
     );
     """))

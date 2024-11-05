@@ -71,7 +71,7 @@ export const SECTORS: ISector[] = [
     description: "waste-description",
     icon: PiTrashLight,
     inventoryTypes: {
-      [InventoryTypeEnum.GPC_BASIC]: { scopes: [1, 3] },
+      [InventoryTypeEnum.GPC_BASIC]: { scopes: [1, 2, 3] },
       [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1, 3] },
     },
     testId: "waste-sector-card",
@@ -85,7 +85,7 @@ export const SECTORS: ISector[] = [
     testId: "ippu-sector-card",
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [] },
-      [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1, 2] },
+      [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1] },
     },
   },
   {
@@ -97,7 +97,7 @@ export const SECTORS: ISector[] = [
     testId: "afolu-sector-card",
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [] },
-      [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1, 2, 3] },
+      [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1] },
     },
   },
 ];

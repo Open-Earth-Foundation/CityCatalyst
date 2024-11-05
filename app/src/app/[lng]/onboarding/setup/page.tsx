@@ -23,6 +23,7 @@ import {
 import { OCCityAttributes } from "@/util/types";
 import {
   ArrowBackIcon,
+  ArrowForwardIcon,
   CheckIcon,
   InfoOutlineIcon,
   SearchIcon,
@@ -989,17 +990,26 @@ export default function OnboardingSetup({
                 <WizardSteps steps={steps} currentStep={activeStep} />
               </div>
             </Box>
-            <Box w="full" display="flex" justifyContent="end">
+            <Box w="full" display="flex" justifyContent="end" px="135px">
               {activeStep == 0 ? (
-                <Button
-                  h={16}
-                  isLoading={isSubmitting}
-                  onClick={() => handleSubmit(onSubmit)()}
-                  px={12}
-                  size="sm"
-                >
-                  {t("save-button")}
-                </Button>
+                <Link href="/onboarding/setup">
+                  <Button
+                    w="auto"
+                    gap="8px"
+                    py="16px"
+                    px="24px"
+                    h="64px"
+                    rightIcon={<ArrowForwardIcon h="24px" w="24px" />}
+                  >
+                    <Text
+                      fontFamily="button.md"
+                      fontWeight="600"
+                      letterSpacing="wider"
+                    >
+                      {t("continue")}
+                    </Text>
+                  </Button>
+                </Link>
               ) : (
                 <>
                   <Button

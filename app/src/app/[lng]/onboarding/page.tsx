@@ -61,14 +61,7 @@ export default function Onboarding({
           </Box>
         </Box>
       </Box>
-      <Box
-        bg="base.light"
-        h="135px"
-        w="full"
-        pos="absolute"
-        bottom="0"
-        left="0"
-      >
+      <Box bg="base.light" h="145px" w="full" pos="fixed" bottom="0" left="0">
         {/* Place holder steppers */}
         <HStack p="4px">
           {steps.map((step) => (

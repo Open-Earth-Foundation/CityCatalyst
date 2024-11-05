@@ -73,7 +73,7 @@ export default function WizardSteps({
                 ? "content.link" // Completed steps
                 : index === currentStep
                   ? "content.link" // Active step
-                  : "gray.200" // Upcoming steps
+                  : "background.neutral" // Upcoming steps
             }
             borderRadius="md"
             cursor="pointer"

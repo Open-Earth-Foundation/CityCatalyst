@@ -24,7 +24,6 @@ interface ActivityTabProps {
   areActivitiesLoading?: boolean;
   totalConsumption?: boolean;
   totalConsumptionUnit?: boolean;
-  filteredScope: number;
   inventoryId: string;
   step: string;
   activityData: ActivityValue[] | undefined;

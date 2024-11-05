@@ -77,15 +77,14 @@
   "steam": "Vapor",
   "refrigiration": "Refrigeración",
   "refrigiration-chp": "Refrigeración CHP",
+  "scope-required-for-basic": "Alcance Requerido para Inventario GHGI Básico:",
+  "scope-required-for-basic-+": "Alcance Requerido para Inventario GHGI Básico+:",
   "stationary-energy": "Energía Estacionaria",
   "stationary-energy-details": "Este sector trata las emisiones que resultan de la generación de electricidad, calor y vapor, así como de su consumo.",
-  "stationary-energy-scope": "Alcance requerido para GHGI Básico: 1, 2",
   "transportation": "Transporte",
   "transportation-details": "Este sector trata las emisiones del transporte de bienes y personas dentro del límite de la ciudad.",
-  "transportation-scope": "Alcance requerido para GHGI Básico: 1, 2",
   "waste": "Residuos y aguas residuales",
   "waste-details": "Este sector cubre las emisiones generadas de los procesos de manejo de residuos.",
-  "waste-scope": "Alcance requerido para GHGI Básico: 1, 3",
   "ippu": "Procesos industriales y uso de productos (IPPU)",
   "ippu-details": "Este sector cubre las emisiones de GEI de procesos industriales que transforman materiales, como en la producción de acero y la fabricación de productos químicos.",
   "afolu": "Agricultura, silvicultura y uso de la tierra (AFOLU)",
@@ -777,5 +776,4 @@
   "emissions-from-livestock-within-the-city-boundary": "Emisiones del ganado dentro de los límites de la ciudad",
   "emissions-from-land-within-the-city-boundary": "Emisiones de la tierra dentro de los límites de la ciudad",
   "emissions-from-aggregate-sources-and-non-co2-emission-sources-on-land-within-the-city-boundary": "Emisiones de fuentes agregadas y fuentes de emisión no CO2 en la tierra dentro de los límites de la ciudad"
-
 }

@@ -85,7 +85,7 @@ export const SECTORS: ISector[] = [
     testId: "ippu-sector-card",
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [] },
-      [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1] },
+      [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1, 2] },
     },
   },
   {
@@ -97,7 +97,7 @@ export const SECTORS: ISector[] = [
     testId: "afolu-sector-card",
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [] },
-      [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1] },
+      [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1, 2, 3] },
     },
   },
 ];

@@ -68,18 +68,17 @@ export default class InventoryProgressService {
               );
               if (
                 sector.referenceNumber === "I" ||
-                sector.referenceNumber === "II"
+                sector.referenceNumber === "II" ||
+                sector.referenceNumber === "IV"
               ) {
-                return lastDigit < 3;
                 // return subcategories with reference numbers that end in 1 and 2
+                return lastDigit < 3;
               } else if (sector.referenceNumber === "III") {
-                return [1, 3].includes(lastDigit);
                 // return subcategories ending with 1 and 3
-              } else if (
-                sector.referenceNumber === "IV" ||
-                sector.referenceNumber === "V"
-              ) {
-                return [1].includes(lastDigit);
+                return [1, 3].includes(lastDigit);
+              } else if (sector.referenceNumber === "V") {
+                // return subcategories ending with 1, 2 and 3
+                return [1, 2, 3].includes(lastDigit);
               }
             }),
         })),

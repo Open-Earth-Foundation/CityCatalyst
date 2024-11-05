@@ -97,7 +97,7 @@ export function SectorCard({
                   ? t("scope-required-for-gpc+")
                   : t("scope-required-for-gpc")}
                 {": "}
-                {(sectorScopes || [])?.join(", ") || "none"}
+                {(sectorScopes || [])?.join(", ") || t("none")}
               </Heading>
             </Box>
             <Box>

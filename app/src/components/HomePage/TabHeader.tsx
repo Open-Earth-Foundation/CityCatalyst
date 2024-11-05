@@ -64,13 +64,13 @@ export function TabHeader({
         {!isPublic ? (
           <Trans
             i18nKey="gpc-inventory-description"
-            values={{ year: inventory }}
+            values={{ year: inventory?.year }}
             t={t}
           >
-            Track and review your {{ year: inventory }} GHG Emission inventory
-            data, prepared according to the Greenhouse Gas Protocol for Cities
-            (GPC) Framework. The data you have submitted is now officially
-            incorporated{" "}
+            Track and review your {{ year: inventory?.year }} GHG Emission
+            inventory data, prepared according to the Greenhouse Gas Protocol
+            for Cities (GPC) Framework. The data you have submitted is now
+            officially incorporated{" "}
             <Link
               href="https://ghgprotocol.org/ghg-protocol-cities"
               target="_blank"
@@ -84,11 +84,11 @@ export function TabHeader({
         ) : (
           <Trans
             i18nKey="gpc-inventory-description-public"
-            values={{ year: inventory }}
+            values={{ year: inventory?.year }}
             t={t}
           >
-            Review the results of {{ year: inventory }} GHG Emission Inventory,
-            prepared according to the GPC Framework.{" "}
+            Review the results of {{ year: inventory?.year }} GHG Emission
+            Inventory, prepared according to the GPC Framework.{" "}
             <Link
               href="https://ghgprotocol.org/ghg-protocol-cities"
               target="_blank"

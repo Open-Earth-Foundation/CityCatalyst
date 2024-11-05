@@ -6,7 +6,7 @@ import { Link } from "@chakra-ui/next-js";
 import { Box, Card, Grid, GridItem, Heading, Text } from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import AddDataCard from "@/components/Cards/add-data-card";
-import { getSectorsForInventory } from "@/util/constants";
+import { getSectorsForInventory, InventoryTypeEnum } from "@/util/constants";
 import { api } from "@/services/api";
 
 export default function AddDataIntro({
@@ -75,20 +75,30 @@ export default function AddDataIntro({
         <Grid templateColumns="repeat(3, 1fr)" gap={4} mt={12}>
           {inventoryData &&
             getSectorsForInventory(inventoryData.inventoryType).map(
-              ({ name, testId, description, scope, icon, number }) => (
-                <GridItem key={name}>
-                  <AddDataCard
-                    testId={testId}
-                    title={t(name)}
-                    description={t(description)}
-                    icon={icon}
-                    scopeText={t(scope)}
-                    buttonText={t("add-data")}
-                    number={number}
-                    inventory={inventory}
-                  />
-                </GridItem>
-              ),
+              ({ name, testId, description, icon, number, inventoryTypes }) => {
+                const requiredScopes = inventoryData?.inventoryType
+                  ? inventoryTypes[inventoryData.inventoryType].scopes
+                  : [];
+                const scopesRequiredText =
+                  inventoryData?.inventoryType ===
+                  InventoryTypeEnum.GPC_BASIC_PLUS
+                    ? "scope-required-for-basic-+"
+                    : "scope-required-for-basic";
+                return (
+                  <GridItem key={name}>
+                    <AddDataCard
+                      testId={testId}
+                      title={t(name)}
+                      description={t(description)}
+                      icon={icon}
+                      scopeText={`${t(scopesRequiredText)} ${requiredScopes.join(", ")}`}
+                      buttonText={t("add-data")}
+                      number={number}
+                      inventory={inventory}
+                    />
+                  </GridItem>
+                );
+              },
             )}
         </Grid>
       </Card>

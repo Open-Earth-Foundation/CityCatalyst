@@ -2,7 +2,7 @@
   "onboarding-heading": "Let's Start Your Emissions Inventory!",
   "onboarding-details": "We need to set and confirm the city where you want to do the inventory.<br/>You are one step closer to getting your GPC emissions inventory!",
   "start-button": "Start City Inventory Profile",
-
+  "city": "City",
   "setup-city-heading": "Select City",
   "setup-city-details": "Search and select the city or municipality for which you want to create your GHG emission inventory.",
   "go-back": "Go Back",

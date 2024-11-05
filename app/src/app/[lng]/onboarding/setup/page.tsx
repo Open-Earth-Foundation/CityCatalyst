@@ -64,6 +64,7 @@ import { useForm } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { MdOutlineAspectRatio, MdOutlinePeopleAlt } from "react-icons/md";
 import FormattedThousandsNumberInput from "@/app/[lng]/onboarding/setup/FormattedThousandsNumberInput";
+import Image from "next/image";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -295,20 +296,41 @@ function SelectCityStep({
   });
 
   return (
-    <Box>
-      <Box minW={400}>
+    <Box w="full">
+      <Box
+        minW={400}
+        w="full"
+        display="flex"
+        flexDir="column"
+        gap="24px"
+        mb="48px"
+      >
         <Heading size="xl">{t("setup-city-heading")}</Heading>
-        <Text className="my-4" color="tertiary">
+        <Text
+          color="content.tertiary"
+          fontSize="body.lg"
+          fontStyle="normal"
+          fontWeight="400"
+          letterSpacing="wide"
+        >
           {t("setup-city-details")}
         </Text>
       </Box>
       <Box w="full">
-        <Card p={6} shadow="none">
+        <Card p={6} shadow="none" px="24px" py="32px">
           <form className="space-y-8">
             <FormControl isInvalid={!!errors.city}>
-              <FormLabel>{t("select-city")}</FormLabel>
-              <InputGroup ref={cityInputRef}>
-                <InputLeftElement pointerEvents="none">
+              <FormLabel>{t("city")}</FormLabel>
+              <InputGroup
+                ref={cityInputRef}
+                shadow="1dp"
+                borderRadius="8px"
+                _focusWithin={{
+                  borderWidth: "1px",
+                  borderColor: "black",
+                }}
+              >
+                <InputLeftElement pointerEvents="none" borderRadius="none">
                   <SearchIcon color="tertiary" boxSize={4} mt={2} ml={4} />
                 </InputLeftElement>
                 <Input
@@ -380,7 +402,92 @@ function SelectCityStep({
                 {errors.city && errors.city.message}
               </FormErrorMessage>
             </FormControl>
-            <FormControl isInvalid={!!errors.year}>
+            {ocCityData ? (
+              <Box
+                display="flex"
+                flexDir="column"
+                borderRadius="8px"
+                w="full"
+                h="full"
+                gap="24px"
+                overflow="hidden"
+              >
+                <CityMap
+                  locode={ocCityData.actor_id}
+                  height={500}
+                  width={1100}
+                />
+                <Box display="flex" alignItems="center" gap="6px">
+                  <InfoOutlineIcon />
+                  <Text
+                    color="content.secondary"
+                    fontWeight="normal"
+                    letterSpacing="wide"
+                  >
+                    In case the geographical boundary is not the right one{" "}
+                    <Link href="">
+                      <Text
+                        as="span"
+                        color="interactive.secondary"
+                        fontWeight="600"
+                        letterSpacing="wide"
+                        textDecorationLine="underline"
+                      >
+                        Contact Us
+                      </Text>
+                    </Link>
+                  </Text>
+                </Box>
+              </Box>
+            ) : (
+              <Box
+                bg="base.light"
+                h="317px"
+                w="full"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                flexDir="column"
+                gap="24px"
+                borderWidth={1}
+                borderColor="border.neutral"
+                borderStyle="dashed"
+                borderRadius="8px"
+              >
+                <Image
+                  src="/assets/city-image.svg"
+                  alt="city-image"
+                  height={400}
+                  width={200}
+                />
+                <Box display="flex" flexDir="column" gap="8px">
+                  <Text
+                    color="content.tertiary"
+                    fontSize="title.md"
+                    fontWeight="bold"
+                    lineHeight="24"
+                    fontFamily="heading"
+                    textAlign="center"
+                  >
+                    Search and select the city to be shown on the map
+                  </Text>
+                  <Text
+                    color="interactive.control"
+                    fontSize="body.md"
+                    fontWeight="400"
+                    fontStyle="normal"
+                    lineHeight="24"
+                    textAlign="center"
+                    letterSpacing="wide"
+                  >
+                    You will be able to check the geographical boundary for your
+                    inventory
+                  </Text>
+                </Box>
+              </Box>
+            )}
+
+            {/* <FormControl isInvalid={!!errors.year}>
               <FormLabel>{t("inventory-year")}</FormLabel>
               <InputGroup>
                 <Select
@@ -599,12 +706,9 @@ function SelectCityStep({
               >
                 {t("information-required")}
               </Text>
-            </HStack>
+            </HStack> */}
           </form>
         </Card>
-        <Text color="tertiary" mt={6} fontSize="sm">
-          {t("gpc-basic-message")}
-        </Text>
       </Box>
     </Box>
   );
@@ -850,6 +954,7 @@ export default function OnboardingSetup({
           variant="ghost"
           leftIcon={<ArrowBackIcon boxSize={6} />}
           onClick={() => router.back()}
+          pl={0}
         >
           Go Back
         </Button>

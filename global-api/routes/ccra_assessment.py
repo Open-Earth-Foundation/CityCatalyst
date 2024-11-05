@@ -115,7 +115,7 @@ def get_ccra_cities(
     # Transform database records into the desired format for the response
     response = [
             {
-                "cityName": record['city_name'],  # Assuming actor_id corresponds to city name
+                "cityname": record['city_name'],
                 "region": record['region_code'],
                 "actor_id": record['actor_id'],
                 "osm_id": record['osm_id']
@@ -148,7 +148,7 @@ def get_city_risk_assessment(
     # Transform database records into the desired format for the response
     response = [
             {
-                "keyimpact": record['keyimpact_name'],  # Assuming actor_id corresponds to city name
+                "keyimpact": record['keyimpact_name'],
                 "hazard": record['hazard_name'],
                 "latest_year": record['latest_year'],
                 "scenario": record['scenario_name'],

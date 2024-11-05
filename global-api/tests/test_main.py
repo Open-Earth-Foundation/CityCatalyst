@@ -18,7 +18,7 @@ def test_health_check():
     assert response.json() == {'status': 'ok'}
 
 # Test the data catalogue end point has no data
-# def test_catalgue_no_data_available():
-#     response = client.get("/api/v0/catalogue")
-#     assert response.status_code == 404
-#     assert response.json() == {"detail": "No data available"}
+def test_catalgue_no_data_available():
+    response = client.get("/api/v0/catalogue")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "No data available"}

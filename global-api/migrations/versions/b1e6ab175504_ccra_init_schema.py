@@ -33,7 +33,7 @@ def upgrade() -> None:
           "indicator_year" int,
           "scenario_name" varchar,
           "datasource" varchar,
-          CONSTRAINT unique_indicator UNIQUE (id)
+          PRIMARY KEY (id)
         );
     """))
 
@@ -44,7 +44,7 @@ def upgrade() -> None:
           hazard_name VARCHAR,
           latest_year INT,
           scenario_name VARCHAR,
-          CONSTRAINT unique_impactchain UNIQUE (id)
+          PRIMARY KEY (id)
         );
     """))
 
@@ -60,7 +60,7 @@ def upgrade() -> None:
       indicator_weight NUMERIC,
       relationship VARCHAR,
       datasource VARCHAR,
-      CONSTRAINT unique_impactchain_indicator UNIQUE (impact_id, indicator_id, category, subcategory)
+      PRIMARY KEY (impact_id, indicator_id, category, subcategory)
     );
     """))
 
@@ -76,7 +76,7 @@ def upgrade() -> None:
       "sensitivity_score" numeric,
       "risk_lower_limit" numeric,
       "risk_upper_limit" numeric,
-      CONSTRAINT unique_risk UNIQUE (impact_id, actor_id)
+      PRIMARY KEY (impact_id, actor_id)
     );
     """))
 

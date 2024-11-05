@@ -5,6 +5,10 @@ import fs from "fs";
 import { Inventory, InventoryTypeEnum } from "@/models/Inventory";
 import * as path from "path";
 import * as process from "node:process";
+import {
+  getScopesForInventoryAndSector,
+  getSectorsForInventory,
+} from "@/util/constants";
 
 const romanTable: Record<string, number> = {
   I: 1,
@@ -32,12 +36,9 @@ export default class InventoryProgressService {
     const sectors = await this.getSortedInventoryStructure();
     const filteredOutSectors = sectors
       .filter((sector) => {
-        if (
-          inventory.inventoryType === InventoryTypeEnum.GPC_BASIC_PLUS ||
-          (sector.referenceNumber && romanTable[sector.referenceNumber] < 4)
-        ) {
-          return true;
-        }
+        return getSectorsForInventory(inventory.inventoryType)
+          .map((s) => s.referenceNumber)
+          .includes(sector.referenceNumber!);
       })
       .map((sector) => ({
         id: sector.sectorId,
@@ -63,23 +64,22 @@ export default class InventoryProgressService {
               lastUpdated: new Date(0),
             }))
             .filter((subCategory) => {
+              if (
+                inventory.inventoryType === InventoryTypeEnum.GPC_BASIC_PLUS
+              ) {
+                return true;
+              }
               const lastDigit = parseInt(
                 subCategory.referenceNumber?.split(".")[2] as string,
               );
-              if (
-                sector.referenceNumber === "I" ||
-                sector.referenceNumber === "II" ||
-                sector.referenceNumber === "IV"
-              ) {
-                // return subcategories with reference numbers that end in 1 and 2
-                return lastDigit < 3;
-              } else if (sector.referenceNumber === "III") {
-                // return subcategories ending with 1 and 3
-                return [1, 3].includes(lastDigit);
-              } else if (sector.referenceNumber === "V") {
-                // return subcategories ending with 1, 2 and 3
-                return [1, 2, 3].includes(lastDigit);
+              if (!lastDigit) {
+                // sectors IV and V don't have a scopeId and should only be returned for BASIC_PLUS
+                return false;
               }
+              return getScopesForInventoryAndSector(
+                inventory.inventoryType!,
+                sector.referenceNumber!,
+              )!.includes(lastDigit);
             }),
         })),
       }));

@@ -39,6 +39,15 @@ export const getSectorsForInventory = (inventoryType?: InventoryType) => {
   });
 };
 
+export const getScopesForInventoryAndSector = (
+  inventoryType: InventoryType,
+  referenceNumber: string,
+) => {
+  if (!inventoryType) return [];
+  return SECTORS.find((s) => s.referenceNumber === referenceNumber)
+    ?.inventoryTypes[inventoryType].scopes;
+};
+
 export const SECTORS: ISector[] = [
   {
     referenceNumber: "I",
@@ -72,7 +81,7 @@ export const SECTORS: ISector[] = [
     icon: PiTrashLight,
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [1, 2, 3] },
-      [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1, 3] },
+      [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1, 2, 3] },
     },
     testId: "waste-sector-card",
   },

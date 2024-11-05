@@ -1,6 +1,7 @@
 {
   "data-heading": "Adicione Dados para Completar Seu Inventário de GEE",
   "data-details": "Adicione dados ou conecte dados de terceiros para sua cidade e complete o inventário de emissões da sua cidade usando a metodologia GPC Básica. <2>Saiba mais</2> sobre o Protocolo GPC",
+  "data-details-+": "Adicione dados ou conecte dados de terceiros para sua cidade e complete o inventário de emissões da sua cidade usando a metodologia GPC Básica+. <2>Saiba mais</2> sobre o Protocolo GPC",
   "data-view-heading": "Selecionar Setor",
   "data-view-details": "Selecione e preencha os dados necessários para o setor relevante para construir um inventário abrangente de GEE.",
   "select-methodology-title": "Selecione a Metodologia para Calcular Emissões",
@@ -227,7 +228,7 @@
   "upload-your-data-details": "Envie seus arquivos aqui e ajustaremos suas estruturas de dados para harmonizá-los e integrá-los para calcular seu inventário de emissões padrão GPC Core.",
   "review-your-data-heading": "Revise os Dados que Você Acabou de Adicionar",
   "gpc-scope-required": "Escopo Necessário para Inventário Básico GPC:",
-  "gpc-scope-required-summary": "Escopo Necessário para Inventário GPC:",
+  "gpc-scope-required-+": "Escopo Necessário para Inventário Básico+ GPC:",
   "edit-sector": "Editar Setor",
   "discard-sector-changes": "Descartar Alterações do Setor",
   "third-party-data": "Dados de Terceiros Conectados",

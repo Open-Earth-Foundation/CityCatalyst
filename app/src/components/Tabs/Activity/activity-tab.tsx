@@ -35,7 +35,6 @@ interface ActivityTabProps {
 const ActivityTab: FC<ActivityTabProps> = ({
   t,
   referenceNumber,
-  filteredScope,
   inventoryId,
   activityData,
   subsectorId,
@@ -52,10 +51,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const [selectedMethodology, setSelectedMethodology] = useState("");
   const [isUnavailableChecked, setIsChecked] = useState<boolean>(false);
 
-  const refNumberWithScope = referenceNumber + "." + (filteredScope || 1);
-
   const { methodologies, directMeasure } = getMethodologies();
-
   // extract the methodology used from the filtered scope
 
   const [methodology, setMethodology] = useState<Methodology | DirectMeasure>();
@@ -63,8 +59,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const getfilteredActivityValues = useMemo(() => {
     let methodologyId: string | null | undefined = undefined;
     const filteredValues = activityData?.filter((activity) => {
-      let val =
-        activity.inventoryValue.gpcReferenceNumber === refNumberWithScope;
+      let val = activity.inventoryValue.gpcReferenceNumber === referenceNumber;
       if (val && !methodologyId) {
         methodologyId = activity.inventoryValue.inputMethodology;
       }
@@ -88,29 +83,29 @@ const ActivityTab: FC<ActivityTabProps> = ({
     }
 
     return filteredValues;
-  }, [activityData, refNumberWithScope]);
+  }, [activityData, referenceNumber]);
 
   function getMethodologies() {
     const methodologies =
-      MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.methodologies || [];
+      MANUAL_INPUT_HIERARCHY[referenceNumber]?.methodologies || [];
     const directMeasure =
-      MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.directMeasure;
+      MANUAL_INPUT_HIERARCHY[referenceNumber]?.directMeasure;
     return { methodologies, directMeasure };
   }
 
   const externalInventoryValue = useMemo(() => {
     return inventoryValues?.find(
       (value) =>
-        value.gpcReferenceNumber === refNumberWithScope &&
+        value.gpcReferenceNumber === referenceNumber &&
         value.dataSource?.sourceType === "third_party",
     );
-  }, [inventoryValues, refNumberWithScope]);
+  }, [inventoryValues, referenceNumber]);
 
   const inventoryValue = useMemo<InventoryValue | null>(() => {
     return (
       inventoryValues?.find(
         (value) =>
-          value.gpcReferenceNumber === refNumberWithScope &&
+          value.gpcReferenceNumber === referenceNumber &&
           value.inputMethodology ===
             (methodology?.id.includes("direct-measure")
               ? "direct-measure"
@@ -137,7 +132,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const getSuggestedActivities = (): SuggestedActivity[] => {
     if (!selectedMethodology) return [];
     let methodology;
-    const scope = MANUAL_INPUT_HIERARCHY[refNumberWithScope];
+    const scope = MANUAL_INPUT_HIERARCHY[referenceNumber];
     if (selectedMethodology.includes("direct-measure")) {
       methodology = scope.directMeasure;
     } else {
@@ -220,7 +215,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                   methodology={methodology}
                   inventoryId={inventoryId}
                   subsectorId={subsectorId}
-                  refNumberWithScope={refNumberWithScope}
+                  refNumberWithScope={referenceNumber}
                   activityValues={activityValues}
                   suggestedActivities={suggestedActivities}
                   totalEmissions={totalEmissions}

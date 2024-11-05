@@ -1,6 +1,7 @@
 {
   "data-heading": "Añade datos para completar tu inventario de GEI",
   "data-details": "Añade datos o conecta datos de terceros para tu ciudad y completa el inventario de emisiones de tu ciudad usando la metodología GPC Básica. <2>Aprende más</2> sobre el Protocolo GPC",
+  "data-details-+": "Añade datos o conecta datos de terceros para tu ciudad y completa el inventario de emisiones de tu ciudad usando la metodología GPC Básica+. <2>Aprende más</2> sobre el Protocolo GPC",
   "data-view-heading": "Selecciona Sector",
   "data-view-details": "Selecciona y completa los datos necesarios para el sector relevante para construir un inventario de GEI completo.",
   "select-methodology-title": "Selecciona la Metodología para Calcular las Emisiones",
@@ -225,7 +226,7 @@
   "upload-your-data-details": "Sube tus archivos aquí y ajustaremos tus estructuras de datos para armonizar e integrarlos para calcular tu inventario de emisiones estándar GPC Core.",
   "review-your-data-heading": "revisa los datos que acabas de añadir",
   "gpc-scope-required": "Alcance Requerido para Inventario GPC Básico:",
-  "gpc-scope-required-summary": "Alcance Requerido para Inventario GPC:",
+  "gpc-scope-required-+": "Alcance Requerido para Inventario GPC Básico+:",
   "edit-sector": "editar sector",
   "discard-sector-changes": "Descartar cambios del sector",
   "third-party-data": "Datos de terceros conectados",

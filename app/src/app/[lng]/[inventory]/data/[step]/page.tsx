@@ -56,7 +56,7 @@ import { TFunction } from "i18next";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { FiTarget, FiTrash2, FiTruck } from "react-icons/fi";
+import { FiTarget, FiTrash2 } from "react-icons/fi";
 import {
   MdAdd,
   MdArrowDropDown,
@@ -65,7 +65,6 @@ import {
   MdHomeWork,
   MdOutlineCheckCircle,
   MdOutlineEdit,
-  MdOutlineHomeWork,
   MdRefresh,
 } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
@@ -80,7 +79,7 @@ import AddFileDataModal from "@/components/Modals/add-file-data-modal";
 import { InventoryValueAttributes } from "@/models/InventoryValue";
 import { motion } from "framer-motion";
 import { getTranslationFromDict } from "@/i18n";
-import { SECTORS } from "@/util/constants";
+import { getScopesForInventoryAndSector, SECTORS } from "@/util/constants";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -697,8 +696,13 @@ export default function AddDataSteps({
                   <Box w="800px"></Box>
                 )}
                 <Text fontWeight="bold" ml={isExpanded ? "-48px" : ""}>
-                  {t("inventory-year")}: 2023 |{" "}
-                  {t("gpc-scope-required-summary")} 1,2
+                  {t("inventory-year")}: {inventoryProgress?.inventory.year} |{" "}
+                  {t("gpc-scope-required")}{" "}
+                  {inventoryProgress?.inventory.inventoryType &&
+                    getScopesForInventoryAndSector(
+                      inventoryProgress.inventory.inventoryType!,
+                      currentStep.referenceNumber,
+                    )?.join(", ")}
                 </Text>
                 <Flex direction="row" ml={isExpanded ? "-48px" : ""}>
                   <SegmentedProgress

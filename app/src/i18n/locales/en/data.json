@@ -1,6 +1,7 @@
 {
   "data-heading": "Add Data to Complete Your GHG Inventory",
   "data-details": "Add data or connect third-party data for your city and complete your city's emission inventory using the GPC Basic methodology. <2>Learn more</2> about GPC Protocol",
+  "data-details-+": "Add data or connect third-party data for your city and complete your city's emission inventory using the GPC Basic+ methodology. <2>Learn more</2> about GPC Protocol",
   "data-view-heading": "Select Sector",
   "data-view-details": "Select and fill in the necessary data for the relevant sector to build a comprehensive GHG inventory.",
   "select-methodology-title": "Select The Methodology to Calculate Emissions",
@@ -228,7 +229,6 @@
   "review-your-data-heading": "review the data you have just added",
   "gpc-scope-required": "Scope Required for GPC Basic Inventory:",
   "gpc-scope-required-+": "Scope Required for GPC Basic+ Inventory:",
-  "gpc-scope-required-summary": "Scope Required for GPC Inventory:",
   "edit-sector": "edit sector",
   "discard-sector-changes": "Discard sector changes",
   "third-party-data": "Third-party data connected",

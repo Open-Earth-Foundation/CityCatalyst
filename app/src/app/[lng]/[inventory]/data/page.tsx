@@ -46,7 +46,14 @@ export default function AddDataIntro({
         {t("data-heading")}
       </Heading>
       <Text color="content.tertiary" className="w-full">
-        <Trans i18nKey="data-details" t={t}>
+        <Trans
+          i18nKey={
+            inventoryData?.inventoryType === InventoryTypeEnum.GPC_BASIC
+              ? "data-details"
+              : "data-details-+"
+          }
+          t={t}
+        >
           Add data or connect third-party data for your city and complete your
           city&apos;s emission inventory using the GPC Basic methodology.{" "}
           <Link
@@ -90,8 +97,9 @@ export default function AddDataIntro({
                       testId={testId}
                       title={t(name)}
                       description={t(description)}
+                      // @ts-ignore
                       icon={icon}
-                      scopeText={`${t(scopesRequiredText)} ${requiredScopes.join(", ")}`}
+                      scopeText={`${t(scopesRequiredText)}: ${requiredScopes.join(", ")}`}
                       buttonText={t("add-data")}
                       number={number}
                       inventory={inventory}

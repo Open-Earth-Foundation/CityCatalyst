@@ -88,12 +88,13 @@ export interface DirectMeasure {
   suggestedActivities?: Activity[];
   inputRequired?: string[];
   "extra-fields"?: ExtraField[];
-  activityTypeField: string;
+  activityTypeField?: string;
   activityUnitsField?: string;
 }
 
 interface ManualInputHierarchy {
   [key: string]: {
+    scope: number;
     methodologies?: Methodology[];
     directMeasure?: DirectMeasure;
   };

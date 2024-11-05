@@ -128,19 +128,12 @@ function SubSectorPage({
   };
 
   const getFilteredSubsectorScopes = () => {
-    const scopes = [];
-
-    for (const key in MANUAL_INPUT_HIERARCHY) {
-      if (key.startsWith(subSectorData?.referenceNumber!)) {
-        const scopeNumber = key.split(".").pop();
-        const result = {
-          ...MANUAL_INPUT_HIERARCHY[key],
-          scope: Number(scopeNumber),
-        };
-        scopes.push(result);
-      }
-    }
-    return scopes;
+    return Object.entries(MANUAL_INPUT_HIERARCHY)
+      .filter(([key]) => key.startsWith(subSectorData?.referenceNumber!))
+      .map(([k, v]) => ({
+        ...v,
+        referenceNumber: k,
+      }));
   };
 
   const scopes = getFilteredSubsectorScopes();
@@ -415,19 +408,21 @@ function SubSectorPage({
             {loadingState ? (
               <LoadingState />
             ) : (
-              scopes?.map((scope) => (
-                <ActivityTab
-                  referenceNumber={subSectorData?.referenceNumber!}
-                  key={subSectorData?.referenceNumber}
-                  filteredScope={scope.scope}
-                  t={t}
-                  inventoryId={inventoryId}
-                  subsectorId={subsector}
-                  step={step}
-                  activityData={activityData}
-                  inventoryValues={inventoryValues ?? []}
-                />
-              ))
+              scopes?.map((scope) => {
+                console.log("scope", JSON.stringify(scope)); // TODO NINA
+                return (
+                  <ActivityTab
+                    referenceNumber={scope.referenceNumber!}
+                    key={scope.referenceNumber}
+                    t={t}
+                    inventoryId={inventoryId}
+                    subsectorId={subsector}
+                    step={step}
+                    activityData={activityData}
+                    inventoryValues={inventoryValues ?? []}
+                  />
+                );
+              })
             )}
           </TabPanels>
         </Box>

@@ -1012,6 +1012,10 @@ function SetInventoryDetailsStep({
   );
 }
 
+function SetPopulationDataStep({}) {
+  return <Box>Population Data</Box>;
+}
+
 function ConfirmStep({
   cityName,
   t,
@@ -1251,7 +1255,9 @@ export default function OnboardingSetup({
         <Button
           variant="ghost"
           leftIcon={<ArrowBackIcon boxSize={6} />}
-          onClick={() => router.back()}
+          onClick={() => {
+            activeStep === 0 ? router.back() : goToPrevious();
+          }}
           pl={0}
         >
           Go Back
@@ -1273,6 +1279,7 @@ export default function OnboardingSetup({
           {activeStep === 1 && (
             <SetInventoryDetailsStep t={t} register={register} years={[]} />
           )}
+          {activeStep === 2 && <SetPopulationDataStep />}
           {activeStep === 3 && (
             <ConfirmStep
               cityName={getValues("city")}
@@ -1311,6 +1318,25 @@ export default function OnboardingSetup({
                 </Button>
               )}
               {activeStep == 1 && (
+                <Button
+                  w="auto"
+                  gap="8px"
+                  py="16px"
+                  onClick={goToNext}
+                  px="24px"
+                  h="64px"
+                  rightIcon={<ArrowForwardIcon h="24px" w="24px" />}
+                >
+                  <Text
+                    fontFamily="button.md"
+                    fontWeight="600"
+                    letterSpacing="wider"
+                  >
+                    {t("continue")}
+                  </Text>
+                </Button>
+              )}
+              {activeStep == 2 && (
                 <Button
                   w="auto"
                   gap="8px"

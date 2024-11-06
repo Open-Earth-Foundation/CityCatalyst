@@ -1050,3 +1050,20 @@ export const AskAiIcon = () => {
     </svg>
   );
 };
+
+export const InventoryButtonCheckIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="25"
+      height="24"
+      viewBox="0 0 25 24"
+      fill="none"
+    >
+      <path
+        d="M9.50016 16.17L5.33016 12L3.91016 13.41L9.50016 19L21.5002 7.00003L20.0902 5.59003L9.50016 16.17Z"
+        fill="#2351DC"
+      />
+    </svg>
+  );
+};

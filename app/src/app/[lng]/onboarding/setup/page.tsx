@@ -45,11 +45,18 @@ import {
   InputGroup,
   InputLeftElement,
   InputRightElement,
+  Radio,
+  RadioGroup,
   Select,
+  Stack,
   Text,
   useOutsideClick,
   useSteps,
   useToast,
+  useRadioGroup,
+  useRadio,
+  UseRadioProps,
+  UseRadioGroupProps,
 } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import dynamic from "next/dynamic";
@@ -66,6 +73,7 @@ import { Trans } from "react-i18next/TransWithoutContext";
 import { MdOutlineAspectRatio, MdOutlinePeopleAlt } from "react-icons/md";
 import FormattedThousandsNumberInput from "@/app/[lng]/onboarding/setup/FormattedThousandsNumberInput";
 import Image from "next/image";
+import { InventoryButtonCheckIcon } from "@/components/icons";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -715,6 +723,295 @@ function SelectCityStep({
   );
 }
 
+// Custom Radio Buttons
+
+interface CustomRadioProps extends UseRadioProps {
+  children: React.ReactNode;
+}
+
+function CustomRadio(props: CustomRadioProps) {
+  const { getInputProps, getCheckboxProps } = useRadio(props);
+
+  return (
+    <Box as="label">
+      <input {...getInputProps()} hidden />
+      <Box
+        {...getCheckboxProps()}
+        cursor="pointer"
+        w="181px"
+        h="56px"
+        borderRadius="full"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        fontFamily="heading"
+        fontStyle="500"
+        lineHeight="20px"
+        gap="8px"
+        letterSpacing="wide"
+        className="transition-all duration-150"
+        borderWidth={props.isChecked ? "0" : "1px"}
+        borderColor={props.isChecked ? "green.500" : "border.neutral"}
+        bg={props.isChecked ? "background.neutral" : "base.light"}
+        color={props.isChecked ? "content.link" : "content.secondary"}
+        _checked={{
+          bg: "background.neutral",
+          color: "content.link",
+          borderWidth: "1px",
+          borderColor: "interactive.secondary",
+        }}
+        _focus={{
+          boxShadow: "outline",
+        }}
+      >
+        {props.isChecked ? <Icon as={InventoryButtonCheckIcon} /> : ""}
+        {props.children}
+      </Box>
+    </Box>
+  );
+}
+
+function SetInventoryDetailsStep({
+  t,
+  register,
+  years,
+}: {
+  t: TFunction;
+  register: UseFormRegister<Inputs>;
+  years: number[];
+}) {
+  let year;
+  const [value, setValue] = useState("Option 1");
+  const inventoryGoalOptions: string[] = ["GPC BASIC", "GPC BASIC +"];
+  const globalWarmingPotential: string[] = ["AR5", "AR6"];
+
+  const {
+    getRootProps: inventoryGoalRootProps,
+    getRadioProps: getInventoryGoalRadioProps,
+  } = useRadioGroup({
+    name: "options",
+    defaultValue: "",
+    onChange: (value: string) => {
+      console.log(value);
+    },
+  } as UseRadioGroupProps);
+
+  const { getRootProps: GWPRootProps, getRadioProps: getGWPRadioProps } =
+    useRadioGroup({
+      name: "options",
+      defaultValue: "",
+      onChange: (value: string) => {
+        console.log(value);
+      },
+    } as UseRadioGroupProps);
+
+  const inventoryGoalGroup = inventoryGoalRootProps();
+  const gwpGroup = GWPRootProps();
+
+  return (
+    <Box w="full">
+      <Box
+        minW={400}
+        w="full"
+        display="flex"
+        flexDir="column"
+        gap="24px"
+        mb="48px"
+      >
+        <Heading size="xl">{t("setup-inventory-details-heading")}</Heading>
+        <Text
+          color="content.tertiary"
+          fontSize="body.lg"
+          fontStyle="normal"
+          fontWeight="400"
+          letterSpacing="wide"
+        >
+          {t("setup-inventory-details-description")}
+        </Text>
+      </Box>
+      <Box
+        w="full"
+        py="36px"
+        borderBottomWidth="2px"
+        borderColor="border.overlay"
+      >
+        {/* Inventory Year */}
+        <Box
+          display="flex"
+          w="full"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <Box>
+            <Text
+              fontFamily="heading"
+              fontSize="title.md"
+              fontStyle="normal"
+              fontWeight="bold"
+              lineHeight="24px"
+            >
+              {t("inventory-year")}
+            </Text>
+          </Box>
+          <Box>
+            <InputGroup>
+              <Select
+                placeholder={t("inventory-year-placeholder")}
+                size="lg"
+                w="400px"
+                shadow="1dp"
+                fontSize="body.lg"
+                fontStyle="normal"
+                letterSpacing="wide"
+                _placeholder={{ color: "content.tertiary" }}
+                py="16px"
+                px={0}
+                {...register("year", {
+                  required: t("inventory-year-required"),
+                })}
+              >
+                {years.map((year: number, i: number) => (
+                  <option value={year} key={i}>
+                    {year}
+                  </option>
+                ))}
+              </Select>
+              <InputRightElement>
+                {!!year && (
+                  <CheckIcon
+                    color="semantic.success"
+                    boxSize={4}
+                    mt={2}
+                    mr={10}
+                  />
+                )}
+              </InputRightElement>
+            </InputGroup>
+          </Box>
+        </Box>
+      </Box>
+      {/* Inventory Goal */}
+      <Box
+        w="full"
+        py="36px"
+        borderBottomWidth="2px"
+        borderColor="border.overlay"
+      >
+        <Box
+          display="flex"
+          w="full"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <Box display="flex" flexDir="column" gap="16px">
+            <Text
+              fontFamily="heading"
+              fontSize="title.md"
+              fontStyle="normal"
+              fontWeight="bold"
+              lineHeight="24px"
+            >
+              {t("inventory-goal")}
+            </Text>
+            <Text
+              fontSize="title.md"
+              fontStyle="normal"
+              lineHeight="24px"
+              letterSpacing="wide"
+              color="content.tertiary"
+            >
+              <Trans i18nKey="inventory-goal-description" t={t}>
+                Want to learn more about these inventory formats?{" "}
+                <Link
+                  href="/"
+                  fontFamily="heading"
+                  fontWeight="bold"
+                  color="content.link"
+                  textDecorationLine="underline"
+                >
+                  Learn more
+                </Link>{" "}
+                about the GPC Framework.
+              </Trans>
+            </Text>
+          </Box>
+          <Box>
+            <HStack {...inventoryGoalGroup} gap="16px">
+              {inventoryGoalOptions.map((value) => {
+                const radioProps = getInventoryGoalRadioProps({ value });
+                return (
+                  <CustomRadio key={value} {...radioProps}>
+                    {value}
+                  </CustomRadio>
+                );
+              })}
+            </HStack>
+          </Box>
+        </Box>
+      </Box>
+      {/* Global Warming Potential */}
+      <Box
+        w="full"
+        py="36px"
+        borderBottomWidth="2px"
+        borderColor="border.overlay"
+      >
+        <Box
+          display="flex"
+          w="full"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <Box display="flex" flexDir="column" gap="16px">
+            <Text
+              fontFamily="heading"
+              fontSize="title.md"
+              fontStyle="normal"
+              fontWeight="bold"
+              lineHeight="24px"
+            >
+              {t("gwp-heading")}
+            </Text>
+            <Text
+              fontSize="title.md"
+              fontStyle="normal"
+              lineHeight="24px"
+              letterSpacing="wide"
+              color="content.tertiary"
+            >
+              <Trans i18nKey="gwp-description" t={t}>
+                Want to learn more about these inventory formats?{" "}
+                <Link
+                  href="/"
+                  fontFamily="heading"
+                  fontWeight="bold"
+                  color="content.link"
+                  textDecorationLine="underline"
+                >
+                  Learn more
+                </Link>{" "}
+                about the GPC Framework.
+              </Trans>
+            </Text>
+          </Box>
+          <Box>
+            <HStack {...gwpGroup} gap="16px">
+              {globalWarmingPotential.map((value) => {
+                const radioProps = getGWPRadioProps({ value });
+                return (
+                  <CustomRadio key={value} {...radioProps}>
+                    {value}
+                  </CustomRadio>
+                );
+              })}
+            </HStack>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+  );
+}
+
 function ConfirmStep({
   cityName,
   t,
@@ -816,8 +1113,8 @@ export default function OnboardingSetup({
 
   const steps = [
     { title: t("setup-step") },
-    { title: t("confirm-step") },
-    { title: t("done-step") },
+    { title: t("set-inventory-details-step") },
+    { title: t("set-population-step") },
     { title: t("done-step") },
   ];
   const { activeStep, goToNext, goToPrevious } = useSteps({
@@ -974,6 +1271,9 @@ export default function OnboardingSetup({
             />
           )}
           {activeStep === 1 && (
+            <SetInventoryDetailsStep t={t} register={register} years={[]} />
+          )}
+          {activeStep === 3 && (
             <ConfirmStep
               cityName={getValues("city")}
               t={t}
@@ -991,50 +1291,69 @@ export default function OnboardingSetup({
               </div>
             </Box>
             <Box w="full" display="flex" justifyContent="end" px="135px">
-              {activeStep == 0 ? (
-                <Link href="/onboarding/setup">
-                  <Button
-                    w="auto"
-                    gap="8px"
-                    py="16px"
-                    px="24px"
-                    h="64px"
-                    rightIcon={<ArrowForwardIcon h="24px" w="24px" />}
+              {activeStep == 0 && (
+                <Button
+                  w="auto"
+                  gap="8px"
+                  py="16px"
+                  px="24px"
+                  onClick={goToNext}
+                  h="64px"
+                  rightIcon={<ArrowForwardIcon h="24px" w="24px" />}
+                >
+                  <Text
+                    fontFamily="button.md"
+                    fontWeight="600"
+                    letterSpacing="wider"
                   >
-                    <Text
-                      fontFamily="button.md"
-                      fontWeight="600"
-                      letterSpacing="wider"
-                    >
-                      {t("continue")}
-                    </Text>
-                  </Button>
-                </Link>
-              ) : (
-                <>
-                  <Button
-                    h={16}
-                    onClick={() => goToPrevious()}
-                    w={400}
-                    variant="ghost"
-                    leftIcon={<SearchIcon />}
-                    size="sm"
-                    px={12}
-                    mr={6}
-                  >
-                    {t("search-city-button")}
-                  </Button>
-                  <Button
-                    h={16}
-                    isLoading={isConfirming}
-                    px={16}
-                    onClick={onConfirm}
-                    size="sm"
-                  >
-                    {t("confirm-button")}
-                  </Button>
-                </>
+                    {t("continue")}
+                  </Text>
+                </Button>
               )}
+              {activeStep == 1 && (
+                <Button
+                  w="auto"
+                  gap="8px"
+                  py="16px"
+                  onClick={goToNext}
+                  px="24px"
+                  h="64px"
+                  rightIcon={<ArrowForwardIcon h="24px" w="24px" />}
+                >
+                  <Text
+                    fontFamily="button.md"
+                    fontWeight="600"
+                    letterSpacing="wider"
+                  >
+                    {t("continue")}
+                  </Text>
+                </Button>
+              )}
+
+              {/* //   <>
+              //     <Button
+              //       h={16}
+              //       onClick={() => goToPrevious()}
+              //       w={400}
+              //       variant="ghost"
+              //       leftIcon={<SearchIcon />}
+              //       size="sm"
+              //       px={12}
+              //       mr={6}
+              //     >
+              //       {t("search-city-button")}
+              //     </Button>
+              //     <Button
+              //       h={16}
+              //       isLoading={isConfirming}
+              //       px={16}
+              //       onClick={onConfirm}
+              //       size="sm"
+              //     >
+              //       {t("confirm-button")}
+              //     </Button>
+              //   </>
+              // )} */}
             </Box>
           </Box>
         </div>

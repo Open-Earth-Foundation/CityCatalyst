@@ -35,6 +35,7 @@ import {
 } from "framer-motion";
 import Link from "next/link";
 import { SECTORS } from "@/util/constants";
+import { InventoryValue } from "@/models/InventoryValue";
 
 const MotionBox = motion(Box);
 
@@ -178,7 +179,7 @@ function SubSectorPage({
           paddingTop: paddingTop,
         }}
         borderColor="border.neutral"
-        borderBottomWidth={true ? "1px" : ""}
+        borderBottomWidth={"1px"}
       >
         <MotionBox className="w-[1090px] max-w-full mx-auto px-4">
           <AnimatePresence>
@@ -385,9 +386,6 @@ function SubSectorPage({
             {scopes?.map((scope, index) => (
               <Tab
                 key={index}
-                onClick={() => {
-                  triggerMochLoading();
-                }}
                 className="[&[aria-selected='false']]:border-[transparent]"
               >
                 <Text
@@ -409,7 +407,6 @@ function SubSectorPage({
               <LoadingState />
             ) : (
               scopes?.map((scope) => {
-                console.log("scope", JSON.stringify(scope)); // TODO NINA
                 return (
                   <ActivityTab
                     referenceNumber={scope.referenceNumber!}
@@ -419,7 +416,13 @@ function SubSectorPage({
                     subsectorId={subsector}
                     step={step}
                     activityData={activityData}
-                    inventoryValues={inventoryValues ?? []}
+                  inventoryValues={
+                    (inventoryValues as InventoryValue[])?.filter(
+                      (iv) =>
+                        iv.gpcReferenceNumber ===
+                        scope.referenceNumber,
+                    ) ?? []
+                  }
                   />
                 );
               })

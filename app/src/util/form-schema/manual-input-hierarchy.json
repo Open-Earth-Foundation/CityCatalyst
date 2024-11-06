@@ -4333,8 +4333,10 @@
           "id": "direct-measure-wastewater-inside-source-type",
           "options": [
             "source-type-domestic-wastewater",
-            "source-type-industrial-wastewater"
-          ]
+            "source-type-industrial-wastewater",
+            "source-type-all-wastewater"
+          ],
+          "exclusive": "source-type-all-wastewaterœ"
         }
       ]
     }

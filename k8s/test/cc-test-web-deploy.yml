@@ -54,8 +54,6 @@ spec:
               value: "openai"
             - name: OPEN_AI_MODEL
               value: "gpt-4o-mini"
-            - name: NEXT_PUBLIC_HOST
-              value: "https://citycatalyst-test.openearth.dev"
           resources:
             limits:
               memory: "1024Mi"

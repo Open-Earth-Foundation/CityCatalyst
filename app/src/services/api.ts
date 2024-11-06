@@ -1,6 +1,7 @@
 import {
   type CityAttributes,
   type InventoryAttributes,
+  InventoryValue,
   type InventoryValueAttributes,
   PopulationAttributes,
   type UserAttributes,
@@ -14,6 +15,7 @@ import type {
   InventoryProgressResponse,
   InventoryResponse,
   InventoryUpdateQuery,
+  InventoryValueInSubSectorScopeUpdateQuery,
   InventoryValueResponse,
   InventoryValueUpdateQuery,
   InventoryWithCity,
@@ -228,6 +230,19 @@ export const api = createApi({
       transformResponse: (response: { data: ConnectDataSourceResponse }) =>
         response.data,
       invalidatesTags: ["InventoryProgress"],
+    }),
+    updateOrCreateInventoryValue: builder.mutation<
+      InventoryValueAttributes,
+      InventoryValueInSubSectorScopeUpdateQuery
+    >({
+      query: (data) => ({
+        url: `/inventory/${data.inventoryId}/value/subsector/${data.subSectorId}`,
+        method: "PATCH",
+        body: data.data,
+      }),
+      transformResponse: (response: { data: InventoryValueAttributes }) =>
+        response.data,
+      invalidatesTags: ["InventoryProgress", "InventoryValue"],
     }),
     getUserInventories: builder.query<InventoryWithCity[], void>({
       query: () => "/user/inventories",
@@ -672,5 +687,6 @@ export const {
   useGetInventoryValuesBySubsectorQuery,
   useGetResultsQuery,
   useUpdateInventoryMutation,
+  useUpdateOrCreateInventoryValueMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

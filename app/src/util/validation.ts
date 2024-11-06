@@ -80,6 +80,7 @@ export const createInventoryValue = z.object({
   activityUnits: z.string().nullable().optional(),
   co2eq: z.coerce.bigint().gte(0n).optional(),
   co2eqYears: z.number().optional(),
+  gpcReferenceNumber: z.string().optional(),
   unavailableReason: z.string().optional(),
   unavailableExplanation: z.string().optional(),
   gasValues: z
@@ -99,6 +100,16 @@ export const createInventoryValue = z.object({
       }),
     )
     .optional(),
+});
+
+export const patchInventoryValue = z.object({
+  activityValue: z.number().nullable().optional(),
+  activityUnits: z.string().nullable().optional(),
+  co2eq: z.coerce.bigint().gte(0n).optional(),
+  co2eqYears: z.number().optional(),
+  gpcReferenceNumber: z.string(),
+  unavailableReason: z.string().optional(),
+  unavailableExplanation: z.string().optional(),
 });
 
 export type CreateInventoryValueRequest = z.infer<typeof createInventoryValue>;

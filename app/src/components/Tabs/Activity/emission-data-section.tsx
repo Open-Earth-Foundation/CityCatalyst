@@ -199,6 +199,7 @@ const EmissionDataSection = ({
 
   return (
     <>
+      {inventoryValue?.unavailableReason && <p> marked as unexpected </p>}
       <Box>
         <Text
           fontFamily="heading"

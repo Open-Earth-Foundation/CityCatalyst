@@ -29,7 +29,7 @@ import { api } from "@/services/api";
 import ByScopeView from "@/app/[lng]/[inventory]/InventoryResultTab/ByScopeView";
 import { SectorHeader } from "@/app/[lng]/[inventory]/InventoryResultTab/SectorHeader";
 import { ByActivityView } from "@/app/[lng]/[inventory]/InventoryResultTab/ByActivityView";
-import { SECTORS } from "@/util/constants";
+import { getSectorsForInventory, SECTORS } from "@/util/constants";
 import { Selector } from "@/components/selector";
 import { EmptyStateCardContent } from "@/app/[lng]/[inventory]/InventoryResultTab/EmptyStateCardContent";
 import { Trans } from "react-i18next/TransWithoutContext";
@@ -65,7 +65,7 @@ function SectorTabs({
   const { data: sectorBreakdown, isLoading: isResultsLoading } =
     api.useGetSectorBreakdownQuery({
       inventoryId: inventory!.inventoryId!,
-      sector: SECTORS[selectedIndex].sectorName,
+      sector: SECTORS[selectedIndex].name,
     });
 
   const handleViewChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -83,33 +83,35 @@ function SectorTabs({
       onChange={(index) => setSelectedIndex(index)}
     >
       <TabList>
-        {SECTORS.map(({ icon, sectorName }, index) => (
-          <Tab key={index}>
-            <Icon
-              as={icon}
-              height="24px"
-              w="24px"
-              color={
-                selectedIndex === index ? "content.link" : "content.tertiary"
-              }
-            />
-            <Text
-              fontSize="16"
-              mx="16px"
-              fontWeight={selectedIndex === index ? 600 : 400}
-              fontStyle="normal"
-              color={
-                selectedIndex === index ? "content.link" : "content.tertiary"
-              }
-            >
-              {capitalizeFirstLetter(t(sectorName))}
-            </Text>
-          </Tab>
-        ))}
+        {getSectorsForInventory(inventory?.inventoryType).map(
+          ({ icon, name }, index) => (
+            <Tab key={index}>
+              <Icon
+                as={icon}
+                height="24px"
+                w="24px"
+                color={
+                  selectedIndex === index ? "content.link" : "content.tertiary"
+                }
+              />
+              <Text
+                fontSize="16"
+                mx="16px"
+                fontWeight={selectedIndex === index ? 600 : 400}
+                fontStyle="normal"
+                color={
+                  selectedIndex === index ? "content.link" : "content.tertiary"
+                }
+              >
+                {capitalizeFirstLetter(t(name))}
+              </Text>
+            </Tab>
+          ),
+        )}
       </TabList>
 
       <TabPanels>
-        {SECTORS.map(({ icon, sectorName }) => {
+        {SECTORS.map(({ icon, name }) => {
           const shouldShowTableByActivity =
             !isEmptyInventory &&
             !isResultsLoading &&
@@ -119,15 +121,15 @@ function SectorTabs({
             !isResultsLoading &&
             selectedTableView === TableView.BY_SCOPE;
           return (
-            <TabPanel key={sectorName}>
+            <TabPanel key={name}>
               {isTopEmissionsResponseLoading ? (
                 <CircularProgress isIndeterminate />
               ) : (
                 <Card>
                   <SectorHeader
                     icon={icon}
-                    sectorName={t(sectorName)}
-                    dataForSector={getDataForSector(sectorName)}
+                    sectorName={t(name)}
+                    dataForSector={getDataForSector(name)}
                     t={t}
                   />
                   <Divider
@@ -166,7 +168,7 @@ function SectorTabs({
                       sectorBreakdown={sectorBreakdown!}
                       tData={tData}
                       tDashboard={t}
-                      sectorName={sectorName}
+                      sectorName={name}
                     />
                   )}
                   {shouldShowTableByScope && (
@@ -174,7 +176,7 @@ function SectorTabs({
                       data={sectorBreakdown!.byScope}
                       tData={tData}
                       tDashboard={t}
-                      sectorName={sectorName}
+                      sectorName={name}
                     />
                   )}
                 </Card>
@@ -243,7 +245,7 @@ export default function InventoryResultTab({
         <Box className="flex flex-col gap-[8px] w-full">
           <TabHeader
             t={t}
-            year={inventory?.year}
+            inventory={inventory}
             title={"tab-emission-inventory-results-title"}
             isPublic={isPublic}
           />

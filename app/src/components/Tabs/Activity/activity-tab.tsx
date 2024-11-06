@@ -33,7 +33,6 @@ interface ActivityTabProps {
   areActivitiesLoading?: boolean;
   totalConsumption?: boolean;
   totalConsumptionUnit?: boolean;
-  filteredScope: number;
   inventoryId: string;
   step: string;
   activityData: ActivityValue[] | undefined;
@@ -44,7 +43,6 @@ interface ActivityTabProps {
 const ActivityTab: FC<ActivityTabProps> = ({
   t,
   referenceNumber,
-  filteredScope,
   inventoryId,
   activityData,
   subsectorId,
@@ -62,8 +60,6 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const [showUnavailableForm, setShowUnavailableForm] =
     useState<boolean>(false);
 
-  const refNumberWithScope = referenceNumber + "." + (filteredScope || 1);
-
   const { methodologies, directMeasure } = getMethodologies();
 
   // extract the methodology used from the filtered scope
@@ -73,8 +69,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const getfilteredActivityValues = useMemo(() => {
     let methodologyId: string | null | undefined = undefined;
     const filteredValues = activityData?.filter((activity) => {
-      let val =
-        activity.inventoryValue.gpcReferenceNumber === refNumberWithScope;
+      let val = activity.inventoryValue.gpcReferenceNumber === referenceNumber;
       if (val && !methodologyId) {
         methodologyId = activity.inventoryValue.inputMethodology;
       }
@@ -98,23 +93,23 @@ const ActivityTab: FC<ActivityTabProps> = ({
     }
 
     return filteredValues;
-  }, [activityData, refNumberWithScope]);
+  }, [activityData, referenceNumber]);
 
   function getMethodologies() {
     const methodologies =
-      MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.methodologies || [];
+      MANUAL_INPUT_HIERARCHY[referenceNumber]?.methodologies || [];
     const directMeasure =
-      MANUAL_INPUT_HIERARCHY[refNumberWithScope]?.directMeasure;
+      MANUAL_INPUT_HIERARCHY[referenceNumber]?.directMeasure;
     return { methodologies, directMeasure };
   }
 
   const externalInventoryValue = useMemo(() => {
     return inventoryValues?.find(
       (value) =>
-        value.gpcReferenceNumber === refNumberWithScope &&
+        value.gpcReferenceNumber === referenceNumber &&
         value.dataSource?.sourceType === "third_party",
     );
-  }, [inventoryValues, refNumberWithScope]);
+  }, [inventoryValues, referenceNumber]);
 
   const [updateInventoryValue, { isLoading }] =
     api.useUpdateOrCreateInventoryValueMutation();
@@ -126,7 +121,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
       data: {
         unavailableReason: "",
         unavailableExplanation: "",
-        gpcReferenceNumber: refNumberWithScope,
+        gpcReferenceNumber: referenceNumber,
       },
     });
   };
@@ -135,10 +130,12 @@ const ActivityTab: FC<ActivityTabProps> = ({
     return (
       inventoryValues?.find(
         (value) =>
-          value.inputMethodology ===
-            (methodology?.id.includes("direct-measure")
-              ? "direct-measure"
-              : methodology?.id) || value.unavailableExplanation,
+          (value.gpcReferenceNumber === referenceNumber &&
+            value.inputMethodology ===
+              (methodology?.id.includes("direct-measure")
+                ? "direct-measure"
+                : methodology?.id)) ||
+          value.unavailableExplanation,
       ) ?? null
     );
   }, [inventoryValues, methodology]);
@@ -161,7 +158,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const getSuggestedActivities = (): SuggestedActivity[] => {
     if (!selectedMethodology) return [];
     let methodology;
-    const scope = MANUAL_INPUT_HIERARCHY[refNumberWithScope];
+    const scope = MANUAL_INPUT_HIERARCHY[referenceNumber];
     if (selectedMethodology.includes("direct-measure")) {
       methodology = scope.directMeasure;
     } else {
@@ -328,7 +325,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
         {showUnavailableForm && (
           <ScopeUnavailable
             inventoryId={inventoryId}
-            gpcReferenceNumber={refNumberWithScope}
+            gpcReferenceNumber={referenceNumber}
             subSectorId={subsectorId}
             t={t}
             onSubmit={() => setShowUnavailableForm(false)}
@@ -360,7 +357,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                   methodology={methodology}
                   inventoryId={inventoryId}
                   subsectorId={subsectorId}
-                  refNumberWithScope={refNumberWithScope}
+                  refNumberWithScope={referenceNumber}
                   activityValues={activityValues}
                   suggestedActivities={suggestedActivities}
                   totalEmissions={totalEmissions}

@@ -34,6 +34,7 @@ import {
   useTransform,
 } from "framer-motion";
 import Link from "next/link";
+import { SECTORS } from "@/util/constants";
 import { InventoryValue } from "@/models/InventoryValue";
 
 const MotionBox = motion(Box);
@@ -106,6 +107,11 @@ function SubSectorPage({
         return t("II");
       case "3":
         return t("III");
+      case "4":
+        return t("IV");
+      case "5":
+        return t("V");
+
       default:
         return t("I");
     }
@@ -118,33 +124,17 @@ function SubSectorPage({
   const subSectorData: SubSectorAttributes = sectorData?.subSectors.find(
     (subsectorItem) => subsectorItem.subsectorId === subsector,
   );
-  const getSectorName = (currentStep: string) => {
-    switch (currentStep) {
-      case "1":
-        return t("stationary-energy");
-      case "2":
-        return t("transportation");
-      case "3":
-        return t("waste");
-      default:
-        return t("stationary-energy");
-    }
+  const getSectorName = (currentScope: string) => {
+    return SECTORS[parseInt(currentScope) - 1].name;
   };
 
   const getFilteredSubsectorScopes = () => {
-    const scopes = [];
-
-    for (const key in MANUAL_INPUT_HIERARCHY) {
-      if (key.startsWith(subSectorData?.referenceNumber!)) {
-        const scopeNumber = key.split(".").pop();
-        const result = {
-          ...MANUAL_INPUT_HIERARCHY[key],
-          scope: Number(scopeNumber),
-        };
-        scopes.push(result);
-      }
-    }
-    return scopes;
+    return Object.entries(MANUAL_INPUT_HIERARCHY)
+      .filter(([key]) => key.startsWith(subSectorData?.referenceNumber!))
+      .map(([k, v]) => ({
+        ...v,
+        referenceNumber: k,
+      }));
   };
 
   const scopes = getFilteredSubsectorScopes();
@@ -245,7 +235,7 @@ function SubSectorPage({
                         href={`/${inventoryId}/data/${step}`}
                         color="content.tertiary"
                       >
-                        {getSectorName(step)}
+                        {t(getSectorName(step))}
                       </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbItem>
@@ -350,8 +340,8 @@ function SubSectorPage({
                     left: leftPosition.get(),
                   }}
                 >
-                  {t("sector")}: {getSectorName(step)} | {t("inventory-year")}:{" "}
-                  {/*            {inventoryProgress?.inventory.year}*/}
+                  {t("sector")}: {t(getSectorName(step))} |{" "}
+                  {t("inventory-year")}: {inventoryProgress?.inventory.year}
                 </Text>
                 <AnimatePresence key="description-layout">
                   {isVisible && (
@@ -416,27 +406,26 @@ function SubSectorPage({
             {loadingState ? (
               <LoadingState />
             ) : (
-              scopes?.map((scope) => (
-                <ActivityTab
-                  key={scope.scope}
-                  referenceNumber={subSectorData?.referenceNumber!}
-                  filteredScope={scope.scope}
-                  t={t}
-                  inventoryId={inventoryId}
-                  subsectorId={subsector}
-                  step={step}
-                  activityData={activityData}
+              scopes?.map((scope) => {
+                return (
+                  <ActivityTab
+                    referenceNumber={scope.referenceNumber!}
+                    key={scope.referenceNumber}
+                    t={t}
+                    inventoryId={inventoryId}
+                    subsectorId={subsector}
+                    step={step}
+                    activityData={activityData}
                   inventoryValues={
                     (inventoryValues as InventoryValue[])?.filter(
                       (iv) =>
                         iv.gpcReferenceNumber ===
-                        (subSectorData.referenceNumber as string) +
-                          "." +
-                          scope.scope,
+                        scope.referenceNumber,
                     ) ?? []
                   }
-                />
-              ))
+                  />
+                );
+              })
             )}
           </TabPanels>
         </Box>

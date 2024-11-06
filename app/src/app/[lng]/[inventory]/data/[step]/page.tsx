@@ -56,7 +56,7 @@ import { TFunction } from "i18next";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { FiTarget, FiTrash2, FiTruck } from "react-icons/fi";
+import { FiTarget, FiTrash2 } from "react-icons/fi";
 import {
   MdAdd,
   MdArrowDropDown,
@@ -65,7 +65,6 @@ import {
   MdHomeWork,
   MdOutlineCheckCircle,
   MdOutlineEdit,
-  MdOutlineHomeWork,
   MdRefresh,
 } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
@@ -80,6 +79,7 @@ import AddFileDataModal from "@/components/Modals/add-file-data-modal";
 import { InventoryValueAttributes } from "@/models/InventoryValue";
 import { motion } from "framer-motion";
 import { getTranslationFromDict } from "@/i18n";
+import { getScopesForInventoryAndSector, SECTORS } from "@/util/constants";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -89,7 +89,10 @@ function getMailURI(locode?: string, sector?: string, year?: number): string {
 }
 
 const kebab = (str: string) =>
-  str.replaceAll(/\s+/g, '-').replaceAll(/[^0-9A-Za-z\-\_]/g, '').toLowerCase()
+  str
+    .replaceAll(/\s+/g, "-")
+    .replaceAll(/[^0-9A-Za-z\-\_]/g, "")
+    .toLowerCase();
 
 function SearchDataSourcesPrompt({
   t,
@@ -214,41 +217,16 @@ export default function AddDataSteps({
   const [connectDataSource, { isLoading: isConnectDataSourceLoading }] =
     api.useConnectDataSourceMutation();
 
-  const [steps, setSteps] = useState<DataStep[]>([
-    {
-      title: "stationary-energy",
-      details: "stationary-energy-details",
-      icon: MdOutlineHomeWork,
+  const [steps, setSteps] = useState<DataStep[]>(
+    SECTORS.map((s) => ({
+      ...s,
       connectedProgress: 0,
       addedProgress: 0,
       totalSubSectors: 0,
-      referenceNumber: "I",
       sector: null,
       subSectors: null,
-    },
-    {
-      title: "transportation",
-      details: "transportation-details",
-      icon: FiTruck,
-      connectedProgress: 0,
-      addedProgress: 0,
-      totalSubSectors: 0,
-      referenceNumber: "II",
-      sector: null,
-      subSectors: null,
-    },
-    {
-      title: "waste",
-      details: "waste-details",
-      icon: FiTrash2,
-      connectedProgress: 0,
-      addedProgress: 0,
-      totalSubSectors: 0,
-      referenceNumber: "III",
-      sector: null,
-      subSectors: null,
-    },
-  ]);
+    })),
+  );
 
   useEffect(() => {
     if (inventoryProgress == null) {
@@ -292,9 +270,6 @@ export default function AddDataSteps({
     count: steps.length,
   });
   const currentStep = steps[activeStep];
-  const onStepSelected = (selectedStep: number) => {
-    setActiveStep(selectedStep);
-  };
   useEffect(() => {
     // change step param in URL without reloading
     const newPath = location.pathname.replace(
@@ -468,7 +443,7 @@ export default function AddDataSteps({
   };
 
   const sectorData = getInventoryData.sectors.filter(
-    (sector) => sector.sectorName === currentStep.title,
+    (sector) => sector.sectorName === currentStep.name,
   );
 
   const [deleteUserFile, { isLoading }] = api.useDeleteUserFileMutation();
@@ -602,6 +577,10 @@ export default function AddDataSteps({
         return 2;
       case "III":
         return 3;
+      case "IV":
+        return 4;
+      case "V":
+        return 5;
       default:
         return 1;
     }
@@ -660,7 +639,7 @@ export default function AddDataSteps({
 
                 <BreadcrumbItem>
                   <BreadcrumbLink href="#" color="content.link">
-                    {t(kebab(currentStep.title))}
+                    {t(kebab(currentStep.name))}
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               </Breadcrumb>
@@ -707,16 +686,23 @@ export default function AddDataSteps({
                   className="transition-all duration-50 ease-linear"
                   fontSize={isExpanded ? "headline.sm" : "headline.md"}
                 >
-                  {t(kebab(currentStep.title))}
+                  {t(kebab(currentStep.name))}
                 </Heading>
                 {scrollPosition <= 0 ? (
-                  <Text color="content.tertiary">{t(currentStep.details)}</Text>
+                  <Text color="content.tertiary">
+                    {t(currentStep.description)}
+                  </Text>
                 ) : (
                   <Box w="800px"></Box>
                 )}
                 <Text fontWeight="bold" ml={isExpanded ? "-48px" : ""}>
-                  {t("inventory-year")}: 2023 |{" "}
-                  {t("gpc-scope-required-summary")} 1,2
+                  {t("inventory-year")}: {inventoryProgress?.inventory.year} |{" "}
+                  {t("gpc-scope-required")}{" "}
+                  {inventoryProgress?.inventory.inventoryType &&
+                    getScopesForInventoryAndSector(
+                      inventoryProgress.inventory.inventoryType!,
+                      currentStep.referenceNumber,
+                    )?.join(", ")}
                 </Text>
                 <Flex direction="row" ml={isExpanded ? "-48px" : ""}>
                   <SegmentedProgress

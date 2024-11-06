@@ -1,4 +1,11 @@
-import { Box, Switch, TabPanel, Text } from "@chakra-ui/react";
+import {
+  Box,
+  IconButton,
+  Spinner,
+  Switch,
+  TabPanel,
+  Text,
+} from "@chakra-ui/react";
 import React, { FC, useMemo, useState } from "react";
 import HeadingText from "../../heading-text";
 import { TFunction } from "i18next";
@@ -14,6 +21,8 @@ import { InventoryValue } from "@/models/InventoryValue";
 import EmissionDataSection from "@/components/Tabs/Activity/emission-data-section";
 import SelectMethodology from "@/components/Tabs/Activity/select-methodology";
 import ExternalDataSection from "@/components/Tabs/Activity/external-data-section";
+import { api } from "@/services/api";
+import { MdModeEditOutline } from "react-icons/md";
 
 interface ActivityTabProps {
   t: TFunction;
@@ -50,7 +59,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const [isMethodologySelected, setIsMethodologySelected] =
     useState<boolean>(false);
   const [selectedMethodology, setSelectedMethodology] = useState("");
-  const [isUnavailableChecked, setIsChecked] = useState<boolean>(false);
+  const [showUnavailableForm, setShowUnavailableForm] =
+    useState<boolean>(false);
 
   const refNumberWithScope = referenceNumber + "." + (filteredScope || 1);
 
@@ -106,15 +116,29 @@ const ActivityTab: FC<ActivityTabProps> = ({
     );
   }, [inventoryValues, refNumberWithScope]);
 
+  const [updateInventoryValue, { isLoading }] =
+    api.useUpdateOrCreateInventoryValueMutation();
+
+  const makeScopeAvailableFunc = () => {
+    updateInventoryValue({
+      inventoryId: inventoryId,
+      subSectorId: subsectorId,
+      data: {
+        unavailableReason: "",
+        unavailableExplanation: "",
+        gpcReferenceNumber: refNumberWithScope,
+      },
+    });
+  };
+
   const inventoryValue = useMemo<InventoryValue | null>(() => {
     return (
       inventoryValues?.find(
         (value) =>
-          value.gpcReferenceNumber === refNumberWithScope &&
           value.inputMethodology ===
             (methodology?.id.includes("direct-measure")
               ? "direct-measure"
-              : methodology?.id),
+              : methodology?.id) || value.unavailableExplanation,
       ) ?? null
     );
   }, [inventoryValues, methodology]);
@@ -164,8 +188,39 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const suggestedActivities: SuggestedActivity[] = getSuggestedActivities();
 
   const handleSwitch = (e: any) => {
-    setIsChecked(!isUnavailableChecked);
+    if (!inventoryValue?.unavailableExplanation && !showUnavailableForm) {
+      showUnavailableFormFunc();
+    }
+    if (!inventoryValue?.unavailableExplanation && showUnavailableForm) {
+      setShowUnavailableForm(false);
+    }
+
+    if (inventoryValue?.unavailableExplanation) {
+      makeScopeAvailableFunc();
+    }
   };
+
+  const showUnavailableFormFunc = () => {
+    setShowUnavailableForm(true);
+  };
+
+  const scopeNotApplicable = useMemo(() => {
+    return inventoryValue?.unavailableExplanation || showUnavailableForm;
+  }, [showUnavailableForm, inventoryValue]);
+
+  const notationKey = useMemo(() => {
+    switch (inventoryValue?.unavailableReason) {
+      // TODO use better identifiers for the reasons (more descriptive)
+      case "select-reason-2":
+        return "notation-key-NE";
+      case "select-reason-3":
+        return "notation-key-C";
+      case "select-reason-4":
+        return "notation-key-IE";
+      default:
+        return "notation-key-NO";
+    }
+  }, [inventoryValue]);
 
   return (
     <>
@@ -180,10 +235,18 @@ const ActivityTab: FC<ActivityTabProps> = ({
             data-testid="manual-input-header"
             title={t("add-data-manually")}
           />
-          <Box display="flex" gap="16px" fontSize="label.lg">
+          <Box
+            display="flex"
+            alignItems="center"
+            gap="16px"
+            fontSize="label.lg"
+          >
+            {isLoading && <Spinner size="sm" color="border.neutral" />}
             <Switch
               disabled={!!externalInventoryValue}
-              isChecked={isUnavailableChecked}
+              isChecked={
+                showUnavailableForm || !!inventoryValue?.unavailableExplanation
+              }
               onChange={handleSwitch}
             />
             <Text
@@ -195,8 +258,85 @@ const ActivityTab: FC<ActivityTabProps> = ({
             </Text>
           </Box>
         </Box>
-        {isUnavailableChecked && <ScopeUnavailable t={t} />}
-        {!isUnavailableChecked && externalInventoryValue && (
+        {inventoryValue?.unavailableExplanation && !showUnavailableForm && (
+          <Box h="auto" px="24px" py="32px" bg="base.light" borderRadius="8px">
+            <Box mb="8px">
+              <HeadingText title={t("scope-unavailable-title")} />
+              <Text
+                letterSpacing="wide"
+                fontSize="body.lg"
+                fontWeight="normal"
+                color="interactive.control"
+                mb="48px"
+              >
+                {t("scope-unavailable-description")}
+              </Text>
+
+              <Box
+                display="flex"
+                gap="48px"
+                alignItems="center"
+                borderWidth="1px"
+                borderRadius="12px"
+                borderColor="border.neutral"
+                py={4}
+                pl={6}
+                pr={3}
+              >
+                <Box>
+                  <Text
+                    fontWeight="bold"
+                    fontSize="title.md"
+                    fontFamily="heading"
+                  >
+                    {t(notationKey)}
+                  </Text>
+                  <Text fontSize="body.md" color="interactive.control">
+                    {t("notation-key")}
+                  </Text>
+                </Box>
+                <Text
+                  fontSize="body.md"
+                  fontFamily="body"
+                  flex="1 0 0"
+                  className="overflow-ellipsis line-clamp-2"
+                >
+                  <Text fontSize="body.md" fontFamily="body">
+                    <strong> {t("reason")}: </strong>
+                    {t(inventoryValue?.unavailableReason as string)}
+                  </Text>
+                </Text>
+                <Text
+                  fontSize="body.md"
+                  flex="1 0 0"
+                  fontFamily="body"
+                  className="line-clamp-2"
+                >
+                  {inventoryValue.unavailableExplanation}
+                </Text>
+                <IconButton
+                  onClick={showUnavailableFormFunc}
+                  icon={<MdModeEditOutline size="24px" />}
+                  aria-label="edit"
+                  variant="ghost"
+                  color="content.tertiary"
+                />
+              </Box>
+            </Box>
+          </Box>
+        )}
+        {showUnavailableForm && (
+          <ScopeUnavailable
+            inventoryId={inventoryId}
+            gpcReferenceNumber={refNumberWithScope}
+            subSectorId={subsectorId}
+            t={t}
+            onSubmit={() => setShowUnavailableForm(false)}
+            reason={inventoryValue?.unavailableReason}
+            justification={inventoryValue?.unavailableExplanation}
+          />
+        )}
+        {!scopeNotApplicable && externalInventoryValue && (
           <Box h="auto" px="24px" py="32px" bg="base.light" borderRadius="8px">
             <ExternalDataSection
               t={t}
@@ -204,7 +344,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
             />
           </Box>
         )}
-        {!isUnavailableChecked && !externalInventoryValue && (
+        {!scopeNotApplicable && !externalInventoryValue && (
           <>
             {isMethodologySelected ? (
               <Box

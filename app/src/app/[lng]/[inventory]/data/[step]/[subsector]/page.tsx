@@ -34,13 +34,17 @@ import {
   useTransform,
 } from "framer-motion";
 import Link from "next/link";
+import { InventoryValue } from "@/models/InventoryValue";
 
 const MotionBox = motion(Box);
 
-const kebab = (str: string|undefined): string =>
-  (str)
-    ? str.replaceAll(/\s+/g, '-').replaceAll(/[^0-9A-Za-z\-\_]/g, '').toLowerCase()
-    : '';
+const kebab = (str: string | undefined): string =>
+  str
+    ? str
+        .replaceAll(/\s+/g, "-")
+        .replaceAll(/[^0-9A-Za-z\-\_]/g, "")
+        .toLowerCase()
+    : "";
 
 function SubSectorPage({
   params: { lng, step, inventory: inventoryId, subsector },
@@ -185,7 +189,7 @@ function SubSectorPage({
           paddingTop: paddingTop,
         }}
         borderColor="border.neutral"
-        borderBottomWidth={true ? "1px" : ""}
+        borderBottomWidth={"1px"}
       >
         <MotionBox className="w-[1090px] max-w-full mx-auto px-4">
           <AnimatePresence>
@@ -392,9 +396,6 @@ function SubSectorPage({
             {scopes?.map((scope, index) => (
               <Tab
                 key={index}
-                onClick={() => {
-                  triggerMochLoading();
-                }}
                 className="[&[aria-selected='false']]:border-[transparent]"
               >
                 <Text
@@ -417,15 +418,23 @@ function SubSectorPage({
             ) : (
               scopes?.map((scope) => (
                 <ActivityTab
+                  key={scope.scope}
                   referenceNumber={subSectorData?.referenceNumber!}
-                  key={subSectorData?.referenceNumber}
                   filteredScope={scope.scope}
                   t={t}
                   inventoryId={inventoryId}
                   subsectorId={subsector}
                   step={step}
                   activityData={activityData}
-                  inventoryValues={inventoryValues ?? []}
+                  inventoryValues={
+                    (inventoryValues as InventoryValue[])?.filter(
+                      (iv) =>
+                        iv.gpcReferenceNumber ===
+                        (subSectorData.referenceNumber as string) +
+                          "." +
+                          scope.scope,
+                    ) ?? []
+                  }
                 />
               ))
             )}

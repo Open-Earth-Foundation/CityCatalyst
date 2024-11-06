@@ -167,6 +167,7 @@ export function SectorCard({
               <Box className="grid grid-cols-3 gap-4 py-4">
                 {sectorProgress.subSectors.map((subSector, i) => (
                   <SubSectorCard
+                    t={t}
                     key={i}
                     title={t(subSector.subsectorName) || t("unnamed-sector")}
                     scopes={sectorScopes.join(", ")}

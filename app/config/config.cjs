@@ -1,7 +1,4 @@
-console.log(
-  " process.env.DATABASE_USER,",
-  JSON.stringify(process.env.DATABASE_USER),
-); // TODO NINA
+console.log(" process.env,", JSON.stringify(process.env)); // TODO NINA
 
 module.exports = {
   development: {

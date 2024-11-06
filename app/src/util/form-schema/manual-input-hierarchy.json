@@ -238,7 +238,33 @@
     "methodologies": [],
     "directMeasure": {
       "id": "residential-buildings-distribution-losses-direct-measure-methodology",
-      "extra-fields": []
+      "extra-fields": [
+        {
+          "id": "residential-building-type",
+          "options": [
+            "building-type-all"
+          ]
+        },
+        {
+          "id": "residential-building-energy-usage",
+          "options": [
+            "energy-usage-all",
+            "energy-usage-electricity",
+            "energy-usage-electricity-chp",
+            "energy-usage-heating",
+            "energy-usage-heating-chp",
+            "energy-usage-steam",
+            "energy-usage-steam-chp",
+            "energy-usage-refrigeration",
+            "energy-usage-refrigeration-chp"
+          ],
+          "exclusive": "energy-usage-all"
+        },
+        {
+          "id": "data-source",
+          "type": "text"
+        }
+      ]
     }
   },
   "I.2.1": {
@@ -533,7 +559,37 @@
     "methodologies": [],
     "directMeasure": {
       "id": "commercial-buildings-distribution-losses-direct-measure-methodology",
-      "extra-fields": []
+      "extra-fields": [
+        {
+          "id": "commercial-building-type",
+          "options": [
+            "type-all",
+            "type-commercial-institutional",
+            "type-commercial-buildings",
+            "type-institutional-buildings",
+            "type-street-lighting"
+          ],
+          "exclusive": "type-all"
+        },
+        {
+          "id": "commercial-building-energy-usage",
+          "options": [
+            "energy-usage-all",
+            "energy-usage-electricity",
+            "energy-usage-electricity-chp",
+            "energy-usage-heating",
+            "energy-usage-heating-chp",
+            "energy-usage-steam",
+            "energy-usage-steam-chp",
+            "energy-usage-refrigeration",
+            "energy-usage-refrigeration-chp"
+          ]
+        },
+        {
+          "id": "data-source",
+          "type": "text"
+        }
+      ]
     }
   },
   "I.3.1": {
@@ -883,7 +939,49 @@
     "methodologies": [],
     "directMeasure": {
       "id": "manufacturing-industries-distribution-losses-direct-measure-methodology",
-      "extra-fields": []
+      "extra-fields": [
+        {
+          "id": "manufacturing-and-construction-type",
+          "options": [
+            "manufacturing-and-construction-type-all",
+            "manufacturing-and-construction-type-manufacturing-industries-and-construction",
+            "manufacturing-and-construction-type-steel",
+            "manufacturing-and-construction-type-cement",
+            "manufacturing-and-construction-type-iron",
+            "manufacturing-and-construction-type-non-ferrous-metals",
+            "manufacturing-and-construction-type-chemical-products",
+            "manufacturing-and-construction-type-pulp-paper-and-printing",
+            "manufacturing-and-construction-type-non-metallic-minerals",
+            "manufacturing-and-construction-type-transport-equipment",
+            "manufacturing-and-construction-type-machinery",
+            "manufacturing-and-construction-type-mining-and-quarrying",
+            "manufacturing-and-construction-type-wood-and-wood-products",
+            "manufacturing-and-construction-type-construction",
+            "manufacturing-and-construction-type-textiles-and-leather",
+            "manufacturing-and-construction-type-unspecified-industry"
+          ],
+          "exclusive": "manufacturing-and-construction-type-all"
+        },
+        {
+          "id": "manufacturing-and-construction-energy-usage",
+          "options": [
+            "energy-usage-all",
+            "energy-usage-electricity",
+            "energy-usage-electricity-chp",
+            "energy-usage-heating",
+            "energy-usage-heating-chp",
+            "energy-usage-steam",
+            "energy-usage-steam-chp",
+            "energy-usage-refrigeration",
+            "energy-usage-refrigeration-chp"
+          ],
+          "exclusive": "energy-usage-all"
+        },
+        {
+          "id": "data-source",
+          "type": "text"
+        }
+      ]
     }
   },
   "I.4.1": {
@@ -1221,7 +1319,40 @@
     "methodologies": [],
     "directMeasure": {
       "id": "energy-industries-distribution-losses-direct-measure-methodology",
-      "extra-fields": []
+      "extra-fields": [
+        {
+          "id": "energy-industries-type",
+          "options": [
+            "type-all",
+            "type-electricity-generation",
+            "type-combined-heat-and-power-generation",
+            "type-heat-plants",
+            "type-pretroleum-refining",
+            "type-non-ferrous-manufacture-of-solid-fuels",
+            "type-chemical-other-energy-industries"
+          ],
+          "exclusive": "type-all"
+        },
+        {
+          "id": "energy-industries-energy-usage",
+          "options": [
+            "energy-usage-all",
+            "energy-usage-electricity",
+            "energy-usage-electricity-chp",
+            "energy-usage-heating",
+            "energy-usage-heating-chp",
+            "energy-usage-steam",
+            "energy-usage-steam-chp",
+            "energy-usage-refrigeration",
+            "energy-usage-refrigeration-chp"
+          ],
+          "exclusive": "energy-usage-all"
+        },
+        {
+          "id": "data-source",
+          "type": "text"
+        }
+      ]
     }
   },
   "I.5.1": {
@@ -1497,7 +1628,37 @@
     "methodologies": [],
     "directMeasure": {
       "id": "agriculture-distribution-losses-direct-measure-methodology",
-      "extra-fields": []
+      "extra-fields": [
+        {
+          "id": "agriculture-forestry-fishing-activities-type",
+          "options": [
+            "type-all",
+            "type-stationary",
+            "type-off-road-vehicles-and-machinery",
+            "type-fishing-mobile-combustion"
+          ],
+          "exclusive": "type-all"
+        },
+        {
+          "id": "agriculture-forestry-fishing-activities-energy-usage",
+          "options": [
+            "energy-usage-all",
+            "energy-usage-electricity",
+            "energy-usage-electricity-chp",
+            "energy-usage-heating",
+            "energy-usage-heating-chp",
+            "energy-usage-steam",
+            "energy-usage-steam-chp",
+            "energy-usage-refrigeration",
+            "energy-usage-refrigeration-chp"
+          ],
+          "exclusive": "energy-usage-all"
+        },
+        {
+          "id": "data-source",
+          "type": "text"
+        }
+      ]
     }
   },
   "I.6.1": {
@@ -1773,7 +1934,36 @@
     "methodologies": [],
     "directMeasure": {
       "id": "non-specified-sources-distribution-losses-direct-measure-methodology",
-      "extra-fields": []
+      "extra-fields": [
+        {
+          "id": "non-specific-sources-type",
+          "options": [
+            "type-all",
+            "type-stationary",
+            "type-mobile"
+          ],
+          "exclusive": "type-all"
+        },
+        {
+          "id": "non-specific-sources-energy-usage",
+          "options": [
+            "energy-usage-all",
+            "energy-usage-electricity",
+            "energy-usage-electricity-chp",
+            "energy-usage-heating",
+            "energy-usage-heating-chp",
+            "energy-usage-steam",
+            "energy-usage-steam-chp",
+            "energy-usage-refrigeration",
+            "energy-usage-refrigeration-chp"
+          ],
+          "exclusive": "energy-usage-all"
+        },
+        {
+          "id": "data-source",
+          "type": "text"
+        }
+      ]
     }
   },
   "I.7.1": {
@@ -2347,7 +2537,23 @@
     "methodologies": [],
     "directMeasure": {
       "id": "on-road-transportation-outside-direct-measure-methodology",
-      "extra-fields": []
+      "extra-fields": [
+        {
+          "id": "on-road-transport-vehicle-type",
+          "options": [
+            "vehicle-type-passenger-vehicles",
+            "vehicle-type-commercial-vehicles",
+            "vehicle-type-public-transport-vehicles",
+            "vehicle-type-emergency-vehicles",
+            "vehicle-type-service-vehicles"
+          ],
+          "multiselect": true
+        },
+        {
+          "id": "on-road-transport-electricity-source",
+          "type": "text"
+        }
+      ]
     }
   },
   "II.2.1": {
@@ -2667,7 +2873,22 @@
     "methodologies": [],
     "directMeasure": {
       "id": "railway-outside-direct-measure-methodology",
-      "extra-fields": []
+      "extra-fields": [
+        {
+          "id": "railways-vehicle-type",
+          "options": [
+            "vehicle-type-passenger-trains",
+            "vehicle-type-freight-trains",
+            "vehicle-type-high-speed-trains",
+            "vehicle-type-tourist-trains"
+          ],
+          "multiselect": true
+        },
+        {
+          "id": "railways-electricity-source",
+          "type": "text"
+        }
+      ]
     }
   },
   "II.3.1": {
@@ -2971,7 +3192,21 @@
     "methodologies": [],
     "directMeasure": {
       "id": "water-transportation-outside-direct-measure-methodology",
-      "extra-fields": []
+      "extra-fields": [
+        {
+          "id": "waterborne-navigation-vehicle-type",
+          "options": [
+            "vehicle-type-ferries",
+            "vehicle-type-boats",
+            "vehicle-type-marine-vessels"
+          ],
+          "multiselect": true
+        },
+        {
+          "id": "waterborne-navigation-electricity-source",
+          "type": "text"
+        }
+      ]
     }
   },
   "II.4.1": {
@@ -3289,7 +3524,22 @@
     "methodologies": [],
     "directMeasure": {
       "id": "aviation-outside-direct-measure-methodology",
-      "extra-fields": []
+      "extra-fields": [
+        {
+          "id": "aviation-vehicle-type",
+          "options": [
+            "vehicle-type-passenger-aircraft",
+            "vehicle-type-cargo-aircraft",
+            "vehicle-type-private-and-business-aircraft",
+            "vehicle-type-helicopters"
+          ],
+          "multiselect": true
+        },
+        {
+          "id": "aviation-electricity-source",
+          "type": "text"
+        }
+      ]
     }
   },
   "II.5.1": {
@@ -4579,7 +4829,73 @@
     "methodologies": [],
     "directMeasure": {
       "id": "industrial-processes-direct-measure-methodology",
-      "extra-fields": []
+      "extra-fields": [
+        {
+          "id": "industrial-processes-industry-type",
+          "options": [
+            {
+              "type": "industry-type-mineral-industry",
+              "names": [
+                "industry-name-cement-production",
+                "industry-name-lime-production",
+                "industry-name-glass-production"
+              ]
+            },
+            {
+              "type": "industry-type-chemical-industry",
+              "names": [
+                "industry-name-ammonia-production",
+                "industry-name-nitric-acid-production",
+                "industry-name-adipic-acid-production",
+                "industry-name-carbide-production",
+                "industry-name-caprotactam-production",
+                "industry-name-titanium-dioxide-production",
+                "industry-name-soda-ash-production",
+                "industry-name-hydrogen-production"
+              ]
+            },
+            {
+              "type": "industry-type-metal-industry",
+              "names": [
+                "industry-name-metallurgical-coke-production",
+                "industry-name-iron-and-steel-production",
+                "industry-name-aluminium-production",
+                "industry-name-lead-production",
+                "industry-name-zinc-production",
+                "industry-name-magnesium-production",
+                "industry-name-ferroalloy-production",
+                "industry-name-rare-earths-production"
+              ]
+            },
+            {
+              "type": "industry-type-electronics-industry",
+              "names": [
+                "industry-name-all",
+                "industry-name-etching-of-semiconductors",
+                "industry-name-heat-transfer-fluids-production"
+              ],
+              "exclusive": "industry-name-all"
+            },
+            {
+              "type": "industry-type-substitutes-for-ozone-depleting-substances",
+              "names": [
+                "industry-name-all-substitutes-for-ozone-depleting-substances",
+                "industry-name-refrigeration-and-air-conditioning",
+                "industry-name-fire-suppression-and-explosion-protection",
+                "industry-name-aerosol",
+                "industry-name-solvent-cleaning",
+                "industry-name-waterproof-films-for-electronic-circuits",
+                "industry-name-foam-blowing-agents"
+              ],
+              "exclusive": "industry-name-all-substitutes-for-ozone-depleting-substances"
+            },
+            {
+              "id": "industrial-processes-source",
+              "type": "text"
+            }
+          ]
+        }
+      ]
     }
   },
   "IV.2": {
@@ -4587,7 +4903,40 @@
     "methodologies": [],
     "directMeasure": {
       "id": "product-use-direct-measure-methodology",
-      "extra-fields": []
+      "extra-fields": [
+        {
+          "id": "product-use-fuel-used",
+          "options": [
+            {
+              "type": "product-use-lubricants",
+              "names": [
+                "non-energy-use-all-lubricants",
+                "non-energy-use-transportation",
+                "non-energy-use-industry"
+              ],
+              "exclusive": "non-energy-use-all-lubricants"
+            },
+            {
+              "type": "product-use-paraffin-waxes",
+              "names": [
+                "non-energy-use-all-paraffin-waxes",
+                "non-energy-use-candles",
+                "non-energy-use-corrugated-boxes",
+                "non-energy-use-packaging",
+                "non-energy-use-paper-coating",
+                "non-energy-use-board-sizing",
+                "non-energy-use-adhesives",
+                "non-energy-use-food-production"
+              ],
+              "exclusive": "non-energy-use-all-paraffin-waxes"
+            },
+            {
+              "id": "product-use-source",
+              "type": "text"
+            }
+          ]
+        }
+      ]
     }
   },
   "V.1": {
@@ -4595,7 +4944,35 @@
     "methodologies": [],
     "directMeasure": {
       "id": "livestock-direct-measure-methodology",
-      "extra-fields": []
+      "extra-fields": [
+        {
+          "id": "livestock-activity-type",
+          "options": [
+            "type-enteric-fermentation",
+            "type-manure-management"
+          ]
+        },
+        {
+          "id": "livestock-species",
+          "options": [
+            "species-all",
+            "species-cattle",
+            "species-buffalo",
+            "species-sheep",
+            "species-goat",
+            "species-camels",
+            "species-horses",
+            "species-mules-and-asses",
+            "species-swine",
+            "species-other"
+          ],
+          "exclusive": "species-all"
+        },
+        {
+          "id": "livestock-source",
+          "type": "text"
+        }
+      ]
     }
   },
   "V.2": {
@@ -4603,15 +4980,134 @@
     "methodologies": [],
     "directMeasure": {
       "id": "land-direct-measure-methodology",
-      "extra-fields": []
+      "extra-fields": [
+        {
+          "id": "land-land-classification",
+          "options": [
+            {
+              "type": "land-classification-forest-land",
+              "names": [
+                "forest-land-forest-land-remaining-as-forest-land",
+                "forest-land-cropland-converted-to-forest-land",
+                "forest-land-grassland-converted-to-forest-land",
+                "forest-land-wetland-converted-to-forest-land",
+                "forest-land-settlements-converted-to-forest-land",
+                "forest-land-other-land-converted-to-forest-land"
+              ]
+            },
+            {
+              "type": "land-classification-cropland",
+              "names": [
+                "cropland-cropland-remaining-as-cropland",
+                "cropland-forest-land-converted-to-cropland",
+                "cropland-grassland-converted-to-cropland",
+                "cropland-wetland-converted-to-cropland",
+                "cropland-settlements-converted-to-cropland",
+                "cropland-other-land-converted-to-cropland"
+              ]
+            },
+            {
+              "type": "land-classification-grassland",
+              "names": [
+                "grassland-grassland-remaining-as-grassland",
+                "grassland-forest-land-converted-to-grassland",
+                "grassland-cropland-converted-to-grassland",
+                "grassland-wetland-converted-to-grassland",
+                "grassland-settlements-converted-to-grassland",
+                "grassland-other-land-converted-to-grassland"
+              ]
+            },
+            {
+              "type": "land-classification-wetland",
+              "names": [
+                "wetland-wetland-remaining-as-wetland",
+                "wetland-forest-land-converted-to-wetland",
+                "wetland-cropland-converted-to-wetland",
+                "wetland-grassland-converted-to-wetland",
+                "wetland-settlements-converted-to-wetland",
+                "wetland-other-land-converted-to-wetland"
+              ]
+            },
+            {
+              "type": "land-classification-settlements",
+              "names": [
+                "settlements-settlements-remaining-as-settlements",
+                "settlements-forest-land-converted-to-settlements",
+                "settlements-cropland-converted-to-settlements",
+                "settlements-grassland-converted-to-settlements",
+                "settlements-wetland-converted-to-settlements",
+                "settlements-other-land-converted-to-settlements"
+              ]
+            },
+            {
+              "type": "land-classification-other-land",
+              "names": [
+                "other-land-other-land-remaining-as-other-land",
+                "other-land-forest-land-converted-to-other-land",
+                "other-land-cropland-converted-to-other-land",
+                "other-land-grassland-converted-to-other-land",
+                "other-land-wetland-converted-to-other-land",
+                "other-land-settlements-converted-to-other-land"
+              ]
+            },
+            {
+              "id": "land-source",
+              "type": "text"
+            }
+          ]
+        }
+      ]
     }
   },
   "V.3": {
     "scope": 1,
     "methodologies": [],
     "directMeasure": {
-      "id": "aggregate-sources-direct-measure-methodology",
-      "extra-fields": []
+      "id": "aggregate-sources-and-non-co2-emission-sources-direct-measure-methodology",
+      "extra-fields": [
+        {
+          "id": "aggregate-sources-activity-type",
+          "options": [
+            {
+              "type": "activity-type-biomass-burning",
+              "names": [
+                "biomass-burning-biomass-burning-in-forest-land",
+                "biomass-burning-biomass-burning-in-cropland",
+                "biomass-burning-biomass-burning-in-grassland",
+                "biomass-burning-biomass-burning-in-other-land"
+              ]
+            },
+            {
+              "type": "activity-type-liming",
+              "names": []
+            },
+            {
+              "type": "activity-type-urea-application",
+              "names": []
+            },
+            {
+              "type": "activity-type-direct-N2O-from-managed-soils",
+              "names": []
+            },
+            {
+              "type": "activity-type-indirect-N2O-from-managed-soils",
+              "names": []
+            },
+            {
+              "type": "activity-type-rice-cultivations",
+              "names": []
+            },
+            {
+              "type": "activity-type-harvested-wood-products",
+              "names": []
+            },
+            {
+              "id": "aggregate-sources-source",
+              "type": "text"
+            }
+          ]
+        }
+      ]
     }
   }
 }

@@ -4224,7 +4224,8 @@
             "source-type-domestic-wastewater",
             "source-type-industrial-wastewater",
             "source-type-all-wastewater"
-          ]
+          ],
+          "exclusive": "source-type-all-wastewaterœ"
         }
       ]
     }

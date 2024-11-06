@@ -210,6 +210,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
 
   const notationKey = useMemo(() => {
     switch (inventoryValue?.unavailableReason) {
+      // TODO use better identifiers for the reasons (more descriptive)
       case "select-reason-2":
         return "notation-key-NE";
       case "select-reason-3":

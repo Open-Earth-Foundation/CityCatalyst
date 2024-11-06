@@ -45,7 +45,6 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 
   const subSector = await db.models.SubSector.findOne({
     where: { subsectorId: params.subsector },
-    // include: [{ model: db.models.Sector, as: "r" }],
   });
   if (!subSector) {
     throw new createHttpError.NotFound(

@@ -396,9 +396,6 @@ function SubSectorPage({
             {scopes?.map((scope, index) => (
               <Tab
                 key={index}
-                // onClick={() => {
-                //   triggerMochLoading();
-                // }}
                 className="[&[aria-selected='false']]:border-[transparent]"
               >
                 <Text

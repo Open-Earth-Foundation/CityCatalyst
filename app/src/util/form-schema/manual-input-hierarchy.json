@@ -2550,6 +2550,13 @@
           "multiselect": true
         },
         {
+          "id": "on-road-transportation-outside-activity-type",
+          "options": [
+            "activity-type-transmission-and-distribution-losses",
+            "activity-type-transboundary-journeys"
+          ]
+        },
+        {
           "id": "on-road-transport-electricity-source",
           "type": "text"
         }
@@ -2885,6 +2892,13 @@
           "multiselect": true
         },
         {
+          "id": "railway-outside-activity-type",
+          "options": [
+            "activity-type-transmission-and-distribution-losses",
+            "activity-type-transboundary-journeys"
+          ]
+        },
+        {
           "id": "railways-electricity-source",
           "type": "text"
         }
@@ -3201,6 +3215,13 @@
             "vehicle-type-marine-vessels"
           ],
           "multiselect": true
+        },
+        {
+          "id": "water-transportation-outside-activity-type",
+          "options": [
+            "activity-type-transmission-and-distribution-losses",
+            "activity-type-transboundary-journeys"
+          ]
         },
         {
           "id": "waterborne-navigation-electricity-source",
@@ -3534,6 +3555,13 @@
             "vehicle-type-helicopters"
           ],
           "multiselect": true
+        },
+        {
+          "id": "aviation-outside-activity-type",
+          "options": [
+            "activity-type-transmission-and-distribution-losses",
+            "activity-type-transboundary-journeys"
+          ]
         },
         {
           "id": "aviation-electricity-source",

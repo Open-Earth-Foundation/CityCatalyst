@@ -1,3 +1,8 @@
+console.log(
+  " process.env.DATABASE_USER,",
+  JSON.stringify(process.env.DATABASE_USER),
+); // TODO NINA
+
 module.exports = {
   development: {
     username: process.env.DATABASE_USER,

@@ -3,6 +3,7 @@ import csv
 from dotenv import load_dotenv
 from openai import OpenAI
 import re
+import json
 
 load_dotenv()
 
@@ -72,45 +73,71 @@ def read_city_inventory():
 
 def read_actions():
     actions = []
-    with open(ACTION_FILE, "r") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            for field in [
-                "emissions_reduction", "population", "time_in_years", "cost"
-            ]:
-                if row[field]:
-                    row[field] = int(row[field].replace(",", ""))
-                else:
-                    row[field] = None
-            actions.append(row)
+    with open("EXAMPLE_3.JSON", "r") as f:
+        data = json.load(f)
+        for item in data:
+            action = {
+                "ActionID": item.get("ActionID"), 
+                "ActionName": item.get("ActionName"), 
+                "ActionType": item.get("ActionType"), # string category adaptation or mitigation
+                "AdaptationCategory": item.get("AdaptationCategory"), # string pointing to a category in c40 list (ecoengineering, infrastructure, etc)
+                
+                "Hazard": item.get("Hazard"), #  # only for adaptation actions 
+                "Sector": item.get("Sector"), #
+                "Subsector": item.get("Subsector"), #
+                "PrimaryPurpose": item.get("PrimaryPurpose"), ##
+                # probably a city data will have data on what and how they want to do 
+                "InterventionType": item.get("InterventionType"), ###  # there are 5 categories of it in the notion
+                "Description": item.get("Description"), ###
+                "BehaviouralChangeTargeted": item.get("BehaviouralChangeTargeted"), ###
+                "CoBenefits": item.get("CoBenefits"), ###
+                "EquityAndInclusionConsiderations": item.get("EquityAndInclusionConsiderations"), ###
+                # this will be categories 10-15 15-20 and so on per sector - look for a sector in the inventory
+                "GHGReductionPotential": item.get("GHGReductionPotential"), # 
+                # low medium or high - where higher is better
+                "AdaptationEffectiveness": item.get("AdaptationEffectiveness"), #
+                # also high medium low where low is better
+                "CostInvestmentNeeded": item.get("CostInvestmentNeeded"), #
+                # 
+                "TimelineForImplementation": item.get("TimelineForImplementation"), #
+                "Dependencies": item.get("Dependencies"),#
+                "KeyPerformanceIndicators": item.get("KeyPerformanceIndicators"),##
+                "Impacts": item.get("Impacts"), #
+            }
+            actions.append(action)
     return actions
 
 
 def quantitative_score(city, action):
     score = 0
 
-    if action["emissions_reduction"]:
-        score += (
-            min(action["emissions_reduction"], MAX_EMISSIONS_REDUCTIONS)
-            / MAX_EMISSIONS_REDUCTIONS
-        ) * SCORE_MAX
+    # Emissions reduction score
+    if action["GHGReductionPotential"]["energy"] != "none":
+        emissions_reduction = float(action["GHGReductionPotential"]["energy"].replace("%", "")) / 100
+        score += (min(emissions_reduction, MAX_EMISSIONS_REDUCTIONS) / MAX_EMISSIONS_REDUCTIONS) * SCORE_MAX
 
-    if action["risk_reduction"]:
-        score += scale_scores.get(action["risk_reduction"], 0) * SCORE_MAX
+    # Adaptation effectiveness score
+    if action["AdaptationEffectiveness"]:
+        score += scale_scores.get(action["AdaptationEffectiveness"], 0) * SCORE_MAX
 
-    if action["environment"] == city["environment"]:
+    # Environment match score
+    if action["Sector"] and city["environment"] in action["Sector"]:
         score += SCORE_MAX
 
-    if action["population"] and city["population"]:
-        diff = abs(action["population"] - city["population"])
-        ratio = min(city["population"] / diff, 1.0) if diff else 1.0
-        score += ratio * SCORE_MAX
+    # Population match score - used when we have city data 
+    #if city["population"]:
+    #    diff = abs(city["population"] - city["population"]) 
+    #    ratio = min(city["population"] / diff, 1.0) if diff else 1.0
+    #    score += ratio * SCORE_MAX
 
-    if action["time_in_years"]:
-        score += (1 - (min(action["time_in_years"], MAX_TIME_IN_YEARS) / MAX_TIME_IN_YEARS)) * SCORE_MAX
+    # Time in years score
+    if action["TimelineForImplementation"]:
+        time_in_years = int(action["TimelineForImplementation"].replace("<", "").replace(">", "").replace(" years", ""))
+        score += (1 - (min(time_in_years, MAX_TIME_IN_YEARS) / MAX_TIME_IN_YEARS)) * SCORE_MAX
 
-    if city["budget"] and action["cost"]:
-        ratio = min(action["cost"], city["budget"]) / city["budget"] if city["budget"] else 1.0
+    # Cost score (assuming cost is not provided in the JSON)
+    if city["budget"]:
+        ratio = min(city["budget"], city["budget"]) / city["budget"] if city["budget"] else 1.0
         score += (1 - ratio) * SCORE_MAX
 
     return score

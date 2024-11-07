@@ -142,7 +142,7 @@ function SubSectorPage({
         getScopesForInventoryAndSector(
           inventoryData.inventoryType!,
           scope.referenceNumber[0],
-        )!.includes(scope.scope),
+        ).includes(scope.scope),
       );
   };
   const scopes = getFilteredSubsectorScopes();
@@ -424,13 +424,11 @@ function SubSectorPage({
                     subsectorId={subsector}
                     step={step}
                     activityData={activityData}
-                  inventoryValues={
-                    (inventoryValues as InventoryValue[])?.filter(
-                      (iv) =>
-                        iv.gpcReferenceNumber ===
-                        scope.referenceNumber,
-                    ) ?? []
-                  }
+                    inventoryValues={
+                      (inventoryValues as InventoryValue[])?.filter(
+                        (iv) => iv.gpcReferenceNumber === scope.referenceNumber,
+                      ) ?? []
+                    }
                   />
                 );
               })

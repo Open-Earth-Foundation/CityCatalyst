@@ -44,8 +44,14 @@ export const getScopesForInventoryAndSector = (
   referenceNumber: string,
 ) => {
   if (!inventoryType) return [];
-  return SECTORS.find((s) => s.referenceNumber === referenceNumber)
-    ?.inventoryTypes[inventoryType].scopes;
+  const sector = SECTORS.find((s) => s.referenceNumber === referenceNumber);
+  if (!sector) {
+    console.error(
+      `Sector ${referenceNumber} for inventoryType ${inventoryType} not found`,
+    );
+    return [];
+  }
+  return sector.inventoryTypes[inventoryType].scopes;
 };
 
 export const SECTORS: ISector[] = [

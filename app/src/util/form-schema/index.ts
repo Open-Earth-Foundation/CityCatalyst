@@ -25,7 +25,7 @@ export function findMethodology(
 export interface ExtraField {
   id: string;
   type?: string;
-  options?: string[];
+  options?: string[] | { type: string; names: string[] }[];
   exclusive?: string;
   multiselect?: boolean;
   "default-units"?: string;

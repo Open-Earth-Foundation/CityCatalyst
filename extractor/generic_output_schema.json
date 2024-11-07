@@ -46,15 +46,15 @@
         "generated": {"type": "boolean"}
     },
     "AdaptationCategory": {
-        "type": "array",
+        "type": "string",
         "items": {"type": "string"},
         "description": "Specifies the category of adaptation action.",
-        "value": ["eco-engineering"],
+        "value": "",
         "appliesTo": {
             "type": "array",
             "items": {
                 "type": "string",
-                "enum": ["adaptation"]
+                "enum": ["mitigation", "adaptation"]
             },
             "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
             "value": ["adaptation"]

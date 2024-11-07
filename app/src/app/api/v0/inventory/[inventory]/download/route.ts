@@ -1,6 +1,5 @@
 import UserService from "@/backend/UserService";
 import { apiHandler } from "@/util/api";
-import { createInventoryRequest } from "@/util/validation";
 import { NextResponse } from "next/server";
 import Excel from "exceljs";
 import { Op } from "sequelize";
@@ -17,6 +16,7 @@ import {
   keyBy,
   PopulationEntry,
 } from "@/util/helpers";
+import ECRFDownloadService from "@/backend/ECRFDownloadService";
 
 type InventoryValueWithEF = InventoryValue & {
   emissionsFactor?: EmissionsFactor;
@@ -119,6 +119,12 @@ export const GET = apiHandler(async (req, { params, session }) => {
         "Content-Disposition": `attachment; filename="inventory-${inventory.city.locode}-${inventory.year}.xls"`,
       };
       break;
+    case "ecrf":
+      body = await ECRFDownloadService.downloadECRF();
+      headers = {
+        "Content-Type": "application/vnd.ms-excel",
+        "Content-Disposition": `attachment; filename="eCRF_inventory-${inventory.city.locode}-${inventory.year}.xlsx"`,
+      };
     case "json":
     default:
       body = Buffer.from(JSON.stringify({ data: output }), "utf-8");

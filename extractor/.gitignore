@@ -188,3 +188,6 @@ files/*xls
 files/*csv
 
 my_db.*
+
+# Outout files
+output/*

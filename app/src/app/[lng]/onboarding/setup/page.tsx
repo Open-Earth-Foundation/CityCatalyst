@@ -829,13 +829,13 @@ function SetInventoryDetailsStep({
           {t("setup-inventory-details-description")}
         </Text>
       </Box>
+      {/* Inventory Year */}
       <Box
         w="full"
         py="36px"
         borderBottomWidth="2px"
         borderColor="border.overlay"
       >
-        {/* Inventory Year */}
         <Box
           display="flex"
           w="full"
@@ -1012,8 +1012,308 @@ function SetInventoryDetailsStep({
   );
 }
 
-function SetPopulationDataStep({}) {
-  return <Box>Population Data</Box>;
+function SetPopulationDataStep({
+  t,
+  register,
+  errors,
+  control,
+}: {
+  t: TFunction;
+  register: UseFormRegister<Inputs>;
+  errors: FieldErrors<Inputs>;
+  control: Control<Inputs>;
+}) {
+  const countryPopulationYears = [1, 2, 1];
+  const regionPopulationYear = [];
+  const cityPopulationYear = [1, 2, 3];
+  const year: number = 0;
+  const years = [1, 2, 3];
+  return (
+    <Box w="full">
+      <Box
+        minW={400}
+        w="full"
+        display="flex"
+        flexDir="column"
+        gap="24px"
+        mb="48px"
+      >
+        <Heading size="xl">{t("setup-population-data-heading")}</Heading>
+        <Text
+          color="content.tertiary"
+          fontSize="body.lg"
+          fontStyle="normal"
+          fontWeight="400"
+          letterSpacing="wide"
+        >
+          {t("setup-population-data-description")}
+        </Text>
+      </Box>
+      <Box
+        w="full"
+        py="36px"
+        borderBottomWidth="2px"
+        borderColor="border.overlay"
+      >
+        <Box
+          display="flex"
+          w="full"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <Box>
+            <Text
+              fontFamily="heading"
+              fontSize="title.md"
+              fontStyle="normal"
+              fontWeight="bold"
+              lineHeight="24px"
+            >
+              {t("Country")}
+            </Text>
+          </Box>
+          <Box display="flex" gap="16px" alignItems="baseline">
+            <HStack spacing={6} align="start">
+              <FormControl isInvalid={!!errors.cityPopulation}>
+                <FormattedThousandsNumberInput<Inputs>
+                  name="cityPopulation"
+                  control={control}
+                  rules={{
+                    required: t("population-required"),
+                  }}
+                  placeholder={t("country-population-placeholder")}
+                  size="lg"
+                  shadow="1dp"
+                  w="400px"
+                  fontSize="body.lg"
+                  letterSpacing="wide"
+                />
+                <Box display="flex" gap="6px" alignItems="center" py="8px">
+                  <InfoOutlineIcon color="interactive.control" />
+                  <Text
+                    color="content.tertiary"
+                    fontSize="body.md"
+                    letterSpacing="wide"
+                    lineHeight="20px"
+                  >
+                    {t("source")}: [{t("source-name")}]
+                  </Text>
+                </Box>
+                <FormErrorMessage
+                  color="content.tertiary"
+                  letterSpacing="0.5px"
+                >
+                  <FormErrorIcon />
+                  {errors.cityPopulation && errors.cityPopulation.message}
+                </FormErrorMessage>
+              </FormControl>
+            </HStack>
+            <InputGroup>
+              <Select
+                placeholder={t("inventory-year-placeholder")}
+                size="lg"
+                w="217px"
+                shadow="1dp"
+                fontSize="body.lg"
+                fontStyle="normal"
+                letterSpacing="wide"
+                _placeholder={{ color: "content.tertiary" }}
+                py="16px"
+                px={0}
+                {...register("year", {
+                  required: t("inventory-year-required"),
+                })}
+              >
+                {countryPopulationYears.map((year: number, i: number) => (
+                  <option value={year} key={i}>
+                    {year}
+                  </option>
+                ))}
+              </Select>
+              <InputRightElement>
+                {!!year && (
+                  <CheckIcon
+                    color="semantic.success"
+                    boxSize={4}
+                    mt={2}
+                    mr={10}
+                  />
+                )}
+              </InputRightElement>
+            </InputGroup>
+          </Box>
+        </Box>
+      </Box>
+      <Box
+        w="full"
+        py="36px"
+        borderBottomWidth="2px"
+        borderColor="border.overlay"
+      >
+        <Box
+          display="flex"
+          w="full"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <Box>
+            <Text
+              fontFamily="heading"
+              fontSize="title.md"
+              fontStyle="normal"
+              fontWeight="bold"
+              lineHeight="24px"
+            >
+              {t("region-or-province")}
+            </Text>
+          </Box>
+          <Box display="flex" gap="16px" alignItems="baseline">
+            <HStack spacing={6} align="start">
+              <FormControl isInvalid={!!errors.cityPopulation}>
+                <FormattedThousandsNumberInput<Inputs>
+                  name="regionPopulation"
+                  control={control}
+                  rules={{
+                    required: t("population-required"),
+                  }}
+                  placeholder={t("region-or-province-population-placeholder")}
+                  size="lg"
+                  shadow="1dp"
+                  w="400px"
+                  fontSize="body.lg"
+                  letterSpacing="wide"
+                />
+                <FormErrorMessage
+                  color="content.tertiary"
+                  letterSpacing="0.5px"
+                >
+                  <FormErrorIcon />
+                  {errors.cityPopulation && errors.cityPopulation.message}
+                </FormErrorMessage>
+              </FormControl>
+            </HStack>
+            <InputGroup>
+              <Select
+                placeholder={t("inventory-year-placeholder")}
+                size="lg"
+                w="217px"
+                shadow="1dp"
+                fontSize="body.lg"
+                fontStyle="normal"
+                letterSpacing="wide"
+                _placeholder={{ color: "content.tertiary" }}
+                py="16px"
+                px={0}
+                {...register("year", {
+                  required: t("inventory-year-required"),
+                })}
+              >
+                {countryPopulationYears.map((year: number, i: number) => (
+                  <option value={year} key={i}>
+                    {year}
+                  </option>
+                ))}
+              </Select>
+              <InputRightElement>
+                {!!year && (
+                  <CheckIcon
+                    color="semantic.success"
+                    boxSize={4}
+                    mt={2}
+                    mr={10}
+                  />
+                )}
+              </InputRightElement>
+            </InputGroup>
+          </Box>
+        </Box>
+      </Box>
+      <Box
+        w="full"
+        py="36px"
+        borderBottomWidth="2px"
+        borderColor="border.overlay"
+      >
+        <Box
+          display="flex"
+          w="full"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <Box>
+            <Text
+              fontFamily="heading"
+              fontSize="title.md"
+              fontStyle="normal"
+              fontWeight="bold"
+              lineHeight="24px"
+            >
+              {t("city")}
+            </Text>
+          </Box>
+          <Box display="flex" gap="16px" alignItems="baseline">
+            <HStack spacing={6} align="start">
+              <FormControl isInvalid={!!errors.cityPopulation}>
+                <FormattedThousandsNumberInput<Inputs>
+                  name="regionPopulation"
+                  control={control}
+                  rules={{
+                    required: t("population-required"),
+                  }}
+                  placeholder={t("city-population-placeholder")}
+                  size="lg"
+                  shadow="1dp"
+                  w="400px"
+                  fontSize="body.lg"
+                  letterSpacing="wide"
+                />
+                <FormErrorMessage
+                  color="content.tertiary"
+                  letterSpacing="0.5px"
+                >
+                  <FormErrorIcon />
+                  {errors.cityPopulation && errors.cityPopulation.message}
+                </FormErrorMessage>
+              </FormControl>
+            </HStack>
+            <InputGroup>
+              <Select
+                placeholder={t("inventory-year-placeholder")}
+                size="lg"
+                w="217px"
+                shadow="1dp"
+                fontSize="body.lg"
+                fontStyle="normal"
+                letterSpacing="wide"
+                _placeholder={{ color: "content.tertiary" }}
+                py="16px"
+                px={0}
+                {...register("year", {
+                  required: t("inventory-year-required"),
+                })}
+              >
+                {countryPopulationYears.map((year: number, i: number) => (
+                  <option value={year} key={i}>
+                    {year}
+                  </option>
+                ))}
+              </Select>
+              <InputRightElement>
+                {!!year && (
+                  <CheckIcon
+                    color="semantic.success"
+                    boxSize={4}
+                    mt={2}
+                    mr={10}
+                  />
+                )}
+              </InputRightElement>
+            </InputGroup>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+  );
 }
 
 function ConfirmStep({
@@ -1279,7 +1579,14 @@ export default function OnboardingSetup({
           {activeStep === 1 && (
             <SetInventoryDetailsStep t={t} register={register} years={[]} />
           )}
-          {activeStep === 2 && <SetPopulationDataStep />}
+          {activeStep === 2 && (
+            <SetPopulationDataStep
+              t={t}
+              register={register}
+              control={control}
+              errors={errors}
+            />
+          )}
           {activeStep === 3 && (
             <ConfirmStep
               cityName={getValues("city")}

@@ -32,7 +32,7 @@ import type {
   SubcategoryData,
 } from "../../../app/[lng]/[inventory]/data/[step]/types";
 import { resolve } from "@/util/helpers";
-import { Methodology, SuggestedActivity } from "@/util/form-schema";
+import { ExtraField, Methodology, SuggestedActivity } from "@/util/form-schema";
 import { ActivityValue } from "@/models/ActivityValue";
 import FormattedNumberInput from "@/components/formatted-number-input";
 import PercentageBreakdownInput from "@/components/percentage-breakdown-input";
@@ -88,17 +88,6 @@ export type Inputs = {
   };
   direct: DirectMeasureData;
   subcategoryData: Record<string, SubcategoryData>;
-};
-
-export type ExtraField = {
-  id: string;
-  type?: string; // Specifies the type, e.g., 'text', 'number'
-  options?: string[]; // Array of options for selection
-  exclusive?: string; // An option that excludes others
-  multiselect?: boolean; // Whether multiple selections are allowed
-  units?: string[]; // Specifies units, applicable when type is 'number'
-  required?: boolean; // Whether the field is required
-  subtypes?: string[];
 };
 
 const ActivityModalBody = ({
@@ -233,7 +222,7 @@ const ActivityModalBody = ({
                 {f.options && (
                   <FormControl key={idx} className="w-full">
                     <BuildingTypeSelectInput
-                      options={f.options}
+                      options={f.options as string[]}
                       required={f.required}
                       control={control}
                       multiselect={f.multiselect}

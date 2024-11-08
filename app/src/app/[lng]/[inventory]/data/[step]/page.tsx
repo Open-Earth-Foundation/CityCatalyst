@@ -379,8 +379,21 @@ export default function AddDataSteps({
     );
   }
 
-  function onSearchDataSourcesClicked() {
-    loadDataSources({ inventoryId: inventory });
+  async function onSearchDataSourcesClicked() {
+    const { data, removedSources, failedSources } = await loadDataSources({
+      inventoryId: inventory,
+    }).unwrap();
+
+    // this is printed to debug missing data sources more easily
+    // TODO consider putting this behind a "dev mode" flag of some kind
+    if (removedSources.length > 0) {
+      console.info("Removed data sources");
+      console.dir(removedSources);
+    }
+    if (failedSources.length > 0) {
+      console.info("Failed data sources");
+      console.dir(failedSources);
+    }
   }
 
   const [selectedSubsector, setSelectedSubsector] =

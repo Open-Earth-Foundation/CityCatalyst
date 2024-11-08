@@ -159,7 +159,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
         inventory,
       );
       if (data instanceof String || typeof data === "string") {
-        return { source, error: data };
+        return { error: data as string, source };
       }
       let scaleFactor = 1.0;
       let issue: string | null = null;

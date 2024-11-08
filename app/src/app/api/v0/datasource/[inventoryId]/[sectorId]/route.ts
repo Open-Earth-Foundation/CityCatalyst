@@ -56,7 +56,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
         inventory,
       );
       if (data instanceof String || typeof data === "string") {
-        return { error: data, source };
+        return { error: data as string, source };
       }
       return { source, data };
     }),

@@ -34,7 +34,11 @@ import {
   useTransform,
 } from "framer-motion";
 import Link from "next/link";
-import { SECTORS } from "@/util/constants";
+import {
+  getScopesForInventoryAndSector,
+  InventoryTypeEnum,
+  SECTORS,
+} from "@/util/constants";
 import { InventoryValue } from "@/models/InventoryValue";
 
 const MotionBox = motion(Box);
@@ -88,6 +92,7 @@ function SubSectorPage({
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
   const defaultInventoryId = userInfo?.defaultInventoryId;
+  const { data: inventoryData } = api.useGetInventoryQuery(inventoryId);
 
   const {
     data: inventoryProgress,
@@ -129,14 +134,17 @@ function SubSectorPage({
   };
 
   const getFilteredSubsectorScopes = () => {
+    if (!inventoryData) return [];
     return Object.entries(MANUAL_INPUT_HIERARCHY)
       .filter(([key]) => key.startsWith(subSectorData?.referenceNumber!))
-      .map(([k, v]) => ({
-        ...v,
-        referenceNumber: k,
-      }));
+      .map(([k, v]) => ({ ...v, referenceNumber: k }))
+      .filter((scope) =>
+        getScopesForInventoryAndSector(
+          inventoryData.inventoryType!,
+          scope.referenceNumber[0],
+        ).includes(scope.scope),
+      );
   };
-
   const scopes = getFilteredSubsectorScopes();
 
   const MotionTabList = motion(TabList);
@@ -416,13 +424,11 @@ function SubSectorPage({
                     subsectorId={subsector}
                     step={step}
                     activityData={activityData}
-                  inventoryValues={
-                    (inventoryValues as InventoryValue[])?.filter(
-                      (iv) =>
-                        iv.gpcReferenceNumber ===
-                        scope.referenceNumber,
-                    ) ?? []
-                  }
+                    inventoryValues={
+                      (inventoryValues as InventoryValue[])?.filter(
+                        (iv) => iv.gpcReferenceNumber === scope.referenceNumber,
+                      ) ?? []
+                    }
                   />
                 );
               })

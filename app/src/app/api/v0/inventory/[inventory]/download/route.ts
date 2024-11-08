@@ -130,7 +130,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
       };
       break;
     case "ecrf":
-      body = await ECRFDownloadService.downloadECRF();
+      body = await ECRFDownloadService.downloadECRF(inventory.inventoryId);
       headers = {
         "Content-Type": "application/vnd.ms-excel",
         "Content-Disposition": `attachment; filename="eCRF_inventory-${inventory.city.locode}-${inventory.year}.xlsx"`,

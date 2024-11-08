@@ -2,6 +2,7 @@ import Excel from "exceljs";
 import { db } from "@/models";
 import { InventoryValue } from "@/models/InventoryValue";
 import { ActivityValue } from "@/models/ActivityValue";
+import createHttpError from "http-errors";
 
 type InventoryValueWithActivityValues = InventoryValue & {
   activityValues: ActivityValue[];
@@ -50,11 +51,13 @@ export default class ECRFDownloadService {
       });
 
       // Save the modified workbook
-      const buffer = await workbook.xlsx.writeBuffer();
+      const buffer = Buffer.from(await workbook.xlsx.writeBuffer());
       console.log("Workbook has been generated successfully");
       return buffer;
     } catch (error) {
-      console.error("Error reading or writing Excel file:", error);
+      throw createHttpError.InternalServerError(
+        "Error reading or writing Excel file",
+      );
     }
   }
 

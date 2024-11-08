@@ -1,13 +1,14 @@
 import type {
   DataSourceWithRelations,
   InventoryValueData,
+  SubSectorWithRelations,
 } from "@/app/[lng]/[inventory]/data/[step]/types";
 import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
 import { DataSourceI18nAttributes as DataSourceAttributes } from "@/models/DataSourceI18n";
 import type { InventoryValueAttributes } from "@/models/InventoryValue";
-import type { SubSector, SubSectorAttributes } from "@/models/SubSector";
+import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
 import type { CityAttributes } from "@/models/City";
 import type { GasValueAttributes } from "@/models/GasValue";
@@ -30,7 +31,7 @@ export interface SectorProgress {
   total: number;
   thirdParty: number;
   uploaded: number;
-  subSectors: SubSector[];
+  subSectors: SubSectorWithRelations[];
 }
 
 export interface InventoryProgressResponse {

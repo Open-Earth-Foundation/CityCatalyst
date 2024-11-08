@@ -23,7 +23,7 @@
   "confirm-step": "Confirm City's Information",
   "select-city": "Select city",
   "select-city-placeholder": "Search by city",
-  "select-city-required": "City is required",
+  "select-city-required": "Please select city",
   "inventory-year": "Inventory year",
   "inventory-year-placeholder": "Select year",
   "inventory-year-required": "Year is required",

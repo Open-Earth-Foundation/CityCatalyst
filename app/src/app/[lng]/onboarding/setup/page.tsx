@@ -27,6 +27,7 @@ import {
   CheckIcon,
   InfoOutlineIcon,
   SearchIcon,
+  WarningIcon,
 } from "@chakra-ui/icons";
 import { Link } from "@chakra-ui/next-js";
 import {
@@ -330,11 +331,8 @@ function SelectCityStep({
               <InputGroup
                 ref={cityInputRef}
                 shadow="1dp"
+                bg={errors.city ? "sentiment.negativeOverlay" : "base.light"}
                 borderRadius="8px"
-                _focusWithin={{
-                  borderWidth: "1px",
-                  borderColor: "black",
-                }}
               >
                 <InputLeftElement pointerEvents="none" borderRadius="none">
                   <SearchIcon color="tertiary" boxSize={4} mt={2} ml={4} />
@@ -404,8 +402,15 @@ function SelectCityStep({
                     })}
                 </Box>
               )}
-              <FormErrorMessage>
-                {errors.city && errors.city.message}
+              <FormErrorMessage gap="6px">
+                <WarningIcon />
+                <Text
+                  fontSize="body.md"
+                  color="content.tertiary"
+                  fontStyle="normal"
+                >
+                  {errors.city && errors.city.message}
+                </Text>
               </FormErrorMessage>
             </FormControl>
             {ocCityData ? (
@@ -1585,6 +1590,7 @@ export default function OnboardingSetup({
     { title: t("set-population-step") },
     { title: t("confirm-step") },
   ];
+
   const { activeStep, goToNext, goToPrevious } = useSteps({
     index: 0,
     count: steps.length,
@@ -1694,23 +1700,15 @@ export default function OnboardingSetup({
     }
   };
 
-  const onSubmit: SubmitHandler<Inputs> = async (newData) => {
-    const year = Number(newData.year);
-
+  const onSubmit: SubmitHandler<Inputs> = async (formData) => {
     setData({
-      name: newData.city,
-      locode: data.locode!,
-      year,
+      ...data,
+      ...formData,
+      locode: ocCityData?.actor_id!,
+      name: ocCityData?.name!,
     });
-
-    if (!newData.city || !ocCityData?.actor_id || year < 0 || !data.locode) {
-      // TODO show user toast? These should normally be caught by validation logic
-      makeErrorToast("Missing data, can't go to next step!");
-      console.error("Missing data, can't go to next step!");
-      return;
-    }
-
     goToNext();
+    console.log(data);
   };
 
   return (
@@ -1775,8 +1773,9 @@ export default function OnboardingSetup({
                   gap="8px"
                   py="16px"
                   px="24px"
-                  onClick={goToNext}
+                  onClick={handleSubmit(onSubmit)}
                   h="64px"
+                  type="submit"
                   rightIcon={<ArrowForwardIcon h="24px" w="24px" />}
                 >
                   <Text
@@ -1793,7 +1792,7 @@ export default function OnboardingSetup({
                   w="auto"
                   gap="8px"
                   py="16px"
-                  onClick={goToNext}
+                  onClick={handleSubmit(onSubmit)}
                   px="24px"
                   h="64px"
                   rightIcon={<ArrowForwardIcon h="24px" w="24px" />}
@@ -1812,7 +1811,7 @@ export default function OnboardingSetup({
                   w="auto"
                   gap="8px"
                   py="16px"
-                  onClick={goToNext}
+                  onClick={handleSubmit(onSubmit)}
                   px="24px"
                   h="64px"
                   rightIcon={<ArrowForwardIcon h="24px" w="24px" />}

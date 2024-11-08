@@ -31,8 +31,9 @@
   "save-button": "Save and Continue",
   "search-city-button": "Search for another City",
   "confirm-button": "Confirm and Continue",
-
-  "confirm-heading": "Confirm City's Information",
+  "confirm-description": "Review the data you've entered for your inventory so far. Please review all details carefully before proceeding.",
+  "confirm-heading": "Confirm city's information",
+  "inventory-format": "Inventory format",
   "confirm-details": "Review and confirm this information about your city. If there is an error please send us an email to edit it.<br /><br />We use <2>open data sources</2> to pre-fill the city profile.",
   "total-population": "Total population",
   "total-land-area": "Total land area",

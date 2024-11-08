@@ -73,7 +73,12 @@ import { Trans } from "react-i18next/TransWithoutContext";
 import { MdOutlineAspectRatio, MdOutlinePeopleAlt } from "react-icons/md";
 import FormattedThousandsNumberInput from "@/app/[lng]/onboarding/setup/FormattedThousandsNumberInput";
 import Image from "next/image";
-import { InventoryButtonCheckIcon } from "@/components/icons";
+import {
+  CalenderIcon,
+  DataFormatIcon,
+  InventoryButtonCheckIcon,
+} from "@/components/icons";
+import { CircleFlag } from "react-circle-flags";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -148,6 +153,7 @@ function SelectCityStep({
   const countryPopulationYear = watch("countryPopulationYear");
 
   const handleSetCity = (city: OCCityAttributes) => {
+    console.log("city", city);
     setValue("city", city.name);
     setOnInputClicked(false);
     dispatch(set(city));
@@ -157,13 +163,15 @@ function SelectCityStep({
     if (year) {
       setData({
         name: city.name,
-        locode: city.actor_id,
+        locode: city.actor_id!,
         year: year!,
       });
     }
 
     setIsCityNew(true);
   };
+
+  console.log(locode);
 
   useEffect(() => {
     if (year && ocCityData) {
@@ -181,17 +189,6 @@ function SelectCityStep({
       setIsCityNew(false);
     }
   }, [cityInputQuery]);
-
-  useEffect(() => {
-    // reset population data when locode changes to prevent keeping data from previous city
-    setValue("cityPopulationYear", null);
-    setValue("cityPopulation", null);
-    setValue("regionPopulation", null);
-    setValue("regionYear", null);
-    setValue("countryPopulation", null);
-    setValue("countryYear", null);
-    setValue("totalCountryEmissions", null);
-  }, [locode, setValue]);
 
   const { data: cityData } = useGetOCCityDataQuery(locode!, {
     skip: !locode,
@@ -737,7 +734,7 @@ function CustomRadio(props: CustomRadioProps) {
       <input {...getInputProps()} hidden />
       <Box
         {...getCheckboxProps()}
-        cursor="pointer"
+        cursor={props.isDisabled ? "not-allowed" : "pointer"}
         w="181px"
         h="56px"
         borderRadius="full"
@@ -936,6 +933,9 @@ function SetInventoryDetailsStep({
             </Text>
           </Box>
           <Box>
+            {/* TODO:
+            only enable basic by default and disable basic+ until we have the feature
+            */}
             <HStack {...inventoryGoalGroup} gap="16px">
               {inventoryGoalOptions.map((value) => {
                 const radioProps = getInventoryGoalRadioProps({ value });
@@ -995,11 +995,14 @@ function SetInventoryDetailsStep({
             </Text>
           </Box>
           <Box>
+            {/* TODO:
+            only enable ar6 and disable ar5 until we have the feature
+            */}
             <HStack {...gwpGroup} gap="16px">
               {globalWarmingPotential.map((value) => {
                 const radioProps = getGWPRadioProps({ value });
                 return (
-                  <CustomRadio key={value} {...radioProps}>
+                  <CustomRadio key={value} {...radioProps} isDisabled>
                     {value}
                   </CustomRadio>
                 );
@@ -1329,71 +1332,232 @@ function ConfirmStep({
   area: number;
   population?: number;
 }) {
+  console.log(locode);
   return (
-    <>
-      <div>
+    <Box w="full">
+      <Box display="flex" flexDir="column" gap="24px">
         <Heading size="lg">{t("confirm-heading")}</Heading>
-        <Text className="my-4" color="tertiary">
-          <Trans t={t} i18nKey="confirm-details">
-            Review and confirm this information about your city. If there is an
-            error please send us an email to edit it. We use{" "}
-            <Link
-              href="https://openclimate.network"
-              target="_blank"
-              rel="noreferrer"
-            >
-              open data sources
-            </Link>{" "}
-            to pre-fill the city profile.
-          </Trans>
+        <Text fontSize="body.lg" color="content.tertiary">
+          {t("confirm-description")}
         </Text>
-      </div>
-      <div>
-        <Card px={6} py={8}>
-          <Heading fontSize="xl" color="brand">
-            {cityName}
-          </Heading>
-          <Flex w={441} mt={12} justify="space-between">
-            <div>
-              <Icon as={MdOutlinePeopleAlt} boxSize={6} mt={1} mr={2} />
-              <Box>
-                <Text fontSize="xl">
-                  {population ? (
-                    <>
-                      {shortenNumber(population)}
-                      {getShortenNumberUnit(population)}
-                    </>
-                  ) : (
-                    "N/A"
-                  )}
-                </Text>
-                <Text fontSize="xs">{t("total-population")}</Text>
+      </Box>
+      <Box w="full">
+        <Card
+          px={6}
+          py={8}
+          shadow="none"
+          bg="none"
+          w="full"
+          flexDir="row"
+          width="full"
+          gap="24px"
+        >
+          <Box w="full" display="flex" flexDir="column">
+            <Box display="flex" alignItems="center" gap="16px">
+              <CircleFlag
+                countryCode={locode?.substring(0, 2).toLowerCase() || ""}
+                width={32}
+              />
+              <Heading
+                fontSize="title.md"
+                color="content.alternative"
+                fontStyle="normal"
+                lineHeight="24px"
+                textOverflow="ellipsis"
+                overflow="hidden"
+              >
+                {cityName}
+              </Heading>
+            </Box>
+            <Box
+              w="full"
+              mt={12}
+              display="flex"
+              flexDir="column"
+              justifyContent="space-between"
+              gap="24px"
+            >
+              <Box
+                borderBottomWidth="2px"
+                borderColor="border.overlay"
+                py="36px"
+                w="full"
+                display="flex"
+                justifyContent="space-between"
+              >
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  h="44px"
+                  gap="16px"
+                  w="full"
+                >
+                  <Box h="full">
+                    <Icon as={CalenderIcon} color="interactive.control" />
+                  </Box>
+                  <Box h="full">
+                    <Text
+                      fontSize="title.md"
+                      fontWeight="600"
+                      lineHeight="24px"
+                      fontStyle="normal"
+                      color="content.secondary"
+                      fontFamily="heading"
+                    >
+                      2024
+                    </Text>
+                    <Text
+                      fontSize="label.md"
+                      fontWeight="500"
+                      lineHeight="16px"
+                      fontStyle="normal"
+                      color="content.tertiary"
+                      letterSpacing="wide"
+                    >
+                      {t("inventory-year")}
+                    </Text>
+                  </Box>
+                </Box>
+                <Box
+                  w="full"
+                  display="flex"
+                  alignItems="center"
+                  h="44px"
+                  gap="16px"
+                >
+                  <Box h="full">
+                    <Icon as={DataFormatIcon} color="interactive.control" />
+                  </Box>
+                  <Box h="full">
+                    <Text
+                      fontSize="title.md"
+                      fontWeight="600"
+                      lineHeight="24px"
+                      fontStyle="normal"
+                      color="content.secondary"
+                      fontFamily="heading"
+                    >
+                      GPC BASIC
+                    </Text>
+                    <Text
+                      fontSize="label.md"
+                      fontWeight="500"
+                      lineHeight="16px"
+                      fontStyle="normal"
+                      color="content.tertiary"
+                      letterSpacing="wide"
+                    >
+                      {t("inventory-format")}
+                    </Text>
+                  </Box>
+                </Box>
               </Box>
-            </div>
-            <div>
-              <Icon as={MdOutlineAspectRatio} boxSize={6} mt={1} mr={2} />
-              <Box>
-                <Text fontSize="xl">
-                  {area && area > 0 ? (
-                    <>
-                      {" "}
-                      {Math.round(area)}km<sup>2</sup>
-                    </>
-                  ) : (
-                    "N/A"
-                  )}
-                </Text>
-                <Text fontSize="xs">{t("total-land-area")}</Text>
+              <Box
+                borderBottomWidth="2px"
+                borderColor="border.overlay"
+                w="full"
+                display="flex"
+                py="36px"
+              >
+                <Box
+                  w="full"
+                  display="flex"
+                  alignItems="center"
+                  h="44px"
+                  gap="16px"
+                >
+                  <Box h="full">
+                    <Icon
+                      h="24px"
+                      w="24px"
+                      as={MdOutlinePeopleAlt}
+                      color="interactive.control"
+                    />
+                  </Box>
+                  <Box h="full">
+                    <Text
+                      fontSize="title.md"
+                      fontWeight="600"
+                      lineHeight="24px"
+                      fontStyle="normal"
+                      color="content.secondary"
+                      fontFamily="heading"
+                    >
+                      {population ? (
+                        <>
+                          {shortenNumber(population)}
+                          {getShortenNumberUnit(population)}
+                        </>
+                      ) : (
+                        "N/A"
+                      )}
+                    </Text>
+                    <Text
+                      fontSize="label.md"
+                      fontWeight="500"
+                      lineHeight="16px"
+                      fontStyle="normal"
+                      color="content.tertiary"
+                      letterSpacing="wide"
+                    >
+                      {t("total-population")}
+                    </Text>
+                  </Box>
+                </Box>
+                <Box
+                  w="full"
+                  display="flex"
+                  alignItems="center"
+                  h="44px"
+                  gap="16px"
+                >
+                  <Box h="full">
+                    <Icon
+                      as={MdOutlineAspectRatio}
+                      color="interactive.control"
+                      h="24px"
+                      w="24px"
+                    />
+                  </Box>
+                  <Box h="full">
+                    <Text
+                      fontSize="title.md"
+                      fontWeight="600"
+                      lineHeight="24px"
+                      fontStyle="normal"
+                      color="content.secondary"
+                      fontFamily="heading"
+                    >
+                      {area && area > 0 ? (
+                        <>
+                          {" "}
+                          {Math.round(area)}km<sup>2</sup>
+                        </>
+                      ) : (
+                        "N/A"
+                      )}
+                    </Text>
+                    <Text
+                      fontSize="label.md"
+                      fontWeight="500"
+                      lineHeight="16px"
+                      fontStyle="normal"
+                      color="content.tertiary"
+                      letterSpacing="wide"
+                    >
+                      {t("total-land-area")}
+                    </Text>
+                  </Box>
+                </Box>
               </Box>
-            </div>
-          </Flex>
-          <Text mb={4} mt={7}>
-            {t("geographical-boundaries")}
-          </Text>
-          <CityMap locode={locode} height={400} width={450} />
+            </Box>
+          </Box>
+          <Box w="full">
+            <CityMap locode={locode} height={400} width={450} />
+          </Box>
         </Card>
-      </div>
-    </>
+      </Box>
+    </Box>
   );
 }
 
@@ -1419,7 +1583,7 @@ export default function OnboardingSetup({
     { title: t("setup-step") },
     { title: t("set-inventory-details-step") },
     { title: t("set-population-step") },
-    { title: t("done-step") },
+    { title: t("confirm-step") },
   ];
   const { activeStep, goToNext, goToPrevious } = useSteps({
     index: 0,
@@ -1662,31 +1826,18 @@ export default function OnboardingSetup({
                   </Text>
                 </Button>
               )}
-
-              {/* //   <>
-              //     <Button
-              //       h={16}
-              //       onClick={() => goToPrevious()}
-              //       w={400}
-              //       variant="ghost"
-              //       leftIcon={<SearchIcon />}
-              //       size="sm"
-              //       px={12}
-              //       mr={6}
-              //     >
-              //       {t("search-city-button")}
-              //     </Button>
-              //     <Button
-              //       h={16}
-              //       isLoading={isConfirming}
-              //       px={16}
-              //       onClick={onConfirm}
-              //       size="sm"
-              //     >
-              //       {t("confirm-button")}
-              //     </Button>
-              //   </>
-              // )} */}
+              {activeStep == 3 && (
+                <Button
+                  h={16}
+                  w="auto"
+                  isLoading={isConfirming}
+                  px="24px"
+                  onClick={onConfirm}
+                  rightIcon={<ArrowForwardIcon h="24px" w="24px" />}
+                >
+                  {t("continue")}
+                </Button>
+              )}
             </Box>
           </Box>
         </div>

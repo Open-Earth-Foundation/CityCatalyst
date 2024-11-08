@@ -12,11 +12,21 @@ def extract_ActionType(row):
     # Simple 1:1 mapping
     generated = False
 
-    # Define the diciotnary
-    dict_action_type = {"value": None, "generated": generated}
+    # Define the dictionary based on the schema
+    dict_action_type = {
+        "type": "array",
+        "items": {"type": "string", "enum": ["mitigation", "adaptation"]},
+        "description": "Specifies whether the action is a Mitigation or Adaptation action.",
+        "value": None,
+        "generated": generated,
+    }
 
-    # User .lower() to ensure consistency with later comparisons
-    dict_action_type["value"] = row["Adaption/Mitigation"].lower()
+    if pd.isnull(row.get("Adaption/Mitigation")):
+        return dict_action_type
+
+    # Get action type from the 'Adaption/Mitigation' column and convert to lowercase
+    action_type = row.get("Adaption/Mitigation")
+    dict_action_type["value"] = [action_type.lower()]
 
     return dict_action_type
 
@@ -27,9 +37,19 @@ def extract_ActionName(row, action_type):
 
     generated = False
 
-    # Define the dictionary
-    dict_action_name = {"value": None, "generated": generated}
+    # Define the dictionary based on the schema
+    dict_action_name = {
+        "type": "string",
+        "description": "Descriptive name of the action.",
+        "value": None,
+        "generated": generated,
+    }
 
+    # Check if the 'Title' column is null
+    if pd.isnull(row.get("Title")):
+        return dict_action_name
+
+    # Set the action name from the 'Title' column
     dict_action_name["value"] = row["Title"]
 
     return dict_action_name
@@ -41,19 +61,28 @@ def extract_AdaptationCategory(row, action_type):
 
     generated = False
 
-    # Define the dictionary
-    dict_adaptation_category = {"value": None, "generated": generated}
+    # Define the dictionary based on the schema
+    dict_adaptation_category = {
+        "type": ["array", "null"],
+        "items": {"type": "string"},
+        "description": "Specifies the category of adaptation action.",
+        "value": None,
+        "generated": generated,
+    }
 
+    # Check if the action type is adaptation-related
     if "adaptation" in action_type:
-        dict_adaptation_category["value"] = row["Category 1"]
-        return dict_adaptation_category
+        # Check if 'Category 1' column is not null
+        if pd.isnull(row.get("Category 1")):
+            return dict_adaptation_category
 
+        # Set the value from 'Category 1' as an array
+        dict_adaptation_category["value"] = [row["Category 1"]]
     else:
-        # For mitigation actions, the adaptation category is not applicable
-        print(
-            "Mitigation action found, adaptation category not applicable for 'AdaptationCategory'"
-        )
-        return dict_adaptation_category
+        # For mitigation actions, adaptation category is not applicable
+        print("Mitigation action found, not applicable for 'AdaptationCategory'")
+
+    return dict_adaptation_category
 
 
 def extract_Hazard(row, action_type):
@@ -294,17 +323,29 @@ def extract_PrimaryPurpose(row, action_type):
 
     # Define the dictionary with a default 'value' set to None
     dict_primary_purpose = {
-        "type": "string",
+        "type": ["array", "null"],
+        "items": {"type": "string", "enum": ["GHG Reduction", "Climate Resilience"]},
         "description": "The main goal of the action, e.g., GHG Reduction, Climate Resilience.",
         "value": None,
         "generated": generated,
     }
 
-    # Set the value based on the action type
-    if action_type == "mitigation":
-        dict_primary_purpose["value"] = "GHG Reduction"
-    elif action_type == "adaptation":
-        dict_primary_purpose["value"] = "Climate Resilience"
+    # Initialize an empty list to store purposes
+    primary_purposes = []
+
+    # Split action_type by commas and strip whitespace
+    action_types = [item.strip().lower() for item in action_type[0].split(",")]
+
+    # Check if 'mitigation' is in action_types
+    if "mitigation" in action_types:
+        primary_purposes.append("GHG Reduction")
+
+    # Check if 'adaptation' is in action_types
+    if "adaptation" in action_types:
+        primary_purposes.append("Climate Resilience")
+
+    # Assign the list of purposes to 'value', or None if no valid purposes were added
+    dict_primary_purpose["value"] = primary_purposes if primary_purposes else None
 
     return dict_primary_purpose
 
@@ -494,7 +535,7 @@ def extract_AdaptionEffectiveness(row, action_type):
     # Define the dictionary based on the schema, with 'value' set to None for now
     dict_adaption_effectiveness = {
         "type": ["string", "null"],
-        "enum": ["High", "Medium", "Low", None],
+        "enum": ["High", "Medium", "Low"],
         "description": "The effectiveness of the action in adapting to climate risks.",
         "value": None,
         "generated": generated,

@@ -28,11 +28,7 @@ with open("generic_output_schema.json", "r") as schema_file:
     json_template = json.load(schema_file)
 
 # Load the data into a DataFrame
-df = load_datafile_into_df("files/climate_action_library.csv")
-
-print(df.head())
-
-print(df.columns)
+df = load_datafile_into_df("files/climate_action_library_original.csv")
 
 # Prepare a list to hold all mapped data
 mapped_data = []
@@ -61,8 +57,8 @@ extraction_functions = {
     "Impacts": extract_Impacts,
 }
 
-# For testing, only process the first two rows
-df_subset = df.tail(50)
+# For testing, only process x rows
+df_subset = df  # .tail(50)
 
 # Incremental counter for ActionID
 action_id = 1

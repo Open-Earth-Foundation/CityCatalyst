@@ -49,7 +49,6 @@ export function SegmentedProgress({
       ? { percentage: v, name: `Segment ${i + 1}`, value: max }
       : v,
   );
-  console.log({ normalizedValues }, "TODO remove");
   const tooltipContent = (
     <TableContainer>
       <Table variant="unstyled" size={"sm"}>

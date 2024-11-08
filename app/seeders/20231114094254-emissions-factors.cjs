@@ -107,7 +107,7 @@ module.exports = {
           emissionsFactors,
           "id",
           transaction,
-          folder == "CarbonFootPrint_2023",
+          // folder == "CarbonFootPrint_2023",
         );
         console.info("Finished adding emissions factors");
         await bulkUpsert(

@@ -34,13 +34,22 @@ import {
   useTransform,
 } from "framer-motion";
 import Link from "next/link";
+import {
+  getScopesForInventoryAndSector,
+  InventoryTypeEnum,
+  SECTORS,
+} from "@/util/constants";
+import { InventoryValue } from "@/models/InventoryValue";
 
 const MotionBox = motion(Box);
 
-const kebab = (str: string|undefined): string =>
-  (str)
-    ? str.replaceAll(/\s+/g, '-').replaceAll(/[^0-9A-Za-z\-\_]/g, '').toLowerCase()
-    : '';
+const kebab = (str: string | undefined): string =>
+  str
+    ? str
+        .replaceAll(/\s+/g, "-")
+        .replaceAll(/[^0-9A-Za-z\-\_]/g, "")
+        .toLowerCase()
+    : "";
 
 function SubSectorPage({
   params: { lng, step, inventory: inventoryId, subsector },
@@ -83,6 +92,7 @@ function SubSectorPage({
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
   const defaultInventoryId = userInfo?.defaultInventoryId;
+  const { data: inventoryData } = api.useGetInventoryQuery(inventoryId);
 
   const {
     data: inventoryProgress,
@@ -102,6 +112,11 @@ function SubSectorPage({
         return t("II");
       case "3":
         return t("III");
+      case "4":
+        return t("IV");
+      case "5":
+        return t("V");
+
       default:
         return t("I");
     }
@@ -114,35 +129,22 @@ function SubSectorPage({
   const subSectorData: SubSectorAttributes = sectorData?.subSectors.find(
     (subsectorItem) => subsectorItem.subsectorId === subsector,
   );
-  const getSectorName = (currentStep: string) => {
-    switch (currentStep) {
-      case "1":
-        return t("stationary-energy");
-      case "2":
-        return t("transportation");
-      case "3":
-        return t("waste");
-      default:
-        return t("stationary-energy");
-    }
+  const getSectorName = (currentScope: string) => {
+    return SECTORS[parseInt(currentScope) - 1].name;
   };
 
   const getFilteredSubsectorScopes = () => {
-    const scopes = [];
-
-    for (const key in MANUAL_INPUT_HIERARCHY) {
-      if (key.startsWith(subSectorData?.referenceNumber!)) {
-        const scopeNumber = key.split(".").pop();
-        const result = {
-          ...MANUAL_INPUT_HIERARCHY[key],
-          scope: Number(scopeNumber),
-        };
-        scopes.push(result);
-      }
-    }
-    return scopes;
+    if (!inventoryData) return [];
+    return Object.entries(MANUAL_INPUT_HIERARCHY)
+      .filter(([key]) => key.startsWith(subSectorData?.referenceNumber!))
+      .map(([k, v]) => ({ ...v, referenceNumber: k }))
+      .filter((scope) =>
+        getScopesForInventoryAndSector(
+          inventoryData.inventoryType!,
+          scope.referenceNumber[0],
+        ).includes(scope.scope),
+      );
   };
-
   const scopes = getFilteredSubsectorScopes();
 
   const MotionTabList = motion(TabList);
@@ -185,7 +187,7 @@ function SubSectorPage({
           paddingTop: paddingTop,
         }}
         borderColor="border.neutral"
-        borderBottomWidth={true ? "1px" : ""}
+        borderBottomWidth={"1px"}
       >
         <MotionBox className="w-[1090px] max-w-full mx-auto px-4">
           <AnimatePresence>
@@ -241,7 +243,7 @@ function SubSectorPage({
                         href={`/${inventoryId}/data/${step}`}
                         color="content.tertiary"
                       >
-                        {getSectorName(step)}
+                        {t(getSectorName(step))}
                       </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbItem>
@@ -346,8 +348,8 @@ function SubSectorPage({
                     left: leftPosition.get(),
                   }}
                 >
-                  {t("sector")}: {getSectorName(step)} | {t("inventory-year")}:{" "}
-                  {/*            {inventoryProgress?.inventory.year}*/}
+                  {t("sector")}: {t(getSectorName(step))} |{" "}
+                  {t("inventory-year")}: {inventoryProgress?.inventory.year}
                 </Text>
                 <AnimatePresence key="description-layout">
                   {isVisible && (
@@ -392,9 +394,6 @@ function SubSectorPage({
             {scopes?.map((scope, index) => (
               <Tab
                 key={index}
-                onClick={() => {
-                  triggerMochLoading();
-                }}
                 className="[&[aria-selected='false']]:border-[transparent]"
               >
                 <Text
@@ -415,19 +414,24 @@ function SubSectorPage({
             {loadingState ? (
               <LoadingState />
             ) : (
-              scopes?.map((scope) => (
-                <ActivityTab
-                  referenceNumber={subSectorData?.referenceNumber!}
-                  key={subSectorData?.referenceNumber}
-                  filteredScope={scope.scope}
-                  t={t}
-                  inventoryId={inventoryId}
-                  subsectorId={subsector}
-                  step={step}
-                  activityData={activityData}
-                  inventoryValues={inventoryValues ?? []}
-                />
-              ))
+              scopes?.map((scope) => {
+                return (
+                  <ActivityTab
+                    referenceNumber={scope.referenceNumber!}
+                    key={scope.referenceNumber}
+                    t={t}
+                    inventoryId={inventoryId}
+                    subsectorId={subsector}
+                    step={step}
+                    activityData={activityData}
+                    inventoryValues={
+                      (inventoryValues as InventoryValue[])?.filter(
+                        (iv) => iv.gpcReferenceNumber === scope.referenceNumber,
+                      ) ?? []
+                    }
+                  />
+                );
+              })
             )}
           </TabPanels>
         </Box>

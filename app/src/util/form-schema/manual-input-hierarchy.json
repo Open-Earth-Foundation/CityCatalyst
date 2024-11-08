@@ -1,5 +1,6 @@
 {
   "I.1.1": {
+    "scope": 1,
     "methodologies": [
       {
         "id": "fuel-combustion-residential-buildings-methodology",
@@ -117,6 +118,7 @@
     }
   },
   "I.1.2": {
+    "scope": 2,
     "methodologies": [
       {
         "id": "energy-consumption-residential-buildings-methodology",
@@ -231,7 +233,16 @@
       ]
     }
   },
+  "I.1.3": {
+    "scope": 3,
+    "methodologies": [],
+    "directMeasure": {
+      "id": "residential-buildings-distribution-losses-direct-measure-methodology",
+      "extra-fields": []
+    }
+  },
   "I.2.1": {
+    "scope": 1,
     "methodologies": [
       {
         "id": "fuel-combustion-commercial-buildings-methodology",
@@ -375,6 +386,7 @@
     }
   },
   "I.2.2": {
+    "scope": 2,
     "methodologies": [
       {
         "id": "energy-consumption-commercial-buildings-methodology",
@@ -516,7 +528,16 @@
       ]
     }
   },
+  "I.2.3": {
+    "scope": 3,
+    "methodologies": [],
+    "directMeasure": {
+      "id": "commercial-buildings-distribution-losses-direct-measure-methodology",
+      "extra-fields": []
+    }
+  },
   "I.3.1": {
+    "scope": 1,
     "methodologies": [
       {
         "id": "fuel-combustion-manufacturing-and-construction-methodology",
@@ -692,6 +713,7 @@
     }
   },
   "I.3.2": {
+    "scope": 2,
     "methodologies": [
       {
         "id": "energy-consumption-manufacturing-and-construction-methodology",
@@ -856,7 +878,16 @@
       ]
     }
   },
+  "I.3.3": {
+    "scope": 3,
+    "methodologies": [],
+    "directMeasure": {
+      "id": "manufacturing-industries-distribution-losses-direct-measure-methodology",
+      "extra-fields": []
+    }
+  },
   "I.4.1": {
+    "scope": 1,
     "methodologies": [
       {
         "id": "fuel-combustion-energy-industries-methodology",
@@ -1029,6 +1060,7 @@
     }
   },
   "I.4.2": {
+    "scope": 2,
     "methodologies": [
       {
         "id": "energy-consumption-energy-industries-methodology",
@@ -1184,7 +1216,16 @@
       ]
     }
   },
+  "I.4.3": {
+    "scope": 3,
+    "methodologies": [],
+    "directMeasure": {
+      "id": "energy-industries-distribution-losses-direct-measure-methodology",
+      "extra-fields": []
+    }
+  },
   "I.5.1": {
+    "scope": 1,
     "methodologies": [
       {
         "id": "fuel-combustion-agriculture-forestry-fishing-activities-methodology",
@@ -1319,6 +1360,7 @@
     }
   },
   "I.5.2": {
+    "scope": 2,
     "methodologies": [
       {
         "id": "energy-consumption-agriculture-forestry-fishing-activities-methodology",
@@ -1450,7 +1492,16 @@
       ]
     }
   },
+  "I.5.3": {
+    "scope": 3,
+    "methodologies": [],
+    "directMeasure": {
+      "id": "agriculture-distribution-losses-direct-measure-methodology",
+      "extra-fields": []
+    }
+  },
   "I.6.1": {
+    "scope": 1,
     "methodologies": [
       {
         "id": "fuel-combustion-non-specific-sources-methodology",
@@ -1587,6 +1638,7 @@
     }
   },
   "I.6.2": {
+    "scope": 2,
     "methodologies": [
       {
         "id": "energy-consumption-non-specific-sources-methodology",
@@ -1716,7 +1768,16 @@
       ]
     }
   },
+  "I.6.3": {
+    "scope": 3,
+    "methodologies": [],
+    "directMeasure": {
+      "id": "non-specified-sources-distribution-losses-direct-measure-methodology",
+      "extra-fields": []
+    }
+  },
   "I.7.1": {
+    "scope": 1,
     "methodologies": [
       {
         "id": "fugitive-emissions-coal-methodology",
@@ -1828,6 +1889,7 @@
     }
   },
   "I.8.1": {
+    "scope": 1,
     "methodologies": [
       {
         "id": "fugitive-emissions-oil-gas-methodology",
@@ -1946,6 +2008,7 @@
     }
   },
   "II.1.1": {
+    "scope": 1,
     "methodologies": [
       {
         "id": "fuel-sales-on-road-transport-methodology",
@@ -2183,6 +2246,7 @@
     }
   },
   "II.1.2": {
+    "scope": 2,
     "methodologies": [
       {
         "id": "electricity-consumption-on-road-transport-methodology",
@@ -2278,7 +2342,16 @@
       ]
     }
   },
+  "II.1.3": {
+    "scope": 3,
+    "methodologies": [],
+    "directMeasure": {
+      "id": "on-road-transportation-outside-direct-measure-methodology",
+      "extra-fields": []
+    }
+  },
   "II.2.1": {
+    "scope": 1,
     "methodologies": [
       {
         "id": "fuel-sales-railways-methodology",
@@ -2497,6 +2570,7 @@
     }
   },
   "II.2.2": {
+    "scope": 2,
     "methodologies": [
       {
         "id": "electricity-consumption-railways-methodology",
@@ -2588,7 +2662,16 @@
       ]
     }
   },
+  "II.2.3": {
+    "scope": 3,
+    "methodologies": [],
+    "directMeasure": {
+      "id": "railway-outside-direct-measure-methodology",
+      "extra-fields": []
+    }
+  },
   "II.3.1": {
+    "scope": 1,
     "methodologies": [
       {
         "id": "fuel-sales-waterborne-navigation-methodology",
@@ -2792,6 +2875,7 @@
     }
   },
   "II.3.2": {
+    "scope": 2,
     "methodologies": [
       {
         "id": "electricity-consumption-waterborne-navigation-methodology",
@@ -2882,7 +2966,16 @@
       ]
     }
   },
+  "II.3.3": {
+    "scope": 3,
+    "methodologies": [],
+    "directMeasure": {
+      "id": "water-transportation-outside-direct-measure-methodology",
+      "extra-fields": []
+    }
+  },
   "II.4.1": {
+    "scope": 1,
     "methodologies": [
       {
         "id": "fuel-sales-aviation-methodology",
@@ -3096,6 +3189,7 @@
     }
   },
   "II.4.2": {
+    "scope": 2,
     "methodologies": [
       {
         "id": "electricity-consumption-aviation-methodology",
@@ -3190,7 +3284,16 @@
       ]
     }
   },
+  "II.4.3": {
+    "scope": 3,
+    "methodologies": [],
+    "directMeasure": {
+      "id": "aviation-outside-direct-measure-methodology",
+      "extra-fields": []
+    }
+  },
   "II.5.1": {
+    "scope": 1,
     "methodologies": [
       {
         "id": "fuel-sales-off-road-transport-methodology",
@@ -3314,6 +3417,7 @@
     }
   },
   "II.5.2": {
+    "scope": 2,
     "methodologies": [
       {
         "id": "electricity-consumption-off-road-transport-methodology",
@@ -3410,6 +3514,7 @@
     }
   },
   "III.1.1": {
+    "scope": 1,
     "methodologies": [
       {
         "id": "methane-commitment-solid-waste-inboundary-methodology",
@@ -3517,6 +3622,7 @@
     }
   },
   "III.1.3": {
+    "scope": 3,
     "activityTypeField": "total-municipal-solid-waste-disposed",
     "methodologies": [
       {
@@ -3617,6 +3723,7 @@
     }
   },
   "III.2.1": {
+    "scope": 1,
     "methodologies": [
       {
         "id": "biological-treatment-inboundary-methodology",
@@ -3716,6 +3823,7 @@
     }
   },
   "III.2.3": {
+    "scope": 3,
     "methodologies": [
       {
         "id": "biological-treatment-outboundary-methodology",
@@ -3815,6 +3923,7 @@
     }
   },
   "III.3.1": {
+    "scope": 1,
     "methodologies": [
       {
         "id": "incineration-waste-inboundary-methodology",
@@ -3904,6 +4013,7 @@
     }
   },
   "III.3.3": {
+    "scope": 3,
     "methodologies": [
       {
         "id": "incineration-waste-outboundary-methodology",
@@ -3993,6 +4103,7 @@
     }
   },
   "III.4.1": {
+    "scope": 1,
     "methodologies": [
       {
         "id": "wastewater-inside-methodology",
@@ -4222,13 +4333,16 @@
           "id": "direct-measure-wastewater-inside-source-type",
           "options": [
             "source-type-domestic-wastewater",
-            "source-type-industrial-wastewater"
-          ]
+            "source-type-industrial-wastewater",
+            "source-type-all-wastewater"
+          ],
+          "exclusive": "source-type-all-wastewaterœ"
         }
       ]
     }
   },
   "III.4.3": {
+    "scope": 3,
     "methodologies": [
       {
         "id": "wastewater-outside-methodology",
@@ -4458,6 +4572,46 @@
           ]
         }
       ]
+    }
+  },
+  "IV.1": {
+    "scope": 1,
+    "methodologies": [],
+    "directMeasure": {
+      "id": "industrial-processes-direct-measure-methodology",
+      "extra-fields": []
+    }
+  },
+  "IV.2": {
+    "scope": 1,
+    "methodologies": [],
+    "directMeasure": {
+      "id": "product-use-direct-measure-methodology",
+      "extra-fields": []
+    }
+  },
+  "V.1": {
+    "scope": 1,
+    "methodologies": [],
+    "directMeasure": {
+      "id": "livestock-direct-measure-methodology",
+      "extra-fields": []
+    }
+  },
+  "V.2": {
+    "scope": 1,
+    "methodologies": [],
+    "directMeasure": {
+      "id": "land-direct-measure-methodology",
+      "extra-fields": []
+    }
+  },
+  "V.3": {
+    "scope": 1,
+    "methodologies": [],
+    "directMeasure": {
+      "id": "aggregate-sources-direct-measure-methodology",
+      "extra-fields": []
     }
   }
 }

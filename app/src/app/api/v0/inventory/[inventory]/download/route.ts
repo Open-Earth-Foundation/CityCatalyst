@@ -51,11 +51,21 @@ export const GET = apiHandler(async (req, { params, session }) => {
         as: "inventoryValues",
         include: [
           {
+            model: db.models.ActivityValue,
+            as: "activityValues",
+            include: [
+              {
+                model: db.models.GasValue,
+                as: "gasValues",
+                include: [
+                  { model: db.models.EmissionsFactor, as: "emissionsFactor" },
+                ],
+              },
+            ],
+          },
+          {
             model: db.models.GasValue,
             as: "gasValues",
-            include: [
-              { model: db.models.EmissionsFactor, as: "emissionsFactor" },
-            ],
           },
           {
             model: db.models.DataSource,
@@ -143,7 +153,6 @@ async function inventoryCSV(inventory: Inventory): Promise<Buffer> {
     where: {
       inventoryId: inventory.inventoryId,
     },
-    include: [{ model: db.models.EmissionsFactor, as: "emissionsFactor" }],
   });
   const headers = [
     "Inventory Reference",

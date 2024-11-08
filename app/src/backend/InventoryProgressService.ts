@@ -2,10 +2,13 @@ import type { Sector } from "@/models/Sector";
 import { db } from "@/models";
 import INVENTORY_STRUCTURE from "../data/inventory-structure.json";
 import fs from "fs";
-import { logger } from "@/services/logger";
-import { Inventory } from "@/models/Inventory";
+import { Inventory, InventoryTypeEnum } from "@/models/Inventory";
 import * as path from "path";
 import * as process from "node:process";
+import {
+  getScopesForInventoryAndSector,
+  getSectorsForInventory,
+} from "@/util/constants";
 
 const romanTable: Record<string, number> = {
   I: 1,
@@ -31,12 +34,11 @@ export const Inventory_Sector_Hierarchy =
 export default class InventoryProgressService {
   public static async getInventoryProgress(inventory: Inventory) {
     const sectors = await this.getSortedInventoryStructure();
-
     const filteredOutSectors = sectors
       .filter((sector) => {
-        if (sector.referenceNumber && romanTable[sector.referenceNumber] < 4) {
-          return true;
-        }
+        return getSectorsForInventory(inventory.inventoryType)
+          .map((s) => s.referenceNumber)
+          .includes(sector.referenceNumber!);
       })
       .map((sector) => ({
         id: sector.sectorId,
@@ -62,19 +64,22 @@ export default class InventoryProgressService {
               lastUpdated: new Date(0),
             }))
             .filter((subCategory) => {
+              if (
+                inventory.inventoryType === InventoryTypeEnum.GPC_BASIC_PLUS
+              ) {
+                return true;
+              }
               const lastDigit = parseInt(
                 subCategory.referenceNumber?.split(".")[2] as string,
               );
-              if (
-                sector.referenceNumber === "I" ||
-                sector.referenceNumber === "II"
-              ) {
-                return lastDigit < 3;
-                // return subcategories with reference numbers that end in 1 and 2
-              } else if (sector.referenceNumber === "III") {
-                return [1, 3].includes(lastDigit);
-                // return subcategories ending with 1 and 3
+              if (!lastDigit) {
+                // sectors IV and V don't have a scopeId and should only be returned for BASIC_PLUS
+                return false;
               }
+              return getScopesForInventoryAndSector(
+                inventory.inventoryType!,
+                sector.referenceNumber!,
+              )!.includes(lastDigit);
             }),
         })),
       }));
@@ -89,7 +94,6 @@ export default class InventoryProgressService {
       },
       {} as Record<string, number>,
     );
-
     const sectorProgress = filteredOutSectors.map((sector) => {
       const inventoryValues = inventory.inventoryValues.filter(
         (inventoryValue) => sector.sectorId === inventoryValue.sectorId,

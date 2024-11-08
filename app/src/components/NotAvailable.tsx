@@ -49,7 +49,7 @@ const NotAvailable = ({ lng }: { lng: string }) => {
         </Text>
         <Button
           as="a"
-          href={process.env.NEXT_PUBLIC_HOST!}
+          href={`${window.location.protocol}//${window.location.host}/${lng}/`}
           gap="8px"
           h="48px"
           px="24px"

@@ -78,6 +78,12 @@ interface InventoryValueUpdateQuery {
   data: InventoryValueData;
 }
 
+interface InventoryValueInSubSectorScopeUpdateQuery {
+  subSectorId: string;
+  inventoryId: string;
+  data: InventoryValueData;
+}
+
 interface InventoryUpdateQuery {
   inventoryId: string;
   data: { isPublic: boolean };

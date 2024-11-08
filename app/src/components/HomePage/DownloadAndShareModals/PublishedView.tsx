@@ -46,16 +46,9 @@ export function PublishedView({
       addSuffix: true,
       locale: getLocale(lng),
     });
-  try {
-    console.log("process.env", JSON.stringify(process.env)); // TODO NINA
-  } catch (e) {
-  } finally {
-    console.log(
-      "process.env.NEXT_PUBLIC_HOST",
-      JSON.stringify(process.env.NEXT_PUBLIC_HOST),
-    ); // TODO NINA
-  }
-  const URL = `${process.env.NEXT_PUBLIC_HOST}/${lng}/public/${inventoryId}`;
+
+  const URL = `${window.location.protocol}//${window.location.host}${window.location.port ? `:${window.location.port}` : ""}/${lng}/public/${inventoryId}`;
+
   return (
     <ModalBody>
       <Text fontWeight="600" fontSize="title.lg">

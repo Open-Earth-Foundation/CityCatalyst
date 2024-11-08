@@ -62,7 +62,7 @@ extraction_functions = {
 }
 
 # For testing, only process the first two rows
-df_subset = df.head(3)
+df_subset = df.tail(50)
 
 # Incremental counter for ActionID
 action_id = 1
@@ -82,9 +82,6 @@ for index, df_row in df_subset.iterrows():
     # iterate over extraction functions and apply them to the row
     for attribute_name, function in extraction_functions.items():
         dict_attribute = function(df_row, action_type["value"])
-        # value, generated = function(df_row, action_type_lower)
-        # Set each attribute as a dictionary with "value" and "generated"
-        # mapped_row[attribute_name] = {"value": value, "generated": generated}
         mapped_row[attribute_name] = dict_attribute
 
     mapped_data.append(mapped_row)

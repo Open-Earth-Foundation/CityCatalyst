@@ -7,37 +7,6 @@ type InventoryValueWithActivityValues = InventoryValue & {
   activityValues: ActivityValue[];
 };
 
-const fakeDictionary: Record<string, any> = {
-  // "I.1.1": {
-  //   activity_amount: 1,
-  //   activity_unit: "kg",
-  //   activity_methodology_description: "Methodology 1",
-  //   activity_source: "Source 1",
-  //   activity_quality: "Quality 1", // when more than one exists, use the most common
-  //   ef_unit: "kg/m3",
-  //   ef_co2_amount: 1,
-  //   ef_n2o_amount: 1,
-  //   ef_ch4_amount: 1,
-  //   ef_description: "Description 1",
-  //   ef_source: "Source 1",
-  //   ghg_tonnes_co2: 2000,
-  // },
-  // "I.2.1": {
-  //   activity_amount: 2,
-  //   activity_unit: "kg",
-  //   activity_methodology_description: "Methodology 2",
-  //   activity_source: "Source 2",
-  //   activity_quality: "Quality 2", // when more than one exists, use the most common
-  //   ef_unit: "kg/m3",
-  //   ef_co2_amount: 2,
-  //   ef_n2o_amount: 2,
-  //   ef_ch4_amount: 2,
-  //   ef_description: "Description 2",
-  //   ef_source: "Source 2",
-  //   ghg_tonnes_co2: 4000,
-  // },
-};
-
 const ECRF_TEMPLATE_PATH = "./templates/eCRF_Export_template.xlsx";
 
 export default class ECRFDownloadService {
@@ -78,25 +47,6 @@ export default class ECRFDownloadService {
             this.replacePlaceholdersInRow(row, dataSection, rowNumber);
           }
         }
-
-        // if (placeholderValue && typeof placeholderValue === "string") {
-        //   const dataSection = fakeDictionary[placeholderValue];
-        //
-        //   if (dataSection) {
-        //     // Loop through each field and update the corresponding cell
-        //     for (const [fieldName, columnIndex] of Object.entries(
-        //       fieldToColumnIndex,
-        //     )) {
-        //       if (dataSection.hasOwnProperty(fieldName)) {
-        //         row.getCell(columnIndex).value = dataSection[fieldName];
-        //       }
-        //     }
-        //   } else {
-        //     console.warn(
-        //       `No data found for placeholder '${placeholderValue}' at row ${rowNumber}`,
-        //     );
-        //   }
-        // }
       });
 
       // Save the modified workbook
@@ -176,7 +126,6 @@ export default class ECRFDownloadService {
     rowNumber: number,
   ) {
     row.eachCell((cell, colNumber) => {
-      // things left to make this work. if the data isn't found, it should be replaced with an empty string
       // dealing with Notation keys
       if (cell.value && typeof cell.value === "string") {
         const cellValue = cell.value as string;
@@ -185,12 +134,17 @@ export default class ECRFDownloadService {
           const fieldName = placeholderMatch[1];
           const replacementValue = dataSection[fieldName];
 
-          if (replacementValue !== undefined) {
+          // if field name is notation key, replace with unavailable explanation
+          if (fieldName === "notation_key" && dataSection["notation_key"]) {
+            // the stored value looks like "reason_NO", "reason_NE", etc.
+            cell.value = dataSection["notation_key"].split("_")[1];
+          } else if (replacementValue !== undefined) {
             cell.value = replacementValue;
           } else {
             console.warn(
               `No data found for field '${fieldName}' at row ${rowNumber}, column ${colNumber}`,
             );
+            cell.value = ""; // remove the placeholder when done
           }
         }
       }

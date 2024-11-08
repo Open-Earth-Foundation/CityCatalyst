@@ -8,7 +8,8 @@ import { decimalToBigInt } from "@/util/big_int";
 
 const EARTH_LOCATION = "EARTH";
 
-type RemovedSourceResult = { source: DataSource; reason: string };
+export type RemovedSourceResult = { source: DataSource; reason: string };
+export type FailedSourceResult = { source: DataSource; error: string };
 type FilterSourcesResult = {
   applicableSources: DataSource[];
   removedSources: RemovedSourceResult[];

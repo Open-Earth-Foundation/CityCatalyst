@@ -8,8 +8,6 @@ import {
   Tbody,
   Td,
   Text,
-  Tfoot,
-  Th,
   Tooltip,
   Tr,
   useToken,
@@ -46,9 +44,9 @@ export function SegmentedProgress({
 }) {
   const colorValues = useToken("colors", colors);
   const tooltipRef = useRef(null);
-  const normalizedValues = values.map((v) =>
+  const normalizedValues = values.map((v, i) =>
     typeof v === "number"
-      ? { percentage: v, name: `Segment ${values.indexOf(v) + 1}`, value: max }
+      ? { percentage: v, name: `Segment ${i + 1}`, value: max }
       : v,
   );
   const tooltipContent = (
@@ -114,7 +112,8 @@ export function SegmentedProgress({
             h={height}
             w={`${(100 * value.percentage) / max}%`}
             borderStartRadius={
-              i === 0 || (i === 1 && normalizedValues[0].value === 0)
+              i === 0 ||
+              (i === 1 && (normalizedValues[0].percentage ?? 0) === 0)
                 ? "full"
                 : undefined
             }

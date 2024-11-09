@@ -2042,7 +2042,6 @@
               },
               {
                 "id": "on-road-transport-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-passenger-vehicles",
                   "vehicle-type-commercial-vehicles",
@@ -2135,7 +2134,6 @@
             "extra-fields": [
               {
                 "id": "on-road-transport-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-passenger-vehicles",
                   "vehicle-type-commercial-vehicles",
@@ -2265,7 +2263,6 @@
             "extra-fields": [
               {
                 "id": "on-road-transport-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-vehicles",
@@ -2704,7 +2701,6 @@
               },
               {
                 "id": "waterborne-navigation-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-ferries",
@@ -2781,7 +2777,6 @@
             "extra-fields": [
               {
                 "id": "waterborne-navigation-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-ferries",
@@ -2892,7 +2887,6 @@
             "extra-fields": [
               {
                 "id": "waterborne-navigation-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-ferries",
@@ -3010,7 +3004,6 @@
               },
               {
                 "id": "aviation-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-aircraft",
@@ -3088,7 +3081,6 @@
             "extra-fields": [
               {
                 "id": "aviation-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-aircraft",
@@ -3208,7 +3200,6 @@
             "extra-fields": [
               {
                 "id": "aviation-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-aircraft",
@@ -3326,7 +3317,6 @@
               },
               {
                 "id": "off-road-transport-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-construction-machinery",
@@ -3436,7 +3426,6 @@
             "extra-fields": [
               {
                 "id": "off-road-transport-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-construction-machinery",

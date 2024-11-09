@@ -156,17 +156,20 @@ const ActivityModalBody = ({
         setIsEmissionFactorInputDisabled(false);
       } else {
         let co2Val =
-          (emissionFactor?.gasValuesByGas["CO2"].gasValues.length as number) > 0
+          (emissionFactor?.gasValuesByGas["CO2"]?.gasValues.length as number) >
+          0
             ? emissionFactor?.gasValuesByGas["CO2"].gasValues[0]
                 .emissionsPerActivity
             : "";
         let n2oVal =
-          (emissionFactor?.gasValuesByGas["N2O"].gasValues.length as number) > 0
+          (emissionFactor?.gasValuesByGas["N2O"]?.gasValues.length as number) >
+          0
             ? emissionFactor?.gasValuesByGas["N2O"].gasValues[0]
                 .emissionsPerActivity
             : "";
         let ch4Val =
-          (emissionFactor?.gasValuesByGas["CH4"].gasValues.length as number) > 0
+          (emissionFactor?.gasValuesByGas["CH4"]?.gasValues.length as number) >
+          0
             ? emissionFactor?.gasValuesByGas["CH4"].gasValues[0]
                 .emissionsPerActivity
             : "";

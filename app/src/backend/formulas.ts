@@ -305,17 +305,17 @@ export async function handleIncinerationWasteFormula(
     const fractionOfFossilCarbonI =
       fractionOfFossilCarbonInput === null ||
       fractionOfFossilCarbonInput === undefined
-        ? 1
+        ? 0.2
         : fractionOfFossilCarbonInput;
 
     const dryMatterContentI =
       dryMatterInput === null || dryMatterInput === undefined
-        ? 1
+        ? 0.2
         : dryMatterInput;
 
     const fractionOfCarbonI =
       fractionOfCarbonInput === null || fractionOfCarbonInput === undefined
-        ? 1
+        ? 0.2
         : fractionOfCarbonInput;
 
     if (dryMatterInput == null) {
@@ -335,6 +335,14 @@ export async function handleIncinerationWasteFormula(
         `fractionOfFossilCarbonI is missing for ${wasteType} a default of 1 used`,
       );
     }
+
+    console.log(dryMatterContentI, "dryMatterContentI");
+    console.log(fractionOfCarbonI, "fractionOfCarbonI");
+    console.log(fractionOfFossilCarbonI, "fractionOfFossilCarbonI");
+    console.log(
+      IncinerationWasteCO2OxidationFactor[technology],
+      "oxidation factor",
+    );
 
     const oxidationFactorI = IncinerationWasteCO2OxidationFactor[technology];
 
@@ -451,6 +459,8 @@ export function handleMethaneCommitmentFormula(
     "industrial-waste",
   ].map(getFraction);
 
+  console.log(data, "the data here");
+
   // TODO this dropdown input is not part of manual input spec for III.1.1
   const landfillType = data["landfill-type"];
 
@@ -517,6 +527,7 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
     inventoryValue.inputMethodology,
     inventoryValue.gpcReferenceNumber,
   );
+
   const activityAmountKey = activityValue.metadata?.["activityTitle"];
   const activityAmount = data?.[activityAmountKey] || 0;
   const gases = gasValues?.map((gasValue) => {
@@ -665,6 +676,8 @@ export async function handleDomesticWasteWaterFormula(
  * @returns The calculated emissions of gases.
  * @throws {createHttpError.BadRequest} If the activity value has no data associated.
  */
+
+// TODO ISSUE WITH WET WASTE NEEDS TO BE FIXED
 export async function handleBiologicalTreatmentFormula(
   activityValue: ActivityValue,
   inventoryValue: InventoryValue,
@@ -680,6 +693,8 @@ export async function handleBiologicalTreatmentFormula(
     inventoryValue.inputMethodology,
     inventoryValue.gpcReferenceNumber,
   );
+
+  console.log(data, "IDHDIH");
   if (!data) {
     throw new createHttpError.BadRequest(
       "Activity has no data associated, so it can't use the formula",
@@ -714,8 +729,7 @@ export async function handleBiologicalTreatmentFormula(
   const totalCH4Emitted = Decimal.mul(organicWasteMass, emissionsFactor).div(
     1000,
   );
-  const totalCH4Recovered =
-    data["biological-treatment-inboundary-total-of-ch4-recovered"] ?? 0;
+  const totalCH4Recovered = data["total-of-ch4-recovered"] ?? 0; // TODO check this.
   const resultCH4 = totalCH4Emitted.round().sub(totalCH4Recovered);
   return [{ gas: "CH4", amount: resultCH4 }];
 }

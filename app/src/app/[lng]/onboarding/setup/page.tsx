@@ -779,22 +779,21 @@ function CustomRadio(props: CustomRadioProps) {
 function SetInventoryDetailsStep({
   t,
   register,
-  years,
   errors,
   control,
   setValue,
+  years,
 }: {
   t: TFunction;
   register: UseFormRegister<Inputs>;
-  years: number[];
   errors: FieldErrors<Inputs>;
   control: Control<Inputs>;
   setValue: any;
+  years: number[];
 }) {
   let year;
   const inventoryGoalOptions: string[] = ["gpc-basic", "gpc-basic-plus"];
   const globalWarmingPotential: string[] = ["ar5", "ar6"];
-  years = [2001, 2002, 2003];
 
   // Handle inventory Goal Radio Input
   // Set default inventory goal form value
@@ -1109,17 +1108,110 @@ function SetPopulationDataStep({
   register,
   errors,
   control,
+  years,
+  setData,
+  setOcCityData,
+  ocCityData,
+  watch,
+  setValue,
+  numberOfYearsDisplayed,
 }: {
   t: TFunction;
   register: UseFormRegister<Inputs>;
   errors: FieldErrors<Inputs>;
   control: Control<Inputs>;
+  years: number[];
+  watch: Function;
+  ocCityData?: OCCityAttributes;
+  setOcCityData: (cityData: OCCityAttributes) => void;
+  setData: (data: OnboardingData) => void;
+  setValue: any;
+  numberOfYearsDisplayed: number;
 }) {
-  const countryPopulationYears = [1, 2, 1];
-  const regionPopulationYear = [];
-  const cityPopulationYear = [1, 2, 3];
-  const year: number = 0;
-  const years = [1, 2, 3];
+  const yearInput = watch("year");
+  const year: number | null = yearInput ? parseInt(yearInput) : null;
+
+  const locode = ocCityData?.actor_id;
+  const { data: cityData } = useGetOCCityDataQuery(locode!, {
+    skip: !locode,
+  });
+  const countryLocode =
+    locode && locode.length > 0 ? locode.split(" ")[0] : null;
+  const { data: countryData } = useGetOCCityDataQuery(countryLocode!, {
+    skip: !countryLocode,
+  });
+  const regionLocode = cityData?.is_part_of;
+  const { data: regionData } = useGetOCCityDataQuery(regionLocode!, {
+    skip: !regionLocode,
+  });
+  const [countryPopulationSourceName, setCountryPopulationSourceName] =
+    useState<string>("");
+  useEffect(() => {
+    if (cityData && year) {
+      const population = findClosestYear(
+        cityData.population,
+        year,
+        numberOfYearsDisplayed,
+      );
+      if (!population) {
+        console.error("Failed to find population data for city");
+        return;
+      }
+      setValue("cityPopulation", population.population);
+      setValue("cityPopulationYear", population.year);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cityData, year, setValue]);
+
+  useEffect(() => {
+    if (regionData && year) {
+      const population = findClosestYear(
+        regionData.population,
+        year,
+        numberOfYearsDisplayed,
+      );
+      if (!population) {
+        console.error("Failed to find population data for region");
+        return;
+      }
+      setValue("regionPopulation", population.population);
+      setValue("regionPopulationYear", population.year);
+    }
+  }, [regionData, year, setValue]);
+
+  useEffect(() => {
+    if (countryData && year) {
+      const population = findClosestYear(
+        countryData.population,
+        year,
+        numberOfYearsDisplayed,
+      );
+      if (!population) {
+        console.error("Failed to find population data for region");
+        return;
+      }
+      let [{ datasource }] = countryData.population;
+      console.log("datasource_name: ", datasource.name);
+      setCountryPopulationSourceName(datasource.name);
+      setValue("countryPopulation", population.population);
+      setValue("countryPopulationYear", population.year);
+      const keys = Object.keys(countryData.emissions);
+      const sourceId = keys.find((id) => id.startsWith("UNFCCC"));
+
+      if (sourceId) {
+        const emissionsData: CountryEmissionsEntry[] =
+          countryData.emissions[sourceId].data;
+        const emissions = emissionsData.find(
+          (e) => e.year === year,
+        )?.total_emissions;
+        if (emissions == null) {
+          console.error("Failed to find country emissions for ", year);
+        }
+        setValue("totalCountryEmissions", emissions);
+      }
+    }
+  }, [countryData, year, setValue]);
+
   return (
     <Box w="full">
       <Box
@@ -1168,7 +1260,7 @@ function SetPopulationDataStep({
             <HStack spacing={6} align="start">
               <FormControl isInvalid={!!errors.cityPopulation}>
                 <FormattedThousandsNumberInput<Inputs>
-                  name="cityPopulation"
+                  name="countryPopulation"
                   control={control}
                   rules={{
                     required: t("population-required"),
@@ -1188,7 +1280,7 @@ function SetPopulationDataStep({
                     letterSpacing="wide"
                     lineHeight="20px"
                   >
-                    {t("source")}: [{t("source-name")}]
+                    {t("source")}: {countryPopulationSourceName}
                   </Text>
                 </Box>
                 <FormErrorMessage
@@ -1212,25 +1304,23 @@ function SetPopulationDataStep({
                 _placeholder={{ color: "content.tertiary" }}
                 py="16px"
                 px={0}
-                {...register("year", {
+                {...register("countryPopulationYear", {
                   required: t("inventory-year-required"),
                 })}
               >
-                {countryPopulationYears.map((year: number, i: number) => (
+                {years.map((year: number, i: number) => (
                   <option value={year} key={i}>
                     {year}
                   </option>
                 ))}
               </Select>
-              <InputRightElement>
-                {!!year && (
-                  <CheckIcon
-                    color="semantic.success"
-                    boxSize={4}
-                    mt={2}
-                    mr={10}
-                  />
-                )}
+              <InputRightElement
+                display="flex"
+                alignItems="center"
+                mt={5}
+                mr={6}
+              >
+                {!!year && <CheckIcon color="semantic.success" boxSize={4} />}
               </InputRightElement>
             </InputGroup>
           </Box>
@@ -1296,25 +1386,18 @@ function SetPopulationDataStep({
                 _placeholder={{ color: "content.tertiary" }}
                 py="16px"
                 px={0}
-                {...register("year", {
+                {...register("regionPopulationYear", {
                   required: t("inventory-year-required"),
                 })}
               >
-                {countryPopulationYears.map((year: number, i: number) => (
+                {years.map((year: number, i: number) => (
                   <option value={year} key={i}>
                     {year}
                   </option>
                 ))}
               </Select>
-              <InputRightElement>
-                {!!year && (
-                  <CheckIcon
-                    color="semantic.success"
-                    boxSize={4}
-                    mt={2}
-                    mr={10}
-                  />
-                )}
+              <InputRightElement mt={5} mr={6}>
+                {!!year && <CheckIcon color="semantic.success" boxSize={4} />}
               </InputRightElement>
             </InputGroup>
           </Box>
@@ -1347,7 +1430,7 @@ function SetPopulationDataStep({
             <HStack spacing={6} align="start">
               <FormControl isInvalid={!!errors.cityPopulation}>
                 <FormattedThousandsNumberInput<Inputs>
-                  name="regionPopulation"
+                  name="cityPopulation"
                   control={control}
                   rules={{
                     required: t("population-required"),
@@ -1380,25 +1463,18 @@ function SetPopulationDataStep({
                 _placeholder={{ color: "content.tertiary" }}
                 py="16px"
                 px={0}
-                {...register("year", {
+                {...register("cityPopulationYear", {
                   required: t("inventory-year-required"),
                 })}
               >
-                {countryPopulationYears.map((year: number, i: number) => (
+                {years.map((year: number, i: number) => (
                   <option value={year} key={i}>
                     {year}
                   </option>
                 ))}
               </Select>
-              <InputRightElement>
-                {!!year && (
-                  <CheckIcon
-                    color="semantic.success"
-                    boxSize={4}
-                    mt={2}
-                    mr={10}
-                  />
-                )}
+              <InputRightElement mt={5} mr={6}>
+                {!!year && <CheckIcon color="semantic.success" boxSize={4} />}
               </InputRightElement>
             </InputGroup>
           </Box>
@@ -1711,6 +1787,13 @@ export default function OnboardingSetup({
   const regionPopulationYear = watch("regionPopulationYear");
   const countryPopulationYear = watch("countryPopulationYear");
 
+  const currentYear = new Date().getFullYear();
+  const numberOfYearsDisplayed = 10;
+  const years = Array.from(
+    { length: numberOfYearsDisplayed },
+    (_x, i) => currentYear - i,
+  );
+
   const { data: cityArea, isLoading: isCityAreaLoading } =
     api.useGetCityBoundaryQuery(data.locode!, {
       skip: !data.locode,
@@ -1826,10 +1909,10 @@ export default function OnboardingSetup({
             <SetInventoryDetailsStep
               t={t}
               register={register}
-              years={[]}
               errors={errors}
               control={control}
               setValue={setValue}
+              years={years}
             />
           )}
           {activeStep === 2 && (
@@ -1838,6 +1921,13 @@ export default function OnboardingSetup({
               register={register}
               control={control}
               errors={errors}
+              years={years}
+              numberOfYearsDisplayed={numberOfYearsDisplayed}
+              setData={setData}
+              setOcCityData={setOcCityData}
+              setValue={setValue}
+              watch={watch}
+              ocCityData={ocCityData}
             />
           )}
           {activeStep === 3 && (

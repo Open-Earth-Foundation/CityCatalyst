@@ -11,9 +11,15 @@ import { TFunction } from "i18next";
 import React, { useState } from "react";
 import NextLink from "next/link";
 
-export function InventoryPreferencesCard({ t }: { t: TFunction }) {
+export function InventoryPreferencesCard({
+  t,
+  isPublic,
+}: {
+  t: TFunction;
+  isPublic: boolean;
+}) {
   const [shouldShowInventoryPreferences, setShouldShowInventoryPreferences] =
-    useState(true);
+    useState(false); // [ON-1840] hide until the feature is finished - don't forget (&& !isPublic)
 
   return (
     <>

@@ -120,7 +120,7 @@ export default function HomePage({
             style={{ maxWidth: "90vw" }}
           >
             <VStack align="start">
-              <InventoryPreferencesCard t={t} />
+              <InventoryPreferencesCard t={t} isPublic={isPublic} />
               <Text
                 color="content.primary"
                 fontWeight="bold"

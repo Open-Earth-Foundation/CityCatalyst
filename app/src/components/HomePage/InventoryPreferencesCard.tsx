@@ -8,7 +8,8 @@ import {
 } from "@chakra-ui/react";
 import { IoIosClose } from "react-icons/io";
 import { TFunction } from "i18next";
-import { useState } from "react";
+import React, { useState } from "react";
+import NextLink from "next/link";
 
 export function InventoryPreferencesCard({ t }: { t: TFunction }) {
   const [shouldShowInventoryPreferences, setShouldShowInventoryPreferences] =
@@ -32,7 +33,12 @@ export function InventoryPreferencesCard({ t }: { t: TFunction }) {
               </Text>
               <Text> {t("discover-relevant-subsectors")}</Text>
             </VStack>
-            <Button> {t("set-inventory-preferences")}</Button>
+            <NextLink
+              data-testid={"inventory-preferences-testId"}
+              href={`preferences`}
+            >
+              <Button> {t("set-inventory-preferences")}</Button>
+            </NextLink>
             <IconButton
               variant="ghost"
               icon={<IoIosClose />}

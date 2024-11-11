@@ -6,13 +6,13 @@ interface CustomRadioProps extends UseRadioProps {
 }
 
 export function CustomRadio(props: CustomRadioProps) {
-  const { getInputProps, getCheckboxProps } = useRadio(props);
+  const { getInputProps, getRadioProps } = useRadio(props);
 
   return (
     <Box as="label">
       <input {...getInputProps()} hidden />
       <Box
-        {...getCheckboxProps()}
+        {...getRadioProps()}
         cursor={props.isDisabled ? "not-allowed" : "pointer"}
         w="181px"
         h="56px"

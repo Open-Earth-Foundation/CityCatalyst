@@ -57,7 +57,6 @@ export default function SetInventoryDetailsStep({
     name: "inventoryGoal",
     defaultValue: "gpc-basic",
     onChange: (value: string) => {
-      console.log("Value", value);
       setValue("inventoryGoal", value!);
     },
   } as UseRadioGroupProps);
@@ -69,15 +68,12 @@ export default function SetInventoryDetailsStep({
       name: "globalWarmingPotential",
       defaultValue: "ar6",
       onChange: (value: string) => {
-        console.log("Value", value);
         setValue("globalWarmingPotential", value!);
       },
     } as UseRadioGroupProps);
 
   const inventoryGoalGroup = inventoryGoalRootProps();
   const gwpGroup = GWPRootProps();
-
-  console.log(errors);
 
   return (
     <Box w="full">

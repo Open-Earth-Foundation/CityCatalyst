@@ -20,7 +20,6 @@ export default function ConfirmStep({
   area: number;
   population?: number;
 }) {
-  console.log(locode);
   return (
     <Box w="full">
       <Box display="flex" flexDir="column" gap="24px">

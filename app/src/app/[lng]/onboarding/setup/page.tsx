@@ -13,23 +13,12 @@ import {
 
 import { OCCityAttributes } from "@/util/types";
 import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
-import {
-  Box,
-  Button,
-  Icon,
-  Text,
-  useSteps,
-  useToast,
-  useRadio,
-  UseRadioProps,
-} from "@chakra-ui/react";
+import { Box, Button, Text, useSteps, useToast } from "@chakra-ui/react";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
-
-import { InventoryButtonCheckIcon } from "@/components/icons";
 import SelectCityStep from "../steps/select-city-steps";
 import SetInventoryDetailsStep from "../steps/add-inventory-details-step";
 import SetPopulationDataStep from "../steps/add-population-data-step";
@@ -210,7 +199,6 @@ export default function OnboardingSetup({
       name: ocCityData?.name!,
     });
     goToNext();
-    console.log(data);
   };
 
   return (

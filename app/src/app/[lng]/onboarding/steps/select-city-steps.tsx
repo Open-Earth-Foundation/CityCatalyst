@@ -69,7 +69,6 @@ export default function SelectCityStep({
   const cityInputQuery = watch("city");
 
   const handleSetCity = (city: OCCityAttributes) => {
-    console.log("city", city);
     setValue("city", city.name);
     setOnInputClicked(false);
     dispatch(set(city));

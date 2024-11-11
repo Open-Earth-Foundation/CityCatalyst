@@ -106,7 +106,6 @@ export default function SetPopulationDataStep({
         return;
       }
       let [{ datasource }] = countryData.population;
-      console.log("datasource_name: ", datasource.name);
       setCountryPopulationSourceName(datasource.name);
       setValue("countryPopulation", population.population);
       setValue("countryPopulationYear", population.year);

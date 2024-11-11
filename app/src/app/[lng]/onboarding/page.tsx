@@ -66,6 +66,7 @@ export default function Onboarding({
         <HStack p="4px">
           {steps.map((step) => (
             <Box
+              key={step}
               h="8px"
               bg="background.neutral"
               w="full"

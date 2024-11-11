@@ -13,12 +13,16 @@ export default function ConfirmStep({
   locode,
   area,
   population,
+  inventoryGoal,
+  year,
 }: {
   cityName: String;
   t: TFunction;
   locode: string;
   area: number;
   population?: number;
+  inventoryGoal: string;
+  year: number;
 }) {
   return (
     <Box w="full">
@@ -91,7 +95,7 @@ export default function ConfirmStep({
                       color="content.secondary"
                       fontFamily="heading"
                     >
-                      2024
+                      {year}
                     </Text>
                     <Text
                       fontSize="label.md"
@@ -124,7 +128,7 @@ export default function ConfirmStep({
                       color="content.secondary"
                       fontFamily="heading"
                     >
-                      GPC BASIC
+                      {t(inventoryGoal)}
                     </Text>
                     <Text
                       fontSize="label.md"

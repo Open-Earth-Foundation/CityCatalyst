@@ -260,6 +260,8 @@ export default function OnboardingSetup({
               locode={data.locode}
               area={cityArea?.area!}
               population={cityPopulation}
+              inventoryGoal={getValues("inventoryGoal")}
+              year={getValues("year")}
             />
           )}
         </div>

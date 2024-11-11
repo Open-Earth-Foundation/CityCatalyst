@@ -22,6 +22,8 @@ export const POST = apiHandler(
     if (!inventory) {
       inventory = await db.models.Inventory.create({
         ...body,
+        globalWarmingPotentialType: body.globalWarmingPotentialType!,
+        inventoryType: body.inventoryGoal,
         inventoryId: randomUUID(),
         cityId: city.cityId,
       });

@@ -1,3 +1,4 @@
+import { GlobalWarmingPotentialType, InventoryType } from "@/models/Inventory";
 import { z } from "zod";
 
 export const emailPattern =
@@ -33,6 +34,8 @@ export const createInventoryRequest = z.object({
   year: z.number().int().min(2000),
   totalEmissions: z.number().int().optional(),
   totalCountryEmissions: z.number().int().optional(),
+  inventoryGoal: z.nativeEnum(InventoryType),
+  globalWarmingPotentialType: z.nativeEnum(GlobalWarmingPotentialType),
 });
 
 export type CreateInventoryRequest = z.infer<typeof createInventoryRequest>;

@@ -8,64 +8,32 @@ import {
   useAddCityMutation,
   useAddCityPopulationMutation,
   useAddInventoryMutation,
-  useGetOCCityDataQuery,
   useSetUserInfoMutation,
 } from "@/services/api";
-import {
-  findClosestYear,
-  getShortenNumberUnit,
-  shortenNumber,
-} from "@/util/helpers";
+
 import { OCCityAttributes } from "@/util/types";
-import {
-  ArrowBackIcon,
-  ArrowForwardIcon,
-  CheckIcon,
-  InfoOutlineIcon,
-  WarningIcon,
-} from "@chakra-ui/icons";
-import { Link } from "@chakra-ui/next-js";
+import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
-  Card,
-  FormControl,
-  FormErrorIcon,
-  FormErrorMessage,
-  HStack,
-  Heading,
   Icon,
-  InputGroup,
-  InputRightElement,
-  Select,
   Text,
   useSteps,
   useToast,
-  useRadioGroup,
   useRadio,
   UseRadioProps,
-  UseRadioGroupProps,
 } from "@chakra-ui/react";
-import type { TFunction } from "i18next";
-import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import type { SubmitHandler, UseFormRegister } from "react-hook-form";
-import { useForm } from "react-hook-form";
-import { Trans } from "react-i18next/TransWithoutContext";
-import { MdOutlineAspectRatio, MdOutlinePeopleAlt } from "react-icons/md";
 
-import {
-  CalenderIcon,
-  DataFormatIcon,
-  InventoryButtonCheckIcon,
-} from "@/components/icons";
-import { CircleFlag } from "react-circle-flags";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import type { SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
+
+import { InventoryButtonCheckIcon } from "@/components/icons";
 import SelectCityStep from "../steps/select-city-steps";
 import SetInventoryDetailsStep from "../steps/add-inventory-details-step";
 import SetPopulationDataStep from "../steps/add-population-data-step";
-
-const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
+import ConfirmStep from "../steps/confirm-city-data-step";
 
 export type Inputs = {
   city: string;
@@ -93,296 +61,6 @@ export type OnboardingData = {
 };
 
 // Custom Radio Buttons
-
-interface CustomRadioProps extends UseRadioProps {
-  children: React.ReactNode;
-}
-
-export function CustomRadio(props: CustomRadioProps) {
-  const { getInputProps, getCheckboxProps } = useRadio(props);
-
-  return (
-    <Box as="label">
-      <input {...getInputProps()} hidden />
-      <Box
-        {...getCheckboxProps()}
-        cursor={props.isDisabled ? "not-allowed" : "pointer"}
-        w="181px"
-        h="56px"
-        borderRadius="full"
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        fontFamily="heading"
-        fontStyle="500"
-        textTransform="uppercase"
-        lineHeight="20px"
-        gap="8px"
-        letterSpacing="wide"
-        className="transition-all duration-150"
-        borderWidth={props.isChecked ? "0" : "1px"}
-        borderColor={props.isChecked ? "green.500" : "border.neutral"}
-        bg={props.isChecked ? "background.neutral" : "base.light"}
-        color={props.isChecked ? "content.link" : "content.secondary"}
-        _checked={{
-          bg: "background.neutral",
-          color: "content.link",
-          borderWidth: "1px",
-          borderColor: "interactive.secondary",
-        }}
-        _focus={{
-          boxShadow: "outline",
-        }}
-      >
-        {props.isChecked ? <Icon as={InventoryButtonCheckIcon} /> : ""}
-        {props.children}
-      </Box>
-    </Box>
-  );
-}
-
-function ConfirmStep({
-  cityName,
-  t,
-  locode,
-  area,
-  population,
-}: {
-  cityName: String;
-  t: TFunction;
-  locode: string;
-  area: number;
-  population?: number;
-}) {
-  console.log(locode);
-  return (
-    <Box w="full">
-      <Box display="flex" flexDir="column" gap="24px">
-        <Heading size="lg">{t("confirm-heading")}</Heading>
-        <Text fontSize="body.lg" color="content.tertiary">
-          {t("confirm-description")}
-        </Text>
-      </Box>
-      <Box w="full">
-        <Card
-          px={6}
-          py={8}
-          shadow="none"
-          bg="none"
-          w="full"
-          flexDir="row"
-          width="full"
-          gap="24px"
-        >
-          <Box w="full" display="flex" flexDir="column">
-            <Box display="flex" alignItems="center" gap="16px">
-              <CircleFlag
-                countryCode={locode?.substring(0, 2).toLowerCase() || ""}
-                width={32}
-              />
-              <Heading
-                fontSize="title.md"
-                color="content.alternative"
-                fontStyle="normal"
-                lineHeight="24px"
-                textOverflow="ellipsis"
-                overflow="hidden"
-              >
-                {cityName}
-              </Heading>
-            </Box>
-            <Box
-              w="full"
-              mt={12}
-              display="flex"
-              flexDir="column"
-              justifyContent="space-between"
-              gap="24px"
-            >
-              <Box
-                borderBottomWidth="2px"
-                borderColor="border.overlay"
-                py="36px"
-                w="full"
-                display="flex"
-                justifyContent="space-between"
-              >
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  h="44px"
-                  gap="16px"
-                  w="full"
-                >
-                  <Box h="full">
-                    <Icon as={CalenderIcon} color="interactive.control" />
-                  </Box>
-                  <Box h="full">
-                    <Text
-                      fontSize="title.md"
-                      fontWeight="600"
-                      lineHeight="24px"
-                      fontStyle="normal"
-                      color="content.secondary"
-                      fontFamily="heading"
-                    >
-                      2024
-                    </Text>
-                    <Text
-                      fontSize="label.md"
-                      fontWeight="500"
-                      lineHeight="16px"
-                      fontStyle="normal"
-                      color="content.tertiary"
-                      letterSpacing="wide"
-                    >
-                      {t("inventory-year")}
-                    </Text>
-                  </Box>
-                </Box>
-                <Box
-                  w="full"
-                  display="flex"
-                  alignItems="center"
-                  h="44px"
-                  gap="16px"
-                >
-                  <Box h="full">
-                    <Icon as={DataFormatIcon} color="interactive.control" />
-                  </Box>
-                  <Box h="full">
-                    <Text
-                      fontSize="title.md"
-                      fontWeight="600"
-                      lineHeight="24px"
-                      fontStyle="normal"
-                      color="content.secondary"
-                      fontFamily="heading"
-                    >
-                      GPC BASIC
-                    </Text>
-                    <Text
-                      fontSize="label.md"
-                      fontWeight="500"
-                      lineHeight="16px"
-                      fontStyle="normal"
-                      color="content.tertiary"
-                      letterSpacing="wide"
-                    >
-                      {t("inventory-format")}
-                    </Text>
-                  </Box>
-                </Box>
-              </Box>
-              <Box
-                borderBottomWidth="2px"
-                borderColor="border.overlay"
-                w="full"
-                display="flex"
-                py="36px"
-              >
-                <Box
-                  w="full"
-                  display="flex"
-                  alignItems="center"
-                  h="44px"
-                  gap="16px"
-                >
-                  <Box h="full">
-                    <Icon
-                      h="24px"
-                      w="24px"
-                      as={MdOutlinePeopleAlt}
-                      color="interactive.control"
-                    />
-                  </Box>
-                  <Box h="full">
-                    <Text
-                      fontSize="title.md"
-                      fontWeight="600"
-                      lineHeight="24px"
-                      fontStyle="normal"
-                      color="content.secondary"
-                      fontFamily="heading"
-                    >
-                      {population ? (
-                        <>
-                          {shortenNumber(population)}
-                          {getShortenNumberUnit(population)}
-                        </>
-                      ) : (
-                        "N/A"
-                      )}
-                    </Text>
-                    <Text
-                      fontSize="label.md"
-                      fontWeight="500"
-                      lineHeight="16px"
-                      fontStyle="normal"
-                      color="content.tertiary"
-                      letterSpacing="wide"
-                    >
-                      {t("total-population")}
-                    </Text>
-                  </Box>
-                </Box>
-                <Box
-                  w="full"
-                  display="flex"
-                  alignItems="center"
-                  h="44px"
-                  gap="16px"
-                >
-                  <Box h="full">
-                    <Icon
-                      as={MdOutlineAspectRatio}
-                      color="interactive.control"
-                      h="24px"
-                      w="24px"
-                    />
-                  </Box>
-                  <Box h="full">
-                    <Text
-                      fontSize="title.md"
-                      fontWeight="600"
-                      lineHeight="24px"
-                      fontStyle="normal"
-                      color="content.secondary"
-                      fontFamily="heading"
-                    >
-                      {area && area > 0 ? (
-                        <>
-                          {" "}
-                          {Math.round(area)}km<sup>2</sup>
-                        </>
-                      ) : (
-                        "N/A"
-                      )}
-                    </Text>
-                    <Text
-                      fontSize="label.md"
-                      fontWeight="500"
-                      lineHeight="16px"
-                      fontStyle="normal"
-                      color="content.tertiary"
-                      letterSpacing="wide"
-                    >
-                      {t("total-land-area")}
-                    </Text>
-                  </Box>
-                </Box>
-              </Box>
-            </Box>
-          </Box>
-          <Box w="full">
-            <CityMap locode={locode} height={400} width={450} />
-          </Box>
-        </Card>
-      </Box>
-    </Box>
-  );
-}
-
 export default function OnboardingSetup({
   params: { lng },
 }: {

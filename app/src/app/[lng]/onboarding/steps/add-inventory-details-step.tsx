@@ -5,7 +5,7 @@ import {
   FieldErrors,
   UseFormRegister,
 } from "react-hook-form";
-import { CustomRadio, Inputs } from "../setup/page";
+import { Inputs } from "../setup/page";
 import { useEffect } from "react";
 import {
   Box,
@@ -23,6 +23,7 @@ import {
 } from "@chakra-ui/react";
 import { CheckIcon, WarningIcon } from "@chakra-ui/icons";
 import { Trans } from "react-i18next";
+import { CustomRadio } from "@/components/custom-radio-buttons";
 
 export default function SetInventoryDetailsStep({
   t,

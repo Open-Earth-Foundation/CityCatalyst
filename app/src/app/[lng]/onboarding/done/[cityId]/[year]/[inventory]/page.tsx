@@ -4,11 +4,9 @@ import { useTranslation } from "@/i18n/client";
 import { useAppSelector } from "@/lib/hooks";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { Box, Button, Card, Flex, Heading, Text } from "@chakra-ui/react";
-import Image from "next/image";
 import NextLink from "next/link";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { logger } from "@/services/logger";
-import { CircleFlag } from "react-circle-flags";
 
 export default function OnboardingDone({
   params: { lng, year, inventory },

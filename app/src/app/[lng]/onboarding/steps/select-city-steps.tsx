@@ -80,6 +80,8 @@ export default function SelectCityStep({
         name: city.name,
         locode: city.actor_id!,
         year: year!,
+        globalWarmingPotential: "",
+        inventoryGoal: "",
       });
     }
 
@@ -92,6 +94,8 @@ export default function SelectCityStep({
         name: ocCityData.name,
         locode: ocCityData.actor_id,
         year: year!,
+        globalWarmingPotential: "",
+        inventoryGoal: "",
       });
     }
   }, [year, ocCityData, setData]);

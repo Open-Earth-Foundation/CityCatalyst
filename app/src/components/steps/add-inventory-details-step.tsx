@@ -5,7 +5,7 @@ import {
   FieldErrors,
   UseFormRegister,
 } from "react-hook-form";
-import { Inputs } from "../setup/page";
+import { Inputs } from "../../app/[lng]/onboarding/setup/page";
 import { useEffect } from "react";
 import {
   Box,

@@ -1,5 +1,9 @@
 import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
-import { CountryEmissionsEntry, Inputs, OnboardingData } from "../setup/page";
+import {
+  CountryEmissionsEntry,
+  Inputs,
+  OnboardingData,
+} from "../../app/[lng]/onboarding/setup/page";
 import { TFunction } from "i18next";
 import { OCCityAttributes } from "@/util/types";
 import { useAppDispatch } from "@/lib/hooks";

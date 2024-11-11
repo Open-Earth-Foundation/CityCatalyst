@@ -1,6 +1,10 @@
 import { TFunction } from "i18next";
 import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
-import { CountryEmissionsEntry, Inputs, OnboardingData } from "../setup/page";
+import {
+  CountryEmissionsEntry,
+  Inputs,
+  OnboardingData,
+} from "../../app/[lng]/onboarding/setup/page";
 import { OCCityAttributes } from "@/util/types";
 import { useGetOCCityDataQuery } from "@/services/api";
 import { useEffect, useState } from "react";

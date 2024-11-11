@@ -19,10 +19,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
-import SelectCityStep from "../steps/select-city-steps";
-import SetInventoryDetailsStep from "../steps/add-inventory-details-step";
-import SetPopulationDataStep from "../steps/add-population-data-step";
-import ConfirmStep from "../steps/confirm-city-data-step";
+import SelectCityStep from "../../../../components/steps/select-city-steps";
+import SetInventoryDetailsStep from "../../../../components/steps/add-inventory-details-step";
+import SetPopulationDataStep from "../../../../components/steps/add-population-data-step";
+import ConfirmStep from "../../../../components/steps/confirm-city-data-step";
 
 export type Inputs = {
   city: string;

@@ -3730,6 +3730,10 @@
               "biological-treatment-inboundary-treatment-type",
               "biological-treatment-inboundary-source"
             ],
+            "formula-mapping": {
+              "treatment_type": "biological-treatment-inboundary-treatment-type",
+              "waste_state": "biological-treatment-inboundary-waste-state"
+            },
             "activity-title": "total-organic-waste-treated",
             "default-units": "units-kilograms",
             "extra-fields": [
@@ -3832,6 +3836,10 @@
             ],
             "activity-title": "total-organic-waste-treated",
             "default-units": "units-kilograms",
+            "formula-mapping": {
+              "treatment_type": "biological-treatment-outboundary-treatment-type",
+              "waste_state": "biological-treatment-outboundary-waste-state"
+            },
             "extra-fields": [
               {
                 "id": "biological-treatment-outboundary-treatment-type",

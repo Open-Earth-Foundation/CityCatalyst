@@ -681,6 +681,7 @@ export async function handleDomesticWasteWaterFormula(
 export async function handleBiologicalTreatmentFormula(
   activityValue: ActivityValue,
   inventoryValue: InventoryValue,
+  formulaMapping: Record<string, string>,
 ): Promise<Gas[]> {
   if (!inventoryValue.inputMethodology || !inventoryValue.gpcReferenceNumber) {
     throw new createHttpError.BadRequest(

@@ -136,9 +136,12 @@ export default class CalculationService {
         gases = handleVkt1Formula(activityValue, gasValues, inventoryValue);
         break;
       case "biological-treatment":
+        let formulaMapping =
+          CalculationService.getFormulaMapping(inputMethodology);
         gases = await handleBiologicalTreatmentFormula(
           activityValue,
           inventoryValue,
+          formulaMapping,
         );
         break;
       case "wastewater-calculator":

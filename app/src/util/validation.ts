@@ -35,7 +35,7 @@ export const createInventoryRequest = z.object({
   totalEmissions: z.number().int().optional(),
   totalCountryEmissions: z.number().int().optional(),
   inventoryGoal: z.nativeEnum(InventoryType),
-  globalWarmingPotentialType: z.nativeEnum(GlobalWarmingPotentialType),
+  globalWarmingPotential: z.nativeEnum(GlobalWarmingPotentialType),
 });
 
 export type CreateInventoryRequest = z.infer<typeof createInventoryRequest>;

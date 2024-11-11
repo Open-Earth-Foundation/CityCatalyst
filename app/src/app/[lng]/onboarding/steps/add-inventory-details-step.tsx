@@ -41,13 +41,13 @@ export default function SetInventoryDetailsStep({
   years: number[];
 }) {
   let year;
-  const inventoryGoalOptions: string[] = ["gpc-basic", "gpc-basic-plus"];
+  const inventoryGoalOptions: string[] = ["gpc_basic", "gpc_basic_plus"];
   const globalWarmingPotential: string[] = ["ar5", "ar6"];
 
   // Handle inventory Goal Radio Input
   // Set default inventory goal form value
   useEffect(() => {
-    setValue("inventoryGoal", "gpc-basic");
+    setValue("inventoryGoal", "gpc_basic");
     setValue("globalWarmingPotential", "ar6");
   }, []);
   const {
@@ -55,7 +55,7 @@ export default function SetInventoryDetailsStep({
     getRadioProps: getInventoryGoalRadioProps,
   } = useRadioGroup({
     name: "inventoryGoal",
-    defaultValue: "gpc-basic",
+    defaultValue: "gpc_basic",
     onChange: (value: string) => {
       setValue("inventoryGoal", value!);
     },

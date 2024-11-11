@@ -47,6 +47,8 @@ export type OnboardingData = {
   name: string;
   locode: string;
   year: number;
+  inventoryGoal: string;
+  globalWarmingPotential: string;
 };
 
 // Custom Radio Buttons
@@ -89,6 +91,8 @@ export default function OnboardingSetup({
     name: "",
     locode: "",
     year: -1,
+    inventoryGoal: "",
+    globalWarmingPotential: "",
   });
   const [ocCityData, setOcCityData] = useState<OCCityAttributes>();
   const [isConfirming, setConfirming] = useState(false);
@@ -104,12 +108,18 @@ export default function OnboardingSetup({
     });
   };
 
+  // Population data
+
   const cityPopulation = watch("cityPopulation");
   const regionPopulation = watch("regionPopulation");
   const countryPopulation = watch("countryPopulation");
   const cityPopulationYear = watch("cityPopulationYear");
   const regionPopulationYear = watch("regionPopulationYear");
   const countryPopulationYear = watch("countryPopulationYear");
+
+  // Inventory data
+  const inventoryGoal = watch("inventoryGoal");
+  const globalWarmingPotential = watch("globalWarmingPotential");
 
   const currentYear = new Date().getFullYear();
   const numberOfYearsDisplayed = 10;
@@ -165,11 +175,14 @@ export default function OnboardingSetup({
     }
 
     try {
+      console.log("inventory year", typeof data.year);
       const inventory = await addInventory({
         cityId: city?.cityId!,
-        year: data.year,
+        year: typeof data.year === "string" ? parseInt(data.year) : data.year,
         inventoryName: `${data.name} - ${data.year}`,
         totalCountryEmissions: getValues("totalCountryEmissions"),
+        inventoryGoal: inventoryGoal,
+        globalWarmingPotential: globalWarmingPotential,
       }).unwrap();
       await setUserInfo({
         cityId: city?.cityId!,

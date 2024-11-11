@@ -3,5 +3,16 @@
   "make-inventory-simpler-accurate": "Make your inventory simpler and more accurate",
   "discover-sub-sectors-for-city": "Discover the GPC sub-sectors that apply to your city and configure your inventory. Adjusting your inventory ensures accurate tracking and helps optimize your data management experience.",
   "back": "back",
-  "continue": "continue"
+  "continue": "continue",
+  "which-activities": "Tell us what activities occurs in your city",
+  "which-activities-description": "Select the activities that take place in your city. This will help us identify the relevant stationary energy sub-sectors for your inventory.",
+  "commercial-and-institutional": "Commercial and Institutional",
+  "manufacturing-industries": "Manufacturing Industries",
+  "construction": "Construction",
+  "agriculture": "Agriculture",
+  "forestry": "Forestry",
+  "fishing": "Fishing",
+  "power-generation-plants": "Power Generation Plants",
+  "oil-or-gas": "Oil or natural gas production or distribution",
+  "coal": "Coal production or distribution"
 }

@@ -25,7 +25,7 @@ export default function PreferencesExplanation({ t }: { t: TFunction }) {
       </VStack>
       <Box width="70vh" height="70vh" position="relative" flex={2}>
         <Image
-          src="/assets/inventory_preferences_image.svg"
+          src="/assets/preferences/inventory_preferences_image.svg"
           layout="fill"
           objectFit="contain"
           alt={"city"}

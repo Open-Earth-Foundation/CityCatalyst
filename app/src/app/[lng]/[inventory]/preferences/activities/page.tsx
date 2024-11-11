@@ -2,19 +2,20 @@
 
 import React from "react";
 import { useTranslation } from "@/i18n/client";
-import PreferencesExplanation from "./PreferencesExplanation";
-import PreferencesPageLayout from "./PreferencesPageLayout";
+import PreferencesPageLayout from "../PreferencesPageLayout";
+import ActivitiesPage from "./ActivitiesPage";
 import { LINKS } from "@/app/[lng]/[inventory]/preferences/LINKS";
 
-export default function PreferencesExplanationPage({
+export default function ActivitiesLayout({
   params: { lng },
 }: {
   params: { lng: string };
 }) {
   const { t } = useTranslation(lng, "preferences");
+
   return (
-    <PreferencesPageLayout step={0} t={t} next={LINKS[0]}>
-      <PreferencesExplanation t={t} />
+    <PreferencesPageLayout step={1} t={t} next={LINKS[1]}>
+      <ActivitiesPage t={t} />
     </PreferencesPageLayout>
   );
 }

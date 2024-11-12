@@ -115,7 +115,7 @@ export default class ECRFDownloadService {
         inventory_year: inventoryYear,
         gpc_reference_number: inventoryValue.gpcReferenceNumber,
         notation_key: inventoryValue.unavailableReason,
-        input_methodology: inventoryValue.inputMethodology,
+        input_methodology: t(inventoryValue.inputMethodology),
         activityValues: activityValues.map((activityValue) => {
           let activityTitleKey = activityValue.metadata?.activityTitle;
           let dataQuality = activityValue.metadata?.dataQuality;
@@ -144,7 +144,7 @@ export default class ECRFDownloadService {
             emission_n2o,
             activity_amount: activityAmount,
             activity_unit: activityUnit,
-            methodology: methodologyDescription,
+            methodology: t(methodologyDescription),
             activity_data_quality: dataQuality,
             activity_data_source: dataSource,
             total_co2e: toDecimal(activityValue.co2eq as bigint)

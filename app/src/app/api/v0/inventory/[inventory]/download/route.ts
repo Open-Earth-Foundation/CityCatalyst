@@ -140,7 +140,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
       );
       headers = {
         "Content-Type": "application/vnd.ms-excel",
-        "Content-Disposition": `attachment; filename="eCRF_inventory-${inventory.city.locode}-${inventory.year}.xlsx"`,
+        "Content-Disposition": `attachment; filename="eCRF-inventory-${inventory.city.locode}-${inventory.year}.xlsx"`,
       };
       break;
     case "json":

@@ -3,6 +3,10 @@ import { db } from "@/models";
 import { UserAttributes } from "@/models/User";
 import { beforeAll, afterAll, describe, it, expect } from "@jest/globals";
 import { mockRequest, setupTests, testUserID } from "../helpers";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
+} from "@/util/enums";
 
 // Test Data
 const inventoryId = "dab66377-a4fc-46d2-9782-5a87282d39fa";
@@ -37,6 +41,8 @@ describe("User API", () => {
       inventoryId,
       year: 3000,
       cityId,
+      inventoryType: InventoryTypeEnum.GPC_BASIC,
+      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
     });
   });
 

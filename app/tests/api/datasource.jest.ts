@@ -10,6 +10,10 @@ import { Sector } from "@/models/Sector";
 import { Inventory } from "@/models/Inventory";
 import fetchMock from "fetch-mock";
 import { beforeAll, afterAll, describe, it, expect } from "@jest/globals";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
+} from "@/util/enums";
 
 const locode = "XX_DATASOURCE_CITY";
 const sectorName = "XX_DATASOURCE_TEST_1";
@@ -20,6 +24,8 @@ const inventoryData: CreateInventoryRequest = {
   inventoryName: "Test Inventory",
   year: 4000,
   totalEmissions: 1337,
+  globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+  inventoryType: InventoryTypeEnum.GPC_BASIC,
 };
 
 const sourceLocations = [

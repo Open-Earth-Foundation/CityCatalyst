@@ -17,6 +17,10 @@ import { Inventory } from "@/models/Inventory";
 import { InventoryValue } from "@/models/InventoryValue";
 import { SubCategory } from "@/models/SubCategory";
 import { SubSector } from "@/models/SubSector";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
+} from "@/util/enums";
 
 const locode = "XX_SUBCATEGORY_CITY";
 const co2eq = 44000n;
@@ -95,6 +99,8 @@ describe("Inventory Value API", () => {
       inventoryId: randomUUID(),
       inventoryName: "TEST_SUBCATEGORY_INVENTORY",
       cityId: city.cityId,
+      inventoryType: InventoryTypeEnum.GPC_BASIC,
+      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
     });
 
     subSector = await db.models.SubSector.create({

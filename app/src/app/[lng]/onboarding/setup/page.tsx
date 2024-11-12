@@ -180,8 +180,8 @@ export default function OnboardingSetup({
         year: typeof data.year === "string" ? parseInt(data.year) : data.year,
         inventoryName: `${data.name} - ${data.year}`,
         totalCountryEmissions: getValues("totalCountryEmissions"),
-        inventoryGoal: inventoryGoal,
-        globalWarmingPotential: globalWarmingPotential,
+        inventoryType: inventoryGoal,
+        globalWarmingPotentialType: globalWarmingPotential,
       }).unwrap();
       await setUserInfo({
         cityId: city?.cityId!,

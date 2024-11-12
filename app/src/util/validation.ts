@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { GlobalWarmingPotentialType, InventoryType } from "./enums";
 
 export const emailPattern =
   /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -33,8 +34,8 @@ export const createInventoryRequest = z.object({
   year: z.number().int().min(2000),
   totalEmissions: z.number().int().optional(),
   totalCountryEmissions: z.number().int().optional(),
-  inventoryGoal: z.string(),
-  globalWarmingPotential: z.string(),
+  inventoryType: z.nativeEnum(InventoryType),
+  globalWarmingPotentialType: z.nativeEnum(GlobalWarmingPotentialType),
 });
 
 export type CreateInventoryRequest = z.infer<typeof createInventoryRequest>;

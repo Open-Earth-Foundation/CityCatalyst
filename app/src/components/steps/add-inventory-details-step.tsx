@@ -23,7 +23,7 @@ import {
 } from "@chakra-ui/react";
 import { CheckIcon, WarningIcon } from "@chakra-ui/icons";
 import { Trans } from "react-i18next";
-import { CustomRadio } from "@/components/custom-radio-buttons";
+import { CustomRadioButtons } from "@/components/custom-radio-buttons";
 
 export default function SetInventoryDetailsStep({
   t,
@@ -230,14 +230,14 @@ export default function SetInventoryDetailsStep({
                     {inventoryGoalOptions.map((value) => {
                       const radioProps = getInventoryGoalRadioProps({ value });
                       return (
-                        <CustomRadio
+                        <CustomRadioButtons
                           value={value}
                           isChecked={field.value === value}
                           key={value}
                           {...radioProps}
                         >
                           {t(value)}
-                        </CustomRadio>
+                        </CustomRadioButtons>
                       );
                     })}
                   </HStack>
@@ -327,14 +327,14 @@ export default function SetInventoryDetailsStep({
                     {globalWarmingPotential.map((value) => {
                       const radioProps = getGWPRadioProps({ value });
                       return (
-                        <CustomRadio
+                        <CustomRadioButtons
                           value={value}
                           isChecked={field.value === value}
                           key={value}
                           {...radioProps}
                         >
                           {t(value)}
-                        </CustomRadio>
+                        </CustomRadioButtons>
                       );
                     })}
                   </HStack>

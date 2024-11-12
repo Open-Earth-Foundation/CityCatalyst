@@ -3,16 +3,7 @@ import { DataTypes, Model, Optional } from "sequelize";
 import type { City, CityId } from "./City";
 import type { InventoryValue, InventoryValueId } from "./InventoryValue";
 import type { Version, VersionId } from "./Version";
-
-export enum InventoryType {
-  GPC_BASIC = "gpc_basic",
-  GPC_BASIC_PLUS = "gpc_basic_plus",
-}
-
-export enum GlobalWarmingPotentialType {
-  ar6 = "ar6",
-  ar5 = "ar5",
-}
+import { GlobalWarmingPotentialType, InventoryType } from "@/util/enums";
 
 export interface InventoryAttributes {
   inventoryId: string;

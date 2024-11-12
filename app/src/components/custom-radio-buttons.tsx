@@ -5,7 +5,7 @@ interface CustomRadioProps extends UseRadioProps {
   children: React.ReactNode;
 }
 
-export function CustomRadio(props: CustomRadioProps) {
+export function CustomRadioButtons(props: CustomRadioProps) {
   const { getInputProps, getRadioProps } = useRadio(props);
 
   return (

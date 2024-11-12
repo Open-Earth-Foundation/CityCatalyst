@@ -129,8 +129,8 @@ export const api = createApi({
         year: number;
         inventoryName: string;
         totalCountryEmissions: number;
-        globalWarmingPotential: string;
-        inventoryGoal: string;
+        globalWarmingPotentialType: string;
+        inventoryType: string;
       }
     >({
       query: (data) => ({

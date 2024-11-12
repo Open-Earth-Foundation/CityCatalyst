@@ -70,11 +70,11 @@ const inventoryData2: CreateInventoryRequest = {
 };
 
 const invalidInventory = {
-  inventoryName: "",
-  year: 0,
+  inventoryName: "inventoryName",
+  year: 1000,
   totalEmissions: "246kg co2eq",
-  globalWarmingPotentialType: "ar4",
-  inventoryType: "gpc_premium",
+  globalWarmingPotentialType: "ar5",
+  inventoryType: "gpc_basic",
 };
 
 const inventoryValue = {

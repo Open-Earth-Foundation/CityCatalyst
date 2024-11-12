@@ -153,6 +153,8 @@ describe("Inventory API", () => {
       inventoryId: randomUUID(),
       cityId: city.cityId,
       ...inventoryData,
+      inventoryType: InventoryTypeEnum.GPC_BASIC,
+      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
     });
     const inventoryValueDb = await db.models.InventoryValue.create({
       id: randomUUID(),

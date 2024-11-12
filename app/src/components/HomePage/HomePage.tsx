@@ -421,6 +421,7 @@ export default function HomePage({
                     <Box>
                       <DownloadButton
                         t={t}
+                        lng={lng}
                         inventoryId={inventoryId!}
                         city={city}
                         inventory={inventory}

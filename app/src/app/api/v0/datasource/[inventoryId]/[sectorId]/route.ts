@@ -49,20 +49,25 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   );
 
   // TODO add query parameter to make this optional?
-  const sourceData = (
-    await Promise.all(
-      applicableSources.map(async (source) => {
-        const data = await DataSourceService.retrieveGlobalAPISource(
-          source,
-          inventory,
-        );
-        if (data instanceof String || typeof data === "string") {
-          return null;
-        }
-        return { source, data };
-      }),
-    )
-  ).filter((source) => !!source);
+  const sourceData = await Promise.all(
+    applicableSources.map(async (source) => {
+      const data = await DataSourceService.retrieveGlobalAPISource(
+        source,
+        inventory,
+      );
+      if (data instanceof String || typeof data === "string") {
+        return { error: data as string, source };
+      }
+      return { source, data };
+    }),
+  );
 
-  return NextResponse.json({ data: sourceData, removedSources });
+  const successfulSources = sourceData.filter((source) => !source.error);
+  const failedSources = sourceData.filter((source) => !!source.error);
+
+  return NextResponse.json({
+    data: successfulSources,
+    removedSources,
+    failedSources,
+  });
 });

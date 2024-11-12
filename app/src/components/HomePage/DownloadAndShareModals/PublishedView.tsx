@@ -47,7 +47,8 @@ export function PublishedView({
       locale: getLocale(lng),
     });
 
-  const URL = `${process.env.NEXT_PUBLIC_HOST}/${lng}/public/${inventoryId}`;
+  const URL = `${window.location.protocol}//${window.location.host}${window.location.port ? `:${window.location.port}` : ""}/${lng}/public/${inventoryId}`;
+
   return (
     <ModalBody>
       <Text fontWeight="600" fontSize="title.lg">

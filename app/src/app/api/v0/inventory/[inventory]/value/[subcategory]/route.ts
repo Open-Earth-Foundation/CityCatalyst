@@ -162,7 +162,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 
   // calculate new co2eq value
   // load gas values again to take any modifications into account
-  if (body.co2eq == null) {
+  if (body.co2eq == null && !body.unavailableReason) {
     const newGasValues = await db.models.GasValue.findAll({
       where: { inventoryValueId: inventoryValue.id },
       include: { model: db.models.EmissionsFactor, as: "emissionsFactor" },

@@ -2,18 +2,19 @@ import {
   type CityAttributes,
   type InventoryAttributes,
   type InventoryValueAttributes,
-  PopulationAttributes,
+  type PopulationAttributes,
   type UserAttributes,
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
 import type {
   ConnectDataSourceQuery,
   ConnectDataSourceResponse,
-  DataSourceResponse,
   EmissionsFactorResponse,
+  GetDataSourcesResult,
   InventoryProgressResponse,
   InventoryResponse,
   InventoryUpdateQuery,
+  InventoryValueInSubSectorScopeUpdateQuery,
   InventoryValueResponse,
   InventoryValueUpdateQuery,
   InventoryWithCity,
@@ -158,12 +159,11 @@ export const api = createApi({
       providesTags: ["UserInfo"],
     }),
     getAllDataSources: builder.query<
-      DataSourceResponse,
+      GetDataSourcesResult,
       { inventoryId: string }
     >({
       query: ({ inventoryId }) => `datasource/${inventoryId}`,
-      transformResponse: (response: { data: DataSourceResponse }) =>
-        response.data,
+      transformResponse: (response: GetDataSourcesResult) => response,
     }),
     getInventoryValue: builder.query<
       InventoryValueResponse,
@@ -228,6 +228,19 @@ export const api = createApi({
       transformResponse: (response: { data: ConnectDataSourceResponse }) =>
         response.data,
       invalidatesTags: ["InventoryProgress"],
+    }),
+    updateOrCreateInventoryValue: builder.mutation<
+      InventoryValueAttributes,
+      InventoryValueInSubSectorScopeUpdateQuery
+    >({
+      query: (data) => ({
+        url: `/inventory/${data.inventoryId}/value/subsector/${data.subSectorId}`,
+        method: "PATCH",
+        body: data.data,
+      }),
+      transformResponse: (response: { data: InventoryValueAttributes }) =>
+        response.data,
+      invalidatesTags: ["InventoryProgress", "InventoryValue"],
     }),
     getUserInventories: builder.query<InventoryWithCity[], void>({
       query: () => "/user/inventories",
@@ -672,5 +685,6 @@ export const {
   useGetInventoryValuesBySubsectorQuery,
   useGetResultsQuery,
   useUpdateInventoryMutation,
+  useUpdateOrCreateInventoryValueMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

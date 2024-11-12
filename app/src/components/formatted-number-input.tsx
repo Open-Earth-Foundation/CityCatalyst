@@ -40,7 +40,11 @@ function FormattedNumberInput({
     let val = parseFloat(nval as string);
     const lastItemDot = nval.toString().slice(-1) === ".";
     if (isNaN(val)) return "";
-    return new Intl.NumberFormat(lng).format(val) + (lastItemDot ? "." : "");
+    return (
+      new Intl.NumberFormat(lng, {
+        maximumFractionDigits: 20,
+      }).format(val) + (lastItemDot ? "." : "")
+    );
   };
 
   // Parse the formatted string into a raw number
@@ -90,6 +94,7 @@ function FormattedNumberInput({
               h="48px"
               type="text" // Use text type to allow formatted input
               shadow="1dp"
+              pr="12px"
               borderRightRadius={children ? 0 : "md"} // Adjust border radius
               bgColor={isDisabled ? "background.neutral" : "base.light"}
               pos="relative"

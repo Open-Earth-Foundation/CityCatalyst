@@ -405,6 +405,7 @@ export default function ChatBot({
         text: t("initial-message"),
       },
     ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const stopGeneration = () => {
     if (abortControllerRef.current) {

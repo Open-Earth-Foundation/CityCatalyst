@@ -1,6 +1,5 @@
 import UserService from "@/backend/UserService";
 import { apiHandler } from "@/util/api";
-import { createInventoryRequest } from "@/util/validation";
 import { NextResponse } from "next/server";
 import Excel from "exceljs";
 import { Op } from "sequelize";
@@ -17,6 +16,9 @@ import {
   keyBy,
   PopulationEntry,
 } from "@/util/helpers";
+import ECRFDownloadService, {
+  InventoryWithInventoryValuesAndActivityValues,
+} from "@/backend/ECRFDownloadService";
 
 type InventoryValueWithEF = InventoryValue & {
   emissionsFactor?: EmissionsFactor;
@@ -42,6 +44,7 @@ const sectorSheetMapping: { [key: string]: number } = {
 };
 
 export const GET = apiHandler(async (req, { params, session }) => {
+  const lng = req.nextUrl.searchParams.get("lng") || "en";
   const inventory = await UserService.findUserInventory(
     params.inventory,
     session,
@@ -51,10 +54,20 @@ export const GET = apiHandler(async (req, { params, session }) => {
         as: "inventoryValues",
         include: [
           {
-            model: db.models.GasValue,
-            as: "gasValues",
+            model: db.models.ActivityValue,
+            as: "activityValues",
             include: [
-              { model: db.models.EmissionsFactor, as: "emissionsFactor" },
+              {
+                model: db.models.GasValue,
+                as: "gasValues",
+                separate: true,
+                include: [
+                  {
+                    model: db.models.EmissionsFactor,
+                    as: "emissionsFactor",
+                  },
+                ],
+              },
             ],
           },
           {
@@ -66,6 +79,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
       },
     ],
   );
+
   if (!inventory.year) {
     throw new createHttpError.BadRequest(
       `Inventory ${inventory.inventoryId} is missing a year number`,
@@ -119,6 +133,16 @@ export const GET = apiHandler(async (req, { params, session }) => {
         "Content-Disposition": `attachment; filename="inventory-${inventory.city.locode}-${inventory.year}.xls"`,
       };
       break;
+    case "ecrf":
+      body = await ECRFDownloadService.downloadECRF(
+        output as InventoryWithInventoryValuesAndActivityValues,
+        lng,
+      );
+      headers = {
+        "Content-Type": "application/vnd.ms-excel",
+        "Content-Disposition": `attachment; filename="eCRF-inventory-${inventory.city.locode}-${inventory.year}.xlsx"`,
+      };
+      break;
     case "json":
     default:
       body = Buffer.from(JSON.stringify({ data: output }), "utf-8");
@@ -137,7 +161,6 @@ async function inventoryCSV(inventory: Inventory): Promise<Buffer> {
     where: {
       inventoryId: inventory.inventoryId,
     },
-    include: [{ model: db.models.EmissionsFactor, as: "emissionsFactor" }],
   });
   const headers = [
     "Inventory Reference",

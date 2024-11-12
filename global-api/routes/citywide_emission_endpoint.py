@@ -8,7 +8,6 @@ api_router = APIRouter(prefix="/api/v0")
 
 CO2_EF_CH4_100yr = 30
 CO2_EF_N2O_100yr = 298
-
 CO2_EF_CH4_20yr = 84
 CO2_EF_N2O_20yr = 264
 
@@ -33,7 +32,9 @@ def db_query(source_name, locode, year, GPC_refno):
     return result
 
 
-@api_router.get("/source/{source_name}/city/{locode}/{year}/{GPC_refno}")
+@api_router.get("/source/{source_name}/city/{locode}/{year}/{GPC_refno}",
+                summary="Get city level emissions",
+                description="DEPRECATED WARNING: This endpoint will be migrated to a new endpoint /api/v1/source/{source_name}/city/{locode}/{year}/{GPC_refno}/emissions in the near future.")
 def get_emissions_by_locode_and_year(source_name: str, locode: str, year: str, GPC_refno: str):
 
     records = db_query(source_name, locode, year, GPC_refno)

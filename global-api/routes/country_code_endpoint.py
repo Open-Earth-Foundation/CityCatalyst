@@ -42,7 +42,9 @@ def db_query(source_name, country_code, year, GPC_refno):
     return rows
 
 
-@api_router.get("/source/{source_name}/country/{country_code}/{year}/{GPC_refno}")
+@api_router.get("/source/{source_name}/country/{country_code}/{year}/{GPC_refno}",
+                summary="Get country level emissions",
+                description="DEPRECATED WARNING: This endpoint will be migrated to a new endpoint /api/v1/source/{source_name}/country/{locode}/{year}/{GPC_refno}/emissions in the near future.")
 def get_emissions_by_country_and_year(source_name: str, country_code: str, year: str, GPC_refno: str):
 
     records = db_query(source_name, country_code, year, GPC_refno)
@@ -67,7 +69,6 @@ def get_emissions_by_country_and_year(source_name: str, country_code: str, year:
     }
 
     emissions = totals["totals"]["emissions"]
-
     total_co2eq_100yr = 0
     total_co2eq_20yr = 0
 

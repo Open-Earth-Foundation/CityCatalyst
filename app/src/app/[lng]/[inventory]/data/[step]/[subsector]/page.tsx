@@ -27,12 +27,33 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MdOutlineHomeWork } from "react-icons/md";
+import {
+  AnimatePresence,
+  easeInOut,
+  motion,
+  useMotionValueEvent,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+import Link from "next/link";
+import type { InventoryValueAttributes } from "@/models/InventoryValue";
+import {
+  getScopesForInventoryAndSector,
+  InventoryTypeEnum,
+  SECTORS,
+} from "@/util/constants";
+
+const MotionBox = motion(Box);
+
 import { throttle } from "lodash";
 
-const kebab = (str: string|undefined): string =>
-  (str)
-    ? str.replaceAll(/\s+/g, '-').replaceAll(/[^0-9A-Za-z\-\_]/g, '').toLowerCase()
-    : '';
+const kebab = (str: string | undefined): string =>
+  str
+    ? str
+        .replaceAll(/\s+/g, "-")
+        .replaceAll(/[^0-9A-Za-z\-\_]/g, "")
+        .toLowerCase()
+    : "";
 
 function SubSectorPage({
   params: { lng, step, inventory: inventoryId, subsector },
@@ -54,14 +75,12 @@ function SubSectorPage({
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
   const defaultInventoryId = userInfo?.defaultInventoryId;
+  const { data: inventoryData } = api.useGetInventoryQuery(inventoryId);
 
-  const {
-    data: inventoryProgress,
-    isLoading: isInventoryProgressLoading,
-    error: inventoryProgressError,
-  } = api.useGetInventoryProgressQuery(defaultInventoryId!, {
-    skip: !defaultInventoryId,
-  });
+  const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
+    api.useGetInventoryProgressQuery(defaultInventoryId!, {
+      skip: !defaultInventoryId,
+    });
 
   // map subsector to sector by reference number
 
@@ -73,6 +92,11 @@ function SubSectorPage({
         return t("II");
       case "3":
         return t("III");
+      case "4":
+        return t("IV");
+      case "5":
+        return t("V");
+
       default:
         return t("I");
     }
@@ -82,38 +106,26 @@ function SubSectorPage({
     (sector) => sector.sector.referenceNumber === getSectorRefNo(step),
   );
 
-  const subSectorData: SubSectorAttributes = sectorData?.subSectors.find(
-    (subsectorItem) => subsectorItem.subsectorId === subsector,
-  );
-  const getSectorName = (currentStep: string) => {
-    switch (currentStep) {
-      case "1":
-        return t("stationary-energy");
-      case "2":
-        return t("transportation");
-      case "3":
-        return t("waste");
-      default:
-        return t("stationary-energy");
-    }
+  const subSectorData: SubSectorAttributes | undefined =
+    sectorData?.subSectors.find(
+      (subsectorItem) => subsectorItem.subsectorId === subsector,
+    );
+  const getSectorName = (currentScope: string) => {
+    return SECTORS[parseInt(currentScope) - 1].name;
   };
 
   const getFilteredSubsectorScopes = () => {
-    const scopes = [];
-
-    for (const key in MANUAL_INPUT_HIERARCHY) {
-      if (key.startsWith(subSectorData?.referenceNumber!)) {
-        const scopeNumber = key.split(".").pop();
-        const result = {
-          ...MANUAL_INPUT_HIERARCHY[key],
-          scope: Number(scopeNumber),
-        };
-        scopes.push(result);
-      }
-    }
-    return scopes;
+    if (!inventoryData) return [];
+    return Object.entries(MANUAL_INPUT_HIERARCHY)
+      .filter(([key]) => key.startsWith(subSectorData?.referenceNumber!))
+      .map(([k, v]) => ({ ...v, referenceNumber: k }))
+      .filter((scope) =>
+        getScopesForInventoryAndSector(
+          inventoryData.inventoryType!,
+          scope.referenceNumber[0],
+        ).includes(scope.scope),
+      );
   };
-
   const scopes = getFilteredSubsectorScopes();
 
   // calculate total consumption and emissions
@@ -140,121 +152,160 @@ function SubSectorPage({
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const triggerMochLoading = () => {
-    setIsLoading(true);
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  };
+  const subSectorId = subSectorData?.subsectorId;
   const scrollResizeHeaderThreshold = 170;
   const [isExpanded, setIsExpanded] = useState(false);
 
   const { data: activityData, isLoading: isActivityDataLoading } =
     api.useGetActivityValuesQuery({
       inventoryId,
-      subSectorId: subSectorData?.subsectorId,
+      subSectorId,
     });
 
   // fetch the inventoryValue for the selected scope
   const { data: inventoryValues, isLoading: isInventoryValueLoading } =
-    useGetInventoryValuesBySubsectorQuery({
-      inventoryId,
-      subSectorId: subSectorData?.subsectorId,
-    });
+    useGetInventoryValuesBySubsectorQuery(
+      {
+        inventoryId,
+        subSectorId: subSectorId ?? "",
+      },
+      { skip: !subSectorId },
+    );
+  const getFilteredInventoryValues = (
+    referenceNumber: string,
+  ): InventoryValueAttributes[] => {
+    return (
+      (inventoryValues as InventoryValueAttributes[] | undefined)?.filter(
+        (iv) => iv.gpcReferenceNumber === referenceNumber,
+      ) ?? []
+    );
+  };
 
   const loadingState =
-    isActivityDataLoading || isInventoryValueLoading || isLoading;
+    isActivityDataLoading ||
+    isInventoryValueLoading ||
+    isLoading ||
+    isInventoryProgressLoading ||
+    isUserInfoLoading;
 
   return (
     <>
       <Box
         bg="background.backgroundLight"
-        className={`fixed z-10 top-0 w-full ${isExpanded ? "pt-[50px] h-[200px]" : "pt-[100px] h-[400px]"} transition-all duration-50 ease-linear`}
+        className="fixed z-10 top-0 w-full transition-all"
+        style={{
+          paddingTop: paddingTop,
+        }}
+        borderColor="border.neutral"
+        borderBottomWidth="1px"
       >
-        <Box className=" w-[1090px]  max-w-full mx-auto px-4">
-          <Box
-            w="full"
-            display="flex"
-            alignItems="center"
-            gap="16px"
-            mb="64px"
-            className={` ${isExpanded ? "hidden" : "flex"} transition-all duration-50 ease-linear`}
-          >
-            <Button
-              variant="ghost"
-              fontSize="14px"
-              leftIcon={<ArrowBackIcon boxSize={6} />}
-              onClick={() => router.back()}
-            >
-              {t("go-back")}
-            </Button>
-            <Box borderRightWidth="1px" borderColor="border.neutral" h="24px" />
-            <Box>
-              <Breadcrumb
-                spacing="8px"
-                fontFamily="heading"
-                fontWeight="bold"
-                fontSize="14px"
-                letterSpacing="widest"
-                textTransform="uppercase"
-                separator={<ChevronRightIcon color="gray.500" h="24px" />}
+        <MotionBox className="w-[1090px] max-w-full mx-auto px-4">
+          <AnimatePresence>
+            {isVisible && (
+              <MotionBox
+                key="bread-crumb"
+                w="full"
+                display="flex"
+                alignItems="center"
+                gap="16px"
+                initial="collapsed"
+                animate="open"
+                exit="collapsed"
+                variants={{
+                  open: { opacity: 1, height: "auto", marginBottom: "64px" },
+                  collapsed: { opacity: 0, height: 0, marginBottom: 0 },
+                }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
               >
-                <BreadcrumbItem>
-                  <BreadcrumbLink
-                    href={`/${inventoryId}/data`}
-                    color="content.tertiary"
+                <Button
+                  variant="ghost"
+                  fontSize="14px"
+                  leftIcon={<ArrowBackIcon boxSize={6} />}
+                  onClick={() => router.back()}
+                >
+                  {t("go-back")}
+                </Button>
+                <Box
+                  borderRightWidth="1px"
+                  borderColor="border.neutral"
+                  h="24px"
+                />
+                <Box>
+                  <Breadcrumb
+                    spacing="8px"
+                    fontFamily="heading"
+                    fontWeight="bold"
+                    fontSize="14px"
+                    letterSpacing="widest"
+                    textTransform="uppercase"
+                    separator={<ChevronRightIcon color="gray.500" h="24px" />}
                   >
-                    {t("all-sectors")}
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbItem>
-                  <BreadcrumbLink
-                    href={`/${inventoryId}/data/${step}`}
-                    color="content.tertiary"
-                  >
-                    {getSectorName(step)}
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbItem>
-                  <BreadcrumbLink href="#" color="content.link">
-                    <Text noOfLines={1}>
-                      {!subSectorData ? (
-                        <CircularProgress
-                          isIndeterminate
-                          color="content.tertiary"
-                          size={"30px"}
-                        />
-                      ) : (
-                        t(kebab(subSectorData?.subsectorName))
-                      )}
-                    </Text>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </Breadcrumb>
-            </Box>
-          </Box>
-          <Box display="flex">
-            {isExpanded ? (
-              <Box>
-                <Link href={`/${inventoryId}/data/${step}`}>
-                  <Icon
-                    as={ArrowBackIcon}
-                    h="24px"
-                    w="24px"
-                    mt="24px"
-                    color="content.link"
-                  />
-                </Link>
-              </Box>
-            ) : (
-              ""
+                    <BreadcrumbItem>
+                      <BreadcrumbLink
+                        href={`/${inventoryId}/data`}
+                        color="content.tertiary"
+                      >
+                        {t("all-sectors")}
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbItem>
+                      <BreadcrumbLink
+                        href={`/${inventoryId}/data/${step}`}
+                        color="content.tertiary"
+                      >
+                        {t(getSectorName(step))}
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbItem>
+                      <BreadcrumbLink href="#" color="content.link">
+                        <Text noOfLines={1}>
+                          {!subSectorData ? (
+                            <CircularProgress
+                              isIndeterminate
+                              color="content.tertiary"
+                              size={"30px"}
+                            />
+                          ) : (
+                            t(kebab(subSectorData?.subsectorName))
+                          )}
+                        </Text>
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                  </Breadcrumb>
+                </Box>
+              </MotionBox>
             )}
-            <Box display="flex" gap="16px">
-              <Box
+          </AnimatePresence>
+          <MotionBox display="flex" gap="16px">
+            <AnimatePresence mode="popLayout">
+              {!isVisible && (
+                <MotionBox
+                  layout
+                  w="full"
+                  key="back-arrow"
+                  initial="collapsed"
+                  animate="open"
+                  exit="collapsed"
+                  variants={{
+                    open: { opacity: 1, width: "24px" },
+                    collapsed: { opacity: 0, width: 0 },
+                  }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                >
+                  <Link href={`/${inventoryId}/data/${step}`}>
+                    <Icon
+                      as={ArrowBackIcon}
+                      h="24px"
+                      w="24px"
+                      mt="24px"
+                      color="content.link"
+                    />
+                  </Link>
+                </MotionBox>
+              )}
+              <MotionBox
+                layout
+                key="icon"
                 color="content.link"
                 pt="5px"
                 pos="relative"
@@ -297,80 +348,90 @@ function SubSectorPage({
                   pos="relative"
                   left={isExpanded ? "-15px" : ""}
                 >
-                  {t("sector")}: {getSectorName(step)} | {t("inventory-year")}:{" "}
-                  {inventoryProgress?.inventory.year}
+                  {t("sector")}: {t(getSectorName(step))} |{" "}
+                  {t("inventory-year")}: {inventoryProgress?.inventory.year}
                 </Text>
-                {isExpanded ? (
-                  ""
-                ) : (
-                  <Text
-                    letterSpacing="wide"
-                    fontSize="body.lg"
-                    fontWeight="normal"
-                    color="interactive.control"
-                  >
-                    {t("commercial-and-institutional-building-description")}
-                  </Text>
-                )}
-              </Box>
-            </Box>
-          </Box>
-        </Box>
-      </Box>
-      <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4 pb-[100px] mt-[240px]">
-        <Box mt="48px">
-          <Tabs>
-            <MotionTabList
-              className="w-[1090px] z-10"
-              bg="background.backgroundLight"
-              h="80px"
-              pos={isExpanded ? "fixed" : "relative"}
-              top={isExpanded ? "170px" : "50px"}
-              animate={{
-                y: isExpanded ? 0 : -50,
-                delay: 200,
-              }}
-              transition={{ duration: 0.2 }}
-            >
-              {scopes?.map((scope, index) => (
-                <Tab
-                  key={index}
-                  onClick={() => {
-                    setSelectedScope(scope.scope);
-                    triggerMochLoading();
-                  }}
+                <AnimatePresence key="description-layout">
+                  {isVisible && (
+                    <MotionBox
+                      key="description-text"
+                      w="full"
+                      display="flex"
+                      alignItems="center"
+                      gap="16px"
+                      initial="collapsed"
+                      animate="open"
+                      exit="collapsed"
+                      variants={{
+                        open: { opacity: 1, height: "auto" },
+                        collapsed: { opacity: 0, height: 0 },
+                      }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                    >
+                      <Text
+                        letterSpacing="wide"
+                        fontSize="body.lg"
+                        fontWeight="normal"
+                        color="interactive.control"
+                      >
+                        {t("commercial-and-institutional-building-description")}
+                      </Text>
+                    </MotionBox>
+                  )}
+                </AnimatePresence>
+              </MotionBox>
+            </AnimatePresence>
+          </MotionBox>
+        </MotionBox>
+        <Box className="w-[1090px] max-w-full mx-auto px-4">
+          <MotionTabList
+            className="w-[1090px] z-10"
+            layout
+            bg="background.backgroundLight"
+            borderBottomWidth="0px"
+            h="80px"
+          >
+            {scopes?.map((scope, index) => (
+              <Tab
+                key={index}
+                className="[&[aria-selected='false']]:border-[transparent]"
+              >
+                <Text
+                  fontFamily="heading"
+                  fontSize="title.md"
+                  fontWeight="medium"
                 >
-                  <Text
-                    fontFamily="heading"
-                    fontSize="title.md"
-                    fontWeight="medium"
-                  >
-                    {t("scope")} {scope.scope}
-                  </Text>
-                </Tab>
-              ))}
-            </MotionTabList>
-
-            <TabPanels>
-              {loadingState ? (
-                <LoadingState />
-              ) : (
-                scopes?.map((scope) => (
+                  {t("scope")} {scope.scope}
+                </Text>
+              </Tab>
+            ))}
+          </MotionTabList>
+        </Box>
+      </MotionBox>
+      <div className="pt-16 w-[1090px] max-w-full mx-auto px-4 pb-[100px] mt-[240px]">
+        <Box mt="48px">
+          <TabPanels>
+            {loadingState ? (
+              <LoadingState />
+            ) : (
+              scopes?.map((scope) => {
+                return (
                   <ActivityTab
-                    referenceNumber={subSectorData?.referenceNumber!}
-                    key={subSectorData?.referenceNumber}
-                    filteredScope={scope.scope}
+                    referenceNumber={scope.referenceNumber!}
+                    key={scope.referenceNumber}
                     t={t}
                     inventoryId={inventoryId}
                     subsectorId={subsector}
                     step={step}
                     activityData={activityData}
-                    inventoryValues={inventoryValues ?? []}
+                    inventoryValues={getFilteredInventoryValues(
+                      scope.referenceNumber,
+                    )}
                   />
-                ))
-              )}
-            </TabPanels>
-          </Tabs>
+                );
+              })
+            )}
+          </TabPanels>
         </Box>
       </div>
     </>

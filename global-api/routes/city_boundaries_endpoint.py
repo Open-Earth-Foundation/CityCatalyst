@@ -17,7 +17,15 @@ api_router = APIRouter(prefix="/api/v0")
 
 # Extract the polygon by locode
 def db_query(locode):
+    """
+        Query the database to retrieve OSM data for a given locode.
 
+        Args:
+            locode (str): The location code to filter by.
+
+        Returns:
+            Osm: The queried row from the OSM table matching the locode.
+    """
     row = None
 
     with SessionLocal() as session:
@@ -26,7 +34,15 @@ def db_query(locode):
     return row
 
 def epsg_code(polygon):
-    """Calculate the UTM zone and corresponding EPSG code for a polygon"""
+    """
+        Calculate the UTM zone and corresponding EPSG code for a polygon.
+
+        Args:
+            polygon (shapely Polygon): The polygon to calculate UTM code for.
+
+        Returns:
+            int: EPSG code for the latitude and longitudeof the polygon's centroid.
+    """
     # Calculate centroid of the polygon
     centroid = polygon.centroid
     longitude = centroid.x
@@ -44,6 +60,16 @@ def epsg_code(polygon):
     return code
 
 def transform_geometry(geometry, transformer):
+    """
+        Transform a polygon's coordinates using a given transformer.
+
+        Args:
+            geometry (Polygon or MultiPolygon): The geometry to transform.
+            transformer (Transformer): The transformation object to apply.
+
+        Returns:
+            Polygon or MultiPolygon: Transformed geometry in UTM projection.
+    """
     if isinstance(geometry, Polygon):
         transformed_polygon = []
         for lat, lon in geometry.exterior.coords:
@@ -60,6 +86,15 @@ def transform_geometry(geometry, transformer):
         raise ValueError("Unsupported geometry type")
 
 def get_area(geometry):
+    """
+        Calculate the area of a geometry object in square kilometers.
+
+        Args:
+            geometry (str): WKT formatted string of the geometry.
+
+        Returns:
+            float: Area in square kilometers.
+    """
     polygon = loads(geometry)
 
     transformer = Transformer.from_crs("epsg:4326", f'epsg:5070')
@@ -70,8 +105,17 @@ def get_area(geometry):
 
     return area
 
-@api_router.get("/cityboundary/city/{locode}")
+@api_router.get("/cityboundary/city/{locode}", summary="Get city boundary and area")
 def get_city_boundary(locode: str):
+    """
+        Retrieve the boundary and area of a city by its locode.
+
+        Args:
+            locode (str): Unique identifier for the city.
+
+        Returns:
+            dict: City boundary information including geometry, bounding boxes, and area.
+    """
     city = db_query(locode)
 
     if not city:
@@ -88,8 +132,17 @@ def get_city_boundary(locode: str):
         "area": area
     }
 
-@api_router.get("/cityboundary/city/{locode}/area")
+@api_router.get("/cityboundary/city/{locode}/area", summary="Get city area")
 def get_city_area(locode: str):
+    """
+        Retrieve the area of a city by its locode.
+
+        Args:
+            locode (str): Unique identifier for the city.
+
+        Returns:
+            dict: City area in square kilometers.
+        """
     city = db_query(locode)
 
     if not city:
@@ -101,12 +154,20 @@ def get_city_area(locode: str):
         "area": area
     }
 
-@api_router.get("/cityboundary/locode/{lat}/{lon}")
+@api_router.get("/cityboundary/locode/{lat}/{lon}", summary="Get city by coordinates")
 def get_locode(lat: Decimal, lon: Decimal):
-    """Returns the locode(s) of the city(ies) that contains the given coordinates"""
+    """
+        Find the locode(s) of the city(ies) that contain given coordinates.
+
+        Args:
+            lat (Decimal): Latitude of the point.
+            lon (Decimal): Longitude of the point.
+
+        Returns:
+            dict: A list of locodes for the cities containing the given point.
+    """
 
     # Get candidate cities whose bounding box is around our point
-
     candidates = []
 
     with SessionLocal() as session:

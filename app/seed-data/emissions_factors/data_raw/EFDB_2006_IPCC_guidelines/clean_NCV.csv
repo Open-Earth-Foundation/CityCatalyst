@@ -1,0 +1,98 @@
+EF ID,IPCC 2006 Source/Sink Category,Gas,Fuel 2006,Description,Region / Regional Conditions,Value,Unit,Technical Reference,calculation_type
+14302,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Crude Oil,1990 Country-Specific Net Calorific Values for Selected Countries,,4.2619999999999995e-05,TJ/kg,"OECD/IEA (1993), Energy Statistics and Balances of Non-OECD Countries: 1990-1991. International Energy Agency, OECD, Paris, France.",Value * kt:kg
+15261,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Refinery Feedstocks,1990 Country-Specific Net Calorific Values for Selected Countries,,4.2499999999999996e-05,TJ/kg,"OECD/IEA (1993), Energy Balances of OECD Countries, 1990-1991. International Energy Agency, OECD, Paris, France.",Value * kt:kg
+15262,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Coking Coal,1990 Country-Specific Net Calorific Values for Selected Countries,,3.349e-05,TJ/kg,"OECD/IEA (1993), Energy Balances of OECD Countries, 1990-1991. International Energy Agency, OECD, Paris, France.",Value * kt:kg
+15265,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Other Bituminous Coal,1990 Country-Specific Net Calorific Values for Selected Countries,,2.93e-05,TJ/kg,"OECD/IEA (1993), Energy Balances of OECD Countries, 1990-1991. International Energy Agency, OECD, Paris, France.",Value * kt:kg
+15271,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Lignite,1990 Country-Specific Net Calorific Values for Selected Countries,,9.630000000000001e-06,TJ/kg,"OECD/IEA (1993), Energy Balances of OECD Countries, 1990-1991. International Energy Agency, OECD, Paris, France.",Value * kt:kg
+15274,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Patent Fuel,1990 Country-Specific Net Calorific Values for Selected Countries,,2.0929999999999998e-05,TJ/kg,"OECD/IEA (1993), Energy Balances of OECD Countries, 1990-1991. International Energy Agency, OECD, Paris, France.",Value * kt:kg
+17138,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Aviation Gasoline,1990 Net Calorific Values for miscellaneous fuels and products,,4.48e-05,TJ/kg,"OECD/IEA  (1996a) Energy balances of OECD countries, 1993-1994 International Energy Agency, OECD, Paris, France. ",Value * kt:kg
+17139,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Motor Gasoline,1990 Net Calorific Values for miscellaneous fuels and products,,4.48e-05,TJ/kg,"OECD/IEA  (1996a) Energy balances of OECD countries, 1993-1994 International Energy Agency, OECD, Paris, France. ",Value * kt:kg
+17141,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Other Kerosene,1990 Net Calorific Values for miscellaneous fuels and products,,4.475e-05,TJ/kg,"OECD/IEA  (1996a) Energy balances of OECD countries, 1993-1994 International Energy Agency, OECD, Paris, France. ",Value * kt:kg
+17142,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Shale Oil,1990 Net Calorific Values for miscellaneous fuels and products,,3.6e-05,TJ/kg,"OECD/IEA  (1996a) Energy balances of OECD countries, 1993-1994 International Energy Agency, OECD, Paris, France. ",Value * kt:kg
+17143,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Diesel Oil,1990 Net Calorific Values for miscellaneous fuels and products,,4.3329999999999993e-05,TJ/kg,"OECD/IEA  (1996a) Energy balances of OECD countries, 1993-1994 International Energy Agency, OECD, Paris, France. ",Value * kt:kg
+17144,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Gas Oil,1990 Net Calorific Values for miscellaneous fuels and products,,4.3329999999999993e-05,TJ/kg,"OECD/IEA  (1996a) Energy balances of OECD countries, 1993-1994 International Energy Agency, OECD, Paris, France. ",Value * kt:kg
+17145,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Residual Fuel Oil,1990 Net Calorific Values for miscellaneous fuels and products,,4.018999999999999e-05,TJ/kg,"OECD/IEA  (1996a) Energy balances of OECD countries, 1993-1994 International Energy Agency, OECD, Paris, France. ",Value * kt:kg
+17146,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Liquefied Petroleum Gases,1990 Net Calorific Values for miscellaneous fuels and products,,4.731e-05,TJ/kg,"OECD/IEA  (1996a) Energy balances of OECD countries, 1993-1994 International Energy Agency, OECD, Paris, France. ",Value * kt:kg
+17147,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Ethane,1990 Net Calorific Values for miscellaneous fuels and products,,4.749e-05,TJ/kg,"OECD/IEA  (1996a) Energy balances of OECD countries, 1993-1994 International Energy Agency, OECD, Paris, France. ",Value * kt:kg
+17148,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Naphtha,1990 Net Calorific Values for miscellaneous fuels and products,,4.501e-05,TJ/kg,"OECD/IEA  (1996a) Energy balances of OECD countries, 1993-1994 International Energy Agency, OECD, Paris, France. ",Value * kt:kg
+17149,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Bitumen,1990 Net Calorific Values for miscellaneous fuels and products,,4.018999999999999e-05,TJ/kg,"OECD/IEA  (1996a) Energy balances of OECD countries, 1993-1994 International Energy Agency, OECD, Paris, France. ",Value * kt:kg
+17150,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Lubricants,1990 Net Calorific Values for miscellaneous fuels and products,,4.018999999999999e-05,TJ/kg,"OECD/IEA  (1996a) Energy balances of OECD countries, 1993-1994 International Energy Agency, OECD, Paris, France. ",Value * kt:kg
+17151,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Petroleum Coke,1990 Net Calorific Values for miscellaneous fuels and products,,3.1e-05,TJ/kg,"OECD/IEA  (1996a) Energy balances of OECD countries, 1993-1994 International Energy Agency, OECD, Paris, France. ",Value * kt:kg
+17153,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Refinery Gas,1990 Net Calorific Values for miscellaneous fuels and products,,4.815e-05,TJ/kg,"OECD/IEA  (1996a) Energy balances of OECD countries, 1993-1994 International Energy Agency, OECD, Paris, France. ",Value * kt:kg
+17154,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Other Petroleum Products,1990 Net Calorific Values for miscellaneous fuels and products,,4.018999999999999e-05,TJ/kg,"OECD/IEA  (1996a) Energy balances of OECD countries, 1993-1994 International Energy Agency, OECD, Paris, France. ",Value * kt:kg
+17155,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Coal Tar,1990 Net Calorific Values for miscellaneous fuels and products,,2.8e-05,TJ/kg,"OECD/IEA  (1996a) Energy balances of OECD countries, 1993-1994 International Energy Agency, OECD, Paris, France. ",Value * kt:kg
+17156,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Oil Shale and Tar Sands,1990 Net Calorific Values for miscellaneous fuels and products,,9.4e-06,TJ/kg,"OECD/IEA  (1996a) Energy balances of OECD countries, 1993-1994 International Energy Agency, OECD, Paris, France. ",Value * kt:kg
+17157,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Orimulsion,1990 Net Calorific Values for miscellaneous fuels and products,,2.7499999999999998e-05,TJ/kg,"OECD/IEA  (1996a) Energy balances of OECD countries, 1993-1994 International Energy Agency, OECD, Paris, France. ",Value * kt:kg
+110280,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Jet Kerosene,1990 Net Calorific Values for miscellaneous fuels and products,,4.459e-05,TJ/kg,"OECD/IEA  (1996a) Energy balances of OECD countries, 1993-1994 International Energy Agency, OECD, Paris, France. ",Value * kt:kg
+18341,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Wood/Wood Waste,Energy content of biomass fuels: default net calorific values,,1.4999999999999999e-05,TJ/kg,Hall et al (1949b),Value * MJ:TJ
+18342,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Charcoal,Energy content of biomass fuels: default net calorific values,,2.9999999999999997e-05,TJ/kg,Hall and Mao (1994a),Value * MJ:TJ
+18343,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Other Primary Solid Biomass,Energy content of biomass fuels: default net calorific values,,1.2e-05,TJ/kg,GOB (1987),Value * MJ:TJ
+126985,"1.A.3 - Transport
+","CARBON DIOXIDE
+","Natural Gas Liquids
+(NGLs)",NCV (LPG sold in ukrainian market from 1990 to 2014),,4.8719999999999994e-05,TJ/kg,,Value * MJ:TJ
+122053,"1.A.3.b - Road Transportation
+","CARBON DIOXIDE
+",Bio-Alcohol,NCV for methanol (methanol can be biofuel and fossil fuel),,1.99e-05,TJ/kg,Methanex. Technical Information & Safe Handling Guide for Methanol Version 3.0 September 2006,Value * kJ:TJ and g:kg
+15302,"1.A - Fuel Combustion Activities
+","CARBON DIOXIDE
+",Sub-Bituminous Coal,1990 Country-Specific Net Calorific Values for Selected Countries,United States of America,1.943e-05,TJ/kg,"OECD/IEA (1993), Energy Balances of OECD Countries, 1990-1991. International Energy Agency, OECD, Paris, France.",Value * kt:kg
+122057,"1.A.3.b - Road Transportation
+","CARBON DIOXIDE
+",Biodiesels,NCV for  biodisel  - B100 for all relevenat transport subactegories,United States of America,0.031167337500000003,TJ/kg,Biodiesel. Handling and Use Guide. Fourth Edition.  US Department of Energy. pp. 56.  NREL/TP-540-43672. Revised January 2009. Available at http://www.nrel.gov/transportation/pdfs/43672.pdf   Accessed on: 10/10/2015.,Value * Btu:TJ and gal:kg

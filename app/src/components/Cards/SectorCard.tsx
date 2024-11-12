@@ -1,6 +1,6 @@
 "use client";
 import SubSectorCard from "@/components/Cards/SubSectorCard";
-import { SectorProgress } from "@/util/types";
+import { InventoryResponse, SectorProgress } from "@/util/types";
 import {
   Accordion,
   AccordionButton,
@@ -14,27 +14,25 @@ import {
   Text,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
-import { BsTruck } from "react-icons/bs";
-import { PiTrashLight } from "react-icons/pi";
-import { TbBuildingCommunity } from "react-icons/tb";
+
 import { useState } from "react";
 import { SegmentedProgress } from "../SegmentedProgress";
 import { formatPercent } from "@/util/helpers";
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { AddIcon } from "@chakra-ui/icons";
-import { api } from "@/services/api";
+import { InventoryType, InventoryTypeEnum, ISector } from "@/util/constants";
 
 export function SectorCard({
   sectorProgress,
-  stepNumber,
+  sector,
   t,
   inventory,
 }: {
   sectorProgress: SectorProgress;
-  stepNumber: number;
+  sector: ISector;
   t: TFunction;
-  inventory: string | null;
+  inventory: InventoryResponse;
 }) {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const toggleAccordion = () => setAccordionOpen(!isAccordionOpen);
@@ -47,35 +45,15 @@ export function SectorCard({
     uploadedProgress = sectorProgress.uploaded / sectorProgress.total;
     totalProgress = thirdPartyProgress + uploadedProgress;
   }
-
   /*** Data ***/
-  const sectorIcons = [TbBuildingCommunity, BsTruck, PiTrashLight];
-  const sectorIcon = sectorIcons[stepNumber - 1];
-  // TODO get from API or use i18n strings
-  const sectorDescriptions = [
-    "This sector deals with emissions that result from the generation of electricity, heat, and steam, as well as their consumption.",
-    "This sector deals with emissions from the transportation of goods and people within the city boundary.",
-    "This sector covers emissions generated from waste management processes.",
-  ];
-  const sectorDescription = sectorDescriptions[stepNumber - 1];
-  const sectorScopesList = [
-    [1, 2],
-    [1, 2],
-    [1, 3],
-  ];
-  const sectorScopes = sectorScopesList[stepNumber - 1];
+  const {
+    icon: sectorIcon,
+    description: sectorDescription,
+    name: sectorName,
+  } = sector;
 
-  const resolveSectorNames = (sectorName: string) => {
-    const sectorNames = ["Stationary Energy", "Transportation", "Waste"];
-    const filteredName =
-      sectorNames.find(
-        (sector: string) => sector.toLowerCase() === sectorName.toLowerCase(),
-      ) || null;
-
-    const resolvedName = filteredName?.toLowerCase().replace(" ", "-");
-
-    return t(resolvedName!);
-  };
+  const sectorScopes: number[] =
+    sector.inventoryTypes[inventory.inventoryType as InventoryType]?.scopes;
 
   return (
     <Box
@@ -97,7 +75,7 @@ export function SectorCard({
                   lineHeight="24"
                   className="pb-[8px]"
                 >
-                  {resolveSectorNames(sectorProgress.sector.sectorName!)}
+                  {t(sectorName)}
                 </Heading>
               </Box>
               <Text
@@ -106,7 +84,7 @@ export function SectorCard({
                 lineHeight="24"
                 letterSpacing="wide"
               >
-                {sectorDescription}
+                {t(sectorDescription)}
               </Text>
               <Heading
                 fontWeight="semibold"
@@ -115,13 +93,16 @@ export function SectorCard({
                 letterSpacing="wide"
                 className="py-[16px]"
               >
-                <Trans t={t}>scope-required-for-gpc</Trans>:{" "}
-                {sectorScopes?.join(", ") || "none"}
+                {InventoryTypeEnum.GPC_BASIC_PLUS === inventory?.inventoryType
+                  ? t("scope-required-for-gpc+")
+                  : t("scope-required-for-gpc")}
+                {": "}
+                {(sectorScopes || [])?.join(", ") || t("none")}
               </Heading>
             </Box>
             <Box>
               <NextLink
-                href={`/${inventory}/data/${stepNumber}`}
+                href={`/${inventory.inventoryId}/data/${sector.number}`}
                 passHref
                 legacyBehavior
               >
@@ -167,9 +148,10 @@ export function SectorCard({
               <Box className="grid grid-cols-3 gap-4 py-4">
                 {sectorProgress.subSectors.map((subSector, i) => (
                   <SubSectorCard
+                    t={t}
                     key={i}
-                    title={subSector.subsectorName || t("unnamed-sector")}
-                    scopes={sectorScopes.join(", ")}
+                    title={t(subSector.subsectorName ?? "unnamed-sector")}
+                    scopes={(sectorScopes || []).join(", ")}
                     isCompleted={subSector.completed}
                   />
                 ))}

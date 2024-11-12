@@ -10,7 +10,7 @@ export const SectorHeader = ({
   sectorName,
   dataForSector,
 }: {
-  icon: (props: IconBaseProps) => JSX.Element;
+  icon: React.ElementType<IconBaseProps>;
   t: TFunction;
   sectorName: string;
   dataForSector?: SectorEmission;

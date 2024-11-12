@@ -39,8 +39,13 @@ def db_query(locode, year, reference_number):
     return result
 
 
-@api_router.get("/crosswalk/city/{locode}/{year}/{gpcReferenceNumber}")
+@api_router.get("/crosswalk/city/{locode}/{year}/{gpcReferenceNumber}",
+                summary="Get emissions from Crosswalk Labs",
+                description="DEPRECATED WARNING: This endpoint will be migrated to a new endpoint /api/v1/source/crosswalk/city/{locode}/{year}/{gpcReferenceNumber} in the near future.")
 def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: str):
+    """
+        Retrieves data from crosswalks labs on greenhouse gas emissions for a specific city identified by locode, for a given year and GPC reference number.
+    """
     records = db_query(locode, year, gpcReferenceNumber)
 
     if not records:

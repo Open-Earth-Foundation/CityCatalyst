@@ -1,5 +1,6 @@
 import csv
 import os
+import json
 import pandas as pd
 from pathlib import Path
 from utils import (
@@ -358,7 +359,15 @@ if __name__ == "__main__":
 
     df_final["CO2e"] = df_final["CO2e"].round(3)
     # create a subcategory column based on fuel name
-    df_final["metadata"] = df_final["CO2e"].apply(lambda x: f"CO2e_value:{x}")
+    df_final["metadata"] = df_final.apply(
+        lambda row: {
+            "CO2e_value": row["CO2e"]
+        },
+        axis=1,
+    )
+
+    df_final["metadata"] = df_final["metadata"].apply(json.dumps)
+
     df_final = df_final.drop(
         columns=["CO2e", "datasource_name", "emission_factor_type"]
     )

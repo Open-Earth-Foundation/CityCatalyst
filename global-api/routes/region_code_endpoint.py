@@ -42,7 +42,10 @@ def db_query(source_name, region_code, year, GPC_refno):
     return rows
 
 
-@api_router.get("/source/{source_name}/region/{region_code}/{year}/{GPC_refno}")
+@api_router.get("/source/{source_name}/region/{region_code}/{year}/{GPC_refno}",
+    summary="Get region level emissions",
+    description="DEPRECATED WARNING: This endpoint will be migrated to a new endpoint /api/v1/source/{source_name}/region/{locode}/{year}/{GPC_refno}/emissions in the near future.")
+
 def get_emissions_by_country_and_year(source_name: str, region_code: str, year: str, GPC_refno: str):
 
     records = db_query(source_name, region_code, year, GPC_refno)

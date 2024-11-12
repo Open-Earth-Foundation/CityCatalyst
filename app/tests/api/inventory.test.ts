@@ -18,6 +18,10 @@ import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
 import { Sector } from "@/models/Sector";
 import { SubCategory } from "@/models/SubCategory";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
+} from "@/util/enums";
 
 const locode = "XX_INVENTORY_CITY";
 // Matches name given by CDP for API testing
@@ -35,12 +39,16 @@ const inventoryData: CreateInventoryRequest = {
   inventoryName,
   year: 3000,
   totalEmissions: 1337,
+  globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+  inventoryType: InventoryTypeEnum.GPC_BASIC,
 };
 
 const inventoryData2: CreateInventoryRequest = {
   inventoryName,
   year: 3001,
   totalEmissions: 1338,
+  globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+  inventoryType: InventoryTypeEnum.GPC_BASIC,
 };
 
 const invalidInventory = {

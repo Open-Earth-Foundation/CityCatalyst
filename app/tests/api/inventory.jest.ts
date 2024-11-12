@@ -70,11 +70,11 @@ const inventoryData2: CreateInventoryRequest = {
 };
 
 const invalidInventory = {
-  inventoryName: "inventoryName",
-  year: 2000,
+  inventoryName: "",
+  year: 0,
   totalEmissions: "246kg co2eq",
-  globalWarmingPotentialType: "ar5",
-  inventoryType: "gpc_basic",
+  globalWarmingPotentialType: "ar4",
+  inventoryType: "gpc_premium",
 };
 
 const inventoryValue = {
@@ -226,7 +226,7 @@ describe("Inventory API", () => {
     const {
       error: { issues },
     } = await res.json();
-    expect(issues.length).toEqual(3);
+    expect(issues.length).toEqual(5);
   });
 
   it("should find an inventory", async () => {

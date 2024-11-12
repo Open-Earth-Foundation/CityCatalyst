@@ -159,7 +159,7 @@ export default class ECRFDownloadService {
 
   private static replacePlaceholdersInRow(
     row: Excel.Row,
-    dataSection: Record<string, any>,
+    dataSection: Record<string, any>, // TODO: Define a type for this
     rowNumber: number,
     visitedScopes: Record<string, any>,
     worksheet: Worksheet,

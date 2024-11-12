@@ -16,7 +16,9 @@ import {
   keyBy,
   PopulationEntry,
 } from "@/util/helpers";
-import ECRFDownloadService from "@/backend/ECRFDownloadService";
+import ECRFDownloadService, {
+  InventoryWithInventoryValuesAndActivityValues,
+} from "@/backend/ECRFDownloadService";
 
 type InventoryValueWithEF = InventoryValue & {
   emissionsFactor?: EmissionsFactor;
@@ -57,15 +59,15 @@ export const GET = apiHandler(async (req, { params, session }) => {
               {
                 model: db.models.GasValue,
                 as: "gasValues",
+                separate: true,
                 include: [
-                  { model: db.models.EmissionsFactor, as: "emissionsFactor" },
+                  {
+                    model: db.models.EmissionsFactor,
+                    as: "emissionsFactor",
+                  },
                 ],
               },
             ],
-          },
-          {
-            model: db.models.GasValue,
-            as: "gasValues",
           },
           {
             model: db.models.DataSource,
@@ -75,6 +77,15 @@ export const GET = apiHandler(async (req, { params, session }) => {
         ],
       },
     ],
+  );
+
+  const gasValues = await db.models.GasValue.findAll({
+    include: [{ model: db.models.EmissionsFactor, as: "emissionsFactor" }],
+  });
+
+  console.log(
+    gasValues.map((g) => g.emissionsFactor),
+    "gasss",
   );
   if (!inventory.year) {
     throw new createHttpError.BadRequest(
@@ -130,11 +141,15 @@ export const GET = apiHandler(async (req, { params, session }) => {
       };
       break;
     case "ecrf":
-      body = await ECRFDownloadService.downloadECRF(inventory.inventoryId);
+      body = await ECRFDownloadService.downloadECRF(
+        inventory.inventoryId,
+        output as InventoryWithInventoryValuesAndActivityValues,
+      );
       headers = {
         "Content-Type": "application/vnd.ms-excel",
         "Content-Disposition": `attachment; filename="eCRF_inventory-${inventory.city.locode}-${inventory.year}.xlsx"`,
       };
+      break;
     case "json":
     default:
       body = Buffer.from(JSON.stringify({ data: output }), "utf-8");

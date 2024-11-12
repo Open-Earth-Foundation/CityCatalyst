@@ -26,7 +26,7 @@ const DownloadButtons = ({
 }) => {
   const DOWNLOAD_BUTTONS = {
     ciris: { isAvailable: false },
-    ecrf: { isAvailable: false },
+    ecrf: { isAvailable: true },
     csv: { isAvailable: true },
     pdf: { isAvailable: false },
   };
@@ -160,7 +160,7 @@ const DownloadButtons = ({
   };
 
   return (
-    <>
+    <Box display="flex" flexDirection="column">
       {Object.entries(DOWNLOAD_BUTTONS).map(([format, { isAvailable }]) => (
         <Button
           key={format}
@@ -202,7 +202,7 @@ const DownloadButtons = ({
           )}
         </Button>
       ))}
-    </>
+    </Box>
   );
 };
 

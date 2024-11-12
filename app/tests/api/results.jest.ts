@@ -21,6 +21,10 @@ import {
 } from "./results.data";
 import { Op } from "sequelize";
 import { City } from "@/models/City";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
+} from "@/util/enums";
 
 const locode = "XX_SUBCATEGORY_CITY";
 
@@ -42,6 +46,8 @@ describe("Results API", () => {
       ...baseInventory,
       inventoryName: "ReportResultInventory",
       cityId: city.cityId,
+      inventoryType: InventoryTypeEnum.GPC_BASIC,
+      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
     });
 
     await db.models.InventoryValue.bulkCreate(inventoryValuesData);

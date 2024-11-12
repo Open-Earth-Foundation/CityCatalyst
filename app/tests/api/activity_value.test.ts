@@ -38,6 +38,10 @@ import {
   updatedActivityValue,
   validCreateActivity,
 } from "./activity_value_data";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
+} from "@/util/enums";
 
 describe("Activity Value API", () => {
   let city: City;
@@ -93,6 +97,8 @@ describe("Activity Value API", () => {
       inventoryId: randomUUID(),
       inventoryName: inventoryName,
       cityId: city.cityId,
+      inventoryType: InventoryTypeEnum.GPC_BASIC,
+      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
     });
 
     sector = await db.models.Sector.create({

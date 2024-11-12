@@ -40,6 +40,10 @@ import {
   validCreateActivity,
   validCreateActivityTimesEmissionsFactor,
 } from "./activity_value_data";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
+} from "@/util/enums";
 
 /** skipped tests are running with the with node test runner **/
 describe.skip("Activity Value API", () => {
@@ -87,6 +91,8 @@ describe.skip("Activity Value API", () => {
       inventoryId: randomUUID(),
       inventoryName: inventoryName,
       cityId: city.cityId,
+      inventoryType: InventoryTypeEnum.GPC_BASIC,
+      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
     });
 
     sector = await db.models.Sector.create({

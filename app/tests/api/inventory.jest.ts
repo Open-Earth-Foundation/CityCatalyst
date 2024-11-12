@@ -73,6 +73,8 @@ const invalidInventory = {
   inventoryName: "",
   year: 0,
   totalEmissions: "246kg co2eq",
+  globalWarmingPotentialType: "ar4",
+  inventoryType: "gpc_premium",
 };
 
 const inventoryValue = {

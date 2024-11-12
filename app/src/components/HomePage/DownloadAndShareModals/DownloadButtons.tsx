@@ -15,11 +15,13 @@ import { FiDownload } from "react-icons/fi";
 
 const DownloadButtons = ({
   t,
+  lng,
   inventoryId,
   cityLocode,
   inventoryYear,
 }: {
   t: TFunction;
+  lng: string;
   inventoryId: string | undefined;
   cityLocode: string | undefined;
   inventoryYear: number | undefined;
@@ -117,7 +119,9 @@ const DownloadButtons = ({
       "semantic.info",
       true, // animated gradient
     );
-    fetch(`/api/v0/inventory/${inventoryId}/download?format=${format}`)
+    fetch(
+      `/api/v0/inventory/${inventoryId}/download?format=${format}&lng=${lng}`,
+    )
       .then((res) => {
         if (!res.ok) {
           throw new Error("Network response was not ok");

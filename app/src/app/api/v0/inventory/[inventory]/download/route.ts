@@ -44,6 +44,7 @@ const sectorSheetMapping: { [key: string]: number } = {
 };
 
 export const GET = apiHandler(async (req, { params, session }) => {
+  const lng = req.nextUrl.searchParams.get("lng") || "en";
   const inventory = await UserService.findUserInventory(
     params.inventory,
     session,
@@ -79,14 +80,6 @@ export const GET = apiHandler(async (req, { params, session }) => {
     ],
   );
 
-  const gasValues = await db.models.GasValue.findAll({
-    include: [{ model: db.models.EmissionsFactor, as: "emissionsFactor" }],
-  });
-
-  console.log(
-    gasValues.map((g) => g.emissionsFactor),
-    "gasss",
-  );
   if (!inventory.year) {
     throw new createHttpError.BadRequest(
       `Inventory ${inventory.inventoryId} is missing a year number`,
@@ -142,8 +135,8 @@ export const GET = apiHandler(async (req, { params, session }) => {
       break;
     case "ecrf":
       body = await ECRFDownloadService.downloadECRF(
-        inventory.inventoryId,
         output as InventoryWithInventoryValuesAndActivityValues,
+        lng,
       );
       headers = {
         "Content-Type": "application/vnd.ms-excel",

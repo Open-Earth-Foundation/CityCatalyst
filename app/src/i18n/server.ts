@@ -1,13 +1,10 @@
-import i18next, { createInstance } from "i18next";
+import { createInstance } from "i18next";
 import resourcesToBackend from "i18next-resources-to-backend";
-import { initReactI18next } from "react-i18next";
-import { getOptions } from "./settings";
-import { getTranslationFromDictionary } from "@/util/helpers";
+import { getOptions } from "@/i18n/settings";
 
 const initI18next = async (lng: string, ns: string) => {
   const i18nInstance = createInstance();
   await i18nInstance
-    .use(initReactI18next)
     .use(
       resourcesToBackend(
         (language: string, namespace: string) =>
@@ -33,10 +30,3 @@ export async function translationFunc(
     i18n: i18nextInstance,
   };
 }
-
-export const getTranslationFromDict = (
-  translations: Record<string, string> | string | undefined,
-): string | undefined => {
-  const lang = i18next.language;
-  return getTranslationFromDictionary(translations, lang);
-};

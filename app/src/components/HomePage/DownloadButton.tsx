@@ -16,12 +16,14 @@ interface DownloadButtonProps {
   inventoryId: string;
   city: any;
   inventory: any;
+  lng: string;
   t: TFunction;
 }
 
 const DownloadButton: React.FC<DownloadButtonProps> = ({
   inventoryId,
   city,
+  lng,
   inventory,
   t,
 }) => {
@@ -48,6 +50,7 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
     >
       <ModalDownloadShare
         t={t}
+        lng={lng}
         isDownloadShareOpen={isDownloadShareOpen}
         onDownloadShareClose={onDownloadShareClose}
         onPublishOpen={onPublishOpen}

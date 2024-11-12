@@ -132,32 +132,32 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
         >
           <Stack direction="column">
             <Radio
-              {...getRadioProps({ value: "select-reason-1" })}
-              key={"select-reason-1"}
+              {...getRadioProps({ value: "reason-NO" })}
+              key={"reason-NO"}
               color="interactive.secondary"
             >
-              {t("select-reason-1")}
+              {t("reason-NO")}
             </Radio>
             <Radio
-              {...getRadioProps({ value: "select-reason-2" })}
-              key={"select-reason-2"}
+              {...getRadioProps({ value: "reason-NE" })}
+              key={"reason-NE"}
               color="interactive.secondary"
             >
-              {t("select-reason-2")}
+              {t("reason-NE")}
             </Radio>
             <Radio
-              {...getRadioProps({ value: "select-reason-3" })}
-              key={"select-reason-3"}
+              {...getRadioProps({ value: "reason-C" })}
+              key={"reason-C"}
               color="interactive.secondary"
             >
-              {t("select-reason-3")}
+              {t("reason-C")}
             </Radio>
             <Radio
-              {...getRadioProps({ value: "select-reason-4" })}
-              key={"select-reason-4"}
+              {...getRadioProps({ value: "reason-IE" })}
+              key={"reason-IE"}
               color="interactive.secondary"
             >
-              {t("select-reason-4")}
+              {t("reason-IE")}
             </Radio>
 
             {errors?.reason ? (

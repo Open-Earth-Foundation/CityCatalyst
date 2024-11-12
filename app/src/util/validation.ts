@@ -1,4 +1,3 @@
-import { GlobalWarmingPotentialType, InventoryType } from "@/models/Inventory";
 import { z } from "zod";
 
 export const emailPattern =

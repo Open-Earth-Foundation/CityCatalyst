@@ -19,10 +19,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
-import SelectCityStep from "../../../../components/steps/select-city-steps";
-import SetInventoryDetailsStep from "../../../../components/steps/add-inventory-details-step";
-import SetPopulationDataStep from "../../../../components/steps/add-population-data-step";
-import ConfirmStep from "../../../../components/steps/confirm-city-data-step";
+import SelectCityStep from "@/components/steps/select-city-steps";
+import SetInventoryDetailsStep from "@/components/steps/add-inventory-details-step";
+import SetPopulationDataStep from "@/components/steps/add-population-data-step";
+import ConfirmStep from "@/components/steps/confirm-city-data-step";
 
 export type Inputs = {
   city: string;
@@ -51,7 +51,6 @@ export type OnboardingData = {
   globalWarmingPotential: string;
 };
 
-// Custom Radio Buttons
 export default function OnboardingSetup({
   params: { lng },
 }: {
@@ -175,7 +174,6 @@ export default function OnboardingSetup({
     }
 
     try {
-      console.log("inventory year", typeof data.year);
       const inventory = await addInventory({
         cityId: city?.cityId!,
         year: typeof data.year === "string" ? parseInt(data.year) : data.year,

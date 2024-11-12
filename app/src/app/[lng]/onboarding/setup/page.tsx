@@ -23,6 +23,7 @@ import SelectCityStep from "@/components/steps/select-city-steps";
 import SetInventoryDetailsStep from "@/components/steps/add-inventory-details-step";
 import SetPopulationDataStep from "@/components/steps/add-population-data-step";
 import ConfirmStep from "@/components/steps/confirm-city-data-step";
+import ProgressSteps from "@/components/steps/progress-steps";
 
 export type Inputs = {
   city: string;
@@ -280,7 +281,7 @@ export default function OnboardingSetup({
           <Box w="full" display="flex" flexDir="column" gap="32px">
             <Box className="w-full">
               <div className="w-full">
-                <WizardSteps steps={steps} currentStep={activeStep} />
+                <ProgressSteps steps={steps} currentStep={activeStep} />
               </div>
             </Box>
             <Box w="full" display="flex" justifyContent="end" px="135px">

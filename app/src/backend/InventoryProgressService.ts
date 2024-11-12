@@ -2,13 +2,14 @@ import type { Sector } from "@/models/Sector";
 import { db } from "@/models";
 import INVENTORY_STRUCTURE from "../data/inventory-structure.json";
 import fs from "fs";
-import { Inventory, InventoryTypeEnum } from "@/models/Inventory";
+import { Inventory } from "@/models/Inventory";
 import * as path from "path";
 import * as process from "node:process";
 import {
   getScopesForInventoryAndSector,
   getSectorsForInventory,
 } from "@/util/constants";
+import { InventoryTypeEnum } from "@/util/enums";
 
 const romanTable: Record<string, number> = {
   I: 1,

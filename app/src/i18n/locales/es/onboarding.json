@@ -40,5 +40,6 @@
   "region-population-title": "Población de la región",
   "region-population-placeholder": "Número de población de la región",
   "country-population-title": "Población del país",
-  "country-population-placeholder": "Número de población del país"
+  "country-population-placeholder": "Número de población del país",
+  "create-intentory": "Crear Inventario"
 }

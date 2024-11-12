@@ -34,6 +34,10 @@ import {
   jest,
 } from "@jest/globals";
 import { activityValues } from "./results.data";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
+} from "@/util/enums";
 
 jest.useFakeTimers();
 
@@ -53,12 +57,16 @@ const inventoryData: CreateInventoryRequest = {
   inventoryName,
   year: 3000,
   totalEmissions: 1337,
+  globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+  inventoryType: InventoryTypeEnum.GPC_BASIC,
 };
 
 const inventoryData2: CreateInventoryRequest = {
   inventoryName,
   year: 3001,
   totalEmissions: 1338,
+  globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+  inventoryType: InventoryTypeEnum.GPC_BASIC,
 };
 
 const invalidInventory = {

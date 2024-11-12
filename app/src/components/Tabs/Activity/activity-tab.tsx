@@ -16,8 +16,8 @@ import {
   Methodology,
   SuggestedActivity,
 } from "@/util/form-schema";
-import { ActivityValue } from "@/models/ActivityValue";
-import { InventoryValue } from "@/models/InventoryValue";
+import type { ActivityValueAttributes } from "@/models/ActivityValue";
+import type { InventoryValueAttributes } from "@/models/InventoryValue";
 import EmissionDataSection from "@/components/Tabs/Activity/emission-data-section";
 import SelectMethodology from "@/components/Tabs/Activity/select-methodology";
 import ExternalDataSection from "@/components/Tabs/Activity/external-data-section";
@@ -35,9 +35,9 @@ interface ActivityTabProps {
   totalConsumptionUnit?: boolean;
   inventoryId: string;
   step: string;
-  activityData: ActivityValue[] | undefined;
+  activityData: ActivityValueAttributes[] | undefined;
   subsectorId: string;
-  inventoryValues: InventoryValue[];
+  inventoryValues: InventoryValueAttributes[];
 }
 
 const ActivityTab: FC<ActivityTabProps> = ({

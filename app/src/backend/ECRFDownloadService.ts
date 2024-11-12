@@ -5,6 +5,8 @@ import createHttpError from "http-errors";
 import { InventoryResponse } from "@/util/types";
 import { findMethodology } from "@/util/form-schema";
 import { translationFunc } from "@/i18n/server";
+import { toDecimal } from "@/util/helpers";
+import Decimal from "decimal.js";
 
 type InventoryValueWithActivityValues = InventoryValue & {
   activityValues: ActivityValue[];
@@ -48,6 +50,12 @@ export default class ECRFDownloadService {
       const visitedScopes = {};
 
       worksheet?.eachRow((row, rowNumber) => {
+        // maintain the styling
+        row.eachCell((cell) => {
+          console.log(cell.style);
+          cell.style = { ...cell.style };
+        });
+
         if (rowNumber === 1) return; // Skip the first row (contains the header)
 
         const referenceNumberCell = row.getCell(2);
@@ -139,7 +147,9 @@ export default class ECRFDownloadService {
             methodology: methodologyDescription,
             activity_data_quality: dataQuality,
             activity_data_source: dataSource,
-            total_co2e: activityValue.co2eq,
+            total_co2e: toDecimal(activityValue.co2eq as bigint)
+              ?.div(new Decimal("1e3"))
+              .toNumber(),
           };
         }),
       };
@@ -158,6 +168,14 @@ export default class ECRFDownloadService {
     const referenceValue = referenceCell.value;
 
     if (typeof referenceValue == "string" && referenceValue in visitedScopes) {
+      return;
+    }
+
+    if (dataSection.notation_key) {
+      this.markRowAsNotEstimated(
+        row,
+        dataSection["notation_key"].split("-")[1],
+      );
       return;
     }
 
@@ -192,7 +210,7 @@ export default class ECRFDownloadService {
             // if field name is notation key, replace with unavailable explanation
             if (fieldName === "no_key" && dataSection["notation_key"]) {
               // the stored value looks like "reason_NO", "reason_NE", etc.
-              cell.value = dataSection["notation_key"].split("_")[1];
+              cell.value = dataSection["notation_key"].split("-")[1];
               return;
             } else if (replacementValue !== undefined) {
               cell.value = replacementValue;
@@ -210,7 +228,7 @@ export default class ECRFDownloadService {
     visitedScopes[referenceValue as string] = true;
   }
 
-  private static markRowAsNotEstimated(row: Excel.Row) {
+  private static markRowAsNotEstimated(row: Excel.Row, notation?: string) {
     row.eachCell((cell) => {
       if (cell.value && typeof cell.value === "string") {
         const cellValue = cell.value as string;
@@ -218,7 +236,7 @@ export default class ECRFDownloadService {
         if (placeholderMatch) {
           const fieldName = placeholderMatch[1];
           if (fieldName === "no_key") {
-            cell.value = "NE"; // Not Estimated
+            cell.value = notation || "NE"; // Not Estimated
           } else {
             cell.value = ""; // remove the placeholder when
           }

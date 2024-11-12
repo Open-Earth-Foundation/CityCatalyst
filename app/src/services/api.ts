@@ -1,17 +1,16 @@
 import {
   type CityAttributes,
   type InventoryAttributes,
-  InventoryValue,
   type InventoryValueAttributes,
-  PopulationAttributes,
+  type PopulationAttributes,
   type UserAttributes,
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
 import type {
   ConnectDataSourceQuery,
   ConnectDataSourceResponse,
-  DataSourceResponse,
   EmissionsFactorResponse,
+  GetDataSourcesResult,
   InventoryProgressResponse,
   InventoryResponse,
   InventoryUpdateQuery,
@@ -160,12 +159,11 @@ export const api = createApi({
       providesTags: ["UserInfo"],
     }),
     getAllDataSources: builder.query<
-      DataSourceResponse,
+      GetDataSourcesResult,
       { inventoryId: string }
     >({
       query: ({ inventoryId }) => `datasource/${inventoryId}`,
-      transformResponse: (response: { data: DataSourceResponse }) =>
-        response.data,
+      transformResponse: (response: GetDataSourcesResult) => response,
     }),
     getInventoryValue: builder.query<
       InventoryValueResponse,

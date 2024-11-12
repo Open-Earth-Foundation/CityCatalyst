@@ -16,8 +16,14 @@ import {
   Methodology,
   SuggestedActivity,
 } from "@/util/form-schema";
-import { ActivityValue } from "@/models/ActivityValue";
-import { InventoryValue } from "@/models/InventoryValue";
+import type {
+  ActivityValueAttributes,
+  ActivityValue,
+} from "@/models/ActivityValue";
+import type {
+  InventoryValueAttributes,
+  InventoryValue,
+} from "@/models/InventoryValue";
 import EmissionDataSection from "@/components/Tabs/Activity/emission-data-section";
 import SelectMethodology from "@/components/Tabs/Activity/select-methodology";
 import ExternalDataSection from "@/components/Tabs/Activity/external-data-section";
@@ -35,9 +41,9 @@ interface ActivityTabProps {
   totalConsumptionUnit?: boolean;
   inventoryId: string;
   step: string;
-  activityData: ActivityValue[] | undefined;
+  activityData: ActivityValueAttributes[] | undefined;
   subsectorId: string;
-  inventoryValues: InventoryValue[];
+  inventoryValues: InventoryValueAttributes[];
 }
 
 const ActivityTab: FC<ActivityTabProps> = ({
@@ -66,14 +72,16 @@ const ActivityTab: FC<ActivityTabProps> = ({
 
   const [methodology, setMethodology] = useState<Methodology | DirectMeasure>();
 
-  const getfilteredActivityValues = useMemo(() => {
+  const getFilteredActivityValues = useMemo(() => {
     let methodologyId: string | null | undefined = undefined;
     const filteredValues = activityData?.filter((activity) => {
-      let val = activity.inventoryValue.gpcReferenceNumber === referenceNumber;
-      if (val && !methodologyId) {
-        methodologyId = activity.inventoryValue.inputMethodology;
+      const activityValue = activity as unknown as ActivityValue; // TODO use InventoryValueResponse/ ActivityValueResponse everywhere
+      let isCurrentRefno =
+        activityValue.inventoryValue.gpcReferenceNumber === referenceNumber;
+      if (isCurrentRefno && !methodologyId) {
+        methodologyId = activityValue.inventoryValue.inputMethodology;
       }
-      return val;
+      return isCurrentRefno;
     });
 
     // TODO remove this. Only extract the methodology from the inventory value if it exists
@@ -107,7 +115,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
     return inventoryValues?.find(
       (value) =>
         value.gpcReferenceNumber === referenceNumber &&
-        value.dataSource?.sourceType === "third_party",
+        (value as unknown as InventoryValue).dataSource?.sourceType ===
+          "third_party",
     );
   }, [inventoryValues, referenceNumber]);
 
@@ -126,7 +135,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
     });
   };
 
-  const inventoryValue = useMemo<InventoryValue | null>(() => {
+  const inventoryValue = useMemo<InventoryValueAttributes | null>(() => {
     return (
       inventoryValues?.find(
         (value) =>
@@ -138,22 +147,23 @@ const ActivityTab: FC<ActivityTabProps> = ({
           value.unavailableExplanation,
       ) ?? null
     );
-  }, [inventoryValues, methodology]);
+  }, [inventoryValues, methodology, referenceNumber]);
 
   const getActivityValuesByMethodology = (
-    activityValues: ActivityValue[] | undefined,
+    activityValues: ActivityValueAttributes[] | undefined,
   ) => {
     const isDirectMeasure = methodology?.id.includes("direct-measure");
 
-    return activityValues?.filter((activity) =>
-      isDirectMeasure
-        ? activity.inventoryValue.inputMethodology === "direct-measure"
-        : activity.inventoryValue.inputMethodology !== "direct-measure",
-    );
+    return activityValues?.filter((activity) => {
+      const isActivityDirectMeasure =
+        (activity as unknown as ActivityValue).inventoryValue
+          .inputMethodology === "direct-measure";
+      isDirectMeasure ? isActivityDirectMeasure : !isActivityDirectMeasure;
+    });
   };
 
   const activityValues =
-    getActivityValuesByMethodology(getfilteredActivityValues) || [];
+    getActivityValuesByMethodology(getFilteredActivityValues) || [];
 
   const getSuggestedActivities = (): SuggestedActivity[] => {
     if (!selectedMethodology) return [];
@@ -336,7 +346,9 @@ const ActivityTab: FC<ActivityTabProps> = ({
           <Box h="auto" px="24px" py="32px" bg="base.light" borderRadius="8px">
             <ExternalDataSection
               t={t}
-              inventoryValue={externalInventoryValue}
+              inventoryValue={
+                externalInventoryValue as unknown as InventoryValue
+              }
             />
           </Box>
         )}
@@ -357,11 +369,11 @@ const ActivityTab: FC<ActivityTabProps> = ({
                   inventoryId={inventoryId}
                   subsectorId={subsectorId}
                   refNumberWithScope={referenceNumber}
-                  activityValues={activityValues}
+                  activityValues={activityValues as unknown as ActivityValue[]}
                   suggestedActivities={suggestedActivities}
                   totalEmissions={totalEmissions}
                   changeMethodology={changeMethodology}
-                  inventoryValue={inventoryValue}
+                  inventoryValue={inventoryValue as unknown as InventoryValue}
                 />
               </Box>
             ) : (

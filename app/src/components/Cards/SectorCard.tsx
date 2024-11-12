@@ -150,7 +150,7 @@ export function SectorCard({
                   <SubSectorCard
                     t={t}
                     key={i}
-                    title={t(subSector.subsectorName) || t("unnamed-sector")}
+                    title={t(subSector.subsectorName ?? "unnamed-sector")}
                     scopes={(sectorScopes || []).join(", ")}
                     isCompleted={subSector.completed}
                   />

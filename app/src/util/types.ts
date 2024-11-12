@@ -1,36 +1,40 @@
 import type {
   DataSourceWithRelations,
   InventoryValueData,
+  SubSectorWithRelations,
 } from "@/app/[lng]/[inventory]/data/[step]/types";
 import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
-import type { DataSourceI18nAttributes as DataSourceAttributes } from "@/models/DataSourceI18n";
-import type { InventoryValueAttributes } from "@/models/SubCategoryValue";
+import { DataSourceI18nAttributes as DataSourceAttributes } from "@/models/DataSourceI18n";
+import type { InventoryValueAttributes } from "@/models/InventoryValue";
 import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
 import type { CityAttributes } from "@/models/City";
-import type { SubSector } from "@/util/types";
 import type { GasValueAttributes } from "@/models/GasValue";
 import type { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
 import Decimal from "decimal.js";
+import {
+  FailedSourceResult,
+  RemovedSourceResult,
+} from "@/backend/DataSourceService";
 
-type InventoryResponse = InventoryAttributes & {
+export type InventoryResponse = InventoryAttributes & {
   city: CityAttributes & {
     populationYear: number;
     population: number;
   };
 };
 
-interface SectorProgress {
+export interface SectorProgress {
   sector: SectorAttributes;
   total: number;
   thirdParty: number;
   uploaded: number;
-  subSectors: SubSector[];
+  subSectors: SubSectorWithRelations[];
 }
 
-interface InventoryProgressResponse {
+export interface InventoryProgressResponse {
   inventory: InventoryResponse;
   totalProgress: {
     total: number;
@@ -40,63 +44,72 @@ interface InventoryProgressResponse {
   sectorProgress: SectorProgress[];
 }
 
-interface UserInfoResponse {
+export interface UserInfoResponse {
   userId: string;
   name: string;
   defaultInventoryId: string | null;
 }
 
-type DataSource = DataSourceAttributes & {
+export type DataSource = DataSourceAttributes & {
   scopes: ScopeAttributes[];
   subSector?: SubSectorAttributes;
   subCategory?: SubCategoryAttributes;
   inventoryValues?: InventoryValueAttributes[];
 };
-type DataSourceResponse = { source: DataSourceWithRelations; data: any }[];
+export type DataSourceResponse = {
+  source: DataSourceWithRelations;
+  data: any;
+}[];
 
-type InventoryValueResponse = InventoryValueAttributes & {
+export interface GetDataSourcesResult {
+  data: DataSourceResponse;
+  removedSources: RemovedSourceResult[];
+  failedSources: FailedSourceResult[];
+}
+
+export type InventoryValueResponse = InventoryValueAttributes & {
   dataSource: DataSourceAttributes;
   gasValues: GasValueAttributes & {
     emissionsFactor: EmissionsFactorAttributes;
   };
 };
 
-interface ConnectDataSourceQuery {
+export interface ConnectDataSourceQuery {
   inventoryId: string;
   dataSourceIds: string[];
 }
 
-interface ConnectDataSourceResponse {
+export interface ConnectDataSourceResponse {
   successful: string[];
   failed: string[];
   invalid: string[];
 }
 
-interface InventoryValueUpdateQuery {
+export interface InventoryValueUpdateQuery {
   subCategoryId: string;
   inventoryId: string;
   data: InventoryValueData;
 }
 
-interface InventoryValueInSubSectorScopeUpdateQuery {
+export interface InventoryValueInSubSectorScopeUpdateQuery {
   subSectorId: string;
   inventoryId: string;
   data: InventoryValueData;
 }
 
-interface InventoryUpdateQuery {
+export interface InventoryUpdateQuery {
   inventoryId: string;
   data: { isPublic: boolean };
 }
 
-type EmissionsFactorWithDataSources = EmissionsFactorAttributes & {
+export type EmissionsFactorWithDataSources = EmissionsFactorAttributes & {
   dataSources: DataSourceAttributes[];
 };
-type EmissionsFactorResponse = EmissionsFactorWithDataSources[];
+export type EmissionsFactorResponse = EmissionsFactorWithDataSources[];
 
-type InventoryWithCity = InventoryAttributes & { city: CityAttributes };
+export type InventoryWithCity = InventoryAttributes & { city: CityAttributes };
 
-interface OCCityAttributes {
+export interface OCCityAttributes {
   actor_id: string;
   name: string;
   is_part_of: string;
@@ -116,13 +129,13 @@ declare module "next-auth" {
   }
 }
 
-type fileContentValues = {
+export interface fileContentValues {
   fileName: string;
   size: number;
   fileType: string;
-};
+}
 
-interface UserFileResponse {
+export interface UserFileResponse {
   id: string;
   userId: string;
   cityId: string;
@@ -138,7 +151,7 @@ interface UserFileResponse {
   lastUpdated: Date;
 }
 
-interface UserInviteResponse {
+export interface UserInviteResponse {
   id: string;
   userId: string;
   locode: string;
@@ -147,11 +160,11 @@ interface UserInviteResponse {
   lastUpdated: string;
 }
 
-interface RequiredScopesResponse {
+export interface RequiredScopesResponse {
   requiredScopes: string[];
 }
 
-interface TopEmission {
+export interface TopEmission {
   scopeName: string;
   co2eq: bigint;
   sectorName: string;
@@ -159,13 +172,13 @@ interface TopEmission {
   percentage: number;
 }
 
-interface SectorEmission {
+export interface SectorEmission {
   sectorName: string;
   co2eq: bigint;
   percentage: number;
 }
 
-interface ResultsResponse {
+export interface ResultsResponse {
   totalEmissions: {
     bySector: SectorEmission[];
     total: bigint;
@@ -173,21 +186,21 @@ interface ResultsResponse {
   topEmissions: { bySubSector: TopEmission[] };
 }
 
-interface SubsectorTotals {
+export interface SubsectorTotals {
   totalActivityValueByUnit: {
     [activityUnit: string]: bigint | string;
   };
   totalActivityEmissions: bigint | string;
 }
 
-interface GroupedActivity {
+export interface GroupedActivity {
   activityValue: string | Decimal; // Using string for "N/A"
   activityUnits: string;
   totalActivityEmissions: string | Decimal; // Using string  for "N/A"
   totalEmissionsPercentage: number;
 }
 
-interface ActivityBreakdown {
+export interface ActivityBreakdown {
   [subSector: string]:
     | {
         [activity: string]: GroupedActivity;
@@ -195,23 +208,19 @@ interface ActivityBreakdown {
     | SubsectorTotals;
 }
 
-interface BreakdownByActivity {
-  [activityName: string]: {
-    [fuelType: string]: {
-      [unit: string]: GroupedActivity;
-    };
-    totals: SubsectorTotals;
-  };
-}
+export type BreakdownByActivity = Record<
+  string,
+  Record<string, Record<string, GroupedActivity>> & { totals: SubsectorTotals }
+>;
 
-interface ActivityDataByScope {
+export interface ActivityDataByScope {
   activityTitle: string;
   scopes: { [key: string]: Decimal };
   totalEmissions: Decimal;
   percentage: number;
 }
 
-interface SectorBreakdownResponse extends BreakdownByActivity {
+export type SectorBreakdownResponse = BreakdownByActivity & {
   byActivity: BreakdownByActivity;
   byScope: ActivityDataByScope[];
-}
+};

@@ -34,12 +34,12 @@ import {
   useTransform,
 } from "framer-motion";
 import Link from "next/link";
+import type { InventoryValueAttributes } from "@/models/InventoryValue";
 import {
   getScopesForInventoryAndSector,
   InventoryTypeEnum,
   SECTORS,
 } from "@/util/constants";
-import { InventoryValue } from "@/models/InventoryValue";
 
 const MotionBox = motion(Box);
 
@@ -94,13 +94,10 @@ function SubSectorPage({
   const defaultInventoryId = userInfo?.defaultInventoryId;
   const { data: inventoryData } = api.useGetInventoryQuery(inventoryId);
 
-  const {
-    data: inventoryProgress,
-    isLoading: isInventoryProgressLoading,
-    error: inventoryProgressError,
-  } = api.useGetInventoryProgressQuery(defaultInventoryId!, {
-    skip: !defaultInventoryId,
-  });
+  const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
+    api.useGetInventoryProgressQuery(defaultInventoryId!, {
+      skip: !defaultInventoryId,
+    });
 
   // map subsector to sector by reference number
 
@@ -126,9 +123,10 @@ function SubSectorPage({
     (sector) => sector.sector.referenceNumber === getSectorRefNo(step),
   );
 
-  const subSectorData: SubSectorAttributes = sectorData?.subSectors.find(
-    (subsectorItem) => subsectorItem.subsectorId === subsector,
-  );
+  const subSectorData: SubSectorAttributes | undefined =
+    sectorData?.subSectors.find(
+      (subsectorItem) => subsectorItem.subsectorId === subsector,
+    );
   const getSectorName = (currentScope: string) => {
     return SECTORS[parseInt(currentScope) - 1].name;
   };
@@ -151,32 +149,39 @@ function SubSectorPage({
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const triggerMochLoading = () => {
-    setIsLoading(true);
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  };
+  const subSectorId = subSectorData?.subsectorId;
 
   const { data: activityData, isLoading: isActivityDataLoading } =
     api.useGetActivityValuesQuery({
       inventoryId,
-      subSectorId: subSectorData?.subsectorId,
+      subSectorId,
     });
 
   // fetch the inventoryValue for the selected scope
   const { data: inventoryValues, isLoading: isInventoryValueLoading } =
-    useGetInventoryValuesBySubsectorQuery({
-      inventoryId,
-      subSectorId: subSectorData?.subsectorId,
-    });
+    useGetInventoryValuesBySubsectorQuery(
+      {
+        inventoryId,
+        subSectorId: subSectorId ?? "",
+      },
+      { skip: !subSectorId },
+    );
+  const getFilteredInventoryValues = (
+    referenceNumber: string,
+  ): InventoryValueAttributes[] => {
+    return (
+      (inventoryValues as InventoryValueAttributes[] | undefined)?.filter(
+        (iv) => iv.gpcReferenceNumber === referenceNumber,
+      ) ?? []
+    );
+  };
 
   const loadingState =
-    isActivityDataLoading || isInventoryValueLoading || isLoading;
+    isActivityDataLoading ||
+    isInventoryValueLoading ||
+    isLoading ||
+    isInventoryProgressLoading ||
+    isUserInfoLoading;
 
   return (
     <Tabs>
@@ -187,7 +192,7 @@ function SubSectorPage({
           paddingTop: paddingTop,
         }}
         borderColor="border.neutral"
-        borderBottomWidth={"1px"}
+        borderBottomWidth="1px"
       >
         <MotionBox className="w-[1090px] max-w-full mx-auto px-4">
           <AnimatePresence>
@@ -408,7 +413,7 @@ function SubSectorPage({
           </MotionTabList>
         </Box>
       </MotionBox>
-      <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4 pb-[100px] mt-[240px]">
+      <div className="pt-16 w-[1090px] max-w-full mx-auto px-4 pb-[100px] mt-[240px]">
         <Box mt="48px">
           <TabPanels>
             {loadingState ? (
@@ -424,11 +429,9 @@ function SubSectorPage({
                     subsectorId={subsector}
                     step={step}
                     activityData={activityData}
-                    inventoryValues={
-                      (inventoryValues as InventoryValue[])?.filter(
-                        (iv) => iv.gpcReferenceNumber === scope.referenceNumber,
-                      ) ?? []
-                    }
+                    inventoryValues={getFilteredInventoryValues(
+                      scope.referenceNumber,
+                    )}
                   />
                 );
               })

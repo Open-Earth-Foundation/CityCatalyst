@@ -34,8 +34,12 @@ import {
   useTransform,
 } from "framer-motion";
 import Link from "next/link";
-import { SECTORS } from "@/util/constants";
 import type { InventoryValueAttributes } from "@/models/InventoryValue";
+import {
+  getScopesForInventoryAndSector,
+  InventoryTypeEnum,
+  SECTORS,
+} from "@/util/constants";
 
 const MotionBox = motion(Box);
 
@@ -88,6 +92,7 @@ function SubSectorPage({
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
   const defaultInventoryId = userInfo?.defaultInventoryId;
+  const { data: inventoryData } = api.useGetInventoryQuery(inventoryId);
 
   const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
     api.useGetInventoryProgressQuery(defaultInventoryId!, {
@@ -127,14 +132,17 @@ function SubSectorPage({
   };
 
   const getFilteredSubsectorScopes = () => {
+    if (!inventoryData) return [];
     return Object.entries(MANUAL_INPUT_HIERARCHY)
       .filter(([key]) => key.startsWith(subSectorData?.referenceNumber!))
-      .map(([k, v]) => ({
-        ...v,
-        referenceNumber: k,
-      }));
+      .map(([k, v]) => ({ ...v, referenceNumber: k }))
+      .filter((scope) =>
+        getScopesForInventoryAndSector(
+          inventoryData.inventoryType!,
+          scope.referenceNumber[0],
+        ).includes(scope.scope),
+      );
   };
-
   const scopes = getFilteredSubsectorScopes();
 
   const MotionTabList = motion(TabList);

@@ -5,7 +5,7 @@
       {
         "id": "fuel-combustion-residential-buildings-methodology",
         "activityTypeField": "residential-building-fuel-type",
-        "activityUnitsField": "total-grid-consumption",
+        "activityUnitsField": "total-fuel-consumption",
         "inputRequired": [
           "total-fuel-consumption"
         ],
@@ -2013,6 +2013,7 @@
       {
         "id": "fuel-sales-on-road-transport-methodology",
         "activityTypeField": "on-road-transport-fuel-type",
+        "activityUnitsField": "total-fuel-sold-in-gas-stations",
         "mostUsed": true,
         "inputRequired": [
           "total-fuel-sold-in-gas-stations"
@@ -2251,6 +2252,7 @@
       {
         "id": "electricity-consumption-on-road-transport-methodology",
         "activityTypeField": "electricity",
+        "activityUnitsField": "total-electricity-consumed-in-charging-stations",
         "inputRequired": [
           "total-electricity-consumed-in-charging-stations"
         ],
@@ -2356,6 +2358,7 @@
       {
         "id": "fuel-sales-railways-methodology",
         "activityTypeField": "railways-fuel-type",
+        "activityUnitsField": "total-fuel-consumed",
         "mostUsed": true,
         "inputRequired": [
           "total-fuel-consumed"
@@ -2442,6 +2445,7 @@
       {
         "id": "geographic-railways-methodology",
         "activityTypeField": "railways-fuel-type",
+        "activityUnitsField": "total-distance-travelled-in-in-boundary-trips",
         "disabled": true,
         "inputRequired": [
           "total-distance-travelled-in-in-boundary-trips",
@@ -2575,6 +2579,7 @@
       {
         "id": "electricity-consumption-railways-methodology",
         "activityTypeField": "electricity",
+        "activityUnitsField": "electricity-consumption-railways-activity",
         "activities": [
           {
             "id": "electricity-consumption-railways-activity",
@@ -2676,6 +2681,7 @@
       {
         "id": "fuel-sales-waterborne-navigation-methodology",
         "activityTypeField": "waterborne-navigation-fuel-type",
+        "activityUnitsField": "total-fuel-sold-in-gas-stations",
         "inputRequired": [
           "total-fuel-sold-in-gas-stations"
         ],
@@ -2762,6 +2768,7 @@
         "id": "geographic-waterborne-navigation-methodology",
         "disabled": true,
         "activityTypeField": "waterborne-navigation-fuel-type",
+        "activityUnitsField": "total-distance-travelled-in-in-boundary-trips",
         "inputRequired": [
           "total-distance-travelled-in-in-boundary-trips",
           "fuel-intensity"
@@ -2980,6 +2987,7 @@
       {
         "id": "fuel-sales-aviation-methodology",
         "activityTypeField": "aviation-fuel-type",
+        "activityUnitsField": "total-fuel-sold-in-gas-stations",
         "inputRequired": [
           "total-fuel-sold-in-gas-stations"
         ],
@@ -3069,6 +3077,7 @@
         "id": "geographic-aviation-methodology",
         "disabled": true,
         "activityTypeField": "aviation-fuel-type",
+        "activityUnitsField": "total-distance-travelled-in-in-boundary-trips",
         "inputRequired": [
           "total-distance-travelled-in-in-boundary-trips",
           "fuel-intensity"
@@ -3194,6 +3203,7 @@
       {
         "id": "electricity-consumption-aviation-methodology",
         "activityTypeField": "electricity",
+        "activityUnitsField": "total-electricity-consumed-in-charging-stations",
         "inputRequired": [
           "total-electricity-consumed-in-charging-stations"
         ],
@@ -3298,6 +3308,7 @@
       {
         "id": "fuel-sales-off-road-transport-methodology",
         "activityTypeField": "off-road-transport-fuel-type",
+        "activityUnitsField": "total-fuel-sold-in-gas-stations",
         "inputRequired": [
           "total-fuel-sold-in-gas-stations"
         ],
@@ -3422,6 +3433,7 @@
       {
         "id": "electricity-consumption-off-road-transport-methodology",
         "activityTypeField": "electricity",
+        "activityUnitsField": "total-electricity-consumed-in-charging-stations",
         "inputRequired": [
           "total-electricity-consumed-in-charging-stations"
         ],

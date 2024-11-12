@@ -20,13 +20,18 @@ import type {
   SectorEmission,
   TopEmission,
 } from "@/util/types";
-import { capitalizeFirstLetter, convertKgToTonnes } from "@/util/helpers";
+import {
+  capitalizeFirstLetter,
+  convertKgToTonnes,
+  toKebabCase,
+} from "@/util/helpers";
 import { api } from "@/services/api";
 import {
   SegmentedProgress,
   SegmentedProgressValues,
 } from "@/components/SegmentedProgress";
 import { EmptyStateCardContent } from "@/app/[lng]/[inventory]/InventoryResultTab/EmptyStateCardContent";
+import { useEffect } from "react";
 
 const EmissionsTable = ({
   topEmissions,
@@ -55,15 +60,14 @@ const EmissionsTable = ({
                   fontFamily="heading"
                   className="text-sm leading-5 tracking-[0.5px]"
                 >
-                  {emission.subsectorName}
+                  {t(toKebabCase(emission.subsectorName))}
                 </Text>
                 <Text
                   fontFamily="heading"
                   color="content.tertiary"
                   className="text-xs leading-4 tracking-[0.5px] "
                 >
-                  {capitalizeFirstLetter(t("scope"))} {emission.scopeName} -{" "}
-                  {emission.sectorName}{" "}
+                  {`${capitalizeFirstLetter(t("scope"))} ${t(toKebabCase(emission.scopeName))} - ${t(toKebabCase(emission.sectorName))}`}
                 </Text>
               </Td>
               <Td>{convertKgToTonnes(emission.co2eq)}</Td>

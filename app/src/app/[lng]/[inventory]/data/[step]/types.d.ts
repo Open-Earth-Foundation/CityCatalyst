@@ -7,8 +7,8 @@ import { SubSectorAttributes } from "@/models/SubSector";
 import type { EmissionsFactorWithDataSources } from "@/util/types";
 
 interface DataStep {
-  title: string;
-  details: string;
+  name: string;
+  description: string;
   icon: any;
   connectedProgress: number;
   addedProgress: number;

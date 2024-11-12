@@ -126,7 +126,7 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
     formData.append("userId", userInfo?.userId!);
     formData.append("fileName", filename);
     formData.append("inventoryId", inventory!);
-    formData.append("sector", currentStep.title);
+    formData.append("sector", currentStep.name);
     formData.append("subsectors", data.subsectors!);
     formData.append("scopes", data.scopes!);
     formData.append("status", DEFAULT_STATUS);

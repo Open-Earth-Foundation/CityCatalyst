@@ -44,10 +44,14 @@ def db_query(locode, year, reference_number):
 def cvt(value):
     return str(int(round(float(value))))
 
-@api_router.get("/edgar/city/{locode}/{year}/{gpcReferenceNumber}")
+@api_router.get("/edgar/city/{locode}/{year}/{gpcReferenceNumber}",
+                summary="Get emissions from Edgar",
+                description="DEPRECATED WARNING: This endpoint will be migrated to a new endpoint /api/v1/source/edgar/city/{locode}/{year}/{gpcReferenceNumber} in the near future.")
 def get_emissions_by_city_and_year(locode: str, year: int, gpcReferenceNumber: str):
+    """
+    Retrieves data from Edgar on greenhouse gas emissions for a specific city identified by locode, for a given year and GPC reference number.
+    """
     records = db_query(locode, year, gpcReferenceNumber)
-
     if not records:
         raise HTTPException(status_code=404, detail="No data available")
 

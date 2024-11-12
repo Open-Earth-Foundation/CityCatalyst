@@ -8,7 +8,7 @@
     "subSectors": [
       {
         "subsectorId": "60c0b6c9-7208-439b-a27a-44599297cc1c",
-        "subsectorName": "XX_DATASOURCE_TEST_1",
+        "subsectorName": "xx-datasource-test-1",
         "sectorId": "86a70970-6559-4d31-bafc-fcd1b51bc8e3",
         "referenceNumber": "X.9",
         "scopeId": null,
@@ -39,7 +39,7 @@
     "subSectors": [
       {
         "subsectorId": "abe4c7b0-242d-3ed2-a146-48885d6fb38d",
-        "subsectorName": "Residential buildings",
+        "subsectorName": "residential-buildings",
         "sectorId": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
         "referenceNumber": "I.1",
         "scopeId": null,
@@ -83,7 +83,7 @@
       },
       {
         "subsectorId": "a235005c-f223-3c64-a0d2-f55d6f22f32f",
-        "subsectorName": "Commercial and institutional buildings and facilities",
+        "subsectorName": "commercial-and-institutional-buildings-and-facilities",
         "sectorId": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
         "referenceNumber": "I.2",
         "scopeId": null,
@@ -127,7 +127,7 @@
       },
       {
         "subsectorId": "8de1d11d-4146-35f3-a973-e66930e68a50",
-        "subsectorName": "Manufacturing industries and construction",
+        "subsectorName": "manufacturing-industries-and-construction",
         "sectorId": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
         "referenceNumber": "I.3",
         "scopeId": null,
@@ -171,7 +171,7 @@
       },
       {
         "subsectorId": "4f342e84-0269-3f04-aceb-1d6cd0a183bc",
-        "subsectorName": "Energy industries",
+        "subsectorName": "energy-industries",
         "sectorId": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
         "referenceNumber": "I.4",
         "scopeId": null,
@@ -226,7 +226,7 @@
       },
       {
         "subsectorId": "95c049d1-eff9-3b26-af49-2b32982e7dd9",
-        "subsectorName": "Agriculture, forestry and fishing activities",
+        "subsectorName": "agriculture-forestry-and-fishing-activities",
         "sectorId": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
         "referenceNumber": "I.5",
         "scopeId": null,
@@ -270,7 +270,7 @@
       },
       {
         "subsectorId": "cfc4d8de-2b90-376c-b9d7-446aaf2d8eeb",
-        "subsectorName": "Non-specified sources",
+        "subsectorName": "non-specified-sources",
         "sectorId": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
         "referenceNumber": "I.6",
         "scopeId": null,
@@ -314,7 +314,7 @@
       },
       {
         "subsectorId": "b69c4ec7-a3c7-37a2-af4f-634d5a06a512",
-        "subsectorName": "Fugitive emissions from mining, processing, storage, and transportation of coal",
+        "subsectorName": "fugitive-emissions-from-mining-processing-storage-and-transportation-of-coal",
         "sectorId": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
         "referenceNumber": "I.7",
         "scopeId": null,
@@ -336,7 +336,7 @@
       },
       {
         "subsectorId": "b32f56a1-3a4e-3cd5-9052-e06284468700",
-        "subsectorName": "Fugitive emissions from oil and natural gas systems",
+        "subsectorName": "fugitive-emissions-from-oil-and-natural-gas-systems",
         "sectorId": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
         "referenceNumber": "I.8",
         "scopeId": null,
@@ -367,7 +367,7 @@
     "subSectors": [
       {
         "subsectorId": "48fcfadb-90ed-34aa-80d9-fa31a90bef80",
-        "subsectorName": "On-road transportation",
+        "subsectorName": "on-road-transportation",
         "sectorId": "73eb7b71-159c-3eda-b7fc-f6eb53754dc3",
         "referenceNumber": "II.1",
         "scopeId": null,
@@ -411,7 +411,7 @@
       },
       {
         "subsectorId": "8cf35b86-9ed2-36bd-b04d-eddc47db6676",
-        "subsectorName": "Railways",
+        "subsectorName": "railways",
         "sectorId": "73eb7b71-159c-3eda-b7fc-f6eb53754dc3",
         "referenceNumber": "II.2",
         "scopeId": null,
@@ -455,7 +455,7 @@
       },
       {
         "subsectorId": "ab32c321-e9e1-31b3-9dde-f93ade472219",
-        "subsectorName": "Waterborne navigation",
+        "subsectorName": "waterborne-navigation",
         "sectorId": "73eb7b71-159c-3eda-b7fc-f6eb53754dc3",
         "referenceNumber": "II.3",
         "scopeId": null,
@@ -499,7 +499,7 @@
       },
       {
         "subsectorId": "5b84b809-1878-3b1b-bf6b-250c64d5e920",
-        "subsectorName": "Aviation",
+        "subsectorName": "aviation",
         "sectorId": "73eb7b71-159c-3eda-b7fc-f6eb53754dc3",
         "referenceNumber": "II.4",
         "scopeId": null,
@@ -543,7 +543,7 @@
       },
       {
         "subsectorId": "e20ace37-9ba4-3a80-9d88-8cac5253c0b0",
-        "subsectorName": "Off-road transportation",
+        "subsectorName": "off-road-transportation",
         "sectorId": "73eb7b71-159c-3eda-b7fc-f6eb53754dc3",
         "referenceNumber": "II.5",
         "scopeId": null,
@@ -585,7 +585,7 @@
     "subSectors": [
       {
         "subsectorId": "172d10c0-6b80-3173-902e-eca5c0af84c8",
-        "subsectorName": "Solid waste disposal",
+        "subsectorName": "solid-waste-disposal",
         "sectorId": "d5acb72e-d915-310f-b3a3-77f634bcbf5e",
         "referenceNumber": "III.1",
         "scopeId": null,
@@ -629,7 +629,7 @@
       },
       {
         "subsectorId": "a8baeb06-0ab2-3215-a93e-2fcbe0e8f8a9",
-        "subsectorName": "Biological treatment of waste",
+        "subsectorName": "biological-treatment-of-waste",
         "sectorId": "d5acb72e-d915-310f-b3a3-77f634bcbf5e",
         "referenceNumber": "III.2",
         "scopeId": null,
@@ -673,7 +673,7 @@
       },
       {
         "subsectorId": "0ed16605-c76a-3c07-892d-4383a7618943",
-        "subsectorName": "Incineration and open burning",
+        "subsectorName": "incineration-and-open-burning",
         "sectorId": "d5acb72e-d915-310f-b3a3-77f634bcbf5e",
         "referenceNumber": "III.3",
         "scopeId": null,
@@ -717,7 +717,7 @@
       },
       {
         "subsectorId": "c465e7a2-1634-337f-819a-2dfbe147927e",
-        "subsectorName": "Wastewater treatment and discharge",
+        "subsectorName": "wastewater-treatment-and-discharge",
         "sectorId": "d5acb72e-d915-310f-b3a3-77f634bcbf5e",
         "referenceNumber": "III.4",
         "scopeId": null,
@@ -770,7 +770,7 @@
     "subSectors": [
       {
         "subsectorId": "6b23cb0a-a1c1-35f5-835e-dca1d009ae9b",
-        "subsectorName": "Emissions from industrial processes occurring within the city boundary",
+        "subsectorName": "emissions-from-industrial-processes-occurring-within-the-city-boundary",
         "sectorId": "6e986105-3df9-30de-8997-041d93537278",
         "referenceNumber": "IV.1",
         "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
@@ -780,7 +780,7 @@
       },
       {
         "subsectorId": "913775b3-0e20-3b0f-b269-2576548bcd36",
-        "subsectorName": "Emissions from product use occurring within the city boundary",
+        "subsectorName": "emissions-from-product-use-occurring-within-the-city-boundary",
         "sectorId": "6e986105-3df9-30de-8997-041d93537278",
         "referenceNumber": "IV.2",
         "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
@@ -799,7 +799,7 @@
     "subSectors": [
       {
         "subsectorId": "52ec93fa-99d8-3cea-8d26-e8c9d3b4afaa",
-        "subsectorName": "Emissions from livestock within the city boundary",
+        "subsectorName": "emissions-from-livestock-within-the-city-boundary",
         "sectorId": "b7845aa4-e50b-3b8c-8941-77d098a73e82",
         "referenceNumber": "V.1",
         "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
@@ -809,7 +809,7 @@
       },
       {
         "subsectorId": "36adcd97-2d47-3997-af8f-bcb8b92639f0",
-        "subsectorName": "Emissions from land within the city boundary",
+        "subsectorName": "emissions-from-land-within-the-city-boundary",
         "sectorId": "b7845aa4-e50b-3b8c-8941-77d098a73e82",
         "referenceNumber": "V.2",
         "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
@@ -819,7 +819,7 @@
       },
       {
         "subsectorId": "3eb70366-95b3-3293-a701-83a5f617648e",
-        "subsectorName": "Emissions from aggregate sources and non-CO2 emission sources on land within the city boundary",
+        "subsectorName": "emissions-from-aggregate-sources-and-non-co2-emission-sources-on-land-within-the-city-boundary",
         "sectorId": "b7845aa4-e50b-3b8c-8941-77d098a73e82",
         "referenceNumber": "V.3",
         "scopeId": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
@@ -838,7 +838,7 @@
     "subSectors": [
       {
         "subsectorId": "401a7571-4951-3e40-be4c-f8b5ea41583f",
-        "subsectorName": "Other Scope 3",
+        "subsectorName": "other-scope-3",
         "sectorId": "501ace3b-f63f-3267-bd57-69ad6ff5ab77",
         "referenceNumber": "VI.1",
         "scopeId": null,
@@ -857,7 +857,7 @@
     "subSectors": [
       {
         "subsectorId": "2a0c2005-f99e-4773-b26c-2f326525b6f6",
-        "subsectorName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST1",
+        "subsectorName": "xx-inventory-progress-test1-progress-test1",
         "sectorId": "47243e5f-15c3-4ff3-8b8f-388c2da11ca6",
         "referenceNumber": null,
         "scopeId": null,
@@ -901,7 +901,7 @@
       },
       {
         "subsectorId": "2d4f4d8b-631f-4b57-8a27-d0e045706dcf",
-        "subsectorName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST2",
+        "subsectorName": "xx-inventory-progress-test1-progress-test2",
         "sectorId": "47243e5f-15c3-4ff3-8b8f-388c2da11ca6",
         "referenceNumber": null,
         "scopeId": null,
@@ -945,7 +945,7 @@
       },
       {
         "subsectorId": "18d600c7-7402-4f4c-9be1-cf89cfd550af",
-        "subsectorName": "XX_INVENTORY_PROGRESS_TEST1_PROGRESS_TEST3",
+        "subsectorName": "xx-inventory-progress-test1-progress-test3",
         "sectorId": "47243e5f-15c3-4ff3-8b8f-388c2da11ca6",
         "referenceNumber": null,
         "scopeId": null,
@@ -998,7 +998,7 @@
     "subSectors": [
       {
         "subsectorId": "22baab3a-e970-426e-90ea-e2d45a5aed91",
-        "subsectorName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST1",
+        "subsectorName": "xx-inventory-progress-test2-progress-test1",
         "sectorId": "00f4189c-dfe0-4b5b-9ddb-820b268588d7",
         "referenceNumber": null,
         "scopeId": null,
@@ -1042,7 +1042,7 @@
       },
       {
         "subsectorId": "c9769b66-b5d3-4c07-b72d-e44884f0223a",
-        "subsectorName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST2",
+        "subsectorName": "xx-inventory-progress-test2-progress-test2",
         "sectorId": "00f4189c-dfe0-4b5b-9ddb-820b268588d7",
         "referenceNumber": null,
         "scopeId": null,
@@ -1086,7 +1086,7 @@
       },
       {
         "subsectorId": "9289e347-ae37-4bcd-8666-4559efb01347",
-        "subsectorName": "XX_INVENTORY_PROGRESS_TEST2_PROGRESS_TEST3",
+        "subsectorName": "xx-inventory-progress-test2-progress-test3",
         "sectorId": "00f4189c-dfe0-4b5b-9ddb-820b268588d7",
         "referenceNumber": null,
         "scopeId": null,
@@ -1139,7 +1139,7 @@
     "subSectors": [
       {
         "subsectorId": "7cf66270-0a07-4aec-ab58-f18d952ff527",
-        "subsectorName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST1",
+        "subsectorName": "xx-inventory-progress-test3-progress-test1",
         "sectorId": "e800e0e1-951b-4310-abf6-bc400cfd3841",
         "referenceNumber": null,
         "scopeId": null,
@@ -1183,7 +1183,7 @@
       },
       {
         "subsectorId": "ba30d625-0585-47dc-8d01-ec9f91eab138",
-        "subsectorName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST2",
+        "subsectorName": "xx-inventory-progress-test3-progress-test2",
         "sectorId": "e800e0e1-951b-4310-abf6-bc400cfd3841",
         "referenceNumber": null,
         "scopeId": null,
@@ -1227,7 +1227,7 @@
       },
       {
         "subsectorId": "cc605439-431e-4597-9233-6d3868d76a3e",
-        "subsectorName": "XX_INVENTORY_PROGRESS_TEST3_PROGRESS_TEST3",
+        "subsectorName": "xx-inventory-progress-test3-progress-test3",
         "sectorId": "e800e0e1-951b-4310-abf6-bc400cfd3841",
         "referenceNumber": null,
         "scopeId": null,

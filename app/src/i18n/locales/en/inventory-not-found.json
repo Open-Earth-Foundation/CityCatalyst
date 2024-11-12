@@ -3,5 +3,7 @@
   "not_part_of_team_description": "Please register or login in again so you can be redirected to your city's dashboard",
   "possible_mistake": "If you think this is a mistake,",
   "please_contact_us": "Please contact us",
-  "goto-dashboard": "Go to dashboard"
+  "goto-dashboard": "Go to dashboard",
+  "emission-mist": "Seems like we've wandered into the emission mist. It seems the emission inventory you’re looking for is no longer available.",
+  "go-to-citycatalyst": "Go to CityCatalyst"
 }

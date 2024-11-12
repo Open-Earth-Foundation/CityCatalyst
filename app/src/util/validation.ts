@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { GlobalWarmingPotentialType, InventoryType } from "./enums";
+import { GlobalWarmingPotentialTypeEnum, InventoryTypeEnum } from "./enums";
 
 export const emailPattern =
   /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -34,8 +34,8 @@ export const createInventoryRequest = z.object({
   year: z.number().int().min(2000),
   totalEmissions: z.number().int().optional(),
   totalCountryEmissions: z.number().int().optional(),
-  inventoryType: z.nativeEnum(InventoryType),
-  globalWarmingPotentialType: z.nativeEnum(GlobalWarmingPotentialType),
+  inventoryType: z.nativeEnum(InventoryTypeEnum),
+  globalWarmingPotentialType: z.nativeEnum(GlobalWarmingPotentialTypeEnum),
 });
 
 export type CreateInventoryRequest = z.infer<typeof createInventoryRequest>;
@@ -83,6 +83,7 @@ export const createInventoryValue = z.object({
   activityUnits: z.string().nullable().optional(),
   co2eq: z.coerce.bigint().gte(0n).optional(),
   co2eqYears: z.number().optional(),
+  gpcReferenceNumber: z.string().optional(),
   unavailableReason: z.string().optional(),
   unavailableExplanation: z.string().optional(),
   gasValues: z
@@ -102,6 +103,16 @@ export const createInventoryValue = z.object({
       }),
     )
     .optional(),
+});
+
+export const patchInventoryValue = z.object({
+  activityValue: z.number().nullable().optional(),
+  activityUnits: z.string().nullable().optional(),
+  co2eq: z.coerce.bigint().gte(0n).optional(),
+  co2eqYears: z.number().optional(),
+  gpcReferenceNumber: z.string(),
+  unavailableReason: z.string().optional(),
+  unavailableExplanation: z.string().optional(),
 });
 
 export type CreateInventoryValueRequest = z.infer<typeof createInventoryValue>;

@@ -3,7 +3,10 @@ import { DataTypes, Model, Optional } from "sequelize";
 import type { City, CityId } from "./City";
 import type { InventoryValue, InventoryValueId } from "./InventoryValue";
 import type { Version, VersionId } from "./Version";
-import { GlobalWarmingPotentialType, InventoryType } from "@/util/enums";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
+} from "@/util/enums";
 
 export interface InventoryAttributes {
   inventoryId: string;
@@ -14,8 +17,8 @@ export interface InventoryAttributes {
   totalCountryEmissions?: number;
   isPublic?: boolean;
   publishedAt?: Date | null;
-  inventoryType?: InventoryType;
-  globalWarmingPotentialType?: GlobalWarmingPotentialType;
+  inventoryType?: InventoryTypeEnum;
+  globalWarmingPotentialType?: GlobalWarmingPotentialTypeEnum;
 }
 
 export type InventoryPk = "inventoryId";
@@ -48,8 +51,8 @@ export class Inventory
   totalCountryEmissions?: number;
   isPublic?: boolean;
   publishedAt?: Date | null;
-  inventoryType?: InventoryType;
-  globalWarmingPotentialType?: GlobalWarmingPotentialType;
+  inventoryType?: InventoryTypeEnum;
+  globalWarmingPotentialType?: GlobalWarmingPotentialTypeEnum;
   // Inventory belongsTo City via cityId
   city!: City;
   getCity!: Sequelize.BelongsToGetAssociationMixin<City>;
@@ -149,12 +152,14 @@ export class Inventory
           field: "published_at",
         },
         inventoryType: {
-          type: DataTypes.ENUM(...Object.values(InventoryType)),
+          type: DataTypes.ENUM(...Object.values(InventoryTypeEnum)),
           allowNull: true,
           field: "inventory_type",
         },
         globalWarmingPotentialType: {
-          type: DataTypes.ENUM(...Object.values(GlobalWarmingPotentialType)),
+          type: DataTypes.ENUM(
+            ...Object.values(GlobalWarmingPotentialTypeEnum),
+          ),
           allowNull: true,
           field: "global_warming_potential_type",
         },

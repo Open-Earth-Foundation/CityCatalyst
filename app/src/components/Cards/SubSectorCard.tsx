@@ -1,22 +1,24 @@
-import { CheckIcon } from "@chakra-ui/icons";
 import { Box, Card, Heading, Icon, Text } from "@chakra-ui/react";
 import React, { FC } from "react";
 import { MdOutlineCheckCircle } from "react-icons/md";
 import { DataAlertIcon } from "../icons";
+import type { TFunction } from "i18next";
 
 interface SubSectorCardProps {
   title: string;
   scopes: string;
   isCompleted: boolean;
+  t: TFunction;
 }
 
 const SubSectorCard: FC<SubSectorCardProps> = ({
   title,
   scopes,
   isCompleted,
+  t,
 }) => {
   return (
-    <Card className="flex flex-row h-[100px] items-center px-4 gap-4 border border-[#E6E7FF] shadow-none">
+    <Card className="flex flex-row h-[120px] items-center px-4 gap-4 border border-[#E6E7FF] shadow-none">
       <Icon
         as={isCompleted ? MdOutlineCheckCircle : DataAlertIcon}
         boxSize={8}
@@ -40,7 +42,7 @@ const SubSectorCard: FC<SubSectorCardProps> = ({
           lineHeight="20"
           letterSpacing="wide"
         >
-          Scope: {scopes}
+          {t("scope")}: {scopes}
         </Text>
       </Box>
     </Card>

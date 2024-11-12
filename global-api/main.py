@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from settings import settings
 from utils.helpers import get_or_create_log_file
 from routes.health import api_router as health_check_route
-from routes.city_locode_endpoint import api_router as city_locode_route
+from routes.city_locode_endpoint_climatetrace import api_router as climatetrace_city_locode_route
 from routes.city_boundaries_endpoint import api_router as city_boundaries_route
 from routes.city_locode_endpoint_crosswalk import api_router as crosswalk_city_locode_route
 from routes.city_locode_endpoint_edgar import api_router as edgar_city_locode_route
@@ -17,7 +17,8 @@ from routes.city_locode_endpoint_ghgrp import api_router as ghgrp_city_locode_ro
 from routes.region_code_endpoint import api_router as region_code_endpoint_route
 from routes.country_code_endpoint import api_router as country_code_endpoint_route
 from routes.citywide_emission_endpoint import api_router as citywide_route
-from routes.v1_emissions import api_router as actor_emissions_route
+from routes.ghgi_emissions import api_router as actor_emissions_route
+from routes.ccra_assessment import api_router as ccra_assessment
 
 """
 Logger instance initialized and configured
@@ -83,7 +84,7 @@ def custom_openapi():
 
 app.openapi = custom_openapi
 
-
+# Endpoints for Health
 @app.get("/")
 def read_root():
     return {"message": "Welcome"}
@@ -92,30 +93,15 @@ app.include_router(
     health_check_route,
     tags=["Database Health Check"],
 )
-app.include_router(
-    city_locode_route,
-    tags=["Climate Trace"],
-)
+
+## Endpoints for City Definitions
 
 app.include_router(
     city_boundaries_route,
-    tags=["Climate Trace"],
+    tags=["City Definitions"],
 )
 
-app.include_router(
-    crosswalk_city_locode_route,
-    tags=["Crosswalk Labs"],
-)
-
-app.include_router(
-    edgar_city_locode_route,
-    tags=["EDGAR"],
-)
-
-app.include_router(
-    catalogue_last_update_endpoint,
-    tags=["Datasource Catalogue"],
-)
+## Endpoints for Catalogue Definitions
 
 app.include_router(
     catalouge_route,
@@ -123,29 +109,59 @@ app.include_router(
 )
 
 app.include_router(
+    catalogue_last_update_endpoint,
+    tags=["Datasource Catalogue"],
+)
+
+## Endpoints for GHGI Emissions
+app.include_router(
+    actor_emissions_route,
+    tags=["GHGI Emissions"],
+)
+
+app.include_router(
+    crosswalk_city_locode_route,
+    tags=["GHGI Emissions"],
+)
+
+app.include_router(
+    edgar_city_locode_route,
+    tags=["GHGI Emissions"],
+)
+
+app.include_router(
+    climatetrace_city_locode_route,
+    tags=["GHGI Emissions"],
+)
+
+app.include_router(
     ghgrp_city_locode_route,
-    tags=["GHGRP EPA"],
+    tags=["GHGI Emissions"],
 )
 
 app.include_router(
     country_code_endpoint_route,
-    tags=["Countrywide emissions"],
+    tags=["GHGI Emissions"],
 )
 
 app.include_router(
     citywide_route,
-    tags=["Citywide emissions"],
+    tags=["GHGI Emissions"],
 )
 
 app.include_router(
     region_code_endpoint_route,
-    tags=["Region"],
+    tags=["GHGI Emissions"],
 )
 
+## Endpoints for CCRA
+
 app.include_router(
-    actor_emissions_route,
-    tags=["Emissions"],
+    ccra_assessment,
+    tags=["CCRA Assessment"],
 )
+
+
 
 """
 Entry point of the fastapi application (Drive Code)

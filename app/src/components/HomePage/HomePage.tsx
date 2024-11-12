@@ -41,6 +41,7 @@ import {
 import MissingInventory from "@/components/missing-inventory";
 import InventoryCalculationTab from "@/components/HomePage/InventoryCalculationTab";
 import InventoryReportTab from "../../app/[lng]/[inventory]/InventoryResultTab";
+import NotAvailable from "@/components/NotAvailable";
 import DownloadButton from "@/components/HomePage/DownloadButton";
 
 // only render map on the client
@@ -116,7 +117,11 @@ export default function HomePage({
     <>
       {!inventory && !isInventoryLoading && (
         <>
-          <MissingInventory lng={lng} />
+          {isPublic ? (
+            <NotAvailable lng={lng} />
+          ) : (
+            <MissingInventory lng={lng} />
+          )}
           <Footer lng={lng} />
         </>
       )}

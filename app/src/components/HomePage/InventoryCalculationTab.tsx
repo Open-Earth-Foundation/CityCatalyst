@@ -5,11 +5,7 @@ import { SegmentedProgress } from "@/components/SegmentedProgress";
 import { CircleIcon } from "@/components/icons";
 import { useTranslation } from "@/i18n/client";
 import { formatPercent } from "@/util/helpers";
-import {
-  InventoryProgressResponse,
-  InventoryResponse,
-  SectorProgress,
-} from "@/util/types";
+import { InventoryProgressResponse, InventoryResponse } from "@/util/types";
 import {
   Box,
   Center,
@@ -22,33 +18,21 @@ import {
 } from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { TabHeader } from "@/components/HomePage/TabHeader";
-import { undefined } from "zod";
 import { BlueSubtitle } from "@/components/blue-subtitle";
-
-function sortSectors(a: SectorProgress, b: SectorProgress): number {
-  const refA = a.sector.referenceNumber;
-  const refB = b.sector.referenceNumber;
-  if (!refA || !refB) {
-    return 0;
-  } else if (refA < refB) {
-    return -1;
-  } else if (refA > refB) {
-    return 1;
-  }
-  return 0;
-}
+import {
+  getSectorsForInventory,
+  InventoryType,
+  SECTORS,
+} from "@/util/constants";
 
 const getSectorProgresses = (
-  inventoryProgress: InventoryProgressResponse | undefined,
+  inventoryProgress: InventoryProgressResponse,
+  referenceNumber: string,
 ) =>
-  inventoryProgress?.sectorProgress
-    .slice()
-    .filter((sectorProgress) => {
-      return ["I", "II", "III"].includes(
-        sectorProgress.sector.referenceNumber || "",
-      );
-    })
-    .sort(sortSectors) || [];
+  inventoryProgress.sectorProgress.find(
+    (sectorProgress) =>
+      sectorProgress.sector.referenceNumber === referenceNumber,
+  )!;
 
 export default function InventoryCalculationTab({
   lng,
@@ -73,13 +57,17 @@ export default function InventoryCalculationTab({
     thirdPartyProgress = thirdParty / total;
     uploadedProgress = uploaded / total;
   }
+
+  const sectorsForInventory = inventory
+    ? getSectorsForInventory(inventory.inventoryType)
+    : [];
   return (
     <>
       {inventory && (
         <Box className="flex flex-col gap-[8px] w-full">
           <TabHeader
             t={t}
-            year={inventory?.year}
+            inventory={inventory}
             title={"emission-inventory-calculation-title"}
           />
           <Box className="flex w-full justify-between items-center mt-2 gap-6">
@@ -137,17 +125,18 @@ export default function InventoryCalculationTab({
                 <Spinner size="lg" />
               </Center>
             ) : (
-              getSectorProgresses(inventoryProgress).map(
-                (sectorProgress, i) => (
-                  <SectorCard
-                    key={i}
-                    sectorProgress={sectorProgress}
-                    stepNumber={i + 1}
-                    t={t}
-                    inventory={inventory?.inventoryId}
-                  />
-                ),
-              )
+              sectorsForInventory.map((sector, i) => (
+                <SectorCard
+                  key={sector.name}
+                  sectorProgress={getSectorProgresses(
+                    inventoryProgress!,
+                    sector.referenceNumber,
+                  )}
+                  sector={SECTORS[i]}
+                  t={t}
+                  inventory={inventory}
+                />
+              ))
             )}
           </Box>
         </Box>

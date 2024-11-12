@@ -1,4 +1,4 @@
-import { CalenderIcon, DataFormatIcon } from "@/components/icons";
+import { CalendarIcon, DataFormatIcon } from "@/components/icons";
 import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
 import { Box, Card, Heading, Icon, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
@@ -84,7 +84,7 @@ export default function ConfirmStep({
                   w="full"
                 >
                   <Box h="full">
-                    <Icon as={CalenderIcon} color="interactive.control" />
+                    <Icon as={CalendarIcon} color="interactive.control" />
                   </Box>
                   <Box h="full">
                     <Text

@@ -1068,7 +1068,7 @@ export const InventoryButtonCheckIcon = () => {
   );
 };
 
-export const CalenderIcon = () => {
+export const CalendarIcon = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

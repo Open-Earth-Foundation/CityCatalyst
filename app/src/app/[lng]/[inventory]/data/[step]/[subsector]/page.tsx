@@ -89,13 +89,10 @@ function SubSectorPage({
     api.useGetUserInfoQuery();
   const defaultInventoryId = userInfo?.defaultInventoryId;
 
-  const {
-    data: inventoryProgress,
-    isLoading: isInventoryProgressLoading,
-    error: inventoryProgressError,
-  } = api.useGetInventoryProgressQuery(defaultInventoryId!, {
-    skip: !defaultInventoryId,
-  });
+  const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
+    api.useGetInventoryProgressQuery(defaultInventoryId!, {
+      skip: !defaultInventoryId,
+    });
 
   // map subsector to sector by reference number
 
@@ -144,17 +141,6 @@ function SubSectorPage({
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const triggerMochLoading = () => {
-    setIsLoading(true);
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  };
-
   const subSectorId = subSectorData?.subsectorId;
 
   const { data: activityData, isLoading: isActivityDataLoading } =
@@ -183,7 +169,11 @@ function SubSectorPage({
   };
 
   const loadingState =
-    isActivityDataLoading || isInventoryValueLoading || isLoading;
+    isActivityDataLoading ||
+    isInventoryValueLoading ||
+    isLoading ||
+    isInventoryProgressLoading ||
+    isUserInfoLoading;
 
   return (
     <Tabs>

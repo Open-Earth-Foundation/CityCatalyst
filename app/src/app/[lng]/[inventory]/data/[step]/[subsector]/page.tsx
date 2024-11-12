@@ -15,17 +15,15 @@ import {
   Button,
   CircularProgress,
   Icon,
-  Link,
   Tab,
   TabList,
   TabPanels,
   Tabs,
   Text,
-  useDisclosure,
 } from "@chakra-ui/react";
-import { motion } from "framer-motion";
+
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MdOutlineHomeWork } from "react-icons/md";
 import {
   AnimatePresence,
@@ -45,8 +43,6 @@ import {
 
 const MotionBox = motion(Box);
 
-import { throttle } from "lodash";
-
 const kebab = (str: string | undefined): string =>
   str
     ? str
@@ -62,16 +58,37 @@ function SubSectorPage({
 }) {
   const router = useRouter();
   const { t } = useTranslation(lng, "data");
+  const { scrollY } = useScroll();
 
-  const {
-    isOpen: isDeleteActivitiesModalOpen,
-    onOpen: onDeleteActivitiesModalOpen,
-    onClose: onDeleteActivitiesModalClose,
-  } = useDisclosure();
+  const paddingTop = useTransform(scrollY, [0, 100], ["100px", "50px"], {
+    ease: easeInOut,
+  });
 
-  const [selectedTab, setSelectedTab] = useState(1); // sector ID (1/2/3)
-  const [selectedScope, setSelectedScope] = useState(1);
-  const [refNumber, setRefNumber] = useState();
+  const fontSize = useTransform(scrollY, [0, 100], ["28px", "24px"], {
+    ease: easeInOut,
+    clamp: true,
+  });
+  const leftPosition = useTransform(scrollY, [0, 100], ["0px", "30px"], {
+    ease: easeInOut,
+  });
+
+  const [isVisible, setIsVisible] = useState(true);
+
+  const scrollStart = 0;
+  const scrollEnd = 200;
+  const animationPercent = useTransform(
+    scrollY,
+    [scrollStart, scrollEnd],
+    [0, 100],
+    {
+      clamp: true, // Ensure the output stays within [0, 100]
+    },
+  );
+
+  useMotionValueEvent(animationPercent, "change", (latest) => {
+    setIsVisible(latest < 50);
+  });
+
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
   const defaultInventoryId = userInfo?.defaultInventoryId;
@@ -128,33 +145,11 @@ function SubSectorPage({
   };
   const scopes = getFilteredSubsectorScopes();
 
-  // calculate total consumption and emissions
-
-  const [scrollPosition, setScrollPosition] = useState<number>(0);
-
-  const handleScroll = () => {
-    const position = window.scrollY;
-
-    setIsExpanded(window.scrollY > scrollResizeHeaderThreshold);
-    // setScrollPosition(position);
-  };
-
-  useEffect(() => {
-    const throttledHandle = throttle(handleScroll, 500);
-    window.addEventListener("scroll", throttledHandle, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", throttledHandle);
-    };
-  }, []);
-
   const MotionTabList = motion(TabList);
 
   const [isLoading, setIsLoading] = useState(false);
 
   const subSectorId = subSectorData?.subsectorId;
-  const scrollResizeHeaderThreshold = 170;
-  const [isExpanded, setIsExpanded] = useState(false);
 
   const { data: activityData, isLoading: isActivityDataLoading } =
     api.useGetActivityValuesQuery({
@@ -189,8 +184,8 @@ function SubSectorPage({
     isUserInfoLoading;
 
   return (
-    <>
-      <Box
+    <Tabs>
+      <MotionBox
         bg="background.backgroundLight"
         className="fixed z-10 top-0 w-full transition-all"
         style={{
@@ -307,24 +302,32 @@ function SubSectorPage({
                 layout
                 key="icon"
                 color="content.link"
+                flexGrow={0}
+                width="32px"
                 pt="5px"
                 pos="relative"
-                left={isExpanded ? "30px" : ""}
+                style={{
+                  left: leftPosition.get(),
+                }}
               >
                 <MdOutlineHomeWork size="32px" />
-              </Box>
-              <Box
+              </MotionBox>
+              <MotionBox
+                layout
+                key="text-section"
                 display="flex"
-                gap={isExpanded ? "8px" : "16px"}
+                flexGrow={1}
+                gap="16px"
                 flexDirection="column"
               >
                 <Text
                   fontFamily="heading"
-                  fontSize={isExpanded ? "headline.sm" : "headline.md"}
                   fontWeight="bold"
                   pos="relative"
-                  left={isExpanded ? "30px" : ""}
-                  className="transition-all duration-50 ease-linear"
+                  style={{
+                    left: leftPosition.get(),
+                    fontSize: fontSize.get(),
+                  }}
                 >
                   {!subSectorData ? (
                     <CircularProgress
@@ -346,7 +349,9 @@ function SubSectorPage({
                   fontSize="label.lg"
                   fontWeight="medium"
                   pos="relative"
-                  left={isExpanded ? "-15px" : ""}
+                  style={{
+                    left: leftPosition.get(),
+                  }}
                 >
                   {t("sector")}: {t(getSectorName(step))} |{" "}
                   {t("inventory-year")}: {inventoryProgress?.inventory.year}
@@ -434,7 +439,7 @@ function SubSectorPage({
           </TabPanels>
         </Box>
       </div>
-    </>
+    </Tabs>
   );
 }
 

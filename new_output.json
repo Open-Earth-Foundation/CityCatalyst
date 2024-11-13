@@ -1,0 +1,23 @@
+[
+    {
+        "city": "Unknown City",
+        "action": "Urban Tree Planting",
+        "quantitative_score": 25.000003166666666,
+        "qualitative_score": 70,
+        "llm_output": "70 | Urban Tree Planting offers moderate cost ('Medium') with effective adaptation potential ('High') particularly for heatwaves and floods, suiting the residential sector. It provides substantial co-benefits like improved health, wellbeing, air quality, and biodiversity, enhancing the urban environment and offering equity by improving underserved communities. While GHG reduction is minimal, high adaptation effectiveness, consistency with an urban setting, population involvement through community engagement, and a reasonable timeline ('<5 years') make it a suitable and beneficial adaptation action."
+    },
+    {
+        "city": "Unknown City",
+        "action": "Community Recycling Program",
+        "quantitative_score": 12.5,
+        "qualitative_score": 3,
+        "llm_output": "3 | The Community Recycling Program is cost-effective with a low cost, which aligns with the preference for lower-cost actions. It has a promising GHG reduction potential specifically in the waste sector, contributing to high emissions reductions. The program promotes inclusivity by providing access to underserved areas, aligning with population matching though not tailored to specific environmental hazards. It has a relatively short implementation timeline of under 5 years, which adds to its appeal. However, its lack of direct risk reduction and limited emissions impact beyond the waste sector slightly reduce its overall priority score."
+    },
+    {
+        "city": "Unknown City",
+        "action": "Solar Panels on Public Buildings",
+        "quantitative_score": 10.416676500000001,
+        "qualitative_score": 3,
+        "llm_output": "3 | The action 'Solar Panels on Public Buildings' demonstrates moderate-to-high potential for GHG reduction in the 'Stationary Energy' sector, aligning well with the city's mitigation goals, which is a clear positive. However, it incurs high costs and has a relatively long timeline for implementation (5-10 years), both of which are less favorable aspects according to the prioritization rules. Additionally, the risk reduction aspect is not directly addressed, and the action doesn't seem to cater specifically to the city's current population or environment in a unique way beyond general advantages to public services. Although it includes positive co-benefits like promoting renewable technologies and providing clean energy equitably, the cost and timeline issues lead to a moderate priority score."
+    }
+]

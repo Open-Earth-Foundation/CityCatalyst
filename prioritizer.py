@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import re
 import json
+import pandas as pd
 
 load_dotenv()
 
@@ -24,14 +25,11 @@ MAX_TIME_IN_YEARS = 20
 MAX_COST = 60000000
 
 # File paths
-CITY_INVENTORY_FILE = "CAP_data/city_inventory.csv"
-ACTION_FILE = "path/to/long_list_action.csv"
-OUTPUT_FILE = "path/to/output.csv"
-
+OUTPUT_FILE = "new_output.json"
 
 def send_to_llm(prompt):
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4o-mini",
         messages=[
             {
                 "role": "system",
@@ -53,104 +51,123 @@ def send_to_llm(prompt):
     )
     return response.choices[0].message.content
 
-
 def read_city_inventory():
-    inventory_data = []
-    with open(CITY_INVENTORY_FILE, "r") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            for field in [
-                "co2eq", "co2eq_years", "activity_value", "co2eq-2", 
-                "gas_amount", "emissions_per_activity"
-            ]:
-                if row[field]:
-                    row[field] = float(row[field].replace(",", ""))
-                else:
-                    row[field] = None
-            inventory_data.append(row)
-    return inventory_data
+    # Load both CSV files into DataFrames
+    activities_df = pd.read_csv("CAP_data/activities_one_row_per_activity.csv")
+    gases_df = pd.read_csv("CAP_data/activities_one_row_per_gas.csv")
+    
+    # Merge the two DataFrames on the 'id' column
+    combined_df = activities_df.merge(gases_df, on='id', suffixes=('_activity', '_gas'), how='left')
 
+    # Process and clean numeric fields as needed
+    for field in ["co2eq", "co2eq_years", "activity_value", "co2eq-2", "gas_amount", "emissions_per_activity"]:
+        if field in combined_df.columns:
+            combined_df[field] = combined_df[field].replace(",", "", regex=True).astype(float)
+    
+    # Aggregating data by city (assuming all entries in the combined DataFrame belong to a single city)
+    city_data = {
+        "total_co2eq": combined_df.get("co2eq", pd.Series(0)).sum(),
+        "total_activity_value": combined_df.get("activity_value", pd.Series(0)).sum(),
+        "average_emissions_per_activity": combined_df.get("emissions_per_activity", pd.Series(0)).mean(),
+        "total_gas_amount": combined_df.get("gas_amount", pd.Series(0)).sum(),
+        # Add other aggregated fields as necessary
+    }
+    
+    # Wrapping in a list to keep compatibility with original function structure
+    return [city_data]
 
 def read_actions():
     actions = []
-    with open("EXAMPLE_3.JSON", "r") as f:
+    with open("CAP_actions/example_3.json", "r") as f:
         data = json.load(f)
         for item in data:
             action = {
                 "ActionID": item.get("ActionID"), 
                 "ActionName": item.get("ActionName"), 
-                "ActionType": item.get("ActionType"), # string category adaptation or mitigation
-                "AdaptationCategory": item.get("AdaptationCategory"), # string pointing to a category in c40 list (ecoengineering, infrastructure, etc)
-                
-                "Hazard": item.get("Hazard"), #  # only for adaptation actions 
-                "Sector": item.get("Sector"), #
-                "Subsector": item.get("Subsector"), #
-                "PrimaryPurpose": item.get("PrimaryPurpose"), ##
-                # probably a city data will have data on what and how they want to do 
-                "InterventionType": item.get("InterventionType"), ###  # there are 5 categories of it in the notion
-                "Description": item.get("Description"), ###
-                "BehaviouralChangeTargeted": item.get("BehaviouralChangeTargeted"), ###
-                "CoBenefits": item.get("CoBenefits"), ###
-                "EquityAndInclusionConsiderations": item.get("EquityAndInclusionConsiderations"), ###
-                # this will be categories 10-15 15-20 and so on per sector - look for a sector in the inventory
-                "GHGReductionPotential": item.get("GHGReductionPotential"), # 
-                # low medium or high - where higher is better
-                "AdaptationEffectiveness": item.get("AdaptationEffectiveness"), #
-                # also high medium low where low is better
-                "CostInvestmentNeeded": item.get("CostInvestmentNeeded"), #
-                # 
-                "TimelineForImplementation": item.get("TimelineForImplementation"), #
-                "Dependencies": item.get("Dependencies"),#
-                "KeyPerformanceIndicators": item.get("KeyPerformanceIndicators"),##
-                "Impacts": item.get("Impacts"), #
+                "ActionType": item.get("ActionType"),
+                "AdaptationCategory": item.get("AdaptationCategory"),
+                "Hazard": item.get("Hazard"),
+                "Sector": item.get("Sector"),
+                "Subsector": item.get("Subsector"),
+                "PrimaryPurpose": item.get("PrimaryPurpose"),
+                "InterventionType": item.get("InterventionType"),
+                "Description": item.get("Description"),
+                "BehaviouralChangeTargeted": item.get("BehaviouralChangeTargeted"),
+                "CoBenefits": item.get("CoBenefits"),
+                "EquityAndInclusionConsiderations": item.get("EquityAndInclusionConsiderations"),
+                "GHGReductionPotential": item.get("GHGReductionPotential"),
+                "AdaptationEffectiveness": item.get("AdaptationEffectiveness"),
+                "CostInvestmentNeeded": item.get("CostInvestmentNeeded"),
+                "TimelineForImplementation": item.get("TimelineForImplementation"),
+                "Dependencies": item.get("Dependencies"),
+                "KeyPerformanceIndicators": item.get("KeyPerformanceIndicators"),
+                "Impacts": item.get("Impacts"),
             }
             actions.append(action)
     return actions
 
-
 def quantitative_score(city, action):
+    """
+    Calculates a quantitative score for a given action in a city based on several criteria.
+    The score is calculated as follows:
+    1. Emissions reduction score: Based on the GHG reduction potential of the action.
+    2. Adaptation effectiveness score: Based on the adaptation effectiveness of the action.
+    3. Time in years score: Based on the timeline for implementation of the action.
+    4. Cost score: Based on the budget of the city.
+    Args:
+        city (dict): A dictionary containing information about the city, including its budget.
+        action (dict): A dictionary containing information about the action, including GHG reduction potential, adaptation effectiveness, and timeline for implementation.
+    Returns:
+        float: The calculated quantitative score for the action.
+    """
     score = 0
-
     # Emissions reduction score
-    if action["GHGReductionPotential"]["energy"] != "none":
-        emissions_reduction = float(action["GHGReductionPotential"]["energy"].replace("%", "")) / 100
+    energy_reduction_str = action["GHGReductionPotential"].get("energy", "none")
+    if energy_reduction_str != "none":
+        energy_reduction_str = energy_reduction_str.replace("%", "")
+        if "-" in energy_reduction_str:
+            emissions_range = energy_reduction_str.split("-")
+            emissions_reduction = sum(map(float, emissions_range)) / len(emissions_range) / 100
+        else:
+            emissions_reduction = float(energy_reduction_str) / 100
         score += (min(emissions_reduction, MAX_EMISSIONS_REDUCTIONS) / MAX_EMISSIONS_REDUCTIONS) * SCORE_MAX
 
     # Adaptation effectiveness score
-    if action["AdaptationEffectiveness"]:
-        score += scale_scores.get(action["AdaptationEffectiveness"], 0) * SCORE_MAX
-
-    # Environment match score
-    if action["Sector"] and city["environment"] in action["Sector"]:
-        score += SCORE_MAX
-
-    # Population match score - used when we have city data 
-    #if city["population"]:
-    #    diff = abs(city["population"] - city["population"]) 
-    #    ratio = min(city["population"] / diff, 1.0) if diff else 1.0
-    #    score += ratio * SCORE_MAX
+    adaptation_effectiveness = action.get("AdaptationEffectiveness")
+    if adaptation_effectiveness in scale_scores:
+        score += scale_scores[adaptation_effectiveness] * SCORE_MAX
 
     # Time in years score
     if action["TimelineForImplementation"]:
-        time_in_years = int(action["TimelineForImplementation"].replace("<", "").replace(">", "").replace(" years", ""))
+        time_str = action["TimelineForImplementation"].replace("<", "").replace(">", "").replace(" years", "").strip()
+        if "-" in time_str:
+            time_values = time_str.split("-")
+            time_in_years = sum(map(float, time_values)) / len(time_values)
+        else:
+            time_in_years = float(time_str)
         score += (1 - (min(time_in_years, MAX_TIME_IN_YEARS) / MAX_TIME_IN_YEARS)) * SCORE_MAX
 
-    # Cost score (assuming cost is not provided in the JSON)
-    if city["budget"]:
-        ratio = min(city["budget"], city["budget"]) / city["budget"] if city["budget"] else 1.0
-        score += (1 - ratio) * SCORE_MAX
+    # Cost score
+    if "CostInvestmentNeeded" in action:
+        cost_category = action.get("CostCategory", "").lower()
+        cost_score_map = {
+            "small": 15,
+            "medium": 10,
+            "big": 5
+        }
+        cost_score = cost_score_map.get(action["CostInvestmentNeeded"], 0)
+        score += (cost_score / 15) * SCORE_MAX
+        #ratio = action["CostInvestmentNeeded"] / MAX_COST if action["CostInvestmentNeeded"] else 1
+        #score += (1 - ratio) * SCORE_MAX
 
     return score
 
-
 def qualitative_score(city, action):
     prompt = f"""
-    According to the rules given, how would you prioritize the following action for the city with name {city["name"]},
-    population {city["population"]}, area {city["area"]}, environment {city["environment"]}, budget {city["budget"]},
-    total GHG emissions in CO2eq {city["total_emission"]}, energy {city["energy_emissions"]}, 
-    transportation emissions {city["transportation_emissions"]}, waste emissions {city["waste_emissions"]}, and risk {city["risk"]}?
+    According to the rules given, how would you prioritize the following action for the city,
+    total GHG emissions in CO2eq {city.get("total_co2eq", "unknown")}, and total activity value {city.get("total_activity_value", "unknown")}? 
 
-    Action: {action["name"]}, cost {action["cost"]}, GHG emissions reduction in CO2eq {action["emissions_reduction"]}, risk reduction {action["risk_reduction"]}, environment {action["environment"]}, population {action["population"]}, time {action["time_in_years"]}
+    Action: {action["ActionName"]}, cost {action.get("cost", "unknown")}, GHG emissions reduction in CO2eq {action.get("emissions_reduction", "unknown")}, risk reduction {action.get("AdaptationEffectiveness", "unknown")}, environment {action.get("Sector", "unknown")}, population {action.get("population", "unknown")}, time {action.get("TimelineForImplementation", "unknown")}
 
     Please return a score from 0 to 100, where 0 is the worst possible action and 100 is the best possible action.
 
@@ -161,52 +178,56 @@ def qualitative_score(city, action):
     score = int(match.group(1)) if match else 0
     return score, llm_response
 
-
 def quantitative_prioritizer(cities, actions):
     all_scores = []
     for city in cities:
-        scores = {}
         for action in actions:
-            score = quantitative_score(city, action)
-            scores[action["name"]] = score
+            quant_score = quantitative_score(city, action)
             all_scores.append({
-                "city": city["name"],
-                "action": action["name"],
-                "score": score
+                "city": "Unknown City",
+                "action": action["ActionName"],
+                "quantitative_score": quant_score
             })
-    sorted_scores = sorted(all_scores, key=lambda x: x["score"], reverse=True)
+    sorted_scores = sorted(all_scores, key=lambda x: x["quantitative_score"], reverse=True)
     return sorted_scores[:20]  # Top 20 actions
 
-
-def qualitative_prioritizer(top_quantitative):
+def qualitative_prioritizer(top_quantitative, actions):
     qualitative_scores = []
     for entry in top_quantitative:
-        city, action = entry["city"], entry["action"]
-        score, llm_output = qualitative_score(city, action)
-        qualitative_scores.append({
-            "city": city,
-            "action": action,
-            "score": score,
-            "llm_output": llm_output
-        })
+        action_name = entry["action"]
+        action = next((a for a in actions if a["ActionName"] == action_name), None)
+        if action:
+            qual_score, llm_output = qualitative_score({}, action)
+            qualitative_scores.append({
+                "city": "Unknown City",
+                "action": action_name,
+                "quantitative_score": entry["quantitative_score"],
+                "qualitative_score": qual_score,
+                "llm_output": llm_output
+            })
     return qualitative_scores
 
-
 def write_output(top_actions):
-    with open(OUTPUT_FILE, "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["city", "action", "score", "llm_output"])
-        writer.writeheader()
-        for action in top_actions:
-            writer.writerow(action)
-
+    output_dir = os.path.dirname(OUTPUT_FILE)
+    try:
+        os.makedirs(output_dir, exist_ok=True)
+    except OSError as e:
+        print("Error creating output directory:", e)
+    except Exception as e:
+        print("Unexpected error creating output directory:", e)
+    try:
+        with open(OUTPUT_FILE, "w") as f:
+            json.dump(top_actions, f, indent=4)
+    except Exception as e:
+        print("Error writing to output file:", e)
+    print("Finished writing to output file")
 
 def main():
     cities = read_city_inventory()
     actions = read_actions()
     top_quantitative = quantitative_prioritizer(cities, actions)
-    top_qualitative = qualitative_prioritizer(top_quantitative)
+    top_qualitative = qualitative_prioritizer(top_quantitative, actions)
     write_output(top_qualitative)
-
 
 if __name__ == "__main__":
     main()

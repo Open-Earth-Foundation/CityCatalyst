@@ -85,14 +85,18 @@ def extract_AdaptationCategory(row, action_type):
     return dict_adaptation_category
 
 
+# Applies only to adaptation actions
 def extract_Hazard(row, action_type):
     # Define the dictionary with a default empty list for 'value' if no valid hazard is found
+
+    generated = False
+
     dict_hazard = {
         "type": ["array", "null"],
         "items": {
             "type": "string",
             "enum": [
-                "drought",
+                "droughts",
                 "heatwaves",
                 "floods",
                 "sea-level-rise",
@@ -104,7 +108,7 @@ def extract_Hazard(row, action_type):
         },
         "description": "The hazard the action is aligned with (for adaptation actions).",
         "value": None,
-        "generated": False,
+        "generated": generated,
     }
 
     # Only proceed if the action type is adaptation-related
@@ -114,7 +118,7 @@ def extract_Hazard(row, action_type):
         # Define the mapping for hazards
         hazard_mapping = {
             "Flood": "floods",
-            "Drought": "drought",
+            "Drought": "droughts",
             "Heat": "heatwaves",
             "Storm": "storms",
             "Sea-level rise": "sea-level-rise",
@@ -217,7 +221,9 @@ def extract_Sector(row, action_type):
     return dict_sector
 
 
+# Applies only to mitigation actions
 def extract_Subsector(row, action_type):
+    # TODO: adjust so it only applied to mitigation actions
     # Use 'Category 1' column
     # For now simple 1:1 mapping that maps only to the enum values
 
@@ -264,56 +270,63 @@ def extract_Subsector(row, action_type):
         "generated": generated,
     }
 
-    # Define mapping for known subsector values to their respective enum values
-    subsector_mapping = {
-        "Residential buildings": "Residential buildings",
-        "Commercial buildings & facilities": "Commercial and institutional buildings and facilities",
-        "Institutional buildings & facilities": "Commercial and institutional buildings and facilities",
-        "Industrial buildings & facilities": "Manufacturing industries and construction",
-        "On-road": "On-road",
-        "Rail": "Railways",
-        "Waterborne navigation": "Waterborne navigation",
-        "Solid waste disposal": "Disposal of solid waste generated in the city",
-        "Other AFOLU": None,  # This is not a clear subsector
-    }
+    if "mitigation" in action_type:
 
-    # Get the value from the row
-    emission_category = row.get("Emissions Source Category")
+        # Define mapping for known subsector values to their respective enum values
+        subsector_mapping = {
+            "Residential buildings": "Residential buildings",
+            "Commercial buildings & facilities": "Commercial and institutional buildings and facilities",
+            "Institutional buildings & facilities": "Commercial and institutional buildings and facilities",
+            "Industrial buildings & facilities": "Manufacturing industries and construction",
+            "On-road": "On-road",
+            "Rail": "Railways",
+            "Waterborne navigation": "Waterborne navigation",
+            "Solid waste disposal": "Disposal of solid waste generated in the city",
+            "Other AFOLU": None,  # This is not a clear subsector
+        }
 
-    # Check if emission_category is NaN
-    if pd.isnull(emission_category):
+        # Get the value from the row
+        emission_category = row.get("Emissions Source Category")
+
+        # Check if emission_category is NaN
+        if pd.isnull(emission_category):
+            return dict_subsector
+
+        # Check if the entry contains 'Total' to map to 'all'
+        if "Total" in emission_category:
+            dict_subsector["value"] = ["all"]
+            return dict_subsector
+
+        # Split emission categories by commas
+        raw_subsectors = [
+            subcategory.strip() for subcategory in emission_category.split(",")
+        ]
+
+        # Extract and map each subsector
+        mapped_subsectors = []
+        for subcategory in raw_subsectors:
+            # Extract part after '>' symbol if it exists
+            match = re.search(r">\s*(.*)", subcategory)
+            if match:
+                extracted_subsector = match.group(1).strip()
+            else:
+                # If no '>' is found, skip this entry
+                continue
+
+            # Map the extracted subsector using subsector_mapping
+            mapped_subsector = subsector_mapping.get(extracted_subsector)
+            if mapped_subsector:  # Only add valid mapped values
+                mapped_subsectors.append(mapped_subsector)
+
+        # Assign mapped subsectors to 'value' or None if no valid mapping is found
+        dict_subsector["value"] = mapped_subsectors if mapped_subsectors else None
+
         return dict_subsector
 
-    # Check if the entry contains 'Total' to map to 'all'
-    if "Total" in emission_category:
-        dict_subsector["value"] = ["all"]
+    else:
+        # For adaptation actions, print message and return dict as is
+        print("Adaptation action found, not applicable for 'Subsector'")
         return dict_subsector
-
-    # Split emission categories by commas
-    raw_subsectors = [
-        subcategory.strip() for subcategory in emission_category.split(",")
-    ]
-
-    # Extract and map each subsector
-    mapped_subsectors = []
-    for subcategory in raw_subsectors:
-        # Extract part after '>' symbol if it exists
-        match = re.search(r">\s*(.*)", subcategory)
-        if match:
-            extracted_subsector = match.group(1).strip()
-        else:
-            # If no '>' is found, skip this entry
-            continue
-
-        # Map the extracted subsector using subsector_mapping
-        mapped_subsector = subsector_mapping.get(extracted_subsector)
-        if mapped_subsector:  # Only add valid mapped values
-            mapped_subsectors.append(mapped_subsector)
-
-    # Assign mapped subsectors to 'value' or None if no valid mapping is found
-    dict_subsector["value"] = mapped_subsectors if mapped_subsectors else None
-
-    return dict_subsector
 
 
 def extract_PrimaryPurpose(row, action_type):

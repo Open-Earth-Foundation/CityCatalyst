@@ -1,357 +1,199 @@
 {
-    "ActionID": {
-        "type": "string",
-        "description": "Unique identifier for each action.",
-        "value": "",
-        "appliesTo": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["mitigation", "adaptation"]
-            },
-            "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
-            "value": ["mitigation", "adaptation"]
-        },
-        "generated": {"type": "boolean"}
-    },
-    "ActionName": {
-        "type": "string",
-        "description": "Descriptive name of the action.",
-        "value": "",
-        "appliesTo": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["mitigation", "adaptation"]
-            },
-            "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
-            "value": ["mitigation", "adaptation"]
-        },
-        "generated": {"type": "boolean"}
-    },
-    "ActionType": {
-        "type": "string",
-        "enum": ["Mitigation", "Adaptation"],
-        "description": "Specifies whether the action is a Mitigation or Adaptation action.",
-        "value": "",
-        "appliesTo": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["mitigation", "adaptation"]
-            },
-            "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
-            "value": ["mitigation", "adaptation"]
-        },
-        "generated": {"type": "boolean"}
-    },
-    "AdaptationCategory": {
-        "type": "string",
-        "items": {"type": "string"},
-        "description": "Specifies the category of adaptation action.",
-        "value": "",
-        "appliesTo": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["mitigation", "adaptation"]
-            },
-            "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
-            "value": ["adaptation"]
-        },
-        "generated": {"type": "boolean"}
-    },
-    "Hazard": {
-        "type": "array",
-        "items": {
+    "//comment": "appliesTo and generated are metadata that are not supported for type checking by JSON schema",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Climate Action Priorization Schema",
+    "description": "Schema for defining climate actions with adaptation and mitigation properties",
+    "type": "object",
+    "properties": {
+        "ActionID": {
             "type": "string",
-            "enum": ["Drought", "Heatwave", "Flood", "Sea-level rise", "Landslides"]
+            "description": "Unique identifier for each action",
+            "appliesTo": ["mitigation", "adaptation"],
+            "generated": true
         },
-        "description": "The hazard the action is aligned with (for adaptation actions).",
-        "value": ["Heatwave", "Flood"],
-        "appliesTo": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["mitigation", "adaptation"]
-            },
-            "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
-            "value": ["adaptation"]
-        },
-        "generated": {"type": "boolean"}
-    },
-    "Sector": {
-        "type": "array",
-        "items": {
+        "ActionName": {
             "type": "string",
-            "enum": ["Stationary Energy", "Transport", "Waste"]
+            "description": "Descriptive name of the action",
+            "appliesTo": ["mitigation", "adaptation"],
+            "generated": false
         },
-        "description": "The sector to which the action belongs.",
-        "value": ["Transport"],
-        "appliesTo": {
+        "ActionType": {
             "type": "array",
             "items": {
                 "type": "string",
                 "enum": ["mitigation", "adaptation"]
             },
-            "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
-            "value": ["mitigation", "adaptation"]
+            "default": ["mitigation", "adaptation"],
+            "description": "Specifies whether the action is a Mitigation or Adaptation action.",
+            "generated": false,
+            "appliesTo": ["mitigation", "adaptation"]
         },
-        "generated": {"type": "boolean"}
-    },
-    "Subsector": {
-        "type": "array",
-        "items": {
+        "AdaptationCategory": {
+            "type": ["string", "null"],
+            "description": "Specifies the category of adaptation action",
+            "appliesTo": ["adaptation"],
+            "generated": false
+        },
+        "Hazard": {
+            "type": ["array", "null"],
+            "items": {
+                "type": "string",
+                "enum": ["droughts", "heatwave", "floods", "sea-level-rise", "landslides", "storms"]
+            },
+            "description": "The hazard the adaptation action is aligned with",
+            "appliesTo": ["adaptation"],
+            "generated": false
+        },
+        "Sector": {
+            "type": ["array", "null"],
+            "items": {
+                "type": "string",
+                "enum": [
+                    "stationary_energy", "transport", "waste", "industrial_processes_and_product_use", "agriculture_forestry_and_other_land_use", 
+                    "water_resources", "food_security", "energy_security", "biodiversity", "public_health", "railway_infrastructure", "road_infrastructure", "geo-hydrological_disasters"
+                ]
+            },
+            "description": "The sector to which the action belongs.",
+            "appliesTo": ["mitigation", "adaptation"],
+            "generated": false
+        },
+        "Subsector": {
+            "type": ["array", "null"],
+            "items": {
+                "type": "string",
+                "enum": [
+                    "residential_buildings", "commercial_and_institutional_buildings_and_facilities",
+                    "manufacturing_industries_and_construction", "energy_industries",
+                    "energy_generation_supplied_to_the_grid", "agriculture_forestry_and_fishing_activities",
+                    "non-specified_sources", "fugitive_emissions_from_mining_processing_storage_and_transportation_of_coal",
+                    "fugitive_emissions_from_oil_and_natural_gas_systems",
+                    "on-road", "railways", "waterborne_navigation", "aviation", "off-road",
+                    "disposal_of_solid_waste_generated_in_the_city", "disposal_of_solid_waste_generated_outside_the_city",
+                    "biological_treatment_of_waste_generated_in_the_city", "biological_treatment_of_waste_generated_outside_the_city",
+                    "incineration_and_open_burning_of_waste_generated_in_the_city",
+                    "incineration_and_open_burning_of_waste_generated_outside_the_city",
+                    "wastewater_generated_in_the_city", "wastewater_generated_outside_the_city",
+                    "industrial_processes", "product_use",
+                    "livestock", "land", "aggregate_sources_and_non-co2_emission_sources_on_land",
+                    "all"
+                ]
+            },
+            "description": "The subsector the mitigation action is aligned with",
+            "appliesTo": ["mitigation"],
+            "generated": false
+        },
+        "PrimaryPurpose": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "enum": ["ghg_reduction", "climate_resilience"]
+            },
+            "description": "The main goal of the action, e.g., GHG Reduction, Climate Resilience.",
+            "appliesTo": ["mitigation", "adaptation"],
+            "generated": false
+        },
+        "InterventionType": {
+            "type": ["array", "null"],
+            "items": {
+                "type": "string",
+                "enum": ["taxes_and_fees", "incentives_and_subsidies", "regulations_and_laws", "programs_and_initiatives", "infrastructure_investments"]
+            },
+            "description": "Specifies the intervention category enabling the activity shift for mitigation actions",
+            "appliesTo": ["mitigation"],
+            "generated": true
+        },
+        "Description": {
             "type": "string",
-            "enum": ["Residential buildings", "On-road transportation", "Rail Transportation"]
+            "description": "Detailed description of the action",
+            "appliesTo": ["mitigation", "adaptation"],
+            "generated": false
         },
-        "description": "The subsector the action is aligned with (for mitigation actions).",
-        "value": ["On-road transportation"],
-        "appliesTo": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["mitigation", "adaptation"]
-            },
-            "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
-            "value": ["mitigation"]
-        },
-        "generated": {"type": "boolean"}
-    },
-    "PrimaryPurpose": {
-        "type": "string",
-        "description": "The main goal of the action, e.g., GHG Reduction, Climate Resilience.",
-        "value": "GHG Reduction",
-        "appliesTo": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["mitigation", "adaptation"]
-            },
-            "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
-            "value": ["mitigation", "adaptation"]
-        },
-        "generated": {"type": "boolean"}
-    },
-    "InterventionType": {
-        "type": "array",
-        "items": {
+        "BehaviouralChangeTargeted": {
             "type": "string",
-            "enum": ["Tax", "Incentive", "Regulation", "Infrastructure Investment"]
+            "description": "Describes the behavioural change encouraged by the intervention",
+            "appliesTo": ["mitigation"],
+            "generated": true
         },
-        "description": "Specifies the intervention category enabling the Activity Shift for mitigation actions.",
-        "value": ["Incentive", "Regulation"],
-        "appliesTo": {
-            "type": "array",
+        "CoBenefits": {
+            "type": ["array", "null"],
             "items": {
                 "type": "string",
-                "enum": ["mitigation", "adaptation"]
+                "enum": ["air_quality", "water_quality", "habitat", "cost_of_living", "housing", "mobility", "stakeholder_engagement"]
             },
-            "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
-            "value": ["mitigation"]
+            "description": "Additional benefits beyond the primary objective",
+            "appliesTo": ["mitigation", "adaptation"],
+            "generated": true
         },
-        "generated": {"type": "boolean"}
-    },
-    "Description": {
-        "type": "string",
-        "description": "Detailed description of the action.",
-        "value": "Conversion of the city bus fleet to electric vehicles.",
-        "appliesTo": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["mitigation", "adaptation"]
-            },
-            "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
-            "value": ["mitigation", "adaptation"]
-        },
-        "generated": {"type": "boolean"}
-    },
-    "BehaviouralChangeTargeted": {
-        "type": "string",
-        "description": "Describes the behavioural change encouraged by the intervention.",
-        "value": "Increase public transit use and reduce emissions from personal vehicles.",
-        "appliesTo": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["mitigation", "adaptation"]
-            },
-            "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
-            "value": ["mitigation", "adaptation"]
-        },
-        "generated": {"type": "boolean"}
-    },
-    "CoBenefits": {
-        "type": "array",
-        "items": {
+        "EquityAndInclusionConsiderations": {
             "type": "string",
-            "enum": [
-                "Health & Wellbeing",
-                "Environment",
-                "Economic Prosperity",
-                "Essential Public Services",
-                "Inclusivity and Civil Society"
-            ]
+            "description": "How the action promotes equity and inclusion, focusing on vulnerable or underserved communities",
+            "appliesTo": ["mitigation", "adaptation"],
+            "generated": true
         },
-        "description": "Additional benefits beyond the primary objective.",
-        "value": ["Health & Wellbeing", "Environment"],
-        "appliesTo": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["mitigation", "adaptation"]
+        "GHGReductionPotential": {
+            "type": "object",
+            "properties": {
+                "energy": {
+                    "type": ["string", "null"],
+                    "enum": ["0-19%", "20-39%", "40-59%"],
+                    "description": "Potential for GHG reduction in the energy sector."
+                },
+                "transportation": {
+                    "type": ["string", "null"],
+                    "enum": ["0-19%", "20-39%", "40-59%"],
+                    "description": "Potential for GHG reduction in the transportation sector."
+                },
+                "waste": {
+                    "type": ["string", "null"],
+                    "enum": ["0-19%", "20-39%", "40-59%"],
+                    "description": "Potential for GHG reduction in the waste sector."
+                }
             },
-            "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
-            "value": ["mitigation", "adaptation"]
+            "appliesTo": ["mitigation"],
+            "generated": false
         },
-        "generated": {"type": "boolean"}
+        "AdaptationEffectiveness": {
+            "type": ["string", "null"],
+            "enum": ["high", "medium", "low"],
+            "description": "The effectiveness of the adaptation action to climate risks",
+            "appliesTo":["adaptation"],
+            "generated": true
+        },
+        "CostInvestmentNeeded": {
+            "type": ["string" , "null"],
+            "enum": ["high", "medium", "low"],
+            "description": "The financial viability of the action",
+            "appliesTo": ["mitigation", "adaptation"],
+            "generated": false
+        },
+        "TimelineForImplementation": {
+            "type": ["string", "null"],
+            "enum": ["<5 years", "5-10 years", ">10 years"],
+            "description": "Estimated time required to fully implement the action",
+            "appliesTo": ["adaptation", "mitigation"],
+            "generated": false
+        },
+        "Dependencies": {
+            "type": ["array", "null"],
+            "items": {"type": "string"},
+            "description": "Dependencies or prerequisites for the action to succeed",
+            "appliesTo": ["mitigation", "adaptation"],
+            "generated": true
+        },
+        "KeyPerformanceIndicators": {
+            "type": ["array", "null"],
+            "items": {"type": "string"},
+            "description": "Metrics to measure the success of the action",
+            "appliesTo": ["mitigation", "adaptation"],
+            "generated": true
+        },
+        "Impacts": {
+            "type": ["array", "null"],
+            "items": {"type": "string"},
+            "description": "Broader impacts, such as increased urban livability or improved public health",
+            "appliesTo": ["mitigation", "adaptation"],
+            "generated": true
+        }
     },
-    "EquityAndInclusionConsiderations": {
-        "type": "string",
-        "description": "How the action promotes equity and inclusion, focusing on vulnerable or underserved communities.",
-        "value": "Increased access to clean public transit in underserved areas.",
-        "appliesTo": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["mitigation", "adaptation"]
-            },
-            "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
-            "value": ["mitigation", "adaptation"]
-        },
-        "generated": {"type": "boolean"}
-    },
-    "GHGReductionPotential": {
-        "type": "object",
-        "properties": {
-            "energy": {
-                "type": "string",
-                "enum": ["0-19%", "20-39%", "40-59%", "none"],
-                "description": "Potential for GHG reduction in the energy sector.",
-                "value": "20-39%"
-            },
-            "transportation": {
-                "type": "string",
-                "enum": ["0-19%", "20-39%", "40-59%", "none"],
-                "description": "Potential for GHG reduction in the transportation sector.",
-                "value": "40-59%"
-            },
-            "waste": {
-                "type": "string",
-                "enum": ["0-19%", "20-39%", "40-59%", "none"],
-                "description": "Potential for GHG reduction in the waste sector.",
-                "value": "0-19%"
-            }
-        },
-        "appliesTo": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["mitigation", "adaptation"]
-            },
-            "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
-            "value": ["mitigation", "adaptation"]
-        },
-        "generated": {"type": "boolean"}
-    },
-    "AdaptationEffectiveness": {
-        "type": "string",
-        "enum": ["High", "Medium", "Low", "none"],
-        "description": "The effectiveness of the action in adapting to climate risks.",
-        "value": ["High"],
-        "appliesTo": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["mitigation", "adaptation"]
-            },
-            "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
-            "value": ["mitigation", "adaptation"]
-        },
-        "generated": {"type": "boolean"}
-    },
-    "CostInvestmentNeeded": {
-        "type": "array",
-        "enum": ["High", "Medium", "Low"],
-        "description": "The financial viability of the action.",
-        "value": ["High"],
-        "appliesTo": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["mitigation", "adaptation"]
-            },
-            "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
-            "value": ["mitigation", "adaptation"]
-        },
-        "generated": {"type": "boolean"}
-    },
-    "TimelineForImplementation": {
-        "type": "string",
-        "enum": ["<5 years", "5-10 years", ">10 years"],
-        "description": "Estimated time required to fully implement the action.",
-        "value": "5-10 years",
-        "appliesTo": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["mitigation", "adaptation"]
-            },
-            "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
-            "value": ["mitigation", "adaptation"]
-        },
-        "generated": {"type": "boolean"}
-    },
-    "Dependencies": {
-        "type": "array",
-        "items": {"type": "string"},
-        "description": "Dependencies or prerequisites for the action to succeed.",
-        "value": ["Availability of electric buses", "Charging infrastructure in place"],
-        "appliesTo": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["mitigation", "adaptation"]
-            },
-            "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
-            "value": ["mitigation", "adaptation"]
-        },
-        "generated": {"type": "boolean"}
-    },
-    "KeyPerformanceIndicators": {
-        "type": "array",
-        "items": {"type": "string"},
-        "description": "Metrics to measure the success of the action.",
-        "value": ["Reduction in emissions", "Increase in public transit ridership"],
-        "appliesTo": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["mitigation", "adaptation"]
-            },
-            "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
-            "value": ["mitigation", "adaptation"]
-        },
-        "generated": {"type": "boolean"}
-    },
-    "Impacts": {
-        "type": "array",
-        "items": {"type": "string"},
-        "description": "Broader impacts, such as increased urban livability or improved public health.",
-        "value": [
-            "Improved air quality",
-            "Reduced healthcare costs related to respiratory diseases"
-        ],
-        "appliesTo": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["mitigation", "adaptation"]
-            },
-            "description": "Specifies if this attribute applies to Mitigation, Adaptation, or both actions.",
-            "value": ["mitigation", "adaptation"]
-        },
-        "generated": {"type": "boolean"}
-    }
+    "required": ["ActionID", "ActionName", "ActionType", "Description"]
 }

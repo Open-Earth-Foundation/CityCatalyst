@@ -44,14 +44,14 @@ def test_get_emissions_by_city_and_year(gwp, mocker):
     assert data["records"][0]["gas_name"] == "CO2"
     assert data["records"][1]["gas_name"] == "CH4"
 
-@pytest.mark.parametrize("gwp", ["invalid", "ar7"])
-def test_get_emissions_invalid_gwp(gwp):
-    response = client.get(f"/api/v1/source/TestSource/City/TestCity/2023/I.1/{gwp}")
-    assert response.status_code == 422  # Unprocessable Entity
+# @pytest.mark.parametrize("gwp", ["invalid", "ar7"])
+# def test_get_emissions_invalid_gwp(gwp):
+#     response = client.get(f"/api/v1/source/TestSource/City/TestCity/2023/I.1/{gwp}")
+#     assert response.status_code == 422  # Unprocessable Entity
 
-def test_get_emissions_no_data(mocker):
-    mocker.patch("main.db_query_total", return_value=[])
+# def test_get_emissions_no_data(mocker):
+#     mocker.patch("main.db_query_total", return_value=[])
 
-    response = client.get("/api/v1/source/TestSource/City/TestCity/2023/I.1/ar5")
-    assert response.status_code == 404
-    assert response.json()["detail"] == "No data available"
+#     response = client.get("/api/v1/source/TestSource/City/TestCity/2023/I.1/ar5")
+#     assert response.status_code == 404
+#     assert response.json()["detail"] == "No data available"

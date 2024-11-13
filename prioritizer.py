@@ -29,7 +29,7 @@ OUTPUT_FILE = "new_output.json"
 
 def send_to_llm(prompt):
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-4o",
         messages=[
             {
                 "role": "system",
@@ -149,13 +149,17 @@ def quantitative_score(city, action):
 
     # Cost score
     if "CostInvestmentNeeded" in action:
+        cost_investment_needed = action["CostInvestmentNeeded"]
+        if isinstance(cost_investment_needed, list):
+            cost_investment_needed = cost_investment_needed[0]  # Extract the first element if it's a list
         cost_category = action.get("CostCategory", "").lower()
         cost_score_map = {
             "small": 15,
             "medium": 10,
             "big": 5
         }
-        cost_score = cost_score_map.get(action["CostInvestmentNeeded"], 0)
+        print(cost_investment_needed)
+        cost_score = cost_score_map.get(cost_investment_needed, 0)
         score += (cost_score / 15) * SCORE_MAX
         #ratio = action["CostInvestmentNeeded"] / MAX_COST if action["CostInvestmentNeeded"] else 1
         #score += (1 - ratio) * SCORE_MAX
@@ -163,15 +167,11 @@ def quantitative_score(city, action):
     return score
 
 def qualitative_score(city, action):
+    # have to rework it later to choose x top actions not reason and score each of them
     prompt = f"""
     According to the rules given, how would you prioritize the following action for the city,
-    total GHG emissions in CO2eq {city.get("total_co2eq", "unknown")}, and total activity value {city.get("total_activity_value", "unknown")}? 
-
-    Action: {action["ActionName"]}, cost {action.get("cost", "unknown")}, GHG emissions reduction in CO2eq {action.get("emissions_reduction", "unknown")}, risk reduction {action.get("AdaptationEffectiveness", "unknown")}, environment {action.get("Sector", "unknown")}, population {action.get("population", "unknown")}, time {action.get("TimelineForImplementation", "unknown")}
-
-    Please return a score from 0 to 100, where 0 is the worst possible action and 100 is the best possible action.
-
-    Response format: [SCORE]
+    {action}
+    Response format: [SCORE] | [REASONING]
     """
     llm_response = send_to_llm(prompt)
     match = re.search(r"\[(\d+)\]", llm_response)

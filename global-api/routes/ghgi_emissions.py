@@ -13,10 +13,10 @@ def db_query_total(datasource_name, spatial_granularity, actor_id, gpc_reference
         query = text(
             f"""
             SELECT		upper(e.gas_name) as gas_name,
-             			sum(e.emissions_value) as emissions_value,
-             			COALESCE(max(gwp.{gwp}),0) as gwp_100yr,
-             			COALESCE(sum(e.emissions_value * gwp.{gwp}),0) as emissions_value_100yr,
-                        COALESCE(sum(e.emissions_value * gwp2.{gwp}),0) as emissions_value_20yr
+             			sum(e.emissions_value)::int as emissions_value,
+             			COALESCE(max(gwp.{gwp}),0)::int as gwp_100yr,
+             			COALESCE(sum(e.emissions_value * gwp.{gwp}),0)::int as emissions_value_100yr,
+                        COALESCE(sum(e.emissions_value * gwp2.{gwp}),0)::int as emissions_value_20yr
             FROM 		modelled.emissions e
             LEFT JOIN 	modelled.emissions_factor ef
             ON 			e.emissionfactor_id = ef.emissionfactor_id
@@ -64,8 +64,8 @@ def db_query_eq_total(datasource_name, spatial_granularity, actor_id, gpc_refere
 
         query = text(
             f"""
-            SELECT		COALESCE(sum(e.emissions_value * gwp.{gwp}),0) as emissions_value_100yr,
-                        COALESCE(sum(e.emissions_value * gwp2.{gwp}),0) as emissions_value_20yr
+            SELECT		COALESCE(sum(e.emissions_value * gwp.{gwp}),0)::int as emissions_value_100yr,
+                        COALESCE(sum(e.emissions_value * gwp2.{gwp}),0)::int as emissions_value_20yr
             FROM 		modelled.emissions e
             LEFT JOIN 	modelled.emissions_factor ef
             ON 			e.emissionfactor_id = ef.emissionfactor_id
@@ -141,7 +141,7 @@ def db_query(datasource_name, spatial_granularity, actor_id, gpc_reference_numbe
 
         query = text(
             f"""
-            SELECT		e.emissions_value,
+            SELECT		e.emissions_value::int as emissions_value,
              			e.gas_name,
              			ef.emissionfactor_value,
              			a.activity_name,
@@ -150,9 +150,9 @@ def db_query(datasource_name, spatial_granularity, actor_id, gpc_reference_numbe
              			a.activity_subcategory_type,
              			m.methodology_name,
                         e.geometry as emissions_geometry,
-             			COALESCE(gwp.{gwp},0) as gwp_100yr,
-             			COALESCE(e.emissions_value * gwp.{gwp},0) as emissions_value_100yr,
-                        COALESCE(e.emissions_value * gwp2.{gwp},0) as emissions_value_20yr
+             			COALESCE(gwp.{gwp},0)::int as gwp_100yr,
+             			COALESCE(e.emissions_value * gwp.{gwp},0)::int as emissions_value_100yr,
+                        COALESCE(e.emissions_value * gwp2.{gwp},0)::int as emissions_value_20yr
             FROM 		modelled.emissions e
             LEFT JOIN 	modelled.emissions_factor ef
             ON 			e.emissionfactor_id = ef.emissionfactor_id

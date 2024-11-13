@@ -48,6 +48,9 @@ jobs:
           ALEMBIC_URL=postgresql://citycatalyst:@localhost/citycatalyst alembic upgrade head
           cp sample.env .env
 
+      - name: Run tests
+        run: pytest
+
       - name: Build coverage file
         run: |
           pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=app tests/ | tee pytest-coverage.txt

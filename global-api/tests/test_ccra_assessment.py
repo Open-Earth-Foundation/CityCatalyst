@@ -67,7 +67,7 @@ def test_get_ccra_cities():
     assert response.status_code == 200
     assert response.json() == [
         {
-            "cityName": "Test City",
+            "cityname": "Test City",
             "region": "TEST",
             "actor_id": "CITY1",
             "osm_id": "R12345"

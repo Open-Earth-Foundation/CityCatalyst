@@ -17,6 +17,7 @@ import { InventoryResponse } from "@/util/types";
 
 const ModalDownloadShare = ({
   t,
+  lng,
   isDownloadShareOpen,
   onDownloadShareClose,
   inventoryId,
@@ -25,6 +26,7 @@ const ModalDownloadShare = ({
   inventory,
 }: {
   t: TFunction;
+  lng: string;
   isDownloadShareOpen: boolean;
   onDownloadShareClose: () => void;
   inventoryId: string | undefined;
@@ -48,6 +50,7 @@ const ModalDownloadShare = ({
         <ModalBody>
           <DownloadButtons
             t={t}
+            lng={lng}
             inventoryId={inventoryId}
             cityLocode={cityLocode}
             inventoryYear={inventory.year}

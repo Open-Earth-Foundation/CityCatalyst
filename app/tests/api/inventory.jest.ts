@@ -34,6 +34,10 @@ import {
   jest,
 } from "@jest/globals";
 import { activityValues } from "./results.data";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
+} from "@/util/enums";
 
 jest.useFakeTimers();
 
@@ -53,18 +57,24 @@ const inventoryData: CreateInventoryRequest = {
   inventoryName,
   year: 3000,
   totalEmissions: 1337,
+  globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+  inventoryType: InventoryTypeEnum.GPC_BASIC,
 };
 
 const inventoryData2: CreateInventoryRequest = {
   inventoryName,
   year: 3001,
   totalEmissions: 1338,
+  globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+  inventoryType: InventoryTypeEnum.GPC_BASIC,
 };
 
 const invalidInventory = {
   inventoryName: "",
   year: 0,
   totalEmissions: "246kg co2eq",
+  globalWarmingPotentialType: "ar4",
+  inventoryType: "gpc_premium",
 };
 
 const inventoryValue = {
@@ -145,6 +155,8 @@ describe("Inventory API", () => {
       inventoryId: randomUUID(),
       cityId: city.cityId,
       ...inventoryData,
+      inventoryType: InventoryTypeEnum.GPC_BASIC,
+      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
     });
     const inventoryValueDb = await db.models.InventoryValue.create({
       id: randomUUID(),
@@ -214,7 +226,7 @@ describe("Inventory API", () => {
     const {
       error: { issues },
     } = await res.json();
-    expect(issues.length).toEqual(3);
+    expect(issues.length).toEqual(5);
   });
 
   it("should find an inventory", async () => {

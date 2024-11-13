@@ -255,7 +255,7 @@ export const getInputMethodology = (methodologyId: string) => {
   }
 };
 
-function toDecimal(
+export function toDecimal(
   value: Decimal | string | bigint | number | undefined,
 ): Decimal | undefined {
   if (!value) return undefined;
@@ -273,7 +273,7 @@ export function convertKgToTonnes(
   gas?: string,
 ): string {
   const locale = "en-US";
-  const gasSuffix = gas ? ` ${gas}` : " CO2";
+  const gasSuffix = gas ? ` ${gas}` : " CO2e";
 
   const kg = toDecimal(valueInKg);
   if (!kg) return "";
@@ -302,7 +302,8 @@ export function convertKgToTonnes(
     return `${formatter.format(tonnes.toNumber())} t${gasSuffix}`;
   } else {
     // Return as kg if the value is less than 1,000 kg
-    return `${formatter.format(kg.toNumber())} kg${gasSuffix}`;
+    const tonnes = kg.div(tonne);
+    return `${formatter.format(tonnes.toNumber())} t${gasSuffix}`;
   }
 }
 

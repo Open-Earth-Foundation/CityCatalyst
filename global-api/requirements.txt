@@ -1,5 +1,5 @@
 aiohttp==3.10.*
-alembic==1.13.3
+alembic==1.14.0
 black==24.10.0
 fastapi==0.114.2
 flake8==7.1.1
@@ -11,11 +11,11 @@ pandas==2.2.3
 psycopg2-binary==2.9.10
 pydantic-settings==2.*
 pytest==8.3.3
-rioxarray==0.17.*
+rioxarray==0.18.*
 scipy==1.14.*
 shapely==2.0.6
 SQLAlchemy==2.0.36
-tqdm==4.66.*
+tqdm==4.67.*
 uvicorn==0.32.0
 xarray==2024.*
 geojson==3.1.*

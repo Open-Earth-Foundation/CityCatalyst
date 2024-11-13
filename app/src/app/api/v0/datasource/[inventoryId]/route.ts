@@ -152,31 +152,36 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   } = await findPopulationScaleFactors(inventory, applicableSources);
 
   // TODO add query parameter to make this optional?
-  const sourceData = (
-    await Promise.all(
-      applicableSources.map(async (source) => {
-        const data = await DataSourceService.retrieveGlobalAPISource(
-          source,
-          inventory,
-        );
-        if (data instanceof String || typeof data === "string") {
-          return null;
-        }
-        let scaleFactor = 1.0;
-        let issue: string | null = null;
-        if (source.retrievalMethod === downscaledByCountryPopulation) {
-          scaleFactor = countryPopulationScaleFactor;
-          issue = populationIssue;
-        } else if (source.retrievalMethod === downscaledByRegionPopulation) {
-          scaleFactor = regionPopulationScaleFactor;
-          issue = populationIssue;
-        }
-        return { source, data: { ...data, scaleFactor, issue } };
-      }),
-    )
-  ).filter((source) => !!source);
+  const sourceData = await Promise.all(
+    applicableSources.map(async (source) => {
+      const data = await DataSourceService.retrieveGlobalAPISource(
+        source,
+        inventory,
+      );
+      if (data instanceof String || typeof data === "string") {
+        return { error: data as string, source };
+      }
+      let scaleFactor = 1.0;
+      let issue: string | null = null;
+      if (source.retrievalMethod === downscaledByCountryPopulation) {
+        scaleFactor = countryPopulationScaleFactor;
+        issue = populationIssue;
+      } else if (source.retrievalMethod === downscaledByRegionPopulation) {
+        scaleFactor = regionPopulationScaleFactor;
+        issue = populationIssue;
+      }
+      return { source, data: { ...data, scaleFactor, issue } };
+    }),
+  );
 
-  return NextResponse.json({ data: sourceData, removedSources });
+  const successfulSources = sourceData.filter((source) => !source.error);
+  const failedSources = sourceData.filter((source) => !!source.error);
+
+  return NextResponse.json({
+    data: successfulSources,
+    removedSources,
+    failedSources,
+  });
 });
 
 const applySourcesRequest = z.object({

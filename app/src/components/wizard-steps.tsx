@@ -26,11 +26,11 @@ export default function WizardSteps({
 }) {
   const orientation: "horizontal" | "vertical" | undefined = useBreakpointValue(
     { base: "vertical", md: "horizontal" },
-    { fallback: "md" }
+    { fallback: "md" },
   );
   const gap: "0" | undefined = useBreakpointValue(
     { base: "0", md: undefined },
-    { fallback: "md" }
+    { fallback: "md" },
   );
 
   return (

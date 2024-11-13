@@ -1,12 +1,14 @@
 import type { DataSourceI18nAttributes as DataSourceAttributes } from "@/models/DataSourceI18n";
 import type { GasValueAttributes } from "@/models/GasValue";
 import type { InventoryValueAttributes } from "@/models/InventoryValue";
-import { ScopeAttributes } from "@/models/Scope";
+import { Publisher } from "@/models/Publisher";
+import { Scope, ScopeAttributes } from "@/models/Scope";
+import type { Sector, SectorAttributes } from "@/models/Sector";
 import { SubCategoryAttributes } from "@/models/SubCategory";
 import { SubSectorAttributes } from "@/models/SubSector";
 import type { EmissionsFactorWithDataSources } from "@/util/types";
 
-interface DataStep {
+export interface DataStep {
   name: string;
   description: string;
   icon: any;
@@ -14,11 +16,11 @@ interface DataStep {
   addedProgress: number;
   totalSubSectors: number;
   referenceNumber: string;
-  sector: Sector | null;
+  sector: SectorAttributes | null;
   subSectors: SubSectorWithRelations[] | null;
 }
 
-type SubSector = {
+export type SubSector = {
   subsectorId: string;
   name: string;
   scope: { scopeName: string };
@@ -27,7 +29,7 @@ type SubSector = {
   subCategories: SubCategory[];
 };
 
-type SubCategory = {
+export type SubCategory = {
   subcategoryId: string;
   subcategoryName?: string;
   referenceNumber?: string;
@@ -39,12 +41,12 @@ type SubCategory = {
   lastUpdated?: Date;
 };
 
-type SubcategoryOption = {
+export type SubcategoryOption = {
   label: string;
   value: string;
 };
 
-type ActivityData = {
+export type ActivityData = {
   activityDataAmount?: number | null;
   activityDataUnit?: string | null;
   emissionFactorType: string;
@@ -55,7 +57,7 @@ type ActivityData = {
   sourceReference: string;
 };
 
-type DirectMeasureData = {
+export type DirectMeasureData = {
   co2Emissions: bigint;
   ch4Emissions: bigint;
   n2oEmissions: bigint;
@@ -63,9 +65,9 @@ type DirectMeasureData = {
   sourceReference: string;
 };
 
-type SubcategoryData = {
+export type SubcategoryData = {
   methodology: "activity-data" | "direct-measure" | "";
-  isUnavailable: bool;
+  isUnavailable: boolean;
   unavailableReason:
     | "no-occurrance"
     | "not-estimated"
@@ -77,23 +79,23 @@ type SubcategoryData = {
   direct: DirectMeasureData;
 };
 
-type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
+export type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 
-type EmissionsFactorData = Optional<
+export type EmissionsFactorData = Optional<
   EmissionsFactorWithDataSources,
   "id" | "dataSources"
 >;
-type GasValueData = Omit<GasValueAttributes, "id" | "gasAmount"> & {
+export type GasValueData = Omit<GasValueAttributes, "id" | "gasAmount"> & {
   emissionsFactor?: EmissionsFactorData;
   gasAmount?: bigint | null;
 };
 
-type InventoryValueData = Omit<InventoryValueAttributes, "id"> & {
+export type InventoryValueData = Omit<InventoryValueAttributes, "id"> & {
   dataSource?: Omit<DataSourceAttributes, "datasourceId">;
   gasValues?: GasValueData[];
 };
 
-type DataSourceWithRelations = DataSourceAttributes & {
+export type DataSourceWithRelations = DataSourceAttributes & {
   subCategory:
     | (SubCategoryAttributes & {
         subsector: SubSectorAttributes;
@@ -106,14 +108,14 @@ type DataSourceWithRelations = DataSourceAttributes & {
   scopes: Scope[];
 };
 
-type DataSourceData = {
-  totals: { emissions: { co2eq_100yr } };
+export type DataSourceData = {
+  totals: { emissions: { co2eq_100yr: string } };
   points?: any;
   scaleFactor: number;
   issue: string | null;
 };
 
-type SubSectorWithRelations = SubSectorAttributes & {
+export type SubSectorWithRelations = SubSectorAttributes & {
   completed: boolean;
   completedCount: number;
   totalCount: number;

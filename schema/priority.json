@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.openearth.org/cap/priority.json",
+  "title": "Priority",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "locode": {
+        "type": "string",
+        "description": "The UN/LOCODE of the city",
+        "pattern": "^[A-Z]{2}[A-Z0-9]{3}$"
+      },
+      "cityName": {
+        "type": "string",
+        "description": "The name of the city"
+      },
+      "region": {
+        "type": "string",
+        "description": "ISO 3166-2 region code where the city is located",
+        "pattern": "^[A-Z]{2}-[A-Z0-9]{1,3}$"
+      },
+      "regionName": {
+        "type": "string",
+        "description": "The name of the region where the city is located"
+      },
+      "actionId": {
+        "type": "string",
+        "description": "The ID of the action"
+      },
+      "actionName": {
+        "type": "string",
+        "description": "The name of the action"
+      },
+      "actionPriority": {
+        "type": "integer",
+        "description": "The priority of the action",
+        "minimum": 0,
+        "maximum": 100
+      },
+      "explanation": {
+        "type": "string",
+        "description": "The explanation of the priority"
+      }
+    },
+    "required": [
+      "locode",
+      "name",
+      "region",
+      "regionName",
+      "actionId",
+      "actionName",
+      "actionPriority",
+      "explanation"
+    ]
+  }
+}

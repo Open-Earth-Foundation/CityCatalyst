@@ -1,0 +1,6 @@
+name,population,area,environment,budget,total_emission,energy_emissions,transportation_emissions,waste_emissions,risk
+Santa Vitória,"100,000",10,coastal,"10,000,000","250,000","60,000","130,000","60,000",high
+Novo Horizonte,"1,000,000",50,jungle,"125,000,000","4,000,000","740,000","2,580,000","680,000",medium
+Porto Verde,"3,000,000",200,mountainous,"50,000,000","2,000,000","290,000","1,080,000","630,000",medium
+Serra Branca,"8,000,000",700,coastal,"300,000,000","20,000,000","16,940,000","1,210,000","1,850,000",high
+Vila Esperança,"1,500,000",100,interior,"2,000,000","7,000,000","5,720,000","1,210,000","70,000",low

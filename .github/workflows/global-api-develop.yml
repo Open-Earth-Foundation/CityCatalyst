@@ -43,9 +43,9 @@ jobs:
         run: |
           docker run --name github_action_postgresql -d -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_PASSWORD="" postgres
           sleep 10
-          createuser -w -h localhost -p 5432 -U postgres citycatalyst
-          createdb -w -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst
-          ALEMBIC_URL=postgresql://citycatalyst:@localhost/citycatalyst alembic upgrade head
+          createuser -w -h localhost -p 5432 -U postgres ccglobal
+          createdb -w -h localhost -p 5432 -U postgres citycatalyst -O ccglobal
+          ALEMBIC_URL=postgresql://ccglobal:@localhost/ccglobal alembic upgrade head
           cp sample.env .env
 
       - name: Run tests

@@ -23,10 +23,6 @@ from utils.extraction_functions import (
     extract_Impacts,
 )
 
-# Read the JSON schema from the file
-# with open("generic_output_schema.json", "r") as schema_file:
-#     json_template = json.load(schema_file)
-
 # Load the data into a DataFrame
 df = load_datafile_into_df("files/climate_action_library_test.csv")
 

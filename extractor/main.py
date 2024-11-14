@@ -24,11 +24,11 @@ from utils.extraction_functions import (
 )
 
 # Read the JSON schema from the file
-with open("generic_output_schema.json", "r") as schema_file:
-    json_template = json.load(schema_file)
+# with open("generic_output_schema.json", "r") as schema_file:
+#     json_template = json.load(schema_file)
 
 # Load the data into a DataFrame
-df = load_datafile_into_df("files/climate_action_library_original.csv")
+df = load_datafile_into_df("files/climate_action_library_test.csv")
 
 # Prepare a list to hold all mapped data
 mapped_data = []
@@ -40,7 +40,7 @@ extraction_functions = {
     # "ActionType": extract_ActionType, -> not in the mapping because it is already extracted in the main script as first step
     "AdaptationCategory": extract_AdaptationCategory,
     "Hazard": extract_Hazard,
-    "Sector": extract_Sector,
+    # "Sector": extract_Sector,
     "Subsector": extract_Subsector,
     "PrimaryPurpose": extract_PrimaryPurpose,
     "InterventionType": extract_InterventionType,
@@ -58,7 +58,7 @@ extraction_functions = {
 }
 
 # For testing, only process x rows
-df_subset = df  # .tail(50)
+df_subset = df  # .head(2)
 
 # Incremental counter for ActionID
 action_id = 1
@@ -75,9 +75,14 @@ for index, df_row in df_subset.iterrows():
     action_type = extract_ActionType(df_row)
     mapped_row["ActionType"] = action_type
 
+    # Extract 'Sector'
+    sectors = extract_Sector(df_row, action_type)
+    mapped_row["Sector"] = sectors
+
     # iterate over extraction functions and apply them to the row
     for attribute_name, function in extraction_functions.items():
-        dict_attribute = function(df_row, action_type["value"])
+        # dict_attribute = function(df_row, action_type["value"])
+        dict_attribute = function(df_row, action_type, sectors)
         mapped_row[attribute_name] = dict_attribute
 
     mapped_data.append(mapped_row)

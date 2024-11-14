@@ -1,4 +1,3 @@
-import os
 import json
 from utils.data_loader import load_datafile_into_df
 from utils.extraction_functions import (
@@ -22,9 +21,12 @@ from utils.extraction_functions import (
     extract_KeyPerformanceIndicators,
     extract_Impacts,
 )
+from pathlib import Path
 
 # Load the data into a DataFrame
-df = load_datafile_into_df("files/climate_action_library_test.csv")
+# climate_action_library_test.csv for testing and changing values
+# climate_action_library_original.csv for original C40 list
+df = load_datafile_into_df(Path("../data/climate_action_library_test.csv"))
 
 # Prepare a list to hold all mapped data
 mapped_data = []
@@ -86,11 +88,13 @@ for index, df_row in df_subset.iterrows():
     print(f"\nRow {index} processed successfully.\n\n")
 
 
-output_dir = "./output"
-os.makedirs(output_dir, exist_ok=True)
+# Set up output directory and file path using pathlib
+output_dir = Path("./output")
+output_dir.mkdir(parents=False, exist_ok=True)
+output_file = output_dir / "output.json"
 
 # Optionally, save the mapped data to a JSON file
-with open(os.path.join(output_dir, "output.json"), "w") as f:
+with output_file.open("w") as f:
     json.dump(mapped_data, f, indent=4)
 
 print("JSON data has been written to output.json")

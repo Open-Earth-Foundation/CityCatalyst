@@ -3,7 +3,7 @@ from pathlib import Path
 
 from jsonschema import validate, ValidationError
 
-schema = json.load(open(Path("generic_action_schema.json")))
+schema = json.load(open(Path("../schema/generic_action_schema.json")))
 output = json.load(open(Path("./output/output.json")))
 
 # Validate each entry in the output JSON file

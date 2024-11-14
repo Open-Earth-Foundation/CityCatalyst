@@ -56,7 +56,7 @@ extraction_functions = {
 }
 
 # For testing, only process x rows
-df_subset = df  # .head(2)
+df_subset = df.head(2)
 
 # Incremental counter for ActionID
 action_id = 1

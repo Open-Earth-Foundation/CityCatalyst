@@ -1,6 +1,27 @@
 import pandas as pd
 import re
 from typing import Optional
+import json
+import openai
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+client = openai.OpenAI()
+
+
+def generate_response(prompt):
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.0,
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
 
 
 def extract_ActionID(row):
@@ -147,7 +168,6 @@ def extract_Sector(row, action_type) -> Optional[list]:
 
 # Applies only to mitigation actions
 def extract_Subsector(row, action_type, sectors) -> Optional[list]:
-    # TODO: adjust so it only applied to mitigation actions
     # Use 'Category 1' column
     # For now simple 1:1 mapping that maps only to the enum values
 
@@ -235,7 +255,42 @@ def extract_InterventionType(row, action_type, sectors) -> Optional[list]:
 
     if "mitigation" in action_type:
         # TODO: Part of enricher, needs to be filled with actual data
-        return None
+
+        # Get value of 'Explainer for action card'
+        explainer_card = row.get("Explainer for action card")
+
+        if pd.isnull(explainer_card) or not isinstance(explainer_card, str):
+            return None
+
+        # Context for the LLM to map content from the explainer card to one of the categories
+        categories_of_interventions = {
+            "taxes_and_fees": "Financial charges imposed to influence behaviour and reduce emissions.",
+            "incentives_and_subsidies": "Financial incentives to encourage specific behaviours or investments.",
+            "regulations_and_laws": "Rules and regulations to mandate or restrict certain activities.",
+            "programs_and_initiatives": "Projects or programs designed to achieve specific climate-related goals.",
+            "infrastructure_investments": "Investments in physical infrastructure to support mitigation efforts.",
+        }
+
+        prompt = f"""
+Your task is to categorize the intervention type of a climate action based on the provided context.
+
+The following is the discription of the climate action: {explainer_card}
+The following dictionary provides the categories of interventions and their descriptions: {json.dumps(categories_of_interventions, indent=4)}
+
+Your answer **must only** consists of a list of categories of interventions that best describe the climate action.
+For example: ["taxes_and_fees", "regulations_and_laws"] or ["programs_and_initiatives"].
+
+Please provide your answer below:
+[]
+"""
+        response_string = generate_response(prompt)
+
+        # Convert the string to a Python list
+        response_list = json.loads(response_string)
+
+        print(f"Response: {response_list}")
+
+        return response_list
     else:
         # For adaptation actions, print message and return None
         print("Adaptation action found, not applicable for 'InterventionType'")

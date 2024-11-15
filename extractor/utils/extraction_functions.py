@@ -334,11 +334,87 @@ Provide a short, precise and plausible targeted behavioral shift that the climat
         return None
 
 
-def extract_CoBenefits(row, action_type, sectors) -> Optional[list]:
+def extract_CoBenefits(row, action_type, sectors) -> Optional[dict]:
     # Use different columns like air quality, water quality, ....
 
     # TODO: Implement logic here for 'Enricher' part
-    return None
+
+    # Create result dictionary with default None values for each co-benefit
+    dict_co_benefits = {
+        "air_quality": None,
+        "water_quality": None,
+        "eco_systems": None,
+        "income_and_poverty": None,
+        "housing": None,
+        "mobility": None,
+    }
+
+    # Extract the co-benefits from the respective columns
+    air_quality = row.get("Air Quality")
+    if pd.isnull(air_quality) or not isinstance(air_quality, str):
+        air_quality_lower = None
+
+    else:
+        # Lowercase and strip whitespace for consistent processing
+        air_quality_lower = air_quality.lower().strip()
+
+    water_quality = row.get("Water Quality")
+    if pd.isnull(water_quality) or not isinstance(water_quality, str):
+        water_quality_lower = None
+    else:
+        # Lowercase and strip whitespace for consistent processing
+        water_quality_lower = water_quality.lower().strip()
+
+    eco_systems = row.get("Ecosystems ")  # Note the ' ' behinde the column name
+    if pd.isnull(eco_systems) or not isinstance(eco_systems, str):
+        eco_systems_lower = None
+    else:
+        # Lowercase and strip whitespace for consistent processing
+        eco_systems_lower = eco_systems.lower().strip()
+
+    income_and_poverty = row.get("Income and Poverty")
+    if pd.isnull(income_and_poverty) or not isinstance(income_and_poverty, str):
+        income_and_poverty_lower = None
+    else:
+        # Lowercase and strip whitespace for consistent processing
+        income_and_poverty_lower = income_and_poverty.lower().strip()
+
+    housing = row.get("Housing")
+    if pd.isnull(housing) or not isinstance(housing, str):
+        housing_lower = None
+    else:
+        # Lowercase and strip whitespace for consistent processing
+        housing_lower = housing.lower().strip()
+
+    mobility = row.get("Mobility")
+    if pd.isnull(mobility) or not isinstance(mobility, str):
+        mobility_lower = None
+    else:
+        # Lowercase and strip whitespace for consistent processing
+        mobility_lower = mobility.lower().strip()
+
+    mapping_scoring_co_benefits = {
+        "very positive": 2,
+        "somewhat positive": 1,
+        "neutral": 0,
+        "somewhat negative": -1,
+        "very negative": -2,
+    }
+
+    dict_co_benefits["air_quality"] = mapping_scoring_co_benefits.get(air_quality_lower)
+    dict_co_benefits["water_quality"] = mapping_scoring_co_benefits.get(
+        water_quality_lower
+    )
+    dict_co_benefits["eco_systems"] = mapping_scoring_co_benefits.get(eco_systems_lower)
+    dict_co_benefits["income_and_poverty"] = mapping_scoring_co_benefits.get(
+        income_and_poverty_lower
+    )
+    dict_co_benefits["housing"] = mapping_scoring_co_benefits.get(housing_lower)
+    dict_co_benefits["mobility"] = mapping_scoring_co_benefits.get(mobility_lower)
+
+    print(dict_co_benefits)
+
+    return dict_co_benefits
 
 
 def extract_EquityAndInclusionConsiderations(

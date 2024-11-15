@@ -2,40 +2,39 @@
     {
         "ActionID": "0001",
         "ActionType": [
-            "mitigation",
-            "adaptation"
+            "mitigation"
         ],
         "Sector": [
-            "stationary_energy",
-            "transportation"
+            "stationary_energy"
         ],
         "InterventionType": [
-            "regulations_and_laws"
+            "programs_and_initiatives"
         ],
         "BehavioralChangeTargeted": null,
-        "ActionName": "Building Codes",
-        "AdaptationCategory": "Stationary Energy, Transportation",
-        "Hazard": [
-            "droughts",
-            "storms"
-        ],
-        "Subsector": [
-            "all"
-        ],
+        "ActionName": "Sustainable Cooking",
+        "AdaptationCategory": null,
+        "Hazard": null,
+        "Subsector": null,
         "PrimaryPurpose": [
-            "ghg_reduction",
-            "climate_resilience"
+            "ghg_reduction"
         ],
-        "Description": "\"Building Codes and Standards\" entail the formulation and enforcement of regulations guiding the construction of environmentally responsible buildings. By implementing stringent codes, cities promote energy efficiency, reduce carbon emissions, and enhance resilience to climate change, fostering sustainable urban development.",
-        "CoBenefits": null,
+        "Description": "\"Sustainable Cooking\" initiatives encourage environmentally friendly cooking practices, including the use of energy-efficient appliances and sustainable cooking methods. This strategy promotes resource conservation and contributes to overall sustainability in food preparation.",
+        "CoBenefits": {
+            "air_quality": 0,
+            "water_quality": null,
+            "eco_systems": 0,
+            "income_and_poverty": 0,
+            "housing": 0,
+            "mobility": 0
+        },
         "EquityAndInclusionConsiderations": null,
         "GHGReductionPotential": {
             "stationary_energy": "0-19",
-            "transportation": "0-19",
+            "transportation": null,
             "waste": null
         },
         "AdaptionEffectiveness": null,
-        "CostInvestmentNeeded": "medium",
+        "CostInvestmentNeeded": "low",
         "TimelineForImplementation": "5-10 years",
         "Dependencies": null,
         "KeyPerformanceIndicators": null,

@@ -642,7 +642,8 @@ const ActivityModalBody = ({
                           textAlign="center"
                         >
                           kg/
-                          {methodology.id.includes("energy-consumption")
+                          {methodology.id.includes("energy-consumption") ||
+                          methodology.id.includes("electricity-consumption")
                             ? t("kWh")
                             : t("m3")}
                         </Text>
@@ -688,7 +689,8 @@ const ActivityModalBody = ({
                         textAlign="center"
                       >
                         kg/
-                        {methodology.id.includes("energy-consumption")
+                        {methodology.id.includes("energy-consumption") ||
+                        methodology.id.includes("electricity-consumption")
                           ? t("kWh")
                           : t("m3")}
                       </Text>
@@ -733,7 +735,8 @@ const ActivityModalBody = ({
                         textAlign="center"
                       >
                         kg/
-                        {methodology.id.includes("energy-consumption")
+                        {methodology.id.includes("energy-consumption") ||
+                        methodology.id.includes("electricity-consumption")
                           ? t("kWh")
                           : t("m3")}
                       </Text>

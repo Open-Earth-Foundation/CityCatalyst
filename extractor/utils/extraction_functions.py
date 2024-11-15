@@ -3,6 +3,8 @@ import re
 from typing import Optional
 import json
 from utils.llm_creator import generate_response
+from context.intervention_type import categories_of_interventions
+from context.behavioral_change_targeted import context_for_behavioral_change
 
 
 def extract_ActionID(row):
@@ -229,28 +231,20 @@ def extract_PrimaryPurpose(row, action_type, sectors) -> Optional[list]:
 
 
 # Applies only to mitigation actions
-def extract_InterventionType(row, action_type, sectors) -> Optional[list]:
-    # Use 'Explainer for action card' column as the intervention type
+def extract_InterventionType(row, action_type) -> Optional[list]:
+    """
+    Extracts the intervention type for a climate action.
 
-    # TODO: Define where we should get the intervention type from (e.g. excerpt from the explainer card)
+    Use 'Explainer for action card' column as the intervention type and map them based on context provided
+    """
 
     if "mitigation" in action_type:
-        # TODO: Part of enricher, needs to be filled with actual data
 
         # Get value of 'Explainer for action card'
         explainer_card = row.get("Explainer for action card")
 
         if pd.isnull(explainer_card) or not isinstance(explainer_card, str):
             return None
-
-        # Context for the LLM to map content from the explainer card to one of the categories
-        categories_of_interventions = {
-            "taxes_and_fees": "Financial charges imposed to influence behaviour and reduce emissions.",
-            "incentives_and_subsidies": "Financial incentives to encourage specific behaviours or investments.",
-            "regulations_and_laws": "Rules and regulations to mandate or restrict certain activities.",
-            "programs_and_initiatives": "Projects or programs designed to achieve specific climate-related goals.",
-            "infrastructure_investments": "Investments in physical infrastructure to support mitigation efforts.",
-        }
 
         prompt = f"""
 Your task is to categorize the intervention type of a climate action based on the provided context.
@@ -268,8 +262,6 @@ Please provide your answer below:
 
         # Convert the string to a Python list
         response_list = json.loads(response_string)
-
-        print(f"Response: {response_list}")
 
         return response_list
     else:
@@ -292,12 +284,49 @@ def extract_Description(row, action_type, sectors) -> Optional[str]:
     return description
 
 
-def extract_BehavioralChangeTargeted(row, action_type, sectors) -> Optional[str]:
-    # Use 'Explainer for action card' column as the behavioral change targeted and use LLM to fill in the gaps
+def extract_BehavioralChangeTargeted(
+    row: pd.Series, action_type: list, intervention_type: list
+) -> Optional[str]:
+    """
+    Extracts the targeted behavioral change for a climate action.
+
+    Use 'Explainer for action card' column which describes the activity together with previously extracted information about the intervention type
+    and context provided about behavioral change theory and activity shifts to use an LLM to create a plausible targeted behavioral shift.
+    """
 
     # Check action type
     if "mitigation" in action_type:
         # TODO: Implement logic here for 'Enricher' part
+
+        # Get value of 'Explainer for action card'
+        explainer_card = row.get("Explainer for action card")
+
+        if pd.isnull(explainer_card) or not isinstance(explainer_card, str):
+            return None
+
+        prompt = f"""
+Your task is to identify the targeted behavioral change in people for a climate action based on the description of the action and provided context.
+
+The following is the description of the climate action: 
+{explainer_card}
+
+The following is the list of identified intervention types of the climate action: 
+{intervention_type}
+
+The following dictionary provides the categories of interventions and their descriptions: 
+{json.dumps(categories_of_interventions, indent=4)}
+
+The following is the context for behavioral change theory and activity shifts: 
+{context_for_behavioral_change}
+
+Provide a short, precise and plausible targeted behavioral shift that the climate action aims to achieve taking all the provided information into account.
+        """
+
+        print(prompt)
+
+        # response = generate_response(prompt)
+
+        # return response
         return None
     else:
         # For adaptation actions, print message and return dict as is

@@ -45,9 +45,9 @@ def main(input_file, parse_rows=None):
         # "Sector": extract_Sector,
         "Subsector": extract_Subsector,
         "PrimaryPurpose": extract_PrimaryPurpose,
-        "InterventionType": extract_InterventionType,
+        # "InterventionType": extract_InterventionType,
         "Description": extract_Description,
-        "BehavioralChangeTargeted": extract_BehavioralChangeTargeted,
+        # "BehavioralChangeTargeted": extract_BehavioralChangeTargeted,
         "CoBenefits": extract_CoBenefits,
         "EquityAndInclusionConsiderations": extract_EquityAndInclusionConsiderations,
         "GHGReductionPotential": extract_GHGReductionPotential,
@@ -84,6 +84,16 @@ def main(input_file, parse_rows=None):
         # Extract 'Sector'
         sectors = extract_Sector(df_row, action_type)
         mapped_row["Sector"] = sectors
+
+        # Extract 'InterventionType'
+        intervention_type = extract_InterventionType(df_row, action_type)
+        mapped_row["InterventionType"] = intervention_type
+
+        # Extract 'BehavioralChangeTargeted'
+        behavioral_change_targeted = extract_BehavioralChangeTargeted(
+            df_row, action_type, intervention_type
+        )
+        mapped_row["BehavioralChangeTargeted"] = behavioral_change_targeted
 
         # iterate over extraction functions and apply them to the row
         for attribute_name, function in extraction_functions.items():

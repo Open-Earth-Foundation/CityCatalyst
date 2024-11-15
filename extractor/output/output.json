@@ -9,6 +9,10 @@
             "stationary_energy",
             "transportation"
         ],
+        "InterventionType": [
+            "regulations_and_laws"
+        ],
+        "BehavioralChangeTargeted": null,
         "ActionName": "Building Codes",
         "AdaptationCategory": "Stationary Energy, Transportation",
         "Hazard": [
@@ -22,53 +26,12 @@
             "ghg_reduction",
             "climate_resilience"
         ],
-        "InterventionType": [
-            "regulations_and_laws"
-        ],
         "Description": "\"Building Codes and Standards\" entail the formulation and enforcement of regulations guiding the construction of environmentally responsible buildings. By implementing stringent codes, cities promote energy efficiency, reduce carbon emissions, and enhance resilience to climate change, fostering sustainable urban development.",
-        "BehavioralChangeTargeted": null,
         "CoBenefits": null,
         "EquityAndInclusionConsiderations": null,
         "GHGReductionPotential": {
             "stationary_energy": "0-19",
             "transportation": "0-19",
-            "waste": null
-        },
-        "AdaptionEffectiveness": null,
-        "CostInvestmentNeeded": "medium",
-        "TimelineForImplementation": "5-10 years",
-        "Dependencies": null,
-        "KeyPerformanceIndicators": null,
-        "Impacts": null
-    },
-    {
-        "ActionID": "0002",
-        "ActionType": [
-            "mitigation"
-        ],
-        "Sector": [
-            "stationary_energy"
-        ],
-        "ActionName": "Building Codes",
-        "AdaptationCategory": null,
-        "Hazard": null,
-        "Subsector": [
-            "residential_buildings",
-            "commercial_and_institutional_buildings_and_facilities"
-        ],
-        "PrimaryPurpose": [
-            "ghg_reduction"
-        ],
-        "InterventionType": [
-            "regulations_and_laws"
-        ],
-        "Description": "\"Building Codes and Standards, Residential Buildings\" entail the formulation and enforcement of regulations guiding the construction of environmentally responsible buildings. By implementing stringent codes, cities promote energy efficiency, reduce carbon emissions, and enhance resilience to climate change, fostering sustainable urban development.",
-        "BehavioralChangeTargeted": null,
-        "CoBenefits": null,
-        "EquityAndInclusionConsiderations": null,
-        "GHGReductionPotential": {
-            "stationary_energy": "80-100",
-            "transportation": null,
             "waste": null
         },
         "AdaptionEffectiveness": null,

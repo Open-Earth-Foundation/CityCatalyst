@@ -41,27 +41,27 @@ def main(input_file, parse_rows=None):
         "ActionName": extract_ActionName,
         # "ActionType": extract_ActionType, -> not in the mapping because it is already extracted in the main script as first step
         "AdaptationCategory": extract_AdaptationCategory,
-        "Hazard": extract_Hazard,
+        # "Hazard": extract_Hazard,
         # "Sector": extract_Sector,
         "Subsector": extract_Subsector,
         "PrimaryPurpose": extract_PrimaryPurpose,
         # "InterventionType": extract_InterventionType,
-        "Description": extract_Description,
+        # "Description": extract_Description,
         # "BehavioralChangeTargeted": extract_BehavioralChangeTargeted,
         "CoBenefits": extract_CoBenefits,
         "EquityAndInclusionConsiderations": extract_EquityAndInclusionConsiderations,
         "GHGReductionPotential": extract_GHGReductionPotential,
-        "AdaptionEffectiveness": extract_AdaptionEffectiveness,
+        # "AdaptionEffectiveness": extract_AdaptionEffectiveness,
         "CostInvestmentNeeded": extract_CostInvestmentNeeded,
         "TimelineForImplementation": extract_TimelineForImplementation,
-        "Dependencies": extract_Dependencies,
+        # "Dependencies": extract_Dependencies,
         "KeyPerformanceIndicators": extract_KeyPerformanceIndicators,
         "Impacts": extract_Impacts,
     }
 
     # For testing, only process x rows
     if parse_rows:
-        df = df.head(parse_rows)
+        df = df.tail(parse_rows)
     else:
         # For production, process all rows
         pass
@@ -81,6 +81,10 @@ def main(input_file, parse_rows=None):
         action_type = extract_ActionType(df_row)
         mapped_row["ActionType"] = action_type
 
+        # Extract 'Hazard'
+        hazard = extract_Hazard(df_row, action_type)
+        mapped_row["Hazard"] = hazard
+
         # Extract 'Sector'
         sectors = extract_Sector(df_row, action_type)
         mapped_row["Sector"] = sectors
@@ -89,11 +93,25 @@ def main(input_file, parse_rows=None):
         intervention_type = extract_InterventionType(df_row, action_type)
         mapped_row["InterventionType"] = intervention_type
 
+        # Extract 'Description'
+        description = extract_Description(df_row)
+        mapped_row["Description"] = description
+
         # Extract 'BehavioralChangeTargeted'
         behavioral_change_targeted = extract_BehavioralChangeTargeted(
             df_row, action_type, intervention_type
         )
         mapped_row["BehavioralChangeTargeted"] = behavioral_change_targeted
+
+        # Extract 'AdaptationEffectiveness'
+        adaptation_effectiveness = extract_AdaptionEffectiveness(
+            action_type, description, hazard
+        )
+        mapped_row["AdaptionEffectiveness"] = adaptation_effectiveness
+
+        # Extract 'Dependencies'
+        dependencies = extract_Dependencies(description)
+        mapped_row["Dependencies"] = dependencies
 
         # iterate over extraction functions and apply them to the row
         for attribute_name, function in extraction_functions.items():

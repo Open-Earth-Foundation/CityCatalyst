@@ -2,41 +2,131 @@
     {
         "ActionID": "0001",
         "ActionType": [
+            "adaptation"
+        ],
+        "Hazard": null,
+        "Sector": null,
+        "InterventionType": null,
+        "Description": "\"Food Procurement\" strategies involve sourcing food for public institutions and services from sustainable and local producers. This initiative supports sustainable agriculture, reduces the carbon footprint of food supply chains, and promotes responsible consumption.",
+        "BehavioralChangeTargeted": null,
+        "AdaptionEffectiveness": null,
+        "Dependencies": [
+            "Availability of sustainable and local food producers",
+            "Infrastructure for local food distribution",
+            "Support from public institutions and services",
+            "Consumer awareness and demand for sustainable food",
+            "Policies and regulations promoting sustainable agriculture",
+            "Collaboration between stakeholders in the food supply chain"
+        ],
+        "ActionName": "Food Procurement",
+        "AdaptationCategory": "Government policies and programs actions",
+        "Subsector": null,
+        "PrimaryPurpose": [
+            "climate_resilience"
+        ],
+        "CoBenefits": {
+            "air_quality": 0,
+            "water_quality": 0,
+            "eco_systems": 0,
+            "income_and_poverty": 0,
+            "housing": 0,
+            "mobility": 0
+        },
+        "EquityAndInclusionConsiderations": "1. **Access to Local Producers**: Ensure that small-scale and marginalized farmers have equal opportunities to participate in food procurement contracts, avoiding favoritism towards larger, established producers.\n\n2. **Affordability**: Address potential cost barriers by providing subsidies or financial support to public institutions, ensuring that sustainable food options remain affordable for all communities, especially low-income populations.\n\n3. **Cultural Relevance**: Incorporate culturally appropriate food options in procurement strategies to reflect the diverse dietary needs and preferences of the community, promoting inclusivity.\n\n4. **Community Engagement**: Involve local communities in the decision-making process regarding food procurement to ensure their voices and needs are heard and addressed.\n\n5. **Training and Capacity Building**: Offer training programs for local producers, particularly those from underrepresented groups, to enhance their ability to meet procurement standards and compete effectively.\n\n6. **Transparency and Accountability**: Establish clear criteria and processes for food procurement that are transparent and accessible, allowing for community oversight and accountability.\n\n7. **Environmental Justice**: Prioritize sourcing from producers who practice sustainable agriculture in ways that also address historical injustices and support communities disproportionately affected by climate change.\n\n8. **Health Equity**: Ensure that the food procured is not only sustainable but also nutritious, contributing to the overall health and well-being of all community members, particularly vulnerable populations.",
+        "GHGReductionPotential": null,
+        "CostInvestmentNeeded": "low",
+        "TimelineForImplementation": "5-10 years",
+        "KeyPerformanceIndicators": null,
+        "Impacts": null
+    },
+    {
+        "ActionID": "0002",
+        "ActionType": [
             "mitigation"
         ],
+        "Hazard": null,
+        "Sector": [
+            "transportation"
+        ],
+        "InterventionType": [
+            "regulations_and_laws",
+            "programs_and_initiatives"
+        ],
+        "Description": "\"City-wide Speed Restrictions and Road Danger Measures\" include the implementation of speed limits and physical measures to enhance road safety. This program aims to reduce traffic-related hazards, promote sustainable transportation, and improve overall urban safety.",
+        "BehavioralChangeTargeted": null,
+        "AdaptionEffectiveness": null,
+        "Dependencies": [
+            "Collaboration with local government and law enforcement agencies for enforcement of speed limits",
+            "Public awareness campaigns to educate citizens about the new speed restrictions and road safety measures",
+            "Infrastructure investment for physical measures such as speed bumps, traffic calming devices, and improved signage",
+            "Data collection and analysis to assess traffic patterns and identify high-risk areas",
+            "Community engagement to gather input and support from residents and stakeholders"
+        ],
+        "ActionName": "City is implementing city-wide speed restrictions and a programme of physichal measures to tackle road danger",
+        "AdaptationCategory": null,
+        "Subsector": null,
+        "PrimaryPurpose": [
+            "ghg_reduction"
+        ],
+        "CoBenefits": {
+            "air_quality": 0,
+            "water_quality": 0,
+            "eco_systems": 0,
+            "income_and_poverty": 0,
+            "housing": 0,
+            "mobility": -1
+        },
+        "EquityAndInclusionConsiderations": "1. **Accessibility for Vulnerable Populations**: Ensure that speed restrictions and road safety measures consider the needs of vulnerable groups, including children, the elderly, and individuals with disabilities, by providing safe crossings and accessible pathways.\n\n2. **Community Engagement**: Involve diverse community members in the planning process to gather input and address specific concerns of marginalized groups who may be disproportionately affected by traffic hazards.\n\n3. **Equitable Distribution of Resources**: Allocate resources for road safety measures in underserved neighborhoods that experience higher rates of traffic incidents, ensuring that all communities benefit from improved safety.\n\n4. **Public Awareness Campaigns**: Develop targeted educational campaigns to inform all community members, particularly those in low-income areas, about the new speed limits and safety measures to promote compliance and awareness.\n\n5. **Monitoring and Evaluation**: Implement a system to monitor the impact of speed restrictions and road safety measures on different demographic groups to ensure that the benefits are equitably distributed and to make adjustments as needed.\n\n6. **Integration with Public Transport**: Ensure that speed restrictions and road safety measures complement public transportation options, making it easier for low-income individuals to access jobs and services without relying on personal vehicles.\n\n7. **Cultural Sensitivity**: Recognize and respect cultural differences in transportation habits and community dynamics, tailoring communication and engagement strategies to be inclusive of all cultural backgrounds.",
+        "GHGReductionPotential": null,
+        "CostInvestmentNeeded": "low",
+        "TimelineForImplementation": null,
+        "KeyPerformanceIndicators": null,
+        "Impacts": null
+    },
+    {
+        "ActionID": "0003",
+        "ActionType": [
+            "mitigation"
+        ],
+        "Hazard": null,
         "Sector": [
             "stationary_energy"
         ],
         "InterventionType": [
             "programs_and_initiatives"
         ],
+        "Description": "\"Sustainable Cooking\" initiatives encourage environmentally friendly cooking practices, including the use of energy-efficient appliances and sustainable cooking methods. This strategy promotes resource conservation and contributes to overall sustainability in food preparation.",
         "BehavioralChangeTargeted": null,
+        "AdaptionEffectiveness": null,
+        "Dependencies": [
+            "Availability of energy-efficient appliances",
+            "Access to information on sustainable cooking methods",
+            "Consumer awareness and education on environmental impacts of cooking",
+            "Support from local governments or organizations for sustainable initiatives",
+            "Availability of resources for training and workshops on sustainable cooking practices"
+        ],
         "ActionName": "Sustainable Cooking",
         "AdaptationCategory": null,
-        "Hazard": null,
         "Subsector": null,
         "PrimaryPurpose": [
             "ghg_reduction"
         ],
-        "Description": "\"Sustainable Cooking\" initiatives encourage environmentally friendly cooking practices, including the use of energy-efficient appliances and sustainable cooking methods. This strategy promotes resource conservation and contributes to overall sustainability in food preparation.",
         "CoBenefits": {
             "air_quality": 0,
-            "water_quality": null,
+            "water_quality": 0,
             "eco_systems": 0,
             "income_and_poverty": 0,
             "housing": 0,
             "mobility": 0
         },
-        "EquityAndInclusionConsiderations": null,
+        "EquityAndInclusionConsiderations": "1. **Access to Resources**: Ensure that low-income households have access to energy-efficient appliances and sustainable cooking tools, possibly through subsidies or community programs.\n\n2. **Cultural Relevance**: Incorporate diverse cooking practices and traditional methods from various cultures to ensure that initiatives resonate with all community members.\n\n3. **Education and Training**: Provide accessible education and training programs on sustainable cooking practices, targeting marginalized communities to empower them with knowledge and skills.\n\n4. **Community Engagement**: Involve community members in the planning and implementation of initiatives to ensure their needs and preferences are considered.\n\n5. **Language Accessibility**: Offer materials and workshops in multiple languages to accommodate non-English speakers and ensure inclusivity.\n\n6. **Health Considerations**: Address potential health disparities by promoting sustainable cooking methods that also improve nutrition and food safety for all community members.\n\n7. **Feedback Mechanisms**: Establish channels for ongoing feedback from diverse community members to continuously improve the initiatives and address any inequities that arise. \n\n8. **Partnerships with Local Organizations**: Collaborate with local organizations that serve underrepresented communities to enhance outreach and effectiveness of the initiatives.",
         "GHGReductionPotential": {
             "stationary_energy": "0-19",
             "transportation": null,
             "waste": null
         },
-        "AdaptionEffectiveness": null,
         "CostInvestmentNeeded": "low",
         "TimelineForImplementation": "5-10 years",
-        "Dependencies": null,
         "KeyPerformanceIndicators": null,
         "Impacts": null
     }

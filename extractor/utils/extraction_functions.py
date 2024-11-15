@@ -63,7 +63,7 @@ def extract_AdaptationCategory(row, action_type, sectors) -> Optional[str]:
 
 
 # Applies only to adaptation actions
-def extract_Hazard(row, action_type, sectors) -> Optional[list]:
+def extract_Hazard(row: pd.Series, action_type: list) -> Optional[list]:
     # Only proceed if the action type is adaptation-related
     if "adaptation" in action_type:
 
@@ -270,7 +270,7 @@ Please provide your answer below:
         return None
 
 
-def extract_Description(row, action_type, sectors) -> Optional[str]:
+def extract_Description(row: pd.Series) -> Optional[str]:
     # Use 'Explainer for action card' column as the intervention type
     # Simple 1:1 mapping
 
@@ -319,8 +319,8 @@ The following dictionary provides the categories of interventions and their desc
 The following is the context for behavioral change theory and activity shifts: 
 {context_for_behavioral_change}
 
-Provide a short, precise and plausible targeted behavioral shift that the climate action aims to achieve taking all the provided information into account.
-        """
+Provide a short and precise targeted behavioral shift that the climate action aims to achieve taking all the provided information into account.
+"""
 
         print(prompt)
 
@@ -336,8 +336,6 @@ Provide a short, precise and plausible targeted behavioral shift that the climat
 
 def extract_CoBenefits(row, action_type, sectors) -> Optional[dict]:
     # Use different columns like air quality, water quality, ....
-
-    # TODO: Implement logic here for 'Enricher' part
 
     # Create result dictionary with default None values for each co-benefit
     dict_co_benefits = {
@@ -412,20 +410,41 @@ def extract_CoBenefits(row, action_type, sectors) -> Optional[dict]:
     dict_co_benefits["housing"] = mapping_scoring_co_benefits.get(housing_lower)
     dict_co_benefits["mobility"] = mapping_scoring_co_benefits.get(mobility_lower)
 
-    print(dict_co_benefits)
-
     return dict_co_benefits
 
 
 def extract_EquityAndInclusionConsiderations(
-    row, action_type, sectors
+    row: pd.Series, action_type, sectors
 ) -> Optional[str]:
-    # Use 'Explainer for action card' column as the equity and inclusion consideration and use LLM to fill in the gaps
+    """
+    Extracts the equity and inclusion considerations for a climate action.
 
-    # TODO: Implement logic here for 'Enricher' part
+    It uses the 'Explainer for action card' column as the equity and inclusion consideration and uses LLM to fill in the gaps.
+    """
 
-    # Placeholder logic: currently returns None for 'value'
-    return None
+    # Extract the value from the 'Explainer for action card' column
+    explainer_card = row.get("Explainer for action card")
+
+    # Check if the 'Explainer for action card' column is null
+    if pd.isnull(explainer_card) or not isinstance(explainer_card, str):
+        return None
+
+    # TODO: Add more context to the prompt
+    prompt = f"""
+Your task is to identify the equity and inclusion considerations for a climate action based on the description of the action.
+
+The following is the description of the climate action: 
+{explainer_card}
+
+The following is further context for equity and inclusion considerations:
+{""}
+
+Provide short and precise considerations for equity and inclusion of this climate action taking all the provided information into account.
+"""
+
+    response = generate_response(prompt)
+
+    return response
 
 
 # Applies only to mitigation actions
@@ -472,13 +491,46 @@ def extract_GHGReductionPotential(row, action_type, sectors) -> dict:
 
 
 # Applies only to adaptation actions
-def extract_AdaptionEffectiveness(row, action_type, sectors) -> Optional[str]:
-    # TODO: How to extract that? Let the LLM make a suggestion
+def extract_AdaptionEffectiveness(
+    action_type: list, description: str, hazard: list
+) -> Optional[str]:
+    """
+    Extracts the effectiveness of an adaptation action.
+
+    It takes in as input the 'Explainer for action card' column and the hazard from 'Climate hazards adressed' column.
+    It then uses an LLM to generate a plausible answer.
+    """
 
     # Only proceed if the action type is adaptation-related
     if "adaptation" in action_type:
-        # Placeholder logic, currently returning None for 'value'
-        return None
+
+        if pd.isnull(description) or not isinstance(description, str):
+            return None
+
+        if pd.isnull(hazard) or not isinstance(hazard, list):
+            return None
+
+        prompt = f"""
+Your task is to identify the effectiveness of an adaptation action based on the provided context.
+
+The following is the description of the climate action:
+{description}
+
+The following is the climate hazard addressed by the action:
+{hazard}
+
+The possible answer is **one** of the following:
+"high", "medium", "low"
+
+For example: "high" or "medium".
+
+Please provide your answer **without** double or single quotes below:
+"""
+        response = generate_response(prompt)
+
+        print(response)
+
+        return response
     else:
         # For mitigation actions, adaptation effectiveness is not applicable
         print("Mitigation action found, not applicable for 'AdaptationEffectiveness'")
@@ -528,12 +580,31 @@ def extract_TimelineForImplementation(row, action_type, sectors) -> Optional[str
     return timeline_value_lower
 
 
-def extract_Dependencies(row, action_type, sectors) -> Optional[list]:
+def extract_Dependencies(description) -> Optional[list]:
     # TODO: How to extract that?
 
-    # TODO: Implement logic here for extracting dependencies
+    if pd.isnull(description) or not isinstance(description, str):
+        return None
 
-    return None
+    prompt = f"""
+Your task is to identify the dependencies of a climate action based on the provided context.
+
+The following is the description of the climate action:
+{description}
+
+Your answer **must only** consists of a list of dependencies that the climate action relies on.
+For example: ["This is a brief description of dependency 1", "This is a brief description of dependency 2"] or ["This is a brief description of the only identified dependency"].
+
+Please provide your answer below:
+[]
+"""
+
+    response_string = generate_response(prompt)
+
+    # Convert the string to a Python list
+    response_list = json.loads(response_string)
+
+    return response_list
 
 
 def extract_KeyPerformanceIndicators(row, action_type, sectors) -> Optional[list]:

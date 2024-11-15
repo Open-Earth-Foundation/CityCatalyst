@@ -17,12 +17,12 @@ import {
   SuggestedActivity,
 } from "@/util/form-schema";
 import type {
-  ActivityValueAttributes,
   ActivityValue,
+  ActivityValueAttributes,
 } from "@/models/ActivityValue";
 import type {
-  InventoryValueAttributes,
   InventoryValue,
+  InventoryValueAttributes,
 } from "@/models/InventoryValue";
 import EmissionDataSection from "@/components/Tabs/Activity/emission-data-section";
 import SelectMethodology from "@/components/Tabs/Activity/select-methodology";
@@ -54,6 +54,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
   subsectorId,
   inventoryValues,
 }) => {
+  console.log("ActivityTab", referenceNumber);
+
   let totalEmissions = 0;
 
   activityData?.forEach((activity: any) => {
@@ -71,7 +73,6 @@ const ActivityTab: FC<ActivityTabProps> = ({
   // extract the methodology used from the filtered scope
 
   const [methodology, setMethodology] = useState<Methodology | DirectMeasure>();
-
   const getFilteredActivityValues = useMemo(() => {
     let methodologyId: string | null | undefined = undefined;
     const filteredValues = activityData?.filter((activity) => {
@@ -149,21 +150,22 @@ const ActivityTab: FC<ActivityTabProps> = ({
     );
   }, [inventoryValues, methodology, referenceNumber]);
 
-  const getActivityValuesByMethodology = (
-    activityValues: ActivityValueAttributes[] | undefined,
-  ) => {
-    const isDirectMeasure = methodology?.id.includes("direct-measure");
+  // this is not needed because an inventoryValue can only have one methodology
+  // const getActivityValuesByMethodology = (
+  //   activityValues: ActivityValueAttributes[] | undefined,
+  // ) => {
+  //   console.log("inner activity values by methodology", activityValues);
+  //   const isDirectMeasure = methodology?.id.includes("direct-measure");
+  //
+  //   return activityValues?.filter((activity) => {
+  //     const isActivityDirectMeasure =
+  //       (activity as unknown as ActivityValue).inventoryValue
+  //         .inputMethodology === "direct-measure";
+  //     isDirectMeasure ? isActivityDirectMeasure : !isActivityDirectMeasure;
+  //   });
+  // };
 
-    return activityValues?.filter((activity) => {
-      const isActivityDirectMeasure =
-        (activity as unknown as ActivityValue).inventoryValue
-          .inputMethodology === "direct-measure";
-      isDirectMeasure ? isActivityDirectMeasure : !isActivityDirectMeasure;
-    });
-  };
-
-  const activityValues =
-    getActivityValuesByMethodology(getFilteredActivityValues) || [];
+  const activityValues = getFilteredActivityValues;
 
   const getSuggestedActivities = (): SuggestedActivity[] => {
     if (!selectedMethodology) return [];
@@ -228,9 +230,11 @@ const ActivityTab: FC<ActivityTabProps> = ({
     }
   }, [inventoryValue]);
 
+  console.log("ActivityTab", referenceNumber, activityValues, activityData);
+
   return (
     <>
-      <TabPanel p="0" pt="48px">
+      <TabPanel key={referenceNumber} p="0" pt="48px">
         <Box
           display="flex"
           alignItems="center"

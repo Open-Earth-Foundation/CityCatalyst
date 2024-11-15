@@ -116,14 +116,48 @@
             "generated": true
         },
         "CoBenefits": {
-            "type": ["array", "null"],
-            "items": {
-                "type": "string",
-                "enum": ["air_quality", "water_quality", "habitat", "cost_of_living", "housing", "mobility", "stakeholder_engagement"]
+            "type": "object",
+            "properties": {
+                "air_quality": {
+                    "oneOf": [
+                        { "type": "number", "enum": [-2, -1, 0, 1, 2] },
+                        { "type": "null" }
+                    ]
+                },
+                "water_quality": {
+                    "oneOf": [
+                        { "type": "number", "enum": [-2, -1, 0, 1, 2] },
+                        { "type": "null" }
+                    ]
+                },
+                "habitat": {
+                    "oneOf": [
+                        { "type": "number", "enum": [-2, -1, 0, 1, 2] },
+                        { "type": "null" }
+                    ]
+                },
+                "cost_of_living": {
+                    "oneOf": [
+                        { "type": "number", "enum": [-2, -1, 0, 1, 2] },
+                        { "type": "null" }
+                    ]
+                },
+                "housing": {
+                    "oneOf": [
+                        { "type": "number", "enum": [-2, -1, 0, 1, 2] },
+                        { "type": "null" }
+                    ]
+                },
+                "mobility": {
+                    "oneOf": [
+                        { "type": "number", "enum": [-2, -1, 0, 1, 2] },
+                        { "type": "null" }
+                    ]
+                }
             },
             "description": "Additional benefits beyond the primary objective",
             "appliesTo": ["mitigation", "adaptation"],
-            "generated": true
+            "generated": false
         },
         "EquityAndInclusionConsiderations": {
             "type": ["string", "null"],

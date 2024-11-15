@@ -2,26 +2,7 @@ import pandas as pd
 import re
 from typing import Optional
 import json
-import openai
-from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
-
-client = openai.OpenAI()
-
-
-def generate_response(prompt):
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.0,
-        )
-        return response.choices[0].message.content
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
+from utils.llm_creator import generate_response
 
 
 def extract_ActionID(row):

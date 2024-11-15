@@ -17,6 +17,7 @@ Attribute Types
    - Subsector: The subsector the mitigation action is aligned with
    - PrimaryPurpose: The main goal of the action, e.g., GHG Reduction, Climate Resilience
    - Description: Detailed description of the action
+   - CoBenefits: Additional benefits beyond the primary objective
    - GHGReductionPotential: Potential for GHG reduction in specific sectors
    - CostInvestmentNeeded: The financial viability of the action
    - TimelineForImplementation: Estimated time required to fully implement the action
@@ -29,7 +30,6 @@ Attribute Types
    - ActionID: Unique identifier for each action
    - InterventionType: Specifies the intervention category enabling the activity shift for mitigation actions
    - BehaviouralChangeTargeted: Describes the behavioral change encouraged by the intervention
-   - CoBenefits: Additional benefits beyond the primary objective
    - EquityAndInclusionConsiderations: How the action promotes equity and inclusion, focusing on vulnerable or underserved communities
    - AdaptationEffectiveness: The effectiveness of the adaptation action to climate risks
    - Dependencies: Dependencies or prerequisites for the action to succeed

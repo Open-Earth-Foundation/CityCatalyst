@@ -61,7 +61,7 @@ def main(input_file, parse_rows=None):
 
     # For testing, only process x rows
     if parse_rows:
-        df = df.head(int(parse_rows))
+        df = df.head(parse_rows)
     else:
         # For production, process all rows
         pass
@@ -114,11 +114,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--input-file",
         required=True,
+        type=str,
         help="Name of the input CSV file located in '../data/'",
     )
     parser.add_argument(
         "--parse-rows",
         required=False,
+        type=int,
         help="Number of rows to parse for testing purposes. If this argument is set, only the first x rows will be processed.",
     )
 

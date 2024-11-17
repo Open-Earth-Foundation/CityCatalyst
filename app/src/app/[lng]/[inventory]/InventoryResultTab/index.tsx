@@ -43,10 +43,12 @@ function SectorTabs({
   t,
   inventory,
   lng,
+  isPublic,
 }: {
   t: TFunction;
   inventory: InventoryResponse;
   lng: string;
+  isPublic: boolean;
 }) {
   const { t: tData } = useTranslation(lng, "data");
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -161,6 +163,7 @@ function SectorTabs({
                       inventoryId={inventory.inventoryId}
                       width={"1042px"}
                       height={"592px"}
+                      isPublic={isPublic}
                     />
                   )}
                   {shouldShowTableByActivity && (
@@ -193,10 +196,12 @@ function EmissionsBreakdown({
   t,
   inventory,
   lng,
+  isPublic,
 }: {
   t: TFunction;
   inventory: InventoryResponse;
   lng: string;
+  isPublic: boolean;
 }) {
   return (
     <>
@@ -216,7 +221,7 @@ function EmissionsBreakdown({
       >
         {t("view-total-emissions-data-by-GPC-required-sectors")}
       </Text>
-      <SectorTabs t={t} inventory={inventory} lng={lng} />
+      <SectorTabs t={t} inventory={inventory} lng={lng} isPublic={isPublic} />
     </>
   );
 }
@@ -236,7 +241,7 @@ export default function InventoryResultTab({
   isInventoryProgressLoading?: boolean;
   inventoryProgress?: InventoryProgressResponse;
   population?: PopulationAttributes;
-  isPublic?: boolean;
+  isPublic: boolean;
 }) {
   const { t } = useTranslation(lng, "dashboard");
   return (
@@ -271,9 +276,18 @@ export default function InventoryResultTab({
               inventory={inventory}
               population={population}
             />
-            <TopEmissionsWidget t={t} inventory={inventory} />
+            <TopEmissionsWidget
+              t={t}
+              inventory={inventory}
+              isPublic={isPublic}
+            />
           </HStack>
-          <EmissionsBreakdown t={t} inventory={inventory} lng={lng} />
+          <EmissionsBreakdown
+            t={t}
+            inventory={inventory}
+            lng={lng}
+            isPublic={isPublic}
+          />
         </Box>
       )}
     </>

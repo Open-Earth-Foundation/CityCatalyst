@@ -11,6 +11,7 @@ export function ActionCards(props: {
   inventoryId: string | null;
   t: TFunction;
   city?: CityAttributes;
+  lng: string;
   inventory?: InventoryAttributes;
 }) {
   return (
@@ -61,6 +62,7 @@ export function ActionCards(props: {
       </NextLink>
       <Box>
         <DownloadButton
+          lng={props.lng}
           t={props.t}
           inventoryId={props.inventoryId!}
           city={props.city}

@@ -138,6 +138,7 @@ export default function HomePage({
                 <ActionCards
                   inventoryId={inventoryId}
                   t={t}
+                  lng={lng}
                   city={city}
                   inventory={inventory}
                 />

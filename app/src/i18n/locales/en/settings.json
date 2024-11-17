@@ -52,7 +52,7 @@
   "delete-inventory": "Delete Inventory",
   "delete-inventory-prompt": "Are you sure you want to <2>permanently delete</2> this city's inventory?",
   "enter-password-info": "Enter your password to confirm the deletion of the cities information.",
-  "user-details-updated": "User details updatedf",
+  "user-details-updated": "User details updated",
   "something-went-wrong": "Something went wrong",
   "user-deleted-from-city": "User(s) details deleted from city",
   "email-address": "Email",

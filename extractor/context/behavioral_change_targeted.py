@@ -1,28 +1,43 @@
-context_for_behavioral_change = """**Interventions:**
-Interventions represent decisions made at all levels of government — local, regional, and national — such as laws passed, investments decided upon, and strategies agreed upon. 
-They are foundational directives that include measures like establishing 30 km/h zones, implementing all-weather cycle parking, installing dynamic traffic lights, imposing fuel taxes, and increasing peak-hour charges. 
-Interventions set the stage for changes in the local environment that can drive the desired activity shifts.
-These interventions influence attributes, which are measurable characteristics of the city or system that drive behaviour change.
+context_for_behavioral_change = """# Behavioral Change and Climate Action: 
 
-**Attributes:** 
-The attributes are tangible, observable outcomes of interventions. 
-They include measurable elements such as traffic safety, cycle parking availability, average cycling speed, fuel prices, and road tolls. 
-These characteristics reflect the implementation of interventions.
+Changing how people behave is essential for effective climate action. This context explains the importance of behavioral change, drawing from the Transition Element Framework (TEF), which provides a model for understanding and implementing climate mitigation strategies.
 
-A behaviour change occurs when a person is presented with an alternative option, so attributes can either encourage or discourage specific behaviours. 
-If an alternative is perceived as safer, simpler, more affordable, and so on, than the status quo, it becomes more appealing. 
-An example of an encouraging attribute would be reducing the cost of public transportation to be less than purchasing fuel for a car trip of the same distance. 
-On the other side, a discouraging attribute could be increasing the cost of public parking spaces, to make travelling by car more inconvenient.
+## The Goal
+To reduce greenhouse gas emissions (GHGs - gases that trap heat in the atmosphere, contributing to climate change), we need to shift from activities that produce a lot of these gases to activities that produce fewer or no emissions. This shift requires changes in how individuals and groups behave.
 
-**Behavioural Changes**: 
-Behavioural changes are the changes in practices by the population (or parts of the population) whose behaviour is influenced by the perceptions formed from the attributes.
-How the city's population perceives these attributes, which can encourage or discourage different behaviours, varyies across different demographics. 
-It includes aspects such as safety, convenience, status, health, and affordability. 
+## Connecting Actions to Outcomes
+The TEF uses a model called "Outcome Logic" to explain how actions taken by governments and organizations ultimately lead to the desired results. Behavioral change is a vital step in this process:
 
-### Comment: From here on I am getting a bit confused about behvarioral change and activity shift.
-### The notion page keeps talking about activity shift however we want to extract behavioral change. To me it seems almost like the same thing - not sure
-# The list of perceptions presented by the taxonomy is based on multiple theories of behaviour change and useful patterns of human perceptions. 
-# It is intended to serve as examples rather than to be prescriptive and these examples cannot be considered mutually exclusive and collectively exhaustive (MECE) in practice as it is not possible for a list of this nature to be comprehensive or exhaustive.
+### Interventions
+Governments and organizations put interventions into place. Interventions are things like new laws or policies, programs to encourage certain behaviors, or investments in new infrastructure.
 
-...
+- **Examples:** A law that requires new buildings to be energy-efficient, a program that offers discounts on electric vehicles, or building new public transportation lines.
+
+### Attributes
+These interventions result in changes to measurable "attributes" of the environment.
+
+- **Examples:** The number of electric vehicle charging stations available, the price of gasoline, how safe bike lanes are, or the amount of green space in a city.
+
+### Perceptions
+People's perceptions of these attributes influence how they feel about different choices. For example, if people feel that biking is safe and convenient, they are more likely to bike. Perceptions are influenced by things like:
+
+- **Safety:** Is it safe to walk or bike in my neighborhood?
+- **Convenience:** Is it easy to get where I need to go using public transportation?
+- **Status:** Will driving an electric car make me look good?
+- **Health:** Will taking the stairs instead of the elevator improve my health?
+- **Affordability:** Can I afford to buy an electric car or solar panels for my home?
+
+### Behavioral Changes
+When perceptions change, people start to behave differently. They might choose to walk or bike more, buy energy-efficient appliances, eat less meat, or support policies that address climate change.
+
+### Activity Shifts
+If enough people change their behavior, this leads to "Activity Shifts" - large-scale changes in how we do things.
+
+- **Examples:** A city sees a significant increase in the number of people biking to work, or a country reduces its overall reliance on coal for electricity.
+
+## Measuring Change
+It's hard to perfectly predict how each person will behave. However, we can measure whether or not these changes are happening. By tracking things like how many people are cycling or how much energy a city is using, we can see if interventions are leading to the desired shifts in activities.
+
+## The Importance of Context
+It's crucial to remember that what works in one place might not work in another. Factors like culture, social norms, and economic conditions can all influence how people perceive things and how they behave. Understanding the specific people you are trying to reach and their needs is key to designing interventions that will successfully encourage positive change.
 """

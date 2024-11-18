@@ -140,7 +140,6 @@ function SubSectorPage({
       );
   };
   const scopes = getFilteredSubsectorScopes();
-  console.log(scopes);
 
   const MotionTabList = motion(TabList);
 

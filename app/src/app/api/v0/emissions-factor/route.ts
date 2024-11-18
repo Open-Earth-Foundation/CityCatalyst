@@ -79,8 +79,6 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
         });
       }
       andCondition.push(clause);
-
-      console.log(clause, "the clause");
     }
 
     whereClause = {
@@ -102,8 +100,6 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
     if (methodologyId.includes("modeled-data"))
       whereClause.methodologyName = "modeled-data";
   }
-
-  console.log(whereClause, "this is it");
 
   const emissionsFactors = await db.models.EmissionsFactor.findAll({
     where: whereClause,

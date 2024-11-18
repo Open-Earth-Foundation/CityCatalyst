@@ -150,21 +150,6 @@ const ActivityTab: FC<ActivityTabProps> = ({
     );
   }, [inventoryValues, methodology, referenceNumber]);
 
-  // this is not needed because an inventoryValue can only have one methodology
-  // const getActivityValuesByMethodology = (
-  //   activityValues: ActivityValueAttributes[] | undefined,
-  // ) => {
-  //   console.log("inner activity values by methodology", activityValues);
-  //   const isDirectMeasure = methodology?.id.includes("direct-measure");
-  //
-  //   return activityValues?.filter((activity) => {
-  //     const isActivityDirectMeasure =
-  //       (activity as unknown as ActivityValue).inventoryValue
-  //         .inputMethodology === "direct-measure";
-  //     isDirectMeasure ? isActivityDirectMeasure : !isActivityDirectMeasure;
-  //   });
-  // };
-
   const activityValues = getFilteredActivityValues;
 
   const getSuggestedActivities = (): SuggestedActivity[] => {

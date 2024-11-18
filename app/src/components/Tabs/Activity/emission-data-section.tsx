@@ -70,8 +70,6 @@ const EmissionDataSection = ({
     activityValues.length > 0,
   );
 
-  console.log("EmissionDataSection -> totalEmissions", activityValues);
-
   const {
     isOpen: isAddActivityModalOpen,
     onOpen: onAddActivityModalOpen,

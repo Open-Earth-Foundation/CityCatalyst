@@ -48,31 +48,6 @@ function FormattedNumberInput({
     name,
   });
 
-  // useEffect(() => {
-  //   console.log("value", value, setError, "ne");
-  //   const minValue = min; // Define your minimum value
-  //   const maxValue = max; // Define your maximum value
-  //   clearErrors?.(`activity.ppp`);
-  //   if (value === "" || isNaN(value)) {
-  //     console.log("got to error 1", name);
-  //     setError?.(
-  //       `activity.${id}`,
-  //       {
-  //         message: t("value-required"),
-  //       },
-  //       { shouldFocus: true },
-  //     );
-  //   } else if (minValue && value < minValue) {
-  //     setError?.(`activity.${id}`, {
-  //       message: t("value-too-low", { min }),
-  //     });
-  //   } else if (maxValue && value > maxValue) {
-  //     setError?.(`activity.${id}`, {
-  //       message: t("value-too-high", { max }),
-  //     });
-  //   }
-  // }, [max, min, name, setError, t, value]);
-
   // Format the number according to the locale
   const format = (nval: number | string) => {
     let val = parseFloat(nval as string);

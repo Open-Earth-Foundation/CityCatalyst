@@ -23,7 +23,7 @@ import {
 } from "@chakra-ui/react";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 import { MdOutlineHomeWork } from "react-icons/md";
 import {
   AnimatePresence,
@@ -37,7 +37,12 @@ import Link from "next/link";
 import type { InventoryValueAttributes } from "@/models/InventoryValue";
 import { getScopesForInventoryAndSector, SECTORS } from "@/util/constants";
 
-const MotionBox = motion(Box);
+const MotionBox = motion(
+  // the display name is added below, but the linter isn't picking it up
+  // eslint-disable-next-line react/display-name
+  forwardRef<HTMLDivElement, any>((props, ref) => <Box ref={ref} {...props} />),
+);
+MotionBox.displayName = "MotionBox";
 
 const kebab = (str: string | undefined): string =>
   str
@@ -141,7 +146,14 @@ function SubSectorPage({
   };
   const scopes = getFilteredSubsectorScopes();
 
-  const MotionTabList = motion(TabList);
+  const MotionTabList = motion(
+    // the display name is added below, but the linter isn't picking it up
+    // eslint-disable-next-line react/display-name
+    forwardRef<HTMLDivElement, any>((props, ref) => (
+      <TabList ref={ref} {...props} />
+    )),
+  );
+  MotionTabList.displayName = "MotionTabList";
 
   const [isLoading, setIsLoading] = useState(false);
 

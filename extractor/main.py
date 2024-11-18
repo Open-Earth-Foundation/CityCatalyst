@@ -36,30 +36,6 @@ def main(input_file, parse_rows=None):
     # Prepare a list to hold all mapped data
     mapped_data = []
 
-    # Define a list of extraction functions and corresponding JSON fields
-    extraction_functions = {
-        # "ActionID": extract_ActionID, -> not in the mapping because it is already set in the main script as incremental index
-        "ActionName": extract_ActionName,
-        # "ActionType": extract_ActionType, -> not in the mapping because it is already extracted in the main script as first step
-        "AdaptationCategory": extract_AdaptationCategory,
-        # "Hazard": extract_Hazard,
-        # "Sector": extract_Sector,
-        "Subsector": extract_Subsector,
-        "PrimaryPurpose": extract_PrimaryPurpose,
-        # "InterventionType": extract_InterventionType,
-        # "Description": extract_Description,
-        # "BehavioralChangeTargeted": extract_BehavioralChangeTargeted,
-        "CoBenefits": extract_CoBenefits,
-        "EquityAndInclusionConsiderations": extract_EquityAndInclusionConsiderations,
-        "GHGReductionPotential": extract_GHGReductionPotential,
-        # "AdaptionEffectiveness": extract_AdaptionEffectiveness,
-        "CostInvestmentNeeded": extract_CostInvestmentNeeded,
-        "TimelineForImplementation": extract_TimelineForImplementation,
-        # "Dependencies": extract_Dependencies,
-        "KeyPerformanceIndicators": extract_KeyPerformanceIndicators,
-        "Impacts": extract_Impacts,
-    }
-
     # For testing, only process x rows
     if parse_rows:
         df = df.tail(parse_rows)
@@ -97,17 +73,33 @@ def main(input_file, parse_rows=None):
         # Assign an incremental value to ActionID
         mapped_row["ActionID"] = f"{action_id:04d}"
 
+        # Extract 'ActionName'
+        action_name = extract_ActionName(df_row)
+        mapped_row["ActionName"] = action_name
+
         # Extract 'ActionType' first
         action_type = extract_ActionType(df_row)
         mapped_row["ActionType"] = action_type
+
+        # Extract 'AdaptationCategory'
+        adaptation_category = extract_AdaptationCategory(df_row, action_type)
+        mapped_row["AdaptationCategory"] = adaptation_category
 
         # Extract 'Hazard'
         hazard = extract_Hazard(df_row, action_type)
         mapped_row["Hazard"] = hazard
 
         # Extract 'Sector'
-        sectors = extract_Sector(df_row, action_type)
+        sectors = extract_Sector(df_row)
         mapped_row["Sector"] = sectors
+
+        # Extract 'Subsector'
+        subsector = extract_Subsector(df_row, action_type)
+        mapped_row["Subsector"] = subsector
+
+        # Extract 'PrimaryPurpose'
+        primary_purpose = extract_PrimaryPurpose(action_type)
+        mapped_row["PrimaryPurpose"] = primary_purpose
 
         # Extract 'InterventionType'
         intervention_type = extract_InterventionType(df_row, action_type)
@@ -123,21 +115,49 @@ def main(input_file, parse_rows=None):
         )
         mapped_row["BehavioralChangeTargeted"] = behavioral_change_targeted
 
+        # Extract 'CoBenefits'
+        co_benefits = extract_CoBenefits(df_row)
+        mapped_row["CoBenefits"] = co_benefits
+
+        # Extract 'EquityAndInclusionConsiderations'
+        equity_and_inclusion_considerations = extract_EquityAndInclusionConsiderations(
+            df_row
+        )
+        mapped_row["EquityAndInclusionConsiderations"] = (
+            equity_and_inclusion_considerations
+        )
+
+        # Extract 'GHGReductionPotential'
+        ghg_reduction_potential = extract_GHGReductionPotential(
+            df_row, action_type, sectors
+        )
+        mapped_row["GHGReductionPotential"] = ghg_reduction_potential
+
         # Extract 'AdaptationEffectiveness'
         adaptation_effectiveness = extract_AdaptionEffectiveness(
             action_type, description, hazard
         )
         mapped_row["AdaptionEffectiveness"] = adaptation_effectiveness
 
+        # Extract 'CostInvestmentNeeded'
+        cost_investment_needed = extract_CostInvestmentNeeded(df_row)
+        mapped_row["CostInvestmentNeeded"] = cost_investment_needed
+
+        # Extract 'TimelineForImplementation'
+        timeline_for_implementation = extract_TimelineForImplementation(df_row)
+        mapped_row["TimelineForImplementation"] = timeline_for_implementation
+
         # Extract 'Dependencies'
         dependencies = extract_Dependencies(description)
         mapped_row["Dependencies"] = dependencies
 
-        # iterate over extraction functions and apply them to the row
-        for attribute_name, function in extraction_functions.items():
-            # dict_attribute = function(df_row, action_type["value"])
-            dict_attribute = function(df_row, action_type, sectors)
-            mapped_row[attribute_name] = dict_attribute
+        # Extract 'KeyPerformanceIndicators'
+        key_performance_indicators = extract_KeyPerformanceIndicators(df_row)
+        mapped_row["KeyPerformanceIndicators"] = key_performance_indicators
+
+        # Extract 'Impacts'
+        impacts = extract_Impacts(df_row)
+        mapped_row["Impacts"] = impacts
 
         mapped_data.append(mapped_row)
         action_id += 1

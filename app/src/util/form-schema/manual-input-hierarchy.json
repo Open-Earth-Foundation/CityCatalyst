@@ -2043,7 +2043,6 @@
               },
               {
                 "id": "on-road-transport-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-passenger-vehicles",
                   "vehicle-type-commercial-vehicles",
@@ -2136,7 +2135,6 @@
             "extra-fields": [
               {
                 "id": "on-road-transport-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-passenger-vehicles",
                   "vehicle-type-commercial-vehicles",
@@ -2267,7 +2265,6 @@
             "extra-fields": [
               {
                 "id": "on-road-transport-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-vehicles",
@@ -2388,7 +2385,6 @@
               },
               {
                 "id": "railways-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-trains",
@@ -2466,7 +2462,6 @@
             "extra-fields": [
               {
                 "id": "railways-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-passenger-trains",
                   "vehicle-type-freight-trains",
@@ -2591,7 +2586,6 @@
             "extra-fields": [
               {
                 "id": "railways-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-trains",
@@ -2710,7 +2704,6 @@
               },
               {
                 "id": "waterborne-navigation-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-ferries",
@@ -2788,7 +2781,6 @@
             "extra-fields": [
               {
                 "id": "waterborne-navigation-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-ferries",
@@ -2899,7 +2891,6 @@
             "extra-fields": [
               {
                 "id": "waterborne-navigation-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-ferries",
@@ -3018,7 +3009,6 @@
               },
               {
                 "id": "aviation-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-aircraft",
@@ -3097,7 +3087,6 @@
             "extra-fields": [
               {
                 "id": "aviation-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-aircraft",
@@ -3218,7 +3207,6 @@
             "extra-fields": [
               {
                 "id": "aviation-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-aircraft",
@@ -3337,7 +3325,6 @@
               },
               {
                 "id": "off-road-transport-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-construction-machinery",
@@ -3448,7 +3435,6 @@
             "extra-fields": [
               {
                 "id": "off-road-transport-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-construction-machinery",
@@ -3753,6 +3739,10 @@
               "biological-treatment-inboundary-treatment-type",
               "biological-treatment-inboundary-source"
             ],
+            "formula-mapping": {
+              "treatment_type": "biological-treatment-inboundary-treatment-type",
+              "waste-state": "biological-treatment-inboundary-waste-state"
+            },
             "activity-title": "total-organic-waste-treated",
             "default-units": "units-kilograms",
             "extra-fields": [
@@ -3855,6 +3845,10 @@
             ],
             "activity-title": "total-organic-waste-treated",
             "default-units": "units-kilograms",
+            "formula-mapping": {
+              "treatment_type": "biological-treatment-outboundary-treatment-type",
+              "waste-state": "biological-treatment-outboundary-waste-state"
+            },
             "extra-fields": [
               {
                 "id": "biological-treatment-outboundary-treatment-type",

@@ -34,6 +34,8 @@ export interface ExtraField {
   subtypes?: string[];
   "emission-factor-dependency"?: boolean;
   units?: string[];
+  max?: number;
+  min?: number;
 }
 
 export interface Activity {

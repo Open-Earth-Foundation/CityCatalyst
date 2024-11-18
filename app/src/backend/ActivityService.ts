@@ -5,7 +5,6 @@ import type {
   ActivityValue,
   ActivityValueAttributes,
 } from "@/models/ActivityValue";
-import type { DataSourceI18nAttributes as DataSourceAttributes } from "@/models/DataSourceI18n";
 import type {
   EmissionsFactor,
   EmissionsFactorAttributes,
@@ -19,6 +18,7 @@ import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 import type { Transaction } from "sequelize";
 import ManualInputValidationService from "./ManualnputValidationService";
+import { decimalToBigInt } from "@/util/big_int";
 
 type GasValueInput = Omit<GasValueCreationAttributes, "id"> & {
   emissionsFactor?: Omit<EmissionsFactorAttributes, "id">;
@@ -29,36 +29,6 @@ export type UpdateGasValueInput = GasValueCreationAttributes & {
 };
 
 export default class ActivityService {
-  private static async updateDataSource({
-    activityValue,
-    dataSourceParams,
-    transaction,
-  }: {
-    activityValue: ActivityValue;
-    dataSourceParams: Omit<DataSourceAttributes, "datasourceId"> | undefined;
-    transaction: Transaction;
-  }): Promise<string> {
-    const dataSource = await db.models.DataSource.findOne({
-      where: { datasourceId: activityValue.datasourceId },
-      transaction,
-    });
-
-    if (!dataSource) {
-      throw new createHttpError.NotFound(
-        "Data source for ActivityValue not found",
-      );
-    }
-
-    // update the data source
-    await dataSource.update(
-      {
-        ...dataSourceParams,
-      },
-      { transaction },
-    );
-    return dataSource.datasourceId;
-  }
-
   private static async updateInventoryValue({
     activityValue,
     inventoryValueParams,
@@ -219,7 +189,7 @@ export default class ActivityService {
           BigInt(inventoryValue.co2eq as bigint) -
             BigInt(activityValue.co2eq as bigint) ?? 0n;
 
-        const calculatedCO2e = BigInt(totalCO2e.toString()); // Ensure totalCO2e is BigInt
+        const calculatedCO2e = decimalToBigInt(totalCO2e); // Ensure totalCO2e is BigInt
 
         inventoryValue.co2eq = currentCO2e + calculatedCO2e;
         inventoryValue.co2eqYears = Math.max(
@@ -323,7 +293,7 @@ export default class ActivityService {
           );
 
         const currentCO2e = BigInt(inventoryValue.co2eq ?? 0n);
-        const calculatedCO2e = BigInt(totalCO2e.toString()); // Ensure totalCO2e is BigInt
+        const calculatedCO2e = decimalToBigInt(totalCO2e); // Ensure totalCO2e is BigInt
 
         inventoryValue.co2eq = currentCO2e + calculatedCO2e;
         inventoryValue.co2eqYears = Math.max(

@@ -152,7 +152,9 @@ def main(input_file, parse_rows=None):
         mapped_row["Dependencies"] = dependencies
 
         # Extract 'KeyPerformanceIndicators'
-        key_performance_indicators = extract_KeyPerformanceIndicators(df_row)
+        key_performance_indicators = extract_KeyPerformanceIndicators(
+            df_row, description
+        )
         mapped_row["KeyPerformanceIndicators"] = key_performance_indicators
 
         # Extract 'Impacts'

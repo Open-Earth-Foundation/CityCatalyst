@@ -468,6 +468,7 @@ export default function HomePage({
                     </TabPanel>
                     <TabPanel>
                       <InventoryReportTab
+                        isPublic={isPublic}
                         lng={lng}
                         population={population}
                         inventory={inventory}

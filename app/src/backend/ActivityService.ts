@@ -250,7 +250,7 @@ export default class ActivityService {
               inventoryId,
               sectorId,
               subSectorId,
-              subCategoryId,
+              subCategoryId: subCategoryId ?? undefined,
               gpcReferenceNumber: inventoryValueParams.gpcReferenceNumber,
             },
             { transaction },

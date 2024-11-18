@@ -32,9 +32,9 @@ export default class GPCService {
     });
     if (subcategory) {
       return {
-        sectorId: subcategory?.subsector?.sector?.sectorId,
-        subSectorId: subcategory?.subsector?.subsectorId,
-        subCategoryId: subcategory?.subsector?.sector?.sectorId,
+        sectorId: subcategory.subsector.sector.sectorId,
+        subSectorId: subcategory.subsector.subsectorId,
+        subCategoryId: subcategory.subsector.sector.sectorId,
       };
     }
     const subsector = await db.models.SubSector.findOne({
@@ -50,8 +50,8 @@ export default class GPCService {
     });
     if (subsector) {
       return {
-        sectorId: subsector?.sector?.sectorId,
-        subSectorId: subsector?.subsectorId,
+        sectorId: subsector.sector.sectorId,
+        subSectorId: subsector.subsectorId,
         subCategoryId: null,
       };
     }

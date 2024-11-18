@@ -1,5 +1,4 @@
 import pandas as pd
-import re
 from typing import Optional
 import json
 from utils.llm_creator import generate_response
@@ -8,12 +7,12 @@ from context.behavioral_change_targeted import context_for_behavioral_change
 from langsmith import traceable
 
 
-def extract_ActionID(row):
+def extract_ActionID():
     # ActionID will be set in the main script as incremental index
     raise NotImplementedError
 
 
-def extract_ActionType(row) -> Optional[list]:
+def extract_ActionType(row: pd.Series) -> Optional[list]:
     # Get action type from the 'Adaption/Mitigation' column
     action_type_raw = row.get("Adaption/Mitigation")
 
@@ -27,7 +26,7 @@ def extract_ActionType(row) -> Optional[list]:
     return action_type_list
 
 
-def extract_ActionName(row, action_type, sectors) -> Optional[str]:
+def extract_ActionName(row: pd.Series) -> Optional[str]:
     # Use 'Title' column
     # Simple 1:1 mapping
 
@@ -41,7 +40,7 @@ def extract_ActionName(row, action_type, sectors) -> Optional[str]:
 
 
 # Applies only to adaptation actions
-def extract_AdaptationCategory(row, action_type, sectors) -> Optional[str]:
+def extract_AdaptationCategory(row: pd.Series, action_type: list) -> Optional[str]:
     # Use 'Category 1' column as the adaptation category
     # Simple 1:1 mapping
 
@@ -104,7 +103,7 @@ def extract_Hazard(row: pd.Series, action_type: list) -> Optional[list]:
     return None
 
 
-def extract_Sector(row, action_type) -> Optional[list]:
+def extract_Sector(row: pd.Series) -> Optional[list]:
     # Use 'Category 1' column
     # For now simple 1:1 mapping that maps only to the enum values
 
@@ -151,7 +150,7 @@ def extract_Sector(row, action_type) -> Optional[list]:
 
 
 # Applies only to mitigation actions
-def extract_Subsector(row, action_type, sectors) -> Optional[list]:
+def extract_Subsector(row: pd.Series, action_type: list) -> Optional[list]:
     # Use 'Category 1' column
     # For now simple 1:1 mapping that maps only to the enum values
 
@@ -211,7 +210,7 @@ def extract_Subsector(row, action_type, sectors) -> Optional[list]:
         return None
 
 
-def extract_PrimaryPurpose(row, action_type, sectors) -> Optional[list]:
+def extract_PrimaryPurpose(action_type: list) -> Optional[list]:
     # Use extracted action_type from column 'Adaption/Mitigation' as the primary purpose
     # Simple 1:1 mapping
     # action_type is a list of strings
@@ -233,7 +232,7 @@ def extract_PrimaryPurpose(row, action_type, sectors) -> Optional[list]:
 
 # Applies only to mitigation actions
 @traceable(name="Extract InterventionType")
-def extract_InterventionType(row, action_type) -> Optional[list]:
+def extract_InterventionType(row: pd.Series, action_type: list) -> Optional[list]:
     """
     Extracts the intervention type for a climate action.
 
@@ -299,7 +298,6 @@ def extract_BehavioralChangeTargeted(
 
     # Check action type
     if "mitigation" in action_type:
-        # TODO: Implement logic here for 'Enricher' part
 
         # Get value of 'Explainer for action card'
         explainer_card = row.get("Explainer for action card")
@@ -308,7 +306,7 @@ def extract_BehavioralChangeTargeted(
             return None
 
         prompt = f"""
-Your task is to identify the targeted behavioral change in people for a climate action based on the description of the action and provided context.
+Your task is to identify and to describe the targeted behavioral change in people encouraged by the intervention of a climate action based on the description of the action and provided context.
 
 The following is the description of the climate action: 
 {explainer_card}
@@ -325,17 +323,16 @@ The following is the context for behavioral change theory and activity shifts:
 Provide a short and precise targeted behavioral shift that the climate action aims to achieve taking all the provided information into account.
 """
 
-        # response = generate_response(prompt)
+        response = generate_response(prompt)
 
-        # return response
-        return None
+        return response
     else:
         # For adaptation actions, print message and return dict as is
         print("Adaptation action found, not applicable for 'BehavioralChangeTargeted'")
         return None
 
 
-def extract_CoBenefits(row, action_type, sectors) -> Optional[dict]:
+def extract_CoBenefits(row: pd.Series) -> Optional[dict]:
     # Use different columns like air quality, water quality, ....
 
     # Create result dictionary with default None values for each co-benefit
@@ -415,9 +412,7 @@ def extract_CoBenefits(row, action_type, sectors) -> Optional[dict]:
 
 
 @traceable(name="Extract EquityAndInclusionConsiderations")
-def extract_EquityAndInclusionConsiderations(
-    row: pd.Series, action_type, sectors
-) -> Optional[str]:
+def extract_EquityAndInclusionConsiderations(row: pd.Series) -> Optional[str]:
     """
     Extracts the equity and inclusion considerations for a climate action.
 
@@ -433,7 +428,8 @@ def extract_EquityAndInclusionConsiderations(
 
     # TODO: Add more context to the prompt
     prompt = f"""
-Your task is to identify the equity and inclusion considerations for a climate action based on the description of the action.
+Your task is to identify how the climate action promotes equity and inclusion focusing on vulnerable or underserved communities based on the description of the action.
+Do not make suggestions on how to improve equity and inclusion, but only describe how the action already considers these aspects.
 
 The following is the description of the climate action: 
 {explainer_card}
@@ -450,7 +446,9 @@ Provide short and precise considerations for equity and inclusion of this climat
 
 
 # Applies only to mitigation actions
-def extract_GHGReductionPotential(row, action_type, sectors) -> dict:
+def extract_GHGReductionPotential(
+    row: pd.Series, action_type: list, sectors: list
+) -> dict:
     # Use 'Emission Source Category' column to reference the sector
     # use 'Extent' column to reference the extent of GHG reductionS
 
@@ -538,7 +536,7 @@ Please provide your answer **without** double or single quotes below:
         return None
 
 
-def extract_CostInvestmentNeeded(row, action_type, sectors) -> Optional[str]:
+def extract_CostInvestmentNeeded(row: pd.Series) -> Optional[str]:
     # Use 'Cost of action' column as the cost investment needed
     # Simple 1:1 mapping
 
@@ -564,7 +562,7 @@ def extract_CostInvestmentNeeded(row, action_type, sectors) -> Optional[str]:
     return mapped_cost_value
 
 
-def extract_TimelineForImplementation(row, action_type, sectors) -> Optional[str]:
+def extract_TimelineForImplementation(row: pd.Series) -> Optional[str]:
     # Use 'Implementation Perdio' column as the timeline for implementation
     # Simple 1:1 mapping
 
@@ -582,7 +580,7 @@ def extract_TimelineForImplementation(row, action_type, sectors) -> Optional[str
 
 
 @traceable(name="Extract Dependencies")
-def extract_Dependencies(description) -> Optional[list]:
+def extract_Dependencies(description: str) -> Optional[list]:
     # TODO: How to extract that?
 
     if pd.isnull(description) or not isinstance(description, str):
@@ -594,7 +592,7 @@ Your task is to identify the dependencies of a climate action based on the provi
 The following is the description of the climate action:
 {description}
 
-Your answer **must only** consists of a list of dependencies that the climate action relies on.
+Your answer **must only** consists of a list of dependencies that the climate action relies on. The dependencies must be described in a brief way.
 For example: ["This is a brief description of dependency 1", "This is a brief description of dependency 2"] or ["This is a brief description of the only identified dependency"].
 
 Please provide your answer below:
@@ -610,16 +608,14 @@ Please provide your answer below:
 
 
 @traceable(name="Extract KeyPerformanceIndicators")
-def extract_KeyPerformanceIndicators(row, action_type, sectors) -> Optional[list]:
+def extract_KeyPerformanceIndicators(row: pd.Series) -> Optional[list]:
     # TODO: How to extract that?
 
     return None
 
 
 @traceable(name="Extract Impacts")
-def extract_Impacts(row, action_type, sectors) -> Optional[list]:
+def extract_Impacts(row: pd.Series) -> Optional[list]:
     # TODO: How to extract that?
-
-    # TODO: Implement logic here for extracting impacts
 
     return None

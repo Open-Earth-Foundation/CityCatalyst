@@ -35,11 +35,7 @@ import {
 } from "framer-motion";
 import Link from "next/link";
 import type { InventoryValueAttributes } from "@/models/InventoryValue";
-import {
-  getScopesForInventoryAndSector,
-  InventoryTypeEnum,
-  SECTORS,
-} from "@/util/constants";
+import { getScopesForInventoryAndSector, SECTORS } from "@/util/constants";
 
 const MotionBox = motion(Box);
 

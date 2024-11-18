@@ -190,6 +190,8 @@
   "activity-data-amount": "Activity data amount",
   "value-required": "Please add a value",
   "option-required": "Please select an option",
+  "value-too-low": "Value must be greater than or equal to {{min}}",
+  "value-too-high": "Value must be less than {{max}}",
   "activity-data-amount-placeholder": "Insert activity data amount",
   "emission-factor-type": "Select emission factor type",
   "emission-factors-values": "Emission factors values",

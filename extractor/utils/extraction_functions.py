@@ -5,6 +5,7 @@ import json
 from utils.llm_creator import generate_response
 from context.intervention_type import categories_of_interventions
 from context.behavioral_change_targeted import context_for_behavioral_change
+from langsmith import traceable
 
 
 def extract_ActionID(row):
@@ -231,6 +232,7 @@ def extract_PrimaryPurpose(row, action_type, sectors) -> Optional[list]:
 
 
 # Applies only to mitigation actions
+@traceable(name="Extract InterventionType")
 def extract_InterventionType(row, action_type) -> Optional[list]:
     """
     Extracts the intervention type for a climate action.
@@ -284,6 +286,7 @@ def extract_Description(row: pd.Series) -> Optional[str]:
     return description
 
 
+@traceable(name="Extract BehavioralChangeTargeted")
 def extract_BehavioralChangeTargeted(
     row: pd.Series, action_type: list, intervention_type: list
 ) -> Optional[str]:
@@ -321,8 +324,6 @@ The following is the context for behavioral change theory and activity shifts:
 
 Provide a short and precise targeted behavioral shift that the climate action aims to achieve taking all the provided information into account.
 """
-
-        print(prompt)
 
         # response = generate_response(prompt)
 
@@ -413,6 +414,7 @@ def extract_CoBenefits(row, action_type, sectors) -> Optional[dict]:
     return dict_co_benefits
 
 
+@traceable(name="Extract EquityAndInclusionConsiderations")
 def extract_EquityAndInclusionConsiderations(
     row: pd.Series, action_type, sectors
 ) -> Optional[str]:
@@ -491,6 +493,7 @@ def extract_GHGReductionPotential(row, action_type, sectors) -> dict:
 
 
 # Applies only to adaptation actions
+@traceable(name="Extract AdaptionEffectiveness")
 def extract_AdaptionEffectiveness(
     action_type: list, description: str, hazard: list
 ) -> Optional[str]:
@@ -527,8 +530,6 @@ For example: "high" or "medium".
 Please provide your answer **without** double or single quotes below:
 """
         response = generate_response(prompt)
-
-        print(response)
 
         return response
     else:
@@ -580,6 +581,7 @@ def extract_TimelineForImplementation(row, action_type, sectors) -> Optional[str
     return timeline_value_lower
 
 
+@traceable(name="Extract Dependencies")
 def extract_Dependencies(description) -> Optional[list]:
     # TODO: How to extract that?
 
@@ -607,12 +609,14 @@ Please provide your answer below:
     return response_list
 
 
+@traceable(name="Extract KeyPerformanceIndicators")
 def extract_KeyPerformanceIndicators(row, action_type, sectors) -> Optional[list]:
     # TODO: How to extract that?
 
     return None
 
 
+@traceable(name="Extract Impacts")
 def extract_Impacts(row, action_type, sectors) -> Optional[list]:
     # TODO: How to extract that?
 

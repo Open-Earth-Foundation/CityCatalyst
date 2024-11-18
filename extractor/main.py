@@ -23,6 +23,7 @@ from utils.extraction_functions import (
     extract_Impacts,
 )
 from pathlib import Path
+from langsmith import traceable
 
 
 def main(input_file, parse_rows=None):
@@ -69,8 +70,27 @@ def main(input_file, parse_rows=None):
     # Incremental counter for ActionID
     action_id = 1
 
+    @traceable(name=f">>> New run <<<")
+    def create_langsmith_trace_start():
+        """
+        Purely for langchain tracing purposes at runtime
+        """
+        pass
+
+    create_langsmith_trace_start()
+
     # Iterate over DataFrame rows
     for index, df_row in df.iterrows():
+
+        @traceable(name=f"Processing row {index}...")
+        def create_langsmith_trace_row():
+            """
+            Purely for langchain tracing purposes at runtime
+            """
+            pass
+
+        create_langsmith_trace_row()
+
         print(f"Processing row {index}...\n")
         mapped_row = {}
 

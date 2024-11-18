@@ -1,6 +1,7 @@
 import os
 import openai
 from dotenv import load_dotenv
+from langsmith.wrappers import wrap_openai
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -11,10 +12,13 @@ if not openai.api_key:
 DEFAULT_MODEL = "gpt-4o-mini"
 DEFAULT_TEMPERATURE = 0.0
 
+# Auto-trace LLM calls in-context
+client = wrap_openai(openai.Client())
+
 
 def generate_response(prompt, model=DEFAULT_MODEL, temperature=DEFAULT_TEMPERATURE):
     try:
-        response = openai.chat.completions.create(
+        response = client.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
             temperature=temperature,

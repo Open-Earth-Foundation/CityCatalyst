@@ -124,7 +124,7 @@ export function Hero({
                     >
                       <Trans values={{ year: inventory?.year }} t={t}>
                         total-emissions-in
-                      </Trans>{" "}
+                      </Trans>
                     </Text>
                   </Box>
                 </Box>

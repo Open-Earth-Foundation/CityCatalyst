@@ -7,7 +7,13 @@ import DownloadButton from "@/components/HomePage/DownloadButton";
 import type { CityAttributes } from "@/models/City";
 import type { InventoryAttributes } from "@/models/Inventory";
 
-export function ActionCards(props: {
+export function ActionCards({
+  city,
+  inventory,
+  inventoryId,
+  lng,
+  t,
+}: {
   inventoryId: string | null;
   t: TFunction;
   city?: CityAttributes;
@@ -18,7 +24,7 @@ export function ActionCards(props: {
     <Box className="flex gap-[24px] ">
       <NextLink
         data-testid={"add-data-to-inventory-card"}
-        href={`/${props.inventoryId}/data`}
+        href={`/${inventoryId}/data`}
       >
         <Card
           shadow="2dp"
@@ -46,7 +52,7 @@ export function ActionCards(props: {
                   color="interactive.primary"
                   fontWeight="semibold"
                 >
-                  <Trans t={props.t}>add-data-to-inventory</Trans>
+                  <Trans t={t}>add-data-to-inventory</Trans>
                 </Text>
               </CardHeader>
               <CardBody className="h-[75px]">
@@ -56,7 +62,7 @@ export function ActionCards(props: {
                   lineHeight="24"
                   letterSpacing="wide"
                 >
-                  <Trans t={props.t}>add-data-to-inventory-description</Trans>
+                  <Trans t={t}>add-data-to-inventory-description</Trans>
                 </Text>
               </CardBody>
             </Box>
@@ -65,11 +71,11 @@ export function ActionCards(props: {
       </NextLink>
       <Box>
         <DownloadButton
-          lng={props.lng}
-          t={props.t}
-          inventoryId={props.inventoryId!}
-          city={props.city}
-          inventory={props.inventory}
+          lng={lng}
+          t={t}
+          inventoryId={inventoryId!}
+          city={city}
+          inventory={inventory}
         />
       </Box>
     </Box>

@@ -100,7 +100,10 @@ def extract_Hazard(row: pd.Series, action_type: list) -> Optional[list]:
         # Return the list of mapped hazards or None if no valid hazards (empty list []) found
         return mapped_hazards if mapped_hazards else None
 
-    return None
+    else:
+        # For mitigation actions, adaptation category is not applicable
+        print("Mitigation action found, not applicable for 'Hazard'")
+        return None
 
 
 def extract_Sector(row: pd.Series) -> Optional[list]:
@@ -608,10 +611,30 @@ Please provide your answer below:
 
 
 @traceable(name="Extract KeyPerformanceIndicators")
-def extract_KeyPerformanceIndicators(row: pd.Series) -> Optional[list]:
+def extract_KeyPerformanceIndicators(
+    row: pd.Series, description: str
+) -> Optional[list]:
     # TODO: How to extract that?
 
-    return None
+    prompt = f"""
+Your task is to identify the key performance indicators (KPIs) of a climate action based on the provided context.
+
+The following is the description of the climate action:
+{description}
+
+Your answer **must only** consists of a list of key performance indicators that are used to measure the success of the climate action.
+For example: ["KPI 1", "KPI 2"] or ["KPI 1"].
+
+Please provide your answer below:
+[]
+"""
+
+    response_string = generate_response(prompt)
+
+    # Convert the string to a Python list
+    response_list = json.loads(response_string)
+
+    return response_list
 
 
 @traceable(name="Extract Impacts")

@@ -219,8 +219,9 @@ export default function HomePage({
                             lineHeight="20px"
                             letterSpacing="wide"
                           >
-                            <Trans t={t}>total-emissions-in</Trans>{" "}
-                            {inventory?.year}
+                            <Trans values={{ year: inventory?.year }} t={t}>
+                              total-emissions-in
+                            </Trans>
                           </Text>
                         </Box>
                       </Box>

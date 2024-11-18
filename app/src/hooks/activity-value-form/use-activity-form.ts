@@ -74,6 +74,10 @@ const useActivityForm = ({
     formState: { errors },
   } = useForm<Inputs | any>();
 
+  useEffect(() => {
+    console.log("form errors", errors);
+  }, [errors]);
+
   const selectedActivityOption = watch(
     `activity.${methodology.activitySelectionField?.id as string}`,
   );

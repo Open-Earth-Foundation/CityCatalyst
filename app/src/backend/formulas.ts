@@ -336,14 +336,6 @@ export async function handleIncinerationWasteFormula(
       );
     }
 
-    console.log(dryMatterContentI, "dryMatterContentI");
-    console.log(fractionOfCarbonI, "fractionOfCarbonI");
-    console.log(fractionOfFossilCarbonI, "fractionOfFossilCarbonI");
-    console.log(
-      IncinerationWasteCO2OxidationFactor[technology],
-      "oxidation factor",
-    );
-
     const oxidationFactorI = IncinerationWasteCO2OxidationFactor[technology];
 
     totalPartialCO2Emissions = Decimal.sum(
@@ -434,6 +426,7 @@ export function handleMethaneCommitmentFormula(
     inventoryValue.inputMethodology,
     inventoryValue.gpcReferenceNumber,
   );
+
   if (!data) {
     throw new createHttpError.BadRequest(
       "Activity has no data associated, so it can't use the formula",
@@ -451,29 +444,24 @@ export function handleMethaneCommitmentFormula(
     textilesFraction,
     industrialWasteFraction,
   ] = [
-    "food",
-    "garden-waste",
-    "paper",
-    "wood",
-    "textiles",
-    "industrial-waste",
+    "waste-composition-food",
+    "waste-composition-garden",
+    "waste-composition-paper",
+    "waste-composition-wood",
+    "waste-composition-textiles",
+    "waste-composition-industrial",
   ].map(getFraction);
-
-  console.log(data, "the data here");
 
   // TODO this dropdown input is not part of manual input spec for III.1.1
   const landfillType = data["landfill-type"];
 
-  const recoveredMethaneFraction =
-    data[
-      "methane-commitment-solid-waste-inboundary-methane-collected-and-removed"
-    ] || 0;
+  const recoveredMethaneFraction = data["methane-collected-and-removed"] || 0;
   const oxidationFactor =
     data["methane-commitment-solid-waste-inboundary-oxidation-factor"] ===
     "oxidation-factor-well-managed-landfill"
       ? 0.1
       : 0;
-  const totalSolidWaste = data["methane-commitment-solid-waste-disposed"] || 0;
+  const totalSolidWaste = data["total-municipal-solid-waste-disposed"] || 0;
 
   // Degradable organic carbon in year of deposition, fraction (tonnes C/tonnes waste)
   const degradableOrganicCarbon =
@@ -484,8 +472,13 @@ export function handleMethaneCommitmentFormula(
     TEXTILES_FACTOR * textilesFraction +
     INDUSTRIAL_WASTE_FACTOR * industrialWasteFraction;
 
+  // if the oxidation type is well managed, then the landfill is well managed and the methane correction factor is 1.0
+  // otherwise, get the methane correction factor from the METHANE_CORRECTION_FACTORS object
   const methaneCorrectionFactor =
-    METHANE_CORRECTION_FACTORS[landfillType] ?? 0.6;
+    oxidationFactor === 0.1
+      ? 1.0
+      : METHANE_CORRECTION_FACTORS[landfillType] ?? 0.6;
+
   // GPC assumption, Fraction of degradable organic carbon that is ultimately degraded
   const DOC_FRACTION = 0.6;
   // GPC assumption, fraction of methane in landfill gas
@@ -579,11 +572,11 @@ export function handleIndustrialWasteWaterFormula(
   const totalIndustrialProduction = data["total-industry-production"];
   const wastewaterGenerated = data[`${prefixKey}-wastewater-generated`];
   const degradableOrganicComponents =
-    data["degradable-organic-components"] ?? 38; // TODO get this from formula values csv;
+    data["degradable-organic-components"] ?? 38; // TODO COD from formula values dependent on industry type;
   const methaneProductionCapacity =
-    data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should this only be handled UI-side?
+    data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should default to 0.25
   const removedSludge = data["total-organic-sludge-removed"];
-  const methaneCorrectionFactor = 1; // TODO fetch this from formula values csv
+  const methaneCorrectionFactor = 1; // TODO fetch this from formula values csv dependent on treatment type
   const methaneRecovered = data[`${prefixKey}-methane-recovered`];
 
   // TODO is new Decimal/ BigNumber required for these calculations?
@@ -628,7 +621,7 @@ export async function handleDomesticWasteWaterFormula(
   const methaneProductionCapacity = DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should this only be handled UI-side?
   const removedSludge = data["total-organic-sludge-removed"];
   // TODO get MCF from seed-data/formula_values
-  const methaneCorrectionFactor = DEFAULT_METHANE_CORRECTION_FACTOR;
+  const methaneCorrectionFactor = DEFAULT_METHANE_CORRECTION_FACTOR; // TODO read from formula file
   const methaneRecovered = data[`${prefixKey}-methane-recovered`];
 
   const totalCityPopulationEntry = await findClosestCityPopulation(inventory);
@@ -639,7 +632,7 @@ export async function handleDomesticWasteWaterFormula(
   }
   const totalCityPopulation = totalCityPopulationEntry.population;
 
-  const bodPerCapita = DEFAULT_BOD_PER_CAPITA;
+  const bodPerCapita = DEFAULT_BOD_PER_CAPITA; // TODO BOD using region of the city
   const isCollectedWasteWater =
     data[`${prefixKey}-collection-status`] ===
     "collection-status-type-wastewater-collected";
@@ -695,7 +688,6 @@ export async function handleBiologicalTreatmentFormula(
     inventoryValue.gpcReferenceNumber,
   );
 
-  console.log(data, "IDHDIH");
   if (!data) {
     throw new createHttpError.BadRequest(
       "Activity has no data associated, so it can't use the formula",

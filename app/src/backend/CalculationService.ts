@@ -124,12 +124,12 @@ export default class CalculationService {
         gases = handleMethaneCommitmentFormula(activityValue, inventoryValue);
         break;
       case "incineration-waste":
-        let formulaMapping =
+        const incinerationformulaMapping =
           CalculationService.getFormulaMapping(inputMethodology);
         gases = await handleIncinerationWasteFormula(
           activityValue,
           inventoryValue,
-          formulaMapping,
+          incinerationformulaMapping,
         );
         break;
       case "induced-activity-1":

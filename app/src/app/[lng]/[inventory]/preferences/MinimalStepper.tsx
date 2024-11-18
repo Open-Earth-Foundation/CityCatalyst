@@ -5,7 +5,7 @@ function MinimalStepperItem({ isEnabled }: { isEnabled: boolean }) {
   return (
     <Box
       flex={"1"}
-      height={"8px"}
+      height={2}
       backgroundColor={
         isEnabled ? "interactive.secondary" : "background.neutral"
       }
@@ -17,11 +17,11 @@ function MinimalStepperItem({ isEnabled }: { isEnabled: boolean }) {
 export default function MinimalStepper({ step }: { step: number }) {
   return (
     <Flex
-      my={"5px"}
+      my={1}
       align={"center"}
       justifyContent="space-between"
       width="100%"
-      gap="4px"
+      gap={1}
     >
       <MinimalStepperItem isEnabled={step >= 1} />
       <MinimalStepperItem isEnabled={step >= 2} />

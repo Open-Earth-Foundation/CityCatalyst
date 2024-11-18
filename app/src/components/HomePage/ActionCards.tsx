@@ -31,7 +31,10 @@ export function ActionCards(props: {
         >
           <Box className="flex items-center w-fill">
             <Box>
-              <Box className="flex items-center justify-center h-[48px] w-[48px] rounded-full bg-[#008600]">
+              <Box
+                className="flex items-center justify-center h-[48px] w-[48px] rounded-full"
+                backgroundColor={"interactive.primary"}
+              >
                 <MdOutlineAddchart className="text-white" size={24} />
               </Box>
             </Box>

@@ -4,7 +4,8 @@ import React from "react";
 import { useTranslation } from "@/i18n/client";
 import PreferencesExplanation from "./PreferencesExplanation";
 import PreferencesPageLayout from "./PreferencesPageLayout";
-import { LINKS } from "@/app/[lng]/[inventory]/preferences/LINKS";
+
+import { LINKS } from "@/app/[lng]/[inventory]/preferences/constants";
 
 export default function PreferencesExplanationPage({
   params: { lng },

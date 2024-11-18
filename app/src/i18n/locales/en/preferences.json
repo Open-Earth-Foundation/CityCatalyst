@@ -25,12 +25,12 @@
   "railways": "Railways",
   "aviation": "Aviation",
   "waterborne": "Waterborne navigation",
-   "controlled-landfill": "Controlled Landfill",
- "uncontrolled-landfill": "Uncontrolled Landfill",
- "open-air-landfill": "Open-air landfill",
- "incineration": "Incineration or open burning",
+  "controlled-landfill": "Controlled Landfill",
+  "uncontrolled-landfill": "Uncontrolled Landfill",
+  "open-air-landfill": "Open-air landfill",
+  "incineration": "Incineration or open burning",
   "biological-treatment": "Biological treatment plant",
- "wastewater-treatment": "Wastewater treatment plant",
- "collected-untreated": "Collected and untreated wastewater",
- "uncollected-untreated": "Uncollected and untreated wastewater"
+  "wastewater-treatment": "Wastewater treatment plant",
+  "collected-untreated": "Collected and untreated wastewater",
+  "uncollected-untreated": "Uncollected and untreated wastewater"
 }

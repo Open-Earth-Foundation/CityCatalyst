@@ -34,16 +34,7 @@ export function PreferenceCard({
           height={32}
           objectFit="cover"
         />
-        <Text
-          fontSize="label.lg"
-          fontWeight="medium"
-          color="gray.700"
-          textTransform="none"
-          whiteSpace="normal"
-          textAlign="left"
-        >
-          {t(title)}
-        </Text>
+        <Text variant="card">{t(title)}</Text>c{" "}
       </VStack>
     </Button>
   );

@@ -131,9 +131,7 @@ const ActivityModalBody = ({
 
   let prefix = "";
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
-    useState<boolean>(
-      !(targetActivityValue?.metadata?.emissionFactorType === "custom"),
-    );
+    useState<boolean>(false);
 
   useEffect(() => {
     if (emissionsFactorTypes.length > 0 && emissionFactorTypeValue) {

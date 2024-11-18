@@ -31,7 +31,6 @@ import {
   SegmentedProgressValues,
 } from "@/components/SegmentedProgress";
 import { EmptyStateCardContent } from "@/app/[lng]/[inventory]/InventoryResultTab/EmptyStateCardContent";
-import { useEffect } from "react";
 
 const EmissionsTable = ({
   topEmissions,
@@ -83,9 +82,11 @@ const EmissionsTable = ({
 const TopEmissionsWidget = ({
   t,
   inventory,
+  isPublic,
 }: {
   t: Function & TFunction<"translation", undefined>;
   inventory?: InventoryResponse;
+  isPublic: boolean;
 }) => {
   const { data: results, isLoading: isTopEmissionsResponseLoading } =
     api.useGetResultsQuery(inventory!.inventoryId!);
@@ -123,6 +124,7 @@ const TopEmissionsWidget = ({
             height={"344px"}
             t={t}
             inventoryId={inventory?.inventoryId}
+            isPublic={isPublic}
           />
         </Card>
       </>

@@ -54,8 +54,6 @@ const ActivityTab: FC<ActivityTabProps> = ({
   subsectorId,
   inventoryValues,
 }) => {
-  console.log("ActivityTab", referenceNumber);
-
   let totalEmissions = 0;
 
   activityData?.forEach((activity: any) => {
@@ -73,7 +71,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
   // extract the methodology used from the filtered scope
 
   const [methodology, setMethodology] = useState<Methodology | DirectMeasure>();
-  const getFilteredActivityValues = useMemo(() => {
+  const filteredActivityValues = useMemo(() => {
     let methodologyId: string | null | undefined = undefined;
     const filteredValues = activityData?.filter((activity) => {
       const activityValue = activity as unknown as ActivityValue; // TODO use InventoryValueResponse/ ActivityValueResponse everywhere
@@ -150,7 +148,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
     );
   }, [inventoryValues, methodology, referenceNumber]);
 
-  const activityValues = getFilteredActivityValues;
+  const activityValues = filteredActivityValues;
 
   const getSuggestedActivities = (): SuggestedActivity[] => {
     if (!selectedMethodology) return [];
@@ -214,8 +212,6 @@ const ActivityTab: FC<ActivityTabProps> = ({
         return "notation-key-NO";
     }
   }, [inventoryValue]);
-
-  console.log("ActivityTab", referenceNumber, activityValues, activityData);
 
   return (
     <>

@@ -574,7 +574,7 @@ export function handleIndustrialWasteWaterFormula(
   const degradableOrganicComponents =
     data["degradable-organic-components"] ?? 38; // TODO COD from formula values dependent on industry type;
   const methaneProductionCapacity =
-    data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should default to 0.25
+    data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY;
   const removedSludge = data["total-organic-sludge-removed"];
   const methaneCorrectionFactor = 1; // TODO fetch this from formula values csv dependent on treatment type
   const methaneRecovered = data[`${prefixKey}-methane-recovered`];

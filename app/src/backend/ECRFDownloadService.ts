@@ -140,7 +140,7 @@ export default class ECRFDownloadService {
             emission_ch4 = ch4_gas?.emissionsFactor.emissionsPerActivity;
             emission_n2o = n2o_gas?.emissionsFactor.emissionsPerActivity;
 
-            ghg_co2 = BigInt(co2_gas?.gasAmount as bigint) * BigInt(1);
+            ghg_co2 = BigInt(co2_gas?.gasAmount as bigint);
             ghg_ch4 = BigInt(ch4_gas?.gasAmount as bigint) * BigInt(28);
             ghg_n2o = BigInt(n2o_gas?.gasAmount as bigint) * BigInt(265);
           }

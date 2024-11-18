@@ -2385,7 +2385,6 @@
               },
               {
                 "id": "railways-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-trains",
@@ -2463,7 +2462,6 @@
             "extra-fields": [
               {
                 "id": "railways-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-passenger-trains",
                   "vehicle-type-freight-trains",
@@ -2588,7 +2586,6 @@
             "extra-fields": [
               {
                 "id": "railways-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-trains",

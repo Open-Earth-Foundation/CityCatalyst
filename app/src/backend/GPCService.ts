@@ -34,7 +34,7 @@ export default class GPCService {
       return {
         sectorId: subcategory.subsector.sector.sectorId,
         subSectorId: subcategory.subsector.subsectorId,
-        subCategoryId: subcategory.subsector.sector.sectorId,
+        subCategoryId: subcategory.subcategoryId,
       };
     }
     const subsector = await db.models.SubSector.findOne({

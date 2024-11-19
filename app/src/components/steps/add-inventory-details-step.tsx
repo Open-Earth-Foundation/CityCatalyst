@@ -85,7 +85,9 @@ export default function SetInventoryDetailsStep({
         gap="24px"
         mb="48px"
       >
-        <Heading size="xl">{t("setup-inventory-details-heading")}</Heading>
+        <Heading data-testId="inventory-details-heading" size="xl">
+          {t("setup-inventory-details-heading")}
+        </Heading>
         <Text
           color="content.tertiary"
           fontSize="body.lg"

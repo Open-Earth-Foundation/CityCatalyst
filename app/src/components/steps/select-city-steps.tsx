@@ -232,13 +232,16 @@ export default function SelectCityStep({
         gap="24px"
         mb="48px"
       >
-        <Heading size="xl">{t("setup-city-heading")}</Heading>
+        <Heading data-testId="setup-city-heading" size="xl">
+          {t("setup-city-heading")}
+        </Heading>
         <Text
           color="content.tertiary"
           fontSize="body.lg"
           fontStyle="normal"
           fontWeight="400"
           letterSpacing="wide"
+          data-testId="setup-city-description"
         >
           {t("setup-city-details")}
         </Text>
@@ -247,7 +250,9 @@ export default function SelectCityStep({
         <Card p={6} shadow="none" px="24px" py="32px">
           <form className="space-y-8">
             <FormControl isInvalid={!!errors.city}>
-              <FormLabel>{t("city")}</FormLabel>
+              <FormLabel data-testId="setup-city-input-label">
+                {t("city")}
+              </FormLabel>
               <InputGroup
                 ref={cityInputRef}
                 shadow="1dp"
@@ -259,6 +264,7 @@ export default function SelectCityStep({
                 </InputLeftElement>
                 <Input
                   type="text"
+                  data-testId="setup-city-input"
                   placeholder={t("select-city-placeholder")}
                   size="lg"
                   {...register("city", {

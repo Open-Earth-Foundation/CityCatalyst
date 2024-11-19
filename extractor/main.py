@@ -38,7 +38,7 @@ def main(input_file, parse_rows=None):
 
     # For testing, only process x rows
     if parse_rows:
-        df = df.tail(parse_rows)
+        df = df.head(parse_rows)
     else:
         # For production, process all rows
         pass
@@ -94,8 +94,8 @@ def main(input_file, parse_rows=None):
         mapped_row["Sector"] = sectors
 
         # Extract 'Subsector'
-        subsector = extract_Subsector(df_row, action_type)
-        mapped_row["Subsector"] = subsector
+        subsectors = extract_Subsector(df_row, action_type)
+        mapped_row["Subsector"] = subsectors
 
         # Extract 'PrimaryPurpose'
         primary_purpose = extract_PrimaryPurpose(action_type)
@@ -152,13 +152,25 @@ def main(input_file, parse_rows=None):
         mapped_row["Dependencies"] = dependencies
 
         # Extract 'KeyPerformanceIndicators'
-        key_performance_indicators = extract_KeyPerformanceIndicators(
-            df_row, description
-        )
+        key_performance_indicators = extract_KeyPerformanceIndicators(description)
         mapped_row["KeyPerformanceIndicators"] = key_performance_indicators
 
         # Extract 'Impacts'
-        impacts = extract_Impacts(df_row)
+        impacts = extract_Impacts(
+            action_type,
+            sectors,
+            subsectors,
+            primary_purpose,
+            intervention_type,
+            description,
+            behavioral_change_targeted,
+            co_benefits,
+            equity_and_inclusion_considerations,
+            ghg_reduction_potential,
+            adaptation_category,
+            hazard,
+            adaptation_effectiveness,
+        )
         mapped_row["Impacts"] = impacts
 
         mapped_data.append(mapped_row)

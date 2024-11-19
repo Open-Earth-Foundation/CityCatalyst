@@ -511,7 +511,8 @@ def extract_AdaptionEffectiveness(
         if pd.isnull(description) or not isinstance(description, str):
             return None
 
-        if pd.isnull(hazard) or not isinstance(hazard, list):
+        if hazard is None or not all(isinstance(item, str) for item in hazard):
+            # if pd.isnull(hazard) or not isinstance(hazard, list):
             return None
 
         prompt = f"""
@@ -611,10 +612,10 @@ Please provide your answer below:
 
 
 @traceable(name="Extract KeyPerformanceIndicators")
-def extract_KeyPerformanceIndicators(
-    row: pd.Series, description: str
-) -> Optional[list]:
-    # TODO: How to extract that?
+def extract_KeyPerformanceIndicators(description: str) -> Optional[list]:
+
+    if pd.isnull(description) or not isinstance(description, str):
+        return None
 
     prompt = f"""
 Your task is to identify the key performance indicators (KPIs) of a climate action based on the provided context.
@@ -638,7 +639,171 @@ Please provide your answer below:
 
 
 @traceable(name="Extract Impacts")
-def extract_Impacts(row: pd.Series) -> Optional[list]:
-    # TODO: How to extract that?
+def extract_Impacts(
+    action_type: Optional[list],
+    sectors: Optional[list],
+    subsectors: Optional[list],
+    primary_purpose: Optional[list],
+    intervention_type: Optional[list],
+    description: Optional[str],
+    behavioral_change_targeted: Optional[str],
+    co_benefits: Optional[dict],
+    equity_and_inclusion_considerations: Optional[str],
+    ghg_reduction_potential: Optional[dict],
+    adaptation_category: Optional[str],
+    hazard: Optional[list],
+    adaptation_effectiveness: Optional[str],
+) -> Optional[list]:
+    """
+    Extracts the overall impacts of a climate action based on the provided context.
+    It takes all relevant attributes of a climate action and uses an LLM to generate a plausible answer.
 
-    return None
+    It gives either an answer for mitigation actions, adaptation actions, or both based on the action type.
+    """
+
+    if action_type is None or not all(isinstance(item, str) for item in action_type):
+        return None
+
+    if description is None or not isinstance(description, str):
+        return None
+
+    # Process actions that are both mitigation and adaptation
+    if "mitigation" in action_type and "adaptation" in action_type:
+        prompt = f"""
+Your task is to identify the overall impacts of a climate action based on the provided context.
+For the given context may not all values be available, based on the climate action and available information, please provide the best possible answer.
+
+The following is the description of the climate action:
+{description}
+
+The following is the adaptation category of the climate action:
+{adaptation_category}
+
+The following is the climate hazard addressed by the action:
+{hazard}
+
+The following is the list of identified sectors of the climate action:
+{sectors}
+
+The following is the list of identified subsectors of the climate action:
+{subsectors}
+
+The following is the list of identified primary purposes of the climate action:
+{primary_purpose}
+
+The following is the list of identified intervention types of the climate action:
+{intervention_type}
+
+The following is the targeted behavioral change in people encouraged by the intervention of the climate action:
+{behavioral_change_targeted}
+
+The following is the identified co-benefits of the climate action:
+{json.dumps(co_benefits, indent=4)}
+
+The following is the context for equity and inclusion considerations:
+{equity_and_inclusion_considerations}
+
+The following is the identified GHG reduction potential of the climate action:
+{json.dumps(ghg_reduction_potential, indent=4)}
+
+The following is the effectiveness of the adaptation action:
+{adaptation_effectiveness}
+
+Your answer **must only** consists of a list containing short and precise descriptions of the overall impacts of the climate action based on the provided information.
+For example: ["Impact 1", "Impact 2"] or ["Impact 1"].
+
+Please provide your answer below:
+[]
+"""
+        response_string = generate_response(prompt)
+        response_list = json.loads(response_string)
+        return response_list
+
+    # Process mitigation actions
+    if "mitigation" in action_type:
+
+        prompt = f"""
+Your task is to identify the overall impacts of a climate mitigation action based on the provided context.
+For the given context may not all values be available, based on the climate action and available information, please provide the best possible answer.
+
+The following is the description of the climate action:
+{description}
+
+The following is the list of identified sectors of the climate action:
+{sectors}
+
+The following is the list of identified subsectors of the climate action:
+{subsectors}
+
+The following is the list of identified primary purposes of the climate action:
+{primary_purpose}
+
+The following is the list of identified intervention types of the climate action:
+{intervention_type}
+
+The following is the targeted behavioral change in people encouraged by the intervention of the climate action:
+{behavioral_change_targeted}
+
+The following is the identified co-benefits of the climate action:
+{json.dumps(co_benefits, indent=4)}
+The impact scores for the given categories are as follows: "very positive": 2, "somewhat positive": 1, "neutral": 0, "somewhat negative": -1, "very negative": -2
+
+The following is the context for equity and inclusion considerations:
+{equity_and_inclusion_considerations}
+
+The following is the identified GHG reduction potential of the climate action:
+{json.dumps(ghg_reduction_potential, indent=4)}
+The value for a sector is given in percentage of GHG reduction potential.
+
+
+Your answer **must only** consists of a list containing short and precise descriptions of the overall impacts of the climate action based on the provided information.
+For example: ["Impact 1", "Impact 2"] or ["Impact 1"].
+
+Please provide your answer below:
+[]
+"""
+        response_string = generate_response(prompt)
+        response_list = json.loads(response_string)
+        return response_list
+
+    # Process adaptation actions
+    if "adaptation" in action_type:
+        prompt = f"""
+Your task is to identify the overall impacts of a climate adaptation action based on the provided context.
+For the given context may not all values be available, based on the climate action and available information, please provide the best possible answer.
+
+The following is the description of the climate action:
+{description}
+
+The following is the adaptation category of the climate action:
+{adaptation_category}
+
+The following is the climate hazard addressed by the action:
+{hazard}
+
+The following is the list of identified sectors of the climate action:
+{sectors}
+
+The following is the list of identified primary purposes of the climate action:
+{primary_purpose}
+
+The following is the identified co-benefits of the climate action:
+{json.dumps(co_benefits, indent=4)}
+The impact scores for the given categories are as follows: "very positive": 2, "somewhat positive": 1, "neutral": 0, "somewhat negative": -1, "very negative": -2
+
+The following is the context for equity and inclusion considerations:
+{equity_and_inclusion_considerations}
+
+The following is the effectiveness of the adaptation action:
+{adaptation_effectiveness}
+
+Your answer **must only** consists of a list containing short and precise descriptions of the overall impacts of the climate action based on the provided information.
+For example: ["Impact 1", "Impact 2"] or ["Impact 1"].
+
+Please provide your answer below:
+[]
+"""
+
+        response_string = generate_response(prompt)
+        response_list = json.loads(response_string)
+        return response_list

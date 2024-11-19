@@ -28,6 +28,7 @@ export default function Onboarding({
               textTransform="uppercase"
               color="content.tertiary"
               fontSize="title.sm"
+              data-testid="start-page-title"
             >
               {t("create-inventory")}
             </Text>
@@ -38,6 +39,7 @@ export default function Onboarding({
               lineHeight="44px"
               fontWeight="600"
               fontStyle="normal"
+              data-testid="start-page-heading"
             >
               {t("create-ghg-inventory")}
             </Heading>
@@ -47,6 +49,7 @@ export default function Onboarding({
               lineHeight="24px"
               fontWeight="400"
               letterSpacing="wide"
+              data-testid="start-page-description"
             >
               {t("inventory-creation-description")}
             </Text>

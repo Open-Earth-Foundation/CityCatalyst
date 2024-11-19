@@ -50,7 +50,7 @@
             "items": {
                 "type": "string",
                 "enum": [
-                    "stationary_energy", "transportation", "waste", "industrial_processes_and_product_use", "agriculture_forestry_and_other_land_use", 
+                    "stationary_energy", "transportation", "waste", "ippu", "afolu", 
                     "water_resources", "food_security", "energy_security", "biodiversity", "public_health", "railway_infrastructure", "road_infrastructure", "geo-hydrological_disasters"
                 ]
             },

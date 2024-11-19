@@ -1,11 +1,13 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Onboarding", () => {
-  test("should display the onboarding start page", async ({ page }) => {
-    const lng = "en";
-
-    //   navigate to the onboarding page
+test.describe("Onboarding Flow", () => {
+  const lng = "en";
+  test.beforeEach(async ({ page }) => {
+    // Navigate to start page before each test
     await page.goto(`/${lng}/onboarding/`);
+  });
+  test("should display the onboarding start page", async ({ page }) => {
+    //   navigate to the onboarding page
 
     //   Verify the title of the page is correct
     await expect(page).toHaveTitle(/CityCatalyst/i);

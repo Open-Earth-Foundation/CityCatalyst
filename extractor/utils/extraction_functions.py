@@ -128,6 +128,7 @@ def extract_Sector(row: pd.Series) -> Optional[list]:
         "transportation": "transportation",
         "waste": "waste",
         "afolu": "agriculture_forestry_and_other_land_use",
+        "ippu": "industrial_processes_and_product_use",
         # The sectors given in the C40 list below have no clear assignment to the provided enum values
         "generation of grid-supplied energy": None,
         "eco-engineering": None,
@@ -476,6 +477,8 @@ def extract_GHGReductionPotential(
             "stationary_energy": None,
             "transportation": None,
             "waste": None,
+            "ippu": None,
+            "afolu": None,
         }
 
         # Map extent to the corresponding sectors in dict_ghg_reduction_potential
@@ -485,6 +488,10 @@ def extract_GHGReductionPotential(
             dict_ghg_reduction_potential["transportation"] = extent_value
         if "waste" in sectors:
             dict_ghg_reduction_potential["waste"] = extent_value
+        if "ippu" in sectors:
+            dict_ghg_reduction_potential["ippu"] = extent_value
+        if "afolu" in sectors:
+            dict_ghg_reduction_potential["afolu"] = extent_value
 
         return dict_ghg_reduction_potential
     else:

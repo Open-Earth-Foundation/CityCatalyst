@@ -2,6 +2,10 @@ import os
 import openai
 from dotenv import load_dotenv
 from langsmith.wrappers import wrap_openai
+import json
+
+from openai import AsyncOpenAI
+
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -13,20 +17,26 @@ DEFAULT_MODEL = "gpt-4o-mini"
 DEFAULT_TEMPERATURE = 0.0
 
 # Auto-trace LLM calls in-context
-client = wrap_openai(openai.Client())
+# client = wrap_openai(openai.Client())
+client = wrap_openai(AsyncOpenAI())
 
 
-def generate_response(prompt, model=DEFAULT_MODEL, temperature=DEFAULT_TEMPERATURE):
+async def generate_response(
+    prompt, model=DEFAULT_MODEL, temperature=DEFAULT_TEMPERATURE
+):
     try:
-        response = client.chat.completions.create(
+        response = await client.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
             temperature=temperature,
         )
+        print("OK: ", response.choices[0].message.content)
         return response.choices[0].message.content
-    except openai.error.OpenAIError as e:
+    except openai.OpenAIError as e:
         print(f"OpenAI API error: {e}")
-        return {"error": str(e)}
+        return json.dumps({"error": str(e)})  # Return as a JSON string
     except Exception as e:
         print(f"Unexpected error: {e}")
-        return {"error": "An unexpected error occurred"}
+        return json.dumps(
+            {"error": "An unexpected error occurred"}
+        )  # Return as a JSON string

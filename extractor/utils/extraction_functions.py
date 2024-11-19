@@ -236,7 +236,7 @@ def extract_PrimaryPurpose(action_type: list) -> Optional[list]:
 
 # Applies only to mitigation actions
 @traceable(name="Extract InterventionType")
-def extract_InterventionType(row: pd.Series, action_type: list) -> Optional[list]:
+async def extract_InterventionType(row: pd.Series, action_type: list) -> Optional[list]:
     """
     Extracts the intervention type for a climate action.
 
@@ -263,7 +263,7 @@ For example: ["taxes_and_fees", "regulations_and_laws"] or ["programs_and_initia
 Please provide your answer below:
 []
 """
-        response_string = generate_response(prompt)
+        response_string = await generate_response(prompt)
 
         # Convert the string to a Python list
         response_list = json.loads(response_string)
@@ -290,7 +290,7 @@ def extract_Description(row: pd.Series) -> Optional[str]:
 
 
 @traceable(name="Extract BehavioralChangeTargeted")
-def extract_BehavioralChangeTargeted(
+async def extract_BehavioralChangeTargeted(
     row: pd.Series, action_type: list, intervention_type: list
 ) -> Optional[str]:
     """
@@ -327,7 +327,7 @@ The following is the context for behavioral change theory and activity shifts:
 Provide a short and precise targeted behavioral shift that the climate action aims to achieve taking all the provided information into account.
 """
 
-        response = generate_response(prompt)
+        response = await generate_response(prompt)
 
         return response
     else:
@@ -416,7 +416,7 @@ def extract_CoBenefits(row: pd.Series) -> Optional[dict]:
 
 
 @traceable(name="Extract EquityAndInclusionConsiderations")
-def extract_EquityAndInclusionConsiderations(row: pd.Series) -> Optional[str]:
+async def extract_EquityAndInclusionConsiderations(row: pd.Series) -> Optional[str]:
     """
     Extracts the equity and inclusion considerations for a climate action.
 
@@ -444,7 +444,7 @@ The following is further context for equity and inclusion considerations:
 Provide short and precise considerations for equity and inclusion of this climate action taking all the provided information into account.
 """
 
-    response = generate_response(prompt)
+    response = await generate_response(prompt)
 
     return response
 
@@ -502,7 +502,7 @@ def extract_GHGReductionPotential(
 
 # Applies only to adaptation actions
 @traceable(name="Extract AdaptionEffectiveness")
-def extract_AdaptionEffectiveness(
+async def extract_AdaptionEffectiveness(
     action_type: list, description: str, hazard: list
 ) -> Optional[str]:
     """
@@ -538,7 +538,7 @@ For example: "high" or "medium".
 
 Please provide your answer **without** double or single quotes below:
 """
-        response = generate_response(prompt)
+        response = await generate_response(prompt)
 
         return response
     else:
@@ -591,7 +591,7 @@ def extract_TimelineForImplementation(row: pd.Series) -> Optional[str]:
 
 
 @traceable(name="Extract Dependencies")
-def extract_Dependencies(description: str) -> Optional[list]:
+async def extract_Dependencies(description: str) -> Optional[list]:
     # TODO: How to extract that?
 
     if pd.isnull(description) or not isinstance(description, str):
@@ -610,7 +610,7 @@ Please provide your answer below:
 []
 """
 
-    response_string = generate_response(prompt)
+    response_string = await generate_response(prompt)
 
     # Convert the string to a Python list
     response_list = json.loads(response_string)
@@ -619,7 +619,7 @@ Please provide your answer below:
 
 
 @traceable(name="Extract KeyPerformanceIndicators")
-def extract_KeyPerformanceIndicators(description: str) -> Optional[list]:
+async def extract_KeyPerformanceIndicators(description: str) -> Optional[list]:
 
     if pd.isnull(description) or not isinstance(description, str):
         return None
@@ -637,7 +637,7 @@ Please provide your answer below:
 []
 """
 
-    response_string = generate_response(prompt)
+    response_string = await generate_response(prompt)
 
     # Convert the string to a Python list
     response_list = json.loads(response_string)
@@ -646,7 +646,7 @@ Please provide your answer below:
 
 
 @traceable(name="Extract Impacts")
-def extract_Impacts(
+async def extract_Impacts(
     action_type: Optional[list],
     sectors: Optional[list],
     subsectors: Optional[list],
@@ -722,7 +722,7 @@ For example: ["Impact 1", "Impact 2"] or ["Impact 1"].
 Please provide your answer below:
 []
 """
-        response_string = generate_response(prompt)
+        response_string = await generate_response(prompt)
         response_list = json.loads(response_string)
         return response_list
 
@@ -769,7 +769,7 @@ For example: ["Impact 1", "Impact 2"] or ["Impact 1"].
 Please provide your answer below:
 []
 """
-        response_string = generate_response(prompt)
+        response_string = await generate_response(prompt)
         response_list = json.loads(response_string)
         return response_list
 
@@ -811,6 +811,6 @@ Please provide your answer below:
 []
 """
 
-        response_string = generate_response(prompt)
+        response_string = await generate_response(prompt)
         response_list = json.loads(response_string)
         return response_list

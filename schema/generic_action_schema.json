@@ -188,6 +188,20 @@
                         { "type": "null" }
                     ],
                     "description": "Potential for GHG reduction in the waste sector."
+                },
+                "ippu": {
+                    "oneOf": [
+                        { "type": "string", "enum": ["0-19", "20-39", "40-59", "60-79", "80-100"] },
+                        { "type": "null" }
+                    ],
+                    "description": "Potential for GHG reduction in the industrial processes and product (ippu) sector."
+                },
+                "afolu": {
+                    "oneOf": [
+                        { "type": "string", "enum": ["0-19", "20-39", "40-59", "60-79", "80-100"] },
+                        { "type": "null" }
+                    ],
+                    "description": "Potential for GHG reduction in the agriculture, forestry and other land use (afolu) sector."
                 }
             },
             "appliesTo": ["mitigation"],

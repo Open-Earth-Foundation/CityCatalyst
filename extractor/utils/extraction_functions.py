@@ -127,8 +127,8 @@ def extract_Sector(row: pd.Series) -> Optional[list]:
         "stationary energy": "stationary_energy",
         "transportation": "transportation",
         "waste": "waste",
-        "afolu": "agriculture_forestry_and_other_land_use",
-        "ippu": "industrial_processes_and_product_use",
+        "afolu": "afolu",
+        "ippu": "ippu",
         # The sectors given in the C40 list below have no clear assignment to the provided enum values
         "generation of grid-supplied energy": None,
         "eco-engineering": None,

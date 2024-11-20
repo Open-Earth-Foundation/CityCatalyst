@@ -140,7 +140,9 @@ export default function SetPopulationDataStep({
         gap="24px"
         mb="48px"
       >
-        <Heading size="xl">{t("setup-population-data-heading")}</Heading>
+        <Heading data-testId="add-population-data-heading" size="xl">
+          {t("setup-population-data-heading")}
+        </Heading>
         <Text
           color="content.tertiary"
           fontSize="body.lg"

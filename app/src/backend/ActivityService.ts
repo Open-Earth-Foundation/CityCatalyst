@@ -302,7 +302,7 @@ export default class ActivityService {
         );
 
         await inventoryValue.save({ transaction });
-        activityValue.co2eq = BigInt(totalCO2e.toString());
+        activityValue.co2eq = decimalToBigInt(totalCO2e);
         activityValue.co2eqYears = totalCO2eYears;
         await activityValue.save({ transaction });
 

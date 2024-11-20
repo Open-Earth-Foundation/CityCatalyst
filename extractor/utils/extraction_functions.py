@@ -1,5 +1,5 @@
 import pandas as pd
-from typing import Optional
+from typing import Optional, Dict
 import json
 from utils.llm_creator import generate_response
 from context.intervention_type import categories_of_interventions
@@ -7,18 +7,13 @@ from context.behavioral_change_targeted import context_for_behavioral_change
 from langsmith import traceable
 
 
-def extract_ActionID():
-    # ActionID will be set in the main script as incremental index
-    raise NotImplementedError
-
-
-def extract_ActionType(row: pd.Series) -> Optional[list]:
+def extract_ActionType(index: int, row: pd.Series) -> list[str]:
     # Get action type from the 'Adaption/Mitigation' column
     action_type_raw = row.get("Adaption/Mitigation")
 
     # Check if the value is null or not a string
     if pd.isnull(action_type_raw) or not isinstance(action_type_raw, str):
-        return None
+        action_type_raw = ""
 
     # Split by commas if there are multiple action types, strip whitespace, and convert to lowercase
     action_type_list = [item.strip().lower() for item in action_type_raw.split(",")]
@@ -26,7 +21,7 @@ def extract_ActionType(row: pd.Series) -> Optional[list]:
     return action_type_list
 
 
-def extract_ActionName(row: pd.Series) -> Optional[str]:
+def extract_ActionName(index: int, row: pd.Series) -> str:
     # Use 'Title' column
     # Simple 1:1 mapping
 
@@ -34,13 +29,15 @@ def extract_ActionName(row: pd.Series) -> Optional[str]:
 
     # Check if the 'Title' column is null or not a string
     if pd.isnull(action_name) or not isinstance(action_name, str):
-        return None
+        action_name = ""
 
     return action_name
 
 
 # Applies only to adaptation actions
-def extract_AdaptationCategory(row: pd.Series, action_type: list) -> Optional[str]:
+def extract_AdaptationCategory(
+    index: int, row: pd.Series, action_type: list[str]
+) -> Optional[str]:
     # Use 'Category 1' column as the adaptation category
     # Simple 1:1 mapping
 
@@ -57,13 +54,14 @@ def extract_AdaptationCategory(row: pd.Series, action_type: list) -> Optional[st
         return adaptation_category
 
     else:
-        # For mitigation actions, adaptation category is not applicable
-        print("Mitigation action found, not applicable for 'AdaptationCategory'")
+        print(
+            f"Row {index}: Mitigation action found, not applicable for 'AdaptationCategory'"
+        )
         return None
 
 
 # Applies only to adaptation actions
-def extract_Hazard(row: pd.Series, action_type: list) -> Optional[list]:
+def extract_Hazard(index: int, row: pd.Series, action_type: list) -> Optional[list]:
     # Only proceed if the action type is adaptation-related
     if "adaptation" in action_type:
 
@@ -101,12 +99,11 @@ def extract_Hazard(row: pd.Series, action_type: list) -> Optional[list]:
         return mapped_hazards if mapped_hazards else None
 
     else:
-        # For mitigation actions, adaptation category is not applicable
-        print("Mitigation action found, not applicable for 'Hazard'")
+        print(f"Row {index}: Mitigation action found, not applicable for 'Hazard'")
         return None
 
 
-def extract_Sector(row: pd.Series) -> Optional[list]:
+def extract_Sector(index: int, row: pd.Series) -> Optional[list[str]]:
     # Use 'Category 1' column
     # For now simple 1:1 mapping that maps only to the enum values
 
@@ -123,7 +120,7 @@ def extract_Sector(row: pd.Series) -> Optional[list]:
     sectors_list = [sector.strip() for sector in sector_str_lower.split(",")]
 
     # Define mapping for known sector values to their respective enum values
-    sector_mapping = {
+    sector_mapping: Dict[str, Optional[str]] = {
         "stationary energy": "stationary_energy",
         "transportation": "transportation",
         "waste": "waste",
@@ -144,9 +141,11 @@ def extract_Sector(row: pd.Series) -> Optional[list]:
 
     # Map sectors to their corresponding values in sector_mapping
     mapped_sectors = [
-        sector_mapping.get(sector)
+        mapped_sector
         for sector in sectors_list
-        if sector in sector_mapping and sector_mapping[sector] is not None
+        if sector in sector_mapping
+        for mapped_sector in [sector_mapping[sector]]
+        if mapped_sector is not None
     ]
 
     # Return the list of mapped sectors or None if no valid sectors are found
@@ -154,7 +153,7 @@ def extract_Sector(row: pd.Series) -> Optional[list]:
 
 
 # Applies only to mitigation actions
-def extract_Subsector(row: pd.Series, action_type: list) -> Optional[list]:
+def extract_Subsector(index: int, row: pd.Series, action_type: list) -> Optional[list]:
     # Use 'Category 1' column
     # For now simple 1:1 mapping that maps only to the enum values
 
@@ -209,12 +208,11 @@ def extract_Subsector(row: pd.Series, action_type: list) -> Optional[list]:
         return mapped_subsectors if mapped_subsectors else None
 
     else:
-        # For adaptation actions, subsector is not applicable
-        print("Adaptation action found, not applicable for 'Subsector'")
+        print(f"Row {index}: Adaptation action found, not applicable for 'Subsector'")
         return None
 
 
-def extract_PrimaryPurpose(action_type: list) -> Optional[list]:
+def extract_PrimaryPurpose(index: int, action_type: list) -> Optional[list]:
     # Use extracted action_type from column 'Adaption/Mitigation' as the primary purpose
     # Simple 1:1 mapping
     # action_type is a list of strings
@@ -236,7 +234,9 @@ def extract_PrimaryPurpose(action_type: list) -> Optional[list]:
 
 # Applies only to mitigation actions
 @traceable(name="Extract InterventionType")
-async def extract_InterventionType(row: pd.Series, action_type: list) -> Optional[list]:
+async def extract_InterventionType(
+    index: int, row: pd.Series, action_type: list
+) -> Optional[list]:
     """
     Extracts the intervention type for a climate action.
 
@@ -265,17 +265,21 @@ Please provide your answer below:
 """
         response_string = await generate_response(prompt)
 
+        if response_string is None:
+            raise ValueError("The response_string is None, cannot parse to JSON.")
+
         # Convert the string to a Python list
         response_list = json.loads(response_string)
 
         return response_list
     else:
-        # For adaptation actions, print message and return None
-        print("Adaptation action found, not applicable for 'InterventionType'")
+        print(
+            f"Row {index}: Adaptation action found, not applicable for 'InterventionType'"
+        )
         return None
 
 
-def extract_Description(row: pd.Series) -> Optional[str]:
+def extract_Description(index: int, row: pd.Series) -> str:
     # Use 'Explainer for action card' column as the intervention type
     # Simple 1:1 mapping
 
@@ -284,14 +288,14 @@ def extract_Description(row: pd.Series) -> Optional[str]:
 
     # Check if the 'Explainer for action card' column is empty
     if pd.isnull(description) or not isinstance(description, str):
-        return None
+        description = ""
 
     return description
 
 
 @traceable(name="Extract BehavioralChangeTargeted")
 async def extract_BehavioralChangeTargeted(
-    row: pd.Series, action_type: list, intervention_type: list
+    index: int, row: pd.Series, action_type: list, intervention_type: list
 ) -> Optional[str]:
     """
     Extracts the targeted behavioral change for a climate action.
@@ -331,16 +335,17 @@ Provide a short and precise targeted behavioral shift that the climate action ai
 
         return response
     else:
-        # For adaptation actions, print message and return dict as is
-        print("Adaptation action found, not applicable for 'BehavioralChangeTargeted'")
+        print(
+            f"Row {index}: Adaptation action found, not applicable for 'BehavioralChangeTargeted'"
+        )
         return None
 
 
-def extract_CoBenefits(row: pd.Series) -> Optional[dict]:
+def extract_CoBenefits(index: int, row: pd.Series) -> Optional[dict]:
     # Use different columns like air quality, water quality, ....
 
     # Create result dictionary with default None values for each co-benefit
-    dict_co_benefits = {
+    dict_co_benefits: Dict[str, Optional[int]] = {
         "air_quality": None,
         "water_quality": None,
         "eco_systems": None,
@@ -352,7 +357,7 @@ def extract_CoBenefits(row: pd.Series) -> Optional[dict]:
     # Extract the co-benefits from the respective columns
     air_quality = row.get("Air Quality")
     if pd.isnull(air_quality) or not isinstance(air_quality, str):
-        air_quality_lower = None
+        air_quality_lower = ""
 
     else:
         # Lowercase and strip whitespace for consistent processing
@@ -360,35 +365,35 @@ def extract_CoBenefits(row: pd.Series) -> Optional[dict]:
 
     water_quality = row.get("Water Quality")
     if pd.isnull(water_quality) or not isinstance(water_quality, str):
-        water_quality_lower = None
+        water_quality_lower = ""
     else:
         # Lowercase and strip whitespace for consistent processing
         water_quality_lower = water_quality.lower().strip()
 
     eco_systems = row.get("Ecosystems ")  # Note the ' ' behinde the column name
     if pd.isnull(eco_systems) or not isinstance(eco_systems, str):
-        eco_systems_lower = None
+        eco_systems_lower = ""
     else:
         # Lowercase and strip whitespace for consistent processing
         eco_systems_lower = eco_systems.lower().strip()
 
     income_and_poverty = row.get("Income and Poverty")
     if pd.isnull(income_and_poverty) or not isinstance(income_and_poverty, str):
-        income_and_poverty_lower = None
+        income_and_poverty_lower = ""
     else:
         # Lowercase and strip whitespace for consistent processing
         income_and_poverty_lower = income_and_poverty.lower().strip()
 
     housing = row.get("Housing")
     if pd.isnull(housing) or not isinstance(housing, str):
-        housing_lower = None
+        housing_lower = ""
     else:
         # Lowercase and strip whitespace for consistent processing
         housing_lower = housing.lower().strip()
 
     mobility = row.get("Mobility")
     if pd.isnull(mobility) or not isinstance(mobility, str):
-        mobility_lower = None
+        mobility_lower = ""
     else:
         # Lowercase and strip whitespace for consistent processing
         mobility_lower = mobility.lower().strip()
@@ -416,7 +421,9 @@ def extract_CoBenefits(row: pd.Series) -> Optional[dict]:
 
 
 @traceable(name="Extract EquityAndInclusionConsiderations")
-async def extract_EquityAndInclusionConsiderations(row: pd.Series) -> Optional[str]:
+async def extract_EquityAndInclusionConsiderations(
+    index: int, row: pd.Series
+) -> Optional[str]:
     """
     Extracts the equity and inclusion considerations for a climate action.
 
@@ -451,8 +458,8 @@ Provide short and precise considerations for equity and inclusion of this climat
 
 # Applies only to mitigation actions
 def extract_GHGReductionPotential(
-    row: pd.Series, action_type: list, sectors: list
-) -> dict:
+    index: int, row: pd.Series, action_type: list, sectors: Optional[list[str]]
+) -> Optional[dict]:
     # Use 'Emission Source Category' column to reference the sector
     # use 'Extent' column to reference the extent of GHG reductionS
 
@@ -473,7 +480,7 @@ def extract_GHGReductionPotential(
         extent_value = extent_value.replace("%", "").strip()
 
         # Initialize the GHGReductionPotential dictionary with default None values for each sector
-        dict_ghg_reduction_potential = {
+        dict_ghg_reduction_potential: Dict[str, Optional[str]] = {
             "stationary_energy": None,
             "transportation": None,
             "waste": None,
@@ -495,15 +502,16 @@ def extract_GHGReductionPotential(
 
         return dict_ghg_reduction_potential
     else:
-        # For adaptation actions, print message and return dict as is
-        print("Adaptation action found, not applicable for 'GHGReductionPotential'")
+        print(
+            f"Row {index}: Adaptation action found, not applicable for 'GHGReductionPotential'"
+        )
         return None
 
 
 # Applies only to adaptation actions
 @traceable(name="Extract AdaptionEffectiveness")
 async def extract_AdaptionEffectiveness(
-    action_type: list, description: str, hazard: list
+    index: int, action_type: list, description: str, hazard: list
 ) -> Optional[str]:
     """
     Extracts the effectiveness of an adaptation action.
@@ -542,12 +550,13 @@ Please provide your answer **without** double or single quotes below:
 
         return response
     else:
-        # For mitigation actions, adaptation effectiveness is not applicable
-        print("Mitigation action found, not applicable for 'AdaptationEffectiveness'")
+        print(
+            f"Row {index}: Mitigation action found, not applicable for 'AdaptationEffectiveness'"
+        )
         return None
 
 
-def extract_CostInvestmentNeeded(row: pd.Series) -> Optional[str]:
+def extract_CostInvestmentNeeded(index: int, row: pd.Series) -> Optional[str]:
     # Use 'Cost of action' column as the cost investment needed
     # Simple 1:1 mapping
 
@@ -569,11 +578,10 @@ def extract_CostInvestmentNeeded(row: pd.Series) -> Optional[str]:
     # Attempt to map cost_value_lower; returns None if not in cost_mapping
     mapped_cost_value = cost_mapping.get(cost_value_lower)
 
-    # Return the mapped cost value, or None if no valid mapping was found
     return mapped_cost_value
 
 
-def extract_TimelineForImplementation(row: pd.Series) -> Optional[str]:
+def extract_TimelineForImplementation(index: int, row: pd.Series) -> Optional[str]:
     # Use 'Implementation Perdio' column as the timeline for implementation
     # Simple 1:1 mapping
 
@@ -591,7 +599,7 @@ def extract_TimelineForImplementation(row: pd.Series) -> Optional[str]:
 
 
 @traceable(name="Extract Dependencies")
-async def extract_Dependencies(description: str) -> Optional[list]:
+async def extract_Dependencies(index: int, description: str) -> Optional[list]:
     # TODO: How to extract that?
 
     if pd.isnull(description) or not isinstance(description, str):
@@ -612,6 +620,9 @@ Please provide your answer below:
 
     response_string = await generate_response(prompt)
 
+    if response_string is None:
+        raise ValueError("The response_string is None, cannot parse to JSON.")
+
     # Convert the string to a Python list
     response_list = json.loads(response_string)
 
@@ -619,7 +630,9 @@ Please provide your answer below:
 
 
 @traceable(name="Extract KeyPerformanceIndicators")
-async def extract_KeyPerformanceIndicators(description: str) -> Optional[list]:
+async def extract_KeyPerformanceIndicators(
+    index: int, description: str
+) -> Optional[list]:
 
     if pd.isnull(description) or not isinstance(description, str):
         return None
@@ -639,6 +652,9 @@ Please provide your answer below:
 
     response_string = await generate_response(prompt)
 
+    if response_string is None:
+        raise ValueError("The response_string is None, cannot parse to JSON.")
+
     # Convert the string to a Python list
     response_list = json.loads(response_string)
 
@@ -647,6 +663,7 @@ Please provide your answer below:
 
 @traceable(name="Extract Impacts")
 async def extract_Impacts(
+    index: int,
     action_type: Optional[list],
     sectors: Optional[list],
     subsectors: Optional[list],
@@ -723,6 +740,10 @@ Please provide your answer below:
 []
 """
         response_string = await generate_response(prompt)
+
+        if response_string is None:
+            raise ValueError("The response_string is None, cannot parse to JSON")
+
         response_list = json.loads(response_string)
         return response_list
 
@@ -770,6 +791,10 @@ Please provide your answer below:
 []
 """
         response_string = await generate_response(prompt)
+
+        if response_string is None:
+            raise ValueError("The response_string is None, cannot parse to JSON")
+
         response_list = json.loads(response_string)
         return response_list
 
@@ -812,5 +837,9 @@ Please provide your answer below:
 """
 
         response_string = await generate_response(prompt)
+
+        if response_string is None:
+            raise ValueError("The response_string is None, cannot parse to JSON")
+
         response_list = json.loads(response_string)
         return response_list

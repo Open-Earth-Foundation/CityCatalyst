@@ -3,6 +3,7 @@ import openai
 from dotenv import load_dotenv
 from langsmith.wrappers import wrap_openai
 import json
+from typing import Optional
 
 from openai import AsyncOpenAI
 
@@ -22,15 +23,14 @@ client = wrap_openai(AsyncOpenAI())
 
 
 async def generate_response(
-    prompt, model=DEFAULT_MODEL, temperature=DEFAULT_TEMPERATURE
-):
+    prompt: str, model: str = DEFAULT_MODEL, temperature: float = DEFAULT_TEMPERATURE
+) -> Optional[str]:
     try:
         response = await client.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
             temperature=temperature,
         )
-        print("OK: ", response.choices[0].message.content)
         return response.choices[0].message.content
     except openai.OpenAIError as e:
         print(f"OpenAI API error: {e}")

@@ -94,6 +94,7 @@ export default function SetInventoryDetailsStep({
           fontStyle="normal"
           fontWeight="400"
           letterSpacing="wide"
+          data-testId="inventory-details-description"
         >
           {t("setup-inventory-details-description")}
         </Text>
@@ -118,6 +119,7 @@ export default function SetInventoryDetailsStep({
               fontStyle="normal"
               fontWeight="bold"
               lineHeight="24px"
+              data-testId="inventory-year"
             >
               {t("inventory-year")}
             </Text>
@@ -135,6 +137,7 @@ export default function SetInventoryDetailsStep({
                   letterSpacing="wide"
                   _placeholder={{ color: "content.tertiary" }}
                   py="16px"
+                  data-testId="inventory-detils-year"
                   px={0}
                   {...register("year", {
                     required: t("inventory-year-required"),

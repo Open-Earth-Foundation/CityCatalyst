@@ -19,6 +19,11 @@ import {
   RemovedSourceResult,
 } from "@/backend/DataSourceService";
 
+export interface CitiesAndYearsResponse {
+  city: CityAttributes;
+  years: { year: number; inventoryId: string; lastUpdatedAt: Date }[];
+}
+
 export type InventoryResponse = InventoryAttributes & {
   city: CityAttributes & {
     populationYear: number;

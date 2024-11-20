@@ -6,7 +6,8 @@ import {
   type UserAttributes,
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
-import type {
+import {
+  CitiesAndYearsResponse,
   ConnectDataSourceQuery,
   ConnectDataSourceResponse,
   EmissionsFactorResponse,
@@ -46,6 +47,11 @@ export const api = createApi({
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
+    getCitiesAndYears: builder.query<CitiesAndYearsResponse, void>({
+      query: () => "user/inventory/cities",
+      transformResponse: (response: { data: CitiesAndYearsResponse }) =>
+        response.data,
+    }),
     getCity: builder.query<CityAttributes, string>({
       query: (cityId) => `city/${cityId}`,
       transformResponse: (response: { data: CityAttributes }) => response.data,
@@ -658,6 +664,7 @@ export const GLOBAL_API_URL =
 // hooks are automatically generated
 export const {
   useGetCityQuery,
+  useGetCitiesAndYearsQuery,
   useAddCityMutation,
   useAddInventoryMutation,
   useSetUserInfoMutation,

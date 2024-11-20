@@ -1,6 +1,6 @@
+import type { Optional } from "sequelize";
 import * as Sequelize from "sequelize";
 import { DataTypes, Model } from "sequelize";
-import type { Optional } from "sequelize";
 import type { Inventory, InventoryId } from "./Inventory";
 import type { SubCategory, SubCategoryId } from "./SubCategory";
 import type {
@@ -238,6 +238,24 @@ export class InventoryValue
             fields: [{ name: "id" }],
           },
         ],
+        hooks: {
+          afterCreate: async (inventoryValue: InventoryValue) => {
+            if (inventoryValue.inventoryId) {
+              const inventory = await inventoryValue.getInventory();
+              if (inventory) {
+                await inventory.update({ lastUpdatedAt: new Date() });
+              }
+            }
+          },
+          afterUpdate: async (inventoryValue: InventoryValue) => {
+            if (inventoryValue.inventoryId) {
+              const inventory = await inventoryValue.getInventory();
+              if (inventory) {
+                await inventory.update({ lastUpdatedAt: new Date() });
+              }
+            }
+          },
+        },
       },
     );
   }

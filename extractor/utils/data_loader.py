@@ -3,7 +3,7 @@ import pandas as pd
 from pathlib import Path
 
 
-def load_datafile_into_df(file_path):
+def load_datafile_into_df(file_path: Path) -> pd.DataFrame:
     # Ensure file_path is a Path object
     file_path = Path(file_path)
 
@@ -19,7 +19,7 @@ def load_datafile_into_df(file_path):
 
             else:
                 print("Unsupported file type. Please provide a CSV or Excel file.")
-                return None
+                raise Exception("Unsupported file type")
 
             return df
         else:

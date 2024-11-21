@@ -75,6 +75,28 @@
       "scope3Emissions": {
         "type": "number",
         "description": "The CO2 emissions from scope 3 sources in metric tons per year"
+      },
+      "ccra": {
+        "type": "array",
+        "description": "The list containing keyimpacts, hazards and risk scores for a city",
+        "items": {
+          "type": "object",
+          "properties": {
+            "keyimpact": {
+              "type": "string",
+              "description": "The sector or area that is directly affected by one or more hazards"
+            },
+            "hazard": {
+              "type": "string",
+              "description": "The occurrence of an environmental event that has a harmful impact on people, property, or the environment"
+            },
+            "normalised_risk_score": {
+              "type": "number",
+              "description": "The potential for loss or adverse effects, assessed as a combination of exposure, vulnerability, and hazard characteristics"
+            }
+          },
+          "required": ["keyimpact", "hazard", "risk_score"]
+        }
       }
     },
     "required": [

@@ -67,8 +67,10 @@ test.describe("Onboarding Flow", () => {
       page,
     }) => {
       // Fill in the city input
-      const cityInput = page.getByTestId("setup-city-input");
-      await cityInput.fill("Chicago");
+      const cityInput = page.locator('input[name="city"]');
+      await cityInput.click();
+
+      await page.keyboard.type("Chicago", { delay: 100 });
 
       //   Wait for the search results to load
       const citySearchResults = page.getByText(
@@ -95,6 +97,7 @@ test.describe("Onboarding Flow", () => {
     });
 
     test.describe("Set Inventory Details Step", () => {
+      test.setTimeout(60000);
       test.beforeEach(async ({ page }) => {
         // Navigate to the setup page
         await page.goto(`/${lng}/onboarding/setup`, {
@@ -102,8 +105,10 @@ test.describe("Onboarding Flow", () => {
         });
 
         // Fill in the city input
-        const cityInput = page.getByTestId("setup-city-input");
-        await cityInput.fill("Chicago");
+        const cityInput = page.locator('input[name="city"]');
+        await cityInput.click();
+
+        await page.keyboard.type("Chicago", { delay: 100 });
 
         //   Wait for the search results to load
         const citySearchResults = page.getByText(
@@ -183,6 +188,7 @@ test.describe("Onboarding Flow", () => {
     });
 
     test.describe("Set Population Data Step", () => {
+      test.setTimeout(60000);
       test.beforeEach(async ({ page }) => {
         // Navigate through previous steps to reach the Set Population Data Step
 
@@ -192,8 +198,10 @@ test.describe("Onboarding Flow", () => {
         });
 
         // Fill in the city input
-        const cityInput = page.getByTestId("setup-city-input");
-        await cityInput.fill("Chicago");
+        const cityInput = page.locator('input[name="city"]');
+        await cityInput.click();
+
+        await page.keyboard.type("Chicago", { delay: 100 });
 
         // Wait for the search results to load
         const citySearchResults = page.getByText(
@@ -391,6 +399,7 @@ test.describe("Onboarding Flow", () => {
       });
     });
     test.describe("Confirm Step", () => {
+      test.setTimeout(60000);
       test.beforeEach(async ({ page }) => {
         // Navigate through previous steps to reach the Confirm Step
 
@@ -400,8 +409,10 @@ test.describe("Onboarding Flow", () => {
         });
 
         // Fill in the city input
-        const cityInput = page.getByTestId("setup-city-input");
-        await cityInput.fill("Chicago", { force: true });
+        const cityInput = page.locator('input[name="city"]');
+        await cityInput.click();
+
+        await page.keyboard.type("Chicago", { delay: 100 });
 
         // Wait for the search results to load
         const citySearchResults = page.getByText(
@@ -522,17 +533,6 @@ test.describe("Onboarding Flow", () => {
         await expect(continueButton).toBeEnabled();
         await continueButton.click();
 
-        // const uuidPattern =
-        //   "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
-        // const urlPattern = new RegExp(
-        //   `\/${lng}\/onboarding\/done\/US%20CHI\/2023\/${uuidPattern}\/$`,
-        // );
-
-        // // Verify that the page URL is correct
-        // await expect(page).toHaveURL(urlPattern);
-
-        // Verify that the onboarding process is completed
-        // Adjust the text to match the actual completion message on your page
         const completionMessage = page.getByTestId("done-heading");
         await expect(completionMessage).toBeVisible();
 

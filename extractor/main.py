@@ -25,9 +25,6 @@ from utils.extraction_functions import (
 )
 from pathlib import Path
 
-# from langsmith import traceable
-
-
 # Create a semaphore with a concurrency limit (e.g., 10 tasks at a time)
 semaphore = asyncio.Semaphore(100)
 

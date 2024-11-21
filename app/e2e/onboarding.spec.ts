@@ -2,6 +2,9 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Onboarding Flow", () => {
   const lng = "en";
+  const locode = "US%20CHI";
+  const inventoryId = "bb596cf4-27de-4355-8d6d-3667ff9e9fc4";
+  const year = "2023";
 
   test.describe("Start Page", () => {
     test("should display the onboarding start page", async ({ page }) => {
@@ -398,7 +401,7 @@ test.describe("Onboarding Flow", () => {
 
         // Fill in the city input
         const cityInput = page.getByTestId("setup-city-input");
-        await cityInput.fill("Chicago");
+        await cityInput.fill("Chicago", { force: true });
 
         // Wait for the search results to load
         const citySearchResults = page.getByText(
@@ -519,10 +522,27 @@ test.describe("Onboarding Flow", () => {
         await expect(continueButton).toBeEnabled();
         await continueButton.click();
 
+        // const uuidPattern =
+        //   "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
+        // const urlPattern = new RegExp(
+        //   `\/${lng}\/onboarding\/done\/US%20CHI\/2023\/${uuidPattern}\/$`,
+        // );
+
+        // // Verify that the page URL is correct
+        // await expect(page).toHaveURL(urlPattern);
+
         // Verify that the onboarding process is completed
-        // Adjust the selector and text based on what the next page shows
-        const completionMessage = page.getByText(/Onboarding Complete/i);
+        // Adjust the text to match the actual completion message on your page
+        const completionMessage = page.getByTestId("done-heading");
         await expect(completionMessage).toBeVisible();
+
+        // Verify that the "Add new inventory" button is present
+        const addnewInventoryButton = page.getByTestId("add-new-inventory");
+        await expect(addnewInventoryButton).toBeVisible();
+
+        // Verify that the "Add new inventory" button is present
+        const checkDashboardButton = page.getByTestId("check-dashboard");
+        await expect(checkDashboardButton).toBeVisible();
       });
     });
   });

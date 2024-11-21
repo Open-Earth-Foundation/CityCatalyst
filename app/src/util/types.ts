@@ -191,6 +191,10 @@ export interface ResultsResponse {
   topEmissions: { bySubSector: TopEmission[] };
 }
 
+export interface YearOverYearResultsResponse {
+  [inventoryId: string]: ResultsResponse;
+}
+
 export interface SubsectorTotals {
   totalActivityValueByUnit: {
     [activityUnit: string]: bigint | string;

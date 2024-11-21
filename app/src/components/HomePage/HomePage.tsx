@@ -6,6 +6,7 @@ import {
   api,
   useGetCitiesAndYearsQuery,
   useGetCityPopulationQuery,
+  useGetYearOverYearResultsQuery,
 } from "@/services/api";
 import { CheckUserSession } from "@/util/check-user-session";
 import { formatEmissions } from "@/util/helpers";
@@ -90,6 +91,11 @@ export default function HomePage({
   );
 
   const { data: citiesAndYears } = useGetCitiesAndYearsQuery();
+
+  const { data: yearlyGhgResult } = useGetYearOverYearResultsQuery(
+    inventory?.cityId!,
+    { skip: !inventory?.cityId },
+  );
 
   const formattedEmissions = inventory?.totalEmissions
     ? formatEmissions(inventory.totalEmissions)

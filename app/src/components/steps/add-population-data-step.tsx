@@ -176,7 +176,7 @@ export default function SetPopulationDataStep({
           </Box>
           <Box display="flex" gap="16px" alignItems="baseline">
             <HStack spacing={6} align="start">
-              <FormControl isInvalid={!!errors.cityPopulation}>
+              <FormControl isInvalid={!!errors.countryPopulation}>
                 <FormattedThousandsNumberInput<Inputs>
                   name="countryPopulation"
                   control={control}
@@ -201,46 +201,50 @@ export default function SetPopulationDataStep({
                     {t("source")}: {countryPopulationSourceName}
                   </Text>
                 </Box>
-                <FormErrorMessage
-                  color="content.tertiary"
-                  letterSpacing="0.5px"
-                >
-                  <FormErrorIcon />
-                  {errors.cityPopulation && errors.cityPopulation.message}
-                </FormErrorMessage>
+                {errors.countryPopulation && (
+                  <FormErrorMessage
+                    color="content.tertiary"
+                    letterSpacing="0.5px"
+                  >
+                    <FormErrorIcon />
+                    {errors.countryPopulation.message}
+                  </FormErrorMessage>
+                )}
               </FormControl>
             </HStack>
-            <InputGroup>
-              <Select
-                placeholder={t("inventory-year-placeholder")}
-                size="lg"
-                w="217px"
-                shadow="1dp"
-                fontSize="body.lg"
-                fontStyle="normal"
-                letterSpacing="wide"
-                _placeholder={{ color: "content.tertiary" }}
-                py="16px"
-                px={0}
-                {...register("countryPopulationYear", {
-                  required: t("inventory-year-required"),
-                })}
-              >
-                {years.map((year: number, i: number) => (
-                  <option value={year} key={i}>
-                    {year}
-                  </option>
-                ))}
-              </Select>
-              <InputRightElement
-                display="flex"
-                alignItems="center"
-                mt={5}
-                mr={6}
-              >
-                {!!year && <CheckIcon color="semantic.success" boxSize={4} />}
-              </InputRightElement>
-            </InputGroup>
+            <FormControl isInvalid={!!errors.countryPopulationYear}>
+              <InputGroup>
+                <Select
+                  placeholder={t("inventory-year-placeholder")}
+                  size="lg"
+                  w="217px"
+                  shadow="1dp"
+                  fontSize="body.lg"
+                  fontStyle="normal"
+                  letterSpacing="wide"
+                  _placeholder={{ color: "content.tertiary" }}
+                  py="16px"
+                  px={0}
+                  {...register("countryPopulationYear", {
+                    required: t("inventory-year-required"),
+                  })}
+                >
+                  {years.map((year: number, i: number) => (
+                    <option value={year} key={i}>
+                      {year}
+                    </option>
+                  ))}
+                </Select>
+                <InputRightElement
+                  display="flex"
+                  alignItems="center"
+                  mt={5}
+                  mr={6}
+                >
+                  {!!year && <CheckIcon color="semantic.success" boxSize={4} />}
+                </InputRightElement>
+              </InputGroup>
+            </FormControl>
           </Box>
         </Box>
       </Box>
@@ -269,7 +273,7 @@ export default function SetPopulationDataStep({
           </Box>
           <Box display="flex" gap="16px" alignItems="baseline">
             <HStack spacing={6} align="start">
-              <FormControl isInvalid={!!errors.cityPopulation}>
+              <FormControl isInvalid={!!errors.regionPopulation}>
                 <FormattedThousandsNumberInput<Inputs>
                   name="regionPopulation"
                   control={control}
@@ -283,41 +287,45 @@ export default function SetPopulationDataStep({
                   fontSize="body.lg"
                   letterSpacing="wide"
                 />
-                <FormErrorMessage
-                  color="content.tertiary"
-                  letterSpacing="0.5px"
-                >
-                  <FormErrorIcon />
-                  {errors.cityPopulation && errors.cityPopulation.message}
-                </FormErrorMessage>
+                {errors.regionPopulation && (
+                  <FormErrorMessage
+                    color="content.tertiary"
+                    letterSpacing="0.5px"
+                  >
+                    <FormErrorIcon />
+                    {errors.regionPopulation.message}
+                  </FormErrorMessage>
+                )}
               </FormControl>
             </HStack>
-            <InputGroup>
-              <Select
-                placeholder={t("inventory-year-placeholder")}
-                size="lg"
-                w="217px"
-                shadow="1dp"
-                fontSize="body.lg"
-                fontStyle="normal"
-                letterSpacing="wide"
-                _placeholder={{ color: "content.tertiary" }}
-                py="16px"
-                px={0}
-                {...register("regionPopulationYear", {
-                  required: t("inventory-year-required"),
-                })}
-              >
-                {years.map((year: number, i: number) => (
-                  <option value={year} key={i}>
-                    {year}
-                  </option>
-                ))}
-              </Select>
-              <InputRightElement mt={5} mr={6}>
-                {!!year && <CheckIcon color="semantic.success" boxSize={4} />}
-              </InputRightElement>
-            </InputGroup>
+            <FormControl isInvalid={!!errors.regionPopulationYear}>
+              <InputGroup>
+                <Select
+                  placeholder={t("inventory-year-placeholder")}
+                  size="lg"
+                  w="217px"
+                  shadow="1dp"
+                  fontSize="body.lg"
+                  fontStyle="normal"
+                  letterSpacing="wide"
+                  _placeholder={{ color: "content.tertiary" }}
+                  py="16px"
+                  px={0}
+                  {...register("regionPopulationYear", {
+                    required: t("inventory-year-required"),
+                  })}
+                >
+                  {years.map((year: number, i: number) => (
+                    <option value={year} key={i}>
+                      {year}
+                    </option>
+                  ))}
+                </Select>
+                <InputRightElement mt={5} mr={6}>
+                  {!!year && <CheckIcon color="semantic.success" boxSize={4} />}
+                </InputRightElement>
+              </InputGroup>
+            </FormControl>
           </Box>
         </Box>
       </Box>
@@ -360,41 +368,45 @@ export default function SetPopulationDataStep({
                   fontSize="body.lg"
                   letterSpacing="wide"
                 />
-                <FormErrorMessage
-                  color="content.tertiary"
-                  letterSpacing="0.5px"
-                >
-                  <FormErrorIcon />
-                  {errors.cityPopulation && errors.cityPopulation.message}
-                </FormErrorMessage>
+                {errors.cityPopulation && (
+                  <FormErrorMessage
+                    color="content.tertiary"
+                    letterSpacing="0.5px"
+                  >
+                    <FormErrorIcon />
+                    {errors.cityPopulation.message}
+                  </FormErrorMessage>
+                )}
               </FormControl>
             </HStack>
-            <InputGroup>
-              <Select
-                placeholder={t("inventory-year-placeholder")}
-                size="lg"
-                w="217px"
-                shadow="1dp"
-                fontSize="body.lg"
-                fontStyle="normal"
-                letterSpacing="wide"
-                _placeholder={{ color: "content.tertiary" }}
-                py="16px"
-                px={0}
-                {...register("cityPopulationYear", {
-                  required: t("inventory-year-required"),
-                })}
-              >
-                {years.map((year: number, i: number) => (
-                  <option value={year} key={i}>
-                    {year}
-                  </option>
-                ))}
-              </Select>
-              <InputRightElement mt={5} mr={6}>
-                {!!year && <CheckIcon color="semantic.success" boxSize={4} />}
-              </InputRightElement>
-            </InputGroup>
+            <FormControl isInvalid={!!errors.cityPopulationYear}>
+              <InputGroup>
+                <Select
+                  placeholder={t("inventory-year-placeholder")}
+                  size="lg"
+                  w="217px"
+                  shadow="1dp"
+                  fontSize="body.lg"
+                  fontStyle="normal"
+                  letterSpacing="wide"
+                  _placeholder={{ color: "content.tertiary" }}
+                  py="16px"
+                  px={0}
+                  {...register("cityPopulationYear", {
+                    required: t("inventory-year-required"),
+                  })}
+                >
+                  {years.map((year: number, i: number) => (
+                    <option value={year} key={i}>
+                      {year}
+                    </option>
+                  ))}
+                </Select>
+                <InputRightElement mt={5} mr={6}>
+                  {!!year && <CheckIcon color="semantic.success" boxSize={4} />}
+                </InputRightElement>
+              </InputGroup>
+            </FormControl>
           </Box>
         </Box>
       </Box>

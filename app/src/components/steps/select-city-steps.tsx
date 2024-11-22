@@ -356,7 +356,7 @@ export default function SelectCityStep({
                     letterSpacing="wide"
                   >
                     In case the geographical boundary is not the right one{" "}
-                    <Link href="">
+                    <Link href="mailto:greta@openearth.org">
                       <Text
                         as="span"
                         color="interactive.secondary"

@@ -134,7 +134,7 @@ async def main(input_file, parse_rows=None):
     # Load the data into a DataFrame
     # climate_action_library_test.csv for testing and changing values
     # climate_action_library_original.csv for original C40 list
-    data_path = Path("../data") / input_file
+    data_path = Path("../data/climate_actions") / input_file
     df = load_datafile_into_df(data_path)
 
     # Prepare a list to hold all mapped data

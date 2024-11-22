@@ -120,7 +120,10 @@ export default class InventoryProgressService {
       // add completed field to subsectors if there is a value for it
       const subSectors = sector.subSectors.map((subSector) => {
         let completed = false;
-        let totalCount = subSector.subCategories.length;
+        let totalCount =
+          subSector.subCategories.length > 0
+            ? subSector.subCategories.length
+            : 1; // for sectors IV and V there are no subcategories. We use 1 here so that the progress doesn't come back as full when it's empty
         let completedCount = 0;
         if (inventoryValues?.length > 0) {
           completedCount = inventoryValues.filter(

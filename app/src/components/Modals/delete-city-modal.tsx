@@ -1,28 +1,26 @@
 "use client";
 
-import { UserDetails } from "@/app/[lng]/[inventory]/settings/page";
 import {
-  Modal,
+  Badge,
+  Box,
   Button,
+  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Text,
-  Box,
-  Badge,
   useToast,
-  ModalFooter,
 } from "@chakra-ui/react";
 import React, { FC, useState } from "react";
 
 import { FiTrash2 } from "react-icons/fi";
 import PasswordInput from "../password-input";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useTranslation } from "@/i18n/client";
 import { TFunction } from "i18next";
-import { InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
+import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { UserAttributes } from "@/models/User";
 import { api } from "@/services/api";
 import { CityAttributes } from "@/models/City";
@@ -67,7 +65,7 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
     }).then(async (res: any) => {
       if (res.data?.comparePassword) {
         await removeCity({
-          cityId: cityData.locode!,
+          cityId: cityData.cityId!,
         }).then((res: any) => {
           onClose();
           setIsPasswordCorrect(true);

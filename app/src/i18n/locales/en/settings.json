@@ -59,5 +59,7 @@
   "remove-user-prompt": " Are you sure you want to <2> permanently remove this user </2> from your team?",
   "city-deleted": "City deleted successfully",
   "delete-file-prompt": "Are you sure you want to <2> permanently delete </2> this file from the city's repository?",
-  "mark-as-completed": "Mark as completed"
+  "mark-as-completed": "Mark as completed",
+  "password-required": "Password is required",
+  "min-length": "Minimum length should be {{length}}"
 }

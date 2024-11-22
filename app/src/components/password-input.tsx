@@ -1,11 +1,5 @@
 import { passwordRegex } from "@/util/validation";
-import {
-  CheckIcon,
-  CloseIcon,
-  ViewIcon,
-  ViewOffIcon,
-  WarningIcon,
-} from "@chakra-ui/icons";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
   Button,
   FormControl,
@@ -194,7 +188,7 @@ export default function PasswordInput({
             letterSpacing="wide"
             color="content.tertiary"
           >
-            {error.message}
+            {t(error.message)}
           </Text>
         </FormErrorMessage>
       )}

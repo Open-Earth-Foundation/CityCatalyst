@@ -84,13 +84,15 @@ export default class InventoryProgressService {
             }),
         })),
       }));
-
     const sectorTotals: Record<string, number> = filteredOutSectors.reduce(
       (acc, sector) => {
-        const subCategoryCount = sector.subSectors
-          .map((s) => s.subCategories.length)
-          .reduce((acc, count) => acc + count, 0);
-        acc[sector.sectorId] = subCategoryCount;
+        const subCategoryCount = sector.subSectors.reduce(
+          (count, subSector) => count + subSector.subCategories.length,
+          0,
+        );
+        acc[sector.sectorId] = ["I", "II", "III"].includes(sector.sectorName!)
+          ? subCategoryCount
+          : sector.subSectors.length;
         return acc;
       },
       {} as Record<string, number>,

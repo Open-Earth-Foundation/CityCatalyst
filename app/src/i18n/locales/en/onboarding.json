@@ -4,6 +4,8 @@
   "start-button": "Start City Inventory Profile",
   "city": "City",
   "setup-city-heading": "Select City",
+  "no-results": "No results found",
+  "no-results-details": "Try searching for another city",
   "setup-city-details": "Search and select the city or municipality for which you want to create your GHG emission inventory.",
   "go-back": "Go Back",
   "continue": "Continue",

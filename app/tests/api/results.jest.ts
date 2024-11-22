@@ -81,6 +81,7 @@ describe("Results API", () => {
           bySubSector: [
             {
               co2eq: "40399",
+              inventoryId: inventoryId,
               percentage: 55,
               scopeName: "1",
               sectorName: "Stationary Energy",
@@ -88,6 +89,7 @@ describe("Results API", () => {
             },
             {
               co2eq: "22388",
+              inventoryId: inventoryId,
               percentage: 31,
               scopeName: "1",
               sectorName: "Transportation",
@@ -95,6 +97,7 @@ describe("Results API", () => {
             },
             {
               co2eq: "10581",
+              inventoryId: inventoryId,
               percentage: 14,
               scopeName: "1",
               sectorName: "Waste",

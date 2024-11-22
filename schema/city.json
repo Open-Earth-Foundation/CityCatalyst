@@ -2,109 +2,106 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://schemas.openearth.org/cap/city.json",
   "title": "City",
-  "type": "array",
-  "items": {
-    "type": "object",
-    "properties": {
-      "locode": {
-        "type": "string",
-        "description": "The UN/LOCODE of the city",
-        "pattern": "^[A-Z]{2}[A-Z0-9]{3}$"
-      },
-      "name": {
-        "type": "string",
-        "description": "The name of the city"
-      },
-      "region": {
-        "type": "string",
-        "description": "ISO 3166-2 region code where the city is located",
-        "pattern": "^[A-Z]{2}-[A-Z0-9]{1,3}$"
-      },
-      "regionName": {
-        "type": "string",
-        "description": "The name of the region where the city is located"
-      },
-      "population": {
-        "type": "integer",
-        "description": "The population of the city"
-      },
-      "area": {
-        "type": "number",
-        "description": "The area of the city in square kilometers"
-      },
-      "elevation": {
-        "type": "number",
-        "description": "The elevation of the city in meters"
-      },
-      "biome": {
-        "type": "string",
-        "description": "The environmental classification of the city"
-      },
-      "totalEmissions": {
-        "type": "number",
-        "description": "The CO2 emissions of the city in metric tons per year"
-      },
-      "stationaryEnergyEmissions": {
-        "type": "number",
-        "description": "The CO2 emissions from stationary energy sources in metric tons per year"
-      },
-      "transportationEmissions": {
-        "type": "number",
-        "description": "The CO2 emissions from transportation sources in metric tons per year"
-      },
-      "wasteEmissions": {
-        "type": "number",
-        "description": "The CO2 emissions from waste sources in metric tons per year"
-      },
-      "industrialProcessEmissions": {
-        "type": "number",
-        "description": "The CO2 emissions from industrial processes in metric tons per year"
-      },
-      "landUseEmissions": {
-        "type": "number",
-        "description": "The CO2 emissions from land use changes in metric tons per year"
-      },
-      "scope1Emissions": {
-        "type": "number",
-        "description": "The CO2 emissions from scope 1 sources in metric tons per year"
-      },
-      "scope2Emissions": {
-        "type": "number",
-        "description": "The CO2 emissions from scope 2 sources in metric tons per year"
-      },
-      "scope3Emissions": {
-        "type": "number",
-        "description": "The CO2 emissions from scope 3 sources in metric tons per year"
-      },
-      "ccra": {
-        "type": "array",
-        "description": "The list containing keyimpacts, hazards and risk scores for a city",
-        "items": {
-          "type": "object",
-          "properties": {
-            "keyimpact": {
-              "type": "string",
-              "description": "The sector or area that is directly affected by one or more hazards"
-            },
-            "hazard": {
-              "type": "string",
-              "description": "The occurrence of an environmental event that has a harmful impact on people, property, or the environment"
-            },
-            "normalised_risk_score": {
-              "type": "number",
-              "description": "The potential for loss or adverse effects, assessed as a combination of exposure, vulnerability, and hazard characteristics"
-            }
-          },
-          "required": ["keyimpact", "hazard", "risk_score"]
-        }
-      }
+  "type": "object",
+  "properties": {
+    "locode": {
+      "type": "string",
+      "description": "The UN/LOCODE of the city",
+      "pattern": "^[A-Z]{2}[A-Z0-9]{3}$"
     },
-    "required": [
-      "locode",
-      "name",
-      "region",
-      "regionName",
-      "totalEmissions"
-    ]
-  }
+    "name": {
+      "type": "string",
+      "description": "The name of the city"
+    },
+    "region": {
+      "type": "string",
+      "description": "ISO 3166-2 region code where the city is located",
+      "pattern": "^[A-Z]{2}-[A-Z0-9]{1,3}$"
+    },
+    "regionName": {
+      "type": "string",
+      "description": "The name of the region where the city is located"
+    },
+    "population": {
+      "type": "integer",
+      "description": "The population of the city"
+    },
+    "area": {
+      "type": "number",
+      "description": "The area of the city in square kilometers"
+    },
+    "elevation": {
+      "type": "number",
+      "description": "The elevation of the city in meters"
+    },
+    "biome": {
+      "type": "string",
+      "description": "The environmental classification of the city"
+    },
+    "totalEmissions": {
+      "type": "number",
+      "description": "The CO2 emissions of the city in metric tons per year"
+    },
+    "stationaryEnergyEmissions": {
+      "type": "number",
+      "description": "The CO2 emissions from stationary energy sources in metric tons per year"
+    },
+    "transportationEmissions": {
+      "type": "number",
+      "description": "The CO2 emissions from transportation sources in metric tons per year"
+    },
+    "wasteEmissions": {
+      "type": "number",
+      "description": "The CO2 emissions from waste sources in metric tons per year"
+    },
+    "industrialProcessEmissions": {
+      "type": "number",
+      "description": "The CO2 emissions from industrial processes in metric tons per year"
+    },
+    "landUseEmissions": {
+      "type": "number",
+      "description": "The CO2 emissions from land use changes in metric tons per year"
+    },
+    "scope1Emissions": {
+      "type": "number",
+      "description": "The CO2 emissions from scope 1 sources in metric tons per year"
+    },
+    "scope2Emissions": {
+      "type": "number",
+      "description": "The CO2 emissions from scope 2 sources in metric tons per year"
+    },
+    "scope3Emissions": {
+      "type": "number",
+      "description": "The CO2 emissions from scope 3 sources in metric tons per year"
+    },
+    "ccra": {
+      "type": "array",
+      "description": "The list containing keyimpacts, hazards and risk scores for a city",
+      "items": {
+        "type": "object",
+        "properties": {
+          "keyimpact": {
+            "type": "string",
+            "description": "The sector or area that is directly affected by one or more hazards"
+          },
+          "hazard": {
+            "type": "string",
+            "description": "The occurrence of an environmental event that has a harmful impact on people, property, or the environment"
+          },
+          "normalised_risk_score": {
+            "type": "number",
+            "description": "The potential for loss or adverse effects, assessed as a combination of exposure, vulnerability, and hazard characteristics"
+          }
+        },
+        "required": ["keyimpact", "hazard", "normalised_risk_score"]
+      }
+    }
+  },
+  "required": [
+    "locode",
+    "name",
+    "region",
+    "regionName",
+    "totalEmissions"
+  ]
 }

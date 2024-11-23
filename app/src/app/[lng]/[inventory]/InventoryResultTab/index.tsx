@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/i18n/client";
-import { InventoryProgressResponse, InventoryResponse } from "@/util/types";
+import { InventoryResponse } from "@/util/types";
 import {
   Box,
   Card,
@@ -229,17 +229,11 @@ function EmissionsBreakdown({
 export default function InventoryResultTab({
   lng,
   inventory,
-  isUserInfoLoading,
-  isInventoryProgressLoading,
-  inventoryProgress,
   isPublic,
   population,
 }: {
   lng: string;
   inventory?: InventoryResponse;
-  isUserInfoLoading?: boolean;
-  isInventoryProgressLoading?: boolean;
-  inventoryProgress?: InventoryProgressResponse;
   population?: PopulationAttributes;
   isPublic: boolean;
 }) {

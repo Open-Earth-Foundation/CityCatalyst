@@ -19,7 +19,7 @@ export interface InventoryAttributes {
   publishedAt?: Date | null;
   inventoryType?: InventoryTypeEnum;
   globalWarmingPotentialType?: GlobalWarmingPotentialTypeEnum;
-  lastUpdatedAt?: Date | null;
+  lastUpdated?: Date | null;
 }
 
 export type InventoryPk = "inventoryId";
@@ -34,7 +34,7 @@ export type InventoryOptionalAttributes =
   | "publishedAt"
   | "inventoryType"
   | "globalWarmingPotentialType"
-  | "lastUpdatedAt";
+  | "lastUpdated";
 
 export type InventoryCreationAttributes = Optional<
   InventoryAttributes,
@@ -53,7 +53,7 @@ export class Inventory
   totalCountryEmissions?: number;
   isPublic?: boolean;
   publishedAt?: Date | null;
-  lastUpdatedAt?: Date | null;
+  lastUpdated?: Date | null;
   inventoryType?: InventoryTypeEnum;
   globalWarmingPotentialType?: GlobalWarmingPotentialTypeEnum;
   // Inventory belongsTo City via cityId
@@ -166,17 +166,17 @@ export class Inventory
           allowNull: true,
           field: "global_warming_potential_type",
         },
-        lastUpdatedAt: {
+        lastUpdated: {
           type: DataTypes.DATE,
           allowNull: true,
-          field: "last_updated_at",
+          field: "last_updated",
         },
       },
       {
         sequelize,
         tableName: "Inventory",
         schema: "public",
-        timestamps: false,
+        timestamps: true,
         createdAt: "created",
         updatedAt: "last_updated",
         indexes: [
@@ -188,7 +188,7 @@ export class Inventory
         ],
         hooks: {
           beforeCreate: (inventory) => {
-            inventory.lastUpdatedAt = new Date();
+            inventory.lastUpdated = new Date();
           },
         },
       },

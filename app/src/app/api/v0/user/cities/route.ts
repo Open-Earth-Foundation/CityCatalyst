@@ -23,7 +23,7 @@ export const GET = apiHandler(async (_req: NextRequest, context) => {
           {
             model: db.models.Inventory,
             as: "inventories",
-            attributes: ["year", "inventoryId", "lastUpdatedAt"],
+            attributes: ["year", "inventoryId", "lastUpdated"],
           },
         ],
       },
@@ -49,7 +49,7 @@ export const GET = apiHandler(async (_req: NextRequest, context) => {
       years: city.inventories.map((inventory) => ({
         year: inventory.year,
         inventoryId: inventory.inventoryId,
-        lastUpdate: inventory.lastUpdatedAt,
+        lastUpdate: inventory.lastUpdated,
       })),
     };
   });

@@ -243,7 +243,7 @@ export class InventoryValue
             if (inventoryValue.inventoryId) {
               const inventory = await inventoryValue.getInventory();
               if (inventory) {
-                await inventory.update({ lastUpdatedAt: new Date() });
+                await inventory.update({ lastUpdated: new Date() });
               }
             }
           },
@@ -251,7 +251,15 @@ export class InventoryValue
             if (inventoryValue.inventoryId) {
               const inventory = await inventoryValue.getInventory();
               if (inventory) {
-                await inventory.update({ lastUpdatedAt: new Date() });
+                await inventory.update({ lastUpdated: new Date() });
+              }
+            }
+          },
+          afterDestroy: async (inventoryValue: InventoryValue) => {
+            if (inventoryValue.inventoryId) {
+              const inventory = await inventoryValue.getInventory();
+              if (inventory) {
+                await inventory.update({ lastUpdated: new Date() });
               }
             }
           },

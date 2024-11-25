@@ -44,7 +44,9 @@ const EmissionsTable = ({
       <Table variant="simple">
         <Thead>
           <Tr>
-            <Th sx={{ font: "bold", color: "black" }}>{t("subsector")}</Th>
+            <Th sx={{ font: "bold", color: "black" }} width={"50%"}>
+              {t("subsector")}
+            </Th>
             <Th sx={{ font: "bold", color: "black" }}>
               {t("total-emissions-CO2eq")}
             </Th>
@@ -54,10 +56,11 @@ const EmissionsTable = ({
         <Tbody>
           {(topEmissions || []).map((emission, index) => (
             <Tr key={index}>
-              <Td>
+              <Td sx={{ maxWidth: "50%", wordBreak: "break-word" }}>
                 <Text
                   fontFamily="heading"
                   className="text-sm leading-5 tracking-[0.5px]"
+                  sx={{ whiteSpace: "normal" }}
                 >
                   {t(toKebabCase(emission.subsectorName))}
                 </Text>

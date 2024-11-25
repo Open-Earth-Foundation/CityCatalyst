@@ -155,9 +155,9 @@ async def main(input_file, parse_rows=None):
     mapped_data.extend(results)
 
     # Set up output directory and file path using pathlib
-    output_dir = Path("./output")
+    output_dir = Path("../data/climate_actions/output")
     output_dir.mkdir(parents=False, exist_ok=True)
-    output_file = output_dir / "output.json"
+    output_file = output_dir / "c40_output.json"
 
     # Optionally, save the mapped data to a JSON file
     with output_file.open("w") as f:

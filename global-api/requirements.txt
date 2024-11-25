@@ -16,7 +16,7 @@ scipy==1.14.*
 shapely==2.0.6
 SQLAlchemy==2.0.36
 tqdm==4.67.*
-uvicorn==0.32.0
+uvicorn==0.32.1
 xarray==2024.*
 geojson==3.1.*
 openclimate==0.1.*

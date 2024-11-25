@@ -123,5 +123,7 @@
   "ghg-emissions-inventory-in-year": "GHG emissions inventory in {{ year }}",
   "set-inventory-preferences": "Set inventory preferences",
   "discover-relevant-subsectors": "Discover the GPC sub-sectors relevant to your city and tailor your inventory to fit your city's specific needs.",
+  "agriculture,-forestry,-and-other-land-use-(afolu)": "AFOLU",
+  "industrial-processes-and-product-uses-(ippu)": "IPPU",
   "inventory-year": "Inventory year"
 }

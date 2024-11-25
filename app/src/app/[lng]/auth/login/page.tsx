@@ -63,7 +63,7 @@ export default function Login({
   ) {
     callbackUrl = callbackParam;
   }
-  const { showAuthToast } = useAuthToast(t);
+  const { showLoginSuccessToast } = useAuthToast(t);
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
       const res = await signIn("credentials", {
@@ -74,7 +74,7 @@ export default function Login({
       });
 
       if (res?.ok) {
-        showAuthToast();
+        showLoginSuccessToast();
         router.push(callbackUrl);
         setError("");
         return;

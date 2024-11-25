@@ -5,7 +5,7 @@ import { TFunction } from "i18next";
 export function useAuthToast(t: TFunction) {
   const toast = useToast();
 
-  const showAuthToast = () => {
+  const showLoginSuccessToast = () => {
     return toast({
       title: t("verified-toast-title"),
       description: t("verified-toast-description"),
@@ -37,5 +37,5 @@ export function useAuthToast(t: TFunction) {
     });
   };
 
-  return { showAuthToast };
+  return { showLoginSuccessToast };
 }

@@ -44,7 +44,10 @@ export default function Signup({
     register,
     setError: setFormError,
     formState: { errors, isSubmitting },
+    watch,
   } = useForm<Inputs>();
+
+  const watchPassword = watch("password", "");
 
   const [error, setError] = useState("");
 
@@ -168,8 +171,9 @@ export default function Signup({
           error={errors.password}
           shouldValidate={true}
           t={t}
+          watchPassword={watchPassword}
         >
-          {!errors.password && (
+          {!errors.password && watchPassword.length === 0 && (
             <FormHelperText display="flex" alignItems="center" gap="6px">
               <InfoOutlineIcon color="interactive.primary" boxSize={4} />{" "}
               <Text
@@ -189,6 +193,7 @@ export default function Signup({
           t={t}
           name={t("confirm-password")}
           id="confirmPassword"
+          shouldValidate={false}
         />
         <FormControl isInvalid={!!errors.inviteCode}>
           <FormLabel>{t("invite-code")}</FormLabel>

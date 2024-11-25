@@ -1,5 +1,5 @@
 import { passwordRegex } from "@/util/validation";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { ViewIcon, ViewOffIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Button,
   FormControl,
@@ -8,6 +8,7 @@ import {
   Input,
   InputGroup,
   InputRightElement,
+  Text,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { FieldError } from "react-hook-form";
@@ -42,6 +43,9 @@ export default function PasswordInput({
           type={showPassword ? "text" : "password"}
           size="lg"
           shadow="2dp"
+          background={
+            error ? "sentiment.negativeOverlay" : "background.default"
+          }
           placeholder={showPassword ? t("password") : "········"}
           {...register(id, {
             required: t("password-required"),
@@ -71,7 +75,19 @@ export default function PasswordInput({
         </InputRightElement>
       </InputGroup>
       {children}
-      <FormErrorMessage>{error && error.message}</FormErrorMessage>
+      {error && (
+        <FormErrorMessage display="flex" gap="6px">
+          <WarningIcon />
+          <Text
+            fontSize="body.md"
+            lineHeight="20px"
+            letterSpacing="wide"
+            color="content.tertiary"
+          >
+            {error.message}
+          </Text>
+        </FormErrorMessage>
+      )}
     </FormControl>
   );
 }

@@ -3,7 +3,7 @@
 import EmailInput from "@/components/email-input";
 import PasswordInput from "@/components/password-input";
 import { useTranslation } from "@/i18n/client";
-import { InfoOutlineIcon } from "@chakra-ui/icons";
+import { InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
 import { Link } from "@chakra-ui/next-js";
 import {
   Button,
@@ -79,8 +79,8 @@ export default function Signup({
       return;
     }
 
-    if(inventoryId && inventoryId !== '') {
-      data.inventory = inventoryId
+    if (inventoryId && inventoryId !== "") {
+      data.inventory = inventoryId;
     }
 
     try {
@@ -138,15 +138,29 @@ export default function Signup({
           <Input
             type="text"
             placeholder={t("full-name-placeholder")}
+            background={
+              errors.name ? "sentiment.negativeOverlay" : "background.default"
+            }
+            shadow="2dp"
             size="lg"
             {...register("name", {
               required: t("full-name-required"),
               minLength: { value: 4, message: t("min-length", { length: 4 }) },
             })}
           />
-          <FormErrorMessage>
-            {errors.name && errors.name.message}
-          </FormErrorMessage>
+          {errors.name && (
+            <FormErrorMessage display="flex" gap="6px">
+              <WarningIcon />
+              <Text
+                fontSize="body.md"
+                lineHeight="20px"
+                letterSpacing="wide"
+                color="content.tertiary"
+              >
+                {errors.name.message}
+              </Text>
+            </FormErrorMessage>
+          )}
         </FormControl>
         <EmailInput register={register} error={errors.email} t={t} />
         <PasswordInput
@@ -155,15 +169,19 @@ export default function Signup({
           shouldValidate={true}
           t={t}
         >
-          <FormHelperText>
-            <InfoOutlineIcon
-              color="interactive.secondary"
-              boxSize={4}
-              mt={-0.5}
-              mr={1.5}
-            />{" "}
-            {t("password-hint")}
-          </FormHelperText>
+          {!errors.password && (
+            <FormHelperText display="flex" alignItems="center" gap="6px">
+              <InfoOutlineIcon color="interactive.primary" boxSize={4} />{" "}
+              <Text
+                fontSize="body.md"
+                lineHeight="20px"
+                letterSpacing="wide"
+                color="conent.tertiary"
+              >
+                {t("password-hint")}
+              </Text>
+            </FormHelperText>
+          )}
         </PasswordInput>
         <PasswordInput
           register={register}
@@ -178,15 +196,31 @@ export default function Signup({
             type="text"
             placeholder={t("invite-code-placeholder")}
             size="lg"
+            shadow="2dp"
+            background={
+              errors.inviteCode
+                ? "sentiment.negativeOverlay"
+                : "background.default"
+            }
             {...register("inviteCode", {
               required: t("invite-code-required"),
               minLength: { value: 6, message: t("invite-code-invalid") },
               maxLength: { value: 6, message: t("invite-code-invalid") },
             })}
           />
-          <FormErrorMessage>
-            {errors.inviteCode && errors.inviteCode.message}
-          </FormErrorMessage>
+          {errors.inviteCode && (
+            <FormErrorMessage display="flex" gap="6px">
+              <WarningIcon />
+              <Text
+                fontSize="body.md"
+                lineHeight="20px"
+                letterSpacing="wide"
+                color="content.tertiary"
+              >
+                {errors.inviteCode.message}
+              </Text>
+            </FormErrorMessage>
+          )}
           <FormHelperText>
             <Trans t={t} i18nKey="no-invite-code">
               Don&apos;t have an invitation code?{" "}
@@ -215,9 +249,19 @@ export default function Signup({
               </Link>
             </Trans>
           </Checkbox>
-          <FormErrorMessage>
-            {errors.acceptTerms && errors.acceptTerms.message}
-          </FormErrorMessage>
+          {errors.acceptTerms && (
+            <FormErrorMessage display="flex" gap="6px">
+              <WarningIcon />
+              <Text
+                fontSize="body.md"
+                lineHeight="20px"
+                letterSpacing="wide"
+                color="content.tertiary"
+              >
+                {errors.acceptTerms.message}
+              </Text>
+            </FormErrorMessage>
+          )}
         </FormControl>
         {error && <Text color="semantic.danger">{error}</Text>}
         <Button

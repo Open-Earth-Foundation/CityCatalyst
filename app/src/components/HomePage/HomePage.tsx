@@ -4,7 +4,6 @@ import Footer from "@/components/Sections/Footer";
 import { useTranslation } from "@/i18n/client";
 import {
   api,
-  useGetCitiesAndYearsQuery,
   useGetCityPopulationQuery,
   useGetYearOverYearResultsQuery,
 } from "@/services/api";
@@ -89,8 +88,6 @@ export default function HomePage({
     { cityId: inventory?.cityId!, year: inventory?.year! },
     { skip: !inventory?.cityId || !inventory?.year },
   );
-
-  const { data: citiesAndYears } = useGetCitiesAndYearsQuery();
 
   const { data: yearlyGhgResult } = useGetYearOverYearResultsQuery(
     inventory?.cityId!,

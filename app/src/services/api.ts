@@ -46,13 +46,15 @@ export const api = createApi({
     "YearlyReportResults",
     "SectorBreakdown",
     "Inventory",
+    "CitiesAndInventories",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
-    getCitiesAndYears: builder.query<CitiesAndYearsResponse, void>({
+    getCitiesAndYears: builder.query<CitiesAndYearsResponse[], void>({
       query: () => "user/cities",
-      transformResponse: (response: { data: CitiesAndYearsResponse }) =>
+      transformResponse: (response: { data: CitiesAndYearsResponse[] }) =>
         response.data,
+      providesTags: ["CitiesAndInventories"],
     }),
     getCity: builder.query<CityAttributes, string>({
       query: (cityId) => `city/${cityId}`,
@@ -155,7 +157,7 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: InventoryAttributes }) =>
         response.data,
-      invalidatesTags: ["UserInventories"],
+      invalidatesTags: ["UserInventories", "CitiesAndInventories"],
     }),
     setUserInfo: builder.mutation<
       UserAttributes,

@@ -1,4 +1,3 @@
-// Backend/ResultsService.ts
 import { db } from "@/models";
 import { QueryTypes } from "sequelize";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
@@ -164,7 +163,7 @@ async function fetchTopEmissionsBulk(
     FROM "InventoryValue" iv
     JOIN "Sector" s ON iv.sector_id = s.sector_id
     JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
-    JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
+    LEFT JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
     JOIN "Scope" scope ON scope.scope_id = sc.scope_id OR ss.scope_id = scope.scope_id
     WHERE iv.inventory_id IN (:inventoryIds) AND iv.co2eq IS NOT NULL
     ORDER BY iv.inventory_id, iv.co2eq DESC
@@ -219,7 +218,7 @@ async function fetchActivitiesBulk(
     JOIN "InventoryValue" iv ON av.inventory_value_id = iv.id
     JOIN "Sector" s ON iv.sector_id = s.sector_id
     JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
-    JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
+    LEFT JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
     JOIN "Scope" scope ON scope.scope_id = sc.scope_id OR ss.scope_id = scope.scope_id
     WHERE iv.inventory_id IN (:inventoryIds)
       AND LOWER(s.sector_name) IN (:sectorNames)

@@ -41,6 +41,7 @@ export default function PasswordInput({
         <Input
           type={showPassword ? "text" : "password"}
           size="lg"
+          shadow="2dp"
           placeholder={showPassword ? t("password") : "········"}
           {...register(id, {
             required: t("password-required"),

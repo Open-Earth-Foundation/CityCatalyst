@@ -71,9 +71,9 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
           tickSize: 5,
           tickPadding: 5,
           tickRotation: 0,
-          legend: "Year",
+          legend: tData("year"),
           legendPosition: "middle",
-          legendOffset: 32,
+          legendOffset: 40,
         }}
         axisLeft={{
           tickSize: 5,
@@ -81,7 +81,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
           tickRotation: 0,
           legend: "CO2eq",
           legendPosition: "middle",
-          legendOffset: -50,
+          legendOffset: -55,
           format: (value) => `${value} kt`,
         }}
         labelSkipWidth={12}

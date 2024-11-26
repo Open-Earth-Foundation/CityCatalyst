@@ -1,11 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/i18n/client";
-import {
-
-  InventoryResponse,
-  SectorEmission,
-} from "@/util/types";
+import { InventoryResponse, SectorEmission } from "@/util/types";
 import {
   Box,
   Card,
@@ -293,37 +289,39 @@ export function EmissionPerSectors({
       });
 
       // taking the response object let's working on getting the percentage increase for each year
-      return response.map((data) => {
-        const yearWithPercentageIncrease = data.bySector.map((sectorData) => {
-          if (data.year - 1 in yearlyMap) {
-            let lastYearData = yearlyMap[data.year - 1].find(
-              (sector) => sector.sectorName === sectorData.sectorName,
-            );
+      return response
+        .map((data) => {
+          const yearWithPercentageIncrease = data.bySector.map((sectorData) => {
+            if (data.year - 1 in yearlyMap) {
+              let lastYearData = yearlyMap[data.year - 1].find(
+                (sector) => sector.sectorName === sectorData.sectorName,
+              );
 
-            // calculate percentage change
+              // calculate percentage change
 
-            let percentageChange = lastYearData
-              ? Number(
-                  (BigInt(sectorData.co2eq) - BigInt(lastYearData?.co2eq)) *
-                    100n,
-                ) / Number(sectorData.co2eq)
-              : 100;
+              let percentageChange = lastYearData
+                ? Number(
+                    (BigInt(sectorData.co2eq) - BigInt(lastYearData?.co2eq)) *
+                      100n,
+                  ) / Number(sectorData.co2eq)
+                : 100;
 
+              return {
+                ...sectorData,
+                percentageChange,
+              };
+            }
             return {
               ...sectorData,
-              percentageChange,
+              percentageChange: 0n,
             };
-          }
+          });
           return {
-            ...sectorData,
-            percentageChange: 0n,
+            ...data,
+            bySector: yearWithPercentageIncrease,
           };
-        });
-        return {
-          ...data,
-          bySector: yearWithPercentageIncrease,
-        };
-      });
+        })
+        .sort((a, b) => b.year - a.year);
     }
     return [];
   }, [targetYears, yearlyGhgResult]);

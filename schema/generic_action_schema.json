@@ -39,7 +39,7 @@
             "type": ["array", "null"],
             "items": {
                 "type": "string",
-                "enum": ["droughts", "heatwaves", "floods", "sea-level-rise", "landslides", "storms", "wildfires"]
+                "enum": ["droughts", "heatwaves", "floods", "sea-level-rise", "landslides", "storms", "wildfires", "diseases"]
             },
             "description": "The hazard the adaptation action is aligned with",
             "appliesTo": ["adaptation"],

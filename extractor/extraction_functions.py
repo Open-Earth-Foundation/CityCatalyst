@@ -85,6 +85,7 @@ def extract_Hazard(index: int, row: pd.Series, action_type: list) -> Optional[li
             "storm": "storms",
             "sea-level rise": "sea-level-rise",
             "landslide": "landslides",
+            "wildfire": "wildfires",
             "disease": "diseases",
         }
 

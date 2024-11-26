@@ -130,7 +130,6 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
                         {tData("emissions")}:&nbsp;
                       </Text>
                       <Text fontWeight="normal">
-                        {" "}
                         {convertKgToTonnes(
                           item.bySector.reduce(
                             (acc, curr) => acc + BigInt(curr.co2eq as bigint),
@@ -144,7 +143,7 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
                 <AccordionIcon
                   color="interactive.control"
                   marginRight="24px"
-                  style={{ fontSize: "40px" }}
+                  boxSize="40px"
                 />
               </AccordionButton>
             </h2>

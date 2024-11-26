@@ -136,7 +136,7 @@ export default function HomePage({
             population={population}
           />
 
-          <Box className="flex mx-auto mt-[80px] max-w-full w-[1090px]">
+          <Box className="flex mx-auto mt-[80px] w-full max-w-[1090px]">
             <VStack align="start">
               <InventoryPreferencesCard t={t} isPublic={isPublic} />
               {!isPublic && (
@@ -155,7 +155,7 @@ export default function HomePage({
             bg="background.backgroundLight"
             px={8}
           >
-            <Box className="mx-auto max-w-full w-[1090px] css-0">
+            <Box className="mx-auto w-full max-w-[1090px] css-0">
               {/* Years section */}
               {!isPublic ? (
                 <>

@@ -292,7 +292,6 @@ export default class ActivityService {
             gasValues as GasValueInput[],
           );
 
-        console.log("what was calculated", totalCO2e, totalCO2eYears, gases);
         const currentCO2e = BigInt(inventoryValue.co2eq ?? 0n);
         const calculatedCO2e = decimalToBigInt(totalCO2e); // Ensure totalCO2e is BigInt
 

@@ -45,7 +45,7 @@
     },
     "required": [
       "locode",
-      "name",
+      "cityName",
       "region",
       "regionName",
       "actionId",

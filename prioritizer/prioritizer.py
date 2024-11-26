@@ -14,7 +14,7 @@ api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
 # Constants for quantitative scoring
-SCORE_MAX = 100 / 6
+SCORE_MAX = 100 / 5
 MAX_EMISSIONS_REDUCTIONS = 500000
 scale_scores = {
     "Very High": 1.0,
@@ -81,6 +81,13 @@ def quantitative_score(city, action):
     Returns:
         float: The calculated quantitative score for the action.
     """
+    def load_weights():
+        weights_path = "CAP_data/weights.json"
+        with open(weights_path, "r", encoding="utf-8") as f:
+            weights = json.load(f)
+        return weights
+
+    weights = load_weights()
     score = 0
     # Emissions reduction score
     ghg_potential = action.get("GHGReductionPotential", {})
@@ -106,16 +113,17 @@ def quantitative_score(city, action):
     if emissions_reduction > 0:
         emissions_reduction_percentage = emissions_reduction  # Since it's already in percentage
         emissions_reduction_score = emissions_reduction_percentage/100 * SCORE_MAX
+        ghg_weight = weights.get("GHGReductionPotential", 1)
+        emissions_reduction_score *= ghg_weight
         score += emissions_reduction_score
-        print("GHG", ghg_potential)
-        print("GHG REDUCTION", emissions_reduction_score)
     print("Score after GHG reduction:", score)
 
 
     # Adaptation effectiveness score
     adaptation_effectiveness = action.get("AdaptionEffectiveness")
     if adaptation_effectiveness in scale_scores:
-        score += scale_scores[adaptation_effectiveness] * SCORE_MAX
+        adaptation_weight = weights.get("AdaptationEffectiveness", 1)
+        score += scale_scores[adaptation_effectiveness] * SCORE_MAX * adaptation_weight
     print("Score after adaptation effectiveness:", score)
 
     # Define the mapping for timeline options
@@ -132,8 +140,9 @@ def quantitative_score(city, action):
     else:
         timeline_str.strip()
     if timeline_str in timeline_mapping:
+        time_score_weight = weights.get("TimelineForImplementation", 1)
         time_score = timeline_mapping[timeline_str]
-        score += time_score
+        score += time_score*time_score_weight
     else:
         print("Invalid timeline:", timeline_str)
 
@@ -150,10 +159,10 @@ def quantitative_score(city, action):
             "medium": 10,
             "big": 5
         }
+        cost_score_weight = weights.get("CostInvestmentNeeded", 1)
         cost_score = cost_score_map.get(cost_investment_needed, 0)
-        score += (cost_score / 15) * SCORE_MAX
-        #ratio = action["CostInvestmentNeeded"] / MAX_COST if action["CostInvestmentNeeded"] else 1
-        #score += (1 - ratio) * SCORE_MAX
+        score += (cost_score / 15) * SCORE_MAX * cost_score_weight
+
     print("Score after cost:", score)
     print("-------------")
     return score

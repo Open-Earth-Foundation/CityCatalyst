@@ -7,7 +7,7 @@
         "actionId": "c40_0026",
         "actionName": "Vehicle Emissions",
         "actionPriority": 1.0,
-        "explanation": "This action addresses transportation emissions, which is a significant emission sector for Cama\u00e7ari (150,000 tons). It also has the highest quantitative score (36.1), indicating a strong potential for emissions reduction and cost-effectiveness. Vehicle emissions reduction is suitable for Cama\u00e7ari's city size, impacting public health by mitigating heatwaves."
+        "explanation": "High emissions reduction potential due to targeting transportation emissions, which makeup a significant portion of city emissions. Compatible with the infrastructure and moderate cost."
     },
     {
         "locode": "BRCCI",
@@ -17,7 +17,7 @@
         "actionId": "c40_0035",
         "actionName": "Waste Efficiency",
         "actionPriority": 2.0,
-        "explanation": "Waste Efficiency targets waste emissions sector, another key area accounting for 50,000 tons of emissions. It shares the highest quantitative score (36.1) with Vehicle Emissions, indicating high emissions reduction potential. Enhancing waste management can mitigate public health risks, complementing the city's climate risk assessment regarding diseases and flooding."
+        "explanation": "Targets the waste emission sector, with a significant quantitative score, moderate cost, and potential risk reduction benefit."
     },
     {
         "locode": "BRCCI",
@@ -27,7 +27,7 @@
         "actionId": "c40_0036",
         "actionName": "Landfill Management",
         "actionPriority": 3.0,
-        "explanation": "Landfill Management further addresses emissions from the waste sector, which is significant due to 50,000 tons attributed to waste. Scoring 32.69 in quantitative analysis, it offers a considerable reduction potential at a relatively low cost, and it suits the environmental focus of Cama\u00e7ari regarding managed waste."
+        "explanation": "Addresses waste emission sector and helps in reducing emissions from landfills. Important for both environmental and public health impact, aligning with risk reduction priorities."
     },
     {
         "locode": "BRCCI",
@@ -37,7 +37,7 @@
         "actionId": "c40_0002",
         "actionName": "Building Codes",
         "actionPriority": 4.0,
-        "explanation": "Building Codes focus on stationary energy emissions (200,000 tons), the largest sector for Cama\u00e7ari. This action has a good quantitative score (31.11) and aligns with the need to enhance energy security, a critical point in the climate risk assessment related to heatwaves and energy shortages."
+        "explanation": "Enhances efficiency in the stationary energy sector, which is the largest sector. Reduces energy demand and corresponding emissions."
     },
     {
         "locode": "BRCCI",
@@ -47,6 +47,6 @@
         "actionId": "c40_0023",
         "actionName": "Bus Emissions",
         "actionPriority": 5.0,
-        "explanation": "Bus Emissions target transportation emissions, one of the city's major sectors (150,000 tons). With a score of 26.03, it promises emissions reduction and cost efficiency. It's also aligned with public health concerns related to heatwaves by reducing pollution, enhancing Cama\u00e7ari's adaptive capacity in public transit systems."
+        "explanation": "Addresses transportation emissions, contributing to significant potential reduction. Feasible action considering the city's public transport infrastructure and emission profile."
     }
 ]

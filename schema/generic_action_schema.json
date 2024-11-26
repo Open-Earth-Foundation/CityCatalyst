@@ -153,6 +153,12 @@
                         { "type": "number", "enum": [-2, -1, 0, 1, 2] },
                         { "type": "null" }
                     ]
+                },
+                "stakeholder_engagement": {
+                    "oneOf": [
+                        { "type": "number", "enum": [-2, -1, 0, 1, 2] },
+                        { "type": "null" }
+                    ]
                 }
             },
             "description": "Additional benefits beyond the primary objective",

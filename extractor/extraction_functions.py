@@ -349,10 +349,11 @@ def extract_CoBenefits(index: int, row: pd.Series) -> Optional[dict]:
     dict_co_benefits: Dict[str, Optional[int]] = {
         "air_quality": None,
         "water_quality": None,
-        "eco_systems": None,
-        "income_and_poverty": None,
+        "habitat": None,
+        "cost_of_living": None,
         "housing": None,
         "mobility": None,
+        "stakeholder_engagement": None,
     }
 
     # Extract the co-benefits from the respective columns
@@ -371,19 +372,19 @@ def extract_CoBenefits(index: int, row: pd.Series) -> Optional[dict]:
         # Lowercase and strip whitespace for consistent processing
         water_quality_lower = water_quality.lower().strip()
 
-    eco_systems = row.get("Ecosystems ")  # Note the ' ' behinde the column name
-    if pd.isnull(eco_systems) or not isinstance(eco_systems, str):
-        eco_systems_lower = ""
+    habitat = row.get("Ecosystems ")  # Note the ' ' behinde the column name
+    if pd.isnull(habitat) or not isinstance(habitat, str):
+        habitat_lower = ""
     else:
         # Lowercase and strip whitespace for consistent processing
-        eco_systems_lower = eco_systems.lower().strip()
+        habitat_lower = habitat.lower().strip()
 
-    income_and_poverty = row.get("Income and Poverty")
-    if pd.isnull(income_and_poverty) or not isinstance(income_and_poverty, str):
-        income_and_poverty_lower = ""
+    cost_of_living = row.get("Income and Poverty")
+    if pd.isnull(cost_of_living) or not isinstance(cost_of_living, str):
+        cost_of_living_lower = ""
     else:
         # Lowercase and strip whitespace for consistent processing
-        income_and_poverty_lower = income_and_poverty.lower().strip()
+        cost_of_living_lower = cost_of_living.lower().strip()
 
     housing = row.get("Housing")
     if pd.isnull(housing) or not isinstance(housing, str):
@@ -411,12 +412,14 @@ def extract_CoBenefits(index: int, row: pd.Series) -> Optional[dict]:
     dict_co_benefits["water_quality"] = mapping_scoring_co_benefits.get(
         water_quality_lower
     )
-    dict_co_benefits["eco_systems"] = mapping_scoring_co_benefits.get(eco_systems_lower)
-    dict_co_benefits["income_and_poverty"] = mapping_scoring_co_benefits.get(
-        income_and_poverty_lower
+    dict_co_benefits["habitat"] = mapping_scoring_co_benefits.get(habitat_lower)
+    dict_co_benefits["cost_of_living"] = mapping_scoring_co_benefits.get(
+        cost_of_living_lower
     )
     dict_co_benefits["housing"] = mapping_scoring_co_benefits.get(housing_lower)
     dict_co_benefits["mobility"] = mapping_scoring_co_benefits.get(mobility_lower)
+
+    # No scoring for stakeholder engagement
 
     return dict_co_benefits
 

@@ -226,8 +226,6 @@ export default function SelectCityStep({
     skip: cityInputQuery?.length <= 2,
   });
 
-  // somehow fetch the city,
-
   const renderParentPath = (path: []) => {
     let pathString = "";
     const pathCopy = [...path];

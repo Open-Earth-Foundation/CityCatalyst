@@ -139,19 +139,6 @@ export default function HomePage({
           <Box className="flex mx-auto mt-[80px] max-w-full w-[1090px]">
             <VStack align="start">
               <InventoryPreferencesCard t={t} isPublic={isPublic} />
-              {/*<Text*/}
-              {/*  color="content.primary"*/}
-              {/*  fontWeight="bold"*/}
-              {/*  lineHeight="24px"*/}
-              {/*  fontSize="headline.sm"*/}
-              {/*  fontFamily="heading"*/}
-              {/*  fontStyle="normal"*/}
-              {/*  my="48px"*/}
-              {/*>*/}
-              {/*  {t("ghg-emissions-inventory-in-year", {*/}
-              {/*    year: inventory?.year,*/}
-              {/*  })}*/}
-              {/*</Text>*/}
               {!isPublic && (
                 <ActionCards
                   inventoryId={inventoryId}

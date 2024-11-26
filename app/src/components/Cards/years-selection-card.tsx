@@ -66,7 +66,7 @@ function YearCard({
           : {}
       }
     >
-      <Box className="flex flex-col gap-[8px]">
+      <Box className="flex flex-col gap-2">
         <Heading
           fontSize="title.sm"
           fontWeight="medium"

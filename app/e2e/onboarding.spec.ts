@@ -2,10 +2,6 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Onboarding Flow", () => {
   const lng = "en";
-  const locode = "US%20CHI";
-  const inventoryId = "bb596cf4-27de-4355-8d6d-3667ff9e9fc4";
-  const year = "2023";
-
   test.describe("Start Page", () => {
     test("should display the onboarding start page", async ({ page }) => {
       // Navigate to start page before each test
@@ -322,12 +318,6 @@ test.describe("Onboarding Flow", () => {
 
         // Click the "Continue" button
         await continueButton.click();
-
-        // Verify that the page navigated to the next step (e.g., Review and Confirm Step)
-        // const nextStepHeading = page.getByRole("heading", {
-        //   name: /Review and confirm/i,
-        // });
-        // await expect(nextStepHeading).toBeVisible();
       });
       test("Displays validation errors when population data is cleared", async ({
         page,

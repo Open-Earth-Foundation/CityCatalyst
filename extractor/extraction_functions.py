@@ -419,7 +419,8 @@ def extract_CoBenefits(index: int, row: pd.Series) -> Optional[dict]:
     dict_co_benefits["housing"] = mapping_scoring_co_benefits.get(housing_lower)
     dict_co_benefits["mobility"] = mapping_scoring_co_benefits.get(mobility_lower)
 
-    # No scoring for stakeholder engagement
+    # Stakeholder engagement is not mentioned in the C40 list, we assign 0 as default
+    dict_co_benefits["stakeholder_engagement"] = 0
 
     return dict_co_benefits
 

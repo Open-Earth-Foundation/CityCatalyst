@@ -6,7 +6,8 @@ import {
   type UserAttributes,
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
-import type {
+import {
+  CitiesAndYearsResponse,
   ConnectDataSourceQuery,
   ConnectDataSourceResponse,
   EmissionsFactorResponse,
@@ -24,6 +25,7 @@ import type {
   UserFileResponse,
   UserInfoResponse,
   UserInviteResponse,
+  YearOverYearResultsResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -41,11 +43,17 @@ export const api = createApi({
     "FileData",
     "CityData",
     "ReportResults",
+    "YearlyReportResults",
     "SectorBreakdown",
     "Inventory",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
+    getCitiesAndYears: builder.query<CitiesAndYearsResponse, void>({
+      query: () => "user/cities",
+      transformResponse: (response: { data: CitiesAndYearsResponse }) =>
+        response.data,
+    }),
     getCity: builder.query<CityAttributes, string>({
       query: (cityId) => `city/${cityId}`,
       transformResponse: (response: { data: CityAttributes }) => response.data,
@@ -76,6 +84,12 @@ export const api = createApi({
       query: (inventoryId: string) => `inventory/${inventoryId}/results`,
       transformResponse: (response: { data: ResultsResponse }) => response.data,
       providesTags: ["ReportResults"],
+    }),
+    getYearOverYearResults: builder.query<YearOverYearResultsResponse, string>({
+      query: (cityId: string) => `user/cities/${cityId}/results`,
+      transformResponse: (response: { data: YearOverYearResultsResponse }) =>
+        response.data,
+      providesTags: ["YearlyReportResults"],
     }),
     getSectorBreakdown: builder.query<
       SectorBreakdownResponse,
@@ -658,6 +672,8 @@ export const GLOBAL_API_URL =
 // hooks are automatically generated
 export const {
   useGetCityQuery,
+  useGetCitiesAndYearsQuery,
+  useGetYearOverYearResultsQuery,
   useAddCityMutation,
   useAddInventoryMutation,
   useSetUserInfoMutation,

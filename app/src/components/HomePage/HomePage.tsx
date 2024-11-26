@@ -2,7 +2,12 @@
 
 import Footer from "@/components/Sections/Footer";
 import { useTranslation } from "@/i18n/client";
-import { api, useGetCityPopulationQuery } from "@/services/api";
+import {
+  api,
+  useGetCitiesAndYearsQuery,
+  useGetCityPopulationQuery,
+  useGetYearOverYearResultsQuery,
+} from "@/services/api";
 import { CheckUserSession } from "@/util/check-user-session";
 import { formatEmissions } from "@/util/helpers";
 import {
@@ -85,6 +90,13 @@ export default function HomePage({
     { skip: !inventory?.cityId || !inventory?.year },
   );
 
+  const { data: citiesAndYears } = useGetCitiesAndYearsQuery();
+
+  const { data: yearlyGhgResult } = useGetYearOverYearResultsQuery(
+    inventory?.cityId!,
+    { skip: !inventory?.cityId },
+  );
+
   const formattedEmissions = inventory?.totalEmissions
     ? formatEmissions(inventory.totalEmissions)
     : { value: t("N/A"), unit: "" };
@@ -150,7 +162,15 @@ export default function HomePage({
             bg="background.backgroundLight"
             px={8}
           >
-            <Box className="flex mx-auto max-w-full w-[1090px] css-0">
+            <Box className="mx-auto max-w-full w-[1090px] css-0">
+              <Text
+                color="content.primary"
+                fontWeight="bold"
+                lineHeight="24px"
+                fontSize="headline.sm"
+                fontFamily="heading"
+                fontStyle="normal"
+              ></Text>
               {!isPublic ? (
                 <Tabs align="start" variant="line" isLazy>
                   <TabList>

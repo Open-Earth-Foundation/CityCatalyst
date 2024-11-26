@@ -192,15 +192,12 @@ export default function AddDataSteps({
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
-  const defaultInventoryId = userInfo?.defaultInventoryId;
 
   const {
     data: inventoryProgress,
     isLoading: isInventoryProgressLoading,
     error: inventoryProgressError,
-  } = api.useGetInventoryProgressQuery(defaultInventoryId!, {
-    skip: !defaultInventoryId,
-  });
+  } = api.useGetInventoryProgressQuery(inventory);
   const isInventoryLoading = isUserInfoLoading || isInventoryProgressLoading;
   const locode = inventoryProgress?.inventory.city.locode || undefined;
   const year = inventoryProgress?.inventory.year || undefined;

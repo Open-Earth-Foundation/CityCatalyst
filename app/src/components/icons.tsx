@@ -1157,3 +1157,37 @@ export const NoResultsIcon = () => {
     </svg>
   );
 };
+
+export const CheckListIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+    >
+      <path
+        d="M6.0001 10.78L3.2201 8.00002L2.27344 8.94002L6.0001 12.6667L14.0001 4.66668L13.0601 3.72668L6.0001 10.78Z"
+        fill="#24BE00"
+      />
+    </svg>
+  );
+};
+
+export const CloseListIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+    >
+      <path
+        d="M12.6663 4.27331L11.7263 3.33331L7.99967 7.05998L4.27301 3.33331L3.33301 4.27331L7.05967 7.99998L3.33301 11.7266L4.27301 12.6666L7.99967 8.93998L11.7263 12.6666L12.6663 11.7266L8.93967 7.99998L12.6663 4.27331Z"
+        fill="#F23D33"
+      />
+    </svg>
+  );
+};

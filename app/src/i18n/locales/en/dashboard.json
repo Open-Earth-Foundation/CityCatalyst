@@ -120,7 +120,8 @@
   "emissions-from-livestock-within-the-city-boundary": "Emissions from livestock within the city boundary",
   "emissions-from-land-within-the-city-boundary": "Emissions from land within the city boundary",
   "emissions-from-aggregate-sources-and-non-co2-emission-sources-on-land-within-the-city-boundary": "Emissions from aggregate sources and non-CO2 emission sources on land within the city boundary",
-  "ghg-emissions-inventory-in-year"  :"GHG emissions inventory in {{ year }}",
+  "ghg-emissions-inventory-in-year": "GHG emissions inventory in {{ year }}",
   "set-inventory-preferences": "Set inventory preferences",
-  "discover-relevant-subsectors": "Discover the GPC sub-sectors relevant to your city and tailor your inventory to fit your city's specific needs."
+  "discover-relevant-subsectors": "Discover the GPC sub-sectors relevant to your city and tailor your inventory to fit your city's specific needs.",
+  "inventory-year": "Inventory year"
 }

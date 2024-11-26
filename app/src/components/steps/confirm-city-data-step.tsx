@@ -27,7 +27,9 @@ export default function ConfirmStep({
   return (
     <Box w="full">
       <Box display="flex" flexDir="column" gap="24px">
-        <Heading size="lg">{t("confirm-heading")}</Heading>
+        <Heading data-testId="confirm-city-data-heading" size="lg">
+          {t("confirm-heading")}
+        </Heading>
         <Text fontSize="body.lg" color="content.tertiary">
           {t("confirm-description")}
         </Text>
@@ -94,6 +96,7 @@ export default function ConfirmStep({
                       fontStyle="normal"
                       color="content.secondary"
                       fontFamily="heading"
+                      data-testId="confirm-city-data-year"
                     >
                       {year}
                     </Text>
@@ -127,6 +130,7 @@ export default function ConfirmStep({
                       fontStyle="normal"
                       color="content.secondary"
                       fontFamily="heading"
+                      data-testId="confirm-city-data-inventory-goal"
                     >
                       {t(inventoryGoal)}
                     </Text>
@@ -173,6 +177,7 @@ export default function ConfirmStep({
                       fontStyle="normal"
                       color="content.secondary"
                       fontFamily="heading"
+                      data-testId="confirm-city-data-population"
                     >
                       {population ? (
                         <>
@@ -218,6 +223,7 @@ export default function ConfirmStep({
                       fontStyle="normal"
                       color="content.secondary"
                       fontFamily="heading"
+                      data-testId="confirm-city-data-area"
                     >
                       {area && area > 0 ? (
                         <>

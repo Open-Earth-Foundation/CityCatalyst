@@ -9,7 +9,11 @@ import { OCCityAttributes } from "@/util/types";
 import { useAppDispatch } from "@/lib/hooks";
 import { useEffect, useRef, useState } from "react";
 import { set } from "@/features/city/openclimateCitySlice";
-import { useGetOCCityDataQuery, useGetOCCityQuery } from "@/services/api";
+import {
+  useGetCityQuery,
+  useGetOCCityDataQuery,
+  useGetOCCityQuery,
+} from "@/services/api";
 import { findClosestYear } from "@/util/helpers";
 import {
   Box,
@@ -35,6 +39,7 @@ import RecentSearches from "@/components/recent-searches";
 import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
+import { useSearchParams } from "next/navigation";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -59,14 +64,18 @@ export default function SelectCityStep({
   setOcCityData: (cityData: OCCityAttributes) => void;
   setData: (data: OnboardingData) => void;
 }) {
+  const searchParams = useSearchParams();
+  const cityFromUrl = searchParams.get("city");
+
   const currentYear = new Date().getFullYear();
+
   const numberOfYearsDisplayed = 10;
 
   const dispatch = useAppDispatch();
 
   const [onInputClicked, setOnInputClicked] = useState<boolean>(false);
   const [isCityNew, setIsCityNew] = useState<boolean>(false);
-  const [locode, setLocode] = useState<string | null>(null);
+  const [locode, setLocode] = useState<string | null>();
 
   const yearInput = watch("year");
   const year: number | null = yearInput ? parseInt(yearInput) : null;
@@ -123,6 +132,24 @@ export default function SelectCityStep({
   const { data: regionData } = useGetOCCityDataQuery(regionLocode!, {
     skip: !regionLocode,
   });
+
+  const { data: CCCityData } = useGetCityQuery(cityFromUrl as string, {
+    skip: !cityFromUrl,
+  });
+
+  useEffect(() => {
+    if (CCCityData) {
+      setValue("city", CCCityData.name);
+      setLocode(CCCityData.locode);
+      setOcCityData({
+        actor_id: CCCityData.locode?.split("-").join(" ") as string,
+        name: CCCityData.name as string,
+        is_part_of: CCCityData.regionLocode as string,
+        root_path_geo: [],
+        area: 0,
+      });
+    }
+  }, [CCCityData]);
 
   // react to API data changes and different year selections
   useEffect(() => {
@@ -196,6 +223,8 @@ export default function SelectCityStep({
   } = useGetOCCityQuery(cityInputQuery, {
     skip: cityInputQuery?.length <= 2,
   });
+
+  // somehow fetch the city,
 
   const renderParentPath = (path: []) => {
     let pathString = "";

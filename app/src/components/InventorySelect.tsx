@@ -18,7 +18,6 @@ import {
   MdLocationOn,
   MdOutlineLocationOn,
 } from "react-icons/md";
-import { useEffect } from "react";
 
 export const InventorySelect = ({
   currentInventoryId,
@@ -28,19 +27,12 @@ export const InventorySelect = ({
   const router = useRouter();
   const goToOnboarding = () => router.push("/onboarding/setup");
 
-  const { data: inventories, isLoading } = api.useGetUserInventoriesQuery();
-  // fetch the cities and years for the user's inventories
-
-  const { data: citiesAndYears } = useGetCitiesAndYearsQuery();
-
-  useEffect(() => {
-    console.log(citiesAndYears, "this is the cities and years");
-  }, [citiesAndYears]);
+  const { data: citiesAndYears, isLoading } = useGetCitiesAndYearsQuery();
 
   const [setUserInfo] = api.useSetUserInfoMutation();
   const onSelect = async ({ city, years }: CitiesAndYearsResponse) => {
     // get the latest inventory for the city
-    const targetInventory = years.sort((a, b) => b.year - a.year)[0];
+    let targetInventory = years[0];
     await setUserInfo({
       cityId: city.cityId!,
       defaultInventoryId: targetInventory.inventoryId,

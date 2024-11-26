@@ -21,7 +21,7 @@ import {
 
 export interface CitiesAndYearsResponse {
   city: CityAttributes;
-  years: { year: number; inventoryId: string; lastUpdatedAt: Date }[];
+  years: { year: number; inventoryId: string; lastUpdate: Date }[];
 }
 
 export type InventoryResponse = InventoryAttributes & {

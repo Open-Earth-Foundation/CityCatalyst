@@ -84,7 +84,7 @@ export function Hero({
                   <Icon
                     as={MdArrowOutward}
                     boxSize={6}
-                    fill="interactive.accent"
+                    fill="sentiment.negativeDefault"
                   />
                   <Box>
                     <Box className="flex gap-1">

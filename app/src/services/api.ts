@@ -53,7 +53,10 @@ export const api = createApi({
     getCitiesAndYears: builder.query<CitiesAndYearsResponse[], void>({
       query: () => "user/cities",
       transformResponse: (response: { data: CitiesAndYearsResponse[] }) =>
-        response.data,
+        response.data.map(({ city, years }) => ({
+          city,
+          years: years.sort((a, b) => b.year - a.year),
+        })),
       providesTags: ["CitiesAndInventories"],
     }),
     getCity: builder.query<CityAttributes, string>({

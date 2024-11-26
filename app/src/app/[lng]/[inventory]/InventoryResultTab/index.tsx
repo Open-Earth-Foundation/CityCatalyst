@@ -254,6 +254,7 @@ export default function InventoryResultTab({
             title={"tab-emission-inventory-results-title"}
             isPublic={isPublic}
           />
+
           <BlueSubtitle t={t} text={"overview"} />
           <Heading fontSize="headline.sm" fontWeight="semibold" lineHeight="32">
             <Trans

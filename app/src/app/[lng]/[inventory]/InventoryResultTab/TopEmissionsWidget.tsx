@@ -114,7 +114,7 @@ const TopEmissionsWidget = ({
         </Card>
       </HStack>
     );
-  } else if (results!.totalEmissions.total <= 0) {
+  } else if (results!?.totalEmissions.total <= 0) {
     return (
       <>
         <Card width={"713px"} height={"448px"}>
@@ -153,7 +153,7 @@ const TopEmissionsWidget = ({
                 </Heading>
               </Box>
               <EmissionsTable
-                topEmissions={results!.topEmissions.bySubSector}
+                topEmissions={results!?.topEmissions.bySubSector}
                 t={t}
               />
             </>

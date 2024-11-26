@@ -61,7 +61,7 @@
   "download-error": "There was an error during download",
   "tab-emission-inventory-calculation-title": "Inventory Calculation",
   "emission-inventory-calculation-title": "Emission Inventory Calculation",
-  "tab-emission-inventory-results-title": "Inventory Results",
+  "tab-emission-inventory-results-title": "Emission inventory results",
   "inventory-format-basic": "Inventory format: GPC BASIC",
   "inventory-format-basic+": "Inventory format: GPC BASIC+",
   "view-progress-in-each-sector": "View the progress of data collection in each GPC-required sector.",
@@ -123,5 +123,6 @@
   "ghg-emissions-inventory-in-year": "GHG emissions inventory in {{ year }}",
   "set-inventory-preferences": "Set inventory preferences",
   "discover-relevant-subsectors": "Discover the GPC sub-sectors relevant to your city and tailor your inventory to fit your city's specific needs.",
-  "inventory-year": "Inventory year"
+  "inventory-year": "Inventory year",
+  "add-new-inventory": "Add new inventory"
 }

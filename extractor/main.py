@@ -2,7 +2,7 @@ import argparse
 import json
 import asyncio
 from utils.data_loader import load_datafile_into_df
-from utils.extraction_functions import (
+from extraction_functions import (
     extract_ActionType,
     extract_ActionName,
     extract_AdaptationCategory,

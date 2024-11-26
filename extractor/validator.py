@@ -4,7 +4,7 @@ from pathlib import Path
 from jsonschema import validate, ValidationError
 
 schema = json.load(open(Path("../schema/generic_action_schema.json")))
-output = json.load(open(Path("./output/output.json")))
+output = json.load(open(Path("../data/climate_actions/output/c40_output.json")))
 
 all_valid = True
 

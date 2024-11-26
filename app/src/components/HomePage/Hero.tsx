@@ -17,7 +17,6 @@ interface HeroProps {
   inventory: InventoryResponse;
   isPublic: boolean;
   currentInventoryId: string | null;
-  isUserInfoLoading: boolean;
   isInventoryLoading: boolean;
   formattedEmissions: { value: string; unit: string };
   t: TFunction;
@@ -30,7 +29,6 @@ export function Hero({
   inventory,
   isInventoryLoading,
   isPublic,
-  isUserInfoLoading,
   population,
   t,
 }: HeroProps) {
@@ -74,9 +72,7 @@ export function Hero({
                     )}
                   </>
                 ) : (
-                  (isUserInfoLoading || isInventoryLoading) && (
-                    <Spinner size="lg" color="white" />
-                  )
+                  isInventoryLoading && <Spinner size="lg" color="white" />
                 )}
               </Box>
               <Box className="flex gap-8 mt-[24px]">

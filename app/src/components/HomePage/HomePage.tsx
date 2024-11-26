@@ -28,6 +28,7 @@ import NotAvailable from "@/components/NotAvailable";
 import { Hero } from "@/components/HomePage/Hero";
 import { ActionCards } from "@/components/HomePage/ActionCards";
 import { InventoryPreferencesCard } from "@/components/HomePage/InventoryPreferencesCard";
+import { useEffect } from "react";
 import React, { useMemo } from "react";
 import { YearSelectorCard } from "@/components/Cards/years-selection-card";
 import { AddIcon } from "@chakra-ui/icons";
@@ -41,48 +42,36 @@ export default function HomePage({
 }) {
   const { t } = useTranslation(lng, "dashboard");
   const router = useRouter();
+
   // Check if user is authenticated otherwise route to login page
   isPublic || CheckUserSession();
+
   const { inventory: inventoryParam } = useParams();
-  let inventoryId = inventoryParam as string | null;
-  if (inventoryId === "null" || inventoryId === "undefined") {
-    inventoryId = null;
-  }
+  const { data: inventory, isLoading: isInventoryLoading } =
+    api.useGetInventoryQuery((inventoryParam as string) || "default");
 
-  // query API data
-  // TODO maybe rework this logic into one RTK query:
-  // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#performing-multiple-requests-with-a-single-query
+  // TODO also add this to login logic or after email verification to prevent extra redirect?
+  // if the user doesn't have a default inventory or if path has a null inventory id, redirect to onboarding page
 
-  const { data: userInfo, isLoading: isUserInfoLoading } =
-    api.useGetUserInfoQuery();
-
-  let defaultInventoryId: string | null = null;
-  if (!isUserInfoLoading && userInfo) {
-    defaultInventoryId = userInfo.defaultInventoryId;
-
-    // TODO also add this to login logic or after email verification to prevent extra redirect?
-    // if the user doesn't have a default inventory or if path has a null inventory id, redirect to onboarding page
-    if (!inventoryId) {
-      if (defaultInventoryId) {
-        inventoryId = defaultInventoryId;
+  useEffect(() => {
+    if (!inventoryParam && !isInventoryLoading && inventory) {
+      if (inventory.inventoryId) {
         // fix inventoryId in URL without reloading page
-        const newPath = "/" + lng + "/" + inventoryId;
+        const newPath = "/" + lng + "/" + inventory.inventoryId;
         history.replaceState(null, "", newPath);
       } else {
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
         setTimeout(() => router.push(`/onboarding`), 0);
       }
     }
-  }
+  }, [isInventoryLoading, inventory, inventoryParam, lng, router]);
 
-  const { data: inventory, isLoading: isInventoryLoading } =
-    api.useGetInventoryQuery(inventoryId!, {
-      skip: !inventoryId,
-    });
+  // query API data
+  // TODO maybe rework this logic into one RTK query:
+  // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#performing-multiple-requests-with-a-single-query
+
   const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
-    api.useGetInventoryProgressQuery(inventoryId!, {
-      skip: !inventoryId,
-    });
+    api.useGetInventoryProgressQuery((inventoryParam as string) || "default");
 
   const { data: city } = api.useGetCityQuery(inventory?.cityId!, {
     skip: !inventory?.cityId,
@@ -128,8 +117,7 @@ export default function HomePage({
           <Hero
             inventory={inventory}
             isPublic={isPublic}
-            currentInventoryId={inventoryId}
-            isUserInfoLoading={isUserInfoLoading}
+            currentInventoryId={inventory?.inventoryId}
             isInventoryLoading={isInventoryLoading}
             formattedEmissions={formattedEmissions}
             t={t}
@@ -141,7 +129,7 @@ export default function HomePage({
               <InventoryPreferencesCard t={t} isPublic={isPublic} />
               {!isPublic && (
                 <ActionCards
-                  inventoryId={inventoryId}
+                  inventoryId={inventory?.inventoryId}
                   t={t}
                   lng={lng}
                   city={city}
@@ -190,7 +178,7 @@ export default function HomePage({
                   <YearSelectorCard
                     cityId={inventory.cityId as string}
                     inventories={inventoriesForCurrentCity}
-                    currentInventoryId={inventoryId}
+                    currentInventoryId={inventory.inventoryId}
                     lng={lng}
                     t={t}
                   />
@@ -217,7 +205,6 @@ export default function HomePage({
                           lng={lng}
                           inventory={inventory}
                           inventoryProgress={inventoryProgress}
-                          isUserInfoLoading={isUserInfoLoading}
                           isInventoryProgressLoading={
                             isInventoryProgressLoading
                           }
@@ -229,11 +216,6 @@ export default function HomePage({
                           lng={lng}
                           population={population}
                           inventory={inventory}
-                          inventoryProgress={inventoryProgress}
-                          isUserInfoLoading={isUserInfoLoading}
-                          isInventoryProgressLoading={
-                            isInventoryProgressLoading
-                          }
                         />
                       </TabPanel>
                     </TabPanels>
@@ -244,9 +226,6 @@ export default function HomePage({
                   lng={lng}
                   population={population}
                   inventory={inventory}
-                  inventoryProgress={inventoryProgress}
-                  isUserInfoLoading={isUserInfoLoading}
-                  isInventoryProgressLoading={isInventoryProgressLoading}
                   isPublic={isPublic}
                 />
               )}

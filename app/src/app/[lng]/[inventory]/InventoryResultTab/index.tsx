@@ -2,7 +2,7 @@
 
 import { useTranslation } from "@/i18n/client";
 import {
-  InventoryProgressResponse,
+
   InventoryResponse,
   SectorEmission,
 } from "@/util/types";
@@ -392,17 +392,11 @@ export function EmissionPerSectors({
 export default function InventoryResultTab({
   lng,
   inventory,
-  isUserInfoLoading,
-  isInventoryProgressLoading,
-  inventoryProgress,
   isPublic,
   population,
 }: {
   lng: string;
   inventory?: InventoryResponse;
-  isUserInfoLoading?: boolean;
-  isInventoryProgressLoading?: boolean;
-  inventoryProgress?: InventoryProgressResponse;
   population?: PopulationAttributes;
   isPublic: boolean;
 }) {

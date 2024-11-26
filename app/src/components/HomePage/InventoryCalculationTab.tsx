@@ -37,13 +37,11 @@ const getSectorProgresses = (
 export default function InventoryCalculationTab({
   lng,
   inventory,
-  isUserInfoLoading,
   isInventoryProgressLoading,
   inventoryProgress,
 }: {
   lng: string;
   inventory?: InventoryResponse;
-  isUserInfoLoading?: boolean;
   isInventoryProgressLoading?: boolean;
   inventoryProgress?: InventoryProgressResponse;
 }) {
@@ -120,7 +118,7 @@ export default function InventoryCalculationTab({
             <Text>
               <Trans t={t}>view-progress-in-each-sector</Trans>
             </Text>
-            {isUserInfoLoading || isInventoryProgressLoading ? (
+            {isInventoryProgressLoading ? (
               <Center>
                 <Spinner size="lg" />
               </Center>

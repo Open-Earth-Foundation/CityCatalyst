@@ -553,6 +553,7 @@ export const api = createApi({
         "ActivityValue",
         "InventoryValue",
         "InventoryProgress",
+        "YearlyReportResults",
         "ReportResults",
         "SectorBreakdown",
       ],
@@ -577,7 +578,7 @@ export const api = createApi({
         "InventoryValue",
         "InventoryProgress",
         "ReportResults",
-
+        "YearlyReportResults",
         "SectorBreakdown",
       ],
     }),
@@ -593,6 +594,7 @@ export const api = createApi({
         "InventoryProgress",
         "ReportResults",
         "SectorBreakdown",
+        "YearlyReportResults",
       ],
     }),
     deleteAllActivityValues: builder.mutation({
@@ -614,6 +616,7 @@ export const api = createApi({
         "InventoryValue",
         "InventoryProgress",
         "ReportResults",
+        "YearlyReportResults",
         "SectorBreakdown",
       ],
     }),

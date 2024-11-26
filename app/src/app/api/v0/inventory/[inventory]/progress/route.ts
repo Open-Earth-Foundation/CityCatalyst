@@ -3,31 +3,16 @@ import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 
-import type { Sector } from "@/models/Sector";
 import InventoryProgressService from "@/backend/InventoryProgressService";
 
-// sort whole inventory by GPC reference number
-function romanNumeralComparison(sectorA: Sector, sectorB: Sector) {
-  const a = sectorA.referenceNumber || "";
-  const b = sectorB.referenceNumber || "";
-
-  const romanTable: Record<string, number> = {
-    I: 1,
-    II: 2,
-    III: 3,
-    IV: 4,
-    V: 5,
-    VI: 6,
-    VII: 7,
-    "": 1337,
-  };
-
-  return romanTable[a] - romanTable[b];
-}
-
 export const GET = apiHandler(async (_req, { session, params }) => {
+  let inventoryId = params.inventory;
+
+  if (inventoryId === "default") {
+    inventoryId = await UserService.findUserDefaultInventory(session);
+  }
   const inventory = await UserService.findUserInventory(
-    params.inventory,
+    inventoryId,
     session,
     [
       {

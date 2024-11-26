@@ -70,7 +70,7 @@ export const api = createApi({
       }) => response,
     }),
     getInventory: builder.query<InventoryResponse, string>({
-      query: (inventoryId) => `inventory/${inventoryId}`,
+      query: (inventoryId: string) => `inventory/${inventoryId}`,
       transformResponse: (response: { data: InventoryResponse }) =>
         response.data,
       providesTags: ["Inventory"],

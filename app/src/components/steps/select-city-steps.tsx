@@ -22,6 +22,7 @@ import {
   FormErrorMessage,
   FormLabel,
   Heading,
+  Icon,
   Input,
   InputGroup,
   InputLeftElement,
@@ -39,6 +40,7 @@ import RecentSearches from "@/components/recent-searches";
 import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
+import { NoResultsIcon } from "../icons";
 import { useSearchParams } from "next/navigation";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
@@ -261,13 +263,16 @@ export default function SelectCityStep({
         gap="24px"
         mb="48px"
       >
-        <Heading size="xl">{t("setup-city-heading")}</Heading>
+        <Heading data-testId="setup-city-heading" size="xl">
+          {t("setup-city-heading")}
+        </Heading>
         <Text
           color="content.tertiary"
           fontSize="body.lg"
           fontStyle="normal"
           fontWeight="400"
           letterSpacing="wide"
+          data-testId="setup-city-description"
         >
           {t("setup-city-details")}
         </Text>
@@ -276,7 +281,9 @@ export default function SelectCityStep({
         <Card p={6} shadow="none" px="24px" py="32px">
           <form className="space-y-8">
             <FormControl isInvalid={!!errors.city}>
-              <FormLabel>{t("city")}</FormLabel>
+              <FormLabel data-testId="setup-city-input-label">
+                {t("city")}
+              </FormLabel>
               <InputGroup
                 ref={cityInputRef}
                 shadow="1dp"
@@ -288,6 +295,7 @@ export default function SelectCityStep({
                 </InputLeftElement>
                 <Input
                   type="text"
+                  data-testId="setup-city-input"
                   placeholder={t("select-city-placeholder")}
                   size="lg"
                   {...register("city", {
@@ -349,6 +357,39 @@ export default function SelectCityStep({
                         </Box>
                       );
                     })}
+                  {isSuccess && cities.length == 0 && (
+                    <Box className="py-2 w-full items-center flex gap-4 px-4">
+                      <Box h="full" display="flex" alignItems="center">
+                        <Icon
+                          as={NoResultsIcon}
+                          color="content.secondary"
+                          boxSize="24px"
+                        />
+                      </Box>
+                      <Box display="flex" flexDir="column" gap="8px">
+                        <Text
+                          color="content.secondary"
+                          fontSize="body.md"
+                          fontFamily="body"
+                          fontWeight="normal"
+                          lineHeight="24"
+                          letterSpacing="wide"
+                        >
+                          {t("no-results")}
+                        </Text>
+                        <Text
+                          color="content.tertiary"
+                          fontSize="body.sm"
+                          fontFamily="body"
+                          fontWeight="normal"
+                          lineHeight="24"
+                          letterSpacing="wide"
+                        >
+                          {t("no-results-details")}
+                        </Text>
+                      </Box>
+                    </Box>
+                  )}
                 </Box>
               )}
               <FormErrorMessage gap="6px">
@@ -385,7 +426,7 @@ export default function SelectCityStep({
                     letterSpacing="wide"
                   >
                     In case the geographical boundary is not the right one{" "}
-                    <Link href="">
+                    <Link href="mailto:greta@openearth.org">
                       <Text
                         as="span"
                         color="interactive.secondary"

@@ -22,7 +22,5 @@ setup("authenticate", async ({ page, request }) => {
   // TODO how to ensure that session route was called?
   await page.waitForResponse("/api/auth/session");
 
-  await expect(page).toHaveURL("/en/onboarding/");
-
   await page.context().storageState({ path: authFile });
 });

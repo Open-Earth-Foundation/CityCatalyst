@@ -252,12 +252,14 @@ export function EmissionPerSectors({
 }) {
   const [selectedView, setSelectedView] = useState("table");
 
-  const { data: yearlyGhgResult } = useGetYearOverYearResultsQuery(
-    inventory?.cityId!,
-    { skip: !inventory?.cityId },
-  );
+  const { data: yearlyGhgResult, isLoading: isLoadingYearlgyGhg } =
+    useGetYearOverYearResultsQuery(inventory?.cityId!, {
+      skip: !inventory?.cityId,
+    });
 
   const { data: citiesAndYears, isLoading } = useGetCitiesAndYearsQuery();
+
+  const loadingState = isLoading || isLoadingYearlgyGhg;
 
   const targetYears = useMemo<
     | Record<string, { year: number; inventoryId: string; lastUpdate: Date }>
@@ -350,19 +352,38 @@ export function EmissionPerSectors({
           </CardHeader>
           <ButtonGroupToggle options={options} activeOption={selectedView} />
         </Box>
-        <Box className="pt-6">
-          {selectedView === "table" ? (
-            <EmissionBySectorTableSection
-              lng={lng}
-              data={transformedYearOverYearData}
-            />
-          ) : (
-            <EmissionBySectorChart
-              data={transformedYearOverYearData}
-              lng={lng}
-            />
-          )}
-        </Box>
+        {loadingState && (
+          <Box className="w-full py-12 flex items-center justify-center">
+            <CircularProgress isIndeterminate />
+          </Box>
+        )}
+        {!loadingState && transformedYearOverYearData.length === 0 && (
+          <EmptyStateCardContent
+            t={t}
+            inventoryId={inventory.inventoryId}
+            width={"1042px"}
+            height={"592px"}
+            isPublic={isPublic}
+          />
+        )}
+        {
+          // if we have data, we can display the table or the chart
+          !loadingState && transformedYearOverYearData.length > 0 && (
+            <Box className="pt-6">
+              {selectedView === "table" ? (
+                <EmissionBySectorTableSection
+                  lng={lng}
+                  data={transformedYearOverYearData}
+                />
+              ) : (
+                <EmissionBySectorChart
+                  data={transformedYearOverYearData}
+                  lng={lng}
+                />
+              )}
+            </Box>
+          )
+        }
       </Card>
     </Box>
   );

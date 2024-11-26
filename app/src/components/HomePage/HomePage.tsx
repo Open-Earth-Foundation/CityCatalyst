@@ -6,12 +6,12 @@ import {
   api,
   useGetCitiesAndYearsQuery,
   useGetCityPopulationQuery,
-  useGetYearOverYearResultsQuery,
 } from "@/services/api";
 import { CheckUserSession } from "@/util/check-user-session";
 import { formatEmissions } from "@/util/helpers";
 import {
   Box,
+  Button,
   Tab,
   TabList,
   TabPanel,
@@ -29,6 +29,9 @@ import { Hero } from "@/components/HomePage/Hero";
 import { ActionCards } from "@/components/HomePage/ActionCards";
 import { InventoryPreferencesCard } from "@/components/HomePage/InventoryPreferencesCard";
 import { useEffect } from "react";
+import React, { useMemo } from "react";
+import { YearSelectorCard } from "@/components/Cards/years-selection-card";
+import { AddIcon } from "@chakra-ui/icons";
 
 export default function HomePage({
   lng,
@@ -79,16 +82,23 @@ export default function HomePage({
     { skip: !inventory?.cityId || !inventory?.year },
   );
 
-  const { data: citiesAndYears } = useGetCitiesAndYearsQuery();
-
-  const { data: yearlyGhgResult } = useGetYearOverYearResultsQuery(
-    inventory?.cityId!,
-    { skip: !inventory?.cityId },
-  );
+  const { data: citiesAndYears, isLoading } = useGetCitiesAndYearsQuery();
 
   const formattedEmissions = inventory?.totalEmissions
     ? formatEmissions(inventory.totalEmissions)
     : { value: t("N/A"), unit: "" };
+
+  const inventoriesForCurrentCity = useMemo<
+    { year: number; inventoryId: string; lastUpdate: Date }[]
+  >(() => {
+    if (!citiesAndYears) {
+      return [];
+    }
+    return citiesAndYears
+      .filter(({ city }) => inventory?.cityId === city.cityId)
+      .map(({ years }) => years)
+      .flat();
+  }, [citiesAndYears, inventory?.cityId]);
 
   return (
     <>
@@ -114,26 +124,9 @@ export default function HomePage({
             population={population}
           />
 
-          <Box
-            className="flex"
-            justifySelf={"center"}
-            style={{ maxWidth: "90vw" }}
-          >
+          <Box className="flex mx-auto mt-[80px] w-full max-w-[1090px]">
             <VStack align="start">
               <InventoryPreferencesCard t={t} isPublic={isPublic} />
-              <Text
-                color="content.primary"
-                fontWeight="bold"
-                lineHeight="24px"
-                fontSize="headline.sm"
-                fontFamily="heading"
-                fontStyle="normal"
-                my="48px"
-              >
-                {t("ghg-emissions-inventory-in-year", {
-                  year: inventory?.year,
-                })}
-              </Text>
               {!isPublic && (
                 <ActionCards
                   inventoryId={inventory?.inventoryId}
@@ -146,56 +139,88 @@ export default function HomePage({
             </VStack>
           </Box>
           <Box
-            className="h-full pt-[128px] pb-[100px]"
+            className="h-full pt-[48px] pb-[100px]"
             bg="background.backgroundLight"
             px={8}
           >
-            <Box className="mx-auto max-w-full w-[1090px] css-0">
-              <Text
-                color="content.primary"
-                fontWeight="bold"
-                lineHeight="24px"
-                fontSize="headline.sm"
-                fontFamily="heading"
-                fontStyle="normal"
-              ></Text>
+            <Box className="mx-auto w-full max-w-[1090px] css-0">
+              {/* Years section */}
               {!isPublic ? (
-                <Tabs align="start" variant="line" isLazy>
-                  <TabList>
-                    {[
-                      t("tab-emission-inventory-calculation-title"),
-                      t("tab-emission-inventory-results-title"),
-                    ]?.map((tab, index) => (
-                      <Tab key={index}>
-                        <Text
-                          fontFamily="heading"
-                          fontSize="title.md"
-                          fontWeight="medium"
-                        >
-                          {t(tab)}
-                        </Text>
-                      </Tab>
-                    ))}
-                  </TabList>
-                  <TabPanels>
-                    <TabPanel>
-                      <InventoryCalculationTab
-                        lng={lng}
-                        inventory={inventory}
-                        inventoryProgress={inventoryProgress}
-                        isInventoryProgressLoading={isInventoryProgressLoading}
-                      />
-                    </TabPanel>
-                    <TabPanel>
-                      <InventoryReportTab
-                        isPublic={isPublic}
-                        lng={lng}
-                        population={population}
-                        inventory={inventory}
-                      />
-                    </TabPanel>
-                  </TabPanels>
-                </Tabs>
+                <>
+                  <Box className="w-full mb-6 flex items-center justify-between">
+                    <Text
+                      color="content.primary"
+                      fontWeight="bold"
+                      lineHeight="24px"
+                      fontSize="headline.sm"
+                      fontFamily="heading"
+                      fontStyle="normal"
+                    >
+                      {t("inventory-year")}
+                    </Text>
+                    <Button
+                      data-testid="add-new-inventory-button"
+                      title={t("add-new-inventory")}
+                      leftIcon={<AddIcon h="16px" w="16px" />}
+                      h="48px"
+                      aria-label="activity-button"
+                      fontSize="button.md"
+                      gap="8px"
+                      onClick={() =>
+                        router.push(
+                          `/onboarding/setup?city=${inventory?.cityId}`,
+                        )
+                      }
+                    >
+                      {t("add-new-inventory")}
+                    </Button>
+                  </Box>
+                  <YearSelectorCard
+                    cityId={inventory.cityId as string}
+                    inventories={inventoriesForCurrentCity}
+                    currentInventoryId={inventory.inventoryId}
+                    lng={lng}
+                    t={t}
+                  />
+                  <Tabs align="start" className="mt-12" variant="line" isLazy>
+                    <TabList>
+                      {[
+                        t("tab-emission-inventory-calculation-title"),
+                        t("tab-emission-inventory-results-title"),
+                      ]?.map((tab, index) => (
+                        <Tab key={index}>
+                          <Text
+                            fontFamily="heading"
+                            fontSize="title.md"
+                            fontWeight="medium"
+                          >
+                            {t(tab)}
+                          </Text>
+                        </Tab>
+                      ))}
+                    </TabList>
+                    <TabPanels>
+                      <TabPanel>
+                        <InventoryCalculationTab
+                          lng={lng}
+                          inventory={inventory}
+                          inventoryProgress={inventoryProgress}
+                          isInventoryProgressLoading={
+                            isInventoryProgressLoading
+                          }
+                        />
+                      </TabPanel>
+                      <TabPanel>
+                        <InventoryReportTab
+                          isPublic={isPublic}
+                          lng={lng}
+                          population={population}
+                          inventory={inventory}
+                        />
+                      </TabPanel>
+                    </TabPanels>
+                  </Tabs>
+                </>
               ) : (
                 <InventoryReportTab
                   lng={lng}

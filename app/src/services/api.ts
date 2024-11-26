@@ -46,13 +46,18 @@ export const api = createApi({
     "YearlyReportResults",
     "SectorBreakdown",
     "Inventory",
+    "CitiesAndInventories",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
-    getCitiesAndYears: builder.query<CitiesAndYearsResponse, void>({
+    getCitiesAndYears: builder.query<CitiesAndYearsResponse[], void>({
       query: () => "user/cities",
-      transformResponse: (response: { data: CitiesAndYearsResponse }) =>
-        response.data,
+      transformResponse: (response: { data: CitiesAndYearsResponse[] }) =>
+        response.data.map(({ city, years }) => ({
+          city,
+          years: years.sort((a, b) => b.year - a.year),
+        })),
+      providesTags: ["CitiesAndInventories"],
     }),
     getCity: builder.query<CityAttributes, string>({
       query: (cityId) => `city/${cityId}`,
@@ -155,7 +160,7 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: InventoryAttributes }) =>
         response.data,
-      invalidatesTags: ["UserInventories"],
+      invalidatesTags: ["UserInventories", "CitiesAndInventories"],
     }),
     setUserInfo: builder.mutation<
       UserAttributes,
@@ -548,6 +553,7 @@ export const api = createApi({
         "ActivityValue",
         "InventoryValue",
         "InventoryProgress",
+        "YearlyReportResults",
         "ReportResults",
         "SectorBreakdown",
       ],
@@ -572,7 +578,7 @@ export const api = createApi({
         "InventoryValue",
         "InventoryProgress",
         "ReportResults",
-
+        "YearlyReportResults",
         "SectorBreakdown",
       ],
     }),
@@ -588,6 +594,7 @@ export const api = createApi({
         "InventoryProgress",
         "ReportResults",
         "SectorBreakdown",
+        "YearlyReportResults",
       ],
     }),
     deleteAllActivityValues: builder.mutation({
@@ -609,6 +616,7 @@ export const api = createApi({
         "InventoryValue",
         "InventoryProgress",
         "ReportResults",
+        "YearlyReportResults",
         "SectorBreakdown",
       ],
     }),

@@ -21,7 +21,7 @@ import {
 
 export interface CitiesAndYearsResponse {
   city: CityAttributes;
-  years: { year: number; inventoryId: string; lastUpdatedAt: Date }[];
+  years: { year: number; inventoryId: string; lastUpdate: Date }[];
 }
 
 export type InventoryResponse = InventoryAttributes & {
@@ -191,8 +191,23 @@ export interface ResultsResponse {
   topEmissions: { bySubSector: TopEmission[] };
 }
 
+export interface YearOverYearResultResponse {
+  totalEmissions: {
+    sumOfEmissions: bigint;
+    totalEmissionsBySector: SectorEmission[];
+  };
+  topEmissionsBySubSector: {
+    inventoryId: string;
+    co2eq: bigint;
+    percentage: number;
+    scopeName: string;
+    sectorName: string;
+    subsectorName: string;
+  };
+}
+
 export interface YearOverYearResultsResponse {
-  [inventoryId: string]: ResultsResponse;
+  [inventoryId: string]: YearOverYearResultResponse;
 }
 
 export interface SubsectorTotals {

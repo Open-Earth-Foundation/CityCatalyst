@@ -18,6 +18,7 @@ import {
   FormErrorMessage,
   FormLabel,
   Heading,
+  Icon,
   Input,
   InputGroup,
   InputLeftElement,
@@ -35,6 +36,7 @@ import RecentSearches from "@/components/recent-searches";
 import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
+import { NoResultsIcon } from "../icons";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -320,6 +322,39 @@ export default function SelectCityStep({
                         </Box>
                       );
                     })}
+                  {isSuccess && cities.length == 0 && (
+                    <Box className="py-2 w-full items-center flex gap-4 px-4">
+                      <Box h="full" display="flex" alignItems="center">
+                        <Icon
+                          as={NoResultsIcon}
+                          color="content.secondary"
+                          boxSize="24px"
+                        />
+                      </Box>
+                      <Box display="flex" flexDir="column" gap="8px">
+                        <Text
+                          color="content.secondary"
+                          fontSize="body.md"
+                          fontFamily="body"
+                          fontWeight="normal"
+                          lineHeight="24"
+                          letterSpacing="wide"
+                        >
+                          {t("no-results")}
+                        </Text>
+                        <Text
+                          color="content.tertiary"
+                          fontSize="body.sm"
+                          fontFamily="body"
+                          fontWeight="normal"
+                          lineHeight="24"
+                          letterSpacing="wide"
+                        >
+                          {t("no-results-details")}
+                        </Text>
+                      </Box>
+                    </Box>
+                  )}
                 </Box>
               )}
               <FormErrorMessage gap="6px">
@@ -356,7 +391,7 @@ export default function SelectCityStep({
                     letterSpacing="wide"
                   >
                     In case the geographical boundary is not the right one{" "}
-                    <Link href="">
+                    <Link href="mailto:greta@openearth.org">
                       <Text
                         as="span"
                         color="interactive.secondary"

@@ -75,6 +75,7 @@
   "emissions-per-capita-in-year": "Emissions per capita in {{year}}",
   "%-of-country's-emissions": "% of country's emissions",
   "top-emissions": "Top Emissions",
+  "ghg-by-sector-heading": "GHG emissions history by sectors",
   "by-sub-sector": "BY SUB-SECTOR",
   "total": "total",
   "overview": "overview",
@@ -124,5 +125,7 @@
   "set-inventory-preferences": "Set inventory preferences",
   "discover-relevant-subsectors": "Discover the GPC sub-sectors relevant to your city and tailor your inventory to fit your city's specific needs.",
   "inventory-year": "Inventory year",
-  "add-new-inventory": "Add new inventory"
+  "add-new-inventory": "Add new inventory",
+  "table-view": "Table",
+  "chart-view": "Chart"
 }

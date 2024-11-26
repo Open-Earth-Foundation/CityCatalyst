@@ -19,6 +19,8 @@
   "activities-added": "activities added",
   "total-consumption": "Total Consumption",
   "emissions": "Emissions",
+  "percentage-emissions": "% of emissions",
+  "based-on-previous-year": "Based on previous year",
   "inventory-year": "Inventory Year",
   "fuel-type": "Fuel type",
   "fuel-consumption": "Fuel Consumption",

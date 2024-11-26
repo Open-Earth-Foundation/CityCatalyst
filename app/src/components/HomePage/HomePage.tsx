@@ -6,7 +6,6 @@ import {
   api,
   useGetCitiesAndYearsQuery,
   useGetCityPopulationQuery,
-  useGetYearOverYearResultsQuery,
 } from "@/services/api";
 import { CheckUserSession } from "@/util/check-user-session";
 import { formatEmissions } from "@/util/helpers";
@@ -92,11 +91,6 @@ export default function HomePage({
   const { data: population } = useGetCityPopulationQuery(
     { cityId: inventory?.cityId!, year: inventory?.year! },
     { skip: !inventory?.cityId || !inventory?.year },
-  );
-
-  const { data: yearlyGhgResult } = useGetYearOverYearResultsQuery(
-    inventory?.cityId!,
-    { skip: !inventory?.cityId },
   );
 
   const { data: citiesAndYears, isLoading } = useGetCitiesAndYearsQuery();

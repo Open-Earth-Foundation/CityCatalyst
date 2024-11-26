@@ -2,3 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+.nivo-chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.nivo-legend-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}

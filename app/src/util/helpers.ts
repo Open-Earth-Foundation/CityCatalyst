@@ -268,6 +268,14 @@ export function toDecimal(
   return new Decimal(value);
 }
 
+export function convertKgToKiloTonnes(
+  valueInKg: number | Decimal | bigint,
+): number {
+  const kg = toDecimal(valueInKg);
+  if (!kg) return 0;
+  return Number(kg.div(1e6).toNumber().toFixed(2));
+}
+
 export function convertKgToTonnes(
   valueInKg: number | Decimal | bigint,
   gas?: string,

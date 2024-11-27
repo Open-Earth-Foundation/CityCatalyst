@@ -7,6 +7,7 @@ import json
 import pandas as pd
 from pydantic import BaseModel
 from typing import List
+from pathlib import Path
 
 load_dotenv()
 
@@ -25,21 +26,22 @@ scale_scores = {
 }
 MAX_TIME_IN_YEARS = 20
 MAX_COST = 60000000
-
-# File paths
-OUTPUT_FILE = "new_output.json"
+# Dynamically construct the file paths based on the script's location
+BASE_DIR = Path(__file__).resolve().parent
+ACTION_DATA_PATH = BASE_DIR / "CAP_data/long_actions.json"
+CITY_DATA_PATH = BASE_DIR / "CAP_data/city_data.json"
+OUTPUT_FILE = BASE_DIR / "new_output.json"
 
 
 def read_city_inventory():
     # Load both CSV files into DataFrames
-    city_data_path = "CAP_data/city_data.json"
-    with open(city_data_path, "r", encoding="utf-8") as f:
+    with open(CITY_DATA_PATH, "r", encoding="utf-8") as f:
         city_data = json.load(f)
     return city_data[0]
 
 def read_actions():
     actions = []
-    with open("CAP_data/long_actions.json", "r") as f:
+    with open(ACTION_DATA_PATH, "r") as f:
         data = json.load(f)
         for item in data:
             action = {
@@ -66,6 +68,41 @@ def read_actions():
             }
             actions.append(action)
     return actions
+
+def find_highest_emission(city):
+    emission_keys = [
+        "stationaryEnergyEmissions",
+        "transportationEmissions",
+        "wasteEmissions",
+        "industrialProcessEmissions",
+        "landUseEmissions",
+        "scope1Emissions",
+        "scope2Emissions",
+        "scope3Emissions"
+    ]
+    
+    highest_emission = None
+    highest_value = 0
+    
+    for key in emission_keys:
+        if city.get(key, 0) > highest_value:
+            highest_value = city[key]
+            highest_emission = key
+    
+    total_emissions = city.get("totalEmissions", 1)  # Avoid division by zero
+    highest_percentage = (highest_value / total_emissions) * 100
+    
+    return highest_emission, highest_percentage
+
+def count_matching_hazards(city, action):
+    city_hazards = set(city.get("hazards", []))
+    if action.get("Hazard") is None:
+        return 0
+    action_hazards = set(action.get("Hazard", []))
+    
+    matching_hazards = city_hazards.intersection(action_hazards)
+    
+    return len(matching_hazards)
 
 def quantitative_score(city, action):
     """
@@ -118,6 +155,31 @@ def quantitative_score(city, action):
         score += emissions_reduction_score
     print("Score after GHG reduction:", score)
 
+       # Hazard calculation -  agreed adding the hazard into the city data and filtering it from them to see how many match
+    # there should be weights adjusted for the hazards based on CCRA data listing the most important ones for the city
+    matching_hazards_count = count_matching_hazards(city, action)
+    if matching_hazards_count > 0:
+        hazards_weight = weights.get("Hazard", 1)
+        score += (matching_hazards_count / len(city.get("hazards", []))) * SCORE_MAX * hazards_weight
+    
+    # Dependencies - caculate the number of dependencies and give a minus score based on that very low impact
+    dependencies = action.get("Dependencies", [])
+    if isinstance(dependencies, list):
+        score -= len(dependencies)
+    # ActionName - pass
+    # AdaptationCategory - pass this time
+    # Subsector - skip for now maybe more data needed as now we are covering per sector 
+    # PrimaryPurpose - use only for LLM
+
+    # Sector - if it matches the most emmissions intensive sectors gets bonus points
+    # TODO Require additional rework
+    most_emissions, percentage_emissions_value = find_highest_emission(city)
+    if action.get("Sector") == most_emissions:
+        score += (percentage_emissions_value / 100) * SCORE_MAX
+
+    # InterventionType - skip for now
+    # Description - use only for LLM
+    # BehavioralChangeTargeted - skip for now
 
     # Adaptation effectiveness score
     adaptation_effectiveness = action.get("AdaptionEffectiveness")
@@ -136,10 +198,8 @@ def quantitative_score(city, action):
     # Time in years score
     timeline_str = action.get("TimelineForImplementation", "")
     if timeline_str is None:
-        timeline_str = ""
-    else:
-        timeline_str.strip()
-    if timeline_str in timeline_mapping:
+        pass
+    elif timeline_str in timeline_mapping:
         time_score_weight = weights.get("TimelineForImplementation", 1)
         time_score = timeline_mapping[timeline_str]
         score += time_score*time_score_weight

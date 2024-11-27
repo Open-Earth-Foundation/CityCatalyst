@@ -84,13 +84,15 @@ export default class InventoryProgressService {
             }),
         })),
       }));
-
     const sectorTotals: Record<string, number> = filteredOutSectors.reduce(
       (acc, sector) => {
-        const subCategoryCount = sector.subSectors
-          .map((s) => s.subCategories.length)
-          .reduce((acc, count) => acc + count, 0);
-        acc[sector.sectorId] = subCategoryCount;
+        const subCategoryCount = sector.subSectors.reduce(
+          (count, subSector) => count + subSector.subCategories.length,
+          0,
+        );
+        acc[sector.sectorId] = ["I", "II", "III"].includes(sector.sectorName!)
+          ? subCategoryCount
+          : sector.subSectors.length;
         return acc;
       },
       {} as Record<string, number>,
@@ -120,7 +122,10 @@ export default class InventoryProgressService {
       // add completed field to subsectors if there is a value for it
       const subSectors = sector.subSectors.map((subSector) => {
         let completed = false;
-        let totalCount = subSector.subCategories.length;
+        let totalCount =
+          subSector.subCategories.length > 0
+            ? subSector.subCategories.length
+            : 1; // for sectors IV and V there are no subcategories. We use 1 here so that the progress doesn't come back as full when it's empty
         let completedCount = 0;
         if (inventoryValues?.length > 0) {
           completedCount = inventoryValues.filter(

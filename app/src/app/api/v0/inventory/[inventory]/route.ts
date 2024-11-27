@@ -21,13 +21,19 @@ function hasIsPublicProperty(
 }
 
 export const GET = apiHandler(async (req, { session, params }) => {
-  const { inventory: inventoryId } = params;
-  const inventory = await UserService.findUserInventory(
+  let inventoryId = params.inventory;
+
+  let inventory;
+  if ("default" === inventoryId) {
+    inventoryId = await UserService.findUserDefaultInventory(session);
+  }
+  inventory = await UserService.findUserInventory(
     inventoryId,
     session,
     [{ model: db.models.City, as: "city" }],
     true,
   );
+
   if (!inventory) {
     throw new createHttpError.NotFound("Inventory not found");
   }
@@ -40,7 +46,7 @@ export const GET = apiHandler(async (req, { session, params }) => {
   `;
 
   const [{ sum }] = (await db.sequelize!.query(rawQuery, {
-    replacements: { inventoryId: params.inventory },
+    replacements: { inventoryId },
     type: QueryTypes.SELECT,
     raw: true,
   })) as unknown as { sum: number }[];

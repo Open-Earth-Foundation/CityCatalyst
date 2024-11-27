@@ -25,6 +25,7 @@ export default function OnboardingDone({
         mb="24px"
         fontSize="headline.md"
         color="content.alternative"
+        data-testid="done-heading"
       >
         <Trans t={t}>done-heading</Trans>
       </Heading>
@@ -51,6 +52,7 @@ export default function OnboardingDone({
             color="content.link"
             borderWidth="2px"
             borderColor="content.link"
+            data-testid="add-new-inventory"
           >
             {t("add-new-inventory")}
           </Button>
@@ -61,6 +63,7 @@ export default function OnboardingDone({
             h={16}
             px={6}
             rightIcon={<ArrowForwardIcon boxSize={6} />}
+            data-testid="check-dashboard"
           >
             {t("check-dashboard")}
           </Button>

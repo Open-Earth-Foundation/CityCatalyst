@@ -8,11 +8,13 @@ export const EmptyStateCardContent = ({
   inventoryId,
   width,
   height,
+  isPublic,
 }: {
   inventoryId: string | undefined;
   t: TFunction;
   width: string;
   height: string;
+  isPublic: boolean;
 }) => (
   <Center width={width} height={height}>
     <VStack width="400px" spacing={4}>
@@ -30,12 +32,14 @@ export const EmptyStateCardContent = ({
       >
         {t("no-data-for-inventory-yet")}
       </Text>
-      <Text>
-        <span>{t("start-adding-data")} </span>
-        <Link href={`/${inventoryId}/data`} color="blue.500">
-          {t("add-data-to-inventory")}
-        </Link>
-      </Text>
+      {!isPublic && (
+        <Text>
+          <span>{t("start-adding-data")} </span>
+          <Link href={`/${inventoryId}/data`} color="blue.500">
+            {t("add-data-to-inventory")}
+          </Link>
+        </Text>
+      )}
     </VStack>
   </Center>
 );

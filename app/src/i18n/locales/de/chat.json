@@ -1,0 +1,10 @@
+{
+  "ask-ai-expert": "Fragen Sie einen KI-Experten",
+  "ai-expert": "KI-Experte",
+  "ask-ai": "KI fragen",
+  "ask-assistant": "Fragen Sie den Assistenten etwas...",
+  "initial-message": "Hallo! Ich bin Clima, Ihr virtueller Assistent. Ich bin hier, um Sie durch den Prozess der genauen Messung und Berichterstattung der Treibhausgasemissionen Ihrer Stadt zu führen. Wie kann ich Ihnen heute helfen?",
+  "regenerate": "Regenerieren",
+  "send-message": "Nachricht senden",
+  "stop-generation": "Generierung stoppen"
+}

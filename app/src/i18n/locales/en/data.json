@@ -19,6 +19,8 @@
   "activities-added": "activities added",
   "total-consumption": "Total Consumption",
   "emissions": "Emissions",
+  "percentage-emissions": "% of emissions",
+  "based-on-previous-year": "Based on previous year",
   "inventory-year": "Inventory Year",
   "fuel-type": "Fuel type",
   "fuel-consumption": "Fuel Consumption",
@@ -190,6 +192,8 @@
   "activity-data-amount": "Activity data amount",
   "value-required": "Please add a value",
   "option-required": "Please select an option",
+  "value-too-low": "Value must be greater than or equal to {{min}}",
+  "value-too-high": "Value must be less than {{max}}",
   "activity-data-amount-placeholder": "Insert activity data amount",
   "emission-factor-type": "Select emission factor type",
   "emission-factors-values": "Emission factors values",
@@ -926,5 +930,9 @@
   "emissions-from-product-use-occurring-within-the-city-boundary": "Emissions from product use occurring within the city boundary",
   "emissions-from-livestock-within-the-city-boundary": "Emissions from livestock within the city boundary",
   "emissions-from-land-within-the-city-boundary": "Emissions from land within the city boundary",
-  "emissions-from-aggregate-sources-and-non-co2-emission-sources-on-land-within-the-city-boundary": "Emissions from aggregate sources and non-CO2 emission sources on land within the city boundary"
+  "emissions-from-aggregate-sources-and-non-co2-emission-sources-on-land-within-the-city-boundary": "Emissions from aggregate sources and non-CO2 emission sources on land within the city boundary",
+  "industrial-processes-direct-measure-methodology": "Direct measure",
+  "industrial-processes-direct-measure-methodology-description": "Direct measurement of emissions from industrial processes.",
+  "product-use-direct-measure-methodology": "Direct measure",
+  "product-use-direct-measure-methodology-description": "Direct measurement of emissions from product use."
 }

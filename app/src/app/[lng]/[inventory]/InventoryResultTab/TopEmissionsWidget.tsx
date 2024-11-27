@@ -31,7 +31,6 @@ import {
   SegmentedProgressValues,
 } from "@/components/SegmentedProgress";
 import { EmptyStateCardContent } from "@/app/[lng]/[inventory]/InventoryResultTab/EmptyStateCardContent";
-import { useEffect } from "react";
 
 const EmissionsTable = ({
   topEmissions,
@@ -45,7 +44,9 @@ const EmissionsTable = ({
       <Table variant="simple">
         <Thead>
           <Tr>
-            <Th sx={{ font: "bold", color: "black" }}>{t("subsector")}</Th>
+            <Th sx={{ font: "bold", color: "black" }} width={"50%"}>
+              {t("subsector")}
+            </Th>
             <Th sx={{ font: "bold", color: "black" }}>
               {t("total-emissions-CO2eq")}
             </Th>
@@ -55,10 +56,11 @@ const EmissionsTable = ({
         <Tbody>
           {(topEmissions || []).map((emission, index) => (
             <Tr key={index}>
-              <Td>
+              <Td sx={{ maxWidth: "50%", wordBreak: "break-word" }}>
                 <Text
                   fontFamily="heading"
                   className="text-sm leading-5 tracking-[0.5px]"
+                  sx={{ whiteSpace: "normal" }}
                 >
                   {t(toKebabCase(emission.subsectorName))}
                 </Text>
@@ -83,9 +85,11 @@ const EmissionsTable = ({
 const TopEmissionsWidget = ({
   t,
   inventory,
+  isPublic,
 }: {
   t: Function & TFunction<"translation", undefined>;
   inventory?: InventoryResponse;
+  isPublic: boolean;
 }) => {
   const { data: results, isLoading: isTopEmissionsResponseLoading } =
     api.useGetResultsQuery(inventory!.inventoryId!);
@@ -113,7 +117,7 @@ const TopEmissionsWidget = ({
         </Card>
       </HStack>
     );
-  } else if (results!.totalEmissions.total <= 0) {
+  } else if (results!?.totalEmissions.total <= 0) {
     return (
       <>
         <Card width={"713px"} height={"448px"}>
@@ -123,6 +127,7 @@ const TopEmissionsWidget = ({
             height={"344px"}
             t={t}
             inventoryId={inventory?.inventoryId}
+            isPublic={isPublic}
           />
         </Card>
       </>
@@ -151,7 +156,7 @@ const TopEmissionsWidget = ({
                 </Heading>
               </Box>
               <EmissionsTable
-                topEmissions={results!.topEmissions.bySubSector}
+                topEmissions={results!?.topEmissions.bySubSector}
                 t={t}
               />
             </>

@@ -7,6 +7,7 @@ import { findMethodology } from "@/util/form-schema";
 import { translationFunc } from "@/i18n/server";
 import { toDecimal } from "@/util/helpers";
 import Decimal from "decimal.js";
+import { bigIntToDecimal } from "@/util/big_int";
 
 type InventoryValueWithActivityValues = InventoryValue & {
   activityValues: ActivityValue[];
@@ -52,7 +53,6 @@ export default class ECRFDownloadService {
       worksheet?.eachRow((row, rowNumber) => {
         // maintain the styling
         row.eachCell((cell) => {
-          console.log(cell.style);
           cell.style = { ...cell.style };
         });
 
@@ -119,24 +119,35 @@ export default class ECRFDownloadService {
         activityValues: activityValues.map((activityValue) => {
           let activityTitleKey = activityValue.metadata?.activityTitle;
           let dataQuality = activityValue.metadata?.dataQuality;
-          let dataSource = activityValue.metadata?.dataSource;
+          let dataSource = activityValue.activityData?.["data-source"];
           let activityAmount = activityValue.activityData?.[activityTitleKey];
           let activityUnit = t(
             activityValue.activityData?.[`${activityTitleKey}-unit`],
           );
-          let emission_co2 = activityValue.gasValues.find(
-            (g) => g.gas === "CO2",
-          )?.emissionsFactor.emissionsPerActivity;
-          let emission_ch4 = activityValue.gasValues.find(
-            (g) => g.gas === "CH4",
-          )?.emissionsFactor.emissionsPerActivity;
-          let emission_n2o = activityValue.gasValues.find(
-            (g) => g.gas === "N2O",
-          )?.emissionsFactor.emissionsPerActivity;
+          let emission_co2 = null;
+          let emission_ch4 = null;
+          let emission_n2o = null;
+          let ghg_co2 = null;
+          let ghg_ch4 = null;
+          let ghg_n2o = null;
+
+          if (activityValue.gasValues) {
+            let co2_gas = activityValue.gasValues.find((g) => g.gas === "CO2");
+            let ch4_gas = activityValue.gasValues.find((g) => g.gas === "CH4");
+            let n2o_gas = activityValue.gasValues.find((g) => g.gas === "N2O");
+
+            emission_co2 = co2_gas?.emissionsFactor.emissionsPerActivity;
+            emission_ch4 = ch4_gas?.emissionsFactor.emissionsPerActivity;
+            emission_n2o = n2o_gas?.emissionsFactor.emissionsPerActivity;
+
+            ghg_co2 = BigInt(co2_gas?.gasAmount as bigint);
+            ghg_ch4 = BigInt(ch4_gas?.gasAmount as bigint) * BigInt(28);
+            ghg_n2o = BigInt(n2o_gas?.gasAmount as bigint) * BigInt(265);
+          }
           return {
-            ghg_co2: activityValue.activityData?.co2_amount,
-            ghg_ch4: activityValue.activityData?.ch4_amount,
-            ghg_n2o: activityValue.activityData?.n2o_amount,
+            ghg_co2: bigIntToDecimal(ghg_co2 as bigint).toNumber(),
+            ghg_ch4: bigIntToDecimal(ghg_ch4 as bigint).toNumber(),
+            ghg_n2o: bigIntToDecimal(ghg_n2o as bigint).toNumber(),
             activity_type: t(activityValue.activityData?.[activityKey]),
             emission_factor_unit: null,
             emission_co2,

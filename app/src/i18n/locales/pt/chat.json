@@ -4,5 +4,7 @@
   "ask-ai": "Pergunte à IA",
   "ask-assistant": "Pergunte qualquer coisa ao assistente...",
   "initial-message": "Olá! Sou Clima, sua assistente virtual. Estou aqui para guiá-lo no processo de medir e reportar com precisão as emissões de gases de efeito estufa da sua cidade. Como posso ajudá-lo hoje?",
-  "regenerate": "Regenerar"
+  "regenerate": "Regenerar",
+  "send-message": "Enviar mensagem",
+  "stop-generation": "Parar geração"
 }

@@ -39,7 +39,7 @@
             "type": ["array", "null"],
             "items": {
                 "type": "string",
-                "enum": ["droughts", "heatwaves", "floods", "sea-level-rise", "landslides", "storms", "wildfires"]
+                "enum": ["droughts", "heatwaves", "floods", "sea-level-rise", "landslides", "storms", "wildfires", "diseases"]
             },
             "description": "The hazard the adaptation action is aligned with",
             "appliesTo": ["adaptation"],
@@ -51,7 +51,7 @@
                 "type": "string",
                 "enum": [
                     "stationary_energy", "transportation", "waste", "ippu", "afolu", 
-                    "water_resources", "food_security", "energy_security", "biodiversity", "public_health", "railway_infrastructure", "road_infrastructure", "geo-hydrological_disasters"
+                    "water_resources", "food_security", "energy_security", "biodiversity", "public_health", "railway_infrastructure", "road_infrastructure", "port_infrastructure","geo-hydrological_disasters"
                 ]
             },
             "description": "The sector to which the action belongs.",
@@ -149,6 +149,12 @@
                     ]
                 },
                 "mobility": {
+                    "oneOf": [
+                        { "type": "number", "enum": [-2, -1, 0, 1, 2] },
+                        { "type": "null" }
+                    ]
+                },
+                "stakeholder_engagement": {
                     "oneOf": [
                         { "type": "number", "enum": [-2, -1, 0, 1, 2] },
                         { "type": "null" }

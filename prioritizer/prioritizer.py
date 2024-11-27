@@ -8,7 +8,8 @@ import pandas as pd
 from pydantic import BaseModel
 from typing import List
 from pathlib import Path
-from utils.utils import count_matching_hazards, read_city_inventory, read_actions, find_highest_emission
+from utils.reading_data import read_city_inventory, read_actions
+from utils.reading_data import count_matching_hazards, find_highest_emission
 
 load_dotenv()
 

@@ -7,7 +7,7 @@
         "actionId": "c40_0026",
         "actionName": "Vehicle Emissions",
         "actionPriority": 1.0,
-        "explanation": "This action targets vehicle emissions which are part of the transportation sector, contributing 150,000 tons of emissions. Prioritizing vehicle emissions reduction aligns with both high sector impact and high population density needs. The score reflects its relatively high quantitative value."
+        "explanation": "Vehicle emissions action targets the transportation sector, which is a significant source of emissions in Cama\u00e7ari. The action is cost-effective, suitable for the city's size, and aligns well with the transportation emissions aspect of the city, providing a high potential for emission reductions."
     },
     {
         "locode": "BRCCI",
@@ -17,7 +17,7 @@
         "actionId": "c40_0035",
         "actionName": "Waste Efficiency",
         "actionPriority": 2.0,
-        "explanation": "Waste Efficiency directly addresses waste emissions, a more feasible sector given Cama\u00e7ari's focus on waste, making it a crucial target for reduction. Its high quantitative score and sector alignment make it a priority."
+        "explanation": "This action addresses waste emissions, which are one of the city's sectors identified for improvement. Given the city's emissions profile, improving waste efficiency can significantly contribute to reducing emissions. The action is feasible and aligns with city infrastructure needs."
     },
     {
         "locode": "BRCCI",
@@ -27,17 +27,7 @@
         "actionId": "c40_0002",
         "actionName": "Building Codes",
         "actionPriority": 3.0,
-        "explanation": "Building Codes affect the stationary energy emissions sector, which is major for Cama\u00e7ari. Given the city\u2019s prominent stationary energy emissions and the cost-effectiveness of updating codes, it\u2019s ranked high."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0036",
-        "actionName": "Landfill Management",
-        "actionPriority": 4.0,
-        "explanation": "Landfill Management fits well with the need to reduce waste emissions and has a lesser cost compared to other interventions. It is important due to the 50,000 tons from waste emissions."
+        "explanation": "The building codes action targets stationary energy emissions, aiding in significant emissions reduction. It is cost-effective and blends well with the city's needs for energy efficiency in buildings, considering the high risk of heatwaves affecting energy security and public health."
     },
     {
         "locode": "BRCCI",
@@ -46,7 +36,17 @@
         "regionName": "Bahia",
         "actionId": "c40_0003",
         "actionName": "Building Codes",
+        "actionPriority": 4.0,
+        "explanation": "Similar to other building code actions, it addresses energy efficiency, aligning with the city's stationary energy emissions sector, thus providing a substantial contribution to emission reductions. It also mitigates risk related to heat waves."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0004",
+        "actionName": "Building Codes",
         "actionPriority": 5.0,
-        "explanation": "Building Codes, similar to the one previously listed, remain crucial due to their impact on stationary energy emissions. It continues to align with city emissions strategy and mitigates risk,"
+        "explanation": "This action focuses on enhancing building efficiency, which is crucial given the city's population and stationary energy emission levels. It aligns with existing infrastructure demands and addresses critical emission areas identified in the city data."
     }
 ]

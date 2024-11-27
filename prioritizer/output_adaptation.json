@@ -7,7 +7,7 @@
         "actionId": "c40_0063",
         "actionName": "Local Food Support",
         "actionPriority": 1.0,
-        "explanation": "Local Food Support is prioritized due to high alignment with the city's need to address food security risks from drought and flooding, which are significant hazards (risk score of 0.99). This action also has the highest quantitative score among the options, indicating strong potential effectiveness."
+        "explanation": "The action has the highest quantitative score, addresses food security critical due to high flood and drought risks, and fits well with the population, emphasizing sustainable resources for a densely populated area experiencing 500,000 total emissions."
     },
     {
         "locode": "BRCCI",
@@ -17,7 +17,7 @@
         "actionId": "c40_0048",
         "actionName": "Improved Drainage",
         "actionPriority": 2.0,
-        "explanation": "Improved Drainage tackles the high risks of flooding (risk score of 0.99), which is critical due to the city's vulnerability to geo-hydrological disasters. It also has a strong quantitative score, suggesting good potential for effective implementation."
+        "explanation": "This action also ranks high quantitatively, directly addresses the substantial flood risks identified in Cama\u00e7ari's CCRA, and is vital in a tropical rainforest biome where heavy rains are prevalent, ensuring better water management."
     },
     {
         "locode": "BRCCI",
@@ -27,26 +27,26 @@
         "actionId": "c40_0047",
         "actionName": "Water Storage",
         "actionPriority": 3.0,
-        "explanation": "Water Storage is vital for managing risks related to water resources, particularly droughts (risk score of 0.28), and aligns well with the city's tropical rainforest biome. Its strong quantitative score supports its inclusion."
+        "explanation": "Water storage solutions are crucial given the severe drought risk, fitting well with the city's context and demographic needs to secure reliable water sources for Cama\u00e7ari's 300,000 residents."
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0056",
-        "actionName": "Watershed Preservation",
+        "actionId": "c40_0050",
+        "actionName": "White Roofs",
         "actionPriority": 4.0,
-        "explanation": "Watershed Preservation supports long-term water resource management and aligns with the biome of Cama\u00e7ari. This action is crucial for mitigating drought-related impacts, despite its lower quantitative score among top actions."
+        "explanation": "This action, while lower in quantitative score, significantly helps in reducing heatwave impact, which is highly rated in the city's risk profile, aiding in energy efficiency and public health."
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0065",
-        "actionName": "Food Access Laws",
+        "actionId": "c40_0051",
+        "actionName": "Public Shading",
         "actionPriority": 5.0,
-        "explanation": "Food Access Laws address significant public health risks, particularly related to health impacts from diseases and heatwaves (risk score of 0.99). While its quantitative score is lower, its potential impact on health and food security justifies its prioritization."
+        "explanation": "Addressing the high heatwave risks, public shading is crucial for improving outdoor comfort and health, particularly in urban areas, aligning with the need to mitigate heat impacts stipulated in the CCRA."
     }
 ]

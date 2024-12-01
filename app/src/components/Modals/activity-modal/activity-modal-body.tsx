@@ -32,7 +32,7 @@ import type {
   SubcategoryData,
 } from "../../../app/[lng]/[inventory]/data/[step]/types";
 import { resolve } from "@/util/helpers";
-import { Methodology, SuggestedActivity } from "@/util/form-schema";
+import { ExtraField, Methodology, SuggestedActivity } from "@/util/form-schema";
 import { ActivityValue } from "@/models/ActivityValue";
 import FormattedNumberInput from "@/components/formatted-number-input";
 import PercentageBreakdownInput from "@/components/percentage-breakdown-input";
@@ -90,17 +90,6 @@ export type Inputs = {
   subcategoryData: Record<string, SubcategoryData>;
 };
 
-export type ExtraField = {
-  id: string;
-  type?: string; // Specifies the type, e.g., 'text', 'number'
-  options?: string[]; // Array of options for selection
-  exclusive?: string; // An option that excludes others
-  multiselect?: boolean; // Whether multiple selections are allowed
-  units?: string[]; // Specifies units, applicable when type is 'number'
-  required?: boolean; // Whether the field is required
-  subtypes?: string[];
-};
-
 const ActivityModalBody = ({
   t,
   register,
@@ -142,9 +131,7 @@ const ActivityModalBody = ({
 
   let prefix = "";
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
-    useState<boolean>(
-      !(targetActivityValue?.metadata?.emissionFactorType === "custom"),
-    );
+    useState<boolean>(false);
 
   useEffect(() => {
     if (emissionsFactorTypes.length > 0 && emissionFactorTypeValue) {
@@ -156,17 +143,20 @@ const ActivityModalBody = ({
         setIsEmissionFactorInputDisabled(false);
       } else {
         let co2Val =
-          (emissionFactor?.gasValuesByGas["CO2"].gasValues.length as number) > 0
+          (emissionFactor?.gasValuesByGas["CO2"]?.gasValues.length as number) >
+          0
             ? emissionFactor?.gasValuesByGas["CO2"].gasValues[0]
                 .emissionsPerActivity
             : "";
         let n2oVal =
-          (emissionFactor?.gasValuesByGas["N2O"].gasValues.length as number) > 0
+          (emissionFactor?.gasValuesByGas["N2O"]?.gasValues.length as number) >
+          0
             ? emissionFactor?.gasValuesByGas["N2O"].gasValues[0]
                 .emissionsPerActivity
             : "";
         let ch4Val =
-          (emissionFactor?.gasValuesByGas["CH4"].gasValues.length as number) > 0
+          (emissionFactor?.gasValuesByGas["CH4"]?.gasValues.length as number) >
+          0
             ? emissionFactor?.gasValuesByGas["CH4"].gasValues[0]
                 .emissionsPerActivity
             : "";
@@ -321,6 +311,11 @@ const ActivityModalBody = ({
                       <FormLabel className="truncate">{t(f.id)}</FormLabel>
                       <FormattedNumberInput
                         placeholder={t("activity-data-amount-placeholder")}
+                        max={f.max}
+                        id={f.id}
+                        setError={setError}
+                        clearErrors={clearErrors}
+                        min={f.min}
                         control={control}
                         name={`activity.${f.id}`}
                         t={t}
@@ -345,7 +340,7 @@ const ActivityModalBody = ({
                           </Select>
                         )}
                       </FormattedNumberInput>
-                      {(errors?.[`activity.${f.id}`] as any) ? (
+                      {(errors?.activity?.[f.id] as any) ? (
                         <Box
                           display="flex"
                           gap="6px"
@@ -355,6 +350,22 @@ const ActivityModalBody = ({
                           <WarningIcon color="sentiment.negativeDefault" />
                           <Text fontSize="body.md">
                             {errors?.activity?.[f.id]?.message}{" "}
+                          </Text>
+                        </Box>
+                      ) : (
+                        ""
+                      )}
+                      {(errors?.activity?.[`${f.id}-unit`] as any) &&
+                      !errors?.activity?.[`${f.id}-unit`] ? (
+                        <Box
+                          display="flex"
+                          gap="6px"
+                          alignItems="center"
+                          mt="6px"
+                        >
+                          <WarningIcon color="sentiment.negativeDefault" />
+                          <Text fontSize="body.md">
+                            {errors?.activity?.[`${f.id}-unit`]?.message}{" "}
                           </Text>
                         </Box>
                       ) : (
@@ -639,7 +650,8 @@ const ActivityModalBody = ({
                           textAlign="center"
                         >
                           kg/
-                          {methodology.id.includes("energy-consumption")
+                          {methodology.id.includes("energy-consumption") ||
+                          methodology.id.includes("electricity-consumption")
                             ? t("kWh")
                             : t("m3")}
                         </Text>
@@ -685,7 +697,8 @@ const ActivityModalBody = ({
                         textAlign="center"
                       >
                         kg/
-                        {methodology.id.includes("energy-consumption")
+                        {methodology.id.includes("energy-consumption") ||
+                        methodology.id.includes("electricity-consumption")
                           ? t("kWh")
                           : t("m3")}
                       </Text>
@@ -730,7 +743,8 @@ const ActivityModalBody = ({
                         textAlign="center"
                       >
                         kg/
-                        {methodology.id.includes("energy-consumption")
+                        {methodology.id.includes("energy-consumption") ||
+                        methodology.id.includes("electricity-consumption")
                           ? t("kWh")
                           : t("m3")}
                       </Text>

@@ -80,6 +80,7 @@ import { InventoryValueAttributes } from "@/models/InventoryValue";
 import { motion } from "framer-motion";
 import { getTranslationFromDict } from "@/i18n";
 import { getScopesForInventoryAndSector, SECTORS } from "@/util/constants";
+import { forwardRef } from "react";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -191,15 +192,12 @@ export default function AddDataSteps({
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
-  const defaultInventoryId = userInfo?.defaultInventoryId;
 
   const {
     data: inventoryProgress,
     isLoading: isInventoryProgressLoading,
     error: inventoryProgressError,
-  } = api.useGetInventoryProgressQuery(defaultInventoryId!, {
-    skip: !defaultInventoryId,
-  });
+  } = api.useGetInventoryProgressQuery(inventory);
   const isInventoryLoading = isUserInfoLoading || isInventoryProgressLoading;
   const locode = inventoryProgress?.inventory.city.locode || undefined;
   const year = inventoryProgress?.inventory.year || undefined;
@@ -604,7 +602,14 @@ export default function AddDataSteps({
     }
   };
 
-  const MotionBox = motion(Box);
+  const MotionBox = motion(
+    // the display name is added below, but the linter isn't picking it up
+    // eslint-disable-next-line react/display-name
+    forwardRef<HTMLDivElement, any>((props, ref) => (
+      <Box ref={ref} {...props} />
+    )),
+  );
+  MotionBox.displayName = "MotionBox";
 
   const scrollResizeHeaderThreshold = 50;
   const isExpanded = scrollPosition > scrollResizeHeaderThreshold;

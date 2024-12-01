@@ -19,6 +19,11 @@ import {
   RemovedSourceResult,
 } from "@/backend/DataSourceService";
 
+export interface CitiesAndYearsResponse {
+  city: CityAttributes;
+  years: { year: number; inventoryId: string; lastUpdate: Date }[];
+}
+
 export type InventoryResponse = InventoryAttributes & {
   city: CityAttributes & {
     populationYear: number;
@@ -184,6 +189,25 @@ export interface ResultsResponse {
     total: bigint;
   };
   topEmissions: { bySubSector: TopEmission[] };
+}
+
+export interface YearOverYearResultResponse {
+  totalEmissions: {
+    sumOfEmissions: bigint;
+    totalEmissionsBySector: SectorEmission[];
+  };
+  topEmissionsBySubSector: {
+    inventoryId: string;
+    co2eq: bigint;
+    percentage: number;
+    scopeName: string;
+    sectorName: string;
+    subsectorName: string;
+  };
+}
+
+export interface YearOverYearResultsResponse {
+  [inventoryId: string]: YearOverYearResultResponse;
 }
 
 export interface SubsectorTotals {

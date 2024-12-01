@@ -5,7 +5,7 @@ import { QueryTypes } from "sequelize";
 type IDsFromReferenceNumberResult = {
   sectorId: string;
   subSectorId: string;
-  subCategoryId: string;
+  subCategoryId: string | null;
 };
 
 export default class GPCService {
@@ -30,18 +30,34 @@ export default class GPCService {
         },
       ],
     });
-
-    const subCategoryId = subcategory?.subcategoryId;
-    const subSectorId = subcategory?.subsector?.subsectorId;
-    const sectorId = subcategory?.subsector?.sector?.sectorId;
-
-    if (!sectorId || !subSectorId || !subCategoryId) {
-      throw new createHttpError.BadRequest(
-        "Couldn't find sector/ subsector/ subcategory for given GPC reference number",
-      );
+    if (subcategory) {
+      return {
+        sectorId: subcategory.subsector.sector.sectorId,
+        subSectorId: subcategory.subsector.subsectorId,
+        subCategoryId: subcategory.subcategoryId,
+      };
     }
-
-    return { sectorId, subSectorId, subCategoryId };
+    const subsector = await db.models.SubSector.findOne({
+      where: { referenceNumber: gpcReferenceNumber },
+      attributes: ["subsectorId"],
+      include: [
+        {
+          model: db.models.Sector,
+          as: "sector",
+          attributes: ["sectorId"],
+        },
+      ],
+    });
+    if (subsector) {
+      return {
+        sectorId: subsector.sector.sectorId,
+        subSectorId: subsector.subsectorId,
+        subCategoryId: null,
+      };
+    }
+    throw new createHttpError.BadRequest(
+      "Couldn't find sector/ subsector/ subcategory for given GPC reference number",
+    );
   }
 
   public static async getRequiredScopes(sectorId: string) {

@@ -499,6 +499,14 @@ export const appTheme = extendTheme({
           lineHeight: "20",
           letterSpacing: "wide",
         },
+        card: {
+          fontSize: "label.lg",
+          fontWeight: "medium",
+          color: "content.secondary",
+          textTransform: "none",
+          whiteSpace: "normal",
+          textAlign: "left",
+        },
       },
     },
     Heading: {

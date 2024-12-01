@@ -1,9 +1,11 @@
 import { emailPattern } from "@/util/validation";
+import { WarningIcon } from "@chakra-ui/icons";
 import {
   FormControl,
   FormErrorMessage,
   FormLabel,
   Input,
+  Text,
 } from "@chakra-ui/react";
 import { FieldError } from "react-hook-form";
 
@@ -32,7 +34,14 @@ export default function EmailInput({
         type="email"
         placeholder={t("email-placeholder")}
         size="lg"
-        background={disabled ? "background.neutral" : "background.default"}
+        shadow="2dp"
+        background={
+          error
+            ? "sentiment.negativeOverlay"
+            : disabled
+              ? "background.neutral"
+              : "background.default"
+        }
         {...register(id, {
           required: t("email-required"),
           pattern: {
@@ -42,7 +51,19 @@ export default function EmailInput({
         })}
       />
       {children}
-      <FormErrorMessage>{error && error.message}</FormErrorMessage>
+      {error && (
+        <FormErrorMessage display="flex" gap="6px">
+          <WarningIcon />
+          <Text
+            fontSize="body.md"
+            lineHeight="20px"
+            letterSpacing="wide"
+            color="content.tertiary"
+          >
+            {error.message}
+          </Text>
+        </FormErrorMessage>
+      )}
     </FormControl>
   );
 }

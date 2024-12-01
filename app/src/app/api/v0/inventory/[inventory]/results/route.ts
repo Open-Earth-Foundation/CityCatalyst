@@ -3,7 +3,6 @@ import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import { getEmissionResults } from "@/backend/ResultsService";
-import sumBy from "lodash/sumBy";
 
 export const GET = apiHandler(
   async (_req, { session, params: { inventory } }) => {
@@ -27,14 +26,14 @@ export const GET = apiHandler(
       true,
     );
 
-    const { totalEmissionsBySector, topEmissionsBySubSector } =
+    const { totalEmissionsBySector, topEmissionsBySubSector, totalEmissions } =
       await getEmissionResults(inventory);
 
     return NextResponse.json({
       data: {
         totalEmissions: {
           bySector: totalEmissionsBySector,
-          total: sumBy(totalEmissionsBySector, (e) => Number(e.co2eq)),
+          total: totalEmissions,
         },
         topEmissions: { bySubSector: topEmissionsBySubSector },
       },

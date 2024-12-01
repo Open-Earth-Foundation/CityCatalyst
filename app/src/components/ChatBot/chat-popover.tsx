@@ -62,8 +62,6 @@ export default function ChatPopover({
             letterSpacing="wider"
             fontFamily="heading"
             aria-label={t("ai-expert")}
-            w="116px"
-            h="56px"
           >
             {t("ask-ai")}
           </Button>

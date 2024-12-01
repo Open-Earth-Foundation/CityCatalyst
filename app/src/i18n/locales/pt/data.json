@@ -924,5 +924,9 @@
   "emissions-from-product-use-occurring-within-the-city-boundary": "Emissões do uso de produtos que ocorrem dentro dos limites da cidade",
   "emissions-from-livestock-within-the-city-boundary": "Emissões de gado dentro dos limites da cidade",
   "emissions-from-land-within-the-city-boundary": "Emissões da terra dentro dos limites da cidade",
-  "emissions-from-aggregate-sources-and-non-co2-emission-sources-on-land-within-the-city-boundary": "Emissões de fontes agregadas e fontes de emissão não CO2 na terra dentro dos limites da cidade"
+  "emissions-from-aggregate-sources-and-non-co2-emission-sources-on-land-within-the-city-boundary": "Emissões de fontes agregadas e fontes de emissão não CO2 na terra dentro dos limites da cidade",
+  "industrial-processes-direct-measure-methodology": "Medição direta",
+  "industrial-processes-direct-measure-methodology-description": "Medição direta das emissões dos processos industriais.",
+  "product-use-direct-measure-methodology": "Medição direta",
+  "product-use-direct-measure-methodology-description": "Medição direta das emissões do uso de produtos."
 }

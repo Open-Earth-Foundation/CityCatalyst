@@ -17,12 +17,12 @@ import {
   SuggestedActivity,
 } from "@/util/form-schema";
 import type {
-  ActivityValueAttributes,
   ActivityValue,
+  ActivityValueAttributes,
 } from "@/models/ActivityValue";
 import type {
-  InventoryValueAttributes,
   InventoryValue,
+  InventoryValueAttributes,
 } from "@/models/InventoryValue";
 import EmissionDataSection from "@/components/Tabs/Activity/emission-data-section";
 import SelectMethodology from "@/components/Tabs/Activity/select-methodology";
@@ -71,8 +71,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
   // extract the methodology used from the filtered scope
 
   const [methodology, setMethodology] = useState<Methodology | DirectMeasure>();
-
-  const getFilteredActivityValues = useMemo(() => {
+  const filteredActivityValues = useMemo(() => {
     let methodologyId: string | null | undefined = undefined;
     const filteredValues = activityData?.filter((activity) => {
       const activityValue = activity as unknown as ActivityValue; // TODO use InventoryValueResponse/ ActivityValueResponse everywhere
@@ -149,21 +148,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
     );
   }, [inventoryValues, methodology, referenceNumber]);
 
-  const getActivityValuesByMethodology = (
-    activityValues: ActivityValueAttributes[] | undefined,
-  ) => {
-    const isDirectMeasure = methodology?.id.includes("direct-measure");
-
-    return activityValues?.filter((activity) => {
-      const isActivityDirectMeasure =
-        (activity as unknown as ActivityValue).inventoryValue
-          .inputMethodology === "direct-measure";
-      isDirectMeasure ? isActivityDirectMeasure : !isActivityDirectMeasure;
-    });
-  };
-
-  const activityValues =
-    getActivityValuesByMethodology(getFilteredActivityValues) || [];
+  const activityValues = filteredActivityValues;
 
   const getSuggestedActivities = (): SuggestedActivity[] => {
     if (!selectedMethodology) return [];
@@ -230,7 +215,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
 
   return (
     <>
-      <TabPanel p="0" pt="48px">
+      <TabPanel key={referenceNumber} p="0" pt="48px">
         <Box
           display="flex"
           alignItems="center"

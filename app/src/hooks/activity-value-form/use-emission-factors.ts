@@ -74,8 +74,6 @@ const reduceEmissionsToUniqueSourcesAndUnits = (
 const generateMetadataKey = (key: string) => {
   if (key.includes("fuel-type")) {
     return "fuel_type";
-  } else if (key.includes("transport-type") || key.includes("vehicle-type")) {
-    return "transport_type";
   } else if (key.includes("fugitive-emissions")) {
     return "activity_name";
   }

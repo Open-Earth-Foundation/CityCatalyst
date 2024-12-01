@@ -1,6 +1,6 @@
 import type { TFunction } from "i18next";
 import React from "react";
-import { Select } from "@chakra-ui/react";
+import { Select, Text } from "@chakra-ui/react";
 
 export function Selector<T extends string>({
   value,
@@ -38,7 +38,14 @@ export function Selector<T extends string>({
     >
       {options.map((opt) => (
         <option key={opt} value={opt}>
-          {t(opt)}
+          <Text
+            fontWeight="regular"
+            color="interactive.control"
+            lineHeight="20"
+            letterSpacing="wide"
+          >
+            {t(opt)}
+          </Text>
         </option>
       ))}
     </Select>

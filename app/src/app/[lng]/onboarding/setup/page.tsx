@@ -1,6 +1,5 @@
 "use client";
 
-import WizardSteps from "@/components/wizard-steps";
 import { useTranslation } from "@/i18n/client";
 import type { CityAttributes } from "@/models/City";
 import {

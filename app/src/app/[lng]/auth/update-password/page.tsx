@@ -73,7 +73,7 @@ export default function UpdatePassword({
         <PasswordInput
           register={register}
           error={errors.password}
-          name="New Password"
+          name={t("new-password")}
           t={t}
         >
           <FormHelperText>

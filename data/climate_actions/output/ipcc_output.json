@@ -16,12 +16,12 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives"
         ],
         "Description":"Enhancing urban density and mixed land use to reduce travel distances, car dependency, and associated greenhouse gas emissions. Includes public transport infrastructure, pedestrian pathways, and bike-friendly zones.",
-        "BehaviouralChangeTargeted":"Encourages shifts from car dependency to active transport and public transit use.",
+        "BehavioralChangeTargeted":"Encourages shifts from car dependency to active transport and public transit use.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -69,12 +69,12 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives"
         ],
         "Description":"Promoting walking and cycling as primary modes of transport for short journeys (5 km or less) to reduce dependency on light-duty vehicles and decrease GHG emissions.",
-        "BehaviouralChangeTargeted":"Encourages a modal shift from car and motorcycle use to walking and cycling.",
+        "BehavioralChangeTargeted":"Encourages a modal shift from car and motorcycle use to walking and cycling.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -122,13 +122,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "regulations_and_laws"
         ],
         "Description":"Promoting the use of public transportation systems such as buses and rail for urban and intercity travel to reduce dependency on light-duty vehicles and decrease greenhouse gas emissions.",
-        "BehaviouralChangeTargeted":"Encourages a shift from private car usage to public transit for short and medium journeys.",
+        "BehavioralChangeTargeted":"Encourages a shift from private car usage to public transit for short and medium journeys.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -176,9 +176,12 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":"['programs_and_initiatives', 'infrastructure_investments'",
+        "InterventionType":[
+            "programs_and_initiatives",
+            "infrastructure_investments"
+        ],
         "Description":"Promoting the reduction in the quantity of materials used per unit of output to improve material efficiency, reduce transport needs, and enhance the efficiency of freight transport. Examples include combining multiple functions into single devices, localized production through 3D printing, and circular economy principles.",
-        "BehaviouralChangeTargeted":"Encourages reduced material consumption and adoption of multifunctional devices to reduce transport demand",
+        "BehavioralChangeTargeted":"Encourages reduced material consumption and adoption of multifunctional devices to reduce transport demand",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -226,12 +229,12 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments"
         ],
         "Description":"Promoting shared mobility solutions such as car sharing, bike sharing, e-scooters, and carpooling to reduce reliance on privately owned vehicles and decrease greenhouse gas emissions. Shared Mobility includes Mobility as a Service (MaaS), integrating various transportation services for increased system efficiency.",
-        "BehaviouralChangeTargeted":"Encourages reduced vehicle ownership and increased use of shared transport options for short and medium journeys.",
+        "BehavioralChangeTargeted":"Encourages reduced vehicle ownership and increased use of shared transport options for short and medium journeys.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -279,12 +282,12 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "regulations_and_laws"
         ],
         "Description":"Encouraging teleworking (working from home) and videoconferencing as alternatives to commuting and in-person meetings, thereby reducing light-duty vehicle travel and associated emissions.",
-        "BehaviouralChangeTargeted":"Promotes a shift towards digital solutions, reducing the need for physical travel.",
+        "BehavioralChangeTargeted":"Promotes a shift towards digital solutions, reducing the need for physical travel.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -332,13 +335,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "regulations_and_laws"
         ],
         "Description":"Utilizing advanced technologies, such as ICT, IoT sensors, AI, and Mobility as a Service (MaaS), to improve transport efficiency, reduce emissions, and enhance urban mobility. Smart mobility integrates various transport modes and optimizes operations to compete with private vehicles.",
-        "BehaviouralChangeTargeted":"Encourages a shift from private vehicle use to integrated, efficient, and shared transport solutions.",
+        "BehavioralChangeTargeted":"Encourages a shift from private vehicle use to integrated, efficient, and shared transport solutions.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -386,12 +389,12 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments"
         ],
         "Description":"Improving logistics planning in freight transport through strategies such as route optimisation, load optimisation, and eco-driving to reduce travel distances and enhance efficiency, thereby lowering GHG emissions.",
-        "BehaviouralChangeTargeted":"Encourages efficient logistics and eco-friendly driving practices to reduce fuel consumption and operational costs.",
+        "BehavioralChangeTargeted":"Encourages efficient logistics and eco-friendly driving practices to reduce fuel consumption and operational costs.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -439,12 +442,12 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments"
         ],
         "Description":"Encouraging consumer purchasing of goods online to reduce travel by light-duty vehicles for shopping purposes. This trades vehicle kilometers traveled for light-duty vehicles with freight transport through light trucks ('last-mile delivery').",
-        "BehaviouralChangeTargeted":"Encourages a shift from in-person shopping trips to online purchasing and efficient last-mile delivery systems.",
+        "BehavioralChangeTargeted":"Encourages a shift from in-person shopping trips to online purchasing and efficient last-mile delivery systems.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -492,12 +495,12 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments"
         ],
         "Description":"Utilizes advanced technologies to automate driving tasks, improve road safety, optimize driving patterns, reduce congestion, and enhance efficient use of road space. Levels range from driver assistance to full autonomy.",
-        "BehaviouralChangeTargeted":"Encourages shifts to safer, more efficient automated driving systems, potentially reducing congestion and travel emissions.",
+        "BehavioralChangeTargeted":"Encourages shifts to safer, more efficient automated driving systems, potentially reducing congestion and travel emissions.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -545,13 +548,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments",
             "regulations_and_laws"
         ],
         "Description":"Utilizes low-carbon or zero-carbon fuels, including natural gas, biofuels, ammonia, and synthetic fuels, to replace conventional petrol and diesel in internal combustion engines (ICE). These fuels offer pathways to reduce greenhouse gas emissions and diversify energy sources, though challenges remain in production costs, lifecycle emissions, and infrastructure.",
-        "BehaviouralChangeTargeted":"Encourages adoption of low-carbon fuel alternatives and a shift from conventional petrol and diesel to more sustainable fuel sources.",
+        "BehavioralChangeTargeted":"Encourages adoption of low-carbon fuel alternatives and a shift from conventional petrol and diesel to more sustainable fuel sources.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -599,14 +602,14 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments",
             "incentives_and_subsidies",
             "regulations_and_laws"
         ],
         "Description":"Adoption of electric vehicle technologies, including Battery Electric Vehicles (BEVs), Hybrid Electric Vehicles (HEVs), and Plug-in Hybrid Electric Vehicles (PHEVs), to reduce GHG emissions and dependence on fossil fuels. BEVs operate on electricity alone, producing zero emissions; HEVs combine an internal combustion engine with an electric motor; PHEVs allow extended electric-only driving.",
-        "BehaviouralChangeTargeted":"Encourages a shift from internal combustion engine vehicles to electric vehicles and adoption of renewable energy for charging.",
+        "BehavioralChangeTargeted":"Encourages a shift from internal combustion engine vehicles to electric vehicles and adoption of renewable energy for charging.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -654,14 +657,14 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments",
             "incentives_and_subsidies",
             "regulations_and_laws"
         ],
         "Description":"Use of fuel cell technology to power vehicles by converting hydrogen into electricity through an electrochemical reaction. Produces zero emissions at the point of use and water as a by-product. Hydrogen fuel cells are highly efficient, particularly when hydrogen is produced from renewable sources.",
-        "BehaviouralChangeTargeted":"Encourages a shift from internal combustion engine vehicles to hydrogen-powered fuel cell vehicles, promoting cleaner transport options.",
+        "BehavioralChangeTargeted":"Encourages a shift from internal combustion engine vehicles to hydrogen-powered fuel cell vehicles, promoting cleaner transport options.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -709,13 +712,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments",
             "incentives_and_subsidies"
         ],
         "Description":"Reducing the overall weight of vehicles by using advanced materials such as high-strength steel, aluminum, carbon fiber, and composites to improve fuel efficiency and reduce greenhouse gas emissions. Lightweighting enhances vehicle performance without compromising safety.",
-        "BehaviouralChangeTargeted":"Encourages the adoption of vehicles with enhanced fuel efficiency and reduced lifecycle emissions through material innovation.",
+        "BehavioralChangeTargeted":"Encourages the adoption of vehicles with enhanced fuel efficiency and reduced lifecycle emissions through material innovation.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -766,13 +769,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "regulations_and_laws",
             "programs_and_initiatives",
             "infrastructure_investments"
         ],
         "Description":"Optimizing vehicle design, technology, and operations to reduce energy consumption and emissions. This includes advanced aerodynamics, efficient powertrains, low rolling resistance tires, better thermal management systems, turbocharging, direct fuel injection, and cylinder deactivation in internal combustion engines, among others.",
-        "BehaviouralChangeTargeted":"Encourages adoption of fuel-efficient technologies and operational practices across vehicle types.",
+        "BehavioralChangeTargeted":"Encourages adoption of fuel-efficient technologies and operational practices across vehicle types.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -820,13 +823,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "incentives_and_subsidies",
             "regulations_and_laws"
         ],
         "Description":"A set of driving practices aimed at improving fuel efficiency, reducing greenhouse gas emissions, and minimizing wear and tear on vehicles by promoting smooth driving, regular vehicle maintenance, and traffic anticipation.",
-        "BehaviouralChangeTargeted":"Encourages drivers to adopt fuel-efficient driving practices, maintain vehicles properly, and avoid aggressive driving behaviors.",
+        "BehavioralChangeTargeted":"Encourages drivers to adopt fuel-efficient driving practices, maintain vehicles properly, and avoid aggressive driving behaviors.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -874,12 +877,12 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives"
         ],
         "Description":"Optimization of aircraft technology, including improvements in engine design, aerodynamics, airframe mass reduction, and operational navigation to reduce fuel consumption and emissions.",
-        "BehaviouralChangeTargeted":"Encourages adoption of fuel-efficient navigation routes, operational practices, and investment in advanced aircraft technology.",
+        "BehavioralChangeTargeted":"Encourages adoption of fuel-efficient navigation routes, operational practices, and investment in advanced aircraft technology.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -927,13 +930,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "regulations_and_laws"
         ],
         "Description":"Development and deployment of alternative aviation fuels, including bio-based SAFs, synthetic fuels, and liquid hydrogen, to reduce aviation greenhouse gas emissions.",
-        "BehaviouralChangeTargeted":"Encourages adoption of sustainable aviation fuels and development of low-carbon fuel infrastructure.",
+        "BehavioralChangeTargeted":"Encourages adoption of sustainable aviation fuels and development of low-carbon fuel infrastructure.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -981,14 +984,14 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "regulations_and_laws",
             "incentives_and_subsidies",
             "programs_and_initiatives"
         ],
         "Description":"Promoting a shift from regional and medium-haul flights to high-speed rail (HSR) as a low-carbon alternative. HSR can serve distances of 400\u20131000 km effectively, reducing demand for air travel and associated emissions. Infrastructure improvements, supportive policies, and enhanced HSR networks are critical for this transition.",
-        "BehaviouralChangeTargeted":"Encourages a shift in consumer travel preferences from air travel to high-speed rail, fostering acceptance of HSR as a primary mode for regional trips.",
+        "BehavioralChangeTargeted":"Encourages a shift in consumer travel preferences from air travel to high-speed rail, fostering acceptance of HSR as a primary mode for regional trips.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -1036,14 +1039,14 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "regulations_and_laws",
             "incentives_and_subsidies"
         ],
         "Description":"Transition to alternative fuels in the shipping sector, including hydrogen, ammonia, methanol, synthetic hydrocarbons, advanced biofuels, and electric propulsion. Focus on fuels produced using low-carbon energy sources to reduce lifecycle greenhouse gas emissions and achieve International Maritime Organization (IMO) targets.",
-        "BehaviouralChangeTargeted":"Encourages adoption of low-carbon fuels, improved operational practices, and infrastructure development for sustainable maritime transport.",
+        "BehavioralChangeTargeted":"Encourages adoption of low-carbon fuels, improved operational practices, and infrastructure development for sustainable maritime transport.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -1091,14 +1094,14 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "regulations_and_laws",
             "incentives_and_subsidies"
         ],
         "Description":"Adoption of electric propulsion technologies, including battery-electric and hybrid-electric systems, for short-sea shipping, ferries, and inland waterways to reduce greenhouse gas emissions. Includes advancements in design and engineering, such as optimizing hull shapes and integrating renewable energy sources like wind and solar for propulsion.",
-        "BehaviouralChangeTargeted":"Encourages adoption of low-emission propulsion systems and increased investment in infrastructure to support electric technologies. Promotes shifts toward sustainable practices in the maritime industry.",
+        "BehavioralChangeTargeted":"Encourages adoption of low-emission propulsion systems and increased investment in infrastructure to support electric technologies. Promotes shifts toward sustainable practices in the maritime industry.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":1,
@@ -1146,14 +1149,14 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "regulations_and_laws",
             "incentives_and_subsidies"
         ],
         "Description":"Enhancing energy efficiency in shipping through operational measures, optimized hull designs, advanced propulsion systems, and adoption of low-carbon fuels like hydrogen and ammonia. Includes reducing ship speeds ('slow steaming'), improving port operations, and retrofitting vessels with modern technologies to minimize emissions and fuel consumption.",
-        "BehaviouralChangeTargeted":"Encourages adoption of energy-efficient practices, operational changes, and investment in infrastructure to support the transition to low-carbon technologies in shipping. Promotes collaboration among stakeholders to achieve decarbonization goals.",
+        "BehavioralChangeTargeted":"Encourages adoption of energy-efficient practices, operational changes, and investment in infrastructure to support the transition to low-carbon technologies in shipping. Promotes collaboration among stakeholders to achieve decarbonization goals.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":1,
@@ -1201,14 +1204,14 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "incentives_and_subsidies",
             "regulations_and_laws"
         ],
         "Description":"Enhanced energy efficiency in industrial processes by recovering heat and energy from waste streams, improving process coupling, and adopting advanced technologies such as coke dry quenching, black liquor gasification, and top pressure recovery turbines. Includes reducing energy use in comminution, paper drying, and other industrial processes through optimized designs, operational improvements, and material efficiency strategies.",
-        "BehaviouralChangeTargeted":"Encourages adoption of energy recovery technologies, waste reduction practices, and material efficiency improvements in industrial processes. Promotes recycling and sustainable resource management.",
+        "BehavioralChangeTargeted":"Encourages adoption of energy recovery technologies, waste reduction practices, and material efficiency improvements in industrial processes. Promotes recycling and sustainable resource management.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -1256,14 +1259,14 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "regulations_and_laws",
             "incentives_and_subsidies"
         ],
         "Description":"Enhancing fuel delivery systems in the steel production process by implementing technologies such as pulverized coal injection, improving furnace designs and process controls, and optimizing fuel combustion for heating. Includes energy efficiency measures to reduce emissions from coal and coke used in conventional iron-making, and the potential adoption of alternative reductants like biomass and waste plastics.",
-        "BehaviouralChangeTargeted":"Promotes the adoption of advanced fuel delivery systems and energy-efficient practices in steel manufacturing, encouraging industries to transition towards less emissions-intensive processes.",
+        "BehavioralChangeTargeted":"Promotes the adoption of advanced fuel delivery systems and energy-efficient practices in steel manufacturing, encouraging industries to transition towards less emissions-intensive processes.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -1311,14 +1314,14 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "regulations_and_laws",
             "incentives_and_subsidies"
         ],
         "Description":"Enhancing the design and operation of furnaces and kilns to improve energy efficiency and reduce emissions. Includes technologies such as improved heat and energy recovery from process gases, advanced process controls, and better furnace designs to minimize temperature cycles and optimize fuel usage.",
-        "BehaviouralChangeTargeted":"Encourages industries to adopt advanced furnace designs, process controls, and energy-efficient practices.",
+        "BehavioralChangeTargeted":"Encourages industries to adopt advanced furnace designs, process controls, and energy-efficient practices.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -1366,13 +1369,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "incentives_and_subsidies"
         ],
         "Description":"This action involves improving heat-use energy efficiency by utilizing heat exchanger networks and high-temperature heat pumps to recover and reuse waste heat in industrial processes. Techniques include reducing heat needs via thermal insulation, reusing waste heat at various temperature grades, and recycling waste heat for power generation through technologies such as mechanical vapor recompression and thermoelectric conversion.",
-        "BehaviouralChangeTargeted":"Encourages industries to adopt energy-efficient technologies for heat recovery and reuse, reducing reliance on high-emission heat production methods.",
+        "BehavioralChangeTargeted":"Encourages industries to adopt energy-efficient technologies for heat recovery and reuse, reducing reliance on high-emission heat production methods.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -1420,13 +1423,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "incentives_and_subsidies"
         ],
         "Description":"This action focuses on reducing energy and emissions intensity in the steel production process by improving coupling between processes, such as Endless Strip Production (ESP). Techniques include reducing the number of temperature cycles, integrating process stages, and adopting energy-efficient technologies.",
-        "BehaviouralChangeTargeted":"Encourages manufacturers to optimize production stages, adopt efficient technologies, and reduce waste to improve overall energy efficiency and reduce emissions.",
+        "BehavioralChangeTargeted":"Encourages manufacturers to optimize production stages, adopt efficient technologies, and reduce waste to improve overall energy efficiency and reduce emissions.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -1474,13 +1477,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "incentives_and_subsidies"
         ],
         "Description":"Implementation of energy-efficient technologies in mining processes, particularly in comminution, by upgrading ore concentration methods, using efficient grinding and crushing technologies, and optimizing particle size feed. Other opportunities include improving separation, drying, and materials handling processes.",
-        "BehaviouralChangeTargeted":"Encourages the adoption of advanced technologies and optimization of resource use to reduce energy consumption and emissions in mining processes.",
+        "BehavioralChangeTargeted":"Encourages the adoption of advanced technologies and optimization of resource use to reduce energy consumption and emissions in mining processes.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -1528,12 +1531,12 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives"
         ],
         "Description":"Enhancing energy efficiency in the pulp, paper, and food processing industries by optimizing drying and dewatering processes. This includes using advanced technologies like heat exchanger networks, thermal vapor recompression, and reverse osmosis for energy savings.",
-        "BehaviouralChangeTargeted":"Encourages industries to adopt more energy-efficient technologies and optimize resource usage in drying and dewatering processes.",
+        "BehavioralChangeTargeted":"Encourages industries to adopt more energy-efficient technologies and optimize resource usage in drying and dewatering processes.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -1581,13 +1584,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments",
             "incentives_and_subsidies"
         ],
         "Description":"Material recycling involves recovering and reprocessing materials such as paper, aluminium, and other metals to reduce energy consumption, lower emissions, and conserve resources. It includes techniques like paper recycling, aluminium reuse, and increased recovery of valuable metals from industrial waste.",
-        "BehaviouralChangeTargeted":"Promotes increased adoption of recycling practices, reducing waste generation and encouraging efficient material use across industries.",
+        "BehavioralChangeTargeted":"Promotes increased adoption of recycling practices, reducing waste generation and encouraging efficient material use across industries.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -1635,13 +1638,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments",
             "incentives_and_subsidies"
         ],
         "Description":"The implementation of energy management systems using digitalisation and smart technologies to optimise energy use. These systems leverage real-time monitoring, advanced analytics, machine learning, and automation to improve energy efficiency, productivity, and cost-effectiveness.",
-        "BehaviouralChangeTargeted":"Encourages adoption of real-time energy management practices and optimization of energy-intensive processes, fostering a culture of sustainability in industries.",
+        "BehavioralChangeTargeted":"Encourages adoption of real-time energy management practices and optimization of energy-intensive processes, fostering a culture of sustainability in industries.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -1689,13 +1692,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "incentives_and_subsidies"
         ],
         "Description":"Transitioning from fossil fuels like coal to renewable energy sources (e.g., biomass, natural gas, and waste-derived fuels) in industrial processes to reduce emissions. This includes the use of renewable substitutes such as biomass and waste plastics to displace coal in sectors like steel and cement.",
-        "BehaviouralChangeTargeted":"Encourages industries to adopt renewable fuel sources and replace traditional fossil fuels to align with climate goals.",
+        "BehavioralChangeTargeted":"Encourages industries to adopt renewable fuel sources and replace traditional fossil fuels to align with climate goals.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -1743,13 +1746,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "regulations_and_laws"
         ],
         "Description":"Transitioning steel production processes to electrified methods such as molten oxide electrolysis, advanced direct reduction, and other methods powered by low-carbon electricity to reduce emissions and improve energy efficiency.",
-        "BehaviouralChangeTargeted":"Encourages adoption of electrified processes and transition to low-carbon energy sources in steel production.",
+        "BehavioralChangeTargeted":"Encourages adoption of electrified processes and transition to low-carbon energy sources in steel production.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -1797,13 +1800,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "incentives_and_subsidies"
         ],
         "Description":"Recycling energy from furnaces and kilns through technologies like heat recovery systems, including advanced heat exchangers and top pressure recovery turbines, to enhance energy efficiency and reduce emissions in steel production.",
-        "BehaviouralChangeTargeted":"Encourages adoption of advanced energy recovery technologies in industrial processes to reduce energy waste and emissions.",
+        "BehavioralChangeTargeted":"Encourages adoption of advanced energy recovery technologies in industrial processes to reduce energy waste and emissions.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -1851,13 +1854,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "regulations_and_laws"
         ],
         "Description":"Implementation of advanced technologies to optimize production processes across various industries, including iron and steel, cement, and aluminum. Examples include enhanced heat recovery, energy-efficient equipment, advanced material handling, and integration of renewable energy sources. Efforts aim to reduce energy consumption and emissions while improving production efficiency.",
-        "BehaviouralChangeTargeted":"Encourages industries to adopt state-of-the-art technologies and optimize operational processes to reduce energy use and emissions while maintaining productivity.",
+        "BehavioralChangeTargeted":"Encourages industries to adopt state-of-the-art technologies and optimize operational processes to reduce energy use and emissions while maintaining productivity.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -1905,12 +1908,12 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives"
         ],
         "Description":"Implementation of on-site combined heat and power (CHP) systems in the pulp and paper industry to improve energy efficiency and reduce GHG emissions. CHP systems efficiently generate electricity and heat simultaneously.",
-        "BehaviouralChangeTargeted":"Encourages adoption of more energy-efficient technologies and integration of heat and power systems at manufacturing sites.",
+        "BehavioralChangeTargeted":"Encourages adoption of more energy-efficient technologies and integration of heat and power systems at manufacturing sites.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -1958,14 +1961,14 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "incentives_and_subsidies",
             "regulations_and_laws"
         ],
         "Description":"Decarbonising feedstocks for industrial processes through Carbon Capture and Storage (CCS), Carbon Capture and Utilisation (CCU), and integration with low-carbon energy sources. This includes capturing carbon from various industrial emissions and reusing or storing it to reduce greenhouse gas emissions. Applications include creating synthetic fuels, chemicals, and materials while using renewable energy or biogenic carbon sources.",
-        "BehaviouralChangeTargeted":"Encourages industrial stakeholders to adopt CCS and CCU technologies, shifting towards low-carbon and circular economy feedstocks.",
+        "BehavioralChangeTargeted":"Encourages industrial stakeholders to adopt CCS and CCU technologies, shifting towards low-carbon and circular economy feedstocks.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -2013,13 +2016,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "incentives_and_subsidies"
         ],
         "Description":"Capturing carbon dioxide (CO2) from industrial processes or combustion gases and reusing it for producing fuels, chemicals, and building materials. This process reduces emissions from the initial source and provides an alternative to using new fossil or biomass feedstocks.",
-        "BehaviouralChangeTargeted":"Encourages industries to adopt carbon reuse technologies, reducing reliance on virgin feedstocks and enhancing the circular economy.",
+        "BehavioralChangeTargeted":"Encourages industries to adopt carbon reuse technologies, reducing reliance on virgin feedstocks and enhancing the circular economy.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -2067,13 +2070,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "regulations_and_laws"
         ],
         "Description":"Carbon Capture and Storage (CCS) involves capturing CO2 from industrial processes, energy generation, or the atmosphere and storing it in geological formations for millennia to prevent its release into the atmosphere. CCS technologies can also enable near-zero or negative emissions when combined with sustainably sourced biofuels or direct air capture, supporting decarbonization of hard-to-abate sectors.",
-        "BehaviouralChangeTargeted":"Encourages industries to adopt CCS technologies for emission reduction, contributing to compliance with climate targets and fostering sustainable innovation.",
+        "BehavioralChangeTargeted":"Encourages industries to adopt CCS technologies for emission reduction, contributing to compliance with climate targets and fostering sustainable innovation.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -2121,13 +2124,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "regulations_and_laws",
             "incentives_and_subsidies"
         ],
         "Description":"This action involves improving material efficiency by designing lighter products, optimizing material usage to maintain functionality, and incorporating circular economy principles such as reusability, repairability, and recyclability. It spans the entire product lifecycle, from design to end-of-life management.",
-        "BehaviouralChangeTargeted":"Encourages adoption of efficient material use practices, longer product lifespans, and repair\/reuse behaviors among manufacturers and consumers.",
+        "BehavioralChangeTargeted":"Encourages adoption of efficient material use practices, longer product lifespans, and repair\/reuse behaviors among manufacturers and consumers.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -2175,13 +2178,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "regulations_and_laws"
         ],
         "Description":"This action focuses on enhancing material efficiency by adopting near-net shape casting and similar innovative manufacturing techniques. These methods reduce material wastage during production, improve yield from raw materials, and enhance energy efficiency by minimizing reprocessing. Strategies include optimizing product design, lightweighting, and improving recycling and reuse processes.",
-        "BehaviouralChangeTargeted":"Encourages manufacturers to adopt innovative manufacturing processes, optimize material usage, and reduce production waste.",
+        "BehavioralChangeTargeted":"Encourages manufacturers to adopt innovative manufacturing processes, optimize material usage, and reduce production waste.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -2229,13 +2232,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments",
             "regulations_and_laws"
         ],
         "Description":"This action involves designing products to enable circular principles such as extended product life, reusability, repairability, and ease of recycling. It emphasizes lightweighting, material optimization, and improved recovery of materials at the end of their lifecycle through reuse, remanufacturing, or recycling.",
-        "BehaviouralChangeTargeted":"Encourages stakeholders to adopt circular economy principles, reduce waste, and prioritize designing products for longevity and efficient material recovery.",
+        "BehavioralChangeTargeted":"Encourages stakeholders to adopt circular economy principles, reduce waste, and prioritize designing products for longevity and efficient material recovery.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -2283,14 +2286,14 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "regulations_and_laws",
             "incentives_and_subsidies",
             "programs_and_initiatives",
             "infrastructure_investments"
         ],
         "Description":"Circular Economy (CE) policies aim to close the loop for materials and energy flows by reducing, reusing, and recycling resources. These policies promote durable goods, reuse and remanufacturing, industrial symbiosis, and urban symbiosis to minimize waste and reduce GHG emissions. CE policies operate at micro, meso, and macro levels to integrate strategies like eco-design, sustainable supply chains, and urban energy symbiosis.",
-        "BehaviouralChangeTargeted":"Encourages adoption of sustainable production practices, consumer participation in recycling, and cross-sectoral collaboration to reduce resource extraction and waste generation.",
+        "BehavioralChangeTargeted":"Encourages adoption of sustainable production practices, consumer participation in recycling, and cross-sectoral collaboration to reduce resource extraction and waste generation.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -2338,13 +2341,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments",
             "incentives_and_subsidies"
         ],
         "Description":"Utilizing alternative feedstocks, such as blast furnace slag, fly ash, and pozzolans, to reduce the clinker-to-cement ratio in cement production. These alternatives lower emissions associated with calcination and energy-intensive processes. Improved material efficiency through high-strength concretes and innovative placement methods further reduces material usage.",
-        "BehaviouralChangeTargeted":"Encourages the adoption of alternative materials and innovative construction practices to reduce reliance on traditional clinker-intensive cement production.",
+        "BehavioralChangeTargeted":"Encourages the adoption of alternative materials and innovative construction practices to reduce reliance on traditional clinker-intensive cement production.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -2392,13 +2395,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "incentives_and_subsidies",
             "regulations_and_laws"
         ],
         "Description":"Encouraging behavioral changes to reduce waste in industrial processes and consumer habits, particularly in food production and consumption. This includes reducing food waste through better planning, optimizing portion sizes, and improving recycling and reuse practices in production and post-consumption stages.",
-        "BehaviouralChangeTargeted":"Encourages individuals and industries to adopt waste-reduction strategies, reduce overproduction, optimize food usage, and recycle waste effectively.",
+        "BehavioralChangeTargeted":"Encourages individuals and industries to adopt waste-reduction strategies, reduce overproduction, optimize food usage, and recycle waste effectively.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -2446,12 +2449,12 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "regulations_and_laws"
         ],
         "Description":"Encourages precise use of consumable products like detergents and fertilizers to minimize material and energy waste while maximizing product-service efficiency. This strategy aims to reduce material intensity and waste production in the industry sector.",
-        "BehaviouralChangeTargeted":"Promotes behavioral changes in the precise use of products, such as following recommended doses for consumables and minimizing waste in production processes.",
+        "BehavioralChangeTargeted":"Promotes behavioral changes in the precise use of products, such as following recommended doses for consumables and minimizing waste in production processes.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -2499,12 +2502,12 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "incentives_and_subsidies"
         ],
         "Description":"Promotes more intensive use of durable products by encouraging product sharing, which reduces the demand for new products and the associated GHG emissions from their manufacturing and supply chain.",
-        "BehaviouralChangeTargeted":"Encourages users to share durable products and adopt product-service systems that emphasize using goods more efficiently rather than owning them individually.",
+        "BehavioralChangeTargeted":"Encourages users to share durable products and adopt product-service systems that emphasize using goods more efficiently rather than owning them individually.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -2552,13 +2555,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments",
             "regulations_and_laws"
         ],
         "Description":"Designing products with longer lifespans, increased reusability, repairability, and recyclability to reduce material use and improve resource efficiency. This includes optimizing product designs to minimize material consumption and emissions, supporting a circular economy.",
-        "BehaviouralChangeTargeted":"Encourages manufacturers and consumers to prioritize durability, reuse, and efficient use of materials to reduce waste and emissions.",
+        "BehavioralChangeTargeted":"Encourages manufacturers and consumers to prioritize durability, reuse, and efficient use of materials to reduce waste and emissions.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -2606,12 +2609,12 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives"
         ],
         "Description":"Extending the lifespan of buildings and infrastructure by maintaining their structural integrity through improved product stock maintenance. This involves ensuring concrete structures remain functional for over 200 years.",
-        "BehaviouralChangeTargeted":"Encourages extending the lifetime of concrete structures and promoting more sustainable construction and maintenance practices.",
+        "BehavioralChangeTargeted":"Encourages extending the lifetime of concrete structures and promoting more sustainable construction and maintenance practices.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -2659,13 +2662,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "regulations_and_laws",
             "incentives_and_subsidies"
         ],
         "Description":"Promotes behavioral and consumption changes to reduce overall industrial emissions, emphasizing reduced demand for products, reuse and recycling, and more efficient use of resources.",
-        "BehaviouralChangeTargeted":"Encourages reducing overconsumption, reusing materials, adopting sustainable consumption patterns, and reducing waste generation through lifestyle and business model changes.",
+        "BehavioralChangeTargeted":"Encourages reducing overconsumption, reusing materials, adopting sustainable consumption patterns, and reducing waste generation through lifestyle and business model changes.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -2713,13 +2716,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "incentives_and_subsidies",
             "regulations_and_laws"
         ],
         "Description":"This action focuses on mitigating climate change by reducing the demand for industrial products and services, particularly in sectors such as clothing and tourism. It emphasizes behavioral and lifestyle changes, such as sustainable consumption patterns, reduced long-haul travel, and lower demand for products linked to excessive material production and emissions.",
-        "BehaviouralChangeTargeted":"Promotes sustainable consumption and lifestyle changes, such as reduced reliance on fast fashion, decreased long-haul travel, and responsible use of industrial products to limit resource consumption and emissions.",
+        "BehavioralChangeTargeted":"Promotes sustainable consumption and lifestyle changes, such as reduced reliance on fast fashion, decreased long-haul travel, and responsible use of industrial products to limit resource consumption and emissions.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -2767,13 +2770,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "regulations_and_laws",
             "programs_and_initiatives",
             "infrastructure_investments"
         ],
         "Description":"Reducing deforestation and forest degradation conserves carbon pools in forest vegetation and soil by avoiding tree cover loss and disturbance. This involves controlling drivers of deforestation, improving forest governance, and supporting community forest management.",
-        "BehaviouralChangeTargeted":"Encourages sustainable land management practices, community engagement in conservation, and improved governance to reduce activities driving deforestation and degradation.",
+        "BehavioralChangeTargeted":"Encourages sustainable land management practices, community engagement in conservation, and improved governance to reduce activities driving deforestation and degradation.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":1,
@@ -2821,13 +2824,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments",
             "incentives_and_subsidies"
         ],
         "Description":"Activities focused on converting land to forests, restoring degraded forests, and prioritizing ecological integrity. Afforestation targets historically non-forested land, while reforestation targets previously forested areas. Efforts include enhancing biodiversity, improving ecosystem services, and increasing carbon sequestration.",
-        "BehaviouralChangeTargeted":"Encourages sustainable land management, restoration of degraded ecosystems, and adoption of forest-friendly agricultural practices.",
+        "BehavioralChangeTargeted":"Encourages sustainable land management, restoration of degraded ecosystems, and adoption of forest-friendly agricultural practices.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":1,
@@ -2875,13 +2878,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "incentives_and_subsidies",
             "programs_and_initiatives",
             "regulations_and_laws"
         ],
         "Description":"Sustainable forest management of already managed forests to increase carbon stocks, improve wood quality, mitigate disturbances, and provide co-benefits like biodiversity conservation, water regulation, and soil protection. Includes longer rotations, reduced harvesting, mixed stands, and climate-smart forestry.",
-        "BehaviouralChangeTargeted":"Encourages forest owners and managers to adopt sustainable practices, prioritize biodiversity, and reduce harvesting impacts while maintaining productivity.",
+        "BehavioralChangeTargeted":"Encourages forest owners and managers to adopt sustainable practices, prioritize biodiversity, and reduce harvesting impacts while maintaining productivity.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":1,
@@ -2929,13 +2932,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments",
             "regulations_and_laws"
         ],
         "Description":"Implementation of fire management practices, including prescribed burning and natural resource management, to reduce uncontrolled wildfires in forests and savannas. Focuses on safeguarding life, property, and resources while mitigating GHG emissions and maintaining carbon stocks.",
-        "BehaviouralChangeTargeted":"Encourages adoption of prescribed burning and sustainable fire management practices among communities and land managers to reduce uncontrolled wildfires and their associated GHG emissions.",
+        "BehavioralChangeTargeted":"Encourages adoption of prescribed burning and sustainable fire management practices among communities and land managers to reduce uncontrolled wildfires and their associated GHG emissions.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -2983,13 +2986,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "regulations_and_laws",
             "programs_and_initiatives",
             "incentives_and_subsidies"
         ],
         "Description":"This action involves preventing the conversion of grasslands and savannas to croplands to avoid soil carbon loss and mitigate GHG emissions. It includes activities such as vegetation management, animal management, and fire management to enhance soil carbon sequestration and conserve biodiversity.",
-        "BehaviouralChangeTargeted":"Encourages sustainable land management practices, reduced cropland expansion, and protection of grasslands and savannas.",
+        "BehavioralChangeTargeted":"Encourages sustainable land management practices, reduced cropland expansion, and protection of grasslands and savannas.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -3037,13 +3040,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "regulations_and_laws",
             "programs_and_initiatives",
             "incentives_and_subsidies"
         ],
         "Description":"Prevent conversion and degradation of peatlands to avoid emissions from vegetation clearing, fires, and peat decomposition. Includes improving governance and management to preserve carbon-rich ecosystems critical for biodiversity and carbon storage.",
-        "BehaviouralChangeTargeted":"Encourages sustainable land management practices and prioritization of conservation over land conversion for agriculture, mining, or urban expansion.",
+        "BehavioralChangeTargeted":"Encourages sustainable land management practices and prioritization of conservation over land conversion for agriculture, mining, or urban expansion.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":1,
@@ -3091,13 +3094,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments",
             "incentives_and_subsidies"
         ],
         "Description":"Peatland restoration involves rewetting and revegetating degraded peatlands to increase carbon accumulation in vegetation and soils, while avoiding ongoing CO2 emissions. This includes restoring hydrology, reducing fire risk, and maintaining ecosystem services like water regulation and flood prevention. It also addresses biodiversity conservation and paludiculture.",
-        "BehaviouralChangeTargeted":"Encourages sustainable land management practices, collaboration among stakeholders, and the prioritization of ecosystem restoration over competing land uses.",
+        "BehavioralChangeTargeted":"Encourages sustainable land management practices, collaboration among stakeholders, and the prioritization of ecosystem restoration over competing land uses.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":1,
@@ -3145,14 +3148,14 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "regulations_and_laws",
             "incentives_and_subsidies",
             "programs_and_initiatives",
             "infrastructure_investments"
         ],
         "Description":"This action involves reducing the conversion of coastal wetlands such as mangroves, marshes, and seagrass ecosystems to avoid emissions from biomass and soil carbon loss. It also supports biodiversity conservation, fisheries production, soil stabilization, water quality regulation, flood prevention, and resilience against cyclones.",
-        "BehaviouralChangeTargeted":"Promotes sustainable land-use practices and prioritizes wetland preservation over aquaculture, agriculture, and urban development.",
+        "BehavioralChangeTargeted":"Promotes sustainable land-use practices and prioritizes wetland preservation over aquaculture, agriculture, and urban development.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":1,
@@ -3200,13 +3203,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments",
             "regulations_and_laws"
         ],
         "Description":"Coastal wetland restoration involves restoring degraded or damaged coastal ecosystems, including mangroves, salt marshes, and seagrass beds, to sequester \"blue carbon\" in vegetation and soils. Restoration includes passive (removal of degradation drivers) and active (environmental manipulation) approaches to reinstate ecosystem functions and carbon sequestration potential.",
-        "BehaviouralChangeTargeted":"Encourages the prevention of wetland degradation, active participation of local communities in restoration efforts, and sustainable management of coastal ecosystems.",
+        "BehavioralChangeTargeted":"Encourages the prevention of wetland degradation, active participation of local communities in restoration efforts, and sustainable management of coastal ecosystems.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":1,
@@ -3254,13 +3257,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "incentives_and_subsidies",
             "regulations_and_laws"
         ],
         "Description":"Implementation of sustainable soil management practices in croplands and grasslands to enhance soil organic carbon. Practices include improved crop and nutrient management, reduced tillage, residue retention, water and rice management, biochar application, improved grass varieties, livestock stocking management, and fire management. These activities aim to increase soil organic matter, mitigate GHG emissions, and provide co-benefits for biodiversity, water provision, and food security.",
-        "BehaviouralChangeTargeted":"Encourages adoption of sustainable soil management practices to increase soil organic carbon, optimize water and nutrient use, and reduce emissions.",
+        "BehavioralChangeTargeted":"Encourages adoption of sustainable soil management practices to increase soil organic carbon, optimize water and nutrient use, and reduce emissions.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":1,
@@ -3308,13 +3311,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "incentives_and_subsidies",
             "programs_and_initiatives",
             "infrastructure_investments"
         ],
         "Description":"Biochar is produced by heating organic matter (e.g., forestry residues, straw, manure) in oxygen-limited environments. It has significant mitigation potential through carbon dioxide removal (CDR), reduced greenhouse gas emissions, and soil application benefits like improved fertility and reduced N2O emissions.",
-        "BehaviouralChangeTargeted":"Encourages adoption of sustainable practices, use of biochar in agriculture, and increased awareness of its long-term soil and climate benefits.",
+        "BehavioralChangeTargeted":"Encourages adoption of sustainable practices, use of biochar in agriculture, and increased awareness of its long-term soil and climate benefits.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -3362,13 +3365,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "regulations_and_laws",
             "incentives_and_subsidies"
         ],
         "Description":"Agroforestry integrates trees and shrubs with crops and\/or livestock to sequester carbon, enhance soil health, reduce soil erosion, improve water quality, and diversify livelihoods. It also offers co-benefits like mitigating regional climates and increasing land productivity while addressing risks like biodiversity and hydrology impacts.",
-        "BehaviouralChangeTargeted":"Encourages farmers to adopt sustainable land management practices by integrating trees, crops, and livestock to improve productivity, carbon sequestration, and resilience.",
+        "BehavioralChangeTargeted":"Encourages farmers to adopt sustainable land management practices by integrating trees, crops, and livestock to improve productivity, carbon sequestration, and resilience.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":1,
@@ -3416,13 +3419,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "regulations_and_laws",
             "incentives_and_subsidies",
             "programs_and_initiatives"
         ],
         "Description":"This action targets methane (CH4) emissions from enteric fermentation in livestock through direct interventions like feed additives, inhibitors, or vaccines, and indirect measures like improving production efficiency through better breeding and husbandry practices. It also includes early-life manipulation of the ruminal biome.",
-        "BehaviouralChangeTargeted":"Encourages adoption of advanced feeding practices, use of additives or vaccines, and selection of low-emission livestock breeds to reduce methane emissions while improving productivity.",
+        "BehavioralChangeTargeted":"Encourages adoption of advanced feeding practices, use of additives or vaccines, and selection of low-emission livestock breeds to reduce methane emissions while improving productivity.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -3470,13 +3473,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "incentives_and_subsidies",
             "regulations_and_laws"
         ],
         "Description":"Implementation of improved water management practices (e.g., single and multiple drainage systems), residue management, better fertiliser application (e.g., slow-release fertilisers), and soil amendments (e.g., biochar) to reduce CH4 and N2O emissions while enhancing sustainability and system resilience.",
-        "BehaviouralChangeTargeted":"Encourages adoption of sustainable cultivation practices, such as reducing water waste, improving fertiliser use efficiency, and adopting innovative drainage and residue management techniques.",
+        "BehavioralChangeTargeted":"Encourages adoption of sustainable cultivation practices, such as reducing water waste, improving fertiliser use efficiency, and adopting innovative drainage and residue management techniques.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":1,
@@ -3524,13 +3527,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "incentives_and_subsidies",
             "regulations_and_laws"
         ],
         "Description":"Implementation of improved crop nutrient management practices to reduce N2O emissions from cropland soils. Practices include optimizing fertilizer application rates, timing, and types; using nitrification inhibitors and slow-release fertilizers; and integrating nutrient management techniques such as crop rotations, cover crops, and bio-fertilizer application.",
-        "BehaviouralChangeTargeted":"Encourages farmers to adopt precision fertilization, use organic and synthetic fertilizers efficiently, and employ sustainable agricultural practices for reduced emissions and enhanced productivity.",
+        "BehavioralChangeTargeted":"Encourages farmers to adopt precision fertilization, use organic and synthetic fertilizers efficiently, and employ sustainable agricultural practices for reduced emissions and enhanced productivity.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":1,
@@ -3578,13 +3581,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments",
             "incentives_and_subsidies"
         ],
         "Description":"Manure management measures aim to mitigate CH4 and N2O emissions from manure storage and deposition through techniques such as anaerobic digestion, nitrification inhibitors, composting, improved storage and application practices, grazing practices, and livestock diet alteration. Co-benefits include improved nutrient recovery, fertiliser value, and biogas production.",
-        "BehaviouralChangeTargeted":"Encourages adoption of sustainable manure management practices, including reducing nitrogen excretion, improving application timing, and adopting biogas production methods.",
+        "BehavioralChangeTargeted":"Encourages adoption of sustainable manure management practices, including reducing nitrogen excretion, improving application timing, and adopting biogas production methods.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":1,
@@ -3632,13 +3635,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "regulations_and_laws"
         ],
         "Description":"Bioenergy involves producing energy from organic sources like biomass, organic waste, and harvest residues, displacing fossil fuels in heat, electricity, and fuel production. When combined with carbon capture and storage (BECCS), it stores biogenic carbon in geological or terrestrial reservoirs, achieving negative emissions. BECCS can also integrate with agriculture and forestry for co-benefits like land restoration and biogas production.",
-        "BehaviouralChangeTargeted":"Promotes the adoption of sustainable land-use practices, integration of biomass production with agriculture, and support for renewable energy adoption.",
+        "BehavioralChangeTargeted":"Promotes the adoption of sustainable land-use practices, integration of biomass production with agriculture, and support for renewable energy adoption.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":1,
@@ -3686,13 +3689,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "incentives_and_subsidies",
             "regulations_and_laws"
         ],
         "Description":"Transitioning dietary patterns to promote individual health and well-being while minimizing environmental impacts. Focuses on reducing animal-based food consumption, particularly from ruminant animals, and increasing plant-based food consumption to reduce GHG emissions and preserve biodiversity.",
-        "BehaviouralChangeTargeted":"Encourages a shift in consumer behavior towards adopting plant-rich diets, reducing red meat consumption, and increasing awareness of the environmental and health benefits of sustainable diets.",
+        "BehavioralChangeTargeted":"Encourages a shift in consumer behavior towards adopting plant-rich diets, reducing red meat consumption, and increasing awareness of the environmental and health benefits of sustainable diets.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":1,
@@ -3740,14 +3743,14 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "taxes_and_fees",
             "regulations_and_laws",
             "programs_and_initiatives",
             "incentives_and_subsidies"
         ],
         "Description":"Reduction of food loss and waste (FLW) through improved harvesting and post-harvesting technologies, mandatory reporting, reduction targets, consumer awareness campaigns, taxation, and marketing of imperfect food products. Includes measures across the entire food supply chain to minimize spoilage and waste.",
-        "BehaviouralChangeTargeted":"Promotes consumer behavior changes, such as avoiding food waste, opting for longer-lasting products, and choosing cosmetically imperfect products. Encourages businesses to reduce waste through reporting and adopting better practices.",
+        "BehavioralChangeTargeted":"Promotes consumer behavior changes, such as avoiding food waste, opting for longer-lasting products, and choosing cosmetically imperfect products. Encourages businesses to reduce waste through reporting and adopting better practices.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":1,
@@ -3795,13 +3798,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments",
             "incentives_and_subsidies"
         ],
         "Description":"Promotes the use of sustainably harvested wood for material substitution (e.g., replacing concrete or steel) and increasing carbon storage in wood products. Includes strategies like increasing recycling, extending product lifetimes, and shifting to long-lived wood products.",
-        "BehaviouralChangeTargeted":"Encourages the adoption of wood-based materials in construction and other industries while promoting sustainable forest management.",
+        "BehavioralChangeTargeted":"Encourages the adoption of wood-based materials in construction and other industries while promoting sustainable forest management.",
         "CoBenefits":{
             "air_quality":0,
             "water_quality":0,
@@ -3849,13 +3852,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "regulations_and_laws",
             "infrastructure_investments"
         ],
         "Description":"Developing urban areas with medium to high densities of housing, jobs, and commerce; a high mix of land uses; connected streets; and high accessibility. This layout reduces vehicle miles traveled and supports low-carbon transportation and energy efficiency.",
-        "BehaviouralChangeTargeted":"Encourages reduced vehicle usage, increased use of public transportation, walking, and cycling, and adoption of smaller, energy-efficient dwelling units.",
+        "BehavioralChangeTargeted":"Encourages reduced vehicle usage, increased use of public transportation, walking, and cycling, and adoption of smaller, energy-efficient dwelling units.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -3903,13 +3906,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "regulations_and_laws",
             "programs_and_initiatives",
             "infrastructure_investments"
         ],
         "Description":"This action integrates spatial planning strategies based on the 5Ds of transit-oriented development (density, diversity, design, destination accessibility, and distance to transit). It aims to reduce vehicle miles traveled (VMT) and transport-related GHG emissions by increasing residential and job densities, improving street connectivity, and encouraging mixed land uses.",
-        "BehaviouralChangeTargeted":"Encourages reduced car ownership and usage, increased public transit, walking, and cycling, and supports a compact, energy-efficient urban lifestyle.",
+        "BehavioralChangeTargeted":"Encourages reduced car ownership and usage, increased public transit, walking, and cycling, and supports a compact, energy-efficient urban lifestyle.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -3957,13 +3960,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "regulations_and_laws",
             "programs_and_initiatives"
         ],
         "Description":"Integrated spatial planning promotes compact urban form to reduce GHG emissions by increasing urban efficiency, supporting sustainable infrastructure such as district heating\/cooling networks, and enhancing green areas. Co-design processes improve public acceptance and institutional capacity to support coordinated mitigation strategies.",
-        "BehaviouralChangeTargeted":"Encourages adoption of efficient urban designs, increased density, and eco-friendly living patterns through public engagement and stakeholder collaboration.",
+        "BehavioralChangeTargeted":"Encourages adoption of efficient urban designs, increased density, and eco-friendly living patterns through public engagement and stakeholder collaboration.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -4011,14 +4014,14 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives",
             "regulations_and_laws",
             "incentives_and_subsidies"
         ],
         "Description":"This action involves replacing fossil fuel-based technologies with electrified alternatives, such as electric vehicles, heat pumps, and renewable energy systems, to decarbonize urban energy infrastructure. It focuses on integrating renewable energy, increasing demand-side flexibility, and promoting energy efficiency in urban systems to support decarbonization and reduce GHG emissions.",
-        "BehaviouralChangeTargeted":"Encourages the adoption of electrified technologies, demand-side energy management, and community engagement to reduce reliance on fossil fuels and transition to renewable energy.",
+        "BehavioralChangeTargeted":"Encourages the adoption of electrified technologies, demand-side energy management, and community engagement to reduce reliance on fossil fuels and transition to renewable energy.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -4066,13 +4069,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "regulations_and_laws",
             "infrastructure_investments",
             "programs_and_initiatives"
         ],
         "Description":"Transition to net-zero embodied carbon in construction materials and supply chains by substituting emissions-intensive materials like steel and concrete with engineered timber systems. This includes mass timber technologies for mid-rise urban buildings, integrating sustainable forestry, recycling, and reuse.",
-        "BehaviouralChangeTargeted":"Encourages adoption of low-carbon building materials and design practices, and promotes sustainable consumption patterns in construction sectors.",
+        "BehavioralChangeTargeted":"Encourages adoption of low-carbon building materials and design practices, and promotes sustainable consumption patterns in construction sectors.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -4120,13 +4123,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments",
             "incentives_and_subsidies"
         ],
         "Description":"Implementation and management of urban tree planting to enhance carbon sequestration, reduce energy use, mitigate the urban heat island (UHI) effect, improve air quality, and provide co-benefits such as reduced stormwater runoff and increased public health and well-being.",
-        "BehaviouralChangeTargeted":"Encourages community engagement in tree planting and preservation, promoting urban sustainability and increased appreciation for green spaces.",
+        "BehavioralChangeTargeted":"Encourages community engagement in tree planting and preservation, promoting urban sustainability and increased appreciation for green spaces.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":1,
@@ -4174,12 +4177,12 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "infrastructure_investments",
             "programs_and_initiatives"
         ],
         "Description":"The implementation of green roofs, green walls, and greenways mitigates urban heat island effects, improves thermal comfort, reduces energy demand in buildings, manages stormwater, and promotes active transportation through connected green spaces, contributing to emissions reductions and urban livability.",
-        "BehaviouralChangeTargeted":"Encourages reduced energy consumption through improved building insulation and promotes active transportation via cycling and walking through integrated green infrastructure.",
+        "BehavioralChangeTargeted":"Encourages reduced energy consumption through improved building insulation and promotes active transportation via cycling and walking through integrated green infrastructure.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":1,
@@ -4227,13 +4230,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "programs_and_initiatives",
             "infrastructure_investments",
             "regulations_and_laws"
         ],
         "Description":"This action focuses on leveraging spatial planning, urban form, and infrastructure to promote socio-behavioral changes that reduce reliance on private vehicles. Strategies include implementing 15\/20-minute city programs, improving accessibility through walking, biking, and public transit, and reducing urban energy use.",
-        "BehaviouralChangeTargeted":"Encourages a shift to active travel modes like walking and biking, reduces reliance on private vehicles, and promotes the use of public transit.",
+        "BehavioralChangeTargeted":"Encourages a shift to active travel modes like walking and biking, reduces reliance on private vehicles, and promotes the use of public transit.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,
@@ -4281,13 +4284,13 @@
         "PrimaryPurpose":[
             "ghg_reduction"
         ],
-        "Intervention Type":[
+        "InterventionType":[
             "regulations_and_laws",
             "programs_and_initiatives",
             "infrastructure_investments"
         ],
         "Description":"Implementation of waste hierarchy principles to reduce waste generation, improve source separation, and increase recycling and composting. Promotes decentralized waste management, home composting, and circular economy approaches to transform waste into energy or by-products while minimizing transport-related emissions.",
-        "BehaviouralChangeTargeted":"Encourages waste separation at source, adoption of recycling and composting behaviors, and increased public participation in waste management programs.",
+        "BehavioralChangeTargeted":"Encourages waste separation at source, adoption of recycling and composting behaviors, and increased public participation in waste management programs.",
         "CoBenefits":{
             "air_quality":1,
             "water_quality":0,

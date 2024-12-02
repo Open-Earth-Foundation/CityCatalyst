@@ -110,7 +110,7 @@
             "generated": false
         },
         "BehaviouralChangeTargeted": {
-            "type": "string",
+            "type": ["string", "null"],
             "description": "Describes the behavioural change encouraged by the intervention",
             "appliesTo": ["mitigation"],
             "generated": true
@@ -161,7 +161,7 @@
                     ]
                 }
             },
-            "description": "Additional benefits beyond the primary objective",
+            "description": "Additional benefits beyond the primary objective. Values range from -2 to 2, where -2 is a very negative impact, -1 is somewhat negative, 0 is neutral, 1 is somewhat positive and 2 is a very positive impact.",
             "appliesTo": ["mitigation", "adaptation"],
             "generated": false
         },
@@ -277,5 +277,6 @@
             "generated": true
         }
     },
-    "required": ["ActionID", "ActionName", "ActionType", "Description"]
+    "required": ["ActionID", "ActionName", "ActionType", "AdaptationCategory", "Hazard", "Sector", "Subsector",
+    "PrimaryPurpose", "InterventionType", "Description", "BehavioralChangeTargeted", "CoBenefits", "EquityAndInclusionConsiderations", "GHGReductionPotential", "AdaptationEffectiveness", "CostInvestmentNeeded", "TimelineForImplementation", "Dependencies", "KeyPerformanceIndicators", "Impacts"]
 }

@@ -92,7 +92,7 @@ async def process_row(index, df_row):
     adaptation_effectiveness = await extract_AdaptionEffectiveness(
         index, action_type, description, hazard
     )
-    mapped_row["AdaptionEffectiveness"] = adaptation_effectiveness
+    mapped_row["AdaptationEffectiveness"] = adaptation_effectiveness
 
     cost_investment_needed = extract_CostInvestmentNeeded(index, df_row)
     mapped_row["CostInvestmentNeeded"] = cost_investment_needed

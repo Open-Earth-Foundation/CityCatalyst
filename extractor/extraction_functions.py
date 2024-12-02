@@ -1,7 +1,7 @@
 import pandas as pd
 from typing import Optional, Dict
 import json
-from utils.llm_creator import generate_response
+from utils.llm_creator_async import generate_response
 from context.intervention_type import categories_of_interventions
 from context.behavioral_change_targeted import context_for_behavioral_change
 from langsmith import traceable

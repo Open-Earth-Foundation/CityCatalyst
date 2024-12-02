@@ -225,7 +225,9 @@ export function NavigationBar({
                 height="128px"
                 zIndex={2000}
               >
-                <NextLink href={`/${inventory}/settings`}>
+                <NextLink
+                  href={`/${inventory ? inventory : currentInventoryId}/settings`}
+                >
                   <MenuItem paddingTop="12px" paddingBottom="12px" px="16px">
                     <Icon
                       as={FiSettings}

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 function get_package_version() {
+  echo -n "v" # add v prefix to version so it matches our existing tags
   node -p "require('./package.json').version"
 }
 

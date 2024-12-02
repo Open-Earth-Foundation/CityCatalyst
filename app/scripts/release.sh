@@ -33,6 +33,7 @@ function release_test() {
   git merge "$MAIN_VERSION"
   # resolve merge conflicts because of changed version number
   git checkout --theirs -- package.json package-lock.json
+  git commit -am "chore(release): merge rc version $MAIN_VERSION into main"
   git push
 }
 

@@ -23,11 +23,16 @@ function release_test() {
   git commit -am "chore(release): development version $DEV_VERSION"
   git tag "$DEV_VERSION"
   git push
-  git push --tags
+  # push new tags to remote
+  git push origin refs/tags/"$DEV_VERSION"
+  git push origin refs/tags/"$MAIN_VERSION"
 
   git fetch origin main
   git checkout main
-  git merge "$MAIN_VERSION" --theirs # merge rc version tag into main branch and accept all changes from it (so version number can be overwritten)
+  # merge rc version tag into main branch
+  git merge "$MAIN_VERSION"
+  # resolve merge conflicts because of changed version number
+  git checkout --theirs -- package.json package-lock.json
   git push
 }
 
@@ -40,7 +45,7 @@ function release_prod() {
   git commit -am "chore(release): production version $PROD_VERSION"
   git tag "$PROD_VERSION"
   git push main
-  git push --tags
+  git push origin refs/tags/"$PROD_VERSION"
 }
 
 # Check if Git working directory is clean

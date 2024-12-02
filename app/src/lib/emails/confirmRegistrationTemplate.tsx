@@ -16,7 +16,7 @@ import {
   Hr,
 } from "@react-email/components";
 
-export default function InviteUserTemplate({
+export default function ConfirmRegistrationTemplate({
   url = "/",
   user = { name: "" },
 }: {

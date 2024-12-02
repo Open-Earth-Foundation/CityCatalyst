@@ -1,13 +1,11 @@
 import os
 import openai
 from dotenv import load_dotenv
-
 from langsmith.wrappers import wrap_openai
-from langsmith import traceable
 import json
 from typing import Optional
 
-from openai import OpenAI
+from openai import AsyncOpenAI
 
 
 load_dotenv()
@@ -20,16 +18,15 @@ DEFAULT_MODEL = "gpt-4o-mini"
 DEFAULT_TEMPERATURE = 0.0
 
 # Auto-trace LLM calls in-context
-client = wrap_openai(OpenAI())
-# client = OpenAI()
+# client = wrap_openai(openai.Client())
+client = wrap_openai(AsyncOpenAI())
 
 
-@traceable
-def generate_response(
+async def generate_response(
     prompt: str, model: str = DEFAULT_MODEL, temperature: float = DEFAULT_TEMPERATURE
 ) -> Optional[str]:
     try:
-        response = client.chat.completions.create(
+        response = await client.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
             temperature=temperature,

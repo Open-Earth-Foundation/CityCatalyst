@@ -43,12 +43,17 @@ function release_prod() {
   git push --tags
 }
 
-# Check if Git working directory is clean
-if [ -z "$(git status --porcelain)" ]; then
-  echo "Working directory clean, continuing..."
+# Check if --skip-checks flag is passed as an argument
+if [[ $* == *--skip-checks* ]]; then
+  echo "Skipping git checks..."
 else
-  echo "Working directory not clean! Commit your changes and try again."
-  exit 1
+  # Check if Git working directory is clean
+  if [ -z "$(git status --porcelain)" ]; then
+    echo "Working directory clean, continuing..."
+  else
+    echo "Working directory not clean! Commit your changes and try again."
+    exit 1
+  fi
 fi
 
 # Check if --prod flag is passed as an argument

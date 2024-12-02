@@ -26,7 +26,7 @@ function release_test() {
 
   git fetch main
   git checkout main
-  git merge "$MAIN_VERSION" # merge rc version tag into main branch
+  git merge "$MAIN_VERSION" --theirs # merge rc version tag into main branch and accept all changes from it (so version number can be overwritten)
   git push
 }
 

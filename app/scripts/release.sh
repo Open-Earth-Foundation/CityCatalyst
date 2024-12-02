@@ -6,7 +6,7 @@ function get_package_version() {
 }
 
 function release_test() {
-  git fetch develop
+  git fetch origin develop
   git checkout develop
 
   # create new test version (rc)
@@ -25,14 +25,14 @@ function release_test() {
   git push
   git push --tags
 
-  git fetch main
+  git fetch origin main
   git checkout main
   git merge "$MAIN_VERSION" --theirs # merge rc version tag into main branch and accept all changes from it (so version number can be overwritten)
   git push
 }
 
 function release_prod() {
-  git fetch main
+  git fetch origin main
   git checkout main
 
   npm version minor

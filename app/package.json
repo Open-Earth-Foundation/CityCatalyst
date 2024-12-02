@@ -1,6 +1,6 @@
 {
   "name": "city-catalyst",
-  "version": "0.24.0-rc.0",
+  "version": "0.25.0-dev.0",
   "private": true,
   "type": "module",
   "scripts": {

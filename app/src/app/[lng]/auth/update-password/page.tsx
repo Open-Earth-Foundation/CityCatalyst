@@ -30,7 +30,9 @@ export default function UpdatePassword({
     register,
     formState: { errors, isSubmitting },
     setError: setFormError,
+    watch
   } = useForm<Inputs>();
+  const watchPassword = watch("password", "")
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (data.password !== data.confirmPassword) {
       setFormError("confirmPassword", {
@@ -75,6 +77,8 @@ export default function UpdatePassword({
           error={errors.password}
           name={t("new-password")}
           t={t}
+          shouldValidate
+          watchPassword={watchPassword}
         >
           <FormHelperText>
             <InfoOutlineIcon color="#2351DC" mr={1.5} mt={-0.5} boxSize={4} />

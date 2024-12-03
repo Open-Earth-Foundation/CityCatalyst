@@ -5,6 +5,7 @@ import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 import Decimal from "decimal.js";
 import { decimalToBigInt } from "@/util/big_int";
+import type { SubSector } from "@/models/SubSector";
 
 const EARTH_LOCATION = "EARTH";
 
@@ -147,14 +148,36 @@ export default class DataSourceService {
       ch4Amount = new Decimal(emissions.ch4_mass);
     }
 
-    const subCategory = await db.models.SubCategory.findOne({
-      where: { subcategoryId: source.subcategoryId },
-      include: [{ model: db.models.SubSector, as: "subsector" }],
-    });
+    let gpcReferenceNumber: string | undefined;
+    let subSector: SubSector | undefined;
+    if (source.subcategoryId) {
+      const subCategory = await db.models.SubCategory.findOne({
+        where: { subcategoryId: source.subcategoryId },
+        include: [{ model: db.models.SubSector, as: "subsector" }],
+      });
 
-    if (!subCategory) {
+      if (!subCategory) {
+        throw new createHttpError.InternalServerError(
+          "Sub-category for source not found",
+        );
+      }
+      gpcReferenceNumber = subCategory.referenceNumber;
+      subSector = subCategory.subsector;
+    } else if (source.subsectorId) {
+      subSector =
+        (await db.models.SubSector.findOne({
+          where: { subsectorId: source.subsectorId },
+        })) ?? undefined;
+
+      if (!subSector) {
+        throw new createHttpError.InternalServerError(
+          "Sub-sector for source not found",
+        );
+      }
+      gpcReferenceNumber = subSector.referenceNumber;
+    } else {
       throw new createHttpError.InternalServerError(
-        "Sub-category for source not found",
+        "Sub-category or sub-sector not set in source data",
       );
     }
 
@@ -166,9 +189,9 @@ export default class DataSourceService {
       co2eqYears: 100,
       id: randomUUID(),
       subCategoryId: source.subcategoryId,
-      subSectorId: subCategory.subsectorId,
-      sectorId: subCategory.subsector.sectorId,
-      gpcReferenceNumber: subCategory.referenceNumber,
+      subSectorId: subSector.subsectorId,
+      sectorId: subSector.sectorId,
+      gpcReferenceNumber,
     });
 
     // store values for co2, ch4, n2o separately for accounting and editing

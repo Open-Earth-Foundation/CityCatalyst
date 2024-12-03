@@ -4995,5 +4995,1351 @@
             "enhanced resource efficiency",
             "economic growth through job creation in the waste management sector"
         ]
+    },
+    {
+        "ActionID":"ipcc_0081",
+        "ActionName":"Coastal Accommodation",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Structural adaptation",
+        "Hazard":[
+            "floods",
+            "sea-level-rise"
+        ],
+        "Sector":[
+            "road_infrastructure",
+            "geo-hydrological_disasters"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Raising dwellings and key infrastructure such as coastal roads above ground level to reduce flooding impacts in small islands, with government subsidies supporting elevated houses in flood-prone areas.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":0,
+            "water_quality":0,
+            "habitat":1,
+            "cost_of_living":-1,
+            "housing":1,
+            "mobility":0,
+            "stakeholder_engagement":1
+        },
+        "EquityAndInclusionConsiderations":"Provides flood mitigation and safety for vulnerable coastal populations, though local opposition has limited implementation in some areas.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"medium",
+        "CostInvestmentNeeded":"high",
+        "TimelineForImplementation":"5-10 years",
+        "Dependencies":[
+            "Government subsidies",
+            "Community support",
+            "Availability of construction materials"
+        ],
+        "KeyPerformanceIndicators":[
+            "Percentage of houses elevated",
+            "Reduction in flood-related damages",
+            "Number of roads raised"
+        ],
+        "Impacts":[
+            "Improved flood resilience",
+            "Reduced damage to infrastructure",
+            "Safer living conditions for communities in flood-prone areas"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0082",
+        "ActionName":"Coastal Infrastructure",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Physical coastal management infrastructure",
+        "Hazard":[
+            "floods",
+            "sea-level-rise",
+            "storms"
+        ],
+        "Sector":[
+            "road_infrastructure",
+            "port_infrastructure",
+            "geo-hydrological_disasters"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Construction and maintenance of physical structures like seawalls, dykes, revetments, breakwaters, and tidal barriers to protect against flooding, erosion, and other coastal hazards.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":0,
+            "water_quality":1,
+            "habitat":-1,
+            "cost_of_living":-1,
+            "housing":1,
+            "mobility":0,
+            "stakeholder_engagement":0
+        },
+        "EquityAndInclusionConsiderations":"Hard-engineered structures may be inaccessible to poorer communities, necessitating inclusive planning to ensure equitable protection and benefits.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"high",
+        "CostInvestmentNeeded":"high",
+        "TimelineForImplementation":">10 years",
+        "Dependencies":[
+            "Sufficient funding",
+            "Appropriate engineering expertise",
+            "Regular maintenance"
+        ],
+        "KeyPerformanceIndicators":[
+            "Reduction in flooding incidents",
+            "Stability and durability of infrastructure",
+            "Community resilience improvement"
+        ],
+        "Impacts":[
+            "Increased protection of coastal areas",
+            "Reduced economic losses from hazards",
+            "Potential ecological disruptions and increased erosion elsewhere"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0083",
+        "ActionName":"Strategic coastal retreat",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Relocation and Planned Retreat",
+        "Hazard":[
+            "sea-level-rise",
+            "floods",
+            "storms",
+            "landslides"
+        ],
+        "Sector":[
+            "geo-hydrological_disasters",
+            "public_health"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Planned relocation and retreat of people, assets, and activities from coastal hazard zones to reduce exposure and risks caused by sea-level rise and associated coastal hazards.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":0,
+            "water_quality":1,
+            "habitat":2,
+            "cost_of_living":-1,
+            "housing":1,
+            "mobility":1,
+            "stakeholder_engagement":1
+        },
+        "EquityAndInclusionConsiderations":"Strategic retreat ensures inclusion of vulnerable populations, respecting cultural ties, and addressing place-attachment and livelihoods.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"high",
+        "CostInvestmentNeeded":"high",
+        "TimelineForImplementation":">10 years",
+        "Dependencies":[
+            "Suitable and affordable land",
+            "Adequate financing",
+            "Effective governance and planning",
+            "Community engagement"
+        ],
+        "KeyPerformanceIndicators":[
+            "Number of communities relocated",
+            "Reduction in exposure to hazards",
+            "Restoration of ecosystem services in retreat zones"
+        ],
+        "Impacts":[
+            "Reduced hazard exposure",
+            "Increased safety and resilience",
+            "Potential loss of cultural ties and socioeconomic impacts for resettled communities if not equitably planned"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0084",
+        "ActionName":"Restore\/create natural areas",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Nature-Based Solutions",
+        "Hazard":[
+            "sea-level-rise",
+            "floods",
+            "storms",
+            "droughts"
+        ],
+        "Sector":[
+            "biodiversity",
+            "water_resources",
+            "geo-hydrological_disasters"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Restoration and conservation of marine and coastal habitats, such as mangroves, vegetated dunes, seagrasses, coral reefs, and kelp forests, to protect coastal communities, support biodiversity, sequester carbon, and mitigate climate change. Efforts include creating marine protected areas, active restoration of coral reefs, ridge-to-reef management, restoring\ndunes, planting salinity-tolerant trees, increasing forest cover, detect and manage forest pests. ",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":1,
+            "water_quality":2,
+            "habitat":2,
+            "cost_of_living":1,
+            "housing":1,
+            "mobility":0,
+            "stakeholder_engagement":1
+        },
+        "EquityAndInclusionConsiderations":"Promotes inclusion by protecting ecosystems that support vulnerable coastal communities and enhances livelihoods through sustainable fisheries and recreation opportunities.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"high",
+        "CostInvestmentNeeded":"medium",
+        "TimelineForImplementation":"5-10 years",
+        "Dependencies":[
+            "Community engagement",
+            "Funding for restoration projects",
+            "Integration of local knowledge",
+            "Sustainable management of marine resources"
+        ],
+        "KeyPerformanceIndicators":[
+            "Area of habitats restored",
+            "Reduction in coastal flooding incidents",
+            "Improvement in biodiversity indices",
+            "Carbon sequestration capacity"
+        ],
+        "Impacts":[
+            "Reduced coastal vulnerability",
+            "Enhanced ecosystem resilience",
+            "Improved fishery productivity",
+            "Increased carbon storage",
+            "Improved public health and recreation opportunities"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0085",
+        "ActionName":"Reduce ecosystem stress",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Pollution Management and Ecosystem-Based Adaptation",
+        "Hazard":[
+            "droughts",
+            "floods",
+            "sea-level-rise",
+            "wildfires",
+            "storms"
+        ],
+        "Sector":[
+            "biodiversity",
+            "water_resources",
+            "geo-hydrological_disasters"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Reduce pollution, eutrophication, and anthropogenic pressures on natural systems, including marine and terrestrial ecosystems. Efforts include managing runoff, protecting sensitive habitats like the Great Barrier Reef, addressing non-climate drivers, promoting sustainable fisheries harvest, and increasing connectivity between natural areas to enhance ecosystem resilience.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":1,
+            "water_quality":2,
+            "habitat":2,
+            "cost_of_living":0,
+            "housing":0,
+            "mobility":0,
+            "stakeholder_engagement":1
+        },
+        "EquityAndInclusionConsiderations":"Supports vulnerable communities reliant on ecosystems for livelihoods by improving ecosystem services, promoting sustainable fisheries, and ensuring access to connected habitats that can mitigate climate-related hazards.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"high",
+        "CostInvestmentNeeded":"medium",
+        "TimelineForImplementation":"5-10 years",
+        "Dependencies":[
+            "Enforcement of pollution regulations",
+            "Funding for ecosystem restoration",
+            "Monitoring fish stocks and habitat connectivity",
+            "Community engagement",
+            "Strategic habitat restoration planning"
+        ],
+        "KeyPerformanceIndicators":[
+            "Reduction in pollutant levels",
+            "Improvement in water quality indices",
+            "Increase in biodiversity resilience scores",
+            "Reduction in frequency of ecosystem stress events",
+            "Increase in sustainable fishery yields",
+            "Increase in habitat connectivity"
+        ],
+        "Impacts":[
+            "Enhanced ecosystem resilience",
+            "Reduced anthropogenic stress on sensitive habitats",
+            "Improved water and air quality",
+            "Strengthened biodiversity protection",
+            "Improved marine resource management",
+            "Increased habitat availability for species migration"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0086",
+        "ActionName":"Ecosystem-based adaptation",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Ecosystem-based adaptation (EbA)",
+        "Hazard":[
+            "storms",
+            "sea-level-rise",
+            "heatwaves",
+            "floods"
+        ],
+        "Sector":[
+            "biodiversity",
+            "geo-hydrological_disasters",
+            "water_resources",
+            "public_health"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Restoring and sustainably managing marine, coastal, urban, riverine, and wetland ecosystems to protect against climate hazards such as storm surges, floods, and heatwaves. Efforts include agroecology, coastal and marine vegetation and reefs, vegetation corridors,  mangrove habitat restoration, urban green space to reduce temperatures. These actions improve biodiversity, store carbon, enhance water quality, and provide socio-economic and cultural co-benefits.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":1,
+            "water_quality":2,
+            "habitat":2,
+            "cost_of_living":0,
+            "housing":1,
+            "mobility":1,
+            "stakeholder_engagement":1
+        },
+        "EquityAndInclusionConsiderations":"Supports vulnerable communities by enhancing climate resilience, promoting equitable access to ecosystem services, and creating livelihood opportunities, especially for marginalized and underserved populations.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"high",
+        "CostInvestmentNeeded":"medium",
+        "TimelineForImplementation":"5-10 years",
+        "Dependencies":[
+            "Community engagement",
+            "Regulatory support",
+            "Financial investment",
+            "Urban planning",
+            "Climate-resilient vegetation",
+            "Biodiversity assessments",
+            "Catchment management",
+            "Upstream planning",
+            "Sustainable funding"
+        ],
+        "KeyPerformanceIndicators":[
+            "Reduction in storm surge damage",
+            "Carbon sequestration rates",
+            "Increased biodiversity",
+            "Temperature reduction in urban areas",
+            "Improved water quality",
+            "Access to green spaces by underserved communities",
+            "Reduction in flood events",
+            "Enhanced ecosystem health"
+        ],
+        "Impacts":[
+            "Improved coastal resilience",
+            "Enhanced biodiversity",
+            "Support for local livelihoods",
+            "Improved urban livability",
+            "Enhanced public health",
+            "Reduction in urban heat island effect",
+            "Flood risk reduction",
+            "Improved water quality",
+            "Enhanced ecosystem services"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0087",
+        "ActionName":"Infrastructure retrofitting",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Infrastructural Adaptation",
+        "Hazard":[
+            "floods",
+            "droughts",
+            "heatwaves"
+        ],
+        "Sector":[
+            "road_infrastructure",
+            "public_health",
+            "energy_security"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Strengthening and upgrading existing infrastructure, including roads, housing, and energy systems, to improve resilience against climate risks such as floods, droughts, and heatwaves. Efforts include Air conditioning, using thermosiphons for permafrost degradation, increasing rooftop albedo (for reflectivity) and shading",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":1,
+            "water_quality":1,
+            "habitat":0,
+            "cost_of_living":-1,
+            "housing":1,
+            "mobility":1,
+            "stakeholder_engagement":1
+        },
+        "EquityAndInclusionConsiderations":"Improves resilience for vulnerable communities, especially in low-income regions, by reducing risks from extreme climate events.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"high",
+        "CostInvestmentNeeded":"high",
+        "TimelineForImplementation":"5-10 years",
+        "Dependencies":[
+            "Policy alignment",
+            "Funding availability",
+            "Engineering and construction expertise"
+        ],
+        "KeyPerformanceIndicators":[
+            "Reduced infrastructure failure during hazards",
+            "Increased capacity for housing and energy systems"
+        ],
+        "Impacts":[
+            "Enhanced urban resilience",
+            "Safer housing",
+            "Reduced economic losses due to climate impacts"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0088",
+        "ActionName":"Building codes",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Climate-Resilient Urban Planning",
+        "Hazard":[
+            "floods",
+            "landslides"
+        ],
+        "Sector":[
+            "road_infrastructure",
+            "geo-hydrological_disasters"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"The development and implementation of building codes and architectural design regulations aimed at integrating climate adaptation parameters. These codes are focused on reducing risks from climate-induced hazards like floods and landslides. They also support climate-resilient urban development by guiding land use, construction practices, and infrastructure standards. The initiative fosters strategic long-term urban planning to coordinate public and private investments in adaptation, including the creation of safe zones and the transformation of precarious settlements. It ensures that new infrastructure is resilient to climate risks and that urban spaces are safe and sustainable for current and future populations.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":2,
+            "water_quality":0,
+            "habitat":1,
+            "cost_of_living":1,
+            "housing":2,
+            "mobility":1,
+            "stakeholder_engagement":1
+        },
+        "EquityAndInclusionConsiderations":"Promotes inclusive urban planning by addressing risks in informal and precarious settlements and integrating eco-parks and eco-gardens for vulnerable populations.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"high",
+        "CostInvestmentNeeded":"medium",
+        "TimelineForImplementation":"5-10 years",
+        "Dependencies":[
+            "Integration with local climate risk assessments",
+            "Strategic collaboration between urban planners and municipal authorities"
+        ],
+        "KeyPerformanceIndicators":[
+            "Reduction in urban flood incidents",
+            "Increased availability of safe housing in risk areas",
+            "Implementation rate of eco-parks and eco-gardens in vulnerable areas"
+        ],
+        "Impacts":[
+            "Improved public health",
+            "Increased urban livability",
+            "Reduced disaster-related costs"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0089",
+        "ActionName":"Spatially redirect development",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Regulatory and governance actions",
+        "Hazard":[
+            "floods",
+            "heatwaves",
+            "sea-level-rise"
+        ],
+        "Sector":[
+            "water_resources",
+            "food_security",
+            "geo-hydrological_disasters"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Use zoning and land-use planning to regulate coastal development by implementing spatial development strategies that consider environmental vulnerabilities, protect ecosystems, and mitigate risks from flooding, heatwaves, and sea-level rise. This includes ensuring that development is directed away from high-risk areas, integrating climate adaptation considerations into urban planning, and promoting sustainable practices to close adaptation gaps while addressing urban inequality.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":1,
+            "water_quality":1,
+            "habitat":2,
+            "cost_of_living":-1,
+            "housing":1,
+            "mobility":0,
+            "stakeholder_engagement":2
+        },
+        "EquityAndInclusionConsiderations":"Addresses inequality in urban populations by targeting the poorest quintiles and ensuring equitable adaptation deployment.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"medium",
+        "CostInvestmentNeeded":"medium",
+        "TimelineForImplementation":"5-10 years",
+        "Dependencies":[
+            "Effective governance frameworks",
+            "Community engagement",
+            "Financial investments",
+            "Technical expertise"
+        ],
+        "KeyPerformanceIndicators":[
+            "Reduction in adaptation gap",
+            "Decrease in urban vulnerability disparities",
+            "Improved resilience of coastal areas"
+        ],
+        "Impacts":[
+            "Reduced urban inequality",
+            "Enhanced urban livability",
+            "Increased resilience to climate hazards"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0090",
+        "ActionName":"Insurance",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Financial adaptation strategy",
+        "Hazard":[
+            "droughts",
+            "floods",
+            "storms"
+        ],
+        "Sector":[
+            "food_security",
+            "water_resources",
+            "energy_security"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"nsurance provides financial risk management tools tailored to climate-induced challenges. This includes traditional agricultural insurance to protect farmers from weather-related losses and innovative index-based insurance solutions. Index-based insurance leverages measurable weather indices, such as rainfall or temperature, to trigger payouts automatically when thresholds are reached, bypassing the need for loss verification. These tools help stabilize incomes, encourage investment in climate-resilient practices, and reduce the economic vulnerability of stakeholders in agriculture, aquaculture, and energy sectors. Furthermore, bundled insurance products with additional services like fertilizer or seed access enhance overall resilience, particularly in underserved and rural communities. By mitigating risks associated with droughts, floods, and storms, insurance supports sustainable development and adaptation goals",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":0,
+            "water_quality":1,
+            "habitat":0,
+            "cost_of_living":-1,
+            "housing":0,
+            "mobility":0,
+            "stakeholder_engagement":2
+        },
+        "EquityAndInclusionConsiderations":"Supports small-scale farmers, marginalized communities, and those in vulnerable areas by improving access to financial resilience tools and mitigating climate-related risks",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"medium",
+        "CostInvestmentNeeded":"medium",
+        "TimelineForImplementation":"<5 years",
+        "Dependencies":[
+            "Availability of climate data",
+            "Regulatory frameworks",
+            "Collaboration among financial institutions and governments"
+        ],
+        "KeyPerformanceIndicators":[
+            "Increase in number of insurance beneficiaries",
+            "Reduction in economic losses from extreme events",
+            "Adoption of index-based insurance products"
+        ],
+        "Impacts":[
+            "Enhanced financial resilience",
+            "Decreased vulnerability to climate-induced hazards",
+            "Strengthened adaptive capacity in food and water systems"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0091",
+        "ActionName":"Diversification of livelihoods ",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Livelihood Adaptation",
+        "Hazard":[
+            "storms",
+            "sea-level-rise"
+        ],
+        "Sector":[
+            "food_security",
+            "biodiversity"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Diversifying income-generating activities within fisheries and mariculture sectors to mitigate the economic impacts of climate change. This includes shifting target species, adapting harvest tactics, and transitioning to mariculture and ecotourism. Technology and infrastructure upgrades improve marine harvest efficiency and promote sustainable resource management. These adaptations aim to stabilize fisheries, enhance sustainability, and protect livelihoods under shifting marine species distributions and climate variability.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":0,
+            "water_quality":1,
+            "habitat":2,
+            "cost_of_living":1,
+            "housing":0,
+            "mobility":0,
+            "stakeholder_engagement":2
+        },
+        "EquityAndInclusionConsiderations":"Promotes equitable opportunities for vulnerable fishing communities by supporting transitions to alternative employment sectors like ecotourism and mariculture.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"high",
+        "CostInvestmentNeeded":"medium",
+        "TimelineForImplementation":"<5 years",
+        "Dependencies":[
+            "Investment in education",
+            "infrastructure",
+            "technology to support the transition to diversified livelihoods"
+        ],
+        "KeyPerformanceIndicators":[
+            "Increase in income diversity",
+            "employment rates in alternative sectors",
+            "reduction in overexploitation of marine species"
+        ],
+        "Impacts":[
+            "Improved livelihood stability",
+            "economic resilience",
+            "enhanced resource sustainability"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0092",
+        "ActionName":"Social safety nets",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Social Protection and Risk Reduction",
+        "Hazard":[
+            "droughts",
+            "heatwaves",
+            "floods",
+            "storms"
+        ],
+        "Sector":[
+            "food_security",
+            "public_health"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Social safety nets encompass adaptive social protection mechanisms to reduce food insecurity and malnutrition, especially for vulnerable populations. These include cash transfers, school feeding programs, public work initiatives, unemployment compensation, land reforms, credit and insurance schemes. Integrated approaches combine climate risk assessments with disaster risk reduction, education, and social equity to enhance resilience to climate stresses.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":0,
+            "water_quality":1,
+            "habitat":1,
+            "cost_of_living":2,
+            "housing":1,
+            "mobility":0,
+            "stakeholder_engagement":2
+        },
+        "EquityAndInclusionConsiderations":"Enhances the social status and rights of marginalized groups, protects vulnerable populations, reduces inequalities, and promotes education and gender equity.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"high",
+        "CostInvestmentNeeded":"medium",
+        "TimelineForImplementation":"5-10 years",
+        "Dependencies":[
+            "Integration of climate and disaster risk into social protection",
+            "education programs",
+            "coordination with sustainable livelihoods and financial inclusion initiatives"
+        ],
+        "KeyPerformanceIndicators":[
+            "Reduction in malnutrition rates",
+            "Increase in education access for vulnerable groups",
+            "Participation in social protection programs"
+        ],
+        "Impacts":[
+            "Improved public health",
+            "Reduced poverty and inequality",
+            "Strengthened resilience and social empowerment"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0093",
+        "ActionName":"Availability of health infrastructure",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Infrastructure Adaptation",
+        "Hazard":[
+            "droughts",
+            "floods",
+            "sea-level-rise",
+            "diseases"
+        ],
+        "Sector":[
+            "public_health",
+            "water_resources"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Ensuring access to safe drinking water infrastructure, protecting health services, and improving sanitation systems to mitigate climate impacts. This includes developing adaptive measures for water security against droughts, floods, and sea-level rise. Strengthening infrastructure resilience ensures equitable access to health services, reduces contamination risks, and addresses the impacts of climate-induced hazards.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":0,
+            "water_quality":2,
+            "habitat":1,
+            "cost_of_living":1,
+            "housing":0,
+            "mobility":0,
+            "stakeholder_engagement":2
+        },
+        "EquityAndInclusionConsiderations":"Enhances access to critical health and water resources for vulnerable and underserved communities, mitigating inequities caused by climate impacts.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"high",
+        "CostInvestmentNeeded":"medium",
+        "TimelineForImplementation":"5-10 years",
+        "Dependencies":[
+            "Adequate funding",
+            "technological investments in health and water infrastructure",
+            "effective governance and cross-sector coordination"
+        ],
+        "KeyPerformanceIndicators":[
+            "Reduction in waterborne diseases",
+            "improved access to potable water",
+            "number of resilient health facilities developed"
+        ],
+        "Impacts":[
+            "Improved public health",
+            "enhanced water security",
+            "resilience against climate-induced hazards"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0094",
+        "ActionName":"Access to health care",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Health Systems Strengthening",
+        "Hazard":[
+            "heatwaves",
+            "floods",
+            "droughts"
+        ],
+        "Sector":[
+            "public_health",
+            "water_resources"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Enhancing access to health care services, including health and nutrition services, clean water, sanitation, and culturally appropriate mental health resources. Expanding telemedicine capabilities enables efficient health service delivery, particularly for remote and underserved populations. Strengthening basic public health systems and disaster preparedness can rapidly reduce vulnerability to climate-related health risks.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":1,
+            "water_quality":2,
+            "habitat":0,
+            "cost_of_living":1,
+            "housing":1,
+            "mobility":0,
+            "stakeholder_engagement":2
+        },
+        "EquityAndInclusionConsiderations":"Promotes equitable access to health care for marginalized and vulnerable groups, including homeless populations, remote communities, and those affected by housing inequities.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"high",
+        "CostInvestmentNeeded":"medium",
+        "TimelineForImplementation":"5-10 years",
+        "Dependencies":[
+            "Investment in telemedicine technologies",
+            "Strengthened governance of public health systems",
+            "Capacity building for health workers",
+            "Infrastructure upgrades for health facilities"
+        ],
+        "KeyPerformanceIndicators":[
+            "Reduction in climate-related mortality",
+            "Increased access to telemedicine",
+            "Number of culturally tailored health programs implemented",
+            "Improved water and sanitation access metrics"
+        ],
+        "Impacts":[
+            "Improved public health",
+            "Reduced health inequities",
+            "Enhanced disaster preparedness",
+            "Stronger health system resilience"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0095",
+        "ActionName":"Disaster early warning",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Risk Reduction and Preparedness",
+        "Hazard":[
+            "heatwaves",
+            "droughts",
+            "storms"
+        ],
+        "Sector":[
+            "public_health",
+            "biodiversity",
+            "geo-hydrological_disasters"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Establishing and maintaining early warning systems for disasters, including marine heatwaves, pest outbreaks, and heatwaves. These systems involve timely information dissemination to individuals, communities, and emergency services, enabling proactive measures to mitigate risks. Heat Action Plans (HAPs) are part of these systems and include detailed strategies like urban planning with nature-based solutions (e.g., green-blue spaces, cool materials), public awareness campaigns, and targeted measures for vulnerable groups (e.g., elderly, children, outdoor workers). Critical actions also include evaluation of system effectiveness post-disaster, lessons sharing, and improvements for better preparedness in future events.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":2,
+            "water_quality":1,
+            "habitat":2,
+            "cost_of_living":0,
+            "housing":0,
+            "mobility":1,
+            "stakeholder_engagement":2
+        },
+        "EquityAndInclusionConsiderations":"Focuses on addressing vulnerabilities among low-income groups, elderly, pregnant women, children, and outdoor workers by incorporating targeted communication, access to cool areas, and specific health interventions. Promotes equity by engaging marginalized communities in planning and ensuring access to necessary resources.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"high",
+        "CostInvestmentNeeded":"medium",
+        "TimelineForImplementation":"<5 years",
+        "Dependencies":[
+            "Coordination among emergency services and health agencies",
+            "Investment in urban planning and nature-based solutions",
+            "Community education and public awareness campaigns",
+            "Technological infrastructure for early warning systems"
+        ],
+        "KeyPerformanceIndicators":[
+            "Reduction in heatwave-related mortality rates",
+            "Timeliness of warnings",
+            "Public awareness levels",
+            "Community adoption of protective measures"
+        ],
+        "Impacts":[
+            "Improved public health and safety",
+            "Enhanced community resilience to disasters",
+            "Reduced economic losses from heat-related productivity impacts",
+            "Broader ecosystem benefits through urban nature-based solutions"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0096",
+        "ActionName":"Farm\/fishery improvements",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Integrated Farm and Fishery Adaptation",
+        "Hazard":[
+            "droughts",
+            "heatwaves",
+            "floods",
+            "wildfires",
+            "storms"
+        ],
+        "Sector":[
+            "food_security",
+            "biodiversity",
+            "water_resources"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Implementing a range of strategies to adapt farms and fisheries to climate impacts. This includes changing fishing gear or vessel power, adopting new crop varieties or adjusting planting schedules, improving irrigation schemes, integrating crop and livestock systems, relocating livestock with improved pasture management, and adopting agroecological and agroforestry systems. Technological innovations like smart farming and financial measures such as subsidies support these adaptations.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":1,
+            "water_quality":2,
+            "habitat":2,
+            "cost_of_living":1,
+            "housing":0,
+            "mobility":0,
+            "stakeholder_engagement":2
+        },
+        "EquityAndInclusionConsiderations":"Ensures access to resources for marginalized farmers and fishers, promotes diverse livelihood options, and builds resilience in underserved communities.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"high",
+        "CostInvestmentNeeded":"medium",
+        "TimelineForImplementation":"5-10 years",
+        "Dependencies":[
+            "Policy support for climate-resilient agriculture and fisheries",
+            "Access to finance and subsidies",
+            "Training for adopting new practices",
+            "Improved market infrastructure"
+        ],
+        "KeyPerformanceIndicators":[
+            "Increase in agricultural and fishery productivity",
+            "Adoption rate of integrated systems",
+            "Reduction in climate-related yield losses"
+        ],
+        "Impacts":[
+            "Improved food security",
+            "Enhanced ecosystem health",
+            "Increased resilience of agricultural and fishery systems"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0097",
+        "ActionName":"Food storage\/distribution improvements",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Infrastructure Improvement",
+        "Hazard":[
+            "droughts",
+            "floods",
+            "storms",
+            "heatwaves"
+        ],
+        "Sector":[
+            "food_security",
+            "road_infrastructure"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Enhancing food storage and distribution systems by improving transportation infrastructure, optimizing trade networks, and shortening supply chains to ensure local food availability and resilience to climate impacts. This action also includes increasing the capacity of local food storage facilities to reduce post-harvest losses, addressing inefficiencies in logistics, and bolstering infrastructure for perishable goods. It aims to improve food security and reduce vulnerability to extreme events, disruptions, and cascading impacts, especially during pandemics and other crises.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":0,
+            "water_quality":1,
+            "habitat":1,
+            "cost_of_living":1,
+            "housing":0,
+            "mobility":2,
+            "stakeholder_engagement":2
+        },
+        "EquityAndInclusionConsiderations":"Supports equitable access to food for marginalized and vulnerable populations by prioritizing local food production and improving distribution systems that reach underserved areas.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"high",
+        "CostInvestmentNeeded":"medium",
+        "TimelineForImplementation":"5-10 years",
+        "Dependencies":[
+            "Investment in infrastructure",
+            "Policy incentives for local food production",
+            "Collaboration with logistics and trade sectors",
+            "Technology for supply chain optimization"
+        ],
+        "KeyPerformanceIndicators":[
+            "Reduction in post-harvest losses",
+            "Increased local food availability",
+            "Improved transportation efficiency for food distribution",
+            "Shortened supply chains"
+        ],
+        "Impacts":[
+            "Improved food security",
+            "Resilience to climate-induced disruptions",
+            "Reduced greenhouse gas emissions from supply chains",
+            "Enhanced local economic growth"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0098",
+        "ActionName":"Behaviour change in diets and food waste",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Food System Transformation",
+        "Hazard":[
+            "droughts",
+            "heatwaves",
+            "floods",
+            "wildfires"
+        ],
+        "Sector":[
+            "food_security",
+            "biodiversity"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Reducing food loss and waste through improved food production, distribution, and consumption practices. Actions include enhancing agricultural techniques, adopting water-saving technologies, implementing low-cost storage solutions, and promoting plant-based diets. Policymakers can encourage these behaviors with appropriate pricing policies, sustainable agriculture initiatives, and support for disadvantaged groups. The action emphasizes shifting to healthier diets, reducing overconsumption, and supporting local food systems to mitigate greenhouse gas emissions and ensure food security under climate change.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":1,
+            "water_quality":2,
+            "habitat":2,
+            "cost_of_living":1,
+            "housing":0,
+            "mobility":0,
+            "stakeholder_engagement":2
+        },
+        "EquityAndInclusionConsiderations":"Promotes access to affordable, healthy food for vulnerable communities, empowering women, youth, and socially disadvantaged groups. Encourages equitable participation in sustainable agricultural practices and local food networks.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"high",
+        "CostInvestmentNeeded":"medium",
+        "TimelineForImplementation":"5-10 years",
+        "Dependencies":[
+            "Education and training for farmers",
+            "Access to sustainable agricultural inputs",
+            "Policy support for sustainable practices",
+            "Technological infrastructure for storage and processing"
+        ],
+        "KeyPerformanceIndicators":[
+            "Reduction in food loss and waste percentages",
+            "Increase in adoption of plant-based diets",
+            "Improved food security indicators",
+            "Reduction in GHG emissions from food systems"
+        ],
+        "Impacts":[
+            "Improved food security",
+            "Enhanced health outcomes",
+            "Reduced greenhouse gas emissions",
+            "Strengthened local food systems",
+            "Greater resilience to climate variability"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0099",
+        "ActionName":"Water capture\/storage",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Infrastructure-Based Adaptation",
+        "Hazard":[
+            "droughts",
+            "floods",
+            "storms"
+        ],
+        "Sector":[
+            "water_resources",
+            "food_security",
+            "energy_security",
+            "geo-hydrological_disasters"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Implementing water capture and storage solutions such as farm ponds, revival of water bodies, rain gardens, bioswales, retention ponds, and water storage tanks. These measures aim to mitigate climate-induced impacts by improving water management, reducing stormwater runoff, enhancing water quality, and supporting agriculture and energy production under changing climate scenarios. Multi-purpose water reservoirs and dams provide additional benefits by addressing water shortages and managing risks associated with natural hazards.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":0,
+            "water_quality":2,
+            "habitat":2,
+            "cost_of_living":1,
+            "housing":0,
+            "mobility":1,
+            "stakeholder_engagement":2
+        },
+        "EquityAndInclusionConsiderations":"Ensures access to water for underserved communities, supports sustainable livelihoods in water-scarce regions, and promotes equitable resource distribution through inclusive decision-making processes.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"high",
+        "CostInvestmentNeeded":"medium",
+        "TimelineForImplementation":"5-10 years",
+        "Dependencies":[
+            "Investment in green infrastructure",
+            "community engagement",
+            "policy support for water resource management"
+        ],
+        "KeyPerformanceIndicators":[
+            "Reduction in stormwater runoff",
+            "increase in water storage capacity",
+            "improvement in water quality",
+            "stability in agricultural yields"
+        ],
+        "Impacts":[
+            "Improved water availability",
+            "enhanced climate resilience",
+            "sustainable agriculture and energy production",
+            "reduced risk of flooding and drought"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0100",
+        "ActionName":"Efficient water use\/demand",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Integrated Water Management",
+        "Hazard":[
+            "droughts",
+            "heatwaves"
+        ],
+        "Sector":[
+            "water_resources",
+            "food_security"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Implementing advanced irrigation techniques such as precision and drip irrigation to enhance water use efficiency in agriculture. Managed Aquifer Recharge (MAR) is applied to replenish groundwater supplies using stormwater, treated wastewater, or other sources. These actions are complemented by cooperative policies across multiple sectors to ensure sustainable water resource management, equitable access, and regional collaboration. Additionally, promoting changes in water consumption patterns, such as reducing waste and improving efficiency in urban and agricultural water use, supports resilience against water scarcity and enhances adaptive capacity in vulnerable regions. These efforts collectively aim to address the growing demand for freshwater in the face of climate change and ensure long-term sustainability.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":0,
+            "water_quality":2,
+            "habitat":1,
+            "cost_of_living":1,
+            "housing":0,
+            "mobility":0,
+            "stakeholder_engagement":2
+        },
+        "EquityAndInclusionConsiderations":"Supports vulnerable farming and urban communities by ensuring equitable access to water resources, promoting sustainable consumption patterns, and addressing persistent water stress in underserved areas.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"high",
+        "CostInvestmentNeeded":"medium",
+        "TimelineForImplementation":"5-10 years",
+        "Dependencies":[
+            "Infrastructure for water reuse and MAR",
+            "Regulatory frameworks for water management",
+            "Education and training on irrigation techniques",
+            "Regional and cross-sector policy coordination"
+        ],
+        "KeyPerformanceIndicators":[
+            "Reduction in agricultural water usage",
+            "Increase in groundwater recharge rates",
+            "Improved crop yields",
+            "Adoption of sustainable water consumption patterns",
+            "Regional collaboration metrics"
+        ],
+        "Impacts":[
+            "Enhanced water resource sustainability",
+            "Improved food security",
+            "Increased resilience against water scarcity",
+            "Strengthened regional and cross-sector collaboration"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0101",
+        "ActionName":"Efficient water supply\/distribution",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Sustainable Resource Management",
+        "Hazard":[
+            "droughts",
+            "floods",
+            "storms"
+        ],
+        "Sector":[
+            "water_resources"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Implementing sustainable water supply systems by constructing irrigation infrastructure, promoting inter-basin water transfers, utilizing nature-based solutions (NBS) such as rain gardens, bioswales, and wetlands, and integrating advanced techniques like water reuse and water upgrading. Water reuse involves treating and recycling wastewater for non-potable or potable purposes, while water upgrading focuses on improving the quality of available water for diverse uses. These approaches enhance stormwater infiltration, improve urban water management, increase drought resilience, and support groundwater recharge. They provide energy-efficient and economical water solutions while maintaining sustainable urban development.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":0,
+            "water_quality":2,
+            "habitat":2,
+            "cost_of_living":1,
+            "housing":0,
+            "mobility":0,
+            "stakeholder_engagement":1
+        },
+        "EquityAndInclusionConsiderations":"Promotes equitable access to water resources, particularly in underserved urban areas, by integrating natural and engineered water management systems to benefit all communities, including low-income groups.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"high",
+        "CostInvestmentNeeded":"medium",
+        "TimelineForImplementation":"5-10 years",
+        "Dependencies":[
+            "Adequate funding for infrastructure development",
+            "Community engagement for NBS implementation",
+            "Integration of urban planning with water management"
+        ],
+        "KeyPerformanceIndicators":[
+            "Reduction in water scarcity incidents",
+            "Increase in groundwater recharge rates",
+            "Enhanced urban water infiltration capacity"
+        ],
+        "Impacts":[
+            "Improved water security",
+            "Enhanced urban livability",
+            "Increased resilience to climate-related water risks"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0102",
+        "ActionName":"Seasonal\/temporary mobility",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Livelihood Adaptation",
+        "Hazard":[
+            "sea-level-rise",
+            "storms",
+            "droughts"
+        ],
+        "Sector":[
+            "food_security",
+            "biodiversity"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Facilitating mobility of fishing fleets and workers to adapt to shifting marine species distributions caused by climate change. This includes enabling seasonal or temporary migration to align with the availability of resources, improving infrastructure and technology to support mobility, and fostering flexible governance to manage transboundary resources sustainably. These actions aim to maintain livelihoods and reduce economic impacts of climate variability.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":0,
+            "water_quality":1,
+            "habitat":2,
+            "cost_of_living":1,
+            "housing":0,
+            "mobility":2,
+            "stakeholder_engagement":1
+        },
+        "EquityAndInclusionConsiderations":"Ensures equitable access to resources for vulnerable communities, including small-scale fishers and those dependent on seasonal income, by promoting inclusive governance structures and reducing barriers to mobility.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"high",
+        "CostInvestmentNeeded":"medium",
+        "TimelineForImplementation":"5-10 years",
+        "Dependencies":[
+            "Infrastructure and technology investments",
+            "Transboundary agreements",
+            "Capacity-building initiatives to support mobility"
+        ],
+        "KeyPerformanceIndicators":[
+            "Reduction in resource overexploitation",
+            "Increase in seasonal employment opportunities",
+            "Enhanced management of transboundary fisheries"
+        ],
+        "Impacts":[
+            "Improved economic resilience",
+            "Stabilized food security",
+            "Sustainable management of marine biodiversity"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0103",
+        "ActionName":"Cooperative governance",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Governance and Policy Adaptation",
+        "Hazard":[
+            "sea-level-rise",
+            "storms"
+        ],
+        "Sector":[
+            "water_resources",
+            "biodiversity"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Enhancing cooperative governance through transboundary fishing agreements and inclusive ocean governance. This involves participatory approaches, structured decision-making tools, and decentralized frameworks that couple top-down management with community-driven initiatives. Additional strategies include collective water management systems to optimize resource use under climate-induced variability, indigenous water-sharing systems rooted in traditional practices to ensure sustainable and equitable resource allocation, and enforcing the land rights of Indigenous populations to protect biodiversity and cultural heritage. Adaptive co-management in Arctic fisheries integrates local and scientific knowledge to address climate impacts on marine resources. The international compact on migration fosters orderly and safe migration as an adaptive response to climate risks, and policies for adaptive governance promote ecosystem-based solutions, legal frameworks, and institutional adaptations to enhance resilience to climate change. These combined measures address geopolitical complexities, ensure equitable resource distribution, and strengthen resilience to climate-induced hazards.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":0,
+            "water_quality":1,
+            "habitat":2,
+            "cost_of_living":1,
+            "housing":0,
+            "mobility":0,
+            "stakeholder_engagement":2
+        },
+        "EquityAndInclusionConsiderations":"Promotes inclusivity by incorporating Indigenous knowledge systems, ensuring representation of marginalized communities in decision-making processes, and creating equitable access to marine resources for vulnerable populations. Recognizes the importance of Indigenous land rights and traditional governance systems to enhance community resilience and equitable resource management.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"high",
+        "CostInvestmentNeeded":"medium",
+        "TimelineForImplementation":"5-10 years",
+        "Dependencies":[
+            "Establishment of transboundary agreements",
+            "Investment in marine observation technologies",
+            "Capacity building for local communities",
+            "Recognition of Indigenous land and water rights",
+            "Implementation of adaptive co-management frameworks"
+        ],
+        "KeyPerformanceIndicators":[
+            "Number of transboundary agreements signed",
+            "Increase in fish stock sustainability",
+            "Stakeholder satisfaction with governance processes",
+            "Improved water-sharing outcomes in Indigenous communities",
+            "Integration of adaptive co-management in fisheries governance"
+        ],
+        "Impacts":[
+            "Enhanced marine resource sustainability",
+            "Improved international relations",
+            "Strengthened community resilience and equity",
+            "Protection of Indigenous cultural and environmental heritage",
+            "Increased resilience of water resources to climate impacts"
+        ]
+    },
+    {
+        "ActionID":"ipcc_0104",
+        "ActionName":"Permanent migration",
+        "ActionType":[
+            "adaptation"
+        ],
+        "AdaptationCategory":"Social and Economic Resilience",
+        "Hazard":[
+            "floods",
+            "landslides",
+            "sea-level-rise"
+        ],
+        "Sector":[
+            "geo-hydrological_disasters",
+            "public_health",
+            "water_resources"
+        ],
+        "Subsector":null,
+        "PrimaryPurpose":[
+            "climate_resilience"
+        ],
+        "InterventionType":null,
+        "Description":"Resettlement of communities from flood-prone areas and rural\u2013urban migration as a strategy to mitigate vulnerabilities caused by climate change. This includes addressing urbanization challenges, such as unplanned development, water insecurity, and socioeconomic disparities, while providing equitable opportunities for migrants in urban centers. Measures include enhancing urban planning, water resource management, and social support systems for displaced populations.",
+        "BehavioralChangeTargeted":null,
+        "CoBenefits":{
+            "air_quality":0,
+            "water_quality":1,
+            "habitat":1,
+            "cost_of_living":-1,
+            "housing":-1,
+            "mobility":1,
+            "stakeholder_engagement":2
+        },
+        "EquityAndInclusionConsiderations":"Promotes inclusion by addressing the vulnerabilities of marginalized populations and ensuring equitable access to resources, opportunities, and support systems for displaced communities.",
+        "GHGReductionPotential":null,
+        "AdaptationEffectiveness":"medium",
+        "CostInvestmentNeeded":"high",
+        "TimelineForImplementation":"5-10 years",
+        "Dependencies":[
+            "Development of urban infrastructure",
+            "Equitable resource allocation",
+            "Strong governance frameworks",
+            "Capacity building for displaced populations"
+        ],
+        "KeyPerformanceIndicators":[
+            "Reduction in displacement-related mortality",
+            "Increase in access to water and housing",
+            "Improvement in migrant livelihoods and employment rates"
+        ],
+        "Impacts":[
+            "Reduced vulnerabilities to climate-induced hazards",
+            "Enhanced resilience of urban populations",
+            "Improved socioeconomic stability for migrants and host communities"
+        ]
     }
 ]

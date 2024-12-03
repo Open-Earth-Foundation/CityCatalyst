@@ -124,7 +124,7 @@
     "@storybook/addon-links": "^7.6.17",
     "@storybook/blocks": "^8.0.4",
     "@storybook/nextjs": "^8.0.8",
-    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^14.2.1",
     "@types/glob": "^8.1.0",
     "@types/lodash.groupby": "^4.6.9",

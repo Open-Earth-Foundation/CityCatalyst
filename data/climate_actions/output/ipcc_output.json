@@ -43,13 +43,19 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Policy support for land-use planning, public acceptance, and reallocation of transport budgets towards sustainable modes."
+            "Policy support for land-use planning",
+            "public acceptance",
+            "reallocation of transport budgets towards sustainable modes"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in per capita car use, increase in public transport ridership, improved walkability index."
+            "Reduction in per capita car use",
+            "increase in public transport ridership",
+            "improved walkability index"
         ],
         "Impacts":[
-            "Improved urban livability, better public health outcomes, reduced GHG emissions."
+            "Improved urban livability",
+            "better public health outcomes",
+            "reduced GHG emissions"
         ]
     },
     {
@@ -96,13 +102,20 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"<5 years",
         "Dependencies":[
-            "Investment in safe walking and cycling infrastructure, public awareness campaigns, and supportive urban planning policies."
+            "Investment in safe walking and cycling infrastructure",
+            "public awareness campaigns",
+            "supportive urban planning policies"
         ],
         "KeyPerformanceIndicators":[
-            "Increase in kilometers of bicycle and walking networks, rise in active transport modal share, reduction in car usage for short trips."
+            "Increase in kilometers of bicycle and walking networks",
+            "rise in active transport modal share",
+            "reduction in car usage for short trips"
         ],
         "Impacts":[
-            "Improved public health, reduced urban congestion, lower transport-related GHG emissions, and enhanced quality of urban life."
+            "Improved public health",
+            "reduced urban congestion",
+            "lower transport-related GHG emissions",
+            "enhanced quality of urban life"
         ]
     },
     {
@@ -150,13 +163,20 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Investments in modern and efficient transit systems, policies to disincentivize private car use, and public awareness campaigns to encourage public transit adoption."
+            "Investments in modern and efficient transit systems",
+            "policies to disincentivize private car use",
+            "public awareness campaigns to encourage public transit adoption"
         ],
         "KeyPerformanceIndicators":[
-            "Increase in public transit ridership, reduction in private vehicle kilometers traveled, and emissions reduction per passenger kilometer."
+            "Increase in public transit ridership",
+            "reduction in private vehicle kilometers traveled",
+            "emissions reduction per passenger kilometer"
         ],
         "Impacts":[
-            "Enhanced urban livability, reduced traffic congestion, improved public health, and significant reductions in transport-related greenhouse gas emissions."
+            "Enhanced urban livability",
+            "reduced traffic congestion",
+            "improved public health",
+            "significant reductions in transport-related greenhouse gas emissions"
         ]
     },
     {
@@ -203,13 +223,19 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":">10 years",
         "Dependencies":[
-            "Technological innovation, adoption of circular economy practices, and behavioral shifts towards minimalism and efficiency."
+            "Technological innovation",
+            "adoption of circular economy practices",
+            "behavioral shifts towards minimalism and efficiency"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in material intensity per unit output, decrease in freight transport emissions, and increased adoption of circular economy practices."
+            "Reduction in material intensity per unit output",
+            "decrease in freight transport emissions",
+            "increased adoption of circular economy practices"
         ],
         "Impacts":[
-            "Improved resource efficiency, lower environmental footprint, and potential for reduced transport emissions."
+            "Improved resource efficiency",
+            "lower environmental footprint",
+            "potential for reduced transport emissions"
         ]
     },
     {
@@ -256,13 +282,20 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Development of efficient shared mobility platforms, supportive urban policies, and technological advancements in ride-sharing systems."
+            "Development of efficient shared mobility platforms",
+            "supportive urban policies",
+            "technological advancements in ride-sharing systems"
         ],
         "KeyPerformanceIndicators":[
-            "Increase in shared mobility trips, reduction in private vehicle kilometers traveled, and decreased transport-related emissions."
+            "Increase in shared mobility trips",
+            "reduction in private vehicle kilometers traveled",
+            "decreased transport-related emissions"
         ],
         "Impacts":[
-            "Enhanced urban mobility, reduced traffic congestion, lower transport emissions, and increased system efficiency."
+            "Enhanced urban mobility",
+            "reduced traffic congestion",
+            "lower transport emissions",
+            "increased system efficiency"
         ]
     },
     {
@@ -309,13 +342,20 @@
         "CostInvestmentNeeded":"low",
         "TimelineForImplementation":"<5 years",
         "Dependencies":[
-            "Widespread access to high-speed internet, supportive organizational policies, and employee willingness to adopt teleworking."
+            "Widespread access to high-speed internet",
+            "supportive organizational policies",
+            "employee willingness to adopt teleworking"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in commuter trips, increase in teleworking adoption rates, and decreased transport-related emissions."
+            "Reduction in commuter trips",
+            "increase in teleworking adoption rates",
+            "decreased transport-related emissions"
         ],
         "Impacts":[
-            "Reduced traffic congestion, improved air quality, enhanced work-life balance, and lower transport emissions."
+            "Reduced traffic congestion",
+            "improved air quality",
+            "enhanced work-life balance",
+            "lower transport emissions"
         ]
     },
     {
@@ -363,13 +403,20 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Widespread adoption of ICT and IoT technologies, supportive urban planning, and investments in shared and digitalized mobility systems."
+            "Widespread adoption of ICT and IoT technologies",
+            "supportive urban planning",
+            "investments in shared and digitalized mobility systems"
         ],
         "KeyPerformanceIndicators":[
-            "Increase in shared and public transport use, reduction in private vehicle kilometers traveled, and decreased transport-related emissions."
+            "Increase in shared and public transport use",
+            "reduction in private vehicle kilometers traveled",
+            "decreased transport-related emissions"
         ],
         "Impacts":[
-            "Enhanced urban livability, reduced congestion, improved air quality, and significant advancements in transport efficiency."
+            "Enhanced urban livability",
+            "reduced congestion",
+            "improved air quality",
+            "significant advancements in transport efficiency"
         ]
     },
     {
@@ -416,13 +463,21 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Access to advanced logistics tools and software, collaboration between supply chain stakeholders, and integration of eco-driving training"
+            "Access to advanced logistics tools and software",
+            "collaboration between supply chain stakeholders",
+            "integration of eco-driving training"
         ],
         "KeyPerformanceIndicators":[
-            "Reduced freight distances, increased vehicle carrying capacity, improved fuel efficiency, and reduced operating costs"
+            "Reduced freight distances",
+            "increased vehicle carrying capacity",
+            "improved fuel efficiency",
+            "reduced operating costs"
         ],
         "Impacts":[
-            "Reduced operating costs, improved corporate image, enhanced transport infrastructure utilisation, and potential air quality improvement"
+            "Reduced operating costs",
+            "improved corporate image",
+            "enhanced transport infrastructure utilisation",
+            "potential air quality improvement"
         ]
     },
     {
@@ -469,13 +524,19 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Expansion of e-commerce platforms, investments in last-mile delivery logistics, and consumer trust in online shopping."
+            "Expansion of e-commerce platforms",
+            "investments in last-mile delivery logistics",
+            "consumer trust in online shopping"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in vehicle kilometers traveled (VMT) for shopping, increase in online shopping adoption rates, and emissions reductions in freight logistics."
+            "Reduction in vehicle kilometers traveled (VMT) for shopping",
+            "increase in online shopping adoption rates",
+            "emissions reductions in freight logistics"
         ],
         "Impacts":[
-            "Improved urban mobility, reduced shopping-related travel emissions, and enhanced convenience for consumers."
+            "Improved urban mobility",
+            "reduced shopping-related travel emissions",
+            "enhanced convenience for consumers"
         ]
     },
     {
@@ -522,13 +583,21 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":">10 years",
         "Dependencies":[
-            "Development and deployment of autonomous vehicle technologies, supportive regulatory frameworks, and public acceptance of automated systems."
+            "Development and deployment of autonomous vehicle technologies",
+            "supportive regulatory frameworks",
+            "public acceptance of automated systems"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in congestion, improved fuel efficiency, decreased transport-related emissions per vehicle kilometer, and increased accessibility for marginalized groups."
+            "Reduction in congestion",
+            "improved fuel efficiency",
+            "decreased transport-related emissions per vehicle kilometer",
+            "increased accessibility for marginalized groups"
         ],
         "Impacts":[
-            "Enhanced road safety, reduced traffic congestion, increased accessibility for underserved populations, and optimization of transport systems for environmental and societal benefit."
+            "Enhanced road safety",
+            "reduced traffic congestion",
+            "increased accessibility for underserved populations",
+            "optimization of transport systems for environmental and societal benefit"
         ]
     },
     {
@@ -576,13 +645,20 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":">10 years",
         "Dependencies":[
-            "Development of low-cost and sustainable production technologies, supportive policy measures (e.g., fuel standards, blending mandates), and investment in distribution and storage infrastructure."
+            "Development of low-cost and sustainable production technologies",
+            "supportive policy measures (e.g., fuel standards, blending mandates)",
+            "investment in distribution and storage infrastructure"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in GHG emissions from fuel lifecycle, percentage of vehicle fleet using alternative fuels, and infrastructure deployment metrics."
+            "Reduction in GHG emissions from fuel lifecycle",
+            "percentage of vehicle fleet using alternative fuels",
+            "infrastructure deployment metrics"
         ],
         "Impacts":[
-            "Reduced GHG emissions, improved air quality, energy diversification, and increased resilience in transportation systems."
+            "Reduced GHG emissions",
+            "improved air quality",
+            "energy diversification",
+            "increased resilience in transportation systems"
         ]
     },
     {
@@ -631,13 +707,21 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Dependence on advancements in battery technologies, development of charging infrastructure, policies for subsidies and incentives, and integration with renewable energy sources for electricity generation."
+            "Dependence on advancements in battery technologies",
+            "development of charging infrastructure",
+            "policies for subsidies and incentives",
+            "integration with renewable energy sources for electricity generation"
         ],
         "KeyPerformanceIndicators":[
-            "Percentage of electric vehicles in the vehicle fleet, reduction in GHG emissions per kilometer traveled, and availability of charging infrastructure."
+            "Percentage of electric vehicles in the vehicle fleet",
+            "reduction in GHG emissions per kilometer traveled",
+            "availability of charging infrastructure"
         ],
         "Impacts":[
-            "Reduced GHG emissions, improved urban air quality, decreased reliance on fossil fuels, and greater energy security."
+            "Reduced GHG emissions",
+            "improved urban air quality",
+            "decreased reliance on fossil fuels",
+            "greater energy security"
         ]
     },
     {
@@ -686,13 +770,22 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":">10 years",
         "Dependencies":[
-            "Hydrogen production infrastructure, availability of low-carbon hydrogen, cost reductions in fuel cell systems, and durable policies to support adoption."
+            "Hydrogen production infrastructure",
+            "availability of low-carbon hydrogen",
+            "cost reductions in fuel cell systems",
+            "durable policies to support adoption"
         ],
         "KeyPerformanceIndicators":[
-            "Share of fuel cell vehicles in the vehicle fleet, reduction in GHG emissions per kilometer, deployment of hydrogen refueling stations, cost parity with diesel vehicles."
+            "Share of fuel cell vehicles in the vehicle fleet",
+            "reduction in GHG emissions per kilometer",
+            "deployment of hydrogen refueling stations",
+            "cost parity with diesel vehicles"
         ],
         "Impacts":[
-            "Reduced GHG emissions, improved air quality, energy diversification, and advancement of clean technologies for transportation."
+            "Reduced GHG emissions",
+            "improved air quality",
+            "energy diversification",
+            "advancement of clean technologies for transportation"
         ]
     },
     {
@@ -740,13 +833,21 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":">10 years",
         "Dependencies":[
-            "Availability and development of advanced lightweight materials, efficient recycling processes, and industry-scale implementation."
+            "Availability and development of advanced lightweight materials",
+            "efficient recycling processes",
+            "industry-scale implementation"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in vehicle mass, improvement in fuel efficiency (km\/l), lifecycle GHG emissions avoided, and share of lightweighted vehicles in the fleet."
+            "Reduction in vehicle mass",
+            "improvement in fuel efficiency (km\/l)",
+            "lifecycle GHG emissions avoided",
+            "share of lightweighted vehicles in the fleet"
         ],
         "Impacts":[
-            "Reduced GHG emissions, enhanced fuel efficiency, improved vehicle performance, and contribution to a circular economy through advanced recycling."
+            "Reduced GHG emissions",
+            "enhanced fuel efficiency",
+            "improved vehicle performance",
+            "contribution to a circular economy through advanced recycling"
         ]
     },
     {
@@ -797,13 +898,21 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Development and deployment of advanced vehicle technologies, regulatory frameworks, and consumer acceptance."
+            "Development and deployment of advanced vehicle technologies",
+            "regulatory frameworks",
+            "consumer acceptance"
         ],
         "KeyPerformanceIndicators":[
-            "Improvements in fuel economy (km\/l), reduction in GHG emissions per km, share of energy-efficient vehicles in fleets, and fuel cost savings."
+            "Improvements in fuel economy (km\/l)",
+            "reduction in GHG emissions per km",
+            "share of energy-efficient vehicles in fleets",
+            "fuel cost savings"
         ],
         "Impacts":[
-            "Reduced GHG emissions, enhanced fuel efficiency, lower operating costs, and improved air quality."
+            "Reduced GHG emissions",
+            "enhanced fuel efficiency",
+            "lower operating costs",
+            "improved air quality"
         ]
     },
     {
@@ -851,13 +960,23 @@
         "CostInvestmentNeeded":"low",
         "TimelineForImplementation":"<5 years",
         "Dependencies":[
-            "Driver education, effective training programs, policy support, and incentive mechanisms to encourage adoption of eco-driving practices."
+            "Driver education",
+            "effective training programs",
+            "policy support",
+            "incentive mechanisms",
+            "encourage adoption of eco-driving practices"
         ],
         "KeyPerformanceIndicators":[
-            "Percentage reduction in fuel consumption, GHG emissions per vehicle, number of drivers trained in eco-driving, and adherence to eco-driving practices among trained drivers."
+            "Percentage reduction in fuel consumption",
+            "GHG emissions per vehicle",
+            "number of drivers trained in eco-driving",
+            "adherence to eco-driving practices among trained drivers"
         ],
         "Impacts":[
-            "Reduced GHG emissions, enhanced fuel efficiency, improved road safety, and lower transport costs."
+            "Reduced GHG emissions",
+            "enhanced fuel efficiency",
+            "improved road safety",
+            "lower transport costs"
         ]
     },
     {
@@ -904,13 +1023,19 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":">10 years",
         "Dependencies":[
-            "Development and adoption of advanced aircraft technology, global air traffic management optimization, and industry investments in research and development."
+            "Development and adoption of advanced aircraft technology",
+            "global air traffic management optimization",
+            "industry investments in research and development"
         ],
         "KeyPerformanceIndicators":[
-            "Percentage reduction in fuel consumption per flight, improvement in navigation efficiency, and adoption rate of advanced aircraft designs."
+            "Percentage reduction in fuel consumption per flight",
+            "improvement in navigation efficiency",
+            "adoption rate of advanced aircraft designs"
         ],
         "Impacts":[
-            "Reduced GHG emissions, enhanced operational efficiency, and strengthened energy security in aviation."
+            "Reduced GHG emissions",
+            "enhanced operational efficiency",
+            "strengthened energy security in aviation"
         ]
     },
     {
@@ -958,13 +1083,21 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":">10 years",
         "Dependencies":[
-            "Availability of low-carbon energy, advancements in fuel production technologies, cost reductions, policy support, and infrastructure for production and distribution."
+            "Availability of low-carbon energy",
+            "advancements in fuel production technologies",
+            "cost reductions",
+            "policy support",
+            "infrastructure for production and distribution"
         ],
         "KeyPerformanceIndicators":[
-            "Adoption rates of SAFs, lifecycle emissions reductions, and advancements in fuel production technologies."
+            "Adoption rates of SAFs",
+            "lifecycle emissions reductions",
+            "advancements in fuel production technologies"
         ],
         "Impacts":[
-            "Significant reductions in aviation emissions, improved energy security, and progress toward net-zero aviation operations."
+            "Significant reductions in aviation emissions",
+            "improved energy security",
+            "progress toward net-zero aviation operations"
         ]
     },
     {
@@ -1013,13 +1146,20 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Requires significant investments in HSR infrastructure, policy support to limit competing air travel options, and integration of rail networks with existing transportation systems."
+            "Requires significant investments in HSR infrastructure",
+            "policy support to limit competing air travel options",
+            "integration of rail networks with existing transportation systems"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in domestic and regional air travel demand, increase in HSR ridership, and measurable reductions in transportation sector GHG emissions."
+            "Reduction in domestic and regional air travel demand",
+            "increase in HSR ridership",
+            "measurable reductions in transportation sector GHG emissions"
         ],
         "Impacts":[
-            "Reduces aviation emissions, improves regional connectivity, decreases transportation-related air pollution, and enhances public transportation networks."
+            "Reduces aviation emissions",
+            "improves regional connectivity",
+            "decreases transportation-related air pollution",
+            "enhances public transportation networks"
         ]
     },
     {
@@ -1068,13 +1208,22 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":">10 years",
         "Dependencies":[
-            "Availability of low-carbon fuels and energy, infrastructure investments, retrofitting capabilities for existing ships, policy and regulatory support, and advances in fuel storage and safety technologies."
+            "Availability of low-carbon fuels and energy",
+            "infrastructure investments",
+            "retrofitting capabilities for existing ships",
+            "policy and regulatory support",
+            "advances in fuel storage and safety technologies"
         ],
         "KeyPerformanceIndicators":[
-            "Adoption rate of alternative fuels, emissions reductions achieved (tank-to-wake and well-to-wake), and advancements in bunkering and storage infrastructure."
+            "Adoption rate of alternative fuels",
+            "emissions reductions achieved (tank-to-wake and well-to-wake)",
+            "advancements in bunkering and storage infrastructure"
         ],
         "Impacts":[
-            "Significant reductions in maritime emissions, improved air quality, progress toward global decarbonization goals, and reduced reliance on fossil fuels in the shipping industry."
+            "Significant reductions in maritime emissions",
+            "improved air quality",
+            "progress toward global decarbonization goals",
+            "reduced reliance on fossil fuels in the shipping industry"
         ]
     },
     {
@@ -1123,13 +1272,21 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":">10 years",
         "Dependencies":[
-            "Availability of low-carbon electricity, advancements in battery technology, infrastructure for charging and maintenance, and supportive regulatory frameworks for the maritime industry."
+            "Availability of low-carbon electricity",
+            "advancements in battery technology",
+            "infrastructure for charging and maintenance",
+            "supportive regulatory frameworks for the maritime industry"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in lifecycle emissions of vessels, number of electric and hybrid-electric ships in operation, and improvements in port infrastructure to support electric propulsion systems."
+            "Reduction in lifecycle emissions of vessels",
+            "number of electric and hybrid-electric ships in operation",
+            "improvements in port infrastructure to support electric propulsion systems"
         ],
         "Impacts":[
-            "Significant reduction in maritime sector emissions, improved air quality in coastal and port regions, decreased reliance on fossil fuels, and promotion of innovation in clean transportation technologies."
+            "Significant reduction in maritime sector emissions",
+            "Improved air quality in coastal and port regions",
+            "Decreased reliance on fossil fuels",
+            "Promotion of innovation in clean transportation technologies"
         ]
     },
     {
@@ -1178,13 +1335,23 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Availability of low-carbon fuels, advancements in propulsion and hull design technologies, investments in port infrastructure, and regulatory support for energy efficiency and emissions reductions."
+            "Availability of low-carbon fuels",
+            "advancements in propulsion and hull design technologies",
+            "investments in port infrastructure",
+            "regulatory support for energy efficiency and emissions reductions"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in shipping emissions, adoption rate of energy-efficient technologies and operational measures, number of retrofitted vessels, and efficiency improvements in port operations."
+            "Reduction in shipping emissions",
+            "adoption rate of energy-efficient technologies",
+            "operational measures",
+            "number of retrofitted vessels",
+            "efficiency improvements in port operations"
         ],
         "Impacts":[
-            "Reduction in maritime emissions, improved air and water quality, increased energy security, and enhanced innovation in sustainable shipping technologies."
+            "Reduction in maritime emissions",
+            "improved air and water quality",
+            "increased energy security",
+            "enhanced innovation in sustainable shipping technologies"
         ]
     },
     {
@@ -1233,13 +1400,22 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Availability of advanced technologies, supportive regulatory frameworks, investment in research and development, and alignment with global standards for emissions reduction and energy efficiency."
+            "Availability of advanced technologies",
+            "supportive regulatory frameworks",
+            "investment in research and development",
+            "alignment with global standards for emissions reduction and energy efficiency"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in industrial GHG emissions, adoption rates of heat and energy recovery technologies, energy intensity improvements in key industries, and recycling rates."
+            "Reduction in industrial GHG emissions",
+            "adoption rates of heat and energy recovery technologies",
+            "energy intensity improvements in key industries",
+            "recycling rates"
         ],
         "Impacts":[
-            "Significant reductions in industrial emissions, improved resource efficiency, enhanced energy security, and increased sustainability in manufacturing and construction sectors."
+            "Significant reductions in industrial emissions",
+            "improved resource efficiency",
+            "enhanced energy security",
+            "increased sustainability in manufacturing and construction sectors"
         ]
     },
     {
@@ -1288,13 +1464,22 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Availability of advanced fuel delivery systems, supportive policy frameworks, investment in R&D for alternative reductants, and industry-wide adoption of optimized process controls and technologies."
+            "Availability of advanced fuel delivery systems",
+            "supportive policy frameworks",
+            "investment in R&D for alternative reductants",
+            "industry-wide adoption of optimized process controls and technologies"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in GHG emissions from heating in steel production, energy intensity improvements, increased adoption rates of pulverized coal injection and alternative fuels, and reduced production of hazardous wastes."
+            "Reduction in GHG emissions from heating in steel production",
+            "energy intensity improvements",
+            "increased adoption rates of pulverized coal injection and alternative fuels",
+            "reduced production of hazardous wastes"
         ],
         "Impacts":[
-            "Significant reductions in emissions and energy use in steel manufacturing, improved air quality, enhanced energy security, and more sustainable industrial practices."
+            "Significant reductions in emissions and energy use in steel manufacturing",
+            "improved air quality",
+            "enhanced energy security",
+            "more sustainable industrial practices"
         ]
     },
     {
@@ -1343,13 +1528,23 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Availability of advanced furnace designs, supportive policies and incentives, skilled workforce for installation and maintenance, and industry-wide adoption of energy-efficient technologies."
+            "Availability of advanced furnace designs",
+            "supportive policies and incentives",
+            "skilled workforce for installation and maintenance",
+            "industry-wide adoption of energy-efficient technologies"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in energy intensity, GHG emissions, and hazardous waste production; increased adoption of advanced furnaces and process controls."
+            "Reduction in energy intensity",
+            "GHG emissions",
+            "hazardous waste production",
+            "increased adoption of advanced furnaces",
+            "process controls"
         ],
         "Impacts":[
-            "Significant improvements in industrial energy efficiency, reduced emissions, cost savings for manufacturers, and enhanced air quality."
+            "Significant improvements in industrial energy efficiency",
+            "reduced emissions",
+            "cost savings for manufacturers",
+            "enhanced air quality"
         ]
     },
     {
@@ -1397,13 +1592,20 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Availability of advanced heat recovery and pump technologies, skilled workforce for installation and maintenance, and policy support for adoption of waste heat recovery systems."
+            "Availability of advanced heat recovery and pump technologies",
+            "skilled workforce for installation and maintenance",
+            "policy support for adoption of waste heat recovery systems"
         ],
         "KeyPerformanceIndicators":[
-            "Increase in waste heat recovery rate, reduction in energy intensity, and percentage of heat reused through high-efficiency systems."
+            "Increase in waste heat recovery rate",
+            "reduction in energy intensity",
+            "percentage of heat reused through high-efficiency systems"
         ],
         "Impacts":[
-            "Significant reductions in industrial energy consumption and GHG emissions, enhanced energy security, cost savings for manufacturers, and reduced environmental waste."
+            "Significant reductions in industrial energy consumption and GHG emissions",
+            "enhanced energy security",
+            "cost savings for manufacturers",
+            "reduced environmental waste"
         ]
     },
     {
@@ -1451,13 +1653,20 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Development and deployment of advanced process integration technologies, skilled workforce training, and supportive policies to incentivize adoption."
+            "Development and deployment of advanced process integration technologies",
+            "skilled workforce training",
+            "supportive policies to incentivize adoption"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in energy consumption per unit of steel, increase in process coupling efficiency, and reduction in GHG emissions per ton of steel produced."
+            "Reduction in energy consumption per unit of steel",
+            "increase in process coupling efficiency",
+            "reduction in GHG emissions per ton of steel produced"
         ],
         "Impacts":[
-            "Improved energy efficiency, reduced emissions, cost savings for manufacturers, and enhanced competitiveness of the steel industry in global markets."
+            "Improved energy efficiency",
+            "reduced emissions",
+            "cost savings for manufacturers",
+            "enhanced competitiveness of the steel industry in global markets"
         ]
     },
     {
@@ -1505,13 +1714,20 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Development of advanced comminution and ore sorting technologies, availability of renewable energy sources for power generation, and policy support to incentivize adoption."
+            "Development of advanced comminution and ore sorting technologies",
+            "availability of renewable energy sources for power generation",
+            "policy support to incentivize adoption"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in energy consumption per ton of ore processed, improvement in ore recovery ratio, and reduction in GHG emissions from mining operations."
+            "Reduction in energy consumption per ton of ore processed",
+            "improvement in ore recovery ratio",
+            "reduction in GHG emissions from mining operations"
         ],
         "Impacts":[
-            "Improved energy efficiency in mining, reduced operational costs, decreased environmental footprint of mining activities, and enhanced resource utilization."
+            "Improved energy efficiency in mining",
+            "reduced operational costs",
+            "decreased environmental footprint of mining activities",
+            "enhanced resource utilization"
         ]
     },
     {
@@ -1558,13 +1774,20 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Availability of advanced drying\/dewatering technologies, skilled workforce for implementation, and supportive policies or incentives to offset initial costs."
+            "Availability of advanced drying\/dewatering technologies",
+            "skilled workforce for implementation",
+            "supportive policies or incentives to offset initial costs"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in energy consumption per unit of output, percentage improvement in drying efficiency, and reduction in GHG emissions from manufacturing processes."
+            "Reduction in energy consumption per unit of output",
+            "percentage improvement in drying efficiency",
+            "reduction in GHG emissions from manufacturing processes"
         ],
         "Impacts":[
-            "Increased energy efficiency, reduced operational costs, lower emissions, and enhanced sustainability in industrial processes."
+            "Increased energy efficiency",
+            "reduced operational costs",
+            "lower emissions",
+            "enhanced sustainability in industrial processes"
         ]
     },
     {
@@ -1612,13 +1835,20 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Availability of recycling infrastructure, advanced technologies for material separation and recovery, and supportive policies for incentivizing recycling practices."
+            "Availability of recycling infrastructure",
+            "advanced technologies for material separation and recovery",
+            "supportive policies for incentivizing recycling practices"
         ],
         "KeyPerformanceIndicators":[
-            "Recycling rates by material type, reduction in energy consumption for material production, and decrease in landfill waste volumes."
+            "Recycling rates by material type",
+            "reduction in energy consumption for material production",
+            "decrease in landfill waste volumes"
         ],
         "Impacts":[
-            "Reduces reliance on virgin material extraction, lowers industrial energy demand, mitigates GHG emissions, and supports sustainable production practices."
+            "Reduces reliance on virgin material extraction",
+            "lowers industrial energy demand",
+            "mitigates GHG emissions",
+            "supports sustainable production practices"
         ]
     },
     {
@@ -1666,13 +1896,20 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Availability of advanced technologies like sensors and machine learning systems, adequate digital infrastructure, and supportive policies for energy efficiency adoption."
+            "Availability of advanced technologies like sensors and machine learning systems",
+            "adequate digital infrastructure",
+            "supportive policies for energy efficiency adoption"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in energy use, cost savings per production cycle, and percentage improvement in process efficiency."
+            "Reduction in energy use",
+            "cost savings per production cycle",
+            "percentage improvement in process efficiency"
         ],
         "Impacts":[
-            "Enhanced energy efficiency, reduced operational costs, improved industrial competitiveness, and support for decarbonization goals."
+            "Enhanced energy efficiency",
+            "reduced operational costs",
+            "improved industrial competitiveness",
+            "support for decarbonization goals"
         ]
     },
     {
@@ -1720,13 +1957,20 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Availability of renewable fuel infrastructure, technology development for alternative fuel production, and supportive policies."
+            "Availability of renewable fuel infrastructure",
+            "technology development for alternative fuel production",
+            "supportive policies"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in CO2 emissions, increased adoption rate of renewable fuels, and reduction in the carbon intensity of industrial processes."
+            "Reduction in CO2 emissions",
+            "increased adoption rate of renewable fuels",
+            "reduction in the carbon intensity of industrial processes"
         ],
         "Impacts":[
-            "Reduced dependence on fossil fuels, improved energy security, and mitigation of air pollution, contributing to global emission reduction targets."
+            "Reduced dependence on fossil fuels",
+            "improved energy security",
+            "mitigation of air pollution",
+            "contributing to global emission reduction targets"
         ]
     },
     {
@@ -1774,13 +2018,19 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Availability of low-carbon electricity, development of suitable anode materials, and infrastructure for large-scale electrification in steel production."
+            "Availability of low-carbon electricity",
+            "development of suitable anode materials",
+            "infrastructure for large-scale electrification in steel production"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in emissions per ton of steel produced, increase in the share of electrified processes, and energy savings in production stages."
+            "Reduction in emissions per ton of steel produced",
+            "increase in the share of electrified processes",
+            "energy savings in production stages"
         ],
         "Impacts":[
-            "Reduced reliance on fossil fuels, improved air quality, and enhanced global competitiveness of steel manufacturers."
+            "Reduced reliance on fossil fuels",
+            "improved air quality",
+            "enhanced global competitiveness of steel manufacturers"
         ]
     },
     {
@@ -1828,13 +2078,20 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Availability of advanced heat recovery technologies, skilled workforce for installation and operation, and supportive policies and funding incentives."
+            "Availability of advanced heat recovery technologies",
+            "skilled workforce for installation and operation",
+            "supportive policies and funding incentives"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in energy consumption per ton of product, increase in waste energy recovery rates, and decrease in GHG emissions intensity in industrial processes."
+            "Reduction in energy consumption per ton of product",
+            "increase in waste energy recovery rates",
+            "decrease in GHG emissions intensity in industrial processes"
         ],
         "Impacts":[
-            "Enhances energy efficiency, reduces emissions, lowers operational costs, and improves competitiveness of the industrial sector in global markets."
+            "Enhances energy efficiency",
+            "reduces emissions",
+            "lowers operational costs",
+            "improves competitiveness of the industrial sector in global markets"
         ]
     },
     {
@@ -1882,13 +2139,23 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Development of advanced process technologies, regulatory support for adoption, workforce training, and sufficient financial incentives or subsidies to offset high initial costs."
+            "Development of advanced process technologies",
+            "regulatory support for adoption",
+            "workforce training",
+            "sufficient financial incentives or subsidies to offset high initial costs"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in energy use per unit of production, lower emissions per ton of material produced, increased adoption rate of advanced technologies, and improved process efficiency metrics."
+            "Reduction in energy use per unit of production",
+            "lower emissions per ton of material produced",
+            "increased adoption rate of advanced technologies",
+            "improved process efficiency metrics"
         ],
         "Impacts":[
-            "Enhanced energy efficiency, significant emissions reductions, cost savings for industries, increased competitiveness in global markets, and improved environmental sustainability."
+            "Enhanced energy efficiency",
+            "significant emissions reductions",
+            "cost savings for industries",
+            "increased competitiveness in global markets",
+            "improved environmental sustainability"
         ]
     },
     {
@@ -1935,13 +2202,20 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Access to biomass resources, skilled workforce for CHP system operation, and supportive policies to incentivize adoption of CHP systems."
+            "Access to biomass resources",
+            "skilled workforce for CHP system operation",
+            "supportive policies to incentivize adoption of CHP systems"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in energy intensity per ton of paper, decrease in direct and indirect CO2 emissions, and increase in on-site electricity production through CHP systems."
+            "Reduction in energy intensity per ton of paper",
+            "decrease in direct and indirect CO2 emissions",
+            "increase in on-site electricity production through CHP systems"
         ],
         "Impacts":[
-            "Improved energy efficiency, reduced emissions, enhanced competitiveness of the pulp and paper industry, and long-term cost savings for manufacturers."
+            "Improved energy efficiency",
+            "reduced emissions",
+            "enhanced competitiveness of the pulp and paper industry",
+            "long-term cost savings for manufacturers"
         ]
     },
     {
@@ -1990,13 +2264,20 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":">10 years",
         "Dependencies":[
-            "Requires advancements in CCS and CCU technologies, availability of low-GHG electricity, and supportive policies to incentivize industrial decarbonization."
+            "Requires advancements in CCS and CCU technologies",
+            "availability of low-GHG electricity",
+            "supportive policies to incentivize industrial decarbonization"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in GHG emissions from industrial processes, increase in the use of low-carbon feedstocks, and the number of CCS\/CCU projects implemented."
+            "Reduction in GHG emissions from industrial processes",
+            "increase in the use of low-carbon feedstocks",
+            "the number of CCS\/CCU projects implemented"
         ],
         "Impacts":[
-            "Enhanced industrial sustainability, reduced dependence on fossil fuels, advancement of circular economy principles, and mitigation of climate change impacts."
+            "Enhanced industrial sustainability",
+            "reduced dependence on fossil fuels",
+            "advancement of circular economy principles",
+            "mitigation of climate change impacts"
         ]
     },
     {
@@ -2044,13 +2325,19 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Availability of clean energy for hydrogen production, development of CCU technologies, and policies to support adoption."
+            "Availability of clean energy for hydrogen production",
+            "development of CCU technologies",
+            "policies to support adoption"
         ],
         "KeyPerformanceIndicators":[
-            "Quantity of CO2 captured and reused, reduction in emissions per ton of product, and market penetration of CCU-derived products."
+            "Quantity of CO2 captured and reused",
+            "reduction in emissions per ton of product",
+            "market penetration of CCU-derived products"
         ],
         "Impacts":[
-            "Reduction in GHG emissions, enhanced energy security, and development of sustainable industries."
+            "Reduction in GHG emissions",
+            "enhanced energy security",
+            "development of sustainable industries"
         ]
     },
     {
@@ -2098,13 +2385,20 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":">10 years",
         "Dependencies":[
-            "Requires the development of CO2 transport and storage infrastructure, supportive policy frameworks, sufficient clean energy for capture processes, and incentives for adoption."
+            "Requires the development of CO2 transport and storage infrastructure",
+            "supportive policy frameworks",
+            "sufficient clean energy for capture processes",
+            "incentives for adoption"
         ],
         "KeyPerformanceIndicators":[
-            "Amount of CO2 captured and stored annually, percentage reduction in industrial emissions, and operational capacity of CCS projects globally."
+            "Amount of CO2 captured and stored annually",
+            "percentage reduction in industrial emissions",
+            "operational capacity of CCS projects globally"
         ],
         "Impacts":[
-            "Significant reductions in GHG emissions, mitigation of climate change effects, and increased energy security through sustainable industrial practices."
+            "Significant reductions in GHG emissions",
+            "mitigation of climate change effects",
+            "increased energy security through sustainable industrial practices"
         ]
     },
     {
@@ -2152,13 +2446,23 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Availability of advanced materials, supportive policies for circular economy, stakeholder collaboration across supply chains, and investment in R&D for lightweight materials and high-efficiency design methods."
+            "Availability of advanced materials",
+            "supportive policies for circular economy",
+            "stakeholder collaboration across supply chains",
+            "investment in R&D for lightweight materials",
+            "high-efficiency design methods"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in material usage per product, increase in product lifespan, percentage of materials recovered and reused, and reduction in GHG emissions from production processes."
+            "Reduction in material usage per product",
+            "increase in product lifespan",
+            "percentage of materials recovered and reused",
+            "reduction in GHG emissions from production processes"
         ],
         "Impacts":[
-            "Reduced environmental footprint, lower production costs, improved resource efficiency, and enhanced sustainability of industrial processes."
+            "Reduced environmental footprint",
+            "lower production costs",
+            "improved resource efficiency",
+            "enhanced sustainability of industrial processes"
         ]
     },
     {
@@ -2206,13 +2510,21 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Availability of advanced manufacturing technologies, workforce training, supportive regulations, and access to materials for near-net shape casting."
+            "Availability of advanced manufacturing technologies",
+            "workforce training",
+            "supportive regulations",
+            "access to materials for near-net shape casting"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in material waste, increase in production yield, and reduction in GHG emissions per unit of material produced."
+            "Reduction in material waste",
+            "increase in production yield",
+            "reduction in GHG emissions per unit of material produced"
         ],
         "Impacts":[
-            "Significant reduction in material and energy use, enhanced production efficiency, reduced emissions, and improved sustainability across industrial supply chains."
+            "Significant reduction in material and energy use",
+            "enhanced production efficiency",
+            "reduced emissions",
+            "improved sustainability across industrial supply chains"
         ]
     },
     {
@@ -2260,13 +2572,20 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Collaboration across supply chains, advances in recycling and remanufacturing technologies, and supportive policy frameworks to incentivize adoption."
+            "Collaboration across supply chains",
+            "advances in recycling and remanufacturing technologies",
+            "supportive policy frameworks to incentivize adoption"
         ],
         "KeyPerformanceIndicators":[
-            "Percentage of materials recovered and reused, reduction in production waste, and decrease in GHG emissions per unit of product lifecycle."
+            "Percentage of materials recovered and reused",
+            "reduction in production waste",
+            "decrease in GHG emissions per unit of product lifecycle"
         ],
         "Impacts":[
-            "Reduction in raw material demand, improved environmental sustainability, decreased emissions, and enhanced industrial efficiency."
+            "Reduction in raw material demand",
+            "improved environmental sustainability",
+            "decreased emissions",
+            "enhanced industrial efficiency"
         ]
     },
     {
@@ -2315,13 +2634,22 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Effective coordination between industries, governments, and communities; supportive policies and regulations; development of recycling infrastructure; and data sharing platforms for material and energy flows."
+            "Effective coordination between industries, governments, and communities",
+            "supportive policies and regulations",
+            "development of recycling infrastructure",
+            "data sharing platforms for material and energy flows"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in virgin material use, GHG emissions avoided through CE practices, increase in recycling rates, number of industrial symbiosis networks implemented, and resource recovery metrics."
+            "Reduction in virgin material use",
+            "GHG emissions avoided through CE practices",
+            "increase in recycling rates",
+            "number of industrial symbiosis networks implemented",
+            "resource recovery metrics"
         ],
         "Impacts":[
-            "Significant reductions in resource extraction, energy use, and emissions; enhanced regional development through eco-industrial parks; and broader adoption of sustainable practices across industries and urban areas."
+            "Significant reductions in resource extraction, energy use, and emissions",
+            "enhanced regional development through eco-industrial parks",
+            "broader adoption of sustainable practices across industries and urban areas"
         ]
     },
     {
@@ -2369,13 +2697,20 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Development and availability of alternative feedstocks, regulatory support for material substitution, and investment in research and development for innovative concrete applications."
+            "Development and availability of alternative feedstocks",
+            "regulatory support for material substitution",
+            "investment in research and development for innovative concrete applications"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in clinker-to-cement ratio, lower CO2 emissions per tonne of cement, and increased adoption of alternative materials in cement production."
+            "Reduction in clinker-to-cement ratio",
+            "lower CO2 emissions per tonne of cement",
+            "increased adoption of alternative materials in cement production"
         ],
         "Impacts":[
-            "Reduced GHG emissions, enhanced resource efficiency, lower energy consumption in cement production, and improved environmental quality in cement manufacturing regions."
+            "Reduced GHG emissions",
+            "enhanced resource efficiency",
+            "lower energy consumption in cement production",
+            "improved environmental quality in cement manufacturing regions"
         ]
     },
     {
@@ -2423,13 +2758,20 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"<5 years",
         "Dependencies":[
-            "Availability of infrastructure for waste collection and recycling, public awareness campaigns, and supportive policy frameworks."
+            "Availability of infrastructure for waste collection and recycling",
+            "public awareness campaigns",
+            "supportive policy frameworks"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in food waste percentage, increased recycling rates, and reduced greenhouse gas emissions from waste management."
+            "Reduction in food waste percentage",
+            "increased recycling rates",
+            "reduced greenhouse gas emissions from waste management"
         ],
         "Impacts":[
-            "Reduced environmental burden, enhanced resource efficiency, improved urban livability, and cost savings in waste management systems."
+            "Reduced environmental burden",
+            "enhanced resource efficiency",
+            "improved urban livability",
+            "cost savings in waste management systems"
         ]
     },
     {
@@ -2476,13 +2818,20 @@
         "CostInvestmentNeeded":"low",
         "TimelineForImplementation":"<5 years",
         "Dependencies":[
-            "Requires clear guidelines, consumer education campaigns, and industry compliance with precise dosing recommendations."
+            "Requires clear guidelines",
+            "consumer education campaigns",
+            "industry compliance with precise dosing recommendations"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in material waste, increased adherence to dosing guidelines, and measurable decreases in associated emissions."
+            "Reduction in material waste",
+            "increased adherence to dosing guidelines",
+            "measurable decreases in associated emissions"
         ],
         "Impacts":[
-            "Reduced industrial emissions, lower resource consumption, cost savings for consumers and industries, and improved efficiency across the supply chain."
+            "Reduced industrial emissions",
+            "lower resource consumption",
+            "cost savings for consumers and industries",
+            "improved efficiency across the supply chain"
         ]
     },
     {
@@ -2529,13 +2878,20 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Development of platforms and systems to facilitate product sharing, stakeholder collaboration, and supportive policies to incentivize shared usage models."
+            "Development of platforms and systems to facilitate product sharing",
+            "stakeholder collaboration",
+            "supportive policies to incentivize shared usage models"
         ],
         "KeyPerformanceIndicators":[
-            "Number of shared product-service systems implemented, reduction in material demand per capita, and decrease in GHG emissions from product manufacturing."
+            "Number of shared product-service systems implemented",
+            "reduction in material demand per capita",
+            "decrease in GHG emissions from product manufacturing"
         ],
         "Impacts":[
-            "Reduction in resource use and emissions, cost savings for consumers, increased accessibility to products, and fostering a circular economy through more efficient use of materials."
+            "Reduction in resource use and emissions",
+            "cost savings for consumers",
+            "increased accessibility to products",
+            "fostering a circular economy through more efficient use of materials"
         ]
     },
     {
@@ -2583,13 +2939,21 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Requires collaboration across material supply chains, advancements in product design, and supportive policy frameworks to incentivize circular economy practices."
+            "Requires collaboration across material supply chains",
+            "advancements in product design",
+            "supportive policy frameworks to incentivize circular economy practices"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in material use per product, increase in product lifespan, rate of reuse and repair, and reduction in GHG emissions from material production and waste."
+            "Reduction in material use per product",
+            "increase in product lifespan",
+            "rate of reuse and repair",
+            "reduction in GHG emissions from material production and waste"
         ],
         "Impacts":[
-            "Significant emissions reductions, resource conservation, cost savings for consumers, and strengthened circular economy practices."
+            "Significant emissions reductions",
+            "resource conservation",
+            "cost savings for consumers",
+            "strengthened circular economy practices"
         ]
     },
     {
@@ -2636,13 +3000,20 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Development of advanced maintenance techniques, effective policies to promote longer building lifespans, and education for construction professionals on durable practices."
+            "Development of advanced maintenance techniques",
+            "effective policies to promote longer building lifespans",
+            "education for construction professionals on durable practices"
         ],
         "KeyPerformanceIndicators":[
-            "Increase in the average lifespan of buildings and infrastructure, reduction in cement demand per capita, and overall CO2 emissions reductions in cement production."
+            "Increase in the average lifespan of buildings and infrastructure",
+            "reduction in cement demand per capita",
+            "overall CO2 emissions reductions in cement production"
         ],
         "Impacts":[
-            "Reduction in demand for new concrete and cement production, reduced emissions, enhanced resource efficiency, and increased affordability and sustainability of infrastructure."
+            "Reduction in demand for new concrete and cement production",
+            "reduced emissions",
+            "enhanced resource efficiency",
+            "increased affordability and sustainability of infrastructure"
         ]
     },
     {
@@ -2690,13 +3061,21 @@
         "CostInvestmentNeeded":"low",
         "TimelineForImplementation":"<5 years",
         "Dependencies":[
-            "Public awareness campaigns, supportive policies, and integration of sustainability into business and governmental frameworks."
+            "Public awareness campaigns",
+            "supportive policies",
+            "integration of sustainability into business and governmental frameworks"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in material and energy intensity per capita, decrease in waste generation rates, and improvement in recycling and reuse statistics."
+            "Reduction in material and energy intensity per capita",
+            "decrease in waste generation rates",
+            "improvement in recycling and reuse statistics"
         ],
         "Impacts":[
-            "Enhances societal well-being by reducing overconsumption, lowering environmental impacts, and fostering long-term sustainability in resource use and industrial processes."
+            "Enhances societal well-being",
+            "reducing overconsumption",
+            "lowering environmental impacts",
+            "fostering long-term sustainability in resource use",
+            "industrial processes"
         ]
     },
     {
@@ -2744,13 +3123,20 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Implementation of policies and programs promoting sustainable consumption, availability of alternatives to high-emission activities, and societal support for behavioral and lifestyle changes."
+            "Implementation of policies and programs promoting sustainable consumption",
+            "availability of alternatives to high-emission activities",
+            "societal support for behavioral and lifestyle changes"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in demand for high-emission products and services, decreased industrial emissions linked to product use, and increased adoption of sustainable consumption practices."
+            "Reduction in demand for high-emission products and services",
+            "decreased industrial emissions linked to product use",
+            "increased adoption of sustainable consumption practices"
         ],
         "Impacts":[
-            "Reduction in global GHG emissions, improved resource efficiency, enhanced sustainability in consumption patterns, and reduced strain on environmental resources."
+            "Reduction in global GHG emissions",
+            "improved resource efficiency",
+            "enhanced sustainability in consumption patterns",
+            "reduced strain on environmental resources"
         ]
     },
     {
@@ -2798,13 +3184,22 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Requires improved governance, clear land tenure policies, funding for protected areas, and community participation in forest conservation efforts."
+            "Requires improved governance",
+            "clear land tenure policies",
+            "funding for protected areas",
+            "community participation in forest conservation efforts"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in deforestation rates, increased forest cover, and the amount of GHG emissions avoided per year."
+            "Reduction in deforestation rates",
+            "increased forest cover",
+            "the amount of GHG emissions avoided per year"
         ],
         "Impacts":[
-            "Preserves biodiversity, enhances ecosystem services, improves air and water quality, and contributes to climate stabilization and sustainable development."
+            "Preserves biodiversity",
+            "enhances ecosystem services",
+            "improves air and water quality",
+            "contributes to climate stabilization",
+            "sustainable development"
         ]
     },
     {
@@ -2852,13 +3247,24 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Requires funding for land restoration, access to suitable species for planting, local community engagement, and monitoring systems for ecosystem integrity and carbon sequestration."
+            "Requires funding for land restoration",
+            "access to suitable species for planting",
+            "local community engagement",
+            "monitoring systems for ecosystem integrity and carbon sequestration"
         ],
         "KeyPerformanceIndicators":[
-            "Area of land reforested or afforested, carbon sequestration rates, improvement in biodiversity indices, and ecosystem service metrics such as water regulation and soil quality."
+            "Area of land reforested or afforested",
+            "carbon sequestration rates",
+            "improvement in biodiversity indices",
+            "ecosystem service metrics such as water regulation and soil quality"
         ],
         "Impacts":[
-            "Increased carbon sequestration, improved biodiversity, enhanced ecosystem resilience, better water regulation, soil stabilization, and support for local communities through sustainable resource use."
+            "Increased carbon sequestration",
+            "improved biodiversity",
+            "enhanced ecosystem resilience",
+            "better water regulation",
+            "soil stabilization",
+            "support for local communities through sustainable resource use"
         ]
     },
     {
@@ -2906,13 +3312,23 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Requires expertise in sustainable forestry, investment in nurseries with adapted species, supportive policies, and incentives to overcome economic barriers and ensure accessibility for local stakeholders."
+            "Requires expertise in sustainable forestry",
+            "investment in nurseries with adapted species",
+            "supportive policies",
+            "incentives to overcome economic barriers",
+            "ensure accessibility for local stakeholders"
         ],
         "KeyPerformanceIndicators":[
-            "Increase in forest carbon stocks, reduction in GHG emissions, improvements in biodiversity indicators, and reduction in soil erosion and water-related issues."
+            "Increase in forest carbon stocks",
+            "reduction in GHG emissions",
+            "improvements in biodiversity indicators",
+            "reduction in soil erosion and water-related issues"
         ],
         "Impacts":[
-            "Improved forest health and resilience, enhanced carbon sequestration, biodiversity conservation, and increased ecosystem services like water and soil regulation."
+            "Improved forest health and resilience",
+            "enhanced carbon sequestration",
+            "biodiversity conservation",
+            "increased ecosystem services like water and soil regulation"
         ]
     },
     {
@@ -2960,13 +3376,23 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Effective governance frameworks, access to research and technology for fire management, community engagement, and alignment with regional legal and policy frameworks."
+            "Effective governance frameworks",
+            "access to research and technology for fire management",
+            "community engagement",
+            "alignment with regional legal and policy frameworks"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in frequency and intensity of uncontrolled wildfires, area managed with prescribed burns, reduction in GHG emissions from fires, and improvement in biodiversity and soil health metrics."
+            "Reduction in frequency and intensity of uncontrolled wildfires",
+            "Area managed with prescribed burns",
+            "Reduction in GHG emissions from fires",
+            "Improvement in biodiversity and soil health metrics"
         ],
         "Impacts":[
-            "Reduced GHG emissions, improved biodiversity conservation, prevention of soil erosion, enhanced land productivity, and reduced risks to life and property from uncontrolled wildfires."
+            "Reduced GHG emissions",
+            "improved biodiversity conservation",
+            "prevention of soil erosion",
+            "enhanced land productivity",
+            "reduced risks to life and property from uncontrolled wildfires"
         ]
     },
     {
@@ -3014,13 +3440,22 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Strong policy frameworks, financial incentives for conservation, and collaboration between governments, local communities, and landowners to implement sustainable practices."
+            "Strong policy frameworks",
+            "financial incentives for conservation",
+            "collaboration between governments",
+            "local communities",
+            "landowners to implement sustainable practices"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in conversion rates of grasslands, increase in soil organic carbon levels, and measurable reduction in GHG emissions from targeted areas."
+            "Reduction in conversion rates of grasslands",
+            "increase in soil organic carbon levels",
+            "measurable reduction in GHG emissions from targeted areas"
         ],
         "Impacts":[
-            "Preserves ecosystem services, enhances biodiversity, supports climate resilience, and provides sustainable livelihoods for communities dependent on grasslands."
+            "Preserves ecosystem services",
+            "enhances biodiversity",
+            "supports climate resilience",
+            "provides sustainable livelihoods for communities dependent on grasslands"
         ]
     },
     {
@@ -3068,13 +3503,24 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Requires strong governance, financial support, international cooperation, and policies to control land conversion drivers such as agriculture, mining, and urban development."
+            "Requires strong governance",
+            "financial support",
+            "international cooperation",
+            "policies to control land conversion drivers",
+            "such as agriculture",
+            "mining",
+            "urban development"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in peatland conversion rates, avoided emissions per hectare, and improvements in biodiversity and water quality metrics."
+            "Reduction in peatland conversion rates",
+            "avoided emissions per hectare",
+            "improvements in biodiversity and water quality metrics"
         ],
         "Impacts":[
-            "Reduced GHG emissions, enhanced biodiversity, improved water regulation, and decreased fire-related health hazards."
+            "Reduced GHG emissions",
+            "enhanced biodiversity",
+            "improved water regulation",
+            "decreased fire-related health hazards"
         ]
     },
     {
@@ -3122,13 +3568,23 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":">10 years",
         "Dependencies":[
-            "Availability of funding, collaboration among local and national stakeholders, scientific research on optimal restoration practices, and policies to incentivize restoration efforts."
+            "Availability of funding",
+            "collaboration among local and national stakeholders",
+            "scientific research on optimal restoration practices",
+            "policies to incentivize restoration efforts"
         ],
         "KeyPerformanceIndicators":[
-            "Availability of funding, collaboration among local and national stakeholders, scientific research on optimal restoration practices, and policies to incentivize restoration efforts."
+            "Availability of funding",
+            "collaboration among local and national stakeholders",
+            "scientific research on optimal restoration practices",
+            "policies to incentivize restoration efforts"
         ],
         "Impacts":[
-            "Significant reductions in CO2 emissions, improved biodiversity, enhanced water regulation, reduced flooding risks, and increased resilience to climate change."
+            "Significant reductions in CO2 emissions",
+            "improved biodiversity",
+            "enhanced water regulation",
+            "reduced flooding risks",
+            "increased resilience to climate change"
         ]
     },
     {
@@ -3177,13 +3633,22 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Effective integration of coastal climate mitigation policies, marine spatial planning, and economic incentives to prioritize wetland conservation."
+            "Effective integration of coastal climate mitigation policies",
+            "marine spatial planning",
+            "economic incentives to prioritize wetland conservation"
         ],
         "KeyPerformanceIndicators":[
-            "Area of coastal wetlands preserved, GHG emissions avoided from biomass and soil carbon loss, and improvements in biodiversity metrics and ecosystem resilience."
+            "Area of coastal wetlands preserved",
+            "GHG emissions avoided from biomass and soil carbon loss",
+            "improvements in biodiversity metrics",
+            "ecosystem resilience"
         ],
         "Impacts":[
-            "Increased carbon sequestration, enhanced resilience to climate impacts, improved biodiversity, better water quality, and greater protection against flooding and storm surges."
+            "Increased carbon sequestration",
+            "enhanced resilience to climate impacts",
+            "improved biodiversity",
+            "better water quality",
+            "greater protection against flooding and storm surges"
         ]
     },
     {
@@ -3231,13 +3696,28 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":">10 years",
         "Dependencies":[
-            "Requires long-term commitments, supportive policies, funding, monitoring frameworks, and technical capacity to address drivers of degradation and ensure restoration success."
+            "Requires long-term commitments",
+            "supportive policies",
+            "funding",
+            "monitoring frameworks",
+            "technical capacity",
+            "to address drivers of degradation",
+            "ensure restoration success"
         ],
         "KeyPerformanceIndicators":[
-            "Area of wetlands restored, carbon sequestration rates, biodiversity recovery metrics, reduction in storm damage costs, and water quality improvements."
+            "Area of wetlands restored",
+            "carbon sequestration rates",
+            "biodiversity recovery metrics",
+            "reduction in storm damage costs",
+            "water quality improvements"
         ],
         "Impacts":[
-            "Enhanced ecosystem resilience, improved carbon sequestration, protection against sea-level rise and storms, increased biodiversity, and strengthened coastal livelihoods and food security."
+            "Enhanced ecosystem resilience",
+            "improved carbon sequestration",
+            "protection against sea-level rise and storms",
+            "increased biodiversity",
+            "strengthened coastal livelihoods",
+            "food security"
         ]
     },
     {
@@ -3285,13 +3765,23 @@
         "CostInvestmentNeeded":"low",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Success depends on the availability of resources for monitoring and verification, regional adaptation of practices, and addressing barriers such as soil saturation and permanence issues."
+            "Success depends on the availability of resources for monitoring and verification",
+            "regional adaptation of practices",
+            "addressing barriers such as soil saturation and permanence issues"
         ],
         "KeyPerformanceIndicators":[
-            "Increase in soil organic carbon, reduction in GHG emissions, improvement in agricultural productivity, and biodiversity enhancements."
+            "Increase in soil organic carbon",
+            "reduction in GHG emissions",
+            "improvement in agricultural productivity",
+            "biodiversity enhancements"
         ],
         "Impacts":[
-            "Enhanced soil health, improved water retention, increased crop yields, greater biodiversity, reduced erosion, and resilience to climate change in agricultural and grassland ecosystems."
+            "Enhanced soil health",
+            "improved water retention",
+            "increased crop yields",
+            "greater biodiversity",
+            "reduced erosion",
+            "resilience to climate change in agricultural and grassland ecosystems"
         ]
     },
     {
@@ -3339,13 +3829,23 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Availability of sustainably sourced biomass, standardization of production methods, monitoring systems, and incentives for scaling up biochar production and application."
+            "Availability of sustainably sourced biomass",
+            "standardization of production methods",
+            "monitoring systems",
+            "incentives for scaling up biochar production and application"
         ],
         "KeyPerformanceIndicators":[
-            "Carbon sequestration rates, reduction in soil N2O emissions, crop yield improvements, and displacement of fossil fuel use through pyrolysis gases."
+            "Carbon sequestration rates",
+            "reduction in soil N2O emissions",
+            "crop yield improvements",
+            "displacement of fossil fuel use through pyrolysis gases"
         ],
         "Impacts":[
-            "Improved agricultural productivity, enhanced soil resilience to climate change, reduced pollution, and long-term carbon storage in soils, contributing to global climate goals."
+            "Improved agricultural productivity",
+            "enhanced soil resilience to climate change",
+            "reduced pollution",
+            "long-term carbon storage in soils",
+            "contributing to global climate goals"
         ]
     },
     {
@@ -3393,13 +3893,26 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Requires access to appropriate germplasm, supportive policies, extension systems, credit access, and reforms in land tenure systems. Adoption depends on aligning agroforestry practices to biophysical and socio-economic contexts."
+            "Requires access to appropriate germplasm",
+            "supportive policies",
+            "extension systems",
+            "credit access",
+            "reforms in land tenure systems",
+            "Adoption depends on aligning agroforestry practices to biophysical and socio-economic contexts"
         ],
         "KeyPerformanceIndicators":[
-            "Carbon sequestration rates (above and below ground), improved soil health metrics, increase in farmer income, reduction in soil erosion, and adoption rates of agroforestry systems."
+            "Carbon sequestration rates (above and below ground)",
+            "improved soil health metrics",
+            "increase in farmer income",
+            "reduction in soil erosion",
+            "adoption rates of agroforestry systems"
         ],
         "Impacts":[
-            "Enhanced land productivity, improved livelihoods, increased carbon storage, better water quality, and resilience to climate change."
+            "Enhanced land productivity",
+            "improved livelihoods",
+            "increased carbon storage",
+            "better water quality",
+            "resilience to climate change"
         ]
     },
     {
@@ -3447,13 +3960,20 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Development and regulatory approval of feed additives, vaccines, and inhibitors; regional adaptation of mitigation strategies; and overcoming barriers like costs, infrastructure, and public acceptance."
+            "Development and regulatory approval of feed additives, vaccines, and inhibitors",
+            "regional adaptation of mitigation strategies",
+            "overcoming barriers like costs, infrastructure, and public acceptance"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in CH4 emissions per animal, adoption rates of improved feeding practices, and increase in production efficiency per unit of livestock product."
+            "Reduction in CH4 emissions per animal",
+            "adoption rates of improved feeding practices",
+            "increase in production efficiency per unit of livestock product"
         ],
         "Impacts":[
-            "Reduction in global agricultural methane emissions, improved livestock productivity, and enhanced food security, particularly in regions with high agricultural dependence."
+            "Reduction in global agricultural methane emissions",
+            "improved livestock productivity",
+            "enhanced food security",
+            "particularly in regions with high agricultural dependence"
         ]
     },
     {
@@ -3501,13 +4021,24 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Adequate irrigation infrastructure, training for farmers on advanced techniques, access to slow-release fertilisers and biochar, and coordinated water management practices among neighboring farmers and regions."
+            "Adequate irrigation infrastructure",
+            "training for farmers on advanced techniques",
+            "access to slow-release fertilisers and biochar",
+            "coordinated water management practices among neighboring farmers and regions"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in CH4 and N2O emissions per hectare, increased water use efficiency, yield stability during droughts, and adoption rate of improved rice cultivation techniques."
+            "Reduction in CH4 and N2O emissions per hectare",
+            "increased water use efficiency",
+            "yield stability during droughts",
+            "adoption rate of improved rice cultivation techniques"
         ],
         "Impacts":[
-            "Reduced greenhouse gas emissions, improved water use efficiency, enhanced drought resilience, increased farm income, and more sustainable agricultural practices contributing to food security."
+            "Reduced greenhouse gas emissions",
+            "improved water use efficiency",
+            "enhanced drought resilience",
+            "increased farm income",
+            "more sustainable agricultural practices",
+            "contributing to food security"
         ]
     },
     {
@@ -3555,13 +4086,21 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Availability of training and technical support for farmers, development of regional nutrient management roadmaps, and access to affordable fertilizers and inhibitors."
+            "Availability of training and technical support for farmers",
+            "development of regional nutrient management roadmaps",
+            "access to affordable fertilizers and inhibitors"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in N2O emissions, improvement in crop yields, increase in soil carbon sequestration, and reduction in fertilizer use per hectare."
+            "Reduction in N2O emissions",
+            "improvement in crop yields",
+            "increase in soil carbon sequestration",
+            "reduction in fertilizer use per hectare"
         ],
         "Impacts":[
-            "Contributes to climate mitigation, improves food and nutrition security, enhances environmental sustainability, and supports long-term agricultural productivity."
+            "Contributes to climate mitigation",
+            "improves food and nutrition security",
+            "enhances environmental sustainability",
+            "supports long-term agricultural productivity"
         ]
     },
     {
@@ -3609,13 +4148,23 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Development of cost-effective anaerobic digestion systems, supportive policies for nitrification inhibitors, region-specific training programs, and accessible financing for farmers."
+            "Development of cost-effective anaerobic digestion systems",
+            "supportive policies for nitrification inhibitors",
+            "region-specific training programs",
+            "accessible financing for farmers"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in CH4 and N2O emissions from manure storage, increased adoption of anaerobic digestion systems, improved nitrogen use efficiency, and enhanced biogas production."
+            "Reduction in CH4 and N2O emissions from manure storage",
+            "increased adoption of anaerobic digestion systems",
+            "improved nitrogen use efficiency",
+            "enhanced biogas production"
         ],
         "Impacts":[
-            "Reduces greenhouse gas emissions, improves local water and air quality, enhances soil health, supports food security, and provides renewable energy through biogas production."
+            "Reduces greenhouse gas emissions",
+            "improves local water and air quality",
+            "enhances soil health",
+            "supports food security",
+            "provides renewable energy through biogas production"
         ]
     },
     {
@@ -3663,13 +4212,23 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":">10 years",
         "Dependencies":[
-            "Requires sustainable land management, advanced bioenergy technology development, infrastructure for carbon capture and storage, and global governance for trade and supply chains."
+            "Requires sustainable land management",
+            "advanced bioenergy technology development",
+            "infrastructure for carbon capture and storage",
+            "global governance for trade and supply chains"
         ],
         "KeyPerformanceIndicators":[
-            "Amount of carbon removed through BECCS (in GtCO2 per year), total energy produced from bioenergy, land restored for biomass production, and GHG emissions reduction from displaced fossil fuel use."
+            "Amount of carbon removed through BECCS (in GtCO2 per year)",
+            "total energy produced from bioenergy",
+            "land restored for biomass production",
+            "GHG emissions reduction from displaced fossil fuel use"
         ],
         "Impacts":[
-            "Enhanced energy security, reduced GHG emissions, restored degraded lands, improved air and water quality, and biodiversity conservation."
+            "Enhanced energy security",
+            "reduced GHG emissions",
+            "restored degraded lands",
+            "improved air and water quality",
+            "biodiversity conservation"
         ]
     },
     {
@@ -3717,13 +4276,21 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Implementation of integrated food-system policies, financial incentives for sustainable agriculture, awareness campaigns, and the development of local food systems to support dietary transitions."
+            "Implementation of integrated food-system policies",
+            "financial incentives for sustainable agriculture",
+            "awareness campaigns",
+            "the development of local food systems to support dietary transitions"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in GHG emissions from food production, reduction in land use for livestock, increase in plant-based food consumption, and improvement in public health metrics related to diet-related diseases."
+            "Reduction in GHG emissions from food production",
+            "reduction in land use for livestock",
+            "increase in plant-based food consumption",
+            "improvement in public health metrics related to diet-related diseases"
         ],
         "Impacts":[
-            "Improved public health outcomes, reduced environmental pressures (e.g., deforestation, biodiversity loss), and strengthened food security through sustainable practices."
+            "Improved public health outcomes",
+            "reduced environmental pressures (e.g., deforestation, biodiversity loss)",
+            "strengthened food security through sustainable practices"
         ]
     },
     {
@@ -3772,13 +4339,21 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Adequate infrastructure for food storage and transportation, policy frameworks for waste reduction, financial incentives, and widespread consumer education to change behaviors."
+            "Adequate infrastructure for food storage and transportation",
+            "policy frameworks for waste reduction",
+            "financial incentives",
+            "widespread consumer education to change behaviors"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in food waste percentages at consumer and business levels, decrease in land used for agricultural production, and measurable GHG emission reductions across the food supply chain."
+            "Reduction in food waste percentages at consumer and business levels",
+            "decrease in land used for agricultural production",
+            "measurable GHG emission reductions across the food supply chain"
         ],
         "Impacts":[
-            "Enhances food security, reduces environmental stress on water and land resources, supports poverty alleviation, and contributes to achieving SDG 12 for sustainable consumption and production patterns."
+            "Enhances food security",
+            "reduces environmental stress on water and land resources",
+            "supports poverty alleviation",
+            "contributes to achieving SDG 12 for sustainable consumption and production patterns"
         ]
     },
     {
@@ -3826,13 +4401,21 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Requires sustainable forest management practices, advanced wood processing technologies, market demand for wood substitutes, and global cooperation to prevent resource exploitation."
+            "Requires sustainable forest management practices",
+            "advanced wood processing technologies",
+            "market demand for wood substitutes",
+            "global cooperation to prevent resource exploitation"
         ],
         "KeyPerformanceIndicators":[
-            "Increased use of wood products in construction, reduction in GHG emissions from material substitution, and increase in recycled wood product utilization rates."
+            "Increased use of wood products in construction",
+            "reduction in GHG emissions from material substitution",
+            "increase in recycled wood product utilization rates"
         ],
         "Impacts":[
-            "Reduces emissions from traditional material production, enhances carbon sequestration, supports sustainable forest industries, and provides economic opportunities in rural and forested areas."
+            "Reduces emissions from traditional material production",
+            "enhances carbon sequestration",
+            "supports sustainable forest industries",
+            "provides economic opportunities in rural and forested areas"
         ]
     },
     {
@@ -3880,13 +4463,23 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":">10 years",
         "Dependencies":[
-            "Requires integrated spatial planning, infrastructure development, zoning regulations, and public transport investment."
+            "Requires integrated spatial planning",
+            "infrastructure development",
+            "zoning regulations",
+            "public transport investment"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in vehicle miles traveled, increase in public transport usage, percentage of urban areas with mixed-use development, and lower per capita energy use in urban areas."
+            "Reduction in vehicle miles traveled",
+            "increase in public transport usage",
+            "percentage of urban areas with mixed-use development",
+            "lower per capita energy use in urban areas"
         ],
         "Impacts":[
-            "Reduced GHG emissions, improved public health, better urban livability, reduced resource consumption, and preservation of land for agriculture and forestry."
+            "Reduced GHG emissions",
+            "improved public health",
+            "better urban livability",
+            "reduced resource consumption",
+            "preservation of land for agriculture and forestry"
         ]
     },
     {
@@ -3934,13 +4527,22 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Requires effective urban planning, policy support for mixed land use, investment in public transit infrastructure, and cooperation across municipal agencies."
+            "Requires effective urban planning",
+            "policy support for mixed land use",
+            "investment in public transit infrastructure",
+            "cooperation across municipal agencies"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in VMT, increase in public transit ridership, decrease in transport-related GHG emissions, and improved accessibility to jobs and housing."
+            "Reduction in VMT",
+            "increase in public transit ridership",
+            "decrease in transport-related GHG emissions",
+            "improved accessibility to jobs and housing"
         ],
         "Impacts":[
-            "Reduces GHG emissions, improves air quality, enhances urban livability, and fosters more sustainable urban growth patterns."
+            "Reduces GHG emissions",
+            "improves air quality",
+            "enhances urban livability",
+            "fosters more sustainable urban growth patterns"
         ]
     },
     {
@@ -3988,13 +4590,21 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":">10 years",
         "Dependencies":[
-            "High institutional capacity for cross-sector collaboration, advanced GIS tools for spatial planning, and stakeholder engagement for co-design processes."
+            "High institutional capacity for cross-sector collaboration",
+            "advanced GIS tools for spatial planning",
+            "stakeholder engagement for co-design processes"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in GHG emissions per capita, adoption rates of district heating\/cooling systems, and proportion of urban population with access to green areas."
+            "Reduction in GHG emissions per capita",
+            "adoption rates of district heating\/cooling systems",
+            "proportion of urban population with access to green areas"
         ],
         "Impacts":[
-            "Enhanced livability, improved public health, reduced energy use, increased resilience to climate impacts, and promotion of green economic growth."
+            "Enhanced livability",
+            "improved public health",
+            "reduced energy use",
+            "increased resilience to climate impacts",
+            "promotion of green economic growth"
         ]
     },
     {
@@ -4043,13 +4653,25 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Requires grid upgrades, supportive policies, stakeholder cooperation, financial incentives, and public awareness campaigns, access to renewable energy and advanced storage technologies is critical."
+            "Requires grid upgrades",
+            "supportive policies",
+            "stakeholder cooperation",
+            "financial incentives",
+            "public awareness campaigns",
+            "access to renewable energy",
+            "advanced storage technologies is critical"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in GHG emissions per kWh, increase in renewable energy penetration, adoption rates of EVs and heat pumps, and improved urban air quality."
+            "Reduction in GHG emissions per kWh",
+            "increase in renewable energy penetration",
+            "adoption rates of EVs and heat pumps",
+            "improved urban air quality"
         ],
         "Impacts":[
-            "Enhances energy security, reduces urban air pollution, improves public health, and supports sustainable urban development through renewable energy and electrification."
+            "Enhances energy security",
+            "reduces urban air pollution",
+            "improves public health",
+            "supports sustainable urban development through renewable energy and electrification"
         ]
     },
     {
@@ -4097,13 +4719,24 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":">10 years",
         "Dependencies":[
-            "Sustainable forestry management, international carbon accounting standards, development of mass timber technologies, robust forest and urban land governance policies, and incentivized afforestation practices."
+            "Sustainable forestry management",
+            "international carbon accounting standards",
+            "development of mass timber technologies",
+            "robust forest and urban land governance policies",
+            "incentivized afforestation practices"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in embodied carbon in construction, number of mid-rise urban buildings using engineered timber, carbon sequestration capacity of urban timber infrastructure, and improvement in sustainable forestry practices."
+            "Reduction in embodied carbon in construction",
+            "number of mid-rise urban buildings using engineered timber",
+            "carbon sequestration capacity of urban timber infrastructure",
+            "improvement in sustainable forestry practices"
         ],
         "Impacts":[
-            "Reduced GHG emissions from construction, enhanced carbon storage in urban environments, sustainable urbanization, improved resource efficiency, and reduced pressure on natural ecosystems."
+            "Reduced GHG emissions from construction",
+            "enhanced carbon storage in urban environments",
+            "sustainable urbanization",
+            "improved resource efficiency",
+            "reduced pressure on natural ecosystems"
         ]
     },
     {
@@ -4151,13 +4784,24 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Availability of land for planting, community participation, funding for maintenance, and policies supporting urban greening initiatives"
+            "Availability of land for planting",
+            "community participation",
+            "funding for maintenance",
+            "policies supporting urban greening initiatives"
         ],
         "KeyPerformanceIndicators":[
-            "Increase in urban tree cover percentage, reduction in urban heat island effect, amount of carbon sequestered, reduction in building energy use, and improvement in air quality metrics."
+            "Increase in urban tree cover percentage",
+            "reduction in urban heat island effect",
+            "amount of carbon sequestered",
+            "reduction in building energy use",
+            "improvement in air quality metrics"
         ],
         "Impacts":[
-            "Enhanced urban livability, improved public health, reduced energy consumption, increased biodiversity, and greater resilience to climate change impacts."
+            "Enhanced urban livability",
+            "improved public health",
+            "reduced energy consumption",
+            "increased biodiversity",
+            "greater resilience to climate change impacts"
         ]
     },
     {
@@ -4204,13 +4848,24 @@
         "CostInvestmentNeeded":"high",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Requires local government coordination, community engagement, urban planning integration, and adequate funding for infrastructure development and maintenance."
+            "Requires local government coordination",
+            "community engagement",
+            "urban planning integration",
+            "adequate funding for infrastructure development and maintenance"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in building energy consumption, increase in urban green coverage, stormwater retention rates, increased active transportation use (cycling\/walking), and improved thermal comfort."
+            "Reduction in building energy consumption",
+            "increase in urban green coverage",
+            "stormwater retention rates",
+            "increased active transportation use (cycling\/walking)",
+            "improved thermal comfort"
         ],
         "Impacts":[
-            "Enhanced urban livability, reduced urban heat island effects, improved public health, better stormwater management, and increased biodiversity in urban areas."
+            "Enhanced urban livability",
+            "reduced urban heat island effects",
+            "improved public health",
+            "better stormwater management",
+            "increased biodiversity in urban areas"
         ]
     },
     {
@@ -4258,13 +4913,22 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Requires integrated urban planning, investment in active transport infrastructure, collaboration between urban and transportation planners, and community engagement."
+            "Requires integrated urban planning",
+            "investment in active transport infrastructure",
+            "collaboration between urban and transportation planners",
+            "community engagement"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in vehicle miles traveled (VMT), increase in walking and biking trips, reduction in urban GHG emissions, and improved accessibility to essential services."
+            "Reduction in vehicle miles traveled (VMT)",
+            "increase in walking and biking trips",
+            "reduction in urban GHG emissions",
+            "improved accessibility to essential services"
         ],
         "Impacts":[
-            "Reduces urban energy use, improves public health, enhances urban livability, and fosters community engagement through better connectivity and accessibility."
+            "Reduces urban energy use",
+            "improves public health",
+            "enhances urban livability",
+            "fosters community engagement through better connectivity and accessibility"
         ]
     },
     {
@@ -4312,13 +4976,24 @@
         "CostInvestmentNeeded":"medium",
         "TimelineForImplementation":"5-10 years",
         "Dependencies":[
-            "Requires institutional capacity, governance, cross-sectoral coordination, and public awareness campaigns, needs infrastructure for decentralized waste treatment and policies to promote circular economy practices."
+            "Requires institutional capacity",
+            "governance",
+            "cross-sectoral coordination",
+            "public awareness campaigns",
+            "needs infrastructure for decentralized waste treatment",
+            "policies to promote circular economy practices"
         ],
         "KeyPerformanceIndicators":[
-            "Reduction in waste generation per capita, increase in recycling and composting rates, reduction in CH4 emissions from waste, and employment opportunities created in waste management."
+            "Reduction in waste generation per capita",
+            "increase in recycling and composting rates",
+            "reduction in CH4 emissions from waste",
+            "employment opportunities created in waste management"
         ],
         "Impacts":[
-            "Improved urban livability, reduction in landfill emissions, enhanced resource efficiency, and economic growth through job creation in the waste management sector."
+            "Improved urban livability",
+            "reduction in landfill emissions",
+            "enhanced resource efficiency",
+            "economic growth through job creation in the waste management sector"
         ]
     }
 ]

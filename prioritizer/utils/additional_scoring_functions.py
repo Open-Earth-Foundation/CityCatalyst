@@ -1,13 +1,17 @@
 
 def count_matching_hazards(city, action):
-    city_hazards = set(city.get("hazards", []))
-    if action.get("Hazard") is None:
-        return 0
-    action_hazards = set(action.get("Hazard", []))
+    # Get the city's hazards with a normalised risk score above 0.5
+    city_hazards = {entry["hazard"] for entry in city.get("ccra", []) if entry["normalised_risk_score"] > 0.5}
     
+    # Get the action's hazards
+    action_hazards = set(action.get("Hazard", [])) if action.get("Hazard") is not None else set()  
+    # Find the intersection of city hazards and action hazards
     matching_hazards = city_hazards.intersection(action_hazards)
-    
-    return len(matching_hazards)
+    # Calculate the percentage of matching hazards
+    total_hazards = len(city_hazards)
+    matching_percentage = len(matching_hazards) / total_hazards if total_hazards > 0 else 0
+    return matching_percentage
+
 
 def find_highest_emission(city):
     emission_keys = [

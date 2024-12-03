@@ -4,10 +4,60 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
+        "actionId": "c40_0028",
+        "actionName": "Zero Emission Buses",
+        "actionPriority": 1,
+        "explanation": "Scores high on emissions reduction due to focus on transportation emissions, where the city has significant emissions. Immediate impact, low dependencies, and aligns with the city's capacity and environmental compatibility."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0038",
+        "actionName": "Sanitary Landfills",
+        "actionPriority": 2,
+        "explanation": "Cost-effective solution for waste management, directly addressing waste emissions. Compatible with the city's environment and addresses an immediate sector."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
         "actionId": "c40_0026",
         "actionName": "Vehicle Emissions",
-        "actionPriority": 1.0,
-        "explanation": "Vehicle emissions action targets the transportation sector, which is a significant source of emissions in Cama\u00e7ari. The action is cost-effective, suitable for the city's size, and aligns well with the transportation emissions aspect of the city, providing a high potential for emission reductions."
+        "actionPriority": 3,
+        "explanation": "Effective in reducing transportation emissions and risks associated with air quality. Suitable for the city's infrastructure with significant immediate impact potential."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0002",
+        "actionName": "Active Transport Modes",
+        "actionPriority": 4,
+        "explanation": "Promotes low-cost, low-emission transport options aligning with the city's needs for reduced transportation emissions, also benefiting public health."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0075",
+        "actionName": "Electrification and Decarbonisation of the Urban Energy System",
+        "actionPriority": 5,
+        "explanation": "Addresses stationary energy emissions and has long-term benefits but requires significant capacity, aligning with city's strategic priorities."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0012",
+        "actionName": "Electric Technologies",
+        "actionPriority": 6,
+        "explanation": "Potential to reduce emissions in industrial processes and energy sectors, suitable for the city's industrial profile and capacity."
     },
     {
         "locode": "BRCCI",
@@ -16,37 +66,137 @@
         "regionName": "Bahia",
         "actionId": "c40_0035",
         "actionName": "Waste Efficiency",
-        "actionPriority": 2.0,
-        "explanation": "This action addresses waste emissions, which are one of the city's sectors identified for improvement. Given the city's emissions profile, improving waste efficiency can significantly contribute to reducing emissions. The action is feasible and aligns with city infrastructure needs."
+        "actionPriority": 7,
+        "explanation": "Targets waste emission reductions cost-effectively, suitable for the city's need for improved waste management."
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0002",
-        "actionName": "Building Codes",
-        "actionPriority": 3.0,
-        "explanation": "The building codes action targets stationary energy emissions, aiding in significant emissions reduction. It is cost-effective and blends well with the city's needs for energy efficiency in buildings, considering the high risk of heatwaves affecting energy security and public health."
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
+        "actionPriority": 8,
+        "explanation": "Supports improvements in existing waste management systems, addressing both current waste emissions and risks of methane release."
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0003",
-        "actionName": "Building Codes",
-        "actionPriority": 4.0,
-        "explanation": "Similar to other building code actions, it addresses energy efficiency, aligning with the city's stationary energy emissions sector, thus providing a substantial contribution to emission reductions. It also mitigates risk related to heat waves."
+        "actionId": "ipcc_0045",
+        "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
+        "actionPriority": 9,
+        "explanation": "Emphasizes community engagement with minimal cost and significant potential if executed well, targeting waste emissions indirectly."
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0004",
-        "actionName": "Building Codes",
-        "actionPriority": 5.0,
-        "explanation": "This action focuses on enhancing building efficiency, which is crucial given the city's population and stationary energy emission levels. It aligns with existing infrastructure demands and addresses critical emission areas identified in the city data."
+        "actionId": "c40_0007",
+        "actionName": "Retrofit Measures",
+        "actionPriority": 10,
+        "explanation": "Enhances energy efficiency in buildings, aligning with emissions reduction in stationary energy sector with decent cost-effectiveness."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0008",
+        "actionName": "Retrofit Measures",
+        "actionPriority": 11,
+        "explanation": "Similar to above, effective in reducing emissions in buildings with focus on improving energy efficiency. Slightly lower priority due to redundancy entry."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0025",
+        "actionName": "Truck Emissions",
+        "actionPriority": 12,
+        "explanation": "Critical for addressing heavy-duty transport emissions, contributing good overall emissions reduction in transportation."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0023",
+        "actionName": "Bus Emissions",
+        "actionPriority": 13,
+        "explanation": "Focuses on public transportation emissions, effective for short to medium-term reductions, leveraging city's capacity."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0021",
+        "actionName": "Heat Networks",
+        "actionPriority": 14,
+        "explanation": "Promotes efficiency in energy use for heating, aligning with stationary energy emission reductions but dependent on infrastructure development."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0019",
+        "actionName": "Modal Shift from Aircraft to Train",
+        "actionPriority": 15,
+        "explanation": "Potential for significant indirect emissions reduction, though it requires larger infrastructure and dependency on broader regional cooperation."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0022",
+        "actionName": "Clean heating/cooling",
+        "actionPriority": 16,
+        "explanation": "Targeting direct building emissions, suitable for long-term emissions reduction but requires investment in new technologies."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0037",
+        "actionName": "Source Separation",
+        "actionPriority": 17,
+        "explanation": "Improves waste sorting and treatment, enhancing the city's waste management framework efficiently."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0033",
+        "actionName": "15/30-Minute Areas",
+        "actionPriority": 18,
+        "explanation": "Encourages community-based planning to reduce transport needs, suited for medium to long-term impact, fostering environmental compatibility."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0027",
+        "actionName": "Rail Improvements",
+        "actionPriority": 19,
+        "explanation": "Focused on transport emission reductions through infrastructure improvements, requiring significant investment but high emissions reduction potential."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0033",
+        "actionName": "Electrification of Processes",
+        "actionPriority": 20,
+        "explanation": "Targets industrial emissions with high potential. Suited for long-term implementation, but requires substantial capacity and investment."
     }
 ]

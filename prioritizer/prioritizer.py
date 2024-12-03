@@ -9,7 +9,8 @@ from pydantic import BaseModel
 from typing import List
 from pathlib import Path
 from utils.reading_data import read_city_inventory, read_actions
-from utils.reading_data import count_matching_hazards, find_highest_emission
+from utils.additional_scoring_functions import count_matching_hazards, find_highest_emission
+from utils.prompt import prompt as PROMPT
 
 load_dotenv()
 
@@ -17,8 +18,8 @@ api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
 # Constants for quantitative scoring
-SCORE_MAX = 100 / 5
-MAX_EMISSIONS_REDUCTIONS = 500000
+SCORE_MAX = 100 / 4
+# Do a dynamic adaptation of how many fields we calculate for an action ( if there are nulls )
 scale_scores = {
     "Very High": 1.0,
     "High": 0.75,
@@ -26,15 +27,73 @@ scale_scores = {
     "Low": 0.25,
     "Very Low": 0.0,
 }
-MAX_TIME_IN_YEARS = 20
-MAX_COST = 60000000
+scale_adaptation_effectiveness ={
+    'low': 0.33,
+    'medium': 0.66,
+    'high': 0.99
+}
+
+# Define the mapping for timeline options
+timeline_mapping = {
+    "<5 years": 1.0,
+    "5-10 years": 0.5,
+    ">10 years": 0
+}
+ghgi_potential_mapping = {
+    "0-19" : 0.20,
+    "20-39" : 0.4,
+    "40-59" : 0.6,
+    "60-79" : 0.8,
+    "80-100" : 1.0
+}
 # Dynamically construct the file paths based on the script's location
 BASE_DIR = Path(__file__).resolve().parent
 ACTION_DATA_PATH = BASE_DIR / "CAP_data/long_actions.json"
 CITY_DATA_PATH = BASE_DIR / "CAP_data/city_data.json"
 OUTPUT_FILE = BASE_DIR / "new_output.json"
 
+def calculate_emissions_reduction(city, action):
+    # Define the mapping for percentage ranges
+    reduction_mapping = {
+        "0-19": 0.1,
+        "20-39": 0.3,
+        "40-59": 0.5,
+        "60-79": 0.7,
+        "80-100": 0.9
+    }
+    # Initialize total emissions reduction
+    total_reduction = 0
 
+    # Get the GHGReductionPotential from the action
+    ghg_potential = action.get("GHGReductionPotential", {})
+    if not ghg_potential:
+        print("There was no GHGReductionPotential")
+        return 0
+
+    # Define the sectors and corresponding city emissions keys
+    sectors = {
+        "stationary_energy": "stationaryEnergyEmissions",
+        "transportation": "transportationEmissions",
+        "waste": "wasteEmissions",
+        "ippu": "industrialProcessEmissions",
+        "afolu": "landUseEmissions"
+    }
+
+    # Iterate over the sectors
+    for sector, city_emission_key in sectors.items():
+        reduction_str = ghg_potential.get(sector) if ghg_potential else None
+        if reduction_str is None:
+            pass
+        if reduction_str and reduction_str in reduction_mapping:
+            print("Reduction string:", reduction_str)
+            print("Reduction mapping:", reduction_mapping[reduction_str])
+            reduction_percentage = reduction_mapping[reduction_str]
+            city_emission = city.get(city_emission_key, 0)
+            print("City emission:", city_emission)
+            reduction_amount = city_emission * reduction_percentage
+            total_reduction += reduction_amount
+
+    return total_reduction
 
 def quantitative_score(city, action):
     """
@@ -58,74 +117,52 @@ def quantitative_score(city, action):
 
     weights = load_weights()
     score = 0
-    # Emissions reduction score
-    ghg_potential = action.get("GHGReductionPotential", {})
-    emissions_reduction = 0
-    if ghg_potential:
-        for sector in ["stationary_energy", "transportation", "waste", "ippu", "afolu"]:
-            reduction_str = ghg_potential.get(sector)
-            if reduction_str and reduction_str.lower() != "none" and reduction_str.lower() != "null":
-                reduction_str = reduction_str.replace("%", "")
-                if "-" in reduction_str:
-                    reductions = [float(r) for r in reduction_str.split("-")]
-                    reduction = sum(reductions) / len(reductions)
-                else:
-                    try:
-                        reduction = float(reduction_str)
-                    except ValueError:
-                        reduction = 0
-                emissions_reduction += reduction
-    else:
-        print("GHG NULL")
-        score += 0
-    # Now normalize and add to score
-    if emissions_reduction > 0:
-        emissions_reduction_percentage = emissions_reduction  # Since it's already in percentage
-        emissions_reduction_score = emissions_reduction_percentage/100 * SCORE_MAX
-        ghg_weight = weights.get("GHGReductionPotential", 1)
-        emissions_reduction_score *= ghg_weight
-        score += emissions_reduction_score
-    print("Score after GHG reduction:", score)
-
-       # Hazard calculation -  agreed adding the hazard into the city data and filtering it from them to see how many match
+    # Hazard calculation -  agreed adding the hazard into the city data and filtering it from them to see how many match
     # there should be weights adjusted for the hazards based on CCRA data listing the most important ones for the city
     matching_hazards_count = count_matching_hazards(city, action)
     if matching_hazards_count > 0:
         hazards_weight = weights.get("Hazard", 1)
-        score += (matching_hazards_count / len(city.get("hazards", []))) * SCORE_MAX * hazards_weight
-    
+        # check if it's not 0
+        score += matching_hazards_count * hazards_weight * SCORE_MAX
+    print("Score after hazard:", score)
+
     # Dependencies - caculate the number of dependencies and give a minus score based on that very low impact
     dependencies = action.get("Dependencies", [])
     if isinstance(dependencies, list):
-        score -= len(dependencies)
+        score -= len(dependencies) * 0.5
+    print("Score after dependencies:", score)
     # ActionName - pass
     # AdaptationCategory - pass this time
     # Subsector - skip for now maybe more data needed as now we are covering per sector 
     # PrimaryPurpose - use only for LLM
 
     # Sector - if it matches the most emmissions intensive sectors gets bonus points
-    # TODO Require additional rework
+    total_emission_reduction_all_sectors = calculate_emissions_reduction(city, action)
+    print("Total emissions reduction for all sectors:", total_emission_reduction_all_sectors)
+    if total_emission_reduction_all_sectors > 0:
+        total_emissions = city.get("totalEmissions", 1)  # Avoid division by zero
+        reduction_percentage = (total_emission_reduction_all_sectors / total_emissions) * 100
+        print("Reduction percentage:", reduction_percentage)
+        score += round((reduction_percentage / 100) * SCORE_MAX, 3)
+    print("Score after emissions reduction:", score)
+
+    # Calculate for every sector
+    weights_emissions = weights.get("GHGReductionPotential", 1)
     most_emissions, percentage_emissions_value = find_highest_emission(city)
     if action.get("Sector") == most_emissions:
-        score += (percentage_emissions_value / 100) * SCORE_MAX
-
+        score += (percentage_emissions_value / 100) * SCORE_MAX * weights_emissions
+    print("Score after sector emission reduction:", score)
     # InterventionType - skip for now
     # Description - use only for LLM
     # BehavioralChangeTargeted - skip for now
 
     # Adaptation effectiveness score
+    # TODO I can see that there is No key like that in the current version of long list of actions was this scraped or moved to another one
     adaptation_effectiveness = action.get("AdaptionEffectiveness")
-    if adaptation_effectiveness in scale_scores:
+    if adaptation_effectiveness in scale_adaptation_effectiveness:
         adaptation_weight = weights.get("AdaptationEffectiveness", 1)
-        score += scale_scores[adaptation_effectiveness] * SCORE_MAX * adaptation_weight
+        score += scale_adaptation_effectiveness[adaptation_effectiveness] * SCORE_MAX * adaptation_weight
     print("Score after adaptation effectiveness:", score)
-
-    # Define the mapping for timeline options
-    timeline_mapping = {
-        "<5 years": 10,
-        "5-10 years": 5,
-        ">10 years": 0
-    }
 
     # Time in years score
     timeline_str = action.get("TimelineForImplementation", "")
@@ -134,7 +171,7 @@ def quantitative_score(city, action):
     elif timeline_str in timeline_mapping:
         time_score_weight = weights.get("TimelineForImplementation", 1)
         time_score = timeline_mapping[timeline_str]
-        score += time_score*time_score_weight
+        score += time_score*time_score_weight * SCORE_MAX
     else:
         print("Invalid timeline:", timeline_str)
 
@@ -143,17 +180,9 @@ def quantitative_score(city, action):
     # Cost score
     if "CostInvestmentNeeded" in action:
         cost_investment_needed = action["CostInvestmentNeeded"]
-        if isinstance(cost_investment_needed, list):
-            cost_investment_needed = cost_investment_needed[0]  # Extract the first element if it's a list
-        cost_category = action.get("CostCategory", "").lower()
-        cost_score_map = {
-            "small": 15,
-            "medium": 10,
-            "big": 5
-        }
         cost_score_weight = weights.get("CostInvestmentNeeded", 1)
-        cost_score = cost_score_map.get(cost_investment_needed, 0)
-        score += (cost_score / 15) * SCORE_MAX * cost_score_weight
+        cost_score = scale_adaptation_effectiveness.get(cost_investment_needed, 0)
+        score += cost_score * SCORE_MAX * cost_score_weight
 
     print("Score after cost:", score)
     print("-------------")
@@ -162,7 +191,7 @@ def quantitative_score(city, action):
 class Action(BaseModel):
     action_id: str
     action_name: str
-    actionPriority: float
+    actionPriority: int
     explanation: str
     city_name: str
 
@@ -171,26 +200,13 @@ class PrioritizedActions(BaseModel):
     actions: List[Action]
 
 def send_to_llm(prompt):
+    system_prompt = PROMPT
     response = client.beta.chat.completions.parse(
         model="gpt-4o-2024-08-06",
         messages=[
             {
                 "role": "system",
-                "content": """
-            You are a climate action expert, tasked to prioritize climate actions for cities.
-             
-            These are the rules to use for prioritizing a climate action for a city:
-             
-            - Lower cost actions are better than higher cost actions.
-            - High emissions reductions are better than low emissions reductions.
-            - High risk reduction is better than low risk reduction.
-            - Actions that match the environment are better than those that don't.
-            - Actions that match the population are better than those that don't.
-            - Actions that take less time are better than those that take more time.
-            - Taking into account the dependencies of the actions.
-            - Take into account the emissions sector from the city data the action is in more emission sector impact should get better scoring
-            - Take into account the city size actions that are more suitable to be implemented by the city size should get better scoring
-            """,
+                "content": system_prompt,
             },
             {"role": "user", "content": prompt},
         ],
@@ -199,18 +215,33 @@ def send_to_llm(prompt):
     return response.choices[0].message.parsed
 
 def qualitative_score(city, action):
-    # have to rework it later to choose x top actions not reason and score each of them
     prompt = f"""
-    According to the rules given, how would you pick top 5 actions for the city.
-    Here is top 20 actions:
-    ###
+    You are a climate action expert, tasked to prioritize and recommend the top 20 actions for a city based on the following guidelines:
+    
+    ### Guidelines for Action Prioritization:
+    1. **Cost-effectiveness:** Actions with lower costs and high benefits should rank higher.
+    2. **Emissions Reduction:** Actions that achieve significant greenhouse gas (GHG) emissions reduction (Scope 1, 2, and 3) should rank higher, especially those targeting the city's largest emission sectors.
+    3. **Risk Reduction:** Prioritize actions that address climate hazards and reduce risks for the city effectively.
+    4. **Environmental Compatibility:** Actions that align with the city's environment, such as biome and climate, should be preferred.
+    5. **Socio-Demographic Suitability:** Actions should match the population size, density, and socio-economic context of the city.
+    6. **Implementation Timeline:** Actions with shorter implementation timelines or faster impact should rank higher.
+    7. **Dependencies:** Actions with fewer dependencies or preconditions should be prioritized.
+    8. **Sector Relevance:** Actions targeting high-emission or priority sectors for the city should rank higher.
+    9. **City Size and Capacity:** Actions should be suitable for the city's capacity and resources to implement.
+
+    ### Instructions:
+    - Based on the rules, evaluate the top 20 actions provided.
+    - Consider both qualitative and quantitative aspects of the actions.
+    - Rank all 20 actions.
+    - Provide a detailed explanation for why each action was prioritized.
+
+    ### Action Data (Top 20 Actions):
     {action}
-    ###
-    Here is city data:
-    ###
+
+    ### City Data:
     {city}
-    ###
-    Pick only top 5 actions in the desired output format provided.
+
+    RETURN ALL ACTIONS RANKED BY PRIORITY.
     """
     llm_response = send_to_llm(prompt)
     return llm_response
@@ -235,7 +266,7 @@ def quantitative_prioritizer(cities, actions):
     mitigation_actions = [score for score in sorted_scores if score["action_type"] == "mitigation"]
 
     # Return top 15 for each category
-    return adaptation_actions[:15], mitigation_actions[:15]
+    return adaptation_actions[:20], mitigation_actions[:20]
 
 def qualitative_prioritizer(top_quantitative, actions, city):
     qualitative_scores = []

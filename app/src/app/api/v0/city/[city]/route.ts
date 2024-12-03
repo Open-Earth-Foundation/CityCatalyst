@@ -33,10 +33,10 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
     currentDefaultInventory?.defaultInventory?.cityId;
   if (currentDefaultCityId === params.city) {
     const rawQuery = `
-        select i.inventory_id
-        from "CityUser" cu
-                 join "City" c on c.city_id = cu.city_id
-                 join "Inventory" i on i.city_id = c.city_id
+        SELECT i.inventory_id
+        FROM "CityUser" cu
+                 JOIN "City" c ON c.city_id = cu.city_id
+                 JOIN "Inventory" i ON i.city_id = c.city_id
         WHERE cu.user_id = :userId
           AND cu.city_id != :cityId
         LIMIT 1;

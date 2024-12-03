@@ -60,6 +60,7 @@ export default function ChatPopover({
             fontStyle="normal"
             fontWeight="600"
             letterSpacing="wider"
+            py="32px"
             fontFamily="heading"
             aria-label={t("ai-expert")}
           >

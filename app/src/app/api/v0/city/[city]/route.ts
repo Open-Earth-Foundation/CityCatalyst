@@ -29,7 +29,8 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
     ],
   });
 
-  const currentDefaultCityId = currentDefaultInventory?.defaultInventory.cityId;
+  const currentDefaultCityId =
+    currentDefaultInventory?.defaultInventory?.cityId;
   if (currentDefaultCityId === params.city) {
     const rawQuery = `
         select i.inventory_id

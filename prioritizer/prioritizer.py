@@ -20,6 +20,12 @@ load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
+# Set constants for file paths
+BASE_DIR = Path("../data")
+ACTION_DATA_PATH = BASE_DIR / "climate_actions/output/combined_output.json"
+CITY_DATA_PATH = BASE_DIR / "cities/city_data.json"
+OUTPUT_PATH = BASE_DIR / "prioritized/"
+
 # Constants for quantitative scoring
 SCORE_MAX = 100 / 4
 # Do a dynamic adaptation of how many fields we calculate for an action ( if there are nulls )
@@ -41,11 +47,6 @@ ghgi_potential_mapping = {
     "60-79": 0.8,
     "80-100": 1.0,
 }
-# Dynamically construct the file paths based on the script's location
-BASE_DIR = Path(__file__).resolve().parent
-ACTION_DATA_PATH = BASE_DIR / "CAP_data/long_actions.json"
-CITY_DATA_PATH = BASE_DIR / "CAP_data/city_data.json"
-OUTPUT_FILE = BASE_DIR / "new_output.json"
 
 
 def calculate_emissions_reduction(city, action):
@@ -319,19 +320,21 @@ def qualitative_prioritizer(top_quantitative, actions, city):
 
 
 def write_output(top_actions, filename):
-    output_dir = os.path.dirname(filename)
-    if output_dir:  # Check if there's a directory path to create
-        try:
-            os.makedirs(output_dir, exist_ok=True)
-        except OSError as e:
-            print("Error creating output directory:", e)
-            return
-        except Exception as e:
-            print("Unexpected error creating output directory:", e)
-            return
+
+    full_path = OUTPUT_PATH / filename
+    try:
+        # Create the output directory if it doesn't exist
+        OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
+    except OSError as e:
+        print("Error creating output directory:", e)
+        return
+    except Exception as e:
+        print("Unexpected error creating output directory:", e)
+        return
 
     try:
-        with open(filename, "w", encoding="utf-8") as f:
+        # Write JSON data to the specified file
+        with full_path.open("w", encoding="utf-8") as f:
             json.dump(top_actions, f, indent=4)
         print(f"Successfully wrote to {filename}.")
     except Exception as e:

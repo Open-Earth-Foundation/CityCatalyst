@@ -1,0 +1,202 @@
+[
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0028",
+        "actionName": "Zero Emission Buses",
+        "actionPriority": 1,
+        "explanation": "Ranked highest due to significant potential for emissions reduction in the transportation sector, one of Cama\u00e7ari's largest emitters, with relatively feasible implementation considering city size and capacity. Additionally, offers socio-demographic benefits and aligns well with city priorities on risk reduction and sector relevance."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0038",
+        "actionName": "Sanitary Landfills",
+        "actionPriority": 2,
+        "explanation": "Addresses waste emissions effectively with potential cost-efficiency and risk reduction related to environmental health. Important for waste sector management in Cama\u00e7ari, with feasible timelines and moderate socio-demographic compatibility."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 3,
+        "explanation": "Focused on reducing vehicular emissions which comprise a large part of the city's emissions inventory. The action is cost-effective and timely, aligning with transportation sector priorities and the need for broader socio-demographic benefits."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0007",
+        "actionName": "Retrofit Measures",
+        "actionPriority": 4,
+        "explanation": "Offers substantial emissions reduction through energy efficiency in stationary energy, a major sector in the city's emissions profile. Cost-effective with additional benefits on building resilience and socio-demographic suitability."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0008",
+        "actionName": "Retrofit Measures",
+        "actionPriority": 5,
+        "explanation": "Similar to action c40_0007 in focus and impact, maintaining high rankings due to similar rationale of sector relevance and emissions reduction in critical sectors."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0012",
+        "actionName": "Electric Technologies",
+        "actionPriority": 6,
+        "explanation": "Targets electrification and energy efficiency with significant emissions reduction potential across multiple scope categories, aligning with city strategy to address stationary energy emissions."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0023",
+        "actionName": "Bus Emissions",
+        "actionPriority": 7,
+        "explanation": "Specific focus on reducing emissions from public transportation, offering a direct impact on Cama\u00e7ari's transportation emissions, a key sector for city climate action with moderate time requirements and dependencies."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0025",
+        "actionName": "Truck Emissions",
+        "actionPriority": 8,
+        "explanation": "Critical in addressing freight-related emissions, which form part of the transportation sector's sizeable emission profile in the city. Implementation is moderately cost-effective with direct emissions reduction."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0035",
+        "actionName": "Waste Efficiency",
+        "actionPriority": 9,
+        "explanation": "Enhances waste sector management leading to emissions reduction and improved environmental integrity, significant in light of the city's waste emissions profile and biophysical compatibility."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0045",
+        "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
+        "actionPriority": 10,
+        "explanation": "Promotes societal engagement for waste reduction, encouraging long-term emissions reduction and risk mitigation, deeply aligning with environmental and social values."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
+        "actionPriority": 11,
+        "explanation": "Improves landfill operations with a direct effect on emissions and environmental sustainability, crucial for the waste management sector with moderate cost and timeline considerations."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0002",
+        "actionName": "Active Transport Modes",
+        "actionPriority": 12,
+        "explanation": "Supports emissions reduction in transportation through lifestyle changes favoring cycling and walking. This strategy has socio-demographic and environmental benefits, is compatible with city infrastructure."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0075",
+        "actionName": "Electrification and Decarbonization of the Urban Energy System",
+        "actionPriority": 13,
+        "explanation": "High emissions reduction potential through systemic changes in energy sourcing, aligned with city capacity and long-term strategy, although carrying higher initial costs and dependencies."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0021",
+        "actionName": "Heat Networks",
+        "actionPriority": 14,
+        "explanation": "Contributes to reduced emissions from heating, especially significant given Cama\u00e7ari's climatic conditions and potential benefits in energy security under local climate risks."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0019",
+        "actionName": "Modal Shift from Aircraft to Train",
+        "actionPriority": 15,
+        "explanation": "While targeting less substantial portions of the emissions profile, it offers valuable emissions reduction in regional transport infrastructure, with feasible socio-demographic benefits."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0022",
+        "actionName": "Clean heating/cooling",
+        "actionPriority": 16,
+        "explanation": "Important for energy efficiency improvements under the stationary energy sector, supporting the city's climate adaptation needs amidst high risk from heatwaves."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0033",
+        "actionName": "15/30-Minute Areas",
+        "actionPriority": 17,
+        "explanation": "Encourages urban planning that reduces emissions by decreasing transportation needs, offering socio-environmental advantages despite longer timelines and higher dependencies."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0037",
+        "actionName": "Source Separation",
+        "actionPriority": 18,
+        "explanation": "Improves waste management practices, which aid in emissions reduction and environmental health, important but with moderate benefits compared to larger scale waste interventions."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0027",
+        "actionName": "Rail Improvements",
+        "actionPriority": 19,
+        "explanation": "Enhancements in rail infrastructure could indirectly benefit emissions reduction and transportation efficiency; however, less direct impact on primary emissions sectors."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0033",
+        "actionName": "Electrification of Processes",
+        "actionPriority": 20,
+        "explanation": "Aims for process efficiency improvements in industries, potentially significant for industrial emissions but carries high costs and dependencies, thus ranked lower."
+    }
+]

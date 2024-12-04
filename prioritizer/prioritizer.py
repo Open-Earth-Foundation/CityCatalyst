@@ -9,7 +9,10 @@ from pydantic import BaseModel
 from typing import List
 from pathlib import Path
 from utils.reading_data import read_city_inventory, read_actions
-from utils.additional_scoring_functions import count_matching_hazards, find_highest_emission
+from utils.additional_scoring_functions import (
+    count_matching_hazards,
+    find_highest_emission,
+)
 from utils.prompt import prompt as PROMPT
 
 load_dotenv()
@@ -27,30 +30,23 @@ scale_scores = {
     "Low": 0.25,
     "Very Low": 0.0,
 }
-scale_adaptation_effectiveness ={
-    'low': 0.33,
-    'medium': 0.66,
-    'high': 0.99
-}
+scale_adaptation_effectiveness = {"low": 0.33, "medium": 0.66, "high": 0.99}
 
 # Define the mapping for timeline options
-timeline_mapping = {
-    "<5 years": 1.0,
-    "5-10 years": 0.5,
-    ">10 years": 0
-}
+timeline_mapping = {"<5 years": 1.0, "5-10 years": 0.5, ">10 years": 0}
 ghgi_potential_mapping = {
-    "0-19" : 0.20,
-    "20-39" : 0.4,
-    "40-59" : 0.6,
-    "60-79" : 0.8,
-    "80-100" : 1.0
+    "0-19": 0.20,
+    "20-39": 0.4,
+    "40-59": 0.6,
+    "60-79": 0.8,
+    "80-100": 1.0,
 }
 # Dynamically construct the file paths based on the script's location
 BASE_DIR = Path(__file__).resolve().parent
 ACTION_DATA_PATH = BASE_DIR / "CAP_data/long_actions.json"
 CITY_DATA_PATH = BASE_DIR / "CAP_data/city_data.json"
 OUTPUT_FILE = BASE_DIR / "new_output.json"
+
 
 def calculate_emissions_reduction(city, action):
     # Define the mapping for percentage ranges
@@ -59,7 +55,7 @@ def calculate_emissions_reduction(city, action):
         "20-39": 0.3,
         "40-59": 0.5,
         "60-79": 0.7,
-        "80-100": 0.9
+        "80-100": 0.9,
     }
     # Initialize total emissions reduction
     total_reduction = 0
@@ -76,7 +72,7 @@ def calculate_emissions_reduction(city, action):
         "transportation": "transportationEmissions",
         "waste": "wasteEmissions",
         "ippu": "industrialProcessEmissions",
-        "afolu": "landUseEmissions"
+        "afolu": "landUseEmissions",
     }
 
     # Iterate over the sectors
@@ -95,6 +91,7 @@ def calculate_emissions_reduction(city, action):
 
     return total_reduction
 
+
 def quantitative_score(city, action):
     """
     Calculates a quantitative score for a given action in a city based on several criteria.
@@ -109,6 +106,7 @@ def quantitative_score(city, action):
     Returns:
         float: The calculated quantitative score for the action.
     """
+
     def load_weights():
         weights_path = "CAP_data/weights.json"
         with open(weights_path, "r", encoding="utf-8") as f:
@@ -133,15 +131,20 @@ def quantitative_score(city, action):
     print("Score after dependencies:", score)
     # ActionName - pass
     # AdaptationCategory - pass this time
-    # Subsector - skip for now maybe more data needed as now we are covering per sector 
+    # Subsector - skip for now maybe more data needed as now we are covering per sector
     # PrimaryPurpose - use only for LLM
 
     # Sector - if it matches the most emmissions intensive sectors gets bonus points
     total_emission_reduction_all_sectors = calculate_emissions_reduction(city, action)
-    print("Total emissions reduction for all sectors:", total_emission_reduction_all_sectors)
+    print(
+        "Total emissions reduction for all sectors:",
+        total_emission_reduction_all_sectors,
+    )
     if total_emission_reduction_all_sectors > 0:
         total_emissions = city.get("totalEmissions", 1)  # Avoid division by zero
-        reduction_percentage = (total_emission_reduction_all_sectors / total_emissions) * 100
+        reduction_percentage = (
+            total_emission_reduction_all_sectors / total_emissions
+        ) * 100
         print("Reduction percentage:", reduction_percentage)
         score += round((reduction_percentage / 100) * SCORE_MAX, 3)
     print("Score after emissions reduction:", score)
@@ -161,7 +164,11 @@ def quantitative_score(city, action):
     adaptation_effectiveness = action.get("AdaptionEffectiveness")
     if adaptation_effectiveness in scale_adaptation_effectiveness:
         adaptation_weight = weights.get("AdaptationEffectiveness", 1)
-        score += scale_adaptation_effectiveness[adaptation_effectiveness] * SCORE_MAX * adaptation_weight
+        score += (
+            scale_adaptation_effectiveness[adaptation_effectiveness]
+            * SCORE_MAX
+            * adaptation_weight
+        )
     print("Score after adaptation effectiveness:", score)
 
     # Time in years score
@@ -171,7 +178,7 @@ def quantitative_score(city, action):
     elif timeline_str in timeline_mapping:
         time_score_weight = weights.get("TimelineForImplementation", 1)
         time_score = timeline_mapping[timeline_str]
-        score += time_score*time_score_weight * SCORE_MAX
+        score += time_score * time_score_weight * SCORE_MAX
     else:
         print("Invalid timeline:", timeline_str)
 
@@ -188,6 +195,7 @@ def quantitative_score(city, action):
     print("-------------")
     return score
 
+
 class Action(BaseModel):
     action_id: str
     action_name: str
@@ -198,6 +206,7 @@ class Action(BaseModel):
 
 class PrioritizedActions(BaseModel):
     actions: List[Action]
+
 
 def send_to_llm(prompt):
     system_prompt = PROMPT
@@ -213,6 +222,7 @@ def send_to_llm(prompt):
         response_format=PrioritizedActions,
     )
     return response.choices[0].message.parsed
+
 
 def qualitative_score(city, action):
     prompt = f"""
@@ -246,29 +256,44 @@ def qualitative_score(city, action):
     llm_response = send_to_llm(prompt)
     return llm_response
 
+
 def quantitative_prioritizer(cities, actions):
     all_scores = []
 
     for action in actions:
         quant_score = quantitative_score(cities, action)
-        all_scores.append({
-            "city": cities.get("name", "Unknown City"),
-            "action_id": action["ActionID"],  # Use ActionID for unique identification
-            "action_type": action["ActionType"][0] if action["ActionType"] else "Unknown",
-            "action_name": action["ActionName"],
-            "quantitative_score": quant_score
-            })
+        all_scores.append(
+            {
+                "city": cities.get("name", "Unknown City"),
+                "action_id": action[
+                    "ActionID"
+                ],  # Use ActionID for unique identification
+                "action_type": (
+                    action["ActionType"][0] if action["ActionType"] else "Unknown"
+                ),
+                "action_name": action["ActionName"],
+                "quantitative_score": quant_score,
+            }
+        )
 
-    sorted_scores = sorted(all_scores, key=lambda x: x["quantitative_score"], reverse=True)
+    sorted_scores = sorted(
+        all_scores, key=lambda x: x["quantitative_score"], reverse=True
+    )
 
     # Filter Adaptation and Mitigation actions
-    adaptation_actions = [score for score in sorted_scores if score["action_type"] == "adaptation"]
-    mitigation_actions = [score for score in sorted_scores if score["action_type"] == "mitigation"]
+    adaptation_actions = [
+        score for score in sorted_scores if score["action_type"] == "adaptation"
+    ]
+    mitigation_actions = [
+        score for score in sorted_scores if score["action_type"] == "mitigation"
+    ]
 
     # Return top 15 for each category
     return adaptation_actions[:20], mitigation_actions[:20]
 
+
 def qualitative_prioritizer(top_quantitative, actions, city):
+    print("Qualitative prioritization started...")
     qualitative_scores = []
     city_name = city.get("name", "Unknown City")
     city_locode = city.get("locode", "Unknown")
@@ -277,17 +302,21 @@ def qualitative_prioritizer(top_quantitative, actions, city):
     llm_output = qualitative_score(city, top_quantitative)
 
     for action in llm_output.actions:
-        qualitative_scores.append({
-            "locode": city_locode,
-            "cityName": city_name,
-            "region": city_region,
-            "regionName": city_regionName,
-            "actionId": action.action_id,
-            "actionName": action.action_name,
-            "actionPriority": action.actionPriority,
-            "explanation": action.explanation
-        })
+        qualitative_scores.append(
+            {
+                "locode": city_locode,
+                "cityName": city_name,
+                "region": city_region,
+                "regionName": city_regionName,
+                "actionId": action.action_id,
+                "actionName": action.action_name,
+                "actionPriority": action.actionPriority,
+                "explanation": action.explanation,
+            }
+        )
+    print("Qualitative prioritization completed.")
     return qualitative_scores
+
 
 def write_output(top_actions, filename):
     output_dir = os.path.dirname(filename)
@@ -302,7 +331,7 @@ def write_output(top_actions, filename):
             return
 
     try:
-        with open(filename, "w", encoding='utf-8') as f:
+        with open(filename, "w", encoding="utf-8") as f:
             json.dump(top_actions, f, indent=4)
         print(f"Successfully wrote to {filename}.")
     except Exception as e:
@@ -312,14 +341,18 @@ def write_output(top_actions, filename):
 def main():
     cities = read_city_inventory()
     actions = read_actions()
-    
+
     # Quantitative prioritization
     top_adaptation, top_mitigation = quantitative_prioritizer(cities, actions)
-    
+
     # Qualitative prioritization
-    top_qualitative_adaptation = qualitative_prioritizer(top_adaptation, actions, cities)
-    top_qualitative_mitigation = qualitative_prioritizer(top_mitigation, actions, cities)
-    
+    top_qualitative_adaptation = qualitative_prioritizer(
+        top_adaptation, actions, cities
+    )
+    top_qualitative_mitigation = qualitative_prioritizer(
+        top_mitigation, actions, cities
+    )
+
     # Save outputs to separate files
     write_output(top_qualitative_adaptation, "output_adaptation.json")
     write_output(top_qualitative_mitigation, "output_mitigation.json")

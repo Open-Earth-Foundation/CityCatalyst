@@ -72,7 +72,13 @@ export const GET = apiHandler(async (req, { params, session }) => {
           },
           {
             model: db.models.DataSource,
-            attributes: ["datasourceId", "sourceType"],
+            attributes: [
+              "datasourceId",
+              "sourceType",
+              "datasetName",
+              "datasourceName",
+              "dataQuality",
+            ],
             as: "dataSource",
           },
         ],

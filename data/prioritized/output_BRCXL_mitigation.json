@@ -1,0 +1,202 @@
+[
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0028",
+        "actionName": "Zero Emission Buses",
+        "actionPriority": 1,
+        "explanation": "This action directly targets transportation emissions, which is a significant source of emissions in Caxias do Sul (120,000 tons CO2e). It's a high-impact sector with substantial GHG reduction potential. The cost is moderate, especially considering long-term savings in fuel and maintenance. Implementation can be staggered, reducing dependencies."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0038",
+        "actionName": "Sanitary Landfills",
+        "actionPriority": 2,
+        "explanation": "Sanitary landfills address waste emissions, aligning with a key sector (50,000 tons CO2e). It offers both emissions reduction and risk reduction by improving waste management practices, reducing GHG emissions, and minimizing landfill-related hazards. The cost is manageable through phased implementation."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0002",
+        "actionName": "Active Transport Modes",
+        "actionPriority": 3,
+        "explanation": "Promoting active transport (like cycling and walking) has immediate health benefits and reduces transport emissions significantly. It's cost-effective, requiring small infrastructure changes and public campaigns, aligning with socio-demographic trends for healthier lifestyles."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0035",
+        "actionName": "Waste Efficiency",
+        "actionPriority": 4,
+        "explanation": "Waste efficiency improves emission reductions from waste management and aligns with environmental sustainability goals. It has a moderate cost with high financial returns due to reduced waste management expenses and potential for recycling income."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0023",
+        "actionName": "Bus Emissions",
+        "actionPriority": 5,
+        "explanation": "Targeting bus emissions is crucial for reducing transportation emissions. Retrofit of buses is a cost-effective strategy to lower emissions quickly, with relatively low dependencies and immediate impacts on air quality and GHG reduction."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0075",
+        "actionName": "Electrification and Decarbonisation of the Urban Energy System",
+        "actionPriority": 6,
+        "explanation": "This action addresses stationary energy emissions (150,000 tons CO2e). It's crucial for long-term emissions reduction and aligns with renewable energy strategies. While the upfront cost might be high, it's cost-effective over time, providing resilience against energy security risks."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0025",
+        "actionName": "Truck Emissions",
+        "actionPriority": 7,
+        "explanation": "Similar to bus emissions, truck emission reductions are critical for addressing transport sector GHGs. Potential cost savings through fuel efficiency improvements and retrofitting trucks make this a feasible action with significant emissions reduction impact."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0045",
+        "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
+        "actionPriority": 8,
+        "explanation": "Behavioral change programs target waste emissions and have low implementation costs. While challenging to achieve swiftly, they offer high emissions reduction potential by influencing long-term consumption patterns and reducing landfill pressures."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0012",
+        "actionName": "Electric Technologies",
+        "actionPriority": 9,
+        "explanation": "Deployment of electric technologies mitigates industrial emissions (60,000 tons CO2e) and supports sectoral shifts towards decarbonization. Moderate costs and significant emissions reduction potential warrant its prioritization in industrial processes."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 10,
+        "explanation": "Broadly targeting vehicle emissions addresses a critical sector. Implementation requires moderate costs for retrofitting and incentivizing cleaner vehicles but is key for systemic emissions reductions in urban transport."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
+        "actionPriority": 11,
+        "explanation": "Enhanced landfill management reduces methane emissions effectively. With low to moderate cost and significant environmental benefits, it aligns well with waste sector priorities and environmental sustainability goals."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0007",
+        "actionName": "Retrofit Measures",
+        "actionPriority": 12,
+        "explanation": "Retrofitting existing infrastructure improves energy efficiency and reduces emissions from stationary energy. While costs can vary, it's a long-term investment in reducing energy consumption and supporting renewable integration."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0008",
+        "actionName": "Retrofit Measures",
+        "actionPriority": 13,
+        "explanation": "Similar to other retrofit measures, this action focuses on enhancing building efficiency, thereby addressing stationary energy use. It offers long-term benefits in emissions reduction and energy cost savings."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0033",
+        "actionName": "15/30-Minute Areas",
+        "actionPriority": 14,
+        "explanation": "Creating 15/30-minute areas enhances urban accessibility and can reduce transport emissions. It requires urban planning efforts but offers socio-demographic benefits by reducing car dependency and enhancing livability."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0019",
+        "actionName": "Modal Shift from Aircraft to Train",
+        "actionPriority": 15,
+        "explanation": "This action encourages shifts to lower-emission transport modes, reducing Scope 3 emissions from air travel. While requiring significant coordination and potential infrastructure investments, it aligns well with transportation emission goals."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0021",
+        "actionName": "Heat Networks",
+        "actionPriority": 16,
+        "explanation": "Heat networks can enhance energy efficiency but require substantial planning and investment. Over time, they can significantly reduce emissions from heating, aligning with stationary energy sector priorities."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0033",
+        "actionName": "Electrification of Processes",
+        "actionPriority": 17,
+        "explanation": "Targeting industrial processes aligns with emission reduction goals (60,000 tons CO2e from industrial activities). Electrification reduces fossil fuel reliance, though it needs considerable capital; however, it promises substantial efficiency gains."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0022",
+        "actionName": "Clean heating/cooling",
+        "actionPriority": 18,
+        "explanation": "Implementing clean heating/cooling solutions addresses stationary energy emissions. While beneficial for GHG reduction, the complexity and possible costs of installation and operation might limit its feasibility for immediate impact."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0037",
+        "actionName": "Source Separation",
+        "actionPriority": 19,
+        "explanation": "Source separation improves waste management by enabling recycling and reducing landfill emissions. Implementation costs are moderate, but it requires public engagement and policy support to be effective."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0027",
+        "actionName": "Rail Improvements",
+        "actionPriority": 20,
+        "explanation": "Improvements in rail infrastructure support modal shifts and emissions reduction in transport. The action, while beneficial environmentally, requires significant investment and longer timelines, thus ranking lower compared to faster-impacting initiatives."
+    }
+]

@@ -7,7 +7,7 @@ CITY_DATA_PATH = BASE_DIR / "CAP_data/city_data.json"
 OUTPUT_FILE = BASE_DIR / "new_output.json"
 
 
-def read_city_inventory():
+def read_city_inventory(locode: str) -> dict:
     """
     Reads city inventory data from a JSON file.
 
@@ -17,7 +17,17 @@ def read_city_inventory():
     city_data_path = CITY_DATA_PATH
     with city_data_path.open("r", encoding="utf-8") as f:
         city_data = json.load(f)
-    return city_data[0]  # Adjust as needed for multiple cities
+    # return city_data[0]  # Adjust as needed for multiple cities
+
+    # Find the city by name
+    for city in city_data:
+        if city["locode"] == locode:
+            return city
+
+    # Return None if city is not found
+    # print(f"City '{city_name}' not found in the data.")
+    raise ValueError(f"City with locode '{locode}' not found in the data.")
+
 
 def read_actions():
     actions = []
@@ -25,8 +35,8 @@ def read_actions():
         data = json.load(f)
         for item in data:
             action = {
-                "ActionID": item.get("ActionID"), 
-                "ActionName": item.get("ActionName"), 
+                "ActionID": item.get("ActionID"),
+                "ActionName": item.get("ActionName"),
                 "ActionType": item.get("ActionType"),
                 "AdaptationCategory": item.get("AdaptationCategory"),
                 "Hazard": item.get("Hazard"),
@@ -37,7 +47,9 @@ def read_actions():
                 "Description": item.get("Description"),
                 "BehaviouralChangeTargeted": item.get("BehaviouralChangeTargeted"),
                 "CoBenefits": item.get("CoBenefits"),
-                "EquityAndInclusionConsiderations": item.get("EquityAndInclusionConsiderations"),
+                "EquityAndInclusionConsiderations": item.get(
+                    "EquityAndInclusionConsiderations"
+                ),
                 "GHGReductionPotential": item.get("GHGReductionPotential"),
                 "AdaptationEffectiveness": item.get("AdaptationEffectiveness"),
                 "CostInvestmentNeeded": item.get("CostInvestmentNeeded"),

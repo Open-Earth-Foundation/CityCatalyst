@@ -1,3 +1,5 @@
+import argparse
+import sys
 import os
 import csv
 from dotenv import load_dotenv
@@ -341,9 +343,13 @@ def write_output(top_actions, filename):
         print(f"Error writing to {filename}:", e)
 
 
-def main():
-    cities = read_city_inventory()
-    actions = read_actions()
+def main(locode: str):
+    try:
+        cities = read_city_inventory(locode)
+        actions = read_actions()
+    except Exception as e:
+        print("Error reading data:", e)
+        sys.exit(1)
 
     # Quantitative prioritization
     top_adaptation, top_mitigation = quantitative_prioritizer(cities, actions)
@@ -357,9 +363,20 @@ def main():
     )
 
     # Save outputs to separate files
-    write_output(top_qualitative_adaptation, "output_adaptation.json")
-    write_output(top_qualitative_mitigation, "output_mitigation.json")
+    write_output(top_qualitative_adaptation, "output_" + locode + "_adaptation.json")
+    write_output(top_qualitative_mitigation, "output_" + locode + "_mitigation.json")
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(
+        description="Prioritize climate actions for a given city."
+    )
+    parser.add_argument(
+        "--locode",
+        type=str,
+        required=True,
+        help="The UN/LOCODE of the city for which to prioritize actions.",
+    )
+    args = parser.parse_args()
+
+    main(locode=args.locode)

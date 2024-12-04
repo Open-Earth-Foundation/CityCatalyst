@@ -180,6 +180,8 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         : { ...values },
       metadata: {
         emissionFactorType: activity.emissionFactorType,
+        emissionFactorTypeReference: activity.emissionFactorReference,
+        emissionFactorName: activity.emissionFactorName,
         activityId: activityId,
         activityTitle: title,
         ...(methodology.activitySelectionField && {

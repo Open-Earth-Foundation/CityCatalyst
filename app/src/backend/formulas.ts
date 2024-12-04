@@ -197,7 +197,8 @@ export function handleDirectMeasureFormula(
   const gases = GAS_NAMES.map((gasName) => {
     const data = activityValue.activityData;
     const key = gasName.toLowerCase() + "_amount";
-    if (!data || !data[key]) {
+    // allow zeros
+    if (!data || (!data[key] && data[key] !== 0)) {
       throw new createHttpError.BadRequest(
         "Missing direct measure form entry " + key,
       );

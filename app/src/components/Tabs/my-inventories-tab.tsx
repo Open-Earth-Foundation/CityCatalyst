@@ -45,7 +45,6 @@ import type { CityAttributes } from "@/models/City";
 import { api } from "@/services/api";
 import type { InventoryAttributes } from "@/models/Inventory";
 import { CircleFlag } from "react-circle-flags";
-import { extractCountryLocode } from "@/util/helpers";
 
 interface MyInventoriesTabProps {
   session: Session | null;
@@ -181,9 +180,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                     <Box>
                       <Box display="flex" gap="8px" alignItems="center">
                         <CircleFlag
-                          countryCode={extractCountryLocode(
-                            city.countryLocode!,
-                          )}
+                          countryCode={city.countryLocode!.toLocaleLowerCase()}
                           height="32px"
                           width="32px"
                         />

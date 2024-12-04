@@ -325,7 +325,3 @@ export const toKebabCase = (input: string | undefined): string => {
 
 export const capitalizeFirstLetter = (string: string) =>
   string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-
-export const extractCountryLocode = (cityLocode: string): string => {
-  return cityLocode.split(" ")[0].toLocaleLowerCase();
-};

@@ -21,7 +21,7 @@ echo "Done."
 
 echo "Extractor..."
 # Run the extractor script with input arguments
-$VENV_PYTHON main.py --input-file climate_action_library_original.csv
+$VENV_PYTHON extractor_c40.py --input-file climate_action_library_original.csv
 echo "Done."
 
 echo "Validator..."

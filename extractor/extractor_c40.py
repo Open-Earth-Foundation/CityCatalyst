@@ -2,7 +2,7 @@ import argparse
 import json
 import asyncio
 from utils.data_loader import load_datafile_into_df
-from utils.extraction_functions import (
+from extraction_functions import (
     extract_ActionType,
     extract_ActionName,
     extract_AdaptationCategory,
@@ -92,7 +92,7 @@ async def process_row(index, df_row):
     adaptation_effectiveness = await extract_AdaptionEffectiveness(
         index, action_type, description, hazard
     )
-    mapped_row["AdaptionEffectiveness"] = adaptation_effectiveness
+    mapped_row["AdaptationEffectiveness"] = adaptation_effectiveness
 
     cost_investment_needed = extract_CostInvestmentNeeded(index, df_row)
     mapped_row["CostInvestmentNeeded"] = cost_investment_needed
@@ -155,9 +155,9 @@ async def main(input_file, parse_rows=None):
     mapped_data.extend(results)
 
     # Set up output directory and file path using pathlib
-    output_dir = Path("./output")
+    output_dir = Path("../data/climate_actions/output")
     output_dir.mkdir(parents=False, exist_ok=True)
-    output_file = output_dir / "output.json"
+    output_file = output_dir / "c40_output.json"
 
     # Optionally, save the mapped data to a JSON file
     with output_file.open("w") as f:

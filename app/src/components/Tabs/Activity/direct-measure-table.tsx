@@ -130,13 +130,23 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                   </Text>
                 </Td>
                 <Td isNumeric isTruncated>
-                  {convertKgToTonnes(activity?.activityData?.co2_amount)}
+                  {/*Direct measure entries are collected in tonnes by default*/}
+                  {convertKgToTonnes(
+                    activity?.activityData?.co2_amount * 1000,
+                    "CO2e",
+                  )}
                 </Td>
                 <Td isNumeric isTruncated>
-                  {convertKgToTonnes(activity?.activityData?.n2o_amount, "N2O")}
+                  {convertKgToTonnes(
+                    activity?.activityData?.n2o_amount * 1000,
+                    "N2O",
+                  )}
                 </Td>
                 <Td isNumeric isTruncated>
-                  {convertKgToTonnes(activity?.activityData?.ch4_amount, "CH4")}
+                  {convertKgToTonnes(
+                    activity?.activityData?.ch4_amount * 1000,
+                    "CH4",
+                  )}
                 </Td>
                 <Td>
                   <Popover>

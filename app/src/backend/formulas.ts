@@ -194,19 +194,48 @@ function convertDataToDefaultUnit(
 export function handleDirectMeasureFormula(
   activityValue: ActivityValue,
 ): Gas[] {
+  // Extract activity data once to avoid repetitive access
+  const data = activityValue.activityData;
+
+  if (!data) {
+    throw new createHttpError.BadRequest("Activity has no data associated");
+  }
+
+  // Initialize an array to hold gas objects
   const gases = GAS_NAMES.map((gasName) => {
-    const data = activityValue.activityData;
-    const key = gasName.toLowerCase() + "_amount";
-    // allow zeros
-    if (!data || (!data[key] && data[key] !== 0)) {
+    const key = `${gasName.toLowerCase()}_amount`;
+
+    let amount;
+    try {
+      // values collected from the direct measure form are in tonnes. but we store the values in kg
+      amount = new Decimal(data[key] ?? 0).mul(1000);
+    } catch (error) {
       throw new createHttpError.BadRequest(
-        "Missing direct measure form entry " + key,
+        `Invalid number format for ${key}: ${data[key]}`,
       );
     }
-    // TODO save amount to GasValue entry?
-    const amount = new Decimal(data[key]);
+
+    // Ensure the amount is not negative (optional, based on business rules)
+    if (amount.isNegative()) {
+      throw new createHttpError.BadRequest(
+        `Gas amount cannot be negative for ${key}`,
+      );
+    }
+
     return { gas: gasName, amount: amount };
   });
+
+  // Check if all gas amounts are zero
+  const allZero = gases.every((gas) => gas.amount.equals(0));
+
+  if (allZero) {
+    throw new createHttpError.BadRequest(
+      "Direct measure requires a non zero gas amount",
+    );
+  }
+
+  // TODO: Save amounts to GasValue entries or perform further processing
+
   return gases;
 }
 

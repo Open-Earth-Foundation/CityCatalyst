@@ -284,7 +284,7 @@ export function convertKgToTonnes(
   const gasSuffix = gas ? ` ${gas}` : " CO2e";
 
   const kg = toDecimal(valueInKg);
-  if (!kg) return "";
+  if (!kg) return `0 t${gasSuffix}`;
   const formatter = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 });
 
   const gigaTonne = new Decimal("1e12");

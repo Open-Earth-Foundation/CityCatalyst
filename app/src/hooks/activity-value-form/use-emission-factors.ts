@@ -17,8 +17,6 @@ export interface EmissionFactorTypes {
   };
 }
 
-[];
-
 const reduceEmissionsToUniqueSourcesAndUnits = (
   emissionsFactors: EmissionsFactorResponse,
 ) => {

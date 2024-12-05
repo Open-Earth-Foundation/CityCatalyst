@@ -934,5 +934,7 @@
   "industrial-processes-direct-measure-methodology": "Direct measure",
   "industrial-processes-direct-measure-methodology-description": "Direct measurement of emissions from industrial processes.",
   "product-use-direct-measure-methodology": "Direct measure",
-  "product-use-direct-measure-methodology-description": "Direct measurement of emissions from product use."
+  "product-use-direct-measure-methodology-description": "Direct measurement of emissions from product use.",
+  "custom-emission-factor-reference": "Custom Emission Factor",
+  "custom-emission-factor-name": "Custom emission factor"
 }

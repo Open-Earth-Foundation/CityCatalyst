@@ -37,16 +37,7 @@ import { ActivityValue } from "@/models/ActivityValue";
 import FormattedNumberInput from "@/components/formatted-number-input";
 import PercentageBreakdownInput from "@/components/percentage-breakdown-input";
 import { RadioButton } from "@/components/radio-button";
-
-export type EmissionFactorTypes = {
-  id: string;
-  name: string;
-  gasValuesByGas: {
-    [gas: string]: {
-      gasValues: Record<string, any>[];
-    };
-  };
-}[];
+import { EmissionFactorTypes } from "@/hooks/activity-value-form/use-emission-factors";
 
 interface AddActivityModalBodyProps {
   t: TFunction;
@@ -60,7 +51,7 @@ interface AddActivityModalBodyProps {
   errors: Record<string, any>;
   setError: Function;
   clearErrors: Function;
-  emissionsFactorTypes: EmissionFactorTypes;
+  emissionsFactorTypes: EmissionFactorTypes[];
   methodology: Methodology;
   selectedActivity?: SuggestedActivity;
   targetActivityValue?: ActivityValue;
@@ -75,6 +66,8 @@ export type Inputs = {
     activityDataAmount?: number | null | undefined;
     activityDataUnit?: string | null | undefined;
     emissionFactorType?: string;
+    emissionFactorReference?: string;
+    emissionFactorName?: string;
     CO2EmissionFactor: number;
     N2OEmissionFactor: number;
     CH4EmissionFactor: number;
@@ -140,6 +133,14 @@ const ActivityModalBody = ({
       );
       const emissionFactorType = emissionFactorTypeValue;
       if (emissionFactorType === "custom") {
+        setValue(
+          "activity.emissionFactorReference",
+          t("custom-emission-factor-reference"),
+        );
+        setValue(
+          "activity.emissionFactorName",
+          t("custom-emission-factor-name"),
+        );
         setIsEmissionFactorInputDisabled(false);
       } else {
         let co2Val =
@@ -164,6 +165,9 @@ const ActivityModalBody = ({
         setValue("activity.CO2EmissionFactor", co2Val ? co2Val : "");
         setValue("activity.N2OEmissionFactor", n2oVal ? n2oVal : "");
         setValue("activity.CH4EmissionFactor", ch4Val ? ch4Val : "");
+        setValue("activity.emissionFactorName", emissionFactor?.name);
+        setValue("activity.emissionFactorReference", emissionFactor?.reference);
+
         setIsEmissionFactorInputDisabled(true);
       }
     }

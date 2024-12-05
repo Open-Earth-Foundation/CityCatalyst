@@ -103,67 +103,102 @@ export default class ECRFDownloadService {
       const gpcRefNo = inventoryValue.gpcReferenceNumber;
       const activityValues = inventoryValue.activityValues || [];
 
-      let methodologyDescription = inventoryValue.inputMethodology;
-      const methodology = findMethodology(
-        inventoryValue.inputMethodology as string,
-        gpcRefNo,
-      );
-      const activityKey = methodology?.activityTypeField as string;
+      if (inventoryValue.dataSource?.sourceType === "third_party") {
+        dataDictionary[gpcRefNo as string] = {
+          inventory_year: inventoryYear,
+          gpc_reference_number: inventoryValue.gpcReferenceNumber,
+          notation_key: inventoryValue.unavailableReason,
+          activityValues: [
+            {
+              activity_type: null,
+              emission_factor_unit: null,
+              emission_factor_source: null,
+              emission_co2: null,
+              emission_ch4: null,
+              emission_n2o: null,
+              activity_amount: null,
+              activity_unit: null,
+              activity_data_quality: inventoryValue.dataSource?.dataQuality,
+              activity_data_source: inventoryValue.dataSource?.datasourceName,
+              total_co2e: toDecimal(inventoryValue.co2eq as bigint)
+                ?.div(new Decimal("1e3"))
+                .toNumber(),
+            },
+          ],
+        };
+      } else {
+        let methodologyDescription = inventoryValue.inputMethodology;
+        const methodology = findMethodology(
+          inventoryValue.inputMethodology as string,
+          gpcRefNo,
+        );
+        const activityKey = methodology?.activityTypeField as string;
 
-      dataDictionary[gpcRefNo as string] = {
-        // InventoryValue fields
-        inventory_year: inventoryYear,
-        gpc_reference_number: inventoryValue.gpcReferenceNumber,
-        notation_key: inventoryValue.unavailableReason,
-        input_methodology: t(inventoryValue.inputMethodology),
-        activityValues: activityValues.map((activityValue) => {
-          let activityTitleKey = activityValue.metadata?.activityTitle;
-          let dataQuality = activityValue.metadata?.dataQuality;
-          let dataSource = activityValue.activityData?.["data-source"];
-          let activityAmount = activityValue.activityData?.[activityTitleKey];
-          let activityUnit = t(
-            activityValue.activityData?.[`${activityTitleKey}-unit`],
-          );
-          let emission_co2 = null;
-          let emission_ch4 = null;
-          let emission_n2o = null;
-          let ghg_co2 = null;
-          let ghg_ch4 = null;
-          let ghg_n2o = null;
+        dataDictionary[gpcRefNo as string] = {
+          // InventoryValue fields
+          inventory_year: inventoryYear,
+          gpc_reference_number: inventoryValue.gpcReferenceNumber,
+          notation_key: inventoryValue.unavailableReason,
+          input_methodology: t(inventoryValue.inputMethodology),
+          activityValues: activityValues.map((activityValue) => {
+            let activityTitleKey = activityValue.metadata?.activityTitle;
+            let dataQuality = activityValue.metadata?.dataQuality;
+            let dataSource = activityValue.activityData?.["data-source"];
+            let activityAmount = activityValue.activityData?.[activityTitleKey];
+            let activityUnit = t(
+              activityValue.activityData?.[`${activityTitleKey}-unit`],
+            );
+            let emission_co2 = null;
+            let emission_ch4 = null;
+            let emission_n2o = null;
+            let ghg_co2 = null;
+            let ghg_ch4 = null;
+            let ghg_n2o = null;
 
-          if (activityValue.gasValues) {
-            let co2_gas = activityValue.gasValues.find((g) => g.gas === "CO2");
-            let ch4_gas = activityValue.gasValues.find((g) => g.gas === "CH4");
-            let n2o_gas = activityValue.gasValues.find((g) => g.gas === "N2O");
+            if (activityValue.gasValues) {
+              let co2_gas = activityValue.gasValues.find(
+                (g) => g.gas === "CO2",
+              );
+              let ch4_gas = activityValue.gasValues.find(
+                (g) => g.gas === "CH4",
+              );
+              let n2o_gas = activityValue.gasValues.find(
+                (g) => g.gas === "N2O",
+              );
 
-            emission_co2 = co2_gas?.emissionsFactor.emissionsPerActivity;
-            emission_ch4 = ch4_gas?.emissionsFactor.emissionsPerActivity;
-            emission_n2o = n2o_gas?.emissionsFactor.emissionsPerActivity;
+              emission_co2 = co2_gas?.emissionsFactor.emissionsPerActivity;
+              emission_ch4 = ch4_gas?.emissionsFactor.emissionsPerActivity;
+              emission_n2o = n2o_gas?.emissionsFactor.emissionsPerActivity;
 
-            ghg_co2 = BigInt(co2_gas?.gasAmount as bigint);
-            ghg_ch4 = BigInt(ch4_gas?.gasAmount as bigint) * BigInt(28);
-            ghg_n2o = BigInt(n2o_gas?.gasAmount as bigint) * BigInt(265);
-          }
-          return {
-            ghg_co2: bigIntToDecimal(ghg_co2 as bigint).toNumber(),
-            ghg_ch4: bigIntToDecimal(ghg_ch4 as bigint).toNumber(),
-            ghg_n2o: bigIntToDecimal(ghg_n2o as bigint).toNumber(),
-            activity_type: t(activityValue.activityData?.[activityKey]),
-            emission_factor_unit: null,
-            emission_co2,
-            emission_ch4,
-            emission_n2o,
-            activity_amount: activityAmount,
-            activity_unit: activityUnit,
-            methodology: t(methodologyDescription),
-            activity_data_quality: dataQuality,
-            activity_data_source: dataSource,
-            total_co2e: toDecimal(activityValue.co2eq as bigint)
-              ?.div(new Decimal("1e3"))
-              .toNumber(),
-          };
-        }),
-      };
+              ghg_co2 = BigInt(co2_gas?.gasAmount as bigint);
+              ghg_ch4 = BigInt(ch4_gas?.gasAmount as bigint) * BigInt(28);
+              ghg_n2o = BigInt(n2o_gas?.gasAmount as bigint) * BigInt(265);
+            }
+            return {
+              ghg_co2: bigIntToDecimal(ghg_co2 as bigint).toNumber(),
+              ghg_ch4: bigIntToDecimal(ghg_ch4 as bigint).toNumber(),
+              ghg_n2o: bigIntToDecimal(ghg_n2o as bigint).toNumber(),
+              activity_type: t(activityValue.activityData?.[activityKey]),
+              emission_factor_unit: null,
+              emission_co2,
+              emission_ch4,
+              emission_n2o,
+              activity_amount: activityAmount,
+              emission_factor_source:
+                activityValue.metadata?.emissionFactorName,
+              emission_factor_description:
+                activityValue.metadata?.emissionFactorTypeReference,
+              activity_unit: activityUnit,
+              methodology: t(methodologyDescription),
+              activity_data_quality: dataQuality,
+              activity_data_source: dataSource,
+              total_co2e: toDecimal(activityValue.co2eq as bigint)
+                ?.div(new Decimal("1e3"))
+                .toNumber(),
+            };
+          }),
+        };
+      }
     });
     return dataDictionary;
   }

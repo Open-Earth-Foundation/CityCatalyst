@@ -133,8 +133,14 @@ const ActivityModalBody = ({
       );
       const emissionFactorType = emissionFactorTypeValue;
       if (emissionFactorType === "custom") {
-        setValue("activity.emissionFactorReference", "custom emission factors");
-        setValue("activity.emissionFactorName", "custom");
+        setValue(
+          "activity.emissionFactorReference",
+          t("custom-emission-factor-reference"),
+        );
+        setValue(
+          "activity.emissionFactorName",
+          t("custom-emission-factor-name"),
+        );
         setIsEmissionFactorInputDisabled(false);
       } else {
         let co2Val =

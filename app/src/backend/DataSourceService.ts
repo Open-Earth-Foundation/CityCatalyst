@@ -184,23 +184,14 @@ export default class DataSourceService {
       inventory,
     );
     if (typeof data === "string") {
-      return data;
+      return data; // this is an error/ validation failure message and handled at the callsite
     }
 
     const emissions = data.totals.emissions;
-    let co2eq, co2Amount, n2oAmount, ch4Amount: Decimal;
-
-    if (scaleFactor !== 1.0) {
-      co2eq = new Decimal(emissions.co2eq_100yr).times(scaleFactor);
-      co2Amount = new Decimal(emissions.co2_mass).times(scaleFactor);
-      n2oAmount = new Decimal(emissions.n2o_mass).times(scaleFactor);
-      ch4Amount = new Decimal(emissions.ch4_mass).times(scaleFactor);
-    } else {
-      co2eq = new Decimal(emissions.co2eq_100yr);
-      co2Amount = new Decimal(emissions.co2_mass);
-      n2oAmount = new Decimal(emissions.n2o_mass);
-      ch4Amount = new Decimal(emissions.ch4_mass);
-    }
+    const co2eq = new Decimal(emissions.co2eq_100yr).times(scaleFactor);
+    const co2Amount = new Decimal(emissions.co2_mass).times(scaleFactor);
+    const n2oAmount = new Decimal(emissions.n2o_mass).times(scaleFactor);
+    const ch4Amount = new Decimal(emissions.ch4_mass).times(scaleFactor);
 
     // TODO what to do with existing InventoryValues and GasValues?
     const inventoryValue = await db.models.InventoryValue.create({

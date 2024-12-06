@@ -125,11 +125,10 @@ export default class DataSourceService {
     inventory: Inventory,
     scaleFactor: number = 1.0,
   ): Promise<string | boolean> {
-    // TODO adjust into if/ else statement once GLOBAL_API_ACTIVITY_DATA is implemented (then we will need to check for an ActivityValue with a connected source as well for collisions)
-    if (source.sourceType !== "GLOBAL_API") {
+    // TODO adjust into if/ else statement once global_api_activity_data is implemented (then we will need to check for an ActivityValue with a connected source as well for collisions)
+    if (source.retrievalMethod === "global_api_activity_data") {
       throw new createHttpError.BadRequest(
-        "Data source not of type GLOBAL_API, not yet supported: " +
-          source.sourceType,
+        "Data source of retrieval method global_api_activity_data, not yet supported",
       );
     }
 

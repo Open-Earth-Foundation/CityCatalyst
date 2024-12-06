@@ -165,7 +165,7 @@ export default class DataSourceService {
       );
     }
 
-    // check for another already connected data source and throw an error in that case
+    // check for another already connected data source with the same GPC refno to prevent overwriting data or surplus emissions
     const existingInventoryValue = await db.models.InventoryValue.findOne({
       where: {
         gpcReferenceNumber,

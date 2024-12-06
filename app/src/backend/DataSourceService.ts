@@ -125,27 +125,11 @@ export default class DataSourceService {
     inventory: Inventory,
     scaleFactor: number = 1.0,
   ): Promise<string | boolean> {
-    const data = await DataSourceService.retrieveGlobalAPISource(
-      source,
-      inventory,
-    );
-    if (typeof data === "string") {
-      return data;
-    }
-
-    const emissions = data.totals.emissions;
-    let co2eq, co2Amount, n2oAmount, ch4Amount: Decimal;
-
-    if (scaleFactor !== 1.0) {
-      co2eq = new Decimal(emissions.co2eq_100yr).times(scaleFactor);
-      co2Amount = new Decimal(emissions.co2_mass).times(scaleFactor);
-      n2oAmount = new Decimal(emissions.n2o_mass).times(scaleFactor);
-      ch4Amount = new Decimal(emissions.ch4_mass).times(scaleFactor);
-    } else {
-      co2eq = new Decimal(emissions.co2eq_100yr);
-      co2Amount = new Decimal(emissions.co2_mass);
-      n2oAmount = new Decimal(emissions.n2o_mass);
-      ch4Amount = new Decimal(emissions.ch4_mass);
+    // TODO adjust into if/ else statement once global_api_activity_data is implemented (then we will need to check for an ActivityValue with a connected source as well for collisions)
+    if (source.retrievalMethod === "global_api_activity_data") {
+      throw new createHttpError.BadRequest(
+        "Data source of retrieval method global_api_activity_data, not yet supported",
+      );
     }
 
     let gpcReferenceNumber: string | undefined;
@@ -180,6 +164,34 @@ export default class DataSourceService {
         "Sub-category or sub-sector not set in source data",
       );
     }
+
+    // check for another already connected data source with the same GPC refno to prevent overwriting data or surplus emissions
+    const existingInventoryValue = await db.models.InventoryValue.findOne({
+      where: {
+        gpcReferenceNumber,
+        inventoryId: inventory.inventoryId,
+      },
+    });
+    if (existingInventoryValue) {
+      // TODO do we need a "force" parameter that overrides this check and deletes the existing value?
+      throw new createHttpError.BadRequest(
+        "Inventory already has a value for GPC refno " + gpcReferenceNumber,
+      );
+    }
+
+    const data = await DataSourceService.retrieveGlobalAPISource(
+      source,
+      inventory,
+    );
+    if (typeof data === "string") {
+      return data; // this is an error/ validation failure message and handled at the callsite
+    }
+
+    const emissions = data.totals.emissions;
+    const co2eq = new Decimal(emissions.co2eq_100yr).times(scaleFactor);
+    const co2Amount = new Decimal(emissions.co2_mass).times(scaleFactor);
+    const n2oAmount = new Decimal(emissions.n2o_mass).times(scaleFactor);
+    const ch4Amount = new Decimal(emissions.ch4_mass).times(scaleFactor);
 
     // TODO what to do with existing InventoryValues and GasValues?
     const inventoryValue = await db.models.InventoryValue.create({

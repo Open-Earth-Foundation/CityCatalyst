@@ -100,7 +100,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
     }
 
     return filteredValues;
-  }, [activityData, referenceNumber]);
+  }, [activityData, referenceNumber, directMeasure, methodologies]);
 
   function getMethodologies() {
     const methodologies =

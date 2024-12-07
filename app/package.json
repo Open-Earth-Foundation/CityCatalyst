@@ -40,7 +40,7 @@
     "@huggingface/inference": "^2.8.0",
     "@next/env": "^14.2.5",
     "@nivo/bar": "^0.88.0",
-    "@react-email/components": "^0.0.19",
+    "@react-email/components": "^0.0.28",
     "@reduxjs/toolkit": "^2.2.7",
     "@storybook/cli": "^8.3.4",
     "@storybook/react": "^8.2.9",

@@ -126,10 +126,10 @@ function SubSectorPage({
 
   const subSectorData: SubSectorAttributes | undefined =
     sectorData?.subSectors.find(
-      (subsectorItem) => subsectorItem.subsectorId === subsector,
+      (subSectorItem) => subSectorItem.subsectorId === subsector,
     );
-  const getSectorName = (currentScope: string) => {
-    return SECTORS[parseInt(currentScope) - 1].name;
+  const getSectorName = (currentStep: string) => {
+    return SECTORS[parseInt(currentStep) - 1].name;
   };
 
   const getFilteredSubsectorScopes = () => {
@@ -155,15 +155,13 @@ function SubSectorPage({
   );
   MotionTabList.displayName = "MotionTabList";
 
-  const [isLoading, setIsLoading] = useState(false);
-
   const subSectorId = subSectorData?.subsectorId;
 
   const { data: activityData, isLoading: isActivityDataLoading } =
-    api.useGetActivityValuesQuery({
-      inventoryId,
-      subSectorId,
-    });
+    api.useGetActivityValuesQuery(
+      { inventoryId, subSectorId },
+      { skip: !subSectorId }, // request fails without a subSectorId
+    );
 
   // fetch the inventoryValue for the selected scope
   const { data: inventoryValues, isLoading: isInventoryValueLoading } =
@@ -187,7 +185,6 @@ function SubSectorPage({
   const loadingState =
     isActivityDataLoading ||
     isInventoryValueLoading ||
-    isLoading ||
     isInventoryProgressLoading ||
     isUserInfoLoading;
 

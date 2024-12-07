@@ -227,7 +227,7 @@ const ActivityModalBody = ({
                 {f.options && (
                   <FormControl key={idx} className="w-full">
                     <BuildingTypeSelectInput
-                      options={f.options}
+                      options={f.options as string[]}
                       required={f.required}
                       control={control}
                       multiselect={f.multiselect}

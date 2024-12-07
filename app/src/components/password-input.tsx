@@ -1,11 +1,4 @@
-import { passwordRegex } from "@/util/validation";
-import {
-  CheckIcon,
-  CloseIcon,
-  ViewIcon,
-  ViewOffIcon,
-  WarningIcon,
-} from "@chakra-ui/icons";
+import { ViewIcon, ViewOffIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Button,
   FormControl,
@@ -21,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { FieldError } from "react-hook-form";
-import { CheckListIcon, CloseListIcon, DataCheckIcon } from "./icons";
+import { CheckListIcon, CloseListIcon } from "./icons";
 
 export default function PasswordInput({
   children,
@@ -194,7 +187,7 @@ export default function PasswordInput({
             letterSpacing="wide"
             color="content.tertiary"
           >
-            {error.message}
+            {t(error.message)}
           </Text>
         </FormErrorMessage>
       )}

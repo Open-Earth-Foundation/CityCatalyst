@@ -59,5 +59,7 @@
   "remove-user-prompt": "Sind Sie sicher, dass Sie diesen Benutzer <2>dauerhaft entfernen</2> möchten aus Ihrem Team?",
   "city-deleted": "Stadt erfolgreich gelöscht",
   "delete-file-prompt": "Sind Sie sicher, dass Sie diese Datei <2>dauerhaft löschen</2> möchten aus dem Repository der Stadt?",
-  "mark-as-completed": "Als abgeschlossen markieren"
+  "mark-as-completed": "Als abgeschlossen markieren",
+  "password-required": "Password ist ein Pflichtfeld",
+  "min-length": "Minimallänge sollte {{length}} sein"
 }

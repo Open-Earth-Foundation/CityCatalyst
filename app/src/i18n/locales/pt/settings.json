@@ -59,5 +59,7 @@
   "remove-user-prompt": "Tem certeza de que deseja <2>remover permanentemente este usuário</2> da sua equipe?",
   "city-deleted": "Cidade excluída com sucesso",
   "delete-file-prompt": "Tem certeza de que deseja <2>excluir permanentemente</2> este arquivo do repositório da cidade?",
-  "mark-as-completed": "Marcar como concluído"
+  "mark-as-completed": "Marcar como concluído",
+  "password-required": "A senha é obrigatória",
+  "min-length": "O comprimento mínimo deve ser {{length}}"
 }

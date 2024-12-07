@@ -130,6 +130,15 @@ export default function SetPopulationDataStep({
     }
   }, [countryData, year, setValue]);
 
+  const cityPopulation = watch("cityPopulation");
+  const cityPopulationYear = watch("cityPopulationYear");
+
+  const regionPopulation = watch("regionPopulation");
+  const regionPopulationYear = watch("regionPopulationYear");
+
+  const countryPopulation = watch("countryPopulation");
+  const countryPopulationYear = watch("countryPopulationYear");
+
   return (
     <Box w="full">
       <Box
@@ -243,7 +252,9 @@ export default function SetPopulationDataStep({
                   mt={5}
                   mr={6}
                 >
-                  {!!year && <CheckIcon color="semantic.success" boxSize={4} />}
+                  {!!countryPopulationYear && countryPopulation && (
+                    <CheckIcon color="semantic.success" boxSize={4} />
+                  )}
                 </InputRightElement>
               </InputGroup>
             </FormControl>
@@ -324,7 +335,9 @@ export default function SetPopulationDataStep({
                   ))}
                 </Select>
                 <InputRightElement mt={5} mr={6}>
-                  {!!year && <CheckIcon color="semantic.success" boxSize={4} />}
+                  {!!regionPopulationYear && regionPopulation && (
+                    <CheckIcon color="semantic.success" boxSize={4} />
+                  )}
                 </InputRightElement>
               </InputGroup>
             </FormControl>
@@ -405,7 +418,9 @@ export default function SetPopulationDataStep({
                   ))}
                 </Select>
                 <InputRightElement mt={5} mr={6}>
-                  {!!year && <CheckIcon color="semantic.success" boxSize={4} />}
+                  {!!cityPopulationYear && !!cityPopulation && (
+                    <CheckIcon color="semantic.success" boxSize={4} />
+                  )}
                 </InputRightElement>
               </InputGroup>
             </FormControl>

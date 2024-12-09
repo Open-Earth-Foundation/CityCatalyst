@@ -10,6 +10,7 @@ import type {
 import type { Sector, SectorId } from "./Sector";
 import type { SubSector, SubSectorId } from "./SubSector";
 import type { GasValue, GasValueId } from "./GasValue";
+import type { ActivityValue, ActivityValueId } from "./ActivityValue";
 
 export interface InventoryValueAttributes {
   id: string;
@@ -129,6 +130,40 @@ export class InventoryValue
   hasGasValue!: Sequelize.HasManyHasAssociationMixin<GasValue, GasValueId>;
   hasGasValues!: Sequelize.HasManyHasAssociationsMixin<GasValue, GasValueId>;
   countGasValues!: Sequelize.HasManyCountAssociationsMixin;
+
+  // InventoryValue hasMany ActivityValue via inventoryValueId
+  activityValues!: ActivityValue[];
+  getActivityValues!: Sequelize.HasManyGetAssociationsMixin<ActivityValue>;
+  setActivityValues!: Sequelize.HasManySetAssociationsMixin<
+    ActivityValue,
+    ActivityValueId
+  >;
+  addActivityValue!: Sequelize.HasManyAddAssociationMixin<
+    ActivityValue,
+    ActivityValueId
+  >;
+  addActivityValues!: Sequelize.HasManyAddAssociationsMixin<
+    ActivityValue,
+    ActivityValueId
+  >;
+  createActivityValue!: Sequelize.HasManyCreateAssociationMixin<ActivityValue>;
+  removeActivityValue!: Sequelize.HasManyRemoveAssociationMixin<
+    ActivityValue,
+    ActivityValueId
+  >;
+  removeActivityValues!: Sequelize.HasManyRemoveAssociationsMixin<
+    ActivityValue,
+    ActivityValueId
+  >;
+  hasActivityValue!: Sequelize.HasManyHasAssociationMixin<
+    ActivityValue,
+    ActivityValueId
+  >;
+  hasActivityValues!: Sequelize.HasManyHasAssociationsMixin<
+    ActivityValue,
+    ActivityValueId
+  >;
+  countActivityValues!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof InventoryValue {
     return InventoryValue.init(

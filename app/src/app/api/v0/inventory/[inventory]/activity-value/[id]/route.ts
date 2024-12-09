@@ -35,13 +35,13 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 
 export const DELETE = apiHandler(async (_req, { params, session }) => {
   const id = z.string().uuid().parse(params.id);
-  // just for access control
 
+  // just for access control
   await UserService.findUserInventory(params.inventory, session);
 
-  const result = await ActivityService.deleteActivity(id);
+  await ActivityService.deleteActivity(id);
 
-  return NextResponse.json({ success: true, data: result });
+  return NextResponse.json({ success: true });
 });
 
 export const GET = apiHandler(async (_req, { params, session }) => {

@@ -588,7 +588,7 @@ export const api = createApi({
         method: "DELETE",
         url: `/inventory/${data.inventoryId}/activity-value/${data.activityValueId}`,
       }),
-      transformResponse: (response: any) => response.data,
+      transformResponse: (response: { success: boolean }) => response,
       invalidatesTags: [
         "ActivityValue",
         "InventoryValue",

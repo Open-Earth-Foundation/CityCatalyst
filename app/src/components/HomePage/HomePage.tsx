@@ -36,9 +36,11 @@ import { AddIcon } from "@chakra-ui/icons";
 export default function HomePage({
   lng,
   isPublic,
+  inventoryId,
 }: {
   lng: string;
   isPublic: boolean;
+  inventoryId?: string;
 }) {
   const { t } = useTranslation(lng, "dashboard");
   const router = useRouter();
@@ -47,31 +49,42 @@ export default function HomePage({
   isPublic || CheckUserSession();
 
   const { inventory: inventoryParam } = useParams();
+  const inventoryIdFromParam = inventoryId || inventoryParam;
   const { data: inventory, isLoading: isInventoryLoading } =
-    api.useGetInventoryQuery((inventoryParam as string) || "default");
+    api.useGetInventoryQuery((inventoryIdFromParam as string) || "default");
 
   // TODO also add this to login logic or after email verification to prevent extra redirect?
   // if the user doesn't have a default inventory or if path has a null inventory id, redirect to onboarding page
 
   useEffect(() => {
-    if (!inventoryParam && !isInventoryLoading && inventory) {
+    if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
       if (inventory.inventoryId) {
         // fix inventoryId in URL without reloading page
         const newPath = "/" + lng + "/" + inventory.inventoryId;
         history.replaceState(null, "", newPath);
+        if (typeof window !== "undefined") {
+          const currentPath = window.location.pathname;
+          if (!currentPath.endsWith("/")) {
+            router.replace(`${currentPath}/`);
+          }
+        } else {
+          return;
+        }
       } else {
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
         setTimeout(() => router.push(`/onboarding`), 0);
       }
     }
-  }, [isInventoryLoading, inventory, inventoryParam, lng, router]);
+  }, [isInventoryLoading, inventory, inventoryIdFromParam, lng, router]);
 
   // query API data
   // TODO maybe rework this logic into one RTK query:
   // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#performing-multiple-requests-with-a-single-query
 
   const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
-    api.useGetInventoryProgressQuery((inventoryParam as string) || "default");
+    api.useGetInventoryProgressQuery(
+      (inventoryIdFromParam as string) || "default",
+    );
 
   const { data: city } = api.useGetCityQuery(inventory?.cityId!, {
     skip: !inventory?.cityId,

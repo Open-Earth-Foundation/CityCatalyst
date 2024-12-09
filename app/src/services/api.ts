@@ -536,6 +536,7 @@ export const api = createApi({
         params: {
           subCategoryIds: subCategoryIds?.join(",") ?? undefined,
           subSectorId: subSectorId ?? undefined,
+          methodologyId: methodologyId ?? undefined,
         },
         method: "GET",
       }),

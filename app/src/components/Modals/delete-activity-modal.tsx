@@ -50,7 +50,7 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
       inventoryId,
       activityValueId: selectedActivityValue.id,
     });
-    if (response.data) {
+    if (response.data?.success) {
       // TODO create toast wrapper for success state
       toast({
         status: "success",

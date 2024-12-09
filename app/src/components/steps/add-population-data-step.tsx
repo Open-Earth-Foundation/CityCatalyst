@@ -22,7 +22,8 @@ import {
   Text,
 } from "@chakra-ui/react";
 import FormattedThousandsNumberInput from "@/app/[lng]/onboarding/setup/FormattedThousandsNumberInput";
-import { CheckIcon, InfoOutlineIcon } from "@chakra-ui/icons";
+import { InfoOutlineIcon } from "@chakra-ui/icons";
+import Checkmark from "./chekmark";
 
 export default function SetPopulationDataStep({
   t,
@@ -129,6 +130,15 @@ export default function SetPopulationDataStep({
       }
     }
   }, [countryData, year, setValue]);
+
+  const cityPopulation = watch("cityPopulation");
+  const cityPopulationYear = watch("cityPopulationYear");
+
+  const regionPopulation = watch("regionPopulation");
+  const regionPopulationYear = watch("regionPopulationYear");
+
+  const countryPopulation = watch("countryPopulation");
+  const countryPopulationYear = watch("countryPopulationYear");
 
   return (
     <Box w="full">
@@ -243,7 +253,9 @@ export default function SetPopulationDataStep({
                   mt={5}
                   mr={6}
                 >
-                  {!!year && <CheckIcon color="semantic.success" boxSize={4} />}
+                  <Checkmark
+                    condition={!!countryPopulationYear && !!countryPopulation}
+                  />
                 </InputRightElement>
               </InputGroup>
             </FormControl>
@@ -324,7 +336,9 @@ export default function SetPopulationDataStep({
                   ))}
                 </Select>
                 <InputRightElement mt={5} mr={6}>
-                  {!!year && <CheckIcon color="semantic.success" boxSize={4} />}
+                  <Checkmark
+                    condition={!!regionPopulationYear && !!regionPopulation}
+                  />
                 </InputRightElement>
               </InputGroup>
             </FormControl>
@@ -405,7 +419,9 @@ export default function SetPopulationDataStep({
                   ))}
                 </Select>
                 <InputRightElement mt={5} mr={6}>
-                  {!!year && <CheckIcon color="semantic.success" boxSize={4} />}
+                  <Checkmark
+                    condition={!!cityPopulationYear && !!cityPopulation}
+                  />
                 </InputRightElement>
               </InputGroup>
             </FormControl>

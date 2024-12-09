@@ -22,7 +22,8 @@ import {
   Text,
 } from "@chakra-ui/react";
 import FormattedThousandsNumberInput from "@/app/[lng]/onboarding/setup/FormattedThousandsNumberInput";
-import { CheckIcon, InfoOutlineIcon } from "@chakra-ui/icons";
+import { InfoOutlineIcon } from "@chakra-ui/icons";
+import Checkmark from "./chekmark";
 
 export default function SetPopulationDataStep({
   t,
@@ -252,9 +253,9 @@ export default function SetPopulationDataStep({
                   mt={5}
                   mr={6}
                 >
-                  {!!countryPopulationYear && countryPopulation && (
-                    <CheckIcon color="semantic.success" boxSize={4} />
-                  )}
+                  <Checkmark
+                    condition={!!countryPopulationYear && !!countryPopulation}
+                  />
                 </InputRightElement>
               </InputGroup>
             </FormControl>
@@ -335,9 +336,9 @@ export default function SetPopulationDataStep({
                   ))}
                 </Select>
                 <InputRightElement mt={5} mr={6}>
-                  {!!regionPopulationYear && regionPopulation && (
-                    <CheckIcon color="semantic.success" boxSize={4} />
-                  )}
+                  <Checkmark
+                    condition={!!regionPopulationYear && !!regionPopulation}
+                  />
                 </InputRightElement>
               </InputGroup>
             </FormControl>
@@ -418,9 +419,9 @@ export default function SetPopulationDataStep({
                   ))}
                 </Select>
                 <InputRightElement mt={5} mr={6}>
-                  {!!cityPopulationYear && !!cityPopulation && (
-                    <CheckIcon color="semantic.success" boxSize={4} />
-                  )}
+                  <Checkmark
+                    condition={!!cityPopulationYear && !!cityPopulation}
+                  />
                 </InputRightElement>
               </InputGroup>
             </FormControl>

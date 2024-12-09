@@ -359,8 +359,8 @@ export default class ActivityService {
     );
   }
 
-  public static async deleteActivity(id: string): Promise<number> {
-    return (await db.sequelize?.transaction(async (transaction) => {
+  public static async deleteActivity(id: string): Promise<void> {
+    return await db.sequelize?.transaction(async (transaction) => {
       const activityValue = await db.models.ActivityValue.findByPk(id, {
         include: {
           model: db.models.InventoryValue,
@@ -383,6 +383,8 @@ export default class ActivityService {
 
       const inventoryValue = activityValue?.inventoryValue;
 
+      await activityValue.destroy({ transaction });
+
       // delete the InventoryValue when its last ActivityValue is deleted
       if (inventoryValue?.activityValues.length <= 1) {
         await inventoryValue.destroy({ transaction });
@@ -403,11 +405,7 @@ export default class ActivityService {
 
         await inventoryValue.save({ transaction });
       }
-
-      return await db.models.ActivityValue.destroy({
-        where: { id },
-      });
-    })) as number;
+    });
   }
 
   public static async deleteAllActivitiesInSubsector({

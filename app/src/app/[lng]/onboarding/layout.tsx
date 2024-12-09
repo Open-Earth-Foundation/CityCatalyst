@@ -1,8 +1,9 @@
 "use client";
 
 import { NavigationBar } from "@/components/navigation-bar";
+import { Box } from "@chakra-ui/react";
 
-export default function AuthLayout({
+export default function OnboardingLayout({
   children,
   params: { lng },
 }: {
@@ -10,11 +11,13 @@ export default function AuthLayout({
   params: { lng: string };
 }) {
   return (
-    <main className="h-screen flex flex-col">
+    <Box
+      as="main"
+      bg="background.backgroundLight"
+      className="h-full flex flex-col"
+    >
       <NavigationBar lng={lng} showNav={false} />
-      <div className="w-full h-full bg-city bg-left-bottom bg-no-repeat px-8">
-        {children}
-      </div>
-    </main>
+      <Box className="w-full h-full bg-no-repeat px-8">{children}</Box>
+    </Box>
   );
 }

@@ -23,7 +23,7 @@ import {
 } from "@chakra-ui/react";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 import { MdOutlineHomeWork } from "react-icons/md";
 import {
   AnimatePresence,
@@ -34,10 +34,15 @@ import {
   useTransform,
 } from "framer-motion";
 import Link from "next/link";
-import { SECTORS } from "@/util/constants";
-import { InventoryValue } from "@/models/InventoryValue";
+import type { InventoryValueAttributes } from "@/models/InventoryValue";
+import { getScopesForInventoryAndSector, SECTORS } from "@/util/constants";
 
-const MotionBox = motion(Box);
+const MotionBox = motion(
+  // the display name is added below, but the linter isn't picking it up
+  // eslint-disable-next-line react/display-name
+  forwardRef<HTMLDivElement, any>((props, ref) => <Box ref={ref} {...props} />),
+);
+MotionBox.displayName = "MotionBox";
 
 const kebab = (str: string | undefined): string =>
   str
@@ -88,14 +93,12 @@ function SubSectorPage({
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
   const defaultInventoryId = userInfo?.defaultInventoryId;
+  const { data: inventoryData } = api.useGetInventoryQuery(inventoryId);
 
-  const {
-    data: inventoryProgress,
-    isLoading: isInventoryProgressLoading,
-    error: inventoryProgressError,
-  } = api.useGetInventoryProgressQuery(defaultInventoryId!, {
-    skip: !defaultInventoryId,
-  });
+  const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
+    api.useGetInventoryProgressQuery(defaultInventoryId!, {
+      skip: !defaultInventoryId,
+    });
 
   // map subsector to sector by reference number
 
@@ -121,54 +124,69 @@ function SubSectorPage({
     (sector) => sector.sector.referenceNumber === getSectorRefNo(step),
   );
 
-  const subSectorData: SubSectorAttributes = sectorData?.subSectors.find(
-    (subsectorItem) => subsectorItem.subsectorId === subsector,
-  );
-  const getSectorName = (currentScope: string) => {
-    return SECTORS[parseInt(currentScope) - 1].name;
+  const subSectorData: SubSectorAttributes | undefined =
+    sectorData?.subSectors.find(
+      (subSectorItem) => subSectorItem.subsectorId === subsector,
+    );
+  const getSectorName = (currentStep: string) => {
+    return SECTORS[parseInt(currentStep) - 1].name;
   };
 
   const getFilteredSubsectorScopes = () => {
+    if (!inventoryData) return [];
     return Object.entries(MANUAL_INPUT_HIERARCHY)
       .filter(([key]) => key.startsWith(subSectorData?.referenceNumber!))
-      .map(([k, v]) => ({
-        ...v,
-        referenceNumber: k,
-      }));
+      .map(([k, v]) => ({ ...v, referenceNumber: k }))
+      .filter((scope) =>
+        getScopesForInventoryAndSector(
+          inventoryData.inventoryType!,
+          scope.referenceNumber[0],
+        ).includes(scope.scope),
+      );
   };
-
   const scopes = getFilteredSubsectorScopes();
 
-  const MotionTabList = motion(TabList);
+  const MotionTabList = motion(
+    // the display name is added below, but the linter isn't picking it up
+    // eslint-disable-next-line react/display-name
+    forwardRef<HTMLDivElement, any>((props, ref) => (
+      <TabList ref={ref} {...props} />
+    )),
+  );
+  MotionTabList.displayName = "MotionTabList";
 
-  const [isLoading, setIsLoading] = useState(false);
-
-  const triggerMochLoading = () => {
-    setIsLoading(true);
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  };
+  const subSectorId = subSectorData?.subsectorId;
 
   const { data: activityData, isLoading: isActivityDataLoading } =
-    api.useGetActivityValuesQuery({
-      inventoryId,
-      subSectorId: subSectorData?.subsectorId,
-    });
+    api.useGetActivityValuesQuery(
+      { inventoryId, subSectorId },
+      { skip: !subSectorId }, // request fails without a subSectorId
+    );
 
   // fetch the inventoryValue for the selected scope
   const { data: inventoryValues, isLoading: isInventoryValueLoading } =
-    useGetInventoryValuesBySubsectorQuery({
-      inventoryId,
-      subSectorId: subSectorData?.subsectorId,
-    });
+    useGetInventoryValuesBySubsectorQuery(
+      {
+        inventoryId,
+        subSectorId: subSectorId ?? "",
+      },
+      { skip: !subSectorId },
+    );
+  const getFilteredInventoryValues = (
+    referenceNumber: string,
+  ): InventoryValueAttributes[] => {
+    return (
+      (inventoryValues as InventoryValueAttributes[] | undefined)?.filter(
+        (iv) => iv.gpcReferenceNumber === referenceNumber,
+      ) ?? []
+    );
+  };
 
   const loadingState =
-    isActivityDataLoading || isInventoryValueLoading || isLoading;
+    isActivityDataLoading ||
+    isInventoryValueLoading ||
+    isInventoryProgressLoading ||
+    isUserInfoLoading;
 
   return (
     <Tabs>
@@ -179,7 +197,7 @@ function SubSectorPage({
           paddingTop: paddingTop,
         }}
         borderColor="border.neutral"
-        borderBottomWidth={"1px"}
+        borderBottomWidth="1px"
       >
         <MotionBox className="w-[1090px] max-w-full mx-auto px-4">
           <AnimatePresence>
@@ -400,7 +418,7 @@ function SubSectorPage({
           </MotionTabList>
         </Box>
       </MotionBox>
-      <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4 pb-[100px] mt-[240px]">
+      <div className="pt-16 w-[1090px] max-w-full mx-auto px-4 pb-[100px] mt-[240px]">
         <Box mt="48px">
           <TabPanels>
             {loadingState ? (
@@ -416,13 +434,9 @@ function SubSectorPage({
                     subsectorId={subsector}
                     step={step}
                     activityData={activityData}
-                  inventoryValues={
-                    (inventoryValues as InventoryValue[])?.filter(
-                      (iv) =>
-                        iv.gpcReferenceNumber ===
-                        scope.referenceNumber,
-                    ) ?? []
-                  }
+                    inventoryValues={getFilteredInventoryValues(
+                      scope.referenceNumber,
+                    )}
                   />
                 );
               })

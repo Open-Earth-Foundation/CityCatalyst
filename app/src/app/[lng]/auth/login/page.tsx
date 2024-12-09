@@ -2,6 +2,7 @@
 
 import EmailInput from "@/components/email-input";
 import PasswordInput from "@/components/password-input";
+import { useAuthToast } from "@/hooks/useAuthToast";
 import { useTranslation } from "@/i18n/client";
 import { Link } from "@chakra-ui/next-js";
 import { Button, Heading, Text, useToast } from "@chakra-ui/react";
@@ -53,9 +54,8 @@ export default function Login({
   const searchParams = useSearchParams();
 
   const [error, setError] = useState("");
-  const defaultUrl = `/${lng}`;
   const callbackParam = searchParams.get("callbackUrl");
-  let callbackUrl = defaultUrl;
+  let callbackUrl = `/${lng}`;
   if (
     callbackParam &&
     callbackParam !== "null" &&
@@ -63,6 +63,7 @@ export default function Login({
   ) {
     callbackUrl = callbackParam;
   }
+  const { showLoginSuccessToast } = useAuthToast(t);
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
       const res = await signIn("credentials", {
@@ -71,6 +72,13 @@ export default function Login({
         password: data.password,
         callbackUrl,
       });
+
+      if (res?.ok) {
+        showLoginSuccessToast();
+        router.push(callbackUrl);
+        setError("");
+        return;
+      }
 
       if (!res?.error) {
         router.push(callbackUrl);

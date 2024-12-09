@@ -47,7 +47,7 @@ export function PublishedView({
       locale: getLocale(lng),
     });
 
-  const URL = `${window.location.protocol}//${window.location.host}${window.location.port ? `:${window.location.port}` : ""}/${lng}/public/${inventoryId}`;
+  const URL = `${window.location.protocol}//${window.location.host}/${lng}/public/${inventoryId}`;
 
   return (
     <ModalBody>

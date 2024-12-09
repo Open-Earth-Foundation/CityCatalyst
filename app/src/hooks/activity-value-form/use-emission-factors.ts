@@ -6,19 +6,22 @@ import { EmissionsFactorResponse } from "@/util/types";
 import { getTranslationFromDict } from "@/i18n";
 import { uniqBy } from "lodash";
 
+export interface EmissionFactorTypes {
+  id: string;
+  name: string;
+  reference: string;
+  gasValuesByGas: {
+    [gas: string]: {
+      gasValues: Record<string, any>[];
+    };
+  };
+}
+
 const reduceEmissionsToUniqueSourcesAndUnits = (
   emissionsFactors: EmissionsFactorResponse,
 ) => {
   const reducedMap: {
-    [key: string]: {
-      id: string;
-      name: string;
-      gasValuesByGas: {
-        [gas: string]: {
-          gasValues: Record<string, any>[];
-        };
-      };
-    };
+    [key: string]: EmissionFactorTypes;
   } = {};
 
   emissionsFactors.forEach((factor) => {
@@ -28,6 +31,7 @@ const reduceEmissionsToUniqueSourcesAndUnits = (
         reducedMap[source.datasourceId] = {
           id: source.datasourceId,
           name: getTranslationFromDict(source.datasetName) ?? "unknown",
+          reference: factor.reference as string,
           gasValuesByGas: {},
         };
       }
@@ -74,8 +78,6 @@ const reduceEmissionsToUniqueSourcesAndUnits = (
 const generateMetadataKey = (key: string) => {
   if (key.includes("fuel-type")) {
     return "fuel_type";
-  } else if (key.includes("transport-type") || key.includes("vehicle-type")) {
-    return "transport_type";
   } else if (key.includes("fugitive-emissions")) {
     return "activity_name";
   }

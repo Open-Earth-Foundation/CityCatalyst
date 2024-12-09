@@ -1,8 +1,10 @@
 {
   "ask-ai-expert": "Preguntale al Experto de IA",
   "ai-expert": "Experto IA",
-  "as-ai": "Preguntale a la IA",
+  "ask-ai": "Preguntale a la IA",
   "ask-assistant": "Pregúntale lo que quieras al asistente…",
   "initial-message": "Hola! Soy Clima, tu asistente virtual. Estoy aquí para guiarte a través del proceso de medición y reporte de las emisiones GEI de tu ciudad. ¿Cómo te puedo ayudar hoy?",
-  "regenerate": "Regenerar"
+  "regenerate": "Regenerar",
+  "send-message": "Enviar mensaje",
+  "stop-generation": "Detener generación"
 }

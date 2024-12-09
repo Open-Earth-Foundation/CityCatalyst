@@ -45,10 +45,10 @@
   "scope-unavailable": "Alcance no disponible/no aplicable a mi ciudad",
   "scope-unavailable-description": "Algunas actividades de emisiones pueden no ser relevantes para tu ciudad, o tal vez se contabilizan en una sección diferente. Verifica la razón que se ajusta y proporciona detalles si es necesario. Esto ayuda a mantener tu inventario preciso y adaptado a tu ciudad.",
   "select-reason": "Selecciona razón",
-  "select-reason-1": "La actividad o proceso no ocurre o no existe dentro de la ciudad",
-  "select-reason-2": "Las emisiones para esta actividad no son estimadas",
-  "select-reason-3": "Las emisiones podrían llevar a la divulgación de información confidencial",
-  "select-reason-4": "Las emisiones para esta actividad están estimadas y presentadas en otra parte",
+  "reason-NO": "La actividad o proceso no ocurre o no existe dentro de la ciudad",
+  "reason-NE": "Las emisiones para esta actividad no son estimadas",
+  "reason-C": "Las emisiones podrían llevar a la divulgación de información confidencial",
+  "reason-IE": "Las emisiones para esta actividad están estimadas y presentadas en otra parte",
   "explanation-justification": "Explicación/Justificación",
   "save-changes": "Guardar Cambios",
   "textarea-placeholder-text": "Escribe en detalle por qué este alcance no está incluido",
@@ -784,5 +784,11 @@
   "emissions-from-livestock-within-the-city-boundary": "Emisiones del ganado dentro de los límites de la ciudad",
   "emissions-from-land-within-the-city-boundary": "Emisiones de la tierra dentro de los límites de la ciudad",
   "emissions-from-aggregate-sources-and-non-co2-emission-sources-on-land-within-the-city-boundary": "Emisiones de fuentes agregadas y fuentes de emisión no CO2 en la tierra dentro de los límites de la ciudad",
-  "dependent-extra-field-placeholder": "Selecciona primero {{dependency}}"
+  "dependent-extra-field-placeholder": "Selecciona primero {{dependency}}",
+  "industrial-processes-direct-measure-methodology": "Medición directa",
+  "industrial-processes-direct-measure-methodology-description": "Medición directa de las emisiones de los procesos industriales.",
+  "product-use-direct-measure-methodology": "Medición directa",
+  "product-use-direct-measure-methodology-description": "Medición directa de las emisiones del uso de productos.",
+  "custom-emission-factor-reference": "Factor de Emisión Personalizado",
+  "custom-emission-factor-name": "Factor de emisión personalizado"
 }

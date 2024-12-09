@@ -36,6 +36,8 @@ export interface ExtraField {
   units?: string[];
   dependsOn?: string;
   dependentOptions?: Record<string, string[]>; // key is the option, value is the dependent options
+  max?: number;
+  min?: number;
 }
 
 export interface Activity {

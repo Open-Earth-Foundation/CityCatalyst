@@ -45,10 +45,10 @@
   "scope-unavailable": "Escopo Indisponível/Não Aplicável à Minha Cidade",
   "scope-unavailable-description": "Algumas atividades de emissões podem não ser relevantes para sua cidade, ou talvez estejam contabilizadas em uma seção diferente. Marque a razão que se encaixa e forneça detalhes, se necessário. Isso ajuda a manter seu inventário preciso e adaptado à sua cidade.",
   "select-reason": "Selecione a Razão",
-  "select-reason-1": "A atividade ou processo não ocorre ou existe dentro da cidade",
-  "select-reason-2": "As emissões para esta atividade não são estimadas",
-  "select-reason-3": "As emissões podem levar à divulgação de informações confidenciais",
-  "select-reason-4": "As emissões para esta atividade são estimadas e apresentadas em outro lugar",
+  "reason-NO": "A atividade ou processo não ocorre ou existe dentro da cidade",
+  "reason-NE": "As emissões para esta atividade não são estimadas",
+  "reason-C": "As emissões podem levar à divulgação de informações confidenciais",
+  "reason-IE": "As emissões para esta atividade são estimadas e apresentadas em outro lugar",
   "explanation-justification": "Explicação/Justificativa",
   "save-changes": "Salvar Alterações",
   "textarea-placeholder-text": "Escreva em detalhes por que este escopo não está incluído",
@@ -925,5 +925,11 @@
   "emissions-from-livestock-within-the-city-boundary": "Emissões de gado dentro dos limites da cidade",
   "emissions-from-land-within-the-city-boundary": "Emissões da terra dentro dos limites da cidade",
   "emissions-from-aggregate-sources-and-non-co2-emission-sources-on-land-within-the-city-boundary": "Emissões de fontes agregadas e fontes de emissão não CO2 na terra dentro dos limites da cidade",
-  "dependent-extra-field-placeholder": "Selecione primeiro {{dependency}}"
+  "dependent-extra-field-placeholder": "Selecione primeiro {{dependency}}",
+  "industrial-processes-direct-measure-methodology": "Medição direta",
+  "industrial-processes-direct-measure-methodology-description": "Medição direta das emissões dos processos industriais.",
+  "product-use-direct-measure-methodology": "Medição direta",
+  "product-use-direct-measure-methodology-description": "Medição direta das emissões do uso de produtos.",
+  "custom-emission-factor-reference": "Fator de Emissão Personalizado",
+  "custom-emission-factor-name": "Fator de emissão personalizado"
 }

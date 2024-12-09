@@ -131,5 +131,11 @@
   "cancel": "Abbrechen",
   "upload": "Hochladen",
   "select-placeholder": "Wählen Sie die Untersektoren aus, die in dieser Datei enthalten sind",
-  "dependent-extra-field-placeholder": "Wählen Sie zuerst {{dependency}}"
+  "dependent-extra-field-placeholder": "Wählen Sie zuerst {{dependency}}",
+  "industrial-processes-direct-measure-methodology": "Direkte Messung",
+  "industrial-processes-direct-measure-methodology-description": "Direkte Messung der Emissionen aus industriellen Prozessen.",
+  "product-use-direct-measure-methodology": "Direkte Messung",
+  "product-use-direct-measure-methodology-description": "Direkte Messung der Emissionen aus der Produktnutzung.",
+  "custom-emission-factor-reference": "Benutzerdefinierter Emissionsfaktor",
+  "custom-emission-factor-name": "Benutzerdefinierter Emissionsfaktor"
 }

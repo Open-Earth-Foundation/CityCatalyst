@@ -16,8 +16,14 @@ import {
   Methodology,
   SuggestedActivity,
 } from "@/util/form-schema";
-import { ActivityValue } from "@/models/ActivityValue";
-import { InventoryValue } from "@/models/InventoryValue";
+import type {
+  ActivityValue,
+  ActivityValueAttributes,
+} from "@/models/ActivityValue";
+import type {
+  InventoryValue,
+  InventoryValueAttributes,
+} from "@/models/InventoryValue";
 import EmissionDataSection from "@/components/Tabs/Activity/emission-data-section";
 import SelectMethodology from "@/components/Tabs/Activity/select-methodology";
 import ExternalDataSection from "@/components/Tabs/Activity/external-data-section";
@@ -35,9 +41,9 @@ interface ActivityTabProps {
   totalConsumptionUnit?: boolean;
   inventoryId: string;
   step: string;
-  activityData: ActivityValue[] | undefined;
+  activityData: ActivityValueAttributes[] | undefined;
   subsectorId: string;
-  inventoryValues: InventoryValue[];
+  inventoryValues: InventoryValueAttributes[];
 }
 
 const ActivityTab: FC<ActivityTabProps> = ({
@@ -65,15 +71,16 @@ const ActivityTab: FC<ActivityTabProps> = ({
   // extract the methodology used from the filtered scope
 
   const [methodology, setMethodology] = useState<Methodology | DirectMeasure>();
-
-  const getfilteredActivityValues = useMemo(() => {
+  const filteredActivityValues = useMemo(() => {
     let methodologyId: string | null | undefined = undefined;
     const filteredValues = activityData?.filter((activity) => {
-      let val = activity.inventoryValue.gpcReferenceNumber === referenceNumber;
-      if (val && !methodologyId) {
-        methodologyId = activity.inventoryValue.inputMethodology;
+      const activityValue = activity as unknown as ActivityValue; // TODO use InventoryValueResponse/ ActivityValueResponse everywhere
+      let isCurrentRefno =
+        activityValue.inventoryValue.gpcReferenceNumber === referenceNumber;
+      if (isCurrentRefno && !methodologyId) {
+        methodologyId = activityValue.inventoryValue.inputMethodology;
       }
-      return val;
+      return isCurrentRefno;
     });
 
     // TODO remove this. Only extract the methodology from the inventory value if it exists
@@ -93,7 +100,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
     }
 
     return filteredValues;
-  }, [activityData, referenceNumber]);
+  }, [activityData, referenceNumber, directMeasure, methodologies]);
 
   function getMethodologies() {
     const methodologies =
@@ -107,7 +114,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
     return inventoryValues?.find(
       (value) =>
         value.gpcReferenceNumber === referenceNumber &&
-        value.dataSource?.sourceType === "third_party",
+        (value as unknown as InventoryValue).dataSource,
     );
   }, [inventoryValues, referenceNumber]);
 
@@ -126,7 +133,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
     });
   };
 
-  const inventoryValue = useMemo<InventoryValue | null>(() => {
+  const inventoryValue = useMemo<InventoryValueAttributes | null>(() => {
     return (
       inventoryValues?.find(
         (value) =>
@@ -138,22 +145,9 @@ const ActivityTab: FC<ActivityTabProps> = ({
           value.unavailableExplanation,
       ) ?? null
     );
-  }, [inventoryValues, methodology]);
+  }, [inventoryValues, methodology, referenceNumber]);
 
-  const getActivityValuesByMethodology = (
-    activityValues: ActivityValue[] | undefined,
-  ) => {
-    const isDirectMeasure = methodology?.id.includes("direct-measure");
-
-    return activityValues?.filter((activity) =>
-      isDirectMeasure
-        ? activity.inventoryValue.inputMethodology === "direct-measure"
-        : activity.inventoryValue.inputMethodology !== "direct-measure",
-    );
-  };
-
-  const activityValues =
-    getActivityValuesByMethodology(getfilteredActivityValues) || [];
+  const activityValues = filteredActivityValues;
 
   const getSuggestedActivities = (): SuggestedActivity[] => {
     if (!selectedMethodology) return [];
@@ -207,12 +201,11 @@ const ActivityTab: FC<ActivityTabProps> = ({
 
   const notationKey = useMemo(() => {
     switch (inventoryValue?.unavailableReason) {
-      // TODO use better identifiers for the reasons (more descriptive)
-      case "select-reason-2":
+      case "reason-NE":
         return "notation-key-NE";
-      case "select-reason-3":
+      case "reason-C":
         return "notation-key-C";
-      case "select-reason-4":
+      case "reason-IE":
         return "notation-key-IE";
       default:
         return "notation-key-NO";
@@ -221,7 +214,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
 
   return (
     <>
-      <TabPanel p="0" pt="48px">
+      <TabPanel key={referenceNumber} p="0" pt="48px">
         <Box
           display="flex"
           alignItems="center"
@@ -337,7 +330,9 @@ const ActivityTab: FC<ActivityTabProps> = ({
           <Box h="auto" px="24px" py="32px" bg="base.light" borderRadius="8px">
             <ExternalDataSection
               t={t}
-              inventoryValue={externalInventoryValue}
+              inventoryValue={
+                externalInventoryValue as unknown as InventoryValue
+              }
             />
           </Box>
         )}
@@ -358,11 +353,11 @@ const ActivityTab: FC<ActivityTabProps> = ({
                   inventoryId={inventoryId}
                   subsectorId={subsectorId}
                   refNumberWithScope={referenceNumber}
-                  activityValues={activityValues}
+                  activityValues={activityValues as unknown as ActivityValue[]}
                   suggestedActivities={suggestedActivities}
                   totalEmissions={totalEmissions}
                   changeMethodology={changeMethodology}
-                  inventoryValue={inventoryValue}
+                  inventoryValue={inventoryValue as unknown as InventoryValue}
                 />
               </Box>
             ) : (

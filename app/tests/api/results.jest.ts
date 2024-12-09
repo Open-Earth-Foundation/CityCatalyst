@@ -21,6 +21,10 @@ import {
 } from "./results.data";
 import { Op } from "sequelize";
 import { City } from "@/models/City";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
+} from "@/util/enums";
 
 const locode = "XX_SUBCATEGORY_CITY";
 
@@ -42,6 +46,8 @@ describe("Results API", () => {
       ...baseInventory,
       inventoryName: "ReportResultInventory",
       cityId: city.cityId,
+      inventoryType: InventoryTypeEnum.GPC_BASIC,
+      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
     });
 
     await db.models.InventoryValue.bulkCreate(inventoryValuesData);
@@ -75,6 +81,7 @@ describe("Results API", () => {
           bySubSector: [
             {
               co2eq: "40399",
+              inventoryId: inventoryId,
               percentage: 55,
               scopeName: "1",
               sectorName: "Stationary Energy",
@@ -82,6 +89,7 @@ describe("Results API", () => {
             },
             {
               co2eq: "22388",
+              inventoryId: inventoryId,
               percentage: 31,
               scopeName: "1",
               sectorName: "Transportation",
@@ -89,6 +97,7 @@ describe("Results API", () => {
             },
             {
               co2eq: "10581",
+              inventoryId: inventoryId,
               percentage: 14,
               scopeName: "1",
               sectorName: "Waste",
@@ -114,7 +123,7 @@ describe("Results API", () => {
               sectorName: "Waste",
             },
           ],
-          total: 73368,
+          total: "73368",
         },
       },
     });

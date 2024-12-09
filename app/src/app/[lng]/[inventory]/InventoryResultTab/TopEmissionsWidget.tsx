@@ -20,7 +20,11 @@ import type {
   SectorEmission,
   TopEmission,
 } from "@/util/types";
-import { capitalizeFirstLetter, convertKgToTonnes } from "@/util/helpers";
+import {
+  capitalizeFirstLetter,
+  convertKgToTonnes,
+  toKebabCase,
+} from "@/util/helpers";
 import { api } from "@/services/api";
 import {
   SegmentedProgress,
@@ -40,7 +44,9 @@ const EmissionsTable = ({
       <Table variant="simple">
         <Thead>
           <Tr>
-            <Th sx={{ font: "bold", color: "black" }}>{t("subsector")}</Th>
+            <Th sx={{ font: "bold", color: "black" }} width={"50%"}>
+              {t("subsector")}
+            </Th>
             <Th sx={{ font: "bold", color: "black" }}>
               {t("total-emissions-CO2eq")}
             </Th>
@@ -50,20 +56,20 @@ const EmissionsTable = ({
         <Tbody>
           {(topEmissions || []).map((emission, index) => (
             <Tr key={index}>
-              <Td>
+              <Td sx={{ maxWidth: "50%", wordBreak: "break-word" }}>
                 <Text
                   fontFamily="heading"
                   className="text-sm leading-5 tracking-[0.5px]"
+                  sx={{ whiteSpace: "normal" }}
                 >
-                  {emission.subsectorName}
+                  {t(toKebabCase(emission.subsectorName))}
                 </Text>
                 <Text
                   fontFamily="heading"
                   color="content.tertiary"
                   className="text-xs leading-4 tracking-[0.5px] "
                 >
-                  {capitalizeFirstLetter(t("scope"))} {emission.scopeName} -{" "}
-                  {emission.sectorName}{" "}
+                  {`${capitalizeFirstLetter(t("scope"))} ${t(toKebabCase(emission.scopeName))} - ${t(toKebabCase(emission.sectorName))}`}
                 </Text>
               </Td>
               <Td>{convertKgToTonnes(emission.co2eq)}</Td>
@@ -79,9 +85,11 @@ const EmissionsTable = ({
 const TopEmissionsWidget = ({
   t,
   inventory,
+  isPublic,
 }: {
   t: Function & TFunction<"translation", undefined>;
   inventory?: InventoryResponse;
+  isPublic: boolean;
 }) => {
   const { data: results, isLoading: isTopEmissionsResponseLoading } =
     api.useGetResultsQuery(inventory!.inventoryId!);
@@ -109,7 +117,7 @@ const TopEmissionsWidget = ({
         </Card>
       </HStack>
     );
-  } else if (results!.totalEmissions.total <= 0) {
+  } else if (results!?.totalEmissions.total <= 0) {
     return (
       <>
         <Card width={"713px"} height={"448px"}>
@@ -119,6 +127,7 @@ const TopEmissionsWidget = ({
             height={"344px"}
             t={t}
             inventoryId={inventory?.inventoryId}
+            isPublic={isPublic}
           />
         </Card>
       </>
@@ -147,7 +156,7 @@ const TopEmissionsWidget = ({
                 </Heading>
               </Box>
               <EmissionsTable
-                topEmissions={results!.topEmissions.bySubSector}
+                topEmissions={results!?.topEmissions.bySubSector}
                 t={t}
               />
             </>

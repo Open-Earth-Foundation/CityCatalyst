@@ -1,75 +1,34 @@
 "use client";
 
-import RecentSearches from "@/components/recent-searches";
-import WizardSteps from "@/components/wizard-steps";
-import { set } from "@/features/city/openclimateCitySlice";
 import { useTranslation } from "@/i18n/client";
-import { useAppDispatch } from "@/lib/hooks";
 import type { CityAttributes } from "@/models/City";
 import {
   api,
   useAddCityMutation,
   useAddCityPopulationMutation,
   useAddInventoryMutation,
-  useGetOCCityDataQuery,
-  useGetOCCityQuery,
   useSetUserInfoMutation,
 } from "@/services/api";
-import {
-  findClosestYear,
-  getShortenNumberUnit,
-  shortenNumber,
-} from "@/util/helpers";
+
 import { OCCityAttributes } from "@/util/types";
-import {
-  ArrowBackIcon,
-  CheckIcon,
-  InfoOutlineIcon,
-  SearchIcon,
-} from "@chakra-ui/icons";
-import { Link } from "@chakra-ui/next-js";
-import {
-  Box,
-  Button,
-  Card,
-  Flex,
-  FormControl,
-  FormErrorIcon,
-  FormErrorMessage,
-  FormLabel,
-  HStack,
-  Heading,
-  Icon,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  InputRightElement,
-  Select,
-  Text,
-  useOutsideClick,
-  useSteps,
-  useToast,
-} from "@chakra-ui/react";
-import type { TFunction } from "i18next";
-import dynamic from "next/dynamic";
+import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
+import { Box, Button, Text, useSteps, useToast } from "@chakra-ui/react";
+
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import type {
-  Control,
-  FieldErrors,
-  SubmitHandler,
-  UseFormRegister,
-} from "react-hook-form";
+import { useState } from "react";
+import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
-import { Trans } from "react-i18next/TransWithoutContext";
-import { MdOutlineAspectRatio, MdOutlinePeopleAlt } from "react-icons/md";
-import FormattedThousandsNumberInput from "@/app/[lng]/onboarding/setup/FormattedThousandsNumberInput";
+import SelectCityStep from "@/components/steps/select-city-steps";
+import SetInventoryDetailsStep from "@/components/steps/add-inventory-details-step";
+import SetPopulationDataStep from "@/components/steps/add-population-data-step";
+import ConfirmStep from "@/components/steps/confirm-city-data-step";
+import ProgressSteps from "@/components/steps/progress-steps";
 
-const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
-
-type Inputs = {
+export type Inputs = {
   city: string;
   year: number;
+  inventoryGoal: string;
+  globalWarmingPotential: string;
   cityPopulation: number;
   cityPopulationYear: number;
   regionPopulation: number;
@@ -79,617 +38,18 @@ type Inputs = {
   totalCountryEmissions: number;
 };
 
-type PopulationEntry = {
-  year: number;
-  population: number;
-  datasource_id: string;
-};
-
-type CountryEmissionsEntry = {
+export type CountryEmissionsEntry = {
   year: number;
   total_emissions: number;
 };
 
-type OnboardingData = {
+export type OnboardingData = {
   name: string;
   locode: string;
   year: number;
+  inventoryGoal: string;
+  globalWarmingPotential: string;
 };
-
-function SetupStep({
-  errors,
-  register,
-  control,
-  t,
-  setValue,
-  watch,
-  ocCityData,
-  setOcCityData,
-  setData,
-}: {
-  errors: FieldErrors<Inputs>;
-  register: UseFormRegister<Inputs>;
-  control: Control<Inputs>;
-  t: TFunction;
-  setValue: any;
-  watch: Function;
-  ocCityData?: OCCityAttributes;
-  setOcCityData: (cityData: OCCityAttributes) => void;
-  setData: (data: OnboardingData) => void;
-}) {
-  const currentYear = new Date().getFullYear();
-  const numberOfYearsDisplayed = 10;
-  const years = Array.from(
-    { length: numberOfYearsDisplayed },
-    (_x, i) => currentYear - i,
-  );
-
-  const dispatch = useAppDispatch();
-
-  const [onInputClicked, setOnInputClicked] = useState<boolean>(false);
-  const [isCityNew, setIsCityNew] = useState<boolean>(false);
-  const [locode, setLocode] = useState<string | null>(null);
-
-  const yearInput = watch("year");
-  const year: number | null = yearInput ? parseInt(yearInput) : null;
-  const cityInputQuery = watch("city");
-  const cityPopulationYear = watch("cityPopulationYear");
-  const regionPopulationYear = watch("regionPopulationYear");
-  const countryPopulationYear = watch("countryPopulationYear");
-
-  const handleSetCity = (city: OCCityAttributes) => {
-    setValue("city", city.name);
-    setOnInputClicked(false);
-    dispatch(set(city));
-    setLocode(city.actor_id);
-    setOcCityData(city);
-
-    if (year) {
-      setData({
-        name: city.name,
-        locode: city.actor_id,
-        year: year!,
-      });
-    }
-
-    setIsCityNew(true);
-  };
-
-  useEffect(() => {
-    if (year && ocCityData) {
-      setData({
-        name: ocCityData.name,
-        locode: ocCityData.actor_id,
-        year: year!,
-      });
-    }
-  }, [year, ocCityData, setData]);
-
-  useEffect(() => {
-    if (!cityInputQuery || cityInputQuery.length === 0) {
-      setOnInputClicked(false);
-      setIsCityNew(false);
-    }
-  }, [cityInputQuery]);
-
-  useEffect(() => {
-    // reset population data when locode changes to prevent keeping data from previous city
-    setValue("cityPopulationYear", null);
-    setValue("cityPopulation", null);
-    setValue("regionPopulation", null);
-    setValue("regionYear", null);
-    setValue("countryPopulation", null);
-    setValue("countryYear", null);
-    setValue("totalCountryEmissions", null);
-  }, [locode, setValue]);
-
-  const { data: cityData } = useGetOCCityDataQuery(locode!, {
-    skip: !locode,
-  });
-  const countryLocode =
-    locode && locode.length > 0 ? locode.split(" ")[0] : null;
-  const { data: countryData } = useGetOCCityDataQuery(countryLocode!, {
-    skip: !countryLocode,
-  });
-  const regionLocode = cityData?.is_part_of;
-  const { data: regionData } = useGetOCCityDataQuery(regionLocode!, {
-    skip: !regionLocode,
-  });
-
-  // react to API data changes and different year selections
-  useEffect(() => {
-    if (cityData && year) {
-      const population = findClosestYear(
-        cityData.population,
-        year,
-        numberOfYearsDisplayed,
-      );
-      if (!population) {
-        console.error("Failed to find population data for city");
-        return;
-      }
-      setValue("cityPopulation", population.population);
-      setValue("cityPopulationYear", population.year);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cityData, year, setValue]);
-
-  useEffect(() => {
-    if (regionData && year) {
-      const population = findClosestYear(
-        regionData.population,
-        year,
-        numberOfYearsDisplayed,
-      );
-      if (!population) {
-        console.error("Failed to find population data for region");
-        return;
-      }
-      setValue("regionPopulation", population.population);
-      setValue("regionPopulationYear", population.year);
-    }
-  }, [regionData, year, setValue]);
-
-  useEffect(() => {
-    if (countryData && year) {
-      const population = findClosestYear(
-        countryData.population,
-        year,
-        numberOfYearsDisplayed,
-      );
-      if (!population) {
-        console.error("Failed to find population data for region");
-        return;
-      }
-      setValue("countryPopulation", population.population);
-      setValue("countryPopulationYear", population.year);
-      const keys = Object.keys(countryData.emissions);
-      const sourceId = keys.find((id) => id.startsWith("UNFCCC"));
-
-      if (sourceId) {
-        const emissionsData: CountryEmissionsEntry[] =
-          countryData.emissions[sourceId].data;
-        const emissions = emissionsData.find(
-          (e) => e.year === year,
-        )?.total_emissions;
-        if (emissions == null) {
-          console.error("Failed to find country emissions for ", year);
-        }
-        setValue("totalCountryEmissions", emissions);
-      }
-    }
-  }, [countryData, year, setValue]);
-
-  // import custom redux hooks
-  const {
-    data: cities,
-    isLoading,
-    isSuccess,
-  } = useGetOCCityQuery(cityInputQuery, {
-    skip: cityInputQuery?.length <= 2,
-  });
-
-  const renderParentPath = (path: []) => {
-    let pathString = "";
-    const pathCopy = [...path];
-
-    pathCopy
-      ?.reverse()
-      .slice(1)
-      .map((parent: any) => {
-        if (pathString) {
-          pathString = pathString + " > ";
-        }
-        pathString = pathString + parent.name;
-      });
-
-    return pathString;
-  };
-
-  // using useOutsideClick instead of onBlur input attribute
-  // to fix clicking city dropdown entries not working
-  const cityInputRef = useRef<HTMLDivElement>(null);
-  useOutsideClick({
-    ref: cityInputRef,
-    handler: () => setTimeout(() => setOnInputClicked(false), 0),
-  });
-
-  return (
-    <>
-      <Box minW={400}>
-        <Heading size="xl">{t("setup-heading")}</Heading>
-        <Text className="my-4" color="tertiary">
-          {t("setup-details")}
-        </Text>
-      </Box>
-      <Box w="full">
-        <Card p={6}>
-          <form className="space-y-8">
-            <FormControl isInvalid={!!errors.city}>
-              <FormLabel>{t("select-city")}</FormLabel>
-              <InputGroup ref={cityInputRef}>
-                <InputLeftElement pointerEvents="none">
-                  <SearchIcon color="tertiary" boxSize={4} mt={2} ml={4} />
-                </InputLeftElement>
-                <Input
-                  type="text"
-                  placeholder={t("select-city-placeholder")}
-                  size="lg"
-                  {...register("city", {
-                    required: t("select-city-required"),
-                  })}
-                  autoComplete="off"
-                  onKeyUp={() => setOnInputClicked(true)}
-                  onFocus={() => setOnInputClicked(true)}
-                />
-                <InputRightElement>
-                  {isCityNew && (
-                    <CheckIcon
-                      color="semantic.success"
-                      boxSize={4}
-                      mr={4}
-                      mt={2}
-                    />
-                  )}
-                </InputRightElement>
-              </InputGroup>
-              {onInputClicked && (
-                <Box
-                  shadow="2dp"
-                  className="h-auto max-h-[272px] transition-all duration-150 overflow-scroll flex flex-col py-3 gap-3 rounded-lg w-full absolute bg-white z-50 mt-2 border border-[1px solid #E6E7FF]"
-                >
-                  {!isLoading && !cityInputQuery && <RecentSearches />}
-                  {isLoading && <p className="px-4">Fetching Cities...</p>}
-                  {isSuccess &&
-                    cities &&
-                    cities.map((city: OCCityAttributes) => {
-                      return (
-                        <Box
-                          onClick={() => handleSetCity(city)}
-                          key={city.actor_id}
-                          className="h-[72px] py-3 w-full flex flex-col justify-center group px-4 hover:bg-[#2351DC] transition-all duration-150 cursor-pointer"
-                        >
-                          <Text
-                            className="group-hover:text-white"
-                            color="content.secondary"
-                            fontSize="body.lg"
-                            fontFamily="body"
-                            fontWeight="normal"
-                            lineHeight="24"
-                            letterSpacing="wide"
-                          >
-                            {city.name}
-                          </Text>
-                          <Text
-                            className="group-hover:text-[#E8EAFB]"
-                            color="content.tertiary"
-                            fontSize="body.lg"
-                            fontFamily="body.md"
-                            fontWeight="normal"
-                            lineHeight="20"
-                            letterSpacing="wide"
-                          >
-                            {renderParentPath(city.root_path_geo)}
-                          </Text>
-                        </Box>
-                      );
-                    })}
-                </Box>
-              )}
-              <FormErrorMessage>
-                {errors.city && errors.city.message}
-              </FormErrorMessage>
-            </FormControl>
-            <FormControl isInvalid={!!errors.year}>
-              <FormLabel>{t("inventory-year")}</FormLabel>
-              <InputGroup>
-                <Select
-                  placeholder={t("inventory-year-placeholder")}
-                  size="lg"
-                  {...register("year", {
-                    required: t("inventory-year-required"),
-                  })}
-                >
-                  {years.map((year: number, i: number) => (
-                    <option value={year} key={i}>
-                      {year}
-                    </option>
-                  ))}
-                </Select>
-                <InputRightElement>
-                  {!!year && (
-                    <CheckIcon
-                      color="semantic.success"
-                      boxSize={4}
-                      mt={2}
-                      mr={10}
-                    />
-                  )}
-                </InputRightElement>
-              </InputGroup>
-              <FormErrorMessage>
-                {errors.year && errors.year.message}
-              </FormErrorMessage>
-            </FormControl>
-            <HStack spacing={6} align="start">
-              <FormControl isInvalid={!!errors.cityPopulation}>
-                <FormLabel>{t("city-population-title")}</FormLabel>
-                <FormattedThousandsNumberInput<Inputs>
-                  name="cityPopulation"
-                  control={control}
-                  rules={{
-                    required: t("population-required"),
-                  }}
-                  placeholder={t("city-population-placeholder")}
-                  size="lg"
-                />
-                <FormErrorMessage
-                  color="content.tertiary"
-                  letterSpacing="0.5px"
-                >
-                  <FormErrorIcon />
-                  {errors.cityPopulation && errors.cityPopulation.message}
-                </FormErrorMessage>
-              </FormControl>
-
-              <FormControl isInvalid={!!errors.cityPopulationYear} w={60}>
-                <FormLabel>{t("population-year")}</FormLabel>
-                <InputGroup>
-                  <Select
-                    placeholder={t("year-placeholder")}
-                    size="lg"
-                    {...register("cityPopulationYear", {
-                      required: t("required"),
-                      valueAsNumber: true,
-                    })}
-                  >
-                    {years.map((year: number, i: number) => (
-                      <option value={year} key={i}>
-                        {year}
-                      </option>
-                    ))}
-                  </Select>
-                  {cityPopulationYear ? (
-                    <InputRightElement>
-                      <CheckIcon
-                        color="semantic.success"
-                        boxSize={4}
-                        mt={2}
-                        mr={10}
-                      />
-                    </InputRightElement>
-                  ) : null}
-                </InputGroup>
-                <FormErrorMessage
-                  color="content.tertiary"
-                  letterSpacing="0.5px"
-                >
-                  <FormErrorIcon />
-                  {errors.cityPopulationYear &&
-                    errors.cityPopulationYear.message}
-                </FormErrorMessage>
-              </FormControl>
-            </HStack>
-            <HStack spacing={6} align="start">
-              <FormControl isInvalid={!!errors.regionPopulation}>
-                <FormLabel>{t("region-population-title")}</FormLabel>
-                <FormattedThousandsNumberInput<Inputs>
-                  control={control}
-                  rules={{
-                    required: t("population-required"),
-                  }}
-                  placeholder={t("region-population-placeholder")}
-                  size="lg"
-                  {...register("regionPopulation", {
-                    required: t("population-required"),
-                    valueAsNumber: true,
-                  })}
-                  name="regionPopulation"
-                />
-                <FormErrorMessage
-                  color="content.tertiary"
-                  letterSpacing="0.5px"
-                >
-                  <FormErrorIcon />
-                  {errors.regionPopulation && errors.regionPopulation.message}
-                </FormErrorMessage>
-              </FormControl>
-              <FormControl isInvalid={!!errors.regionPopulationYear} w={60}>
-                <FormLabel>{t("population-year")}</FormLabel>
-                <InputGroup>
-                  <Select
-                    placeholder={t("year-placeholder")}
-                    size="lg"
-                    {...register("regionPopulationYear", {
-                      required: t("required"),
-                      valueAsNumber: true,
-                    })}
-                  >
-                    {years.map((year: number, i: number) => (
-                      <option value={year} key={i}>
-                        {year}
-                      </option>
-                    ))}
-                  </Select>
-                  {regionPopulationYear ? (
-                    <InputRightElement>
-                      <CheckIcon
-                        color="semantic.success"
-                        boxSize={4}
-                        mt={2}
-                        mr={10}
-                      />
-                    </InputRightElement>
-                  ) : null}
-                </InputGroup>
-                <FormErrorMessage
-                  color="content.tertiary"
-                  letterSpacing="0.5px"
-                >
-                  <FormErrorIcon />
-                  {errors.regionPopulationYear &&
-                    errors.regionPopulationYear.message}
-                </FormErrorMessage>
-              </FormControl>
-            </HStack>
-            <HStack spacing={6} align="start">
-              <FormControl isInvalid={!!errors.countryPopulation}>
-                <FormLabel>{t("country-population-title")}</FormLabel>
-                <FormattedThousandsNumberInput<Inputs>
-                  name="countryPopulation"
-                  control={control}
-                  rules={{
-                    required: t("population-required"),
-                  }}
-                  placeholder={t("country-population-placeholder")}
-                  size="lg"
-                />
-                <FormErrorMessage
-                  color="content.tertiary"
-                  letterSpacing="0.5px"
-                >
-                  <FormErrorIcon />
-                  {errors.countryPopulation && errors.countryPopulation.message}
-                </FormErrorMessage>
-              </FormControl>
-              <FormControl isInvalid={!!errors.countryPopulationYear} w={60}>
-                <FormLabel>{t("population-year")}</FormLabel>
-                <InputGroup>
-                  <Select
-                    placeholder={t("year-placeholder")}
-                    size="lg"
-                    {...register("countryPopulationYear", {
-                      required: t("required"),
-                      valueAsNumber: true,
-                    })}
-                  >
-                    {years.map((year: number, i: number) => (
-                      <option value={year} key={i}>
-                        {year}
-                      </option>
-                    ))}
-                  </Select>
-                  {countryPopulationYear ? (
-                    <InputRightElement>
-                      <CheckIcon
-                        color="semantic.success"
-                        boxSize={4}
-                        mt={2}
-                        mr={10}
-                      />
-                    </InputRightElement>
-                  ) : null}
-                </InputGroup>
-                <FormErrorMessage
-                  color="content.tertiary"
-                  letterSpacing="0.5px"
-                >
-                  <FormErrorIcon />
-                  {errors.countryPopulationYear &&
-                    errors.countryPopulationYear.message}
-                </FormErrorMessage>
-              </FormControl>
-            </HStack>
-            <HStack spacing={1.5} align="start">
-              <InfoOutlineIcon color="interactive.secondary" mt={1} />
-              <Text
-                color="content.tertiary"
-                fontSize="sm"
-                whiteSpace="pre-line"
-              >
-                {t("information-required")}
-              </Text>
-            </HStack>
-          </form>
-        </Card>
-        <Text color="tertiary" mt={6} fontSize="sm">
-          {t("gpc-basic-message")}
-        </Text>
-      </Box>
-    </>
-  );
-}
-
-function ConfirmStep({
-  cityName,
-  t,
-  locode,
-  area,
-  population,
-}: {
-  cityName: String;
-  t: TFunction;
-  locode: string;
-  area: number;
-  population?: number;
-}) {
-  return (
-    <>
-      <div>
-        <Heading size="lg">{t("confirm-heading")}</Heading>
-        <Text className="my-4" color="tertiary">
-          <Trans t={t} i18nKey="confirm-details">
-            Review and confirm this information about your city. If there is an
-            error please send us an email to edit it. We use{" "}
-            <Link
-              href="https://openclimate.network"
-              target="_blank"
-              rel="noreferrer"
-            >
-              open data sources
-            </Link>{" "}
-            to pre-fill the city profile.
-          </Trans>
-        </Text>
-      </div>
-      <div>
-        <Card px={6} py={8}>
-          <Heading fontSize="xl" color="brand">
-            {cityName}
-          </Heading>
-          <Flex w={441} mt={12} justify="space-between">
-            <div>
-              <Icon as={MdOutlinePeopleAlt} boxSize={6} mt={1} mr={2} />
-              <Box>
-                <Text fontSize="xl">
-                  {population ? (
-                    <>
-                      {shortenNumber(population)}
-                      {getShortenNumberUnit(population)}
-                    </>
-                  ) : (
-                    "N/A"
-                  )}
-                </Text>
-                <Text fontSize="xs">{t("total-population")}</Text>
-              </Box>
-            </div>
-            <div>
-              <Icon as={MdOutlineAspectRatio} boxSize={6} mt={1} mr={2} />
-              <Box>
-                <Text fontSize="xl">
-                  {area && area > 0 ? (
-                    <>
-                      {" "}
-                      {Math.round(area)}km<sup>2</sup>
-                    </>
-                  ) : (
-                    "N/A"
-                  )}
-                </Text>
-                <Text fontSize="xs">{t("total-land-area")}</Text>
-              </Box>
-            </div>
-          </Flex>
-          <Text mb={4} mt={7}>
-            {t("geographical-boundaries")}
-          </Text>
-          <CityMap locode={locode} height={400} width={450} />
-        </Card>
-      </div>
-    </>
-  );
-}
 
 export default function OnboardingSetup({
   params: { lng },
@@ -709,7 +69,13 @@ export default function OnboardingSetup({
     formState: { errors, isSubmitting },
   } = useForm<Inputs>();
 
-  const steps = [{ title: t("setup-step") }, { title: t("confirm-step") }];
+  const steps = [
+    { title: t("setup-step") },
+    { title: t("set-inventory-details-step") },
+    { title: t("set-population-step") },
+    { title: t("confirm-step") },
+  ];
+
   const { activeStep, goToNext, goToPrevious } = useSteps({
     index: 0,
     count: steps.length,
@@ -724,6 +90,8 @@ export default function OnboardingSetup({
     name: "",
     locode: "",
     year: -1,
+    inventoryGoal: "",
+    globalWarmingPotential: "",
   });
   const [ocCityData, setOcCityData] = useState<OCCityAttributes>();
   const [isConfirming, setConfirming] = useState(false);
@@ -739,12 +107,25 @@ export default function OnboardingSetup({
     });
   };
 
+  // Population data
+
   const cityPopulation = watch("cityPopulation");
   const regionPopulation = watch("regionPopulation");
   const countryPopulation = watch("countryPopulation");
   const cityPopulationYear = watch("cityPopulationYear");
   const regionPopulationYear = watch("regionPopulationYear");
   const countryPopulationYear = watch("countryPopulationYear");
+
+  // Inventory data
+  const inventoryGoal = watch("inventoryGoal");
+  const globalWarmingPotential = watch("globalWarmingPotential");
+
+  const currentYear = new Date().getFullYear();
+  const numberOfYearsDisplayed = 10;
+  const years = Array.from(
+    { length: numberOfYearsDisplayed },
+    (_x, i) => currentYear - i,
+  );
 
   const { data: cityArea, isLoading: isCityAreaLoading } =
     api.useGetCityBoundaryQuery(data.locode!, {
@@ -795,9 +176,11 @@ export default function OnboardingSetup({
     try {
       const inventory = await addInventory({
         cityId: city?.cityId!,
-        year: data.year,
+        year: typeof data.year === "string" ? parseInt(data.year) : data.year,
         inventoryName: `${data.name} - ${data.year}`,
         totalCountryEmissions: getValues("totalCountryEmissions"),
+        inventoryType: inventoryGoal,
+        globalWarmingPotentialType: globalWarmingPotential,
       }).unwrap();
       await setUserInfo({
         cityId: city?.cityId!,
@@ -819,22 +202,13 @@ export default function OnboardingSetup({
     }
   };
 
-  const onSubmit: SubmitHandler<Inputs> = async (newData) => {
-    const year = Number(newData.year);
-
+  const onSubmit: SubmitHandler<Inputs> = async (formData) => {
     setData({
-      name: newData.city,
-      locode: data.locode!,
-      year,
+      ...data,
+      ...formData,
+      locode: ocCityData?.actor_id!,
+      name: ocCityData?.name!,
     });
-
-    if (!newData.city || !ocCityData?.actor_id || year < 0 || !data.locode) {
-      // TODO show user toast? These should normally be caught by validation logic
-      makeErrorToast("Missing data, can't go to next step!");
-      console.error("Missing data, can't go to next step!");
-      return;
-    }
-
     goToNext();
   };
 
@@ -844,18 +218,16 @@ export default function OnboardingSetup({
         <Button
           variant="ghost"
           leftIcon={<ArrowBackIcon boxSize={6} />}
-          onClick={() => router.back()}
+          onClick={() => {
+            activeStep === 0 ? router.back() : goToPrevious();
+          }}
+          pl={0}
         >
           Go Back
         </Button>
-        <div className="w-full flex justify-center">
-          <div className="w-[800px]">
-            <WizardSteps steps={steps} currentStep={activeStep} />
-          </div>
-        </div>
         <div className="flex flex-col md:flex-row md:space-x-12 md:space-y-0 space-y-12 align-top mt-8 md:mt-16 mb-48">
           {activeStep === 0 && (
-            <SetupStep
+            <SelectCityStep
               errors={errors}
               setValue={setValue}
               register={register}
@@ -868,57 +240,122 @@ export default function OnboardingSetup({
             />
           )}
           {activeStep === 1 && (
+            <SetInventoryDetailsStep
+              t={t}
+              register={register}
+              errors={errors}
+              control={control}
+              setValue={setValue}
+              years={years}
+            />
+          )}
+          {activeStep === 2 && (
+            <SetPopulationDataStep
+              t={t}
+              register={register}
+              control={control}
+              errors={errors}
+              years={years}
+              numberOfYearsDisplayed={numberOfYearsDisplayed}
+              setData={setData}
+              setOcCityData={setOcCityData}
+              setValue={setValue}
+              watch={watch}
+              ocCityData={ocCityData}
+            />
+          )}
+          {activeStep === 3 && (
             <ConfirmStep
               cityName={getValues("city")}
               t={t}
               locode={data.locode}
               area={cityArea?.area!}
               population={cityPopulation}
+              inventoryGoal={getValues("inventoryGoal")}
+              year={getValues("year")}
             />
           )}
         </div>
-        <div className="bg-white w-full fixed z-[9999] bottom-0 left-0 border-t-4 border-brand flex flex-row py-8 px-8 drop-shadow-2xl hover:drop-shadow-4xl transition-all">
-          <Box className="w-full">
-            <Text fontSize="sm">Step {activeStep + 1}</Text>
-            <Text fontSize="2xl" as="b">
-              {steps[activeStep]?.title}
-            </Text>
+        <div className="bg-white w-full fixed z-[9999] bottom-0 left-0  pb-8 px-1 transition-all">
+          <Box w="full" display="flex" flexDir="column" gap="32px">
+            <Box className="w-full">
+              <div className="w-full">
+                <ProgressSteps steps={steps} currentStep={activeStep} />
+              </div>
+            </Box>
+            <Box w="full" display="flex" justifyContent="end" px="135px">
+              {activeStep == 0 && (
+                <Button
+                  w="auto"
+                  gap="8px"
+                  py="16px"
+                  px="24px"
+                  onClick={handleSubmit(onSubmit)}
+                  h="64px"
+                  type="submit"
+                  rightIcon={<ArrowForwardIcon h="24px" w="24px" />}
+                >
+                  <Text
+                    fontFamily="button.md"
+                    fontWeight="600"
+                    letterSpacing="wider"
+                  >
+                    {t("continue")}
+                  </Text>
+                </Button>
+              )}
+              {activeStep == 1 && (
+                <Button
+                  w="auto"
+                  gap="8px"
+                  py="16px"
+                  onClick={handleSubmit(onSubmit)}
+                  px="24px"
+                  h="64px"
+                  rightIcon={<ArrowForwardIcon h="24px" w="24px" />}
+                >
+                  <Text
+                    fontFamily="button.md"
+                    fontWeight="600"
+                    letterSpacing="wider"
+                  >
+                    {t("continue")}
+                  </Text>
+                </Button>
+              )}
+              {activeStep == 2 && (
+                <Button
+                  w="auto"
+                  gap="8px"
+                  py="16px"
+                  onClick={handleSubmit(onSubmit)}
+                  px="24px"
+                  h="64px"
+                  rightIcon={<ArrowForwardIcon h="24px" w="24px" />}
+                >
+                  <Text
+                    fontFamily="button.md"
+                    fontWeight="600"
+                    letterSpacing="wider"
+                  >
+                    {t("continue")}
+                  </Text>
+                </Button>
+              )}
+              {activeStep == 3 && (
+                <Button
+                  h={16}
+                  w="auto"
+                  isLoading={isConfirming}
+                  px="24px"
+                  onClick={onConfirm}
+                  rightIcon={<ArrowForwardIcon h="24px" w="24px" />}
+                >
+                  {t("continue")}
+                </Button>
+              )}
+            </Box>
           </Box>
-          {activeStep == 0 ? (
-            <Button
-              h={16}
-              isLoading={isSubmitting}
-              onClick={() => handleSubmit(onSubmit)()}
-              px={12}
-              size="sm"
-            >
-              {t("save-button")}
-            </Button>
-          ) : (
-            <>
-              <Button
-                h={16}
-                onClick={() => goToPrevious()}
-                w={400}
-                variant="ghost"
-                leftIcon={<SearchIcon />}
-                size="sm"
-                px={12}
-                mr={6}
-              >
-                {t("search-city-button")}
-              </Button>
-              <Button
-                h={16}
-                isLoading={isConfirming}
-                px={16}
-                onClick={onConfirm}
-                size="sm"
-              >
-                {t("confirm-button")}
-              </Button>
-            </>
-          )}
         </div>
       </div>
     </>

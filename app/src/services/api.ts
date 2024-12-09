@@ -1,17 +1,17 @@
 import {
   type CityAttributes,
   type InventoryAttributes,
-  InventoryValue,
   type InventoryValueAttributes,
-  PopulationAttributes,
+  type PopulationAttributes,
   type UserAttributes,
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
-import type {
+import {
+  CitiesAndYearsResponse,
   ConnectDataSourceQuery,
   ConnectDataSourceResponse,
-  DataSourceResponse,
   EmissionsFactorResponse,
+  GetDataSourcesResult,
   InventoryProgressResponse,
   InventoryResponse,
   InventoryUpdateQuery,
@@ -25,6 +25,7 @@ import type {
   UserFileResponse,
   UserInfoResponse,
   UserInviteResponse,
+  YearOverYearResultsResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -42,11 +43,22 @@ export const api = createApi({
     "FileData",
     "CityData",
     "ReportResults",
+    "YearlyReportResults",
     "SectorBreakdown",
     "Inventory",
+    "CitiesAndInventories",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
+    getCitiesAndYears: builder.query<CitiesAndYearsResponse[], void>({
+      query: () => "user/cities",
+      transformResponse: (response: { data: CitiesAndYearsResponse[] }) =>
+        response.data.map(({ city, years }) => ({
+          city,
+          years: years.sort((a, b) => b.year - a.year),
+        })),
+      providesTags: ["CitiesAndInventories"],
+    }),
     getCity: builder.query<CityAttributes, string>({
       query: (cityId) => `city/${cityId}`,
       transformResponse: (response: { data: CityAttributes }) => response.data,
@@ -63,7 +75,7 @@ export const api = createApi({
       }) => response,
     }),
     getInventory: builder.query<InventoryResponse, string>({
-      query: (inventoryId) => `inventory/${inventoryId}`,
+      query: (inventoryId: string) => `inventory/${inventoryId}`,
       transformResponse: (response: { data: InventoryResponse }) =>
         response.data,
       providesTags: ["Inventory"],
@@ -77,6 +89,12 @@ export const api = createApi({
       query: (inventoryId: string) => `inventory/${inventoryId}/results`,
       transformResponse: (response: { data: ResultsResponse }) => response.data,
       providesTags: ["ReportResults"],
+    }),
+    getYearOverYearResults: builder.query<YearOverYearResultsResponse, string>({
+      query: (cityId: string) => `user/cities/${cityId}/results`,
+      transformResponse: (response: { data: YearOverYearResultsResponse }) =>
+        response.data,
+      providesTags: ["YearlyReportResults"],
     }),
     getSectorBreakdown: builder.query<
       SectorBreakdownResponse,
@@ -131,6 +149,8 @@ export const api = createApi({
         year: number;
         inventoryName: string;
         totalCountryEmissions: number;
+        globalWarmingPotentialType: string;
+        inventoryType: string;
       }
     >({
       query: (data) => ({
@@ -140,7 +160,7 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: InventoryAttributes }) =>
         response.data,
-      invalidatesTags: ["UserInventories"],
+      invalidatesTags: ["UserInventories", "CitiesAndInventories"],
     }),
     setUserInfo: builder.mutation<
       UserAttributes,
@@ -160,12 +180,11 @@ export const api = createApi({
       providesTags: ["UserInfo"],
     }),
     getAllDataSources: builder.query<
-      DataSourceResponse,
+      GetDataSourcesResult,
       { inventoryId: string }
     >({
       query: ({ inventoryId }) => `datasource/${inventoryId}`,
-      transformResponse: (response: { data: DataSourceResponse }) =>
-        response.data,
+      transformResponse: (response: GetDataSourcesResult) => response,
     }),
     getInventoryValue: builder.query<
       InventoryValueResponse,
@@ -517,6 +536,7 @@ export const api = createApi({
         params: {
           subCategoryIds: subCategoryIds?.join(",") ?? undefined,
           subSectorId: subSectorId ?? undefined,
+          methodologyId: methodologyId ?? undefined,
         },
         method: "GET",
       }),
@@ -534,6 +554,7 @@ export const api = createApi({
         "ActivityValue",
         "InventoryValue",
         "InventoryProgress",
+        "YearlyReportResults",
         "ReportResults",
         "SectorBreakdown",
       ],
@@ -558,7 +579,7 @@ export const api = createApi({
         "InventoryValue",
         "InventoryProgress",
         "ReportResults",
-
+        "YearlyReportResults",
         "SectorBreakdown",
       ],
     }),
@@ -574,6 +595,7 @@ export const api = createApi({
         "InventoryProgress",
         "ReportResults",
         "SectorBreakdown",
+        "YearlyReportResults",
       ],
     }),
     deleteAllActivityValues: builder.mutation({
@@ -595,6 +617,7 @@ export const api = createApi({
         "InventoryValue",
         "InventoryProgress",
         "ReportResults",
+        "YearlyReportResults",
         "SectorBreakdown",
       ],
     }),
@@ -636,7 +659,7 @@ export const openclimateAPI = createApi({
   }),
   endpoints: (builder) => ({
     getOCCity: builder.query<any, string>({
-      query: (q) => `/api/v1/search/actor?q=${q}`,
+      query: (q) => `/api/v1/search/city?q=${q}`,
       transformResponse: (response: any) => {
         return response.data.filter((item: any) => item.type === "city");
       },
@@ -658,6 +681,8 @@ export const GLOBAL_API_URL =
 // hooks are automatically generated
 export const {
   useGetCityQuery,
+  useGetCitiesAndYearsQuery,
+  useGetYearOverYearResultsQuery,
   useAddCityMutation,
   useAddInventoryMutation,
   useSetUserInfoMutation,

@@ -1,5 +1,5 @@
-import { api } from "@/services/api";
-import type { InventoryWithCity } from "@/util/types";
+import { api, useGetCitiesAndYearsQuery } from "@/services/api";
+import type { CitiesAndYearsResponse } from "@/util/types";
 import {
   Center,
   Icon,
@@ -27,14 +27,17 @@ export const InventorySelect = ({
   const router = useRouter();
   const goToOnboarding = () => router.push("/onboarding/setup");
 
-  const { data: inventories, isLoading } = api.useGetUserInventoriesQuery();
+  const { data: citiesAndYears, isLoading } = useGetCitiesAndYearsQuery();
+
   const [setUserInfo] = api.useSetUserInfoMutation();
-  const onSelect = async (inventory: InventoryWithCity) => {
+  const onSelect = async ({ city, years }: CitiesAndYearsResponse) => {
+    // get the latest inventory for the city
+    let targetInventory = years[0];
     await setUserInfo({
-      cityId: inventory.cityId!,
-      defaultInventoryId: inventory.inventoryId,
+      cityId: city.cityId!,
+      defaultInventoryId: targetInventory.inventoryId,
     }).unwrap();
-    router.push(`/${inventory.inventoryId}`);
+    router.push(`/${targetInventory.inventoryId}`);
   };
 
   return (
@@ -48,12 +51,13 @@ export const InventorySelect = ({
             </Center>
           </MenuItem>
         )}
-        {inventories?.map((inventory) => {
-          const isCurrent = inventory.inventoryId === currentInventoryId;
-          // const color = isCurrent ? "interactive.secondary" : "base.light";
+        {citiesAndYears?.map(({ city, years }) => {
+          const isCurrent = years.some(
+            (y) => y.inventoryId === currentInventoryId,
+          );
           return (
             <MenuItem
-              key={inventory.inventoryId}
+              key={city.cityId}
               icon={
                 <Icon
                   as={isCurrent ? MdLocationOn : MdOutlineLocationOn}
@@ -61,10 +65,10 @@ export const InventorySelect = ({
                   boxSize={6}
                 />
               }
-              onClick={() => !isCurrent && onSelect(inventory)}
+              onClick={() => !isCurrent && onSelect({ city, years })}
             >
               <Text color="base.dark">
-                {inventory.city.name}, {inventory.year}
+                {city.name}, {city.country}
               </Text>
             </MenuItem>
           );

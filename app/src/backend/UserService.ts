@@ -5,7 +5,7 @@ import { Roles, type AppSession } from "@/lib/auth";
 import type { City } from "@/models/City";
 import type { Inventory } from "@/models/Inventory";
 import type { User } from "@/models/User";
-import type { Includeable } from "sequelize";
+import { col, Includeable } from "sequelize";
 import { UserFile } from "@/models/UserFile";
 
 export default class UserService {
@@ -118,6 +118,28 @@ export default class UserService {
     }
 
     return inventory;
+  }
+
+  /**
+   * Load inventory information and perform access control
+   */
+  public static async findUserDefaultInventory(
+    session: AppSession | null,
+  ): Promise<string> {
+    if (!session) throw new createHttpError.Unauthorized("Unauthorized");
+
+    const user = await db.models.User.findOne({
+      attributes: ["defaultInventoryId"],
+      where: {
+        userId: session.user.id,
+      },
+    });
+
+    if (!user || !user.defaultInventoryId) {
+      throw new createHttpError.NotFound("Inventory not found");
+    }
+
+    return user.defaultInventoryId;
   }
 
   /**

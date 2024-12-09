@@ -4,11 +4,9 @@ import { useTranslation } from "@/i18n/client";
 import { useAppSelector } from "@/lib/hooks";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { Box, Button, Card, Flex, Heading, Text } from "@chakra-ui/react";
-import Image from "next/image";
 import NextLink from "next/link";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { logger } from "@/services/logger";
-import { CircleFlag } from "react-circle-flags";
 
 export default function OnboardingDone({
   params: { lng, year, inventory },
@@ -21,46 +19,56 @@ export default function OnboardingDone({
   logger.debug(data);
 
   return (
-    <div className="pt-[148px] w-[1024px] max-w-full mx-auto px-4 pb-12 flex flex-col items-center">
-      <Image
-        src="/assets/check-circle.svg"
-        width={64}
-        height={64}
-        alt="Checkmark"
-      />
-      <Heading size="xl" mt={12} mb={20}>
+    <div className="pt-[148px] w-[1024px] h-[100vh] max-w-full mx-auto px-4 pb-12 flex flex-col items-center">
+      <Heading
+        mt={12}
+        mb="24px"
+        fontSize="headline.md"
+        color="content.alternative"
+        data-testid="done-heading"
+      >
         <Trans t={t}>done-heading</Trans>
       </Heading>
-      <Card w="full" px={6} py={8}>
-        <Flex direction="row" gap="8px">
-          <Box>
-            <CircleFlag
-              countryCode={data?.actor_id.substring(0, 2).toLowerCase() || ""}
-              width={32}
-            />
-          </Box>
-          <div className="max-w-full flex-shrink-1 space-y-4">
-            <Heading fontSize="2xl">{data?.name}</Heading>
-            <Heading fontSize="lg">{t("inventory-title", { year })}</Heading>
-            <Text color="tertiary">
-              <Trans t={t}>done-details</Trans>
-            </Text>
-          </div>
-        </Flex>
-      </Card>
-      <div className="self-end">
+      <Box w="589px">
+        <Text
+          fontSize="body.lg"
+          fontStyle="normal"
+          letterSpacing="wide"
+          lineHeight="24px"
+          textAlign="center"
+          color="content.tertiary"
+        >
+          {t("done-description")}
+        </Text>
+      </Box>
+      <Box display="flex" gap="24px" mt="24px">
+        <NextLink href={`/onboarding`} passHref legacyBehavior>
+          <Button
+            variant="ghost"
+            as="a"
+            h={16}
+            px={6}
+            bg="base.light"
+            color="content.link"
+            borderWidth="2px"
+            borderColor="content.link"
+            data-testid="add-new-inventory"
+          >
+            {t("add-new-inventory")}
+          </Button>
+        </NextLink>
         <NextLink href={`/${inventory}`} passHref legacyBehavior>
           <Button
             as="a"
             h={16}
             px={6}
-            mt={12}
             rightIcon={<ArrowForwardIcon boxSize={6} />}
+            data-testid="check-dashboard"
           >
             {t("check-dashboard")}
           </Button>
         </NextLink>
-      </div>
+      </Box>
     </div>
   );
 }

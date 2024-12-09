@@ -62,9 +62,12 @@ export const GET = apiHandler(async (req, { params, session }) => {
   );
 
   const query: WhereOptions<InventoryValue> = {
-    subCategoryId: { [Op.in]: subCategoryIds },
     inventoryId: inventory.inventoryId,
   };
+
+  if (subCategoryIds && subCategoryIds.length > 0) {
+    query.subCategoryId = { [Op.in]: subCategoryIds };
+  }
   if (methodologyId) {
     query.inputMethodology = methodologyId;
   }

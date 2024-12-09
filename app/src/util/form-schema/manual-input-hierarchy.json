@@ -5,7 +5,7 @@
       {
         "id": "fuel-combustion-residential-buildings-methodology",
         "activityTypeField": "residential-building-fuel-type",
-        "activityUnitsField": "total-grid-consumption",
+        "activityUnitsField": "total-fuel-consumption",
         "inputRequired": [
           "total-fuel-consumption"
         ],
@@ -2203,6 +2203,7 @@
       {
         "id": "fuel-sales-on-road-transport-methodology",
         "activityTypeField": "on-road-transport-fuel-type",
+        "activityUnitsField": "total-fuel-sold-in-gas-stations",
         "mostUsed": true,
         "inputRequired": [
           "total-fuel-sold-in-gas-stations"
@@ -2232,7 +2233,6 @@
               },
               {
                 "id": "on-road-transport-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-passenger-vehicles",
                   "vehicle-type-commercial-vehicles",
@@ -2325,7 +2325,6 @@
             "extra-fields": [
               {
                 "id": "on-road-transport-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-passenger-vehicles",
                   "vehicle-type-commercial-vehicles",
@@ -2441,6 +2440,7 @@
       {
         "id": "electricity-consumption-on-road-transport-methodology",
         "activityTypeField": "electricity",
+        "activityUnitsField": "total-electricity-consumed-in-charging-stations",
         "inputRequired": [
           "total-electricity-consumed-in-charging-stations"
         ],
@@ -2455,7 +2455,6 @@
             "extra-fields": [
               {
                 "id": "on-road-transport-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-vehicles",
@@ -2569,6 +2568,7 @@
       {
         "id": "fuel-sales-railways-methodology",
         "activityTypeField": "railways-fuel-type",
+        "activityUnitsField": "total-fuel-consumed",
         "mostUsed": true,
         "inputRequired": [
           "total-fuel-consumed"
@@ -2598,7 +2598,6 @@
               },
               {
                 "id": "railways-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-trains",
@@ -2655,6 +2654,7 @@
       {
         "id": "geographic-railways-methodology",
         "activityTypeField": "railways-fuel-type",
+        "activityUnitsField": "total-distance-travelled-in-in-boundary-trips",
         "disabled": true,
         "inputRequired": [
           "total-distance-travelled-in-in-boundary-trips",
@@ -2675,7 +2675,6 @@
             "extra-fields": [
               {
                 "id": "railways-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-passenger-trains",
                   "vehicle-type-freight-trains",
@@ -2788,6 +2787,7 @@
       {
         "id": "electricity-consumption-railways-methodology",
         "activityTypeField": "electricity",
+        "activityUnitsField": "electricity-consumption-railways-activity",
         "activities": [
           {
             "id": "electricity-consumption-railways-activity",
@@ -2799,7 +2799,6 @@
             "extra-fields": [
               {
                 "id": "railways-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-trains",
@@ -2911,6 +2910,7 @@
       {
         "id": "fuel-sales-waterborne-navigation-methodology",
         "activityTypeField": "waterborne-navigation-fuel-type",
+        "activityUnitsField": "total-fuel-sold-in-gas-stations",
         "inputRequired": [
           "total-fuel-sold-in-gas-stations"
         ],
@@ -2939,7 +2939,6 @@
               },
               {
                 "id": "waterborne-navigation-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-ferries",
@@ -2997,6 +2996,7 @@
         "id": "geographic-waterborne-navigation-methodology",
         "disabled": true,
         "activityTypeField": "waterborne-navigation-fuel-type",
+        "activityUnitsField": "total-distance-travelled-in-in-boundary-trips",
         "inputRequired": [
           "total-distance-travelled-in-in-boundary-trips",
           "fuel-intensity"
@@ -3016,7 +3016,6 @@
             "extra-fields": [
               {
                 "id": "waterborne-navigation-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-ferries",
@@ -3127,7 +3126,6 @@
             "extra-fields": [
               {
                 "id": "waterborne-navigation-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-ferries",
@@ -3236,6 +3234,7 @@
       {
         "id": "fuel-sales-aviation-methodology",
         "activityTypeField": "aviation-fuel-type",
+        "activityUnitsField": "total-fuel-sold-in-gas-stations",
         "inputRequired": [
           "total-fuel-sold-in-gas-stations"
         ],
@@ -3266,7 +3265,6 @@
               },
               {
                 "id": "aviation-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-aircraft",
@@ -3325,6 +3323,7 @@
         "id": "geographic-aviation-methodology",
         "disabled": true,
         "activityTypeField": "aviation-fuel-type",
+        "activityUnitsField": "total-distance-travelled-in-in-boundary-trips",
         "inputRequired": [
           "total-distance-travelled-in-in-boundary-trips",
           "fuel-intensity"
@@ -3344,7 +3343,6 @@
             "extra-fields": [
               {
                 "id": "aviation-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-aircraft",
@@ -3450,6 +3448,7 @@
       {
         "id": "electricity-consumption-aviation-methodology",
         "activityTypeField": "electricity",
+        "activityUnitsField": "total-electricity-consumed-in-charging-stations",
         "inputRequired": [
           "total-electricity-consumed-in-charging-stations"
         ],
@@ -3464,7 +3463,6 @@
             "extra-fields": [
               {
                 "id": "aviation-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-passenger-aircraft",
@@ -3576,6 +3574,7 @@
       {
         "id": "fuel-sales-off-road-transport-methodology",
         "activityTypeField": "off-road-transport-fuel-type",
+        "activityUnitsField": "total-fuel-sold-in-gas-stations",
         "inputRequired": [
           "total-fuel-sold-in-gas-stations"
         ],
@@ -3604,7 +3603,6 @@
               },
               {
                 "id": "off-road-transport-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-construction-machinery",
@@ -3700,6 +3698,7 @@
       {
         "id": "electricity-consumption-off-road-transport-methodology",
         "activityTypeField": "electricity",
+        "activityUnitsField": "total-electricity-consumed-in-charging-stations",
         "inputRequired": [
           "total-electricity-consumed-in-charging-stations"
         ],
@@ -3714,7 +3713,6 @@
             "extra-fields": [
               {
                 "id": "off-road-transport-vehicle-type",
-                "emission-factor-dependency": true,
                 "options": [
                   "vehicle-type-all",
                   "vehicle-type-construction-machinery",
@@ -4019,6 +4017,10 @@
               "biological-treatment-inboundary-treatment-type",
               "biological-treatment-inboundary-source"
             ],
+            "formula-mapping": {
+              "treatment_type": "biological-treatment-inboundary-treatment-type",
+              "waste-state": "biological-treatment-inboundary-waste-state"
+            },
             "activity-title": "total-organic-waste-treated",
             "default-units": "units-kilograms",
             "extra-fields": [
@@ -4121,6 +4123,10 @@
             ],
             "activity-title": "total-organic-waste-treated",
             "default-units": "units-kilograms",
+            "formula-mapping": {
+              "treatment_type": "biological-treatment-outboundary-treatment-type",
+              "waste-state": "biological-treatment-outboundary-waste-state"
+            },
             "extra-fields": [
               {
                 "id": "biological-treatment-outboundary-treatment-type",

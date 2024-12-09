@@ -1,5 +1,5 @@
 import React from "react";
-import { Control, Controller } from "react-hook-form";
+import { Control, Controller, useWatch } from "react-hook-form";
 import {
   InputGroup,
   InputRightAddon,
@@ -12,10 +12,13 @@ import { useParams } from "next/navigation";
 interface FormattedNumberInputProps extends NumberInputProps {
   control: Control<any, any>;
   name: string;
+  setError?: Function;
+  clearErrors?: Function;
   defaultValue?: number;
   isDisabled?: boolean;
   placeholder?: string;
   children?: React.ReactNode;
+  id?: string;
   miniAddon?: boolean;
   testId?: string;
   t: Function;
@@ -23,6 +26,8 @@ interface FormattedNumberInputProps extends NumberInputProps {
 
 function FormattedNumberInput({
   control,
+  setError,
+  id,
   testId,
   name,
   defaultValue = 0,
@@ -30,17 +35,30 @@ function FormattedNumberInput({
   children,
   placeholder,
   miniAddon,
+  clearErrors,
   t,
+  min,
+  max,
   ...rest
 }: FormattedNumberInputProps) {
   const { lng } = useParams();
 
+  const value = useWatch({
+    control,
+    name,
+  });
+
   // Format the number according to the locale
   const format = (nval: number | string) => {
     let val = parseFloat(nval as string);
+
     const lastItemDot = nval.toString().slice(-1) === ".";
     if (isNaN(val)) return "";
-    return new Intl.NumberFormat(lng).format(val) + (lastItemDot ? "." : "");
+    return (
+      new Intl.NumberFormat(lng, {
+        maximumFractionDigits: 20,
+      }).format(val) + (lastItemDot ? "." : "")
+    );
   };
 
   // Parse the formatted string into a raw number
@@ -59,18 +77,25 @@ function FormattedNumberInput({
   return (
     <Controller
       control={control}
+      name={name}
+      defaultValue={defaultValue}
       rules={{
         required: t("value-required"),
         validate: (value) => {
-          return (value !== "" && !isNaN(value)) || t("value-required");
+          if (value === "" || isNaN(value)) {
+            return t("value-required");
+          }
+          if (min && value < min) {
+            return t("value-too-low", { min });
+          }
+          if (max && value >= max) {
+            return t("value-too-high", { max });
+          }
         },
       }}
-      name={name}
-      defaultValue={defaultValue}
       render={({ field }) => (
         <InputGroup>
           <NumberInput
-            min={0}
             isDisabled={isDisabled}
             value={format(field.value)}
             onChange={(valueAsString) => {
@@ -85,11 +110,14 @@ function FormattedNumberInput({
             {...rest}
           >
             <NumberInputField
+              min={min}
+              max={max}
               data-testId={testId}
               placeholder={placeholder}
               h="48px"
               type="text" // Use text type to allow formatted input
               shadow="1dp"
+              pr="12px"
               borderRightRadius={children ? 0 : "md"} // Adjust border radius
               bgColor={isDisabled ? "background.neutral" : "base.light"}
               pos="relative"

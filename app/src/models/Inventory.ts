@@ -3,11 +3,10 @@ import { DataTypes, Model, Optional } from "sequelize";
 import type { City, CityId } from "./City";
 import type { InventoryValue, InventoryValueId } from "./InventoryValue";
 import type { Version, VersionId } from "./Version";
-
-export enum InventoryTypeEnum {
-  GPC_BASIC = "gpc_basic",
-  GPC_BASIC_PLUS = "gpc_basic_plus",
-}
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
+} from "@/util/enums";
 
 export interface InventoryAttributes {
   inventoryId: string;
@@ -19,6 +18,8 @@ export interface InventoryAttributes {
   isPublic?: boolean;
   publishedAt?: Date | null;
   inventoryType?: InventoryTypeEnum;
+  globalWarmingPotentialType?: GlobalWarmingPotentialTypeEnum;
+  lastUpdated?: Date | null;
 }
 
 export type InventoryPk = "inventoryId";
@@ -31,7 +32,9 @@ export type InventoryOptionalAttributes =
   | "totalCountryEmissions"
   | "isPublic"
   | "publishedAt"
-  | "inventoryType";
+  | "inventoryType"
+  | "globalWarmingPotentialType"
+  | "lastUpdated";
 
 export type InventoryCreationAttributes = Optional<
   InventoryAttributes,
@@ -50,7 +53,9 @@ export class Inventory
   totalCountryEmissions?: number;
   isPublic?: boolean;
   publishedAt?: Date | null;
+  lastUpdated?: Date | null;
   inventoryType?: InventoryTypeEnum;
+  globalWarmingPotentialType?: GlobalWarmingPotentialTypeEnum;
   // Inventory belongsTo City via cityId
   city!: City;
   getCity!: Sequelize.BelongsToGetAssociationMixin<City>;
@@ -154,12 +159,24 @@ export class Inventory
           allowNull: true,
           field: "inventory_type",
         },
+        globalWarmingPotentialType: {
+          type: DataTypes.ENUM(
+            ...Object.values(GlobalWarmingPotentialTypeEnum),
+          ),
+          allowNull: true,
+          field: "global_warming_potential_type",
+        },
+        lastUpdated: {
+          type: DataTypes.DATE,
+          allowNull: true,
+          field: "last_updated",
+        },
       },
       {
         sequelize,
         tableName: "Inventory",
         schema: "public",
-        timestamps: false,
+        timestamps: true,
         createdAt: "created",
         updatedAt: "last_updated",
         indexes: [
@@ -169,6 +186,11 @@ export class Inventory
             fields: [{ name: "inventory_id" }],
           },
         ],
+        hooks: {
+          beforeCreate: (inventory) => {
+            inventory.lastUpdated = new Date();
+          },
+        },
       },
     );
   }

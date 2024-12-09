@@ -194,18 +194,48 @@ function convertDataToDefaultUnit(
 export function handleDirectMeasureFormula(
   activityValue: ActivityValue,
 ): Gas[] {
+  // Extract activity data once to avoid repetitive access
+  const data = activityValue.activityData;
+
+  if (!data) {
+    throw new createHttpError.BadRequest("Activity has no data associated");
+  }
+
+  // Initialize an array to hold gas objects
   const gases = GAS_NAMES.map((gasName) => {
-    const data = activityValue.activityData;
-    const key = gasName.toLowerCase() + "_amount";
-    if (!data || !data[key]) {
+    const key = `${gasName.toLowerCase()}_amount`;
+
+    let amount;
+    try {
+      // values collected from the direct measure form are in tonnes. but we store the values in kg
+      amount = new Decimal(data[key] ?? 0).mul(1000);
+    } catch (error) {
       throw new createHttpError.BadRequest(
-        "Missing direct measure form entry " + key,
+        `Invalid number format for ${key}: ${data[key]}`,
       );
     }
-    // TODO save amount to GasValue entry?
-    const amount = new Decimal(data[key]);
+
+    // Ensure the amount is not negative (optional, based on business rules)
+    if (amount.isNegative()) {
+      throw new createHttpError.BadRequest(
+        `Gas amount cannot be negative for ${key}`,
+      );
+    }
+
     return { gas: gasName, amount: amount };
   });
+
+  // Check if all gas amounts are zero
+  const allZero = gases.every((gas) => gas.amount.equals(0));
+
+  if (allZero) {
+    throw new createHttpError.BadRequest(
+      "Direct measure requires a non zero gas amount",
+    );
+  }
+
+  // TODO: Save amounts to GasValue entries or perform further processing
+
   return gases;
 }
 
@@ -305,17 +335,17 @@ export async function handleIncinerationWasteFormula(
     const fractionOfFossilCarbonI =
       fractionOfFossilCarbonInput === null ||
       fractionOfFossilCarbonInput === undefined
-        ? 1
+        ? 0.2
         : fractionOfFossilCarbonInput;
 
     const dryMatterContentI =
       dryMatterInput === null || dryMatterInput === undefined
-        ? 1
+        ? 0.2
         : dryMatterInput;
 
     const fractionOfCarbonI =
       fractionOfCarbonInput === null || fractionOfCarbonInput === undefined
-        ? 1
+        ? 0.2
         : fractionOfCarbonInput;
 
     if (dryMatterInput == null) {
@@ -426,6 +456,7 @@ export function handleMethaneCommitmentFormula(
     inventoryValue.inputMethodology,
     inventoryValue.gpcReferenceNumber,
   );
+
   if (!data) {
     throw new createHttpError.BadRequest(
       "Activity has no data associated, so it can't use the formula",
@@ -443,27 +474,24 @@ export function handleMethaneCommitmentFormula(
     textilesFraction,
     industrialWasteFraction,
   ] = [
-    "food",
-    "garden-waste",
-    "paper",
-    "wood",
-    "textiles",
-    "industrial-waste",
+    "waste-composition-food",
+    "waste-composition-garden",
+    "waste-composition-paper",
+    "waste-composition-wood",
+    "waste-composition-textiles",
+    "waste-composition-industrial",
   ].map(getFraction);
 
   // TODO this dropdown input is not part of manual input spec for III.1.1
   const landfillType = data["landfill-type"];
 
-  const recoveredMethaneFraction =
-    data[
-      "methane-commitment-solid-waste-inboundary-methane-collected-and-removed"
-    ] || 0;
+  const recoveredMethaneFraction = data["methane-collected-and-removed"] || 0;
   const oxidationFactor =
     data["methane-commitment-solid-waste-inboundary-oxidation-factor"] ===
     "oxidation-factor-well-managed-landfill"
       ? 0.1
       : 0;
-  const totalSolidWaste = data["methane-commitment-solid-waste-disposed"] || 0;
+  const totalSolidWaste = data["total-municipal-solid-waste-disposed"] || 0;
 
   // Degradable organic carbon in year of deposition, fraction (tonnes C/tonnes waste)
   const degradableOrganicCarbon =
@@ -474,8 +502,13 @@ export function handleMethaneCommitmentFormula(
     TEXTILES_FACTOR * textilesFraction +
     INDUSTRIAL_WASTE_FACTOR * industrialWasteFraction;
 
+  // if the oxidation type is well managed, then the landfill is well managed and the methane correction factor is 1.0
+  // otherwise, get the methane correction factor from the METHANE_CORRECTION_FACTORS object
   const methaneCorrectionFactor =
-    METHANE_CORRECTION_FACTORS[landfillType] ?? 0.6;
+    oxidationFactor === 0.1
+      ? 1.0
+      : METHANE_CORRECTION_FACTORS[landfillType] ?? 0.6;
+
   // GPC assumption, Fraction of degradable organic carbon that is ultimately degraded
   const DOC_FRACTION = 0.6;
   // GPC assumption, fraction of methane in landfill gas
@@ -517,6 +550,7 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
     inventoryValue.inputMethodology,
     inventoryValue.gpcReferenceNumber,
   );
+
   const activityAmountKey = activityValue.metadata?.["activityTitle"];
   const activityAmount = data?.[activityAmountKey] || 0;
   const gases = gasValues?.map((gasValue) => {
@@ -568,11 +602,11 @@ export function handleIndustrialWasteWaterFormula(
   const totalIndustrialProduction = data["total-industry-production"];
   const wastewaterGenerated = data[`${prefixKey}-wastewater-generated`];
   const degradableOrganicComponents =
-    data["degradable-organic-components"] ?? 38; // TODO get this from formula values csv;
+    data["degradable-organic-components"] ?? 38; // TODO COD from formula values dependent on industry type;
   const methaneProductionCapacity =
-    data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should this only be handled UI-side?
+    data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY;
   const removedSludge = data["total-organic-sludge-removed"];
-  const methaneCorrectionFactor = 1; // TODO fetch this from formula values csv
+  const methaneCorrectionFactor = 1; // TODO fetch this from formula values csv dependent on treatment type
   const methaneRecovered = data[`${prefixKey}-methane-recovered`];
 
   // TODO is new Decimal/ BigNumber required for these calculations?
@@ -617,7 +651,7 @@ export async function handleDomesticWasteWaterFormula(
   const methaneProductionCapacity = DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should this only be handled UI-side?
   const removedSludge = data["total-organic-sludge-removed"];
   // TODO get MCF from seed-data/formula_values
-  const methaneCorrectionFactor = DEFAULT_METHANE_CORRECTION_FACTOR;
+  const methaneCorrectionFactor = DEFAULT_METHANE_CORRECTION_FACTOR; // TODO read from formula file
   const methaneRecovered = data[`${prefixKey}-methane-recovered`];
 
   const totalCityPopulationEntry = await findClosestCityPopulation(inventory);
@@ -628,7 +662,7 @@ export async function handleDomesticWasteWaterFormula(
   }
   const totalCityPopulation = totalCityPopulationEntry.population;
 
-  const bodPerCapita = DEFAULT_BOD_PER_CAPITA;
+  const bodPerCapita = DEFAULT_BOD_PER_CAPITA; // TODO BOD using region of the city
   const isCollectedWasteWater =
     data[`${prefixKey}-collection-status`] ===
     "collection-status-type-wastewater-collected";
@@ -665,9 +699,12 @@ export async function handleDomesticWasteWaterFormula(
  * @returns The calculated emissions of gases.
  * @throws {createHttpError.BadRequest} If the activity value has no data associated.
  */
+
+// TODO ISSUE WITH WET WASTE NEEDS TO BE FIXED
 export async function handleBiologicalTreatmentFormula(
   activityValue: ActivityValue,
   inventoryValue: InventoryValue,
+  formulaMapping: Record<string, string>,
 ): Promise<Gas[]> {
   if (!inventoryValue.inputMethodology || !inventoryValue.gpcReferenceNumber) {
     throw new createHttpError.BadRequest(
@@ -680,6 +717,7 @@ export async function handleBiologicalTreatmentFormula(
     inventoryValue.inputMethodology,
     inventoryValue.gpcReferenceNumber,
   );
+
   if (!data) {
     throw new createHttpError.BadRequest(
       "Activity has no data associated, so it can't use the formula",
@@ -714,8 +752,7 @@ export async function handleBiologicalTreatmentFormula(
   const totalCH4Emitted = Decimal.mul(organicWasteMass, emissionsFactor).div(
     1000,
   );
-  const totalCH4Recovered =
-    data["biological-treatment-inboundary-total-of-ch4-recovered"] ?? 0;
+  const totalCH4Recovered = data["total-of-ch4-recovered"] ?? 0; // TODO check this.
   const resultCH4 = totalCH4Emitted.round().sub(totalCH4Recovered);
   return [{ gas: "CH4", amount: resultCH4 }];
 }

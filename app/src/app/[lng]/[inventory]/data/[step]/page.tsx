@@ -19,7 +19,7 @@ import { RootState } from "@/lib/store";
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
 import { bytesToMB, nameToI18NKey } from "@/util/helpers";
-import type { SectorProgress } from "@/util/types";
+import type { DataSourceResponse, SectorProgress } from "@/util/types";
 import {
   ArrowBackIcon,
   ChevronRightIcon,
@@ -80,6 +80,7 @@ import { InventoryValueAttributes } from "@/models/InventoryValue";
 import { motion } from "framer-motion";
 import { getTranslationFromDict } from "@/i18n";
 import { getScopesForInventoryAndSector, SECTORS } from "@/util/constants";
+import { forwardRef } from "react";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -191,15 +192,12 @@ export default function AddDataSteps({
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
-  const defaultInventoryId = userInfo?.defaultInventoryId;
 
   const {
     data: inventoryProgress,
     isLoading: isInventoryProgressLoading,
     error: inventoryProgressError,
-  } = api.useGetInventoryProgressQuery(defaultInventoryId!, {
-    skip: !defaultInventoryId,
-  });
+  } = api.useGetInventoryProgressQuery(inventory);
   const isInventoryLoading = isUserInfoLoading || isInventoryProgressLoading;
   const locode = inventoryProgress?.inventory.city.locode || undefined;
   const year = inventoryProgress?.inventory.year || undefined;
@@ -207,7 +205,7 @@ export default function AddDataSteps({
   const [
     loadDataSources,
     {
-      data: allDataSources,
+      data,
       isLoading: areDataSourcesLoading,
       isFetching: areDataSourcesFetching,
       error: dataSourcesError,
@@ -286,14 +284,19 @@ export default function AddDataSteps({
     Math.round(percentage * 1000) / 10;
 
   // only display data sources relevant to current sector
-  const dataSources = allDataSources?.filter(({ source, data }) => {
-    const referenceNumber =
-      source.subCategory?.referenceNumber || source.subSector?.referenceNumber;
-    if (!data || !referenceNumber) return false;
-    const sectorReferenceNumber = referenceNumber.split(".")[0];
+  let dataSources: DataSourceResponse | undefined;
+  if (data) {
+    const { data: successfulSources, failedSources, removedSources } = data;
+    dataSources = successfulSources?.filter(({ source, data }) => {
+      const referenceNumber =
+        source.subCategory?.referenceNumber ||
+        source.subSector?.referenceNumber;
+      if (!data || !referenceNumber) return false;
+      const sectorReferenceNumber = referenceNumber.split(".")[0];
 
-    return sectorReferenceNumber === currentStep.referenceNumber;
-  });
+      return sectorReferenceNumber === currentStep.referenceNumber;
+    });
+  }
 
   const [selectedSource, setSelectedSource] =
     useState<DataSourceWithRelations>();
@@ -379,8 +382,21 @@ export default function AddDataSteps({
     );
   }
 
-  function onSearchDataSourcesClicked() {
-    loadDataSources({ inventoryId: inventory });
+  async function onSearchDataSourcesClicked() {
+    const { data, removedSources, failedSources } = await loadDataSources({
+      inventoryId: inventory,
+    }).unwrap();
+
+    // this is printed to debug missing data sources more easily,
+    // TODO consider putting this behind a "dev mode" flag of some kind
+    if (removedSources.length > 0) {
+      console.info("Removed data sources");
+      console.dir(removedSources);
+    }
+    if (failedSources.length > 0) {
+      console.info("Failed data sources");
+      console.dir(failedSources);
+    }
   }
 
   const [selectedSubsector, setSelectedSubsector] =
@@ -586,7 +602,14 @@ export default function AddDataSteps({
     }
   };
 
-  const MotionBox = motion(Box);
+  const MotionBox = motion(
+    // the display name is added below, but the linter isn't picking it up
+    // eslint-disable-next-line react/display-name
+    forwardRef<HTMLDivElement, any>((props, ref) => (
+      <Box ref={ref} {...props} />
+    )),
+  );
+  MotionBox.displayName = "MotionBox";
 
   const scrollResizeHeaderThreshold = 50;
   const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
@@ -1158,7 +1181,7 @@ export default function AddDataSteps({
         <SourceDrawer
           source={selectedSource}
           sourceData={selectedSourceData}
-          sector={currentStep.sector}
+          sector={currentStep.sector ?? undefined}
           isOpen={isSourceDrawerOpen}
           onClose={onSourceDrawerClose}
           onConnectClick={() => onConnectClick(selectedSource!)}

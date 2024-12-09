@@ -8,6 +8,7 @@ import * as process from "node:process";
 import {
   getScopesForInventoryAndSector,
   getSectorsForInventory,
+  SECTORS,
 } from "@/util/constants";
 import { InventoryTypeEnum } from "@/util/enums";
 
@@ -123,9 +124,11 @@ export default class InventoryProgressService {
       const subSectors = sector.subSectors.map((subSector) => {
         let completed = false;
         let totalCount =
-          subSector.subCategories.length > 0
-            ? subSector.subCategories.length
-            : 1; // for sectors IV and V there are no subcategories. We use 1 here so that the progress doesn't come back as full when it's empty
+          SECTORS.find(
+            (sectorConstant) =>
+              sectorConstant.referenceNumber === sector.referenceNumber,
+          )?.inventoryTypes[inventory.inventoryType as InventoryTypeEnum]
+            ?.scopes.length || 1;
         let completedCount = 0;
         if (inventoryValues?.length > 0) {
           completedCount = inventoryValues.filter(

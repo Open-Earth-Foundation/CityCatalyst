@@ -20,6 +20,7 @@ import { convertKgToTonnes } from "@/util/helpers";
 import React from "react";
 import { useTranslation } from "@/i18n/client";
 import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md";
+import { toKebabCaseModified } from "@/app/[lng]/[inventory]/InventoryResultTab/index";
 
 interface EmissionBySectorTableProps {
   data: {
@@ -64,7 +65,9 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
             {item.bySector?.map((sectorBreakDown, i) => {
               return (
                 <Tr key={i} isTruncated>
-                  <Td>{tData(sectorBreakDown.sectorName)}</Td>
+                  <Td>
+                    {tData(toKebabCaseModified(sectorBreakDown.sectorName))}
+                  </Td>
                   <Td>{convertKgToTonnes(sectorBreakDown.co2eq)}</Td>
                   <Td>{sectorBreakDown.percentage}%</Td>
                   <Td

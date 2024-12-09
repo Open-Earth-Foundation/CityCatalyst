@@ -40,16 +40,6 @@ import { RadioButton } from "@/components/radio-button";
 import { EmissionFactorTypes } from "@/hooks/activity-value-form/use-emission-factors";
 import DependentSelectInput from "@/components/dependent-select-input";
 
-export type EmissionFactorTypes = {
-  id: string;
-  name: string;
-  gasValuesByGas: {
-    [gas: string]: {
-      gasValues: Record<string, any>[];
-    };
-  };
-}[];
-
 interface AddActivityModalBodyProps {
   t: TFunction;
   register: UseFormRegister<Inputs>;

@@ -52,9 +52,13 @@ const DependentSelectInput = ({
           required: t("value-required"),
         })}
         bgColor="base.light"
-        placeholder={t("dependent-extra-field-placeholder", {
-          dependency: t(dependentFieldKey),
-        })}
+        placeholder={
+          !dependentValue
+            ? t("dependent-extra-field-placeholder", {
+                dependency: t(dependentFieldKey),
+              })
+            : t("option-required")
+        }
       >
         {field.dependentOptions?.[dependentValue]?.map((option) => (
           <option key={option} value={option}>

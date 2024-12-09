@@ -4,8 +4,8 @@
   "data-details-+": "Verbinden Sie Drittanbieterdaten oder laden Sie Ihre eigenen Daten hoch, um Ihre THG-Inventur nach der GPC-Basismethodik zu erstellen",
   "data-view-heading": "Sehen Sie die benötigten Daten, um die Inventur Ihrer Stadt abzuschließen",
   "data-view-details": "Die GPC-Basis umfasst drei Hauptsektoren: Stationäre Energie, Transport und Abfall. Geben Sie die notwendigen Daten für jeden Sektor ein, um eine umfassende THG-Inventur zu erstellen. <2>Weitere Informationen</2>",
-   "scope-required-for-basic": "Umfang erforderlich für die Grund-THG-Inventur",
-  "scope-required-for-basic-+":"Umfang erforderlich für die Grund-THG-Inventur+",
+  "scope-required-for-basic": "Umfang erforderlich für die Grund-THG-Inventur",
+  "scope-required-for-basic-+": "Umfang erforderlich für die Grund-THG-Inventur+",
   "stationary-energy": "Stationäre Energie",
   "stationary-energy-details": "Dieser Sektor befasst sich mit Emissionen, die aus der Erzeugung und dem Verbrauch von Strom, Wärme und Dampf resultieren.",
   "transportation": "Transport",
@@ -120,10 +120,8 @@
   "add-custom": "Benutzerdefiniert",
   "save-missing-scope-info": "Speichern oder fehlende Informationen ausfüllen, bevor Sie fortfahren.",
   "disconnect-data": "Datenquelle trennen",
-
   "error": "Fehler",
   "missing-population": "Der Stadt fehlt die Bevölkerungszahl/ Regionsbevölkerungszahl/ Landesbevölkerungszahl für ein Jahr nahe dem Inventarjahr",
-
   "transform-data-description": "Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.",
   "file-context": "Erzählen Sie uns mehr über diese Datei",
   "file-data-subtitle": "Welche Art von Daten enthält sie?",
@@ -132,5 +130,6 @@
   "scopes": "Bereiche",
   "cancel": "Abbrechen",
   "upload": "Hochladen",
-  "select-placeholder": "Wählen Sie die Untersektoren aus, die in dieser Datei enthalten sind"
+  "select-placeholder": "Wählen Sie die Untersektoren aus, die in dieser Datei enthalten sind",
+  "dependent-extra-field-placeholder": "Wählen Sie zuerst {{dependency}}"
 }

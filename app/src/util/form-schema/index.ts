@@ -34,6 +34,8 @@ export interface ExtraField {
   subtypes?: string[];
   "emission-factor-dependency"?: boolean;
   units?: string[];
+  dependsOn?: string;
+  dependentOptions?: Record<string, string[]>; // key is the option, value is the dependent options
 }
 
 export interface Activity {

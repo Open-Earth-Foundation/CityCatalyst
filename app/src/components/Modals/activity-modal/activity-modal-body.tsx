@@ -37,6 +37,7 @@ import { ActivityValue } from "@/models/ActivityValue";
 import FormattedNumberInput from "@/components/formatted-number-input";
 import PercentageBreakdownInput from "@/components/percentage-breakdown-input";
 import { RadioButton } from "@/components/radio-button";
+import DependentSelectInput from "@/components/dependent-select-input";
 
 export type EmissionFactorTypes = {
   id: string;
@@ -351,6 +352,21 @@ const ActivityModalBody = ({
                       )}
                     </FormControl>
                   </>
+                )}
+                {f.dependsOn && (
+                  <FormControl className="w-full">
+                    <FormLabel className="truncate">{t(f.id)}</FormLabel>
+                    <DependentSelectInput
+                      field={f}
+                      register={register}
+                      setValue={setValue}
+                      getValues={getValues}
+                      control={control}
+                      errors={errors}
+                      setError={setError}
+                      t={t}
+                    />
+                  </FormControl>
                 )}
               </>
             );

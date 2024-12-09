@@ -926,5 +926,6 @@
   "emissions-from-product-use-occurring-within-the-city-boundary": "Emissions from product use occurring within the city boundary",
   "emissions-from-livestock-within-the-city-boundary": "Emissions from livestock within the city boundary",
   "emissions-from-land-within-the-city-boundary": "Emissions from land within the city boundary",
-  "emissions-from-aggregate-sources-and-non-co2-emission-sources-on-land-within-the-city-boundary": "Emissions from aggregate sources and non-CO2 emission sources on land within the city boundary"
+  "emissions-from-aggregate-sources-and-non-co2-emission-sources-on-land-within-the-city-boundary": "Emissions from aggregate sources and non-CO2 emission sources on land within the city boundary",
+  "dependent-extra-field-placeholder": "Select {{dependency}} first"
 }

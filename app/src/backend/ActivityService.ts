@@ -384,7 +384,7 @@ export default class ActivityService {
       const inventoryValue = activityValue?.inventoryValue;
 
       // delete the InventoryValue when its last ActivityValue is deleted
-      if (inventoryValue?.activityValues.length === 1) {
+      if (inventoryValue?.activityValues.length <= 1) {
         await inventoryValue.destroy({ transaction });
       } else {
         inventoryValue.co2eq =

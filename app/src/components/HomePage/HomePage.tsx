@@ -62,6 +62,14 @@ export default function HomePage({
         // fix inventoryId in URL without reloading page
         const newPath = "/" + lng + "/" + inventory.inventoryId;
         history.replaceState(null, "", newPath);
+        if (typeof window !== "undefined") {
+          const currentPath = window.location.pathname;
+          if (!currentPath.endsWith("/")) {
+            router.replace(`${currentPath}/`);
+          }
+        } else {
+          return;
+        }
       } else {
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
         setTimeout(() => router.push(`/onboarding`), 0);

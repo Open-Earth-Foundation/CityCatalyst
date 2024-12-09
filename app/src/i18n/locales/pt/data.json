@@ -925,6 +925,7 @@
   "emissions-from-livestock-within-the-city-boundary": "Emissões de gado dentro dos limites da cidade",
   "emissions-from-land-within-the-city-boundary": "Emissões da terra dentro dos limites da cidade",
   "emissions-from-aggregate-sources-and-non-co2-emission-sources-on-land-within-the-city-boundary": "Emissões de fontes agregadas e fontes de emissão não CO2 na terra dentro dos limites da cidade",
+  "dependent-extra-field-placeholder": "Selecione primeiro {{dependency}}",
   "industrial-processes-direct-measure-methodology": "Medição direta",
   "industrial-processes-direct-measure-methodology-description": "Medição direta das emissões dos processos industriais.",
   "product-use-direct-measure-methodology": "Medição direta",

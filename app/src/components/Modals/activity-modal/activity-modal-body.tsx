@@ -38,6 +38,7 @@ import FormattedNumberInput from "@/components/formatted-number-input";
 import PercentageBreakdownInput from "@/components/percentage-breakdown-input";
 import { RadioButton } from "@/components/radio-button";
 import { EmissionFactorTypes } from "@/hooks/activity-value-form/use-emission-factors";
+import DependentSelectInput from "@/components/dependent-select-input";
 
 interface AddActivityModalBodyProps {
   t: TFunction;
@@ -227,7 +228,7 @@ const ActivityModalBody = ({
                 {f.options && (
                   <FormControl key={idx} className="w-full">
                     <BuildingTypeSelectInput
-                      options={f.options}
+                      options={f.options as string[]}
                       required={f.required}
                       control={control}
                       multiselect={f.multiselect}
@@ -377,6 +378,21 @@ const ActivityModalBody = ({
                       )}
                     </FormControl>
                   </>
+                )}
+                {f.dependsOn && (
+                  <FormControl className="w-full">
+                    <FormLabel className="truncate">{t(f.id)}</FormLabel>
+                    <DependentSelectInput
+                      field={f}
+                      register={register}
+                      setValue={setValue}
+                      getValues={getValues}
+                      control={control}
+                      errors={errors}
+                      setError={setError}
+                      t={t}
+                    />
+                  </FormControl>
                 )}
               </>
             );

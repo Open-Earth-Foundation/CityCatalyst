@@ -365,6 +365,13 @@ export default class ActivityService {
         include: {
           model: db.models.InventoryValue,
           as: "inventoryValue",
+          include: [
+            {
+              model: db.models.ActivityValue,
+              as: "activityValues",
+              attributes: ["id", "co2eqYears"],
+            },
+          ],
         },
       });
 
@@ -376,15 +383,27 @@ export default class ActivityService {
 
       const inventoryValue = activityValue?.inventoryValue;
 
-      inventoryValue.co2eq =
-        BigInt(inventoryValue.co2eq ?? 0n) - BigInt(activityValue.co2eq ?? 0n);
-      // Todo figure out a way to update the co2eqYears when deleting an activity valye
-      // inventoryValue.co2eqYears = Math.max(
-      //   inventoryValue.co2eqYears ?? 0,
-      //   totalCO2eYears,
-      // );
+      // delete the InventoryValue when its last ActivityValue is deleted
+      if (inventoryValue?.activityValues.length === 1) {
+        await inventoryValue.destroy({ transaction });
+      } else {
+        inventoryValue.co2eq =
+          BigInt(inventoryValue.co2eq ?? 0n) -
+          BigInt(activityValue.co2eq ?? 0n);
 
-      await inventoryValue.save({ transaction });
+        // re-calculate co2eqYears by taking max value of remaining activity values
+        let maxCo2eqYears = 0;
+        for (const activityValue of inventoryValue.activityValues) {
+          maxCo2eqYears = Math.max(
+            maxCo2eqYears,
+            activityValue.co2eqYears ?? 0,
+          );
+        }
+        inventoryValue.co2eqYears = maxCo2eqYears;
+
+        await inventoryValue.save({ transaction });
+      }
+
       return await db.models.ActivityValue.destroy({
         where: { id },
       });

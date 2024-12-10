@@ -1,6 +1,6 @@
 Inventory Reference,GPC Reference Number,Total Emissions,Activity Units,Activity Value,Emission Factor Value,Datasource ID
-d4fc29ec-a073-34fb-abdb-3c27066451f3,III.1.1,291807082,,,N/A,
-e0ba4eda-8fc4-33e6-beaf-6fc7c8f39e8b,III.4.1,76696265520,,,N/A,
+d4fc29ec-a073-34fb-abdb-3c27066451f3,III.1.1,,,,N/A,
+e0ba4eda-8fc4-33e6-beaf-6fc7c8f39e8b,III.4.1,1124796988,,,N/A,
 ,III.2.1,,,,N/A,
 ,III.3.1,,,,N/A,
 1483cc0a-dad1-34ed-81ef-5913ee3be6d1,I.8.1,15579748,,,N/A,de65d76e-510f-49bf-be89-0b687a4f4553
@@ -27,6 +27,7 @@ c7025070-1f90-3034-b366-6ec4ac178666,I.5.1,1025313,,,N/A,c1a1a270-172b-49aa-bc9c
 ,II.4.2,,,,N/A,
 ,II.5.1,,,,N/A,
 ,II.5.2,,,,N/A,
+,IV.1,1720470000,,,,
 ,V.3,3729019,,,N/A,0891f485-942c-44f8-a398-09b9d050dabc
 ,V.1,12400863,,,N/A,3da1a62f-8cff-464b-bd5e-af70213f22c8
 ,V.2,56289000,,,N/A,56578539-5606-4fd7-88da-20a87b730af0

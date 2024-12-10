@@ -12,7 +12,6 @@ interface EmissionBySectorChartProps {
     year: number;
     inventoryId: string;
   }[];
-
   lng: string;
 }
 

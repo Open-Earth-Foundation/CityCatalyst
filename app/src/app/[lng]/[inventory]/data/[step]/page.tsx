@@ -18,7 +18,11 @@ import { useTranslation } from "@/i18n/client";
 import { RootState } from "@/lib/store";
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
-import { bytesToMB, nameToI18NKey } from "@/util/helpers";
+import {
+  bytesToMB,
+  convertSectorReferenceNumberToNumber,
+  nameToI18NKey,
+} from "@/util/helpers";
 import type { DataSourceResponse, SectorProgress } from "@/util/types";
 import {
   ArrowBackIcon,
@@ -54,7 +58,7 @@ import {
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { FiTarget, FiTrash2 } from "react-icons/fi";
 import {
@@ -80,7 +84,6 @@ import { InventoryValueAttributes } from "@/models/InventoryValue";
 import { motion } from "framer-motion";
 import { getTranslationFromDict } from "@/i18n";
 import { getScopesForInventoryAndSector, SECTORS } from "@/util/constants";
-import { forwardRef } from "react";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -585,23 +588,6 @@ export default function AddDataSteps({
     };
   }, []);
 
-  const getCurrentStepParam = (referenceNumber: string) => {
-    switch (referenceNumber) {
-      case "I":
-        return 1;
-      case "II":
-        return 2;
-      case "III":
-        return 3;
-      case "IV":
-        return 4;
-      case "V":
-        return 5;
-      default:
-        return 1;
-    }
-  };
-
   const MotionBox = motion(
     // the display name is added below, but the linter isn't picking it up
     // eslint-disable-next-line react/display-name
@@ -810,7 +796,7 @@ export default function AddDataSteps({
                     className="shadow-none border border-overlay hover:drop-shadow-xl !duration-300 transition-shadow"
                     onClick={() => {
                       router.push(
-                        `/${inventory}/data/${getCurrentStepParam(currentStep.referenceNumber)}/${subSector.subsectorId}`,
+                        `/${inventory}/data/${convertSectorReferenceNumberToNumber(currentStep.referenceNumber)}/${subSector.subsectorId}`,
                       );
                     }}
                     key={subSector.subsectorId}

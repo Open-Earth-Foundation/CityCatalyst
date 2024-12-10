@@ -17,7 +17,10 @@ import NextLink from "next/link";
 
 import { useState } from "react";
 import { SegmentedProgress } from "../SegmentedProgress";
-import { formatPercent } from "@/util/helpers";
+import {
+  convertSectorReferenceNumberToNumber,
+  formatPercent,
+} from "@/util/helpers";
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { AddIcon } from "@chakra-ui/icons";
@@ -147,13 +150,20 @@ export function SectorCard({
               </Text>
               <Box className="grid grid-cols-3 gap-4 py-4">
                 {sectorProgress.subSectors.map((subSector, i) => (
-                  <SubSectorCard
-                    t={t}
+                  <NextLink
                     key={i}
-                    title={t(subSector.subsectorName ?? "unnamed-sector")}
-                    scopes={(sectorScopes || []).join(", ")}
-                    isCompleted={subSector.completed}
-                  />
+                    href={`/${inventory.inventoryId}/data/${convertSectorReferenceNumberToNumber(sector.referenceNumber)}/${subSector.subsectorId}`}
+                  >
+                    <SubSectorCard
+                      t={t}
+                      title={t(subSector.subsectorName ?? "unnamed-sector")}
+                      scopes={(sectorScopes || []).join(", ")}
+                      isCompleted={subSector.completed}
+                      percentageCompletion={
+                        (subSector.completedCount / subSector.totalCount) * 100
+                      }
+                    />
+                  </NextLink>
                 ))}
               </Box>
             </AccordionPanel>

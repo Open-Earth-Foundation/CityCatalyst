@@ -1,4 +1,11 @@
-import { Box, Card, Heading, Icon, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Card,
+  CircularProgress,
+  Heading,
+  Icon,
+  Text,
+} from "@chakra-ui/react";
 import React, { FC } from "react";
 import { MdOutlineCheckCircle } from "react-icons/md";
 import { DataAlertIcon } from "../icons";
@@ -8,6 +15,7 @@ interface SubSectorCardProps {
   title: string;
   scopes: string;
   isCompleted: boolean;
+  percentageCompletion: number;
   t: TFunction;
 }
 
@@ -15,17 +23,28 @@ const SubSectorCard: FC<SubSectorCardProps> = ({
   title,
   scopes,
   isCompleted,
+  percentageCompletion,
   t,
 }) => {
   return (
     <Card className="flex flex-row h-[120px] items-center px-4 gap-4 border border-[#E6E7FF] shadow-none">
-      <Icon
-        as={isCompleted ? MdOutlineCheckCircle : DataAlertIcon}
-        boxSize={8}
-        color={
-          isCompleted ? "interactive.tertiary" : "sentiment.warningDefault"
-        }
-      />
+      {percentageCompletion > 0 && percentageCompletion < 100 ? (
+        <CircularProgress
+          size="32px"
+          thickness="12px"
+          color="interactive.secondary"
+          trackColor="background.neutral"
+          value={percentageCompletion}
+        />
+      ) : (
+        <Icon
+          as={isCompleted ? MdOutlineCheckCircle : DataAlertIcon}
+          boxSize={8}
+          color={
+            isCompleted ? "interactive.tertiary" : "sentiment.warningDefault"
+          }
+        />
+      )}
       <Box className="flex flex-col gap-[8px]">
         <Heading
           fontSize="title.sm"

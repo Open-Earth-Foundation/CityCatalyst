@@ -1,5 +1,5 @@
 import { passwordRegex } from "@/util/validation";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { ViewIcon, ViewOffIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Button,
   FormControl,

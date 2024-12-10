@@ -299,21 +299,26 @@ def qualitative_prioritizer(top_quantitative, actions, city):
     city_regionName = city.get("regionName", "Unknown")
     llm_output = qualitative_score(city, top_quantitative)
 
-    for action in llm_output.actions:
-        qualitative_scores.append(
-            {
-                "locode": city_locode,
-                "cityName": city_name,
-                "region": city_region,
-                "regionName": city_regionName,
-                "actionId": action.action_id,
-                "actionName": action.action_name,
-                "actionPriority": action.actionPriority,
-                "explanation": action.explanation,
-            }
-        )
-    print("Qualitative prioritization completed.")
-    return qualitative_scores
+    if llm_output:
+
+        for action in llm_output.actions:
+            qualitative_scores.append(
+                {
+                    "locode": city_locode,
+                    "cityName": city_name,
+                    "region": city_region,
+                    "regionName": city_regionName,
+                    "actionId": action.action_id,
+                    "actionName": action.action_name,
+                    "actionPriority": action.actionPriority,
+                    "explanation": action.explanation,
+                }
+            )
+        print("Qualitative prioritization completed.")
+        return qualitative_scores
+    else:
+        print("No qualitative prioritization data.")
+        return []
 
 
 def main(locode: str):

@@ -152,11 +152,11 @@ export function SectorCard({
               <Box className="grid grid-cols-3 gap-4 py-4">
                 {sectorProgress.subSectors.map((subSector, i) => (
                   <Link
+                    key={i}
                     href={`/${inventory.inventoryId}/data/${convertSectorReferenceNumberToNumber(sector.referenceNumber)}/${subSector.subsectorId}`}
                   >
                     <SubSectorCard
                       t={t}
-                      key={i}
                       title={t(subSector.subsectorName ?? "unnamed-sector")}
                       scopes={(sectorScopes || []).join(", ")}
                       isCompleted={subSector.completed}

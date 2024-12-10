@@ -80,3 +80,27 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 
   return NextResponse.json({ data: inventoryValue });
 });
+
+export const DELETE = apiHandler(async (_req, { params, session }) => {
+  const inventory = await UserService.findUserInventory(
+    params.inventory,
+    session,
+  );
+
+  const inventoryValue = await db.models.InventoryValue.findOne({
+    where: {
+      inventoryId: inventory.inventoryId,
+      subSectorId: params.subsector,
+    },
+  });
+
+  if (!inventoryValue) {
+    throw new createHttpError.NotFound(
+      "Inventory value not found for subsector: " + params.subsector,
+    );
+  }
+
+  await inventoryValue.destroy();
+
+  return NextResponse.json({ data: inventoryValue });
+});

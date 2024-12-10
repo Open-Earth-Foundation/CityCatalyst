@@ -15,6 +15,7 @@ import {
   InventoryProgressResponse,
   InventoryResponse,
   InventoryUpdateQuery,
+  InventoryValueInSubSectorDeleteQuery,
   InventoryValueInSubSectorScopeUpdateQuery,
   InventoryValueResponse,
   InventoryValueUpdateQuery,
@@ -258,6 +259,18 @@ export const api = createApi({
         url: `/inventory/${data.inventoryId}/value/subsector/${data.subSectorId}`,
         method: "PATCH",
         body: data.data,
+      }),
+      transformResponse: (response: { data: InventoryValueAttributes }) =>
+        response.data,
+      invalidatesTags: ["InventoryProgress", "InventoryValue"],
+    }),
+    deleteInventoryValue: builder.mutation<
+      InventoryValueAttributes,
+      InventoryValueInSubSectorDeleteQuery
+    >({
+      query: (data) => ({
+        url: `/inventory/${data.inventoryId}/value/subsector/${data.subSectorId}`,
+        method: "DELETE",
       }),
       transformResponse: (response: { data: InventoryValueAttributes }) =>
         response.data,
@@ -710,6 +723,7 @@ export const {
   useDeleteAllActivityValuesMutation,
   useDeleteActivityValueMutation,
   useGetInventoryValuesBySubsectorQuery,
+  useDeleteInventoryValueMutation,
   useGetResultsQuery,
   useUpdateInventoryMutation,
   useUpdateOrCreateInventoryValueMutation,

@@ -325,3 +325,22 @@ export const toKebabCase = (input: string | undefined): string => {
 
 export const capitalizeFirstLetter = (string: string) =>
   string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+
+export const convertSectorReferenceNumberToNumber = (
+  referenceNumber: string,
+) => {
+  switch (referenceNumber) {
+    case "I":
+      return 1;
+    case "II":
+      return 2;
+    case "III":
+      return 3;
+    case "IV":
+      return 4;
+    case "V":
+      return 5;
+    default:
+      return 1;
+  }
+};

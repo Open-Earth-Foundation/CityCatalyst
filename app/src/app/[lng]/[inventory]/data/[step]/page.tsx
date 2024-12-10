@@ -234,7 +234,6 @@ export default function AddDataSteps({
       return;
     }
 
-    console.log(inventoryProgress, "the inventory progress");
     const progress = inventoryProgress.sectorProgress;
     const updatedSteps = steps.map((step) => {
       const sectorProgress: SectorProgress | undefined = progress.find(

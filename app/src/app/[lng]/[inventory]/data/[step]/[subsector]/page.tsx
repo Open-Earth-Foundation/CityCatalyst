@@ -137,12 +137,12 @@ function SubSectorPage({
     return Object.entries(MANUAL_INPUT_HIERARCHY)
       .filter(([key]) => key.startsWith(subSectorData?.referenceNumber!))
       .map(([k, v]) => ({ ...v, referenceNumber: k }))
-      .filter((scope) =>
-        getScopesForInventoryAndSector(
+      .filter((scope) => {
+        return getScopesForInventoryAndSector(
           inventoryData.inventoryType!,
-          scope.referenceNumber[0],
-        ).includes(scope.scope),
-      );
+          scope.referenceNumber.split(".")[0],
+        ).includes(scope.scope);
+      });
   };
   const scopes = getFilteredSubsectorScopes();
 

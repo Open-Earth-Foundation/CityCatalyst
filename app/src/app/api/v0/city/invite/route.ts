@@ -31,7 +31,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
     { email: body.email, reason: "invite", city: body.cityId },
     process.env.VERIFICATION_TOKEN_SECRET,
     {
-      expiresIn: "24h",
+      expiresIn: "7d",
     },
   );
 

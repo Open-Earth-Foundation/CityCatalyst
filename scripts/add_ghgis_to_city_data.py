@@ -52,9 +52,7 @@ def extract_data(file_name: str) -> dict:
             sector = GPC_TO_SECTOR.get(sector_key)
 
             if sector:
-                dict_emissions[sector] += (
-                    total_emissions / 1000
-                )  # Convert to metric tons
+                dict_emissions[sector] += total_emissions
 
             # Extract the scope from the GPC Reference Number
             scope_key = gpc_ref.split(".")[
@@ -62,17 +60,13 @@ def extract_data(file_name: str) -> dict:
             ]  # Get the last part of GPC (e.g., "1" from "I.1.1")
 
             if scope_key == "1":
-                dict_emissions["scope1Emissions"] += (
-                    total_emissions / 1000
-                )  # Convert to metric tons
+                dict_emissions["scope1Emissions"] += total_emissions
+
             elif scope_key == "2":
-                dict_emissions["scope2Emissions"] += (
-                    total_emissions / 1000
-                )  # Convert to metric tons
+                dict_emissions["scope2Emissions"] += total_emissions
+
             elif scope_key == "3":
-                dict_emissions["scope3Emissions"] += (
-                    total_emissions / 1000
-                )  # Convert to metric tons
+                dict_emissions["scope3Emissions"] += total_emissions
 
         return dict_emissions
     else:

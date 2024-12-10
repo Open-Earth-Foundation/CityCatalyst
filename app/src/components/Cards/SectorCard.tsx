@@ -14,7 +14,6 @@ import {
   Text,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
-import Link from "next/link";
 
 import { useState } from "react";
 import { SegmentedProgress } from "../SegmentedProgress";
@@ -151,7 +150,7 @@ export function SectorCard({
               </Text>
               <Box className="grid grid-cols-3 gap-4 py-4">
                 {sectorProgress.subSectors.map((subSector, i) => (
-                  <Link
+                  <NextLink
                     key={i}
                     href={`/${inventory.inventoryId}/data/${convertSectorReferenceNumberToNumber(sector.referenceNumber)}/${subSector.subsectorId}`}
                   >
@@ -164,7 +163,7 @@ export function SectorCard({
                         (subSector.completedCount / subSector.totalCount) * 100
                       }
                     />
-                  </Link>
+                  </NextLink>
                 ))}
               </Box>
             </AccordionPanel>

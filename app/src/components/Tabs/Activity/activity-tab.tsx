@@ -141,7 +141,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const activityValues = filteredActivityValues;
 
   const makeScopeAvailableFunc = () => {
-    if ((activityValues?.length as number) > 0) {
+    if (activityValues?.length && activityValues.length > 0) {
       updateInventoryValue({
         inventoryId: inventoryId,
         subSectorId: subsectorId,

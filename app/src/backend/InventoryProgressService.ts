@@ -70,6 +70,7 @@ export default class InventoryProgressService {
               ) {
                 return true;
               }
+
               const lastDigit = parseInt(
                 subCategory.referenceNumber?.split(".")[2] as string,
               );
@@ -106,9 +107,7 @@ export default class InventoryProgressService {
       if (inventoryValues) {
         sectorCounts = inventoryValues.reduce(
           (acc, inventoryValue) => {
-            const sourceType = inventoryValue.dataSource?.sourceType;
-
-            if (sourceType === "third_party") {
+            if (inventoryValue.dataSource) {
               acc.thirdParty++;
             } else {
               acc.uploaded++;

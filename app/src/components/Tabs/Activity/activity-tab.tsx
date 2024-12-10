@@ -121,17 +121,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const [updateInventoryValue, { isLoading }] =
     api.useUpdateOrCreateInventoryValueMutation();
 
-  const makeScopeAvailableFunc = () => {
-    updateInventoryValue({
-      inventoryId: inventoryId,
-      subSectorId: subsectorId,
-      data: {
-        unavailableReason: "",
-        unavailableExplanation: "",
-        gpcReferenceNumber: referenceNumber,
-      },
-    });
-  };
+  const [deleteInventoryValue, { isLoading: isDeletingInventoryValue }] =
+    api.useDeleteInventoryValueMutation();
 
   const inventoryValue = useMemo<InventoryValueAttributes | null>(() => {
     return (
@@ -148,6 +139,25 @@ const ActivityTab: FC<ActivityTabProps> = ({
   }, [inventoryValues, methodology, referenceNumber]);
 
   const activityValues = filteredActivityValues;
+
+  const makeScopeAvailableFunc = () => {
+    if (activityValues?.length && activityValues.length > 0) {
+      updateInventoryValue({
+        inventoryId: inventoryId,
+        subSectorId: subsectorId,
+        data: {
+          unavailableReason: "",
+          unavailableExplanation: "",
+          gpcReferenceNumber: referenceNumber,
+        },
+      });
+    } else {
+      deleteInventoryValue({
+        inventoryId: inventoryId,
+        subSectorId: subsectorId,
+      });
+    }
+  };
 
   const getSuggestedActivities = (): SuggestedActivity[] => {
     if (!selectedMethodology) return [];
@@ -231,7 +241,9 @@ const ActivityTab: FC<ActivityTabProps> = ({
             gap="16px"
             fontSize="label.lg"
           >
-            {isLoading && <Spinner size="sm" color="border.neutral" />}
+            {(isLoading || isDeletingInventoryValue) && (
+              <Spinner size="sm" color="border.neutral" />
+            )}
             <Switch
               disabled={!!externalInventoryValue}
               isChecked={

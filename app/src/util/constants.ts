@@ -1,13 +1,13 @@
 import { BsTruck } from "react-icons/bs";
-import { PiTrashLight } from "react-icons/pi";
+import { PiPlant, PiTrashLight } from "react-icons/pi";
 import { TbBuildingCommunity } from "react-icons/tb";
-import { PiPlant } from "react-icons/pi";
 import { IconBaseProps } from "react-icons";
 import { LiaIndustrySolid } from "react-icons/lia";
 
 export const maxPopulationYearDifference = 5;
 
 export type InventoryType = "gpc_basic" | "gpc_basic_plus";
+
 export enum InventoryTypeEnum {
   GPC_BASIC = "gpc_basic",
   GPC_BASIC_PLUS = "gpc_basic_plus",

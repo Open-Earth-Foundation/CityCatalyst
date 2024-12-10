@@ -1,11 +1,12 @@
 #!/bin/bash
 
 function get_package_version() {
+  echo -n "v" # add v prefix to version so it matches our existing tags
   node -p "require('./package.json').version"
 }
 
 function release_test() {
-  git fetch develop
+  git fetch origin develop
   git checkout develop
 
   # create new test version (rc)
@@ -22,16 +23,22 @@ function release_test() {
   git commit -am "chore(release): development version $DEV_VERSION"
   git tag "$DEV_VERSION"
   git push
-  git push --tags
+  # push new tags to remote
+  git push origin refs/tags/"$DEV_VERSION"
+  git push origin refs/tags/"$MAIN_VERSION"
 
-  git fetch main
+  git fetch origin main
   git checkout main
-  git merge "$MAIN_VERSION" # merge rc version tag into main branch
+  # merge rc version tag into main branch
+  git merge "$MAIN_VERSION"
+  # resolve merge conflicts because of changed version number
+  git checkout --theirs -- package.json package-lock.json
+  git commit -am "chore(release): merge rc version $MAIN_VERSION into main"
   git push
 }
 
 function release_prod() {
-  git fetch main
+  git fetch origin main
   git checkout main
 
   npm version minor
@@ -39,7 +46,7 @@ function release_prod() {
   git commit -am "chore(release): production version $PROD_VERSION"
   git tag "$PROD_VERSION"
   git push main
-  git push --tags
+  git push origin refs/tags/"$PROD_VERSION"
 }
 
 # Check if Git working directory is clean

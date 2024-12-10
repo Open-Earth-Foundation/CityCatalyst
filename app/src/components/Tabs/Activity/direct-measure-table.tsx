@@ -82,7 +82,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
 
   const renderTable = (list: ActivityValue[]) => {
     return (
-      <Table variant="simple" borderWidth="1px">
+      <Table variant="simple" overflowX="scroll" borderWidth="1px">
         <Thead bg="background.backgroundLight">
           <Tr fontSize="button.sm" fontWeight="bold">
             {filteredFields.length > 0 && (
@@ -322,7 +322,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                     />
                   </AccordionButton>
                 </h2>
-                <AccordionPanel padding="0px" pb={4}>
+                <AccordionPanel padding="0px" pb={4} overflowX="scroll">
                   {renderTable(activityGroups[key])}
                 </AccordionPanel>
               </AccordionItem>

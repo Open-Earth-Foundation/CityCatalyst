@@ -103,7 +103,8 @@ export default class ECRFDownloadService {
       const gpcRefNo = inventoryValue.gpcReferenceNumber;
       const activityValues = inventoryValue.activityValues || [];
 
-      if (inventoryValue.dataSource?.sourceType === "third_party") {
+      // if there is a source, this is third party data
+      if (inventoryValue.dataSource) {
         dataDictionary[gpcRefNo as string] = {
           inventory_year: inventoryYear,
           gpc_reference_number: inventoryValue.gpcReferenceNumber,

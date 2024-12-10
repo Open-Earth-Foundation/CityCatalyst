@@ -44,6 +44,7 @@ import type { UserAttributes } from "@/models/User";
 import type { CityAttributes } from "@/models/City";
 import { api } from "@/services/api";
 import type { InventoryAttributes } from "@/models/Inventory";
+import { CircleFlag } from "react-circle-flags";
 
 interface MyInventoriesTabProps {
   session: Session | null;
@@ -178,10 +179,10 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                   >
                     <Box>
                       <Box display="flex" gap="8px" alignItems="center">
-                        <Avatar
-                          className="h-[32px] w-[32px]"
-                          name="Argentina"
-                          src="https://upload.wikimedia.org/wikipedia/commons/1/1a/Flag_of_Argentina.svg"
+                        <CircleFlag
+                          countryCode={city.countryLocode?.toLocaleLowerCase()!}
+                          height="32px"
+                          width="32px"
                         />
                         <Text
                           color="content.secondary"

@@ -10,7 +10,7 @@ import pandas as pd
 from pydantic import BaseModel
 from typing import List
 from pathlib import Path
-from utils.reading_data import read_city_inventory, read_actions
+from utils.reading_writing_data import read_city_inventory, read_actions, write_output
 from utils.additional_scoring_functions import (
     count_matching_hazards,
     find_highest_emission,
@@ -21,12 +21,6 @@ load_dotenv()
 
 api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
-
-# Set constants for file paths
-BASE_DIR = Path("../data")
-ACTION_DATA_PATH = BASE_DIR / "climate_actions/output/combined_output.json"
-CITY_DATA_PATH = BASE_DIR / "cities/city_data.json"
-OUTPUT_PATH = BASE_DIR / "prioritized/"
 
 # Constants for quantitative scoring
 SCORE_MAX = 100 / 4
@@ -223,6 +217,7 @@ def send_to_llm(prompt):
             {"role": "user", "content": prompt},
         ],
         response_format=PrioritizedActions,
+        temperature=0.0,
     )
     return response.choices[0].message.parsed
 
@@ -319,28 +314,6 @@ def qualitative_prioritizer(top_quantitative, actions, city):
         )
     print("Qualitative prioritization completed.")
     return qualitative_scores
-
-
-def write_output(top_actions, filename):
-
-    full_path = OUTPUT_PATH / filename
-    try:
-        # Create the output directory if it doesn't exist
-        OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
-    except OSError as e:
-        print("Error creating output directory:", e)
-        return
-    except Exception as e:
-        print("Unexpected error creating output directory:", e)
-        return
-
-    try:
-        # Write JSON data to the specified file
-        with full_path.open("w", encoding="utf-8") as f:
-            json.dump(top_actions, f, indent=4)
-        print(f"Successfully wrote to {filename}.")
-    except Exception as e:
-        print(f"Error writing to {filename}:", e)
 
 
 def main(locode: str):

@@ -1,0 +1,202 @@
+[
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0053",
+        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+        "actionPriority": 1,
+        "explanation": "This action is highly cost-effective with significant emissions reduction potential, especially in the land use sector, which is the largest emission source for Corumb\u00e1. It aligns well with the city's savanna biome and offers substantial risk reduction against climate hazards like drought and flooding."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0052",
+        "actionName": "Reduce Deforestation and Degradation",
+        "actionPriority": 2,
+        "explanation": "Targeting the largest emission sector, land use, this action offers high emissions reduction potential. It is cost-effective and aligns with the city's environmental context, providing risk reduction benefits against drought and flooding."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0059",
+        "actionName": "Reduce Conversion of Coastal Wetlands",
+        "actionPriority": 3,
+        "explanation": "This action addresses emissions from land use and offers significant risk reduction benefits, particularly for flooding. It is environmentally compatible with the city's natural landscape and provides socio-demographic benefits by protecting vulnerable areas."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0057",
+        "actionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
+        "actionPriority": 4,
+        "explanation": "Peatland protection is crucial for emissions reduction in land use. This action is cost-effective and provides substantial risk reduction benefits, particularly for flooding and drought, aligning with the city's environmental and socio-demographic needs."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0058",
+        "actionName": "Peatland Restoration",
+        "actionPriority": 5,
+        "explanation": "Restoring peatlands offers significant emissions reduction and risk mitigation benefits, particularly for flooding and drought. It is cost-effective and aligns with the city's environmental and socio-demographic context."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0054",
+        "actionName": "Improved Forest Management",
+        "actionPriority": 6,
+        "explanation": "This action targets emissions from land use, offering significant reduction potential. It is cost-effective, aligns with the city's savanna biome, and provides risk reduction benefits against climate hazards like drought and flooding."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0077",
+        "actionName": "Urban Tree Planting and Management",
+        "actionPriority": 7,
+        "explanation": "Urban tree planting is cost-effective and offers emissions reduction benefits, particularly in the land use sector. It aligns with the city's environmental context and provides socio-demographic benefits by enhancing urban green spaces."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0038",
+        "actionName": "Sanitary Landfills",
+        "actionPriority": 8,
+        "explanation": "This action targets waste emissions, a significant sector for Corumb\u00e1. It is cost-effective, offers emissions reduction potential, and aligns with the city's capacity to manage waste efficiently."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0035",
+        "actionName": "Waste Efficiency",
+        "actionPriority": 9,
+        "explanation": "Improving waste efficiency is cost-effective and targets a significant emission sector. It offers emissions reduction potential and aligns with the city's capacity to manage waste efficiently."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
+        "actionPriority": 10,
+        "explanation": "Effective landfill management is cost-effective and targets waste emissions, a significant sector for Corumb\u00e1. It offers emissions reduction potential and aligns with the city's capacity to manage waste efficiently."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0062",
+        "actionName": "Biochar",
+        "actionPriority": 11,
+        "explanation": "Biochar production is cost-effective and offers emissions reduction potential, particularly in the land use sector. It aligns with the city's environmental context and provides socio-demographic benefits by enhancing soil health."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0067",
+        "actionName": "Manure management",
+        "actionPriority": 12,
+        "explanation": "This action targets emissions from agriculture, offering reduction potential. It is cost-effective and aligns with the city's capacity to manage agricultural waste efficiently."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0028",
+        "actionName": "Zero Emission Buses",
+        "actionPriority": 13,
+        "explanation": "Targeting transportation emissions, this action offers significant reduction potential. It is cost-effective and aligns with the city's capacity to implement sustainable transport solutions."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0023",
+        "actionName": "Bus Emissions",
+        "actionPriority": 14,
+        "explanation": "Reducing bus emissions targets transportation, a significant emission sector. It is cost-effective and aligns with the city's capacity to implement sustainable transport solutions."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0025",
+        "actionName": "Truck Emissions",
+        "actionPriority": 15,
+        "explanation": "Reducing truck emissions targets transportation, a significant emission sector. It is cost-effective and aligns with the city's capacity to implement sustainable transport solutions."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 16,
+        "explanation": "Reducing vehicle emissions targets transportation, a significant emission sector. It is cost-effective and aligns with the city's capacity to implement sustainable transport solutions."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0002",
+        "actionName": "Active Transport Modes",
+        "actionPriority": 17,
+        "explanation": "Promoting active transport modes is cost-effective and offers emissions reduction potential in the transportation sector. It aligns with the city's capacity to implement sustainable transport solutions and provides socio-demographic benefits."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0068",
+        "actionName": "Bioenergy and BECCS(Bioenergy with Carbon Capture and Storage)",
+        "actionPriority": 18,
+        "explanation": "This action offers emissions reduction potential, particularly in the energy sector. It is cost-effective and aligns with the city's capacity to implement advanced energy solutions."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0037",
+        "actionName": "Source Separation",
+        "actionPriority": 19,
+        "explanation": "Source separation is cost-effective and targets waste emissions, a significant sector for Corumb\u00e1. It offers emissions reduction potential and aligns with the city's capacity to manage waste efficiently."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0045",
+        "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
+        "actionPriority": 20,
+        "explanation": "Promoting behavioral changes for waste reduction is cost-effective and targets waste emissions. It offers emissions reduction potential and aligns with the city's capacity to implement community-based solutions."
+    }
+]

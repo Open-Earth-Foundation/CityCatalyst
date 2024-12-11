@@ -1,5 +1,5 @@
 import { db } from "@/models";
-import { Op, QueryTypes } from "sequelize";
+import { QueryTypes } from "sequelize";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
 import groupBy from "lodash/groupBy";
 import mapValues from "lodash/mapValues";
@@ -331,17 +331,19 @@ export const getEmissionsBreakdownBatch = async (
 
       if (!emissionResult) {
         console.warn(
-          `No emission results found for inventoryId: ${inventoryId}`,
+          `No activity level emission results found for inventory ID: ${inventoryId}`,
         );
+
+        // use third party data from InventoryValue instead if available
+        const byScope = await calculateThirdPartyEmissionsByScope(inventoryId);
+        breakdownResults[inventoryId] = { byActivity: {}, byScope };
         continue;
       }
 
       const activityValues: UngroupedActivityData[] = [];
 
       // Process activities per sector
-      for (const [sectorName, activities] of Object.entries(
-        activitiesBySector,
-      )) {
+      for (const activities of Object.values(activitiesBySector)) {
         activities.forEach((activity) => {
           const activityData = getActivityDataValues(
             activity,
@@ -358,12 +360,13 @@ export const getEmissionsBreakdownBatch = async (
         const grouped = groupActivities(activityValues);
         const byActivity = calculateActivityTotals(grouped);
         const byScope = calculateEmissionsByScope(activityValues);
-        breakdownResults[inventoryId] = { byActivity, byScope };
-      } else {
-        const byActivity = {};
-        const byScope = await calculateThirdPartyEmissionsByScope(inventoryIds);
 
         breakdownResults[inventoryId] = { byActivity, byScope };
+      } else {
+        // TODO can this state be reached when we have an emissions result?
+        const byScope = await calculateThirdPartyEmissionsByScope(inventoryId);
+
+        breakdownResults[inventoryId] = { byActivity: {}, byScope };
       }
     }
 
@@ -434,12 +437,10 @@ function convertEmissionsToStrings(
 }
 
 async function calculateThirdPartyEmissionsByScope(
-  inventoryIds: string[],
+  inventoryId: string,
 ): Promise<ActivityDataByScope[]> {
   const inventoryValues = await db.models.InventoryValue.findAll({
-    where: {
-      inventoryId: { [Op.in]: inventoryIds },
-    },
+    where: { inventoryId },
   });
   const scopes = inventoryValues.map((value) => {
     const scopeName = value.gpcReferenceNumber?.split(".").slice(-1)[0];

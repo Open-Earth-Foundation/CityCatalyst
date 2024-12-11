@@ -4871,7 +4871,8 @@
             "industry-type-chemical-industry",
             "industry-type-metal-industry",
             "industry-type-electronics-industry",
-            "industry-type-substitutes-for-ozone-depleting-substances"
+            "industry-type-substitutes-for-ozone-depleting-substances",
+            "industry-type-other-industries"
           ]
         },
         {
@@ -4914,6 +4915,12 @@
               "industry-name-solvent-cleaning",
               "industry-name-waterproof-films-for-electronic-circuits",
               "industry-name-foam-blowing-agents"
+            ],
+            "industry-type-other-industries": [
+              "industry-name-pulp-and-paper",
+              "industry-name-food-and-drink",
+              "industry-name-textiles-and-leather",
+              "industry-name-other-industries"
             ]
           }
         },

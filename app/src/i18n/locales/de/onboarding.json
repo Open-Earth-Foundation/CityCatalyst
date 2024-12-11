@@ -29,6 +29,7 @@
   "inventory-title": "GPC Basic Emissions-Inventar - Jahr {{year}}",
   "done-details": "Sie haben ihr Stadt-Profile erstellt, um mit der Erstellung Ihres GPC Basic GHG Inventars zu beginnen.",
   "check-dashboard": "Dashboard überprüfen",
+  "add-new-inventory": "Neues Inventar hinzufügen",
 
   "information-required": "Diese Informationen sind erforderlich und beeinflussen die Genauigkeit Ihres Treibhausgasinventars.",
   "year-placeholder": "Jahr",
@@ -41,5 +42,5 @@
   "region-population-placeholder": "Regionsbevölkerungszahl",
   "country-population-title": "Landesbevölkerung",
   "country-population-placeholder": "Landesbevölkerungszahl",
-  "create-intentory": "Inventar erstellen"
+  "create-inventory": "Inventar erstellen"
 }

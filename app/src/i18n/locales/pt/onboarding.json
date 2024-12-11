@@ -29,6 +29,7 @@
   "inventory-title": "Inventário de Emissões Básico GPC - Ano {{year}}",
   "done-details": "Você criou seu perfil da cidade para iniciar seu inventário básico de GEE do GPC.",
   "check-dashboard": "Ver Painel",
+  "add-new-inventory": "Adicionar novo inventário",
 
   "information-required": "Esta informação é obrigatória e afeta a precisão do seu inventário de GEE.",
   "year-placeholder": "Ano",

@@ -1,5 +1,5 @@
 import { db } from "@/models";
-import { QueryTypes } from "sequelize";
+import { Op, QueryTypes } from "sequelize";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
 import groupBy from "lodash/groupBy";
 import mapValues from "lodash/mapValues";
@@ -7,6 +7,7 @@ import { toKebabCase } from "@/util/helpers";
 import { ActivityDataByScope, GroupedActivity } from "@/util/types";
 import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";
+import createHttpError from "http-errors";
 
 function calculatePercentage(co2eq: Decimal, total: Decimal): number {
   if (total.lessThanOrEqualTo(0)) {
@@ -353,11 +354,17 @@ export const getEmissionsBreakdownBatch = async (
       }
 
       // Group and calculate totals
-      const grouped = groupActivities(activityValues);
-      const byActivity = calculateActivityTotals(grouped);
-      const byScope = calculateEmissionsByScope(activityValues);
+      if (activityValues.length > 0) {
+        const grouped = groupActivities(activityValues);
+        const byActivity = calculateActivityTotals(grouped);
+        const byScope = calculateEmissionsByScope(activityValues);
+        breakdownResults[inventoryId] = { byActivity, byScope };
+      } else {
+        const byActivity = {};
+        const byScope = await calculateThirdPartyEmissionsByScope(inventoryIds);
 
-      breakdownResults[inventoryId] = { byActivity, byScope };
+        breakdownResults[inventoryId] = { byActivity, byScope };
+      }
     }
 
     return breakdownResults;
@@ -424,6 +431,38 @@ function convertEmissionsToStrings(
     totalEmissions: input.totalEmissions,
     percentage: input.percentage,
   };
+}
+
+async function calculateThirdPartyEmissionsByScope(
+  inventoryIds: string[],
+): Promise<ActivityDataByScope[]> {
+  const inventoryValues = await db.models.InventoryValue.findAll({
+    where: {
+      inventoryId: { [Op.in]: inventoryIds },
+    },
+  });
+  const scopes = inventoryValues.map((value) => {
+    const scopeName = value.gpcReferenceNumber?.split(".").slice(-1)[0];
+
+    if (!scopeName) {
+      throw new createHttpError.InternalServerError(
+        "Scope name not found for inventory value " + value.id,
+      );
+    }
+
+    const co2eq = value.co2eq ?? 0n;
+    const totalEmissions = bigIntToDecimal(co2eq);
+    return {
+      activityTitle: "third-party", // TODO use data source name or SubCategory name?
+      scopes: {
+        [scopeName]: bigIntToDecimal(co2eq),
+      },
+      totalEmissions,
+      percentage: 100,
+    };
+  });
+
+  return scopes;
 }
 
 function calculateEmissionsByScope(

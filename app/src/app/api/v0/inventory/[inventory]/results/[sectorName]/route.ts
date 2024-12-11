@@ -7,24 +7,7 @@ import { getEmissionsBreakdown } from "@/backend/ResultsService";
 export const GET = apiHandler(
   async (_req, { session, params: { inventory, sectorName } }) => {
     // ensure inventory belongs to user
-    await UserService.findUserInventory(
-      inventory,
-      session,
-      [
-        {
-          model: db.models.InventoryValue,
-          as: "inventoryValues",
-          include: [
-            {
-              model: db.models.DataSource,
-              attributes: ["datasourceId", "sourceType"],
-              as: "dataSource",
-            },
-          ],
-        },
-      ],
-      true,
-    );
+    await UserService.findUserInventory(inventory, session, [], true);
 
     const emissionsBreakdown = await getEmissionsBreakdown(
       inventory,

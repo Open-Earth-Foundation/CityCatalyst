@@ -135,11 +135,11 @@ function SectorTabs({
           const shouldShowTableByActivity =
             !isEmptyInventory &&
             !isResultsLoading &&
+            false && // ON-3126 restore view by activity
             selectedTableView === TableView.BY_ACTIVITY;
           const shouldShowTableByScope =
-            !isEmptyInventory &&
-            !isResultsLoading &&
-            selectedTableView === TableView.BY_SCOPE;
+            !isEmptyInventory && inventory && !isResultsLoading; // &&
+          // selectedTableView === TableView.BY_SCOPE; ON-3126 restore view by activity
           return (
             <TabPanel key={name}>
               {isTopEmissionsResponseLoading ? (
@@ -165,14 +165,14 @@ function SectorTabs({
                     >
                       {t("breakdown-of-sub-sector-emissions")}
                     </Text>
-                    <Box paddingBottom={"12px"}>
-                      <Selector
-                        options={[TableView.BY_ACTIVITY, TableView.BY_SCOPE]}
-                        value={selectedTableView}
-                        onChange={handleViewChange}
-                        t={t}
-                      />
-                    </Box>
+                    {/*<Box paddingBottom={"12px"}>*/}
+                    {/*  <Selector*/}
+                    {/*    options={[TableView.BY_ACTIVITY, TableView.BY_SCOPE]}*/}
+                    {/*    value={selectedTableView}*/}
+                    {/*    onChange={handleViewChange}*/}
+                    {/*    t={t}*/}
+                    {/*  />*/}
+                    {/*</Box>*/} [ON-3126 restore view by activity]
                   </HStack>
                   {isResultsLoading && <CircularProgress isIndeterminate />}
                   {isEmptyInventory && (

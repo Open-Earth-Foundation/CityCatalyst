@@ -93,7 +93,8 @@ function SectorTabs({
   };
 
   const isEmptyInventory =
-    Object.entries(sectorBreakdown?.byActivity || {}).length === 0;
+    Object.entries(sectorBreakdown?.byActivity || {}).length === 0 &&
+    Object.entries(sectorBreakdown?.byScope || {}).length === 0;
 
   return (
     <Tabs
@@ -194,6 +195,7 @@ function SectorTabs({
                   )}
                   {shouldShowTableByScope && (
                     <ByScopeView
+                      inventoryType={inventory.inventoryType}
                       data={sectorBreakdown!.byScope}
                       tData={tData}
                       tDashboard={t}

@@ -4863,6 +4863,7 @@
     "methodologies": [],
     "directMeasure": {
       "id": "industrial-processes-direct-measure-methodology",
+      "activityTypeField": "direct-measure-wastewater-outside-source-type",
       "extra-fields": [
         {
           "id": "industrial-processes-industry-type",
@@ -4928,6 +4929,7 @@
     "scope": 1,
     "methodologies": [],
     "directMeasure": {
+      "activityTypeField": "product-use-direct-measure-methodology",
       "id": "product-use-direct-measure-methodology",
       "extra-fields": [
         {
@@ -4968,6 +4970,7 @@
     "scope": 1,
     "methodologies": [],
     "directMeasure": {
+      "activityTypeField": "livestock-direct-measure-methodology",
       "id": "livestock-direct-measure-methodology",
       "extra-fields": [
         {
@@ -5004,6 +5007,7 @@
     "scope": 1,
     "methodologies": [],
     "directMeasure": {
+      "activityTypeField": "land-direct-measure-methodology",
       "id": "land-direct-measure-methodology",
       "extra-fields": [
         {
@@ -5082,6 +5086,7 @@
     "scope": 1,
     "methodologies": [],
     "directMeasure": {
+      "activityTypeField": "aggregate-sources-and-non-co2-emission-sources-direct-measure-methodology",
       "id": "aggregate-sources-and-non-co2-emission-sources-direct-measure-methodology",
       "extra-fields": [
         {

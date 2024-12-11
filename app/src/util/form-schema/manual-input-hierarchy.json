@@ -4620,7 +4620,7 @@
             "source-type-industrial-wastewater",
             "source-type-all-wastewater"
           ],
-          "exclusive": "source-type-all-wastewaterœ"
+          "exclusive": "source-type-all-wastewater"
         }
       ]
     }

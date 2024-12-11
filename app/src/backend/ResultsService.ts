@@ -457,11 +457,9 @@ async function calculateThirdPartyEmissionsByScope(
 
     const co2eq = value.co2eq ?? 0n;
     const totalEmissions = bigIntToDecimal(co2eq);
+
     return {
-      // TODO use SubCategory name instead?
-      // TODO i18n
-      activityTitle:
-        value.dataSource?.datasetName?.en ?? "Unknown third-party source",
+      activityTitle: "mixed-activities",
       scopes: {
         [scopeName]: bigIntToDecimal(co2eq),
       },

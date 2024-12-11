@@ -28,7 +28,8 @@ export interface InventoryValueAttributes {
   subSectorId?: string;
   subCategoryId?: string;
   inventoryId?: string;
-  datasourceId?: string | null;
+  /** @deprecated moved to ActivityValue */
+  datasourceId?: string | null; // TODO remove
   created?: Date;
   lastUpdated?: Date;
 }

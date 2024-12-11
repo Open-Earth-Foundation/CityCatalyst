@@ -1,5 +1,5 @@
 import { db } from "@/models";
-import { QueryTypes } from "sequelize";
+import { Op, QueryTypes } from "sequelize";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
 import groupBy from "lodash/groupBy";
 import mapValues from "lodash/mapValues";
@@ -440,7 +440,11 @@ async function calculateThirdPartyEmissionsByScope(
   inventoryId: string,
 ): Promise<ActivityDataByScope[]> {
   const inventoryValues = await db.models.InventoryValue.findAll({
-    where: { inventoryId },
+    where: {
+      inventoryId,
+      datasourceId: { [Op.not]: null }, // only include third-party data
+    },
+    include: [{ model: db.models.DataSource, as: "dataSource" }],
   });
   const scopes = inventoryValues.map((value) => {
     const scopeName = value.gpcReferenceNumber?.split(".").slice(-1)[0];
@@ -454,7 +458,10 @@ async function calculateThirdPartyEmissionsByScope(
     const co2eq = value.co2eq ?? 0n;
     const totalEmissions = bigIntToDecimal(co2eq);
     return {
-      activityTitle: "third-party", // TODO use data source name or SubCategory name?
+      // TODO use SubCategory name instead?
+      // TODO i18n
+      activityTitle:
+        value.dataSource?.datasetName?.en ?? "Unknown third-party source",
       scopes: {
         [scopeName]: bigIntToDecimal(co2eq),
       },

@@ -514,7 +514,7 @@ function calculateEmissionsByScope(
   });
 
   // Convert the activities object to an array
-  return Object.values(activities).map(convertEmissionsToStrings);
+  return Object.values(activities);
 }
 
 const groupActivities = (

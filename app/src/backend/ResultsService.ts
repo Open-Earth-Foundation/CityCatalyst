@@ -356,7 +356,7 @@ interface InventoryValuesBySectorByScope {
 
 /** Core Emissions Breakdown Function
  * Simplified version with only data by sector, not by activity. works for data inputted manually and from 3rd parties.
- * [ON-3126] restore byActivity */
+ * [ON-3126] restore byActivity:  bring back changes from commit 9584504412c2da47eeba2a8e3eaaa15c739e05bc*/
 export const getEmissionsBreakdownBatch = async (
   inventoryId: string,
   sectorName: string,

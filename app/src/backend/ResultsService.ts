@@ -321,7 +321,6 @@ const fetchInventoryValuesBySector = async (
   inventoryId: string,
   sectorName: string,
 ) => {
-  console.log("sectorName", JSON.stringify(sectorName, null, 2)); // TODO NINA
   const rawQuery = `
       SELECT iv.co2eq,
              ss.subsector_name,
@@ -335,7 +334,6 @@ const fetchInventoryValuesBySector = async (
       WHERE iv.inventory_id = (:inventoryId)
         AND LOWER(s.sector_name) = (:sectorName)
   `;
-  console.log("replace", JSON.stringify(sectorName.replace("-", " "), null, 2)); // TODO NINA
   const activitiesRaw: ActivityForSectorBreakdownRecords[] =
     await db.sequelize!.query(rawQuery, {
       replacements: { inventoryId, sectorName: sectorName.replace("-", " ") },
@@ -391,7 +389,6 @@ export const getEmissionsBreakdownBatch = async (
         };
       },
     );
-    console.log("resultsByScope", JSON.stringify(resultsByScope, null, 2)); // TODO NINA
     return { byScope: resultsByScope };
   } catch (error) {
     console.error("Error in getEmissionsBreakdownBatch:", error);
@@ -450,7 +447,7 @@ const getActivityDataValues = (
 const fetch3rdPartyInventoryValues = (inventoryId: string) => {
   const rawQuery = `SELECT iv.id,
                            iv.co2eq,
-                           scope.scope_name,
+                           scope.scope_name
                     FROM "InventoryValue" iv
                              JOIN "Sector" s ON iv.sector_id = s.sector_id
                              JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id

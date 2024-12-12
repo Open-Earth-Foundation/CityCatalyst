@@ -23,13 +23,13 @@ function calculatePercentage(co2eq: Decimal, total: Decimal): number {
 interface TotalEmissionsRecord {
   inventory_id: string;
   co2eq: bigint;
-  sector_name: SectorName;
+  sector_name: SectorNamesInDB;
 }
 
 interface TopEmissionRecord {
   inventory_id: string;
   co2eq: bigint;
-  sector_name: SectorName;
+  sector_name: SectorNamesInDB;
   subsector_name: string;
   scope_name: string;
 }
@@ -38,7 +38,7 @@ interface TotalEmissionsResult {
   inventoryId: string;
   sumOfEmissions: Decimal;
   totalEmissionsBySector: {
-    sectorName: SectorName;
+    sectorName: SectorNamesInDB;
     co2eq: Decimal;
     percentage: number;
   }[];
@@ -47,7 +47,7 @@ interface TotalEmissionsResult {
 interface TopEmission {
   inventoryId: string;
   co2eq: Decimal;
-  sectorName: SectorName;
+  sectorName: SectorNamesInDB;
   subsectorName: string;
   scopeName: string;
   percentage: number;
@@ -58,7 +58,7 @@ interface EmissionResults {
     totalEmissions: {
       sumOfEmissions: Decimal;
       totalEmissionsBySector: {
-        sectorName: SectorName;
+        sectorName: SectorNamesInFE;
         co2eq: Decimal;
         percentage: number;
       }[];
@@ -67,11 +67,11 @@ interface EmissionResults {
   };
 }
 
-interface ActivitiesForSectorBreakdownBulk {
+type ActivitiesForSectorBreakdownBulk = {
   [inventoryId: string]: {
-    [sectorName: keyof SectorName]: ActivityForSectorBreakdown[];
+    [sectorName in SectorNamesInDB]?: ActivityForSectorBreakdown[];
   };
-}
+};
 
 interface GroupedActivityResult {
   // byActivity: ResponseWithoutTotals;
@@ -93,7 +93,7 @@ interface ActivityForSectorBreakdown {
   co2eq: Decimal;
   subsector_name: string;
   scope_name: string;
-  sector_name: SectorName;
+  sector_name: SectorNamesInDB;
 }
 
 type ActivityForSectorBreakdownRecords = ActivityForSectorBreakdown & {
@@ -110,10 +110,8 @@ interface UngroupedActivityData {
   scopeName: string;
 }
 
-type SectorName = SectorNamesInFE & SectorNamesInDB;
-
 /** we get this names for the sectors in the query from the FE */
-type SectorNamesInFE =
+export type SectorNamesInFE =
   | "stationary-energy"
   | "transportation"
   | "waste"
@@ -129,7 +127,7 @@ const SectorMappingsFromFEToDB = {
   afolu: "Agriculture, Forestry, and Other Land Use (AFOLU)",
 };
 
-type SectorNamesInDB =
+export type SectorNamesInDB =
   | "Stationary Energy"
   | "Transportation"
   | "Waste"
@@ -285,7 +283,7 @@ async function fetchActivitiesBulk(
   for (const [inventoryId, records] of Object.entries(grouped)) {
     activitiesByInventory[inventoryId] = {};
 
-    const sectors = sectorNamesMap[inventoryId] || [];
+    const sectors = (sectorNamesMap[inventoryId] as SectorNamesInDB[]) || [];
 
     sectors.forEach((sectorName) => {
       const normalizedSectorName = sectorName.toLowerCase().replace("-", " ");
@@ -328,7 +326,7 @@ export async function getEmissionResultsBatch(
               ...e,
               sectorName: SectorMappingsFromDBToFE[
                 e.sectorName as unknown as SectorNamesInDB
-              ] as SectorName,
+              ] as SectorNamesInFE,
             };
           }),
         },
@@ -361,7 +359,7 @@ export async function getEmissionResultsBatch(
 
 const fetchInventoryValuesBySector = async (
   inventoryId: string,
-  sectorName: SectorName,
+  sectorName: SectorNamesInFE,
 ) => {
   const rawQuery = `
       SELECT sum(iv.co2eq) as co2eq,
@@ -389,21 +387,21 @@ const fetchInventoryValuesBySector = async (
 };
 
 interface InventoryValuesBySector {
-  sector_name: SectorName;
+  sector_name: SectorNamesInDB;
   scope_name: string;
   co2eq: bigint;
 }
 
-interface InventoryValuesBySectorByScope {
-  [sectorName: keyof SectorName]: InventoryValuesBySector[];
-}
+type InventoryValuesBySectorByScope = {
+  [sectorName in SectorNamesInDB]: InventoryValuesBySector[];
+};
 
 /** Core Emissions Breakdown Function
  * Simplified version with only data by sector, not by activity. works for data inputted manually and from 3rd parties.
  * [ON-3126] restore byActivity:  bring back changes from commit 9584504412c2da47eeba2a8e3eaaa15c739e05bc*/
 export const getEmissionsBreakdownBatch = async (
   inventoryId: string,
-  sectorName: SectorName,
+  sectorName: SectorNamesInFE,
 ): Promise<GroupedActivityResult> => {
   try {
     const emissionsForSector = await fetchInventoryValuesBySector(
@@ -427,9 +425,11 @@ export const getEmissionsBreakdownBatch = async (
         );
         const scopes: { [key: string]: Decimal } = {};
 
-        scopeValues.forEach(({ scope_name, co2eq }) => {
-          scopes[scope_name] = bigIntToDecimal(co2eq || 0n);
-        });
+        scopeValues.forEach(
+          ({ scope_name, co2eq }: { scope_name: string; co2eq: bigint }) => {
+            scopes[scope_name] = bigIntToDecimal(co2eq || 0n);
+          },
+        );
 
         return {
           activityTitle: sectorName,
@@ -712,7 +712,7 @@ function calculateActivityTotals(grouped: ResponseWithoutTotals) {
 /** entry point for results/[sectorName] */
 export async function getEmissionsBreakdown(
   inventory: string,
-  sectorName: SectorName,
+  sectorName: SectorNamesInFE,
 ): Promise<{
   // byActivity: ResponseWithoutTotals;
   byScope: ActivityDataByScope[];

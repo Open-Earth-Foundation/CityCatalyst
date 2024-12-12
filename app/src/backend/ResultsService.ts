@@ -110,6 +110,23 @@ interface UngroupedActivityData {
   scopeName: string;
 }
 
+/** we get this names for the sectors in the query from the FE */
+type SectorNamesFromFE =
+  | "stationary-energy"
+  | "transportation"
+  | "waste"
+  | "ippu"
+  | "afolu";
+
+/** and we convert them to the names they have in the DB */
+const SectorMappings = {
+  "stationary-energy": "Stationary Energy",
+  transportation: "Transportation",
+  waste: "Waste",
+  ippu: "Industrial Processes and Product Uses (IPPU)",
+  afolu: "Agriculture, Forestry, and Other Land Use (AFOLU)",
+};
+
 async function fetchTotalEmissionsBulk(
   inventoryIds: string[],
 ): Promise<TotalEmissionsResult[]> {
@@ -322,22 +339,25 @@ const fetchInventoryValuesBySector = async (
   sectorName: string,
 ) => {
   const rawQuery = `
-      SELECT sum( iv.co2eq) as co2eq,
+      SELECT sum(iv.co2eq) as co2eq,
              ss.subsector_name,
              scope.scope_name
       FROM "InventoryValue" iv
-               LEFT JOIN  "ActivityValue" av  ON av.inventory_value_id = iv.id
+               LEFT JOIN "ActivityValue" av ON av.inventory_value_id = iv.id
                JOIN "Sector" s ON iv.sector_id = s.sector_id
                JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
                LEFT JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
                JOIN "Scope" scope ON scope.scope_id = sc.scope_id OR ss.scope_id = scope.scope_id
       WHERE iv.inventory_id = (:inventoryId)
-        AND LOWER(s.sector_name) = (:sectorName)
+        AND (s.sector_name) = (:sectorName)
       GROUP BY ss.subsector_name, scope.scope_name
   `;
   const activitiesRaw: ActivityForSectorBreakdownRecords[] =
     await db.sequelize!.query(rawQuery, {
-      replacements: { inventoryId, sectorName: sectorName.replace("-", " ") },
+      replacements: {
+        inventoryId,
+        sectorName: SectorMappings[sectorName as SectorNamesFromFE],
+      },
       type: QueryTypes.SELECT,
     });
   return activitiesRaw as InventoryValuesBySector[];

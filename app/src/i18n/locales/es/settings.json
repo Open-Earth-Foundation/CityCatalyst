@@ -60,5 +60,6 @@
   "city-deleted": "Ciudad eliminada exitosamente",
   "delete-file-prompt": "¿Está seguro de que desea <2>eliminar permanentemente</2> este archivo del repositorio de la ciudad?",
   "password-required": "Se requiere contraseña",
-  "min-length": "La longitud mínima debe ser {{length}}"
+  "min-length": "La longitud mínima debe ser {{length}}",
+  "mark-as-completed": "Marcar como completado"
 }

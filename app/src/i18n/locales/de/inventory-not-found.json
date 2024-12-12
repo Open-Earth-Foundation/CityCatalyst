@@ -3,5 +3,7 @@
   "not_part_of_team_description": "Bitte registrieren Sie sich oder loggen Sie sich erneut ein, damit Sie zum Dashboard Ihrer Stadt weitergeleitet werden können",
   "possible_mistake": "Wenn Sie dies für einen Fehler halten,",
   "please_contact_us": "kontaktieren Sie uns bitte",
-  "goto-dashboard": "Zum Dashboard"
+  "goto-dashboard": "Zum Dashboard",
+  "emission-mist": "Scheint, als wären wir in den Emissionsnebel geraten. Es scheint, dass das Emissionsinventar, das Sie suchen, nicht mehr verfügbar ist.",
+  "go-to-citycatalyst": "Gehe zu CityCatalyst"
 }

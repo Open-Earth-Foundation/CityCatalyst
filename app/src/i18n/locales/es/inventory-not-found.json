@@ -3,5 +3,7 @@
   "not_part_of_team_description": "Por favor regístrate o inicia sesión nuevamente para que puedas ser redirigido al tablero de tu ciudad",
   "possible_mistake": "Si crees que es un error,",
   "please_contact_us": "Por favor contáctanos",
-  "goto-dashboard": "Ver Dashboard"
+  "goto-dashboard": "Ver Dashboard",
+  "emission-mist": "Parece que hemos vagado hacia la niebla de emisión. Parece que el inventario de emisiones que estás buscando ya no está disponible.",
+  "go-to-citycatalyst": "Ve a CityCatalyst"
 }

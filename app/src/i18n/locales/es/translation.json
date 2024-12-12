@@ -3,5 +3,8 @@
   "help": "Ayuda",
   "log-in": "Ingresar",
   "sign-up": "Registrarse",
-  "go-back": "Regresa"
+  "go-back": "Regresa",
+  "dashboard": "Tablero",
+  "log-out": "Cerrar Sesión",
+  "settings": "Ajustes"
 }

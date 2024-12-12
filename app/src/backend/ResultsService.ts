@@ -322,7 +322,7 @@ const fetchInventoryValuesBySector = async (
   sectorName: string,
 ) => {
   const rawQuery = `
-      SELECT iv.co2eq,
+      SELECT sum( iv.co2eq) as co2eq,
              ss.subsector_name,
              scope.scope_name
       FROM "InventoryValue" iv
@@ -333,6 +333,7 @@ const fetchInventoryValuesBySector = async (
                JOIN "Scope" scope ON scope.scope_id = sc.scope_id OR ss.scope_id = scope.scope_id
       WHERE iv.inventory_id = (:inventoryId)
         AND LOWER(s.sector_name) = (:sectorName)
+      GROUP BY ss.subsector_name, scope.scope_name
   `;
   const activitiesRaw: ActivityForSectorBreakdownRecords[] =
     await db.sequelize!.query(rawQuery, {
@@ -364,14 +365,17 @@ export const getEmissionsBreakdownBatch = async (
       inventoryId,
       sectorName,
     );
-    const bySector: InventoryValuesBySectorByScope = groupBy(
+
+    const bySubSector: InventoryValuesBySectorByScope = groupBy(
       emissionsForSector,
       "subsector_name",
     );
+
     const totalEmissions = bigIntToDecimal(
       sumBigIntBy(emissionsForSector, "co2eq"),
     );
-    const resultsByScope = Object.entries(bySector).map(
+
+    const resultsByScope = Object.entries(bySubSector).map(
       ([sectorName, scopeValues]) => {
         const totalSectorEmissions = bigIntToDecimal(
           sumBigIntBy(scopeValues, "co2eq"),
@@ -381,6 +385,7 @@ export const getEmissionsBreakdownBatch = async (
         scopeValues.forEach(({ scope_name, co2eq }) => {
           scopes[scope_name] = bigIntToDecimal(co2eq || 0n);
         });
+
         return {
           activityTitle: sectorName,
           scopes,

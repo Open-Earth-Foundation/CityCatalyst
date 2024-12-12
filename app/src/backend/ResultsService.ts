@@ -1,5 +1,5 @@
 import { db } from "@/models";
-import { QueryTypes } from "sequelize";
+import { Op, QueryTypes } from "sequelize";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
 import groupBy from "lodash/groupBy";
 import mapValues from "lodash/mapValues";
@@ -7,6 +7,7 @@ import { toKebabCase } from "@/util/helpers";
 import { ActivityDataByScope, GroupedActivity } from "@/util/types";
 import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";
+import createHttpError from "http-errors";
 
 function calculatePercentage(co2eq: Decimal, total: Decimal): number {
   if (total.lessThanOrEqualTo(0)) {
@@ -132,7 +133,7 @@ async function fetchTotalEmissionsBulk(
   return Object.entries(grouped).map(([inventoryId, records]) => {
     const emissions = records.map(({ co2eq, sector_name }) => ({
       sectorName: sector_name,
-      co2eq: bigIntToDecimal(co2eq),
+      co2eq: bigIntToDecimal(co2eq || 0n),
     }));
 
     const sumOfEmissions = emissions.reduce(
@@ -187,7 +188,7 @@ async function fetchTopEmissionsBulk(
       .slice(0, 3)
       .map(({ co2eq, sector_name, subsector_name, scope_name }) => ({
         inventoryId,
-        co2eq: bigIntToDecimal(co2eq),
+        co2eq: bigIntToDecimal(co2eq || 0n),
         sectorName: sector_name,
         subsectorName: subsector_name,
         scopeName: scope_name,
@@ -249,7 +250,7 @@ async function fetchActivitiesBulk(
       activitiesByInventory[inventoryId][sectorName] = filteredActivities.map(
         (record) => ({
           ...record,
-          co2eq: bigIntToDecimal(record.co2eq),
+          co2eq: bigIntToDecimal(record.co2eq || 0n),
         }),
       );
     });
@@ -330,17 +331,19 @@ export const getEmissionsBreakdownBatch = async (
 
       if (!emissionResult) {
         console.warn(
-          `No emission results found for inventoryId: ${inventoryId}`,
+          `No activity level emission results found for inventory ID: ${inventoryId}`,
         );
+
+        // use third party data from InventoryValue instead if available
+        const byScope = await calculateThirdPartyEmissionsByScope(inventoryId);
+        breakdownResults[inventoryId] = { byActivity: {}, byScope };
         continue;
       }
 
       const activityValues: UngroupedActivityData[] = [];
 
       // Process activities per sector
-      for (const [sectorName, activities] of Object.entries(
-        activitiesBySector,
-      )) {
+      for (const activities of Object.values(activitiesBySector)) {
         activities.forEach((activity) => {
           const activityData = getActivityDataValues(
             activity,
@@ -353,11 +356,18 @@ export const getEmissionsBreakdownBatch = async (
       }
 
       // Group and calculate totals
-      const grouped = groupActivities(activityValues);
-      const byActivity = calculateActivityTotals(grouped);
-      const byScope = calculateEmissionsByScope(activityValues);
+      if (activityValues.length > 0) {
+        const grouped = groupActivities(activityValues);
+        const byActivity = calculateActivityTotals(grouped);
+        const byScope = calculateEmissionsByScope(activityValues);
 
-      breakdownResults[inventoryId] = { byActivity, byScope };
+        breakdownResults[inventoryId] = { byActivity, byScope };
+      } else {
+        // TODO can this state be reached when we have an emissions result?
+        const byScope = await calculateThirdPartyEmissionsByScope(inventoryId);
+
+        breakdownResults[inventoryId] = { byActivity: {}, byScope };
+      }
     }
 
     return breakdownResults;
@@ -426,6 +436,41 @@ function convertEmissionsToStrings(
   };
 }
 
+async function calculateThirdPartyEmissionsByScope(
+  inventoryId: string,
+): Promise<ActivityDataByScope[]> {
+  const inventoryValues = await db.models.InventoryValue.findAll({
+    where: {
+      inventoryId,
+      datasourceId: { [Op.not]: null }, // only include third-party data
+    },
+    include: [{ model: db.models.DataSource, as: "dataSource" }],
+  });
+  const scopes = inventoryValues.map((value) => {
+    const scopeName = value.gpcReferenceNumber?.split(".").slice(-1)[0];
+
+    if (!scopeName) {
+      throw new createHttpError.InternalServerError(
+        "Scope name not found for inventory value " + value.id,
+      );
+    }
+
+    const co2eq = value.co2eq ?? 0n;
+    const totalEmissions = bigIntToDecimal(co2eq || 0n);
+
+    return {
+      activityTitle: "mixed-activities",
+      scopes: {
+        [scopeName]: bigIntToDecimal(co2eq || 0n),
+      },
+      totalEmissions,
+      percentage: 100,
+    };
+  });
+
+  return scopes;
+}
+
 function calculateEmissionsByScope(
   activityValues: UngroupedActivityData[],
 ): ActivityDataByScope[] {
@@ -474,10 +519,14 @@ const groupActivities = (
     "subsectorName",
   );
 
+  console.log(groupedBySubsector);
+
   return mapValues(groupedBySubsector, (subsectorActivities) => {
     const groupedByActivity = groupBy(subsectorActivities, (e) =>
       toKebabCase(e.activityTitle),
     );
+
+    console.log(groupedByActivity);
 
     return mapValues(groupedByActivity, (activityGroup) => {
       const groupedByUnit = groupBy(activityGroup, "activityUnits");

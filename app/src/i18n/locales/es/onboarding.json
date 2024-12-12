@@ -26,6 +26,7 @@
   "geographical-boundaries": "Límites geográficos",
 
   "done-heading": "Inventario creado con éxito<br />",
+  "add-new-inventory": "Crear otro inventario",
   "inventory-title": "Inventario Básico de Emisiones GPC - Año {{year}}",
   "done-details": "Creaste tu perfil de ciudad para comenzar tu inventario de GEI con metodología GPC Básico.",
   "check-dashboard": "Ir al Inicio",

@@ -4292,6 +4292,10 @@
           "id": "incineration-facility-address",
           "type": "text",
           "required": false
+        },
+        {
+          "id": "data-source",
+          "type": "text"
         }
       ]
     }
@@ -4382,6 +4386,10 @@
           "id": "incineration-facility-address",
           "type": "text",
           "required": false
+        },
+        {
+          "id": "data-source",
+          "type": "text"
         }
       ]
     }
@@ -4622,6 +4630,11 @@
           ],
           "exclusive": "source-type-all-wastewaterœ"
         }
+        ,
+        {
+          "id": "data-source",
+          "type": "text"
+        }
       ]
     }
   },
@@ -4854,6 +4867,10 @@
             "source-type-domestic-wastewater",
             "source-type-industrial-wastewater"
           ]
+        },
+        {
+          "id": "data-source",
+          "type": "text"
         }
       ]
     }

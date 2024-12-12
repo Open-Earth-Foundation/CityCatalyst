@@ -10,7 +10,7 @@ import { bigIntToDecimal } from "@/util/big_int";
 import createHttpError from "http-errors";
 
 function sumBigIntBy(array: any[], fieldName: string): bigint {
-  return array.reduce((sum, item) => sum + item[fieldName], 0n);
+  return array.reduce((sum, item) => sum + BigInt(item[fieldName]), 0n);
 }
 
 function calculatePercentage(co2eq: Decimal, total: Decimal): number {

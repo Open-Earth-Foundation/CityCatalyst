@@ -1,6 +1,6 @@
 {
   "name": "city-catalyst",
-  "version": "0.28.0",
+  "version": "0.29.0-rc.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -34,6 +34,7 @@
     "create-admin": "tsx scripts/create-admin.ts"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^1.0.8",
     "@chakra-ui/icons": "^2.1.0",
     "@chakra-ui/next-js": "^2.2.0",
     "@chakra-ui/react": "^2.8.2",

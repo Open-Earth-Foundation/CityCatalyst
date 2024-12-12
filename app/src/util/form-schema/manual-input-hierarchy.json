@@ -4292,6 +4292,10 @@
           "id": "incineration-facility-address",
           "type": "text",
           "required": false
+        },
+        {
+          "id": "data-source",
+          "type": "text"
         }
       ]
     }
@@ -4382,6 +4386,10 @@
           "id": "incineration-facility-address",
           "type": "text",
           "required": false
+        },
+        {
+          "id": "data-source",
+          "type": "text"
         }
       ]
     }
@@ -4620,7 +4628,12 @@
             "source-type-industrial-wastewater",
             "source-type-all-wastewater"
           ],
-          "exclusive": "source-type-all-wastewaterœ"
+          "exclusive": "source-type-all-wastewater"
+        }
+        ,
+        {
+          "id": "data-source",
+          "type": "text"
         }
       ]
     }
@@ -4854,6 +4867,10 @@
             "source-type-domestic-wastewater",
             "source-type-industrial-wastewater"
           ]
+        },
+        {
+          "id": "data-source",
+          "type": "text"
         }
       ]
     }
@@ -4871,7 +4888,8 @@
             "industry-type-chemical-industry",
             "industry-type-metal-industry",
             "industry-type-electronics-industry",
-            "industry-type-substitutes-for-ozone-depleting-substances"
+            "industry-type-substitutes-for-ozone-depleting-substances",
+            "industry-type-other-industries"
           ]
         },
         {
@@ -4891,7 +4909,8 @@
               "industry-name-caprotactam-production",
               "industry-name-titanium-dioxide-production",
               "industry-name-soda-ash-production",
-              "industry-name-hydrogen-production"
+              "industry-name-hydrogen-production",
+              "industry-name-petrochemicals-production"
             ],
             "industry-type-metal-industry": [
               "industry-name-metallurgical-coke-production",
@@ -4914,6 +4933,12 @@
               "industry-name-solvent-cleaning",
               "industry-name-waterproof-films-for-electronic-circuits",
               "industry-name-foam-blowing-agents"
+            ],
+            "industry-type-other-industries": [
+              "industry-name-pulp-and-paper",
+              "industry-name-food-and-drink",
+              "industry-name-textiles-and-leather",
+              "industry-name-other-industries"
             ]
           }
         },

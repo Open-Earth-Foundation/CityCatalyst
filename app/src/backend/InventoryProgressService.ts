@@ -86,17 +86,34 @@ export default class InventoryProgressService {
             }),
         })),
       }));
+
     const sectorTotals: Record<string, number> = filteredOutSectors.reduce(
       (acc, sector) => {
         const subCategoryCount = sector.subSectors.reduce(
-          (count, subSector) =>
-            count +
-            (inventory.inventoryType === InventoryTypeEnum.GPC_BASIC_PLUS
-              ? Math.min(2, subSector.subCategories.length)
-              : subSector.subCategories.length), // TODO remove this when scope 3 is added back for SECTOR 1 and 2 in BASIC+;
+          (count, subSector) => {
+            const possibleScopesForInventoryType =
+              getScopesForInventoryAndSector(
+                inventory.inventoryType as InventoryTypeEnum,
+                sector.referenceNumber!,
+              );
+            const subCategoryCount = subSector.subCategories.filter(
+              (subcategory) => {
+                const referenceNumber = subcategory.referenceNumber as string;
+                const parts = referenceNumber?.split(".");
+                const lastItem =
+                  parts && parts.length > 0
+                    ? parts[parts.length - 1]
+                    : undefined;
+                return possibleScopesForInventoryType.includes(
+                  parseInt(lastItem as string),
+                );
+              },
+            ).length;
+
+            return count + subCategoryCount;
+          },
           0,
         ); // the issue with this is that it is not taking into account the inventory type
-
         acc[sector.sectorId] = ["I", "II", "III"].includes(
           sector.referenceNumber!,
         )

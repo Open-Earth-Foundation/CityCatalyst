@@ -425,29 +425,35 @@ const getActivityDataValues = (
   };
 };
 
-function convertEmissionsToStrings(
-  input: ActivityDataByScope,
-): ActivityDataByScope {
-  return {
-    activityTitle: input.activityTitle,
-    scopes: input.scopes,
-    totalEmissions: input.totalEmissions,
-    percentage: input.percentage,
-  };
-}
+const fetch3rdPartyInventoryValues = (inventoryId: string) => {
+  const rawQuery = `SELECT iv.id,
+       iv.co2eq,
+       scope.scope_name,
+FROM "InventoryValue" iv
+         JOIN "Sector" s ON iv.sector_id = s.sector_id
+         JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
+         LEFT JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
+         JOIN "Scope" scope ON scope.scope_id = sc.scope_id OR ss.scope_id = scope.scope_id
+WHERE iv.inventory_id = (:inventoryId) and iv.datasource_id is not null;`;
+
+  return db.sequelize!.query(rawQuery, {
+    replacements: { inventoryId },
+    type: QueryTypes.SELECT,
+  }) as {} as Promise<
+    {
+      id: string;
+      co2eq: bigint;
+      scope_name: string;
+    }[]
+  >;
+};
 
 async function calculateThirdPartyEmissionsByScope(
   inventoryId: string,
 ): Promise<ActivityDataByScope[]> {
-  const inventoryValues = await db.models.InventoryValue.findAll({
-    where: {
-      inventoryId,
-      datasourceId: { [Op.not]: null }, // only include third-party data
-    },
-    include: [{ model: db.models.DataSource, as: "dataSource" }],
-  });
+  const inventoryValues = await fetch3rdPartyInventoryValues(inventoryId);
   const scopes = inventoryValues.map((value) => {
-    const scopeName = value.gpcReferenceNumber?.split(".").slice(-1)[0];
+    const scopeName = value.scope_name;
 
     if (!scopeName) {
       throw new createHttpError.InternalServerError(

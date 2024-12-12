@@ -133,7 +133,7 @@ async function fetchTotalEmissionsBulk(
   return Object.entries(grouped).map(([inventoryId, records]) => {
     const emissions = records.map(({ co2eq, sector_name }) => ({
       sectorName: sector_name,
-      co2eq: bigIntToDecimal(co2eq || 0),
+      co2eq: bigIntToDecimal(co2eq || 0n),
     }));
 
     const sumOfEmissions = emissions.reduce(
@@ -188,7 +188,7 @@ async function fetchTopEmissionsBulk(
       .slice(0, 3)
       .map(({ co2eq, sector_name, subsector_name, scope_name }) => ({
         inventoryId,
-        co2eq: bigIntToDecimal(co2eq || 0),
+        co2eq: bigIntToDecimal(co2eq || 0n),
         sectorName: sector_name,
         subsectorName: subsector_name,
         scopeName: scope_name,
@@ -250,7 +250,7 @@ async function fetchActivitiesBulk(
       activitiesByInventory[inventoryId][sectorName] = filteredActivities.map(
         (record) => ({
           ...record,
-          co2eq: bigIntToDecimal(record.co2eq || 0),
+          co2eq: bigIntToDecimal(record.co2eq || 0n),
         }),
       );
     });
@@ -456,12 +456,12 @@ async function calculateThirdPartyEmissionsByScope(
     }
 
     const co2eq = value.co2eq ?? 0n;
-    const totalEmissions = bigIntToDecimal(co2eq || 0);
+    const totalEmissions = bigIntToDecimal(co2eq || 0n);
 
     return {
       activityTitle: "mixed-activities",
       scopes: {
-        [scopeName]: bigIntToDecimal(co2eq || 0),
+        [scopeName]: bigIntToDecimal(co2eq || 0n),
       },
       totalEmissions,
       percentage: 100,

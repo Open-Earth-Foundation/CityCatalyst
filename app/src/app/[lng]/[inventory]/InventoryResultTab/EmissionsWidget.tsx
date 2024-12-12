@@ -72,9 +72,10 @@ const EmissionsWidget = ({
   inventory?: InventoryResponse;
   population?: PopulationAttributes;
 }) => {
+  // Country total is in tonnes, inventory total is in kg
   const percentageOfCountrysEmissions =
     inventory?.totalEmissions && inventory?.totalCountryEmissions
-      ? (inventory.totalEmissions / inventory.totalCountryEmissions) * 100
+      ? (inventory.totalEmissions / (inventory.totalCountryEmissions * 1000)) * 100
       : undefined;
   const emissionsPerCapita =
     inventory?.totalEmissions && population?.population

@@ -1,5 +1,5 @@
 import { db } from "@/models";
-import { Op, QueryTypes } from "sequelize";
+import { QueryTypes } from "sequelize";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
 import groupBy from "lodash/groupBy";
 import mapValues from "lodash/mapValues";
@@ -110,12 +110,12 @@ async function fetchTotalEmissionsBulk(
   inventoryIds: string[],
 ): Promise<TotalEmissionsResult[]> {
   const rawQuery = `
-    SELECT iv.inventory_id, SUM(iv.co2eq) AS co2eq, s.sector_name 
-    FROM "InventoryValue" iv
-    JOIN "Sector" s ON iv.sector_id = s.sector_id
-    WHERE iv.inventory_id IN (:inventoryIds)
-    GROUP BY iv.inventory_id, s.sector_name
-    ORDER BY iv.inventory_id, SUM(iv.co2eq) DESC
+      SELECT iv.inventory_id, SUM(iv.co2eq) AS co2eq, s.sector_name
+      FROM "InventoryValue" iv
+               JOIN "Sector" s ON iv.sector_id = s.sector_id
+      WHERE iv.inventory_id IN (:inventoryIds)
+      GROUP BY iv.inventory_id, s.sector_name
+      ORDER BY iv.inventory_id, SUM(iv.co2eq) DESC
   `;
 
   const totalEmissionsRaw: TotalEmissionsRecord[] = await db.sequelize!.query(
@@ -160,14 +160,15 @@ async function fetchTopEmissionsBulk(
   inventoryIds: string[],
 ): Promise<{ [inventoryId: string]: TopEmission[] }> {
   const rawQuery = `
-    SELECT iv.inventory_id, iv.co2eq, s.sector_name, ss.subsector_name, scope.scope_name
-    FROM "InventoryValue" iv
-    JOIN "Sector" s ON iv.sector_id = s.sector_id
-    JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
-    LEFT JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
-    JOIN "Scope" scope ON scope.scope_id = sc.scope_id OR ss.scope_id = scope.scope_id
-    WHERE iv.inventory_id IN (:inventoryIds) AND iv.co2eq IS NOT NULL
-    ORDER BY iv.inventory_id, iv.co2eq DESC
+      SELECT iv.inventory_id, iv.co2eq, s.sector_name, ss.subsector_name, scope.scope_name
+      FROM "InventoryValue" iv
+               JOIN "Sector" s ON iv.sector_id = s.sector_id
+               JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
+               LEFT JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
+               JOIN "Scope" scope ON scope.scope_id = sc.scope_id OR ss.scope_id = scope.scope_id
+      WHERE iv.inventory_id IN (:inventoryIds)
+        AND iv.co2eq IS NOT NULL
+      ORDER BY iv.inventory_id, iv.co2eq DESC
   `;
 
   const topEmissionsRaw: TopEmissionRecord[] = await db.sequelize!.query(
@@ -214,15 +215,22 @@ async function fetchActivitiesBulk(
   );
 
   const rawQuery = `
-    SELECT iv.inventory_id, av.activity_data_jsonb, sc.reference_number, iv.input_methodology, av.co2eq, s.sector_name, ss.subsector_name, scope.scope_name
-    FROM "ActivityValue" av
-    JOIN "InventoryValue" iv ON av.inventory_value_id = iv.id
-    JOIN "Sector" s ON iv.sector_id = s.sector_id
-    JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
-    LEFT JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
-    JOIN "Scope" scope ON scope.scope_id = sc.scope_id OR ss.scope_id = scope.scope_id
-    WHERE iv.inventory_id IN (:inventoryIds)
-      AND LOWER(s.sector_name) IN (:sectorNames)
+      SELECT iv.inventory_id,
+             av.activity_data_jsonb,
+             sc.reference_number,
+             iv.input_methodology,
+             av.co2eq,
+             s.sector_name,
+             ss.subsector_name,
+             scope.scope_name
+      FROM "ActivityValue" av
+               JOIN "InventoryValue" iv ON av.inventory_value_id = iv.id
+               JOIN "Sector" s ON iv.sector_id = s.sector_id
+               JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
+               LEFT JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
+               JOIN "Scope" scope ON scope.scope_id = sc.scope_id OR ss.scope_id = scope.scope_id
+      WHERE iv.inventory_id IN (:inventoryIds)
+        AND LOWER(s.sector_name) IN (:sectorNames)
   `;
 
   const activitiesRaw: ActivityForSectorBreakdownRecords[] =
@@ -639,6 +647,7 @@ function calculateActivityTotals(grouped: ResponseWithoutTotals) {
   return grouped;
 }
 
+/** entry point for results/[sectorName] */
 export async function getEmissionsBreakdown(
   inventory: string,
   sectorName: string,
@@ -647,12 +656,13 @@ export async function getEmissionsBreakdown(
   byScope: ActivityDataByScope[];
 }> {
   const groupedActivityResults = await getEmissionsBreakdownBatch([inventory], {
-    [inventory]: [sectorName],
+    [inventory]: [sectorName]
   });
 
   return groupedActivityResults[inventory];
 }
 
+/** entry point for results */
 export async function getEmissionResults(inventory: string): Promise<{
   totalEmissions: Decimal;
   totalEmissionsBySector: any;

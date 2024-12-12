@@ -12,12 +12,14 @@ import {
 import { ActivityDataByScope } from "@/util/types";
 import type { TFunction } from "i18next";
 import { convertKgToTonnes } from "@/util/helpers";
+import { InventoryTypeEnum, SECTORS } from "@/util/constants";
 
 interface ByScopeViewProps {
   data: ActivityDataByScope[];
   tData: TFunction;
   tDashboard: TFunction;
   sectorName: string;
+  inventoryType: InventoryTypeEnum;
 }
 
 const ByScopeView: React.FC<ByScopeViewProps> = ({
@@ -25,8 +27,11 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
   tData,
   tDashboard,
   sectorName,
+  inventoryType,
 }) => {
-  const scopes = sectorName === "waste" ? ["1", "3"] : ["1", "2"];
+  const scopes = SECTORS.find((s) => sectorName === s.name)!.inventoryTypes[
+    inventoryType
+  ].scopes;
   return (
     <ChakraProvider>
       <Box p={4}>

@@ -63,7 +63,7 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
           </Thead>
           <Tbody>
             {item.bySector?.map((sectorBreakDown, i) => {
-              const isNotEqualToZero = sectorBreakDown.percentage !== 0;
+              const hasNotEqualToZero = sectorBreakDown.percentage !== 0;
               return (
                 <Tr key={i} isTruncated>
                   <Td>
@@ -76,19 +76,19 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
                     color={
                       sectorBreakDown.percentage < 0
                         ? "sentiment.positiveDefault"
-                        : isNotEqualToZero
+                        : hasNotEqualToZero
                           ? "sentiment.negativeDefault"
                           : "black"
                     }
                   >
-                    {isNotEqualToZero &&
+                    {hasNotEqualToZero &&
                       (sectorBreakDown.percentage < 0 ? (
                         <Icon as={MdArrowDropDown} />
                       ) : (
                         <Icon as={MdArrowDropUp} />
                       ))}
                     <Text>
-                      {isNotEqualToZero
+                      {hasNotEqualToZero
                         ? `${sectorBreakDown.percentage.toFixed(0)}%`
                         : "N/A"}
                     </Text>

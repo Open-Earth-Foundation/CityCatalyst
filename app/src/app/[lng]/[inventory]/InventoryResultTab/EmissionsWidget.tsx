@@ -17,6 +17,7 @@ import { InventoryResponse } from "@/util/types";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { MdArrowOutward } from "react-icons/md";
 import { PopulationAttributes } from "@/models/Population";
+import { HeatIcon } from "@/components/icons";
 
 const EmissionsWidgetCard = ({
   icon,
@@ -94,7 +95,7 @@ const EmissionsWidget = ({
         </Trans>
       ),
       value: inventory?.totalEmissions,
-      icon: MdArrowOutward,
+      icon: HeatIcon,
       showProgress: false,
     },
     {
@@ -108,7 +109,7 @@ const EmissionsWidget = ({
         ></Trans>
       ),
       value: emissionsPerCapita,
-      icon: MdArrowOutward,
+      icon: HeatIcon,
       showProgress: false,
     },
     {

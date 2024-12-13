@@ -229,12 +229,17 @@ export default class ActivityService {
     });
 
     // check if there is an existing InventoryValue for the reference number
-    const inventoryValue = await db.models.InventoryValue.findOne({
-      where: { id: inventoryValueId },
-    });
-    if (inventoryValue && inventoryValueId == undefined) {
+    if (!inventoryValueId && !inventoryValueParams) {
       throw new createHttpError.BadRequest(
-        `Inventory value for reference number ${inventoryValue.gpcReferenceNumber} already exists`,
+        "Either inventoryValueId or inventory must be provided",
+      );
+    }
+    const existingInventoryValue = await db.models.InventoryValue.findOne({
+      where: { gpcReferenceNumber: inventoryValueParams?.gpcReferenceNumber },
+    });
+    if (existingInventoryValue && !inventoryValueId) {
+      throw new createHttpError.BadRequest(
+        `Inventory value for reference number ${existingInventoryValue.gpcReferenceNumber} already exists`,
       );
     }
 

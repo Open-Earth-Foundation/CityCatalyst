@@ -129,5 +129,6 @@
   "inventory-year": "Inventarjahr",
   "add-new-inventory": "Neues Inventar hinzufügen",
   "table-view": "Tabelle",
-  "chart-view": "Diagramm"
+  "chart-view": "Diagramm",
+  "last-update": "Letztes Update"
 }

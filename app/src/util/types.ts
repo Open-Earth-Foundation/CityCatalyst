@@ -18,13 +18,16 @@ import {
   FailedSourceResult,
   RemovedSourceResult,
 } from "@/backend/DataSourceService";
+import { InventoryType } from "./constants";
 
 export interface CitiesAndYearsResponse {
   city: CityAttributes;
   years: { year: number; inventoryId: string; lastUpdate: Date }[];
 }
 
-export type InventoryResponse = InventoryAttributes & {
+interface RequiredInventoryAttributes extends Required<InventoryAttributes> {}
+
+export type InventoryResponse = RequiredInventoryAttributes & {
   city: CityAttributes & {
     populationYear: number;
     population: number;

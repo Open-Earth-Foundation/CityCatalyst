@@ -228,6 +228,16 @@ export default class ActivityService {
       inventoryValueId,
     });
 
+    // check if there is an existing InventoryValue for the reference number
+    const inventoryValue = await db.models.InventoryValue.findOne({
+      where: { id: inventoryValueId },
+    });
+    if (inventoryValue && inventoryValueId == undefined) {
+      throw new createHttpError.BadRequest(
+        `Inventory value for reference number ${inventoryValue.gpcReferenceNumber} already exists`,
+      );
+    }
+
     return await db.sequelize?.transaction(
       async (transaction: Transaction): Promise<ActivityValue> => {
         if (inventoryValueId && inventoryValueParams) {

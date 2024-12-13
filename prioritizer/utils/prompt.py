@@ -1,41 +1,41 @@
-prompt = """
-Evaluate and rank the actions in the order of importance based on the following criteria. Use this detailed breakdown to ensure consistent and justifiable prioritization:
+def return_prompt(action, city):
+    """
+    Generate the prioritization prompt based on the action and city data.
 
-1. Financial Feasibility (Cost)
-Prioritize actions that have lower costs to implement and maintain.
-Consider cost-effectiveness: Actions that achieve significant benefits (emissions reduction, risk reduction) for less cost should rank higher.
-2. Emissions Reduction Potential
-Rank actions based on their potential to reduce greenhouse gas (GHG) emissions.
-Actions with higher absolute emissions reductions (tons of CO2e avoided) are better.
-Consider both direct (Scope 1 & 2) and indirect (Scope 3) reductions.
-Favor actions targeting high-emission sectors in the city's inventory (e.g., stationary energy, transportation).
-3. Risk Reduction
-Actions that address and reduce risks (climate hazards, vulnerabilities) effectively should be prioritized.
-Weigh actions based on the severity and likelihood of risks addressed.
-4. Environmental Compatibility
-Actions aligned with the city's natural environment (e.g., biome, elevation, climate) are preferred.
-Evaluate the action's sustainability and potential environmental trade-offs.
-5. Socio-Demographic Suitability
-Favor actions that are suitable for the city's population size, density, and socio-economic characteristics.
-Actions targeting widespread public benefit or vulnerable populations are more desirable.
-6. Implementation Timeline
-Actions with shorter timelines to implementation or faster results should rank higher.
-Long-term actions should still be considered if their impact is substantial but weighted lower than immediate-impact actions.
-7. Dependencies
-Consider the dependencies or prerequisites for each action.
-Actions with fewer dependencies and higher self-sufficiency should rank higher.
-8. Sector Relevance
-Match actions to the city's most significant emission sectors:
-High-impact sectors (e.g., stationary energy, industrial processes) should be prioritized for targeted interventions.
-Align actions with the city's strategic priorities.
-9. City Size & Capacity
-Evaluate actions based on the city's size and capacity to implement them effectively.
-Smaller cities may require less resource-intensive actions.
-Larger cities with robust infrastructure might support more ambitious projects.
-Ranking Process
-Use a scoring system or logical hierarchy to weigh each action based on the criteria above.
-Present the actions ranked from best to worst, with an explanation of how the ranking aligns with these priorities.
-For actions that score similarly, prioritize those with broader benefits or fewer negative trade-offs.
+    Args:
+    action (DataFrame): DataFrame containing the top 20 actions to prioritize.
+    city (DataFrame): DataFrame containing the city data.
 
-### REMEMBER: The goal is to identify actions that are both impactful and feasible for the city to implement and return them ALL
-"""
+    Returns:
+    str: The formatted prioritization prompt.
+    """
+    # Generate the prioritization prompt
+    prompt = f"""
+            You are a climate action expert, tasked to prioritize and recommend the top 20 actions for a city based on the following guidelines:
+            
+            ### Guidelines for Action Prioritization:
+            1. **Cost-effectiveness:** Actions with lower costs and high benefits should rank higher.
+            2. **Emissions Reduction:** Actions that achieve significant greenhouse gas (GHG) emissions reduction should rank higher, especially those targeting the city's largest emission sectors.
+            3. **Risk Reduction:** Prioritize actions that address climate hazards and reduce risks for the city effectively.
+            4. **Environmental Compatibility:** Actions that align with the city's environment, such as biome and climate, should be preferred.
+            5. **Socio-Demographic Suitability:** Actions should match the population size, density, and socio-economic context of the city.
+            6. **Implementation Timeline:** Actions with shorter implementation timelines or faster impact should rank higher.
+            7. **Dependencies:** Actions with fewer dependencies or preconditions should be prioritized.
+            8. **Sector Relevance:** Actions targeting high-emission or priority sectors for the city should rank higher.
+            9. **City Size and Capacity:** Actions should be suitable for the city's capacity and resources to implement.
+
+            ### Instructions:
+            - Based on the rules, evaluate the top 20 actions provided.
+            - Consider both qualitative and quantitative aspects of the actions.
+            - Rank all 20 actions.
+            - Provide a detailed explanation for why each action was prioritized.
+
+            ### Action Data (Top 20 Actions):
+            {action}
+
+            ### City Data:
+            {city}
+
+            RETURN ALL ACTIONS RANKED BY PRIORITY.
+            """
+    return prompt

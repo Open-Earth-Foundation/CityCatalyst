@@ -4,10 +4,20 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
+        "actionId": "ipcc_0095",
+        "actionName": "Disaster early warning",
+        "actionPriority": 1,
+        "explanation": "This action is crucial for risk reduction, addressing multiple high-risk hazards such as flooding and heatwaves. It has a relatively low cost and can be implemented quickly, providing immediate benefits."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
         "actionId": "c40_0053",
         "actionName": "Water Savings",
-        "actionPriority": 1,
-        "explanation": "Water Savings is cost-effective and directly addresses the high risk of drought impacting water resources and food security. It aligns with the tropical rainforest biome and can be implemented quickly with minimal dependencies, making it highly suitable for Cama\u00e7ari's socio-demographic context."
+        "actionPriority": 2,
+        "explanation": "Water savings directly address the city's high risk of drought, offering cost-effective solutions with significant environmental compatibility and quick implementation."
     },
     {
         "locode": "BRCCI",
@@ -16,28 +26,8 @@
         "regionName": "Bahia",
         "actionId": "c40_0054",
         "actionName": "Water Recycling",
-        "actionPriority": 2,
-        "explanation": "Water Recycling offers significant risk reduction for drought and aligns with the city's environmental context. It is cost-effective and can be implemented with moderate dependencies, providing substantial benefits in water-scarce scenarios."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
         "actionPriority": 3,
-        "explanation": "Disaster early warning systems are crucial for addressing multiple high-risk hazards like flooding and heatwaves. They are cost-effective, have a quick implementation timeline, and require minimal dependencies, making them highly relevant for Cama\u00e7ari."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0067",
-        "actionName": "Air Quality",
-        "actionPriority": 4,
-        "explanation": "Improving air quality addresses public health risks associated with heatwaves and diseases. It is cost-effective, aligns with the city's environmental needs, and can be implemented relatively quickly, benefiting the entire population."
+        "explanation": "Water recycling is essential for reducing water resource risks, aligning with the city's tropical climate and providing long-term sustainability benefits."
     },
     {
         "locode": "BRCCI",
@@ -46,28 +36,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0087",
         "actionName": "Infrastructure retrofitting",
-        "actionPriority": 5,
-        "explanation": "Retrofitting infrastructure is essential for reducing risks from heatwaves and flooding. It targets high-emission sectors, aligns with the city's capacity, and provides long-term benefits despite a higher cost and longer timeline."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0060",
-        "actionName": "Managed Retreat",
-        "actionPriority": 6,
-        "explanation": "Managed Retreat is crucial for addressing geo-hydrological risks like flooding and landslides. It is environmentally compatible and provides significant risk reduction, though it requires careful planning and resources."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0090",
-        "actionName": "Insurance",
-        "actionPriority": 7,
-        "explanation": "Insurance provides financial risk reduction for climate hazards. It is cost-effective, has minimal dependencies, and can be quickly implemented, offering socio-economic benefits to vulnerable populations."
+        "actionPriority": 4,
+        "explanation": "Retrofitting infrastructure enhances resilience against geo-hydrological disasters like landslides and flooding, crucial for risk reduction and long-term city planning."
     },
     {
         "locode": "BRCCI",
@@ -76,78 +46,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0091",
         "actionName": "Diversification of livelihoods",
-        "actionPriority": 8,
-        "explanation": "Diversifying livelihoods enhances socio-economic resilience against climate impacts like drought and flooding. It is cost-effective, aligns with the city's socio-demographic context, and can be implemented with moderate dependencies."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0063",
-        "actionName": "Local Food Support",
-        "actionPriority": 9,
-        "explanation": "Local Food Support addresses food security risks from drought and flooding. It is cost-effective, environmentally compatible, and benefits the local population, though it requires coordination with local stakeholders."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0050",
-        "actionName": "White Roofs",
-        "actionPriority": 10,
-        "explanation": "White Roofs help mitigate heatwave impacts by reducing urban heat. They are cost-effective, have a quick implementation timeline, and align with the city's environmental conditions, benefiting public health."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0051",
-        "actionName": "Public Shading",
-        "actionPriority": 11,
-        "explanation": "Public Shading reduces heatwave impacts and improves public health. It is cost-effective, quickly implementable, and aligns with the city's socio-demographic needs, providing widespread benefits."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0081",
-        "actionName": "Coastal Accommodation",
-        "actionPriority": 12,
-        "explanation": "Coastal Accommodation addresses risks from flooding and sea-level rise. It is environmentally compatible and provides significant risk reduction, though it requires careful planning and resources."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0046",
-        "actionName": "Coastal Protection",
-        "actionPriority": 13,
-        "explanation": "Coastal Protection is essential for mitigating flooding and sea-level rise impacts. It aligns with the city's environmental context and provides long-term risk reduction, though it requires significant resources."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0104",
-        "actionName": "Permanent migration",
-        "actionPriority": 14,
-        "explanation": "Permanent migration addresses severe risks from flooding and landslides. It is a last-resort option with significant socio-economic implications, requiring careful planning and resources."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0059",
-        "actionName": "Early Warning",
-        "actionPriority": 15,
-        "explanation": "Early Warning systems are crucial for addressing high-risk hazards like flooding and heatwaves. They are cost-effective, have a quick implementation timeline, and require minimal dependencies."
+        "actionPriority": 5,
+        "explanation": "This action supports socio-economic resilience, crucial for adapting to climate impacts and reducing vulnerability in the city's diverse population."
     },
     {
         "locode": "BRCCI",
@@ -156,8 +56,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
-        "actionPriority": 16,
-        "explanation": "Social safety nets provide socio-economic resilience against climate impacts. They are cost-effective, have minimal dependencies, and can be quickly implemented, benefiting vulnerable populations."
+        "actionPriority": 6,
+        "explanation": "Social safety nets are vital for supporting vulnerable populations during climate-related disasters, ensuring socio-demographic suitability and risk reduction."
     },
     {
         "locode": "BRCCI",
@@ -166,18 +66,68 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
-        "actionPriority": 17,
-        "explanation": "Enhancing health infrastructure addresses public health risks from heatwaves and diseases. It aligns with the city's socio-demographic needs, though it requires significant resources and planning."
+        "actionPriority": 7,
+        "explanation": "Enhancing health infrastructure is critical for addressing public health risks from heatwaves and diseases, providing immediate and long-term benefits."
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0089",
-        "actionName": "Spatially redirect development",
-        "actionPriority": 18,
-        "explanation": "Redirecting development reduces risks from flooding and landslides. It is environmentally compatible and provides long-term benefits, though it requires careful planning and resources."
+        "actionId": "c40_0050",
+        "actionName": "White Roofs",
+        "actionPriority": 8,
+        "explanation": "White roofs help mitigate heatwaves by reducing urban heat island effects, offering a cost-effective and quick-to-implement solution."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0051",
+        "actionName": "Public Shading",
+        "actionPriority": 9,
+        "explanation": "Public shading provides immediate relief from heatwaves, enhancing public health and comfort in urban areas, with minimal dependencies."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0090",
+        "actionName": "Insurance",
+        "actionPriority": 10,
+        "explanation": "Insurance mechanisms provide financial resilience against climate impacts, crucial for socio-economic stability and risk management."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0046",
+        "actionName": "Coastal Protection",
+        "actionPriority": 11,
+        "explanation": "Coastal protection is essential for mitigating risks from flooding and sea-level rise, aligning with the city's geographical vulnerabilities."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0059",
+        "actionName": "Early Warning",
+        "actionPriority": 12,
+        "explanation": "Early warning systems are vital for timely responses to climate hazards, reducing risks and enhancing community preparedness."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0088",
+        "actionName": "Building codes",
+        "actionPriority": 13,
+        "explanation": "Updating building codes ensures infrastructure resilience against climate impacts, crucial for long-term urban planning and safety."
     },
     {
         "locode": "BRCCI",
@@ -186,8 +136,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
-        "actionPriority": 19,
-        "explanation": "Improving access to health care addresses public health risks from heatwaves and diseases. It aligns with the city's socio-demographic needs, though it requires significant resources and planning."
+        "actionPriority": 14,
+        "explanation": "Improving access to healthcare is critical for managing public health risks from climate-related diseases and heatwaves."
     },
     {
         "locode": "BRCCI",
@@ -196,7 +146,57 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
+        "actionPriority": 15,
+        "explanation": "Enhancing agricultural practices supports food security, crucial for adapting to drought and flooding risks."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 16,
+        "explanation": "Improving food storage and distribution systems enhances food security, reducing vulnerability to climate impacts."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
+        "actionPriority": 17,
+        "explanation": "Promoting sustainable diets and reducing food waste supports environmental goals and enhances food security."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0100",
+        "actionName": "Efficient water use/demand",
+        "actionPriority": 18,
+        "explanation": "Efficient water use is crucial for managing water resources, especially in drought-prone areas, offering cost-effective solutions."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0060",
+        "actionName": "Managed Retreat",
+        "actionPriority": 19,
+        "explanation": "Managed retreat is a long-term strategy for addressing sea-level rise, requiring significant planning and resources."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0081",
+        "actionName": "Coastal Accommodation",
         "actionPriority": 20,
-        "explanation": "Farm/fishery improvements address food security risks from drought and flooding. They are environmentally compatible and provide long-term benefits, though they require coordination with local stakeholders."
+        "explanation": "Coastal accommodation strategies are essential for adapting to sea-level rise, though they require substantial investment and planning."
     }
 ]

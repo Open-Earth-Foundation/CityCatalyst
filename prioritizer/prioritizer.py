@@ -15,16 +15,14 @@ from utils.additional_scoring_functions import (
     count_matching_hazards,
     find_highest_emission,
 )
-from utils.prompt import prompt as PROMPT
+from utils.prompt import return_prompt
 
 load_dotenv()
 
 api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
-# Constants for quantitative scoring
-SCORE_MAX = 100 / 4
-# Do a dynamic adaptation of how many fields we calculate for an action ( if there are nulls )
+# TODO a dynamic adaptation of how many fields we calculate for an action ( if there are nulls )
 scale_scores = {
     "Very High": 1.0,
     "High": 0.75,
@@ -118,13 +116,14 @@ def quantitative_score(city, action):
     if matching_hazards_count > 0:
         hazards_weight = weights.get("Hazard", 1)
         # check if it's not 0
-        score += matching_hazards_count * hazards_weight * SCORE_MAX
+        score += matching_hazards_count * hazards_weight
     print("Score after hazard:", score)
 
     # Dependencies - caculate the number of dependencies and give a minus score based on that very low impact
     dependencies = action.get("Dependencies", [])
+    dependencies_weights = weights.get("Dependencies", 1)
     if isinstance(dependencies, list):
-        score -= len(dependencies) * 0.5
+        score -= len(dependencies) * dependencies_weights
     print("Score after dependencies:", score)
     # ActionName - pass
     # AdaptationCategory - pass this time
@@ -143,14 +142,14 @@ def quantitative_score(city, action):
             total_emission_reduction_all_sectors / total_emissions
         ) * 100
         print("Reduction percentage:", reduction_percentage)
-        score += round((reduction_percentage / 100) * SCORE_MAX, 3)
+        score += round((reduction_percentage / 100), 3)
     print("Score after emissions reduction:", score)
 
     # Calculate for every sector
     weights_emissions = weights.get("GHGReductionPotential", 1)
     most_emissions, percentage_emissions_value = find_highest_emission(city)
     if action.get("Sector") == most_emissions:
-        score += (percentage_emissions_value / 100) * SCORE_MAX * weights_emissions
+        score += (percentage_emissions_value / 100) * weights_emissions
     print("Score after sector emission reduction:", score)
     # InterventionType - skip for now
     # Description - use only for LLM
@@ -158,12 +157,11 @@ def quantitative_score(city, action):
 
     # Adaptation effectiveness score
     # TODO I can see that there is No key like that in the current version of long list of actions was this scraped or moved to another one
-    adaptation_effectiveness = action.get("AdaptionEffectiveness")
+    adaptation_effectiveness = action.get("AdaptationEffectiveness")
     if adaptation_effectiveness in scale_adaptation_effectiveness:
         adaptation_weight = weights.get("AdaptationEffectiveness", 1)
         score += (
             scale_adaptation_effectiveness[adaptation_effectiveness]
-            * SCORE_MAX
             * adaptation_weight
         )
     print("Score after adaptation effectiveness:", score)
@@ -175,7 +173,7 @@ def quantitative_score(city, action):
     elif timeline_str in timeline_mapping:
         time_score_weight = weights.get("TimelineForImplementation", 1)
         time_score = timeline_mapping[timeline_str]
-        score += time_score * time_score_weight * SCORE_MAX
+        score += time_score * time_score_weight
     else:
         print("Invalid timeline:", timeline_str)
 
@@ -186,7 +184,7 @@ def quantitative_score(city, action):
         cost_investment_needed = action["CostInvestmentNeeded"]
         cost_score_weight = weights.get("CostInvestmentNeeded", 1)
         cost_score = scale_adaptation_effectiveness.get(cost_investment_needed, 0)
-        score += cost_score * SCORE_MAX * cost_score_weight
+        score += cost_score * cost_score_weight
 
     print("Score after cost:", score)
     print("-------------")
@@ -206,14 +204,10 @@ class PrioritizedActions(BaseModel):
 
 
 def send_to_llm(prompt):
-    system_prompt = PROMPT
+
     response = client.beta.chat.completions.parse(
         model="gpt-4o-2024-08-06",
         messages=[
-            {
-                "role": "system",
-                "content": system_prompt,
-            },
             {"role": "user", "content": prompt},
         ],
         response_format=PrioritizedActions,
@@ -223,34 +217,7 @@ def send_to_llm(prompt):
 
 
 def qualitative_score(city, action):
-    prompt = f"""
-    You are a climate action expert, tasked to prioritize and recommend the top 20 actions for a city based on the following guidelines:
-    
-    ### Guidelines for Action Prioritization:
-    1. **Cost-effectiveness:** Actions with lower costs and high benefits should rank higher.
-    2. **Emissions Reduction:** Actions that achieve significant greenhouse gas (GHG) emissions reduction (Scope 1, 2, and 3) should rank higher, especially those targeting the city's largest emission sectors.
-    3. **Risk Reduction:** Prioritize actions that address climate hazards and reduce risks for the city effectively.
-    4. **Environmental Compatibility:** Actions that align with the city's environment, such as biome and climate, should be preferred.
-    5. **Socio-Demographic Suitability:** Actions should match the population size, density, and socio-economic context of the city.
-    6. **Implementation Timeline:** Actions with shorter implementation timelines or faster impact should rank higher.
-    7. **Dependencies:** Actions with fewer dependencies or preconditions should be prioritized.
-    8. **Sector Relevance:** Actions targeting high-emission or priority sectors for the city should rank higher.
-    9. **City Size and Capacity:** Actions should be suitable for the city's capacity and resources to implement.
-
-    ### Instructions:
-    - Based on the rules, evaluate the top 20 actions provided.
-    - Consider both qualitative and quantitative aspects of the actions.
-    - Rank all 20 actions.
-    - Provide a detailed explanation for why each action was prioritized.
-
-    ### Action Data (Top 20 Actions):
-    {action}
-
-    ### City Data:
-    {city}
-
-    RETURN ALL ACTIONS RANKED BY PRIORITY.
-    """
+    prompt = return_prompt(action, city)
     llm_response = send_to_llm(prompt)
     return llm_response
 

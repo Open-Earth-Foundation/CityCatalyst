@@ -19,6 +19,9 @@ def get_ccra(actor_id, scenario_name):
         # Define the output folder and file path
         data_folder = Path("../data/ccra")
         data_folder.mkdir(parents=False, exist_ok=True)
+
+        # Remove any spaces from the actor ID
+        actor_id = actor_id.replace(" ", "")
         output_file = data_folder / f"ccra_{actor_id}_{scenario_name}.json"
 
         # Save the JSON response to a file

@@ -13,7 +13,11 @@ import {
   useToken,
   VStack,
 } from "@chakra-ui/react";
-import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
+import {
+  capitalizeFirstLetter,
+  convertKgToTonnes,
+  toKebabCase,
+} from "@/util/helpers";
 
 export type SegmentedProgressValues =
   | number
@@ -25,6 +29,8 @@ export function SegmentedProgress({
     "interactive.connected",
     "interactive.tertiary",
     "interactive.secondary",
+    "sentiment.negativeDefault",
+    "interactive.control",
   ],
   max = 1,
   height = 4,
@@ -73,7 +79,7 @@ export function SegmentedProgress({
           <Tr>
             <Td>
               <Text color="black" fontWeight="bold" fontSize={"md"}>
-                {t("total")}
+                {capitalizeFirstLetter(t("total"))}
               </Text>
             </Td>
             <Td></Td>
@@ -93,7 +99,7 @@ export function SegmentedProgress({
       label={tooltipContent}
       isDisabled={!showHover}
       placement="bottom"
-      minW="500px"
+      minW="650px"
       hasArrow
       arrowSize={15}
       backgroundColor={"white"}
@@ -133,7 +139,7 @@ export function SegmentedProgress({
   return (
     <VStack>
       {progressBars}
-      <Box w="full" className="flex flex-row" borderRadius="full">
+      <Box w="full" className="flex flex-row flex-wrap" borderRadius="full">
         {normalizedValues.map((v, i) => (
           <Badge
             key={i}

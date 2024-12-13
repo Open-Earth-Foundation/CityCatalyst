@@ -7,7 +7,7 @@
         "actionId": "ipcc_0053",
         "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
         "actionPriority": 1,
-        "explanation": "This action is highly cost-effective, offers significant emissions reduction by targeting land use emissions, aligns with the savanna biome, and has a relatively short implementation timeline. It also addresses risks related to drought and flooding by enhancing water retention and biodiversity."
+        "explanation": "This action is highly cost-effective, aligns with the city's savanna biome, and addresses the largest emission sector (land use). It also provides significant risk reduction against droughts and floods."
     },
     {
         "locode": "BRCMG",
@@ -17,7 +17,7 @@
         "actionId": "ipcc_0052",
         "actionName": "Reduce Deforestation and Degradation",
         "actionPriority": 2,
-        "explanation": "Directly targets the largest emission sector (land use) in Corumb\u00e1, offering substantial GHG reduction. It is cost-effective, aligns with the local environment, and reduces risks associated with drought and flooding."
+        "explanation": "Directly targets the largest emission source (land use) in Corumb\u00e1, offering substantial emissions reduction and environmental compatibility. It also helps mitigate drought and flood risks."
     },
     {
         "locode": "BRCMG",
@@ -27,7 +27,7 @@
         "actionId": "ipcc_0059",
         "actionName": "Reduce Conversion of Coastal Wetlands",
         "actionPriority": 3,
-        "explanation": "This action provides significant emissions reduction and risk mitigation benefits, particularly for flooding and biodiversity. It is cost-effective and aligns with the city's environmental context."
+        "explanation": "This action is crucial for emissions reduction and risk mitigation, particularly for flooding and droughts, while being cost-effective and environmentally compatible."
     },
     {
         "locode": "BRCMG",
@@ -37,7 +37,7 @@
         "actionId": "ipcc_0054",
         "actionName": "Improved Forest Management",
         "actionPriority": 4,
-        "explanation": "Enhances carbon sequestration and reduces emissions from land use. It is cost-effective, aligns with the savanna biome, and supports biodiversity, addressing drought and flooding risks."
+        "explanation": "Enhances carbon sequestration and aligns with the city's biome, offering significant emissions reduction and risk mitigation benefits."
     },
     {
         "locode": "BRCMG",
@@ -47,7 +47,7 @@
         "actionId": "ipcc_0077",
         "actionName": "Urban Tree Planting and Management",
         "actionPriority": 5,
-        "explanation": "Offers emissions reduction, urban cooling, and risk mitigation for heatwaves. It is cost-effective, aligns with the city's environment, and has a short implementation timeline."
+        "explanation": "Provides urban cooling, reduces heatwave impacts, and aligns with the city's environmental context. It is cost-effective and has a short implementation timeline."
     },
     {
         "locode": "BRCMG",
@@ -57,7 +57,7 @@
         "actionId": "c40_0028",
         "actionName": "Zero Emission Buses",
         "actionPriority": 6,
-        "explanation": "Targets transportation emissions, which are significant in Corumb\u00e1. It is cost-effective, reduces air pollution, and aligns with the city's capacity for implementation."
+        "explanation": "Targets transportation emissions, which are significant in Corumb\u00e1. It is cost-effective and aligns with the city's capacity for implementation."
     },
     {
         "locode": "BRCMG",
@@ -67,7 +67,7 @@
         "actionId": "ipcc_0002",
         "actionName": "Active Transport Modes",
         "actionPriority": 7,
-        "explanation": "Promotes emissions reduction in the transportation sector, is cost-effective, and encourages healthier lifestyles. It has a short implementation timeline and aligns with the city's socio-demographic context."
+        "explanation": "Promotes sustainable transport, reducing emissions and improving public health. It is cost-effective and has a short implementation timeline."
     },
     {
         "locode": "BRCMG",
@@ -77,7 +77,7 @@
         "actionId": "ipcc_0045",
         "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
         "actionPriority": 8,
-        "explanation": "Targets waste emissions, is highly cost-effective, and has a short implementation timeline. It aligns with the city's socio-economic context and reduces landfill use."
+        "explanation": "Addresses waste emissions, which are significant in Corumb\u00e1. It is cost-effective and has a short implementation timeline."
     },
     {
         "locode": "BRCMG",
@@ -87,7 +87,7 @@
         "actionId": "c40_0038",
         "actionName": "Sanitary Landfills",
         "actionPriority": 9,
-        "explanation": "Addresses waste emissions, is cost-effective, and aligns with the city's capacity. It reduces environmental and health risks associated with waste management."
+        "explanation": "Targets waste emissions, providing significant emissions reduction. It is cost-effective and aligns with the city's capacity for implementation."
     },
     {
         "locode": "BRCMG",
@@ -97,7 +97,7 @@
         "actionId": "ipcc_0062",
         "actionName": "Biochar",
         "actionPriority": 10,
-        "explanation": "Offers emissions reduction through carbon sequestration, is cost-effective, and aligns with the local environment. It supports soil health and reduces drought risk."
+        "explanation": "Enhances soil carbon storage, aligning with the city's land use emissions profile. It is cost-effective and environmentally compatible."
     },
     {
         "locode": "BRCMG",
@@ -107,7 +107,7 @@
         "actionId": "ipcc_0067",
         "actionName": "Manure management",
         "actionPriority": 11,
-        "explanation": "Targets emissions from agriculture, is cost-effective, and aligns with the city's capacity. It reduces environmental risks and supports sustainable agriculture."
+        "explanation": "Reduces emissions from agricultural activities, aligning with the city's land use emissions profile. It is cost-effective and has a short implementation timeline."
     },
     {
         "locode": "BRCMG",
@@ -117,7 +117,7 @@
         "actionId": "ipcc_0057",
         "actionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
         "actionPriority": 12,
-        "explanation": "Provides significant emissions reduction and risk mitigation benefits, particularly for flooding and biodiversity. It is cost-effective and aligns with the city's environmental context."
+        "explanation": "Targets land use emissions, providing significant emissions reduction and risk mitigation benefits."
     },
     {
         "locode": "BRCMG",
@@ -127,7 +127,7 @@
         "actionId": "ipcc_0058",
         "actionName": "Peatland Restoration",
         "actionPriority": 13,
-        "explanation": "Enhances carbon sequestration and reduces emissions from land use. It is cost-effective, aligns with the savanna biome, and supports biodiversity, addressing drought and flooding risks."
+        "explanation": "Enhances carbon sequestration and aligns with the city's land use emissions profile. It is cost-effective and environmentally compatible."
     },
     {
         "locode": "BRCMG",
@@ -137,7 +137,7 @@
         "actionId": "ipcc_0068",
         "actionName": "Bioenergy and BECCS(Bioenergy with Carbon Capture and Storage)",
         "actionPriority": 14,
-        "explanation": "Offers emissions reduction through carbon capture, is cost-effective, and aligns with the city's capacity. It supports energy security and reduces environmental risks."
+        "explanation": "Provides significant emissions reduction, aligning with the city's energy emissions profile. It is cost-effective and has a short implementation timeline."
     },
     {
         "locode": "BRCMG",
@@ -147,7 +147,7 @@
         "actionId": "ipcc_0069",
         "actionName": "Shift to sustainable healthy diets",
         "actionPriority": 15,
-        "explanation": "Promotes emissions reduction in the agriculture sector, is cost-effective, and encourages healthier lifestyles. It aligns with the city's socio-demographic context."
+        "explanation": "Reduces emissions from food production and waste, aligning with the city's socio-demographic context. It is cost-effective and has a short implementation timeline."
     },
     {
         "locode": "BRCMG",
@@ -157,7 +157,7 @@
         "actionId": "ipcc_0071",
         "actionName": "Improved and enhanced use of wood products",
         "actionPriority": 16,
-        "explanation": "Supports emissions reduction through sustainable forestry, is cost-effective, and aligns with the local environment. It supports biodiversity and reduces environmental risks."
+        "explanation": "Enhances carbon storage and aligns with the city's land use emissions profile. It is cost-effective and environmentally compatible."
     },
     {
         "locode": "BRCMG",
@@ -167,7 +167,7 @@
         "actionId": "ipcc_0033",
         "actionName": "Electrification of Processes",
         "actionPriority": 17,
-        "explanation": "Targets industrial emissions, is cost-effective, and aligns with the city's capacity. It supports energy security and reduces environmental risks."
+        "explanation": "Targets industrial emissions, providing significant emissions reduction. It is cost-effective and aligns with the city's capacity for implementation."
     },
     {
         "locode": "BRCMG",
@@ -177,7 +177,7 @@
         "actionId": "ipcc_0026",
         "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
         "actionPriority": 18,
-        "explanation": "Offers emissions reduction in the industrial sector, is cost-effective, and aligns with the city's capacity. It supports energy efficiency and reduces environmental risks."
+        "explanation": "Enhances energy efficiency, aligning with the city's energy emissions profile. It is cost-effective and has a short implementation timeline."
     },
     {
         "locode": "BRCMG",
@@ -187,7 +187,7 @@
         "actionId": "ipcc_0027",
         "actionName": "Process Coupling and Improvements",
         "actionPriority": 19,
-        "explanation": "Targets industrial emissions, is cost-effective, and aligns with the city's capacity. It supports energy efficiency and reduces environmental risks."
+        "explanation": "Targets industrial emissions, providing significant emissions reduction. It is cost-effective and aligns with the city's capacity for implementation."
     },
     {
         "locode": "BRCMG",
@@ -197,6 +197,6 @@
         "actionId": "ipcc_0032",
         "actionName": "Fuel Switching to Renewable Fuels",
         "actionPriority": 20,
-        "explanation": "Promotes emissions reduction in the energy sector, is cost-effective, and aligns with the city's capacity. It supports energy security and reduces environmental risks."
+        "explanation": "Reduces emissions from energy use, aligning with the city's energy emissions profile. It is cost-effective and has a short implementation timeline."
     }
 ]

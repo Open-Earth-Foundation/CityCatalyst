@@ -7,37 +7,7 @@
         "actionId": "c40_0038",
         "actionName": "Sanitary Landfills",
         "actionPriority": 1,
-        "explanation": "Sanitary Landfills rank highest due to their significant impact on reducing waste emissions, which is the largest emission sector in Cama\u00e7ari. The action is cost-effective, aligns with the city's waste management needs, and has a relatively straightforward implementation process with fewer dependencies."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0028",
-        "actionName": "Zero Emission Buses",
-        "actionPriority": 2,
-        "explanation": "Zero Emission Buses are prioritized for their potential to significantly reduce transportation emissions, the second-largest emission sector. This action is cost-effective in the long term, aligns with the city's transportation needs, and offers socio-demographic benefits by improving public transport."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0035",
-        "actionName": "Waste Efficiency",
-        "actionPriority": 3,
-        "explanation": "Waste Efficiency is crucial for reducing emissions in the waste sector. It is cost-effective, has a quick implementation timeline, and aligns with the city's environmental goals. It also reduces risks associated with waste management."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0036",
-        "actionName": "Landfill Management",
-        "actionPriority": 4,
-        "explanation": "Landfill Management is essential for controlling emissions from waste. It is cost-effective, reduces environmental risks, and aligns with the city's waste management strategy. It also has a relatively short implementation timeline."
+        "explanation": "Sanitary landfills address the city's largest emission sector, waste, and offer significant GHG reduction potential. They are cost-effective and align with the city's waste management needs."
     },
     {
         "locode": "BRCCI",
@@ -46,8 +16,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0033",
         "actionName": "Electrification of Processes",
-        "actionPriority": 5,
-        "explanation": "Electrification of Processes targets industrial emissions, a significant sector in Cama\u00e7ari. It offers substantial emissions reduction potential and aligns with the city's industrial profile. The action is feasible given the city's capacity."
+        "actionPriority": 2,
+        "explanation": "Electrification reduces emissions in industrial processes, a major emission sector for Cama\u00e7ari. It is cost-effective and aligns with the city's industrial profile."
     },
     {
         "locode": "BRCCI",
@@ -56,8 +26,18 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0045",
         "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
-        "actionPriority": 6,
-        "explanation": "Behavioral Changes for Reduced Waste are cost-effective and have a high potential for emissions reduction in the waste sector. This action is suitable for the city's socio-demographic context and can be implemented quickly."
+        "actionPriority": 3,
+        "explanation": "Promoting behavioral changes is cost-effective and can significantly reduce waste emissions, addressing a key emission sector."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0035",
+        "actionName": "Waste Efficiency",
+        "actionPriority": 4,
+        "explanation": "Improving waste efficiency directly targets the city's largest emission sector, offering substantial GHG reductions."
     },
     {
         "locode": "BRCCI",
@@ -66,8 +46,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0026",
         "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
-        "actionPriority": 7,
-        "explanation": "Heat Recovery and Reuse is prioritized for its potential to reduce industrial emissions. It is cost-effective, aligns with the city's industrial processes, and reduces energy-related risks."
+        "actionPriority": 5,
+        "explanation": "This action enhances energy efficiency in industrial processes, reducing emissions and aligning with the city's industrial capacity."
     },
     {
         "locode": "BRCCI",
@@ -76,8 +56,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0027",
         "actionName": "Process Coupling and Improvements",
-        "actionPriority": 8,
-        "explanation": "Process Coupling and Improvements offer significant emissions reduction in industrial processes. This action is cost-effective, aligns with the city's industrial sector, and can be implemented with existing infrastructure."
+        "actionPriority": 6,
+        "explanation": "Process improvements in industries can lead to significant emissions reductions, aligning with the city's industrial profile."
     },
     {
         "locode": "BRCCI",
@@ -86,8 +66,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0032",
         "actionName": "Fuel Switching to Renewable Fuels",
-        "actionPriority": 9,
-        "explanation": "Fuel Switching to Renewable Fuels targets industrial emissions and offers substantial reduction potential. It is cost-effective and aligns with the city's energy transition goals."
+        "actionPriority": 7,
+        "explanation": "Switching to renewable fuels in industrial processes can significantly reduce emissions, aligning with the city's energy transition goals."
     },
     {
         "locode": "BRCCI",
@@ -96,8 +76,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0034",
         "actionName": "Energy Recycling in Furnaces and Kilns",
-        "actionPriority": 10,
-        "explanation": "Energy Recycling in Furnaces and Kilns is prioritized for its emissions reduction potential in industrial processes. It is cost-effective and aligns with the city's industrial energy efficiency goals."
+        "actionPriority": 8,
+        "explanation": "Energy recycling in industrial processes reduces emissions and is cost-effective, aligning with the city's industrial sector."
     },
     {
         "locode": "BRCCI",
@@ -106,8 +86,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0042",
         "actionName": "Design for Recovery, Reuse, or Repurposing",
-        "actionPriority": 11,
-        "explanation": "Design for Recovery, Reuse, or Repurposing is cost-effective and reduces waste emissions. It aligns with the city's circular economy goals and can be implemented with minimal dependencies."
+        "actionPriority": 9,
+        "explanation": "Designing products for recovery and reuse reduces waste emissions and supports a circular economy, aligning with city goals."
     },
     {
         "locode": "BRCCI",
@@ -116,18 +96,38 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0044",
         "actionName": "Alternative feedstocks (e.g. in cement)",
-        "actionPriority": 12,
-        "explanation": "Alternative Feedstocks target industrial emissions and offer significant reduction potential. This action is cost-effective and aligns with the city's industrial sector needs."
+        "actionPriority": 10,
+        "explanation": "Using alternative feedstocks in industrial processes can reduce emissions, aligning with the city's industrial sector needs."
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0041",
-        "actionName": "Waste Collection",
+        "actionId": "c40_0028",
+        "actionName": "Zero Emission Buses",
+        "actionPriority": 11,
+        "explanation": "Transitioning to zero-emission buses reduces transportation emissions, a significant sector for Cama\u00e7ari, and is cost-effective."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
+        "actionPriority": 12,
+        "explanation": "Improving landfill management reduces waste emissions, addressing the city's largest emission sector."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0002",
+        "actionName": "Active Transport Modes",
         "actionPriority": 13,
-        "explanation": "Waste Collection is essential for reducing emissions in the waste sector. It is cost-effective, aligns with the city's waste management strategy, and can be implemented quickly."
+        "explanation": "Promoting active transport reduces transportation emissions and aligns with the city's socio-demographic context."
     },
     {
         "locode": "BRCCI",
@@ -137,7 +137,7 @@
         "actionId": "ipcc_0035",
         "actionName": "Technology Improvements of Processes",
         "actionPriority": 14,
-        "explanation": "Technology Improvements of Processes offer emissions reduction in industrial sectors. This action is cost-effective, aligns with the city's industrial profile, and can be implemented with existing resources."
+        "explanation": "Improving technology in industrial processes reduces emissions and aligns with the city's industrial capacity."
     },
     {
         "locode": "BRCCI",
@@ -147,56 +147,56 @@
         "actionId": "ipcc_0043",
         "actionName": "Circular Economy Policies",
         "actionPriority": 15,
-        "explanation": "Circular Economy Policies are cost-effective and reduce waste emissions. They align with the city's sustainability goals and can be implemented with minimal dependencies."
+        "explanation": "Implementing circular economy policies reduces waste emissions and supports sustainable development goals."
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0026",
-        "actionName": "Vehicle Emissions",
+        "actionId": "ipcc_0028",
+        "actionName": "Introduction of Energy Efficiency Technologies in Processing",
         "actionPriority": 16,
-        "explanation": "Vehicle Emissions reduction is crucial for the transportation sector. This action is cost-effective, aligns with the city's transportation needs, and offers socio-demographic benefits."
+        "explanation": "Enhancing energy efficiency in processing reduces emissions and aligns with the city's industrial sector."
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0039",
-        "actionName": "Gas Management",
+        "actionId": "ipcc_0031",
+        "actionName": "Smart Energy Management",
         "actionPriority": 17,
-        "explanation": "Gas Management is important for reducing emissions in the waste sector. It is cost-effective, aligns with the city's waste management strategy, and can be implemented with existing infrastructure."
+        "explanation": "Smart energy management reduces emissions in industrial processes and aligns with the city's energy goals."
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0002",
-        "actionName": "Active Transport Modes",
+        "actionId": "ipcc_0036",
+        "actionName": "On-site Combined Heat and Power (CHP)",
         "actionPriority": 18,
-        "explanation": "Active Transport Modes are cost-effective and reduce transportation emissions. They align with the city's transportation goals and offer socio-demographic benefits."
+        "explanation": "On-site CHP systems improve energy efficiency and reduce emissions, aligning with the city's industrial capacity."
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0023",
-        "actionName": "Bus Emissions",
+        "actionId": "ipcc_0038",
+        "actionName": "Carbon Capture and Utilization (CCU)",
         "actionPriority": 19,
-        "explanation": "Bus Emissions reduction is important for the transportation sector. This action is cost-effective, aligns with the city's public transport needs, and can be implemented with existing resources."
+        "explanation": "CCU technologies reduce industrial emissions and align with the city's capacity for innovation."
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0025",
-        "actionName": "Truck Emissions",
+        "actionId": "ipcc_0023",
+        "actionName": "Improved Heat and Energy Recovery",
         "actionPriority": 20,
-        "explanation": "Truck Emissions reduction is crucial for the transportation sector. This action is cost-effective, aligns with the city's freight transport needs, and can be implemented with existing infrastructure."
+        "explanation": "Improving heat and energy recovery in industrial processes reduces emissions and aligns with the city's industrial sector."
     }
 ]

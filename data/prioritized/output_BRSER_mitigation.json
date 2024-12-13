@@ -4,30 +4,20 @@
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0038",
-        "actionName": "Sanitary Landfills",
-        "actionPriority": 1,
-        "explanation": "This action ranks highest due to its significant impact on waste emissions, which is a major sector in Serra's emissions profile. It is cost-effective, aligns with the city's waste management needs, and can be implemented relatively quickly with existing infrastructure."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0033",
         "actionName": "Electrification of Processes",
-        "actionPriority": 2,
-        "explanation": "Electrification of processes targets the industrial sector, which is the largest emissions contributor in Serra. It offers substantial emissions reduction potential and aligns with the city's capacity for industrial improvements."
+        "actionPriority": 1,
+        "explanation": "Electrification of processes is highly cost-effective and significantly reduces emissions in the industrial sector, which is the largest emitter in Serra. It aligns with the city's capacity and can be implemented relatively quickly."
     },
     {
         "locode": "BRSER",
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0028",
-        "actionName": "Zero Emission Buses",
-        "actionPriority": 3,
-        "explanation": "This action addresses transportation emissions, the second largest sector. It provides direct emissions reductions and benefits public health by reducing air pollution, with moderate implementation costs."
+        "actionId": "c40_0038",
+        "actionName": "Sanitary Landfills",
+        "actionPriority": 2,
+        "explanation": "Sanitary landfills address waste emissions, the second-largest emission source in Serra. They are cost-effective, reduce health risks, and can be implemented with existing city resources."
     },
     {
         "locode": "BRSER",
@@ -36,8 +26,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0045",
         "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
-        "actionPriority": 4,
-        "explanation": "Promoting behavioral changes is cost-effective and can lead to significant waste reduction. It aligns with socio-demographic suitability by engaging the community and has a quick implementation timeline."
+        "actionPriority": 3,
+        "explanation": "Promoting behavioral changes is low-cost and can lead to significant waste reduction. It is socio-demographically suitable and can be quickly implemented with educational campaigns."
     },
     {
         "locode": "BRSER",
@@ -46,8 +36,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0026",
         "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
-        "actionPriority": 5,
-        "explanation": "This action targets energy efficiency in industrial processes, offering substantial emissions reductions. It is compatible with Serra's industrial profile and can be implemented with existing technologies."
+        "actionPriority": 4,
+        "explanation": "This action targets industrial emissions, offering cost-effective energy savings and emissions reduction. It aligns with Serra's industrial profile and can be implemented with moderate dependencies."
     },
     {
         "locode": "BRSER",
@@ -56,8 +46,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0027",
         "actionName": "Process Coupling and Improvements",
-        "actionPriority": 6,
-        "explanation": "Process improvements in industrial sectors can lead to significant emissions reductions. This action is cost-effective and aligns with the city's industrial emissions profile."
+        "actionPriority": 5,
+        "explanation": "Process improvements in industries can lead to significant emissions reduction. This action is cost-effective and aligns with Serra's industrial capacity."
     },
     {
         "locode": "BRSER",
@@ -66,8 +56,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0032",
         "actionName": "Fuel Switching to Renewable Fuels",
-        "actionPriority": 7,
-        "explanation": "Switching to renewable fuels in industrial processes offers high emissions reduction potential. It is relevant to Serra's industrial sector and supports the transition to sustainable energy sources."
+        "actionPriority": 6,
+        "explanation": "Switching to renewable fuels in industrial processes can significantly reduce emissions. It is cost-effective and aligns with Serra's environmental goals."
     },
     {
         "locode": "BRSER",
@@ -76,8 +66,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0034",
         "actionName": "Energy Recycling in Furnaces and Kilns",
-        "actionPriority": 8,
-        "explanation": "Energy recycling in industrial processes can significantly reduce emissions. This action is cost-effective and aligns with Serra's industrial emissions profile."
+        "actionPriority": 7,
+        "explanation": "Energy recycling is a cost-effective way to reduce industrial emissions. It aligns with Serra's industrial sector and can be implemented with existing technologies."
     },
     {
         "locode": "BRSER",
@@ -86,8 +76,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0042",
         "actionName": "Design for Recovery, Reuse, or Repurposing",
-        "actionPriority": 9,
-        "explanation": "This action supports circular economy principles, reducing waste and emissions. It is cost-effective and aligns with the city's waste management goals."
+        "actionPriority": 8,
+        "explanation": "This action supports a circular economy, reducing waste emissions. It is cost-effective and aligns with Serra's environmental and socio-economic context."
     },
     {
         "locode": "BRSER",
@@ -96,8 +86,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0044",
         "actionName": "Alternative feedstocks (e.g. in cement)",
-        "actionPriority": 10,
-        "explanation": "Using alternative feedstocks in industrial processes can reduce emissions significantly. This action is relevant to Serra's industrial sector and supports sustainable material use."
+        "actionPriority": 9,
+        "explanation": "Using alternative feedstocks in cement production can reduce emissions. It is cost-effective and aligns with Serra's industrial profile."
     },
     {
         "locode": "BRSER",
@@ -106,8 +96,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0035",
         "actionName": "Technology Improvements of Processes",
-        "actionPriority": 11,
-        "explanation": "Improving industrial technologies can lead to emissions reductions. This action is cost-effective and aligns with Serra's industrial emissions profile."
+        "actionPriority": 10,
+        "explanation": "Improving industrial technologies can lead to significant emissions reduction. It is cost-effective and aligns with Serra's industrial capacity."
     },
     {
         "locode": "BRSER",
@@ -116,28 +106,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0043",
         "actionName": "Circular Economy Policies",
-        "actionPriority": 12,
-        "explanation": "Implementing circular economy policies can reduce waste and emissions. This action is cost-effective and aligns with the city's waste management goals."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0035",
-        "actionName": "Waste Efficiency",
-        "actionPriority": 13,
-        "explanation": "Improving waste efficiency can significantly reduce emissions from the waste sector. This action is cost-effective and aligns with Serra's waste management needs."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0036",
-        "actionName": "Landfill Management",
-        "actionPriority": 14,
-        "explanation": "Effective landfill management can reduce emissions from waste. This action is cost-effective and aligns with the city's waste management goals."
+        "actionPriority": 11,
+        "explanation": "Implementing circular economy policies can reduce waste and emissions. It is cost-effective and aligns with Serra's socio-economic context."
     },
     {
         "locode": "BRSER",
@@ -146,8 +116,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0028",
         "actionName": "Introduction of Energy Efficiency Technologies in Processing",
-        "actionPriority": 15,
-        "explanation": "Introducing energy efficiency technologies in industrial processes can reduce emissions. This action is cost-effective and aligns with Serra's industrial emissions profile."
+        "actionPriority": 12,
+        "explanation": "Energy efficiency technologies can significantly reduce industrial emissions. They are cost-effective and align with Serra's industrial capacity."
     },
     {
         "locode": "BRSER",
@@ -156,8 +126,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0031",
         "actionName": "Smart Energy Management",
-        "actionPriority": 16,
-        "explanation": "Smart energy management can optimize energy use and reduce emissions. This action is cost-effective and aligns with Serra's energy management goals."
+        "actionPriority": 13,
+        "explanation": "Smart energy management can optimize energy use and reduce emissions. It is cost-effective and aligns with Serra's industrial and energy sectors."
     },
     {
         "locode": "BRSER",
@@ -166,8 +136,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0036",
         "actionName": "On-site Combined Heat and Power (CHP)",
-        "actionPriority": 17,
-        "explanation": "On-site CHP can improve energy efficiency and reduce emissions. This action is relevant to Serra's industrial sector and supports sustainable energy use."
+        "actionPriority": 14,
+        "explanation": "CHP systems can improve energy efficiency and reduce emissions. They are cost-effective and align with Serra's industrial capacity."
     },
     {
         "locode": "BRSER",
@@ -176,8 +146,48 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0038",
         "actionName": "Carbon Capture and Utilization (CCU)",
+        "actionPriority": 15,
+        "explanation": "CCU can significantly reduce industrial emissions. It is cost-effective and aligns with Serra's industrial profile, though it requires more dependencies."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "c40_0028",
+        "actionName": "Zero Emission Buses",
+        "actionPriority": 16,
+        "explanation": "Zero emission buses can reduce transportation emissions. They are cost-effective and align with Serra's transportation sector, though they require infrastructure changes."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0002",
+        "actionName": "Active Transport Modes",
+        "actionPriority": 17,
+        "explanation": "Promoting active transport modes can reduce transportation emissions. It is cost-effective and aligns with Serra's socio-demographic context."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "c40_0035",
+        "actionName": "Waste Efficiency",
         "actionPriority": 18,
-        "explanation": "CCU offers potential emissions reductions in industrial processes. This action is relevant to Serra's industrial sector but may have higher costs and dependencies."
+        "explanation": "Improving waste efficiency can reduce emissions. It is cost-effective and aligns with Serra's waste management sector."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
+        "actionPriority": 19,
+        "explanation": "Improved landfill management can reduce waste emissions. It is cost-effective and aligns with Serra's waste management sector."
     },
     {
         "locode": "BRSER",
@@ -186,17 +196,7 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0023",
         "actionName": "Improved Heat and Energy Recovery",
-        "actionPriority": 19,
-        "explanation": "Improving heat and energy recovery can reduce emissions in industrial processes. This action is cost-effective and aligns with Serra's industrial emissions profile."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0024",
-        "actionName": "Improved Fuel Delivery for Heating",
         "actionPriority": 20,
-        "explanation": "Improving fuel delivery for heating can reduce emissions. This action is cost-effective but has a lower impact compared to other industrial process improvements."
+        "explanation": "Improving heat and energy recovery can reduce industrial emissions. It is cost-effective and aligns with Serra's industrial capacity, though it requires more dependencies."
     }
 ]

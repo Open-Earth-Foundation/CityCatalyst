@@ -157,7 +157,7 @@ def quantitative_score(city, action):
 
     # Adaptation effectiveness score
     # TODO I can see that there is No key like that in the current version of long list of actions was this scraped or moved to another one
-    adaptation_effectiveness = action.get("AdaptionEffectiveness")
+    adaptation_effectiveness = action.get("AdaptationEffectiveness")
     if adaptation_effectiveness in scale_adaptation_effectiveness:
         adaptation_weight = weights.get("AdaptationEffectiveness", 1)
         score += (

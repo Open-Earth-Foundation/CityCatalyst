@@ -37,48 +37,7 @@ export default class ECRFDownloadService {
     try {
       // Load the workbook
       await workbook.xlsx.readFile(ECRF_TEMPLATE_PATH);
-      const worksheet = workbook.getWorksheet(3); // Get the worksheet by index (3rd sheet)
-      // Fetch data from the database
-      const inventoryValues = output.inventoryValues;
-
-      // Transform data into a dictionary for easy access
-      const dataDictionary = this.transformDataForTemplate(
-        inventoryValues as InventoryValueWithActivityValues[],
-        output.year as number,
-        t,
-      );
-
-      const visitedScopes = {};
-
-      worksheet?.eachRow((row, rowNumber) => {
-        // maintain the styling
-        row.eachCell((cell) => {
-          cell.style = { ...cell.style };
-        });
-
-        if (rowNumber === 1) return; // Skip the first row (contains the header)
-
-        const referenceNumberCell = row.getCell(2);
-        const referenceNumberValue = referenceNumberCell.value;
-
-        if (referenceNumberCell && typeof referenceNumberValue === "string") {
-          const dataSection = dataDictionary[referenceNumberValue];
-          // if the activityValues > 1, then we need to add rows
-          if (dataSection) {
-            this.replacePlaceholdersInRow(
-              row,
-              dataSection,
-              rowNumber,
-              visitedScopes,
-              worksheet,
-            );
-          } else {
-            this.markRowAsNotEstimated(row);
-          }
-        }
-        this.markRowAsNotEstimated(row);
-      });
-
+      await this.writeTOSheet3(workbook, output, t);
       // Save the modified workbook
       const buffer = Buffer.from(await workbook.xlsx.writeBuffer());
       console.log("Workbook has been generated successfully");
@@ -91,7 +50,65 @@ export default class ECRFDownloadService {
     }
   }
 
-  private static transformDataForTemplate(
+  private static async writeTOSheet1() {}
+
+  private static async writeTOSheet2() {
+    // prepare the data for sheet 2
+  }
+
+  private static async writeTOSheet3(
+    workbook: Excel.Workbook,
+    output: InventoryWithInventoryValuesAndActivityValues,
+    t: any,
+  ) {
+    const worksheet = workbook.getWorksheet(3); // Get the worksheet by index (3rd sheet)
+    // Fetch data from the database
+    const inventoryValues = output.inventoryValues;
+
+    // Transform data into a dictionary for easy access
+    const dataDictionary = this.transformDataForTemplate3(
+      inventoryValues as InventoryValueWithActivityValues[],
+      output.year as number,
+      t,
+    );
+
+    const visitedScopes = {};
+
+    worksheet?.eachRow((row, rowNumber) => {
+      // maintain the styling
+      row.eachCell((cell) => {
+        cell.style = { ...cell.style };
+      });
+
+      if (rowNumber === 1) return; // Skip the first row (contains the header)
+
+      const referenceNumberCell = row.getCell(2);
+      const referenceNumberValue = referenceNumberCell.value;
+
+      if (referenceNumberCell && typeof referenceNumberValue === "string") {
+        const dataSection = dataDictionary[referenceNumberValue];
+        // if the activityValues > 1, then we need to add rows
+        if (dataSection) {
+          this.replacePlaceholdersInRow(
+            row,
+            dataSection,
+            rowNumber,
+            visitedScopes,
+            worksheet,
+          );
+        } else {
+          this.markRowAsNotEstimated(row);
+        }
+      }
+      this.markRowAsNotEstimated(row);
+    });
+  }
+
+  private static transformDataForTemplate2(
+    inventoryValues: InventoryValueWithActivityValues,
+  );
+
+  private static transformDataForTemplate3(
     inventoryValues: InventoryValueWithActivityValues[],
     inventoryYear: number,
     t: any,

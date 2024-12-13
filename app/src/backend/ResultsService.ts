@@ -371,7 +371,7 @@ const fetchInventoryValuesBySector = async (
                JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
                LEFT JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
                JOIN "Scope" scope ON scope.scope_id = sc.scope_id OR ss.scope_id = scope.scope_id
-      WHERE iv.inventory_id = (:inventoryId)
+      WHERE iv.inventory_id = (:inventoryId) and iv.co2eq IS NOT NULL
         AND (s.sector_name) = (:sectorName)
       GROUP BY ss.subsector_name, scope.scope_name
   `;

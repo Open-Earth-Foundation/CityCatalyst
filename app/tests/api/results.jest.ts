@@ -110,17 +110,17 @@ describe("Results API", () => {
             {
               co2eq: "40399",
               percentage: 55,
-              sectorName: "Stationary Energy",
+              sectorName: "stationary-energy",
             },
             {
               co2eq: "22388",
               percentage: 31,
-              sectorName: "Transportation",
+              sectorName: "transportation",
             },
             {
               co2eq: "10581",
               percentage: 14,
-              sectorName: "Waste",
+              sectorName: "waste",
             },
           ],
           total: "73368",

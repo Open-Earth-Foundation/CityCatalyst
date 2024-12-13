@@ -2,7 +2,10 @@ import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
-import { getEmissionsBreakdown } from "@/backend/ResultsService";
+import {
+  getEmissionsBreakdown,
+  SectorNamesInFE,
+} from "@/backend/ResultsService";
 
 export const GET = apiHandler(
   async (_req, { session, params: { inventory, sectorName } }) => {
@@ -11,7 +14,7 @@ export const GET = apiHandler(
 
     const emissionsBreakdown = await getEmissionsBreakdown(
       inventory,
-      sectorName,
+      sectorName as SectorNamesInFE,
     );
     return NextResponse.json({
       data: emissionsBreakdown,

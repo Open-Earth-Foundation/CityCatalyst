@@ -16,6 +16,7 @@ import { format } from "date-fns";
 import { de, enUS, es, fr, it, pt } from "date-fns/locale";
 import { api } from "@/services/api";
 import { useRouter } from "next/navigation";
+import { TFunction } from "i18next";
 
 const localesMap: Record<string, any> = {
   en: enUS,
@@ -33,6 +34,7 @@ function YearCard({
   cityId,
   lastUpdate,
   lng,
+  t,
 }: {
   isActive: boolean;
   cityId: string;
@@ -40,6 +42,7 @@ function YearCard({
   lastUpdate: Date;
   inventoryId: string;
   lng: string;
+  t: TFunction;
 }) {
   const [setUserInfo] = api.useSetUserInfoMutation();
   const router = useRouter();
@@ -82,7 +85,7 @@ function YearCard({
           lineHeight="20"
           letterSpacing="wide"
         >
-          Last Update:{" "}
+          {t("last-update")}:{" "}
           {format(new Date(lastUpdate), "dd/MM/yyyy", {
             locale: localesMap[lng],
           })}
@@ -103,7 +106,7 @@ export function YearSelectorCard({
   cityId: string;
   currentInventoryId: string | null;
   lng: string;
-  t: Function;
+  t: TFunction;
 }) {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const toggleAccordion = () => setAccordionOpen(!isAccordionOpen);
@@ -124,6 +127,7 @@ export function YearSelectorCard({
             year={year.year}
             lastUpdate={year.lastUpdate}
             lng={lng}
+            t={t}
           />
         ))}
       </Box>
@@ -148,6 +152,7 @@ export function YearSelectorCard({
                         year={year.year}
                         lastUpdate={year.lastUpdate}
                         lng={lng}
+                        t={t}
                       />
                     ))}
                   </Box>

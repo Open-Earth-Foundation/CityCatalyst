@@ -352,7 +352,8 @@ export default class ActivityService {
               gasValue.gasAmount = BigInt(
                 gases
                   .find((gas) => gas.gas === gasValue.gas)
-                  ?.amount?.toNumber() ?? 0,
+                  ?.amount?.toNumber()
+                  .toFixed(0) ?? 0,
               );
             }
 

@@ -235,7 +235,10 @@ export default class ActivityService {
       );
     }
     const existingInventoryValue = await db.models.InventoryValue.findOne({
-      where: { gpcReferenceNumber: inventoryValueParams?.gpcReferenceNumber },
+      where: {
+        gpcReferenceNumber: inventoryValueParams?.gpcReferenceNumber,
+        inventoryId,
+      },
     });
     if (existingInventoryValue && !inventoryValueId) {
       throw new createHttpError.BadRequest(
@@ -243,6 +246,19 @@ export default class ActivityService {
       );
     }
 
+    if (!inventoryValueId) {
+      const existingInventoryValue = await db.models.InventoryValue.findOne({
+        where: {
+          gpcReferenceNumber: inventoryValueParams?.gpcReferenceNumber,
+          inventoryId,
+        },
+      });
+      if (existingInventoryValue) {
+        throw new createHttpError.BadRequest(
+          `Inventory value for reference number ${existingInventoryValue.gpcReferenceNumber} already exists`,
+        );
+      }
+    }
     return await db.sequelize?.transaction(
       async (transaction: Transaction): Promise<ActivityValue> => {
         if (inventoryValueId && inventoryValueParams) {

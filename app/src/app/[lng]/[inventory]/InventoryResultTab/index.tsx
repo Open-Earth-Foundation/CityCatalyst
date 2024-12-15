@@ -287,15 +287,17 @@ export function EmissionPerSectors({
   const transformedYearOverYearData = useMemo(() => {
     if (yearlyGhgResult && targetYears) {
       const yearlyMap: Record<string, SectorEmission[]> = {};
+      const totalInventoryEmissions: Record<string, bigint> = {};
       const response = Object.keys(yearlyGhgResult).map((inventoryId) => {
         const yearData = targetYears[inventoryId];
-        yearlyMap[yearData.year] =
-          yearlyGhgResult[inventoryId].totalEmissions.totalEmissionsBySector;
+        const totalEmissions = yearlyGhgResult[inventoryId].totalEmissions;
+        yearlyMap[yearData.year] = totalEmissions.totalEmissionsBySector;
+        totalInventoryEmissions[yearData.year] = BigInt(
+          totalEmissions.sumOfEmissions,
+        );
+
         return {
-          bySector: [
-            ...yearlyGhgResult[inventoryId].totalEmissions
-              .totalEmissionsBySector,
-          ],
+          bySector: [...totalEmissions.totalEmissionsBySector],
           ...yearData,
         };
       });
@@ -304,30 +306,34 @@ export function EmissionPerSectors({
       return response
         .map((data) => {
           const yearWithPercentageIncrease = data.bySector.map((sectorData) => {
+            const totalInventoryPercentage = Number(
+              (BigInt(sectorData.co2eq) * 100n) /
+                totalInventoryEmissions[data.year],
+            );
+
+            let percentageChange: number | null = null;
             if (data.year - 1 in yearlyMap) {
-              let lastYearData = yearlyMap[data.year - 1].find(
+              const lastYearData = yearlyMap[data.year - 1].find(
                 (sector) => sector.sectorName === sectorData.sectorName,
               );
 
-              // calculate percentage change
-
-              let percentageChange = lastYearData
-                ? Number(
-                    (BigInt(sectorData.co2eq) - BigInt(lastYearData?.co2eq)) *
-                      100n,
-                  ) / Number(sectorData.co2eq)
-                : 100;
-
-              return {
-                ...sectorData,
-                percentageChange,
-              };
+              if (lastYearData) {
+                const sectorAmount = BigInt(sectorData.co2eq);
+                const lastYearDifference =
+                  sectorAmount - BigInt(lastYearData.co2eq);
+                percentageChange = Number(
+                  (lastYearDifference * 100n) / sectorAmount,
+                );
+              }
             }
+
             return {
               ...sectorData,
-              percentageChange: 0n,
+              percentageChange,
+              totalInventoryPercentage,
             };
           });
+
           return {
             ...data,
             bySector: yearWithPercentageIncrease,

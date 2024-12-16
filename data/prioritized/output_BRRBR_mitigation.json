@@ -4,20 +4,20 @@
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0053",
-        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+        "actionId": "ipcc_0052",
+        "actionName": "Reduce Deforestation and Degradation",
         "actionPriority": 1,
-        "explanation": "This action has a high potential for emissions reduction, particularly in the land use sector, which is the largest emission source for Rio Branco. It is cost-effective, aligns with the Amazon rainforest biome, and can be implemented with relatively low dependencies."
+        "explanation": "Given Rio Branco's significant land use emissions, reducing deforestation and degradation is crucial. This action directly targets the largest emission sector, offering substantial GHG reductions. It aligns with the Amazon rainforest biome and can be implemented with existing resources."
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0052",
-        "actionName": "Reduce Deforestation and Degradation",
+        "actionId": "ipcc_0053",
+        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
         "actionPriority": 2,
-        "explanation": "Directly targets the largest emission sector (land use) in Rio Branco. It is crucial for risk reduction related to climate hazards like droughts and aligns with the city's environmental context. It is also cost-effective and has a significant impact on emissions reduction."
+        "explanation": "This action supports the restoration of the Amazon rainforest, providing long-term carbon sequestration benefits. It is cost-effective and aligns with the city's environmental context, addressing both emissions and biodiversity."
     },
     {
         "locode": "BRRBR",
@@ -27,27 +27,7 @@
         "actionId": "ipcc_0054",
         "actionName": "Improved Forest Management",
         "actionPriority": 3,
-        "explanation": "Enhances carbon sequestration and reduces emissions from land use. It is compatible with the Amazon biome and addresses significant environmental risks. It is cost-effective and has a relatively short implementation timeline."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0057",
-        "actionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
-        "actionPriority": 4,
-        "explanation": "Targets emissions from land use and provides significant co-benefits for biodiversity and water regulation. It is environmentally compatible and addresses key risks such as droughts."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0058",
-        "actionName": "Peatland Restoration",
-        "actionPriority": 5,
-        "explanation": "Restoring peatlands can significantly reduce emissions and enhance carbon storage. It aligns with the city's environmental context and addresses climate risks effectively."
+        "explanation": "Enhancing forest management practices can significantly reduce emissions from land use. This action is compatible with the local biome and can be implemented with moderate costs and dependencies."
     },
     {
         "locode": "BRRBR",
@@ -56,8 +36,8 @@
         "regionName": "Acre",
         "actionId": "ipcc_0059",
         "actionName": "Reduce Conversion of Coastal Wetlands",
-        "actionPriority": 6,
-        "explanation": "Although not directly related to the Amazon biome, this action can still contribute to emissions reduction and risk mitigation, particularly for water-related hazards."
+        "actionPriority": 4,
+        "explanation": "Although not directly related to the Amazon, protecting wetlands can prevent emissions and support biodiversity. This action is cost-effective and has a relatively short implementation timeline."
     },
     {
         "locode": "BRRBR",
@@ -66,8 +46,8 @@
         "regionName": "Acre",
         "actionId": "ipcc_0077",
         "actionName": "Urban Tree Planting and Management",
-        "actionPriority": 7,
-        "explanation": "Provides urban cooling, reduces heatwave risks, and enhances carbon sequestration. It is cost-effective and aligns with the city's environmental and socio-demographic context."
+        "actionPriority": 5,
+        "explanation": "Urban tree planting can enhance local air quality, reduce urban heat, and sequester carbon. It is a low-cost, high-impact action suitable for the city's urban areas."
     },
     {
         "locode": "BRRBR",
@@ -76,98 +56,8 @@
         "regionName": "Acre",
         "actionId": "c40_0028",
         "actionName": "Zero Emission Buses",
-        "actionPriority": 8,
-        "explanation": "Targets transportation emissions, which are significant in Rio Branco. It offers substantial emissions reduction and aligns with the city's capacity to implement transportation improvements."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "c40_0026",
-        "actionName": "Vehicle Emissions",
-        "actionPriority": 9,
-        "explanation": "Addresses transportation emissions, a major sector in Rio Branco. It is cost-effective and can be implemented with existing infrastructure, providing quick emissions reduction."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "c40_0023",
-        "actionName": "Bus Emissions",
-        "actionPriority": 10,
-        "explanation": "Focuses on reducing emissions from public transport, which is crucial for the city's transportation sector. It is cost-effective and aligns with the city's strategic priorities."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "c40_0025",
-        "actionName": "Truck Emissions",
-        "actionPriority": 11,
-        "explanation": "Targets emissions from freight transport, a significant source in the transportation sector. It is cost-effective and can be implemented with existing technologies."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "c40_0038",
-        "actionName": "Sanitary Landfills",
-        "actionPriority": 12,
-        "explanation": "Addresses waste emissions, which are significant in Rio Branco. It is cost-effective and aligns with the city's waste management priorities."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "c40_0035",
-        "actionName": "Waste Efficiency",
-        "actionPriority": 13,
-        "explanation": "Improves waste management efficiency, reducing emissions and aligning with the city's waste sector priorities. It is cost-effective and has a short implementation timeline."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "c40_0036",
-        "actionName": "Landfill Management",
-        "actionPriority": 14,
-        "explanation": "Enhances landfill operations to reduce emissions. It is cost-effective and aligns with the city's waste management strategies."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "c40_0037",
-        "actionName": "Source Separation",
-        "actionPriority": 15,
-        "explanation": "Promotes waste segregation at the source, reducing emissions and improving waste management efficiency. It is cost-effective and suitable for the city's socio-demographic context."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0062",
-        "actionName": "Biochar",
-        "actionPriority": 16,
-        "explanation": "Provides emissions reduction through carbon sequestration and soil improvement. It is cost-effective and aligns with the city's agricultural practices."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0067",
-        "actionName": "Manure management",
-        "actionPriority": 17,
-        "explanation": "Reduces emissions from agricultural waste, aligning with the city's land use practices. It is cost-effective and has a short implementation timeline."
+        "actionPriority": 6,
+        "explanation": "Transitioning to zero-emission buses can significantly reduce transportation emissions, a major sector in Rio Branco. This action is feasible with existing technology and offers quick benefits."
     },
     {
         "locode": "BRRBR",
@@ -176,8 +66,8 @@
         "regionName": "Acre",
         "actionId": "ipcc_0002",
         "actionName": "Active Transport Modes",
-        "actionPriority": 18,
-        "explanation": "Encourages walking and cycling, reducing transportation emissions. It is cost-effective and aligns with the city's socio-demographic characteristics."
+        "actionPriority": 7,
+        "explanation": "Promoting walking and cycling can reduce transportation emissions and improve public health. This action is cost-effective and aligns with the city's socio-demographic context."
     },
     {
         "locode": "BRRBR",
@@ -186,17 +76,127 @@
         "regionName": "Acre",
         "actionId": "ipcc_0045",
         "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
-        "actionPriority": 19,
-        "explanation": "Promotes waste reduction through behavioral changes, aligning with the city's waste management goals. It is cost-effective and has a short implementation timeline."
+        "actionPriority": 8,
+        "explanation": "Encouraging waste reduction behaviors can lower waste emissions and is cost-effective. This action requires minimal infrastructure changes and can be quickly implemented."
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
+        "actionId": "ipcc_0062",
+        "actionName": "Biochar",
+        "actionPriority": 9,
+        "explanation": "Biochar production can sequester carbon and improve soil health. It is compatible with the local agricultural practices and offers co-benefits for land use management."
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0067",
+        "actionName": "Manure management",
+        "actionPriority": 10,
+        "explanation": "Improving manure management can reduce methane emissions from agriculture. This action is cost-effective and aligns with local agricultural practices."
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "c40_0035",
+        "actionName": "Waste Efficiency",
+        "actionPriority": 11,
+        "explanation": "Enhancing waste management efficiency can reduce emissions from the waste sector. This action is feasible with existing technology and offers quick benefits."
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
+        "actionPriority": 12,
+        "explanation": "Improving landfill management can significantly reduce methane emissions. This action is cost-effective and can be implemented with existing resources."
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0057",
+        "actionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
+        "actionPriority": 13,
+        "explanation": "Protecting peatlands can prevent significant emissions and support biodiversity. This action is cost-effective and aligns with the city's environmental context."
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0019",
+        "actionName": "Modal Shift from Aircraft to Train",
+        "actionPriority": 14,
+        "explanation": "Encouraging a shift from air to rail transport can reduce emissions from the transportation sector. This action requires infrastructure investment but offers long-term benefits."
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0015",
+        "actionName": "Improved Energy Efficiency for Vehicles",
+        "actionPriority": 15,
+        "explanation": "Enhancing vehicle energy efficiency can reduce transportation emissions. This action is feasible with existing technology and offers quick benefits."
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 16,
+        "explanation": "Reducing vehicle emissions can significantly impact the transportation sector. This action is cost-effective and aligns with existing policies."
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0007",
+        "actionName": "Smart Mobility",
+        "actionPriority": 17,
+        "explanation": "Implementing smart mobility solutions can optimize transportation efficiency and reduce emissions. This action requires technological investment but offers long-term benefits."
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0026",
+        "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
+        "actionPriority": 18,
+        "explanation": "Utilizing heat recovery systems can improve energy efficiency in buildings. This action requires infrastructure investment but offers long-term benefits."
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0027",
+        "actionName": "Process Coupling and Improvements",
+        "actionPriority": 19,
+        "explanation": "Enhancing industrial processes can reduce emissions from the industrial sector. This action requires technological investment but offers long-term benefits."
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "c40_0038",
+        "actionName": "Sanitary Landfills",
         "actionPriority": 20,
-        "explanation": "Encourages urban planning that reduces transportation emissions. It is suitable for the city's socio-demographic context but may have a longer implementation timeline."
+        "explanation": "Improving sanitary landfill practices can reduce emissions from waste. This action is cost-effective and can be implemented with existing resources."
     }
 ]

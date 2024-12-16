@@ -236,7 +236,13 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: InventoryValueAttributes }) =>
         response.data,
-      invalidatesTags: ["InventoryProgress", "InventoryValue"],
+      invalidatesTags: [
+        "Inventory",
+        "InventoryProgress",
+        "InventoryValue",
+        "ReportResults",
+        "YearlyReportResults",
+      ],
     }),
     connectDataSource: builder.mutation<
       ConnectDataSourceResponse,
@@ -249,7 +255,13 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: ConnectDataSourceResponse }) =>
         response.data,
-      invalidatesTags: ["InventoryProgress"],
+      invalidatesTags: [
+        "Inventory",
+        "InventoryProgress",
+        "InventoryValue",
+        "ReportResults",
+        "YearlyReportResults",
+      ],
     }),
     updateOrCreateInventoryValue: builder.mutation<
       InventoryValueAttributes,
@@ -564,6 +576,7 @@ export const api = createApi({
       }),
       transformResponse: (response: any) => response.data,
       invalidatesTags: [
+        "Inventory",
         "ActivityValue",
         "InventoryValue",
         "InventoryProgress",
@@ -588,6 +601,7 @@ export const api = createApi({
       }),
       transformResponse: (response: any) => response.data,
       invalidatesTags: [
+        "Inventory",
         "ActivityValue",
         "InventoryValue",
         "InventoryProgress",
@@ -603,12 +617,13 @@ export const api = createApi({
       }),
       transformResponse: (response: { success: boolean }) => response,
       invalidatesTags: [
+        "Inventory",
         "ActivityValue",
         "InventoryValue",
         "InventoryProgress",
         "ReportResults",
-        "SectorBreakdown",
         "YearlyReportResults",
+        "SectorBreakdown",
       ],
     }),
     deleteAllActivityValues: builder.mutation({
@@ -626,6 +641,7 @@ export const api = createApi({
       }),
       transformResponse: (response: any) => response.data,
       invalidatesTags: [
+        "Inventory",
         "ActivityValue",
         "InventoryValue",
         "InventoryProgress",

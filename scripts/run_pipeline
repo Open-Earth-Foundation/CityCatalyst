@@ -37,4 +37,15 @@ echo "Prioritizer..."
 $VENV_PYTHON ../prioritizer/prioritizer.py --locode "$LOCODE"
 echo "Done."
 
+echo "Enrich for frontend..."
+# Run the enricher script with input arguments
+# Run the script twice, once for each action type
+$VENV_PYTHON ./enrich_for_frontend_schema.py --locode "$LOCODE" --action_type "mitigation"
+$VENV_PYTHON ./enrich_for_frontend_schema.py --locode "$LOCODE" --action_type "adaptation"
+echo "Done."
+
+echo "Upload to S3..."
+# Run the upload script with input arguments
+$VENV_PYTHON ./upload_to_s3.py --file_path "../data/frontend/output_${LOCODE}_adaptation_enriched.json" --s3_key "data/test/adaptation/${LOCODE}.json"
+$VENV_PYTHON ./upload_to_s3.py --file_path "../data/frontend/output_${LOCODE}_mitigation_enriched.json" --s3_key "data/test/mitigation/${LOCODE}.json"
 deactivate

@@ -20,7 +20,7 @@ def upload_to_s3(file_path, s3_key):
 
     try:
         s3_client.upload_file(file_path, BUCKET_NAME, s3_key)
-        print(f"File {file_path} uploaded to {BUCKET_NAME}/{s3_key}.")
+        print(f"File {file_path} uploaded to {BUCKET_NAME}/data/{s3_key}.")
     except Exception as e:
         print(f"Error uploading file: {e}")
 

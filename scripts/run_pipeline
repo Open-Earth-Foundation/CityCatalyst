@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# This script is used to run the pipeline of:
+# 1. Creating the prioritized list of climate actions
+### 2. Validating against the schema
+# 3. Generating the enriched JSON file for the frontend
+# 4. Uploading the files to the AWS S3 bucket
+
+# Check if the LOCODE argument is provided
+if [ $# -lt 1 ]; then
+  echo "Error: LOCODE argument is required."
+  echo "Usage: $0 LOCODE"
+  exit 1
+fi
+
+# Assign the first argument to the LOCODE variable
+LOCODE=$1
+
+# Path to the virtual environment's Python
+VENV_PYTHON="../extractor/.extractor/Scripts/python.exe"
+
+# Activate the virtual environment
+echo "Activating virtual environment..."
+source ../extractor/.extractor/Scripts/activate
+# Check if the virtual environment was successfully activated
+if [ -z "$VIRTUAL_ENV" ]; then
+  echo "Failed to activate virtual environment."
+  exit 1
+else
+  echo "Virtual environment activated: $VIRTUAL_ENV"
+fi
+
+echo "Done."
+
+echo "Prioritizer..."
+# Run the prirotizer script with input arguments
+$VENV_PYTHON ../prioritizer/prioritizer.py --locode "$LOCODE"
+echo "Done."
+
+deactivate

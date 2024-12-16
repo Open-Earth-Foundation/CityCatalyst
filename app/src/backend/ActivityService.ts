@@ -228,6 +228,26 @@ export default class ActivityService {
       inventoryValueId,
     });
 
+    // check if there is an existing InventoryValue for the reference number
+    if (!inventoryValueId && !inventoryValueParams) {
+      throw new createHttpError.BadRequest(
+        "Either inventoryValueId or inventory must be provided",
+      );
+    }
+    if (inventoryValueParams) {
+      const existingInventoryValue = await db.models.InventoryValue.findOne({
+        where: {
+          gpcReferenceNumber: inventoryValueParams?.gpcReferenceNumber,
+          inventoryId,
+        },
+      });
+      if (existingInventoryValue) {
+        throw new createHttpError.BadRequest(
+          `Inventory value for reference number ${existingInventoryValue.gpcReferenceNumber} already exists`,
+        );
+      }
+    }
+
     return await db.sequelize?.transaction(
       async (transaction: Transaction): Promise<ActivityValue> => {
         if (inventoryValueId && inventoryValueParams) {
@@ -337,7 +357,8 @@ export default class ActivityService {
               gasValue.gasAmount = BigInt(
                 gases
                   .find((gas) => gas.gas === gasValue.gas)
-                  ?.amount?.toNumber() ?? 0,
+                  ?.amount?.toNumber()
+                  .toFixed(0) ?? 0,
               );
             }
 

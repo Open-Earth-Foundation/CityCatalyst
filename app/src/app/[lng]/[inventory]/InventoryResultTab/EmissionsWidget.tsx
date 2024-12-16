@@ -17,6 +17,7 @@ import { InventoryResponse } from "@/util/types";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { MdArrowOutward } from "react-icons/md";
 import { PopulationAttributes } from "@/models/Population";
+import { HeatIcon } from "@/components/icons";
 
 const EmissionsWidgetCard = ({
   icon,
@@ -72,9 +73,10 @@ const EmissionsWidget = ({
   inventory?: InventoryResponse;
   population?: PopulationAttributes;
 }) => {
+  // Country total is in tonnes, inventory total is in kg
   const percentageOfCountrysEmissions =
     inventory?.totalEmissions && inventory?.totalCountryEmissions
-      ? (inventory.totalEmissions / inventory.totalCountryEmissions) * 100
+      ? (inventory.totalEmissions / (inventory.totalCountryEmissions * 1000)) * 100
       : undefined;
   const emissionsPerCapita =
     inventory?.totalEmissions && population?.population
@@ -94,7 +96,7 @@ const EmissionsWidget = ({
         </Trans>
       ),
       value: inventory?.totalEmissions,
-      icon: MdArrowOutward,
+      icon: HeatIcon,
       showProgress: false,
     },
     {
@@ -108,7 +110,7 @@ const EmissionsWidget = ({
         ></Trans>
       ),
       value: emissionsPerCapita,
-      icon: MdArrowOutward,
+      icon: HeatIcon,
       showProgress: false,
     },
     {

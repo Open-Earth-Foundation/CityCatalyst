@@ -1,8 +1,9 @@
 import Excel, { Worksheet } from "exceljs";
-import { InventoryValue } from "@/models/InventoryValue";
-import { ActivityValue } from "@/models/ActivityValue";
 import createHttpError from "http-errors";
-import { InventoryResponse } from "@/util/types";
+import {
+  InventoryValueWithActivityValues,
+  InventoryWithInventoryValuesAndActivityValues,
+} from "@/util/types";
 import { findMethodology } from "@/util/form-schema";
 import { translationFunc } from "@/i18n/server";
 import { toDecimal } from "@/util/helpers";
@@ -10,15 +11,6 @@ import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";
 import PopulationService from "@/backend/PopulationService";
 import CityBoundaryService from "@/backend/CityBoundaryService";
-
-type InventoryValueWithActivityValues = InventoryValue & {
-  activityValues: ActivityValue[];
-};
-
-export type InventoryWithInventoryValuesAndActivityValues =
-  InventoryResponse & {
-    inventoryValues: InventoryValueWithActivityValues[];
-  };
 
 const ECRF_TEMPLATE_PATH = "./templates/ecrf_template.xlsx";
 

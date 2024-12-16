@@ -110,9 +110,5 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
     ["world", parsedLocode].includes(actorId as string),
   );
 
-  if (output.length === 0) {
-    throw new createHttpError.NotFound("Emissions factors not found");
-  }
-
   return NextResponse.json({ data: output });
 });

@@ -93,7 +93,8 @@ function SectorTabs({
   };
 
   const isEmptyInventory =
-    Object.entries(sectorBreakdown?.byActivity || {}).length === 0;
+    Object.entries(sectorBreakdown?.byActivity || {}).length === 0 &&
+    Object.entries(sectorBreakdown?.byScope || {}).length === 0;
 
   return (
     <Tabs
@@ -135,11 +136,11 @@ function SectorTabs({
           const shouldShowTableByActivity =
             !isEmptyInventory &&
             !isResultsLoading &&
+            false && // ON-3126 restore view by activity
             selectedTableView === TableView.BY_ACTIVITY;
           const shouldShowTableByScope =
-            !isEmptyInventory &&
-            !isResultsLoading &&
-            selectedTableView === TableView.BY_SCOPE;
+            !isEmptyInventory && inventory && !isResultsLoading; // &&
+          // selectedTableView === TableView.BY_SCOPE; ON-3126 restore view by activity
           return (
             <TabPanel key={name}>
               {isTopEmissionsResponseLoading ? (
@@ -165,7 +166,7 @@ function SectorTabs({
                     >
                       {t("breakdown-of-sub-sector-emissions")}
                     </Text>
-                    <Box paddingBottom={"12px"}>
+                    {/*<Box paddingBottom={"12px"}>
                       <Selector
                         options={[TableView.BY_ACTIVITY, TableView.BY_SCOPE]}
                         value={selectedTableView}
@@ -173,6 +174,7 @@ function SectorTabs({
                         t={t}
                       />
                     </Box>
+                    {***[ON-3126 restore view by activity]*/}
                   </HStack>
                   {isResultsLoading && <CircularProgress isIndeterminate />}
                   {isEmptyInventory && (
@@ -194,6 +196,7 @@ function SectorTabs({
                   )}
                   {shouldShowTableByScope && (
                     <ByScopeView
+                      inventoryType={inventory.inventoryType}
                       data={sectorBreakdown!.byScope}
                       tData={tData}
                       tDashboard={t}
@@ -284,15 +287,17 @@ export function EmissionPerSectors({
   const transformedYearOverYearData = useMemo(() => {
     if (yearlyGhgResult && targetYears) {
       const yearlyMap: Record<string, SectorEmission[]> = {};
+      const totalInventoryEmissions: Record<string, bigint> = {};
       const response = Object.keys(yearlyGhgResult).map((inventoryId) => {
         const yearData = targetYears[inventoryId];
-        yearlyMap[yearData.year] =
-          yearlyGhgResult[inventoryId].totalEmissions.totalEmissionsBySector;
+        const totalEmissions = yearlyGhgResult[inventoryId].totalEmissions;
+        yearlyMap[yearData.year] = totalEmissions.totalEmissionsBySector;
+        totalInventoryEmissions[yearData.year] = BigInt(
+          totalEmissions.sumOfEmissions,
+        );
+
         return {
-          bySector: [
-            ...yearlyGhgResult[inventoryId].totalEmissions
-              .totalEmissionsBySector,
-          ],
+          bySector: [...totalEmissions.totalEmissionsBySector],
           ...yearData,
         };
       });
@@ -301,30 +306,34 @@ export function EmissionPerSectors({
       return response
         .map((data) => {
           const yearWithPercentageIncrease = data.bySector.map((sectorData) => {
+            const totalInventoryPercentage = Number(
+              (BigInt(sectorData.co2eq) * 100n) /
+                totalInventoryEmissions[data.year],
+            );
+
+            let percentageChange: number | null = null;
             if (data.year - 1 in yearlyMap) {
-              let lastYearData = yearlyMap[data.year - 1].find(
+              const lastYearData = yearlyMap[data.year - 1].find(
                 (sector) => sector.sectorName === sectorData.sectorName,
               );
 
-              // calculate percentage change
-
-              let percentageChange = lastYearData
-                ? Number(
-                    (BigInt(sectorData.co2eq) - BigInt(lastYearData?.co2eq)) *
-                      100n,
-                  ) / Number(sectorData.co2eq)
-                : 100;
-
-              return {
-                ...sectorData,
-                percentageChange,
-              };
+              if (lastYearData) {
+                const sectorAmount = BigInt(sectorData.co2eq);
+                const lastYearDifference =
+                  sectorAmount - BigInt(lastYearData.co2eq);
+                percentageChange = Number(
+                  (lastYearDifference * 100n) / sectorAmount,
+                );
+              }
             }
+
             return {
               ...sectorData,
-              percentageChange: 0n,
+              percentageChange,
+              totalInventoryPercentage,
             };
           });
+
           return {
             ...data,
             bySector: yearWithPercentageIncrease,

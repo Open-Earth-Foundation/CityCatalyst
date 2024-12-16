@@ -7,7 +7,10 @@ import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
 import { DataSourceI18nAttributes as DataSourceAttributes } from "@/models/DataSourceI18n";
-import type { InventoryValueAttributes } from "@/models/InventoryValue";
+import {
+  InventoryValue,
+  InventoryValueAttributes,
+} from "@/models/InventoryValue";
 import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
 import type { CityAttributes } from "@/models/City";
@@ -18,13 +21,16 @@ import {
   FailedSourceResult,
   RemovedSourceResult,
 } from "@/backend/DataSourceService";
+import { ActivityValue } from "@/models/ActivityValue";
 
 export interface CitiesAndYearsResponse {
   city: CityAttributes;
   years: { year: number; inventoryId: string; lastUpdate: Date }[];
 }
 
-export type InventoryResponse = InventoryAttributes & {
+interface RequiredInventoryAttributes extends Required<InventoryAttributes> {}
+
+export type InventoryResponse = RequiredInventoryAttributes & {
   city: CityAttributes & {
     populationYear: number;
     population: number;
@@ -253,3 +259,12 @@ export type SectorBreakdownResponse = BreakdownByActivity & {
   byActivity: BreakdownByActivity;
   byScope: ActivityDataByScope[];
 };
+
+export type InventoryValueWithActivityValues = InventoryValue & {
+  activityValues: ActivityValue[];
+};
+
+export type InventoryWithInventoryValuesAndActivityValues =
+  InventoryResponse & {
+    inventoryValues: InventoryValueWithActivityValues[];
+  };

@@ -24,13 +24,18 @@ import { toKebabCaseModified } from "@/app/[lng]/[inventory]/InventoryResultTab/
 
 interface EmissionBySectorTableProps {
   data: {
-    bySector: SectorEmission[];
+    bySector: ExtendedSectorEmission[];
     year: number;
     inventoryId: string;
   }[];
 
   lng: string;
 }
+
+type ExtendedSectorEmission = SectorEmission & {
+  percentageChange: number | null;
+  totalInventoryPercentage: number;
+};
 
 const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
   data,
@@ -39,7 +44,7 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
   const { t: tData } = useTranslation(lng, "data");
 
   const renderTable = (item: {
-    bySector: SectorEmission[];
+    bySector: ExtendedSectorEmission[];
     year: number;
     inventoryId: string;
   }) => {
@@ -63,35 +68,41 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
           </Thead>
           <Tbody>
             {item.bySector?.map((sectorBreakDown, i) => {
-              const hasNotEqualToZero = sectorBreakDown.percentage !== 0;
+              const hasNonZero =
+                sectorBreakDown.percentageChange !== 0 &&
+                sectorBreakDown.percentageChange != null;
+
+              let previousYearDifference = "N/A";
+              if (sectorBreakDown.percentageChange != null) {
+                previousYearDifference =
+                  sectorBreakDown.percentageChange.toFixed(0) + "%";
+              }
+
               return (
                 <Tr key={i} isTruncated>
                   <Td>
                     {tData(toKebabCaseModified(sectorBreakDown.sectorName))}
                   </Td>
                   <Td>{convertKgToTonnes(sectorBreakDown.co2eq)}</Td>
-                  <Td>{sectorBreakDown.percentage}%</Td>
+                  <Td>{sectorBreakDown.totalInventoryPercentage}%</Td>
                   <Td
                     className="flex items-center"
                     color={
-                      sectorBreakDown.percentage < 0
+                      (sectorBreakDown.percentageChange ?? 0) < 0
                         ? "sentiment.positiveDefault"
-                        : hasNotEqualToZero
+                        : hasNonZero
                           ? "sentiment.negativeDefault"
                           : "black"
                     }
                   >
-                    {hasNotEqualToZero &&
-                      (sectorBreakDown.percentage < 0 ? (
+                    {sectorBreakDown.percentageChange != null &&
+                      hasNonZero &&
+                      (sectorBreakDown.percentageChange < 0 ? (
                         <Icon as={MdArrowDropDown} />
                       ) : (
                         <Icon as={MdArrowDropUp} />
                       ))}
-                    <Text>
-                      {hasNotEqualToZero
-                        ? `${sectorBreakDown.percentage.toFixed(0)}%`
-                        : "N/A"}
-                    </Text>
+                    <Text>{previousYearDifference}</Text>
                   </Td>
                 </Tr>
               );

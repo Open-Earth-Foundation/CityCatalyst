@@ -54,6 +54,7 @@ export function TabHeader({
               fontSize="headline.sm"
               fontWeight="semibold"
               lineHeight="32"
+              pb={3}
             >
               {t(title)}
             </Heading>

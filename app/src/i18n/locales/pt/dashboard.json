@@ -118,5 +118,18 @@
   "emissions-from-product-use-occurring-within-the-city-boundary": "Emissões do uso de produtos que ocorrem dentro dos limites da cidade",
   "emissions-from-livestock-within-the-city-boundary": "Emissões de gado dentro dos limites da cidade",
   "emissions-from-land-within-the-city-boundary": "Emissões da terra dentro dos limites da cidade",
-  "emissions-from-aggregate-sources-and-non-co2-emission-sources-on-land-within-the-city-boundary": "Emissões de fontes agregadas e fontes de emissão não CO2 na terra dentro dos limites da cidade"
+  "emissions-from-aggregate-sources-and-non-co2-emission-sources-on-land-within-the-city-boundary": "Emissões de fontes agregadas e fontes de emissão não CO2 na terra dentro dos limites da cidade",
+  "coming-soon": "Em Breve",
+  "waste-description": "Este setor abrange as emissões geradas a partir de processos de gestão de resíduos.",
+  "ghg-by-sector-heading": "Histórico de emissões de GEE por setores",
+  "ghg-emissions-inventory-in-year": "Inventário de emissões de GEE em {{ ano }}",
+  "set-inventory-preferences": "Definir preferências de inventário",
+  "discover-relevant-subsectors": "Descubra os subsectores GPC relevantes para a sua cidade e adapte o seu inventário para atender às necessidades específicas da sua cidade.",
+  "agriculture,-forestry,-and-other-land-use-(afolu)": "AFOLU",
+  "industrial-processes-and-product-uses-(ippu)": "IPPU",
+  "inventory-year": "Ano de inventário",
+  "add-new-inventory": "Adicionar novo inventário",
+  "table-view": "Tabela",
+  "chart-view": "Gráfico",
+  "last-update": "Última atualização"
 }

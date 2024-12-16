@@ -9,6 +9,8 @@ import { translationFunc } from "@/i18n/server";
 import { toDecimal } from "@/util/helpers";
 import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";
+import PopulationService from "@/backend/PopulationService";
+import CityBoundaryService from "@/backend/CityBoundaryService";
 
 const ECRF_TEMPLATE_PATH = "./templates/ecrf_template.xlsx";
 
@@ -17,10 +19,10 @@ export default class ECRFDownloadService {
     output: InventoryWithInventoryValuesAndActivityValues,
     lng: string,
   ) {
-    return await this.writeTOECRFFILE(output, lng);
+    return await this.writeToECRFFILE(output, lng);
   }
 
-  private static async writeTOECRFFILE(
+  private static async writeToECRFFILE(
     output: InventoryWithInventoryValuesAndActivityValues,
     lng: string,
   ) {
@@ -29,48 +31,8 @@ export default class ECRFDownloadService {
     try {
       // Load the workbook
       await workbook.xlsx.readFile(ECRF_TEMPLATE_PATH);
-      const worksheet = workbook.getWorksheet(3); // Get the worksheet by index (3rd sheet)
-      // Fetch data from the database
-      const inventoryValues = output.inventoryValues;
-
-      // Transform data into a dictionary for easy access
-      const dataDictionary = this.transformDataForTemplate(
-        inventoryValues as InventoryValueWithActivityValues[],
-        output.year as number,
-        t,
-      );
-
-      const visitedScopes = {};
-
-      worksheet?.eachRow((row, rowNumber) => {
-        // maintain the styling
-        row.eachCell((cell) => {
-          cell.style = { ...cell.style };
-        });
-
-        if (rowNumber === 1) return; // Skip the first row (contains the header)
-
-        const referenceNumberCell = row.getCell(2);
-        const referenceNumberValue = referenceNumberCell.value;
-
-        if (referenceNumberCell && typeof referenceNumberValue === "string") {
-          const dataSection = dataDictionary[referenceNumberValue];
-          // if the activityValues > 1, then we need to add rows
-          if (dataSection) {
-            this.replacePlaceholdersInRow(
-              row,
-              dataSection,
-              rowNumber,
-              visitedScopes,
-              worksheet,
-            );
-          } else {
-            this.markRowAsNotEstimated(row);
-          }
-        }
-        this.markRowAsNotEstimated(row);
-      });
-
+      await this.writeToSheet1(workbook, output, t);
+      await this.writeToSheet3(workbook, output, t);
       // Save the modified workbook
       const buffer = Buffer.from(await workbook.xlsx.writeBuffer());
       console.log("Workbook has been generated successfully");
@@ -83,7 +45,112 @@ export default class ECRFDownloadService {
     }
   }
 
-  private static transformDataForTemplate(
+  private static async writeToSheet1(
+    workbook: Excel.Workbook,
+    output: InventoryWithInventoryValuesAndActivityValues,
+    t: any,
+  ) {
+    // fetch population data
+
+    const city = output.city;
+    const year = output.year;
+
+    const cityPopulationData =
+      await PopulationService.getPopulationDataForCityYear(
+        city.cityId,
+        year as number,
+      );
+
+    const cityBoundaryData = await CityBoundaryService.getCityBoundary(
+      city.locode as string,
+    );
+
+    // prepare the data for sheet 1
+    const sheetData: Record<string, any> = {
+      inventory_type: t?.(output.inventoryType),
+      city_country: city.country,
+      city_name: city.name,
+      city_region: city.region,
+      inventory_year: year,
+      city_population: cityPopulationData.population,
+      city_area: cityBoundaryData.area,
+    };
+
+    const worksheet = workbook.getWorksheet(1); // Get the worksheet by index (1st sheet)
+
+    worksheet?.eachRow((row, rowNumber) => {
+      const placeholderCell = row.getCell(3);
+      if (placeholderCell.value && typeof placeholderCell.value === "string") {
+        const cellValue = placeholderCell.value as string;
+        const placeholderMatch = cellValue.match(/{{(.*?)}}/);
+        if (placeholderMatch) {
+          const fieldName = placeholderMatch[1] as string;
+          const replacementValue = sheetData[fieldName];
+          placeholderCell.value = replacementValue ?? "N/A";
+        }
+      }
+    });
+  }
+
+  private static async writeTOSheet2() {
+    // prepare the data for sheet 2
+  }
+
+  private static async writeToSheet3(
+    workbook: Excel.Workbook,
+    output: InventoryWithInventoryValuesAndActivityValues,
+    t: any,
+  ) {
+    const worksheet = workbook.getWorksheet(3); // Get the worksheet by index (3rd sheet)
+    // Fetch data from the database
+    const inventoryValues = output.inventoryValues;
+
+    // Transform data into a dictionary for easy access
+    const dataDictionary = this.transformDataForTemplate3(
+      inventoryValues as InventoryValueWithActivityValues[],
+      output.year as number,
+      t,
+    );
+
+    const visitedScopes = {};
+
+    worksheet?.eachRow((row, rowNumber) => {
+      // maintain the styling
+      row.eachCell((cell) => {
+        cell.style = { ...cell.style };
+      });
+
+      if (rowNumber === 1) return; // Skip the first row (contains the header)
+
+      const referenceNumberCell = row.getCell(2);
+      const referenceNumberValue = referenceNumberCell.value;
+
+      if (referenceNumberCell && typeof referenceNumberValue === "string") {
+        const dataSection = dataDictionary[referenceNumberValue];
+        // if the activityValues > 1, then we need to add rows
+        if (dataSection) {
+          this.replacePlaceholdersInRow(
+            row,
+            dataSection,
+            rowNumber,
+            visitedScopes,
+            worksheet,
+          );
+        } else {
+          this.markRowAsNotEstimated(row);
+        }
+      }
+      this.markRowAsNotEstimated(row);
+    });
+  }
+
+  private static transformDataForTemplate2(
+    inventoryValues: InventoryValueWithActivityValues,
+  ): Record<string, any> {
+    return {};
+  }
+
+  private static transformDataForTemplate3(
     inventoryValues: InventoryValueWithActivityValues[],
     inventoryYear: number,
     t: any,

@@ -1090,5 +1090,7 @@
   "wastewater-calculator": "Calculator of emissions",
   "livestock-direct-measure-methodology": "Direct Measure",
   "land-direct-measure-methodology": "Direct Measure",
-  "aggregate-sources-and-non-co2-emission-sources-direct-measure-methodology": "Direct Measure"
+  "aggregate-sources-and-non-co2-emission-sources-direct-measure-methodology": "Direct Measure",
+  "gpc_basic": "GPC Basic",
+  "gpc_basic_plus": "GPC Basic+"
 }

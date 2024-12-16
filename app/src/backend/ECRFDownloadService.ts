@@ -19,10 +19,10 @@ export default class ECRFDownloadService {
     output: InventoryWithInventoryValuesAndActivityValues,
     lng: string,
   ) {
-    return await this.writeTOECRFFILE(output, lng);
+    return await this.writeToECRFFILE(output, lng);
   }
 
-  private static async writeTOECRFFILE(
+  private static async writeToECRFFILE(
     output: InventoryWithInventoryValuesAndActivityValues,
     lng: string,
   ) {
@@ -31,8 +31,8 @@ export default class ECRFDownloadService {
     try {
       // Load the workbook
       await workbook.xlsx.readFile(ECRF_TEMPLATE_PATH);
-      await this.writeTOSheet1(workbook, output, t);
-      await this.writeTOSheet3(workbook, output, t);
+      await this.writeToSheet1(workbook, output, t);
+      await this.writeToSheet3(workbook, output, t);
       // Save the modified workbook
       const buffer = Buffer.from(await workbook.xlsx.writeBuffer());
       console.log("Workbook has been generated successfully");
@@ -45,7 +45,7 @@ export default class ECRFDownloadService {
     }
   }
 
-  private static async writeTOSheet1(
+  private static async writeToSheet1(
     workbook: Excel.Workbook,
     output: InventoryWithInventoryValuesAndActivityValues,
     t: any,
@@ -96,7 +96,7 @@ export default class ECRFDownloadService {
     // prepare the data for sheet 2
   }
 
-  private static async writeTOSheet3(
+  private static async writeToSheet3(
     workbook: Excel.Workbook,
     output: InventoryWithInventoryValuesAndActivityValues,
     t: any,
@@ -146,7 +146,9 @@ export default class ECRFDownloadService {
 
   private static transformDataForTemplate2(
     inventoryValues: InventoryValueWithActivityValues,
-  );
+  ): Record<string, any> {
+    return {};
+  }
 
   private static transformDataForTemplate3(
     inventoryValues: InventoryValueWithActivityValues[],

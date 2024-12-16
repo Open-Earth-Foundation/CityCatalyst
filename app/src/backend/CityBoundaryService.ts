@@ -5,7 +5,7 @@ import wellknown from "wellknown";
 
 export default class CityBoundaryService {
   public static async getCityBoundary(cityLocode: string): Promise<{
-    data: any;
+    data: wellknown.GeoJSONGeometryOrNull;
     boundingBox: any[];
     area: number;
   }> {

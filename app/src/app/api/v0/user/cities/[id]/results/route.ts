@@ -8,9 +8,6 @@ import { getEmissionResultsBatch } from "@/backend/ResultsService";
 
 export const GET = apiHandler(async (_req: NextRequest, context) => {
   const { id } = context.params;
-  if (!context.session) {
-    throw new createHttpError.Unauthorized("Unauthorized");
-  }
 
   const city = await db.models.City.findOne({
     where: {

@@ -105,7 +105,13 @@ def quantitative_score(city, action):
     """
 
     def load_weights():
-        weights_path = "CAP_data/weights.json"
+        # Get the directory of the current script (prioritizer.py)
+        script_dir = Path(__file__).resolve().parent
+
+        # Construct the full path to the weights.json file
+        weights_path = script_dir / "CAP_data" / "weights.json"
+
+        # weights_path = "CAP_data/weights.json"
         with open(weights_path, "r", encoding="utf-8") as f:
             weights = json.load(f)
         return weights

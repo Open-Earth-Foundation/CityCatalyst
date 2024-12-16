@@ -171,37 +171,6 @@ export const GET = apiHandler(async (req, { params, session }) => {
   return new NextResponse(body, { headers });
 });
 
-async function inventoryCSV(inventory: Inventory): Promise<Buffer> {
-  // TODO better export without UUIDs and merging in data source props, gas values, emission factors
-  const inventoryValues = await db.models.InventoryValue.findAll({
-    where: {
-      inventoryId: inventory.inventoryId,
-    },
-  });
-
-  const headers = [
-    "Inventory Reference",
-    "GPC Reference Number",
-    "Total Emissions",
-    "Activity Units",
-    "Activity Value",
-    "Emission Factor Value",
-    "Datasource ID",
-  ].join(",");
-  const inventoryLines = inventoryValues.map((value: InventoryValueWithEF) => {
-    return [
-      value.subCategoryId,
-      value.gpcReferenceNumber,
-      value.co2eq,
-      value.activityUnits,
-      value.activityValue,
-      value.emissionsFactor?.emissionsPerActivity ?? "N/A",
-      value.datasourceId,
-    ].join(",");
-  });
-  return Buffer.from([headers, ...inventoryLines].join("\n"));
-}
-
 function converKgToTons(amount: bigint | null | undefined): string {
   if (amount == null) {
     return "";

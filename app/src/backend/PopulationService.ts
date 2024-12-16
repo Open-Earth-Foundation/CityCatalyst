@@ -11,11 +11,11 @@ export default class PopulationService {
     year: number,
   ): Promise<{
     cityId: string;
-    population: number | null;
-    year: number | null;
-    countryPopulation: number | null;
+    population?: number | null;
+    year?: number | null;
+    countryPopulation?: number | null;
     countryPopulationYear: number | null;
-    regionPopulation: number | null;
+    regionPopulation?: number | null;
     regionPopulationYear: number | null;
   }> {
     const populations = await db.models.Population.findAll({

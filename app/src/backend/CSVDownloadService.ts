@@ -58,8 +58,12 @@ export default class CSVDownloadService {
       columns: headers,
       quoted: true,
     });
-
-    return Buffer.from(csvContent);
+    try {
+      return Buffer.from(csvContent);
+    } catch (e) {
+      console.error("Error creating CSV", e);
+      throw new Error("Error creating CSV");
+    }
   }
 
   public static prepDataForCSV(
@@ -167,7 +171,7 @@ export default class CSVDownloadService {
               emission_n2o,
               activity_amount: activityAmount,
               activity_unit: activityUnit,
-              data_source_id: "N/A",
+              data_source_id: "",
               data_source_name: dataSource,
               total_co2e: toDecimal(activityValue.co2eq as bigint)
                 ?.div(new Decimal("1e3"))

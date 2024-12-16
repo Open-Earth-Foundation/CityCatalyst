@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/i18n/client";
-import { InventoryResponse, SectorEmission } from "@/util/types";
+import { CityYearData, InventoryResponse, SectorEmission } from "@/util/types";
 import {
   Box,
   Card,
@@ -28,14 +28,13 @@ import { capitalizeFirstLetter, toKebabCase } from "@/util/helpers";
 import React, { ChangeEvent, useMemo, useState } from "react";
 import {
   api,
-  useGetCitiesAndYearsQuery,
+  useGetCityYearsQuery,
   useGetYearOverYearResultsQuery,
 } from "@/services/api";
 import ByScopeView from "@/app/[lng]/[inventory]/InventoryResultTab/ByScopeView";
 import { SectorHeader } from "@/app/[lng]/[inventory]/InventoryResultTab/SectorHeader";
 import { ByActivityView } from "@/app/[lng]/[inventory]/InventoryResultTab/ByActivityView";
 import { getSectorsForInventory, SECTORS } from "@/util/constants";
-import { Selector } from "@/components/selector";
 import { EmptyStateCardContent } from "@/app/[lng]/[inventory]/InventoryResultTab/EmptyStateCardContent";
 import { Trans } from "react-i18next/TransWithoutContext";
 import ButtonGroupToggle from "@/components/button-group-toggle";
@@ -265,40 +264,40 @@ export function EmissionPerSectors({
       skip: !inventory?.cityId,
     });
 
-  const { data: citiesAndYears, isLoading } = useGetCitiesAndYearsQuery();
+  const { data: cityYears, isLoading } = useGetCityYearsQuery(
+    inventory?.cityId,
+  );
 
   const loadingState = isLoading || isLoadingYearlgyGhg;
 
   const targetYears = useMemo<
-    | Record<string, { year: number; inventoryId: string; lastUpdate: Date }>
-    | undefined
+    Record<string, { year: number; inventoryId: string; lastUpdate: Date }>
   >(() => {
-    return citiesAndYears
-      ?.find(({ city }) => inventory.cityId === city.cityId)
-      ?.years.reduce(
-        (acc, curr) => {
+    return (
+      cityYears?.years.reduce(
+        (acc: Record<string, CityYearData>, curr: CityYearData) => {
           acc[curr.inventoryId] = curr;
           return acc;
         },
         {} as Record<string, any>,
-      );
-  }, [citiesAndYears, inventory]);
+      ) ?? {}
+    );
+  }, [cityYears]);
 
   const transformedYearOverYearData = useMemo(() => {
     if (yearlyGhgResult && targetYears) {
       const yearlyMap: Record<string, SectorEmission[]> = {};
       const totalInventoryEmissions: Record<string, bigint> = {};
       const response = Object.keys(yearlyGhgResult).map((inventoryId) => {
-        const yearData = targetYears[inventoryId];
+        const year = targetYears[inventoryId].year;
         const totalEmissions = yearlyGhgResult[inventoryId].totalEmissions;
-        yearlyMap[yearData.year] = totalEmissions.totalEmissionsBySector;
-        totalInventoryEmissions[yearData.year] = BigInt(
-          totalEmissions.sumOfEmissions,
-        );
+        yearlyMap[year] = totalEmissions.totalEmissionsBySector;
+        totalInventoryEmissions[year] = BigInt(totalEmissions.sumOfEmissions);
 
         return {
           bySector: [...totalEmissions.totalEmissionsBySector],
-          ...yearData,
+          year,
+          inventoryId,
         };
       });
 
@@ -306,10 +305,16 @@ export function EmissionPerSectors({
       return response
         .map((data) => {
           const yearWithPercentageIncrease = data.bySector.map((sectorData) => {
-            const totalInventoryPercentage = Number(
-              (BigInt(sectorData.co2eq) * 100n) /
-                totalInventoryEmissions[data.year],
-            );
+            const inventoryEmissions = totalInventoryEmissions[data.year];
+            if (!inventoryEmissions) {
+              console.error(
+                "Total inventory emissions missing for year " + data.year,
+              );
+            }
+
+            const totalInventoryPercentage = inventoryEmissions
+              ? Number((BigInt(sectorData.co2eq) * 100n) / inventoryEmissions)
+              : null;
 
             let percentageChange: number | null = null;
             if (data.year - 1 in yearlyMap) {
@@ -339,6 +344,7 @@ export function EmissionPerSectors({
             bySector: yearWithPercentageIncrease,
           };
         })
+        .filter((data) => !!data)
         .sort((a, b) => b.year - a.year);
     }
     return [];

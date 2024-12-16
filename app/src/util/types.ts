@@ -23,9 +23,15 @@ import {
 } from "@/backend/DataSourceService";
 import { ActivityValue } from "@/models/ActivityValue";
 
-export interface CitiesAndYearsResponse {
+export interface CityAndYearsResponse {
   city: CityAttributes;
-  years: { year: number; inventoryId: string; lastUpdate: Date }[];
+  years: CityYearData[];
+}
+
+export interface CityYearData {
+  year: number;
+  inventoryId: string;
+  lastUpdate: Date;
 }
 
 interface RequiredInventoryAttributes extends Required<InventoryAttributes> {}

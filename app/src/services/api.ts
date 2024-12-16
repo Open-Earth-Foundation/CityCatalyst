@@ -7,7 +7,7 @@ import {
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
 import {
-  CitiesAndYearsResponse,
+  CityAndYearsResponse,
   ConnectDataSourceQuery,
   ConnectDataSourceResponse,
   EmissionsFactorResponse,
@@ -51,13 +51,19 @@ export const api = createApi({
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
-    getCitiesAndYears: builder.query<CitiesAndYearsResponse[], void>({
+    getCitiesAndYears: builder.query<CityAndYearsResponse[], void>({
       query: () => "user/cities",
-      transformResponse: (response: { data: CitiesAndYearsResponse[] }) =>
+      transformResponse: (response: { data: CityAndYearsResponse[] }) =>
         response.data.map(({ city, years }) => ({
           city,
           years: years.sort((a, b) => b.year - a.year),
         })),
+      providesTags: ["CitiesAndInventories"],
+    }),
+    getCityYears: builder.query<CityAndYearsResponse, string>({
+      query: (cityId) => `city/${cityId}/years`,
+      transformResponse: (response: { data: CityAndYearsResponse }) =>
+        response.data,
       providesTags: ["CitiesAndInventories"],
     }),
     getCity: builder.query<CityAttributes, string>({
@@ -710,6 +716,7 @@ export const GLOBAL_API_URL =
 // hooks are automatically generated
 export const {
   useGetCityQuery,
+  useGetCityYearsQuery,
   useGetCitiesAndYearsQuery,
   useGetYearOverYearResultsQuery,
   useAddCityMutation,

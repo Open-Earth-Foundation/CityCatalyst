@@ -1,0 +1,1475 @@
+[
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0053",
+        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+        "actionPriority": 1,
+        "explanation": "This action is highly cost-effective, aligns with the savanna biome, and targets the largest emission sector (land use). It also offers significant risk reduction for biodiversity and water resources.",
+        "action": {
+            "ActionID": "ipcc_0053",
+            "ActionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "infrastructure_investments",
+                "incentives_and_subsidies"
+            ],
+            "Description": "Activities focused on converting land to forests, restoring degraded forests, and prioritizing ecological integrity. Afforestation targets historically non-forested land, while reforestation targets previously forested areas. Efforts include enhancing biodiversity, improving ecosystem services, and increasing carbon sequestration.",
+            "BehavioralChangeTargeted": "Encourages sustainable land management, restoration of degraded ecosystems, and adoption of forest-friendly agricultural practices.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Supports local livelihoods, promotes land-use equity, and ensures inclusive stakeholder participation in afforestation and restoration programs.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Requires funding for land restoration",
+                "access to suitable species for planting",
+                "local community engagement",
+                "monitoring systems for ecosystem integrity and carbon sequestration"
+            ],
+            "KeyPerformanceIndicators": [
+                "Area of land reforested or afforested",
+                "carbon sequestration rates",
+                "improvement in biodiversity indices",
+                "ecosystem service metrics such as water regulation and soil quality"
+            ],
+            "Impacts": [
+                "Increased carbon sequestration",
+                "improved biodiversity",
+                "enhanced ecosystem resilience",
+                "better water regulation",
+                "soil stabilization",
+                "support for local communities through sustainable resource use"
+            ]
+        }
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0052",
+        "actionName": "Reduce Deforestation and Degradation",
+        "actionPriority": 2,
+        "explanation": "Directly addresses the largest emission source (land use) and is crucial for maintaining biodiversity and reducing climate risks.",
+        "action": {
+            "ActionID": "ipcc_0052",
+            "ActionName": "Reduce Deforestation and Degradation",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "regulations_and_laws",
+                "programs_and_initiatives",
+                "infrastructure_investments"
+            ],
+            "Description": "Reducing deforestation and forest degradation conserves carbon pools in forest vegetation and soil by avoiding tree cover loss and disturbance. This involves controlling drivers of deforestation, improving forest governance, and supporting community forest management.",
+            "BehavioralChangeTargeted": "Encourages sustainable land management practices, community engagement in conservation, and improved governance to reduce activities driving deforestation and degradation.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Promotes secure land tenure, supports community-based forest management, and ensures participation of marginalized and indigenous groups in decision-making processes.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Requires improved governance",
+                "clear land tenure policies",
+                "funding for protected areas",
+                "community participation in forest conservation efforts"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in deforestation rates",
+                "increased forest cover",
+                "the amount of GHG emissions avoided per year"
+            ],
+            "Impacts": [
+                "Preserves biodiversity",
+                "enhances ecosystem services",
+                "improves air and water quality",
+                "contributes to climate stabilization",
+                "sustainable development"
+            ]
+        }
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0059",
+        "actionName": "Reduce Conversion of Coastal Wetlands",
+        "actionPriority": 3,
+        "explanation": "Targets land use emissions and provides co-benefits for biodiversity and flood risk reduction.",
+        "action": {
+            "ActionID": "ipcc_0059",
+            "ActionName": "Reduce Conversion of Coastal Wetlands",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "regulations_and_laws",
+                "incentives_and_subsidies",
+                "programs_and_initiatives",
+                "infrastructure_investments"
+            ],
+            "Description": "This action involves reducing the conversion of coastal wetlands such as mangroves, marshes, and seagrass ecosystems to avoid emissions from biomass and soil carbon loss. It also supports biodiversity conservation, fisheries production, soil stabilization, water quality regulation, flood prevention, and resilience against cyclones.",
+            "BehavioralChangeTargeted": "Promotes sustainable land-use practices and prioritizes wetland preservation over aquaculture, agriculture, and urban development.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Supports coastal communities by preserving livelihoods linked to wetlands, enhancing resilience to climate change, and ensuring fair distribution of benefits from ecosystem services.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "40-59"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Effective integration of coastal climate mitigation policies",
+                "marine spatial planning",
+                "economic incentives to prioritize wetland conservation"
+            ],
+            "KeyPerformanceIndicators": [
+                "Area of coastal wetlands preserved",
+                "GHG emissions avoided from biomass and soil carbon loss",
+                "improvements in biodiversity metrics",
+                "ecosystem resilience"
+            ],
+            "Impacts": [
+                "Increased carbon sequestration",
+                "enhanced resilience to climate impacts",
+                "improved biodiversity",
+                "better water quality",
+                "greater protection against flooding and storm surges"
+            ]
+        }
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0054",
+        "actionName": "Improved Forest Management",
+        "actionPriority": 4,
+        "explanation": "Enhances carbon sequestration and aligns with the city's environmental context, addressing land use emissions.",
+        "action": {
+            "ActionID": "ipcc_0054",
+            "ActionName": "Improved Forest Management",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "incentives_and_subsidies",
+                "programs_and_initiatives",
+                "regulations_and_laws"
+            ],
+            "Description": "Sustainable forest management of already managed forests to increase carbon stocks, improve wood quality, mitigate disturbances, and provide co-benefits like biodiversity conservation, water regulation, and soil protection. Includes longer rotations, reduced harvesting, mixed stands, and climate-smart forestry.",
+            "BehavioralChangeTargeted": "Encourages forest owners and managers to adopt sustainable practices, prioritize biodiversity, and reduce harvesting impacts while maintaining productivity.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Promotes inclusive participation in forest management and provides support for smallholders and local communities, especially in tropical regions where sustainable practices can enhance livelihoods and mitigate climate change.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "40-59"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Requires expertise in sustainable forestry",
+                "investment in nurseries with adapted species",
+                "supportive policies",
+                "incentives to overcome economic barriers",
+                "ensure accessibility for local stakeholders"
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in forest carbon stocks",
+                "reduction in GHG emissions",
+                "improvements in biodiversity indicators",
+                "reduction in soil erosion and water-related issues"
+            ],
+            "Impacts": [
+                "Improved forest health and resilience",
+                "enhanced carbon sequestration",
+                "biodiversity conservation",
+                "increased ecosystem services like water and soil regulation"
+            ]
+        }
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0077",
+        "actionName": "Urban Tree Planting and Management",
+        "actionPriority": 5,
+        "explanation": "Provides urban cooling, enhances air quality, and aligns with the city's savanna biome.",
+        "action": {
+            "ActionID": "ipcc_0077",
+            "ActionName": "Urban Tree Planting and Management",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "infrastructure_investments",
+                "incentives_and_subsidies"
+            ],
+            "Description": "Implementation and management of urban tree planting to enhance carbon sequestration, reduce energy use, mitigate the urban heat island (UHI) effect, improve air quality, and provide co-benefits such as reduced stormwater runoff and increased public health and well-being.",
+            "BehavioralChangeTargeted": "Encourages community engagement in tree planting and preservation, promoting urban sustainability and increased appreciation for green spaces.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Promotes equitable distribution of green spaces, ensuring access to urban forests for underserved and vulnerable communities to improve health, well-being, and quality of life.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "40-59"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of land for planting",
+                "community participation",
+                "funding for maintenance",
+                "policies supporting urban greening initiatives"
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in urban tree cover percentage",
+                "reduction in urban heat island effect",
+                "amount of carbon sequestered",
+                "reduction in building energy use",
+                "improvement in air quality metrics"
+            ],
+            "Impacts": [
+                "Enhanced urban livability",
+                "improved public health",
+                "reduced energy consumption",
+                "increased biodiversity",
+                "greater resilience to climate change impacts"
+            ]
+        }
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0028",
+        "actionName": "Zero Emission Buses",
+        "actionPriority": 6,
+        "explanation": "Targets transportation emissions, offering a quick implementation timeline and significant emissions reduction.",
+        "action": {
+            "ActionID": "c40_0028",
+            "ActionName": "Zero Emission Buses",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "infrastructure_investments"
+            ],
+            "Description": "\"Zero Emission Buses\" initiatives focus on integrating electric or other zero-emission technologies into public transportation fleets. This strategy aims to eliminate traditional bus emissions, contributing to cleaner air and a more sustainable urban transit system.",
+            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Zero Emission Buses\" initiative aims to achieve is an increased reliance on public transportation, specifically the use of electric or zero-emission buses, over personal vehicles. This shift is intended to encourage individuals to choose cleaner, more sustainable transit options, thereby reducing greenhouse gas emissions and contributing to improved air quality in urban areas. By enhancing the perception of public transportation as a convenient, safe, and environmentally friendly alternative, the initiative seeks to foster a cultural norm that prioritizes sustainable commuting practices.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The \"Zero Emission Buses\" initiative promotes equity and inclusion by prioritizing cleaner air in urban areas, which often include vulnerable or underserved communities that are disproportionately affected by air pollution. By transitioning to electric or zero-emission buses, the initiative directly addresses health disparities faced by these populations, improving their overall quality of life.\n\nAdditionally, the integration of zero-emission technologies into public transportation enhances accessibility to reliable and sustainable transit options for low-income individuals who may rely on public transport for their daily commutes. This ensures that all community members, regardless of socioeconomic status, have equitable access to clean transportation.\n\nFurthermore, the initiative may create job opportunities in the maintenance and operation of zero-emission buses, particularly in communities that have historically faced economic disadvantages. This can help foster economic inclusion and support local workforce development.\n\nOverall, the initiative's focus on reducing emissions and improving public transportation aligns with the needs of underserved communities, promoting environmental justice and equitable access to clean transit solutions.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "20-39",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Availability of electric or zero-emission bus technology",
+                "Investment in charging infrastructure for electric buses",
+                "Supportive government policies and regulations promoting zero-emission transportation",
+                "Public funding or financial incentives for transit agencies",
+                "Training and workforce development for maintenance and operation of new technologies",
+                "Public acceptance and demand for cleaner public transportation options"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of zero-emission buses deployed",
+                "Reduction in greenhouse gas emissions",
+                "Percentage of public transportation fleet that is zero-emission",
+                "Air quality improvement metrics",
+                "Operational cost savings from zero-emission buses",
+                "Public ridership levels",
+                "Energy consumption per mile",
+                "Maintenance costs of zero-emission buses",
+                "User satisfaction ratings",
+                "Reduction in noise pollution"
+            ],
+            "Impacts": [
+                "Reduction of greenhouse gas emissions in the transportation sector by 20-39%",
+                "Improvement of air quality in urban areas",
+                "Promotion of equity and inclusion for underserved communities",
+                "Enhanced accessibility to public transportation for low-income individuals",
+                "Creation of job opportunities in the maintenance and operation of zero-emission buses"
+            ]
+        }
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0002",
+        "actionName": "Active Transport Modes",
+        "actionPriority": 7,
+        "explanation": "Promotes sustainable transport, reduces emissions, and is cost-effective with health co-benefits.",
+        "action": {
+            "ActionID": "ipcc_0002",
+            "ActionName": "Active Transport Modes",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "infrastructure_investments",
+                "programs_and_initiatives"
+            ],
+            "Description": "Promoting walking and cycling as primary modes of transport for short journeys (5 km or less) to reduce dependency on light-duty vehicles and decrease GHG emissions.",
+            "BehavioralChangeTargeted": "Encourages a modal shift from car and motorcycle use to walking and cycling.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Improves access to safe and affordable transport options, particularly for low-income communities, while enhancing urban mobility for underserved groups.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "0-19",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Investment in safe walking and cycling infrastructure",
+                "public awareness campaigns",
+                "supportive urban planning policies"
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in kilometers of bicycle and walking networks",
+                "rise in active transport modal share",
+                "reduction in car usage for short trips"
+            ],
+            "Impacts": [
+                "Improved public health",
+                "reduced urban congestion",
+                "lower transport-related GHG emissions",
+                "enhanced quality of urban life"
+            ]
+        }
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0045",
+        "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
+        "actionPriority": 8,
+        "explanation": "Cost-effective, reduces waste emissions, and aligns with socio-demographic suitability.",
+        "action": {
+            "ActionID": "ipcc_0045",
+            "ActionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "incentives_and_subsidies",
+                "regulations_and_laws"
+            ],
+            "Description": "Encouraging behavioral changes to reduce waste in industrial processes and consumer habits, particularly in food production and consumption. This includes reducing food waste through better planning, optimizing portion sizes, and improving recycling and reuse practices in production and post-consumption stages.",
+            "BehavioralChangeTargeted": "Encourages individuals and industries to adopt waste-reduction strategies, reduce overproduction, optimize food usage, and recycle waste effectively.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Promotes fair access to education and resources for waste reduction, particularly for low-income and underserved communities to improve resource efficiency and reduce waste management costs.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "20-39",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Availability of infrastructure for waste collection and recycling",
+                "public awareness campaigns",
+                "supportive policy frameworks"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in food waste percentage",
+                "increased recycling rates",
+                "reduced greenhouse gas emissions from waste management"
+            ],
+            "Impacts": [
+                "Reduced environmental burden",
+                "enhanced resource efficiency",
+                "improved urban livability",
+                "cost savings in waste management systems"
+            ]
+        }
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0038",
+        "actionName": "Sanitary Landfills",
+        "actionPriority": 9,
+        "explanation": "Addresses waste emissions, offering a structured approach to waste management with moderate cost.",
+        "action": {
+            "ActionID": "c40_0038",
+            "ActionName": "Sanitary Landfills",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "all"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "infrastructure_investments",
+                "programs_and_initiatives"
+            ],
+            "Description": "\"Sanitary Landfills\" ensure proper disposal of residual waste in engineered facilities, minimizing environmental impact. This mitigation strategy involves utilizing advanced technological solutions to manage waste effectively, promoting sustainable waste disposal practices within a city.",
+            "BehavioralChangeTargeted": "The targeted behavioral change that the climate action of implementing \"Sanitary Landfills\" aims to achieve is the increased adoption of sustainable waste disposal practices among residents and businesses. This includes encouraging individuals to properly separate and dispose of their waste, reduce overall waste generation, and support the use of engineered facilities for waste management. By improving perceptions of waste disposal safety, convenience, and environmental responsibility, the intervention seeks to shift behaviors towards more environmentally friendly waste management practices, ultimately leading to a reduction in greenhouse gas emissions associated with improper waste disposal.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The implementation of sanitary landfills as a climate action promotes equity and inclusion in several ways:\n\n1. **Access to Clean Environments**: By ensuring proper disposal of residual waste, sanitary landfills help reduce pollution and environmental hazards in underserved communities, which are often disproportionately affected by waste mismanagement.\n\n2. **Health Benefits**: Proper waste management minimizes health risks associated with improper disposal, such as contamination and disease, thereby protecting vulnerable populations who may have limited access to healthcare.\n\n3. **Job Creation**: The establishment and maintenance of sanitary landfills can create job opportunities for local residents, particularly in underserved areas, contributing to economic equity.\n\n4. **Community Engagement**: The planning and operation of sanitary landfills can involve local communities, ensuring that their voices are heard and their needs are considered, fostering a sense of inclusion.\n\n5. **Sustainable Practices**: By promoting sustainable waste disposal practices, the action supports long-term environmental justice, benefiting all community members, especially those in vulnerable situations who may rely more heavily on local natural resources. \n\nOverall, the action of implementing sanitary landfills addresses the needs of underserved communities by prioritizing their health, economic opportunities, and environmental safety.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "60-79",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Availability of engineered landfill sites designed to minimize environmental impact",
+                "Implementation of advanced waste management technologies",
+                "Regulatory frameworks and policies supporting sustainable waste disposal",
+                "Public awareness and community engagement in waste management practices",
+                "Funding and investment for infrastructure development and maintenance"
+            ],
+            "KeyPerformanceIndicators": [
+                "Waste diversion rate",
+                "Landfill gas emissions reduction",
+                "Leachate management efficiency",
+                "Volume of waste processed",
+                "Recycling rate",
+                "Public awareness and participation",
+                "Cost-effectiveness of waste management",
+                "Compliance with environmental regulations",
+                "Reduction in illegal dumping incidents",
+                "Sustainability of landfill operations"
+            ],
+            "Impacts": [
+                "Reduction of greenhouse gas emissions by 60-79% in the waste sector",
+                "Improved air quality due to reduced pollution from waste mismanagement",
+                "Enhanced water quality through proper waste disposal practices",
+                "Increased job opportunities in local communities",
+                "Promotion of sustainable waste disposal practices among residents and businesses",
+                "Health benefits for vulnerable populations through reduced environmental hazards",
+                "Community engagement in waste management planning and operations"
+            ]
+        }
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0062",
+        "actionName": "Biochar",
+        "actionPriority": 10,
+        "explanation": "Enhances soil carbon storage, aligns with land use emissions, and offers agricultural co-benefits.",
+        "action": {
+            "ActionID": "ipcc_0062",
+            "ActionName": "Biochar",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "incentives_and_subsidies",
+                "programs_and_initiatives",
+                "infrastructure_investments"
+            ],
+            "Description": "Biochar is produced by heating organic matter (e.g., forestry residues, straw, manure) in oxygen-limited environments. It has significant mitigation potential through carbon dioxide removal (CDR), reduced greenhouse gas emissions, and soil application benefits like improved fertility and reduced N2O emissions.",
+            "BehavioralChangeTargeted": "Encourages adoption of sustainable practices, use of biochar in agriculture, and increased awareness of its long-term soil and climate benefits.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Promotes access to sustainable biochar technologies for smallholder farmers and developing regions, improving food security and livelihoods.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of sustainably sourced biomass",
+                "standardization of production methods",
+                "monitoring systems",
+                "incentives for scaling up biochar production and application"
+            ],
+            "KeyPerformanceIndicators": [
+                "Carbon sequestration rates",
+                "reduction in soil N2O emissions",
+                "crop yield improvements",
+                "displacement of fossil fuel use through pyrolysis gases"
+            ],
+            "Impacts": [
+                "Improved agricultural productivity",
+                "enhanced soil resilience to climate change",
+                "reduced pollution",
+                "long-term carbon storage in soils",
+                "contributing to global climate goals"
+            ]
+        }
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0067",
+        "actionName": "Manure management",
+        "actionPriority": 11,
+        "explanation": "Targets agricultural emissions, offering a cost-effective solution with environmental benefits.",
+        "action": {
+            "ActionID": "ipcc_0067",
+            "ActionName": "Manure management",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "livestock"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "infrastructure_investments",
+                "incentives_and_subsidies"
+            ],
+            "Description": "Manure management measures aim to mitigate CH4 and N2O emissions from manure storage and deposition through techniques such as anaerobic digestion, nitrification inhibitors, composting, improved storage and application practices, grazing practices, and livestock diet alteration. Co-benefits include improved nutrient recovery, fertiliser value, and biogas production.",
+            "BehavioralChangeTargeted": "Encourages adoption of sustainable manure management practices, including reducing nitrogen excretion, improving application timing, and adopting biogas production methods.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Supports small-scale anaerobic digestion technologies and regionally applicable measures in developing countries, providing economic opportunities and improving resilience for underserved farming communities.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of cost-effective anaerobic digestion systems",
+                "supportive policies for nitrification inhibitors",
+                "region-specific training programs",
+                "accessible financing for farmers"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in CH4 and N2O emissions from manure storage",
+                "increased adoption of anaerobic digestion systems",
+                "improved nitrogen use efficiency",
+                "enhanced biogas production"
+            ],
+            "Impacts": [
+                "Reduces greenhouse gas emissions",
+                "improves local water and air quality",
+                "enhances soil health",
+                "supports food security",
+                "provides renewable energy through biogas production"
+            ]
+        }
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0057",
+        "actionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
+        "actionPriority": 12,
+        "explanation": "Addresses land use emissions and provides significant carbon storage benefits.",
+        "action": {
+            "ActionID": "ipcc_0057",
+            "ActionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "regulations_and_laws",
+                "programs_and_initiatives",
+                "incentives_and_subsidies"
+            ],
+            "Description": "Prevent conversion and degradation of peatlands to avoid emissions from vegetation clearing, fires, and peat decomposition. Includes improving governance and management to preserve carbon-rich ecosystems critical for biodiversity and carbon storage.",
+            "BehavioralChangeTargeted": "Encourages sustainable land management practices and prioritization of conservation over land conversion for agriculture, mining, or urban expansion.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Promotes equitable access to preserved peatland resources while reducing health risks caused by fire-related pollutants, especially for vulnerable and rural communities.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "40-59"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Requires strong governance",
+                "financial support",
+                "international cooperation",
+                "policies to control land conversion drivers",
+                "such as agriculture",
+                "mining",
+                "urban development"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in peatland conversion rates",
+                "avoided emissions per hectare",
+                "improvements in biodiversity and water quality metrics"
+            ],
+            "Impacts": [
+                "Reduced GHG emissions",
+                "enhanced biodiversity",
+                "improved water regulation",
+                "decreased fire-related health hazards"
+            ]
+        }
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0058",
+        "actionName": "Peatland Restoration",
+        "actionPriority": 13,
+        "explanation": "Enhances carbon sequestration and aligns with land use emissions reduction.",
+        "action": {
+            "ActionID": "ipcc_0058",
+            "ActionName": "Peatland Restoration",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "infrastructure_investments",
+                "incentives_and_subsidies"
+            ],
+            "Description": "Peatland restoration involves rewetting and revegetating degraded peatlands to increase carbon accumulation in vegetation and soils, while avoiding ongoing CO2 emissions. This includes restoring hydrology, reducing fire risk, and maintaining ecosystem services like water regulation and flood prevention. It also addresses biodiversity conservation and paludiculture.",
+            "BehavioralChangeTargeted": "Encourages sustainable land management practices, collaboration among stakeholders, and the prioritization of ecosystem restoration over competing land uses.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Promotes the inclusion of local communities in planning and implementation, ensures alternative livelihoods are maintained, and addresses potential conflicts over land use.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Availability of funding",
+                "collaboration among local and national stakeholders",
+                "scientific research on optimal restoration practices",
+                "policies to incentivize restoration efforts"
+            ],
+            "KeyPerformanceIndicators": [
+                "Availability of funding",
+                "collaboration among local and national stakeholders",
+                "scientific research on optimal restoration practices",
+                "policies to incentivize restoration efforts"
+            ],
+            "Impacts": [
+                "Significant reductions in CO2 emissions",
+                "improved biodiversity",
+                "enhanced water regulation",
+                "reduced flooding risks",
+                "increased resilience to climate change"
+            ]
+        }
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0068",
+        "actionName": "Bioenergy and BECCS(Bioenergy with Carbon Capture and Storage)",
+        "actionPriority": 14,
+        "explanation": "Offers potential for significant emissions reduction, though with higher costs and dependencies.",
+        "action": {
+            "ActionID": "ipcc_0068",
+            "ActionName": "Bioenergy and BECCS(Bioenergy with Carbon Capture and Storage)",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "infrastructure_investments",
+                "programs_and_initiatives",
+                "regulations_and_laws"
+            ],
+            "Description": "Bioenergy involves producing energy from organic sources like biomass, organic waste, and harvest residues, displacing fossil fuels in heat, electricity, and fuel production. When combined with carbon capture and storage (BECCS), it stores biogenic carbon in geological or terrestrial reservoirs, achieving negative emissions. BECCS can also integrate with agriculture and forestry for co-benefits like land restoration and biogas production.",
+            "BehavioralChangeTargeted": "Promotes the adoption of sustainable land-use practices, integration of biomass production with agriculture, and support for renewable energy adoption.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Focuses on sustainable land-use practices, including degraded land restoration, while ensuring energy access and food security for vulnerable communities.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Requires sustainable land management",
+                "advanced bioenergy technology development",
+                "infrastructure for carbon capture and storage",
+                "global governance for trade and supply chains"
+            ],
+            "KeyPerformanceIndicators": [
+                "Amount of carbon removed through BECCS (in GtCO2 per year)",
+                "total energy produced from bioenergy",
+                "land restored for biomass production",
+                "GHG emissions reduction from displaced fossil fuel use"
+            ],
+            "Impacts": [
+                "Enhanced energy security",
+                "reduced GHG emissions",
+                "restored degraded lands",
+                "improved air and water quality",
+                "biodiversity conservation"
+            ]
+        }
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0069",
+        "actionName": "Shift to sustainable healthy diets",
+        "actionPriority": 15,
+        "explanation": "Promotes reduced emissions from agriculture and aligns with socio-demographic suitability.",
+        "action": {
+            "ActionID": "ipcc_0069",
+            "ActionName": "Shift to sustainable healthy diets",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "livestock"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "incentives_and_subsidies",
+                "regulations_and_laws"
+            ],
+            "Description": "Transitioning dietary patterns to promote individual health and well-being while minimizing environmental impacts. Focuses on reducing animal-based food consumption, particularly from ruminant animals, and increasing plant-based food consumption to reduce GHG emissions and preserve biodiversity.",
+            "BehavioralChangeTargeted": "Encourages a shift in consumer behavior towards adopting plant-rich diets, reducing red meat consumption, and increasing awareness of the environmental and health benefits of sustainable diets.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Promotes access to affordable, culturally acceptable diets that meet nutritional needs, particularly in underserved and vulnerable communities. Policies address equity in food access and mitigate adverse economic impacts on agricultural sectors.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "40-59"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Implementation of integrated food-system policies",
+                "financial incentives for sustainable agriculture",
+                "awareness campaigns",
+                "the development of local food systems to support dietary transitions"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in GHG emissions from food production",
+                "reduction in land use for livestock",
+                "increase in plant-based food consumption",
+                "improvement in public health metrics related to diet-related diseases"
+            ],
+            "Impacts": [
+                "Improved public health outcomes",
+                "reduced environmental pressures (e.g., deforestation, biodiversity loss)",
+                "strengthened food security through sustainable practices"
+            ]
+        }
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0071",
+        "actionName": "Improved and enhanced use of wood products",
+        "actionPriority": 16,
+        "explanation": "Supports sustainable forestry practices and aligns with land use emissions reduction.",
+        "action": {
+            "ActionID": "ipcc_0071",
+            "ActionName": "Improved and enhanced use of wood products",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "infrastructure_investments",
+                "incentives_and_subsidies"
+            ],
+            "Description": "Promotes the use of sustainably harvested wood for material substitution (e.g., replacing concrete or steel) and increasing carbon storage in wood products. Includes strategies like increasing recycling, extending product lifetimes, and shifting to long-lived wood products.",
+            "BehavioralChangeTargeted": "Encourages the adoption of wood-based materials in construction and other industries while promoting sustainable forest management.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Supports local and indigenous communities by creating sustainable livelihoods, promoting equitable forest resource management, and enhancing access to long-term benefits.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "40-59"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Requires sustainable forest management practices",
+                "advanced wood processing technologies",
+                "market demand for wood substitutes",
+                "global cooperation to prevent resource exploitation"
+            ],
+            "KeyPerformanceIndicators": [
+                "Increased use of wood products in construction",
+                "reduction in GHG emissions from material substitution",
+                "increase in recycled wood product utilization rates"
+            ],
+            "Impacts": [
+                "Reduces emissions from traditional material production",
+                "enhances carbon sequestration",
+                "supports sustainable forest industries",
+                "provides economic opportunities in rural and forested areas"
+            ]
+        }
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0033",
+        "actionName": "Electrification of Processes",
+        "actionPriority": 17,
+        "explanation": "Targets industrial emissions, though with higher costs and longer implementation timelines.",
+        "action": {
+            "ActionID": "ipcc_0033",
+            "ActionName": "Electrification of Processes",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "infrastructure_investments",
+                "programs_and_initiatives",
+                "regulations_and_laws"
+            ],
+            "Description": "Transitioning steel production processes to electrified methods such as molten oxide electrolysis, advanced direct reduction, and other methods powered by low-carbon electricity to reduce emissions and improve energy efficiency.",
+            "BehavioralChangeTargeted": "Encourages adoption of electrified processes and transition to low-carbon energy sources in steel production.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Promotes equitable access to advanced electrification technologies and training for workforce, ensuring participation from underserved industrial sectors.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "60-79",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of low-carbon electricity",
+                "development of suitable anode materials",
+                "infrastructure for large-scale electrification in steel production"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in emissions per ton of steel produced",
+                "increase in the share of electrified processes",
+                "energy savings in production stages"
+            ],
+            "Impacts": [
+                "Reduced reliance on fossil fuels",
+                "improved air quality",
+                "enhanced global competitiveness of steel manufacturers"
+            ]
+        }
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0026",
+        "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
+        "actionPriority": 18,
+        "explanation": "Offers energy efficiency benefits, though with moderate costs and dependencies.",
+        "action": {
+            "ActionID": "ipcc_0026",
+            "ActionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "infrastructure_investments",
+                "programs_and_initiatives",
+                "incentives_and_subsidies"
+            ],
+            "Description": "This action involves improving heat-use energy efficiency by utilizing heat exchanger networks and high-temperature heat pumps to recover and reuse waste heat in industrial processes. Techniques include reducing heat needs via thermal insulation, reusing waste heat at various temperature grades, and recycling waste heat for power generation through technologies such as mechanical vapor recompression and thermoelectric conversion.",
+            "BehavioralChangeTargeted": "Encourages industries to adopt energy-efficient technologies for heat recovery and reuse, reducing reliance on high-emission heat production methods.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Ensures that advanced heat recovery technologies are accessible to small and medium industries, particularly in developing regions, helping them reduce energy costs and emissions.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "40-59",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of advanced heat recovery and pump technologies",
+                "skilled workforce for installation and maintenance",
+                "policy support for adoption of waste heat recovery systems"
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in waste heat recovery rate",
+                "reduction in energy intensity",
+                "percentage of heat reused through high-efficiency systems"
+            ],
+            "Impacts": [
+                "Significant reductions in industrial energy consumption and GHG emissions",
+                "enhanced energy security",
+                "cost savings for manufacturers",
+                "reduced environmental waste"
+            ]
+        }
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0027",
+        "actionName": "Process Coupling and Improvements",
+        "actionPriority": 19,
+        "explanation": "Enhances industrial efficiency, though with higher costs and dependencies.",
+        "action": {
+            "ActionID": "ipcc_0027",
+            "ActionName": "Process Coupling and Improvements",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "infrastructure_investments",
+                "programs_and_initiatives",
+                "incentives_and_subsidies"
+            ],
+            "Description": "This action focuses on reducing energy and emissions intensity in the steel production process by improving coupling between processes, such as Endless Strip Production (ESP). Techniques include reducing the number of temperature cycles, integrating process stages, and adopting energy-efficient technologies.",
+            "BehavioralChangeTargeted": "Encourages manufacturers to optimize production stages, adopt efficient technologies, and reduce waste to improve overall energy efficiency and reduce emissions.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Promotes access to advanced manufacturing technologies for small and medium-sized enterprises, ensuring broader participation in decarbonization efforts.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "40-59",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development and deployment of advanced process integration technologies",
+                "skilled workforce training",
+                "supportive policies to incentivize adoption"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in energy consumption per unit of steel",
+                "increase in process coupling efficiency",
+                "reduction in GHG emissions per ton of steel produced"
+            ],
+            "Impacts": [
+                "Improved energy efficiency",
+                "reduced emissions",
+                "cost savings for manufacturers",
+                "enhanced competitiveness of the steel industry in global markets"
+            ]
+        }
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0032",
+        "actionName": "Fuel Switching to Renewable Fuels",
+        "actionPriority": 20,
+        "explanation": "Targets industrial emissions, though with significant costs and dependencies.",
+        "action": {
+            "ActionID": "ipcc_0032",
+            "ActionName": "Fuel Switching to Renewable Fuels",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "infrastructure_investments",
+                "programs_and_initiatives",
+                "incentives_and_subsidies"
+            ],
+            "Description": "Transitioning from fossil fuels like coal to renewable energy sources (e.g., biomass, natural gas, and waste-derived fuels) in industrial processes to reduce emissions. This includes the use of renewable substitutes such as biomass and waste plastics to displace coal in sectors like steel and cement.",
+            "BehavioralChangeTargeted": "Encourages industries to adopt renewable fuel sources and replace traditional fossil fuels to align with climate goals.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Promotes renewable fuel technologies accessible to developing economies to ensure widespread adoption and equitable benefits.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "40-59",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of renewable fuel infrastructure",
+                "technology development for alternative fuel production",
+                "supportive policies"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in CO2 emissions",
+                "increased adoption rate of renewable fuels",
+                "reduction in the carbon intensity of industrial processes"
+            ],
+            "Impacts": [
+                "Reduced dependence on fossil fuels",
+                "improved energy security",
+                "mitigation of air pollution",
+                "contributing to global emission reduction targets"
+            ]
+        }
+    }
+]

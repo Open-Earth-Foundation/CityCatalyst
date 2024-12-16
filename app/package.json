@@ -65,6 +65,7 @@
     "chakra-react-select": "^4.9.1",
     "char-regex": "^2.0.1",
     "csv-parse": "^5.5.6",
+    "csv-stringify": "^6.5.2",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "decimal.js": "^10.4.3",

@@ -8,6 +8,8 @@ import { translationFunc } from "@/i18n/server";
 import { toDecimal } from "@/util/helpers";
 import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";
+import PopulationService from "@/backend/PopulationService";
+import CityBoundaryService from "@/backend/CityBoundaryService";
 
 type InventoryValueWithActivityValues = InventoryValue & {
   activityValues: ActivityValue[];
@@ -37,6 +39,7 @@ export default class ECRFDownloadService {
     try {
       // Load the workbook
       await workbook.xlsx.readFile(ECRF_TEMPLATE_PATH);
+      await this.writeTOSheet1(workbook, output, t);
       await this.writeTOSheet3(workbook, output, t);
       // Save the modified workbook
       const buffer = Buffer.from(await workbook.xlsx.writeBuffer());
@@ -50,9 +53,51 @@ export default class ECRFDownloadService {
     }
   }
 
-  private static async writeTOSheet1() {
+  private static async writeTOSheet1(
+    workbook: Excel.Workbook,
+    output: InventoryWithInventoryValuesAndActivityValues,
+    t: any,
+  ) {
     // fetch population data
+
+    const city = output.city;
+    const year = output.year;
+
+    const cityPopulationData =
+      await PopulationService.getPopulationDataForCityYear(
+        city.cityId,
+        year as number,
+      );
+
+    const cityBoundaryData = await CityBoundaryService.getCityBoundary(
+      city.locode as string,
+    );
+
     // prepare the data for sheet 1
+    const sheetData: Record<string, any> = {
+      inventory_type: t?.(output.inventoryType),
+      city_country: city.country,
+      city_name: city.name,
+      city_region: city.region,
+      inventory_year: year,
+      city_population: cityPopulationData.population,
+      city_area: cityBoundaryData.area,
+    };
+
+    const worksheet = workbook.getWorksheet(1); // Get the worksheet by index (1st sheet)
+
+    worksheet?.eachRow((row, rowNumber) => {
+      const placeholderCell = row.getCell(3);
+      if (placeholderCell.value && typeof placeholderCell.value === "string") {
+        const cellValue = placeholderCell.value as string;
+        const placeholderMatch = cellValue.match(/{{(.*?)}}/);
+        if (placeholderMatch) {
+          const fieldName = placeholderMatch[1] as string;
+          const replacementValue = sheetData[fieldName];
+          placeholderCell.value = replacementValue ?? "N/A";
+        }
+      }
+    });
   }
 
   private static async writeTOSheet2() {

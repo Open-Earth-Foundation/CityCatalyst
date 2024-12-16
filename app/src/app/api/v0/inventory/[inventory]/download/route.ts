@@ -171,16 +171,23 @@ async function inventoryCSV(inventory: Inventory): Promise<Buffer> {
   const headers = [
     "Inventory Reference",
     "GPC Reference Number",
+    "Notation Key",
     "Total Emissions",
     "Activity Units",
     "Activity Value",
     "Emission Factor Value",
+    "Emission Factor Units",
     "Datasource ID",
   ].join(",");
   const inventoryLines = inventoryValues.map((value: InventoryValueWithEF) => {
+    const isSector1or2 =
+      value.gpcReferenceNumber?.includes("I.") ||
+      value.gpcReferenceNumber?.includes("II.");
+
     return [
       value.subCategoryId,
       value.gpcReferenceNumber,
+      value.unavailableReason,
       value.co2eq,
       value.activityUnits,
       value.activityValue,

@@ -50,7 +50,10 @@ export default class ECRFDownloadService {
     }
   }
 
-  private static async writeTOSheet1() {}
+  private static async writeTOSheet1() {
+    // fetch population data
+    // prepare the data for sheet 1
+  }
 
   private static async writeTOSheet2() {
     // prepare the data for sheet 2

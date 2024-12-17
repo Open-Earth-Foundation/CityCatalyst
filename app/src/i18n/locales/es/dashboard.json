@@ -133,5 +133,8 @@
   "add-new-inventory": "Agregar nuevo inventario",
   "table-view": "Tabla",
   "chart-view": "Gráfico",
-  "last-update": "Última actualización"
+  "last-update": "Última actualización",
+  "something-went-wrong": "Algo salió mal",
+  "error-fetching-sector-data": "Error al obtener datos del sector"
+
 }

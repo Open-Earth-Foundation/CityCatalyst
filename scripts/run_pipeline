@@ -10,7 +10,7 @@ set -e
 set -o pipefail
 
 # Paths
-VENV_PYTHON="../extractor/.extractor/Scripts/python.exe"
+VENV_PYTHON="../.cap/Scripts/python.exe"
 PRIORITIZER_SCRIPT="../prioritizer/prioritizer.py"
 ENRICHER_SCRIPT="./enrich_for_frontend_schema.py"
 UPLOAD_SCRIPT="./upload_to_s3.py"
@@ -30,7 +30,7 @@ LOCODE=$1
 
 # Activate the virtual environment
 echo "Activating virtual environment..."
-source ../extractor/.extractor/Scripts/activate
+source ../.cap/Scripts/activate
 # Check if the virtual environment was successfully activated
 if [ -z "$VIRTUAL_ENV" ]; then
   echo "Failed to activate virtual environment."

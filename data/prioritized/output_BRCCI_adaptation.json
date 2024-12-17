@@ -17,7 +17,7 @@
         "actionId": "c40_0053",
         "actionName": "Water Savings",
         "actionPriority": 2,
-        "explanation": "Water savings directly address the city's high risk of drought, improving water resource management. It is cost-effective and aligns with the city's tropical rainforest biome."
+        "explanation": "Water savings directly address the city's high risk of drought, providing significant environmental and socio-economic benefits. It is cost-effective and aligns with the city's tropical rainforest biome."
     },
     {
         "locode": "BRCCI",
@@ -27,7 +27,7 @@
         "actionId": "c40_0054",
         "actionName": "Water Recycling",
         "actionPriority": 3,
-        "explanation": "Similar to water savings, water recycling is vital for managing drought risks. It offers significant environmental benefits and is compatible with the city's infrastructure."
+        "explanation": "Similar to water savings, water recycling is vital for managing drought risks. It offers substantial emissions reduction in the waste sector and is compatible with the city's environmental context."
     },
     {
         "locode": "BRCCI",
@@ -37,7 +37,7 @@
         "actionId": "ipcc_0087",
         "actionName": "Infrastructure retrofitting",
         "actionPriority": 4,
-        "explanation": "Retrofitting infrastructure is essential for reducing risks from heatwaves and landslides, which have high risk scores. It is relevant to the city's high infrastructure emissions."
+        "explanation": "Retrofitting infrastructure is essential for reducing risks from heatwaves and landslides, which have high risk scores. It is relevant to the city's high emissions from industrial processes."
     },
     {
         "locode": "BRCCI",
@@ -47,17 +47,7 @@
         "actionId": "ipcc_0091",
         "actionName": "Diversification of livelihoods",
         "actionPriority": 5,
-        "explanation": "This action enhances socio-economic resilience, crucial for a city with diverse climate risks. It supports adaptation to changing environmental conditions."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0060",
-        "actionName": "Managed Retreat",
-        "actionPriority": 6,
-        "explanation": "Managed retreat is a strategic response to sea level rise and flooding, addressing high-risk areas. It requires careful planning but offers long-term benefits."
+        "explanation": "This action enhances socio-economic resilience, crucial for a city with a diverse population. It addresses food security risks and is cost-effective."
     },
     {
         "locode": "BRCCI",
@@ -66,8 +56,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
-        "actionPriority": 7,
-        "explanation": "Social safety nets are vital for supporting vulnerable populations during climate events, enhancing socio-demographic suitability."
+        "actionPriority": 6,
+        "explanation": "Social safety nets are vital for supporting vulnerable populations during climate hazards, such as heatwaves and flooding. They are cost-effective and have a quick implementation timeline."
     },
     {
         "locode": "BRCCI",
@@ -76,8 +66,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
-        "actionPriority": 8,
-        "explanation": "Improving health infrastructure is critical for addressing public health risks from heatwaves and diseases, which have high risk scores."
+        "actionPriority": 7,
+        "explanation": "Enhancing health infrastructure is critical for addressing public health risks from heatwaves and diseases, which have high risk scores. It is socio-demographically suitable for the city."
     },
     {
         "locode": "BRCCI",
@@ -86,8 +76,8 @@
         "regionName": "Bahia",
         "actionId": "c40_0050",
         "actionName": "White Roofs",
-        "actionPriority": 9,
-        "explanation": "White roofs help mitigate heatwaves by reducing urban heat island effects, offering a cost-effective and quick implementation solution."
+        "actionPriority": 8,
+        "explanation": "White roofs help mitigate heatwave impacts, reducing energy consumption and emissions from stationary energy. They are cost-effective and have a quick implementation timeline."
     },
     {
         "locode": "BRCCI",
@@ -96,8 +86,8 @@
         "regionName": "Bahia",
         "actionId": "c40_0051",
         "actionName": "Public Shading",
-        "actionPriority": 10,
-        "explanation": "Public shading provides immediate relief from heatwaves, improving public health and comfort in urban areas."
+        "actionPriority": 9,
+        "explanation": "Public shading reduces heatwave impacts, improving public health and comfort. It is cost-effective and aligns with the city's tropical climate."
     },
     {
         "locode": "BRCCI",
@@ -106,8 +96,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0090",
         "actionName": "Insurance",
-        "actionPriority": 11,
-        "explanation": "Insurance mechanisms provide financial resilience against climate-related damages, supporting socio-economic stability."
+        "actionPriority": 10,
+        "explanation": "Insurance provides financial protection against climate hazards, such as flooding and landslides. It is cost-effective and has a quick implementation timeline."
     },
     {
         "locode": "BRCCI",
@@ -116,8 +106,8 @@
         "regionName": "Bahia",
         "actionId": "c40_0046",
         "actionName": "Coastal Protection",
-        "actionPriority": 12,
-        "explanation": "Coastal protection is essential for mitigating risks from sea level rise and flooding, aligning with the city's geographical context."
+        "actionPriority": 11,
+        "explanation": "Coastal protection is essential for addressing sea level rise and flooding risks. It is relevant to the city's infrastructure and environmental context."
     },
     {
         "locode": "BRCCI",
@@ -126,8 +116,8 @@
         "regionName": "Bahia",
         "actionId": "c40_0059",
         "actionName": "Early Warning",
-        "actionPriority": 13,
-        "explanation": "Early warning systems are crucial for timely responses to climate hazards, reducing risks and enhancing preparedness."
+        "actionPriority": 12,
+        "explanation": "Early warning systems are crucial for risk reduction, particularly for flooding and landslides. They are cost-effective and have a quick implementation timeline."
     },
     {
         "locode": "BRCCI",
@@ -136,8 +126,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
-        "actionPriority": 14,
-        "explanation": "Updating building codes ensures infrastructure resilience against climate impacts, particularly heatwaves and landslides."
+        "actionPriority": 13,
+        "explanation": "Updating building codes is vital for reducing risks from heatwaves and landslides. It is relevant to the city's infrastructure and socio-economic context."
     },
     {
         "locode": "BRCCI",
@@ -146,8 +136,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
-        "actionPriority": 15,
-        "explanation": "Improving access to healthcare is vital for managing public health risks from climate-related diseases and heatwaves."
+        "actionPriority": 14,
+        "explanation": "Improving access to health care is crucial for addressing public health risks from heatwaves and diseases. It is socio-demographically suitable for the city."
     },
     {
         "locode": "BRCCI",
@@ -156,8 +146,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
-        "actionPriority": 16,
-        "explanation": "Enhancing agricultural practices supports food security, addressing risks from drought and flooding."
+        "actionPriority": 15,
+        "explanation": "Enhancing farm and fishery practices addresses food security risks from drought and flooding. It is cost-effective and aligns with the city's environmental context."
     },
     {
         "locode": "BRCCI",
@@ -166,8 +156,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
-        "actionPriority": 17,
-        "explanation": "Improving food storage and distribution systems enhances food security, crucial for managing risks from climate impacts."
+        "actionPriority": 16,
+        "explanation": "Improving food storage and distribution is essential for food security, particularly during climate hazards. It is cost-effective and has a quick implementation timeline."
     },
     {
         "locode": "BRCCI",
@@ -176,8 +166,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 18,
-        "explanation": "Promoting sustainable diets and reducing food waste contribute to food security and environmental sustainability."
+        "actionPriority": 17,
+        "explanation": "Promoting behavior change in diets and food waste addresses food security and emissions reduction. It is cost-effective and socio-demographically suitable."
     },
     {
         "locode": "BRCCI",
@@ -186,8 +176,18 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0100",
         "actionName": "Efficient water use/demand",
+        "actionPriority": 18,
+        "explanation": "Efficient water use is crucial for managing drought risks and reducing emissions in the waste sector. It is cost-effective and aligns with the city's environmental context."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0060",
+        "actionName": "Managed Retreat",
         "actionPriority": 19,
-        "explanation": "Efficient water use is essential for managing drought risks, aligning with the city's water resource challenges."
+        "explanation": "Managed retreat addresses sea level rise and flooding risks. It is relevant to the city's infrastructure but has a longer implementation timeline."
     },
     {
         "locode": "BRCCI",
@@ -197,6 +197,6 @@
         "actionId": "ipcc_0081",
         "actionName": "Coastal Accommodation",
         "actionPriority": 20,
-        "explanation": "Coastal accommodation strategies address sea level rise, offering long-term adaptation solutions for vulnerable areas."
+        "explanation": "Coastal accommodation is essential for addressing sea level rise. It is relevant to the city's infrastructure but has a longer implementation timeline."
     }
 ]

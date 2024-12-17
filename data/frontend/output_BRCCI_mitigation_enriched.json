@@ -159,7 +159,7 @@
         "actionId": "ipcc_0045",
         "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
         "actionPriority": 3,
-        "explanation": "Promotes waste reduction through behavioral changes, addressing the waste sector. It is low-cost and has a quick implementation timeline.",
+        "explanation": "Promotes waste reduction through behavioral changes, addressing the city's significant waste emissions. It is low-cost and has a quick implementation timeline.",
         "action": {
             "ActionID": "ipcc_0045",
             "ActionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
@@ -230,7 +230,7 @@
         "actionId": "c40_0035",
         "actionName": "Waste Efficiency",
         "actionPriority": 4,
-        "explanation": "Improves waste management efficiency, reducing emissions in the waste sector. It is cost-effective and aligns with the city's waste profile.",
+        "explanation": "Improves waste management efficiency, directly targeting the city's largest emission sector. It is cost-effective and aligns with existing waste infrastructure.",
         "action": {
             "ActionID": "c40_0035",
             "ActionName": "Waste Efficiency",
@@ -307,7 +307,7 @@
         "actionId": "ipcc_0026",
         "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
         "actionPriority": 5,
-        "explanation": "Targets industrial emissions by improving energy efficiency. It is cost-effective and suitable for the city's industrial capacity.",
+        "explanation": "Targets industrial emissions by improving energy efficiency, offering significant GHG reductions. It is cost-effective and suitable for the city's industrial capacity.",
         "action": {
             "ActionID": "ipcc_0026",
             "ActionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
@@ -378,7 +378,7 @@
         "actionId": "ipcc_0027",
         "actionName": "Process Coupling and Improvements",
         "actionPriority": 6,
-        "explanation": "Enhances industrial process efficiency, reducing emissions. It is cost-effective and aligns with the city's industrial sector.",
+        "explanation": "Enhances industrial process efficiency, reducing emissions. It is cost-effective and aligns with the city's industrial sector needs.",
         "action": {
             "ActionID": "ipcc_0027",
             "ActionName": "Process Coupling and Improvements",
@@ -449,7 +449,7 @@
         "actionId": "ipcc_0032",
         "actionName": "Fuel Switching to Renewable Fuels",
         "actionPriority": 7,
-        "explanation": "Reduces emissions by switching to renewable fuels in industrial processes. It is cost-effective and aligns with the city's energy profile.",
+        "explanation": "Switching to renewable fuels reduces emissions in industrial processes, a major sector. It is cost-effective and aligns with the city's energy goals.",
         "action": {
             "ActionID": "ipcc_0032",
             "ActionName": "Fuel Switching to Renewable Fuels",
@@ -520,7 +520,7 @@
         "actionId": "ipcc_0034",
         "actionName": "Energy Recycling in Furnaces and Kilns",
         "actionPriority": 8,
-        "explanation": "Improves energy efficiency in industrial processes, reducing emissions. It is cost-effective and suitable for the city's industrial sector.",
+        "explanation": "Improves energy efficiency in industrial processes, reducing emissions. It is cost-effective and suitable for the city's industrial capacity.",
         "action": {
             "ActionID": "ipcc_0034",
             "ActionName": "Energy Recycling in Furnaces and Kilns",
@@ -662,7 +662,7 @@
         "actionId": "ipcc_0044",
         "actionName": "Alternative feedstocks (e.g. in cement)",
         "actionPriority": 10,
-        "explanation": "Reduces emissions in industrial processes by using alternative feedstocks. It is cost-effective and aligns with the city's industrial profile.",
+        "explanation": "Reduces emissions in industrial processes by using alternative feedstocks. It is cost-effective and aligns with the city's industrial sector.",
         "action": {
             "ActionID": "ipcc_0044",
             "ActionName": "Alternative feedstocks (e.g. in cement)",
@@ -733,7 +733,7 @@
         "actionId": "c40_0028",
         "actionName": "Zero Emission Buses",
         "actionPriority": 11,
-        "explanation": "Targets transportation emissions by introducing zero-emission buses. It is cost-effective and aligns with the city's transportation needs.",
+        "explanation": "Targets transportation emissions, a significant sector. It is cost-effective and aligns with the city's transportation goals.",
         "action": {
             "ActionID": "c40_0028",
             "ActionName": "Zero Emission Buses",
@@ -814,7 +814,7 @@
         "actionId": "c40_0036",
         "actionName": "Landfill Management",
         "actionPriority": 12,
-        "explanation": "Improves landfill management, reducing waste emissions. It is cost-effective and aligns with the city's waste management goals.",
+        "explanation": "Improves landfill management, reducing waste emissions. It is cost-effective and aligns with the city's waste management needs.",
         "action": {
             "ActionID": "c40_0036",
             "ActionName": "Landfill Management",
@@ -892,7 +892,7 @@
         "actionId": "ipcc_0002",
         "actionName": "Active Transport Modes",
         "actionPriority": 13,
-        "explanation": "Promotes active transport, reducing transportation emissions. It is cost-effective and aligns with the city's transportation profile.",
+        "explanation": "Promotes active transport, reducing transportation emissions. It is cost-effective and aligns with the city's transportation goals.",
         "action": {
             "ActionID": "ipcc_0002",
             "ActionName": "Active Transport Modes",
@@ -962,7 +962,7 @@
         "actionId": "ipcc_0035",
         "actionName": "Technology Improvements of Processes",
         "actionPriority": 14,
-        "explanation": "Enhances industrial process efficiency, reducing emissions. It is cost-effective and suitable for the city's industrial sector.",
+        "explanation": "Enhances industrial process efficiency, reducing emissions. It is cost-effective and suitable for the city's industrial capacity.",
         "action": {
             "ActionID": "ipcc_0035",
             "ActionName": "Technology Improvements of Processes",
@@ -1110,7 +1110,7 @@
         "actionId": "ipcc_0028",
         "actionName": "Introduction of Energy Efficiency Technologies in Processing",
         "actionPriority": 16,
-        "explanation": "Improves energy efficiency in industrial processes, reducing emissions. It is cost-effective and suitable for the city's industrial sector.",
+        "explanation": "Improves energy efficiency in industrial processes, reducing emissions. It is cost-effective and suitable for the city's industrial capacity.",
         "action": {
             "ActionID": "ipcc_0028",
             "ActionName": "Introduction of Energy Efficiency Technologies in Processing",
@@ -1181,7 +1181,7 @@
         "actionId": "ipcc_0031",
         "actionName": "Smart Energy Management",
         "actionPriority": 17,
-        "explanation": "Enhances energy management, reducing emissions in industrial processes. It is cost-effective and aligns with the city's energy profile.",
+        "explanation": "Enhances energy management, reducing emissions in industrial processes. It is cost-effective and aligns with the city's energy goals.",
         "action": {
             "ActionID": "ipcc_0031",
             "ActionName": "Smart Energy Management",
@@ -1252,7 +1252,7 @@
         "actionId": "ipcc_0036",
         "actionName": "On-site Combined Heat and Power (CHP)",
         "actionPriority": 18,
-        "explanation": "Improves energy efficiency in industrial processes, reducing emissions. It is cost-effective and suitable for the city's industrial sector.",
+        "explanation": "Improves energy efficiency in industrial processes, reducing emissions. It is cost-effective and suitable for the city's industrial capacity.",
         "action": {
             "ActionID": "ipcc_0036",
             "ActionName": "On-site Combined Heat and Power (CHP)",
@@ -1322,7 +1322,7 @@
         "actionId": "ipcc_0038",
         "actionName": "Carbon Capture and Utilization (CCU)",
         "actionPriority": 19,
-        "explanation": "Reduces emissions by capturing and utilizing carbon in industrial processes. It is cost-effective and aligns with the city's industrial profile.",
+        "explanation": "Reduces emissions in industrial processes through carbon capture. It is cost-effective and aligns with the city's industrial sector.",
         "action": {
             "ActionID": "ipcc_0038",
             "ActionName": "Carbon Capture and Utilization (CCU)",
@@ -1392,7 +1392,7 @@
         "actionId": "ipcc_0023",
         "actionName": "Improved Heat and Energy Recovery",
         "actionPriority": 20,
-        "explanation": "Enhances energy efficiency in industrial processes, reducing emissions. It is cost-effective and suitable for the city's industrial sector.",
+        "explanation": "Enhances energy recovery in industrial processes, reducing emissions. It is cost-effective and suitable for the city's industrial capacity.",
         "action": {
             "ActionID": "ipcc_0023",
             "ActionName": "Improved Heat and Energy Recovery",

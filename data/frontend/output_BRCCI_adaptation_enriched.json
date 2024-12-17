@@ -74,7 +74,7 @@
         "actionId": "c40_0053",
         "actionName": "Water Savings",
         "actionPriority": 2,
-        "explanation": "Water savings directly address the city's high risk of drought, improving water resource management. It is cost-effective and aligns with the city's tropical rainforest biome.",
+        "explanation": "Water savings directly address the city's high risk of drought, providing significant environmental and socio-economic benefits. It is cost-effective and aligns with the city's tropical rainforest biome.",
         "action": {
             "ActionID": "c40_0053",
             "ActionName": "Water Savings",
@@ -140,7 +140,7 @@
         "actionId": "c40_0054",
         "actionName": "Water Recycling",
         "actionPriority": 3,
-        "explanation": "Similar to water savings, water recycling is vital for managing drought risks. It offers significant environmental benefits and is compatible with the city's infrastructure.",
+        "explanation": "Similar to water savings, water recycling is vital for managing drought risks. It offers substantial emissions reduction in the waste sector and is compatible with the city's environmental context.",
         "action": {
             "ActionID": "c40_0054",
             "ActionName": "Water Recycling",
@@ -210,7 +210,7 @@
         "actionId": "ipcc_0087",
         "actionName": "Infrastructure retrofitting",
         "actionPriority": 4,
-        "explanation": "Retrofitting infrastructure is essential for reducing risks from heatwaves and landslides, which have high risk scores. It is relevant to the city's high infrastructure emissions.",
+        "explanation": "Retrofitting infrastructure is essential for reducing risks from heatwaves and landslides, which have high risk scores. It is relevant to the city's high emissions from industrial processes.",
         "action": {
             "ActionID": "ipcc_0087",
             "ActionName": "Infrastructure retrofitting",
@@ -273,7 +273,7 @@
         "actionId": "ipcc_0091",
         "actionName": "Diversification of livelihoods",
         "actionPriority": 5,
-        "explanation": "This action enhances socio-economic resilience, crucial for a city with diverse climate risks. It supports adaptation to changing environmental conditions.",
+        "explanation": "This action enhances socio-economic resilience, crucial for a city with a diverse population. It addresses food security risks and is cost-effective.",
         "action": {
             "ActionID": "ipcc_0091",
             "ActionName": "Diversification of livelihoods ",
@@ -332,78 +332,10 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0060",
-        "actionName": "Managed Retreat",
-        "actionPriority": 6,
-        "explanation": "Managed retreat is a strategic response to sea level rise and flooding, addressing high-risk areas. It requires careful planning but offers long-term benefits.",
-        "action": {
-            "ActionID": "c40_0060",
-            "ActionName": "Managed Retreat",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Behavioural\u00a0actions",
-            "Hazard": [
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "\"Managed Retreat\" strategies involve planned relocation away from high-risk areas vulnerable to climate change impacts. This adaptation measure aims to protect communities from sea-level rise, flooding, and other environmental risks.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Managed Retreat\" strategies inherently promote equity and inclusion by prioritizing the safety and well-being of vulnerable or underserved communities that are most at risk from climate change impacts. By focusing on planned relocation, these strategies aim to protect marginalized populations who often lack the resources to adapt to environmental changes on their own. \n\nAdditionally, the implementation of managed retreat involves engaging affected communities in the decision-making process, ensuring that their voices and needs are considered. This participatory approach helps to address historical inequities and empowers residents to have a say in their future. \n\nFurthermore, managed retreat can provide opportunities for equitable access to safer housing and infrastructure, reducing the disproportionate burden of climate risks faced by low-income and marginalized groups. Overall, this climate action recognizes and addresses the unique challenges faced by underserved communities, fostering a more inclusive approach to climate adaptation.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Assessment of high-risk areas to identify communities that need relocation",
-                "Availability of funding and resources to support relocation efforts",
-                "Community engagement and support for relocation plans",
-                "Development of new infrastructure in safer areas",
-                "Policy and regulatory frameworks that facilitate managed retreat",
-                "Coordination among government agencies and stakeholders involved in the relocation process"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of communities successfully relocated",
-                "Reduction in population exposure to high-risk areas",
-                "Percentage of affected residents engaged in the planning process",
-                "Cost-effectiveness of relocation strategies",
-                "Improvement in community resilience metrics",
-                "Time taken to implement relocation plans",
-                "Satisfaction levels of relocated residents",
-                "Environmental impact assessments post-relocation"
-            ],
-            "Impacts": [
-                "Enhances climate resilience for vulnerable communities",
-                "Promotes equity and inclusion through community engagement",
-                "Addresses historical inequities in climate adaptation",
-                "Provides safer housing and infrastructure options",
-                "Reduces risks associated with storms for marginalized populations"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
-        "actionPriority": 7,
-        "explanation": "Social safety nets are vital for supporting vulnerable populations during climate events, enhancing socio-demographic suitability.",
+        "actionPriority": 6,
+        "explanation": "Social safety nets are vital for supporting vulnerable populations during climate hazards, such as heatwaves and flooding. They are cost-effective and have a quick implementation timeline.",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Social safety nets",
@@ -466,8 +398,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
-        "actionPriority": 8,
-        "explanation": "Improving health infrastructure is critical for addressing public health risks from heatwaves and diseases, which have high risk scores.",
+        "actionPriority": 7,
+        "explanation": "Enhancing health infrastructure is critical for addressing public health risks from heatwaves and diseases, which have high risk scores. It is socio-demographically suitable for the city.",
         "action": {
             "ActionID": "ipcc_0093",
             "ActionName": "Availability of health infrastructure",
@@ -530,8 +462,8 @@
         "regionName": "Bahia",
         "actionId": "c40_0050",
         "actionName": "White Roofs",
-        "actionPriority": 9,
-        "explanation": "White roofs help mitigate heatwaves by reducing urban heat island effects, offering a cost-effective and quick implementation solution.",
+        "actionPriority": 8,
+        "explanation": "White roofs help mitigate heatwave impacts, reducing energy consumption and emissions from stationary energy. They are cost-effective and have a quick implementation timeline.",
         "action": {
             "ActionID": "c40_0050",
             "ActionName": "White Roofs",
@@ -597,8 +529,8 @@
         "regionName": "Bahia",
         "actionId": "c40_0051",
         "actionName": "Public Shading",
-        "actionPriority": 10,
-        "explanation": "Public shading provides immediate relief from heatwaves, improving public health and comfort in urban areas.",
+        "actionPriority": 9,
+        "explanation": "Public shading reduces heatwave impacts, improving public health and comfort. It is cost-effective and aligns with the city's tropical climate.",
         "action": {
             "ActionID": "c40_0051",
             "ActionName": "Public Shading",
@@ -664,8 +596,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0090",
         "actionName": "Insurance",
-        "actionPriority": 11,
-        "explanation": "Insurance mechanisms provide financial resilience against climate-related damages, supporting socio-economic stability.",
+        "actionPriority": 10,
+        "explanation": "Insurance provides financial protection against climate hazards, such as flooding and landslides. It is cost-effective and has a quick implementation timeline.",
         "action": {
             "ActionID": "ipcc_0090",
             "ActionName": "Insurance",
@@ -728,8 +660,8 @@
         "regionName": "Bahia",
         "actionId": "c40_0046",
         "actionName": "Coastal Protection",
-        "actionPriority": 12,
-        "explanation": "Coastal protection is essential for mitigating risks from sea level rise and flooding, aligning with the city's geographical context.",
+        "actionPriority": 11,
+        "explanation": "Coastal protection is essential for addressing sea level rise and flooding risks. It is relevant to the city's infrastructure and environmental context.",
         "action": {
             "ActionID": "c40_0046",
             "ActionName": "Coastal Protection",
@@ -795,8 +727,8 @@
         "regionName": "Bahia",
         "actionId": "c40_0059",
         "actionName": "Early Warning",
-        "actionPriority": 13,
-        "explanation": "Early warning systems are crucial for timely responses to climate hazards, reducing risks and enhancing preparedness.",
+        "actionPriority": 12,
+        "explanation": "Early warning systems are crucial for risk reduction, particularly for flooding and landslides. They are cost-effective and have a quick implementation timeline.",
         "action": {
             "ActionID": "c40_0059",
             "ActionName": "Early Warning",
@@ -862,8 +794,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
-        "actionPriority": 14,
-        "explanation": "Updating building codes ensures infrastructure resilience against climate impacts, particularly heatwaves and landslides.",
+        "actionPriority": 13,
+        "explanation": "Updating building codes is vital for reducing risks from heatwaves and landslides. It is relevant to the city's infrastructure and socio-economic context.",
         "action": {
             "ActionID": "ipcc_0088",
             "ActionName": "Building codes",
@@ -923,8 +855,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
-        "actionPriority": 15,
-        "explanation": "Improving access to healthcare is vital for managing public health risks from climate-related diseases and heatwaves.",
+        "actionPriority": 14,
+        "explanation": "Improving access to health care is crucial for addressing public health risks from heatwaves and diseases. It is socio-demographically suitable for the city.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Access to health care",
@@ -989,8 +921,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
-        "actionPriority": 16,
-        "explanation": "Enhancing agricultural practices supports food security, addressing risks from drought and flooding.",
+        "actionPriority": 15,
+        "explanation": "Enhancing farm and fishery practices addresses food security risks from drought and flooding. It is cost-effective and aligns with the city's environmental context.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Farm/fishery improvements",
@@ -1056,8 +988,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
-        "actionPriority": 17,
-        "explanation": "Improving food storage and distribution systems enhances food security, crucial for managing risks from climate impacts.",
+        "actionPriority": 16,
+        "explanation": "Improving food storage and distribution is essential for food security, particularly during climate hazards. It is cost-effective and has a quick implementation timeline.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Food storage/distribution improvements",
@@ -1123,8 +1055,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 18,
-        "explanation": "Promoting sustainable diets and reducing food waste contribute to food security and environmental sustainability.",
+        "actionPriority": 17,
+        "explanation": "Promoting behavior change in diets and food waste addresses food security and emissions reduction. It is cost-effective and socio-demographically suitable.",
         "action": {
             "ActionID": "ipcc_0098",
             "ActionName": "Behaviour change in diets and food waste",
@@ -1191,8 +1123,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0100",
         "actionName": "Efficient water use/demand",
-        "actionPriority": 19,
-        "explanation": "Efficient water use is essential for managing drought risks, aligning with the city's water resource challenges.",
+        "actionPriority": 18,
+        "explanation": "Efficient water use is crucial for managing drought risks and reducing emissions in the waste sector. It is cost-effective and aligns with the city's environmental context.",
         "action": {
             "ActionID": "ipcc_0100",
             "ActionName": "Efficient water use/demand",
@@ -1255,10 +1187,78 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
+        "actionId": "c40_0060",
+        "actionName": "Managed Retreat",
+        "actionPriority": 19,
+        "explanation": "Managed retreat addresses sea level rise and flooding risks. It is relevant to the city's infrastructure but has a longer implementation timeline.",
+        "action": {
+            "ActionID": "c40_0060",
+            "ActionName": "Managed Retreat",
+            "ActionType": [
+                "adaptation"
+            ],
+            "AdaptationCategory": "Behavioural\u00a0actions",
+            "Hazard": [
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "InterventionType": null,
+            "Description": "\"Managed Retreat\" strategies involve planned relocation away from high-risk areas vulnerable to climate change impacts. This adaptation measure aims to protect communities from sea-level rise, flooding, and other environmental risks.",
+            "BehavioralChangeTargeted": null,
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The \"Managed Retreat\" strategies inherently promote equity and inclusion by prioritizing the safety and well-being of vulnerable or underserved communities that are most at risk from climate change impacts. By focusing on planned relocation, these strategies aim to protect marginalized populations who often lack the resources to adapt to environmental changes on their own. \n\nAdditionally, the implementation of managed retreat involves engaging affected communities in the decision-making process, ensuring that their voices and needs are considered. This participatory approach helps to address historical inequities and empowers residents to have a say in their future. \n\nFurthermore, managed retreat can provide opportunities for equitable access to safer housing and infrastructure, reducing the disproportionate burden of climate risks faced by low-income and marginalized groups. Overall, this climate action recognizes and addresses the unique challenges faced by underserved communities, fostering a more inclusive approach to climate adaptation.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Assessment of high-risk areas to identify communities that need relocation",
+                "Availability of funding and resources to support relocation efforts",
+                "Community engagement and support for relocation plans",
+                "Development of new infrastructure in safer areas",
+                "Policy and regulatory frameworks that facilitate managed retreat",
+                "Coordination among government agencies and stakeholders involved in the relocation process"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of communities successfully relocated",
+                "Reduction in population exposure to high-risk areas",
+                "Percentage of affected residents engaged in the planning process",
+                "Cost-effectiveness of relocation strategies",
+                "Improvement in community resilience metrics",
+                "Time taken to implement relocation plans",
+                "Satisfaction levels of relocated residents",
+                "Environmental impact assessments post-relocation"
+            ],
+            "Impacts": [
+                "Enhances climate resilience for vulnerable communities",
+                "Promotes equity and inclusion through community engagement",
+                "Addresses historical inequities in climate adaptation",
+                "Provides safer housing and infrastructure options",
+                "Reduces risks associated with storms for marginalized populations"
+            ]
+        }
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
         "actionId": "ipcc_0081",
         "actionName": "Coastal Accommodation",
         "actionPriority": 20,
-        "explanation": "Coastal accommodation strategies address sea level rise, offering long-term adaptation solutions for vulnerable areas.",
+        "explanation": "Coastal accommodation is essential for addressing sea level rise. It is relevant to the city's infrastructure but has a longer implementation timeline.",
         "action": {
             "ActionID": "ipcc_0081",
             "ActionName": "Coastal Accommodation",

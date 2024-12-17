@@ -7,7 +7,7 @@
         "actionId": "c40_0038",
         "actionName": "Sanitary Landfills",
         "actionPriority": 1,
-        "explanation": "Sanitary landfills address the city's largest emission sector, waste, and are cost-effective with a high quantitative score. They also have a relatively short implementation timeline and align with the city's waste management needs."
+        "explanation": "Sanitary landfills address the city's largest emission sector, waste, and offer significant GHG reduction. They are cost-effective and align with the city's waste management needs."
     },
     {
         "locode": "BRCCI",
@@ -17,7 +17,7 @@
         "actionId": "ipcc_0033",
         "actionName": "Electrification of Processes",
         "actionPriority": 2,
-        "explanation": "Electrification of processes targets industrial emissions, a significant source in Cama\u00e7ari. It is cost-effective and aligns with the city's capacity for industrial improvements."
+        "explanation": "Electrification reduces emissions in industrial processes, a major emission sector. It is cost-effective and aligns with the city's industrial profile."
     },
     {
         "locode": "BRCCI",
@@ -27,7 +27,7 @@
         "actionId": "ipcc_0045",
         "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
         "actionPriority": 3,
-        "explanation": "Promoting behavioral changes is a low-cost, high-impact action that can significantly reduce waste emissions, aligning with the city's largest emission sector."
+        "explanation": "Promotes waste reduction through behavioral changes, addressing the waste sector. It is cost-effective and has a quick implementation timeline."
     },
     {
         "locode": "BRCCI",
@@ -37,7 +37,7 @@
         "actionId": "c40_0035",
         "actionName": "Waste Efficiency",
         "actionPriority": 4,
-        "explanation": "Improving waste efficiency directly targets the city's largest emission sector, offering a cost-effective solution with a high quantitative score."
+        "explanation": "Improves waste management efficiency, reducing emissions in the waste sector. It is cost-effective and aligns with the city's waste management goals."
     },
     {
         "locode": "BRCCI",
@@ -47,7 +47,7 @@
         "actionId": "ipcc_0026",
         "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
         "actionPriority": 5,
-        "explanation": "This action targets industrial emissions, offering a cost-effective solution with significant emissions reduction potential, suitable for Cama\u00e7ari's industrial profile."
+        "explanation": "Enhances energy efficiency in industrial processes, reducing emissions. It is cost-effective and aligns with the city's industrial energy needs."
     },
     {
         "locode": "BRCCI",
@@ -57,7 +57,7 @@
         "actionId": "ipcc_0027",
         "actionName": "Process Coupling and Improvements",
         "actionPriority": 6,
-        "explanation": "Process improvements in industries can lead to significant emissions reductions, aligning with the city's industrial emissions profile and offering cost-effective benefits."
+        "explanation": "Improves industrial process efficiency, reducing emissions. It is cost-effective and aligns with the city's industrial profile."
     },
     {
         "locode": "BRCCI",
@@ -67,7 +67,7 @@
         "actionId": "ipcc_0032",
         "actionName": "Fuel Switching to Renewable Fuels",
         "actionPriority": 7,
-        "explanation": "Switching to renewable fuels addresses both industrial and stationary energy emissions, offering a sustainable and cost-effective solution for Cama\u00e7ari."
+        "explanation": "Switching to renewable fuels reduces emissions in industrial processes. It is cost-effective and aligns with the city's energy transition goals."
     },
     {
         "locode": "BRCCI",
@@ -77,7 +77,7 @@
         "actionId": "ipcc_0034",
         "actionName": "Energy Recycling in Furnaces and Kilns",
         "actionPriority": 8,
-        "explanation": "Energy recycling in industrial processes can significantly reduce emissions, aligning with the city's industrial profile and offering cost-effective benefits."
+        "explanation": "Enhances energy efficiency in industrial processes, reducing emissions. It is cost-effective and aligns with the city's industrial energy needs."
     },
     {
         "locode": "BRCCI",
@@ -87,7 +87,7 @@
         "actionId": "ipcc_0042",
         "actionName": "Design for Recovery, Reuse, or Repurposing",
         "actionPriority": 9,
-        "explanation": "Designing for recovery and reuse aligns with circular economy principles, offering long-term emissions reductions and cost savings, suitable for Cama\u00e7ari's waste sector."
+        "explanation": "Promotes circular economy principles, reducing waste emissions. It is cost-effective and aligns with the city's waste management goals."
     },
     {
         "locode": "BRCCI",
@@ -97,7 +97,7 @@
         "actionId": "ipcc_0044",
         "actionName": "Alternative feedstocks (e.g. in cement)",
         "actionPriority": 10,
-        "explanation": "Using alternative feedstocks in industrial processes can reduce emissions and align with the city's industrial profile, offering a cost-effective solution."
+        "explanation": "Reduces emissions in industrial processes by using alternative feedstocks. It is cost-effective and aligns with the city's industrial profile."
     },
     {
         "locode": "BRCCI",
@@ -107,7 +107,7 @@
         "actionId": "c40_0028",
         "actionName": "Zero Emission Buses",
         "actionPriority": 11,
-        "explanation": "Transitioning to zero-emission buses addresses transportation emissions, a significant source in Cama\u00e7ari, offering a sustainable and impactful solution."
+        "explanation": "Reduces transportation emissions, a significant sector. It is cost-effective and aligns with the city's transportation goals."
     },
     {
         "locode": "BRCCI",
@@ -117,7 +117,7 @@
         "actionId": "c40_0036",
         "actionName": "Landfill Management",
         "actionPriority": 12,
-        "explanation": "Improving landfill management directly targets the city's largest emission sector, waste, offering a cost-effective and impactful solution."
+        "explanation": "Improves landfill management, reducing waste emissions. It is cost-effective and aligns with the city's waste management goals."
     },
     {
         "locode": "BRCCI",
@@ -127,7 +127,7 @@
         "actionId": "ipcc_0002",
         "actionName": "Active Transport Modes",
         "actionPriority": 13,
-        "explanation": "Promoting active transport modes can reduce transportation emissions, aligning with the city's needs for sustainable mobility solutions."
+        "explanation": "Promotes active transport, reducing transportation emissions. It is cost-effective and aligns with the city's transportation goals."
     },
     {
         "locode": "BRCCI",
@@ -137,7 +137,7 @@
         "actionId": "ipcc_0035",
         "actionName": "Technology Improvements of Processes",
         "actionPriority": 14,
-        "explanation": "Improving industrial processes through technology can lead to significant emissions reductions, aligning with Cama\u00e7ari's industrial profile."
+        "explanation": "Enhances industrial process efficiency, reducing emissions. It is cost-effective and aligns with the city's industrial profile."
     },
     {
         "locode": "BRCCI",
@@ -147,7 +147,7 @@
         "actionId": "ipcc_0043",
         "actionName": "Circular Economy Policies",
         "actionPriority": 15,
-        "explanation": "Implementing circular economy policies can lead to long-term emissions reductions and cost savings, aligning with the city's waste management needs."
+        "explanation": "Promotes circular economy principles, reducing waste emissions. It is cost-effective and aligns with the city's waste management goals."
     },
     {
         "locode": "BRCCI",
@@ -157,7 +157,7 @@
         "actionId": "ipcc_0028",
         "actionName": "Introduction of Energy Efficiency Technologies in Processing",
         "actionPriority": 16,
-        "explanation": "Introducing energy efficiency technologies in industrial processes can significantly reduce emissions, aligning with Cama\u00e7ari's industrial profile."
+        "explanation": "Enhances energy efficiency in industrial processes, reducing emissions. It is cost-effective and aligns with the city's industrial energy needs."
     },
     {
         "locode": "BRCCI",
@@ -167,7 +167,7 @@
         "actionId": "ipcc_0031",
         "actionName": "Smart Energy Management",
         "actionPriority": 17,
-        "explanation": "Smart energy management can optimize energy use and reduce emissions, offering a cost-effective solution for Cama\u00e7ari's energy sector."
+        "explanation": "Improves energy management, reducing emissions in industrial processes. It is cost-effective and aligns with the city's energy management goals."
     },
     {
         "locode": "BRCCI",
@@ -177,7 +177,7 @@
         "actionId": "ipcc_0036",
         "actionName": "On-site Combined Heat and Power (CHP)",
         "actionPriority": 18,
-        "explanation": "On-site CHP systems can improve energy efficiency and reduce emissions, aligning with Cama\u00e7ari's industrial and energy needs."
+        "explanation": "Enhances energy efficiency in industrial processes, reducing emissions. It is cost-effective and aligns with the city's industrial energy needs."
     },
     {
         "locode": "BRCCI",
@@ -187,7 +187,7 @@
         "actionId": "ipcc_0038",
         "actionName": "Carbon Capture and Utilization (CCU)",
         "actionPriority": 19,
-        "explanation": "CCU offers potential for significant emissions reductions, particularly in industrial sectors, aligning with Cama\u00e7ari's emissions profile."
+        "explanation": "Reduces emissions in industrial processes through carbon capture. It is cost-effective and aligns with the city's industrial profile."
     },
     {
         "locode": "BRCCI",
@@ -197,6 +197,6 @@
         "actionId": "ipcc_0023",
         "actionName": "Improved Heat and Energy Recovery",
         "actionPriority": 20,
-        "explanation": "Improving heat and energy recovery in industrial processes can reduce emissions, offering a cost-effective solution for Cama\u00e7ari's industrial sector."
+        "explanation": "Enhances energy efficiency in industrial processes, reducing emissions. It is cost-effective and aligns with the city's industrial energy needs."
     }
 ]

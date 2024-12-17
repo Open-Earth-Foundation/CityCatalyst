@@ -1,5 +1,4 @@
 "use client";
-import { useEffect } from "react";
 import { useTranslation } from "@/i18n/client";
 import { CityYearData, InventoryResponse, SectorEmission } from "@/util/types";
 import {
@@ -17,6 +16,7 @@ import {
   TabPanels,
   Tabs,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { TabHeader } from "@/components/HomePage/TabHeader";
 import EmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsWidget";
@@ -29,7 +29,7 @@ import {
   isEmptyObject,
   toKebabCase,
 } from "@/util/helpers";
-import React, { ChangeEvent, useMemo, useState } from "react";
+import React, { ChangeEvent, useMemo, useState, useEffect } from "react";
 import {
   api,
   useGetCityYearsQuery,
@@ -77,7 +77,6 @@ function SectorTabs({
     TableView.BY_ACTIVITY,
   );
   const [isLoadingNewData, setIsLoadingNewData] = useState(false);
-
   const getDataForSector = (sectorName: string) =>
     results?.totalEmissions.bySector.find(
       (e) =>
@@ -90,11 +89,29 @@ function SectorTabs({
   const {
     data: sectorBreakdown,
     isLoading: isResultsLoading,
+    error,
     refetch,
   } = api.useGetSectorBreakdownQuery({
     inventoryId: inventory!.inventoryId!,
     sector: SECTORS[selectedIndex].name,
   });
+  const toast = useToast();
+
+  const makeErrorToast = (title: string, description?: string) => {
+    toast({
+      title,
+      description,
+      position: "bottom",
+      status: "error",
+      isClosable: true,
+      duration: 10000,
+    });
+  };
+
+  if (error) {
+    makeErrorToast(t("something-went-wrong"), t("error-fetching-sector-data"));
+    console.error("Error fetching sector breakdown:", error);
+  }
 
   useEffect(() => {
     setIsLoadingNewData(true);

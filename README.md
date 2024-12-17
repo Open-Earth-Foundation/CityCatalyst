@@ -22,4 +22,8 @@ Run the `run_pipeline` script inside `/scripts` folder with `bash run_pipeline L
 
 This script will automatically create the ranked actions for this city, format and upload those actions to the AWS S3 bucket for displaying in the frontend app.
 
+### Requirements
+
+To run this pipeline, AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY must be set in an `.env` file with permissions to write to the S3 bucket `/data` folder.
+
 To run the script, the packages inside `/extractor/requirements.txt` needs to be installed. The script will be looking for a virtual environment `.extractor` inside the `/extractor` folder.

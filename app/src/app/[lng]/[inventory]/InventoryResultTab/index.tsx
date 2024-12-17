@@ -154,7 +154,7 @@ function SectorTabs({
                   selectedIndex === index ? "content.link" : "content.tertiary"
                 }
               >
-                {capitalizeFirstLetter(t(name))}
+                {t(name)}
               </Text>
             </Tab>
           ),

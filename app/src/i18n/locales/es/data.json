@@ -80,7 +80,7 @@
   "refrigiration-chp": "Refrigeración CHP",
   "scope-required-for-basic": "Alcance Requerido para Inventario GHGI Básico:",
   "scope-required-for-basic-+": "Alcance Requerido para Inventario GHGI Básico+:",
-  "stationary-energy": "Energía Estacionaria",
+  "stationary-energy": "Energía estacionaria",
   "stationary-energy-details": "Este sector trata las emisiones que resultan de la generación de electricidad, calor y vapor, así como de su consumo.",
   "transportation": "Transporte",
   "transportation-details": "Este sector trata las emisiones del transporte de bienes y personas dentro del límite de la ciudad.",

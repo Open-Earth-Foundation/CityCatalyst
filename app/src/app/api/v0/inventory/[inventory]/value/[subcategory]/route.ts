@@ -222,24 +222,3 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 
   return NextResponse.json({ data: inventoryValue });
 });
-
-export const DELETE = apiHandler(async (_req, { params, session }) => {
-  const inventory = await UserService.findUserInventory(
-    params.inventory,
-    session,
-  );
-
-  const subcategoryValue = await db.models.InventoryValue.findOne({
-    where: {
-      subCategoryId: params.subcategory,
-      inventoryId: inventory.inventoryId,
-    },
-  });
-  if (!subcategoryValue) {
-    throw new createHttpError.NotFound("Inventory value not found");
-  }
-
-  await subcategoryValue.destroy();
-
-  return NextResponse.json({ data: subcategoryValue, deleted: true });
-});

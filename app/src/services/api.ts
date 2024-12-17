@@ -501,9 +501,9 @@ export const api = createApi({
       },
     }),
     disconnectThirdPartyData: builder.mutation({
-      query: ({ inventoryId, subCategoryId }) => ({
+      query: ({ inventoryId, datasourceId }) => ({
         method: "DELETE",
-        url: `inventory/${inventoryId}/value/${subCategoryId}`,
+        url: `datasource/${inventoryId}/datasource/${datasourceId}`,
       }),
       invalidatesTags: ["InventoryValue", "InventoryProgress"],
       transformResponse: (response: { data: EmissionsFactorResponse }) =>

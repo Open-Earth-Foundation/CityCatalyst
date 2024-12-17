@@ -7,7 +7,7 @@
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
         "actionPriority": 1,
-        "explanation": "This action is highly cost-effective and provides significant risk reduction by preparing the city for climate hazards like floods and landslides. It has a short implementation timeline and aligns well with the city's need for infrastructure protection."
+        "explanation": "Highly cost-effective with significant risk reduction potential, especially for geo-hydrological disasters like landslides and flooding. Quick implementation and high relevance to infrastructure risks."
     },
     {
         "locode": "BRCMG",
@@ -17,7 +17,7 @@
         "actionId": "ipcc_0087",
         "actionName": "Infrastructure retrofitting",
         "actionPriority": 2,
-        "explanation": "Retrofitting infrastructure is crucial for reducing risks from heatwaves and landslides, which are high-risk hazards for Corumb\u00e1. It targets the infrastructure sector, which is a priority for the city."
+        "explanation": "Addresses high-risk infrastructure vulnerabilities due to heatwaves and landslides. Cost-effective in the long term with significant risk reduction."
     },
     {
         "locode": "BRCMG",
@@ -27,7 +27,7 @@
         "actionId": "c40_0053",
         "actionName": "Water Savings",
         "actionPriority": 3,
-        "explanation": "Water savings address the high-risk drought hazard impacting water resources and food security. It is cost-effective and has a relatively short implementation timeline."
+        "explanation": "Aligns with the city's drought risk and water resource challenges. Cost-effective with immediate impact on water conservation."
     },
     {
         "locode": "BRCMG",
@@ -37,7 +37,7 @@
         "actionId": "c40_0054",
         "actionName": "Water Recycling",
         "actionPriority": 4,
-        "explanation": "Water recycling is essential for managing drought risks and ensuring water security. It aligns with the city's environmental context and has a significant impact on reducing water resource vulnerabilities."
+        "explanation": "Supports water resource management in drought-prone areas. Environmentally compatible and reduces dependency on fresh water sources."
     },
     {
         "locode": "BRCMG",
@@ -47,7 +47,7 @@
         "actionId": "ipcc_0091",
         "actionName": "Diversification of livelihoods",
         "actionPriority": 5,
-        "explanation": "This action enhances socio-economic resilience by providing alternative income sources, reducing vulnerability to climate impacts on agriculture and fisheries."
+        "explanation": "Enhances socio-economic resilience against climate impacts, particularly in agriculture and fisheries. Suitable for the city's demographic context."
     },
     {
         "locode": "BRCMG",
@@ -57,7 +57,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 6,
-        "explanation": "Social safety nets are crucial for supporting vulnerable populations during climate-related disruptions, aligning with the city's socio-demographic needs."
+        "explanation": "Provides socio-economic protection against climate-induced disruptions. Quick to implement and highly relevant to the city's socio-demographic needs."
     },
     {
         "locode": "BRCMG",
@@ -67,7 +67,7 @@
         "actionId": "c40_0050",
         "actionName": "White Roofs",
         "actionPriority": 7,
-        "explanation": "White roofs help mitigate heatwave impacts by reducing urban heat, aligning with the city's need to address public health and infrastructure risks."
+        "explanation": "Cost-effective measure to reduce heatwave impacts on infrastructure and public health. Quick implementation with immediate benefits."
     },
     {
         "locode": "BRCMG",
@@ -77,7 +77,7 @@
         "actionId": "c40_0051",
         "actionName": "Public Shading",
         "actionPriority": 8,
-        "explanation": "Public shading provides immediate relief from heatwaves, reducing public health risks and enhancing urban livability."
+        "explanation": "Mitigates heatwave impacts on public spaces, enhancing urban livability. Low cost and quick to implement."
     },
     {
         "locode": "BRCMG",
@@ -87,7 +87,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 9,
-        "explanation": "Improving healthcare access is vital for managing health risks from heatwaves and diseases, ensuring the city's population is resilient to climate impacts."
+        "explanation": "Critical for addressing public health risks from heatwaves and diseases. Aligns with socio-demographic needs and quick to implement."
     },
     {
         "locode": "BRCMG",
@@ -97,7 +97,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 10,
-        "explanation": "Enhancing agricultural and fishery practices is crucial for food security, addressing drought and flooding risks that threaten these sectors."
+        "explanation": "Enhances food security and resilience against drought impacts. Suitable for the city's agricultural context."
     },
     {
         "locode": "BRCMG",
@@ -107,7 +107,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 11,
-        "explanation": "Improving food storage and distribution systems is essential for maintaining food security during climate disruptions, particularly floods and droughts."
+        "explanation": "Addresses food security risks from flooding and drought. Cost-effective with significant socio-economic benefits."
     },
     {
         "locode": "BRCMG",
@@ -117,7 +117,7 @@
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 12,
-        "explanation": "Promoting sustainable diets and reducing food waste can significantly enhance food security and reduce emissions from waste."
+        "explanation": "Promotes sustainable consumption patterns, reducing food waste and enhancing food security. Quick to implement with broad socio-economic benefits."
     },
     {
         "locode": "BRCMG",
@@ -127,7 +127,7 @@
         "actionId": "ipcc_0100",
         "actionName": "Efficient water use/demand",
         "actionPriority": 13,
-        "explanation": "Efficient water use is critical for managing drought risks and ensuring sustainable water resources, aligning with the city's environmental needs."
+        "explanation": "Critical for managing water resources in drought-prone areas. Cost-effective with immediate impact on water conservation."
     },
     {
         "locode": "BRCMG",
@@ -137,7 +137,7 @@
         "actionId": "c40_0060",
         "actionName": "Managed Retreat",
         "actionPriority": 14,
-        "explanation": "Managed retreat is a long-term strategy for addressing sea level rise and flooding risks, though it requires significant planning and resources."
+        "explanation": "Long-term strategy for addressing sea level rise and flooding risks. Requires significant planning but essential for high-risk areas."
     },
     {
         "locode": "BRCMG",
@@ -147,7 +147,7 @@
         "actionId": "ipcc_0090",
         "actionName": "Insurance",
         "actionPriority": 15,
-        "explanation": "Insurance provides financial protection against climate-related losses, supporting economic resilience for individuals and businesses."
+        "explanation": "Provides financial protection against climate-induced losses. Quick to implement and aligns with socio-economic needs."
     },
     {
         "locode": "BRCMG",
@@ -157,7 +157,7 @@
         "actionId": "c40_0046",
         "actionName": "Coastal Protection",
         "actionPriority": 16,
-        "explanation": "Coastal protection is necessary for mitigating sea level rise impacts, though it may have higher costs and longer implementation timelines."
+        "explanation": "Addresses sea level rise and flooding risks. Requires significant investment but essential for long-term resilience."
     },
     {
         "locode": "BRCMG",
@@ -167,7 +167,7 @@
         "actionId": "c40_0059",
         "actionName": "Early Warning",
         "actionPriority": 17,
-        "explanation": "Early warning systems are crucial for preparing for climate hazards, though they may require significant technological investments."
+        "explanation": "Supports disaster preparedness for geo-hydrological risks. Quick to implement with significant risk reduction potential."
     },
     {
         "locode": "BRCMG",
@@ -177,7 +177,7 @@
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 18,
-        "explanation": "Updating building codes can enhance resilience to climate impacts, though implementation may be complex and time-consuming."
+        "explanation": "Enhances infrastructure resilience against climate impacts. Requires regulatory changes but essential for long-term safety."
     },
     {
         "locode": "BRCMG",
@@ -187,7 +187,7 @@
         "actionId": "ipcc_0081",
         "actionName": "Coastal Accommodation",
         "actionPriority": 19,
-        "explanation": "Coastal accommodation strategies are important for adapting to sea level rise, but they may have limited immediate impact."
+        "explanation": "Addresses sea level rise impacts. Requires significant planning and investment but essential for long-term adaptation."
     },
     {
         "locode": "BRCMG",
@@ -197,6 +197,6 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 20,
-        "explanation": "Enhancing health infrastructure is vital for managing public health risks, though it may require substantial investment and time."
+        "explanation": "Supports public health resilience against climate impacts. Requires investment but essential for long-term health security."
     }
 ]

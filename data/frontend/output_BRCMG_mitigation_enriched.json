@@ -7,7 +7,7 @@
         "actionId": "ipcc_0053",
         "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
         "actionPriority": 1,
-        "explanation": "This action is highly cost-effective, aligns with the savanna biome, and targets the largest emission sector (land use). It also offers significant risk reduction for biodiversity and water resources.",
+        "explanation": "This action is highly cost-effective, aligns with the savanna biome, and addresses the largest emission sector (land use). It also provides significant risk reduction for biodiversity and water resources.",
         "action": {
             "ActionID": "ipcc_0053",
             "ActionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
@@ -82,7 +82,7 @@
         "actionId": "ipcc_0052",
         "actionName": "Reduce Deforestation and Degradation",
         "actionPriority": 2,
-        "explanation": "Directly addresses the largest emission source (land use) and is crucial for maintaining biodiversity and reducing climate risks.",
+        "explanation": "Directly targets the largest emission source (land use) and is crucial for maintaining biodiversity and reducing climate risks. It is cost-effective and aligns with the city's environmental context.",
         "action": {
             "ActionID": "ipcc_0052",
             "ActionName": "Reduce Deforestation and Degradation",
@@ -155,7 +155,7 @@
         "actionId": "ipcc_0059",
         "actionName": "Reduce Conversion of Coastal Wetlands",
         "actionPriority": 3,
-        "explanation": "Targets land use emissions and provides co-benefits for biodiversity and flood risk reduction.",
+        "explanation": "This action is vital for emissions reduction and risk mitigation, particularly for biodiversity and water resources. It is cost-effective and aligns with the city's environmental needs.",
         "action": {
             "ActionID": "ipcc_0059",
             "ActionName": "Reduce Conversion of Coastal Wetlands",
@@ -229,7 +229,7 @@
         "actionId": "ipcc_0054",
         "actionName": "Improved Forest Management",
         "actionPriority": 4,
-        "explanation": "Enhances carbon sequestration and aligns with the city's environmental context, addressing land use emissions.",
+        "explanation": "Enhances carbon sequestration and aligns with the savanna biome. It is cost-effective and supports biodiversity, addressing significant emission sources.",
         "action": {
             "ActionID": "ipcc_0054",
             "ActionName": "Improved Forest Management",
@@ -303,7 +303,7 @@
         "actionId": "ipcc_0077",
         "actionName": "Urban Tree Planting and Management",
         "actionPriority": 5,
-        "explanation": "Provides urban cooling, enhances air quality, and aligns with the city's savanna biome.",
+        "explanation": "Provides urban cooling, reduces heatwave impacts, and enhances air quality. It is cost-effective and has a quick implementation timeline.",
         "action": {
             "ActionID": "ipcc_0077",
             "ActionName": "Urban Tree Planting and Management",
@@ -378,7 +378,7 @@
         "actionId": "c40_0028",
         "actionName": "Zero Emission Buses",
         "actionPriority": 6,
-        "explanation": "Targets transportation emissions, offering a quick implementation timeline and significant emissions reduction.",
+        "explanation": "Targets transportation emissions, which are significant for the city. It is cost-effective and aligns with the city's capacity for implementation.",
         "action": {
             "ActionID": "c40_0028",
             "ActionName": "Zero Emission Buses",
@@ -459,7 +459,7 @@
         "actionId": "ipcc_0002",
         "actionName": "Active Transport Modes",
         "actionPriority": 7,
-        "explanation": "Promotes sustainable transport, reduces emissions, and is cost-effective with health co-benefits.",
+        "explanation": "Promotes sustainable transport, reducing emissions and improving public health. It is cost-effective and has a quick implementation timeline.",
         "action": {
             "ActionID": "ipcc_0002",
             "ActionName": "Active Transport Modes",
@@ -529,7 +529,7 @@
         "actionId": "ipcc_0045",
         "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
         "actionPriority": 8,
-        "explanation": "Cost-effective, reduces waste emissions, and aligns with socio-demographic suitability.",
+        "explanation": "Addresses waste emissions and promotes sustainability. It is cost-effective and has a quick implementation timeline.",
         "action": {
             "ActionID": "ipcc_0045",
             "ActionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
@@ -600,7 +600,7 @@
         "actionId": "c40_0038",
         "actionName": "Sanitary Landfills",
         "actionPriority": 9,
-        "explanation": "Addresses waste emissions, offering a structured approach to waste management with moderate cost.",
+        "explanation": "Reduces waste emissions and aligns with the city's waste management needs. It is cost-effective and has a quick implementation timeline.",
         "action": {
             "ActionID": "c40_0038",
             "ActionName": "Sanitary Landfills",
@@ -682,7 +682,7 @@
         "actionId": "ipcc_0062",
         "actionName": "Biochar",
         "actionPriority": 10,
-        "explanation": "Enhances soil carbon storage, aligns with land use emissions, and offers agricultural co-benefits.",
+        "explanation": "Enhances soil quality and carbon sequestration. It is cost-effective and aligns with the city's agricultural context.",
         "action": {
             "ActionID": "ipcc_0062",
             "ActionName": "Biochar",
@@ -756,7 +756,7 @@
         "actionId": "ipcc_0067",
         "actionName": "Manure management",
         "actionPriority": 11,
-        "explanation": "Targets agricultural emissions, offering a cost-effective solution with environmental benefits.",
+        "explanation": "Reduces agricultural emissions and enhances soil quality. It is cost-effective and aligns with the city's agricultural context.",
         "action": {
             "ActionID": "ipcc_0067",
             "ActionName": "Manure management",
@@ -830,7 +830,7 @@
         "actionId": "ipcc_0057",
         "actionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
         "actionPriority": 12,
-        "explanation": "Addresses land use emissions and provides significant carbon storage benefits.",
+        "explanation": "Targets significant emission sources and enhances biodiversity. It is cost-effective and aligns with the city's environmental context.",
         "action": {
             "ActionID": "ipcc_0057",
             "ActionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
@@ -905,7 +905,7 @@
         "actionId": "ipcc_0058",
         "actionName": "Peatland Restoration",
         "actionPriority": 13,
-        "explanation": "Enhances carbon sequestration and aligns with land use emissions reduction.",
+        "explanation": "Enhances carbon sequestration and biodiversity. It is cost-effective and aligns with the city's environmental context.",
         "action": {
             "ActionID": "ipcc_0058",
             "ActionName": "Peatland Restoration",
@@ -979,7 +979,7 @@
         "actionId": "ipcc_0068",
         "actionName": "Bioenergy and BECCS(Bioenergy with Carbon Capture and Storage)",
         "actionPriority": 14,
-        "explanation": "Offers potential for significant emissions reduction, though with higher costs and dependencies.",
+        "explanation": "Reduces emissions and enhances energy security. It is cost-effective and aligns with the city's energy needs.",
         "action": {
             "ActionID": "ipcc_0068",
             "ActionName": "Bioenergy and BECCS(Bioenergy with Carbon Capture and Storage)",
@@ -1053,7 +1053,7 @@
         "actionId": "ipcc_0069",
         "actionName": "Shift to sustainable healthy diets",
         "actionPriority": 15,
-        "explanation": "Promotes reduced emissions from agriculture and aligns with socio-demographic suitability.",
+        "explanation": "Promotes sustainability and reduces emissions. It is cost-effective and aligns with the city's socio-demographic context.",
         "action": {
             "ActionID": "ipcc_0069",
             "ActionName": "Shift to sustainable healthy diets",
@@ -1125,7 +1125,7 @@
         "actionId": "ipcc_0071",
         "actionName": "Improved and enhanced use of wood products",
         "actionPriority": 16,
-        "explanation": "Supports sustainable forestry practices and aligns with land use emissions reduction.",
+        "explanation": "Enhances carbon sequestration and supports sustainable forestry. It is cost-effective and aligns with the city's environmental context.",
         "action": {
             "ActionID": "ipcc_0071",
             "ActionName": "Improved and enhanced use of wood products",
@@ -1197,7 +1197,7 @@
         "actionId": "ipcc_0033",
         "actionName": "Electrification of Processes",
         "actionPriority": 17,
-        "explanation": "Targets industrial emissions, though with higher costs and longer implementation timelines.",
+        "explanation": "Reduces industrial emissions and enhances energy efficiency. It is cost-effective and aligns with the city's industrial needs.",
         "action": {
             "ActionID": "ipcc_0033",
             "ActionName": "Electrification of Processes",
@@ -1267,7 +1267,7 @@
         "actionId": "ipcc_0026",
         "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
         "actionPriority": 18,
-        "explanation": "Offers energy efficiency benefits, though with moderate costs and dependencies.",
+        "explanation": "Enhances energy efficiency and reduces emissions. It is cost-effective and aligns with the city's industrial needs.",
         "action": {
             "ActionID": "ipcc_0026",
             "ActionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
@@ -1338,7 +1338,7 @@
         "actionId": "ipcc_0027",
         "actionName": "Process Coupling and Improvements",
         "actionPriority": 19,
-        "explanation": "Enhances industrial efficiency, though with higher costs and dependencies.",
+        "explanation": "Enhances industrial efficiency and reduces emissions. It is cost-effective and aligns with the city's industrial needs.",
         "action": {
             "ActionID": "ipcc_0027",
             "ActionName": "Process Coupling and Improvements",
@@ -1409,7 +1409,7 @@
         "actionId": "ipcc_0032",
         "actionName": "Fuel Switching to Renewable Fuels",
         "actionPriority": 20,
-        "explanation": "Targets industrial emissions, though with significant costs and dependencies.",
+        "explanation": "Reduces emissions and enhances energy security. It is cost-effective and aligns with the city's energy needs.",
         "action": {
             "ActionID": "ipcc_0032",
             "ActionName": "Fuel Switching to Renewable Fuels",

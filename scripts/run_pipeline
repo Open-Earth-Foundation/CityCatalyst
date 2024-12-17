@@ -6,6 +6,10 @@
 # 3. Generating the enriched JSON file for the frontend
 # 4. Uploading the files to the AWS S3 bucket
 
+# Exit immediately if a command exits with a non-zero status
+set -e
+set -o pipefail
+
 # Check if the LOCODE argument is provided
 if [ $# -lt 1 ]; then
   echo "Error: LOCODE argument is required."

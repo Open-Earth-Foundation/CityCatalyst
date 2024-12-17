@@ -790,7 +790,7 @@
   "product-use-direct-measure-methodology": "Medición directa",
   "product-use-direct-measure-methodology-description": "Medición directa de las emisiones del uso de productos.",
   "custom-emission-factor-reference": "Factor de Emisión Personalizado",
-   "percentage-emissions": "% de emisiones",
+  "percentage-emissions": "% de emisiones",
   "based-on-previous-year": "Basado en el año anterior",
   "stationary-energy-description": "Este sector se ocupa de las emisiones que resultan de la generación de electricidad, calor y vapor, así como de su consumo.",
   "transportation-description": "Este sector se ocupa de las emisiones provenientes del transporte de bienes y personas dentro del límite de la ciudad.",
@@ -1077,5 +1077,6 @@
   "activity-name-harvested-wood-products": "Productos de madera cosechados",
   "custom-emission-factor-name": "Factor de emisión personalizado",
   "gpc_basic": "GPC Básico",
-  "gpc_basic_plus": "GPC Básico +"
+  "gpc_basic_plus": "GPC Básico +",
+  "explanation-institutional-missing": "Las emisiones institucionales están incluidas en el registro de emisiones comerciales."
 }

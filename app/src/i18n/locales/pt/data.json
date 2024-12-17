@@ -1069,5 +1069,6 @@
   "activity-name-harvested-wood-products": "Produtos de madeira colhidos",
   "custom-emission-factor-name": "Fator de emissão personalizado",
   "gpc_basic": "GPC Básico",
-  "gpc_basic_plus": "GPC Básico +"
+  "gpc_basic_plus": "GPC Básico +",
+  "explanation-institutional-missing": "As emissões institucionais estão incluídas no registro de emissões comerciais."
 }

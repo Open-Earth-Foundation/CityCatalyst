@@ -24,7 +24,11 @@ import TopEmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/TopEm
 import { BlueSubtitle } from "@/components/blue-subtitle";
 import { PopulationAttributes } from "@/models/Population";
 import type { TFunction } from "i18next";
-import { capitalizeFirstLetter, toKebabCase } from "@/util/helpers";
+import {
+  capitalizeFirstLetter,
+  isEmptyObject,
+  toKebabCase,
+} from "@/util/helpers";
 import React, { ChangeEvent, useMemo, useState } from "react";
 import {
   api,
@@ -285,21 +289,27 @@ export function EmissionPerSectors({
   }, [cityYears]);
 
   const transformedYearOverYearData = useMemo(() => {
-    if (yearlyGhgResult && targetYears) {
+    if (yearlyGhgResult && targetYears && !isEmptyObject(targetYears)) {
       const yearlyMap: Record<string, SectorEmission[]> = {};
       const totalInventoryEmissions: Record<string, bigint> = {};
-      const response = Object.keys(yearlyGhgResult).map((inventoryId) => {
-        const year = targetYears[inventoryId].year;
-        const totalEmissions = yearlyGhgResult[inventoryId].totalEmissions;
-        yearlyMap[year] = totalEmissions.totalEmissionsBySector;
-        totalInventoryEmissions[year] = BigInt(totalEmissions.sumOfEmissions);
+      const response = Object.keys(yearlyGhgResult)
+        .map((inventoryId) => {
+          const year = targetYears[inventoryId]?.year;
+          if (!year) {
+            console.error("Target year missing for inventory " + inventoryId);
+            return null;
+          }
+          const totalEmissions = yearlyGhgResult[inventoryId].totalEmissions;
+          yearlyMap[year] = totalEmissions.totalEmissionsBySector;
+          totalInventoryEmissions[year] = BigInt(totalEmissions.sumOfEmissions);
 
-        return {
-          bySector: [...totalEmissions.totalEmissionsBySector],
-          year,
-          inventoryId,
-        };
-      });
+          return {
+            bySector: [...totalEmissions.totalEmissionsBySector],
+            year,
+            inventoryId,
+          };
+        })
+        .filter((data) => !!data);
 
       // taking the response object let's working on getting the percentage increase for each year
       return response

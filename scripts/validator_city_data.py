@@ -1,3 +1,8 @@
+"""
+This script can be used to validate the city data JSON file against the city schema.
+
+"""
+
 import json
 from pathlib import Path
 

@@ -5,22 +5,24 @@ import { NextResponse } from "next/server";
 import UserService from "@/backend/UserService";
 
 export const DELETE = apiHandler(async (_req, { params, session }) => {
-  const inventory = await UserService.findUserInventory(
-    params.inventoryId,
-    session,
-  );
+  await UserService.findUserInventory(params.inventoryId, session);
 
-  const subcategoryValue = await db.models.InventoryValue.findOne({
+  const inventoryValues = await db.models.InventoryValue.findAll({
     where: {
       datasourceId: params.datasourceId,
       inventoryId: params.inventoryId,
     },
   });
-  if (!subcategoryValue) {
+  if (inventoryValues.length === 0) {
     throw new createHttpError.NotFound("Inventory value not found");
   }
 
-  await subcategoryValue.destroy();
+  await db.models.InventoryValue.destroy({
+    where: {
+      datasourceId: params.datasourceId,
+      inventoryId: params.inventoryId,
+    },
+  });
 
-  return NextResponse.json({ data: subcategoryValue, deleted: true });
+  return NextResponse.json({ data: inventoryValues, deleted: true });
 });

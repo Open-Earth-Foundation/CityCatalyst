@@ -60,8 +60,10 @@ export function SourceDrawer({
   t: TFunction;
 }) {
   const emissionsToBeIncluded = () => {
+    let number, unit;
+    let converted;
     if (!!totalEmissionsData && totalEmissionsData !== "?") {
-      return convertKgToTonnes(parseFloat(totalEmissionsData));
+      converted = convertKgToTonnes(parseFloat(totalEmissionsData));
     }
     const emissionsData = sourceData?.totals?.emissions?.co2eq_100yr;
     let totalEmissions = emissionsData
@@ -71,9 +73,15 @@ export function SourceDrawer({
       totalEmissions = "?";
     }
     if (!!totalEmissions && totalEmissions !== "?") {
-      return convertKgToTonnes(parseInt(totalEmissions));
+      converted = convertKgToTonnes(parseInt(totalEmissions));
     }
-    return totalEmissionsData ?? totalEmissions;
+    if (!converted) {
+      return { number: totalEmissionsData ?? totalEmissions, unit: "" };
+    }
+    return {
+      number: converted.split(" ")[0],
+      unit: converted.split(" ").slice(1).join(" "),
+    };
   };
   return (
     <Drawer
@@ -175,7 +183,7 @@ export function SourceDrawer({
 
               <HStack align="baseline">
                 <Heading fontSize="57px" lineHeight="64px">
-                  {emissionsToBeIncluded().split(" ")[0]}
+                  {emissionsToBeIncluded().number}
                 </Heading>
                 <Text
                   color="content.tertiary"
@@ -184,7 +192,7 @@ export function SourceDrawer({
                   fontFamily="heading"
                   fontWeight={600}
                 >
-                  {emissionsToBeIncluded().split(" ").slice(1).join(" ")}
+                  {emissionsToBeIncluded().unit}
                 </Text>
               </HStack>
 

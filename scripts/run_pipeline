@@ -2,13 +2,21 @@
 
 # This script is used to run the pipeline of:
 # 1. Creating the prioritized list of climate actions
-### 2. Validating against the schema
-# 3. Generating the enriched JSON file for the frontend
-# 4. Uploading the files to the AWS S3 bucket
+# 2. Generating the enriched JSON file for the frontend
+# 3. Uploading the files to the AWS S3 bucket
 
 # Exit immediately if a command exits with a non-zero status
 set -e
 set -o pipefail
+
+# Paths
+VENV_PYTHON="../extractor/.extractor/Scripts/python.exe"
+PRIORITIZER_SCRIPT="../prioritizer/prioritizer.py"
+ENRICHER_SCRIPT="./enrich_for_frontend_schema.py"
+UPLOAD_SCRIPT="./upload_to_s3.py"
+
+# Ensure virtual environment is deactivated on exit
+trap "deactivate; echo 'Virtual environment deactivated.'" EXIT
 
 # Check if the LOCODE argument is provided
 if [ $# -lt 1 ]; then
@@ -20,9 +28,6 @@ fi
 # Assign the first argument to the LOCODE variable
 LOCODE=$1
 
-# Path to the virtual environment's Python
-VENV_PYTHON="../extractor/.extractor/Scripts/python.exe"
-
 # Activate the virtual environment
 echo "Activating virtual environment..."
 source ../extractor/.extractor/Scripts/activate
@@ -31,25 +36,23 @@ if [ -z "$VIRTUAL_ENV" ]; then
   echo "Failed to activate virtual environment."
   exit 1
 else
-  echo "Virtual environment activated: $VIRTUAL_ENV"
+  echo -e "Virtual environment activated: $VIRTUAL_ENV\n"
 fi
-
-echo "Done."
 
 echo "Prioritizer..."
 # Run the prirotizer script with input arguments
-$VENV_PYTHON ../prioritizer/prioritizer.py --locode "$LOCODE"
-echo "Done."
+$VENV_PYTHON "$PRIORITIZER_SCRIPT" --locode "$LOCODE"
+echo -e "Prioritization done.\n"
 
 echo "Enrich for frontend..."
 # Run the enricher script with input arguments
 # Run the script twice, once for each action type
-$VENV_PYTHON ./enrich_for_frontend_schema.py --locode "$LOCODE" --action_type "mitigation"
-$VENV_PYTHON ./enrich_for_frontend_schema.py --locode "$LOCODE" --action_type "adaptation"
-echo "Done."
+$VENV_PYTHON "$ENRICHER_SCRIPT" --locode "$LOCODE" --action_type "mitigation"
+$VENV_PYTHON "$ENRICHER_SCRIPT" --locode "$LOCODE" --action_type "adaptation"
+echo -e "Enriching done. \n"
 
 echo "Upload to S3..."
 # Run the upload script with input arguments
-$VENV_PYTHON ./upload_to_s3.py --file_path "../data/frontend/output_${LOCODE}_adaptation_enriched.json" --s3_key "data/test/adaptation/${LOCODE}.json"
-$VENV_PYTHON ./upload_to_s3.py --file_path "../data/frontend/output_${LOCODE}_mitigation_enriched.json" --s3_key "data/test/mitigation/${LOCODE}.json"
-deactivate
+$VENV_PYTHON "$UPLOAD_SCRIPT" --file_path "../data/frontend/output_${LOCODE}_adaptation_enriched.json" --s3_key "data/test/adaptation/${LOCODE}.json"
+$VENV_PYTHON "$UPLOAD_SCRIPT" --file_path "../data/frontend/output_${LOCODE}_mitigation_enriched.json" --s3_key "data/test/mitigation/${LOCODE}.json"
+echo -e "Upload to S3 done.\n"

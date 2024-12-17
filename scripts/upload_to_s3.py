@@ -1,3 +1,8 @@
+"""
+Script used to upload a file to an S3 bucket.
+
+"""
+
 import boto3
 from dotenv import load_dotenv
 import argparse

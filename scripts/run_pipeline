@@ -53,6 +53,6 @@ echo -e "Enriching done. \n"
 
 echo "Upload to S3..."
 # Run the upload script with input arguments
-$VENV_PYTHON "$UPLOAD_SCRIPT" --file_path "../data/frontend/output_${LOCODE}_adaptation_enriched.json" --s3_key "data/test/adaptation/${LOCODE}.json"
-$VENV_PYTHON "$UPLOAD_SCRIPT" --file_path "../data/frontend/output_${LOCODE}_mitigation_enriched.json" --s3_key "data/test/mitigation/${LOCODE}.json"
+$VENV_PYTHON "$UPLOAD_SCRIPT" --file_path "../data/frontend/output_${LOCODE}_adaptation_enriched.json" --s3_key "data/adaptation/${LOCODE}.json"
+$VENV_PYTHON "$UPLOAD_SCRIPT" --file_path "../data/frontend/output_${LOCODE}_mitigation_enriched.json" --s3_key "data/mitigation/${LOCODE}.json"
 echo -e "Upload to S3 done.\n"

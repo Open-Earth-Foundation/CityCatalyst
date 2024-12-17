@@ -10,6 +10,7 @@ import { toDecimal } from "@/util/helpers";
 import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";
 import PopulationService from "@/backend/PopulationService";
+import CityBoundaryService from "@/backend/CityBoundaryService";
 
 const ECRF_TEMPLATE_PATH = "./templates/ecrf_template.xlsx";
 
@@ -62,9 +63,9 @@ export default class ECRFDownloadService {
         city.cityId,
         year as number,
       );
-      // cityBoundaryData = await CityBoundaryService.getCityBoundary(
-      //   city.locode as string,
-      // );
+      cityBoundaryData = await CityBoundaryService.getCityBoundary(
+        city.locode as string,
+      );
     } catch (e) {
       console.warn("Failed to fetch city boundary or population");
     }
@@ -126,9 +127,6 @@ export default class ECRFDownloadService {
       ippu2: 0n,
     };
 
-    // handle fugitive emission separately.
-    const fugitiveTotals = 0;
-
     // prepare the data for sheet 2
     const dataDictionary = this.transformDataForTemplate2(output, t);
     const fugitive_emissions_data =
@@ -149,12 +147,17 @@ export default class ECRFDownloadService {
         const cellValue = cell.value as string;
         const placeholderMatch = cellValue.match(/{{(.*?)}}/);
         if (placeholderMatch) {
-          // split the placeholders
+          let replacementValue = null; // split the placeholders
           const fieldName = placeholderMatch[1];
+
+          if (fieldName === "explanation-institutional-missing") {
+            cell.value = t("explanation-institutional-missing");
+            return;
+          }
+
           const referenceNoIdentifier = fieldName.split("_")[0];
           const targetIdentifier = fieldName.split("_")[1];
 
-          let replacementValue = null;
           if (targetIdentifier === "full-total") {
             // if sector total placeholder read from totals
             replacementValue = totals[referenceNoIdentifier];

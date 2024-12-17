@@ -1,5 +1,5 @@
 import { api, useGetCitiesAndYearsQuery } from "@/services/api";
-import type { CitiesAndYearsResponse } from "@/util/types";
+import type { CityAndYearsResponse } from "@/util/types";
 import {
   Center,
   Icon,
@@ -30,7 +30,7 @@ export const InventorySelect = ({
   const { data: citiesAndYears, isLoading } = useGetCitiesAndYearsQuery();
 
   const [setUserInfo] = api.useSetUserInfoMutation();
-  const onSelect = async ({ city, years }: CitiesAndYearsResponse) => {
+  const onSelect = async ({ city, years }: CityAndYearsResponse) => {
     // get the latest inventory for the city
     let targetInventory = years[0];
     await setUserInfo({
@@ -53,7 +53,8 @@ export const InventorySelect = ({
         )}
         {citiesAndYears?.map(({ city, years }) => {
           const isCurrent = years.some(
-            (y) => y.inventoryId === currentInventoryId,
+            (y: { inventoryId: string }) =>
+              y.inventoryId === currentInventoryId,
           );
           return (
             <MenuItem

@@ -130,5 +130,7 @@
   "add-new-inventory": "Add new inventory",
   "table-view": "Table",
   "chart-view": "Chart",
-  "last-update": "Last update"
+  "last-update": "Last update",
+  "something-went-wrong":  "Something went wrong",
+  "error-fetching-sector-data": "Error fetching sector data"
 }

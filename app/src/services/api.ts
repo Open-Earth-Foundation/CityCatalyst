@@ -7,7 +7,7 @@ import {
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
 import {
-  CitiesAndYearsResponse,
+  CityAndYearsResponse,
   ConnectDataSourceQuery,
   ConnectDataSourceResponse,
   EmissionsFactorResponse,
@@ -51,13 +51,19 @@ export const api = createApi({
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
-    getCitiesAndYears: builder.query<CitiesAndYearsResponse[], void>({
+    getCitiesAndYears: builder.query<CityAndYearsResponse[], void>({
       query: () => "user/cities",
-      transformResponse: (response: { data: CitiesAndYearsResponse[] }) =>
+      transformResponse: (response: { data: CityAndYearsResponse[] }) =>
         response.data.map(({ city, years }) => ({
           city,
           years: years.sort((a, b) => b.year - a.year),
         })),
+      providesTags: ["CitiesAndInventories"],
+    }),
+    getCityYears: builder.query<CityAndYearsResponse, string>({
+      query: (cityId) => `city/${cityId}/years`,
+      transformResponse: (response: { data: CityAndYearsResponse }) =>
+        response.data,
       providesTags: ["CitiesAndInventories"],
     }),
     getCity: builder.query<CityAttributes, string>({
@@ -236,7 +242,13 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: InventoryValueAttributes }) =>
         response.data,
-      invalidatesTags: ["InventoryProgress", "InventoryValue"],
+      invalidatesTags: [
+        "Inventory",
+        "InventoryProgress",
+        "InventoryValue",
+        "ReportResults",
+        "YearlyReportResults",
+      ],
     }),
     connectDataSource: builder.mutation<
       ConnectDataSourceResponse,
@@ -249,7 +261,13 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: ConnectDataSourceResponse }) =>
         response.data,
-      invalidatesTags: ["InventoryProgress"],
+      invalidatesTags: [
+        "Inventory",
+        "InventoryProgress",
+        "InventoryValue",
+        "ReportResults",
+        "YearlyReportResults",
+      ],
     }),
     updateOrCreateInventoryValue: builder.mutation<
       InventoryValueAttributes,
@@ -564,6 +582,7 @@ export const api = createApi({
       }),
       transformResponse: (response: any) => response.data,
       invalidatesTags: [
+        "Inventory",
         "ActivityValue",
         "InventoryValue",
         "InventoryProgress",
@@ -588,6 +607,7 @@ export const api = createApi({
       }),
       transformResponse: (response: any) => response.data,
       invalidatesTags: [
+        "Inventory",
         "ActivityValue",
         "InventoryValue",
         "InventoryProgress",
@@ -603,12 +623,13 @@ export const api = createApi({
       }),
       transformResponse: (response: { success: boolean }) => response,
       invalidatesTags: [
+        "Inventory",
         "ActivityValue",
         "InventoryValue",
         "InventoryProgress",
         "ReportResults",
-        "SectorBreakdown",
         "YearlyReportResults",
+        "SectorBreakdown",
       ],
     }),
     deleteAllActivityValues: builder.mutation({
@@ -626,6 +647,7 @@ export const api = createApi({
       }),
       transformResponse: (response: any) => response.data,
       invalidatesTags: [
+        "Inventory",
         "ActivityValue",
         "InventoryValue",
         "InventoryProgress",
@@ -694,6 +716,7 @@ export const GLOBAL_API_URL =
 // hooks are automatically generated
 export const {
   useGetCityQuery,
+  useGetCityYearsQuery,
   useGetCitiesAndYearsQuery,
   useGetYearOverYearResultsQuery,
   useAddCityMutation,

@@ -8,10 +8,8 @@ export const GET = apiHandler(async (_req: Request, { session, params }) => {
   const city = await UserService.findUserCity(params.city, session, true);
   const year = z.coerce.number().parse(params.year);
 
-  const cityPopulationData = PopulationService.getPopulationDataForCityYear(
-    city.cityId,
-    year,
-  );
+  const cityPopulationData =
+    await PopulationService.getPopulationDataForCityYear(city.cityId, year);
 
   return NextResponse.json({
     data: cityPopulationData,

@@ -34,7 +34,7 @@ interface EmissionBySectorTableProps {
 
 type ExtendedSectorEmission = SectorEmission & {
   percentageChange: number | null;
-  totalInventoryPercentage: number;
+  totalInventoryPercentage: number | null;
 };
 
 const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({

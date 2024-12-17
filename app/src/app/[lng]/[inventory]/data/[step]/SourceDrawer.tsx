@@ -32,6 +32,7 @@ import type { DataSourceData, DataSourceWithRelations } from "./types";
 import { DataCheckIcon, ScaleIcon } from "@/components/icons";
 import { FiTarget } from "react-icons/fi";
 import { getTranslationFromDict } from "@/i18n";
+import { convertKgToTonnes } from "@/util/helpers";
 
 export function SourceDrawer({
   source,
@@ -58,14 +59,22 @@ export function SourceDrawer({
   totalEmissionsData?: string;
   t: TFunction;
 }) {
-  const emissionsData = sourceData?.totals?.emissions?.co2eq_100yr;
-  let totalEmissions = emissionsData
-    ? ((Number(emissionsData) * sourceData?.scaleFactor) / 1000).toFixed(2)
-    : "?";
-  if (sourceData?.issue) {
-    totalEmissions = "?";
-  }
-
+  const emissionsToBeIncluded = () => {
+    if (!!totalEmissionsData && totalEmissionsData !== "?") {
+      return convertKgToTonnes(parseFloat(totalEmissionsData));
+    }
+    const emissionsData = sourceData?.totals?.emissions?.co2eq_100yr;
+    let totalEmissions = emissionsData
+      ? ((Number(emissionsData) * sourceData?.scaleFactor) / 1000).toFixed(2)
+      : "?";
+    if (sourceData?.issue) {
+      totalEmissions = "?";
+    }
+    if (!!totalEmissions && totalEmissions !== "?") {
+      return convertKgToTonnes(parseInt(totalEmissions));
+    }
+    return totalEmissionsData ?? totalEmissions;
+  };
   return (
     <Drawer
       isOpen={isOpen}
@@ -166,9 +175,7 @@ export function SourceDrawer({
 
               <HStack align="baseline">
                 <Heading fontSize="57px" lineHeight="64px">
-                  {t("intlNumber", {
-                    val: totalEmissionsData ?? totalEmissions,
-                  })}
+                  {emissionsToBeIncluded().split(" ")[0]}
                 </Heading>
                 <Text
                   color="content.tertiary"
@@ -177,7 +184,7 @@ export function SourceDrawer({
                   fontFamily="heading"
                   fontWeight={600}
                 >
-                  TCO2e
+                  {emissionsToBeIncluded().split(" ").slice(1).join(" ")}
                 </Text>
               </HStack>
 

@@ -65,5 +65,8 @@
   "create-inventory": "Create Inventory",
   "create-ghg-inventory": "Create your GHG Inventory",
   "inventory-creation-description": "In this step, configure your city's GHG emissions inventory by selecting the inventory year, setting the target, and adding contextual data such as population.",
-  "start-inventory": "Start Inventory"
+  "start-inventory": "Start Inventory",
+  "city-boundary-info": "In case the geographical boundary is not the right one <0><1>Contact Us</1></0>",
+  "unselected-city-boundary-heading": "Search and select the city to be shown on the map",
+  "unselected-city-boundary-description": "You will be able to check the geographical boundary for your inventory"
 }

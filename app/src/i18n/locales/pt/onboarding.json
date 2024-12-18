@@ -65,5 +65,9 @@
   "create-inventory": "Criar Inventário",
   "create-ghg-inventory": "Crie o seu Inventário de GEE",
   "inventory-creation-description": "Nesta etapa, configure o inventário de emissões de GEE da sua cidade, selecionando o ano do inventário, definindo o objetivo e adicionando dados contextuais, como a população.",
-  "start-inventory": "Iniciar Inventário"
+  "start-inventory": "Iniciar Inventário",
+  "city-boundary-info": "Caso a fronteira geográfica não seja a correta <0><1>Contate-nos</1></0>",
+  "unselected-city-boundary-heading": "Pesquise e selecione a cidade a ser exibida no mapa",
+  "unselected-city-boundary-description": "Você poderá verificar a fronteira geográfica do seu inventário"
+
 }

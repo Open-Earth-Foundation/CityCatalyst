@@ -27,6 +27,7 @@ import {
   InputGroup,
   InputLeftElement,
   InputRightElement,
+  Link,
   Text,
   useOutsideClick,
 } from "@chakra-ui/react";
@@ -37,7 +38,6 @@ import {
   WarningIcon,
 } from "@chakra-ui/icons";
 import RecentSearches from "@/components/recent-searches";
-import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { NoResultsIcon } from "../icons";
@@ -424,18 +424,15 @@ export default function SelectCityStep({
                     fontWeight="normal"
                     letterSpacing="wide"
                   >
-                    <Trans i18nKey="city-boundary-info">
-                      In case the geographical boundary is not the right one{" "}
-                      <Link href="mailto:greta@openearth.org">
-                        <Text
-                          as="span"
-                          color="content.link"
-                          fontWeight="bold"
-                          textDecoration="underline"
-                          letterSpacing="wide"
-                        >
-                          Contact Us
-                        </Text>
+                    <Trans i18nKey="city-boundary-info" t={t}>
+                      <Link
+                        color="content.link"
+                        fontWeight="bold"
+                        textDecoration="underline"
+                        letterSpacing="wide"
+                        href="mailto:greta@openearth.org"
+                      >
+                        Contact Us
                       </Link>
                     </Trans>
                   </Text>

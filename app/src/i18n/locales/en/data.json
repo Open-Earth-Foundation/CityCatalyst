@@ -277,7 +277,6 @@
   "file-deletion-error-description": "Something went wrong during file deletion",
   "file-deletion-success": "file deleted successfully",
   "coming-soon": "Coming Soon",
-  "intlNumber": "{{val, number}}",
   "fuel-combustion-residential-buildings-direct-measure-methodology": "Direct Measure",
   "energy-consumption-residential-buildings-direct-measure-methodology": "Direct Measure",
   "fuel-consumption-commercial-buildings-direct-measure-methodology": "Direct Measure",

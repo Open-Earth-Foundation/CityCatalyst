@@ -309,7 +309,6 @@
   "file-deletion-error-description": "Etwas ist während der Dateilöschung schief gelaufen",
   "file-deletion-success": "Datei erfolgreich gelöscht",
   "coming-soon": "Bald Verfügbar",
-  "intlNumber": "{{val, Nummer}}",
   "fuel-combustion-residential-buildings-direct-measure-methodology": "Direkte Messung",
   "energy-consumption-residential-buildings-direct-measure-methodology": "Direkte Messung",
   "fuel-consumption-commercial-buildings-direct-measure-methodology": "Direkte Messung",

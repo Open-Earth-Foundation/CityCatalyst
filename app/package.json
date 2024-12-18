@@ -59,7 +59,7 @@
     "@types/uuid": "^9.0.8",
     "@types/wellknown": "^0.5.8",
     "accept-language": "^3.0.18",
-    "ai": "^3.4.7",
+    "ai": "^4.0.20",
     "autoprefixer": "10.4.16",
     "bcrypt": "^5.1.1",
     "chakra-react-select": "^4.9.1",

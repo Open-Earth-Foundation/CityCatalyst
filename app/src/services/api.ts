@@ -280,7 +280,14 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: InventoryValueAttributes }) =>
         response.data,
-      invalidatesTags: ["InventoryProgress", "InventoryValue"],
+      invalidatesTags: [
+        "Inventory",
+        "InventoryProgress",
+        "InventoryValue",
+        "ActivityValue", // because they are deleted when IV is marked as not available
+        "ReportResults",
+        "YearlyReportResults",
+      ],
     }),
     deleteInventoryValue: builder.mutation<
       InventoryValueAttributes,

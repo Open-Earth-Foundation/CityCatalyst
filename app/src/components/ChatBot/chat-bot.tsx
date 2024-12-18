@@ -38,6 +38,8 @@ interface Message {
   text: string;
 }
 
+const SUGGESTION_KEYS = ["gpc", "collect-data", "ipcc"];
+
 function useEnterSubmit(): {
   formRef: RefObject<HTMLFormElement>;
   onKeyDown: (event: React.KeyboardEvent<HTMLTextAreaElement>) => void;
@@ -421,7 +423,7 @@ export default function ChatBot({
 
   const userStyles = "rounded-br-none";
   const botStyles = "rounded-bl-none";
-  const suggestions = ["gpc", "collect-data", "ipcc"].map((name) => {
+  const suggestions = SUGGESTION_KEYS.map((name) => {
     return {
       preview: t(`chat-suggestion-${name}`),
       message: t(`chat-suggestion-${name}-message`),

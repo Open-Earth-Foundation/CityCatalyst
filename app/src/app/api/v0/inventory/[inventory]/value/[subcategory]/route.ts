@@ -93,7 +93,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     body.co2eq = undefined;
     body.co2eqYears = undefined;
 
-    // for existing data, find left over ActivityValues and GasValues and delete them
+    // for existing data, delete left over ActivityValues
     if (inventoryValue) {
       await db.models.ActivityValue.destroy({
         where: { inventoryValueId: inventoryValue.id },

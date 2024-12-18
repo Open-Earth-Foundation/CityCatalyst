@@ -7,7 +7,7 @@
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
         "actionPriority": 1,
-        "explanation": "This action is highly prioritized due to its ability to significantly reduce risks associated with geo-hydrological disasters like landslides and flooding, which have high normalized risk scores in Serra. It is cost-effective and can be implemented quickly, providing immediate benefits."
+        "explanation": "This action is crucial for reducing risks associated with geo-hydrological disasters, such as landslides and flooding, which have high normalized risk scores. It is cost-effective and can be implemented quickly, providing immediate benefits to the city."
     },
     {
         "locode": "BRSER",
@@ -17,7 +17,7 @@
         "actionId": "ipcc_0087",
         "actionName": "Infrastructure retrofitting",
         "actionPriority": 2,
-        "explanation": "Retrofitting infrastructure is crucial for reducing risks from flooding and landslides. It aligns with the city's need to address high-risk geo-hydrological hazards and is relevant to the city's capacity to implement."
+        "explanation": "Retrofitting infrastructure is essential for reducing emissions in the industrial process sector, which is the largest emission source. It also enhances resilience against climate hazards, making it a high-priority action."
     },
     {
         "locode": "BRSER",
@@ -27,7 +27,7 @@
         "actionId": "c40_0053",
         "actionName": "Water Savings",
         "actionPriority": 3,
-        "explanation": "Water savings initiatives are essential for addressing drought risks, which impact water resources and energy security. This action is cost-effective and aligns with the city's biome and climate."
+        "explanation": "Water savings address the key impact of water resources and drought, which is a significant risk for Serra. This action is cost-effective and aligns with the city's environmental needs."
     },
     {
         "locode": "BRSER",
@@ -37,7 +37,7 @@
         "actionId": "c40_0054",
         "actionName": "Water Recycling",
         "actionPriority": 4,
-        "explanation": "Water recycling is a strategic action to mitigate drought impacts, supporting water resource management and reducing dependency on external water sources. It is environmentally compatible and socio-demographically suitable."
+        "explanation": "Similar to water savings, water recycling helps mitigate drought risks and is environmentally compatible with Serra's Atlantic forest biome. It also supports efficient resource use."
     },
     {
         "locode": "BRSER",
@@ -47,7 +47,7 @@
         "actionId": "ipcc_0091",
         "actionName": "Diversification of livelihoods",
         "actionPriority": 5,
-        "explanation": "This action supports socio-economic resilience by providing alternative income sources, reducing vulnerability to climate impacts like flooding and drought. It is cost-effective and has a short implementation timeline."
+        "explanation": "This action enhances socio-economic resilience, particularly important for a city with a diverse population. It reduces dependency on vulnerable sectors and supports adaptation to climate impacts."
     },
     {
         "locode": "BRSER",
@@ -57,7 +57,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 6,
-        "explanation": "Social safety nets are vital for protecting vulnerable populations from climate impacts, particularly in a city with significant public health risks from heatwaves and diseases. This action is cost-effective and quickly implementable."
+        "explanation": "Social safety nets are vital for protecting vulnerable populations from climate impacts, such as heatwaves and diseases. They are cost-effective and can be implemented quickly."
     },
     {
         "locode": "BRSER",
@@ -67,7 +67,7 @@
         "actionId": "c40_0050",
         "actionName": "White Roofs",
         "actionPriority": 7,
-        "explanation": "White roofs help mitigate heatwave impacts by reducing urban heat island effects. This action is cost-effective, easy to implement, and aligns with the city's environmental conditions."
+        "explanation": "White roofs help reduce heatwave impacts by lowering urban heat island effects. This action is cost-effective and aligns with the city's need to address public health risks."
     },
     {
         "locode": "BRSER",
@@ -77,7 +77,7 @@
         "actionId": "c40_0051",
         "actionName": "Public Shading",
         "actionPriority": 8,
-        "explanation": "Public shading reduces heat exposure, addressing public health risks from heatwaves. It is cost-effective, quickly implementable, and enhances urban livability."
+        "explanation": "Public shading provides immediate relief from heatwaves, improving public health and comfort. It is a low-cost, high-impact action suitable for Serra's urban environment."
     },
     {
         "locode": "BRSER",
@@ -87,7 +87,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 9,
-        "explanation": "Improving access to healthcare is crucial for managing public health risks from heatwaves and diseases. This action is socio-demographically suitable and aligns with the city's capacity."
+        "explanation": "Improving access to healthcare is crucial for managing health risks from heatwaves and diseases. This action supports the city's socio-demographic needs and enhances resilience."
     },
     {
         "locode": "BRSER",
@@ -97,7 +97,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 10,
-        "explanation": "Enhancing farm and fishery practices supports food security, particularly against flooding and drought risks. This action is environmentally compatible and cost-effective."
+        "explanation": "Enhancing farm and fishery practices supports food security, particularly against flooding and drought risks. It aligns with Serra's environmental and socio-economic context."
     },
     {
         "locode": "BRSER",
@@ -107,7 +107,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 11,
-        "explanation": "Improving food storage and distribution systems enhances food security, addressing risks from flooding and drought. This action is cost-effective and quickly implementable."
+        "explanation": "Improving food storage and distribution systems is essential for maintaining food security during climate events. This action is cost-effective and can be implemented quickly."
     },
     {
         "locode": "BRSER",
@@ -117,7 +117,7 @@
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 12,
-        "explanation": "Promoting behavior change in diets and reducing food waste supports food security and reduces emissions. This action is cost-effective and has a short implementation timeline."
+        "explanation": "Promoting behavior change in diets and reducing food waste supports sustainability and reduces emissions. It is a low-cost action with significant long-term benefits."
     },
     {
         "locode": "BRSER",
@@ -127,7 +127,7 @@
         "actionId": "ipcc_0100",
         "actionName": "Efficient water use/demand",
         "actionPriority": 13,
-        "explanation": "Efficient water use is critical for managing drought risks and supporting water resource sustainability. This action is cost-effective and aligns with the city's environmental conditions."
+        "explanation": "Efficient water use addresses drought risks and supports sustainable resource management. It is a cost-effective action that aligns with Serra's environmental needs."
     },
     {
         "locode": "BRSER",
@@ -137,7 +137,7 @@
         "actionId": "c40_0060",
         "actionName": "Managed Retreat",
         "actionPriority": 14,
-        "explanation": "Managed retreat is a strategic action for reducing risks from flooding and sea-level rise. It is relevant to high-risk areas but may have higher costs and longer timelines."
+        "explanation": "Managed retreat is a strategic action for reducing risks from geo-hydrological disasters, such as flooding. It requires careful planning but offers long-term resilience benefits."
     },
     {
         "locode": "BRSER",
@@ -147,7 +147,7 @@
         "actionId": "ipcc_0090",
         "actionName": "Insurance",
         "actionPriority": 15,
-        "explanation": "Insurance provides financial protection against climate impacts, supporting socio-economic resilience. This action is cost-effective and quickly implementable."
+        "explanation": "Insurance provides financial protection against climate impacts, supporting socio-economic resilience. It is a cost-effective action with immediate benefits."
     },
     {
         "locode": "BRSER",
@@ -157,7 +157,7 @@
         "actionId": "c40_0046",
         "actionName": "Coastal Protection",
         "actionPriority": 16,
-        "explanation": "Coastal protection measures are essential for mitigating risks from flooding and sea-level rise. This action is relevant to high-risk areas but may have higher costs and longer timelines."
+        "explanation": "Coastal protection is essential for mitigating risks from flooding and sea-level rise. It is a high-priority action for Serra's coastal areas."
     },
     {
         "locode": "BRSER",
@@ -167,7 +167,7 @@
         "actionId": "c40_0059",
         "actionName": "Early Warning",
         "actionPriority": 17,
-        "explanation": "Early warning systems are crucial for reducing risks from geo-hydrological disasters. This action is cost-effective and quickly implementable, providing immediate benefits."
+        "explanation": "Early warning systems are crucial for reducing risks from climate hazards, such as flooding and landslides. They provide immediate benefits and are cost-effective."
     },
     {
         "locode": "BRSER",
@@ -177,7 +177,7 @@
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 18,
-        "explanation": "Updating building codes enhances resilience to climate impacts like flooding and heatwaves. This action is relevant to the city's capacity but may have longer implementation timelines."
+        "explanation": "Updating building codes enhances resilience against climate impacts, particularly in the industrial process sector. It is a strategic action for long-term sustainability."
     },
     {
         "locode": "BRSER",
@@ -187,7 +187,7 @@
         "actionId": "ipcc_0081",
         "actionName": "Coastal Accommodation",
         "actionPriority": 19,
-        "explanation": "Coastal accommodation strategies support adaptation to sea-level rise and flooding. This action is relevant to high-risk areas but may have higher costs and longer timelines."
+        "explanation": "Coastal accommodation supports adaptation to sea-level rise and flooding. It requires significant investment but offers long-term benefits for coastal resilience."
     },
     {
         "locode": "BRSER",
@@ -197,6 +197,6 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 20,
-        "explanation": "Enhancing health infrastructure supports public health resilience to climate impacts. This action is socio-demographically suitable but may have longer implementation timelines."
+        "explanation": "Enhancing health infrastructure is vital for managing public health risks from climate impacts. It supports the city's socio-demographic needs and enhances resilience."
     }
 ]

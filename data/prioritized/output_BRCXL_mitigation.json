@@ -7,7 +7,7 @@
         "actionId": "c40_0038",
         "actionName": "Sanitary Landfills",
         "actionPriority": 1,
-        "explanation": "Sanitary landfills are crucial for Caxias do Sul, given the city's high waste emissions. This action is cost-effective, aligns with the city's waste management needs, and can significantly reduce GHG emissions."
+        "explanation": "Sanitary landfills address the largest emission sector in Caxias do Sul, waste emissions, which account for a significant portion of the city's total emissions. This action is cost-effective and aligns with the city's environmental context."
     },
     {
         "locode": "BRCXL",
@@ -17,7 +17,7 @@
         "actionId": "c40_0035",
         "actionName": "Waste Efficiency",
         "actionPriority": 2,
-        "explanation": "Improving waste efficiency is a high priority due to the city's substantial waste emissions. This action is cost-effective and can be implemented quickly, offering significant emissions reduction."
+        "explanation": "Improving waste efficiency directly targets the city's largest emission sector. It is cost-effective and can be implemented relatively quickly, making it a high-priority action."
     },
     {
         "locode": "BRCXL",
@@ -27,7 +27,7 @@
         "actionId": "c40_0036",
         "actionName": "Landfill Management",
         "actionPriority": 3,
-        "explanation": "Effective landfill management is essential for reducing methane emissions from waste, a major emission source in Caxias do Sul. It is cost-effective and aligns with the city's environmental goals."
+        "explanation": "Effective landfill management can significantly reduce methane emissions, a potent greenhouse gas, from the waste sector. This action is crucial for emissions reduction and risk mitigation."
     },
     {
         "locode": "BRCXL",
@@ -37,7 +37,7 @@
         "actionId": "c40_0041",
         "actionName": "Waste Collection",
         "actionPriority": 4,
-        "explanation": "Enhancing waste collection systems can reduce emissions and improve public health. It is a cost-effective measure with a relatively short implementation timeline."
+        "explanation": "Enhancing waste collection systems can improve overall waste management efficiency, reducing emissions and aligning with the city's waste sector priorities."
     },
     {
         "locode": "BRCXL",
@@ -47,7 +47,7 @@
         "actionId": "c40_0039",
         "actionName": "Gas Management",
         "actionPriority": 5,
-        "explanation": "Managing landfill gas is crucial for reducing methane emissions, a significant contributor to the city's GHG profile. This action is cost-effective and aligns with the city's waste management strategy."
+        "explanation": "Gas management in landfills can capture and utilize methane, reducing emissions and providing an alternative energy source. This action is both environmentally compatible and cost-effective."
     },
     {
         "locode": "BRCXL",
@@ -57,7 +57,7 @@
         "actionId": "c40_0028",
         "actionName": "Zero Emission Buses",
         "actionPriority": 6,
-        "explanation": "Transitioning to zero-emission buses addresses transportation emissions, the second-largest emission sector. It is environmentally compatible and supports the city's public transport system."
+        "explanation": "Transitioning to zero-emission buses addresses the transportation sector, the second-largest emission source. This action is crucial for reducing transportation emissions and improving air quality."
     },
     {
         "locode": "BRCXL",
@@ -67,7 +67,7 @@
         "actionId": "ipcc_0002",
         "actionName": "Active Transport Modes",
         "actionPriority": 7,
-        "explanation": "Promoting active transport modes like cycling and walking can reduce transportation emissions and improve public health. It is cost-effective and suitable for the city's urban environment."
+        "explanation": "Promoting active transport modes like cycling and walking can reduce vehicle emissions, improve public health, and is cost-effective with minimal dependencies."
     },
     {
         "locode": "BRCXL",
@@ -77,7 +77,7 @@
         "actionId": "ipcc_0045",
         "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
         "actionPriority": 8,
-        "explanation": "Encouraging behavioral changes to reduce waste is cost-effective and can significantly lower emissions from the waste sector, aligning with the city's environmental goals."
+        "explanation": "Encouraging behavioral changes to reduce waste can have a significant impact on emissions from the waste sector. This action is cost-effective and aligns with socio-demographic suitability."
     },
     {
         "locode": "BRCXL",
@@ -87,7 +87,7 @@
         "actionId": "c40_0026",
         "actionName": "Vehicle Emissions",
         "actionPriority": 9,
-        "explanation": "Reducing vehicle emissions is crucial for addressing transportation emissions. This action is cost-effective and can be implemented with existing technologies."
+        "explanation": "Reducing vehicle emissions is essential for addressing the transportation sector's impact. This action is relevant to the city's emission profile and can be implemented with existing technologies."
     },
     {
         "locode": "BRCXL",
@@ -97,7 +97,7 @@
         "actionId": "ipcc_0019",
         "actionName": "Modal Shift from Aircraft to Train",
         "actionPriority": 10,
-        "explanation": "Encouraging a shift from air to rail travel can reduce emissions from the transportation sector. It is suitable for the city's infrastructure and aligns with environmental goals."
+        "explanation": "Shifting from air to rail transport can significantly reduce emissions in the transportation sector. This action is environmentally compatible and aligns with the city's infrastructure capacity."
     },
     {
         "locode": "BRCXL",
@@ -107,7 +107,7 @@
         "actionId": "ipcc_0015",
         "actionName": "Improved Energy Efficiency for Vehicles",
         "actionPriority": 11,
-        "explanation": "Enhancing vehicle energy efficiency can reduce fuel consumption and emissions. It is cost-effective and aligns with the city's transportation strategy."
+        "explanation": "Enhancing vehicle energy efficiency can reduce fuel consumption and emissions, making it a cost-effective and impactful action for the transportation sector."
     },
     {
         "locode": "BRCXL",
@@ -117,7 +117,7 @@
         "actionId": "ipcc_0059",
         "actionName": "Reduce Conversion of Coastal Wetlands",
         "actionPriority": 12,
-        "explanation": "Protecting coastal wetlands can prevent emissions from land use changes. This action aligns with the city's environmental goals and supports biodiversity."
+        "explanation": "Protecting coastal wetlands can prevent emissions from land use changes and preserve biodiversity. This action aligns with environmental compatibility and risk reduction priorities."
     },
     {
         "locode": "BRCXL",
@@ -127,7 +127,7 @@
         "actionId": "ipcc_0007",
         "actionName": "Smart Mobility",
         "actionPriority": 13,
-        "explanation": "Implementing smart mobility solutions can optimize transportation systems, reduce emissions, and improve urban living conditions. It is suitable for the city's infrastructure."
+        "explanation": "Implementing smart mobility solutions can optimize transportation systems, reduce emissions, and improve urban living conditions. This action is suitable for the city's technological capacity."
     },
     {
         "locode": "BRCXL",
@@ -137,7 +137,7 @@
         "actionId": "ipcc_0012",
         "actionName": "Electric Technologies",
         "actionPriority": 14,
-        "explanation": "Adopting electric technologies in transportation and industry can significantly reduce emissions. This action is cost-effective and aligns with the city's energy goals."
+        "explanation": "Adopting electric technologies in transportation and industry can reduce emissions and align with global trends towards electrification. This action is relevant to the city's emission sectors."
     },
     {
         "locode": "BRCXL",
@@ -147,7 +147,7 @@
         "actionId": "c40_0023",
         "actionName": "Bus Emissions",
         "actionPriority": 15,
-        "explanation": "Reducing bus emissions is crucial for addressing transportation emissions. This action is cost-effective and can be implemented with existing technologies."
+        "explanation": "Reducing emissions from buses is crucial for the transportation sector. This action is cost-effective and can be implemented with existing technologies."
     },
     {
         "locode": "BRCXL",
@@ -157,7 +157,7 @@
         "actionId": "c40_0025",
         "actionName": "Truck Emissions",
         "actionPriority": 16,
-        "explanation": "Addressing truck emissions is essential for reducing transportation emissions. This action is cost-effective and aligns with the city's environmental goals."
+        "explanation": "Addressing truck emissions is essential for reducing transportation sector emissions. This action is relevant to the city's emission profile and can be implemented with available technologies."
     },
     {
         "locode": "BRCXL",
@@ -167,7 +167,7 @@
         "actionId": "ipcc_0026",
         "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
         "actionPriority": 17,
-        "explanation": "Implementing heat recovery systems can improve energy efficiency and reduce emissions. This action is suitable for the city's industrial sector."
+        "explanation": "Implementing heat recovery systems can improve energy efficiency in industrial processes, reducing emissions and energy costs. This action is suitable for the city's industrial capacity."
     },
     {
         "locode": "BRCXL",
@@ -177,7 +177,7 @@
         "actionId": "ipcc_0027",
         "actionName": "Process Coupling and Improvements",
         "actionPriority": 18,
-        "explanation": "Enhancing industrial processes can improve efficiency and reduce emissions. This action is cost-effective and aligns with the city's industrial strategy."
+        "explanation": "Enhancing industrial processes through coupling and improvements can reduce emissions and increase efficiency. This action aligns with the city's industrial sector priorities."
     },
     {
         "locode": "BRCXL",
@@ -187,7 +187,7 @@
         "actionId": "ipcc_0028",
         "actionName": "Introduction of Energy Efficiency Technologies in Processing",
         "actionPriority": 19,
-        "explanation": "Adopting energy efficiency technologies in processing can reduce emissions and improve industrial efficiency. This action is suitable for the city's industrial sector."
+        "explanation": "Introducing energy efficiency technologies in processing can reduce emissions and operational costs, making it a cost-effective action for the industrial sector."
     },
     {
         "locode": "BRCXL",
@@ -197,6 +197,6 @@
         "actionId": "ipcc_0031",
         "actionName": "Smart Energy Management",
         "actionPriority": 20,
-        "explanation": "Implementing smart energy management systems can optimize energy use and reduce emissions. This action is cost-effective and aligns with the city's energy goals."
+        "explanation": "Implementing smart energy management systems can optimize energy use and reduce emissions across sectors. This action is suitable for the city's technological capacity and energy sector priorities."
     }
 ]

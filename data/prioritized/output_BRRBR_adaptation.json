@@ -7,7 +7,7 @@
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
         "actionPriority": 1,
-        "explanation": "This action is highly cost-effective, provides significant risk reduction against geo-hydrological disasters, and has a short implementation timeline. It aligns well with the city's high risk of flooding and landslides."
+        "explanation": "This action is crucial for reducing risks associated with geo-hydrological disasters like landslides and flooding, which have high risk scores. It is cost-effective and can be implemented quickly, providing immediate benefits."
     },
     {
         "locode": "BRRBR",
@@ -17,7 +17,7 @@
         "actionId": "ipcc_0087",
         "actionName": "Infrastructure retrofitting",
         "actionPriority": 2,
-        "explanation": "Retrofitting infrastructure is crucial for reducing risks from heatwaves and flooding, which are significant hazards for Rio Branco. It is cost-effective in the long term and aligns with the city's need for resilient infrastructure."
+        "explanation": "Retrofitting infrastructure is essential for reducing risks from heatwaves and flooding. It aligns with the city's need to adapt to climate hazards and is relevant to the high-emission stationary energy sector."
     },
     {
         "locode": "BRRBR",
@@ -27,7 +27,7 @@
         "actionId": "c40_0053",
         "actionName": "Water Savings",
         "actionPriority": 3,
-        "explanation": "Water savings address the city's drought risk and are cost-effective. This action is compatible with the Amazon rainforest biome and can be implemented relatively quickly."
+        "explanation": "Water savings address the key impact of water resources and drought, which is a significant risk. This action is cost-effective and aligns with the city's Amazon rainforest biome."
     },
     {
         "locode": "BRRBR",
@@ -37,7 +37,7 @@
         "actionId": "c40_0054",
         "actionName": "Water Recycling",
         "actionPriority": 4,
-        "explanation": "Water recycling is essential for managing drought risks and aligns with the city's environmental context. It offers significant long-term benefits and is feasible given the city's resources."
+        "explanation": "Water recycling is crucial for managing water resources and mitigating drought risks. It is environmentally compatible and can be implemented with existing infrastructure."
     },
     {
         "locode": "BRRBR",
@@ -47,7 +47,7 @@
         "actionId": "ipcc_0091",
         "actionName": "Diversification of livelihoods",
         "actionPriority": 5,
-        "explanation": "This action enhances socio-economic resilience, crucial for a city with a diverse population. It addresses risks from climate impacts on agriculture and fisheries."
+        "explanation": "This action supports socio-economic resilience, reducing vulnerability to climate impacts like flooding and drought. It is suitable for the city's socio-demographic context."
     },
     {
         "locode": "BRRBR",
@@ -57,7 +57,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 6,
-        "explanation": "Social safety nets are vital for supporting vulnerable populations during climate-related events, such as heatwaves and flooding, ensuring socio-demographic suitability."
+        "explanation": "Social safety nets are vital for supporting vulnerable populations during climate events, addressing public health risks from heatwaves and diseases."
     },
     {
         "locode": "BRRBR",
@@ -67,7 +67,7 @@
         "actionId": "c40_0050",
         "actionName": "White Roofs",
         "actionPriority": 7,
-        "explanation": "White roofs help mitigate heatwaves, a significant risk for Rio Branco. This action is cost-effective and can be implemented quickly, providing immediate benefits."
+        "explanation": "White roofs help mitigate heatwaves, a significant risk for Rio Branco. This action is cost-effective and can be implemented quickly, providing immediate cooling benefits."
     },
     {
         "locode": "BRRBR",
@@ -77,7 +77,7 @@
         "actionId": "c40_0051",
         "actionName": "Public Shading",
         "actionPriority": 8,
-        "explanation": "Public shading reduces heatwave impacts and is cost-effective. It aligns with the city's need for heat mitigation strategies and can be implemented rapidly."
+        "explanation": "Public shading reduces heatwave impacts, improving public health and comfort. It is a low-cost, high-impact action suitable for the city's climate."
     },
     {
         "locode": "BRRBR",
@@ -87,7 +87,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 9,
-        "explanation": "Improving healthcare access is crucial for managing public health risks from heatwaves and diseases, ensuring the city's socio-demographic suitability."
+        "explanation": "Improving access to healthcare is crucial for managing public health risks from heatwaves and diseases. It supports socio-demographic suitability and risk reduction."
     },
     {
         "locode": "BRRBR",
@@ -97,7 +97,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 10,
-        "explanation": "Enhancing agricultural and fishery practices addresses food security risks from flooding and drought, aligning with the city's environmental and socio-economic context."
+        "explanation": "Enhancing farm and fishery practices addresses food security risks from flooding and drought, aligning with the city's land use emissions sector."
     },
     {
         "locode": "BRRBR",
@@ -107,7 +107,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 11,
-        "explanation": "Improving food storage and distribution is essential for food security, especially during climate events like flooding and drought, ensuring risk reduction."
+        "explanation": "Improving food storage and distribution reduces food security risks, particularly during flooding and drought events. It is cost-effective and aligns with the city's needs."
     },
     {
         "locode": "BRRBR",
@@ -117,7 +117,7 @@
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 12,
-        "explanation": "Promoting sustainable diets and reducing food waste addresses emissions and enhances food security, aligning with the city's socio-demographic context."
+        "explanation": "Promoting behavior change in diets and reducing food waste supports food security and reduces emissions from waste, aligning with the city's environmental goals."
     },
     {
         "locode": "BRRBR",
@@ -127,7 +127,7 @@
         "actionId": "ipcc_0100",
         "actionName": "Efficient water use/demand",
         "actionPriority": 13,
-        "explanation": "Efficient water use is crucial for managing drought risks and is cost-effective. It aligns with the city's environmental context and can be implemented quickly."
+        "explanation": "Efficient water use addresses water resource risks from drought, supporting environmental compatibility and cost-effectiveness."
     },
     {
         "locode": "BRRBR",
@@ -137,7 +137,7 @@
         "actionId": "c40_0060",
         "actionName": "Managed Retreat",
         "actionPriority": 14,
-        "explanation": "Managed retreat addresses long-term risks from flooding and landslides, providing significant risk reduction. It requires careful planning and resources."
+        "explanation": "Managed retreat is a strategic action for reducing risks from geo-hydrological disasters like flooding and landslides, though it requires significant planning and resources."
     },
     {
         "locode": "BRRBR",
@@ -147,7 +147,7 @@
         "actionId": "ipcc_0090",
         "actionName": "Insurance",
         "actionPriority": 15,
-        "explanation": "Insurance provides financial resilience against climate impacts, supporting socio-economic stability. It is cost-effective and aligns with the city's needs."
+        "explanation": "Insurance provides financial protection against climate impacts, supporting socio-economic resilience. It is a cost-effective risk reduction measure."
     },
     {
         "locode": "BRRBR",
@@ -157,7 +157,7 @@
         "actionId": "c40_0046",
         "actionName": "Coastal Protection",
         "actionPriority": 16,
-        "explanation": "Coastal protection is essential for managing flooding risks, providing long-term benefits. It requires significant resources and planning."
+        "explanation": "Coastal protection is relevant for managing flooding risks, though it may have higher costs and dependencies compared to other actions."
     },
     {
         "locode": "BRRBR",
@@ -167,7 +167,7 @@
         "actionId": "c40_0059",
         "actionName": "Early Warning",
         "actionPriority": 17,
-        "explanation": "Early warning systems are crucial for risk reduction from geo-hydrological disasters, providing immediate benefits. It is cost-effective and aligns with the city's needs."
+        "explanation": "Early warning systems are essential for risk reduction, particularly for geo-hydrological disasters. However, they may require significant investment in technology and infrastructure."
     },
     {
         "locode": "BRRBR",
@@ -177,7 +177,7 @@
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 18,
-        "explanation": "Updating building codes enhances resilience against heatwaves and flooding, providing long-term benefits. It requires regulatory changes and resources."
+        "explanation": "Updating building codes supports infrastructure resilience to heatwaves and flooding, though implementation may be complex and time-consuming."
     },
     {
         "locode": "BRRBR",
@@ -187,7 +187,7 @@
         "actionId": "ipcc_0089",
         "actionName": "Spatially redirect development",
         "actionPriority": 19,
-        "explanation": "Redirecting development reduces risks from flooding and landslides, aligning with the city's environmental context. It requires careful planning and resources."
+        "explanation": "Redirecting development reduces exposure to climate hazards, though it involves significant planning and coordination with urban development policies."
     },
     {
         "locode": "BRRBR",
@@ -197,6 +197,6 @@
         "actionId": "ipcc_0081",
         "actionName": "Coastal Accommodation",
         "actionPriority": 20,
-        "explanation": "Coastal accommodation addresses long-term risks from flooding, providing significant risk reduction. It requires substantial resources and planning."
+        "explanation": "Coastal accommodation addresses flooding risks but may have limited applicability in Rio Branco's context, given its inland location and Amazon rainforest biome."
     }
 ]

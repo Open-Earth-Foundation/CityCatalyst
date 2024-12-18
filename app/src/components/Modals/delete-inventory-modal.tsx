@@ -1,28 +1,30 @@
 "use client";
 
-import { UserDetails } from "@/app/[lng]/[inventory]/settings/page";
 import {
-  Modal,
+  Badge,
+  Box,
   Button,
+  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Text,
-  Box,
-  Badge,
-  ModalFooter,
+  useToast,
 } from "@chakra-ui/react";
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 
 import { FiTrash2 } from "react-icons/fi";
 import PasswordInput from "../password-input";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { TFunction } from "i18next";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { UserAttributes } from "@/models/User";
+import { api } from "@/services/api";
+import { MdCheckCircleOutline } from "react-icons/md";
 
 interface DeleteInventoryModalProps {
   isOpen: boolean;
@@ -30,6 +32,7 @@ interface DeleteInventoryModalProps {
   userData: UserAttributes;
   t: TFunction;
   lng: string;
+  inventoryId: string;
 }
 
 const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
@@ -37,6 +40,7 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
   onClose,
   userData,
   lng,
+  inventoryId,
   t,
 }) => {
   const {
@@ -45,6 +49,64 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
     formState: { errors, isSubmitting },
     setValue,
   } = useForm<{ password: string }>();
+  const [requestPasswordConfirm] = api.useRequestVerificationMutation();
+  const { data: token } = api.useGetVerifcationTokenQuery({
+    skip: !userData,
+  });
+  const [deleteInventory] = api.useDeleteInventoryMutation();
+  const [isPasswordCorrect, setIsPasswordCorrect] = useState<boolean>(true);
+  const toast = useToast();
+
+  const onSubmit: SubmitHandler<{ password: string }> = async (data) => {
+    await requestPasswordConfirm({
+      password: data.password!,
+      token: token?.verificationToken!,
+    }).then(async (res: any) => {
+      if (res.data?.comparePassword) {
+        await deleteInventory({
+          inventoryId,
+        }).then((res: any) => {
+          onClose();
+          setIsPasswordCorrect(true);
+          toast({
+            description: t("inventory-deleted"),
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+            render: () => (
+              <Box
+                display="flex"
+                gap="8px"
+                color="white"
+                alignItems="center"
+                justifyContent="space-between"
+                p={3}
+                bg="interactive.primary"
+                width="600px"
+                height="60px"
+                borderRadius="8px"
+              >
+                <Box display="flex" gap="8px" alignItems="center">
+                  <MdCheckCircleOutline fontSize="24px" />
+
+                  <Text
+                    color="base.light"
+                    fontWeight="bold"
+                    lineHeight="52"
+                    fontSize="label.lg"
+                  >
+                    {t("inventory-deleted")}
+                  </Text>
+                </Box>
+              </Box>
+            ),
+          });
+        });
+      } else {
+        setIsPasswordCorrect(false);
+      }
+    });
+  };
 
   return (
     <>
@@ -136,16 +198,29 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
                         gap="6px"
                       >
                         <InfoOutlineIcon color="interactive.secondary" />
-                        <Text
-                          fontSize="body.md"
-                          fontStyle="normal"
-                          lineHeight="20px"
-                          fontFamily="heading"
-                          color="content.tertiary"
-                          letterSpacing="wide"
-                        >
-                          {t("enter-password-info")}
-                        </Text>
+                        {isPasswordCorrect ? (
+                          <Text
+                            fontSize="body.md"
+                            fontStyle="normal"
+                            lineHeight="20px"
+                            fontFamily="heading"
+                            color="content.tertiary"
+                            letterSpacing="wide"
+                          >
+                            {t("enter-password-info")}
+                          </Text>
+                        ) : (
+                          <Text
+                            fontSize="body.md"
+                            fontStyle="normal"
+                            lineHeight="20px"
+                            fontFamily="heading"
+                            color="content.tertiary"
+                            letterSpacing="wide"
+                          >
+                            {t("incorrect-password")}
+                          </Text>
+                        )}
                       </Box>
                     </Box>
                   </Box>
@@ -174,7 +249,8 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
               textTransform="uppercase"
               fontWeight="semibold"
               fontSize="button.md"
-              type="button"
+              type="submit"
+              onClick={handleSubmit(onSubmit)}
               p={0}
               m={0}
             >

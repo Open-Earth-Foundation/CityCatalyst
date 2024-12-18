@@ -12,6 +12,7 @@ import {
   ConnectDataSourceResponse,
   EmissionsFactorResponse,
   GetDataSourcesResult,
+  InventoryDeleteQuery,
   InventoryProgressResponse,
   InventoryResponse,
   InventoryUpdateQuery,
@@ -48,6 +49,7 @@ export const api = createApi({
     "SectorBreakdown",
     "Inventory",
     "CitiesAndInventories",
+    "Inventories",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => ({
@@ -289,6 +291,18 @@ export const api = createApi({
         "YearlyReportResults",
       ],
     }),
+    deleteInventory: builder.mutation<
+      InventoryAttributes,
+      InventoryDeleteQuery
+    >({
+      query: (data) => ({
+        url: `/inventory/${data.inventoryId}`,
+        method: "DELETE",
+      }),
+      transformResponse: (response: { data: InventoryAttributes }) =>
+        response.data,
+      invalidatesTags: ["InventoryProgress", "InventoryValue", "Inventories"],
+    }),
     deleteInventoryValue: builder.mutation<
       InventoryValueAttributes,
       InventoryValueInSubSectorDeleteQuery
@@ -453,6 +467,7 @@ export const api = createApi({
         url: `/city/${cityId}/inventory`,
         method: "GET",
       }),
+      providesTags: ["Inventories"],
       transformResponse: (response: { data: any }) => response.data,
     }),
     addUserFile: builder.mutation<UserFileResponse, any>({

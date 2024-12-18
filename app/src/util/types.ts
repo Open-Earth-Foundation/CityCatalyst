@@ -119,6 +119,10 @@ export interface InventoryValueInSubSectorDeleteQuery {
   inventoryId: string;
 }
 
+export interface InventoryDeleteQuery {
+  inventoryId: string;
+}
+
 export interface InventoryUpdateQuery {
   inventoryId: string;
   data: { isPublic: boolean };

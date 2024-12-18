@@ -3,11 +3,6 @@ import json
 import argparse
 
 
-# # Load the city data from the CSV file
-# PATH_ACTIONSLIST = Path("../data/climate_actions/output/combined_output.json")
-# BASE_PATH_PRIORITIZED_ACTIONS = Path("../data/prioritized/")
-# BASE_PATH_OUTPUT = Path("../data/frontend/")
-
 # Define the base directory relative to the script's location
 SCRIPT_DIR = Path(__file__).resolve().parent
 BASE_DIR = SCRIPT_DIR.parent  # Go one level up from the script's directory
@@ -60,20 +55,6 @@ def process_city(locode, action_type):
 
 
 def main(locode: str, action_type: str):
-    # tuples = [
-    #     {"locode": "BRCCI", "action_type": "adaptation"},
-    #     {"locode": "BRCCI", "action_type": "mitigation"},
-    #     # {"city": "camacari", "pathName": TYPE["ADAPTATION"]},
-    #     # {"city": "camacari", "pathName": TYPE["MITIGATION"]},
-    #     # {"city": "caxias_do_sul", "pathName": TYPE["ADAPTATION"]},
-    #     # {"city": "caxias_do_sul", "pathName": TYPE["MITIGATION"]},
-    #     # {"city": "corumba", "pathName": TYPE["ADAPTATION"]},
-    #     # {"city": "corumba", "pathName": TYPE["MITIGATION"]},
-    #     # {"city": "rio_branco", "pathName": TYPE["ADAPTATION"]},
-    #     # {"city": "rio_branco", "pathName": TYPE["MITIGATION"]},
-    # ]
-
-    # for entry in tuples:
     process_city(locode, action_type)
 
 

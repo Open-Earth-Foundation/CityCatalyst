@@ -17,7 +17,7 @@
         "actionId": "c40_0053",
         "actionName": "Water Savings",
         "actionPriority": 2,
-        "explanation": "Water savings directly address the city's high risk of drought, providing significant environmental and socio-economic benefits. It is cost-effective and aligns with the city's tropical rainforest biome."
+        "explanation": "Water savings directly address the city's high risk of drought, improving water resource management. It is cost-effective and aligns with the city's tropical rainforest biome."
     },
     {
         "locode": "BRCCI",
@@ -27,7 +27,7 @@
         "actionId": "c40_0054",
         "actionName": "Water Recycling",
         "actionPriority": 3,
-        "explanation": "Similar to water savings, water recycling is vital for managing drought risks. It offers substantial emissions reduction in the waste sector and is compatible with the city's environmental context."
+        "explanation": "Similar to water savings, water recycling helps mitigate drought risks and is environmentally compatible with the city's needs. It also offers significant long-term benefits."
     },
     {
         "locode": "BRCCI",
@@ -37,7 +37,7 @@
         "actionId": "ipcc_0087",
         "actionName": "Infrastructure retrofitting",
         "actionPriority": 4,
-        "explanation": "Retrofitting infrastructure is essential for reducing risks from heatwaves and landslides, which have high risk scores. It is relevant to the city's high emissions from industrial processes."
+        "explanation": "Retrofitting infrastructure is essential for reducing risks from heatwaves and landslides, which have high risk scores. It is relevant to the city's infrastructure sector."
     },
     {
         "locode": "BRCCI",
@@ -47,7 +47,7 @@
         "actionId": "ipcc_0091",
         "actionName": "Diversification of livelihoods",
         "actionPriority": 5,
-        "explanation": "This action enhances socio-economic resilience, crucial for a city with a diverse population. It addresses food security risks and is cost-effective."
+        "explanation": "This action enhances socio-economic resilience, particularly important given the city's vulnerability to climate hazards affecting food and energy security."
     },
     {
         "locode": "BRCCI",
@@ -57,7 +57,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 6,
-        "explanation": "Social safety nets are vital for supporting vulnerable populations during climate hazards, such as heatwaves and flooding. They are cost-effective and have a quick implementation timeline."
+        "explanation": "Social safety nets are crucial for supporting vulnerable populations during climate-related disasters, aligning with the city's socio-demographic context."
     },
     {
         "locode": "BRCCI",
@@ -67,7 +67,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 7,
-        "explanation": "Enhancing health infrastructure is critical for addressing public health risks from heatwaves and diseases, which have high risk scores. It is socio-demographically suitable for the city."
+        "explanation": "Improving health infrastructure is vital for addressing public health risks from heatwaves and diseases, which have high risk scores."
     },
     {
         "locode": "BRCCI",
@@ -77,7 +77,7 @@
         "actionId": "c40_0050",
         "actionName": "White Roofs",
         "actionPriority": 8,
-        "explanation": "White roofs help mitigate heatwave impacts, reducing energy consumption and emissions from stationary energy. They are cost-effective and have a quick implementation timeline."
+        "explanation": "White roofs help mitigate heatwave impacts by reducing urban heat, aligning with the city's environmental conditions and offering cost-effective benefits."
     },
     {
         "locode": "BRCCI",
@@ -87,7 +87,7 @@
         "actionId": "c40_0051",
         "actionName": "Public Shading",
         "actionPriority": 9,
-        "explanation": "Public shading reduces heatwave impacts, improving public health and comfort. It is cost-effective and aligns with the city's tropical climate."
+        "explanation": "Public shading provides immediate relief from heatwaves, improving public health and comfort in urban areas, with minimal dependencies."
     },
     {
         "locode": "BRCCI",
@@ -97,7 +97,7 @@
         "actionId": "ipcc_0090",
         "actionName": "Insurance",
         "actionPriority": 10,
-        "explanation": "Insurance provides financial protection against climate hazards, such as flooding and landslides. It is cost-effective and has a quick implementation timeline."
+        "explanation": "Insurance schemes provide financial resilience against climate-related damages, crucial for socio-economic stability in the face of high-risk hazards."
     },
     {
         "locode": "BRCCI",
@@ -107,7 +107,7 @@
         "actionId": "c40_0046",
         "actionName": "Coastal Protection",
         "actionPriority": 11,
-        "explanation": "Coastal protection is essential for addressing sea level rise and flooding risks. It is relevant to the city's infrastructure and environmental context."
+        "explanation": "Coastal protection is essential for mitigating risks from sea level rise and flooding, which are significant threats to the city's infrastructure."
     },
     {
         "locode": "BRCCI",
@@ -117,7 +117,7 @@
         "actionId": "c40_0059",
         "actionName": "Early Warning",
         "actionPriority": 12,
-        "explanation": "Early warning systems are crucial for risk reduction, particularly for flooding and landslides. They are cost-effective and have a quick implementation timeline."
+        "explanation": "Early warning systems are critical for timely responses to climate hazards, reducing risks from events like flooding and landslides."
     },
     {
         "locode": "BRCCI",
@@ -127,7 +127,7 @@
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 13,
-        "explanation": "Updating building codes is vital for reducing risks from heatwaves and landslides. It is relevant to the city's infrastructure and socio-economic context."
+        "explanation": "Updating building codes enhances resilience against climate impacts, particularly heatwaves and landslides, aligning with infrastructure needs."
     },
     {
         "locode": "BRCCI",
@@ -137,7 +137,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 14,
-        "explanation": "Improving access to health care is crucial for addressing public health risks from heatwaves and diseases. It is socio-demographically suitable for the city."
+        "explanation": "Improving access to healthcare is vital for managing public health risks from climate-related diseases and heatwaves."
     },
     {
         "locode": "BRCCI",
@@ -147,7 +147,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 15,
-        "explanation": "Enhancing farm and fishery practices addresses food security risks from drought and flooding. It is cost-effective and aligns with the city's environmental context."
+        "explanation": "Enhancing agricultural practices supports food security, addressing risks from drought and flooding, which impact food supply."
     },
     {
         "locode": "BRCCI",
@@ -157,7 +157,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 16,
-        "explanation": "Improving food storage and distribution is essential for food security, particularly during climate hazards. It is cost-effective and has a quick implementation timeline."
+        "explanation": "Improving food storage and distribution systems enhances food security, crucial for resilience against climate-induced supply disruptions."
     },
     {
         "locode": "BRCCI",
@@ -167,7 +167,7 @@
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 17,
-        "explanation": "Promoting behavior change in diets and food waste addresses food security and emissions reduction. It is cost-effective and socio-demographically suitable."
+        "explanation": "Promoting sustainable diets and reducing food waste contribute to food security and environmental sustainability, with long-term benefits."
     },
     {
         "locode": "BRCCI",
@@ -177,7 +177,7 @@
         "actionId": "ipcc_0100",
         "actionName": "Efficient water use/demand",
         "actionPriority": 18,
-        "explanation": "Efficient water use is crucial for managing drought risks and reducing emissions in the waste sector. It is cost-effective and aligns with the city's environmental context."
+        "explanation": "Efficient water use is essential for managing drought risks, aligning with the city's water resource challenges and offering cost-effective solutions."
     },
     {
         "locode": "BRCCI",
@@ -187,7 +187,7 @@
         "actionId": "c40_0060",
         "actionName": "Managed Retreat",
         "actionPriority": 19,
-        "explanation": "Managed retreat addresses sea level rise and flooding risks. It is relevant to the city's infrastructure but has a longer implementation timeline."
+        "explanation": "Managed retreat is a long-term strategy for addressing sea level rise, requiring significant planning and resources, thus ranked lower."
     },
     {
         "locode": "BRCCI",
@@ -197,6 +197,6 @@
         "actionId": "ipcc_0081",
         "actionName": "Coastal Accommodation",
         "actionPriority": 20,
-        "explanation": "Coastal accommodation is essential for addressing sea level rise. It is relevant to the city's infrastructure but has a longer implementation timeline."
+        "explanation": "Coastal accommodation strategies are important for adapting to sea level rise, but they involve complex planning and higher costs, placing them lower in priority."
     }
 ]

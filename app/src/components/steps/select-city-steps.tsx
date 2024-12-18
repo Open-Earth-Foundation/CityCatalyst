@@ -42,6 +42,7 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import { NoResultsIcon } from "../icons";
 import { useSearchParams } from "next/navigation";
+import { Trans } from "react-i18next";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -423,18 +424,20 @@ export default function SelectCityStep({
                     fontWeight="normal"
                     letterSpacing="wide"
                   >
-                    In case the geographical boundary is not the right one{" "}
-                    <Link href="mailto:greta@openearth.org">
-                      <Text
-                        as="span"
-                        color="interactive.secondary"
-                        fontWeight="600"
-                        letterSpacing="wide"
-                        textDecorationLine="underline"
-                      >
-                        Contact Us
-                      </Text>
-                    </Link>
+                    <Trans i18nKey="city-boundary-info">
+                      In case the geographical boundary is not the right one{" "}
+                      <Link href="mailto:greta@openearth.org">
+                        <Text
+                          as="span"
+                          color="content.link"
+                          fontWeight="bold"
+                          textDecoration="underline"
+                          letterSpacing="wide"
+                        >
+                          Contact Us
+                        </Text>
+                      </Link>
+                    </Trans>
                   </Text>
                 </Box>
               </Box>
@@ -468,7 +471,7 @@ export default function SelectCityStep({
                     fontFamily="heading"
                     textAlign="center"
                   >
-                    Search and select the city to be shown on the map
+                    {t("unselected-city-boundary-heading")}
                   </Text>
                   <Text
                     color="interactive.control"
@@ -479,8 +482,7 @@ export default function SelectCityStep({
                     textAlign="center"
                     letterSpacing="wide"
                   >
-                    You will be able to check the geographical boundary for your
-                    inventory
+                    {t("unselected-city-boundary-description")}
                   </Text>
                 </Box>
               </Box>

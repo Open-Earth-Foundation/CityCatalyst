@@ -18,7 +18,7 @@ This project is licensed under the Affero General Public License v3.0. See the [
 
 ### Automated pipeline
 
-Run the `run_pipeline` script inside `/scripts` folder with `bash run_pipeline LOCODE` where `LOCODE` needs to be replaced by a matching locode from the cities data file inside `data/cities`.
+Run the `run_pipeline` script inside `/scripts` folder with `bash run_pipeline.sh LOCODE` where `LOCODE` needs to be replaced by a matching locode from the cities data file inside `data/cities`.
 
 This script will automatically create the ranked actions for this city, format and upload those actions to the AWS S3 bucket for displaying in the frontend app.
 

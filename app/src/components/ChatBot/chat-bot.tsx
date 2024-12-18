@@ -421,21 +421,12 @@ export default function ChatBot({
 
   const userStyles = "rounded-br-none";
   const botStyles = "rounded-bl-none";
-  const suggestions = [
-    {
-      preview: "What is GPC?",
-      message: "What is the GHG Protocol for Cities?",
-    },
-    {
-      preview: "How can I collect data?",
-      message: "How can I add new data sources to CityCatalyst?",
-    },
-    {
-      preview: "What is IPCC?",
-      message: "What is the Intergovernmental Panel on Climate Change?",
-    },
-  ];
-
+  const suggestions = ["gpc", "collect-data", "ipcc"].map((name) => {
+    return {
+      preview: t(`chat-suggestion-${name}`),
+      message: t(`chat-suggestion-${name}-message`),
+    };
+  });
   /////////////////////
   // Utility Helpers //
   /////////////////////

@@ -9,8 +9,19 @@
 set -e
 set -o pipefail
 
-# Paths
-VENV_PYTHON="../.cap/Scripts/python.exe"
+# OS-specific paths
+if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "darwin"* ]]; then
+  VENV_PYTHON="../.cap/bin/python"
+  VENV_ACTIVATE="../.cap/bin/activate"
+elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "cygwin"* || "$OSTYPE" == "win32" ]]; then
+  VENV_PYTHON="../.cap/Scripts/python.exe"
+  VENV_ACTIVATE="../.cap/Scripts/activate"
+else
+  echo "Unsupported OS: $OSTYPE"
+  exit 1
+fi
+
+# Paths to the scripts
 PRIORITIZER_SCRIPT="../prioritizer/prioritizer.py"
 ENRICHER_SCRIPT="./enrich_for_frontend_schema.py"
 UPLOAD_SCRIPT="./upload_to_s3.py"
@@ -28,16 +39,16 @@ fi
 # Assign the first argument to the LOCODE variable
 LOCODE=$1
 
-# Activate the virtual environment
+# Activate the virtual environment dynamically
 echo "Activating virtual environment..."
-source ../.cap/Scripts/activate
-# Check if the virtual environment was successfully activated
+source "$VENV_ACTIVATE"
 if [ -z "$VIRTUAL_ENV" ]; then
   echo "Failed to activate virtual environment."
   exit 1
 else
   echo -e "Virtual environment activated: $VIRTUAL_ENV\n"
 fi
+
 
 echo "Prioritizer..."
 # Run the prirotizer script with input arguments

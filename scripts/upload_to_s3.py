@@ -6,11 +6,13 @@ Script used to upload a file to an S3 bucket.
 import boto3
 from dotenv import load_dotenv
 import argparse
+import os
 
 
 load_dotenv()
 
-BUCKET_NAME = "openearth.cap"
+# Load environment variables
+S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 
 def upload_to_s3(file_path, s3_key):
@@ -24,8 +26,8 @@ def upload_to_s3(file_path, s3_key):
     s3_client = boto3.client("s3")
 
     try:
-        s3_client.upload_file(file_path, BUCKET_NAME, s3_key)
-        print(f"File {file_path} uploaded to {BUCKET_NAME}/{s3_key}.")
+        s3_client.upload_file(file_path, S3_BUCKET_NAME, s3_key)
+        print(f"File {file_path} uploaded to {S3_BUCKET_NAME}/{s3_key}.")
     except Exception as e:
         print(f"Error uploading file: {e}")
 

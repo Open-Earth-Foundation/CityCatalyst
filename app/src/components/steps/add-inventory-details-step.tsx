@@ -220,9 +220,6 @@ export default function SetInventoryDetailsStep({
             </Text>
           </Box>
           <Box>
-            {/* TODO:
-              only enable basic by default and disable basic+ until we have the feature
-              */}
             <Controller
               name="inventoryGoal"
               control={control}

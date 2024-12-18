@@ -223,7 +223,7 @@ export default function OnboardingSetup({
           }}
           pl={0}
         >
-          Go Back
+          {t("go-back")}
         </Button>
         <div className="flex flex-col md:flex-row md:space-x-12 md:space-y-0 space-y-12 align-top mt-8 md:mt-16 mb-48">
           {activeStep === 0 && (

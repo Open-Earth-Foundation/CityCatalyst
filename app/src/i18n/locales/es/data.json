@@ -80,7 +80,7 @@
   "refrigiration-chp": "Refrigeración CHP",
   "scope-required-for-basic": "Alcance Requerido para Inventario GHGI Básico:",
   "scope-required-for-basic-+": "Alcance Requerido para Inventario GHGI Básico+:",
-  "stationary-energy": "Energía Estacionaria",
+  "stationary-energy": "Energía estacionaria",
   "stationary-energy-details": "Este sector trata las emisiones que resultan de la generación de electricidad, calor y vapor, así como de su consumo.",
   "transportation": "Transporte",
   "transportation-details": "Este sector trata las emisiones del transporte de bienes y personas dentro del límite de la ciudad.",
@@ -271,7 +271,6 @@
   "file-deletion-error-description": "Algo salió mal durante la eliminación del archivo",
   "file-deletion-success": "archivo eliminado con éxito",
   "coming-soon": "Próximamente",
-  "intlNumber": "{{val, number}}",
   "fuel-combustion-residential-buildings-direct-measure-methodology": "Medida Directa",
   "energy-consumption-residential-buildings-direct-measure-methodology": "Medida Directa",
   "fuel-consumption-commercial-buildings-direct-measure-methodology": "Medida Directa",
@@ -790,7 +789,7 @@
   "product-use-direct-measure-methodology": "Medición directa",
   "product-use-direct-measure-methodology-description": "Medición directa de las emisiones del uso de productos.",
   "custom-emission-factor-reference": "Factor de Emisión Personalizado",
-   "percentage-emissions": "% de emisiones",
+  "percentage-emissions": "% de emisiones",
   "based-on-previous-year": "Basado en el año anterior",
   "stationary-energy-description": "Este sector se ocupa de las emisiones que resultan de la generación de electricidad, calor y vapor, así como de su consumo.",
   "transportation-description": "Este sector se ocupa de las emisiones provenientes del transporte de bienes y personas dentro del límite de la ciudad.",
@@ -1077,5 +1076,6 @@
   "activity-name-harvested-wood-products": "Productos de madera cosechados",
   "custom-emission-factor-name": "Factor de emisión personalizado",
   "gpc_basic": "GPC Básico",
-  "gpc_basic_plus": "GPC Básico +"
+  "gpc_basic_plus": "GPC Básico +",
+  "explanation-institutional-missing": "Las emisiones institucionales están incluidas en el registro de emisiones comerciales."
 }

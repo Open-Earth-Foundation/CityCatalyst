@@ -519,7 +519,7 @@ export default function AddDataSteps({
           async (inventoryValue: InventoryValueAttributes) => {
             return await disconnectThirdPartyData({
               inventoryId: inventoryValue.inventoryId,
-              subCategoryId: inventoryValue.subCategoryId,
+              datasourceId: inventoryValue.datasourceId,
             });
           },
         ),

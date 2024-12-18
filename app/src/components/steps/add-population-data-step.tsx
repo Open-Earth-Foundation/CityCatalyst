@@ -194,7 +194,13 @@ export default function SetPopulationDataStep({
                   control={control}
                   rules={{
                     required: t("population-required"),
+                    validate: (value) => {
+                      return (
+                        !isNaN(Number(value)) || t("population-must-be-number")
+                      );
+                    },
                   }}
+                  type="number"
                   placeholder={t("country-population-placeholder")}
                   size="lg"
                   shadow="1dp"
@@ -239,6 +245,7 @@ export default function SetPopulationDataStep({
                   px={0}
                   {...register("countryPopulationYear", {
                     required: t("inventory-year-required"),
+                    valueAsNumber: true,
                   })}
                 >
                   {years.map((year: number, i: number) => (
@@ -293,7 +300,13 @@ export default function SetPopulationDataStep({
                   control={control}
                   rules={{
                     required: t("population-required"),
+                    validate: (value) => {
+                      return (
+                        !isNaN(Number(value)) || t("population-must-be-number")
+                      );
+                    },
                   }}
+                  type="number"
                   placeholder={t("region-or-province-population-placeholder")}
                   size="lg"
                   shadow="1dp"
@@ -327,6 +340,7 @@ export default function SetPopulationDataStep({
                   px={0}
                   {...register("regionPopulationYear", {
                     required: t("inventory-year-required"),
+                    valueAsNumber: true,
                   })}
                 >
                   {years.map((year: number, i: number) => (
@@ -376,9 +390,15 @@ export default function SetPopulationDataStep({
                   control={control}
                   rules={{
                     required: t("population-required"),
+                    validate: (value) => {
+                      return (
+                        !isNaN(Number(value)) || t("population-must-be-number")
+                      );
+                    },
                   }}
                   placeholder={t("city-population-placeholder")}
                   size="lg"
+                  type="number"
                   shadow="1dp"
                   w="400px"
                   fontSize="body.lg"
@@ -410,6 +430,7 @@ export default function SetPopulationDataStep({
                   px={0}
                   {...register("cityPopulationYear", {
                     required: t("inventory-year-required"),
+                    valueAsNumber: true,
                   })}
                 >
                   {years.map((year: number, i: number) => (

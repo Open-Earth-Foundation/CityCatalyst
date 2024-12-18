@@ -6,5 +6,12 @@
   "initial-message": "Hallo! Ich bin Clima, Ihr virtueller Assistent. Ich bin hier, um Sie durch den Prozess der genauen Messung und Berichterstattung der Treibhausgasemissionen Ihrer Stadt zu führen. Wie kann ich Ihnen heute helfen?",
   "regenerate": "Regenerieren",
   "send-message": "Nachricht senden",
-  "stop-generation": "Generierung stoppen"
+  "stop-generation": "Generierung stoppen",
+
+  "chat-suggestion-gpc": "Was ist GPC?",
+  "chat-suggestion-gpc-message": "Was ist das Treibhausgas-Protokoll für Städte (GPC)?",
+  "chat-suggestion-collect-data": "Wie kann ich Daten sammeln?",
+  "chat-suggestion-collect-data-message": "Wie kann ich neue Datenquellen zu CityCatalyst hinzufügen?",
+  "chat-suggestion-ipcc": "Was ist der IPCC?",
+  "chat-suggestion-ipcc-message": "Was ist der Zwischenstaatliche Ausschuss für Klimaänderungen (IPCC)?"
 }

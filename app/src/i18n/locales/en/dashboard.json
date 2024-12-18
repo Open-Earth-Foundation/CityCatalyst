@@ -35,7 +35,7 @@
   "completed": "completed",
   "uploaded-data": "Uploaded data",
   "connect-third-party-data": " Connected third-party data",
-  "stationary-energy": "Stationary Energy",
+  "stationary-energy": "Stationary energy",
   "stationary-energy-description": "This sector deals with emissions that result from the generation of electricity, heat, and steam, as well as their consumption.",
   "add-data-to-sector": "Add data",
   "scope-required-for-gpc": "Scope Required for GPC Basic Inventory",
@@ -130,5 +130,7 @@
   "add-new-inventory": "Add new inventory",
   "table-view": "Table",
   "chart-view": "Chart",
-  "last-update": "Last update"
+  "last-update": "Last update",
+  "something-went-wrong":  "Something went wrong",
+  "error-fetching-sector-data": "Error fetching sector data"
 }

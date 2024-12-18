@@ -6,5 +6,12 @@
   "initial-message": "Hola! Soy Clima, tu asistente virtual. Estoy aquí para guiarte a través del proceso de medición y reporte de las emisiones GEI de tu ciudad. ¿Cómo te puedo ayudar hoy?",
   "regenerate": "Regenerar",
   "send-message": "Enviar mensaje",
-  "stop-generation": "Detener generación"
+  "stop-generation": "Detener generación",
+
+  "chat-suggestion-gpc": "¿Qué es el GPC?",
+  "chat-suggestion-gpc-message": "¿Qué es el Protocolo de Gases de Efecto Invernadero para Ciudades (GPC)?",
+  "chat-suggestion-collect-data": "¿Cómo puedo recolectar datos?",
+  "chat-suggestion-collect-data-message": "¿Cómo puedo agregar nuevas fuentes de datos a CityCatalyst?",
+  "chat-suggestion-ipcc": "¿Qué es el IPCC?",
+  "chat-suggestion-ipcc-message": "¿Qué es el Panel Intergubernamental sobre Cambio Climático (IPCC)?"
 }

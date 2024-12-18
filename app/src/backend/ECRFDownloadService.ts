@@ -32,6 +32,7 @@ export default class ECRFDownloadService {
       // Load the workbook
       await workbook.xlsx.readFile(ECRF_TEMPLATE_PATH);
       await this.writeToSheet1(workbook, output, t);
+      await this.writeToSheet2(workbook, output, t);
       await this.writeToSheet3(workbook, output, t);
       // Save the modified workbook
       const buffer = Buffer.from(await workbook.xlsx.writeBuffer());
@@ -55,15 +56,19 @@ export default class ECRFDownloadService {
     const city = output.city;
     const year = output.year;
 
-    const cityPopulationData =
-      await PopulationService.getPopulationDataForCityYear(
+    let cityPopulationData = null;
+    let cityBoundaryData: Record<string, any> = {};
+    try {
+      cityPopulationData = await PopulationService.getPopulationDataForCityYear(
         city.cityId,
         year as number,
       );
-
-    const cityBoundaryData = await CityBoundaryService.getCityBoundary(
-      city.locode as string,
-    );
+      cityBoundaryData = await CityBoundaryService.getCityBoundary(
+        city.locode as string,
+      );
+    } catch (e) {
+      console.warn("Failed to fetch city boundary or population");
+    }
 
     // prepare the data for sheet 1
     const sheetData: Record<string, any> = {
@@ -72,8 +77,8 @@ export default class ECRFDownloadService {
       city_name: city.name,
       city_region: city.region,
       inventory_year: year,
-      city_population: cityPopulationData.population,
-      city_area: cityBoundaryData.area,
+      city_population: cityPopulationData?.population,
+      city_area: cityBoundaryData?.area,
     };
 
     const worksheet = workbook.getWorksheet(1); // Get the worksheet by index (1st sheet)
@@ -92,8 +97,97 @@ export default class ECRFDownloadService {
     });
   }
 
-  private static async writeTOSheet2() {
+  private static async writeToSheet2(
+    workbook: Excel.Workbook,
+    output: InventoryWithInventoryValuesAndActivityValues,
+    t: any,
+  ) {
+    const sectorNameMapping: Record<string, string> = {
+      I: `stationary`,
+      II: `transport`,
+      III: `waste`,
+      IV: `ippu`,
+      V: `afolu`,
+    };
+
+    const totals: Record<string, any> = {
+      stationary1: 0n,
+      stationary2: 0n,
+      stationary3: 0n,
+      transport1: 0n,
+      transport2: 0n,
+      transport3: 0n,
+      waste1: 0n,
+      waste2: 0n,
+      waste3: 0n,
+      afolu1: 0n,
+      afolu2: 0n,
+      afolu3: 0n,
+      ippu1: 0n,
+      ippu2: 0n,
+    };
+
     // prepare the data for sheet 2
+    const dataDictionary = this.transformDataForTemplate2(output, t);
+    const fugitive_emissions_data =
+      this.groupFugitiveEmissionData(dataDictionary);
+    totals.stationary1 = fugitive_emissions_data?.total;
+
+    const updatedDataDictionary: Record<string, any> = {
+      ...dataDictionary,
+      fugitive: fugitive_emissions_data,
+    };
+
+    // now loop over the rows and columns.
+    const worksheet = workbook.getWorksheet(2);
+
+    worksheet?.eachRow((row, rowNumber) => {
+      // loop over each cell and then check if it's a placeholder.
+      row.eachCell((cell) => {
+        const cellValue = cell.value as string;
+        const placeholderMatch = cellValue.match(/{{(.*?)}}/);
+        if (placeholderMatch) {
+          let replacementValue = null; // split the placeholders
+          const fieldName = placeholderMatch[1];
+
+          if (fieldName === "explanation-institutional-missing") {
+            cell.value = t("explanation-institutional-missing");
+            return;
+          }
+
+          const referenceNoIdentifier = fieldName.split("_")[0];
+          const targetIdentifier = fieldName.split("_")[1];
+
+          if (targetIdentifier === "full-total") {
+            // if sector total placeholder read from totals
+            replacementValue = totals[referenceNoIdentifier];
+          } else if (referenceNoIdentifier in updatedDataDictionary) {
+            replacementValue =
+              updatedDataDictionary[referenceNoIdentifier]?.[targetIdentifier]; // eg dataDictionary.I.total or dataDictionary.I.notation-key
+
+            // build up the totals for each sector scope combo
+            if (
+              targetIdentifier === "total" &&
+              !(referenceNoIdentifier === "fugitive")
+            ) {
+              const refSplit = referenceNoIdentifier.split(".");
+              const sectorNo = refSplit[0];
+              const sectorName = sectorNameMapping[sectorNo];
+              const scopeNo = refSplit[refSplit.length - 1];
+              totals[`${sectorName}${scopeNo}`] += replacementValue
+                ? BigInt(replacementValue)
+                : 0n;
+            }
+          } else if (targetIdentifier === "notation-key") {
+            // mark as Not estimated
+            replacementValue = "NE";
+          }
+          cell.value = replacementValue?.toString() ?? "";
+        }
+      });
+    });
+
+    // create a new object
   }
 
   private static async writeToSheet3(
@@ -144,10 +238,57 @@ export default class ECRFDownloadService {
     });
   }
 
+  private static groupFugitiveEmissionData(
+    subcategoryDataGroup: Record<
+      string,
+      {
+        total?: bigint;
+        "notation-key"?: string;
+      }
+    >,
+  ) {
+    const { total: totalI71 = BigInt(0), "notation-key": keyI71 = "" } =
+      subcategoryDataGroup["I.7.1"] || {};
+    const { total: totalI81 = BigInt(0), "notation-key": keyI81 = "" } =
+      subcategoryDataGroup["I.8.1"] || {};
+
+    // Calculate fugitive emissions total
+    const fugitiveEmissionsTotal = totalI71 + totalI81;
+
+    // Combine notation keys
+    const fugitiveEmissionsNotationKey = [keyI71, keyI81]
+      .filter(Boolean)
+      .join(" / ");
+
+    // Build explanation string
+    const explanationParts = [];
+    if (keyI71) explanationParts.push(`I.7.1: ${keyI71}`);
+    if (keyI81) explanationParts.push(`I.8.1: ${keyI81}`);
+    const explanation = explanationParts.join(",");
+
+    return {
+      total: fugitiveEmissionsTotal,
+      "notation-key": fugitiveEmissionsNotationKey,
+      explanation,
+    };
+  }
+
   private static transformDataForTemplate2(
-    inventoryValues: InventoryValueWithActivityValues,
+    output: InventoryWithInventoryValuesAndActivityValues,
+    t: any,
   ): Record<string, any> {
-    return {};
+    const dataDictionary: Record<string, any> = {};
+
+    output.inventoryValues.map((inventoryValue) => {
+      dataDictionary[inventoryValue.gpcReferenceNumber as string] = {
+        "notation-key": inventoryValue.unavailableReason?.split("-")[1],
+        total: inventoryValue.unavailableReason
+          ? 0n
+          : BigInt(inventoryValue.co2eq ?? 0),
+      };
+    });
+
+    return dataDictionary;
   }
 
   private static transformDataForTemplate3(

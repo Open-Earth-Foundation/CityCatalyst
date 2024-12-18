@@ -81,7 +81,7 @@
   "refrigiration-chp": "Refrigeração CHP",
   "scope-required-for-basic": "Escopo Necessário para GHGI Básico GPC Básico:",
   "scope-required-for-basic-+": "Escopo Necessário para GHGI Básico GPC Básico+:",
-  "stationary-energy": "Energia Estacionária",
+  "stationary-energy": "Energia estacionária",
   "stationary-energy-description": "Este setor trata das emissões que resultam da geração de eletricidade, calor e vapor, bem como de seu consumo.",
   "transportation": "Transporte",
   "transportation-description": "Este setor trata das emissões do transporte de bens e pessoas dentro dos limites da cidade.",
@@ -273,7 +273,6 @@
   "file-deletion-error-description": "Algo deu errado durante a exclusão do arquivo",
   "file-deletion-success": "Arquivo Excluído com Sucesso",
   "coming-soon": "Em Breve",
-  "intlNumber": "{{val, number}}",
   "fuel-combustion-residential-buildings-direct-measure-methodology": "Medição Direta",
   "energy-consumption-residential-buildings-direct-measure-methodology": "Medição Direta",
   "fuel-consumption-commercial-buildings-direct-measure-methodology": "Medição Direta",
@@ -1069,5 +1068,6 @@
   "activity-name-harvested-wood-products": "Produtos de madeira colhidos",
   "custom-emission-factor-name": "Fator de emissão personalizado",
   "gpc_basic": "GPC Básico",
-  "gpc_basic_plus": "GPC Básico +"
+  "gpc_basic_plus": "GPC Básico +",
+  "explanation-institutional-missing": "As emissões institucionais estão incluídas no registro de emissões comerciais."
 }

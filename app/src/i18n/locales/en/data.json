@@ -277,7 +277,6 @@
   "file-deletion-error-description": "Something went wrong during file deletion",
   "file-deletion-success": "file deleted successfully",
   "coming-soon": "Coming Soon",
-  "intlNumber": "{{val, number}}",
   "fuel-combustion-residential-buildings-direct-measure-methodology": "Direct Measure",
   "energy-consumption-residential-buildings-direct-measure-methodology": "Direct Measure",
   "fuel-consumption-commercial-buildings-direct-measure-methodology": "Direct Measure",
@@ -1092,5 +1091,6 @@
   "land-direct-measure-methodology": "Direct Measure",
   "aggregate-sources-and-non-co2-emission-sources-direct-measure-methodology": "Direct Measure",
   "gpc_basic": "GPC Basic",
-  "gpc_basic_plus": "GPC Basic+"
+  "gpc_basic_plus": "GPC Basic+",
+  "explanation-institutional-missing": "Institutional emissions are included in commercial emissions record"
 }

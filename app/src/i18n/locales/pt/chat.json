@@ -6,5 +6,12 @@
   "initial-message": "Olá! Sou Clima, sua assistente virtual. Estou aqui para guiá-lo no processo de medir e reportar com precisão as emissões de gases de efeito estufa da sua cidade. Como posso ajudá-lo hoje?",
   "regenerate": "Regenerar",
   "send-message": "Enviar mensagem",
-  "stop-generation": "Parar geração"
+  "stop-generation": "Parar geração",
+
+  "chat-suggestion-gpc": "O que é o GPC?",
+  "chat-suggestion-gpc-message": "O que é o Protocolo de Gases de Efeito Estufa para Cidades (GPC)?",
+  "chat-suggestion-collect-data": "Como posso coletar dados?",
+  "chat-suggestion-collect-data-message": "Como posso adicionar novas fontes de dados ao CityCatalyst?",
+  "chat-suggestion-ipcc": "O que é o IPCC?",
+  "chat-suggestion-ipcc-message": "O que é o Painel Intergovernamental sobre Mudanças Climáticas (IPCC)?"
 }

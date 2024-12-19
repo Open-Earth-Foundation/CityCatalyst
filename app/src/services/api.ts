@@ -301,7 +301,7 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: InventoryAttributes }) =>
         response.data,
-      invalidatesTags: ["InventoryProgress", "InventoryValue", "Inventories"],
+      invalidatesTags: ["InventoryProgress", "InventoryValue", "Inventories", "Inventory", "ActivityValue", "InventoryValue", "ReportResults", "YearlyReportResults"],
     }),
     deleteInventoryValue: builder.mutation<
       InventoryValueAttributes,

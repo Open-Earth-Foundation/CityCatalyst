@@ -7,7 +7,7 @@
         "actionId": "ipcc_0033",
         "actionName": "Electrification of Processes",
         "actionPriority": 1,
-        "explanation": "Electrification of processes is highly cost-effective and significantly reduces emissions in the industrial sector, which is the largest emitter in Serra. It aligns with the city's capacity and can be implemented relatively quickly."
+        "explanation": "Electrification of processes is highly cost-effective and significantly reduces emissions in the industrial sector, which is the largest emission source in Serra. It aligns with the city's capacity and can be implemented relatively quickly."
     },
     {
         "locode": "BRSER",
@@ -17,7 +17,7 @@
         "actionId": "c40_0038",
         "actionName": "Sanitary Landfills",
         "actionPriority": 2,
-        "explanation": "Sanitary landfills address waste emissions, the second-largest emission source in Serra. They are cost-effective, reduce health risks, and can be implemented with existing city resources."
+        "explanation": "Sanitary landfills address waste emissions, a major source in Serra. They are cost-effective, reduce health risks, and can be implemented with existing city infrastructure."
     },
     {
         "locode": "BRSER",
@@ -37,7 +37,7 @@
         "actionId": "ipcc_0026",
         "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
         "actionPriority": 4,
-        "explanation": "This action targets industrial emissions, offering cost-effective energy savings and emissions reduction. It aligns with Serra's industrial profile and can be implemented with moderate dependencies."
+        "explanation": "This action is cost-effective and reduces industrial emissions. It aligns with Serra's industrial profile and can be implemented with moderate dependencies."
     },
     {
         "locode": "BRSER",
@@ -47,7 +47,7 @@
         "actionId": "ipcc_0027",
         "actionName": "Process Coupling and Improvements",
         "actionPriority": 5,
-        "explanation": "Process improvements in industries can lead to significant emissions reduction. This action is cost-effective and aligns with Serra's industrial capacity."
+        "explanation": "Process improvements are cost-effective and reduce emissions in the industrial sector. They are suitable for Serra's industrial capacity and can be implemented with existing technologies."
     },
     {
         "locode": "BRSER",
@@ -57,7 +57,7 @@
         "actionId": "ipcc_0032",
         "actionName": "Fuel Switching to Renewable Fuels",
         "actionPriority": 6,
-        "explanation": "Switching to renewable fuels in industrial processes can significantly reduce emissions. It is cost-effective and aligns with Serra's environmental goals."
+        "explanation": "Switching to renewable fuels significantly reduces emissions and is compatible with Serra's environmental goals. It requires moderate investment but offers long-term benefits."
     },
     {
         "locode": "BRSER",
@@ -67,7 +67,7 @@
         "actionId": "ipcc_0034",
         "actionName": "Energy Recycling in Furnaces and Kilns",
         "actionPriority": 7,
-        "explanation": "Energy recycling is a cost-effective way to reduce industrial emissions. It aligns with Serra's industrial sector and can be implemented with existing technologies."
+        "explanation": "Energy recycling is cost-effective and reduces emissions in industrial processes. It aligns with Serra's industrial emissions profile and can be implemented with existing technologies."
     },
     {
         "locode": "BRSER",
@@ -77,7 +77,7 @@
         "actionId": "ipcc_0042",
         "actionName": "Design for Recovery, Reuse, or Repurposing",
         "actionPriority": 8,
-        "explanation": "This action supports a circular economy, reducing waste emissions. It is cost-effective and aligns with Serra's environmental and socio-economic context."
+        "explanation": "This action supports a circular economy, reducing waste and emissions. It is cost-effective and aligns with Serra's waste management goals."
     },
     {
         "locode": "BRSER",
@@ -87,7 +87,7 @@
         "actionId": "ipcc_0044",
         "actionName": "Alternative feedstocks (e.g. in cement)",
         "actionPriority": 9,
-        "explanation": "Using alternative feedstocks in cement production can reduce emissions. It is cost-effective and aligns with Serra's industrial profile."
+        "explanation": "Using alternative feedstocks reduces emissions in the industrial sector. It is cost-effective and aligns with Serra's industrial capacity."
     },
     {
         "locode": "BRSER",
@@ -97,7 +97,7 @@
         "actionId": "ipcc_0035",
         "actionName": "Technology Improvements of Processes",
         "actionPriority": 10,
-        "explanation": "Improving industrial technologies can lead to significant emissions reduction. It is cost-effective and aligns with Serra's industrial capacity."
+        "explanation": "Improving technology in industrial processes reduces emissions and is cost-effective. It aligns with Serra's industrial profile and can be implemented with existing resources."
     },
     {
         "locode": "BRSER",
@@ -107,7 +107,7 @@
         "actionId": "ipcc_0043",
         "actionName": "Circular Economy Policies",
         "actionPriority": 11,
-        "explanation": "Implementing circular economy policies can reduce waste and emissions. It is cost-effective and aligns with Serra's socio-economic context."
+        "explanation": "Circular economy policies reduce waste and emissions, aligning with Serra's environmental goals. They are cost-effective and can be implemented with existing frameworks."
     },
     {
         "locode": "BRSER",
@@ -117,7 +117,7 @@
         "actionId": "ipcc_0028",
         "actionName": "Introduction of Energy Efficiency Technologies in Processing",
         "actionPriority": 12,
-        "explanation": "Energy efficiency technologies can significantly reduce industrial emissions. They are cost-effective and align with Serra's industrial capacity."
+        "explanation": "Energy efficiency technologies reduce emissions and are cost-effective. They align with Serra's industrial capacity and can be implemented with existing technologies."
     },
     {
         "locode": "BRSER",
@@ -127,7 +127,7 @@
         "actionId": "ipcc_0031",
         "actionName": "Smart Energy Management",
         "actionPriority": 13,
-        "explanation": "Smart energy management can optimize energy use and reduce emissions. It is cost-effective and aligns with Serra's industrial and energy sectors."
+        "explanation": "Smart energy management reduces emissions and is cost-effective. It aligns with Serra's energy goals and can be implemented with existing infrastructure."
     },
     {
         "locode": "BRSER",
@@ -137,7 +137,7 @@
         "actionId": "ipcc_0036",
         "actionName": "On-site Combined Heat and Power (CHP)",
         "actionPriority": 14,
-        "explanation": "CHP systems can improve energy efficiency and reduce emissions. They are cost-effective and align with Serra's industrial capacity."
+        "explanation": "CHP systems reduce emissions and are cost-effective. They align with Serra's industrial capacity and can be implemented with existing technologies."
     },
     {
         "locode": "BRSER",
@@ -147,7 +147,7 @@
         "actionId": "ipcc_0038",
         "actionName": "Carbon Capture and Utilization (CCU)",
         "actionPriority": 15,
-        "explanation": "CCU can significantly reduce industrial emissions. It is cost-effective and aligns with Serra's industrial profile, though it requires more dependencies."
+        "explanation": "CCU reduces emissions in the industrial sector. It requires moderate investment but offers long-term benefits and aligns with Serra's industrial profile."
     },
     {
         "locode": "BRSER",
@@ -157,7 +157,7 @@
         "actionId": "c40_0028",
         "actionName": "Zero Emission Buses",
         "actionPriority": 16,
-        "explanation": "Zero emission buses can reduce transportation emissions. They are cost-effective and align with Serra's transportation sector, though they require infrastructure changes."
+        "explanation": "Zero emission buses reduce transportation emissions and are cost-effective. They align with Serra's transportation goals and can be implemented with existing infrastructure."
     },
     {
         "locode": "BRSER",
@@ -167,7 +167,7 @@
         "actionId": "ipcc_0002",
         "actionName": "Active Transport Modes",
         "actionPriority": 17,
-        "explanation": "Promoting active transport modes can reduce transportation emissions. It is cost-effective and aligns with Serra's socio-demographic context."
+        "explanation": "Promoting active transport reduces emissions and is cost-effective. It aligns with Serra's transportation goals and can be implemented with existing infrastructure."
     },
     {
         "locode": "BRSER",
@@ -177,7 +177,7 @@
         "actionId": "c40_0035",
         "actionName": "Waste Efficiency",
         "actionPriority": 18,
-        "explanation": "Improving waste efficiency can reduce emissions. It is cost-effective and aligns with Serra's waste management sector."
+        "explanation": "Improving waste efficiency reduces emissions and is cost-effective. It aligns with Serra's waste management goals and can be implemented with existing infrastructure."
     },
     {
         "locode": "BRSER",
@@ -187,7 +187,7 @@
         "actionId": "c40_0036",
         "actionName": "Landfill Management",
         "actionPriority": 19,
-        "explanation": "Improved landfill management can reduce waste emissions. It is cost-effective and aligns with Serra's waste management sector."
+        "explanation": "Improved landfill management reduces emissions and is cost-effective. It aligns with Serra's waste management goals and can be implemented with existing infrastructure."
     },
     {
         "locode": "BRSER",
@@ -197,6 +197,6 @@
         "actionId": "ipcc_0023",
         "actionName": "Improved Heat and Energy Recovery",
         "actionPriority": 20,
-        "explanation": "Improving heat and energy recovery can reduce industrial emissions. It is cost-effective and aligns with Serra's industrial capacity, though it requires more dependencies."
+        "explanation": "Improving heat and energy recovery reduces emissions and is cost-effective. It aligns with Serra's industrial capacity and can be implemented with existing technologies."
     }
 ]

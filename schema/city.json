@@ -89,11 +89,14 @@
             "description": "The occurrence of an environmental event that has a harmful impact on people, property, or the environment"
           },
           "normalised_risk_score": {
-            "type": "number",
+            "oneOf": [
+              { "type": "number" },
+              { "type": "null" }
+            ],
             "description": "The potential for loss or adverse effects, assessed as a combination of exposure, vulnerability, and hazard characteristics"
           }
         },
-        "required": ["keyimpact", "hazard", "normalised_risk_score"]
+      "required": ["keyimpact", "hazard"]
       }
     }
   },

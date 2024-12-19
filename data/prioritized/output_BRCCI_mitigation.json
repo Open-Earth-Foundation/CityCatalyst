@@ -7,7 +7,7 @@
         "actionId": "c40_0038",
         "actionName": "Sanitary Landfills",
         "actionPriority": 1,
-        "explanation": "Sanitary landfills address the city's largest emission sector, waste, and offer significant GHG reduction potential. They are cost-effective and align with the city's waste management needs."
+        "explanation": "Sanitary landfills address the city's largest emission sector, waste, and offer significant GHG reduction. They are cost-effective and align with the city's waste management needs."
     },
     {
         "locode": "BRCCI",
@@ -17,7 +17,7 @@
         "actionId": "ipcc_0033",
         "actionName": "Electrification of Processes",
         "actionPriority": 2,
-        "explanation": "Electrification reduces emissions in industrial processes, a major emission sector for Cama\u00e7ari. It is cost-effective and aligns with the city's industrial profile."
+        "explanation": "Electrification reduces emissions in industrial processes, a major emission sector. It is cost-effective and aligns with the city's industrial profile."
     },
     {
         "locode": "BRCCI",
@@ -27,7 +27,7 @@
         "actionId": "ipcc_0045",
         "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
         "actionPriority": 3,
-        "explanation": "Promoting behavioral changes is cost-effective and can significantly reduce waste emissions, addressing a key emission sector."
+        "explanation": "Promoting behavioral changes is cost-effective and reduces waste emissions significantly. It is quick to implement and has a broad socio-demographic appeal."
     },
     {
         "locode": "BRCCI",
@@ -37,7 +37,7 @@
         "actionId": "c40_0035",
         "actionName": "Waste Efficiency",
         "actionPriority": 4,
-        "explanation": "Improving waste efficiency directly targets the city's largest emission sector, offering substantial GHG reductions."
+        "explanation": "Improving waste efficiency directly targets the city's largest emission sector. It is cost-effective and aligns with existing waste management systems."
     },
     {
         "locode": "BRCCI",
@@ -47,7 +47,7 @@
         "actionId": "ipcc_0026",
         "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
         "actionPriority": 5,
-        "explanation": "This action enhances energy efficiency in industrial processes, reducing emissions and aligning with the city's industrial capacity."
+        "explanation": "This action targets industrial emissions, offering significant reductions. It is cost-effective and aligns with the city's industrial capacity."
     },
     {
         "locode": "BRCCI",
@@ -57,7 +57,7 @@
         "actionId": "ipcc_0027",
         "actionName": "Process Coupling and Improvements",
         "actionPriority": 6,
-        "explanation": "Process improvements in industries can lead to significant emissions reductions, aligning with the city's industrial profile."
+        "explanation": "Enhancing process efficiency in industries reduces emissions and is cost-effective. It aligns with the city's industrial sector needs."
     },
     {
         "locode": "BRCCI",
@@ -67,7 +67,7 @@
         "actionId": "ipcc_0032",
         "actionName": "Fuel Switching to Renewable Fuels",
         "actionPriority": 7,
-        "explanation": "Switching to renewable fuels in industrial processes can significantly reduce emissions, aligning with the city's energy transition goals."
+        "explanation": "Switching to renewable fuels reduces emissions in industrial processes. It is cost-effective and aligns with the city's energy transition goals."
     },
     {
         "locode": "BRCCI",
@@ -77,7 +77,7 @@
         "actionId": "ipcc_0034",
         "actionName": "Energy Recycling in Furnaces and Kilns",
         "actionPriority": 8,
-        "explanation": "Energy recycling in industrial processes reduces emissions and is cost-effective, aligning with the city's industrial sector."
+        "explanation": "Energy recycling reduces industrial emissions and is cost-effective. It aligns with the city's industrial energy efficiency goals."
     },
     {
         "locode": "BRCCI",
@@ -87,7 +87,7 @@
         "actionId": "ipcc_0042",
         "actionName": "Design for Recovery, Reuse, or Repurposing",
         "actionPriority": 9,
-        "explanation": "Designing products for recovery and reuse reduces waste emissions and supports a circular economy, aligning with city goals."
+        "explanation": "Promoting design for recovery reduces waste emissions and is cost-effective. It aligns with the city's circular economy goals."
     },
     {
         "locode": "BRCCI",
@@ -97,7 +97,7 @@
         "actionId": "ipcc_0044",
         "actionName": "Alternative feedstocks (e.g. in cement)",
         "actionPriority": 10,
-        "explanation": "Using alternative feedstocks in industrial processes can reduce emissions, aligning with the city's industrial sector needs."
+        "explanation": "Using alternative feedstocks reduces industrial emissions and is cost-effective. It aligns with the city's industrial sector needs."
     },
     {
         "locode": "BRCCI",
@@ -107,7 +107,7 @@
         "actionId": "c40_0028",
         "actionName": "Zero Emission Buses",
         "actionPriority": 11,
-        "explanation": "Transitioning to zero-emission buses reduces transportation emissions, a significant sector for Cama\u00e7ari, and is cost-effective."
+        "explanation": "Zero emission buses reduce transportation emissions, a significant sector. They are cost-effective and align with the city's public transport goals."
     },
     {
         "locode": "BRCCI",
@@ -117,7 +117,7 @@
         "actionId": "c40_0036",
         "actionName": "Landfill Management",
         "actionPriority": 12,
-        "explanation": "Improving landfill management reduces waste emissions, addressing the city's largest emission sector."
+        "explanation": "Improving landfill management reduces waste emissions and is cost-effective. It aligns with the city's waste management needs."
     },
     {
         "locode": "BRCCI",
@@ -127,7 +127,7 @@
         "actionId": "ipcc_0002",
         "actionName": "Active Transport Modes",
         "actionPriority": 13,
-        "explanation": "Promoting active transport reduces transportation emissions and aligns with the city's socio-demographic context."
+        "explanation": "Promoting active transport reduces transportation emissions and is cost-effective. It aligns with the city's public health and transport goals."
     },
     {
         "locode": "BRCCI",
@@ -137,7 +137,7 @@
         "actionId": "ipcc_0035",
         "actionName": "Technology Improvements of Processes",
         "actionPriority": 14,
-        "explanation": "Improving technology in industrial processes reduces emissions and aligns with the city's industrial capacity."
+        "explanation": "Improving industrial processes reduces emissions and is cost-effective. It aligns with the city's industrial sector needs."
     },
     {
         "locode": "BRCCI",
@@ -147,7 +147,7 @@
         "actionId": "ipcc_0043",
         "actionName": "Circular Economy Policies",
         "actionPriority": 15,
-        "explanation": "Implementing circular economy policies reduces waste emissions and supports sustainable development goals."
+        "explanation": "Implementing circular economy policies reduces waste emissions and is cost-effective. It aligns with the city's sustainability goals."
     },
     {
         "locode": "BRCCI",
@@ -157,7 +157,7 @@
         "actionId": "ipcc_0028",
         "actionName": "Introduction of Energy Efficiency Technologies in Processing",
         "actionPriority": 16,
-        "explanation": "Enhancing energy efficiency in processing reduces emissions and aligns with the city's industrial sector."
+        "explanation": "Energy efficiency in processing reduces industrial emissions and is cost-effective. It aligns with the city's industrial energy goals."
     },
     {
         "locode": "BRCCI",
@@ -167,7 +167,7 @@
         "actionId": "ipcc_0031",
         "actionName": "Smart Energy Management",
         "actionPriority": 17,
-        "explanation": "Smart energy management reduces emissions in industrial processes and aligns with the city's energy goals."
+        "explanation": "Smart energy management reduces emissions in various sectors and is cost-effective. It aligns with the city's energy efficiency goals."
     },
     {
         "locode": "BRCCI",
@@ -177,7 +177,7 @@
         "actionId": "ipcc_0036",
         "actionName": "On-site Combined Heat and Power (CHP)",
         "actionPriority": 18,
-        "explanation": "On-site CHP systems improve energy efficiency and reduce emissions, aligning with the city's industrial capacity."
+        "explanation": "CHP systems reduce industrial emissions and are cost-effective. They align with the city's industrial energy needs."
     },
     {
         "locode": "BRCCI",
@@ -187,7 +187,7 @@
         "actionId": "ipcc_0038",
         "actionName": "Carbon Capture and Utilization (CCU)",
         "actionPriority": 19,
-        "explanation": "CCU technologies reduce industrial emissions and align with the city's capacity for innovation."
+        "explanation": "CCU reduces industrial emissions and is cost-effective. It aligns with the city's industrial sector needs."
     },
     {
         "locode": "BRCCI",
@@ -197,6 +197,6 @@
         "actionId": "ipcc_0023",
         "actionName": "Improved Heat and Energy Recovery",
         "actionPriority": 20,
-        "explanation": "Improving heat and energy recovery in industrial processes reduces emissions and aligns with the city's industrial sector."
+        "explanation": "Improving heat and energy recovery reduces industrial emissions and is cost-effective. It aligns with the city's industrial energy goals."
     }
 ]

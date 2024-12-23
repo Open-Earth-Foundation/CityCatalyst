@@ -527,7 +527,7 @@ export const api = createApi({
         method: "DELETE",
         url: `datasource/${inventoryId}/datasource/${datasourceId}`,
       }),
-      invalidatesTags: ["InventoryValue", "InventoryProgress"],
+      invalidatesTags: ["InventoryValue", "InventoryProgress", "ReportResults"],
       transformResponse: (response: { data: EmissionsFactorResponse }) =>
         response.data,
     }),

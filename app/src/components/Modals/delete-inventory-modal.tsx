@@ -48,6 +48,7 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
     register,
     formState: { errors, isSubmitting },
     setValue,
+    reset,
   } = useForm<{ password: string }>();
   const [requestPasswordConfirm] = api.useRequestVerificationMutation();
   const { data: token } = api.useGetVerifcationTokenQuery({
@@ -66,6 +67,7 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
         await deleteInventory({
           inventoryId,
         }).then((res: any) => {
+          reset();
           onClose();
           setIsPasswordCorrect(true);
           toast({

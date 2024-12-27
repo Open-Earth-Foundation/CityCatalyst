@@ -1,7 +1,8 @@
-import { Badge, Box, Card, Radio, Text } from "@chakra-ui/react";
+import { Badge, Box, Card, Radio, Text, useToast } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC, useState } from "react";
 import type { Methodology } from "@/util/form-schema";
+import { InfoIcon } from "@chakra-ui/icons";
 
 interface MethodologyCardProps {
   id: string;
@@ -29,7 +30,32 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
     });
   };
 
+  const toast = useToast();
+
   const handleCardClick = () => {
+    if (disabled) {
+      toast({
+        status: "error",
+        title: t("selected-methodology-disabled"),
+        render: ({ title }) => (
+          <Box
+            h="48px"
+            w="600px"
+            borderRadius="8px"
+            display="flex"
+            alignItems="center"
+            color="white"
+            backgroundColor="content.alternative"
+            gap="8px"
+            px="16px"
+          >
+            <InfoIcon />
+            <Text>{title}</Text>
+          </Box>
+        ),
+      });
+      return;
+    }
     if (!isSelected) {
       handleCardSelect({
         disabled,

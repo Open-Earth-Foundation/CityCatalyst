@@ -1111,5 +1111,6 @@
   "livestock-direct-measure-methodology-description": "Direct measurement of emissions from livestock",
   "land-direct-measure-methodology-description": "Direct measurement of emissions from land",
   "aggregate-sources-and-non-co2-emission-sources-direct-measure-methodology-description": "Direct measurement of emissions from aggregate sources and non co2 emissions",
-  "emissions-from-aggregate-sources-and-non-co2-emission-sources-on-land-within-the-city-boundary-description": "Includes all emissions from aggregate sources such as liming and urea application, as well as non-CO2 gases emitted from land use activities within the city's boundaries."
+  "emissions-from-aggregate-sources-and-non-co2-emission-sources-on-land-within-the-city-boundary-description": "Includes all emissions from aggregate sources such as liming and urea application, as well as non-CO2 gases emitted from land use activities within the city's boundaries.",
+  "selected-methodology-disabled": "This methodology is disabled"
 }

@@ -1109,5 +1109,6 @@
   "livestock-direct-measure-methodology-description": "Direkte Messung der Emissionen von Vieh",
   "land-direct-measure-methodology-description": "Direkte Messung der Emissionen vom Land",
   "aggregate-sources-and-non-co2-emission-sources-direct-measure-methodology-description": "Direkte Messung der Emissionen aus aggregierten Quellen und Nicht-CO2-Emissionen",
-  "emissions-from-aggregate-sources-and-non-co2-emission-sources-on-land-within-the-city-boundary-description": "Umfasst alle Emissionen aus aggregierten Quellen wie Kalkung und Harnstoffanwendung sowie nicht-CO2-Gase, die durch Landnutzungsaktivitäten innerhalb der Stadtgrenzen emittiert werden."
+  "emissions-from-aggregate-sources-and-non-co2-emission-sources-on-land-within-the-city-boundary-description": "Umfasst alle Emissionen aus aggregierten Quellen wie Kalkung und Harnstoffanwendung sowie nicht-CO2-Gase, die durch Landnutzungsaktivitäten innerhalb der Stadtgrenzen emittiert werden.",
+  "selected-methodology-disabled": "Die ausgewählte Methodik ist deaktiviert"
 }

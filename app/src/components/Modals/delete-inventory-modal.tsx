@@ -4,6 +4,7 @@ import {
   Badge,
   Box,
   Button,
+  FormControl,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -171,7 +172,7 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
                 </Text>
               </Box>
               <Box>
-                <form>
+                <FormControl>
                   <Box
                     display="flex"
                     flexDirection="column"
@@ -226,7 +227,7 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
                       </Box>
                     </Box>
                   </Box>
-                </form>
+                </FormControl>
               </Box>
             </Box>
           </ModalBody>

@@ -4,50 +4,20 @@
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 1,
-        "explanation": "This action is crucial for reducing risks associated with geo-hydrological disasters, such as landslides and flooding, which have high normalized risk scores. It is cost-effective and can be implemented quickly, providing immediate benefits to the city."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0087",
         "actionName": "Infrastructure retrofitting",
+        "actionPriority": 1,
+        "explanation": "This action targets the industrial process sector, which is the largest emission source in Serra. Retrofitting infrastructure can significantly reduce emissions and improve resilience against climate hazards like flooding and landslides."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0095",
+        "actionName": "Disaster early warning",
         "actionPriority": 2,
-        "explanation": "Retrofitting infrastructure is essential for reducing emissions in the industrial process sector, which is the largest emission source. It also enhances resilience against climate hazards, making it a high-priority action."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0053",
-        "actionName": "Water Savings",
-        "actionPriority": 3,
-        "explanation": "Water savings address the key impact of water resources and drought, which is a significant risk for Serra. This action is cost-effective and aligns with the city's environmental needs."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0054",
-        "actionName": "Water Recycling",
-        "actionPriority": 4,
-        "explanation": "Similar to water savings, water recycling helps mitigate drought risks and is environmentally compatible with Serra's Atlantic forest biome. It also supports efficient resource use."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0091",
-        "actionName": "Diversification of livelihoods",
-        "actionPriority": 5,
-        "explanation": "This action enhances socio-economic resilience, particularly important for a city with a diverse population. It reduces dependency on vulnerable sectors and supports adaptation to climate impacts."
+        "explanation": "Given the high risk of geo-hydrological disasters such as flooding and landslides, early warning systems are crucial for risk reduction and public safety."
     },
     {
         "locode": "BRSER",
@@ -56,28 +26,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
-        "actionPriority": 6,
-        "explanation": "Social safety nets are vital for protecting vulnerable populations from climate impacts, such as heatwaves and diseases. They are cost-effective and can be implemented quickly."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0050",
-        "actionName": "White Roofs",
-        "actionPriority": 7,
-        "explanation": "White roofs help reduce heatwave impacts by lowering urban heat island effects. This action is cost-effective and aligns with the city's need to address public health risks."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0051",
-        "actionName": "Public Shading",
-        "actionPriority": 8,
-        "explanation": "Public shading provides immediate relief from heatwaves, improving public health and comfort. It is a low-cost, high-impact action suitable for Serra's urban environment."
+        "actionPriority": 3,
+        "explanation": "This action supports socio-demographic suitability by providing a safety net for vulnerable populations, especially during climate-induced disasters."
     },
     {
         "locode": "BRSER",
@@ -86,8 +36,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
-        "actionPriority": 9,
-        "explanation": "Improving access to healthcare is crucial for managing health risks from heatwaves and diseases. This action supports the city's socio-demographic needs and enhances resilience."
+        "actionPriority": 4,
+        "explanation": "Improving healthcare access is vital for addressing public health risks from heatwaves and diseases, which are significant hazards in Serra."
     },
     {
         "locode": "BRSER",
@@ -96,8 +46,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
-        "actionPriority": 10,
-        "explanation": "Enhancing farm and fishery practices supports food security, particularly against flooding and drought risks. It aligns with Serra's environmental and socio-economic context."
+        "actionPriority": 5,
+        "explanation": "Enhancing agricultural and fishery practices can mitigate food security risks from droughts and flooding, aligning with the city's environmental context."
     },
     {
         "locode": "BRSER",
@@ -106,8 +56,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
-        "actionPriority": 11,
-        "explanation": "Improving food storage and distribution systems is essential for maintaining food security during climate events. This action is cost-effective and can be implemented quickly."
+        "actionPriority": 6,
+        "explanation": "Improving food storage and distribution systems can reduce food waste and enhance resilience against food security risks from climate hazards."
     },
     {
         "locode": "BRSER",
@@ -116,8 +66,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 12,
-        "explanation": "Promoting behavior change in diets and reducing food waste supports sustainability and reduces emissions. It is a low-cost action with significant long-term benefits."
+        "actionPriority": 7,
+        "explanation": "Promoting sustainable diets and reducing food waste can lower emissions and improve resource efficiency, aligning with environmental compatibility."
     },
     {
         "locode": "BRSER",
@@ -126,48 +76,68 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0100",
         "actionName": "Efficient water use/demand",
+        "actionPriority": 8,
+        "explanation": "Efficient water use is crucial for addressing water resource risks from droughts, a key impact area for Serra."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "c40_0050",
+        "actionName": "White Roofs",
+        "actionPriority": 9,
+        "explanation": "White roofs can reduce urban heat, addressing heatwave risks and improving energy efficiency, which is relevant for Serra's energy security."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "c40_0051",
+        "actionName": "Public Shading",
+        "actionPriority": 10,
+        "explanation": "Public shading can mitigate heatwave impacts, enhancing public health and comfort in urban areas."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0091",
+        "actionName": "Diversification of livelihoods",
+        "actionPriority": 11,
+        "explanation": "Diversifying livelihoods can enhance socio-economic resilience against climate impacts, particularly in vulnerable communities."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "c40_0053",
+        "actionName": "Water Savings",
+        "actionPriority": 12,
+        "explanation": "Water savings initiatives are essential for managing water resources efficiently, especially during droughts."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "c40_0052",
+        "actionName": "Cool Pavement",
         "actionPriority": 13,
-        "explanation": "Efficient water use addresses drought risks and supports sustainable resource management. It is a cost-effective action that aligns with Serra's environmental needs."
+        "explanation": "Cool pavements can reduce urban heat and improve comfort, aligning with environmental compatibility and public health goals."
     },
     {
         "locode": "BRSER",
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0060",
-        "actionName": "Managed Retreat",
+        "actionId": "c40_0054",
+        "actionName": "Water Recycling",
         "actionPriority": 14,
-        "explanation": "Managed retreat is a strategic action for reducing risks from geo-hydrological disasters, such as flooding. It requires careful planning but offers long-term resilience benefits."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0090",
-        "actionName": "Insurance",
-        "actionPriority": 15,
-        "explanation": "Insurance provides financial protection against climate impacts, supporting socio-economic resilience. It is a cost-effective action with immediate benefits."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0046",
-        "actionName": "Coastal Protection",
-        "actionPriority": 16,
-        "explanation": "Coastal protection is essential for mitigating risks from flooding and sea-level rise. It is a high-priority action for Serra's coastal areas."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0059",
-        "actionName": "Early Warning",
-        "actionPriority": 17,
-        "explanation": "Early warning systems are crucial for reducing risks from climate hazards, such as flooding and landslides. They provide immediate benefits and are cost-effective."
+        "explanation": "Water recycling can enhance water resource management, crucial for addressing drought risks."
     },
     {
         "locode": "BRSER",
@@ -176,18 +146,18 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
-        "actionPriority": 18,
-        "explanation": "Updating building codes enhances resilience against climate impacts, particularly in the industrial process sector. It is a strategic action for long-term sustainability."
+        "actionPriority": 15,
+        "explanation": "Updating building codes can improve resilience against climate hazards and reduce emissions from the construction sector."
     },
     {
         "locode": "BRSER",
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0081",
-        "actionName": "Coastal Accommodation",
-        "actionPriority": 19,
-        "explanation": "Coastal accommodation supports adaptation to sea-level rise and flooding. It requires significant investment but offers long-term benefits for coastal resilience."
+        "actionId": "ipcc_0089",
+        "actionName": "Spatially redirect development",
+        "actionPriority": 16,
+        "explanation": "Redirecting development can mitigate risks from geo-hydrological disasters and align with sustainable urban planning."
     },
     {
         "locode": "BRSER",
@@ -196,7 +166,37 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
+        "actionPriority": 17,
+        "explanation": "Enhancing health infrastructure is vital for addressing public health risks from climate hazards."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0099",
+        "actionName": "Water capture/storage",
+        "actionPriority": 18,
+        "explanation": "Water capture and storage systems are essential for managing water resources during droughts."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0101",
+        "actionName": "Efficient water supply/distribution",
+        "actionPriority": 19,
+        "explanation": "Improving water supply and distribution efficiency is crucial for addressing water resource risks."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0102",
+        "actionName": "Seasonal/temporary mobility",
         "actionPriority": 20,
-        "explanation": "Enhancing health infrastructure is vital for managing public health risks from climate impacts. It supports the city's socio-demographic needs and enhances resilience."
+        "explanation": "Facilitating mobility can enhance resilience against climate impacts, particularly for vulnerable populations."
     }
 ]

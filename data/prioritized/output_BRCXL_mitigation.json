@@ -4,30 +4,10 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0038",
-        "actionName": "Sanitary Landfills",
-        "actionPriority": 1,
-        "explanation": "Sanitary landfills address the largest emission sector in Caxias do Sul, waste emissions, which account for a significant portion of the city's total emissions. This action is cost-effective and aligns with the city's environmental context."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
         "actionId": "c40_0035",
         "actionName": "Waste Efficiency",
-        "actionPriority": 2,
-        "explanation": "Improving waste efficiency directly targets the city's largest emission sector. It is cost-effective and can be implemented relatively quickly, making it a high-priority action."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0036",
-        "actionName": "Landfill Management",
-        "actionPriority": 3,
-        "explanation": "Effective landfill management can significantly reduce methane emissions, a potent greenhouse gas, from the waste sector. This action is crucial for emissions reduction and risk mitigation."
+        "actionPriority": 1,
+        "explanation": "This action targets the waste sector, which is the largest emission source in Caxias do Sul, accounting for 78.7% of total emissions. It offers significant GHG reduction potential and aligns with the city's environmental context."
     },
     {
         "locode": "BRCXL",
@@ -36,8 +16,38 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "c40_0041",
         "actionName": "Waste Collection",
+        "actionPriority": 2,
+        "explanation": "Improving waste collection can significantly reduce emissions in the waste sector, the city's largest emission source. It is cost-effective and has a relatively short implementation timeline."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0040",
+        "actionName": "Volume-Based Collection",
+        "actionPriority": 3,
+        "explanation": "This action incentivizes waste reduction at the source, directly impacting the largest emission sector. It is environmentally compatible and cost-effective."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0038",
+        "actionName": "Sanitary Landfills",
         "actionPriority": 4,
-        "explanation": "Enhancing waste collection systems can improve overall waste management efficiency, reducing emissions and aligning with the city's waste sector priorities."
+        "explanation": "Enhancing landfill management can reduce methane emissions, a potent GHG, from the waste sector. It aligns with the city's environmental goals and is cost-effective."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
+        "actionPriority": 5,
+        "explanation": "Effective landfill management can significantly reduce emissions from the waste sector, aligning with the city's largest emission source."
     },
     {
         "locode": "BRCXL",
@@ -46,38 +56,28 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "c40_0039",
         "actionName": "Gas Management",
-        "actionPriority": 5,
-        "explanation": "Gas management in landfills can capture and utilize methane, reducing emissions and providing an alternative energy source. This action is both environmentally compatible and cost-effective."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0028",
-        "actionName": "Zero Emission Buses",
         "actionPriority": 6,
-        "explanation": "Transitioning to zero-emission buses addresses the transportation sector, the second-largest emission source. This action is crucial for reducing transportation emissions and improving air quality."
+        "explanation": "Managing landfill gas can reduce methane emissions, contributing to significant GHG reductions in the waste sector."
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0002",
-        "actionName": "Active Transport Modes",
+        "actionId": "ipcc_0080",
+        "actionName": "Avoiding, Minimising, and Recycling Waste",
         "actionPriority": 7,
-        "explanation": "Promoting active transport modes like cycling and walking can reduce vehicle emissions, improve public health, and is cost-effective with minimal dependencies."
+        "explanation": "This action targets waste reduction at the source, offering significant emissions reduction potential in the city's largest emission sector."
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0045",
-        "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
+        "actionId": "ipcc_0012",
+        "actionName": "Electric Technologies",
         "actionPriority": 8,
-        "explanation": "Encouraging behavioral changes to reduce waste can have a significant impact on emissions from the waste sector. This action is cost-effective and aligns with socio-demographic suitability."
+        "explanation": "Transitioning to electric technologies can reduce emissions in the stationary energy sector, the second-largest emission source in the city."
     },
     {
         "locode": "BRCXL",
@@ -87,7 +87,7 @@
         "actionId": "c40_0026",
         "actionName": "Vehicle Emissions",
         "actionPriority": 9,
-        "explanation": "Reducing vehicle emissions is essential for addressing the transportation sector's impact. This action is relevant to the city's emission profile and can be implemented with existing technologies."
+        "explanation": "Reducing vehicle emissions targets the transportation sector, the third-largest emission source, offering significant GHG reduction potential."
     },
     {
         "locode": "BRCXL",
@@ -97,7 +97,17 @@
         "actionId": "ipcc_0019",
         "actionName": "Modal Shift from Aircraft to Train",
         "actionPriority": 10,
-        "explanation": "Shifting from air to rail transport can significantly reduce emissions in the transportation sector. This action is environmentally compatible and aligns with the city's infrastructure capacity."
+        "explanation": "Promoting a modal shift can reduce emissions in the transportation sector, aligning with the city's emission reduction goals."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0011",
+        "actionName": "Alternative Fuels for Vehicles",
+        "actionPriority": 11,
+        "explanation": "Using alternative fuels can reduce emissions in the transportation sector, contributing to the city's emission reduction targets."
     },
     {
         "locode": "BRCXL",
@@ -106,8 +116,18 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0015",
         "actionName": "Improved Energy Efficiency for Vehicles",
-        "actionPriority": 11,
-        "explanation": "Enhancing vehicle energy efficiency can reduce fuel consumption and emissions, making it a cost-effective and impactful action for the transportation sector."
+        "actionPriority": 12,
+        "explanation": "Enhancing vehicle energy efficiency can reduce emissions in the transportation sector, aligning with the city's emission reduction goals."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0002",
+        "actionName": "Active Transport Modes",
+        "actionPriority": 13,
+        "explanation": "Promoting active transport modes can reduce emissions in the transportation sector, contributing to the city's emission reduction targets."
     },
     {
         "locode": "BRCXL",
@@ -116,8 +136,48 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0059",
         "actionName": "Reduce Conversion of Coastal Wetlands",
-        "actionPriority": 12,
-        "explanation": "Protecting coastal wetlands can prevent emissions from land use changes and preserve biodiversity. This action aligns with environmental compatibility and risk reduction priorities."
+        "actionPriority": 14,
+        "explanation": "Protecting coastal wetlands can sequester carbon, contributing to emissions reduction and aligning with the city's environmental goals."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0037",
+        "actionName": "Source Separation",
+        "actionPriority": 15,
+        "explanation": "Source separation of waste can enhance recycling and reduce emissions in the waste sector, the city's largest emission source."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0028",
+        "actionName": "Zero Emission Buses",
+        "actionPriority": 16,
+        "explanation": "Introducing zero-emission buses can reduce emissions in the transportation sector, aligning with the city's emission reduction goals."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0045",
+        "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
+        "actionPriority": 17,
+        "explanation": "Encouraging behavioral changes can reduce waste generation, contributing to emissions reduction in the city's largest emission sector."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0053",
+        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+        "actionPriority": 18,
+        "explanation": "These actions can sequester carbon, contributing to emissions reduction and aligning with the city's environmental goals."
     },
     {
         "locode": "BRCXL",
@@ -126,77 +186,17 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0007",
         "actionName": "Smart Mobility",
-        "actionPriority": 13,
-        "explanation": "Implementing smart mobility solutions can optimize transportation systems, reduce emissions, and improve urban living conditions. This action is suitable for the city's technological capacity."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0012",
-        "actionName": "Electric Technologies",
-        "actionPriority": 14,
-        "explanation": "Adopting electric technologies in transportation and industry can reduce emissions and align with global trends towards electrification. This action is relevant to the city's emission sectors."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0023",
-        "actionName": "Bus Emissions",
-        "actionPriority": 15,
-        "explanation": "Reducing emissions from buses is crucial for the transportation sector. This action is cost-effective and can be implemented with existing technologies."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0025",
-        "actionName": "Truck Emissions",
-        "actionPriority": 16,
-        "explanation": "Addressing truck emissions is essential for reducing transportation sector emissions. This action is relevant to the city's emission profile and can be implemented with available technologies."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0026",
-        "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
-        "actionPriority": 17,
-        "explanation": "Implementing heat recovery systems can improve energy efficiency in industrial processes, reducing emissions and energy costs. This action is suitable for the city's industrial capacity."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0027",
-        "actionName": "Process Coupling and Improvements",
-        "actionPriority": 18,
-        "explanation": "Enhancing industrial processes through coupling and improvements can reduce emissions and increase efficiency. This action aligns with the city's industrial sector priorities."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0028",
-        "actionName": "Introduction of Energy Efficiency Technologies in Processing",
         "actionPriority": 19,
-        "explanation": "Introducing energy efficiency technologies in processing can reduce emissions and operational costs, making it a cost-effective action for the industrial sector."
+        "explanation": "Implementing smart mobility solutions can reduce emissions in the transportation sector, contributing to the city's emission reduction targets."
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0031",
-        "actionName": "Smart Energy Management",
+        "actionId": "ipcc_0022",
+        "actionName": "Improved Energy Efficiency for Shipping",
         "actionPriority": 20,
-        "explanation": "Implementing smart energy management systems can optimize energy use and reduce emissions across sectors. This action is suitable for the city's technological capacity and energy sector priorities."
+        "explanation": "Enhancing energy efficiency in shipping can reduce emissions in the transportation sector, aligning with the city's emission reduction goals."
     }
 ]

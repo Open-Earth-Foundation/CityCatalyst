@@ -87,8 +87,7 @@ def quantitative_score(city, action):
     # Emissions reduction score
     print("# Calculating emissions reduction score")
     ghg_weight = weights.get("GHGReductionPotential", 1)
-    emissions_reduction = calculate_emissions_reduction(city, action)
-    scores += emissions_reduction * ghg_weight
+    scores += calculate_emissions_reduction(city, action) * ghg_weight
     print(f"Score after emissions reduction: {scores}")
 
     # Sector match score

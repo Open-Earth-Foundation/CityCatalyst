@@ -17,7 +17,7 @@
         "actionId": "ipcc_0033",
         "actionName": "Electrification of Processes",
         "actionPriority": 2,
-        "explanation": "Electrification of industrial processes can significantly reduce emissions in the industrial sector, which is a major contributor to the city's total emissions. It is cost-effective and aligns with the city's energy security needs."
+        "explanation": "Electrification targets the industrial sector, which is a major emission source in Cama\u00e7ari. It offers substantial emissions reduction by replacing fossil fuels with cleaner electricity."
     },
     {
         "locode": "BRCCI",
@@ -27,17 +27,7 @@
         "actionId": "ipcc_0037",
         "actionName": "Feedstock Decarbonisation",
         "actionPriority": 3,
-        "explanation": "Targeting the industrial sector, feedstock decarbonisation can substantially lower emissions. It is relevant to the city's largest emission sector and offers a high return on investment."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0076",
-        "actionName": "Switching to Net-zero-emissions Materials and Supply Chains",
-        "actionPriority": 4,
-        "explanation": "This action addresses emissions in the industrial sector by promoting sustainable materials, aligning with the city's environmental goals and offering significant emissions reduction."
+        "explanation": "This action focuses on reducing emissions from industrial feedstocks, directly addressing a significant emission source in the city."
     },
     {
         "locode": "BRCCI",
@@ -46,28 +36,8 @@
         "regionName": "Bahia",
         "actionId": "c40_0035",
         "actionName": "Waste Efficiency",
-        "actionPriority": 5,
-        "explanation": "Waste efficiency directly targets the waste sector, which is a significant emission source in Cama\u00e7ari. It is cost-effective and can be implemented relatively quickly."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0041",
-        "actionName": "Waste Collection",
-        "actionPriority": 6,
-        "explanation": "Improving waste collection systems can reduce emissions from waste management, a key sector in Cama\u00e7ari. It is cost-effective and aligns with the city's waste management goals."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0040",
-        "actionName": "Volume-Based Collection",
-        "actionPriority": 7,
-        "explanation": "This action incentivizes waste reduction and efficient collection, directly impacting the waste sector's emissions. It is cost-effective and aligns with the city's waste management strategy."
+        "actionPriority": 4,
+        "explanation": "Waste management is a major emission sector in Cama\u00e7ari. Improving waste efficiency can significantly reduce emissions and align with the city's environmental goals."
     },
     {
         "locode": "BRCCI",
@@ -76,8 +46,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0026",
         "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
-        "actionPriority": 8,
-        "explanation": "This action targets energy efficiency in industrial processes, offering emissions reduction and cost savings. It is relevant to the city's industrial sector."
+        "actionPriority": 5,
+        "explanation": "This action targets energy efficiency in industrial processes, offering emissions reduction and cost savings, making it highly relevant for Cama\u00e7ari's industrial sector."
     },
     {
         "locode": "BRCCI",
@@ -86,8 +56,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0027",
         "actionName": "Process Coupling and Improvements",
-        "actionPriority": 9,
-        "explanation": "Improving industrial processes can lead to significant emissions reductions. This action is relevant to the city's largest emission sector and offers cost-effective solutions."
+        "actionPriority": 6,
+        "explanation": "Enhancing industrial process efficiency can lead to significant emissions reduction, aligning with the city's need to address industrial emissions."
     },
     {
         "locode": "BRCCI",
@@ -96,8 +66,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0032",
         "actionName": "Fuel Switching to Renewable Fuels",
-        "actionPriority": 10,
-        "explanation": "Switching to renewable fuels in industrial processes can significantly reduce emissions. It aligns with the city's energy goals and offers a high return on investment."
+        "actionPriority": 7,
+        "explanation": "Switching to renewable fuels in industrial processes can significantly reduce emissions, addressing a major emission source in Cama\u00e7ari."
     },
     {
         "locode": "BRCCI",
@@ -106,8 +76,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0034",
         "actionName": "Energy Recycling in Furnaces and Kilns",
-        "actionPriority": 11,
-        "explanation": "This action targets energy efficiency in industrial processes, offering emissions reduction and cost savings. It is relevant to the city's industrial sector."
+        "actionPriority": 8,
+        "explanation": "This action improves energy efficiency in industrial processes, offering emissions reduction and cost savings."
     },
     {
         "locode": "BRCCI",
@@ -116,8 +86,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0042",
         "actionName": "Design for Recovery, Reuse, or Repurposing",
-        "actionPriority": 12,
-        "explanation": "Promoting circular economy practices can reduce emissions in the industrial sector. This action aligns with the city's sustainability goals and offers long-term benefits."
+        "actionPriority": 9,
+        "explanation": "Promoting circular economy practices can reduce waste emissions, aligning with Cama\u00e7ari's environmental goals."
     },
     {
         "locode": "BRCCI",
@@ -126,8 +96,28 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0044",
         "actionName": "Alternative feedstocks (e.g. in cement)",
-        "actionPriority": 13,
-        "explanation": "Using alternative feedstocks in industrial processes can reduce emissions. This action is relevant to the city's industrial sector and offers a high return on investment."
+        "actionPriority": 10,
+        "explanation": "Using alternative feedstocks can reduce emissions in industrial processes, addressing a significant emission source in Cama\u00e7ari."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0038",
+        "actionName": "Sanitary Landfills",
+        "actionPriority": 11,
+        "explanation": "Improving landfill management can reduce waste emissions, a major sector in Cama\u00e7ari."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0076",
+        "actionName": "Switching to Net-zero-emissions Materials and Supply Chains",
+        "actionPriority": 12,
+        "explanation": "This action targets emissions across supply chains, offering comprehensive emissions reduction potential."
     },
     {
         "locode": "BRCCI",
@@ -136,8 +126,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0035",
         "actionName": "Technology Improvements of Processes",
-        "actionPriority": 14,
-        "explanation": "Improving technology in industrial processes can lead to significant emissions reductions. This action is relevant to the city's largest emission sector and offers cost-effective solutions."
+        "actionPriority": 13,
+        "explanation": "Enhancing technology in industrial processes can lead to emissions reduction and efficiency gains."
     },
     {
         "locode": "BRCCI",
@@ -146,8 +136,18 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0043",
         "actionName": "Circular Economy Policies",
+        "actionPriority": 14,
+        "explanation": "Implementing circular economy policies can reduce waste emissions and promote sustainability."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0041",
+        "actionName": "Waste Collection",
         "actionPriority": 15,
-        "explanation": "Implementing circular economy policies can reduce emissions in the industrial sector. This action aligns with the city's sustainability goals and offers long-term benefits."
+        "explanation": "Improving waste collection can reduce emissions from waste management, a significant sector in Cama\u00e7ari."
     },
     {
         "locode": "BRCCI",
@@ -157,7 +157,7 @@
         "actionId": "ipcc_0030",
         "actionName": "Material Recycling",
         "actionPriority": 16,
-        "explanation": "Promoting material recycling can reduce emissions in the industrial sector. This action aligns with the city's sustainability goals and offers long-term benefits."
+        "explanation": "Recycling materials can reduce waste emissions and promote resource efficiency."
     },
     {
         "locode": "BRCCI",
@@ -167,7 +167,7 @@
         "actionId": "ipcc_0047",
         "actionName": "Enhanced product service levels per product (e.g. product sharing)",
         "actionPriority": 17,
-        "explanation": "Enhancing product service levels can reduce emissions by promoting efficient use of resources. This action aligns with the city's sustainability goals."
+        "explanation": "Enhancing product service levels can reduce demand and emissions associated with production."
     },
     {
         "locode": "BRCCI",
@@ -177,7 +177,7 @@
         "actionId": "ipcc_0048",
         "actionName": "Design for extended product life-time",
         "actionPriority": 18,
-        "explanation": "Designing products for extended life-time can reduce emissions by promoting efficient use of resources. This action aligns with the city's sustainability goals."
+        "explanation": "Designing products for longer life can reduce emissions from production and waste."
     },
     {
         "locode": "BRCCI",
@@ -187,7 +187,7 @@
         "actionId": "ipcc_0049",
         "actionName": "Improved product stock maintenance to extend life-time",
         "actionPriority": 19,
-        "explanation": "Improving product stock maintenance can reduce emissions by promoting efficient use of resources. This action aligns with the city's sustainability goals."
+        "explanation": "Maintaining product stock can extend product life and reduce emissions from production and waste."
     },
     {
         "locode": "BRCCI",
@@ -197,6 +197,6 @@
         "actionId": "ipcc_0051",
         "actionName": "Reducing overall demand for product services",
         "actionPriority": 20,
-        "explanation": "Reducing demand for product services can lower emissions by promoting efficient use of resources. This action aligns with the city's sustainability goals."
+        "explanation": "Reducing demand can lower emissions associated with production and consumption."
     }
 ]

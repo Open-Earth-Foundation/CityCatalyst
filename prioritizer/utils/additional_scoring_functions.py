@@ -54,8 +54,8 @@ def calculate_emissions_reduction(city, action):
             reduction_percentage = reduction_mapping[reduction_str]
             city_emission = city.get(city_emission_key, 0)
             total_reduction += city_emission * reduction_percentage
-
-    return total_reduction
+    total_reduction_percentage = total_reduction / city.get("totalEmissions", 1)
+    return total_reduction_percentage
 
 def adaptation_effectiveness_score(action):
     mappings = load_mappings()
@@ -91,6 +91,6 @@ def find_highest_emission(city):
             highest_emission = key
 
     total_emissions = city.get("totalEmissions", 1)  # Avoid division by zero
-    highest_percentage = (highest_value / total_emissions) * 100
+    highest_percentage = (highest_value / total_emissions)
 
     return highest_emission, highest_percentage

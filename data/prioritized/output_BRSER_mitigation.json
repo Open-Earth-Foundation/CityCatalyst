@@ -8,6 +8,7 @@
         "actionName": "Carbon Capture and Storage (CCS)",
         "actionPriority": 1,
         "explanation": "CCS directly targets the industrial process emissions, which are the largest emission sector in Serra. It offers significant GHG reduction potential, aligning with the city's emission profile."
+
     },
     {
         "locode": "BRSER",
@@ -18,6 +19,7 @@
         "actionName": "Electrification of Processes",
         "actionPriority": 2,
         "explanation": "Electrification can significantly reduce emissions in the industrial sector by replacing fossil fuels with cleaner electricity, which is crucial for Serra's high industrial emissions."
+
     },
     {
         "locode": "BRSER",
@@ -48,6 +50,7 @@
         "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
         "actionPriority": 5,
         "explanation": "This action improves energy efficiency in industrial processes, reducing emissions and aligning with Serra's high industrial emissions."
+
     },
     {
         "locode": "BRSER",
@@ -58,6 +61,7 @@
         "actionName": "Process Coupling and Improvements",
         "actionPriority": 6,
         "explanation": "Enhancing process efficiency in industries can lead to significant emissions reductions, crucial for Serra's industrial sector."
+
     },
     {
         "locode": "BRSER",
@@ -68,6 +72,7 @@
         "actionName": "Fuel Switching to Renewable Fuels",
         "actionPriority": 7,
         "explanation": "Switching to renewable fuels can reduce emissions in both industrial and transportation sectors, which are significant in Serra."
+
     },
     {
         "locode": "BRSER",
@@ -78,6 +83,7 @@
         "actionName": "Energy Recycling in Furnaces and Kilns",
         "actionPriority": 8,
         "explanation": "This action targets energy-intensive industrial processes, offering emissions reductions in Serra's largest sector."
+
     },
     {
         "locode": "BRSER",
@@ -88,6 +94,7 @@
         "actionName": "Design for Recovery, Reuse, or Repurposing",
         "actionPriority": 9,
         "explanation": "Promotes circular economy principles, reducing waste emissions and aligning with Serra's environmental goals."
+
     },
     {
         "locode": "BRSER",
@@ -98,6 +105,7 @@
         "actionName": "Alternative feedstocks (e.g. in cement)",
         "actionPriority": 10,
         "explanation": "Using alternative feedstocks can reduce emissions in the industrial sector, which is crucial for Serra."
+
     },
     {
         "locode": "BRSER",
@@ -108,6 +116,7 @@
         "actionName": "Technology Improvements of Processes",
         "actionPriority": 11,
         "explanation": "Improving industrial technologies can lead to emissions reductions, aligning with Serra's high industrial emissions."
+
     },
     {
         "locode": "BRSER",
@@ -118,6 +127,7 @@
         "actionName": "Circular Economy Policies",
         "actionPriority": 12,
         "explanation": "Encourages waste reduction and resource efficiency, addressing waste emissions in Serra."
+
     },
     {
         "locode": "BRSER",
@@ -128,6 +138,7 @@
         "actionName": "Material Recycling",
         "actionPriority": 13,
         "explanation": "Recycling reduces waste emissions and supports Serra's environmental goals."
+
     },
     {
         "locode": "BRSER",
@@ -138,6 +149,7 @@
         "actionName": "Enhanced product service levels per product (e.g. product sharing)",
         "actionPriority": 14,
         "explanation": "Promotes resource efficiency and waste reduction, aligning with Serra's environmental objectives."
+
     },
     {
         "locode": "BRSER",
@@ -148,6 +160,7 @@
         "actionName": "Design for extended product life-time",
         "actionPriority": 15,
         "explanation": "Extending product life reduces waste emissions, supporting Serra's environmental goals."
+
     },
     {
         "locode": "BRSER",
@@ -158,6 +171,7 @@
         "actionName": "Improved product stock maintenance to extend life-time",
         "actionPriority": 16,
         "explanation": "Enhances resource efficiency and reduces waste emissions, aligning with Serra's environmental objectives."
+
     },
     {
         "locode": "BRSER",
@@ -168,6 +182,7 @@
         "actionName": "Reducing overall demand for product services",
         "actionPriority": 17,
         "explanation": "Decreasing demand reduces emissions across sectors, supporting Serra's environmental goals."
+
     },
     {
         "locode": "BRSER",
@@ -178,6 +193,7 @@
         "actionName": "Improved Material Utilization (Near-Net Shape Casting)",
         "actionPriority": 18,
         "explanation": "Enhances efficiency in material use, reducing industrial emissions in Serra."
+
     },
     {
         "locode": "BRSER",
@@ -188,6 +204,7 @@
         "actionName": "Design with Less / Lightweighting of Products",
         "actionPriority": 19,
         "explanation": "Reduces material use and emissions, supporting Serra's environmental objectives."
+
     },
     {
         "locode": "BRSER",
@@ -198,5 +215,6 @@
         "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
         "actionPriority": 20,
         "explanation": "Encourages waste reduction through behavioral changes, aligning with Serra's environmental goals."
+
     }
 ]

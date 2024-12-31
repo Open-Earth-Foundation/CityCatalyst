@@ -8,6 +8,7 @@
         "actionName": "Reduce Deforestation and Degradation",
         "actionPriority": 1,
         "explanation": "This action directly targets the largest emission sector in Corumb\u00e1, which is land use emissions. Reducing deforestation and degradation will significantly lower GHG emissions, aligning with the city's biome and providing substantial environmental benefits."
+
     },
     {
         "locode": "BRCMG",
@@ -18,6 +19,7 @@
         "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
         "actionPriority": 2,
         "explanation": "This action supports the restoration of forest ecosystems, which is crucial for reducing land use emissions. It aligns well with the savanna biome and offers long-term carbon sequestration benefits."
+
     },
     {
         "locode": "BRCMG",
@@ -28,6 +30,7 @@
         "actionName": "Soil Carbon Management in Croplands and Grasslands",
         "actionPriority": 3,
         "explanation": "By enhancing soil carbon storage, this action addresses emissions from agricultural activities, which are significant in the region. It is cost-effective and compatible with the local environment."
+
     },
     {
         "locode": "BRCMG",
@@ -38,6 +41,7 @@
         "actionName": "Peatland Restoration",
         "actionPriority": 4,
         "explanation": "Restoring peatlands can prevent further emissions from these carbon-rich areas. This action is crucial for maintaining biodiversity and reducing land use emissions."
+
     },
     {
         "locode": "BRCMG",
@@ -48,6 +52,7 @@
         "actionName": "Reduce Conversion of Coastal Wetlands",
         "actionPriority": 5,
         "explanation": "Coastal wetlands are vital carbon sinks. Preventing their conversion helps maintain their ecological function and reduces emissions."
+
     },
     {
         "locode": "BRCMG",
@@ -58,6 +63,7 @@
         "actionName": "Urban Tree Planting and Management",
         "actionPriority": 6,
         "explanation": "Urban tree planting enhances carbon sequestration in urban areas, improves air quality, and provides shade, reducing heatwave impacts."
+
     },
     {
         "locode": "BRCMG",
@@ -68,6 +74,7 @@
         "actionName": "Improved Forest Management",
         "actionPriority": 7,
         "explanation": "Enhancing forest management practices can reduce emissions from deforestation and degradation, aligning with the city's environmental goals."
+
     },
     {
         "locode": "BRCMG",
@@ -78,6 +85,7 @@
         "actionName": "Bioenergy and BECCS",
         "actionPriority": 8,
         "explanation": "Bioenergy with carbon capture and storage offers a dual benefit of energy production and carbon sequestration, although it requires significant investment."
+
     },
     {
         "locode": "BRCMG",
@@ -88,6 +96,7 @@
         "actionName": "Shift to sustainable healthy diets",
         "actionPriority": 9,
         "explanation": "Promoting sustainable diets can reduce emissions from agriculture and improve public health, aligning with socio-demographic suitability."
+
     },
     {
         "locode": "BRCMG",
@@ -98,6 +107,7 @@
         "actionName": "Improved and enhanced use of wood products",
         "actionPriority": 10,
         "explanation": "Using wood products sustainably can store carbon and reduce emissions from deforestation."
+
     },
     {
         "locode": "BRCMG",
@@ -108,6 +118,7 @@
         "actionName": "Reduce Degradation and Conversion of Peatlands",
         "actionPriority": 11,
         "explanation": "This action prevents emissions from peatland degradation, supporting biodiversity and carbon storage."
+
     },
     {
         "locode": "BRCMG",
@@ -118,6 +129,7 @@
         "actionName": "Agroforestry",
         "actionPriority": 12,
         "explanation": "Integrating trees into agricultural systems can enhance carbon sequestration and improve land productivity."
+
     },
     {
         "locode": "BRCMG",
@@ -128,6 +140,7 @@
         "actionName": "Biodiversity Expansion",
         "actionPriority": 13,
         "explanation": "Expanding biodiversity supports ecosystem resilience and carbon sequestration, although it may have a longer implementation timeline."
+
     },
     {
         "locode": "BRCMG",
@@ -138,6 +151,7 @@
         "actionName": "Coastal Wetland Restoration",
         "actionPriority": 14,
         "explanation": "Restoring coastal wetlands enhances their role as carbon sinks and protects against flooding."
+
     },
     {
         "locode": "BRCMG",
@@ -148,6 +162,7 @@
         "actionName": "Biochar",
         "actionPriority": 15,
         "explanation": "Biochar production can sequester carbon and improve soil health, though it requires initial investment."
+
     },
     {
         "locode": "BRCMG",
@@ -158,6 +173,7 @@
         "actionName": "Manure management",
         "actionPriority": 16,
         "explanation": "Improving manure management reduces methane emissions from agriculture, aligning with cost-effectiveness and sector relevance."
+
     },
     {
         "locode": "BRCMG",
@@ -168,6 +184,7 @@
         "actionName": "Enteric fermentation",
         "actionPriority": 17,
         "explanation": "Addressing enteric fermentation can reduce methane emissions from livestock, though it may require changes in farming practices."
+
     },
     {
         "locode": "BRCMG",
@@ -178,6 +195,7 @@
         "actionName": "Crop nutrient management",
         "actionPriority": 18,
         "explanation": "Optimizing nutrient management reduces emissions from fertilizers, supporting sustainable agriculture."
+
     },
     {
         "locode": "BRCMG",
@@ -188,6 +206,7 @@
         "actionName": "Fire Management (Forest and Grassland / Savanna Fires)",
         "actionPriority": 19,
         "explanation": "Effective fire management reduces emissions from uncontrolled fires, aligning with the savanna biome."
+
     },
     {
         "locode": "BRCMG",
@@ -198,5 +217,6 @@
         "actionName": "Improve rice management",
         "actionPriority": 20,
         "explanation": "Improving rice management can reduce methane emissions, though it may have limited impact compared to other actions."
+
     }
 ]

@@ -8,6 +8,7 @@
         "actionName": "Farm/fishery improvements",
         "actionPriority": 1,
         "explanation": "Targets land use emissions, the largest emission sector in Rio Branco. Aligns with the Amazon rainforest biome and addresses food security risks."
+
     },
     {
         "locode": "BRRBR",
@@ -18,6 +19,7 @@
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 2,
         "explanation": "Reduces waste emissions significantly and aligns with socio-demographic suitability. Addresses food security and waste management."
+
     },
     {
         "locode": "BRRBR",
@@ -28,6 +30,7 @@
         "actionName": "Efficient water use/demand",
         "actionPriority": 3,
         "explanation": "Addresses water resource risks and aligns with the city's climate. Cost-effective with a quick implementation timeline."
+
     },
     {
         "locode": "BRRBR",
@@ -38,6 +41,7 @@
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 4,
         "explanation": "Targets waste emissions and improves food security. Suitable for the city's socio-economic context."
+
     },
     {
         "locode": "BRRBR",
@@ -48,6 +52,7 @@
         "actionName": "Disaster early warning",
         "actionPriority": 5,
         "explanation": "Reduces risks from geo-hydrological disasters and heatwaves. Quick implementation and high relevance to public safety."
+
     },
     {
         "locode": "BRRBR",
@@ -58,6 +63,7 @@
         "actionName": "Infrastructure retrofitting",
         "actionPriority": 6,
         "explanation": "Addresses stationary energy emissions and enhances resilience against climate hazards. High sector relevance."
+
     },
     {
         "locode": "BRRBR",
@@ -68,6 +74,7 @@
         "actionName": "Access to health care",
         "actionPriority": 7,
         "explanation": "Improves public health resilience against heatwaves and diseases. Aligns with socio-demographic needs."
+
     },
     {
         "locode": "BRRBR",
@@ -78,6 +85,7 @@
         "actionName": "Social safety nets",
         "actionPriority": 8,
         "explanation": "Enhances socio-economic resilience and addresses public health risks. Suitable for the city's population context."
+
     },
     {
         "locode": "BRRBR",
@@ -88,6 +96,7 @@
         "actionName": "Water capture/storage",
         "actionPriority": 9,
         "explanation": "Mitigates drought risks and aligns with the city's water resource needs. Cost-effective and quick to implement."
+
     },
     {
         "locode": "BRRBR",
@@ -98,6 +107,7 @@
         "actionName": "Efficient water supply/distribution",
         "actionPriority": 10,
         "explanation": "Addresses water resource risks and improves water management. Suitable for the city's infrastructure capacity."
+
     },
     {
         "locode": "BRRBR",
@@ -108,6 +118,7 @@
         "actionName": "White Roofs",
         "actionPriority": 11,
         "explanation": "Reduces heatwave impacts and improves energy efficiency. Quick implementation with environmental compatibility."
+
     },
     {
         "locode": "BRRBR",
@@ -118,6 +129,7 @@
         "actionName": "Public Shading",
         "actionPriority": 12,
         "explanation": "Mitigates heatwave impacts and enhances public comfort. Cost-effective and aligns with the city's climate."
+
     },
     {
         "locode": "BRRBR",
@@ -128,6 +140,7 @@
         "actionName": "Building codes",
         "actionPriority": 13,
         "explanation": "Improves energy efficiency and reduces stationary energy emissions. Aligns with the city's development needs."
+
     },
     {
         "locode": "BRRBR",
@@ -138,6 +151,7 @@
         "actionName": "Spatially redirect development",
         "actionPriority": 14,
         "explanation": "Reduces land use emissions and aligns with urban planning needs. Suitable for the city's growth strategy."
+
     },
     {
         "locode": "BRRBR",
@@ -148,6 +162,7 @@
         "actionName": "Cool Pavement",
         "actionPriority": 15,
         "explanation": "Reduces heatwave impacts and improves urban comfort. Quick implementation with environmental compatibility."
+
     },
     {
         "locode": "BRRBR",
@@ -158,6 +173,7 @@
         "actionName": "Water Savings",
         "actionPriority": 16,
         "explanation": "Addresses water resource risks and improves water management. Cost-effective and aligns with the city's needs."
+
     },
     {
         "locode": "BRRBR",
@@ -168,6 +184,7 @@
         "actionName": "Water Recycling",
         "actionPriority": 17,
         "explanation": "Enhances water resource management and mitigates drought risks. Suitable for the city's infrastructure capacity."
+
     },
     {
         "locode": "BRRBR",
@@ -178,6 +195,7 @@
         "actionName": "Diversification of livelihoods",
         "actionPriority": 18,
         "explanation": "Enhances socio-economic resilience and addresses food security. Suitable for the city's socio-economic context."
+
     },
     {
         "locode": "BRRBR",
@@ -188,6 +206,7 @@
         "actionName": "Availability of health infrastructure",
         "actionPriority": 19,
         "explanation": "Improves public health resilience against climate hazards. Aligns with socio-demographic needs."
+
     },
     {
         "locode": "BRRBR",
@@ -198,5 +217,6 @@
         "actionName": "Seasonal/temporary mobility",
         "actionPriority": 20,
         "explanation": "Enhances resilience against climate hazards and aligns with socio-demographic needs. Suitable for the city's context."
+
     }
 ]

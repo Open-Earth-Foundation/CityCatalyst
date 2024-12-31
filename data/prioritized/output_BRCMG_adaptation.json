@@ -8,6 +8,7 @@
         "actionName": "Diversification of livelihoods",
         "actionPriority": 1,
         "explanation": "This action targets the land use sector, which is the largest emission source in Corumb\u00e1. It also addresses socio-demographic suitability by providing alternative income sources, reducing dependency on high-emission activities."
+
     },
     {
         "locode": "BRCMG",
@@ -18,6 +19,7 @@
         "actionName": "Disaster early warning",
         "actionPriority": 2,
         "explanation": "Addresses risk reduction by providing timely alerts for geo-hydrological disasters, which have high normalized risk scores. It is cost-effective and has a short implementation timeline."
+
     },
     {
         "locode": "BRCMG",
@@ -28,6 +30,7 @@
         "actionName": "Water Savings",
         "actionPriority": 3,
         "explanation": "Targets water resources, a key impact area with high risk from drought. It is cost-effective and aligns with the city's savanna biome."
+
     },
     {
         "locode": "BRCMG",
@@ -38,16 +41,18 @@
         "actionName": "Water Recycling",
         "actionPriority": 4,
         "explanation": "Enhances water resource management, crucial for drought-prone areas. It is environmentally compatible and cost-effective."
+
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0087",
-        "actionName": "Infrastructure retrofitting",
+        "actionId": "ipcc_0091",
+        "actionName": "Diversification of livelihoods",
         "actionPriority": 5,
         "explanation": "Improves resilience against climate hazards like flooding and landslides. It is relevant to the city's infrastructure sector and has a moderate cost-benefit ratio."
+
     },
     {
         "locode": "BRCMG",
@@ -58,6 +63,7 @@
         "actionName": "Building codes",
         "actionPriority": 6,
         "explanation": "Ensures new constructions are resilient to climate impacts, reducing future risks. It is sector-relevant and has a long-term impact."
+
     },
     {
         "locode": "BRCMG",
@@ -78,6 +84,7 @@
         "actionName": "Availability of health infrastructure",
         "actionPriority": 8,
         "explanation": "Addresses public health risks from heatwaves and diseases. It is crucial for socio-demographic suitability and risk reduction."
+
     },
     {
         "locode": "BRCMG",
@@ -88,6 +95,7 @@
         "actionName": "Water capture/storage",
         "actionPriority": 9,
         "explanation": "Mitigates drought impacts by enhancing water availability. It is environmentally compatible and cost-effective."
+
     },
     {
         "locode": "BRCMG",
@@ -98,6 +106,7 @@
         "actionName": "Efficient water supply/distribution",
         "actionPriority": 10,
         "explanation": "Improves water management, crucial for drought-prone areas. It is cost-effective and aligns with the city's biome."
+
     },
     {
         "locode": "BRCMG",
@@ -108,6 +117,7 @@
         "actionName": "Seasonal/temporary mobility",
         "actionPriority": 11,
         "explanation": "Provides flexibility in response to climate hazards, reducing risk. It is socio-demographically suitable and has a short implementation timeline."
+
     },
     {
         "locode": "BRCMG",
@@ -118,6 +128,7 @@
         "actionName": "Coastal Protection",
         "actionPriority": 12,
         "explanation": "Addresses geo-hydrological risks like flooding. It is sector-relevant and has a moderate cost-benefit ratio."
+
     },
     {
         "locode": "BRCMG",
@@ -128,6 +139,7 @@
         "actionName": "Early Warning",
         "actionPriority": 13,
         "explanation": "Provides timely alerts for climate hazards, reducing risk. It is cost-effective and has a short implementation timeline."
+
     },
     {
         "locode": "BRCMG",
@@ -138,6 +150,7 @@
         "actionName": "Insurance",
         "actionPriority": 14,
         "explanation": "Provides financial protection against climate impacts, enhancing socio-demographic suitability. It is cost-effective and has a short implementation timeline."
+
     },
     {
         "locode": "BRCMG",
@@ -148,6 +161,7 @@
         "actionName": "Coastal Infrastructure",
         "actionPriority": 15,
         "explanation": "Enhances resilience against flooding and other coastal hazards. It is sector-relevant and has a moderate cost-benefit ratio."
+
     },
     {
         "locode": "BRCMG",
@@ -158,6 +172,7 @@
         "actionName": "Restore/create natural areas",
         "actionPriority": 16,
         "explanation": "Enhances ecosystem services, aligning with the city's savanna biome. It is environmentally compatible and cost-effective."
+
     },
     {
         "locode": "BRCMG",
@@ -168,6 +183,7 @@
         "actionName": "Access to health care",
         "actionPriority": 17,
         "explanation": "Addresses public health risks from climate impacts. It is crucial for socio-demographic suitability and risk reduction."
+
     },
     {
         "locode": "BRCMG",
@@ -178,6 +194,7 @@
         "actionName": "Farm/fishery improvements",
         "actionPriority": 18,
         "explanation": "Enhances food security, a key impact area with high risk from drought. It is cost-effective and aligns with the city's socio-economic context."
+
     },
     {
         "locode": "BRCMG",
@@ -188,6 +205,7 @@
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 19,
         "explanation": "Enhances food security, crucial for socio-demographic suitability. It is cost-effective and has a short implementation timeline."
+
     },
     {
         "locode": "BRCMG",
@@ -198,5 +216,6 @@
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 20,
         "explanation": "Reduces food waste, enhancing food security. It is cost-effective and aligns with the city's socio-economic context."
+
     }
 ]

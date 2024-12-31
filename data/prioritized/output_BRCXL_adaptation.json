@@ -8,6 +8,7 @@
         "actionName": "Diversification of livelihoods",
         "actionPriority": 1,
         "explanation": "This action addresses socio-economic resilience, crucial for adapting to climate impacts. It supports the city's capacity to withstand economic shocks, especially in high-risk sectors like agriculture and fisheries."
+
     },
     {
         "locode": "BRCXL",
@@ -18,6 +19,7 @@
         "actionName": "Water Savings",
         "actionPriority": 2,
         "explanation": "Water savings directly address the city's high risk of drought and water scarcity, aligning with the key impact of water resources. It is cost-effective and has a quick implementation timeline."
+
     },
     {
         "locode": "BRCXL",
@@ -28,6 +30,7 @@
         "actionName": "Infrastructure retrofitting",
         "actionPriority": 3,
         "explanation": "Retrofitting infrastructure reduces emissions from the stationary energy sector, which is a significant source of emissions in Caxias do Sul. It also enhances resilience against climate hazards like flooding."
+
     },
     {
         "locode": "BRCXL",
@@ -38,6 +41,7 @@
         "actionName": "Disaster early warning",
         "actionPriority": 4,
         "explanation": "Early warning systems are crucial for reducing risks from geo-hydrological disasters such as landslides and flooding, which have high normalized risk scores in the city."
+
     },
     {
         "locode": "BRCXL",
@@ -48,6 +52,7 @@
         "actionName": "Water Recycling",
         "actionPriority": 5,
         "explanation": "Water recycling is vital for addressing water scarcity and reducing emissions from waste management. It aligns with the city's environmental context and has a moderate cost-benefit ratio."
+
     },
     {
         "locode": "BRCXL",
@@ -58,6 +63,7 @@
         "actionName": "Building codes",
         "actionPriority": 6,
         "explanation": "Implementing stringent building codes can significantly reduce emissions from the construction sector and improve resilience against climate hazards like heatwaves and flooding."
+
     },
     {
         "locode": "BRCXL",
@@ -68,6 +74,7 @@
         "actionName": "Social safety nets",
         "actionPriority": 7,
         "explanation": "Social safety nets are essential for supporting vulnerable populations during climate-related events, enhancing socio-demographic suitability and resilience."
+
     },
     {
         "locode": "BRCXL",
@@ -78,6 +85,7 @@
         "actionName": "Availability of health infrastructure",
         "actionPriority": 8,
         "explanation": "Improving health infrastructure is critical for addressing public health risks from heatwaves and diseases, which have high risk scores in the city."
+
     },
     {
         "locode": "BRCXL",
@@ -88,6 +96,7 @@
         "actionName": "Water capture/storage",
         "actionPriority": 9,
         "explanation": "Enhancing water capture and storage systems is crucial for mitigating drought impacts and ensuring water security, aligning with the city's high risk of water scarcity."
+
     },
     {
         "locode": "BRCXL",
@@ -98,6 +107,7 @@
         "actionName": "Efficient water supply/distribution",
         "actionPriority": 10,
         "explanation": "Improving water supply and distribution efficiency addresses the city's water scarcity issues and reduces emissions from the water sector."
+
     },
     {
         "locode": "BRCXL",
@@ -108,6 +118,7 @@
         "actionName": "Seasonal/temporary mobility",
         "actionPriority": 11,
         "explanation": "Facilitating seasonal or temporary mobility can help manage population pressures during climate events, enhancing socio-demographic suitability."
+
     },
     {
         "locode": "BRCXL",
@@ -124,20 +135,11 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0059",
-        "actionName": "Early Warning",
-        "actionPriority": 13,
-        "explanation": "Similar to disaster early warning, this action is crucial for reducing risks from climate hazards, particularly geo-hydrological disasters."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0090",
         "actionName": "Insurance",
         "actionPriority": 14,
         "explanation": "Insurance schemes can provide financial protection against climate-related losses, supporting socio-economic resilience."
+
     },
     {
         "locode": "BRCXL",
@@ -148,6 +150,7 @@
         "actionName": "Coastal Infrastructure",
         "actionPriority": 15,
         "explanation": "Although not directly applicable to Caxias do Sul, coastal infrastructure improvements can indirectly support water management and flood risk reduction."
+
     },
     {
         "locode": "BRCXL",
@@ -158,6 +161,7 @@
         "actionName": "Restore/create natural areas",
         "actionPriority": 16,
         "explanation": "Restoring natural areas can enhance biodiversity, improve air quality, and provide natural flood defenses, aligning with the city's environmental context."
+
     },
     {
         "locode": "BRCXL",
@@ -168,6 +172,7 @@
         "actionName": "Access to health care",
         "actionPriority": 17,
         "explanation": "Improving access to healthcare is vital for managing public health risks from climate impacts, particularly diseases and heatwaves."
+
     },
     {
         "locode": "BRCXL",
@@ -178,6 +183,7 @@
         "actionName": "Farm/fishery improvements",
         "actionPriority": 18,
         "explanation": "Enhancing farm and fishery practices can improve food security and reduce emissions from the agricultural sector."
+
     },
     {
         "locode": "BRCXL",
@@ -188,6 +194,7 @@
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 19,
         "explanation": "Improving food storage and distribution systems can reduce food waste and enhance food security, aligning with the city's socio-economic context."
+
     },
     {
         "locode": "BRCXL",
@@ -198,5 +205,6 @@
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 20,
         "explanation": "Promoting behavior change in diets and reducing food waste can lower emissions from the food sector and support sustainable consumption patterns."
+
     }
 ]

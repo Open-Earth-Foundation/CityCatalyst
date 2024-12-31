@@ -8,6 +8,7 @@
         "actionName": "Infrastructure retrofitting",
         "actionPriority": 1,
         "explanation": "This action targets the industrial process emissions, which is the largest emission sector in Cama\u00e7ari. Retrofitting infrastructure can significantly reduce emissions and improve resilience against climate hazards like flooding and heatwaves."
+
     },
     {
         "locode": "BRCCI",
@@ -18,6 +19,7 @@
         "actionName": "Disaster early warning",
         "actionPriority": 2,
         "explanation": "Given the high risk of geo-hydrological disasters such as flooding and landslides, early warning systems are crucial for risk reduction and protecting public health and safety."
+
     },
     {
         "locode": "BRCCI",
@@ -28,6 +30,7 @@
         "actionName": "Availability of health infrastructure",
         "actionPriority": 3,
         "explanation": "With high risks from heatwaves and diseases, enhancing health infrastructure is vital for public health and aligns with the city's socio-demographic needs."
+
     },
     {
         "locode": "BRCCI",
@@ -38,6 +41,7 @@
         "actionName": "Social safety nets",
         "actionPriority": 4,
         "explanation": "Social safety nets are essential for supporting vulnerable populations during climate-related events, addressing socio-demographic suitability and risk reduction."
+
     },
     {
         "locode": "BRCCI",
@@ -48,6 +52,7 @@
         "actionName": "Access to health care",
         "actionPriority": 5,
         "explanation": "Improving access to healthcare is critical in managing the impacts of heatwaves and diseases, which are significant risks for Cama\u00e7ari."
+
     },
     {
         "locode": "BRCCI",
@@ -58,6 +63,7 @@
         "actionName": "Farm/fishery improvements",
         "actionPriority": 6,
         "explanation": "Enhancing agricultural practices can mitigate the impacts of droughts and flooding on food security, aligning with environmental compatibility and risk reduction."
+
     },
     {
         "locode": "BRCCI",
@@ -68,6 +74,7 @@
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 7,
         "explanation": "Improving food storage and distribution systems can help manage food security risks posed by flooding and droughts."
+
     },
     {
         "locode": "BRCCI",
@@ -78,6 +85,7 @@
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 8,
         "explanation": "Promoting sustainable diets and reducing food waste can contribute to emissions reduction and improve food security."
+
     },
     {
         "locode": "BRCCI",
@@ -88,6 +96,7 @@
         "actionName": "Efficient water use/demand",
         "actionPriority": 9,
         "explanation": "Efficient water use is crucial in addressing water resource risks from droughts, aligning with environmental compatibility and cost-effectiveness."
+
     },
     {
         "locode": "BRCCI",
@@ -98,6 +107,7 @@
         "actionName": "White Roofs",
         "actionPriority": 10,
         "explanation": "White roofs can reduce urban heat, addressing heatwave risks and improving energy efficiency, which is relevant for the city's climate."
+
     },
     {
         "locode": "BRCCI",
@@ -108,6 +118,7 @@
         "actionName": "Public Shading",
         "actionPriority": 11,
         "explanation": "Public shading can mitigate heatwave impacts, enhancing public health and comfort in urban areas."
+
     },
     {
         "locode": "BRCCI",
@@ -118,6 +129,7 @@
         "actionName": "Diversification of livelihoods",
         "actionPriority": 12,
         "explanation": "Diversifying livelihoods can enhance resilience against climate impacts, supporting socio-economic stability."
+
     },
     {
         "locode": "BRCCI",
@@ -128,6 +140,7 @@
         "actionName": "Water Savings",
         "actionPriority": 13,
         "explanation": "Water savings initiatives are important for managing drought risks and ensuring sustainable water resources."
+
     },
     {
         "locode": "BRCCI",
@@ -138,6 +151,7 @@
         "actionName": "Cool Pavement",
         "actionPriority": 14,
         "explanation": "Cool pavements can reduce urban heat, addressing heatwave risks and improving urban comfort."
+
     },
     {
         "locode": "BRCCI",
@@ -148,6 +162,7 @@
         "actionName": "Water Recycling",
         "actionPriority": 15,
         "explanation": "Water recycling can enhance water resource management, crucial for drought risk reduction."
+
     },
     {
         "locode": "BRCCI",
@@ -158,6 +173,7 @@
         "actionName": "Building codes",
         "actionPriority": 16,
         "explanation": "Updating building codes can improve resilience against climate hazards like flooding and heatwaves, aligning with environmental compatibility."
+
     },
     {
         "locode": "BRCCI",
@@ -168,6 +184,7 @@
         "actionName": "Spatially redirect development",
         "actionPriority": 17,
         "explanation": "Redirecting development can reduce exposure to climate hazards, supporting risk reduction and sustainable urban planning."
+
     },
     {
         "locode": "BRCCI",
@@ -178,6 +195,7 @@
         "actionName": "Water capture/storage",
         "actionPriority": 18,
         "explanation": "Enhancing water capture and storage is vital for managing water resources and addressing drought risks."
+
     },
     {
         "locode": "BRCCI",
@@ -188,6 +206,7 @@
         "actionName": "Efficient water supply/distribution",
         "actionPriority": 19,
         "explanation": "Improving water supply and distribution efficiency is crucial for managing water resources and reducing drought impacts."
+
     },
     {
         "locode": "BRCCI",
@@ -198,5 +217,6 @@
         "actionName": "Seasonal/temporary mobility",
         "actionPriority": 20,
         "explanation": "Facilitating seasonal or temporary mobility can help manage population pressures during climate events, supporting socio-demographic suitability."
+
     }
 ]

@@ -8,6 +8,7 @@
         "actionName": "Infrastructure retrofitting",
         "actionPriority": 1,
         "explanation": "This action targets the industrial process sector, which is the largest emission source in Serra. Retrofitting infrastructure can significantly reduce emissions and improve resilience against climate hazards like flooding and landslides."
+
     },
     {
         "locode": "BRSER",
@@ -18,6 +19,7 @@
         "actionName": "Disaster early warning",
         "actionPriority": 2,
         "explanation": "Given the high risk of geo-hydrological disasters such as flooding and landslides, early warning systems are crucial for risk reduction and public safety."
+
     },
     {
         "locode": "BRSER",
@@ -28,6 +30,7 @@
         "actionName": "Social safety nets",
         "actionPriority": 3,
         "explanation": "This action supports socio-demographic suitability by providing a safety net for vulnerable populations, especially during climate-induced disasters."
+
     },
     {
         "locode": "BRSER",
@@ -38,6 +41,7 @@
         "actionName": "Access to health care",
         "actionPriority": 4,
         "explanation": "Improving healthcare access is vital for addressing public health risks from heatwaves and diseases, which are significant hazards in Serra."
+
     },
     {
         "locode": "BRSER",
@@ -48,6 +52,7 @@
         "actionName": "Farm/fishery improvements",
         "actionPriority": 5,
         "explanation": "Enhancing agricultural and fishery practices can mitigate food security risks from droughts and flooding, aligning with the city's environmental context."
+
     },
     {
         "locode": "BRSER",
@@ -58,6 +63,7 @@
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 6,
         "explanation": "Improving food storage and distribution systems can reduce food waste and enhance resilience against food security risks from climate hazards."
+
     },
     {
         "locode": "BRSER",
@@ -68,6 +74,7 @@
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 7,
         "explanation": "Promoting sustainable diets and reducing food waste can lower emissions and improve resource efficiency, aligning with environmental compatibility."
+
     },
     {
         "locode": "BRSER",
@@ -78,6 +85,7 @@
         "actionName": "Efficient water use/demand",
         "actionPriority": 8,
         "explanation": "Efficient water use is crucial for addressing water resource risks from droughts, a key impact area for Serra."
+
     },
     {
         "locode": "BRSER",
@@ -88,6 +96,7 @@
         "actionName": "White Roofs",
         "actionPriority": 9,
         "explanation": "White roofs can reduce urban heat, addressing heatwave risks and improving energy efficiency, which is relevant for Serra's energy security."
+
     },
     {
         "locode": "BRSER",
@@ -98,6 +107,7 @@
         "actionName": "Public Shading",
         "actionPriority": 10,
         "explanation": "Public shading can mitigate heatwave impacts, enhancing public health and comfort in urban areas."
+
     },
     {
         "locode": "BRSER",
@@ -108,6 +118,7 @@
         "actionName": "Diversification of livelihoods",
         "actionPriority": 11,
         "explanation": "Diversifying livelihoods can enhance socio-economic resilience against climate impacts, particularly in vulnerable communities."
+
     },
     {
         "locode": "BRSER",
@@ -118,6 +129,7 @@
         "actionName": "Water Savings",
         "actionPriority": 12,
         "explanation": "Water savings initiatives are essential for managing water resources efficiently, especially during droughts."
+
     },
     {
         "locode": "BRSER",
@@ -128,6 +140,7 @@
         "actionName": "Cool Pavement",
         "actionPriority": 13,
         "explanation": "Cool pavements can reduce urban heat and improve comfort, aligning with environmental compatibility and public health goals."
+
     },
     {
         "locode": "BRSER",
@@ -138,6 +151,7 @@
         "actionName": "Water Recycling",
         "actionPriority": 14,
         "explanation": "Water recycling can enhance water resource management, crucial for addressing drought risks."
+
     },
     {
         "locode": "BRSER",
@@ -148,6 +162,7 @@
         "actionName": "Building codes",
         "actionPriority": 15,
         "explanation": "Updating building codes can improve resilience against climate hazards and reduce emissions from the construction sector."
+
     },
     {
         "locode": "BRSER",
@@ -158,6 +173,7 @@
         "actionName": "Spatially redirect development",
         "actionPriority": 16,
         "explanation": "Redirecting development can mitigate risks from geo-hydrological disasters and align with sustainable urban planning."
+
     },
     {
         "locode": "BRSER",
@@ -168,6 +184,7 @@
         "actionName": "Availability of health infrastructure",
         "actionPriority": 17,
         "explanation": "Enhancing health infrastructure is vital for addressing public health risks from climate hazards."
+
     },
     {
         "locode": "BRSER",
@@ -178,6 +195,7 @@
         "actionName": "Water capture/storage",
         "actionPriority": 18,
         "explanation": "Water capture and storage systems are essential for managing water resources during droughts."
+
     },
     {
         "locode": "BRSER",
@@ -188,7 +206,7 @@
         "actionName": "Efficient water supply/distribution",
         "actionPriority": 19,
         "explanation": "Improving water supply and distribution efficiency is crucial for addressing water resource risks."
-    },
+
     {
         "locode": "BRSER",
         "cityName": "Serra",
@@ -198,5 +216,6 @@
         "actionName": "Seasonal/temporary mobility",
         "actionPriority": 20,
         "explanation": "Facilitating mobility can enhance resilience against climate impacts, particularly for vulnerable populations."
+
     }
 ]

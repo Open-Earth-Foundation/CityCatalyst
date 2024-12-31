@@ -8,6 +8,7 @@
         "actionName": "Carbon Capture and Storage (CCS)",
         "actionPriority": 1,
         "explanation": "CCS is highly effective in reducing emissions from industrial processes, which is the largest emission sector in Cama\u00e7ari. It aligns with the city's need to address industrial emissions and offers significant GHG reduction potential."
+
     },
     {
         "locode": "BRCCI",
@@ -18,6 +19,7 @@
         "actionName": "Electrification of Processes",
         "actionPriority": 2,
         "explanation": "Electrification targets the industrial sector, which is a major emission source in Cama\u00e7ari. It offers substantial emissions reduction by replacing fossil fuels with cleaner electricity."
+
     },
     {
         "locode": "BRCCI",
@@ -28,6 +30,7 @@
         "actionName": "Feedstock Decarbonisation",
         "actionPriority": 3,
         "explanation": "This action focuses on reducing emissions from industrial feedstocks, directly addressing a significant emission source in the city."
+
     },
     {
         "locode": "BRCCI",
@@ -38,6 +41,7 @@
         "actionName": "Waste Efficiency",
         "actionPriority": 4,
         "explanation": "Waste management is a major emission sector in Cama\u00e7ari. Improving waste efficiency can significantly reduce emissions and align with the city's environmental goals."
+
     },
     {
         "locode": "BRCCI",
@@ -48,6 +52,7 @@
         "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
         "actionPriority": 5,
         "explanation": "This action targets energy efficiency in industrial processes, offering emissions reduction and cost savings, making it highly relevant for Cama\u00e7ari's industrial sector."
+
     },
     {
         "locode": "BRCCI",
@@ -58,6 +63,7 @@
         "actionName": "Process Coupling and Improvements",
         "actionPriority": 6,
         "explanation": "Enhancing industrial process efficiency can lead to significant emissions reduction, aligning with the city's need to address industrial emissions."
+
     },
     {
         "locode": "BRCCI",
@@ -68,6 +74,7 @@
         "actionName": "Fuel Switching to Renewable Fuels",
         "actionPriority": 7,
         "explanation": "Switching to renewable fuels in industrial processes can significantly reduce emissions, addressing a major emission source in Cama\u00e7ari."
+
     },
     {
         "locode": "BRCCI",
@@ -78,6 +85,7 @@
         "actionName": "Energy Recycling in Furnaces and Kilns",
         "actionPriority": 8,
         "explanation": "This action improves energy efficiency in industrial processes, offering emissions reduction and cost savings."
+
     },
     {
         "locode": "BRCCI",
@@ -88,6 +96,7 @@
         "actionName": "Design for Recovery, Reuse, or Repurposing",
         "actionPriority": 9,
         "explanation": "Promoting circular economy practices can reduce waste emissions, aligning with Cama\u00e7ari's environmental goals."
+
     },
     {
         "locode": "BRCCI",
@@ -98,6 +107,7 @@
         "actionName": "Alternative feedstocks (e.g. in cement)",
         "actionPriority": 10,
         "explanation": "Using alternative feedstocks can reduce emissions in industrial processes, addressing a significant emission source in Cama\u00e7ari."
+
     },
     {
         "locode": "BRCCI",
@@ -108,6 +118,7 @@
         "actionName": "Sanitary Landfills",
         "actionPriority": 11,
         "explanation": "Improving landfill management can reduce waste emissions, a major sector in Cama\u00e7ari."
+
     },
     {
         "locode": "BRCCI",
@@ -118,6 +129,7 @@
         "actionName": "Switching to Net-zero-emissions Materials and Supply Chains",
         "actionPriority": 12,
         "explanation": "This action targets emissions across supply chains, offering comprehensive emissions reduction potential."
+
     },
     {
         "locode": "BRCCI",
@@ -128,6 +140,7 @@
         "actionName": "Technology Improvements of Processes",
         "actionPriority": 13,
         "explanation": "Enhancing technology in industrial processes can lead to emissions reduction and efficiency gains."
+
     },
     {
         "locode": "BRCCI",
@@ -138,6 +151,7 @@
         "actionName": "Circular Economy Policies",
         "actionPriority": 14,
         "explanation": "Implementing circular economy policies can reduce waste emissions and promote sustainability."
+
     },
     {
         "locode": "BRCCI",
@@ -148,6 +162,7 @@
         "actionName": "Waste Collection",
         "actionPriority": 15,
         "explanation": "Improving waste collection can reduce emissions from waste management, a significant sector in Cama\u00e7ari."
+
     },
     {
         "locode": "BRCCI",
@@ -158,6 +173,7 @@
         "actionName": "Material Recycling",
         "actionPriority": 16,
         "explanation": "Recycling materials can reduce waste emissions and promote resource efficiency."
+
     },
     {
         "locode": "BRCCI",
@@ -168,6 +184,7 @@
         "actionName": "Enhanced product service levels per product (e.g. product sharing)",
         "actionPriority": 17,
         "explanation": "Enhancing product service levels can reduce demand and emissions associated with production."
+
     },
     {
         "locode": "BRCCI",
@@ -178,6 +195,7 @@
         "actionName": "Design for extended product life-time",
         "actionPriority": 18,
         "explanation": "Designing products for longer life can reduce emissions from production and waste."
+
     },
     {
         "locode": "BRCCI",
@@ -188,6 +206,7 @@
         "actionName": "Improved product stock maintenance to extend life-time",
         "actionPriority": 19,
         "explanation": "Maintaining product stock can extend product life and reduce emissions from production and waste."
+
     },
     {
         "locode": "BRCCI",
@@ -198,5 +217,6 @@
         "actionName": "Reducing overall demand for product services",
         "actionPriority": 20,
         "explanation": "Reducing demand can lower emissions associated with production and consumption."
+
     }
 ]

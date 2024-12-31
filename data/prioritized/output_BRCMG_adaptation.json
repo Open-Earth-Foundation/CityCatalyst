@@ -4,20 +4,22 @@
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
+        "actionId": "ipcc_0091",
+        "actionName": "Diversification of livelihoods",
         "actionPriority": 1,
-        "explanation": "Highly cost-effective with significant risk reduction potential, especially for geo-hydrological disasters like landslides and flooding. Quick implementation and high relevance to infrastructure risks."
+        "explanation": "This action targets the land use sector, which is the largest emission source in Corumb\u00e1. It also addresses socio-demographic suitability by providing alternative income sources, reducing dependency on high-emission activities."
+
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0087",
-        "actionName": "Infrastructure retrofitting",
+        "actionId": "ipcc_0095",
+        "actionName": "Disaster early warning",
         "actionPriority": 2,
-        "explanation": "Addresses high-risk infrastructure vulnerabilities due to heatwaves and landslides. Cost-effective in the long term with significant risk reduction."
+        "explanation": "Addresses risk reduction by providing timely alerts for geo-hydrological disasters, which have high normalized risk scores. It is cost-effective and has a short implementation timeline."
+
     },
     {
         "locode": "BRCMG",
@@ -27,7 +29,8 @@
         "actionId": "c40_0053",
         "actionName": "Water Savings",
         "actionPriority": 3,
-        "explanation": "Aligns with the city's drought risk and water resource challenges. Cost-effective with immediate impact on water conservation."
+        "explanation": "Targets water resources, a key impact area with high risk from drought. It is cost-effective and aligns with the city's savanna biome."
+
     },
     {
         "locode": "BRCMG",
@@ -37,7 +40,8 @@
         "actionId": "c40_0054",
         "actionName": "Water Recycling",
         "actionPriority": 4,
-        "explanation": "Supports water resource management in drought-prone areas. Environmentally compatible and reduces dependency on fresh water sources."
+        "explanation": "Enhances water resource management, crucial for drought-prone areas. It is environmentally compatible and cost-effective."
+
     },
     {
         "locode": "BRCMG",
@@ -47,127 +51,8 @@
         "actionId": "ipcc_0091",
         "actionName": "Diversification of livelihoods",
         "actionPriority": 5,
-        "explanation": "Enhances socio-economic resilience against climate impacts, particularly in agriculture and fisheries. Suitable for the city's demographic context."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 6,
-        "explanation": "Provides socio-economic protection against climate-induced disruptions. Quick to implement and highly relevant to the city's socio-demographic needs."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0050",
-        "actionName": "White Roofs",
-        "actionPriority": 7,
-        "explanation": "Cost-effective measure to reduce heatwave impacts on infrastructure and public health. Quick implementation with immediate benefits."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0051",
-        "actionName": "Public Shading",
-        "actionPriority": 8,
-        "explanation": "Mitigates heatwave impacts on public spaces, enhancing urban livability. Low cost and quick to implement."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 9,
-        "explanation": "Critical for addressing public health risks from heatwaves and diseases. Aligns with socio-demographic needs and quick to implement."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 10,
-        "explanation": "Enhances food security and resilience against drought impacts. Suitable for the city's agricultural context."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 11,
-        "explanation": "Addresses food security risks from flooding and drought. Cost-effective with significant socio-economic benefits."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 12,
-        "explanation": "Promotes sustainable consumption patterns, reducing food waste and enhancing food security. Quick to implement with broad socio-economic benefits."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0100",
-        "actionName": "Efficient water use/demand",
-        "actionPriority": 13,
-        "explanation": "Critical for managing water resources in drought-prone areas. Cost-effective with immediate impact on water conservation."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0060",
-        "actionName": "Managed Retreat",
-        "actionPriority": 14,
-        "explanation": "Long-term strategy for addressing sea level rise and flooding risks. Requires significant planning but essential for high-risk areas."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0090",
-        "actionName": "Insurance",
-        "actionPriority": 15,
-        "explanation": "Provides financial protection against climate-induced losses. Quick to implement and aligns with socio-economic needs."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0046",
-        "actionName": "Coastal Protection",
-        "actionPriority": 16,
-        "explanation": "Addresses sea level rise and flooding risks. Requires significant investment but essential for long-term resilience."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0059",
-        "actionName": "Early Warning",
-        "actionPriority": 17,
-        "explanation": "Supports disaster preparedness for geo-hydrological risks. Quick to implement with significant risk reduction potential."
+        "explanation": "Improves resilience against climate hazards like flooding and landslides. It is relevant to the city's infrastructure sector and has a moderate cost-benefit ratio."
+
     },
     {
         "locode": "BRCMG",
@@ -176,18 +61,19 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
-        "actionPriority": 18,
-        "explanation": "Enhances infrastructure resilience against climate impacts. Requires regulatory changes but essential for long-term safety."
+        "actionPriority": 6,
+        "explanation": "Ensures new constructions are resilient to climate impacts, reducing future risks. It is sector-relevant and has a long-term impact."
+
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0081",
-        "actionName": "Coastal Accommodation",
-        "actionPriority": 19,
-        "explanation": "Addresses sea level rise impacts. Requires significant planning and investment but essential for long-term adaptation."
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 7,
+        "explanation": "Supports vulnerable populations, enhancing socio-demographic suitability. It is cost-effective and has a short implementation timeline."
     },
     {
         "locode": "BRCMG",
@@ -196,7 +82,140 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
+        "actionPriority": 8,
+        "explanation": "Addresses public health risks from heatwaves and diseases. It is crucial for socio-demographic suitability and risk reduction."
+
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0099",
+        "actionName": "Water capture/storage",
+        "actionPriority": 9,
+        "explanation": "Mitigates drought impacts by enhancing water availability. It is environmentally compatible and cost-effective."
+
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0101",
+        "actionName": "Efficient water supply/distribution",
+        "actionPriority": 10,
+        "explanation": "Improves water management, crucial for drought-prone areas. It is cost-effective and aligns with the city's biome."
+
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0102",
+        "actionName": "Seasonal/temporary mobility",
+        "actionPriority": 11,
+        "explanation": "Provides flexibility in response to climate hazards, reducing risk. It is socio-demographically suitable and has a short implementation timeline."
+
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0046",
+        "actionName": "Coastal Protection",
+        "actionPriority": 12,
+        "explanation": "Addresses geo-hydrological risks like flooding. It is sector-relevant and has a moderate cost-benefit ratio."
+
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0059",
+        "actionName": "Early Warning",
+        "actionPriority": 13,
+        "explanation": "Provides timely alerts for climate hazards, reducing risk. It is cost-effective and has a short implementation timeline."
+
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0090",
+        "actionName": "Insurance",
+        "actionPriority": 14,
+        "explanation": "Provides financial protection against climate impacts, enhancing socio-demographic suitability. It is cost-effective and has a short implementation timeline."
+
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0082",
+        "actionName": "Coastal Infrastructure",
+        "actionPriority": 15,
+        "explanation": "Enhances resilience against flooding and other coastal hazards. It is sector-relevant and has a moderate cost-benefit ratio."
+
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0084",
+        "actionName": "Restore/create natural areas",
+        "actionPriority": 16,
+        "explanation": "Enhances ecosystem services, aligning with the city's savanna biome. It is environmentally compatible and cost-effective."
+
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 17,
+        "explanation": "Addresses public health risks from climate impacts. It is crucial for socio-demographic suitability and risk reduction."
+
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 18,
+        "explanation": "Enhances food security, a key impact area with high risk from drought. It is cost-effective and aligns with the city's socio-economic context."
+
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 19,
+        "explanation": "Enhances food security, crucial for socio-demographic suitability. It is cost-effective and has a short implementation timeline."
+
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 20,
-        "explanation": "Supports public health resilience against climate impacts. Requires investment but essential for long-term health security."
+        "explanation": "Reduces food waste, enhancing food security. It is cost-effective and aligns with the city's socio-economic context."
+
     }
 ]

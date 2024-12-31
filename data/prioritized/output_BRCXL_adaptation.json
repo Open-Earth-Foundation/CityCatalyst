@@ -4,30 +4,33 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0053",
-        "actionName": "Water Savings",
-        "actionPriority": 1,
-        "explanation": "Water savings is cost-effective, reduces risk of drought, and aligns with the city's high water resource risk."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0054",
-        "actionName": "Water Recycling",
-        "actionPriority": 2,
-        "explanation": "Water recycling is crucial for reducing water scarcity risks and is cost-effective with significant environmental benefits."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0091",
         "actionName": "Diversification of livelihoods",
+        "actionPriority": 1,
+        "explanation": "This action addresses socio-economic resilience, crucial for adapting to climate impacts. It supports the city's capacity to withstand economic shocks, especially in high-risk sectors like agriculture and fisheries."
+
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0053",
+        "actionName": "Water Savings",
+        "actionPriority": 2,
+        "explanation": "Water savings directly address the city's high risk of drought and water scarcity, aligning with the key impact of water resources. It is cost-effective and has a quick implementation timeline."
+
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0087",
+        "actionName": "Infrastructure retrofitting",
         "actionPriority": 3,
-        "explanation": "Diversifying livelihoods enhances socio-economic resilience, crucial for a city with diverse climate risks."
+        "explanation": "Retrofitting infrastructure reduces emissions from the stationary energy sector, which is a significant source of emissions in Caxias do Sul. It also enhances resilience against climate hazards like flooding."
+
     },
     {
         "locode": "BRCXL",
@@ -37,67 +40,19 @@
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
         "actionPriority": 4,
-        "explanation": "Early warning systems are vital for reducing risks from landslides and flooding, which are high-risk hazards for the city."
+        "explanation": "Early warning systems are crucial for reducing risks from geo-hydrological disasters such as landslides and flooding, which have high normalized risk scores in the city."
+
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
+        "actionId": "c40_0054",
+        "actionName": "Water Recycling",
         "actionPriority": 5,
-        "explanation": "Improving health infrastructure addresses public health risks from heatwaves and diseases, which are significant for the city."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0087",
-        "actionName": "Infrastructure retrofitting",
-        "actionPriority": 6,
-        "explanation": "Retrofitting infrastructure is essential for reducing risks from landslides and flooding, aligning with the city's high-risk profile."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0060",
-        "actionName": "Managed Retreat",
-        "actionPriority": 7,
-        "explanation": "Managed retreat is a strategic response to geo-hydrological risks, particularly landslides and flooding."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0090",
-        "actionName": "Insurance",
-        "actionPriority": 8,
-        "explanation": "Insurance provides financial resilience against climate-related disasters, crucial for socio-economic stability."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0046",
-        "actionName": "Coastal Protection",
-        "actionPriority": 9,
-        "explanation": "While not directly applicable, coastal protection strategies can inform flood management practices."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0059",
-        "actionName": "Early Warning",
-        "actionPriority": 10,
-        "explanation": "Early warning systems are critical for timely responses to climate hazards, reducing potential impacts."
+        "explanation": "Water recycling is vital for addressing water scarcity and reducing emissions from waste management. It aligns with the city's environmental context and has a moderate cost-benefit ratio."
+
     },
     {
         "locode": "BRCXL",
@@ -106,18 +61,9 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
-        "actionPriority": 11,
-        "explanation": "Updating building codes enhances resilience against climate impacts, particularly for infrastructure."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0081",
-        "actionName": "Coastal Accommodation",
-        "actionPriority": 12,
-        "explanation": "Coastal accommodation strategies can be adapted for flood-prone areas, enhancing resilience."
+        "actionPriority": 6,
+        "explanation": "Implementing stringent building codes can significantly reduce emissions from the construction sector and improve resilience against climate hazards like heatwaves and flooding."
+
     },
     {
         "locode": "BRCXL",
@@ -126,8 +72,20 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
-        "actionPriority": 13,
-        "explanation": "Social safety nets provide support during climate-induced disruptions, crucial for vulnerable populations."
+        "actionPriority": 7,
+        "explanation": "Social safety nets are essential for supporting vulnerable populations during climate-related events, enhancing socio-demographic suitability and resilience."
+
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 8,
+        "explanation": "Improving health infrastructure is critical for addressing public health risks from heatwaves and diseases, which have high risk scores in the city."
+
     },
     {
         "locode": "BRCXL",
@@ -136,8 +94,9 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0099",
         "actionName": "Water capture/storage",
-        "actionPriority": 14,
-        "explanation": "Water capture and storage are vital for managing water resources, addressing drought risks."
+        "actionPriority": 9,
+        "explanation": "Enhancing water capture and storage systems is crucial for mitigating drought impacts and ensuring water security, aligning with the city's high risk of water scarcity."
+
     },
     {
         "locode": "BRCXL",
@@ -146,8 +105,9 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0101",
         "actionName": "Efficient water supply/distribution",
-        "actionPriority": 15,
-        "explanation": "Improving water supply efficiency is cost-effective and addresses water scarcity issues."
+        "actionPriority": 10,
+        "explanation": "Improving water supply and distribution efficiency addresses the city's water scarcity issues and reduces emissions from the water sector."
+
     },
     {
         "locode": "BRCXL",
@@ -156,38 +116,41 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0102",
         "actionName": "Seasonal/temporary mobility",
-        "actionPriority": 16,
-        "explanation": "Mobility strategies can mitigate risks from climate-induced displacement, enhancing resilience."
+        "actionPriority": 11,
+        "explanation": "Facilitating seasonal or temporary mobility can help manage population pressures during climate events, enhancing socio-demographic suitability."
+
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0050",
-        "actionName": "White Roofs",
-        "actionPriority": 17,
-        "explanation": "White roofs reduce urban heat, aligning with the city's risk from heatwaves."
+        "actionId": "c40_0046",
+        "actionName": "Coastal Protection",
+        "actionPriority": 12,
+        "explanation": "While Caxias do Sul is not a coastal city, coastal protection measures can still be relevant for managing water-related risks and enhancing resilience."
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0051",
-        "actionName": "Public Shading",
-        "actionPriority": 18,
-        "explanation": "Public shading reduces heat exposure, improving public health outcomes during heatwaves."
+        "actionId": "ipcc_0090",
+        "actionName": "Insurance",
+        "actionPriority": 14,
+        "explanation": "Insurance schemes can provide financial protection against climate-related losses, supporting socio-economic resilience."
+
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0056",
-        "actionName": "Watershed Preservation",
-        "actionPriority": 19,
-        "explanation": "Preserving watersheds is crucial for maintaining water quality and availability, addressing drought risks."
+        "actionId": "ipcc_0082",
+        "actionName": "Coastal Infrastructure",
+        "actionPriority": 15,
+        "explanation": "Although not directly applicable to Caxias do Sul, coastal infrastructure improvements can indirectly support water management and flood risk reduction."
+
     },
     {
         "locode": "BRCXL",
@@ -196,7 +159,52 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0084",
         "actionName": "Restore/create natural areas",
+        "actionPriority": 16,
+        "explanation": "Restoring natural areas can enhance biodiversity, improve air quality, and provide natural flood defenses, aligning with the city's environmental context."
+
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 17,
+        "explanation": "Improving access to healthcare is vital for managing public health risks from climate impacts, particularly diseases and heatwaves."
+
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 18,
+        "explanation": "Enhancing farm and fishery practices can improve food security and reduce emissions from the agricultural sector."
+
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 19,
+        "explanation": "Improving food storage and distribution systems can reduce food waste and enhance food security, aligning with the city's socio-economic context."
+
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 20,
-        "explanation": "Restoring natural areas enhances biodiversity and provides ecosystem services, supporting climate resilience."
+        "explanation": "Promoting behavior change in diets and reducing food waste can lower emissions from the food sector and support sustainable consumption patterns."
+
     }
 ]

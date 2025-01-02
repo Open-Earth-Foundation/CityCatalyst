@@ -19,6 +19,7 @@ from routes.country_code_endpoint import api_router as country_code_endpoint_rou
 from routes.citywide_emission_endpoint import api_router as citywide_route
 from routes.ghgi_emissions import api_router as actor_emissions_route
 from routes.ccra_assessment import api_router as ccra_assessment
+from routes.ghgi_emission_forecast import api_router as emission_forecast
 
 """
 Logger instance initialized and configured
@@ -116,6 +117,11 @@ app.include_router(
 ## Endpoints for GHGI Emissions
 app.include_router(
     actor_emissions_route,
+    tags=["GHGI Emissions"],
+)
+
+app.include_router(
+    emission_forecast,
     tags=["GHGI Emissions"],
 )
 

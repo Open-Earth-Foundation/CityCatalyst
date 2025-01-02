@@ -1,7 +1,7 @@
 import { SectorEmission } from "@/util/types";
 import { ResponsiveBar } from "@nivo/bar";
 import { SECTORS } from "@/util/constants";
-import { convertKgToKiloTonnes } from "@/util/helpers";
+import { convertKgToKiloTonnes, convertKgToTonnes } from "@/util/helpers";
 import { useTranslation } from "@/i18n/client";
 import { toKebabCaseModified } from "@/app/[lng]/[inventory]/InventoryResultTab/index";
 import { Badge, Box, Card, HStack, Text } from "@chakra-ui/react";
@@ -73,7 +73,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
                 <Text>
                   {tData(id as string)}
                   {" - "}
-                  {value} {tData("co2eq")}
+                  {convertKgToTonnes(value)}
                 </Text>
               </HStack>
             </Card>
@@ -101,8 +101,8 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
             tickRotation: 0,
             legend: "CO2eq",
             legendPosition: "middle",
-            legendOffset: -75,
-            format: (value) => value,
+            legendOffset: -100,
+            format: (value) => convertKgToTonnes(value),
           }}
           labelSkipWidth={12}
           labelSkipHeight={12}
@@ -113,7 +113,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
           role="application"
           ariaLabel="Nivo bar chart demo"
           barAriaLabel={function (e) {
-            return e.id + ": " + e.formattedValue + " in year: " + e.indexValue;
+            return `${e.id}: ${convertKgToTonnes(e.value!)} in year: ${e.indexValue}`;
           }}
         />
       </div>

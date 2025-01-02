@@ -4,7 +4,7 @@ import { SECTORS } from "@/util/constants";
 import { convertKgToKiloTonnes } from "@/util/helpers";
 import { useTranslation } from "@/i18n/client";
 import { toKebabCaseModified } from "@/app/[lng]/[inventory]/InventoryResultTab/index";
-import { Box, Text } from "@chakra-ui/react";
+import { Badge, Box, Card, HStack, Text } from "@chakra-ui/react";
 
 interface EmissionBySectorChartProps {
   data: {
@@ -61,6 +61,23 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
           layout={"vertical"}
           margin={{ top: 50, right: 130, bottom: 50, left: 120 }}
           padding={0.3}
+          tooltip={({ id, value, color }) => (
+            <Card py={2} px={2}>
+              <HStack>
+                <Badge
+                  colorScheme="gray"
+                  boxSize="16px"
+                  bg={color}
+                  marginRight="8px"
+                />
+                <Text>
+                  {tData(id as string)}
+                  {" - "}
+                  {value} {tData("co2eq")}
+                </Text>
+              </HStack>
+            </Card>
+          )}
           valueScale={{ type: "linear", min: 0, max: "auto" }}
           indexScale={{ type: "band", round: true }}
           colors={colors}

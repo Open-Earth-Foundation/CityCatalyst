@@ -24,7 +24,7 @@ def db_city_emission_forecast(actor_id, forecast_year, spatial_granularity):
                    	TRIM(unnest(STRING_TO_ARRAY(gpc_sector,','))) AS gpc_sector,
     		2023 as forecast_year,
     		year as future_year,
-    		value as growth_rate
+    		value/100 as growth_rate
             FROM (
             SELECT 'III' AS gpc_sector, 2024 AS year, 0.670 AS value UNION ALL
             SELECT 'III', 2025, 0.440 UNION ALL

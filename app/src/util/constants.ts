@@ -128,6 +128,8 @@ export const SECTORS: ISector[] = [
 ];
 
 export const allSectorColors = SECTORS.map((sector) => sector.color);
+export const getSectorByName = (name: string) =>
+  SECTORS.find((s) => s.name === name);
 
 export const getReferenceNumberByName = (name: keyof ISector) =>
   findBy("name", name)?.referenceNumber;

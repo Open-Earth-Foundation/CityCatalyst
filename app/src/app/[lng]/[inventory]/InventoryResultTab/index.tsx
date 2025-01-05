@@ -45,6 +45,7 @@ import ButtonGroupToggle from "@/components/button-group-toggle";
 import { MdBarChart, MdTableChart } from "react-icons/md";
 import EmissionBySectorTableSection from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionBySectorTable";
 import EmissionBySectorChart from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionBySectorChart";
+import { EmissionsForecastSection } from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/EmissionsForecastSection";
 
 enum TableView {
   BY_ACTIVITY = "by-activity",
@@ -504,6 +505,11 @@ export default function InventoryResultTab({
               isPublic={isPublic}
             />
           </HStack>
+          <EmissionsForecastSection
+            inventoryId={inventory.inventoryId}
+            t={t}
+            lng={lng}
+          />
           <EmissionPerSectors
             t={t}
             inventory={inventory}

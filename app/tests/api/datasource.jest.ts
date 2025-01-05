@@ -188,7 +188,7 @@ describe("DataSource API", () => {
         },
       },
     });
-    console.log("datasource", JSON.stringify(datasource, null, 2)); // TODO NINA
+
     const { datasourceId } = datasource;
     const inventoryValueId = randomUUID();
     await db.models.InventoryValue.create({

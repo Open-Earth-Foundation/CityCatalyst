@@ -8,6 +8,17 @@ import { ActivityDataByScope, GroupedActivity } from "@/util/types";
 import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";
 import createHttpError from "http-errors";
+import { getGrowthRatesFromOC } from "./OpenClimateService";
+import { Inventory } from "@/models/Inventory";
+
+function multiplyBigIntByFraction(
+  stringValue: string,
+  fraction: number,
+): string {
+  const decimalValue = new Decimal(stringValue);
+  const result = decimalValue.times(fraction);
+  return result.toFixed(0); // Convert back to bigint, rounding if necessary
+}
 
 function sumBigIntBy(array: any[], fieldName: string): bigint {
   return array.reduce((sum, item) => sum + BigInt(item[fieldName]), 0n);
@@ -142,25 +153,31 @@ const SectorMappingsFromDBToFE = {
   "Agriculture, Forestry, and Other Land Use (AFOLU)": "afolu",
 };
 
-async function fetchTotalEmissionsBulk(
-  inventoryIds: string[],
-): Promise<TotalEmissionsResult[]> {
+export async function getTotalEmissionsBySector(inventoryIds: string[]) {
   const rawQuery = `
-      SELECT iv.inventory_id, SUM(iv.co2eq) AS co2eq, s.sector_name
+      SELECT iv.inventory_id, SUM(iv.co2eq) AS co2eq, s.sector_name, s.reference_number
       FROM "InventoryValue" iv
                JOIN "Sector" s ON iv.sector_id = s.sector_id
       WHERE iv.inventory_id IN (:inventoryIds)
-      GROUP BY iv.inventory_id, s.sector_name
+      GROUP BY iv.inventory_id, s.sector_name, s.reference_number
       ORDER BY iv.inventory_id, SUM(iv.co2eq) DESC
   `;
 
-  const totalEmissionsRaw: TotalEmissionsRecord[] = await db.sequelize!.query(
-    rawQuery,
-    {
-      replacements: { inventoryIds },
-      type: QueryTypes.SELECT,
-    },
-  );
+  return (await db.sequelize!.query(rawQuery, {
+    replacements: { inventoryIds },
+    type: QueryTypes.SELECT,
+  })) as {
+    co2eq: bigint;
+    inventory_id: string;
+    sector_name: SectorNamesInDB;
+    reference_number: string;
+  }[];
+}
+
+async function fetchTotalEmissionsBulk(
+  inventoryIds: string[],
+): Promise<TotalEmissionsResult[]> {
+  const totalEmissionsRaw = await getTotalEmissionsBySector(inventoryIds);
 
   // Group by inventory_id
   const grouped = groupBy(totalEmissionsRaw, "inventory_id");
@@ -371,7 +388,8 @@ const fetchInventoryValuesBySector = async (
                JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
                LEFT JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
                JOIN "Scope" scope ON scope.scope_id = sc.scope_id OR ss.scope_id = scope.scope_id
-      WHERE iv.inventory_id = (:inventoryId) and iv.co2eq IS NOT NULL
+      WHERE iv.inventory_id = (:inventoryId)
+        and iv.co2eq IS NOT NULL
         AND (s.sector_name) = (:sectorName)
       GROUP BY ss.subsector_name, scope.scope_name
   `;
@@ -595,14 +613,10 @@ const groupActivities = (
     "subsectorName",
   );
 
-  console.log(groupedBySubsector);
-
   return mapValues(groupedBySubsector, (subsectorActivities) => {
     const groupedByActivity = groupBy(subsectorActivities, (e) =>
       toKebabCase(e.activityTitle),
     );
-
-    console.log(groupedByActivity);
 
     return mapValues(groupedByActivity, (activityGroup) => {
       const groupedByUnit = groupBy(activityGroup, "activityUnits");
@@ -735,3 +749,49 @@ export async function getEmissionResults(inventory: string): Promise<{
     topEmissionsBySubSector: inventoryEmissionResults.topEmissionsBySubSector,
   };
 }
+
+export const getEmissionsForecasts = async (inventoryData: Inventory) => {
+  const OCResponse = await getGrowthRatesFromOC(
+    inventoryData.city.locode!,
+    inventoryData.created!.getFullYear(),
+  );
+  if (!OCResponse) {
+    return {
+      forecast: null,
+      cluster: null,
+      growthRates: null,
+    };
+  }
+  const { growthRates, cluster } = OCResponse;
+  const totalEmissionsBySector = await getTotalEmissionsBySector([
+    inventoryData.inventoryId,
+  ]);
+  const projectedEmissions: { [year: string]: { [sector: string]: string } } =
+    {};
+  // Initialize projected emissions with the base year emissions
+  const baseYear = inventoryData.created!.getFullYear().toString();
+  projectedEmissions[baseYear] = {};
+  totalEmissionsBySector.forEach((sector) => {
+    projectedEmissions[baseYear][sector.reference_number] =
+      sector.co2eq.toString();
+  });
+
+  // Calculate projected emissions year over year
+  for (let year = parseInt(baseYear) + 1; year <= 2050; year++) {
+    projectedEmissions[year] = {};
+    totalEmissionsBySector.forEach((emissionsInSector) => {
+      const previousYear = year - 1;
+      const referenceNumber = emissionsInSector.reference_number;
+      const growthRate = growthRates[year][referenceNumber];
+      projectedEmissions[year][referenceNumber] = multiplyBigIntByFraction(
+        projectedEmissions[previousYear][referenceNumber],
+        1 + growthRate,
+      );
+    });
+  }
+  return {
+    forecast: projectedEmissions,
+    cluster: cluster,
+    growthRates: growthRates,
+  };
+};

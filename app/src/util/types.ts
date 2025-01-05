@@ -212,6 +212,23 @@ export interface ResultsResponse {
   topEmissions: { bySubSector: TopEmission[] };
 }
 
+export interface ProjectionData {
+  [year: string]: {
+    [sector: string]: number;
+  };
+}
+
+export interface EmissionsForecastData {
+  growthRates: ProjectionData;
+  forecast: ProjectionData;
+  cluster: {
+    id: number;
+    description: {
+      [lng: string]: string;
+    };
+  };
+}
+
 export interface YearOverYearResultResponse {
   totalEmissions: {
     sumOfEmissions: bigint;

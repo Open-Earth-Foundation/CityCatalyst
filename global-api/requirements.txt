@@ -12,7 +12,7 @@ psycopg2-binary==2.9.10
 pydantic-settings==2.*
 pytest==8.3.4
 rioxarray==0.18.*
-scipy==1.14.*
+scipy==1.15.*
 shapely==2.0.6
 SQLAlchemy==2.0.36
 tqdm==4.67.*

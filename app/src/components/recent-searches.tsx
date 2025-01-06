@@ -1,7 +1,8 @@
 import { Box, Text } from "@chakra-ui/react";
+import { TFunction } from "i18next";
 import React from "react";
 
-const RecentSearches = () => {
+const RecentSearches = ({ t }: { t: TFunction }) => {
   const data = [
     {
       id: 1,
@@ -31,7 +32,7 @@ const RecentSearches = () => {
           fontSize="overline"
           fontFamily="heading"
         >
-          RECENT SEARCHES
+          {t("recent-searches-title")}
         </Text>
       </Box>
       {hasRecentSearches ? (
@@ -78,7 +79,7 @@ const RecentSearches = () => {
             lineHeight="24"
             letterSpacing="wide"
           >
-            You have no recent searches
+            {t("recent-searches-no-results")}
           </Text>
         </Box>
       )}

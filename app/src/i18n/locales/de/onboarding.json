@@ -68,5 +68,7 @@
   "start-inventory": "Startinventar",
   "city-boundary-info": "Falls die geografische Grenze nicht korrekt ist <0><1>Kontaktieren Sie uns</1></0>",
   "unselected-city-boundary-heading": "Suchen und wählen Sie die Stadt aus, die auf der Karte angezeigt werden soll",
-  "unselected-city-boundary-description": "Sie können die geografische Grenze für Ihren Bestand überprüfen"
+  "unselected-city-boundary-description": "Sie können die geografische Grenze für Ihren Bestand überprüfen",
+  "recent-searches-title": "Letzte Suchen",
+  "recent-searches-no-results": "Sie haben keine kürzlichen Suchen"
 }

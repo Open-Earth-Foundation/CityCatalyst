@@ -1,5 +1,6 @@
 import { EmissionsForecastData } from "@/util/types";
 import { GLOBAL_API_URL } from "@/services/api";
+import { logger } from "@/services/logger";
 
 export type GrowthRatesResponse = Omit<EmissionsForecastData, "forecast">;
 
@@ -10,8 +11,8 @@ export const getGrowthRatesFromOC = async (
   try {
     const URL = `${GLOBAL_API_URL}/api/v0/ghgi/emissions_forecast/city/${encodeURIComponent(locode)}/${forecastYear}`;
     const response = await fetch(URL);
-
-    console.info(`getGrowthRatesFromOC Status: ${response.status}`);
+    logger.info(`getGrowthRatesFromOC URL: ${URL}`);
+    logger.info(`getGrowthRatesFromOC Status: ${response.status}`);
     const data = await response.json();
     return {
       ...data,

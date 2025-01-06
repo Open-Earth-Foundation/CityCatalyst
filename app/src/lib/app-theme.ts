@@ -15,6 +15,14 @@ export const appTheme = extendTheme({
       alternative: "#001EA7",
     },
 
+    sectors: {
+      I: "#575BF4",
+      II: "#DF2222",
+      III: "#F28C37",
+      IV: "#2D0D58",
+      V: "#CC6B1D",
+    },
+
     semantic: {
       success: "#24BE00",
       successOverlay: "#EFFDE5",

@@ -1,5 +1,13 @@
 import { extendTheme, theme } from "@chakra-ui/react";
 
+export enum SectorColors {
+  I = "#575BF4",
+  II = "#DF2222",
+  III = "#F28C37",
+  IV = "#2D0D58",
+  V = "#CC6B1D",
+}
+
 export const appTheme = extendTheme({
   colors: {
     brand: {
@@ -16,11 +24,11 @@ export const appTheme = extendTheme({
     },
 
     sectors: {
-      I: "#575BF4",
-      II: "#DF2222",
-      III: "#F28C37",
-      IV: "#2D0D58",
-      V: "#CC6B1D",
+      I: SectorColors.I,
+      II: SectorColors.II,
+      III: SectorColors.III,
+      IV: SectorColors.IV,
+      V: SectorColors.V,
     },
 
     semantic: {

@@ -1,10 +1,10 @@
 import { EmissionsForecastData } from "@/util/types";
 import { TFunction } from "i18next/typescript/t";
 import {
-  getReferenceNumberByName,
-  SECTORS,
-  ISector,
   allSectorColors,
+  getReferenceNumberByName,
+  ISector,
+  SECTORS,
 } from "@/util/constants";
 import {
   Badge,
@@ -15,11 +15,13 @@ import {
   Tbody,
   Td,
   Text,
+  Tfoot,
   Th,
+  Thead,
   Tr,
 } from "@chakra-ui/react";
+import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
 import { ResponsiveLine } from "@nivo/line";
-import { convertKgToTonnes } from "@/util/helpers";
 
 interface LineChartData {
   id: string;
@@ -108,6 +110,14 @@ export const EmissionsForecastChart = ({
             </Box>
             <Box padding="4">
               <Table variant="simple" size={"sm"}>
+                <Thead>
+                  <Tr>
+                    <Th>{t("sector")}</Th>
+                    <Th>{t("rate")}</Th>
+                    <Th>%</Th>
+                    <Th>{t("total-emissions")}</Th>
+                  </Tr>
+                </Thead>
                 <Tbody>
                   {data.map((series, index) => {
                     const yearData = series.data.find(
@@ -117,9 +127,11 @@ export const EmissionsForecastChart = ({
                       ? ((yearData.y / sumOfYs) * 100).toFixed(2)
                       : 0;
                     const sectorRefNo = getReferenceNumberByName(
-                      point.serieId as keyof ISector,
+                      toKebabCase(point.serieId as string) as keyof ISector,
                     );
-
+                    const yearGrowthRates =
+                      yearData && forecast.growthRates[yearData.x as string];
+                    const growthRate = yearGrowthRates?.[sectorRefNo!];
                     return (
                       <Tr key={series.id}>
                         <Td>
@@ -131,13 +143,7 @@ export const EmissionsForecastChart = ({
                           />
                           {series.id}
                         </Td>
-                        <Td>
-                          {
-                            forecast.growthRates[point.data.x as number]?.[
-                              sectorRefNo!
-                            ]
-                          }
-                        </Td>
+                        <Td>{growthRate}</Td>
                         <Td>{percentage}%</Td>
                         <Td>
                           {convertKgToTonnes(
@@ -147,12 +153,15 @@ export const EmissionsForecastChart = ({
                       </Tr>
                     );
                   })}
+                </Tbody>
+                <Tfoot>
                   <Tr>
                     <Th>{t("total")}</Th>
                     <Th></Th>
+                    <Th></Th>
                     <Th>{convertKgToTonnes(sumOfYs)}</Th>
                   </Tr>
-                </Tbody>
+                </Tfoot>
               </Table>
             </Box>
           </Card>

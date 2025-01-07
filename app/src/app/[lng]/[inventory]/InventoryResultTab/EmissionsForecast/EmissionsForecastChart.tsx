@@ -1,6 +1,11 @@
 import { EmissionsForecastData } from "@/util/types";
 import { TFunction } from "i18next/typescript/t";
-import { getReferenceNumberByName, SECTORS, ISector } from "@/util/constants";
+import {
+  getReferenceNumberByName,
+  SECTORS,
+  ISector,
+  allSectorColors,
+} from "@/util/constants";
 import {
   Badge,
   Box,
@@ -55,7 +60,6 @@ export const EmissionsForecastChart = ({
 
   const data = convertToLineChartData(forecast);
 
-  const colors = ["#FFAB51", "#5162FF", "#51ABFF", "#D45252", "#CFAE53"];
   return (
     <ResponsiveLine
       data={data}
@@ -80,7 +84,7 @@ export const EmissionsForecastChart = ({
         tickRotation: 0,
         format: (value: number) => convertKgToTonnes(value),
       }}
-      colors={colors}
+      colors={allSectorColors}
       tooltip={({ point }) => {
         const year = point.data.x;
         const sumOfYs = data.reduce((sum, series) => {
@@ -122,7 +126,7 @@ export const EmissionsForecastChart = ({
                           <Badge
                             colorScheme="gray"
                             boxSize="10px"
-                            bg={colors[index]}
+                            bg={allSectorColors[index]}
                             marginRight="8px"
                           />
                           {series.id}

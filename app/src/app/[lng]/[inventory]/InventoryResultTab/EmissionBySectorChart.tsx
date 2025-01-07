@@ -1,6 +1,6 @@
 import { SectorEmission } from "@/util/types";
 import { ResponsiveBar } from "@nivo/bar";
-import { SECTORS } from "@/util/constants";
+import { allSectorColors, SECTORS } from "@/util/constants";
 import { convertKgToKiloTonnes, convertKgToTonnes } from "@/util/helpers";
 import { useTranslation } from "@/i18n/client";
 import { toKebabCaseModified } from "@/app/[lng]/[inventory]/InventoryResultTab/index";
@@ -46,8 +46,6 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
     toKebabCaseModified(sector.name),
   );
 
-  const colors = ["#5785F4", "#F17105", "#25AC4B", "#BFA937", "#F5D949"];
-
   return (
     <div className="min-h-[600px]">
       <div className="h-[600px]">
@@ -80,7 +78,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
           )}
           valueScale={{ type: "linear", min: 0, max: "auto" }}
           indexScale={{ type: "band", round: true }}
-          colors={colors}
+          colors={allSectorColors}
           borderColor={{
             from: "color",
             modifiers: [["darker", 1.6]],
@@ -136,7 +134,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
           >
             <Box
               className="h-4 w-4"
-              style={{ backgroundColor: colors[index] }}
+              style={{ backgroundColor: allSectorColors[index] }}
             ></Box>
             <Text
               fontSize="body.md"

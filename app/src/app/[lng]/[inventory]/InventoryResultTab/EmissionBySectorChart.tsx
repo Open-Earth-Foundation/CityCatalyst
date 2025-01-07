@@ -1,10 +1,10 @@
 import { SectorEmission } from "@/util/types";
 import { ResponsiveBar } from "@nivo/bar";
 import { SECTORS } from "@/util/constants";
-import { convertKgToKiloTonnes } from "@/util/helpers";
+import { convertKgToKiloTonnes, convertKgToTonnes } from "@/util/helpers";
 import { useTranslation } from "@/i18n/client";
 import { toKebabCaseModified } from "@/app/[lng]/[inventory]/InventoryResultTab/index";
-import { Box, Text } from "@chakra-ui/react";
+import { Badge, Box, Card, HStack, Text } from "@chakra-ui/react";
 
 interface EmissionBySectorChartProps {
   data: {
@@ -61,6 +61,23 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
           layout={"vertical"}
           margin={{ top: 50, right: 130, bottom: 50, left: 120 }}
           padding={0.3}
+          tooltip={({ id, value, color }) => (
+            <Card py={2} px={2}>
+              <HStack>
+                <Badge
+                  colorScheme="gray"
+                  boxSize="16px"
+                  bg={color}
+                  marginRight="8px"
+                />
+                <Text>
+                  {tData(id as string)}
+                  {" - "}
+                  {convertKgToTonnes(value)}
+                </Text>
+              </HStack>
+            </Card>
+          )}
           valueScale={{ type: "linear", min: 0, max: "auto" }}
           indexScale={{ type: "band", round: true }}
           colors={colors}
@@ -84,8 +101,8 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
             tickRotation: 0,
             legend: "CO2eq",
             legendPosition: "middle",
-            legendOffset: -75,
-            format: (value) => value,
+            legendOffset: -100,
+            format: (value) => convertKgToTonnes(value),
           }}
           labelSkipWidth={12}
           labelSkipHeight={12}
@@ -96,7 +113,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
           role="application"
           ariaLabel="Nivo bar chart demo"
           barAriaLabel={function (e) {
-            return e.id + ": " + e.formattedValue + " in year: " + e.indexValue;
+            return `${e.id}: ${convertKgToTonnes(e.value!)} in year: ${e.indexValue}`;
           }}
         />
       </div>

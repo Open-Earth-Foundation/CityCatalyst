@@ -58,6 +58,7 @@
   "email-address": "E-mail",
   "remove-user-prompt": "Tem certeza de que deseja <2>remover permanentemente este usuário</2> da sua equipe?",
   "city-deleted": "Cidade excluída com sucesso",
+  "inventory-deleted": "Inventário excluído com sucesso",
   "delete-file-prompt": "Tem certeza de que deseja <2>excluir permanentemente</2> este arquivo do repositório da cidade?",
   "mark-as-completed": "Marcar como concluído",
   "password-required": "A senha é obrigatória",

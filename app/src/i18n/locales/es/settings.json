@@ -58,6 +58,7 @@
   "email-address": "Correo electrónico",
   "remove-user-prompt": "¿Está seguro de que desea <2>eliminar permanentemente a este usuario</2> de su equipo?",
   "city-deleted": "Ciudad eliminada exitosamente",
+  "inventory-deleted": "Inventorio eliminado exitosamente",
   "delete-file-prompt": "¿Está seguro de que desea <2>eliminar permanentemente</2> este archivo del repositorio de la ciudad?",
   "password-required": "Se requiere contraseña",
   "min-length": "La longitud mínima debe ser {{length}}",

@@ -65,6 +65,8 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
 }) => {
   const [tabIndex, setTabIndex] = useState(0);
   const [cityId, setCityId] = useState<string | undefined>(defaultCityId);
+  const [inventoryId, setInventoryId] = useState("");
+
   useEffect(() => {
     if (!cityId && defaultCityId && defaultCityId !== cityId) {
       setCityId(defaultCityId);
@@ -327,6 +329,9 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                                                 color: "white",
                                               }}
                                               onClick={() => {
+                                                setInventoryId(
+                                                  inventory.inventoryId,
+                                                );
                                                 onInventoryDeleteModalOpen();
                                               }}
                                             >
@@ -363,6 +368,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
       </TabPanel>
 
       <DeleteInventoryModal
+        inventoryId={inventoryId}
         isOpen={isInventoryDeleteModalOpen}
         onClose={onInventoryDeleteModalClose}
         userData={userData}

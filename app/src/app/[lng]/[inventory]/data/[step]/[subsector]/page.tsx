@@ -36,6 +36,7 @@ import {
 import Link from "next/link";
 import type { InventoryValueAttributes } from "@/models/InventoryValue";
 import { getScopesForInventoryAndSector, SECTORS } from "@/util/constants";
+import { toKebabCase } from "@/util/helpers";
 
 const MotionBox = motion(
   // the display name is added below, but the linter isn't picking it up
@@ -123,7 +124,6 @@ function SubSectorPage({
   const sectorData = inventoryProgress?.sectorProgress.find(
     (sector) => sector.sector.referenceNumber === getSectorRefNo(step),
   );
-
   const subSectorData: SubSectorAttributes | undefined =
     sectorData?.subSectors.find(
       (subSectorItem) => subSectorItem.subsectorId === subsector,
@@ -384,7 +384,10 @@ function SubSectorPage({
                         fontWeight="normal"
                         color="interactive.control"
                       >
-                        {t("commercial-and-institutional-building-description")}
+                        {t(
+                          toKebabCase(subSectorData?.subsectorName) +
+                            "-description",
+                        )}
                       </Text>
                     </MotionBox>
                   )}

@@ -320,7 +320,7 @@ export default function SelectCityStep({
                   shadow="2dp"
                   className="h-auto max-h-[272px] transition-all duration-150 overflow-scroll flex flex-col py-3 gap-3 rounded-lg w-full absolute bg-white z-50 mt-2 border border-[1px solid #E6E7FF]"
                 >
-                  {!isLoading && !cityInputQuery && <RecentSearches />}
+                  {!isLoading && !cityInputQuery && <RecentSearches t={t} />}
                   {isLoading && <p className="px-4">Fetching Cities...</p>}
                   {isSuccess &&
                     cities &&

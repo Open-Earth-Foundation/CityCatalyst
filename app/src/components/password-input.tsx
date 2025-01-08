@@ -15,6 +15,7 @@ import {
 import { useState } from "react";
 import { FieldError } from "react-hook-form";
 import { CheckListIcon, CloseListIcon } from "./icons";
+import { TFunction } from "i18next";
 
 export default function PasswordInput({
   children,
@@ -30,7 +31,7 @@ export default function PasswordInput({
   children?: React.ReactNode;
   error: FieldError | undefined;
   register: Function;
-  t: Function;
+  t: TFunction;
   name?: String;
   id?: String;
   w?: string;
@@ -187,7 +188,7 @@ export default function PasswordInput({
             letterSpacing="wide"
             color="content.tertiary"
           >
-            {t(error.message)}
+            {t(error.message || "")}
           </Text>
         </FormErrorMessage>
       )}

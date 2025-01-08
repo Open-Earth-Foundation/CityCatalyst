@@ -192,7 +192,7 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
                         error={errors.password}
                         register={register}
                         t={t}
-                        name="Password"
+                        name={t("password")}
                       />
                       <Box
                         display="flex"

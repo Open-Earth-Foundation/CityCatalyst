@@ -31,6 +31,7 @@ import {
   SegmentedProgressValues,
 } from "@/components/SegmentedProgress";
 import { EmptyStateCardContent } from "@/app/[lng]/[inventory]/InventoryResultTab/EmptyStateCardContent";
+import { allSectorColors, SECTORS } from "@/util/constants";
 
 const EmissionsTable = ({
   topEmissions,
@@ -96,11 +97,12 @@ const TopEmissionsWidget = ({
 
   function getPercentagesForProgress(): SegmentedProgressValues[] {
     const bySector: SectorEmission[] = results?.totalEmissions.bySector ?? [];
-    return bySector.map(({ sectorName, co2eq, percentage }) => {
+    return SECTORS.map(({ name }) => {
+      const sector = bySector.find((sector) => sector.sectorName === name)!;
       return {
-        name: sectorName,
-        value: co2eq,
-        percentage: percentage,
+        name,
+        value: sector?.co2eq || 0,
+        percentage: sector?.percentage || 0,
       } as SegmentedProgressValues;
     });
   }
@@ -147,6 +149,7 @@ const TopEmissionsWidget = ({
                 values={getPercentagesForProgress()}
                 total={results?.totalEmissions.total}
                 t={t}
+                colors={allSectorColors}
                 showLabels
                 showHover
               />

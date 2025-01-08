@@ -21,7 +21,7 @@ export default function PasswordInput({
   error,
   register,
   t,
-  name = t("password"),
+  name = "Password",
   id = "password",
   w,
   shouldValidate = false,

@@ -1,22 +1,16 @@
 import Excel, { Worksheet } from "exceljs";
-import { InventoryValue } from "@/models/InventoryValue";
-import { ActivityValue } from "@/models/ActivityValue";
 import createHttpError from "http-errors";
-import { InventoryResponse } from "@/util/types";
+import {
+  InventoryValueWithActivityValues,
+  InventoryWithInventoryValuesAndActivityValues,
+} from "@/util/types";
 import { findMethodology } from "@/util/form-schema";
 import { translationFunc } from "@/i18n/server";
 import { toDecimal } from "@/util/helpers";
 import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";
-
-type InventoryValueWithActivityValues = InventoryValue & {
-  activityValues: ActivityValue[];
-};
-
-export type InventoryWithInventoryValuesAndActivityValues =
-  InventoryResponse & {
-    inventoryValues: InventoryValueWithActivityValues[];
-  };
+import PopulationService from "@/backend/PopulationService";
+import CityBoundaryService from "@/backend/CityBoundaryService";
 
 const ECRF_TEMPLATE_PATH = "./templates/ecrf_template.xlsx";
 
@@ -25,10 +19,10 @@ export default class ECRFDownloadService {
     output: InventoryWithInventoryValuesAndActivityValues,
     lng: string,
   ) {
-    return await this.writeTOECRFFILE(output, lng);
+    return await this.writeToECRFFILE(output, lng);
   }
 
-  private static async writeTOECRFFILE(
+  private static async writeToECRFFILE(
     output: InventoryWithInventoryValuesAndActivityValues,
     lng: string,
   ) {
@@ -37,48 +31,9 @@ export default class ECRFDownloadService {
     try {
       // Load the workbook
       await workbook.xlsx.readFile(ECRF_TEMPLATE_PATH);
-      const worksheet = workbook.getWorksheet(3); // Get the worksheet by index (3rd sheet)
-      // Fetch data from the database
-      const inventoryValues = output.inventoryValues;
-
-      // Transform data into a dictionary for easy access
-      const dataDictionary = this.transformDataForTemplate(
-        inventoryValues as InventoryValueWithActivityValues[],
-        output.year as number,
-        t,
-      );
-
-      const visitedScopes = {};
-
-      worksheet?.eachRow((row, rowNumber) => {
-        // maintain the styling
-        row.eachCell((cell) => {
-          cell.style = { ...cell.style };
-        });
-
-        if (rowNumber === 1) return; // Skip the first row (contains the header)
-
-        const referenceNumberCell = row.getCell(2);
-        const referenceNumberValue = referenceNumberCell.value;
-
-        if (referenceNumberCell && typeof referenceNumberValue === "string") {
-          const dataSection = dataDictionary[referenceNumberValue];
-          // if the activityValues > 1, then we need to add rows
-          if (dataSection) {
-            this.replacePlaceholdersInRow(
-              row,
-              dataSection,
-              rowNumber,
-              visitedScopes,
-              worksheet,
-            );
-          } else {
-            this.markRowAsNotEstimated(row);
-          }
-        }
-        this.markRowAsNotEstimated(row);
-      });
-
+      await this.writeToSheet1(workbook, output, t);
+      await this.writeToSheet2(workbook, output, t);
+      await this.writeToSheet3(workbook, output, t);
       // Save the modified workbook
       const buffer = Buffer.from(await workbook.xlsx.writeBuffer());
       console.log("Workbook has been generated successfully");
@@ -91,7 +46,252 @@ export default class ECRFDownloadService {
     }
   }
 
-  private static transformDataForTemplate(
+  private static async writeToSheet1(
+    workbook: Excel.Workbook,
+    output: InventoryWithInventoryValuesAndActivityValues,
+    t: any,
+  ) {
+    // fetch population data
+
+    const city = output.city;
+    const year = output.year;
+
+    let cityPopulationData = null;
+    let cityBoundaryData: Record<string, any> = {};
+    try {
+      cityPopulationData = await PopulationService.getPopulationDataForCityYear(
+        city.cityId,
+        year as number,
+      );
+      cityBoundaryData = await CityBoundaryService.getCityBoundary(
+        city.locode as string,
+      );
+    } catch (e) {
+      console.warn("Failed to fetch city boundary or population");
+    }
+
+    // prepare the data for sheet 1
+    const sheetData: Record<string, any> = {
+      inventory_type: t?.(output.inventoryType),
+      city_country: city.country,
+      city_name: city.name,
+      city_region: city.region,
+      inventory_year: year,
+      city_population: cityPopulationData?.population,
+      city_area: cityBoundaryData?.area,
+    };
+
+    const worksheet = workbook.getWorksheet(1); // Get the worksheet by index (1st sheet)
+
+    worksheet?.eachRow((row, rowNumber) => {
+      const placeholderCell = row.getCell(3);
+      if (placeholderCell.value && typeof placeholderCell.value === "string") {
+        const cellValue = placeholderCell.value as string;
+        const placeholderMatch = cellValue.match(/{{(.*?)}}/);
+        if (placeholderMatch) {
+          const fieldName = placeholderMatch[1] as string;
+          const replacementValue = sheetData[fieldName];
+          placeholderCell.value = replacementValue ?? "N/A";
+        }
+      }
+    });
+  }
+
+  private static async writeToSheet2(
+    workbook: Excel.Workbook,
+    output: InventoryWithInventoryValuesAndActivityValues,
+    t: any,
+  ) {
+    const sectorNameMapping: Record<string, string> = {
+      I: `stationary`,
+      II: `transport`,
+      III: `waste`,
+      IV: `ippu`,
+      V: `afolu`,
+    };
+
+    const totals: Record<string, any> = {
+      stationary1: 0n,
+      stationary2: 0n,
+      stationary3: 0n,
+      transport1: 0n,
+      transport2: 0n,
+      transport3: 0n,
+      waste1: 0n,
+      waste2: 0n,
+      waste3: 0n,
+      afolu1: 0n,
+      afolu2: 0n,
+      afolu3: 0n,
+      ippu1: 0n,
+      ippu2: 0n,
+    };
+
+    // prepare the data for sheet 2
+    const dataDictionary = this.transformDataForTemplate2(output, t);
+    const fugitive_emissions_data =
+      this.groupFugitiveEmissionData(dataDictionary);
+    totals.stationary1 = fugitive_emissions_data?.total;
+
+    const updatedDataDictionary: Record<string, any> = {
+      ...dataDictionary,
+      fugitive: fugitive_emissions_data,
+    };
+
+    // now loop over the rows and columns.
+    const worksheet = workbook.getWorksheet(2);
+
+    worksheet?.eachRow((row, rowNumber) => {
+      // loop over each cell and then check if it's a placeholder.
+      row.eachCell((cell) => {
+        const cellValue = cell.value as string;
+        const placeholderMatch = cellValue.match(/{{(.*?)}}/);
+        if (placeholderMatch) {
+          let replacementValue = null; // split the placeholders
+          const fieldName = placeholderMatch[1];
+
+          if (fieldName === "explanation-institutional-missing") {
+            cell.value = t("explanation-institutional-missing");
+            return;
+          }
+
+          const referenceNoIdentifier = fieldName.split("_")[0];
+          const targetIdentifier = fieldName.split("_")[1];
+
+          if (targetIdentifier === "full-total") {
+            // if sector total placeholder read from totals
+            replacementValue = totals[referenceNoIdentifier];
+          } else if (referenceNoIdentifier in updatedDataDictionary) {
+            replacementValue =
+              updatedDataDictionary[referenceNoIdentifier]?.[targetIdentifier]; // eg dataDictionary.I.total or dataDictionary.I.notation-key
+
+            // build up the totals for each sector scope combo
+            if (
+              targetIdentifier === "total" &&
+              !(referenceNoIdentifier === "fugitive")
+            ) {
+              const refSplit = referenceNoIdentifier.split(".");
+              const sectorNo = refSplit[0];
+              const sectorName = sectorNameMapping[sectorNo];
+              const scopeNo = refSplit[refSplit.length - 1];
+              totals[`${sectorName}${scopeNo}`] += replacementValue
+                ? BigInt(replacementValue)
+                : 0n;
+            }
+          } else if (targetIdentifier === "notation-key") {
+            // mark as Not estimated
+            replacementValue = "NE";
+          }
+          cell.value = replacementValue?.toString() ?? "";
+        }
+      });
+    });
+
+    // create a new object
+  }
+
+  private static async writeToSheet3(
+    workbook: Excel.Workbook,
+    output: InventoryWithInventoryValuesAndActivityValues,
+    t: any,
+  ) {
+    const worksheet = workbook.getWorksheet(3); // Get the worksheet by index (3rd sheet)
+    // Fetch data from the database
+    const inventoryValues = output.inventoryValues;
+
+    // Transform data into a dictionary for easy access
+    const dataDictionary = this.transformDataForTemplate3(
+      inventoryValues as InventoryValueWithActivityValues[],
+      output.year as number,
+      t,
+    );
+
+    const visitedScopes = {};
+
+    worksheet?.eachRow((row, rowNumber) => {
+      // maintain the styling
+      row.eachCell((cell) => {
+        cell.style = { ...cell.style };
+      });
+
+      if (rowNumber === 1) return; // Skip the first row (contains the header)
+
+      const referenceNumberCell = row.getCell(2);
+      const referenceNumberValue = referenceNumberCell.value;
+
+      if (referenceNumberCell && typeof referenceNumberValue === "string") {
+        const dataSection = dataDictionary[referenceNumberValue];
+        // if the activityValues > 1, then we need to add rows
+        if (dataSection) {
+          this.replacePlaceholdersInRow(
+            row,
+            dataSection,
+            rowNumber,
+            visitedScopes,
+            worksheet,
+          );
+        } else {
+          this.markRowAsNotEstimated(row);
+        }
+      }
+      this.markRowAsNotEstimated(row);
+    });
+  }
+
+  private static groupFugitiveEmissionData(
+    subcategoryDataGroup: Record<
+      string,
+      {
+        total?: bigint;
+        "notation-key"?: string;
+      }
+    >,
+  ) {
+    const { total: totalI71 = BigInt(0), "notation-key": keyI71 = "" } =
+      subcategoryDataGroup["I.7.1"] || {};
+    const { total: totalI81 = BigInt(0), "notation-key": keyI81 = "" } =
+      subcategoryDataGroup["I.8.1"] || {};
+
+    // Calculate fugitive emissions total
+    const fugitiveEmissionsTotal = totalI71 + totalI81;
+
+    // Combine notation keys
+    const fugitiveEmissionsNotationKey = [keyI71, keyI81]
+      .filter(Boolean)
+      .join(" / ");
+
+    // Build explanation string
+    const explanationParts = [];
+    if (keyI71) explanationParts.push(`I.7.1: ${keyI71}`);
+    if (keyI81) explanationParts.push(`I.8.1: ${keyI81}`);
+    const explanation = explanationParts.join(",");
+
+    return {
+      total: fugitiveEmissionsTotal,
+      "notation-key": fugitiveEmissionsNotationKey,
+      explanation,
+    };
+  }
+
+  private static transformDataForTemplate2(
+    output: InventoryWithInventoryValuesAndActivityValues,
+    t: any,
+  ): Record<string, any> {
+    const dataDictionary: Record<string, any> = {};
+
+    output.inventoryValues.map((inventoryValue) => {
+      dataDictionary[inventoryValue.gpcReferenceNumber as string] = {
+        "notation-key": inventoryValue.unavailableReason?.split("-")[1],
+        total: inventoryValue.unavailableReason
+          ? 0n
+          : BigInt(inventoryValue.co2eq ?? 0),
+      };
+    });
+
+    return dataDictionary;
+  }
+
+  private static transformDataForTemplate3(
     inventoryValues: InventoryValueWithActivityValues[],
     inventoryYear: number,
     t: any,

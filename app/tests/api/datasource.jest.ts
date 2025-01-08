@@ -1,19 +1,27 @@
 import { GET as getDataSourcesForSector } from "@/app/api/v0/datasource/[inventoryId]/[sectorId]/route";
 import { GET as getAllDataSources } from "@/app/api/v0/datasource/[inventoryId]/route";
+import { DELETE as deleteInventoryValue } from "@/app/api/v0/datasource/[inventoryId]/datasource/[datasourceId]/route";
 import { db } from "@/models";
 import { randomUUID } from "node:crypto";
 import { literal, Op } from "sequelize";
-import { cascadeDeleteDataSource, mockRequest, setupTests } from "../helpers";
+import {
+  cascadeDeleteDataSource,
+  expectStatusCode,
+  mockRequest,
+  setupTests,
+  testUserID,
+} from "../helpers";
 import { City } from "@/models/City";
 import { CreateInventoryRequest } from "@/util/validation";
 import { Sector } from "@/models/Sector";
 import { Inventory } from "@/models/Inventory";
 import fetchMock from "fetch-mock";
-import { beforeAll, afterAll, describe, it, expect } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
 import {
   GlobalWarmingPotentialTypeEnum,
   InventoryTypeEnum,
 } from "@/util/enums";
+import { AppSession, Auth } from "@/lib/auth";
 
 const locode = "XX_DATASOURCE_CITY";
 const sectorName = "XX_DATASOURCE_TEST_1";
@@ -33,6 +41,11 @@ const sourceLocations = [
   "DE,US,XX",
   "DE_BLN,US_NY,XX_DATASOURCE_CITY",
 ];
+
+const mockSession: AppSession = {
+  user: { id: testUserID, role: "user" },
+  expires: "1h",
+};
 
 const apiEndpoint =
   "http://localhost:4000/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber";
@@ -59,9 +72,12 @@ describe("DataSource API", () => {
   let city: City;
   let inventory: Inventory;
   let sector: Sector;
+  let prevGetServerSession = Auth.getServerSession;
 
   beforeAll(async () => {
     setupTests();
+    Auth.getServerSession = jest.fn(() => Promise.resolve(mockSession));
+
     await db.initialize();
 
     await db.models.Inventory.destroy({ where: { year: inventoryData.year } });
@@ -74,7 +90,11 @@ describe("DataSource API", () => {
       locode,
       name: "CC_",
     });
-
+    await db.models.CityUser.create({
+      cityUserId: randomUUID(),
+      userId: testUserID,
+      cityId: city.cityId,
+    });
     await db.models.SubCategory.destroy({ where: { subcategoryName } });
     await db.models.SubSector.destroy({ where: { subsectorName } });
     await db.models.Sector.destroy({ where: { sectorName } });
@@ -126,6 +146,7 @@ describe("DataSource API", () => {
   });
 
   afterAll(async () => {
+    Auth.getServerSession = prevGetServerSession;
     if (db.sequelize) await db.sequelize.close();
   });
 
@@ -157,4 +178,48 @@ describe("DataSource API", () => {
   });
 
   it.todo("should apply data sources");
+
+  it("should delete an inventory value", async () => {
+    const datasource = await db.models.DataSource.findOne({
+      // @ts-ignore
+      where: {
+        url: {
+          [Op.ne]: null,
+        },
+      },
+    });
+
+    const { datasourceId } = datasource;
+    const inventoryValueId = randomUUID();
+    await db.models.InventoryValue.create({
+      id: inventoryValueId,
+      datasourceId,
+      inventoryId: inventory.inventoryId,
+    });
+    const req = mockRequest();
+    const res = await deleteInventoryValue(req, {
+      params: {
+        inventoryId: inventory.inventoryId,
+        datasourceId,
+      },
+    });
+    await expectStatusCode(res, 200);
+    const { deleted } = await res.json();
+    expect(deleted).toEqual(true);
+    const deletedInventoryValue = await db.models.InventoryValue.findOne({
+      where: { id: inventoryValueId },
+    });
+    expect(deletedInventoryValue).toBeNull();
+  });
+
+  it("should not delete a non-existing inventory value", async () => {
+    const req = mockRequest();
+    const res = await deleteInventoryValue(req, {
+      params: {
+        inventoryId: randomUUID(),
+        datasourceId: randomUUID(),
+      },
+    });
+    await expectStatusCode(res, 404);
+  });
 });

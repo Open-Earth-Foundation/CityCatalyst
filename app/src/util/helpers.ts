@@ -344,3 +344,29 @@ export const convertSectorReferenceNumberToNumber = (
       return 1;
   }
 };
+
+const compareGpcRefNumbers = (a: string, b: string) => {
+  const aSplit = a.split(".");
+  const bSplit = b.split(".");
+
+  const aSector = convertSectorReferenceNumberToNumber(aSplit[0]).toString();
+  aSplit[0] = aSector.toString();
+  const bSector = convertSectorReferenceNumberToNumber(bSplit[0]).toString();
+  bSplit[0] = bSector.toString();
+
+  for (let i = 0; i < Math.min(aSplit.length, bSplit.length); i++) {
+    if (aSplit[i] !== bSplit[i]) {
+      return parseInt(aSplit[i]) - parseInt(bSplit[i]);
+    }
+  }
+
+  return 0;
+};
+
+export const sortGpcReferenceNumbers = (refNumbers: string[]): string[] => {
+  return [...refNumbers].sort(compareGpcRefNumbers);
+};
+
+export const isEmptyObject = (obj: Record<string, any>) => {
+  return Object.keys(obj).length === 0 && obj.constructor === Object;
+};

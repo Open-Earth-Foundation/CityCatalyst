@@ -1,5 +1,4 @@
 import {
-  DELETE as deleteInventoryValue,
   GET as findInventoryValue,
   PATCH as upsertInventoryValue,
 } from "@/app/api/v0/inventory/[inventory]/value/[subcategory]/route";
@@ -281,32 +280,5 @@ describe("Inventory Value API", () => {
       error: { issues },
     } = await res.json();
     expect(issues.length).toEqual(3);
-  });
-
-  it("should delete an inventory value", async () => {
-    const req = mockRequest(inventoryValue2);
-    const res = await deleteInventoryValue(req, {
-      params: {
-        inventory: inventory.inventoryId,
-        subcategory: subCategory.subcategoryId,
-      },
-    });
-    await expectStatusCode(res, 200);
-    const { data, deleted } = await res.json();
-    expect(deleted).toEqual(true);
-    expectToBeLooselyEqual(data.co2eq, co2eq);
-    expect(data.activityUnits).toEqual(activityUnits);
-    expectToBeLooselyEqual(data.activityValue, activityValue);
-  });
-
-  it("should not delete a non-existing inventory value", async () => {
-    const req = mockRequest(inventoryValue2);
-    const res = await deleteInventoryValue(req, {
-      params: {
-        inventory: randomUUID(),
-        subcategory: randomUUID(),
-      },
-    });
-    await expectStatusCode(res, 404);
   });
 });

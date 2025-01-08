@@ -27,6 +27,7 @@ import {
   InputGroup,
   InputLeftElement,
   InputRightElement,
+  Link,
   Text,
   useOutsideClick,
 } from "@chakra-ui/react";
@@ -37,11 +38,11 @@ import {
   WarningIcon,
 } from "@chakra-ui/icons";
 import RecentSearches from "@/components/recent-searches";
-import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { NoResultsIcon } from "../icons";
 import { useSearchParams } from "next/navigation";
+import { Trans } from "react-i18next";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -319,7 +320,7 @@ export default function SelectCityStep({
                   shadow="2dp"
                   className="h-auto max-h-[272px] transition-all duration-150 overflow-scroll flex flex-col py-3 gap-3 rounded-lg w-full absolute bg-white z-50 mt-2 border border-[1px solid #E6E7FF]"
                 >
-                  {!isLoading && !cityInputQuery && <RecentSearches />}
+                  {!isLoading && !cityInputQuery && <RecentSearches t={t} />}
                   {isLoading && <p className="px-4">Fetching Cities...</p>}
                   {isSuccess &&
                     cities &&
@@ -423,18 +424,17 @@ export default function SelectCityStep({
                     fontWeight="normal"
                     letterSpacing="wide"
                   >
-                    In case the geographical boundary is not the right one{" "}
-                    <Link href="mailto:greta@openearth.org">
-                      <Text
-                        as="span"
-                        color="interactive.secondary"
-                        fontWeight="600"
+                    <Trans i18nKey="city-boundary-info" t={t}>
+                      <Link
+                        color="content.link"
+                        fontWeight="bold"
+                        textDecoration="underline"
                         letterSpacing="wide"
-                        textDecorationLine="underline"
+                        href="mailto:greta@openearth.org"
                       >
                         Contact Us
-                      </Text>
-                    </Link>
+                      </Link>
+                    </Trans>
                   </Text>
                 </Box>
               </Box>
@@ -468,7 +468,7 @@ export default function SelectCityStep({
                     fontFamily="heading"
                     textAlign="center"
                   >
-                    Search and select the city to be shown on the map
+                    {t("unselected-city-boundary-heading")}
                   </Text>
                   <Text
                     color="interactive.control"
@@ -479,8 +479,7 @@ export default function SelectCityStep({
                     textAlign="center"
                     letterSpacing="wide"
                   >
-                    You will be able to check the geographical boundary for your
-                    inventory
+                    {t("unselected-city-boundary-description")}
                   </Text>
                 </Box>
               </Box>

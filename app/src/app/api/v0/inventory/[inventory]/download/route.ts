@@ -7,7 +7,10 @@ import createHttpError from "http-errors";
 
 import type { Inventory } from "@/models/Inventory";
 import type { InventoryValue } from "@/models/InventoryValue";
-import type { InventoryResponse } from "@/util/types";
+import type {
+  InventoryResponse,
+  InventoryWithInventoryValuesAndActivityValues,
+} from "@/util/types";
 import type { EmissionsFactor } from "@/models/EmissionsFactor";
 import { db } from "@/models";
 import {
@@ -16,9 +19,8 @@ import {
   keyBy,
   PopulationEntry,
 } from "@/util/helpers";
-import ECRFDownloadService, {
-  InventoryWithInventoryValuesAndActivityValues,
-} from "@/backend/ECRFDownloadService";
+import ECRFDownloadService from "@/backend/ECRFDownloadService";
+import CSVDownloadService from "@/backend/CSVDownloadService";
 
 type InventoryValueWithEF = InventoryValue & {
   emissionsFactor?: EmissionsFactor;
@@ -81,6 +83,11 @@ export const GET = apiHandler(async (req, { params, session }) => {
             ],
             as: "dataSource",
           },
+          {
+            model: db.models.SubSector,
+            as: "subSector",
+            attributes: ["subsectorId", "subsectorName"],
+          },
         ],
       },
     ],
@@ -126,7 +133,10 @@ export const GET = apiHandler(async (req, { params, session }) => {
 
   switch (req.nextUrl.searchParams.get("format")?.toLowerCase()) {
     case "csv":
-      body = await inventoryCSV(inventory);
+      body = await CSVDownloadService.downloadCSV(
+        output as InventoryWithInventoryValuesAndActivityValues,
+        lng,
+      );
       headers = {
         "Content-Type": "text/csv",
         "Content-Disposition": `attachment; filename="inventory-${inventory.city.locode}-${inventory.year}.csv"`,
@@ -160,36 +170,6 @@ export const GET = apiHandler(async (req, { params, session }) => {
 
   return new NextResponse(body, { headers });
 });
-
-async function inventoryCSV(inventory: Inventory): Promise<Buffer> {
-  // TODO better export without UUIDs and merging in data source props, gas values, emission factors
-  const inventoryValues = await db.models.InventoryValue.findAll({
-    where: {
-      inventoryId: inventory.inventoryId,
-    },
-  });
-  const headers = [
-    "Inventory Reference",
-    "GPC Reference Number",
-    "Total Emissions",
-    "Activity Units",
-    "Activity Value",
-    "Emission Factor Value",
-    "Datasource ID",
-  ].join(",");
-  const inventoryLines = inventoryValues.map((value: InventoryValueWithEF) => {
-    return [
-      value.subCategoryId,
-      value.gpcReferenceNumber,
-      value.co2eq,
-      value.activityUnits,
-      value.activityValue,
-      value.emissionsFactor?.emissionsPerActivity ?? "N/A",
-      value.datasourceId,
-    ].join(",");
-  });
-  return Buffer.from([headers, ...inventoryLines].join("\n"));
-}
 
 function converKgToTons(amount: bigint | null | undefined): string {
   if (amount == null) {

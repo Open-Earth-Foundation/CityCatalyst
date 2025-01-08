@@ -163,9 +163,9 @@ const ActivityModalBody = ({
                 .emissionsPerActivity
             : "";
 
-        setValue("activity.CO2EmissionFactor", co2Val ? co2Val : "");
-        setValue("activity.N2OEmissionFactor", n2oVal ? n2oVal : "");
-        setValue("activity.CH4EmissionFactor", ch4Val ? ch4Val : "");
+        setValue("activity.CO2EmissionFactor", co2Val ? co2Val : 0);
+        setValue("activity.N2OEmissionFactor", n2oVal ? n2oVal : 0);
+        setValue("activity.CH4EmissionFactor", ch4Val ? ch4Val : 0);
         setValue("activity.emissionFactorName", emissionFactor?.name);
         setValue("activity.emissionFactorReference", emissionFactor?.reference);
 

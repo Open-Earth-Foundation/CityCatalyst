@@ -53,6 +53,7 @@ export class Inventory
   totalCountryEmissions?: number;
   isPublic?: boolean;
   publishedAt?: Date | null;
+  created?: Date;
   lastUpdated?: Date | null;
   inventoryType?: InventoryTypeEnum;
   globalWarmingPotentialType?: GlobalWarmingPotentialTypeEnum;

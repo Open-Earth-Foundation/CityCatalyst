@@ -3,6 +3,7 @@ import { PiPlant, PiTrashLight } from "react-icons/pi";
 import { TbBuildingCommunity } from "react-icons/tb";
 import { IconBaseProps } from "react-icons";
 import { LiaIndustrySolid } from "react-icons/lia";
+import { appTheme, SectorColors } from "@/lib/app-theme"; // Import the appTheme
 
 export const maxPopulationYearDifference = 5;
 
@@ -28,6 +29,7 @@ export interface ISector {
       scopes: number[];
     };
   };
+  color: string;
 }
 
 export const getSectorsForInventory = (inventoryType?: InventoryType) => {
@@ -39,12 +41,16 @@ export const getSectorsForInventory = (inventoryType?: InventoryType) => {
   });
 };
 
+function findBy(field: keyof ISector, referenceNumber: string) {
+  return SECTORS.find((s) => s[field] === referenceNumber);
+}
+
 export const getScopesForInventoryAndSector = (
   inventoryType: InventoryType,
   referenceNumber: string,
 ) => {
   if (!inventoryType) return [];
-  const sector = SECTORS.find((s) => s.referenceNumber === referenceNumber);
+  const sector = findBy("referenceNumber", referenceNumber);
   if (!sector) {
     console.error(
       `Sector ${referenceNumber} for inventoryType ${inventoryType} not found`,
@@ -61,6 +67,7 @@ export const SECTORS: ISector[] = [
     name: "stationary-energy",
     description: "stationary-energy-description",
     icon: TbBuildingCommunity,
+    color: SectorColors.I,
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [1, 2] },
       [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1, 2, 3] },
@@ -73,6 +80,7 @@ export const SECTORS: ISector[] = [
     name: "transportation",
     description: "transportation-description",
     icon: BsTruck,
+    color: SectorColors.II,
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [1, 2] },
       [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1, 2, 3] },
@@ -85,6 +93,7 @@ export const SECTORS: ISector[] = [
     name: "waste",
     description: "waste-description",
     icon: PiTrashLight,
+    color: SectorColors.III,
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [1, 3] },
       [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1, 3] },
@@ -97,6 +106,7 @@ export const SECTORS: ISector[] = [
     name: "ippu",
     description: "ippu-description",
     icon: LiaIndustrySolid,
+    color: SectorColors.IV,
     testId: "ippu-sector-card",
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [] },
@@ -109,6 +119,7 @@ export const SECTORS: ISector[] = [
     name: "afolu",
     description: "afolu-description",
     icon: PiPlant,
+    color: SectorColors.V,
     testId: "afolu-sector-card",
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [] },
@@ -116,3 +127,12 @@ export const SECTORS: ISector[] = [
     },
   },
 ];
+
+export const allSectorColors = SECTORS.map((sector) => {
+  return sector.color;
+});
+export const getSectorByName = (name: string) =>
+  SECTORS.find((s) => s.name === name);
+
+export const getReferenceNumberByName = (name: keyof ISector) =>
+  findBy("name", name)?.referenceNumber;

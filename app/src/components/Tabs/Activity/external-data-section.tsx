@@ -66,7 +66,7 @@ const ExternalDataSection = ({
   ) => {
     await disconnectThirdPartyData({
       inventoryId: inventoryValue.inventoryId,
-      subCategoryId: inventoryValue.subCategoryId,
+      datasourceId: inventoryValue.datasourceId,
     });
     toast({
       status: "error",

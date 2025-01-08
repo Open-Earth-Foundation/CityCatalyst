@@ -22,7 +22,7 @@ export default function PasswordInput({
   error,
   register,
   t,
-  name,
+  name = "Password",
   id = "password",
   w,
   shouldValidate = false,
@@ -188,7 +188,7 @@ export default function PasswordInput({
             letterSpacing="wide"
             color="content.tertiary"
           >
-            {t(error.message)}
+            {t(error.message || "")}
           </Text>
         </FormErrorMessage>
       )}

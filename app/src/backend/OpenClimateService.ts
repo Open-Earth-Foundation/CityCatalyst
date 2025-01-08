@@ -11,8 +11,7 @@ export const getGrowthRatesFromOC = async (
   try {
     const URL = `${GLOBAL_API_URL}/api/v0/ghgi/emissions_forecast/city/${encodeURIComponent(locode)}/${forecastYear}`;
     const response = await fetch(URL);
-    logger.info(`getGrowthRatesFromOC URL: ${URL}`);
-    logger.info(`getGrowthRatesFromOC Status: ${response.status}`);
+    logger.info(`${URL} Response Status: ${response.status}`);
     const data = await response.json();
     return {
       ...data,

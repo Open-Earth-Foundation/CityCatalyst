@@ -1,8 +1,67 @@
-import { createSystem, defaultConfig } from "@chakra-ui/react";
+import { createSystem, defaultConfig, defineRecipe } from "@chakra-ui/react";
+
+
+// Buttons
+const buttonRecipe = defineRecipe({
+  variants: {
+    raised: {
+      true: {
+        boxShadow: "md",
+      }
+    },
+    outline: {
+      true: {
+        border: "2px solid",
+        borderColor: "brand.primary",
+        color: "brand.primary",
+        _hover: {
+          borderColor: "brand.secondary",
+          color: "brand.secondary",
+        },
+        _active: {
+          borderColor: "brand.secondary",
+          color: "brand.secondary",
+        },
+        _loading: {
+          opacity: 0.8,}
+    },}
+    solid:{
+      true: {
+        bg: "brand.primary",
+        color: "white",
+        _hover: {
+          bg: "brand.secondary",
+        }
+      }
+    },
+    danger: {
+      true: {
+        bg: "semantic.danger",
+        color: "white",
+        _hover: {
+          bg: "semantic.dangerOverlay",
+        }
+      }
+    },
+    solidPrimary: {
+      true: {
+        bg: "sentiment.positiveOverlay",
+        color: "interactive.primary",
+        _hover: {
+          bg: "sentiment.positiveLight",
+          color: "interactive.primaryLight",
+        }
+      }
+    }
+  }
+})
 
 export const appTheme = createSystem(defaultConfig,
 {
   theme: {
+    recipes: {
+      button: buttonRecipe
+    },
     tokens: {
         colors: {
           brand: {

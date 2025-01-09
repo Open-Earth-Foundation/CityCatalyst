@@ -1,4 +1,4 @@
-import { createSystem, defaultConfig, defineRecipe } from "@chakra-ui/react";
+import { createSystem, defaultConfig } from "@chakra-ui/react";
 import { buttonRecipe } from "./recipes";
 
 export const appTheme = createSystem(defaultConfig, {

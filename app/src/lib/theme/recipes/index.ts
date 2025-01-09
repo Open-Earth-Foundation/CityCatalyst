@@ -125,3 +125,9 @@ export const buttonRecipe = defineRecipe({
     },
   },
 });
+
+export const linkRecipe = defineRecipe({
+  base: {
+    color: "brand.secondary",
+  },
+});

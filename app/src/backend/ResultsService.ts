@@ -8,7 +8,7 @@ import { ActivityDataByScope, GroupedActivity } from "@/util/types";
 import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";
 import createHttpError from "http-errors";
-import { getGrowthRatesFromOC } from "./OpenClimateService";
+import { getGrowthRatesFromOC } from "./GlobalAPIService";
 import { Inventory } from "@/models/Inventory";
 
 function multiplyBigIntByFraction(

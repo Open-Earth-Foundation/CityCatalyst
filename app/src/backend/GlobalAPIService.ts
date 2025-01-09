@@ -13,6 +13,9 @@ export const getGrowthRatesFromOC = async (
     const response = await fetch(URL);
     logger.info(`${URL} Response Status: ${response.status}`);
     const data = await response.json();
+    if (response.status !== 200) {
+      return undefined;
+    }
     return {
       ...data,
       growthRates: data.growth_rates,

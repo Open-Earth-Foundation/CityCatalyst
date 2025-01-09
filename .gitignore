@@ -188,3 +188,5 @@ files/*xls
 files/*csv
 
 my_db.*
+
+temp/

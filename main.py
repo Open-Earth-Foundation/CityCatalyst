@@ -2,91 +2,168 @@ from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain.tools import tool
 from langgraph.prebuilt import create_react_agent
-from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from langchain_community.tools.tavily_search import TavilySearchResults
 
 from langgraph.checkpoint.memory import MemorySaver
+import json
+from pathlib import Path
 
-memory = MemorySaver()
+# Load JSON data from files
+with open(Path("./data/climateAction.json"), "r") as file:
+    climateAction = json.load(file)
 
+with open(Path("./data/city.json"), "r") as file:
+    city = json.load(file)
 
 # Initialize the model
-model = ChatOpenAI(model="gpt-4o-mini", temperature=0.0)
+model = ChatOpenAI(model="gpt-4o-mini", temperature=0.0, seed=42)
 
-
-@tool
-def add_numbers(a: float, b: float) -> float:
-    """Function to add two numbers together
-
-    Args:
-        a (float): first number
-        b (float): second number
-
-    Returns:
-        float: the sum of the two numbers
+# Create prompt for the model
+systemPromptPlanerLLM = SystemMessage(
     """
-    return a + b
+<role>
+You are a project manager specialized in implementing climate actions for a given city.
+</role>
+                                      
+<task>                              
+You are tasked with identifying the required steps for creating an climate action plan for a climate action project in a city.
+</task>
+                                      
+<climateActionPlanTemplate>                             
+Below is the generic template of a climate action plan.
+                                      
+1. In-depth main action description
+[Provide a detailed description]
 
+2. Proposed sub-actions
+[Action 1]
+[Action 2]
+[...
 
-@tool
-def mul_numbers(a: float, b: float) -> float:
-    """Function to multiply two numbers together
+3. Involved municipal institutions and partners
+[Institution 1]
+[Institution 2]
+[...]
 
-    Args:
-        a (float): first number
-        b (float): second number
+4. Goals and milestones
+[Goal 1]
+[Goal 2]
+[...]
 
-    Returns:
-        float: the product of the two numbers
-    """
-    return a * b
+5. Action timeline
+Short term (Year 1):
+[Activities]
+Medium term (Year 2-3):
+[Activities]
+Long term (Year 4-5):
+[Activities]
 
+6. Costs and budget considerations
+[Cost consideration 1]
+[Cost consideration 2]
+[...]
 
-tools = [add_numbers, mul_numbers]
+7. Monitoring, Evaluation and Reporting (MER) indicators
+[Indicator 1]
+[Indicator 2]
+[...]
+
+8. Relationship with SDGs
+SDG [Number]: [Description]
+SDG [Number]: [Description]
+[...]
+</climateActionPlanTemplate> 
+
+<input>
+You are provided with the details of the climate action in JSON format. 
+You are also provided with the details of the city in JSON format.
+</input>
+
+<output>
+For each part of the climate action plan, you output the required steps for creating the climate action plan for the given city.
+You do not need to provide the actual content of the climate action plan, but rather the steps required to create it.
+The steps must be striclty related to the given city and the climate action.
+For example to create the main action description, it might be necessary to research about the city's and country's climate strategies and policies in general and in regards to the specifc climate action.                                     
+</output>
+"""
+)
+
+userPromptPlanerLLM = HumanMessage(
+    f"""
+<climateAction>
+This is the climate action that needs to be implemented in the city:
+{json.dumps(climateAction, indent=4)}
+</climateAction>
+<city>
+This is the city where the climate action needs to be implemented:
+{json.dumps(city, indent=4)}
+</city>
+"""
+)
 
 # Create a model with tools
-model_with_tools = model.bind_tools(tools)
+# model_with_tools = model.bind_tools(tools)
+
+
+messages: list = []
+
+messages.append(systemPromptPlanerLLM)
+messages.append(userPromptPlanerLLM)
+
+
+memory = MemorySaver()
+config = {"configurable": {"thread_id": "0001"}}
+
+search = TavilySearchResults(max_results=2)
+tools = [search]
 
 # Create a react agent
 agent = create_react_agent(model, tools, checkpointer=memory)
-config = {"configurable": {"thread_id": "abc123"}}
 
 
-def main(prompt: str):
+agentPrompt = HumanMessage(
+    """
+<role>
+You are a project manager specialized in implementing climate actions for a given city.
+</role>
 
-    print("---------------------------")
-    print("Pure LLM Model")
-    # Invoke the pure llm model
-    response = model.invoke(prompt)
+<task>
+Your task is to fill out the climate action plan template with specific information for the given city and climate action.
+Follow the suggested steps outlined by the previous response.
+
+Use your provided tools to look up information and to perform internet search.
+</task>
+
+<input>
+You are provided with the details of the climate action in JSON format.
+You are also provided with the details of the city in JSON format.
+You are also provided with the steps required to create the climate action plan for the given city.
+</input>
+
+<output>
+You need to fill out the climate action plan template with specific information for the given city and climate action.
+Your response is the climate action plan in markdown language and formatted for a human to read. 
+If you look up information on the internet, you need to provide the source of the information.
+</output>
+"""
+)
+
+
+def main():
+    response = model.invoke(messages)  # type: ignore
     print(response.content)
-    print("---------------------------\n\n")
 
-    print("---------------------------")
-    print("LLM Model with tools")
-    # Invoke the llm model with tools
-    response = model_with_tools.invoke(prompt)
-    print(response.additional_kwargs["tool_calls"][0])
-    print("---------------------------\n\n")
+    messages.append(AIMessage(response.content))
 
-    print("---------------------------")
-    print("Agent")
-    # messages: list = []
-    while True:
-        prompt = input("User: ")
-        # messages.append(HumanMessage(prompt))
-        # Get the response from the agent
-        # response = agent.invoke({"messages": messages})
-        response = agent.invoke({"messages": prompt}, config)  # type: ignore
+    messages.append(agentPrompt)
 
-        # Append last message to the list
-        # messages.append(AIMessage(response["messages"][-1].content))
-
-        print(response["messages"][-1].content)
-
-        # print(memory.get(config)) # type: ignore
+    agent_response = agent.invoke({"messages": messages}, config=config)  # type: ignore
+    print(agent_response["messages"][-1].content)
 
 
 if __name__ == "__main__":
 
     load_dotenv()
 
-    main("What is 13.5 times 2.145?")
+    main()

@@ -10,23 +10,18 @@ const buttonRecipe = defineRecipe({
     lineHeight: "16px",
   },
   variants: {
-    raised: {
-      true: {
-        boxShadow: "md",
-      },
-    },
     outline: {
       true: {
         border: "2px solid",
-        borderColor: "brand.primary",
-        color: "brand.primary",
+        borderColor: "interactive.secondary",
+        color: "interactive.secondary",
         _hover: {
-          borderColor: "brand.secondary",
-          color: "brand.secondary",
+          borderColor: "#5a7be0",
+          color: "#5a7be0",
         },
         _active: {
-          borderColor: "brand.secondary",
-          color: "brand.secondary",
+          borderColor: "#899ee0",
+          color: "#899ee0",
         },
         _loading: {
           opacity: 0.8,
@@ -35,19 +30,41 @@ const buttonRecipe = defineRecipe({
     },
     solid: {
       true: {
-        bg: "brand.primary",
+        bg: "interactive.secondary",
         color: "white",
         _hover: {
-          bg: "brand.secondary",
+          bg: "#5a7be0",
+        },
+        _active: {
+          bg: "#899ee0",
+        },
+        _loading: {
+          bg: "background.overlay",
+          color: "content.link",
+          _hover: {
+            bg: "#5a7be0",
+            color: "base.light",
+          },
         },
       },
     },
     danger: {
       true: {
-        bg: "semantic.danger",
+        bg: "sentiment.negativeDefault", // #F23D33
         color: "white",
         _hover: {
+          bg: "#FF5F5F",
+        },
+        _active: {
+          bg: "#E3241A",
+        },
+        _loading: {
           bg: "semantic.dangerOverlay",
+          color: "base.dark",
+          _hover: {
+            bg: "#E3241A",
+            color: "base.light",
+          },
         },
       },
     },
@@ -58,6 +75,45 @@ const buttonRecipe = defineRecipe({
         _hover: {
           bg: "sentiment.positiveLight",
           color: "interactive.primaryLight",
+        },
+        _active: {
+          bg: "sentiment.positiveDark",
+          color: "sentiment.positiveOverlay",
+        },
+        _loading: {
+          opacity: 0.8,
+          bg: "sentiment.positiveLight",
+        },
+      },
+    },
+    ghost: {
+      true: {
+        color: "content.link",
+      },
+    },
+    lightGhost: {
+      true: {
+        color: "base.light",
+        _hover: {
+          bg: "background.transparentGrey",
+          color: "base.light",
+        },
+      },
+    },
+    solidIcon: {
+      true: {
+        bgColor: "background.neutral",
+        color: "interactive.secondary",
+        _hover: {
+          color: "white",
+          bg: "#5a7be0",
+        },
+        _active: {
+          bg: "#899ee0",
+        },
+        _loading: {
+          opacity: 0.8,
+          bg: "background.neutral",
         },
       },
     },

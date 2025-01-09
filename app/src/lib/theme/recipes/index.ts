@@ -248,3 +248,77 @@ export const cardRecipe = defineRecipe({
     py: 8,
   },
 });
+
+// define a recipe for the tooltip
+export const tooltipRecipe = defineRecipe({
+  base: {
+    bg: "content.secondary",
+    color: "base.light",
+    borderRadius: 8,
+    px: 4,
+    py: 2,
+  },
+});
+
+// define a recipe for the tabs
+export const tabsRecipe = defineRecipe({
+  variants: {
+    true: {
+      line: {
+        tab: {
+          borderColor: "#E6E7FF",
+          _selected: {
+            color: "interactive.secondary",
+            borderColor: "interactive.secondary",
+            fontWeight: "bold",
+          },
+        },
+      },
+    },
+  },
+});
+
+// define a recipe for the accordion
+export const accordionRecipe = defineRecipe({
+  variants: {
+    brand: {
+      container: {
+        borderRadius: 8,
+      },
+      button: {
+        borderRadius: "8px",
+      },
+    },
+  },
+  defaultVariants: {
+    brand: "container",
+  },
+});
+
+// define a recipe for the progress
+export const progressRecipe = defineRecipe({
+  base: {
+    bg: "#24BE00",
+  },
+});
+
+// define a recipe for the Form
+export const formRecipe = defineRecipe({
+  variants: {
+    brand: {
+      container: {
+        label: {
+          fontFamily: "heading",
+          fontWeight: "500",
+          lineHeight: "20px",
+          letterSpacing: "0.5px",
+          fontSize: "14px",
+          mb: 4,
+        },
+      },
+    },
+  },
+  defaultVariants: {
+    brand: "container",
+  },
+});

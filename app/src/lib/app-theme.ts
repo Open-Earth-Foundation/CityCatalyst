@@ -1,13 +1,19 @@
 import { createSystem, defaultConfig, defineRecipe } from "@chakra-ui/react";
 
-
 // Buttons
 const buttonRecipe = defineRecipe({
+  base: {
+    textTransform: "uppercase",
+    borderRadius: 50,
+    fontFamily: "var(--font-poppins)",
+    letterSpacing: "1.25px",
+    lineHeight: "16px",
+  },
   variants: {
     raised: {
       true: {
         boxShadow: "md",
-      }
+      },
     },
     outline: {
       true: {
@@ -23,16 +29,18 @@ const buttonRecipe = defineRecipe({
           color: "brand.secondary",
         },
         _loading: {
-          opacity: 0.8,}
-    },}
-    solid:{
+          opacity: 0.8,
+        },
+      },
+    },
+    solid: {
       true: {
         bg: "brand.primary",
         color: "white",
         _hover: {
           bg: "brand.secondary",
-        }
-      }
+        },
+      },
     },
     danger: {
       true: {
@@ -40,8 +48,8 @@ const buttonRecipe = defineRecipe({
         color: "white",
         _hover: {
           bg: "semantic.dangerOverlay",
-        }
-      }
+        },
+      },
     },
     solidPrimary: {
       true: {
@@ -50,210 +58,217 @@ const buttonRecipe = defineRecipe({
         _hover: {
           bg: "sentiment.positiveLight",
           color: "interactive.primaryLight",
-        }
-      }
-    }
-  }
-})
+        },
+      },
+    },
+  },
+});
 
-export const appTheme = createSystem(defaultConfig,
-{
+export const appTheme = createSystem(defaultConfig, {
   theme: {
     recipes: {
-      button: buttonRecipe
+      button: buttonRecipe,
     },
     tokens: {
-        colors: {
-          brand: {
-            primary: {value:"#001EA7"},
-            secondary: {value:"#2351DC"},
-          },
-      
-          content: {
-            primary: {value:"#00001F"},
-            secondary: {value:"#00001F"},
-            tertiary: {value:"#4B4C63"},
-            link: {value:"#2351DC"},
-            alternative: {value:"#001EA7"},
-          },
-      
-          semantic: {
-            success: {value:"#24BE00"},
-            successOverlay: {value:"#EFFDE5"},
-            warning: {value:"#C98300"},
-            warningOverlay: {value:"#FEF8E1"},
-            danger: {value:"#F23D33"},
-            dangerOverlay: {value:"#FFEAEE"},
-            info: {value:"#2351DC"},
-          },
-      
-          base: {
-            light: {value:"#FFFFFF"},
-            dark: {value:"#00001F"},
-          },
-      
-          border: {
-            neutral: {value:"#D7D8FA"},
-            overlay: {value:"#E6E7FF"},
-          },
-          divider: {
-            neutral: {value:"#F0F0F0"},
-          },
-      
-          background: {
-            default: {value:"#FFFFFF"},
-            neutral: {value:"#E8EAFB"},
-            alternative: {value:"#EFFDE5"},
-            overlay: {value:"#C5CBF5"},
-            transparentGrey: {value: "rgba(232, 234, 251, 0.20)"},
-            backgroundLight: {value:"#FAFAFA"},
-            backgroundGreyFlat: {value:"#FAFBFE"},
-            backgroundLoading: {value:"#E8EAFB"},
-          },
-      
-          interactive: {
-            primary: {value:"#008600"},
-            primaryLight: {value:"#61c261"},
-            accent: {value:"#5FE500"},
-            secondary: {value:"#2351DC"},
-            tertiary: {value:"#24BE00"},
-            quaternary: {value:"#F17105"},
-            control: {value:"#7A7B9A"},
-            connected: {value:"#FA7200"},
-          },
-      
-          sentiment: {
-            positiveOverlay: {value:"#EFFDE5"},
-            positiveLight: {value:"#f0f7eb"},
-            positiveDark: {value:"#b9cfa9"},
-            positiveDefault: {value:"#24BE00"},
-            warningDefault: {value:"#C98300"},
-            warningOverlay: {value:"#FEF8E1"},
-            negativeDefault: {value:"#F23D33"},
-            negativeOverlay: {value:"#FFEAEE"},
-          },
-      
-          brandScheme: {
-            100: {value:"#C5CBF5"},
-            500: {value:"#2351DC"},
-          },
-      
-          body: {value:"#232640"},
+      colors: {
+        brand: {
+          primary: { value: "#001EA7" },
+          secondary: { value: "#2351DC" },
         },
-      
-        fonts: {
-          heading: {value:"var(--font-poppins)"},
-          body: {value:"var(--font-opensans)"},
+
+        content: {
+          primary: { value: "#00001F" },
+          secondary: { value: "#00001F" },
+          tertiary: { value: "#4B4C63" },
+          link: { value: "#2351DC" },
+          alternative: { value: "#001EA7" },
         },
-      
-        fontSizes: {
-          display: {
-            xl: {value: "140px"},
-            lg: {value:"57px"},
-            md: {value: "45px"},
-            sm: {value: "36px"},
-          },
-      
-          headline: {
-            lg: {value:"32px"},
-            md: {value: "28px"},
-            sm: {value: "24px"},
-          },
-      
-          title: {
-            lg: {value: "22px"},
-            md: {value: "16px"},
-            sm: {value: "14px"},
-          },
-      
-          label: {
-            lg: {value: "14px"},
-            md: {value: "12px"},
-            sm: {value: "11px"},
-          },
-      
-          body: {
-            xl: {value: "22px"},
-            lg: {value: "16px"},
-            md: {value: "14px"},
-            sm: {value: "12px"},
-          },
-      
-          button: {
-            lg: {value: "20px"},
-            md: {value: "14px"},
-            sm: {value: "12px"},
-          },
-      
-          caption: {value: "12px"},
-          overline: {value: "10px"},
+
+        semantic: {
+          success: { value: "#24BE00" },
+          successOverlay: { value: "#EFFDE5" },
+          warning: { value: "#C98300" },
+          warningOverlay: { value: "#FEF8E1" },
+          danger: { value: "#F23D33" },
+          dangerOverlay: { value: "#FFEAEE" },
+          info: { value: "#2351DC" },
         },
-      
-        fontWeights: {
-          hairline: {value:100},
-          thin: {value:200},
-          light: {value:300},
-          regular: {value:400},
-          medium: {value:500},
-          semibold: {value:600},
-          bold: {value:700},
+
+        base: {
+          light: { value: "#FFFFFF" },
+          dark: { value: "#00001F" },
         },
-      
-        lineHeights: {
-          normal: {value: "normal"},
-          none: {value: 1},
-          "64": {value: "64px"},
-          "52": {value: "52px"},
-          "44": {value: "44px"},
-          "40": {value: "40px"},
-          "36": {value: "36px"},
-          "32": {value: "32px"},
-          "28": {value: "28px"},
-          "24": {value: "24px"},
-          "20": {value: "20px"},
-          "16": {value: "16px"},
+
+        border: {
+          neutral: { value: "#D7D8FA" },
+          overlay: { value: "#E6E7FF" },
         },
-      
-        letterSpacings: {
-          normal: {value: 0},
-          wide: {value: "0.5px"},
-          wider: {value: "1.25px"},
-          widest: {value: "1.5px"},
+        divider: {
+          neutral: { value: "#F0F0F0" },
         },
-      
-        spacing: {
-          xs: {value: "4px"},
-          s: {value: "8px"},
-          m: {value: "16px"},
-          l: {value: "24px"},
-          xl: {value: "32px"},
-          xxl: {value: "40px"},
-          "xxl-2": {value: "48px"},
-          "xxl-3": {value: "56px"},
-          "xxl-4": {value: "64px"},
-          "xxl-5": {value: "72px"},
-          "xxl-6": {value: "80px"},
+
+        background: {
+          default: { value: "#FFFFFF" },
+          neutral: { value: "#E8EAFB" },
+          alternative: { value: "#EFFDE5" },
+          overlay: { value: "#C5CBF5" },
+          transparentGrey: { value: "rgba(232, 234, 251, 0.20)" },
+          backgroundLight: { value: "#FAFAFA" },
+          backgroundGreyFlat: { value: "#FAFBFE" },
+          backgroundLoading: { value: "#E8EAFB" },
         },
-      
-        shadows: {
-          "1dp": {value: "0px 1px 2px -1px #0000001A, 0px 1px 3px 0px #00001F1A"},
-          "2dp": {value: "0px 2px 4px -2px #0000001A, 0px 4px 6px -1px #0000001A"},
-          "4dp": {value: "0px 4px 6px -4px #0000001A, 0px 10px 15px -3px #0000001A"},
-          "8dp": {value: "0px 8px 10px -6px #0000001A, 0px 20px 25px -5px #0000001A"},
-          "12dp": {value: "0px 25px 50px -12px #00000040"},
+
+        interactive: {
+          primary: { value: "#008600" },
+          primaryLight: { value: "#61c261" },
+          accent: { value: "#5FE500" },
+          secondary: { value: "#2351DC" },
+          tertiary: { value: "#24BE00" },
+          quaternary: { value: "#F17105" },
+          control: { value: "#7A7B9A" },
+          connected: { value: "#FA7200" },
         },
-      
-        radii: {
-          full: {value: "50%"},
-          minimal: {value: "4px"},
-          rounded: {value: "8px"},
-          "rounded-xl": {value: "16px"},
-          "rounded-xxl": {value: "20px"},
+
+        sentiment: {
+          positiveOverlay: { value: "#EFFDE5" },
+          positiveLight: { value: "#f0f7eb" },
+          positiveDark: { value: "#b9cfa9" },
+          positiveDefault: { value: "#24BE00" },
+          warningDefault: { value: "#C98300" },
+          warningOverlay: { value: "#FEF8E1" },
+          negativeDefault: { value: "#F23D33" },
+          negativeOverlay: { value: "#FFEAEE" },
         },
-        borders: {
-          inputBox: {value: "1px solid #D7D8FB"},
+
+        brandScheme: {
+          100: { value: "#C5CBF5" },
+          500: { value: "#2351DC" },
         },
-        /*
+
+        body: { value: "#232640" },
+      },
+
+      fonts: {
+        heading: { value: "var(--font-poppins)" },
+        body: { value: "var(--font-opensans)" },
+      },
+
+      fontSizes: {
+        display: {
+          xl: { value: "140px" },
+          lg: { value: "57px" },
+          md: { value: "45px" },
+          sm: { value: "36px" },
+        },
+
+        headline: {
+          lg: { value: "32px" },
+          md: { value: "28px" },
+          sm: { value: "24px" },
+        },
+
+        title: {
+          lg: { value: "22px" },
+          md: { value: "16px" },
+          sm: { value: "14px" },
+        },
+
+        label: {
+          lg: { value: "14px" },
+          md: { value: "12px" },
+          sm: { value: "11px" },
+        },
+
+        body: {
+          xl: { value: "22px" },
+          lg: { value: "16px" },
+          md: { value: "14px" },
+          sm: { value: "12px" },
+        },
+
+        button: {
+          lg: { value: "20px" },
+          md: { value: "14px" },
+          sm: { value: "12px" },
+        },
+
+        caption: { value: "12px" },
+        overline: { value: "10px" },
+      },
+
+      fontWeights: {
+        hairline: { value: 100 },
+        thin: { value: 200 },
+        light: { value: 300 },
+        regular: { value: 400 },
+        medium: { value: 500 },
+        semibold: { value: 600 },
+        bold: { value: 700 },
+      },
+
+      lineHeights: {
+        normal: { value: "normal" },
+        none: { value: 1 },
+        "64": { value: "64px" },
+        "52": { value: "52px" },
+        "44": { value: "44px" },
+        "40": { value: "40px" },
+        "36": { value: "36px" },
+        "32": { value: "32px" },
+        "28": { value: "28px" },
+        "24": { value: "24px" },
+        "20": { value: "20px" },
+        "16": { value: "16px" },
+      },
+
+      letterSpacings: {
+        normal: { value: 0 },
+        wide: { value: "0.5px" },
+        wider: { value: "1.25px" },
+        widest: { value: "1.5px" },
+      },
+
+      spacing: {
+        xs: { value: "4px" },
+        s: { value: "8px" },
+        m: { value: "16px" },
+        l: { value: "24px" },
+        xl: { value: "32px" },
+        xxl: { value: "40px" },
+        "xxl-2": { value: "48px" },
+        "xxl-3": { value: "56px" },
+        "xxl-4": { value: "64px" },
+        "xxl-5": { value: "72px" },
+        "xxl-6": { value: "80px" },
+      },
+
+      shadows: {
+        "1dp": {
+          value: "0px 1px 2px -1px #0000001A, 0px 1px 3px 0px #00001F1A",
+        },
+        "2dp": {
+          value: "0px 2px 4px -2px #0000001A, 0px 4px 6px -1px #0000001A",
+        },
+        "4dp": {
+          value: "0px 4px 6px -4px #0000001A, 0px 10px 15px -3px #0000001A",
+        },
+        "8dp": {
+          value: "0px 8px 10px -6px #0000001A, 0px 20px 25px -5px #0000001A",
+        },
+        "12dp": { value: "0px 25px 50px -12px #00000040" },
+      },
+
+      radii: {
+        full: { value: "50%" },
+        minimal: { value: "4px" },
+        rounded: { value: "8px" },
+        "rounded-xl": { value: "16px" },
+        "rounded-xxl": { value: "20px" },
+      },
+      borders: {
+        inputBox: { value: "1px solid #D7D8FB" },
+      },
+      /*
         breakpoints: {
           xs: "360px",
           sm: "600px",
@@ -262,366 +277,6 @@ export const appTheme = createSystem(defaultConfig,
           xl: "1440px",
         },
         */
-        components: {
-          Button: {
-            baseStyle: {
-              textTransform: "uppercase",
-              borderRadius: 50,
-              fontFamily: "var(--font-poppins)",
-              letterSpacing: "1.25px",
-              lineHeight: "16px",
-            },
-            variants: {
-              outline: {
-                border: "2px solid",
-                borderColor: "interactive.secondary",
-                color: "interactive.secondary",
-                _hover: {
-                  borderColor: "#5a7be0",
-                  color: "#5a7be0",
-                },
-                _active: {
-                  borderColor: "#899ee0",
-                  color: "#899ee0",
-                },
-                _loading: {
-                  opacity: 0.8,
-                },
-              },
-              solid: {
-                bg: "interactive.secondary",
-                color: "white",
-                _hover: {
-                  bg: "#5a7be0",
-                },
-                _active: {
-                  bg: "#899ee0",
-                },
-                _loading: {
-                  bg: "background.overlay",
-                  color: "content.link",
-                  _hover: {
-                    bg: "#5a7be0",
-                    color: "base.light",
-                  },
-                },
-              },
-              danger: {
-                bg: "sentiment.negativeDefault", // #F23D33
-                color: "white",
-                _hover: {
-                  bg: "#FF5F5F",
-                },
-                _active: {
-                  bg: "#E3241A",
-                },
-                _loading: {
-                  bg: "semantic.dangerOverlay",
-                  color: "base.dark",
-                  _hover: {
-                    bg: "#E3241A",
-                    color: "base.light",
-                  },
-                },
-              },
-              solidPrimary: {
-                // Button.variants?.solid,
-                bg: "sentiment.positiveOverlay",
-                color: "interactive.primary",
-                _hover: {
-                  bg: "sentiment.positiveLight",
-                  color: "interactive.primaryLight",
-                },
-                _active: {
-                  bg: "sentiment.positiveDark",
-                  color: "sentiment.positiveOverlay",
-                },
-                _loading: {
-                  opacity: 0.8,
-                  bg: "sentiment.positiveLight",
-                },
-              },
-              ghost: {
-                color: "content.link",
-              },
-              lightGhost: {
-                color: "base.light",
-                _hover: {
-                  bg: "background.transparentGrey",
-                  color: "base.light",
-                },
-              },
-              solidIcon: {
-                bgColor: "background.neutral",
-                color: "interactive.secondary",
-                _hover: {
-                  color: "white",
-                  bg: "#5a7be0",
-                },
-                _active: {
-                  bg: "#899ee0",
-                },
-                _loading: {
-                  opacity: 0.8,
-                  bg: "background.neutral",
-                },
-              },
-            },
-          },
-          Link: {
-            baseStyle: {
-              color: "brand.secondary",
-            },
-          },
-          Card: {
-            baseStyle: {
-              container: {
-                borderRadius: 8,
-                px: 6,
-                py: 8,
-              },
-            },
-          },
-          Tag: {
-            variants: {
-              brand: {
-                container: {
-                  px: 3,
-                  py: 1,
-                  borderRadius: "full",
-                  borderColor: "background.neutral",
-                  borderWidth: 1,
-                  color: "background.neutral",
-                },
-                label: {
-                  color: "content.secondary",
-                  fontFamily: "heading",
-                  fontSize: "14px",
-                  lineHeight: "20px",
-                  letterSpacing: "0.5px",
-                  borderWidth: 0,
-                  mt: -0.5,
-                },
-              },
-              filled: {
-                container: {
-                  px: 4,
-                  py: 1,
-                  borderRadius: "full",
-                  bgColor: "background.neutral",
-                },
-                label: {
-                  color: "content.alternative",
-                },
-              },
-              success: {
-                container: {
-                  px: 4,
-                  py: 1,
-                  borderRadius: "full",
-                  borderWidth: 1,
-                  borderColor: "sentiment.positiveDefault",
-                  bgColor: "sentiment.positiveOverlay",
-                  color: "sentiment.positiveDefault",
-                  fontWeight: 500,
-                },
-                label: {
-                  color: "sentiment.positiveDefault",
-                },
-              },
-              warning: {
-                container: {
-                  px: 4,
-                  py: 1,
-                  borderRadius: "full",
-                  borderWidth: 1,
-                  borderColor: "sentiment.warningDefault",
-                  bgColor: "sentiment.warningOverlay",
-                  color: "sentiment.warningDefault",
-                },
-                label: {
-                  color: "sentiment.warningDefault",
-                },
-              },
-              low: {
-                container: {
-                  bgColor: "sentiment.warningOverlay",
-                  borderColor: "sentiment.warningDefault",
-                  borderWidth: 1,
-                  borderRadius: "full",
-                },
-                label: {
-                  color: "sentiment.warningDefault",
-                  fontWeight: "medium",
-                },
-              },
-              medium: {
-                container: {
-                  bgColor: "background.neutral",
-                  borderColor: "content.link",
-                  borderWidth: 1,
-                  borderRadius: "full",
-                },
-                label: {
-                  color: "content.link",
-                  fontWeight: "medium",
-                },
-              },
-              high: {
-                container: {
-                  bgColor: "sentiment.positiveOverlay",
-                  borderColor: "interactive.tertiary",
-                  borderWidth: 1,
-                  borderRadius: "full",
-                },
-                label: {
-                  color: "interactive.tertiary",
-                  fontWeight: "medium",
-                },
-              },
-            },
-            defaultProps: {
-              variant: "brand",
-            },
-          },
-          Tooltip: {
-            baseStyle: {
-              bg: "content.secondary",
-              color: "base.light",
-              px: 4,
-              py: 2,
-              borderRadius: "lg",
-            },
-          },
-          Tabs: {
-            variants: {
-              line: {
-                tab: {
-                  borderColor: "#E6E7FF",
-                  _selected: {
-                    color: "interactive.secondary",
-                    borderColor: "interactive.secondary",
-                    fontWeight: "bold",
-                  },
-                },
-              },
-            },
-          },
-          Accordion: {
-            variants: {
-              brand: {
-                container: {
-                  borderRadius: "8px",
-                  bgColor: "background.transparentGrey",
-                  borderWidth: 0,
-                  px: 4,
-                  py: 4,
-                  mb: 6,
-                },
-                button: {
-                  borderRadius: "8px",
-                },
-              },
-            },
-            defaultProps: {
-              variant: "brand",
-            },
-          },
-          Progress: {
-            baseStyle: {
-              filledTrack: {
-                bg: "#24BE00",
-              },
-            },
-          },
-          Form: {
-            variants: {
-              brand: {
-                container: {
-                  label: {
-                    fontFamily: "heading",
-                    fontWeight: "500",
-                    lineHeight: "20px",
-                    letterSpacing: "0.5px",
-                    fontSize: "14px",
-                    mb: 4,
-                  },
-                },
-              },
-            },
-            defaultProps: {
-              variant: "brand",
-            },
-          },
-          Text: {
-            variants: {
-              spaced: {
-                fontWeight: "medium",
-                lineHeight: "20",
-                letterSpacing: "wide",
-              },
-              card: {
-                fontSize: "label.lg",
-                fontWeight: "medium",
-                color: "content.secondary",
-                textTransform: "none",
-                whiteSpace: "normal",
-                textAlign: "left",
-              },
-            },
-          },
-          Heading: {
-            sizes: {
-              lg: {
-                fontSize: "24px",
-                lineHeight: "32px",
-                fontWeight: 600,
-              },
-            },
-          },
-          Switch: {
-            variants: {
-              brand: {
-                track: {
-                  bg: "background.overlay",
-                  _checked: {
-                    bg: "content.link",
-                  },
-                },
-                container: {
-                  mb: "0 !important",
-                },
-              },
-            },
-            defaultProps: {
-              variant: "brand",
-            },
-          },
-          Textarea: {
-            variants: {
-              brand: {
-                borderWidth: "1px",
-                borderRadius: "16px",
-                resize: "none",
-                borderColor: "border.neutral",
-                _invalid: {
-                  background: "sentiment.negativeOverlay",
-                  borderWidth: "2px",
-                  borderColor: "sentiment.negativeDefault",
-                },
-                _focus: {
-                  borderWidth: "2px",
-                  borderColor: "#3182ce",
-                },
-              },
-            },
-            defaultProps: {
-              variant: "brand",
-            },
-          },
-        },
-      }
-    }
-  }
-}
-);
+    },
+  },
+});

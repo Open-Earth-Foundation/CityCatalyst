@@ -1,10 +1,12 @@
 import { createSystem, defaultConfig } from "@chakra-ui/react";
-import { buttonRecipe } from "./recipes";
+import { buttonRecipe, linkRecipe, tagRecipe } from "./recipes";
 
 export const appTheme = createSystem(defaultConfig, {
   theme: {
     recipes: {
       button: buttonRecipe,
+      link: linkRecipe,
+      tag: tagRecipe,
     },
     tokens: {
       colors: {

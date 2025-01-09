@@ -4,6 +4,7 @@
 
 import { defineRecipe } from "@chakra-ui/react";
 
+// define a recipe for the button
 export const buttonRecipe = defineRecipe({
   // base styles for the button
   base: {
@@ -126,8 +127,124 @@ export const buttonRecipe = defineRecipe({
   },
 });
 
+// define a recipe for the link (anchor tag)
 export const linkRecipe = defineRecipe({
   base: {
     color: "brand.secondary",
+  },
+});
+
+// define a recipe for the tag
+export const tagRecipe = defineRecipe({
+  base: {},
+
+  variants: {
+    brand: {
+      container: {
+        px: 3,
+        py: 1,
+        borderRadius: "full",
+        borderColor: "background.neutral",
+        borderWidth: 1,
+        color: "background.neutral",
+      },
+      label: {
+        color: "content.secondary",
+        fontFamily: "heading",
+        fontSize: "14px",
+        lineHeight: "20px",
+        letterSpacing: "0.5px",
+        borderWidth: 0,
+        mt: -0.5,
+      },
+    },
+    filled: {
+      container: {
+        px: 4,
+        py: 1,
+        borderRadius: "full",
+        bgColor: "background.neutral",
+      },
+      label: {
+        color: "content.alternative",
+      },
+    },
+    success: {
+      container: {
+        px: 4,
+        py: 1,
+        borderRadius: "full",
+        borderWidth: 1,
+        borderColor: "sentiment.positiveDefault",
+        bgColor: "sentiment.positiveOverlay",
+        color: "sentiment.positiveDefault",
+        fontWeight: 500,
+      },
+      label: {
+        color: "sentiment.positiveDefault",
+      },
+    },
+    warning: {
+      container: {
+        px: 4,
+        py: 1,
+        borderRadius: "full",
+        borderWidth: 1,
+        borderColor: "sentiment.warningDefault",
+        bgColor: "sentiment.warningOverlay",
+        color: "sentiment.warningDefault",
+      },
+      label: {
+        color: "sentiment.warningDefault",
+      },
+    },
+    low: {
+      container: {
+        bgColor: "sentiment.warningOverlay",
+        borderColor: "sentiment.warningDefault",
+        borderWidth: 1,
+        borderRadius: "full",
+      },
+      label: {
+        color: "sentiment.warningDefault",
+        fontWeight: "medium",
+      },
+    },
+    medium: {
+      container: {
+        bgColor: "background.neutral",
+        borderColor: "content.link",
+        borderWidth: 1,
+        borderRadius: "full",
+      },
+      label: {
+        color: "content.link",
+        fontWeight: "medium",
+      },
+    },
+    high: {
+      container: {
+        bgColor: "sentiment.positiveOverlay",
+        borderColor: "interactive.tertiary",
+        borderWidth: 1,
+        borderRadius: "full",
+      },
+      label: {
+        color: "interactive.tertiary",
+        fontWeight: "medium",
+      },
+    },
+  },
+  defaultVariants: {
+    brand: "label",
+  },
+});
+
+// define a recipe for the card
+export const cardRecipe = defineRecipe({
+  base: {
+    borderRadius: 8,
+    px: 6,
+    py: 8,
   },
 });

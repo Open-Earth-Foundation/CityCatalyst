@@ -1,0 +1,78 @@
+{
+    "_doc": "The main template for the climate action plan.",
+    "in_depth_main_action_description": {
+    "_doc": "This field gives a detailed description of the climate action and how it affects the city. Additionally it gives an overview on how the climate action aligns with the broader climate strategy of the city, the region and the country.",
+    "value": "[description]"
+    },
+    "proposed_sub_actions": {
+    "_doc": "This field gives a list of specific sub-actions that support the implementation of the main action.",
+    "value": [
+        "sub-action 1",
+        "sub-action 2",
+        "sub-action 3",
+        "..."
+    ]
+    },
+    "involved_municipal_institutions_and_partners": {
+    "_doc": "Municipal institutions and partners involved in executing the actions.",
+    "value": [
+        "Institution 1",
+        "Institution 2",
+        "Institution 3"
+    ]
+    },
+    "goals_and_milestones": {
+    "_doc": "Goals and milestones associated with the action plan.",
+    "value": [
+        "Goal 1",
+        "Goal 2",
+        "Goal 3"
+    ]
+    },
+    "action_timeline": {
+    "_doc": "Timeline for the action plan categorized into short, medium, and long term.",
+    "short_term": {
+        "_doc": "Activities and goals for Year 1.",
+        "value": "[Activities]"
+    },
+    "medium_term": {
+        "_doc": "Activities and goals for Years 2-3.",
+        "value": "[Activities]"
+    },
+    "long_term": {
+        "_doc": "Activities and goals for Years 4-5.",
+        "value": "[Activities]"
+    }
+    },
+    "costs_and_budget_considerations": {
+    "_doc": "Cost estimates and budget allocation details.",
+    "value": [
+        "Cost consideration 1",
+        "Cost consideration 2",
+        "Cost consideration 3"
+    ]
+    },
+    "monitoring_evaluation_and_reporting_indicators": {
+    "_doc": "Indicators to monitor, evaluate, and report progress.",
+    "value": [
+        "Indicator 1",
+        "Indicator 2",
+        "Indicator 3"
+    ]
+    },
+    "relationship_with_sdgs": {
+    "_doc": "Mapping of the action plan to specific Sustainable Development Goals (SDGs).",
+    "value": [
+        {
+        "sdg_number": "[Number]",
+        "description": "[Description]"
+        },
+        {
+        "sdg_number": "[Number]",
+        "description": "[Description]"
+        }
+    ]
+    }
+}
+  
+  

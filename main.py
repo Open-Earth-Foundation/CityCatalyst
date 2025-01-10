@@ -1,5 +1,15 @@
+import json
 from graph_definition import create_graph
 from state.agent_state import AgentState
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from pathlib import Path
+
+# Path to template
+template_path = Path(__file__).parent / "data" / "climate_action_plan_template.json"
+
+# Load the template with docstring
+with open(template_path, "r") as f:
+    template = json.load(f)
 
 # Create the graph
 graph = create_graph()
@@ -11,8 +21,10 @@ initial_state = AgentState(
         "parts": ["Main Action Description", "Goals", "Implementation Plan"],
     },
     city_data={"name": "New York City", "population": 8_336_817},
-    response_agent_1="",
-    messages=[{"role": "user", "content": "Start the process."}],
+    climate_action_plan_template=template,
+    response_agent_1=AIMessage(""),
+    messages=[HumanMessage("Start the process.")],
+    test="The content of test is a weird sentence about a blue bird.",
 )
 
 # Invoke the compiled graph

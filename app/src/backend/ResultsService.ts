@@ -8,7 +8,7 @@ import { ActivityDataByScope, GroupedActivity } from "@/util/types";
 import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";
 import createHttpError from "http-errors";
-import { getGrowthRatesFromOC } from "./GlobalAPIService";
+import GlobalAPIService from "./GlobalAPIService";
 import { Inventory } from "@/models/Inventory";
 
 function multiplyBigIntByFraction(
@@ -751,7 +751,7 @@ export async function getEmissionResults(inventory: string): Promise<{
 }
 
 export const getEmissionsForecasts = async (inventoryData: Inventory) => {
-  const OCResponse = await getGrowthRatesFromOC(
+  const OCResponse = await GlobalAPIService.fetchGrowthRates(
     inventoryData.city.locode!,
     inventoryData.created!.getFullYear(),
   );

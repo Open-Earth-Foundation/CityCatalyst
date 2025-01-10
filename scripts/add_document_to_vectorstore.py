@@ -66,7 +66,7 @@ def add_document_to_vectorstore(
 if __name__ == "__main__":
 
     add_document_to_vectorstore(
-        file_name="Brazil_NDC_November2024.pdf",
+        file_name="Worldbank_Green_Cities_Brazil.pdf",
         collection_name="chroma_db",
         embedding_model="text-embedding-3-large",
         chunk_size=2000,

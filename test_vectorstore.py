@@ -38,4 +38,12 @@ result = vector_store.similarity_search(
     k=2,
 )
 
-print(result)
+docs_and_scores = vector_store.similarity_search_with_relevance_scores(
+    query="Climate",
+    k=4,  # number of documents to retrieve
+    score_threshold=0.00,  # minimum similarity score
+)
+
+# print(result)
+
+print(docs_and_scores)

@@ -15,13 +15,22 @@ import {
 } from "@/util/enums";
 import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
+import { GrowthRatesResponse } from "@/backend/GlobalAPIService";
+import GlobalAPIService from "@/backend/GlobalAPIService";
 
 const locode = "XX_SUBCATEGORY_CITY";
 
-// TODO UNSKIP when we can mock getGrowthRatesFromOC
-describe.skip("Emissions Forecast API", () => {
+describe("Emissions Forecast API", () => {
   let city: City;
   let inventory: Inventory;
+  let mockGrowthRates: GrowthRatesResponse | undefined;
+
+  jest
+    .spyOn(GlobalAPIService, "fetchGrowthRates")
+    .mockImplementation((locode, forecastYear) => {
+      return Promise.resolve(mockGrowthRates);
+    });
+
   beforeAll(async () => {
     setupTests();
     await db.initialize();
@@ -51,13 +60,7 @@ describe.skip("Emissions Forecast API", () => {
   });
 
   it("should calculate projected emissions correctly", async () => {
-    jest.mock("@/backend/GlobalAPIService", () => {
-      return {
-        getGrowthRatesFromOC: jest
-          .fn()
-          .mockImplementation(() => growth_rates_response),
-      };
-    });
+    mockGrowthRates = growth_rates_response;
     const req = mockRequest();
     const result = await getResults(req, {
       params: { inventory: inventory.inventoryId },
@@ -67,11 +70,7 @@ describe.skip("Emissions Forecast API", () => {
   });
 
   it("should handle empty growth factors", async () => {
-    jest.mock("@/backend/GlobalAPIService", () => {
-      return {
-        getGrowthRatesFromOC: jest.fn().mockImplementation(() => undefined),
-      };
-    });
+    mockGrowthRates = undefined;
     const req = mockRequest();
     const result = await getResults(req, {
       params: { inventory: inventory.inventoryId },

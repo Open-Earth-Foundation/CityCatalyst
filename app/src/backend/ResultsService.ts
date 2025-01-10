@@ -782,7 +782,13 @@ export const getEmissionsForecasts = async (inventoryData: Inventory) => {
     totalEmissionsBySector.forEach((emissionsInSector) => {
       const previousYear = year - 1;
       const referenceNumber = emissionsInSector.reference_number;
-      const growthRate = growthRates[year][referenceNumber];
+      const growthRate = growthRates?.[year]?.[referenceNumber];
+      if (!growthRate) {
+        throw new createHttpError.InternalServerError(
+          `Failed to find growth rate for sector ${referenceNumber} in year ${year} in city ${inventoryData.city.locode!}`,
+        );
+      }
+
       projectedEmissions[year][referenceNumber] = multiplyBigIntByFraction(
         projectedEmissions[previousYear][referenceNumber],
         1 + growthRate,

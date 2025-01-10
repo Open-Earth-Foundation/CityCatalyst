@@ -11,6 +11,7 @@ initial_state = AgentState(
         "parts": ["Main Action Description", "Goals", "Implementation Plan"],
     },
     city_data={"name": "New York City", "population": 8_336_817},
+    response_agent_1="",
     messages=[{"role": "user", "content": "Start the process."}],
 )
 

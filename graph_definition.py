@@ -40,10 +40,35 @@ prompt_agent_4 = "You are Agent 4. Your task is to..."
 
 
 # Create the agents
-model = ChatOpenAI(model="gpt-4o-mini")
+model = ChatOpenAI(model="gpt-4o")
 
 
-agent_1 = create_react_agent(model, [tool_agent_1], state_modifier=prompt_agent_1)
+def build_custom_agent_1(model, tools):
+    """Wrap create_react_agent to store final output in AgentState."""
+
+    # The chain returned by create_react_agent
+    react_chain = create_react_agent(model, tools, state_modifier="You are Agent 1...")
+
+    def custom_agent_1(state: AgentState) -> AgentState:
+        # 1) Run the chain
+        result_state = react_chain.invoke(state)
+
+        # 2) The result might be in result_state["messages"][-1]["content"]
+        #    or in the 'output' key, depending on how your chain returns data.
+        #    Adjust to your chain’s specifics. For example:
+        agent_output = result_state["messages"][-1].content
+
+        # 3) Store the output under "response_agent_1"
+        result_state["response_agent_1"] = agent_output
+
+        # 4) Return the updated state
+        return AgentState(**result_state)
+
+    return custom_agent_1
+
+
+agent_1 = build_custom_agent_1(model, [tool_agent_1])
+# agent_1 = create_react_agent(model, [tool_agent_1], state_modifier=prompt_agent_1)
 agent_2 = create_react_agent(model, [tool_agent_2], state_modifier=prompt_agent_2)
 agent_3 = create_react_agent(model, [tool_agent_3], state_modifier=prompt_agent_3)
 agent_4 = create_react_agent(model, [tool_agent_4], state_modifier=prompt_agent_4)

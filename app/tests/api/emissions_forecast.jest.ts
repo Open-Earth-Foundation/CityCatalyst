@@ -51,7 +51,7 @@ describe.skip("Emissions Forecast API", () => {
   });
 
   it("should calculate projected emissions correctly", async () => {
-    jest.mock("@/backend/OpenClimateService", () => {
+    jest.mock("@/backend/GlobalAPIService", () => {
       return {
         getGrowthRatesFromOC: jest
           .fn()
@@ -67,7 +67,7 @@ describe.skip("Emissions Forecast API", () => {
   });
 
   it("should handle empty growth factors", async () => {
-    jest.mock("@/backend/OpenClimateService", () => {
+    jest.mock("@/backend/GlobalAPIService", () => {
       return {
         getGrowthRatesFromOC: jest.fn().mockImplementation(() => undefined),
       };

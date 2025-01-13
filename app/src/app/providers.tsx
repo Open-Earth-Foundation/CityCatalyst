@@ -3,7 +3,7 @@
 import { appTheme } from "@/lib/theme/app-theme";
 import { persistor, store } from "@/lib/store";
 import { CacheProvider } from "@chakra-ui/next-js";
-import { ChakraProvider } from "@chakra-ui/react";
+import { Provider as ChakraProvider } from "@/components/ui/provider";
 import { SessionProvider } from "next-auth/react";
 import localFont from "next/font/local";
 import { Provider } from "react-redux";

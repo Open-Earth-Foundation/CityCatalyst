@@ -1,19 +1,19 @@
-# utils/load_retriever.py
+# utils/load_vectorstore.py
 
-"""This function is currently not used and the retrieval is done directly on the vector store"""
-
-from pathlib import Path
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
-from langchain.schema import BaseRetriever
+from pathlib import Path
 from typing import Optional
 
 PERSISTENT_DIRECTORY = Path(__file__).parent.parent / "chroma_langchain_db"
 
 
-def load_retriever(
-    collection_name: str, embedding_model: str
-) -> Optional[BaseRetriever]:
+def load_vectorstore(
+    collection_name: str = "chroma_db", embedding_model: str = "text-embedding-3-large"
+) -> Optional[Chroma]:
+    """
+    Loads an existing vector store and returns it.
+    """
 
     if PERSISTENT_DIRECTORY.exists():
         # Load existing vector store
@@ -29,11 +29,8 @@ def load_retriever(
             embedding_function=embeddings,
             persist_directory=str(PERSISTENT_DIRECTORY),
         )
-        # TODO: Check best search type
-        retriever = vector_store.as_retriever(search_type="mmr", search_kwargs={"k": 5})
 
-        return retriever
+        return vector_store
+
     else:
-        print(
-            f"\nVector Store does not exist at {PERSISTENT_DIRECTORY}\nCreate it first.\n"
-        )
+        print("Could not load vector store. Please ensure your vector DB is created.")

@@ -4,32 +4,49 @@ from langgraph.graph import StateGraph, MessagesState, START, END
 from langgraph.prebuilt import create_react_agent
 from langchain.tools import tool
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-
-from utils.utils import render_graph
+from utils.render_graph import render_graph
 from state.agent_state import AgentState
+from utils.load_vectorstore import load_vectorstore
 
-from utils.load_retriever import load_retriever
 
-
-# Define tools for each agent (placeholders)
+# Define tools for each agent
 @tool
 def document_retriever_tool(search_query: str):
     """
-    Use this tool to retrieve chunks of text from your local Chroma database.
-    Input: A user query (string).
-    Output: The retrieved documents.
+        Use this tool to retrieve chunks of text from a local Chroma database.
+
+    The Chroma database contains the following documents:
+
+    1. Brazil_NDC_November2024.pdf
+       - Document Name: Brazil's Nationally Determined Contribution (NDC) to the Paris Agreement
+       - Content: This document outlines Brazil's climate action plan strategy.
+
+    2. Green_Cities_Brazil.pdf
+       - Document Name: Green Cities: Cities and Climate Change in Brazil
+       - Content: This report from the World Bank discusses opportunities for mitigating urban greenhouse gas emissions in sectors like transport, land use, energy efficiency, waste management, and urban forestry in Brazil.
+
+    Both documents are limited in scope to Brazil's climate action plan and its implementation.
+    Do not use this tool to retrieve information about cities outside of Brazil.
+
+    **Input**: A user query (string).
+
+    **Output**: A list of tuples in the form `[(document, relevance_score)]`.
+    - Relevance scores range from `0` (lowest) to `1` (highest).
+    - If you retrieve more than one document, give higher priority to the most relevant document.
     """
 
-    retriever = load_retriever("chroma_db", "text-embedding-3-large")
+    vector_store = load_vectorstore("chroma_db", "text-embedding-3-large")
 
-    if not retriever:
-        return "Could not load retriever. Please ensure your vector DB is created."
+    if not vector_store:
+        return "Could not load vector store. Please ensure your vector DB is created."
 
-    search_results = retriever.invoke(search_query)
+    docs_and_scores = vector_store.similarity_search_with_relevance_scores(
+        query=search_query,
+        k=4,
+        score_threshold=0.40,
+    )
 
-    print(f"Search results: {search_results}")
-
-    return search_results
+    return docs_and_scores
 
 
 @tool
@@ -50,7 +67,7 @@ def tool_agent_4():
     pass  # Placeholder for Agent 4's tool
 
 
-# Define prompts for each agent (placeholders)
+# Define prompts for each agent
 system_prompt_agent_1 = SystemMessage(
     """
 <role>
@@ -65,7 +82,7 @@ You only provide information for the main action description and no other fields
 """
 )
 system_prompt_agent_2 = SystemMessage(
-    "You are Agent 2. Do nothing for now. You will be prompted later."
+    "You are Agent 2. What is the weird test sentence about?"
 )
 system_prompt_agent_3 = SystemMessage(
     "You are Agent 3. Do nothing for now. You will be prompted later."
@@ -112,20 +129,53 @@ def build_custom_agent_1(model, tools):
         agent_output = result_state["messages"][-1].content
 
         # 3) Store the output under "response_agent_1"
+        # result_state["response_agent_1"] = AIMessage(agent_output)
         result_state["response_agent_1"] = AIMessage(agent_output)
 
         # 4) Return the updated state
-        # return AgentState(**result_state)
         return AgentState(**result_state)
+        # return AgentState(**state)
 
     return custom_agent_1
 
 
+def build_custom_agent_2(model, tools):
+    """Wrap create_react_agent to store final output in AgentState."""
+
+    # The chain returned by create_react_agent
+    react_chain = create_react_agent(model, tools, state_modifier=system_prompt_agent_2)
+
+    def custom_agent_2(state: AgentState) -> AgentState:
+        # 1) Run the chain
+        # result_state = react_chain.invoke(state)
+
+        result_state = react_chain.invoke(
+            {
+                "messages": HumanMessage(
+                    f"""
+                    This is the werid test sentence: 
+                    {json.dumps(state['test'], indent=4)}
+                    """
+                )
+            }
+        )
+
+        # 2) The result might be in result_state["messages"][-1]["content"]
+        #    or in the 'output' key, depending on how your chain returns data.
+        #    Adjust to your chain’s specifics. For example:
+        agent_output = result_state["messages"][-1].content
+
+        # 3) Store the output under "response_agent_1"
+        result_state["response_agent_2"] = AIMessage(agent_output)
+
+        # 4) Return the updated state
+        return AgentState(**result_state)
+
+    return custom_agent_2
+
+
 agent_1 = build_custom_agent_1(model, [document_retriever_tool])
-# agent_1 = create_react_agent(model, [tool_agent_1], state_modifier=prompt_agent_1)
-agent_2 = create_react_agent(
-    model, [tool_agent_2], state_modifier=system_prompt_agent_2
-)
+agent_2 = build_custom_agent_2(model, [tool_agent_2])
 agent_3 = create_react_agent(
     model, [tool_agent_3], state_modifier=system_prompt_agent_3
 )

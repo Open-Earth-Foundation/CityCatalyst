@@ -1,5 +1,19 @@
 import { createSystem, defaultConfig } from "@chakra-ui/react";
-import { buttonRecipe, linkRecipe, tagRecipe } from "./recipes";
+import {
+  accordionRecipe,
+  buttonRecipe,
+  cardRecipe,
+  formRecipe,
+  headingRecipe,
+  linkRecipe,
+  progressRecipe,
+  switchRecipe,
+  tabsRecipe,
+  tagRecipe,
+  textareaRecipe,
+  textRecipe,
+  tooltipRecipe,
+} from "./recipes";
 
 export const appTheme = createSystem(defaultConfig, {
   theme: {
@@ -7,6 +21,16 @@ export const appTheme = createSystem(defaultConfig, {
       button: buttonRecipe,
       link: linkRecipe,
       tag: tagRecipe,
+      card: cardRecipe,
+      tooltip: tooltipRecipe,
+      tab: tabsRecipe,
+      accordion: accordionRecipe,
+      progress: progressRecipe,
+      form: formRecipe,
+      text: textRecipe,
+      heading: headingRecipe,
+      switch: switchRecipe,
+      textarea: textareaRecipe,
     },
     tokens: {
       colors: {

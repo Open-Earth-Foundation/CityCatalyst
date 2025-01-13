@@ -24,7 +24,7 @@ def upgrade() -> None:
 
     conn.execute(text("""
         CREATE TABLE IF NOT EXISTS modelled.ghgi_emission_forecast(
-       	id uuid,
+       	id uuid NOT NULL,
        	actor_id varchar,
        	cluster_id int,
        	cluster_name json,
@@ -34,7 +34,7 @@ def upgrade() -> None:
        	future_year int,
        	growth_rate numeric,
         spatial_granularity varchar,
-       	datasource varchar null,
+       	datasource varchar,
        	CONSTRAINT ghgi_forecast PRIMARY KEY (id)
         );
     """))

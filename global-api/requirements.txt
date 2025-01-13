@@ -17,7 +17,7 @@ shapely==2.0.6
 SQLAlchemy==2.0.36
 tqdm==4.67.*
 uvicorn==0.34.0
-xarray==2024.*
+xarray==2025.*
 geojson==3.2.*
 openclimate==0.1.*
 nest_asyncio==1.6.*

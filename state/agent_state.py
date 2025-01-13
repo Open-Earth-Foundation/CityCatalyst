@@ -14,4 +14,3 @@ class AgentState(TypedDict):
     response_agent_1: Annotated[AIMessage, "The response from Agent 1"]
     response_agent_2: Annotated[AIMessage, "The response from Agent 2"]
     messages: Annotated[list, "The list of messages exchanged between agents"]
-    test: Annotated[str, "Test content goes here"]

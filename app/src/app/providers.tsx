@@ -55,7 +55,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         `}
       </style>
       <CacheProvider>
-        <ChakraProvider theme={appTheme}>
+        <ChakraProvider>
           <SessionProvider>
             <Provider store={store}>
               <PersistGate loading={null} persistor={persistor}>

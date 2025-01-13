@@ -9,24 +9,25 @@ from state.agent_state import AgentState
 from utils.load_vectorstore import load_vectorstore
 
 
+# 1. Brazil_NDC_November2024.pdf
+#    - Document Name: Brazil's Nationally Determined Contribution (NDC) to the Paris Agreement
+#    - Content: This document outlines Brazil's climate action plan strategy.
+
+# 2. Green_Cities_Brazil.pdf
+#    - Document Name: Green Cities: Cities and Climate Change in Brazil
+#    - Content: This report from the World Bank discusses opportunities for mitigating urban greenhouse gas emissions in sectors like transport, land use, energy efficiency, waste management, and urban forestry in Brazil.
+
+# Both documents are limited in scope to Brazil's climate action plan and its implementation.
+
+
 # Define tools for each agent
 @tool
 def document_retriever_tool(search_query: str):
     """
         Use this tool to retrieve chunks of text from a local Chroma database.
 
-    The Chroma database contains the following documents:
-
-    1. Brazil_NDC_November2024.pdf
-       - Document Name: Brazil's Nationally Determined Contribution (NDC) to the Paris Agreement
-       - Content: This document outlines Brazil's climate action plan strategy.
-
-    2. Green_Cities_Brazil.pdf
-       - Document Name: Green Cities: Cities and Climate Change in Brazil
-       - Content: This report from the World Bank discusses opportunities for mitigating urban greenhouse gas emissions in sectors like transport, land use, energy efficiency, waste management, and urban forestry in Brazil.
-
-    Both documents are limited in scope to Brazil's climate action plan and its implementation.
-    Do not use this tool to retrieve information about cities outside of Brazil.
+    The Chroma database contains documents limited in scope to Brazil's climate action plan and its implementation.
+    Use this tool to retrieve relevant information about cities within Brazil.
 
     **Input**: A user query (string).
 
@@ -78,11 +79,54 @@ You are a project manager specialized in implementing climate actions for a give
 You are tasked with creating the in-depth main action description of the climate action plan.
 To do this, refer to the provided climate action plan template and the given doc strings to know, which information is required. 
 You only provide information for the main action description and no other fields.
+
+Follow these guidlines carefully to complete the task:
+
+1. Information retrievel
+    a. Retrieve general relevant information about climate strategies within Brazil.
+    b. Retrieve specific information about climate strategies relevant to the given action description.
+    c. Retrieve specific information about climate strategies relevant to the city you are working on.
+    When using information from the documents, ensure that the information is relevant to the city you are working on.
+    Include the source of the information in the final output using the format: `[source: <document title and page>]`.
+    Important: If you could not retrieve any information, do not make up any information but instead state that you could not find any relevant information in the provided documents.
+2. Broad climate strategy
+    a. Start by providing a concise overview of the climate strategy in Brazil based on the retreived information. Inlcude both national and city-level strategies.
+3. Action Description
+    a. Create a concise in-depth main action description of the climate action plan related to the city you are working on.
+    b. Ensure that the description is relevant to the city you are working on.
 </task>
+
+<tools>
+You have access to a document retrieval tool that can retrieve relevant information about climate strategies within Brazil.
+Use this tool to gather general information about Brazils climate strategy to enrich the action description.
+</tools>
+
+<output>
+- The final output should be structured into two main sections:
+    1. Broad Climate Strategy (National + City-Level)  
+    2. In-Depth Main Action Description  
+- Provide information only for the main action description (and the concise overview of the climate strategy), and no other fields.
+
+<sample_output>
+## 1. Broad Climate Strategy
+[Concise overview of Brazil's national and city-level strategies, with references]
+
+## 2. Main Action Description
+[Detailed plan for the city, referencing relevant documents where applicable]
+
+Sources:
+[source: DocumentXYZ]
+</sample_output>
+</output>
+
+<important>
+When using information from the documents, ensure that the information is relevant to the city you are working on.
+Include the scource of the information in the final output.
+</important>
 """
 )
 system_prompt_agent_2 = SystemMessage(
-    "You are Agent 2. What is the weird test sentence about?"
+    "You are Agent 2. Do nothing for now. You will be prompted later."
 )
 system_prompt_agent_3 = SystemMessage(
     "You are Agent 3. Do nothing for now. You will be prompted later."
@@ -153,8 +197,8 @@ def build_custom_agent_2(model, tools):
             {
                 "messages": HumanMessage(
                     f"""
-                    This is the werid test sentence: 
-                    {json.dumps(state['test'], indent=4)}
+                    Placeholder for now. Do nothing.
+                    {state}
                     """
                 )
             }

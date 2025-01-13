@@ -23,6 +23,7 @@ initial_state = AgentState(
     city_data={"name": "New York City", "population": 8_336_817},
     climate_action_plan_template=template,
     response_agent_1=AIMessage(""),
+    response_agent_2=AIMessage(""),
     messages=[HumanMessage("Start the process.")],
     test="The content of test is a weird sentence about a blue bird.",
 )

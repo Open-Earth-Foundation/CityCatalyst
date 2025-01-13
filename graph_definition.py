@@ -1,12 +1,18 @@
 import json
 from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, MessagesState, START, END
-from langgraph.prebuilt import create_react_agent
 from langchain.tools import tool
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from utils.render_graph import render_graph
 from state.agent_state import AgentState
 from utils.load_vectorstore import load_vectorstore
+
+from agents.agent_1 import build_custom_agent_1
+from agents.agent_2 import build_custom_agent_2
+from agents.agent_3 import build_custom_agent_3
+from agents.agent_8 import build_custom_agent_8
+
+from langchain_community.tools.tavily_search import TavilySearchResults
 
 
 # 1. Brazil_NDC_November2024.pdf
@@ -50,182 +56,28 @@ def document_retriever_tool(search_query: str):
     return docs_and_scores
 
 
-@tool
-def tool_agent_2():
-    """Placeholder for Agent 2's tool"""
-    pass  # Placeholder for Agent 2's tool
-
-
-@tool
-def tool_agent_3():
-    """Placeholder for Agent 3's tool"""
-    pass  # Placeholder for Agent 3's tool
+search = TavilySearchResults(
+    max_results=5,
+    search_depth="advanced",
+    description="Search for municipal institutions and partners and their contact information for the implementation of the specific climate action for the given city. Perform the search in English und Portugues.",
+)
 
 
 @tool
-def tool_agent_4():
-    """Placeholder for Agent 4's tool"""
-    pass  # Placeholder for Agent 4's tool
-
-
-# Define prompts for each agent
-system_prompt_agent_1 = SystemMessage(
-    """
-<role>
-You are a project manager specialized in implementing climate actions for a given city.
-</role> 
-
-<task>
-You are tasked with creating the in-depth main action description of the climate action plan.
-To do this, refer to the provided climate action plan template and the given doc strings to know, which information is required. 
-You only provide information for the main action description and no other fields.
-
-Follow these guidlines carefully to complete the task:
-
-1. Information retrievel
-    a. Retrieve general relevant information about climate strategies within Brazil.
-    b. Retrieve specific information about climate strategies relevant to the given action description.
-    c. Retrieve specific information about climate strategies relevant to the city you are working on.
-    When using information from the documents, ensure that the information is relevant to the city you are working on.
-    Include the source of the information in the final output using the format: `[source: <document title and page>]`.
-    Important: If you could not retrieve any information, do not make up any information but instead state that you could not find any relevant information in the provided documents.
-2. Broad climate strategy
-    a. Start by providing a concise overview of the climate strategy in Brazil based on the retreived information. Inlcude both national and city-level strategies.
-3. Action Description
-    a. Create a concise in-depth main action description of the climate action plan related to the city you are working on.
-    b. Ensure that the description is relevant to the city you are working on.
-</task>
-
-<tools>
-You have access to a document retrieval tool that can retrieve relevant information about climate strategies within Brazil.
-Use this tool to gather general information about Brazils climate strategy to enrich the action description.
-</tools>
-
-<output>
-- The final output should be structured into two main sections:
-    1. Broad Climate Strategy (National + City-Level)  
-    2. In-Depth Main Action Description  
-- Provide information only for the main action description (and the concise overview of the climate strategy), and no other fields.
-
-<sample_output>
-## 1. Broad Climate Strategy
-[Concise overview of Brazil's national and city-level strategies, with references]
-
-## 2. Main Action Description
-[Detailed plan for the city, referencing relevant documents where applicable]
-
-Sources:
-[source: DocumentXYZ]
-</sample_output>
-</output>
-
-<important>
-When using information from the documents, ensure that the information is relevant to the city you are working on.
-Include the scource of the information in the final output.
-</important>
-"""
-)
-system_prompt_agent_2 = SystemMessage(
-    "You are Agent 2. Do nothing for now. You will be prompted later."
-)
-system_prompt_agent_3 = SystemMessage(
-    "You are Agent 3. Do nothing for now. You will be prompted later."
-)
-system_prompt_agent_4 = SystemMessage(
-    "You are Agent 4. Do nothing for now. You will be prompted later."
-)
+def placeholder_tool():
+    """A placeholder tool that does not have any functionality."""
 
 
 # Create the agents
 model = ChatOpenAI(model="gpt-4o-mini", temperature=0.0, seed=42)
 
 
-def build_custom_agent_1(model, tools):
-    """Wrap create_react_agent to store final output in AgentState."""
-
-    # The chain returned by create_react_agent
-    react_chain = create_react_agent(model, tools, state_modifier=system_prompt_agent_1)
-
-    def custom_agent_1(state: AgentState) -> AgentState:
-        # 1) Run the chain
-        # result_state = react_chain.invoke(state)
-
-        result_state = react_chain.invoke(
-            {
-                "messages": HumanMessage(
-                    f"""
-                    This is the climate action data: 
-                    {json.dumps(state['climate_action_data'], indent=4)}
-
-                    This is the city data: 
-                    {json.dumps(state['city_data'], indent=4)}
-
-                    This is the relevant part of the climate action plan template: 
-                    {json.dumps(state['climate_action_plan_template']["in_depth_main_action_description"], indent=4)}
-                    """
-                )
-            }
-        )
-
-        # 2) The result might be in result_state["messages"][-1]["content"]
-        #    or in the 'output' key, depending on how your chain returns data.
-        #    Adjust to your chain’s specifics. For example:
-        agent_output = result_state["messages"][-1].content
-
-        # 3) Store the output under "response_agent_1"
-        # result_state["response_agent_1"] = AIMessage(agent_output)
-        result_state["response_agent_1"] = AIMessage(agent_output)
-
-        # 4) Return the updated state
-        return AgentState(**result_state)
-        # return AgentState(**state)
-
-    return custom_agent_1
-
-
-def build_custom_agent_2(model, tools):
-    """Wrap create_react_agent to store final output in AgentState."""
-
-    # The chain returned by create_react_agent
-    react_chain = create_react_agent(model, tools, state_modifier=system_prompt_agent_2)
-
-    def custom_agent_2(state: AgentState) -> AgentState:
-        # 1) Run the chain
-        # result_state = react_chain.invoke(state)
-
-        result_state = react_chain.invoke(
-            {
-                "messages": HumanMessage(
-                    f"""
-                    Placeholder for now. Do nothing.
-                    {state}
-                    """
-                )
-            }
-        )
-
-        # 2) The result might be in result_state["messages"][-1]["content"]
-        #    or in the 'output' key, depending on how your chain returns data.
-        #    Adjust to your chain’s specifics. For example:
-        agent_output = result_state["messages"][-1].content
-
-        # 3) Store the output under "response_agent_1"
-        result_state["response_agent_2"] = AIMessage(agent_output)
-
-        # 4) Return the updated state
-        return AgentState(**result_state)
-
-    return custom_agent_2
-
-
 agent_1 = build_custom_agent_1(model, [document_retriever_tool])
-agent_2 = build_custom_agent_2(model, [tool_agent_2])
-agent_3 = create_react_agent(
-    model, [tool_agent_3], state_modifier=system_prompt_agent_3
-)
-agent_4 = create_react_agent(
-    model, [tool_agent_4], state_modifier=system_prompt_agent_4
-)
+agent_2 = build_custom_agent_2(model, [placeholder_tool])
+agent_3 = build_custom_agent_3(
+    model, [placeholder_tool]
+)  # for debugging purposes, 'search' tool is not provided to save on API calls. Add [search] to the list of tools to enable search tool.
+agent_8 = build_custom_agent_8(model, [placeholder_tool])
 
 
 def create_graph():
@@ -234,14 +86,14 @@ def create_graph():
     builder.add_node("agent_1", agent_1)
     builder.add_node("agent_2", agent_2)
     builder.add_node("agent_3", agent_3)
-    builder.add_node("agent_4", agent_4)
+    builder.add_node("agent_8", agent_8)
 
     # Define the edges
     builder.add_edge(START, "agent_1")
     builder.add_edge("agent_1", "agent_2")
     builder.add_edge("agent_2", "agent_3")
-    builder.add_edge("agent_3", "agent_4")
-    builder.add_edge("agent_4", END)
+    builder.add_edge("agent_3", "agent_8")
+    builder.add_edge("agent_8", END)
 
     # Compile the graph
     compiled_graph = builder.compile()

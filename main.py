@@ -26,9 +26,10 @@ graph = create_graph()
 initial_state = AgentState(
     climate_action_data=climate_action_data,
     city_data=city_data,
-    climate_action_plan_template=template,
     response_agent_1=AIMessage(""),
     response_agent_2=AIMessage(""),
+    response_agent_3=AIMessage(""),
+    response_agent_8=AIMessage(""),
     messages=[],
 )
 
@@ -36,4 +37,4 @@ initial_state = AgentState(
 result = graph.invoke(input=initial_state)
 
 # Print the result
-print(result)
+print("All done")

@@ -9,17 +9,7 @@ import {
 } from "@/services/api";
 import { CheckUserSession } from "@/util/check-user-session";
 import { formatEmissions } from "@/util/helpers";
-import {
-  Box,
-  Button,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Tabs, Text, VStack } from "@chakra-ui/react";
 import { useParams, useRouter } from "next/navigation";
 import MissingInventory from "@/components/missing-inventory";
 import InventoryCalculationTab from "@/components/HomePage/InventoryCalculationTab";
@@ -32,6 +22,7 @@ import { useEffect } from "react";
 import React, { useMemo } from "react";
 import { YearSelectorCard } from "@/components/Cards/years-selection-card";
 import { AddIcon } from "@chakra-ui/icons";
+import { Button } from "../ui/button";
 
 export default function HomePage({
   lng,
@@ -174,7 +165,6 @@ export default function HomePage({
                     <Button
                       data-testid="add-new-inventory-button"
                       title={t("add-new-inventory")}
-                      leftIcon={<AddIcon h="16px" w="16px" />}
                       h="48px"
                       aria-label="activity-button"
                       fontSize="button.md"
@@ -185,6 +175,7 @@ export default function HomePage({
                         )
                       }
                     >
+                      <AddIcon h="16px" w="16px" />
                       {t("add-new-inventory")}
                     </Button>
                   </Box>
@@ -195,13 +186,13 @@ export default function HomePage({
                     lng={lng}
                     t={t}
                   />
-                  <Tabs align="start" className="mt-12" variant="line" isLazy>
-                    <TabList>
+                  <Tabs.Root className="mt-12" variant="line" lazyMount>
+                    <Tabs.List>
                       {[
                         t("tab-emission-inventory-calculation-title"),
                         t("tab-emission-inventory-results-title"),
                       ]?.map((tab, index) => (
-                        <Tab key={index}>
+                        <Tabs.Trigger key={index} value={t(tab)}>
                           <Text
                             fontFamily="heading"
                             fontSize="title.md"
@@ -209,30 +200,30 @@ export default function HomePage({
                           >
                             {t(tab)}
                           </Text>
-                        </Tab>
+                        </Tabs.Trigger>
                       ))}
-                    </TabList>
-                    <TabPanels>
-                      <TabPanel>
-                        <InventoryCalculationTab
-                          lng={lng}
-                          inventory={inventory}
-                          inventoryProgress={inventoryProgress}
-                          isInventoryProgressLoading={
-                            isInventoryProgressLoading
-                          }
-                        />
-                      </TabPanel>
-                      <TabPanel>
-                        <InventoryReportTab
-                          isPublic={isPublic}
-                          lng={lng}
-                          population={population}
-                          inventory={inventory}
-                        />
-                      </TabPanel>
-                    </TabPanels>
-                  </Tabs>
+                    </Tabs.List>
+                    <Tabs.Content
+                      value={t("tab-emission-inventory-calculation-title")}
+                    >
+                      <InventoryCalculationTab
+                        lng={lng}
+                        inventory={inventory}
+                        inventoryProgress={inventoryProgress}
+                        isInventoryProgressLoading={isInventoryProgressLoading}
+                      />
+                    </Tabs.Content>
+                    <Tabs.Content
+                      value={t("tab-emission-inventory-results-title")}
+                    >
+                      <InventoryReportTab
+                        isPublic={isPublic}
+                        lng={lng}
+                        population={population}
+                        inventory={inventory}
+                      />
+                    </Tabs.Content>
+                  </Tabs.Root>
                 </>
               ) : (
                 <InventoryReportTab

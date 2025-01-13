@@ -322,3 +322,83 @@ export const formRecipe = defineRecipe({
     brand: "container",
   },
 });
+
+// define a recipe for the text
+export const textRecipe = defineRecipe({
+  variants: {
+    spaced: {
+      true: {
+        fontWeight: "medium",
+        lineHeight: "20",
+        letterSpacing: "wide",
+      },
+    },
+    card: {
+      true: {
+        fontSize: "label.lg",
+        fontWeight: "medium",
+        color: "content.secondary",
+        textTransform: "none",
+        whiteSpace: "normal",
+        textAlign: "left",
+      },
+    },
+  },
+});
+
+// define a recipe for the Heading
+export const headingRecipe = defineRecipe({
+  variants: {
+    lg: {
+      true: {
+        fontSize: "24px",
+        fontWeight: "bold",
+        lineHeight: "32px",
+      },
+    },
+  },
+  defaultVariants: {
+    lg: true,
+  },
+});
+
+// define a recipe for the Switch
+export const switchRecipe = defineRecipe({
+  variants: {
+    brand: {
+      track: {
+        borderRadius: "full",
+        bg: "background.neutral",
+        _checked: {
+          bg: "interactive.secondary",
+        },
+      },
+      container: {
+        mb: "0 !important",
+      },
+    },
+  },
+  defaultVariants: {
+    brand: "track",
+  },
+});
+
+// define a recipe for the Textarea
+export const textareaRecipe = defineRecipe({
+  variants: {
+    brand: {
+      container: {
+        bg: "background.neutral",
+        borderColor: "background.neutral",
+        borderRadius: 8,
+        color: "content.secondary",
+        _focus: {
+          borderColor: "interactive.secondary",
+        },
+      },
+    },
+  },
+  defaultVariants: {
+    brand: "container",
+  },
+});

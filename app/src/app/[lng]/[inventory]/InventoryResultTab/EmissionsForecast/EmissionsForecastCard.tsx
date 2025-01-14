@@ -10,8 +10,8 @@ import {
   IconButton,
   Text,
 } from "@chakra-ui/react";
-import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { EmissionsForecastChart } from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/EmissionsForecastChart";
+import { MdInfoOutline } from "react-icons/md";
 
 export const EmissionsForecastCard = ({
   forecast,
@@ -46,7 +46,7 @@ export const EmissionsForecastCard = ({
               variant={"unstyled"}
               isRound
               onClick={() => setIsExplanationModalOpen(true)}
-              icon={<InfoOutlineIcon marginRight={3} fontSize={"20px"} />}
+              icon={<MdInfoOutline marginRight={3} fontSize={"20px"} />}
               aria-label={"growth-rates-explanation"}
             />
           </HStack>

@@ -23,8 +23,9 @@ import {
 } from "@/util/helpers";
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { AddIcon } from "@chakra-ui/icons";
+// import { AddIcon } from "@chakra-ui/icons";
 import { InventoryType, InventoryTypeEnum, ISector } from "@/util/constants";
+import { BsPlus } from "react-icons/bs";
 
 export function SectorCard({
   sectorProgress,
@@ -116,7 +117,7 @@ export function SectorCard({
                   color="brand.secondary"
                   ml={2}
                 >
-                  <AddIcon />
+                  <BsPlus />
                   <Text fontFamily="heading" fontSize="button.md">
                     <Trans t={t}>add-data-to-sector</Trans>
                   </Text>

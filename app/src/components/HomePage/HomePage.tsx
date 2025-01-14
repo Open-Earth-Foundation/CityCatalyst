@@ -21,8 +21,8 @@ import { InventoryPreferencesCard } from "@/components/HomePage/InventoryPrefere
 import { useEffect } from "react";
 import React, { useMemo } from "react";
 import { YearSelectorCard } from "@/components/Cards/years-selection-card";
-import { AddIcon } from "@chakra-ui/icons";
 import { Button } from "../ui/button";
+import { BsPlus } from "react-icons/bs";
 
 export default function HomePage({
   lng,
@@ -175,7 +175,7 @@ export default function HomePage({
                         )
                       }
                     >
-                      <AddIcon h="16px" w="16px" />
+                      <BsPlus h="16px" w="16px" />
                       {t("add-new-inventory")}
                     </Button>
                   </Box>

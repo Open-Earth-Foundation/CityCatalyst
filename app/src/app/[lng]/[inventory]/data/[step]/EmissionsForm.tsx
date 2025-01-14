@@ -1,5 +1,4 @@
 import { RadioButton } from "@/components/radio-button";
-import { InfoOutlineIcon } from "@chakra-ui/icons";
 import {
   Box,
   Flex,
@@ -20,6 +19,7 @@ import type { TFunction } from "i18next";
 import { Control, useController } from "react-hook-form";
 import { resolve } from "@/util/helpers";
 import type { EmissionsFactorWithDataSources } from "@/util/types";
+import { MdInfoOutline } from "react-icons/md";
 
 export function EmissionsForm({
   t,
@@ -121,7 +121,7 @@ export function EmissionsForm({
               color="base.light"
               placement="bottom-start"
             >
-              <InfoOutlineIcon mt={-0.5} color="content.tertiary" />
+              <MdInfoOutline mt={-0.5} color="content.tertiary" />
             </Tooltip>
           </Heading>
           <HStack spacing={4} {...getRootProps()}>

@@ -9,8 +9,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import React, { MouseEventHandler } from "react";
-import { InfoOutlineIcon } from "@chakra-ui/icons";
-import { MdCheckCircleOutline } from "react-icons/md";
+import { MdCheckCircleOutline, MdInfoOutline } from "react-icons/md";
 import { FiDownload } from "react-icons/fi";
 
 const DownloadButtons = ({
@@ -79,7 +78,7 @@ const DownloadButtons = ({
         >
           <Box display="flex" gap="8px" alignItems="center">
             {status === "info" || status === "error" ? (
-              <InfoOutlineIcon fontSize="24px" />
+              <MdInfoOutline fontSize="24px" />
             ) : (
               <MdCheckCircleOutline fontSize="24px" />
             )}

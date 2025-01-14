@@ -1,10 +1,10 @@
 import { Box, Text } from "@chakra-ui/layout";
 import Image from "next/image";
 import { Button, Heading } from "@chakra-ui/react";
-import { ArrowForwardIcon } from "@chakra-ui/icons";
 import React from "react";
 import { useTranslation } from "@/i18n/client";
 import "dotenv/config";
+import { MdArrowForward } from "react-icons/md";
 
 const NotAvailable = ({ lng }: { lng: string }) => {
   const { t } = useTranslation(lng, "inventory-not-found");
@@ -54,7 +54,7 @@ const NotAvailable = ({ lng }: { lng: string }) => {
           h="48px"
           px="24px"
           fontSize="body.md"
-          rightIcon={<ArrowForwardIcon />}
+          rightIcon={<MdArrowForward />}
         >
           {t("go-to-citycatalyst")}
         </Button>

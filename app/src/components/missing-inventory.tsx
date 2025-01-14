@@ -1,11 +1,11 @@
 import { Box, Link, Text } from "@chakra-ui/layout";
 import Image from "next/image";
 import { Button, CircularProgress, Heading } from "@chakra-ui/react";
-import { ArrowForwardIcon } from "@chakra-ui/icons";
 import React, { useEffect } from "react";
 import { useTranslation } from "@/i18n/client";
 import { useRouter } from "next/navigation";
 import { api } from "@/services/api";
+import { MdArrowForward } from "react-icons/md";
 
 const MissingInventory = ({ lng }: { lng: string }) => {
   const { data: userInfo, isLoading: isUserInfoLoading } =
@@ -79,7 +79,7 @@ const MissingInventory = ({ lng }: { lng: string }) => {
             px="24px"
             fontSize="body.md"
             isLoading={isUserInfoLoading}
-            rightIcon={<ArrowForwardIcon />}
+            rightIcon={<MdArrowForward />}
           >
             {t("goto-dashboard")}
           </Button>

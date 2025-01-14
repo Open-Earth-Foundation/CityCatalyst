@@ -2,7 +2,6 @@
 
 import { useTranslation } from "@/i18n/client";
 import { languages } from "@/i18n/settings";
-import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import {
   Avatar,
   Box,
@@ -23,6 +22,7 @@ import NextLink from "next/link";
 import { CircleFlag } from "react-circle-flags";
 import { FiSettings } from "react-icons/fi";
 import { MdLogout } from "react-icons/md";
+import { GoTriangleDown, GoTriangleUp } from "react-icons/go";
 import Cookies from "js-cookie";
 import { useParams } from "next/navigation";
 import { api } from "@/services/api";
@@ -144,7 +144,7 @@ export function NavigationBar({
                   width="24"
                 />
               }
-              rightIcon={isOpen ? <TriangleUpIcon /> : <TriangleDownIcon />}
+              rightIcon={isOpen ? <GoTriangleUp /> : <GoTriangleDown />}
               className="whitespace-nowrap normal-case"
               _hover={{
                 bg: "#FFF2",

@@ -3,8 +3,12 @@ import dynamic from "next/dynamic";
 import { Box, Heading, Icon, Spinner, Text, Tooltip } from "@chakra-ui/react";
 import { CircleFlag } from "react-circle-flags";
 import { InventorySelect } from "@/components/InventorySelect";
-import { MdArrowOutward, MdGroup, MdOutlineAspectRatio } from "react-icons/md";
-import { InfoOutlineIcon } from "@chakra-ui/icons";
+import {
+  MdArrowOutward,
+  MdGroup,
+  MdInfoOutline,
+  MdOutlineAspectRatio,
+} from "react-icons/md";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
 import type { TFunction } from "i18next";
@@ -103,11 +107,7 @@ export function Hero({
                         })}
                         placement="bottom-start"
                       >
-                        <InfoOutlineIcon
-                          w={3}
-                          h={3}
-                          color="background.overlay"
-                        />
+                        <MdInfoOutline w={3} h={3} color="background.overlay" />
                       </Tooltip>
                     </Box>
                     <Text

@@ -1,8 +1,8 @@
 import type { TFunction } from "i18next";
 import { Badge, Button, HStack, Text, VStack } from "@chakra-ui/react";
 import { Img } from "@react-email/components";
-import { ChevronRightIcon } from "@chakra-ui/icons";
 import React from "react";
+import { BsChevronRight } from "react-icons/bs";
 
 const PublishButtons = ({
   t,
@@ -39,7 +39,7 @@ const PublishButtons = ({
           mx="24px"
           variant="ghost"
           leftIcon={<Img src={src} alt={title} width="32px" height="32px" />}
-          rightIcon={<ChevronRightIcon width="24px" height="24px" mx="16px" />}
+          rightIcon={<BsChevronRight width="24px" height="24px" mx="16px" />}
           isDisabled={!isAvailable}
           style={{
             backgroundColor: "white",

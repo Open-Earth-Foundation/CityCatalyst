@@ -4,7 +4,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { ColorModeProvider, type ColorModeProviderProps } from "./color-mode";
 import { appTheme } from "@/lib/theme/app-theme";
 
-export function Provider(props: ColorModeProviderProps) {
+export function Provider(props: ColorModeProviderProps, value: any) {
   return (
     <ChakraProvider value={appTheme}>
       <ColorModeProvider {...props} />

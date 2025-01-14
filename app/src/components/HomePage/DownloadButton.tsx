@@ -59,6 +59,8 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
         cityLocode={city?.locode}
       />
       <ModalPublish
+        // Todo: add close state action
+        setModalOpen={() => {}}
         t={t}
         isPublishOpen={isPublishOpen}
         onPublishClose={onPublishClose}

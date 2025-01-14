@@ -1,5 +1,5 @@
 import { EmissionsForecastData } from "@/util/types";
-import { TFunction } from "i18next/typescript/t";
+import { TFunction } from "i18next";
 import { useState } from "react";
 import { GrowthRatesExplanationModal } from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/GrowthRatesExplanationModal";
 import {

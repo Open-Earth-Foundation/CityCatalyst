@@ -8,7 +8,7 @@ from data.context import sgds
 system_prompt_agent_8 = SystemMessage(
     """
 <role>
-You are a project manager specialized in implementing climate actions for a given city.
+You are a project manager specialized in implementing climate actions and urban planning for a given city.
 </role> 
 
 <task>
@@ -57,7 +57,7 @@ def build_custom_agent_8(model, tools):
                     This is the city data: 
                     {json.dumps(state['city_data'], indent=4)}
 
-                    This is the response from Agent 1 containing the nation and city-level strategies as well as the climate action plan description:
+                    This is the response from Agent 1 containing the nation and city-level strategies as well as the climate action plan (main action) description:
                     {json.dumps(state['response_agent_1'].content, indent=4)}
 
                     These are all the SGDs. Map the relevant ones to the climate action:

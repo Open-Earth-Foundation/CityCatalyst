@@ -53,17 +53,17 @@ export function Providers({ children }: { children: React.ReactNode }) {
           }
         `}
       </style>
-      <CacheProvider>
-        <ChakraProvider>
-          <SessionProvider>
-            <Provider store={store}>
-              <PersistGate loading={null} persistor={persistor}>
-                {children}
-              </PersistGate>
-            </Provider>
-          </SessionProvider>
-        </ChakraProvider>
-      </CacheProvider>
+      {/* <CacheProvider> */}
+      <ChakraProvider>
+        <SessionProvider>
+          <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+              {children}
+            </PersistGate>
+          </Provider>
+        </SessionProvider>
+      </ChakraProvider>
+      {/* </CacheProvider> */}
     </>
   );
 }

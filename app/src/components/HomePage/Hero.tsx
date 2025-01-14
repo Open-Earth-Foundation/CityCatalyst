@@ -169,11 +169,7 @@ export function Hero({
                         }
                         placement="bottom-start"
                       >
-                        <InfoOutlineIcon
-                          w={3}
-                          h={3}
-                          color="background.overlay"
-                        />
+                        <MdInfoOutline w={3} h={3} color="background.overlay" />
                       </Tooltip>
                     </Box>
                     <Text
@@ -230,11 +226,7 @@ export function Hero({
                         }
                         placement="bottom-start"
                       >
-                        <InfoOutlineIcon
-                          w={3}
-                          h={3}
-                          color="background.overlay"
-                        />
+                        <MdInfoOutline w={3} h={3} color="background.overlay" />
                       </Tooltip>
                     </Box>
                     <Text

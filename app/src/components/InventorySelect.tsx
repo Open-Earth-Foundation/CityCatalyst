@@ -4,10 +4,7 @@ import {
   Center,
   Icon,
   IconButton,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
+  MenuRoot,
   Spinner,
   Text,
 } from "@chakra-ui/react";
@@ -18,6 +15,8 @@ import {
   MdLocationOn,
   MdOutlineLocationOn,
 } from "react-icons/md";
+import { MenuContent, MenuItem, MenuTrigger } from "./ui/menu";
+import { Button } from "./ui/button";
 
 export const InventorySelect = ({
   currentInventoryId,
@@ -41,11 +40,20 @@ export const InventorySelect = ({
   };
 
   return (
-    <Menu isLazy={true}>
-      <MenuButton as={IconButton} icon={<MdArrowDropDown size={24} />} />
-      <MenuList>
+    <MenuRoot isLazy={true}>
+      <MenuTrigger>
+        <Button
+          aria-label="Select inventory"
+          variant="ghost"
+          colorScheme="interactive.secondary"
+          size="lg"
+        >
+          <MdArrowDropDown size={24} />
+        </Button>
+      </MenuTrigger>
+      <MenuContent>
         {isLoading && (
-          <MenuItem>
+          <MenuItem value="">
             <Center>
               <Spinner size="sm" />
             </Center>
@@ -59,13 +67,7 @@ export const InventorySelect = ({
           return (
             <MenuItem
               key={city.cityId}
-              icon={
-                <Icon
-                  as={isCurrent ? MdLocationOn : MdOutlineLocationOn}
-                  color="interactive.secondary"
-                  boxSize={6}
-                />
-              }
+              value={city.cityId}
               onClick={() => !isCurrent && onSelect({ city, years })}
             >
               <Text color="base.dark">
@@ -75,12 +77,13 @@ export const InventorySelect = ({
           );
         })}
         <MenuItem
+          value="add-city"
           onClick={goToOnboarding}
           icon={<Icon as={MdAdd} color="interactive.secondary" boxSize={6} />}
         >
           Add a new city
         </MenuItem>
-      </MenuList>
-    </Menu>
+      </MenuContent>
+    </MenuRoot>
   );
 };

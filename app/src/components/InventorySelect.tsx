@@ -1,13 +1,6 @@
 import { api, useGetCitiesAndYearsQuery } from "@/services/api";
 import type { CityAndYearsResponse } from "@/util/types";
-import {
-  Center,
-  Icon,
-  IconButton,
-  MenuRoot,
-  Spinner,
-  Text,
-} from "@chakra-ui/react";
+import { Center, Icon, IconButton, Spinner, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import {
   MdAdd,
@@ -15,7 +8,7 @@ import {
   MdLocationOn,
   MdOutlineLocationOn,
 } from "react-icons/md";
-import { MenuContent, MenuItem, MenuTrigger } from "./ui/menu";
+import { MenuRoot, MenuContent, MenuItem, MenuTrigger } from "./ui/menu";
 import { Button } from "./ui/button";
 
 export const InventorySelect = ({
@@ -40,8 +33,8 @@ export const InventorySelect = ({
   };
 
   return (
-    <MenuRoot isLazy={true}>
-      <MenuTrigger>
+    <MenuRoot lazyMount>
+      <MenuTrigger asChild>
         <Button
           aria-label="Select inventory"
           variant="ghost"
@@ -53,7 +46,7 @@ export const InventorySelect = ({
       </MenuTrigger>
       <MenuContent>
         {isLoading && (
-          <MenuItem value="">
+          <MenuItem value="" asChild>
             <Center>
               <Spinner size="sm" />
             </Center>
@@ -76,11 +69,8 @@ export const InventorySelect = ({
             </MenuItem>
           );
         })}
-        <MenuItem
-          value="add-city"
-          onClick={goToOnboarding}
-          icon={<Icon as={MdAdd} color="interactive.secondary" boxSize={6} />}
-        >
+        <MenuItem value="" onClick={goToOnboarding}>
+          <Icon as={MdAdd} color="interactive.secondary" boxSize={6} />
           Add a new city
         </MenuItem>
       </MenuContent>

@@ -28,19 +28,19 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
   t,
 }) => {
   const {
-    isOpen: isDownloadShareOpen,
+    open: isDownloadShareOpen,
     onOpen: onDownloadShareOpen,
     onClose: onDownloadShareClose,
   } = useDisclosure();
 
   const {
-    isOpen: isPublishOpen,
+    open: isPublishOpen,
     onOpen: onPublishOpen,
     onClose: onPublishClose,
   } = useDisclosure();
 
   return (
-    <Card
+    <Card.Root
       onClick={onDownloadShareOpen}
       shadow="2dp"
       backgroundColor="base.light"
@@ -94,7 +94,7 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
           </CardBody>
         </Box>
       </Box>
-    </Card>
+    </Card.Root>
   );
 };
 

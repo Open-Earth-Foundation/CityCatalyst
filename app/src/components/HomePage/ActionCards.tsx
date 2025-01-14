@@ -26,7 +26,7 @@ export function ActionCards({
         data-testid={"add-data-to-inventory-card"}
         href={`/${inventoryId}/data`}
       >
-        <Card
+        <Card.Root
           shadow="2dp"
           backgroundColor="base.light"
           borderColor="interactive.accent"
@@ -67,7 +67,7 @@ export function ActionCards({
               </CardBody>
             </Box>
           </Box>
-        </Card>
+        </Card.Root>
       </NextLink>
       <Box>
         <DownloadButton

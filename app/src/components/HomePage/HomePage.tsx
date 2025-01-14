@@ -9,7 +9,7 @@ import {
 } from "@/services/api";
 import { CheckUserSession } from "@/util/check-user-session";
 import { formatEmissions } from "@/util/helpers";
-import { Box, Tabs, Text, VStack } from "@chakra-ui/react";
+import { Box, Tabs, Text, VStack, Icon } from "@chakra-ui/react";
 import { useParams, useRouter } from "next/navigation";
 import MissingInventory from "@/components/missing-inventory";
 import InventoryCalculationTab from "@/components/HomePage/InventoryCalculationTab";
@@ -175,7 +175,7 @@ export default function HomePage({
                         )
                       }
                     >
-                      <BsPlus h="16px" w="16px" />
+                      <Icon as={BsPlus} h="16px" w="16px" />
                       {t("add-new-inventory")}
                     </Button>
                   </Box>

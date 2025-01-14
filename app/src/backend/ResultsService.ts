@@ -753,7 +753,7 @@ export async function getEmissionResults(inventory: string): Promise<{
 export const getEmissionsForecasts = async (inventoryData: Inventory) => {
   const OCResponse = await GlobalAPIService.fetchGrowthRates(
     inventoryData.city.locode!,
-    inventoryData.created!.getFullYear(),
+    inventoryData.year!,
   );
   if (!OCResponse) {
     return {

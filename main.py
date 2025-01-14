@@ -29,6 +29,10 @@ initial_state = AgentState(
     response_agent_1=AIMessage(""),
     response_agent_2=AIMessage(""),
     response_agent_3=AIMessage(""),
+    response_agent_4=AIMessage(""),
+    response_agent_5=AIMessage(""),
+    response_agent_6=AIMessage(""),
+    response_agent_7=AIMessage(""),
     response_agent_8=AIMessage(""),
     messages=[],
 )

@@ -56,7 +56,7 @@ export function PublishedView({
   const URL = `${window.location.protocol}//${window.location.host}/${lng}/public/${inventoryId}`;
 
   return (
-    <DialogRoot>
+    <DialogBody>
       <Text fontWeight="600" fontSize="title.lg">
         {t("public-city-inventory")}
       </Text>
@@ -80,6 +80,6 @@ export function PublishedView({
           </Link>
         </Box>
       </HStack>
-    </DialogRoot>
+    </DialogBody>
   );
 }

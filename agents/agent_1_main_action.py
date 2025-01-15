@@ -17,14 +17,14 @@ You are tasked with creating the description of the climate action plan (main ac
 Follow these guidlines carefully to complete the task:
 
 1. Information retrievel
-    a. Retrieve relevant information about Brazil's overall climate strategy.
-    b. Retrieve information about climate strategies related to the climate action (main action) that you are provided with.
-    c. Retrieve information about climate strategies relevant to the city you are working on.
+    a. Retrieve relevant information about Brazil's (national) climate strategy.
+    b. Retrieve relevant information about regional (state) and local (city-level) climate strategies.
+    c. Retrieve information about climate strategies relevant to the climate action (main action) you are working on.
     When using information from the documents, ensure that the information is relevant to the country, the city and the climate action (main action) you are working on. Do not make up any information or use it in a different context.
     Include the source of the information in the final output using the format: `[source: <document title and page>]`.
 
 2. National climate strategy
-    a. Create a concise overview of the national climate strategy based on the retreived information. Inlcude both national and city-level strategies.
+    a. Create a concise overview of the respective climate strategies based on the retreived information. Inlcude national, regional and local (city-level) strategies.
 
 3. Climate action (main action) description
     a. Create a concise main action description of the climate action related to the city you are working on.
@@ -43,8 +43,8 @@ The entire section should not exceed 200 words.
 
 <sample_output>
 ## Main Action Description: 
-[name of climate action]
-[name of city]
+Climate action: [name of climate action]
+City: [name of city]
 
 ### 1. Broad Climate Strategy
 [Concise overview of Brazil's national and city-level strategies, with references]
@@ -83,7 +83,7 @@ def build_custom_agent_1(model, tools):
             {
                 "messages": HumanMessage(
                     f"""
-                    This is the climate action data: 
+                    This is the climate action (main action) data: 
                     {json.dumps(state['climate_action_data'], indent=4)}
 
                     This is the city data: 

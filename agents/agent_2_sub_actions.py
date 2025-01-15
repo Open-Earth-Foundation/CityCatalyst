@@ -20,18 +20,18 @@ Follow these guidlines carefully to complete the task:
 1. Understand the details of climate action (main action).
 2. Understand the details of the city you are working on.
 3. Review the the national and city-level climate strategies and the climate action (main action) description.
-4. Create a list of actionable sub-actions for implementing the climate action.
+4. Create a list of actionable sub-actions for implementing the climate action. The sub-actions should consider dependencies and be in chronological order if possible. 
 </task>
 
 <output>
-The final output should be a headline and a bullet point list of actionable sub-actions for implementing the climate action.
+The final output should be a headline and an ordered list of actionable sub-actions for implementing the climate action.
 <example_output>
 ## Sub-actions:
 
-* Sub-action 1
-* Sub-action 2
-* Sub-action 3
-* ...
+1. Sub-action 1
+2. Sub-action 2
+3. Sub-action 3
+4. ...
 </example_output>
 </output>
 
@@ -60,7 +60,7 @@ def build_custom_agent_2(model, tools):
             {
                 "messages": HumanMessage(
                     f"""
-                    This is the climate action data: 
+                    This is the climate action (main action) data: 
                     {json.dumps(state['climate_action_data'], indent=4)}
 
                     This is the city data: 

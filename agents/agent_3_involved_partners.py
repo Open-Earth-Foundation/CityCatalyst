@@ -28,7 +28,7 @@ Include the source of the information in the final output using the format: `[so
 
 <tools>
 You have access to an internet search tool that can can be used to look-up specific institutions, partners and their contacts. 
-Always perform the search in the nation's national language to get the most relevant results. E.g. use Portuguese for Brazil, French for France, etc.
+Always provide the search query in the nation's national language to get the most relevant results. E.g. use Portuguese for Brazil, French for France, etc.
 </tools>
 
 <output>
@@ -67,7 +67,7 @@ def build_custom_agent_3(model, tools):
             {
                 "messages": HumanMessage(
                     f"""
-                    This is the climate action data: 
+                    This is the climate action (main action) data: 
                     {json.dumps(state['climate_action_data'], indent=4)}
 
                     This is the city data: 

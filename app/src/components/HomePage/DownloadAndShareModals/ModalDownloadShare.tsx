@@ -1,19 +1,20 @@
-import {
-  Center,
-  Divider,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Center, Text } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import React from "react";
 import DownloadButtons from "./DownloadButtons";
 import ModalPublishButtons from "./PublishButtons";
 import { InventoryResponse } from "@/util/types";
+
+import {
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const ModalDownloadShare = ({
   t,
@@ -35,19 +36,18 @@ const ModalDownloadShare = ({
   inventory: InventoryResponse;
 }) => {
   return (
-    <Modal isOpen={isDownloadShareOpen} onClose={onDownloadShareClose}>
-      <ModalOverlay />
-      <ModalContent maxW="container.md">
-        <ModalHeader>
+    <DialogRoot open={isDownloadShareOpen} onOpenChange={onDownloadShareClose}>
+      <DialogContent maxW="container.md">
+        <DialogHeader>
           <Center>
             <Text fontSize="headline.sm" mx="8px">
               {t("download-and-share")}
             </Text>
           </Center>
-        </ModalHeader>
-        <ModalCloseButton />
-        <Divider my="24px" />
-        <ModalBody>
+        </DialogHeader>
+        <DialogCloseTrigger />
+        <Box divideX="2px" my="24px" />
+        <DialogBody>
           <DownloadButtons
             t={t}
             lng={lng}
@@ -55,15 +55,15 @@ const ModalDownloadShare = ({
             cityLocode={cityLocode}
             inventoryYear={inventory.year}
           />
-          <Divider my="12px" />
+          <Box divideX="2px" my="12px" />
           <ModalPublishButtons
             t={t}
             onClose={onDownloadShareClose}
             onPublishOpen={onPublishOpen}
           />
-        </ModalBody>
-      </ModalContent>
-    </Modal>
+        </DialogBody>
+      </DialogContent>
+    </DialogRoot>
   );
 };
 

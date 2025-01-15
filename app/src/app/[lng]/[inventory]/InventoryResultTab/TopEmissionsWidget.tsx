@@ -2,17 +2,10 @@ import {
   Box,
   Card,
   Center,
-  CircularProgress,
   Heading,
   HStack,
   Table,
-  TableContainer,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
-  Tr,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import type {
@@ -32,6 +25,11 @@ import {
 } from "@/components/SegmentedProgress";
 import { EmptyStateCardContent } from "@/app/[lng]/[inventory]/InventoryResultTab/EmptyStateCardContent";
 
+import {
+  ProgressCircleRing,
+  ProgressCircleRoot,
+} from "@/components/ui/progress-circle";
+
 const EmissionsTable = ({
   topEmissions,
   t,
@@ -40,45 +38,48 @@ const EmissionsTable = ({
   t: TFunction;
 }) => {
   return (
-    <TableContainer my={4}>
-      <Table variant="simple">
-        <Thead>
-          <Tr>
-            <Th sx={{ font: "bold", color: "black" }} width={"50%"}>
-              {t("subsector")}
-            </Th>
-            <Th sx={{ font: "bold", color: "black" }}>
-              {t("total-emissions-CO2eq")}
-            </Th>
-            <Th sx={{ font: "bold", color: "black" }}>{t("%-of-emissions")}</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {(topEmissions || []).map((emission, index) => (
-            <Tr key={index}>
-              <Td sx={{ maxWidth: "50%", wordBreak: "break-word" }}>
-                <Text
-                  fontFamily="heading"
-                  className="text-sm leading-5 tracking-[0.5px]"
-                  sx={{ whiteSpace: "normal" }}
-                >
-                  {t(toKebabCase(emission.subsectorName))}
-                </Text>
-                <Text
-                  fontFamily="heading"
-                  color="content.tertiary"
-                  className="text-xs leading-4 tracking-[0.5px] "
-                >
-                  {`${capitalizeFirstLetter(t("scope"))} ${t(toKebabCase(emission.scopeName))} - ${t(toKebabCase(emission.sectorName))}`}
-                </Text>
-              </Td>
-              <Td>{convertKgToTonnes(emission.co2eq)}</Td>
-              <Td>{emission.percentage}%</Td>
-            </Tr>
-          ))}
-        </Tbody>
-      </Table>
-    </TableContainer>
+    <Table.Root unstyled my={4}>
+      <Table.Header>
+        <Table.Row>
+          <Table.ColumnHeader
+            css={{ font: "bold", color: "black" }}
+            width={"50%"}
+          >
+            {t("subsector")}
+          </Table.ColumnHeader>
+          <Table.ColumnHeader css={{ font: "bold", color: "black" }}>
+            {t("total-emissions-CO2eq")}
+          </Table.ColumnHeader>
+          <Table.ColumnHeader css={{ font: "bold", color: "black" }}>
+            {t("%-of-emissions")}
+          </Table.ColumnHeader>
+        </Table.Row>
+      </Table.Header>
+      <Table.Body>
+        {(topEmissions || []).map((emission, index) => (
+          <Table.Row key={index}>
+            <Table.Cell css={{ maxWidth: "50%", wordBreak: "break-word" }}>
+              <Text
+                fontFamily="heading"
+                className="text-sm leading-5 tracking-[0.5px]"
+                css={{ whiteSpace: "normal" }}
+              >
+                {t(toKebabCase(emission.subsectorName))}
+              </Text>
+              <Text
+                fontFamily="heading"
+                color="content.tertiary"
+                className="text-xs leading-4 tracking-[0.5px] "
+              >
+                {`${capitalizeFirstLetter(t("scope"))} ${t(toKebabCase(emission.scopeName))} - ${t(toKebabCase(emission.sectorName))}`}
+              </Text>
+            </Table.Cell>
+            <Table.Cell>{convertKgToTonnes(emission.co2eq)}</Table.Cell>
+            <Table.Cell>{emission.percentage}%</Table.Cell>
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table.Root>
   );
 };
 
@@ -108,19 +109,21 @@ const TopEmissionsWidget = ({
   if (isTopEmissionsResponseLoading) {
     return (
       <HStack>
-        <Card marginLeft={"4"} backgroundColor={"white"} p={4}>
+        <Card.Root marginLeft={"4"} backgroundColor={"white"} p={4}>
           {
             <Center>
-              <CircularProgress isIndeterminate />
+              <ProgressCircleRoot value={null} size="sm">
+                <ProgressCircleRing cap="round" />
+              </ProgressCircleRoot>
             </Center>
           }
-        </Card>
+        </Card.Root>
       </HStack>
     );
   } else if (results!?.totalEmissions.total <= 0) {
     return (
       <>
-        <Card width={"713px"} height={"448px"}>
+        <Card.Root width={"713px"} height={"448px"}>
           <Heading size="sm">{t("top-emissions")}</Heading>
           <EmptyStateCardContent
             width={"665px"}
@@ -129,13 +132,13 @@ const TopEmissionsWidget = ({
             inventoryId={inventory?.inventoryId}
             isPublic={isPublic}
           />
-        </Card>
+        </Card.Root>
       </>
     );
   } else {
     return (
       <HStack>
-        <Card marginLeft={"4"} backgroundColor={"white"} p={4}>
+        <Card.Root marginLeft={"4"} backgroundColor={"white"} p={4}>
           {
             <>
               <Box>
@@ -161,7 +164,7 @@ const TopEmissionsWidget = ({
               />
             </>
           }
-        </Card>
+        </Card.Root>
       </HStack>
     );
   }

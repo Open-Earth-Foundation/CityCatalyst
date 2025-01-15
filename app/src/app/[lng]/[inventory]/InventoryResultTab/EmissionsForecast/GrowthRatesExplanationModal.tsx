@@ -1,20 +1,17 @@
-import { TFunction } from "i18next/typescript/t";
-import {
-  Divider,
-  Heading,
-  HStack,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  Text,
-  Box,
-  VStack,
-} from "@chakra-ui/react";
+import { TFunction } from "i18next";
+import { Heading, HStack, Text, Box, VStack } from "@chakra-ui/react";
 import { MdBarChart } from "react-icons/md";
 import { GrowthRatesExplanationModalTable } from "./GrowthRatesExplanationModalTable";
 import { EmissionsForecastData } from "@/util/types";
+import {
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogRoot,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export function GrowthRatesExplanationModal({
   t,
@@ -31,9 +28,14 @@ export function GrowthRatesExplanationModal({
 }) {
   const { cluster, growthRates } = emissionsForecast;
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered size={"4xl"}>
-      <ModalContent>
-        <ModalHeader>
+    <DialogRoot
+      open={isOpen}
+      onOpenChange={onClose}
+      placement="center"
+      size={"xl"}
+    >
+      <DialogContent>
+        <DialogHeader>
           <HStack>
             <MdBarChart size={"24px"} fontSize={"24px"} />
             <Text
@@ -46,11 +48,10 @@ export function GrowthRatesExplanationModal({
             >
               {t("about-growth-rates")}
             </Text>
-            <ModalCloseButton />
           </HStack>
-        </ModalHeader>
-        <Divider borderColor="border.overlay" borderWidth="1px" />
-        <ModalBody>
+        </DialogHeader>
+        <Box divideX="1px" borderColor="border.overlay" borderWidth="1px" />
+        <DialogBody>
           <Text
             color="content.primary"
             fontWeight="bold"
@@ -141,16 +142,17 @@ export function GrowthRatesExplanationModal({
           >
             {t("methodology-and-assumptions-description")}
           </Text>
-          <ModalBody>
+          <Box>
             <Box display="flex" justifySelf={"center"}>
               <GrowthRatesExplanationModalTable
                 growthRates={growthRates}
                 t={t}
               />
             </Box>
-          </ModalBody>
-        </ModalBody>
-      </ModalContent>
-    </Modal>
+          </Box>
+        </DialogBody>
+        <DialogCloseTrigger />
+      </DialogContent>
+    </DialogRoot>
   );
 }

@@ -139,7 +139,7 @@ export function SectorCard({
         </Box>
       </Box>
       <Box className="w-full pt-[24px] items-center justify-center">
-        <AccordionRoot border="none" w="full">
+        <AccordionRoot border="none" w="full" collapsible>
           <AccordionItem value="" border="none">
             <AccordionItemContent padding={0}>
               <Text className="font-[600]">

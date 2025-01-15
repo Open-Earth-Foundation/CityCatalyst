@@ -4,12 +4,7 @@ import {
   Box,
   Flex,
   Table,
-  TableContainer,
-  Tbody,
-  Td,
   Text,
-  Tooltip,
-  Tr,
   useToken,
   VStack,
 } from "@chakra-ui/react";
@@ -18,6 +13,8 @@ import {
   convertKgToTonnes,
   toKebabCase,
 } from "@/util/helpers";
+
+import { Tooltip } from "@/components/ui/tooltip";
 
 export type SegmentedProgressValues =
   | number
@@ -56,53 +53,50 @@ export function SegmentedProgress({
       : v,
   );
   const tooltipContent = (
-    <TableContainer>
-      <Table variant="unstyled" size={"sm"}>
-        <Tbody>
-          {normalizedValues.map((value, index) => (
-            <Tr key={index}>
-              <Td>
-                <Text color="gray.600" mr={2}>
-                  {t(toKebabCase(value.name))}
-                </Text>
-              </Td>
-              <Td>
-                <Text color="gray.600" mr={2}>
-                  {value.percentage.toFixed(1)}%
-                </Text>
-              </Td>
-              <Td>
-                <Text color="gray.600">{convertKgToTonnes(value.value)}</Text>
-              </Td>
-            </Tr>
-          ))}
-          <Tr>
-            <Td>
-              <Text color="black" fontWeight="bold" fontSize={"md"}>
-                {capitalizeFirstLetter(t("total"))}
+    <Table.Root unstyled size={"sm"}>
+      <Table.Body>
+        {normalizedValues.map((value, index) => (
+          <Table.Row key={index}>
+            <Table.Cell>
+              <Text color="gray.600" mr={2}>
+                {t(toKebabCase(value.name))}
               </Text>
-            </Td>
-            <Td></Td>
-            <Td>
-              <Text color="black" fontWeight="bold" fontSize={"md"}>
-                {convertKgToTonnes(total!)}
+            </Table.Cell>
+            <Table.Cell>
+              <Text color="gray.600" mr={2}>
+                {value.percentage.toFixed(1)}%
               </Text>
-            </Td>
-          </Tr>
-        </Tbody>
-      </Table>
-    </TableContainer>
+            </Table.Cell>
+            <Table.Cell>
+              <Text color="gray.600">{convertKgToTonnes(value.value)}</Text>
+            </Table.Cell>
+          </Table.Row>
+        ))}
+        <Table.Row>
+          <Table.Cell>
+            <Text color="black" fontWeight="bold" fontSize={"md"}>
+              {capitalizeFirstLetter(t("total"))}
+            </Text>
+          </Table.Cell>
+          <Table.Cell></Table.Cell>
+          <Table.Cell>
+            <Text color="black" fontWeight="bold" fontSize={"md"}>
+              {convertKgToTonnes(total!)}
+            </Text>
+          </Table.Cell>
+        </Table.Row>
+      </Table.Body>
+    </Table.Root>
   );
 
   const progressBars = (
     <Tooltip
-      label={tooltipContent}
-      isDisabled={!showHover}
-      placement="bottom"
-      minW="650px"
-      hasArrow
-      arrowSize={15}
-      backgroundColor={"white"}
+      content={tooltipContent}
+      disabled={!showHover}
+      positioning={{
+        placement: "bottom",
+      }}
+      showArrow
     >
       <Box
         ref={tooltipRef}

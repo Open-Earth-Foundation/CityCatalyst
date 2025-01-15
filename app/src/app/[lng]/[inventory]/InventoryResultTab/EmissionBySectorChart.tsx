@@ -62,7 +62,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
           margin={{ top: 50, right: 130, bottom: 50, left: 120 }}
           padding={0.3}
           tooltip={({ id, value, color }) => (
-            <Card py={2} px={2}>
+            <Card.Root py={2} px={2}>
               <HStack>
                 <Badge
                   colorScheme="gray"
@@ -76,7 +76,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
                   {convertKgToTonnes(value)}
                 </Text>
               </HStack>
-            </Card>
+            </Card.Root>
           )}
           valueScale={{ type: "linear", min: 0, max: "auto" }}
           indexScale={{ type: "band", round: true }}

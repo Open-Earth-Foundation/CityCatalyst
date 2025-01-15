@@ -1,12 +1,4 @@
-import {
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-} from "@chakra-ui/react";
+import { Table } from "@chakra-ui/react";
 import { SECTORS } from "@/util/constants";
 import { TFunction } from "i18next";
 import { ProjectionData } from "@/util/types";
@@ -19,37 +11,39 @@ export const GrowthRatesExplanationModalTable = ({
   t: TFunction;
 }) => {
   return (
-    <Table variant={"striped"}>
-      <TableContainer>
-        <Thead>
-          <Tr>
-            <Th>{t("sector")}</Th>
+    <Table.Root unstyled>
+      <Table.Header>
+        <Table.Row>
+          <Table.ColumnHeader>{t("sector")}</Table.ColumnHeader>
+          {Object.keys(growthRates)
+            .slice(0, 4)
+            .map((year) => (
+              <Table.ColumnHeader key={year}>{year}</Table.ColumnHeader>
+            ))}
+          <Table.ColumnHeader>{"2030"}</Table.ColumnHeader>
+          <Table.ColumnHeader>{"2050"}</Table.ColumnHeader>
+        </Table.Row>
+      </Table.Header>
+      <Table.Body>
+        {SECTORS.map((sector) => (
+          <Table.Row key={sector.name}>
+            <Table.Cell>{t(sector.name + "-short")}</Table.Cell>
             {Object.keys(growthRates)
               .slice(0, 4)
               .map((year) => (
-                <Th key={year}>{year}</Th>
+                <Table.Cell key={year}>
+                  {growthRates[year][sector.referenceNumber]}
+                </Table.Cell>
               ))}
-            <Th>{"2030"}</Th>
-            <Th>{"2050"}</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {SECTORS.map((sector) => (
-            <Tr key={sector.name}>
-              <Td>{t(sector.name + "-short")}</Td>
-              {Object.keys(growthRates)
-                .slice(0, 4)
-                .map((year) => (
-                  <Td key={year}>
-                    {growthRates[year][sector.referenceNumber]}
-                  </Td>
-                ))}
-              <Td>{growthRates["2030"][sector.referenceNumber]}</Td>
-              <Td>{growthRates["2050"][sector.referenceNumber]}</Td>
-            </Tr>
-          ))}
-        </Tbody>
-      </TableContainer>
-    </Table>
+            <Table.Cell>
+              {growthRates["2030"][sector.referenceNumber]}
+            </Table.Cell>
+            <Table.Cell>
+              {growthRates["2050"][sector.referenceNumber]}
+            </Table.Cell>
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table.Root>
   );
 };

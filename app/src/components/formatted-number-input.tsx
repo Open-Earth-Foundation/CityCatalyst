@@ -88,7 +88,7 @@ function FormattedNumberInput({
           if (min && value < min) {
             return t("value-too-low", { min });
           }
-          if (max && value >= max) {
+          if (max && value > max) {
             return t("value-too-high", { max });
           }
         },

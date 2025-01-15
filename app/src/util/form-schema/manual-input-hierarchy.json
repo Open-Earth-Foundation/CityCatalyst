@@ -3811,7 +3811,7 @@
               "methane-commitment-solid-waste-inboundary-landfill-id"
             ],
             "activity-title": "total-municipal-solid-waste-disposed",
-            "default-units": "units-tonnes",
+            "default-units": "units-kilograms",
             "extra-fields": [
               {
                 "id": "methane-commitment-solid-waste-inboundary-landfill-id",
@@ -4629,8 +4629,7 @@
             "source-type-all-wastewater"
           ],
           "exclusive": "source-type-all-wastewater"
-        }
-        ,
+        },
         {
           "id": "data-source",
           "type": "text"

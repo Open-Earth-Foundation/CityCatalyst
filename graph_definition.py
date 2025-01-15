@@ -45,7 +45,7 @@ def document_retriever_tool(search_query: str):
     - If you retrieve more than one document, give higher priority to the most relevant document.
     """
 
-    vector_store = load_vectorstore("chroma_db", "text-embedding-3-large")
+    vector_store = load_vectorstore("strategy_docs_db")
 
     if not vector_store:
         return "Could not load vector store. Please ensure your vector DB is created."
@@ -61,9 +61,10 @@ def document_retriever_tool(search_query: str):
 
 search = TavilySearchResults(
     max_results=3,
-    search_depth="advanced",
+    search_depth="basic",  # change to 'advanced' for production
     description="""
     Search for municipal institutions and partners and their contact information that might be relevant for the implementation of the specific climate action for the given city.
+    Input: A search query in the national language.
     """,
 )
 

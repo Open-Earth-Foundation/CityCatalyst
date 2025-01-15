@@ -577,11 +577,11 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
   return gases;
 }
 
-export function handleIndustrialWasteWaterFormula(
+export async function handleIndustrialWasteWaterFormula(
   activityValue: ActivityValue,
   inventoryValue: InventoryValue,
   prefixKey: string,
-): Gas[] {
+): Promise<Gas[]> {
   if (!inventoryValue.inputMethodology || !inventoryValue.gpcReferenceNumber) {
     throw new createHttpError.BadRequest(
       "InventoryValue has no inputMethodology or gpcReferenceNumber associated",
@@ -600,9 +600,24 @@ export function handleIndustrialWasteWaterFormula(
   }
 
   const totalIndustrialProduction = data["total-industry-production"];
+  const industryType = data[`${prefixKey}-industry-type`];
   const wastewaterGenerated = data[`${prefixKey}-wastewater-generated`];
-  const degradableOrganicComponents =
+  const degradableOrganicComponents = // degradable organic industrial component (CODi)
     data["degradable-organic-components"] ?? 38; // TODO COD from formula values dependent on industry type;
+
+  const formulaInput = await db.models.FormulaInput.findOne({
+    where: {
+      [`metadata.industry_type`]: industryType as string,
+      gas: "CH4",
+      parameterCode: "COD",
+      formulaName: "industrial-wastewater",
+      gpcRefno: inventoryValue.gpcReferenceNumber,
+      region: "world",
+    },
+  });
+
+  console.log(formulaInput, "formulaInput");
+
   const methaneProductionCapacity =
     data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY;
   const removedSludge = data["total-organic-sludge-removed"];

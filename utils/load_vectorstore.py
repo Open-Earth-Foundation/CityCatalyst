@@ -5,17 +5,21 @@ from langchain_openai import OpenAIEmbeddings
 from pathlib import Path
 from typing import Optional
 
-PERSISTENT_DIRECTORY = Path(__file__).parent.parent / "chroma_langchain_db"
-
 
 def load_vectorstore(
-    collection_name: str = "chroma_db", embedding_model: str = "text-embedding-3-large"
+    collection_name: str, embedding_model: str = "text-embedding-3-large"
 ) -> Optional[Chroma]:
     """
-    Loads an existing vector store and returns it.
+    Loads an existing vector store from folder /vector_stores and returns it.
+    Looks for the vector store in the folder /vector_stores/collection_name.
+
+    Input: collection_name (str), embedding_model (str)
+    Returns: vector_store (Chroma)
     """
 
-    if PERSISTENT_DIRECTORY.exists():
+    vector_store_path = Path(__file__).parent.parent / "vector_stores" / collection_name
+
+    if vector_store_path.exists():
         # Load existing vector store
 
         # Create embeddings model
@@ -27,7 +31,7 @@ def load_vectorstore(
         vector_store = Chroma(
             collection_name=collection_name,
             embedding_function=embeddings,
-            persist_directory=str(PERSISTENT_DIRECTORY),
+            persist_directory=str(vector_store_path),
         )
 
         return vector_store

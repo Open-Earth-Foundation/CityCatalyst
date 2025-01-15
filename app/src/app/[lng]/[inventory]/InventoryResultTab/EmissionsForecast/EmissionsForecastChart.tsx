@@ -1,18 +1,7 @@
 import { EmissionsForecastData } from "@/util/types";
-import { TFunction } from "i18next/typescript/t";
+import { TFunction } from "i18next";
 import { getReferenceNumberByName, SECTORS, ISector } from "@/util/constants";
-import {
-  Badge,
-  Box,
-  Card,
-  Heading,
-  Table,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Tr,
-} from "@chakra-ui/react";
+import { Badge, Box, Card, Heading, Table, Text } from "@chakra-ui/react";
 import { ResponsiveLine } from "@nivo/line";
 import { convertKgToTonnes } from "@/util/helpers";
 
@@ -89,9 +78,9 @@ export const EmissionsForecastChart = ({
         }, 0);
 
         return (
-          <Card py={2} px={2}>
+          <Card.Root py={2} px={2}>
             <Box padding="4" borderBottom="1px solid">
-              <Heading size="title.sm">{t("year")}</Heading>
+              <Heading size="sm">{t("year")}</Heading>
               <Text
                 fontFamily="heading"
                 fontSize="label.lg"
@@ -103,8 +92,8 @@ export const EmissionsForecastChart = ({
               </Text>
             </Box>
             <Box padding="4">
-              <Table variant="simple" size={"sm"}>
-                <Tbody>
+              <Table.Root unstyled size={"sm"}>
+                <Table.Body>
                   {data.map((series, index) => {
                     const yearData = series.data.find(
                       ({ x }) => x === point.data.x,
@@ -117,8 +106,8 @@ export const EmissionsForecastChart = ({
                     );
 
                     return (
-                      <Tr key={series.id}>
-                        <Td>
+                      <Table.Row key={series.id}>
+                        <Table.Cell>
                           <Badge
                             colorScheme="gray"
                             boxSize="10px"
@@ -126,32 +115,34 @@ export const EmissionsForecastChart = ({
                             marginRight="8px"
                           />
                           {series.id}
-                        </Td>
-                        <Td>
+                        </Table.Cell>
+                        <Table.Cell>
                           {
                             forecast.growthRates[point.data.x as number]?.[
                               sectorRefNo!
                             ]
                           }
-                        </Td>
-                        <Td>{percentage}%</Td>
-                        <Td>
+                        </Table.Cell>
+                        <Table.Cell>{percentage}%</Table.Cell>
+                        <Table.Cell>
                           {convertKgToTonnes(
                             parseInt(yearData?.y as unknown as string),
                           )}
-                        </Td>
-                      </Tr>
+                        </Table.Cell>
+                      </Table.Row>
                     );
                   })}
-                  <Tr>
-                    <Th>{t("total")}</Th>
-                    <Th></Th>
-                    <Th>{convertKgToTonnes(sumOfYs)}</Th>
-                  </Tr>
-                </Tbody>
-              </Table>
+                  <Table.Row>
+                    <Table.ColumnHeader>{t("total")}</Table.ColumnHeader>
+                    <Table.ColumnHeader></Table.ColumnHeader>
+                    <Table.ColumnHeader>
+                      {convertKgToTonnes(sumOfYs)}
+                    </Table.ColumnHeader>
+                  </Table.Row>
+                </Table.Body>
+              </Table.Root>
             </Box>
-          </Card>
+          </Card.Root>
         );
       }}
       enableGridX={false}

@@ -1,8 +1,6 @@
-import json
 from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, MessagesState, START, END
 from langchain.tools import tool
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from utils.render_graph import render_graph
 from state.agent_state import AgentState
 from utils.load_vectorstore import load_vectorstore
@@ -15,6 +13,7 @@ from agents.agent_5_timeline import build_custom_agent_5
 from agents.agent_6_cost_budget import build_custom_agent_6
 from agents.agent_7_mer import build_custom_agent_7
 from agents.agent_8_sgds import build_custom_agent_8
+from agents.agent_combine import custom_agent_combine
 
 from langchain_community.tools.tavily_search import TavilySearchResults
 
@@ -61,9 +60,11 @@ def document_retriever_tool(search_query: str):
 
 
 search = TavilySearchResults(
-    max_results=5,
+    max_results=3,
     search_depth="advanced",
-    description="Search for municipal institutions and partners and their contact information for the implementation of the specific climate action for the given city. Perform the search in English und Portugues.",
+    description="""
+    Search for municipal institutions and partners and their contact information that might be relevant for the implementation of the specific climate action for the given city.
+    """,
 )
 
 
@@ -84,13 +85,14 @@ placeholder_tools = [placeholder_tool]
 agent_1 = build_custom_agent_1(model, [document_retriever_tool])
 agent_2 = build_custom_agent_2(model, placeholder_tools)
 agent_3 = build_custom_agent_3(
-    model, placeholder_tools
+    model, [search]
 )  # for debugging purposes, 'search' tool is not provided to save on API calls. Add [search] to the list of tools to enable search tool.
 agent_4 = build_custom_agent_4(model, placeholder_tools)
 agent_5 = build_custom_agent_5(model, placeholder_tools)
 agent_6 = build_custom_agent_6(model, placeholder_tools)
 agent_7 = build_custom_agent_7(model, placeholder_tools)
 agent_8 = build_custom_agent_8(model, placeholder_tools)
+agent_combine = custom_agent_combine
 
 
 def create_graph():
@@ -104,6 +106,7 @@ def create_graph():
     builder.add_node("agent_6", agent_6)
     builder.add_node("agent_7", agent_7)
     builder.add_node("agent_8", agent_8)
+    builder.add_node("agent_combine", agent_combine)
 
     # Define the edges
     builder.add_edge(START, "agent_1")
@@ -114,7 +117,8 @@ def create_graph():
     builder.add_edge("agent_5", "agent_6")
     builder.add_edge("agent_6", "agent_7")
     builder.add_edge("agent_7", "agent_8")
-    builder.add_edge("agent_8", END)
+    builder.add_edge("agent_8", "agent_combine")
+    builder.add_edge("agent_combine", END)
 
     # Compile the graph
     compiled_graph = builder.compile()

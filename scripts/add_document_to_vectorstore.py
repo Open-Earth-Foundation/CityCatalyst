@@ -70,10 +70,8 @@ def add_document_to_vectorstore(
         for page in pages:
             page.metadata.update(metadata)
 
-        print(pages[:2])
-
         # Add documents to vector store
-        vector_store.add_documents(pages, metadata={"file_name": file_name})
+        vector_store.add_documents(pages)
 
     else:
         print(

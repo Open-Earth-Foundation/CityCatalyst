@@ -2,7 +2,7 @@
 
 import { useTranslation } from "@/i18n/client";
 import { languages } from "@/i18n/settings";
-import { Box, Button, Heading, Icon, Link, Text } from "@chakra-ui/react";
+import { Box, Heading, Icon, Link, Text } from "@chakra-ui/react";
 import i18next from "i18next";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
@@ -21,6 +21,8 @@ import {
   MenuTrigger,
 } from "@/components/ui/menu";
 import { Avatar, AvatarGroup } from "@/components/ui/avatar";
+
+import { Button } from "@/components/ui/button";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -133,18 +135,18 @@ export function NavigationBar({
             bg: "#FFF3",
           }}
         >
-          <Box>
-            <CircleFlag
+          <Button>
+            {/* <CircleFlag
               countryCode={
                 countryFromLanguage(i18next.language) === "pt"
                   ? "br"
                   : countryFromLanguage(i18next.language)
               }
               width="24"
-            />
+            /> */}
 
             {i18next.language.toUpperCase()}
-          </Box>
+          </Button>
         </MenuTrigger>
         <MenuContent minW="140px" zIndex={2000}>
           {languages.map((language) => (
@@ -153,7 +155,7 @@ export function NavigationBar({
               onClick={() => onChangeLanguage(language)}
               key={language}
             >
-              <CircleFlag
+              {/* <CircleFlag
                 countryCode={
                   countryFromLanguage(language) === "pt"
                     ? "br"
@@ -161,8 +163,8 @@ export function NavigationBar({
                 }
                 width="24"
                 className="mr-4"
-              />
-              {language.toUpperCase()}
+              /> */}
+              <Box>{language.toUpperCase()}</Box>
             </MenuItem>
           ))}
         </MenuContent>
@@ -171,7 +173,6 @@ export function NavigationBar({
         <MenuRoot>
           <MenuTrigger
             asChild
-            as={Button}
             color="base.light"
             minW="220px"
             // rightIcon={isOpen ? <TriangleUpIcon /> : <TriangleDownIcon />}
@@ -183,7 +184,7 @@ export function NavigationBar({
               bg: "#FFF3",
             }}
           >
-            <Box>
+            <Button variant="ghost">
               <Avatar
                 size="sm"
                 bg="interactive.connected"
@@ -199,7 +200,7 @@ export function NavigationBar({
               >
                 {session.user?.name}
               </Text>
-            </Box>
+            </Button>
           </MenuTrigger>
           <MenuContent
             paddingTop="8px"
@@ -229,7 +230,7 @@ export function NavigationBar({
                 color="content.tertiary"
                 mr={4}
               />
-              {t("settings")}
+              <Box>{t("settings")}</Box>
             </MenuItem>
 
             <MenuItem
@@ -245,7 +246,7 @@ export function NavigationBar({
                 color="sentiment.negativeDefault"
                 mr={4}
               />
-              {t("log-out")}
+              <Box>{t("log-out")}</Box>
             </MenuItem>
           </MenuContent>
         </MenuRoot>

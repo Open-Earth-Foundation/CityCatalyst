@@ -13,9 +13,9 @@ export default function DataLayout({
 }) {
   return (
     <Box className="h-full flex flex-col" bg="background.backgroundLight">
-      <NavigationBar lng={lng} />
+      {/* <NavigationBar lng={lng} /> */}
       <div className="w-full h-full">{children}</div>
-      <ChatPopover inventoryId={inventory} />
+      {/* <ChatPopover inventoryId={inventory} /> */}
     </Box>
   );
 }

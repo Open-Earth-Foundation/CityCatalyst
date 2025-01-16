@@ -1,6 +1,11 @@
 "use client";
 
-import { Button, Icon, IconButton, useDisclosure } from "@chakra-ui/react";
+import {
+  Icon,
+  IconButton,
+  PopoverHeader,
+  useDisclosure,
+} from "@chakra-ui/react";
 import React from "react";
 import { BsStars } from "react-icons/bs";
 import ChatBot from "./chat-bot";
@@ -15,6 +20,8 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from "@/components/ui/popover";
+
+import { Button } from "@/components/ui/button";
 
 export default function ChatPopover({
   lng = "en",
@@ -60,8 +67,9 @@ export default function ChatPopover({
             py="26px"
             fontFamily="heading"
             aria-label={t("ai-expert")}
+            variant="solid"
           >
-            <Icon as={AskAiIcon} h={24} w={24} />
+            {/* <Icon as={AskAiIcon} h={24} w={24} /> */}
             {t("ask-ai")}
           </Button>
         </PopoverTrigger>
@@ -73,7 +81,7 @@ export default function ChatPopover({
           className="drop-shadow-md"
           zIndex={9999}
         >
-          <PopoverTitle
+          <PopoverHeader
             bg="background.overlay"
             color="content.alternative"
             fontWeight="600"
@@ -85,17 +93,17 @@ export default function ChatPopover({
             p={6}
           >
             {t("ask-ai-expert")}
-            <PopoverCloseTrigger
-              color="content.secondary"
-              w={8}
-              h={8}
-              mr={4}
-              mt={6}
-            />
-          </PopoverTitle>
+          </PopoverHeader>
           <PopoverBody w="full" p={6} borderRadius={4}>
             <ChatBot inputRef={inputRef} t={t} inventoryId={inventoryId} />
           </PopoverBody>
+          <PopoverCloseTrigger
+            color="content.secondary"
+            w={8}
+            h={8}
+            mr={4}
+            mt={6}
+          />
         </PopoverContent>
       </PopoverRoot>
     </>

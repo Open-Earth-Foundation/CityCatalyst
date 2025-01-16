@@ -497,7 +497,7 @@ export default function ChatBot({
         {messages.map((m, i) => {
           const isUser = m.role === "user";
           return (
-            <HStack key={i} align="top">
+            <HStack key={i} align="top" asChild>
               <Box
                 w={9}
                 h={9}
@@ -529,7 +529,7 @@ export default function ChatBot({
                   messages.length > 1 && (
                     <>
                       <Box divideX="2px" borderColor="border.overlay" my={3} />
-                      <HStack>
+                      <HStack asChild>
                         {/* <IconButton
                           variant="ghost"
                           icon={<Icon as={MdOutlineThumbUp} boxSize={5} />}
@@ -557,7 +557,7 @@ export default function ChatBot({
                             boxSize={5}
                           />
                         </IconButton>
-                        <Spacer />
+                        {/* <Spacer /> */}
                         {/* <Button
                           onClick={() => reload()}
                           leftIcon={<Icon as={MdRefresh} boxSize={5} />}

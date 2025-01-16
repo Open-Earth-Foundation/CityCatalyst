@@ -1,14 +1,9 @@
-import { ViewIcon, ViewOffIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Button,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
+  Icon,
   Input,
-  InputGroup,
-  InputRightElement,
   List,
-  ListIcon,
+  ListIndicator,
   ListItem,
   Text,
 } from "@chakra-ui/react";
@@ -16,6 +11,9 @@ import { useState } from "react";
 import { FieldError } from "react-hook-form";
 import { CheckListIcon, CloseListIcon } from "./icons";
 import { TFunction } from "i18next";
+import { Field } from "@/components/ui/field";
+import { InputGroup } from "./ui/input-group";
+import { GrFormView, GrFormViewHide } from "react-icons/gr";
 
 export default function PasswordInput({
   children,
@@ -53,9 +51,24 @@ export default function PasswordInput({
   const isPasswordValid =
     hasMinLength && hasLowercase && hasUppercase && hasNumber && hasSpecial;
   return (
-    <FormControl isInvalid={!!error} w={w}>
-      <FormLabel>{name}</FormLabel>
-      <InputGroup>
+    <Field invalid={!!error} label={name} errorText={error?.message} w={w}>
+      <InputGroup
+        startElement={
+          <Button
+            h="2rem"
+            size="md"
+            mt={2}
+            onClick={handlePasswordVisibility}
+            variant="ghost"
+          >
+            {showPassword ? (
+              <Icon as={GrFormViewHide} color="#7A7B9A" />
+            ) : (
+              <Icon as={GrFormView} color="#7A7B9A" />
+            )}
+          </Button>
+        }
+      >
         <Input
           type={showPassword ? "text" : "password"}
           size="lg"
@@ -81,35 +94,21 @@ export default function PasswordInput({
               : undefined,
           })}
         />
-        <InputRightElement width="3rem" mr={2}>
-          <Button
-            h="2rem"
-            size="md"
-            mt={2}
-            onClick={handlePasswordVisibility}
-            variant="ghost"
-          >
-            {showPassword ? (
-              <ViewOffIcon color="#7A7B9A" />
-            ) : (
-              <ViewIcon color="#7A7B9A" />
-            )}
-          </Button>
-        </InputRightElement>
       </InputGroup>
       {children}
       {/* Password Checklist */}
       {shouldValidate && (
-        <List spacing={1} mt={2}>
-          <ListItem display="flex" alignItems="center" gap="6px">
-            <ListIcon
-              as={hasMinLength ? CheckListIcon : CloseListIcon}
+        <List.Root gap={1} mt={2}>
+          <List.Item display="flex" alignItems="center" gap="6px">
+            <List.Indicator
               color={
                 hasMinLength
                   ? "sentiment.positiveDefault"
                   : "sentiment.negativeDefault"
               }
-            />
+            >
+              {hasMinLength ? <CheckListIcon /> : <CloseListIcon />}
+            </List.Indicator>
             <Text
               color={
                 hasMinLength ? "content.tertiary" : "sentiment.negativeDefault"
@@ -119,16 +118,17 @@ export default function PasswordInput({
             >
               {t("password-min-length-check", { length: 8 })}
             </Text>
-          </ListItem>
-          <ListItem display="flex" alignItems="center" gap="6px">
-            <ListIcon
-              as={hasUppercase ? CheckListIcon : CloseListIcon}
+          </List.Item>
+          <List.Item display="flex" alignItems="center" gap="6px">
+            <List.Indicator
               color={
                 hasUppercase
                   ? "sentiment.positiveDefault"
                   : "sentiment.negativeDefault"
               }
-            />
+            >
+              {hasUppercase ? <CheckListIcon /> : <CloseListIcon />}
+            </List.Indicator>
             <Text
               color={
                 hasUppercase ? "content.tertiary" : "sentiment.negativeDefault"
@@ -138,16 +138,17 @@ export default function PasswordInput({
             >
               {t("password-upper-case-check")}
             </Text>
-          </ListItem>
-          <ListItem display="flex" alignItems="center" gap="6px">
-            <ListIcon
-              as={hasLowercase ? CheckListIcon : CloseListIcon}
+          </List.Item>
+          <List.Item display="flex" alignItems="center" gap="6px">
+            <ListIndicator
               color={
                 hasLowercase
                   ? "sentiment.positiveDefault"
                   : "sentiment.negativeDefault"
               }
-            />
+            >
+              {hasLowercase ? <CheckListIcon /> : <CloseListIcon />}
+            </ListIndicator>
             <Text
               color={
                 hasLowercase ? "content.tertiary" : "sentiment.negativeDefault"
@@ -157,16 +158,17 @@ export default function PasswordInput({
             >
               {t("password-lower-case-check")}
             </Text>
-          </ListItem>
-          <ListItem display="flex" alignItems="center" gap="6px">
-            <ListIcon
-              as={hasNumber ? CheckListIcon : CloseListIcon}
+          </List.Item>
+          <List.Item display="flex" alignItems="center" gap="6px">
+            <List.Indicator
               color={
                 hasNumber
                   ? "sentiment.positiveDefault"
                   : "sentiment.negativeDefault"
               }
-            />
+            >
+              {hasNumber ? <CheckListIcon /> : <CloseListIcon />}
+            </List.Indicator>
             <Text
               color={
                 hasNumber ? "content.tertiary" : "sentiment.negativeDefault"
@@ -176,22 +178,9 @@ export default function PasswordInput({
             >
               {t("password-number-check")}
             </Text>
-          </ListItem>
-        </List>
+          </List.Item>
+        </List.Root>
       )}
-      {error && (
-        <FormErrorMessage display="flex" gap="6px">
-          <WarningIcon />
-          <Text
-            fontSize="body.md"
-            lineHeight="20px"
-            letterSpacing="wide"
-            color="content.tertiary"
-          >
-            {t(error.message!)}
-          </Text>
-        </FormErrorMessage>
-      )}
-    </FormControl>
+    </Field>
   );
 }

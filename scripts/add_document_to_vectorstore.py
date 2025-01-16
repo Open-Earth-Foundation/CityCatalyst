@@ -31,6 +31,7 @@ def add_document_to_vectorstore(
     embedding_model (str), -> default="text-embedding-3-large"
     chunk_size (int), -> default=2000
     chunk_overlap (int) -> default=400
+    metadata (dict) -> Metadata to associate with the document chunks.
     """
     full_file_path = file_folder_base_path / file_name
 
@@ -63,8 +64,16 @@ def add_document_to_vectorstore(
         # Split PDF using text splitter
         pages = loader.load_and_split(text_splitter)
 
+        # For testing we add meta data here directly
+        metadata = {"level": "national"}
+
+        for page in pages:
+            page.metadata.update(metadata)
+
+        print(pages[:2])
+
         # Add documents to vector store
-        vector_store.add_documents(pages)
+        vector_store.add_documents(pages, metadata={"file_name": file_name})
 
     else:
         print(

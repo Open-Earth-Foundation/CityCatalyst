@@ -2,17 +2,17 @@
 
 import { useTranslation } from "@/i18n/client";
 import { languages } from "@/i18n/settings";
-import { Box, Button, Heading, Icon, Text } from "@chakra-ui/react";
+import { Box, Button, Heading, Icon, Link, Text } from "@chakra-ui/react";
 import i18next from "i18next";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
-import NextLink from "next/link";
+
 import { CircleFlag } from "react-circle-flags";
 import { FiSettings } from "react-icons/fi";
 import { MdLogout } from "react-icons/md";
 import { GoTriangleDown, GoTriangleUp } from "react-icons/go";
 import Cookies from "js-cookie";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { api } from "@/services/api";
 import {
   MenuContent,
@@ -74,12 +74,13 @@ export function NavigationBar({
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
   const currentInventoryId = userInfo?.defaultInventoryId;
+  const router = useRouter();
   return (
     <Box
       className="flex flex-row px-8 py-4 align-middle space-x-12 items-center relative z-50"
       bgColor="content.alternative"
     >
-      <NextLink href={`/${inventory ? inventory : currentInventoryId}`}>
+      <Link href={`/${inventory ? inventory : currentInventoryId}`}>
         <Image
           src="/assets/logo.svg"
           width={36}
@@ -87,22 +88,22 @@ export function NavigationBar({
           alt="CityCatalyst logo"
           className="mr-[56px]"
         />
-      </NextLink>
-      <NextLink href={`/${inventory ? inventory : currentInventoryId}`}>
+      </Link>
+      <Link href={`/${inventory ? inventory : currentInventoryId}`}>
         <Heading size="lg" color="base.light">
           {t("title")}
         </Heading>
-      </NextLink>
+      </Link>
       <div className="w-full" />
       {showNav && !isPublic && (
         <>
           {" "}
-          <NextLink href={`/${inventory ? inventory : currentInventoryId}`}>
+          <Link href={`/${inventory ? inventory : currentInventoryId}`}>
             <Heading color="base.light" size="sm" className="opacity-75" ml={6}>
               {t("dashboard")}
             </Heading>
-          </NextLink>
-          <NextLink
+          </Link>
+          <Link
             target="_blank"
             rel="help noopener noreferrer"
             href="https://citycatalyst.openearth.org/learning-hub"
@@ -115,12 +116,13 @@ export function NavigationBar({
             >
               {t("learning-hub")}
             </Heading>
-          </NextLink>
+          </Link>
           <Box divideY="2px" h={6} />
         </>
       )}
       <MenuRoot>
         <MenuTrigger
+          asChild
           color="base.light"
           minW="120px"
           className="whitespace-nowrap normal-case"
@@ -131,16 +133,18 @@ export function NavigationBar({
             bg: "#FFF3",
           }}
         >
-          <CircleFlag
-            countryCode={
-              countryFromLanguage(i18next.language) === "pt"
-                ? "br"
-                : countryFromLanguage(i18next.language)
-            }
-            width="24"
-          />
+          <Box>
+            <CircleFlag
+              countryCode={
+                countryFromLanguage(i18next.language) === "pt"
+                  ? "br"
+                  : countryFromLanguage(i18next.language)
+              }
+              width="24"
+            />
 
-          {i18next.language.toUpperCase()}
+            {i18next.language.toUpperCase()}
+          </Box>
         </MenuTrigger>
         <MenuContent minW="140px" zIndex={2000}>
           {languages.map((language) => (
@@ -166,6 +170,7 @@ export function NavigationBar({
       {!isPublic && status === "authenticated" && session.user && (
         <MenuRoot>
           <MenuTrigger
+            asChild
             as={Button}
             color="base.light"
             minW="220px"
@@ -178,21 +183,23 @@ export function NavigationBar({
               bg: "#FFF3",
             }}
           >
-            <Avatar
-              size="sm"
-              bg="interactive.connected"
-              color="base.light"
-              name={session.user?.name!}
-              src={session.user?.image!}
-            />
-            <Text
-              w="120px"
-              overflow="hidden"
-              textOverflow="ellipsis"
-              whiteSpace="nowrap"
-            >
-              {session.user?.name}
-            </Text>
+            <Box>
+              <Avatar
+                size="sm"
+                bg="interactive.connected"
+                color="base.light"
+                name={session.user?.name!}
+                src={session.user?.image!}
+              />
+              <Text
+                w="120px"
+                overflow="hidden"
+                textOverflow="ellipsis"
+                whiteSpace="nowrap"
+              >
+                {session.user?.name}
+              </Text>
+            </Box>
           </MenuTrigger>
           <MenuContent
             paddingTop="8px"
@@ -205,24 +212,26 @@ export function NavigationBar({
             height="128px"
             zIndex={2000}
           >
-            <NextLink
-              href={`/${inventory ? inventory : currentInventoryId}/settings`}
+            <MenuItem
+              value="settings"
+              paddingTop="12px"
+              paddingBottom="12px"
+              px="16px"
+              onClick={() =>
+                router.push(
+                  `/${inventory ? inventory : currentInventoryId}/settings`,
+                )
+              }
             >
-              <MenuItem
-                value="settings"
-                paddingTop="12px"
-                paddingBottom="12px"
-                px="16px"
-              >
-                <Icon
-                  as={FiSettings}
-                  boxSize={6}
-                  color="content.tertiary"
-                  mr={4}
-                />
-                {t("settings")}
-              </MenuItem>
-            </NextLink>
+              <Icon
+                as={FiSettings}
+                boxSize={6}
+                color="content.tertiary"
+                mr={4}
+              />
+              {t("settings")}
+            </MenuItem>
+
             <MenuItem
               paddingTop="12px"
               paddingBottom="12px"

@@ -5,14 +5,12 @@ import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import {
   Box,
   Button,
-  Divider,
   HStack,
   Icon,
   IconButton,
   Spacer,
   Text,
   Textarea,
-  useToast,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { BsStars } from "react-icons/bs";
@@ -30,6 +28,7 @@ import { api, useCreateThreadIdMutation } from "@/services/api";
 import { AssistantStream } from "openai/lib/AssistantStream";
 // @ts-expect-error - no types for this yet
 import { AssistantStreamEvent } from "openai/resources/beta/assistants/assistants";
+import { Toaster, toaster } from "@/components/ui/toaster";
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -79,7 +78,6 @@ export default function ChatBot({
   const [getAllDataSources] = api.useLazyGetAllDataSourcesQuery();
   const [getUserInventories] = api.useLazyGetUserInventoriesQuery();
   const [getInventory] = api.useLazyGetInventoryQuery();
-  const toast = useToast();
 
   // AbortController reference
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -87,12 +85,11 @@ export default function ChatBot({
 
   const handleError = (error: any, errorMessage: string) => {
     // Display error to user
-    toast({
+    toaster.create({
       title: "An error occurred",
       description: errorMessage,
-      status: "error",
+      type: "error",
       duration: 5000,
-      isClosable: true,
     });
   };
 
@@ -531,7 +528,7 @@ export default function ChatBot({
                   i === messages.length - 1 &&
                   messages.length > 1 && (
                     <>
-                      <Divider borderColor="border.overlay" my={3} />
+                      <Box divideX="2px" borderColor="border.overlay" my={3} />
                       <HStack>
                         {/* <IconButton
                           variant="ghost"
@@ -548,19 +545,18 @@ export default function ChatBot({
                         <IconButton
                           onClick={() => copyToClipboard(m.text)}
                           variant="ghost"
-                          icon={
-                            <Icon
-                              as={isCopied ? MdCheckCircle : MdContentCopy}
-                              boxSize={5}
-                            />
-                          }
                           aria-label="Copy text"
                           color={
                             isCopied
                               ? "sentiment.positiveDefault"
                               : "content.tertiary"
                           }
-                        />
+                        >
+                          <Icon
+                            as={isCopied ? MdCheckCircle : MdContentCopy}
+                            boxSize={5}
+                          />
+                        </IconButton>
                         <Spacer />
                         {/* <Button
                           onClick={() => reload()}
@@ -586,7 +582,7 @@ export default function ChatBot({
         <div ref={messagesEndRef} />
       </div>
 
-      <Divider mt={2} mb={6} borderColor="border.neutral" />
+      <Box divideX="2px" mt={2} mb={6} borderColor="border.neutral" />
 
       <div className="overflow-x-auto space-x-2 whitespace-nowrap pb-3">
         {suggestions.map((suggestion, i) => (
@@ -607,7 +603,7 @@ export default function ChatBot({
             fontWeight="400"
             whiteSpace="nowrap"
             display="inline-block"
-            isDisabled={inputDisabled}
+            disabled={inputDisabled}
           >
             {suggestion.preview}
           </Button>
@@ -634,19 +630,21 @@ export default function ChatBot({
           {inputDisabled ? (
             <IconButton
               onClick={stopGeneration}
-              icon={<MdStop />}
               colorScheme="red"
               aria-label={t("stop-generation")}
-            />
+            >
+              <MdStop />
+            </IconButton>
           ) : (
             <IconButton
               type="submit"
               variant="ghost"
-              icon={<MdOutlineSend size={24} />}
               color="content.tertiary"
               aria-label={t("send-message")}
-              isDisabled={inputDisabled}
-            />
+              disabled={inputDisabled}
+            >
+              <MdOutlineSend size={24} />
+            </IconButton>
           )}
         </HStack>
       </form>

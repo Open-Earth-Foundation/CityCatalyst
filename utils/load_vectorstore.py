@@ -20,6 +20,7 @@ def load_vectorstore(
     vector_store_path = Path(__file__).parent.parent / "vector_stores" / collection_name
 
     if vector_store_path.exists():
+        print("Loading vector store...")
         # Load existing vector store
 
         # Create embeddings model
@@ -32,6 +33,10 @@ def load_vectorstore(
             collection_name=collection_name,
             embedding_function=embeddings,
             persist_directory=str(vector_store_path),
+        )
+
+        print(
+            f"Vector Store loaded with: {len(vector_store.get()['documents'])} documents\n"
         )
 
         return vector_store

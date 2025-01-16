@@ -10,7 +10,7 @@ import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { toaster } from "@/components/ui/toaster";
+import { Toaster, toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
 
 type Inputs = {
@@ -133,6 +133,7 @@ export default function Login({
       <Suspense>
         <VerifiedNotification t={t} />
       </Suspense>
+      <Toaster />
     </>
   );
 }

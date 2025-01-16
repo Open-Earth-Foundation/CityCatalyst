@@ -122,135 +122,151 @@ export function NavigationBar({
           <Box divideY="2px" h={6} />
         </>
       )}
-      <MenuRoot>
-        <MenuTrigger
-          asChild
-          color="base.light"
-          minW="120px"
-          className="whitespace-nowrap normal-case"
-          _hover={{
-            bg: "#FFF2",
-          }}
-          _active={{
-            bg: "#FFF3",
-          }}
-        >
-          <Button>
-            {/* <CircleFlag
-              countryCode={
-                countryFromLanguage(i18next.language) === "pt"
-                  ? "br"
-                  : countryFromLanguage(i18next.language)
-              }
-              width="24"
-            /> */}
-
-            {i18next.language.toUpperCase()}
-          </Button>
-        </MenuTrigger>
-        <MenuContent minW="140px" zIndex={2000}>
-          {languages.map((language) => (
-            <MenuItem
-              value={language}
-              onClick={() => onChangeLanguage(language)}
-              key={language}
+      <Box>
+        <Box>
+          <MenuRoot>
+            <MenuTrigger
+              asChild
+              color="base.light"
+              minW="120px"
+              className="whitespace-nowrap normal-case"
+              _hover={{
+                bg: "#FFF2",
+              }}
+              _active={{
+                bg: "#FFF3",
+              }}
             >
-              {/* <CircleFlag
-                countryCode={
-                  countryFromLanguage(language) === "pt"
-                    ? "br"
-                    : countryFromLanguage(language)
-                }
-                width="24"
-                className="mr-4"
-              /> */}
-              <Box>{language.toUpperCase()}</Box>
-            </MenuItem>
-          ))}
-        </MenuContent>
-      </MenuRoot>
-      {!isPublic && status === "authenticated" && session.user && (
-        <MenuRoot>
-          <MenuTrigger
-            asChild
-            color="base.light"
-            minW="220px"
-            // rightIcon={isOpen ? <TriangleUpIcon /> : <TriangleDownIcon />}
-            className="whitespace-nowrap normal-case"
-            _hover={{
-              bg: "#FFF2",
-            }}
-            _active={{
-              bg: "#FFF3",
-            }}
-          >
-            <Button variant="ghost">
-              <Avatar
-                size="sm"
-                bg="interactive.connected"
+              <Button>
+                <Box>
+                  <CircleFlag
+                    countryCode={
+                      countryFromLanguage(i18next.language) === "pt"
+                        ? "br"
+                        : countryFromLanguage(i18next.language)
+                    }
+                    width="24"
+                  />
+
+                  <Box>{i18next.language.toUpperCase()}</Box>
+                </Box>
+              </Button>
+            </MenuTrigger>
+            <MenuContent minW="140px" zIndex={2000}>
+              {languages.map((language) => (
+                <MenuItem
+                  value={language}
+                  onClick={() => onChangeLanguage(language)}
+                  key={language}
+                >
+                  <Box>
+                    <CircleFlag
+                      countryCode={
+                        countryFromLanguage(language) === "pt"
+                          ? "br"
+                          : countryFromLanguage(language)
+                      }
+                      width="24"
+                      className="mr-4"
+                    />
+                    <Box>{language.toUpperCase()}</Box>
+                  </Box>
+                </MenuItem>
+              ))}
+            </MenuContent>
+          </MenuRoot>
+        </Box>
+        <Box>
+          {!isPublic && status === "authenticated" && session.user && (
+            <MenuRoot>
+              <MenuTrigger
+                asChild
                 color="base.light"
-                name={session.user?.name!}
-                src={session.user?.image!}
-              />
-              <Text
-                w="120px"
-                overflow="hidden"
-                textOverflow="ellipsis"
-                whiteSpace="nowrap"
+                minW="220px"
+                // Todo: add icon switch functionality
+                // rightIcon={isOpen ? <TriangleUpIcon /> : <TriangleDownIcon />}
+                className="whitespace-nowrap normal-case"
+                _hover={{
+                  bg: "#FFF2",
+                }}
+                _active={{
+                  bg: "#FFF3",
+                }}
               >
-                {session.user?.name}
-              </Text>
-            </Button>
-          </MenuTrigger>
-          <MenuContent
-            paddingTop="8px"
-            paddingBottom="8px"
-            shadow="2dp"
-            minW="150px"
-            display="flex"
-            flexDirection="column"
-            justifyContent="space-around"
-            height="128px"
-            zIndex={2000}
-          >
-            <MenuItem
-              value="settings"
-              paddingTop="12px"
-              paddingBottom="12px"
-              px="16px"
-              onClick={() =>
-                router.push(
-                  `/${inventory ? inventory : currentInventoryId}/settings`,
-                )
-              }
-            >
-              <Icon
-                as={FiSettings}
-                boxSize={6}
-                color="content.tertiary"
-                mr={4}
-              />
-              <Box>{t("settings")}</Box>
-            </MenuItem>
+                <Button variant="ghost">
+                  <Avatar
+                    size="sm"
+                    bg="interactive.connected"
+                    color="base.light"
+                    name={session.user?.name!}
+                    src={session.user?.image!}
+                  />
+                  <Text
+                    w="120px"
+                    overflow="hidden"
+                    textOverflow="ellipsis"
+                    whiteSpace="nowrap"
+                  >
+                    {session.user?.name}
+                  </Text>
+                </Button>
+              </MenuTrigger>
 
-            <MenuItem
-              paddingTop="12px"
-              paddingBottom="12px"
-              value="log-out"
-              px="16px"
-              onClick={() => logOut()}
-            >
-              <Icon
-                as={MdLogout}
-                boxSize={6}
-                color="sentiment.negativeDefault"
-                mr={4}
-              />
-              <Box>{t("log-out")}</Box>
-            </MenuItem>
-          </MenuContent>
-        </MenuRoot>
-      )}
+              <MenuContent
+                paddingTop="8px"
+                paddingBottom="8px"
+                shadow="2dp"
+                minW="150px"
+                display="flex"
+                flexDirection="column"
+                justifyContent="space-around"
+                height="128px"
+                zIndex={2000}
+              >
+                <MenuItem
+                  value="settings"
+                  paddingTop="12px"
+                  paddingBottom="12px"
+                  px="16px"
+                  onClick={() =>
+                    router.push(
+                      `/${inventory ? inventory : currentInventoryId}/settings`,
+                    )
+                  }
+                >
+                  <Box>
+                    {" "}
+                    <Icon
+                      as={FiSettings}
+                      boxSize={6}
+                      color="content.tertiary"
+                      mr={4}
+                    />
+                    <Box>{t("settings")}</Box>
+                  </Box>
+                </MenuItem>
+                <MenuItem
+                  paddingTop="12px"
+                  paddingBottom="12px"
+                  value="log-out"
+                  px="16px"
+                  onClick={() => logOut()}
+                >
+                  <Box>
+                    <Icon
+                      as={MdLogout}
+                      boxSize={6}
+                      color="sentiment.negativeDefault"
+                      mr={4}
+                    />
+                    <Box>{t("log-out")}</Box>
+                  </Box>
+                </MenuItem>
+              </MenuContent>
+            </MenuRoot>
+          )}
+        </Box>
+      </Box>
     </Box>
   );
 }

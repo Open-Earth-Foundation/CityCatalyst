@@ -29,19 +29,17 @@ from tools.tools import document_retriever_tool, search, placeholder_tool
 # Create the agents
 model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
 
-placeholder_tools = [placeholder_tool]
-
 
 agent_1 = build_custom_agent_1(model, [document_retriever_tool])
-agent_2 = build_custom_agent_2(model, placeholder_tools)
+agent_2 = build_custom_agent_2(model, [placeholder_tool])
 agent_3 = build_custom_agent_3(
     model, [search]
 )  # for debugging purposes, 'search' tool is not provided to save on API calls. Add [search] to the list of tools to enable search tool.
-agent_4 = build_custom_agent_4(model, placeholder_tools)
-agent_5 = build_custom_agent_5(model, placeholder_tools)
-agent_6 = build_custom_agent_6(model, placeholder_tools)
-agent_7 = build_custom_agent_7(model, placeholder_tools)
-agent_8 = build_custom_agent_8(model, placeholder_tools)
+agent_4 = build_custom_agent_4(model, [placeholder_tool])
+agent_5 = build_custom_agent_5(model, [placeholder_tool])
+agent_6 = build_custom_agent_6(model, [placeholder_tool])
+agent_7 = build_custom_agent_7(model, [placeholder_tool])
+agent_8 = build_custom_agent_8(model, [placeholder_tool])
 agent_combine = custom_agent_combine
 
 
@@ -60,16 +58,16 @@ def create_graph():
 
     # Define the edges
     builder.add_edge(START, "agent_1")
-    builder.add_edge("agent_1", END)
-    # builder.add_edge("agent_1", "agent_2")
-    # builder.add_edge("agent_2", "agent_3")
-    # builder.add_edge("agent_3", "agent_4")
-    # builder.add_edge("agent_4", "agent_5")
-    # builder.add_edge("agent_5", "agent_6")
-    # builder.add_edge("agent_6", "agent_7")
-    # builder.add_edge("agent_7", "agent_8")
-    # builder.add_edge("agent_8", "agent_combine")
-    # builder.add_edge("agent_combine", END)
+    # builder.add_edge("agent_1", END)
+    builder.add_edge("agent_1", "agent_2")
+    builder.add_edge("agent_2", "agent_3")
+    builder.add_edge("agent_3", "agent_4")
+    builder.add_edge("agent_4", "agent_5")
+    builder.add_edge("agent_5", "agent_6")
+    builder.add_edge("agent_6", "agent_7")
+    builder.add_edge("agent_7", "agent_8")
+    builder.add_edge("agent_8", "agent_combine")
+    builder.add_edge("agent_combine", END)
 
     # Compile the graph
     compiled_graph = builder.compile()

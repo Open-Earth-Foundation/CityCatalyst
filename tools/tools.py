@@ -49,6 +49,7 @@ search = TavilySearchResults(
     search_depth="advanced",  # change between 'basic' for testing and 'advanced' for production
     description="""
     Search for municipal institutions and partners and their contact information that might be relevant for the implementation of the specific climate action for the given city.
+    
     Input: A search query in the national language.
     """,
 )

@@ -5,11 +5,10 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
+from typing import Optional
 
 base_path = Path(__file__).parent.parent
 file_folder_base_path = base_path / "data" / "files"
-
-# PERSISTENT_DIRECTORY = Path(__file__).parent.parent / "chroma_langchain_db"
 
 
 def add_document_to_vectorstore(
@@ -18,6 +17,7 @@ def add_document_to_vectorstore(
     embedding_model: str,
     chunk_size: int,
     chunk_overlap: int,
+    metadata: Optional[dict] = None,
 ):
     """
     Loads documents from `directory`, splits them, and adds them to the vector store.
@@ -64,11 +64,10 @@ def add_document_to_vectorstore(
         # Split PDF using text splitter
         pages = loader.load_and_split(text_splitter)
 
-        # For testing we add meta data here directly
-        metadata = {"level": "national"}
-
-        for page in pages:
-            page.metadata.update(metadata)
+        # If metadata is provided, update each page's metadata
+        if metadata:
+            for page in pages:
+                page.metadata.update(metadata)
 
         # Add documents to vector store
         vector_store.add_documents(pages)
@@ -113,8 +112,25 @@ if __name__ == "__main__":
         default=400,
         help="Size of the overlap between chunks. Defaults to 400.",
     )
+    parser.add_argument(
+        "--metadata",
+        type=str,
+        action="append",
+        help="Metadata as key=value pairs. You can pass multiple flags. Example: --metadata level=national --metadata foo=bar",
+    )
 
     args = parser.parse_args()
+
+    # Parse metadata key-value pairs
+    # e.g., ['level=national', 'foo=bar'] -> {'level': 'national', 'foo': 'bar'}
+    metadata_dict = {}
+    if args.metadata:
+        for kv_pair in args.metadata:
+            if "=" in kv_pair:
+                key, value = kv_pair.split("=", 1)
+                metadata_dict[key] = value
+            else:
+                print(f"Invalid metadata format '{kv_pair}', should be key=value")
 
     add_document_to_vectorstore(
         file_name=args.file_name,
@@ -122,4 +138,5 @@ if __name__ == "__main__":
         embedding_model=args.embedding_model,
         chunk_size=args.chunk_size,
         chunk_overlap=args.chunk_overlap,
+        metadata=metadata_dict,
     )

@@ -21,7 +21,7 @@ const ActionCardSmall: React.FC<ActionCardSmallProps> = ({
       py={0}
       px={6}
     >
-      <Box className="flex items-center w-fill h-full">
+      <Box className="flex items-center h-full">
         <Box className="flex items-center justify-center h-[48px] w-[48px] rounded-full bg-[#2351DC]">
           {icon}
         </Box>

@@ -63,7 +63,6 @@ export const POST = apiHandler(async (req, { params, session }) => {
                 "error creating invite",
                 { cityId, email },
               );
-              throw new createHttpError.BadRequest("Something went wrong");
             }
             return invite;
           }),
@@ -100,6 +99,8 @@ export const POST = apiHandler(async (req, { params, session }) => {
       }
     }),
   );
-
+  if (failedInvites.length > 0) {
+    throw new createHttpError.InternalServerError("Something went wrong");
+  }
   return NextResponse.json({ success: failedInvites.length === 0 });
 });

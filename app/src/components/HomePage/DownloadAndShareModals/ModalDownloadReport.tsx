@@ -15,7 +15,7 @@ import DownloadButtons from "./DownloadButtons";
 import ModalPublishButtons from "./PublishButtons";
 import { InventoryResponse } from "@/util/types";
 
-const ModalDownloadShare = ({
+const ModalDownloadReport = ({
   t,
   lng,
   isDownloadShareOpen,
@@ -67,4 +67,4 @@ const ModalDownloadShare = ({
   );
 };
 
-export default ModalDownloadShare;
+export default ModalDownloadReport;

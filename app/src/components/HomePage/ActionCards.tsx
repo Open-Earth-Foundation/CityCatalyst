@@ -37,7 +37,7 @@ export function ActionCards({
             py={0}
             px={6}
           >
-            <Box className="flex items-center w-fill" height={"100%"}>
+            <Box className="flex items-center" height={"100%"}>
               <Box>
                 <Box
                   className="flex items-center justify-center h-[48px] w-[48px] rounded-full"

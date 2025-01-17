@@ -28,7 +28,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
   }
 
   if (!process.env.VERIFICATION_TOKEN_SECRET) {
-    console.error("Need to assign RESET_TOKEN_SECRET in env!");
+    console.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
     throw createHttpError.InternalServerError("Configuration error");
   }
 

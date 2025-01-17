@@ -2,7 +2,7 @@ import React from "react";
 import { useDisclosure } from "@chakra-ui/react";
 import { FiDownload } from "react-icons/fi";
 import type { TFunction } from "i18next";
-import ModalDownloadShare from "./DownloadAndShareModals/ModalDownloadShare";
+import ModalDownloadReport from "./DownloadAndShareModals/ModalDownloadReport";
 import ModalPublish from "./DownloadAndShareModals/ModalPublish";
 import ActionCardSmall from "./ActionCardSmall";
 
@@ -35,7 +35,7 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
 
   return (
     <>
-      <ModalDownloadShare
+      <ModalDownloadReport
         t={t}
         lng={lng}
         isDownloadShareOpen={isDownloadShareOpen}

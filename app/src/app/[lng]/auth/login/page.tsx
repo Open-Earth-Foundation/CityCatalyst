@@ -69,18 +69,13 @@ export default function Login({
         callbackUrl: finalCallbackUrl,
       });
 
-      if (res?.ok) {
+      if (res?.ok && !res?.error) {
         showLoginSuccessToast();
         router.push(finalCallbackUrl);
         setError("");
         return;
-      }
-
-      if (!res?.error) {
-        router.push(finalCallbackUrl);
-        setError("");
       } else {
-        console.error("Sign in failure:", res.error);
+        console.error("Sign in failure:", res?.error);
         setError(t("invalid-email-password"));
       }
     } catch (error: any) {

@@ -70,7 +70,7 @@ const AddCollaboratorsModal = ({
       cityIds: selectedCities,
       emails,
     });
-    if (!data?.success || !error) {
+    if (data?.success && !error) {
       showSuccessToast();
       setEmails([]);
       setSelectedCities([]);

@@ -15,6 +15,9 @@ from agents.agent_combine import custom_agent_combine
 
 from tools.tools import document_retriever_tool, search, placeholder_tool
 
+# Include following line for experimental tool
+# from tools.tools import reasoning_tool
+
 # 1. Brazil_NDC_November2024.pdf
 #    - Document Name: Brazil's Nationally Determined Contribution (NDC) to the Paris Agreement
 #    - Content: This document outlines Brazil's climate action plan strategy.
@@ -58,16 +61,16 @@ def create_graph():
 
     # Define the edges
     builder.add_edge(START, "agent_1")
-    # builder.add_edge("agent_1", END)
-    builder.add_edge("agent_1", "agent_2")
-    builder.add_edge("agent_2", "agent_3")
-    builder.add_edge("agent_3", "agent_4")
-    builder.add_edge("agent_4", "agent_5")
-    builder.add_edge("agent_5", "agent_6")
-    builder.add_edge("agent_6", "agent_7")
-    builder.add_edge("agent_7", "agent_8")
-    builder.add_edge("agent_8", "agent_combine")
-    builder.add_edge("agent_combine", END)
+    builder.add_edge("agent_1", END)
+    # builder.add_edge("agent_1", "agent_2")
+    # builder.add_edge("agent_2", "agent_3")
+    # builder.add_edge("agent_3", "agent_4")
+    # builder.add_edge("agent_4", "agent_5")
+    # builder.add_edge("agent_5", "agent_6")
+    # builder.add_edge("agent_6", "agent_7")
+    # builder.add_edge("agent_7", "agent_8")
+    # builder.add_edge("agent_8", "agent_combine")
+    # builder.add_edge("agent_combine", END)
 
     # Compile the graph
     compiled_graph = builder.compile()

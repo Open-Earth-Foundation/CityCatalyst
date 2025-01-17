@@ -142,6 +142,7 @@ export default class ECRFDownloadService {
     const worksheet = workbook.getWorksheet(2);
 
     worksheet?.eachRow((row, rowNumber) => {
+      let justificationString = "";
       // loop over each cell and then check if it's a placeholder.
       row.eachCell((cell) => {
         const cellValue = cell.value as string;
@@ -165,6 +166,12 @@ export default class ECRFDownloadService {
             replacementValue =
               updatedDataDictionary[referenceNoIdentifier]?.[targetIdentifier]; // eg dataDictionary.I.total or dataDictionary.I.notation-key
 
+            // build up the justification string for each row
+            if (targetIdentifier === "notation-key") {
+              justificationString +=
+                (justificationString ? `, ` : "") +
+                updatedDataDictionary[referenceNoIdentifier]?.["explanation"];
+            }
             // build up the totals for each sector scope combo
             if (
               targetIdentifier === "total" &&
@@ -181,6 +188,8 @@ export default class ECRFDownloadService {
           } else if (targetIdentifier === "notation-key") {
             // mark as Not estimated
             replacementValue = "NE";
+          } else if (targetIdentifier === "explanation") {
+            replacementValue = justificationString;
           }
           cell.value = replacementValue?.toString() ?? "";
         }
@@ -244,13 +253,20 @@ export default class ECRFDownloadService {
       {
         total?: bigint;
         "notation-key"?: string;
+        explanation?: string;
       }
     >,
   ) {
-    const { total: totalI71 = BigInt(0), "notation-key": keyI71 = "" } =
-      subcategoryDataGroup["I.7.1"] || {};
-    const { total: totalI81 = BigInt(0), "notation-key": keyI81 = "" } =
-      subcategoryDataGroup["I.8.1"] || {};
+    const {
+      total: totalI71 = BigInt(0),
+      "notation-key": keyI71 = "",
+      explanation: explanationI71 = "",
+    } = subcategoryDataGroup["I.7.1"] || {};
+    const {
+      total: totalI81 = BigInt(0),
+      "notation-key": keyI81 = "",
+      explanation: explanationI81 = "",
+    } = subcategoryDataGroup["I.8.1"] || {};
 
     // Calculate fugitive emissions total
     const fugitiveEmissionsTotal = totalI71 + totalI81;
@@ -260,16 +276,14 @@ export default class ECRFDownloadService {
       .filter(Boolean)
       .join(" / ");
 
-    // Build explanation string
-    const explanationParts = [];
-    if (keyI71) explanationParts.push(`I.7.1: ${keyI71}`);
-    if (keyI81) explanationParts.push(`I.8.1: ${keyI81}`);
-    const explanation = explanationParts.join(",");
+    const fugitiveEmissionsUnavailableReasons = [explanationI71, explanationI81]
+      .filter(Boolean)
+      .join(", ");
 
     return {
       total: fugitiveEmissionsTotal,
       "notation-key": fugitiveEmissionsNotationKey,
-      explanation,
+      explanation: fugitiveEmissionsUnavailableReasons,
     };
   }
 
@@ -282,6 +296,7 @@ export default class ECRFDownloadService {
     output.inventoryValues.map((inventoryValue) => {
       dataDictionary[inventoryValue.gpcReferenceNumber as string] = {
         "notation-key": inventoryValue.unavailableReason?.split("-")[1],
+        explanation: inventoryValue.unavailableExplanation,
         total: inventoryValue.unavailableReason
           ? 0n
           : BigInt(inventoryValue.co2eq ?? 0),
@@ -454,7 +469,6 @@ export default class ECRFDownloadService {
             const fieldName = placeholderMatch[1];
             const replacementValue = dataSection[fieldName];
 
-            // if field name is notation key, replace with unavailable explanation
             if (fieldName === "no_key" && dataSection["notation_key"]) {
               // the stored value looks like "reason_NO", "reason_NE", etc.
               cell.value = dataSection["notation_key"].split("-")[1];

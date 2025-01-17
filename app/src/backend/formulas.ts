@@ -235,7 +235,6 @@ export function handleDirectMeasureFormula(
   }
 
   // TODO: Save amounts to GasValue entries or perform further processing
-
   return gases;
 }
 

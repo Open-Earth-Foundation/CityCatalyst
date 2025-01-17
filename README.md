@@ -20,3 +20,12 @@ This will:
 1. python create_vectorstore.py --collection_name strategy_docs_db
 2. python add_document_to_vectorstore.py --collection_name strategy_docs_db --file_name Brazil_NDC_November2024.pdf --metadata level=national
 3. python add_document_to_vectorstore.py --collection_name strategy_docs_db --file_name Worldbank_Green_Cities_Brazil.pdf level=national
+
+## Run the script
+
+The script can be run with `python main.py --climate_action_id [action_id] --city_data_loc [loc]`
+E.g.: `python main.py --climate_action_id c40_0028 --city_data_loc brcxl`
+
+The example files are within `data/input/`.
+
+In a future version, these inputs will be passed in with the request body of an API call.

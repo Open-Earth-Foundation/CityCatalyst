@@ -31,7 +31,8 @@ fi
 
 # Setup vector store
 python create_vectorstore.py --collection_name strategy_docs_db
-python add_document_to_vectorstore.py --collection_name strategy_docs_db --file_name Brazil_NDC_November2024.pdf --metadata level=national
+python add_document_to_vectorstore.py --collection_name strategy_docs_db --file_name Brazil_NDC_November_2024.pdf --metadata level=national
+python add_document_to_vectorstore.py --collection_name strategy_docs_db --file_name Brazil_NAP_2016.pdf --metadata level=national
 python add_document_to_vectorstore.py --collection_name strategy_docs_db --file_name Worldbank_Green_Cities_Brazil.pdf --metadata level=national
 
 # Ensure clean exit

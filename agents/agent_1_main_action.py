@@ -33,9 +33,10 @@ Follow these guidlines carefully to complete the task:
 </task>
 
 <tools>
-You have access to a document retrieval tool that can retrieve relevant information about climate strategies within Brazil.
-Use this tool to gather general information about Brazils climate strategy to enrich the climate action (main action) description.
-When using this tool, always provide a full sentence including relevant context to search for relevant documents instead of just providing key words.
+You have access to the following toosl:
+- a document retrieval tool that can retrieve relevant information about climate strategies within Brazil. 
+    Use this tool to gather general information about Brazils climate strategy to enrich the climate action (main action) description.
+    When using this tool, always provide a full sentence including relevant context to search for relevant documents instead of just providing key words.
 </tools>
 
 <output>

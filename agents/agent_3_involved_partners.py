@@ -41,12 +41,12 @@ The final output should be a headline and a bullet point list of possibly involv
 
 * **[name in national language]**
     * [brief english description]
-    * [contact information]
-    * source: [<link to the website>]
+    * Contact: [contact information]
+    * Source: [<link to the website>]
 * **[name in national language]**
     * [brief english description]
-    * [contact information]
-    * source: [<link to the website>]
+    * Contact: [contact information]
+    * Source: [<link to the website>]
 * ...
 </example_output>
 </output>

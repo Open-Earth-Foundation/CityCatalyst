@@ -51,27 +51,13 @@ export default function Signup({
 
   const [error, setError] = useState("");
 
-  // extract inventory id from callbackUrl search parameter
   const searchParams = useSearchParams();
+  const queryParams = Object.fromEntries(searchParams.entries());
   let callbackUrl = searchParams.get("callbackUrl");
   if (!callbackUrl || callbackUrl === "null" || callbackUrl === "undefined") {
     callbackUrl = null;
   }
-
-  let inventoryId: string | undefined = undefined;
-  if (callbackUrl) {
-    try {
-      const path = callbackUrl.startsWith("/")
-        ? callbackUrl
-        : new URL(callbackUrl).pathname;
-      const callbackUrlSegments = path.split("/");
-      if (callbackUrlSegments.length > 2) {
-        inventoryId = callbackUrlSegments.pop();
-      }
-    } catch (err) {
-      console.error("Invalid callback url", callbackUrl);
-    }
-  }
+  const isUserInvite = !!callbackUrl?.includes("user/invite");
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (data.password !== data.confirmPassword) {
@@ -82,10 +68,9 @@ export default function Signup({
       return;
     }
 
-    if (inventoryId && inventoryId !== "") {
-      data.inventory = inventoryId;
+    if (isUserInvite) {
+      data.inviteCode = "123456";
     }
-
     try {
       const res = await fetch("/api/v0/auth/register", {
         method: "POST",
@@ -105,9 +90,9 @@ export default function Signup({
         setError(message);
         return;
       }
-
-      const callbackParam = callbackUrl ? `&callbackUrl=${callbackUrl}` : "";
-      const nextCallbackUrl = `/auth/check-email?email=${data.email}${callbackParam}`;
+      const queryParamsString = new URLSearchParams(queryParams).toString();
+      const callbackParam = callbackUrl ? "&" : "";
+      const nextCallbackUrl = `/auth/check-email?email_address=${data.email}&${callbackParam}${queryParamsString}`;
       router.push(nextCallbackUrl);
 
       // TODO automatic login required?
@@ -195,50 +180,52 @@ export default function Signup({
           id="confirmPassword"
           shouldValidate={false}
         />
-        <FormControl isInvalid={!!errors.inviteCode}>
-          <FormLabel>{t("invite-code")}</FormLabel>
-          <Input
-            type="text"
-            placeholder={t("invite-code-placeholder")}
-            size="lg"
-            shadow="2dp"
-            background={
-              errors.inviteCode
-                ? "sentiment.negativeOverlay"
-                : "background.default"
-            }
-            {...register("inviteCode", {
-              required: t("invite-code-required"),
-              minLength: { value: 6, message: t("invite-code-invalid") },
-              maxLength: { value: 6, message: t("invite-code-invalid") },
-            })}
-          />
-          {errors.inviteCode && (
-            <FormErrorMessage display="flex" gap="6px">
-              <WarningIcon />
-              <Text
-                fontSize="body.md"
-                lineHeight="20px"
-                letterSpacing="wide"
-                color="content.tertiary"
-              >
-                {errors.inviteCode.message}
-              </Text>
-            </FormErrorMessage>
-          )}
-          <FormHelperText>
-            <Trans t={t} i18nKey="no-invite-code">
-              Don&apos;t have an invitation code?{" "}
-              <Link
-                href="https://citycatalyst.openearth.org/#webflow-form"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Subscribe to the Waiting List
-              </Link>
-            </Trans>
-          </FormHelperText>
-        </FormControl>
+        {!isUserInvite && (
+          <FormControl isInvalid={!!errors.inviteCode}>
+            <FormLabel>{t("invite-code")}</FormLabel>
+            <Input
+              type="text"
+              placeholder={t("invite-code-placeholder")}
+              size="lg"
+              shadow="2dp"
+              background={
+                errors.inviteCode
+                  ? "sentiment.negativeOverlay"
+                  : "background.default"
+              }
+              {...register("inviteCode", {
+                required: t("invite-code-required"),
+                minLength: { value: 6, message: t("invite-code-invalid") },
+                maxLength: { value: 6, message: t("invite-code-invalid") },
+              })}
+            />
+            {errors.inviteCode && (
+              <FormErrorMessage display="flex" gap="6px">
+                <WarningIcon />
+                <Text
+                  fontSize="body.md"
+                  lineHeight="20px"
+                  letterSpacing="wide"
+                  color="content.tertiary"
+                >
+                  {errors.inviteCode.message}
+                </Text>
+              </FormErrorMessage>
+            )}
+            <FormHelperText>
+              <Trans t={t} i18nKey="no-invite-code">
+                Don&apos;t have an invitation code?{" "}
+                <Link
+                  href="https://citycatalyst.openearth.org/#webflow-form"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Subscribe to the Waiting List
+                </Link>
+              </Trans>
+            </FormHelperText>
+          </FormControl>
+        )}
         <FormControl isInvalid={!!errors.acceptTerms}>
           <Checkbox
             color="content.tertiary"

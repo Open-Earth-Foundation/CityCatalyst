@@ -11,6 +11,11 @@ import InviteUserTemplate from "@/lib/emails/InviteUserTemplate";
 import UserService from "@/backend/UserService";
 
 export const POST = apiHandler(async (req, { params, session }) => {
+  if (!session) {
+    throw new createHttpError.Unauthorized(
+      "Not signed in as the requested user",
+    );
+  }
   const body = createUserInvite.parse(await req.json());
   const city = await UserService.findUserCity(body.cityId, session);
 
@@ -38,6 +43,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
   const invite = await db.models.CityInvite.create({
     id: randomUUID(),
     ...body,
+    invitingUserId: session.user.id,
   });
 
   if (!invite) {

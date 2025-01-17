@@ -166,6 +166,17 @@ export const createUserInvite = z.object({
   cityId: z.string(),
 });
 
+export const AcceptInvite = z.object({
+  email: z.string().email(),
+  cityIds: z.array(z.string()),
+  token: z.string(),
+});
+
+export const CreateUsersInvite = z.object({
+  emails: z.array(z.string().email()),
+  cityIds: z.array(z.string()),
+});
+
 export type CreateUserInvite = z.infer<typeof createUserInvite>;
 
 const gasValueSchema = z.object({

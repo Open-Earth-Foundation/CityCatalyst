@@ -1,4 +1,7 @@
 {
   "not-found-description": "Scheint, als wären wir in den Emissionsnebel geraten. Bitte kehren Sie zum Dashboard zurück",
-  "goto-dashboard": "Gehe zum Dashboard"
+  "goto-dashboard": "Gehe zum Dashboard",
+  "invite-not-valid": "Este convite não é mais válido",
+  "invite-not-valid-description": "O link que você está usando está expirado ou já foi reivindicado.\n Por favor, peça ao convidador para reenviá-lo para você.\n Se você acha que isso é um erro, por favor, entre em contato conosco.",
+  "go-back": "Voltar"
 }

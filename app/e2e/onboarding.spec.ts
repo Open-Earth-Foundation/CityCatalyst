@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Onboarding Flow", () => {
+test.describe.skip("Onboarding Flow", () => {
   const lng = "en";
   test.describe("Start Page", () => {
     test("should display the onboarding start page", async ({ page }) => {

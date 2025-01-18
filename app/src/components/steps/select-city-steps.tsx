@@ -272,9 +272,7 @@ export default function SelectCityStep({
           fontWeight="400"
           letterSpacing="wide"
           data-testId="setup-city-description"
-        >
-          {t("setup-city-details")}
-        </Text>
+        ></Text>
       </Box>
       <Box w="full">
         <Card p={6} shadow="none" px="24px" py="32px">

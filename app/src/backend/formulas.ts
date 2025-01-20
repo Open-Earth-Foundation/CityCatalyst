@@ -11,7 +11,7 @@ import { InventoryValue } from "@/models/InventoryValue";
 import { Decimal } from "decimal.js";
 import { findMethodology } from "@/util/form-schema";
 import UnitConversionService from "@/backend/UnitConversionService";
-import { Op } from "sequelize";
+import { literal, Op } from "sequelize";
 
 type GasValueWithEmissionsFactor = Omit<GasValueCreationAttributes, "id"> & {
   emissionsFactor?:
@@ -626,7 +626,6 @@ export async function handleIndustrialWasteWaterFormula(
         gas: "CH4",
         parameterCode: "COD",
         formulaName: "industrial-wastewater",
-        gpcRefno: inventoryValue.gpcReferenceNumber,
         [Op.or]: [
           { region: { [Op.iLike]: "%world%" } },
           { region: { [Op.iLike]: `%${country}%` } },
@@ -642,20 +641,25 @@ export async function handleIndustrialWasteWaterFormula(
       gas: "CH4",
       parameterCode: "MCF",
       methodologyName: `${prefixKey}-activity`,
-      gpcRefno: inventoryValue.gpcReferenceNumber,
       [Op.or]: [
-        { region: { [Op.iLike]: "%world%" } },
         { region: { [Op.iLike]: `%${country}%` } },
+        { region: { [Op.iLike]: "%world%" } },
       ],
     },
+    order: [
+      // Prioritize specific country matches first
+      [
+        literal(`CASE WHEN region ILIKE '%${country}%' THEN 1 ELSE 2 END`),
+        "ASC",
+      ],
+    ],
   });
 
   const degradableOrganicComponents = formulaInputsDOC?.formulaInputValue ?? 1;
 
-  const methaneProductionCapacity =
-    data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY;
+  const methaneProductionCapacity = DEFAULT_METHANE_PRODUCTION_CAPACITY;
   const removedSludge = data["total-organic-sludge-removed"];
-  const methaneCorrectionFactor = formulaInputMCF?.formulaInputValue ?? 0; // TODO fetch this from formula values csv dependent on treatment type
+  const methaneCorrectionFactor = formulaInputMCF?.formulaInputValue || 0.3; // TODO fetch this from formula values csv dependent on treatment type
 
   const methaneRecovered = data[`${prefixKey}-methane-recovered`];
 

@@ -4802,7 +4802,12 @@
               {
                 "id": "wastewater-outside-industrial-calculator-wastewater-generated",
                 "type": "number",
-                "required": false
+                "required": false,
+                "units": [
+                  "units-cubic-meters-per-kilogram",
+                  "units-cubic-meters-per-tonne"
+                ],
+                "default-units": "units-cubic-meters-per-tonne"
               },
               {
                 "id": "wastewater-outside-industrial-calculator-collection-status",

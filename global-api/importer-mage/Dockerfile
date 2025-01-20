@@ -10,7 +10,8 @@ COPY ${PROJECT_NAME} ${PROJECT_NAME}
 
 ENV USER_CODE_PATH=${USER_CODE_PATH}
 
-RUN pip3 install -r ${USER_CODE_PATH}/requirements.txt
+# Commenting out the requirements installation step
+#RUN pip3 install -r ${USER_CODE_PATH}/requirements.txt
 
 ENV PYTHONPATH="${PYTHONPATH}:${MAGE_CODE_PATH}"
 

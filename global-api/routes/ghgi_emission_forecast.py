@@ -13,7 +13,7 @@ def db_city_emission_forecast(actor_id, forecast_year, spatial_granularity):
             SELECT actor_id,cluster_id,cluster_name,cluster_description,gpc_sector,forecast_year,future_year,growth_rate
             FROM modelled.ghgi_emission_forecast
             WHERE actor_id = :actor_id
-            AND forecast_year = :forecast_year
+            AND future_year >= :forecast_year
             AND spatial_granularity = :spatial_granularity
             """
         )

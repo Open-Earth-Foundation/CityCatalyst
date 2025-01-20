@@ -17,7 +17,7 @@ jiter==0.8.2
 #openai==1.57.1
 orjson==3.10.12
 pydantic==2.10.3
-pydantic-core==2.27.1
+#pydantic-core==2.27.1
 python-dotenv==1.0.1
 PyYAML==6.0.2
 requests==2.32.3

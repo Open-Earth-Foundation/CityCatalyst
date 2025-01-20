@@ -37,7 +37,7 @@
     "@ai-sdk/openai": "^1.0.8",
     "@chakra-ui/icons": "^2.1.0",
     "@chakra-ui/next-js": "^2.2.0",
-    "@chakra-ui/react": "^2.8.2",
+    "@chakra-ui/react": "^3.4.0",
     "@huggingface/inference": "^2.8.0",
     "@next/env": "^14.2.5",
     "@nivo/bar": "^0.88.0",

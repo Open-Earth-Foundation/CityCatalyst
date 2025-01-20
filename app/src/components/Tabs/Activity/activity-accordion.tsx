@@ -32,7 +32,7 @@ import { MdModeEditOutline, MdMoreVert } from "react-icons/md";
 import { FiTrash2 } from "react-icons/fi";
 import { ExtraField, findMethodology, Methodology } from "@/util/form-schema";
 import { useParams } from "next/navigation";
-import { regionalLocales } from "@/util/constants";
+import { REGIONALLOCALES } from "@/util/constants";
 
 interface IActivityGroup {
   activityData: ActivityValue[];
@@ -253,7 +253,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                     {convertKgToTonnes(
                       activity?.co2eq,
                       null,
-                      regionalLocales[lng as string],
+                      REGIONALLOCALES[lng as string],
                     )}
                   </Td>
                   <Td>
@@ -412,7 +412,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                                 0n,
                               ),
                               null,
-                              regionalLocales[lng as string],
+                              REGIONALLOCALES[lng as string],
                             )}{" "}
                           </Text>
                         </Box>

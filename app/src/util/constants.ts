@@ -137,7 +137,7 @@ export const getSectorByName = (name: string) =>
 export const getReferenceNumberByName = (name: keyof ISector) =>
   findBy("name", name)?.referenceNumber;
 
-export const regionalLocales: Record<string, string> = {
+export const REGIONALLOCALES: Record<string, string> = {
   es: "es-ES", // Spanish (Spain)
   en: "en-US", // English (United States)
   pt: "pt-PT", // Portuguese (Portugal)

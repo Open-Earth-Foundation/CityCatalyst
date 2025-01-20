@@ -8,7 +8,7 @@ import {
   NumberInputProps,
 } from "@chakra-ui/react";
 import { useParams } from "next/navigation";
-import { regionalLocales } from "@/util/constants";
+import { REGIONALLOCALES } from "@/util/constants";
 
 interface FormattedNumberInputProps extends NumberInputProps {
   control: Control<any, any>;
@@ -52,7 +52,7 @@ function FormattedNumberInput({
 
   const format = (nval: number | string) => {
     nval = nval.toString();
-    const locale = regionalLocales[lng as string] || "en-US"; // Get the user's locale
+    const locale = REGIONALLOCALES[lng as string] || "en-US"; // Get the user's locale
     const decimalSeparator = (1.1).toLocaleString(locale).substring(1, 2); // Detect the decimal separator
 
     // Check if the input ends with a decimal separator
@@ -82,7 +82,7 @@ function FormattedNumberInput({
   // Parse the formatted string into a raw number
   const parse = (val: string) => {
     const localeDecimalSeparator = (1.1)
-      .toLocaleString(regionalLocales[lng as string])
+      .toLocaleString(REGIONALLOCALES[lng as string])
       .substring(1, 2); // Get the decimal separator for the current locale
 
     const normalizedVal = val.replace(
@@ -96,7 +96,7 @@ function FormattedNumberInput({
   };
 
   const isCharacterValid = (char: string) => {
-    const normalizedLocale = regionalLocales[lng as string] || "en-US"; // Default to en-US
+    const normalizedLocale = REGIONALLOCALES[lng as string] || "en-US"; // Default to en-US
     const decimalSeparator = (1.1)
       .toLocaleString(normalizedLocale)
       .substring(1, 2);

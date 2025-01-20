@@ -35,7 +35,7 @@ import {
 } from "@/util/form-schema";
 import { AddIcon } from "@chakra-ui/icons";
 import { useParams } from "next/navigation";
-import { regionalLocales } from "@/util/constants";
+import { REGIONALLOCALES } from "@/util/constants";
 
 interface DirectMeasureTableProps {
   t: TFunction;
@@ -137,21 +137,21 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                   {convertKgToTonnes(
                     activity?.activityData?.co2_amount * 1000,
                     "CO2e",
-                    regionalLocales[lng as string],
+                    REGIONALLOCALES[lng as string],
                   )}
                 </Td>
                 <Td isNumeric isTruncated>
                   {convertKgToTonnes(
                     activity?.activityData?.n2o_amount * 1000,
                     "N2O",
-                    regionalLocales[lng as string],
+                    REGIONALLOCALES[lng as string],
                   )}
                 </Td>
                 <Td isNumeric isTruncated>
                   {convertKgToTonnes(
                     activity?.activityData?.ch4_amount * 1000,
                     "CH4",
-                    regionalLocales[lng as string],
+                    REGIONALLOCALES[lng as string],
                   )}
                 </Td>
                 <Td>
@@ -299,7 +299,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                                 0n,
                               ),
                               null,
-                              regionalLocales[lng as string],
+                              REGIONALLOCALES[lng as string],
                             )}{" "}
                           </Text>
                         </Box>

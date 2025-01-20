@@ -35,7 +35,7 @@ import HeadingText from "@/components/heading-text";
 import { MdMoreVert } from "react-icons/md";
 import { FaNetworkWired } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
-import { regionalLocales } from "@/util/constants";
+import { REGIONALLOCALES } from "@/util/constants";
 import { useParams } from "next/navigation";
 
 interface EmissionDataSectionProps {
@@ -364,7 +364,7 @@ const EmissionDataSection = ({
                       {convertKgToTonnes(
                         inventoryValue?.co2eq as bigint,
                         null,
-                        regionalLocales[lng as string],
+                        REGIONALLOCALES[lng as string],
                       )}
                     </Text>
                   </Box>

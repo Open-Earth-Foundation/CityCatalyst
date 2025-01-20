@@ -7,19 +7,20 @@ on:
       - global-api/importer-mage/**
       - charts/mage-ai/**
       - .github/workflows/mage-ai-develop.yml
+      - global-api/requirements.txt
     branches: ["develop"]
   pull_request:
     paths:
       - global-api/importer-mage/**
+      - global-api/requirements.txt
 
 jobs:
-
   pushToGHCR:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./global-api/importer-mage
-        
+
     steps:
       - uses: actions/checkout@v4
 

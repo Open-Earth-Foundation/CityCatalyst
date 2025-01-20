@@ -35,6 +35,8 @@ import HeadingText from "@/components/heading-text";
 import { MdMoreVert } from "react-icons/md";
 import { FaNetworkWired } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
+import { regionalLocales } from "@/util/constants";
+import { useParams } from "next/navigation";
 
 interface EmissionDataSectionProps {
   t: TFunction;
@@ -117,6 +119,8 @@ const EmissionDataSection = ({
     setSelectedActivityValue(activity);
     onAddActivityModalOpen();
   };
+
+  const { lng } = useParams();
 
   const renderSuggestedActivities = () => (
     <>
@@ -357,7 +361,11 @@ const EmissionDataSection = ({
                       fontWeight="semibold"
                       fontSize="headline.md"
                     >
-                      {convertKgToTonnes(inventoryValue?.co2eq as bigint)}
+                      {convertKgToTonnes(
+                        inventoryValue?.co2eq as bigint,
+                        null,
+                        regionalLocales[lng as string],
+                      )}
                     </Text>
                   </Box>
                 </Box>

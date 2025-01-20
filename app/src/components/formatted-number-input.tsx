@@ -8,6 +8,7 @@ import {
   NumberInputProps,
 } from "@chakra-ui/react";
 import { useParams } from "next/navigation";
+import { regionalLocales } from "@/util/constants";
 
 interface FormattedNumberInputProps extends NumberInputProps {
   control: Control<any, any>;
@@ -24,13 +25,6 @@ interface FormattedNumberInputProps extends NumberInputProps {
   localization?: string;
   t: Function;
 }
-
-const regionalLocales: Record<string, string> = {
-  es: "es-ES", // Spanish (Spain)
-  en: "en-US", // English (United States)
-  pt: "pt-PT", // Portuguese (Portugal)
-  de: "de-DE", // German (Germany)
-};
 
 function FormattedNumberInput({
   control,

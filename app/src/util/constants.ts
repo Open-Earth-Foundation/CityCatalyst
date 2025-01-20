@@ -3,7 +3,7 @@ import { PiPlant, PiTrashLight } from "react-icons/pi";
 import { TbBuildingCommunity } from "react-icons/tb";
 import { IconBaseProps } from "react-icons";
 import { LiaIndustrySolid } from "react-icons/lia";
-import { appTheme, SectorColors } from "@/lib/app-theme"; // Import the appTheme
+import { SectorColors } from "@/lib/app-theme"; // Import the appTheme
 
 export const maxPopulationYearDifference = 5;
 
@@ -136,3 +136,10 @@ export const getSectorByName = (name: string) =>
 
 export const getReferenceNumberByName = (name: keyof ISector) =>
   findBy("name", name)?.referenceNumber;
+
+export const regionalLocales: Record<string, string> = {
+  es: "es-ES", // Spanish (Spain)
+  en: "en-US", // English (United States)
+  pt: "pt-PT", // Portuguese (Portugal)
+  de: "de-DE", // German (Germany)
+};

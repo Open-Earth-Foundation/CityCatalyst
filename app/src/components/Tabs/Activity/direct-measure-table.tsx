@@ -34,6 +34,8 @@ import {
   MANUAL_INPUT_HIERARCHY,
 } from "@/util/form-schema";
 import { AddIcon } from "@chakra-ui/icons";
+import { useParams } from "next/navigation";
+import { regionalLocales } from "@/util/constants";
 
 interface DirectMeasureTableProps {
   t: TFunction;
@@ -52,6 +54,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
   t,
   showActivityModal,
 }) => {
+  const { lng } = useParams();
   const directMeasure = MANUAL_INPUT_HIERARCHY[referenceNumber as string]
     .directMeasure as DirectMeasure;
   const extraFields = directMeasure["extra-fields"] as ExtraField[];
@@ -134,18 +137,21 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                   {convertKgToTonnes(
                     activity?.activityData?.co2_amount * 1000,
                     "CO2e",
+                    regionalLocales[lng as string],
                   )}
                 </Td>
                 <Td isNumeric isTruncated>
                   {convertKgToTonnes(
                     activity?.activityData?.n2o_amount * 1000,
                     "N2O",
+                    regionalLocales[lng as string],
                   )}
                 </Td>
                 <Td isNumeric isTruncated>
                   {convertKgToTonnes(
                     activity?.activityData?.ch4_amount * 1000,
                     "CH4",
+                    regionalLocales[lng as string],
                   )}
                 </Td>
                 <Td>
@@ -292,6 +298,8 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                                   acc + BigInt(curr.co2eq as bigint),
                                 0n,
                               ),
+                              null,
+                              regionalLocales[lng as string],
                             )}{" "}
                           </Text>
                         </Box>

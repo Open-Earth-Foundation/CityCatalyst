@@ -11,6 +11,7 @@ import { InventoryValue } from "@/models/InventoryValue";
 import { Decimal } from "decimal.js";
 import { findMethodology } from "@/util/form-schema";
 import UnitConversionService from "@/backend/UnitConversionService";
+import { Op } from "sequelize";
 
 type GasValueWithEmissionsFactor = Omit<GasValueCreationAttributes, "id"> & {
   emissionsFactor?:
@@ -600,22 +601,54 @@ export async function handleIndustrialWasteWaterFormula(
 
   const totalIndustrialProduction = data["total-industry-production"];
   const industryType = data[`${prefixKey}-industry-type`];
-  const wastewaterGenerated = data[`${prefixKey}-wastewater-generated`];
-  const degradableOrganicComponents = // degradable organic industrial component (CODi)
-    data["degradable-organic-components"] ?? 38; // TODO COD from formula values dependent on industry type;
-
-  const formulaInput = await db.models.FormulaInput.findOne({
+  const treatmentType = data[`${prefixKey}-treatment-type-collected-treated`];
+  let wastewaterGenerated = data[`${prefixKey}-wastewater-generated`]; // should this be gotten from UI or
+  const country = inventoryValue.inventory.city.country as string;
+  const formulaInputsDOC = await db.models.FormulaInput.findOne({
     where: {
       [`metadata.industry_type`]: industryType as string,
       gas: "CH4",
       parameterCode: "COD",
       formulaName: "industrial-wastewater",
       gpcRefno: inventoryValue.gpcReferenceNumber,
-      region: "world",
+      [Op.or]: [
+        { region: { [Op.iLike]: "%world%" } },
+        { region: { [Op.iLike]: `%${country}%` } },
+      ],
     },
   });
 
-  console.log(formulaInput, "formulaInput");
+  if (!wastewaterGenerated) {
+    wastewaterGenerated = await db.models.FormulaInput.findOne({
+      where: {
+        [`metadata.industry_type`]: industryType as string,
+        gas: "CH4",
+        parameterCode: "COD",
+        formulaName: "industrial-wastewater",
+        gpcRefno: inventoryValue.gpcReferenceNumber,
+        [Op.or]: [
+          { region: { [Op.iLike]: "%world%" } },
+          { region: { [Op.iLike]: `%${country}%` } },
+        ],
+      },
+    });
+  }
+
+  const formulaInputMCF = await db.models.FormulaInput.findOne({
+    where: {
+      [`metadata.treatment-type`]: treatmentType as string,
+      gas: "CH4",
+      parameterCode: "COD",
+      formulaName: "industrial-wastewater",
+      gpcRefno: inventoryValue.gpcReferenceNumber,
+      [Op.or]: [
+        { region: { [Op.iLike]: "%world%" } },
+        { region: { [Op.iLike]: `%${country}%` } },
+      ],
+    },
+  });
+
+  const degradableOrganicComponents = formulaInputsDOC?.formulaInputValue ?? 1;
 
   const methaneProductionCapacity =
     data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY;

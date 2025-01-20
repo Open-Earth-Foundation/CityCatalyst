@@ -42,7 +42,21 @@ export default class ActivityService {
 
     let inventoryValue = await db.models.InventoryValue.findByPk(
       inventoryValueId,
-      { transaction },
+      {
+        transaction,
+        include: [
+          {
+            model: db.models.Inventory,
+            as: "inventory",
+            include: [
+              {
+                model: db.models.City,
+                as: "city",
+              },
+            ],
+          },
+        ],
+      },
     );
 
     if (!inventoryValue) {
@@ -273,17 +287,33 @@ export default class ActivityService {
               subCategoryId: subCategoryId ?? undefined,
               gpcReferenceNumber: inventoryValueParams.gpcReferenceNumber,
             },
-            { transaction },
+            {
+              transaction,
+            },
           );
-        } else if (inventoryValueId) {
-          inventoryValue = await db.models.InventoryValue.findByPk(
-            inventoryValueId,
-            { transaction },
-          );
-          if (!inventoryValue) {
-            throw new createHttpError.NotFound("InventoryValue not found");
-          }
-        } else {
+        }
+
+        let finalInventoryValueId = inventoryValueId || inventoryValue?.id;
+        inventoryValue = await db.models.InventoryValue.findByPk(
+          finalInventoryValueId,
+          {
+            transaction,
+            include: [
+              {
+                model: db.models.Inventory,
+                as: "inventory",
+                include: [
+                  {
+                    model: db.models.City,
+                    as: "city",
+                  },
+                ],
+              },
+            ],
+          },
+        );
+
+        if (!inventoryValue) {
           throw new createHttpError.BadRequest(
             "Either inventoryValueId or inventoryValue must be provided",
           );
@@ -303,7 +333,6 @@ export default class ActivityService {
           },
           { transaction },
         );
-
         let { totalCO2e, totalCO2eYears, gases } =
           await CalculationService.calculateGasAmount(
             inventoryValue,

@@ -10,8 +10,7 @@ COPY ${PROJECT_NAME} ${PROJECT_NAME}
 
 ENV USER_CODE_PATH=${USER_CODE_PATH}
 
-# Uninstall the packages listed in requirements.txt
-RUN pip uninstall -y -r ${USER_CODE_PATH}/requirements.txt || true
+RUN pip install -r ${USER_CODE_PATH}/requirements.txt
 
 ENV PYTHONPATH="${PYTHONPATH}:${MAGE_CODE_PATH}"
 

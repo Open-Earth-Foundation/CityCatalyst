@@ -10,8 +10,8 @@ COPY ${PROJECT_NAME} ${PROJECT_NAME}
 
 ENV USER_CODE_PATH=${USER_CODE_PATH}
 
-# Commenting out the requirements installation step
-#RUN pip3 install -r ${USER_CODE_PATH}/requirements.txt
+# Uninstall the packages listed in requirements.txt
+RUN pip uninstall -y -r ${USER_CODE_PATH}/requirements.txt || true
 
 ENV PYTHONPATH="${PYTHONPATH}:${MAGE_CODE_PATH}"
 

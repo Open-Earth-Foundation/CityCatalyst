@@ -9,6 +9,7 @@ mypy==1.14.1
 osmnx==2.0.1
 pandas==2.2.3
 psycopg2-binary==2.9.10
+pydantic==2.10.3
 pydantic-settings==2.*
 pytest==8.3.4
 rioxarray==0.18.*

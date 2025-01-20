@@ -244,6 +244,7 @@ function SubSectorPage({
                       <BreadcrumbLink
                         href={`/${inventoryId}/data`}
                         color="content.tertiary"
+                        isTruncated
                       >
                         {t("all-sectors")}
                       </BreadcrumbLink>
@@ -252,6 +253,7 @@ function SubSectorPage({
                       <BreadcrumbLink
                         href={`/${inventoryId}/data/${step}`}
                         color="content.tertiary"
+                        isTruncated
                       >
                         {t(getSectorName(step))}
                       </BreadcrumbLink>

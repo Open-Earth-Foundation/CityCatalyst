@@ -4558,6 +4558,11 @@
               {
                 "id": "wastewater-inside-industrial-calculator-wastewater-generated",
                 "type": "number",
+                "units": [
+                  "units-cubic-meters-per-kilogram",
+                  "units-cubic-meters-per-tonne"
+                ],
+                "default-units": "units-cubic-meters-per-tonne",
                 "required": false
               },
               {

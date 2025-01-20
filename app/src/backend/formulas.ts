@@ -602,6 +602,7 @@ export async function handleIndustrialWasteWaterFormula(
   const totalIndustrialProduction = data["total-industry-production"];
   const industryType = data[`${prefixKey}-industry-type`];
   const treatmentType = data[`${prefixKey}-treatment-type-collected-treated`];
+  const treatmentStatus = data[`${prefixKey}-treatment-status`];
   let wastewaterGenerated = data[`${prefixKey}-wastewater-generated`]; // should this be gotten from UI or
   const country = inventoryValue.inventory.city.country as string;
   const formulaInputsDOC = await db.models.FormulaInput.findOne({
@@ -637,9 +638,10 @@ export async function handleIndustrialWasteWaterFormula(
   const formulaInputMCF = await db.models.FormulaInput.findOne({
     where: {
       [`metadata.treatment-type`]: treatmentType as string,
+      [`metadata.treatment-status`]: treatmentStatus as string,
       gas: "CH4",
-      parameterCode: "COD",
-      formulaName: "industrial-wastewater",
+      parameterCode: "MCF",
+      methodologyName: `${prefixKey}-activity`,
       gpcRefno: inventoryValue.gpcReferenceNumber,
       [Op.or]: [
         { region: { [Op.iLike]: "%world%" } },
@@ -653,7 +655,8 @@ export async function handleIndustrialWasteWaterFormula(
   const methaneProductionCapacity =
     data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY;
   const removedSludge = data["total-organic-sludge-removed"];
-  const methaneCorrectionFactor = 1; // TODO fetch this from formula values csv dependent on treatment type
+  const methaneCorrectionFactor = formulaInputMCF?.formulaInputValue ?? 0; // TODO fetch this from formula values csv dependent on treatment type
+
   const methaneRecovered = data[`${prefixKey}-methane-recovered`];
 
   // TODO is new Decimal/ BigNumber required for these calculations?

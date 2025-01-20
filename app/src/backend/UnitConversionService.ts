@@ -18,6 +18,10 @@ export default class UnitConversionService {
         "units-kilograms": 0.001, // 1 tonne = 1000 kilograms
         "units-tonnes": 1, // 1 tonne = 1 tonne (identity)
       },
+      "units-cubic-meters-per-tonnes": {
+        "units-cubic-meters-per-tonnes": 1, // 1 m³/t = 1 m³/t (identity)
+        "units-cubic-meters-per-kilograms": 1000, // 1 m³/t = 0.001 m³/kg
+      },
     };
 
   private static fuelDensities: Record<string, number> = {

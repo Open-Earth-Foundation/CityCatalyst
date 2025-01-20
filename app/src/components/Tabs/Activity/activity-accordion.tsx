@@ -31,6 +31,8 @@ import React, { FC, useMemo } from "react";
 import { MdModeEditOutline, MdMoreVert } from "react-icons/md";
 import { FiTrash2 } from "react-icons/fi";
 import { ExtraField, findMethodology, Methodology } from "@/util/form-schema";
+import { useParams } from "next/navigation";
+import { REGIONALLOCALES } from "@/util/constants";
 
 interface IActivityGroup {
   activityData: ActivityValue[];
@@ -61,6 +63,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
   onEditActivity,
   referenceNumber,
 }) => {
+  const { lng } = useParams();
   // perform the group by logic when there's more than one activity.
   // split the data into groups
   // for each table group by the group by field
@@ -246,7 +249,13 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                     {parseFloat(activity?.activityData[title])}{" "}
                     {t(activity?.activityData[title + "-unit"])}
                   </Td>
-                  <Td>{convertKgToTonnes(activity?.co2eq)}</Td>
+                  <Td>
+                    {convertKgToTonnes(
+                      activity?.co2eq,
+                      null,
+                      REGIONALLOCALES[lng as string],
+                    )}
+                  </Td>
                   <Td>
                     <Popover>
                       <PopoverTrigger>
@@ -402,6 +411,8 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                                   acc + BigInt(curr.co2eq as bigint),
                                 0n,
                               ),
+                              null,
+                              REGIONALLOCALES[lng as string],
                             )}{" "}
                           </Text>
                         </Box>

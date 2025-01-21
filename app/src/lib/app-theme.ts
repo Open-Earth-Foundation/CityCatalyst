@@ -8,6 +8,12 @@ export enum SectorColors {
   V = "#CC6B1D",
 }
 
+export enum SubSectorColors {
+  "V.1" = "#38A857",
+  "V.2" = "#0E5221",
+  "V.3" = "#149037",
+}
+
 export const appTheme = extendTheme({
   colors: {
     brand: {

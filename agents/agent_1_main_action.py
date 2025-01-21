@@ -20,11 +20,12 @@ Follow these guidlines carefully to complete the task:
     a. Retrieve relevant information about Brazil's (national) climate strategy.
     b. Retrieve information about climate strategies relevant to the climate action (main action) you are working on.
     
-2. National climate strategy
+2. Climate strategy overview
     a. Create a concise overview of the climate strategies based on the retreived information. 
+        - This should include the national climate strategy and information regarding the climate action (main action) related strategy - if available.
     b. **ONLY** inlcude information you have retrieved from the documents and do not include any of your internal knowledge. If you can not find relevant information just state this fact.
     c. When using information from the documents, ensure that the information retrieved is relevant to the national climate strategy and the climate action (main action).
-    d. Include the source of the information in the final output using the format: `[source: <document title and page>]`
+    d. Include all the the sources of the retrieved information in the final output using the format: `[source: <document title and page>]`
 
 3. Climate action (main action) description
     a. Create a concise climate action (main action) description of the climate action related to the city you are working on.
@@ -41,7 +42,7 @@ You have access to the following toosl:
 
 <output>
 The final output should be a headline with two main sections:
-1. National Climate Strategy 
+1. Climate Strategy Overview
 2. Climate Action Description  
 The entire section should not exceed 150 words.
 
@@ -50,8 +51,8 @@ The entire section should not exceed 150 words.
 **Climate action:** [name of climate action]
 **City:** [name of city]
 
-### 1. National Climate Strategy
-[Concise overview of Brazil's national strategies, with sources]
+### 1. Climate Strategy Overview
+[Concise overview of the national strategy and information regarding the climate action (main action) related strategy - if available, with sources]
 
 ### 2. Climate Action Description
 [Consice description of the climate action and its affect on the city]

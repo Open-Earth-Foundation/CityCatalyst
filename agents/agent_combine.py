@@ -9,7 +9,7 @@ def custom_agent_combine(state: AgentState) -> AgentState:
 
     # Get meta data
     climate_action_id = state["climate_action_data"]["ActionID"]
-    city_name = state["city_data"]["name"]
+    city_locode = state["city_data"]["locode"]
 
     # Get individual responses from the agents
     response_agent_1 = state["response_agent_1"].content
@@ -45,7 +45,9 @@ def custom_agent_combine(state: AgentState) -> AgentState:
     # Get current date/time in hh:mm format
     current_time = datetime.now().strftime("%Y%m%d_%H%M")
 
-    file_name = f"{current_time}_{city_name}_{climate_action_id}_implementation_plan.md"
+    file_name = (
+        f"{current_time}_{city_locode}_{climate_action_id}_implementation_plan.md"
+    )
 
     # Write the combined Markdown text to a local file (e.g. "combined_responses.md")
     with open(OUTPUT_PATH / file_name, "w", encoding="utf-8") as md_file:

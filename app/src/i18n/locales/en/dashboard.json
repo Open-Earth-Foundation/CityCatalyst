@@ -168,5 +168,8 @@
   "invite-success-toast-text": "All set! Your invitations have been sent successfully",
   "invite-error-toast-title": "Something went wrong",
   "invite-error-toast-description": "There was an error sending your invitations",
-  "invite-error-toast-text": "There was an error sending your invitations"
+  "invite-error-toast-text": "There was an error sending your invitations",
+  "afolu-other-agriculture": "Other agriculture",
+  "afolu-livestock": "Live stock",
+  "afolu-land": "Land"
 }

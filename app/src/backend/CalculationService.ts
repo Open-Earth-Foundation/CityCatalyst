@@ -171,7 +171,7 @@ export default class CalculationService {
           activityId === "wastewater-outside-industrial-calculator-activity"
         ) {
           let prefixKey = activityId.split("-").slice(0, -1).join("-");
-          gases = handleIndustrialWasteWaterFormula(
+          gases = await handleIndustrialWasteWaterFormula(
             activityValue,
             inventoryValue,
             prefixKey,

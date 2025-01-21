@@ -4,13 +4,13 @@ import type { ActivityValue } from "@/models/ActivityValue";
 import type { Gas } from "./CalculationService";
 import type { GasValueCreationAttributes } from "@/models/GasValue";
 import type { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
-import { findClosestCityPopulation } from "@/util/population";
 import type { Inventory } from "@/models/Inventory";
 import { db } from "@/models";
 import { InventoryValue } from "@/models/InventoryValue";
 import { Decimal } from "decimal.js";
 import { findMethodology } from "@/util/form-schema";
 import UnitConversionService from "@/backend/UnitConversionService";
+import { literal, Op } from "sequelize";
 
 type GasValueWithEmissionsFactor = Omit<GasValueCreationAttributes, "id"> & {
   emissionsFactor?:
@@ -576,11 +576,11 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
   return gases;
 }
 
-export function handleIndustrialWasteWaterFormula(
+export async function handleIndustrialWasteWaterFormula(
   activityValue: ActivityValue,
   inventoryValue: InventoryValue,
   prefixKey: string,
-): Gas[] {
+): Promise<Gas[]> {
   if (!inventoryValue.inputMethodology || !inventoryValue.gpcReferenceNumber) {
     throw new createHttpError.BadRequest(
       "InventoryValue has no inputMethodology or gpcReferenceNumber associated",
@@ -599,13 +599,93 @@ export function handleIndustrialWasteWaterFormula(
   }
 
   const totalIndustrialProduction = data["total-industry-production"];
-  const wastewaterGenerated = data[`${prefixKey}-wastewater-generated`];
-  const degradableOrganicComponents =
-    data["degradable-organic-components"] ?? 38; // TODO COD from formula values dependent on industry type;
-  const methaneProductionCapacity =
-    data["methane-production-capacity"] ?? DEFAULT_METHANE_PRODUCTION_CAPACITY;
+  const industryType = data[`${prefixKey}-industry-type`];
+  const treatmentType = data[`${prefixKey}-treatment-type-collected-treated`];
+  const treatmentStatus = data[`${prefixKey}-treatment-status`];
+  const dischargePathway = data[`${prefixKey}-discharge-pathway-untreated`];
+  const treatmentTypeMetaDataFilter =
+    treatmentStatus === "treatment-status-type-wastewater-untreated"
+      ? dischargePathway
+      : treatmentType;
+  let wastewaterGenerated = data[`${prefixKey}-wastewater-generated`]; // should this be gotten from UI or
+  const country = inventoryValue.inventory.city.country as string;
+  const countryCode = inventoryValue.inventory.city.countryLocode;
+  const formulaInputsDOC = await db.models.FormulaInput.findOne({
+    where: {
+      [`metadata.industry_type`]: industryType as string,
+      gas: "CH4",
+      parameterCode: "COD",
+      formulaName: "industrial-wastewater",
+      gpcRefno: inventoryValue.gpcReferenceNumber,
+      [Op.or]: [
+        { actorId: { [Op.iLike]: "%world%" } },
+        { actorId: { [Op.iLike]: `%${countryCode}%` } },
+      ],
+    },
+    order: [
+      // Prioritize specific country matches first
+      [
+        literal(
+          `CASE WHEN actor_id ILIKE '%${countryCode}%' THEN 1 ELSE 2 END`,
+        ),
+        "ASC",
+      ],
+    ],
+  });
+
+  if (!wastewaterGenerated) {
+    wastewaterGenerated = await db.models.FormulaInput.findOne({
+      where: {
+        [`metadata.industry_type`]: industryType as string,
+        gas: "CH4",
+        parameterCode: "Wi",
+        formulaName: "industrial-wastewater",
+        [Op.or]: [
+          { actorId: { [Op.iLike]: "%world%" } },
+          { actorId: { [Op.iLike]: `%${countryCode}%` } },
+        ],
+      },
+      order: [
+        // Prioritize specific country matches first
+        [
+          literal(
+            `CASE WHEN actor_id ILIKE '%${countryCode}%' THEN 1 ELSE 2 END`,
+          ),
+          "ASC",
+        ],
+      ],
+    });
+  }
+
+  const formulaInputMCF = await db.models.FormulaInput.findOne({
+    where: {
+      [`metadata.treatment-type`]: treatmentTypeMetaDataFilter as string,
+      [`metadata.treatment-status`]: treatmentStatus as string,
+      gas: "CH4",
+      parameterCode: "MCF",
+      methodologyName: `${prefixKey}-activity`,
+      [Op.or]: [
+        { actorId: { [Op.iLike]: `%${countryCode}%` } },
+        { actorId: { [Op.iLike]: "%world%" } },
+      ],
+    },
+    order: [
+      // Prioritize specific country matches first
+      [
+        literal(
+          `CASE WHEN actor_id ILIKE '%${countryCode}%' THEN 1 ELSE 2 END`,
+        ),
+        "ASC",
+      ],
+    ],
+  });
+
+  const degradableOrganicComponents = formulaInputsDOC?.formulaInputValue ?? 1;
+
+  const methaneProductionCapacity = DEFAULT_METHANE_PRODUCTION_CAPACITY;
   const removedSludge = data["total-organic-sludge-removed"];
-  const methaneCorrectionFactor = 1; // TODO fetch this from formula values csv dependent on treatment type
+  const methaneCorrectionFactor = formulaInputMCF?.formulaInputValue || 0.3; // TODO fetch this from formula values csv dependent on treatment type
+
   const methaneRecovered = data[`${prefixKey}-methane-recovered`];
 
   // TODO is new Decimal/ BigNumber required for these calculations?
@@ -647,48 +727,143 @@ export async function handleDomesticWasteWaterFormula(
     );
   }
 
-  const methaneProductionCapacity = DEFAULT_METHANE_PRODUCTION_CAPACITY; // TODO should this only be handled UI-side?
   const removedSludge = data["total-organic-sludge-removed"];
-  // TODO get MCF from seed-data/formula_values
-  const methaneCorrectionFactor = DEFAULT_METHANE_CORRECTION_FACTOR; // TODO read from formula file
   const methaneRecovered = data[`${prefixKey}-methane-recovered`];
-
-  const totalCityPopulationEntry = await findClosestCityPopulation(inventory);
-  if (!totalCityPopulationEntry) {
-    throw new createHttpError.BadRequest(
-      "No recent city population entry was found.",
-    );
-  }
-  const totalCityPopulation = totalCityPopulationEntry.population;
-
-  const bodPerCapita = DEFAULT_BOD_PER_CAPITA; // TODO BOD using region of the city
+  const totalPopulation = data["total-population"];
+  const collectionStatus = data[`${prefixKey}-collection-status`];
   const isCollectedWasteWater =
-    data[`${prefixKey}-collection-status`] ===
-    "collection-status-type-wastewater-collected";
+    collectionStatus === "collection-status-type-wastewater-collected";
   const industrialBodFactor = isCollectedWasteWater ? 1.0 : 1.25;
-  const totalOrganicWaste = new Decimal(
-    totalCityPopulation * bodPerCapita * industrialBodFactor * 365,
+  const treatmentStatus = data[`${prefixKey}-treatment-status`];
+  const treatmentType = data[`${prefixKey}-treatment-type-collected-treated`];
+  const dischargePathway = data[`${prefixKey}-discharge-pathway-untreated`];
+  const incomeGroup = data[`${prefixKey}-income-group`];
+  const methaneProductionCapacity = 0.6; // Bo takes default value of 0.6 for domestic
+  const country = inventoryValue.inventory.city.country as string;
+  const countryCode = inventoryValue.inventory.city.countryLocode;
+  const treatmentTypeMetaDataFilter =
+    treatmentStatus === "treatment-status-type-wastewater-untreated"
+      ? dischargePathway
+      : treatmentType;
+  // where clause filter
+
+  const formulaInputMCF = await db.models.FormulaInput.findOne({
+    where: {
+      [`metadata.treatment-type`]: treatmentTypeMetaDataFilter as string,
+      [`metadata.treatment-status`]: treatmentStatus as string,
+      gas: "CH4",
+      parameterCode: "MCF",
+      methodologyName: `${prefixKey}-activity`,
+      [Op.or]: [
+        { actorId: { [Op.iLike]: `%${countryCode}%` } },
+        { actorId: { [Op.iLike]: "%world%" } },
+      ],
+    },
+    order: [
+      // Prioritize specific country matches first
+      [
+        literal(
+          `CASE WHEN actor_id ILIKE '%${countryCode}%' THEN 1 ELSE 2 END`,
+        ),
+        "ASC",
+      ],
+    ],
+  });
+  const MethaneCorrectionFactor = formulaInputMCF?.formulaInputValue || 0.3; // TODO confirm if a non zero default is okay
+  const formulaInputDOU = await db.models.FormulaInput.findOne({
+    where: {
+      [`metadata.income-group`]: incomeGroup as string,
+      gas: "CH4",
+      parameterCode: "U*T",
+      methodologyName: `${prefixKey}-activity`,
+      [Op.or]: [
+        { actorId: { [Op.iLike]: `%${countryCode}%` } },
+        { actorId: { [Op.iLike]: "%world%" } },
+      ],
+    },
+    order: [
+      // Prioritize specific country matches first
+      [
+        literal(
+          `CASE WHEN actor_id ILIKE '%${countryCode}%' THEN 1 ELSE 2 END`,
+        ),
+        "ASC",
+      ],
+    ],
+  });
+
+  const degreeOfUtilization = formulaInputDOU?.formulaInputValue || 0;
+
+  // calculate the EFj
+  const EFj = new Decimal(
+    methaneProductionCapacity * MethaneCorrectionFactor * degreeOfUtilization,
   );
 
-  const incomeGroup =
-    data[`${prefixKey}-income-group`] ?? "income-group-type-all";
-  const incomeGroupFraction = DEFAULT_INCOME_GROUP_FRACTIONS[incomeGroup];
-  const dischargeSystemUtulizationRatio =
-    data["discharge-system-utilization-ratio"] ?? 0.5; // TODO wrong key!
+  // calculate TOW
+  const formulaInputBOD = await db.models.FormulaInput.findOne({
+    where: {
+      gas: "CH4",
+      parameterCode: "BOD",
+      methodologyName: `${prefixKey}-activity`,
+      [Op.or]: [
+        { actorId: { [Op.iLike]: `%${countryCode}%` } },
+        { actorId: { [Op.iLike]: "%world%" } },
+      ],
+    },
+    order: [
+      // Prioritize specific country matches first
+      [
+        literal(
+          `CASE WHEN actor_id ILIKE '%${countryCode}%' THEN 1 ELSE 2 END`,
+        ),
+        "ASC",
+      ],
+    ],
+  });
 
-  const emissionsFactor =
-    methaneProductionCapacity *
-    methaneCorrectionFactor *
-    incomeGroupFraction *
-    dischargeSystemUtulizationRatio;
+  const bodPerCapita =
+    formulaInputBOD?.formulaInputValue ?? DEFAULT_BOD_PER_CAPITA; // TODO what is the best default value
+
+  const formulaInputUI = await db.models.FormulaInput.findOne({
+    where: {
+      [`metadata.income-group`]: incomeGroup as string,
+      gas: "CH4",
+      parameterCode: "Ui",
+      methodologyName: `${prefixKey}-activity`,
+      [Op.or]: [
+        { actorId: { [Op.iLike]: `%${countryCode}%` } },
+        { actorId: { [Op.iLike]: "%world%" } },
+      ],
+    },
+    order: [
+      // Prioritize specific country matches first
+      [
+        literal(
+          `CASE WHEN actor_id ILIKE '%${countryCode}%' THEN 1 ELSE 2 END`,
+        ),
+        "ASC",
+      ],
+    ],
+  });
+
+  const utilizationByIncomeGroup = formulaInputUI?.formulaInputValue || 1; //  TODO is the default of 1 the best ?
+
+  const cityPopulationByIncomegroup =
+    totalPopulation / utilizationByIncomeGroup;
+
+  const totalOrganicWaste = new Decimal(
+    cityPopulationByIncomegroup * bodPerCapita * industrialBodFactor * 365,
+  );
 
   const totalMethaneProduction = totalOrganicWaste
     .sub(removedSludge)
-    .mul(emissionsFactor)
+    .mul(EFj)
     .sub(methaneRecovered);
 
   const amount = totalMethaneProduction.round(); // TODO round right or is ceil/ floor more correct?
   return [{ gas: "CH4", amount }];
+
+  // TODO include N20 calculations
 }
 
 /**

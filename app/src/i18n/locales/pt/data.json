@@ -716,6 +716,8 @@
   "units-kilograms": "Quilogramas (kg)",
   "units-grams-per-kilometer": "gramas por quilômetro (g/km)",
   "units-kilograms-per-kilometer": "quilogramas por quilômetro (kg/km)",
+  "units-cubic-meters-per-kilogram": "metros cúbicos por quilograma (m³/kg)",
+  "units-cubic-meters-per-tonne": "metros cúbicos por tonelada (m³/t)",
   "vehicle-type-agricultural-machinery": "Máquinas agrícolas (Tratores, Colheitadeiras, etc.)",
   "vehicle-type-all": "Selecionar todos os tipos de transporte",
   "vehicle-type-boats": "Barcos",

@@ -1,6 +1,6 @@
 import { Box, Heading, Text } from "@chakra-ui/react";
 import { api } from "@/services/api";
-import { BlueSubtitle } from "@/components/blue-subtitle";
+import { BlueSubtitle } from "@/components/Texts/BlueSubtitle";
 import { TFunction } from "i18next/typescript/t";
 import { EmissionsForecastCard } from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/EmissionsForecastCard";
 

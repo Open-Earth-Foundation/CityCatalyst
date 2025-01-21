@@ -21,7 +21,7 @@ import {
 import { TabHeader } from "@/components/HomePage/TabHeader";
 import EmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsWidget";
 import TopEmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/TopEmissionsWidget";
-import { BlueSubtitle } from "@/components/blue-subtitle";
+import { BlueSubtitle } from "@/components/Texts/BlueSubtitle";
 import { PopulationAttributes } from "@/models/Population";
 import type { TFunction } from "i18next";
 import {

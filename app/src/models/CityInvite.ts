@@ -1,14 +1,21 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import { City, CityId } from "./City";
-import { UserFileCreationAttributes } from "./UserFile";
+
+export enum CityInviteStatus {
+  PENDING = "pending",
+  ACCEPTED = "accepted",
+  CANCELED = "canceled",
+  EXPIRED = "expired",
+}
 
 export interface CityInviteAttributes {
   id: string;
   cityId?: string;
   userId?: string;
+  email?: string;
   invitingUserId?: string;
-  status?: string;
+  status?: CityInviteStatus;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -22,20 +29,22 @@ export type CityInviteCreationAttributes = Optional<
 export type CityInviteOptionalAttributes =
   | "cityId"
   | "userId"
+  | "email"
   | "invitingUserId"
   | "status"
   | "created"
   | "lastUpdated";
 
 export class CityInvite
-  extends Model<CityInviteAttributes, UserFileCreationAttributes>
+  extends Model<CityInviteAttributes, CityInviteCreationAttributes>
   implements CityInviteAttributes
 {
   id!: string;
   cityId?: string | undefined;
   userId?: string | undefined;
+  email?: string | undefined;
   invitingUserId?: string | undefined;
-  status?: string | undefined;
+  status?: CityInviteStatus | undefined;
   created?: Date | undefined;
   lastUpdated?: Date | undefined;
 
@@ -67,6 +76,10 @@ export class CityInvite
           type: DataTypes.STRING(255),
           allowNull: true,
         },
+        email: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+        },
         invitingUserId: {
           type: DataTypes.UUID,
           allowNull: true,
@@ -94,6 +107,18 @@ export class CityInvite
             name: "CityInvite_pkey",
             unique: true,
             fields: [{ name: "id" }],
+          },
+          {
+            name: "CityInvite_email_index",
+            fields: [{ name: "email" }],
+          },
+          {
+            name: "CityInvite_inviting_user_id_index",
+            fields: [{ name: "inviting_user_id" }],
+          },
+          {
+            name: "CityInvite_user_id_index",
+            fields: [{ name: "user_id" }],
           },
         ],
       },

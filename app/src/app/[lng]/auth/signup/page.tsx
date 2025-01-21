@@ -92,7 +92,7 @@ export default function Signup({
       }
       const queryParamsString = new URLSearchParams(queryParams).toString();
       const callbackParam = callbackUrl ? "&" : "";
-      const nextCallbackUrl = `/auth/check-email?email_address=${data.email}&${callbackParam}${queryParamsString}`;
+      const nextCallbackUrl = `/auth/check-email?email_address=${data.email}${callbackParam}${queryParamsString}`;
       router.push(nextCallbackUrl);
 
       // TODO automatic login required?

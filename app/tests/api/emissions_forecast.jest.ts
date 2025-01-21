@@ -47,6 +47,7 @@ describe("Emissions Forecast API", () => {
       cityId: city.cityId,
       inventoryType: InventoryTypeEnum.GPC_BASIC,
       globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+      year: 2023,
     });
 
     await db.models.InventoryValue.bulkCreate(inventoryValuesData);

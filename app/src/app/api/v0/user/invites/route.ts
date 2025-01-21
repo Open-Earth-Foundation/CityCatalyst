@@ -30,7 +30,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
   });
 
   if (!process.env.VERIFICATION_TOKEN_SECRET) {
-    console.error("Need to assign RESET_TOKEN_SECRET in env!");
+    console.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
     throw createHttpError.InternalServerError("Configuration error");
   }
 
@@ -68,7 +68,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
           }),
         );
         const host = process.env.HOST ?? "http://localhost:3000";
-        const url = `${host}/user/invite?cityIds=${encodeURIComponent(invites.map((i) => i.cityId).join(","))}&token=${encodeURIComponent(invitationCode)}&email=${encodeURIComponent(email)}`;
+        const url = `${host}/user/invites?cityIds=${encodeURIComponent(invites.map((i) => i.cityId).join(","))}&token=${encodeURIComponent(invitationCode)}&email=${encodeURIComponent(email)}`;
         const sendInvite = await sendEmail({
           to: email!,
           subject: "City Catalyst - City Invitation",

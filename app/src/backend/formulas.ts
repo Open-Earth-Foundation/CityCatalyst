@@ -638,7 +638,7 @@ export async function handleIndustrialWasteWaterFormula(
       where: {
         [`metadata.industry_type`]: industryType as string,
         gas: "CH4",
-        parameterCode: "COD",
+        parameterCode: "Wi",
         formulaName: "industrial-wastewater",
         [Op.or]: [
           { actorId: { [Op.iLike]: "%world%" } },

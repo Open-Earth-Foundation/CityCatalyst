@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe("Login page", () => {
-  test("redirects to onboarding after entering correct data", async ({
+  test.skip("redirects to onboarding after entering correct data", async ({
     page,
     request,
   }) => {

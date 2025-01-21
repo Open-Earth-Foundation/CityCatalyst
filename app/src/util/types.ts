@@ -186,6 +186,25 @@ export interface UserInviteResponse {
   lastUpdated: string;
 }
 
+export interface AcceptInviteResponse {
+  success: boolean;
+  error?: string;
+}
+export interface AcceptInviteRequest {
+  email: string;
+  cityIds: string[];
+  token: string;
+}
+
+export interface UsersInvitesRequest {
+  cityIds: string[];
+  emails: string[];
+}
+
+export interface UsersInvitesResponse {
+  success: boolean;
+}
+
 export interface RequiredScopesResponse {
   requiredScopes: string[];
 }

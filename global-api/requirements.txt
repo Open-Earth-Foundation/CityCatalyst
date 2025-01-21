@@ -1,5 +1,5 @@
 aiohttp==3.11.*
-alembic==1.14.0
+alembic==1.14.1
 black==24.10.0
 fastapi==0.115.6
 flake8==7.1.1
@@ -14,10 +14,10 @@ pytest==8.3.4
 rioxarray==0.18.*
 scipy==1.15.*
 shapely==2.0.6
-SQLAlchemy==2.0.36
+SQLAlchemy==2.0.37
 tqdm==4.67.*
 uvicorn==0.34.0
-xarray==2024.*
+xarray==2025.*
 geojson==3.2.*
 openclimate==0.1.*
 nest_asyncio==1.6.*

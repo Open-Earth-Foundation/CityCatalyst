@@ -29,6 +29,10 @@ import {
   UserInfoResponse,
   UserInviteResponse,
   YearOverYearResultsResponse,
+  UsersInvitesRequest,
+  AcceptInviteResponse,
+  AcceptInviteRequest,
+  UsersInvitesResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -584,6 +588,33 @@ export const api = createApi({
         transformResponse: (response: { data: UserInviteResponse }) =>
           response.data,
       }),
+      inviteUsers: builder.mutation<UsersInvitesResponse, UsersInvitesRequest>({
+        query: (data) => {
+          return {
+            method: "POST",
+            url: `/user/invites`,
+            body: data,
+          };
+        },
+        transformResponse: (response: UsersInvitesResponse) => {
+          return response;
+        },
+      }),
+      acceptInvite: builder.mutation<AcceptInviteResponse, AcceptInviteRequest>(
+        {
+          query: (data) => {
+            return {
+              method: "PATCH",
+              url: `/user/invites/accept`,
+              body: data,
+            };
+          },
+
+          transformResponse: (response: { data: AcceptInviteResponse }) =>
+            response.data,
+        },
+      ),
+
       mockData: builder.query({
         query: () => {
           return {
@@ -792,6 +823,8 @@ export const {
   useDeleteUserFileMutation,
   useDisconnectThirdPartyDataMutation,
   useInviteUserMutation,
+  useInviteUsersMutation,
+  useAcceptInviteMutation,
   useCheckUserMutation,
   useMockDataQuery,
   useConnectToCDPMutation,

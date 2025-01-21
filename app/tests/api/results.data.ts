@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { GrowthRatesResponse } from "@/backend/OpenClimateService";
+import { GrowthRatesResponse } from "@/backend/GlobalAPIService";
 
 export const inventoryValueId = randomUUID();
 export const inventoryValueId1 = randomUUID();

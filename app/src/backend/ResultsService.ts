@@ -8,7 +8,7 @@ import { ActivityDataByScope, GroupedActivity } from "@/util/types";
 import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";
 import createHttpError from "http-errors";
-import { getGrowthRatesFromOC } from "./OpenClimateService";
+import GlobalAPIService from "./GlobalAPIService";
 import { Inventory } from "@/models/Inventory";
 
 function multiplyBigIntByFraction(
@@ -751,9 +751,9 @@ export async function getEmissionResults(inventory: string): Promise<{
 }
 
 export const getEmissionsForecasts = async (inventoryData: Inventory) => {
-  const OCResponse = await getGrowthRatesFromOC(
+  const OCResponse = await GlobalAPIService.fetchGrowthRates(
     inventoryData.city.locode!,
-    inventoryData.created!.getFullYear(),
+    inventoryData.year!,
   );
   if (!OCResponse) {
     return {
@@ -782,7 +782,13 @@ export const getEmissionsForecasts = async (inventoryData: Inventory) => {
     totalEmissionsBySector.forEach((emissionsInSector) => {
       const previousYear = year - 1;
       const referenceNumber = emissionsInSector.reference_number;
-      const growthRate = growthRates[year][referenceNumber];
+      const growthRate = growthRates?.[year]?.[referenceNumber];
+      if (!growthRate) {
+        throw new createHttpError.InternalServerError(
+          `Failed to find growth rate for sector ${referenceNumber} in year ${year} in city ${inventoryData.city.locode!}`,
+        );
+      }
+
       projectedEmissions[year][referenceNumber] = multiplyBigIntByFraction(
         projectedEmissions[previousYear][referenceNumber],
         1 + growthRate,

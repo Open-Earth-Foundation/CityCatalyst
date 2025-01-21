@@ -42,7 +42,7 @@ export default class CSVDownloadService {
           value.subsector_name,
           value.notation_key,
           activityValue.total_co2e,
-          "kg CO2e",
+          "t CO2e",
           activityValue.activity_amount,
           activityValue.activity_unit,
           activityValue.emission_co2,

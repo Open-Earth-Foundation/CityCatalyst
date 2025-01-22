@@ -3,24 +3,17 @@
 import EmailInput from "@/components/email-input";
 import PasswordInput from "@/components/password-input";
 import { useTranslation } from "@/i18n/client";
-import { InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
-import { Link } from "@chakra-ui/next-js";
-import {
-  Button,
-  Checkbox,
-  FormControl,
-  FormErrorMessage,
-  FormHelperText,
-  FormLabel,
-  Heading,
-  Input,
-  Text,
-} from "@chakra-ui/react";
+
+import { Box, Heading, Icon, Input, Link, Text } from "@chakra-ui/react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { logger } from "@/services/logger";
+import { MdInfoOutline, MdWarning } from "react-icons/md";
+import { Button } from "@/components/ui/button";
+import { Field } from "@/components/ui/field";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type Inputs = {
   inventory?: string;
@@ -136,8 +129,23 @@ export default function Signup({
         {t("signup-details")}
       </Text>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <FormControl isInvalid={!!errors.name}>
-          <FormLabel>{t("full-name")}</FormLabel>
+        <Field
+          label={t("full-name")}
+          invalid={!!errors.name}
+          errorText={
+            <Box display="flex" gap="6px">
+              <Icon as={MdWarning} />
+              <Text
+                fontSize="body.md"
+                lineHeight="20px"
+                letterSpacing="wide"
+                color="content.tertiary"
+              >
+                {errors.name?.message}
+              </Text>
+            </Box>
+          }
+        >
           <Input
             type="text"
             placeholder={t("full-name-placeholder")}
@@ -151,20 +159,7 @@ export default function Signup({
               minLength: { value: 4, message: t("min-length", { length: 4 }) },
             })}
           />
-          {errors.name && (
-            <FormErrorMessage display="flex" gap="6px">
-              <WarningIcon />
-              <Text
-                fontSize="body.md"
-                lineHeight="20px"
-                letterSpacing="wide"
-                color="content.tertiary"
-              >
-                {errors.name.message}
-              </Text>
-            </FormErrorMessage>
-          )}
-        </FormControl>
+        </Field>
         <EmailInput register={register} error={errors.email} t={t} />
         <PasswordInput
           register={register}
@@ -172,21 +167,7 @@ export default function Signup({
           shouldValidate={true}
           t={t}
           watchPassword={watchPassword}
-        >
-          {!errors.password && watchPassword.length === 0 && (
-            <FormHelperText display="flex" alignItems="center" gap="6px">
-              <InfoOutlineIcon color="interactive.primary" boxSize={4} />{" "}
-              <Text
-                fontSize="body.md"
-                lineHeight="20px"
-                letterSpacing="wide"
-                color="conent.tertiary"
-              >
-                {t("password-hint")}
-              </Text>
-            </FormHelperText>
-          )}
-        </PasswordInput>
+        />
         <PasswordInput
           register={register}
           error={errors.confirmPassword}
@@ -195,8 +176,23 @@ export default function Signup({
           id="confirmPassword"
           shouldValidate={false}
         />
-        <FormControl isInvalid={!!errors.inviteCode}>
-          <FormLabel>{t("invite-code")}</FormLabel>
+        <Field
+          label={t("invite-code")}
+          invalid={!!errors.inviteCode}
+          labelText={
+            <Box display="flex" gap="6px">
+              <Icon as={MdWarning} />
+              <Text
+                fontSize="body.md"
+                lineHeight="20px"
+                letterSpacing="wide"
+                color="content.tertiary"
+              >
+                {errors.inviteCode?.message}
+              </Text>
+            </Box>
+          }
+        >
           <Input
             type="text"
             placeholder={t("invite-code-placeholder")}
@@ -213,20 +209,8 @@ export default function Signup({
               maxLength: { value: 6, message: t("invite-code-invalid") },
             })}
           />
-          {errors.inviteCode && (
-            <FormErrorMessage display="flex" gap="6px">
-              <WarningIcon />
-              <Text
-                fontSize="body.md"
-                lineHeight="20px"
-                letterSpacing="wide"
-                color="content.tertiary"
-              >
-                {errors.inviteCode.message}
-              </Text>
-            </FormErrorMessage>
-          )}
-          <FormHelperText>
+
+          <Box>
             <Trans t={t} i18nKey="no-invite-code">
               Don&apos;t have an invitation code?{" "}
               <Link
@@ -237,9 +221,24 @@ export default function Signup({
                 Subscribe to the Waiting List
               </Link>
             </Trans>
-          </FormHelperText>
-        </FormControl>
-        <FormControl isInvalid={!!errors.acceptTerms}>
+          </Box>
+        </Field>
+        <Field
+          isInvalid={!!errors.acceptTerms}
+          labelText={
+            <Box display="flex" gap="6px">
+              <Icon as={MdWarning} />
+              <Text
+                fontSize="body.md"
+                lineHeight="20px"
+                letterSpacing="wide"
+                color="content.tertiary"
+              >
+                {errors.acceptTerms?.message}
+              </Text>
+            </Box>
+          }
+        >
           <Checkbox
             color="content.tertiary"
             size="md"
@@ -254,25 +253,12 @@ export default function Signup({
               </Link>
             </Trans>
           </Checkbox>
-          {errors.acceptTerms && (
-            <FormErrorMessage display="flex" gap="6px">
-              <WarningIcon />
-              <Text
-                fontSize="body.md"
-                lineHeight="20px"
-                letterSpacing="wide"
-                color="content.tertiary"
-              >
-                {errors.acceptTerms.message}
-              </Text>
-            </FormErrorMessage>
-          )}
-        </FormControl>
+        </Field>
         {error && <Text color="semantic.danger">{error}</Text>}
         <Button
           type="submit"
           formNoValidate
-          isLoading={isSubmitting}
+          loading={isSubmitting}
           h={16}
           width="full"
           bgColor="interactive.secondary"

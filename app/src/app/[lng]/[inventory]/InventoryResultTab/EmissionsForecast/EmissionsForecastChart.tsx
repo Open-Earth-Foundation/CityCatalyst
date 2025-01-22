@@ -47,7 +47,7 @@ export const EmissionsForecastChart = ({
   const convertToLineChartData = (
     forecastData: EmissionsForecastData,
   ): LineChartData[] => {
-    let sectors = Object.keys(
+    const sectors = Object.keys(
       forecastData.forecast[Object.keys(forecastData.forecast)[0]],
     );
     return sectors

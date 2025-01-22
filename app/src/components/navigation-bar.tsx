@@ -2,7 +2,7 @@
 
 import { useTranslation } from "@/i18n/client";
 import { languages } from "@/i18n/settings";
-import { Box, Heading, Icon, Link, Text } from "@chakra-ui/react";
+import { Box, Heading, Icon, Link, Separator, Text } from "@chakra-ui/react";
 import i18next from "i18next";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
@@ -100,7 +100,7 @@ export function NavigationBar({
         <>
           {" "}
           <Link href={`/${inventory ? inventory : currentInventoryId}`}>
-            <Heading color="base.light" size="sm" className="opacity-75" ml={6}>
+            <Heading color="base.light" size="md" className="opacity-75" ml={6}>
               {t("dashboard")}
             </Heading>
           </Link>
@@ -111,32 +111,32 @@ export function NavigationBar({
           >
             <Heading
               color="base.light"
-              size="sm"
+              size="md"
               className="opacity-75 !text-nowrap"
               ml={6}
             >
               {t("learning-hub")}
             </Heading>
           </Link>
-          <Box divideY="2px" h={6} />
+          <Separator
+            orientation="vertical"
+            height="6"
+            backgroundColor="black"
+          />
         </>
       )}
-      <Box>
-        <Box>
+      <Box display="flex">
+        <Box display="flex">
           <MenuRoot>
             <MenuTrigger asChild>
               <Button
                 color="base.light"
                 minW="120px"
-                className="whitespace-nowrap normal-case"
-                _hover={{
-                  bg: "#FFF2",
-                }}
-                _active={{
-                  bg: "#FFF3",
-                }}
+                variant="lightGhost"
+                textTransform="none"
+                whiteSpace="nowrap"
               >
-                <Box>
+                <Box display="flex" alignItems="center" gap="3">
                   <CircleFlag
                     countryCode={
                       countryFromLanguage(i18next.language) === "pt"
@@ -146,7 +146,9 @@ export function NavigationBar({
                     width="24"
                   />
 
-                  <Box>{i18next.language.toUpperCase()}</Box>
+                  <Text fontSize="title.md" fontWeight="bold">
+                    {i18next.language.toUpperCase()}
+                  </Text>
                 </Box>
               </Button>
             </MenuTrigger>
@@ -157,7 +159,7 @@ export function NavigationBar({
                   onClick={() => onChangeLanguage(language)}
                   key={language}
                 >
-                  <Box>
+                  <Box display="flex" alignItems="center">
                     <CircleFlag
                       countryCode={
                         countryFromLanguage(language) === "pt"
@@ -167,7 +169,7 @@ export function NavigationBar({
                       width="24"
                       className="mr-4"
                     />
-                    <Box>{language.toUpperCase()}</Box>
+                    <Text fontSize="title.md">{language.toUpperCase()}</Text>
                   </Box>
                 </MenuItem>
               ))}
@@ -184,14 +186,8 @@ export function NavigationBar({
                 // Todo: add icon switch functionality
                 // rightIcon={isOpen ? <TriangleUpIcon /> : <TriangleDownIcon />}
                 className="whitespace-nowrap normal-case"
-                _hover={{
-                  bg: "#FFF2",
-                }}
-                _active={{
-                  bg: "#FFF3",
-                }}
               >
-                <Button variant="ghost">
+                <Button variant="lightGhost">
                   <Avatar
                     size="sm"
                     bg="interactive.connected"
@@ -204,6 +200,8 @@ export function NavigationBar({
                     overflow="hidden"
                     textOverflow="ellipsis"
                     whiteSpace="nowrap"
+                    fontSize="title.md"
+                    fontWeight="bold"
                   >
                     {session.user?.name}
                   </Text>
@@ -232,7 +230,7 @@ export function NavigationBar({
                     )
                   }
                 >
-                  <Box>
+                  <Box display="flex" alignItems="center">
                     {" "}
                     <Icon
                       as={FiSettings}
@@ -240,7 +238,7 @@ export function NavigationBar({
                       color="content.tertiary"
                       mr={4}
                     />
-                    <Box>{t("settings")}</Box>
+                    <Text fontSize="title.md">{t("settings")}</Text>
                   </Box>
                 </MenuItem>
                 <MenuItem
@@ -250,14 +248,14 @@ export function NavigationBar({
                   px="16px"
                   onClick={() => logOut()}
                 >
-                  <Box>
+                  <Box display="flex" alignItems="center">
                     <Icon
                       as={MdLogout}
                       boxSize={6}
                       color="sentiment.negativeDefault"
                       mr={4}
                     />
-                    <Box>{t("log-out")}</Box>
+                    <Text fontSize="title.md">{t("log-out")}</Text>
                   </Box>
                 </MenuItem>
               </MenuContent>

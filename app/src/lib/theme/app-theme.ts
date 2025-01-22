@@ -1,7 +1,6 @@
 import { createSystem, defaultConfig } from "@chakra-ui/react";
 import {
   accordionRecipe,
-  buttonRecipe,
   cardRecipe,
   formRecipe,
   headingRecipe,
@@ -14,6 +13,8 @@ import {
   textRecipe,
   tooltipRecipe,
 } from "./recipes";
+import { buttonRecipe } from "./recipes/button.recipe";
+import { separatorRecipe } from "./recipes/separator.recipe";
 
 export const appTheme = createSystem(defaultConfig, {
   theme: {
@@ -31,6 +32,7 @@ export const appTheme = createSystem(defaultConfig, {
       heading: headingRecipe,
       switch: switchRecipe,
       textarea: textareaRecipe,
+      seperator: separatorRecipe,
     },
     tokens: {
       colors: {

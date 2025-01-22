@@ -22,9 +22,17 @@
       "type": "string",
       "description": "The name of the region where the city is located"
     },
+    "populationSize": {
+      "type": "number",
+      "description": "The population size of the city"
+    },
+    "populationDensity": {
+      "type": "number",
+      "description": "The inhabitants per square kilometer in the city"
+    },
     "population": {
       "type": "integer",
-      "description": "The population of the city"
+      "description": "DEPRECATED: The population of the city"
     },
     "area": {
       "type": "number",
@@ -35,68 +43,77 @@
       "description": "The elevation of the city in meters"
     },
     "biome": {
-      "type": "string",
-      "description": "The environmental classification of the city"
+      "type": "object",
+      "description": "The environmental classification of the city",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Tropical Rainforest",
+            "Temperate Forest",
+            "Desert",
+            "Grassland/Savanna",
+            "Tundra",
+            "Wetlands",
+            "Mountains",
+            "Boreal Forest/Taiga",
+            "Coastal/Marine"
+          ],
+          "description": "The biome where the city is located"
+        }
+      }
     },
-    "totalEmissions": {
-      "type": "number",
-      "description": "The CO2 emissions of the city in metric tons per year"
-    },
-    "stationaryEnergyEmissions": {
-      "type": "number",
-      "description": "The CO2 emissions from stationary energy sources in metric tons per year"
-    },
-    "transportationEmissions": {
-      "type": "number",
-      "description": "The CO2 emissions from transportation sources in metric tons per year"
-    },
-    "wasteEmissions": {
-      "type": "number",
-      "description": "The CO2 emissions from waste sources in metric tons per year"
-    },
-    "industrialProcessEmissions": {
-      "type": "number",
-      "description": "The CO2 emissions from industrial processes in metric tons per year"
-    },
-    "landUseEmissions": {
-      "type": "number",
-      "description": "The CO2 emissions from land use changes in metric tons per year"
-    },
-    "scope1Emissions": {
-      "type": "number",
-      "description": "The CO2 emissions from scope 1 sources in metric tons per year"
-    },
-    "scope2Emissions": {
-      "type": "number",
-      "description": "The CO2 emissions from scope 2 sources in metric tons per year"
-    },
-    "scope3Emissions": {
-      "type": "number",
-      "description": "The CO2 emissions from scope 3 sources in metric tons per year"
-    },
-    "ccra": {
-      "type": "array",
-      "description": "The list containing keyimpacts, hazards and risk scores for a city",
-      "items": {
-        "type": "object",
-        "properties": {
-          "keyimpact": {
-            "type": "string",
-            "description": "The sector or area that is directly affected by one or more hazards"
-          },
-          "hazard": {
-            "type": "string",
-            "description": "The occurrence of an environmental event that has a harmful impact on people, property, or the environment"
-          },
-          "normalised_risk_score": {
-            "oneOf": [
-              { "type": "number" },
-              { "type": "null" }
-            ],
-            "description": "The potential for loss or adverse effects, assessed as a combination of exposure, vulnerability, and hazard characteristics"
-          }
+    "socioEconomicFactors": {
+      "type": "object",
+      "properties": {
+        "lowIncome": {
+          "type": "string",
+          "enum": [
+            "0-4.23%",
+            "4.24-7.08%",
+            "7.09-11.87%",
+            "11.88-18.17%",
+            "18.18-34.02%"
+          ],
+          "description": "The proportion of the population with a nominal monthly per capita income of less than 1/2 the minimum wage. This classification reflects levels of economic vulnerability. Categories: Very Low (0-4.23%), Low (4.24-7.08%), Medium (7.09-11.87%), High (11.88-18.17%), Very High(18.18-34.02%)."
         },
-      "required": ["keyimpact", "hazard"]
+        "accessToPublicServices": {
+          "type": "object",
+          "properties": {
+            "inadequateWaterAccess": {
+              "type": "string",
+              "enum": [
+                "0-7.32%",
+                "7.33-14.35%",
+                "14.36-23.11%",
+                "23.12-35.88%",
+                "35.89-100%"
+              ],
+              "description": "The percentage of the population lacking adequate access to clean water. Categories: Very Low (0-7.32%), Low (7.33-14.35%), Moderate (14.36-23.11%), High (23.12-35.88%), Very High(35.89-100%)."
+            },
+            "inadequateSanitation": {
+              "type": "string",
+              "enum": [
+                "0-7.53%",
+                "7.54-22.10%",
+                "22.11-44.04%",
+                "44.05-70.86%",
+                "70.87-99.55%"
+              ],
+              "description": "The percentage of the population lacking adequate access to sanitation services. Categories: Very Low (0-7.53%), Low (7.54-22.10%), Moderate (22.11-44.04%), High (44.05-70.86%), Very High(70.87-99.55%)."
+            }
+          }
+        }
+      }
+    },
+    "policyContext": {
+      "type": "object",
+      "properties": {
+        "alignmentWithNationalPolicies": {
+          "type": "string",
+          "enum": ["Yes", "No"],
+          "description": "Whether the action aligns with national policies"
+        }
       }
     }
   },

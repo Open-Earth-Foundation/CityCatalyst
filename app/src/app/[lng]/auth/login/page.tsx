@@ -4,7 +4,7 @@ import EmailInput from "@/components/email-input";
 import PasswordInput from "@/components/password-input";
 import { useAuthToast } from "@/hooks/useAuthToast";
 import { useTranslation } from "@/i18n/client";
-import { Heading, Text, Link } from "@chakra-ui/react";
+import { Heading, Text, Link, Box } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -13,7 +13,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { Toaster, toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
 
-type Inputs = {
+export type LoginInputs = {
   email: string;
   password: string;
 };
@@ -48,7 +48,7 @@ export default function Login({
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
-  } = useForm<Inputs>();
+  } = useForm<LoginInputs>();
 
   const searchParams = useSearchParams();
 
@@ -63,7 +63,7 @@ export default function Login({
     callbackUrl = callbackParam;
   }
   const { showLoginSuccessToast } = useAuthToast(t);
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+  const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     try {
       const res = await signIn("credentials", {
         redirect: false,
@@ -93,7 +93,7 @@ export default function Login({
   };
 
   return (
-    <>
+    <Box>
       <Heading size="xl">{t("login-heading")}</Heading>
       <Text my={4} color="content.tertiary">
         {t("login-details")}
@@ -134,6 +134,6 @@ export default function Login({
         <VerifiedNotification t={t} />
       </Suspense>
       <Toaster />
-    </>
+    </Box>
   );
 }

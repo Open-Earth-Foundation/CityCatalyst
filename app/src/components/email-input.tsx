@@ -22,31 +22,29 @@ export default function EmailInput({
   disabled?: boolean;
 }) {
   return (
-    <Fieldset.Root>
-      <Field label={name} invalid={!!error} errorText={error?.message}>
-        <Input
-          readOnly={disabled}
-          type="email"
-          placeholder={t("email-placeholder")}
-          size="lg"
-          shadow="2dp"
-          background={
-            error
-              ? "sentiment.negativeOverlay"
-              : disabled
-                ? "background.neutral"
-                : "background.default"
-          }
-          {...register(id, {
-            required: t("email-required"),
-            pattern: {
-              value: emailPattern,
-              message: t("email-invalid"),
-            },
-          })}
-        />
-        {children}
-      </Field>
-    </Fieldset.Root>
+    <Field label={name} invalid={!!error} errorText={error?.message}>
+      <Input
+        readOnly={disabled}
+        type="email"
+        placeholder={t("email-placeholder")}
+        size="lg"
+        shadow="2dp"
+        background={
+          error
+            ? "sentiment.negativeOverlay"
+            : disabled
+              ? "background.neutral"
+              : "background.default"
+        }
+        {...register(id, {
+          required: t("email-required"),
+          pattern: {
+            value: emailPattern,
+            message: t("email-invalid"),
+          },
+        })}
+      />
+      {children}
+    </Field>
   );
 }

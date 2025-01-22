@@ -1,19 +1,10 @@
-import {
-  Icon,
-  Input,
-  List,
-  ListIndicator,
-  ListItem,
-  Text,
-} from "@chakra-ui/react";
+import { Box, List, ListIndicator, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { FieldError } from "react-hook-form";
 import { CheckListIcon, CloseListIcon } from "./icons";
 import { TFunction } from "i18next";
 import { Field } from "@/components/ui/field";
-import { InputGroup } from "./ui/input-group";
-import { GrFormView, GrFormViewHide } from "react-icons/gr";
-import { Button } from "./ui/button";
+import { PasswordInput as ChakraPasswordInput } from "@/components/ui/password-input";
 
 export default function PasswordInput({
   children,
@@ -36,66 +27,40 @@ export default function PasswordInput({
   shouldValidate?: boolean;
   watchPassword?: string;
 }) {
-  const [showPassword, setShowPassword] = useState(false);
-  const handlePasswordVisibility = () => setShowPassword(!showPassword);
-
   // Password checks
   const password = watchPassword || "";
   const hasLowercase = /[a-z]/.test(password);
   const hasMinLength = password.length >= 8;
   const hasUppercase = /[A-Z]/.test(password);
   const hasNumber = /\d/.test(password);
-  const hasSpecial = /[^A-Za-z0-9]/.test(password);
 
-  // overal validity
-  const isPasswordValid =
-    hasMinLength && hasLowercase && hasUppercase && hasNumber && hasSpecial;
   return (
     <Field invalid={!!error} label={name} errorText={error?.message} w={w}>
-      <InputGroup
-        startElement={
-          <Button
-            h="2rem"
-            size="md"
-            mt={2}
-            onClick={handlePasswordVisibility}
-            variant="ghost"
-          >
-            {showPassword ? (
-              <Icon as={GrFormViewHide} color="#7A7B9A" />
-            ) : (
-              <Icon as={GrFormView} color="#7A7B9A" />
-            )}
-          </Button>
-        }
-      >
-        <Input
-          type={showPassword ? "text" : "password"}
-          size="lg"
-          shadow="2dp"
-          background={
-            error ? "sentiment.negativeOverlay" : "background.default"
-          }
-          placeholder={showPassword ? t("password") : "········"}
-          {...register(id, {
-            required: t("password-required"),
-            minLength: { value: 4, message: t("min-length", { length: 4 }) },
-            pattern: shouldValidate
-              ? {
-                  hasMinLength: (value: string) =>
-                    value.length >= 8 || t("password-min-length"),
-                  hasUpperCase: (value: string) =>
-                    /[A-Z]/.test(value) || t("password-upper-case"),
-                  hasLowerCase: (value: string) =>
-                    /[a-z]/.test(value) || t("password-lower-case"),
-                  hasNumber: (value: string) =>
-                    /[0-9]/.test(value) || t("password-number"),
-                }
-              : undefined,
-          })}
-        />
-      </InputGroup>
-      {children}
+      <ChakraPasswordInput
+        size="lg"
+        w="full"
+        shadow="2dp"
+        placeholder={t("password")}
+        background={error ? "sentiment.negativeOverlay" : "background.default"}
+        {...register(id, {
+          required: t("password-required"),
+          minLength: { value: 4, message: t("min-length", { length: 4 }) },
+          pattern: shouldValidate
+            ? {
+                hasMinLength: (value: string) =>
+                  value.length >= 8 || t("password-min-length"),
+                hasUpperCase: (value: string) =>
+                  /[A-Z]/.test(value) || t("password-upper-case"),
+                hasLowerCase: (value: string) =>
+                  /[a-z]/.test(value) || t("password-lower-case"),
+                hasNumber: (value: string) =>
+                  /[0-9]/.test(value) || t("password-number"),
+              }
+            : undefined,
+        })}
+      />
+
+      <Box>{children}</Box>
       {/* Password Checklist */}
       {shouldValidate && (
         <List.Root gap={1} mt={2}>

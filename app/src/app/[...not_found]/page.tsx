@@ -1,8 +1,9 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
-import { Box, Text } from "@chakra-ui/layout";
-import { Button, IconButton } from "@chakra-ui/react";
+
+import { Text, Box, Icon } from "@chakra-ui/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -58,10 +59,10 @@ const NotFound = ({ params: { lng } }: { params: { lng: string } }) => {
           h="48px"
           px="24px"
           fontSize="body.md"
-          // isLoading={isUserInfoLoading}
+          loading={isUserInfoLoading}
         >
-          rightIcon={<MdArrowForward />}
           {t("goto-dashboard")}
+          <Icon as={MdArrowForward} />
         </Button>
       </Box>
     </Box>

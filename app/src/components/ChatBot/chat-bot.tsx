@@ -498,44 +498,45 @@ export default function ChatBot({
           const isUser = m.role === "user";
           return (
             <HStack key={i} align="top" asChild>
-              <Box
-                w={9}
-                h={9}
-                p={2}
-                borderRadius="full"
-                bg="content.alternative"
-                visibility={isUser ? "hidden" : "visible"}
-              >
-                <Icon as={BsStars} boxSize={5} color="base.light" />
-              </Box>
-              <Spacer />
-              <Box
-                className={`rounded-2xl border-r-t px-6 py-4 ${isUser ? userStyles : botStyles}`}
-                bg={isUser ? "content.link" : "base.light"}
-              >
-                <>
-                  <Text
-                    className="whitespace-pre-wrap"
-                    color={isUser ? "base.light" : "content.tertiary"}
-                    letterSpacing="0.5px"
-                    lineHeight="24px"
-                    fontSize="16px"
-                  >
-                    <ReactMarkdown rehypePlugins={[remarkGfm]}>
-                      {m.text}
-                    </ReactMarkdown>
-                  </Text>
-                  {!isUser &&
-                    i === messages.length - 1 &&
-                    messages.length > 1 && (
-                      <>
-                        <Box
-                          divideX="2px"
-                          borderColor="border.overlay"
-                          my={3}
-                        />
-                        <HStack asChild>
-                          {/* <IconButton
+              <Box>
+                <Box
+                  w={9}
+                  h={9}
+                  p={2}
+                  borderRadius="full"
+                  bg="content.alternative"
+                  visibility={isUser ? "hidden" : "visible"}
+                >
+                  <Icon as={BsStars} boxSize={5} color="base.light" />
+                </Box>
+                <Spacer />
+                <Box
+                  className={`rounded-2xl border-r-t px-6 py-4 ${isUser ? userStyles : botStyles}`}
+                  bg={isUser ? "content.link" : "base.light"}
+                >
+                  <>
+                    <Text
+                      className="whitespace-pre-wrap"
+                      color={isUser ? "base.light" : "content.tertiary"}
+                      letterSpacing="0.5px"
+                      lineHeight="24px"
+                      fontSize="16px"
+                    >
+                      <ReactMarkdown rehypePlugins={[remarkGfm]}>
+                        {m.text}
+                      </ReactMarkdown>
+                    </Text>
+                    {!isUser &&
+                      i === messages.length - 1 &&
+                      messages.length > 1 && (
+                        <>
+                          <Box
+                            divideX="2px"
+                            borderColor="border.overlay"
+                            my={3}
+                          />
+                          <HStack asChild>
+                            {/* <IconButton
                           variant="ghost"
                           icon={<Icon as={MdOutlineThumbUp} boxSize={5} />}
                           aria-label="Vote good"
@@ -547,23 +548,23 @@ export default function ChatBot({
                           aria-label="Vote bad"
                           color="content.tertiary"
                         /> */}
-                          <IconButton
-                            onClick={() => copyToClipboard(m.text)}
-                            variant="ghost"
-                            aria-label="Copy text"
-                            color={
-                              isCopied
-                                ? "sentiment.positiveDefault"
-                                : "content.tertiary"
-                            }
-                          >
-                            <Icon
-                              as={isCopied ? MdCheckCircle : MdContentCopy}
-                              boxSize={5}
-                            />
-                          </IconButton>
-                          {/* <Spacer /> */}
-                          {/* <Button
+                            <IconButton
+                              onClick={() => copyToClipboard(m.text)}
+                              variant="ghost"
+                              aria-label="Copy text"
+                              color={
+                                isCopied
+                                  ? "sentiment.positiveDefault"
+                                  : "content.tertiary"
+                              }
+                            >
+                              <Icon
+                                as={isCopied ? MdCheckCircle : MdContentCopy}
+                                boxSize={5}
+                              />
+                            </IconButton>
+                            {/* <Spacer /> */}
+                            {/* <Button
                           onClick={() => reload()}
                           leftIcon={<Icon as={MdRefresh} boxSize={5} />}
                           variant="outline"
@@ -577,10 +578,11 @@ export default function ChatBot({
                         >
                           {t("regenerate")}
                         </Button> */}
-                        </HStack>
-                      </>
-                    )}
-                </>
+                          </HStack>
+                        </>
+                      )}
+                  </>
+                </Box>
               </Box>
             </HStack>
           );

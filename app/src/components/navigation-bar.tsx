@@ -10,7 +10,6 @@ import Image from "next/image";
 import { CircleFlag } from "react-circle-flags";
 import { FiSettings } from "react-icons/fi";
 import { MdLogout } from "react-icons/md";
-import { GoTriangleDown, GoTriangleUp } from "react-icons/go";
 import Cookies from "js-cookie";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/services/api";
@@ -125,19 +124,18 @@ export function NavigationBar({
       <Box>
         <Box>
           <MenuRoot>
-            <MenuTrigger
-              asChild
-              color="base.light"
-              minW="120px"
-              className="whitespace-nowrap normal-case"
-              _hover={{
-                bg: "#FFF2",
-              }}
-              _active={{
-                bg: "#FFF3",
-              }}
-            >
-              <Button>
+            <MenuTrigger asChild>
+              <Button
+                color="base.light"
+                minW="120px"
+                className="whitespace-nowrap normal-case"
+                _hover={{
+                  bg: "#FFF2",
+                }}
+                _active={{
+                  bg: "#FFF3",
+                }}
+              >
                 <Box>
                   <CircleFlag
                     countryCode={

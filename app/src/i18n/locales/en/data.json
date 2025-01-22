@@ -1130,5 +1130,6 @@
   "garbage-disposal-type-non-garbage-disposals": "Non-garbage disposals",
   "garbage-disposal-type-garbage-disposals": "Garbage disposals",
   "treatment-type-latrine-dry-climate": "Latrine: Dry climate",
-  "treatment-type-latrine-sediment-removal": "Latrine: Regular sediment removal"
+  "treatment-type-latrine-sediment-removal": "Latrine: Regular sediment removal",
+  "units-kilograms-N-yr": "kg N/yr"
 }

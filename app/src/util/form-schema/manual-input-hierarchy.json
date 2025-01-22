@@ -4441,9 +4441,9 @@
                 "id": "total-organic-sludge-removed",
                 "type": "number",
                 "units": [
-                  "units-kilograms-BOD"
+                  "units-kilograms-N-yr"
                 ],
-                "default-units": "units-kilograms-BOD"
+                "default-units": "units-kilograms-N-yr"
               },
               {
                 "id": "wastewater-inside-domestic-calculator-methane-recovered",

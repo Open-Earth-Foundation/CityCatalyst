@@ -82,7 +82,7 @@ describe("Results API", () => {
             {
               co2eq: "40399",
               inventoryId: inventoryId,
-              percentage: 55,
+              percentage: 48,
               scopeName: "1",
               sectorName: "Stationary Energy",
               subsectorName: "Residential buildings",
@@ -90,7 +90,7 @@ describe("Results API", () => {
             {
               co2eq: "22388",
               inventoryId: inventoryId,
-              percentage: 31,
+              percentage: 27,
               scopeName: "1",
               sectorName: "Transportation",
               subsectorName: "On-road transportation",
@@ -98,10 +98,10 @@ describe("Results API", () => {
             {
               co2eq: "10581",
               inventoryId: inventoryId,
-              percentage: 14,
+              percentage: 13,
               scopeName: "1",
-              sectorName: "Waste",
-              subsectorName: "Solid waste disposal",
+              sectorName: "Agriculture, Forestry, and Other Land Use (AFOLU)",
+              subsectorName: "Emissions from land within the city boundary",
             },
           ],
         },
@@ -109,21 +109,21 @@ describe("Results API", () => {
           bySector: [
             {
               co2eq: "40399",
-              percentage: 55,
+              percentage: 48,
               sectorName: "stationary-energy",
             },
             {
               co2eq: "22388",
-              percentage: 31,
+              percentage: 27,
               sectorName: "transportation",
             },
             {
-              co2eq: "10581",
-              percentage: 14,
-              sectorName: "waste",
+              co2eq: "21162",
+              percentage: 25,
+              sectorName: "afolu",
             },
           ],
-          total: "73368",
+          total: "83949",
         },
       },
     });

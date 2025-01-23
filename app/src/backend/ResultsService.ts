@@ -265,16 +265,16 @@ async function fetchTopEmissionsBulk(
   const topEmissions: { [inventoryId: string]: TopEmission[] } = {};
 
   for (const [inventoryId, records] of Object.entries(grouped)) {
-    topEmissions[inventoryId] = records
-      .slice(0, 3)
-      .map(({ co2eq, sector_name, subsector_name, scope_name }) => ({
+    topEmissions[inventoryId] = records.map(
+      ({ co2eq, sector_name, subsector_name, scope_name }) => ({
         inventoryId,
         co2eq: bigIntToDecimal(co2eq || 0n),
         sectorName: sector_name,
         subsectorName: subsector_name,
         scopeName: scope_name,
         percentage: 0, // To be calculated later
-      }));
+      }),
+    );
   }
 
   return topEmissions;

@@ -42,7 +42,7 @@ describe("Results API", () => {
     await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
     await city.addUser(testUserID);
     inventory = await db.models.Inventory.create({
-      inventoryId: inventoryId,
+      inventoryId,
       ...baseInventory,
       inventoryName: "ReportResultInventory",
       cityId: city.cityId,
@@ -81,7 +81,7 @@ describe("Results API", () => {
           bySubSector: [
             {
               co2eq: "40399",
-              inventoryId: inventoryId,
+              inventoryId,
               percentage: 48,
               scopeName: "1",
               sectorName: "Stationary Energy",
@@ -89,15 +89,23 @@ describe("Results API", () => {
             },
             {
               co2eq: "22388",
-              inventoryId: inventoryId,
+              inventoryId,
               percentage: 27,
               scopeName: "1",
               sectorName: "Transportation",
               subsectorName: "On-road transportation",
             },
             {
+              co2eq: "10582",
+              inventoryId,
+              percentage: 13,
+              scopeName: "1",
+              sectorName: "Agriculture, Forestry, and Other Land Use (AFOLU)",
+              subsectorName: "Emissions from land within the city boundary",
+            },
+            {
               co2eq: "10581",
-              inventoryId: inventoryId,
+              inventoryId,
               percentage: 13,
               scopeName: "1",
               sectorName: "Agriculture, Forestry, and Other Land Use (AFOLU)",
@@ -119,12 +127,12 @@ describe("Results API", () => {
               sectorName: "transportation",
             },
             {
-              co2eq: "21162",
+              co2eq: "21163",
               percentage: 25,
               sectorName: "afolu",
             },
           ],
-          total: "83949",
+          total: "83950",
         },
       },
     });

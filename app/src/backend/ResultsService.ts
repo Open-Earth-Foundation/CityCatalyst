@@ -770,10 +770,10 @@ export async function getEmissionResults(inventory: string): Promise<{
   const EmissionResults = await getEmissionResultsBatch([inventory]);
   const inventoryEmissionResults = EmissionResults[inventory];
   return {
-    totalEmissions: inventoryEmissionResults.totalEmissions.sumOfEmissions,
+    totalEmissions: inventoryEmissionResults?.totalEmissions?.sumOfEmissions,
     totalEmissionsBySector:
-      inventoryEmissionResults.totalEmissions.totalEmissionsBySector,
-    topEmissionsBySubSector: inventoryEmissionResults.topEmissionsBySubSector,
+      inventoryEmissionResults?.totalEmissions?.totalEmissionsBySector,
+    topEmissionsBySubSector: inventoryEmissionResults?.topEmissionsBySubSector,
   };
 }
 

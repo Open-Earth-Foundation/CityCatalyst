@@ -101,7 +101,8 @@ describe("Results API", () => {
               percentage: 13,
               scopeName: "1",
               sectorName: "Agriculture, Forestry, and Other Land Use (AFOLU)",
-              subsectorName: "Emissions from land within the city boundary",
+              subsectorName:
+                "Emissions from livestock within the city boundary",
             },
           ],
         },

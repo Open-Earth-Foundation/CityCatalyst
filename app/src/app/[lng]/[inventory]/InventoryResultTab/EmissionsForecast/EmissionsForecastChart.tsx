@@ -1,10 +1,12 @@
 import { EmissionsForecastData } from "@/util/types";
 import { TFunction } from "i18next/typescript/t";
 import {
-  allSectorColors,
   getReferenceNumberByName,
+  getSectorByName,
+  getSectorByReferenceNumber,
+  getSubSectorByName,
+  getSubSectorByReferenceNumber,
   ISector,
-  SECTORS,
 } from "@/util/constants";
 import {
   Badge,
@@ -25,8 +27,15 @@ import { ResponsiveLine } from "@nivo/line";
 
 interface LineChartData {
   id: string;
+  color: string;
   data: { x: string; y: number }[];
 }
+
+const getColorForSeries = (seriesId: string) => {
+  const sectorOrSubsector =
+    getSectorByName(seriesId) || getSubSectorByName(seriesId);
+  return sectorOrSubsector?.color || "semantic.dangerOverlay";
+};
 
 export const EmissionsForecastChart = ({
   forecast,
@@ -41,26 +50,30 @@ export const EmissionsForecastChart = ({
     const sectors = Object.keys(
       forecastData.forecast[Object.keys(forecastData.forecast)[0]],
     );
-
     return sectors
-      .map((sector) => ({
-        id: t(
-          SECTORS.find((s) => s.referenceNumber === sector)?.name + "-short" ||
-            sector,
-        ),
-        data: Object.entries(forecastData.forecast).map(
-          ([year, sectorsData]) => {
-            return {
-              x: year,
-              y: sectorsData[sector] || 0,
-            };
-          },
-        ),
-      }))
+      .map((sector) => {
+        const [sectorRefNo, subSectorRefNo] = sector.split(".");
+
+        return {
+          id: !subSectorRefNo
+            ? getSectorByReferenceNumber(sectorRefNo)?.name || sector
+            : getSubSectorByReferenceNumber(sector)?.name || sector,
+          color: getColorForSeries(sector),
+          data: Object.entries(forecastData.forecast).map(
+            ([year, sectorsData]) => {
+              return {
+                x: year,
+                y: sectorsData[sector] || 0,
+              };
+            },
+          ),
+        };
+      })
       .reverse();
   };
 
   const data = convertToLineChartData(forecast);
+  const colors = data.map((series) => getColorForSeries(series.id)!);
 
   return (
     <ResponsiveLine
@@ -86,7 +99,7 @@ export const EmissionsForecastChart = ({
         tickRotation: 0,
         format: (value: number) => convertKgToTonnes(value),
       }}
-      colors={allSectorColors}
+      colors={colors}
       tooltip={({ point }) => {
         const year = point.data.x;
         const sumOfYs = data.reduce((sum, series) => {
@@ -119,29 +132,31 @@ export const EmissionsForecastChart = ({
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {data.map((series, index) => {
-                    const yearData = series.data.find(
-                      ({ x }) => x === point.data.x,
-                    );
+                  {data.map(({ data, id }) => {
+                    const yearData = data.find(({ x }) => x === point.data.x);
                     const percentage = yearData
                       ? ((yearData.y / sumOfYs) * 100).toFixed(2)
                       : 0;
-                    const sectorRefNo = getReferenceNumberByName(
-                      toKebabCase(point.serieId as string) as keyof ISector,
-                    );
+                    const sectorRefNo =
+                      getReferenceNumberByName(
+                        toKebabCase(id as string) as keyof ISector,
+                      ) || getSubSectorByName(id)?.referenceNumber;
+
                     const yearGrowthRates =
                       yearData && forecast.growthRates[yearData.x as string];
-                    const growthRate = yearGrowthRates?.[sectorRefNo!];
+                    const growthRate =
+                      yearGrowthRates?.[sectorRefNo!] ||
+                      yearGrowthRates?.[point.serieId as string];
+
                     return (
-                      <Tr key={series.id}>
+                      <Tr key={id}>
                         <Td>
                           <Badge
-                            colorScheme="gray"
                             boxSize="10px"
-                            bg={allSectorColors[index]}
+                            bg={getColorForSeries(id)}
                             marginRight="8px"
                           />
-                          {series.id}
+                          {t(id)}
                         </Td>
                         <Td>{growthRate}</Td>
                         <Td>{percentage}%</Td>
@@ -203,6 +218,11 @@ export const EmissionsForecastChart = ({
               },
             },
           ],
+          data: data.map((series) => ({
+            id: series.id,
+            color: getColorForSeries(series.id),
+            label: t(series.id),
+          })),
         },
       ]}
     />

@@ -7,7 +7,7 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import { SECTORS } from "@/util/constants";
+import { ISector, SECTORS } from "@/util/constants";
 import { TFunction } from "i18next";
 import { ProjectionData } from "@/util/types";
 
@@ -18,6 +18,12 @@ export const GrowthRatesExplanationModalTable = ({
   growthRates: ProjectionData;
   t: TFunction;
 }) => {
+  function getNameTranslationString(
+    sector: ISector | { name: string; color: string; referenceNumber: string },
+  ) {
+    return sector.name === "ippu" ? sector.name + "-short" : sector.name;
+  }
+
   return (
     <Table variant={"striped"}>
       <TableContainer>
@@ -34,20 +40,25 @@ export const GrowthRatesExplanationModalTable = ({
           </Tr>
         </Thead>
         <Tbody>
-          {SECTORS.map((sector) => (
-            <Tr key={sector.name}>
-              <Td>{t(sector.name + "-short")}</Td>
-              {Object.keys(growthRates)
-                .slice(0, 4)
-                .map((year) => (
-                  <Td key={year}>
-                    {growthRates[year][sector.referenceNumber]}
-                  </Td>
-                ))}
-              <Td>{growthRates["2030"][sector.referenceNumber]}</Td>
-              <Td>{growthRates["2050"][sector.referenceNumber]}</Td>
-            </Tr>
-          ))}
+          {[
+            ...SECTORS.slice(0, 4),
+            ...Object.values(SECTORS[4].subSectors!),
+          ].map((sector) => {
+            return (
+              <Tr key={sector.name}>
+                <Td>{t(getNameTranslationString(sector))}</Td>
+                {Object.keys(growthRates)
+                  .slice(0, 4)
+                  .map((year) => (
+                    <Td key={year}>
+                      {growthRates[year][sector.referenceNumber]}
+                    </Td>
+                  ))}
+                <Td>{growthRates["2030"][sector.referenceNumber]}</Td>
+                <Td>{growthRates["2050"][sector.referenceNumber]}</Td>
+              </Tr>
+            );
+          })}
         </Tbody>
       </TableContainer>
     </Table>

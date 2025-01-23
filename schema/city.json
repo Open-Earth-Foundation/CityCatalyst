@@ -65,11 +65,11 @@
         "lowIncome": {
           "type": "string",
           "enum": [
-            "0-4.23%",
-            "4.24-7.08%",
-            "7.09-11.87%",
-            "11.88-18.17%",
-            "18.18-100%"
+            "very_low",
+            "low",
+            "moderate",
+            "high",
+            "very_high"
           ],
           "description": "The proportion of the population with a nominal monthly per capita income of less than 1/2 the minimum wage. This classification reflects levels of economic vulnerability. Categories: Very Low (0-4.23%), Low (4.24-7.08%), Medium (7.09-11.87%), High (11.88-18.17%), Very High(18.18-100%)."
         }
@@ -81,34 +81,24 @@
         "inadequateWaterAccess": {
           "type": "string",
           "enum": [
-            "0-7.32%",
-            "7.33-14.35%",
-            "14.36-23.11%",
-            "23.12-35.88%",
-            "35.89-100%"
+            "very_low",
+            "low",
+            "moderate",
+            "high",
+            "very_high"
           ],
           "description": "The percentage of the population lacking adequate access to clean water. Categories: Very Low (0-7.32%), Low (7.33-14.35%), Moderate (14.36-23.11%), High (23.12-35.88%), Very High(35.89-100%)."
         },
         "inadequateSanitation": {
           "type": "string",
           "enum": [
-            "0-7.53%",
-            "7.54-22.10%",
-            "22.11-44.04%",
-            "44.05-70.86%",
-            "70.87-100%"
+            "very_low",
+            "low",
+            "moderate",
+            "high",
+            "very_high"
           ],
           "description": "The percentage of the population lacking adequate access to sanitation services. Categories: Very Low (0-7.53%), Low (7.54-22.10%), Moderate (22.11-44.04%), High (44.05-70.86%), Very High(70.87-100%)."
-        }
-      }
-    },
-    "policyContext": {
-      "type": "object",
-      "properties": {
-        "alignmentWithNationalPolicies": {
-          "type": "string",
-          "enum": ["Yes", "No"],
-          "description": "Whether the action aligns with national policies"
         }
       }
     }
@@ -117,7 +107,6 @@
     "locode",
     "name",
     "region",
-    "regionName",
-    "totalEmissions"
+    "regionName"
   ]
 }

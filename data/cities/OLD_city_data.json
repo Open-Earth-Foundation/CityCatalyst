@@ -4,18 +4,10 @@
         "name": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "populationSize": 300372,
-        "populationDensity": 382.43,
+        "population": 300000,
         "area": 758.73,
         "elevation": 36,
-        "biome": null,
-        "socioEconomicFactors": {
-            "lowIncome": "very_high"
-        },
-        "accessToPublicServices": {
-            "inadequateWaterAccess": "very_low",
-            "inadequateSanitation": "low"
-        },
+        "biome": "Tropical rainforest",
         "totalEmissions": 3390145659.0,
         "stationaryEnergyEmissions": 176766789.0,
         "transportationEmissions": 295693000.0,
@@ -103,18 +95,10 @@
         "name": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "populationSize": 96268,
-        "populationDensity": 1.49,
+        "population": 110000,
         "area": 64962.0,
         "elevation": 118,
-        "biome": null,
-        "socioEconomicFactors": {
-            "lowIncome": "very_high"
-        },
-        "accessToPublicServices": {
-            "inadequateWaterAccess": "very_low",
-            "inadequateSanitation": "low"
-        },
+        "biome": "Savanna",
         "totalEmissions": 9118053991.9,
         "stationaryEnergyEmissions": 22358041.0,
         "transportationEmissions": 62605669.0,
@@ -202,18 +186,10 @@
         "name": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "populationSize": 463501,
-        "populationDensity": 280.52,
+        "population": 517000,
         "area": 1643.0,
         "elevation": 817,
-        "biome": null,
-        "socioEconomicFactors": {
-            "lowIncome": "very_high"
-        },
-        "accessToPublicServices": {
-            "inadequateWaterAccess": "very_low",
-            "inadequateSanitation": "very_low"
-        },
+        "biome": "Atlantic forest",
         "totalEmissions": 4527548810.0,
         "stationaryEnergyEmissions": 151964298.0,
         "transportationEmissions": 554225715.0,
@@ -301,18 +277,10 @@
         "name": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "populationSize": 364756,
-        "populationDensity": 41.28,
+        "population": 400000,
         "area": 9222.6,
         "elevation": 153,
-        "biome": null,
-        "socioEconomicFactors": {
-            "lowIncome": "very_high"
-        },
-        "accessToPublicServices": {
-            "inadequateWaterAccess": "high",
-            "inadequateSanitation": "low"
-        },
+        "biome": "Amazon rainforest",
         "totalEmissions": 6474195194.6,
         "stationaryEnergyEmissions": 58762012.0,
         "transportationEmissions": 257493969.0,
@@ -400,18 +368,10 @@
         "name": "Serra",
         "region": "BR-ES",
         "regionName": "Espírito Santo",
-        "populationSize": 520653,
-        "populationDensity": 950.74,
+        "population": 528000,
         "area": 553.0,
         "elevation": 60,
-        "biome": null,
-        "socioEconomicFactors": {
-            "lowIncome": "very_high"
-        },
-        "accessToPublicServices": {
-            "inadequateWaterAccess": "very_low",
-            "inadequateSanitation": "very_low"
-        },
+        "biome": "Atlantic forest",
         "totalEmissions": 14833157058.0,
         "stationaryEnergyEmissions": 199992647.0,
         "transportationEmissions": 738428743.0,
@@ -493,11 +453,5 @@
                 "normalised_risk_score": null
             }
         ]
-    },
-    {
-        "locode": "BRMGE",
-        "name": "Maranguape",
-        "region": null,
-        "regionName": null
     }
 ]

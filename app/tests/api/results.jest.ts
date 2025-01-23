@@ -137,4 +137,34 @@ describe("Results API", () => {
       },
     });
   });
+
+  it("should return empty arrays when Inventory has no data", async () => {
+    const emptyInventoryId = randomUUID();
+    const emptyInventory = await db.models.Inventory.create({
+      inventoryId: emptyInventoryId,
+      ...baseInventory,
+      inventoryName: "ReportResultEmptyInventory",
+      cityId: city.cityId,
+      inventoryType: InventoryTypeEnum.GPC_BASIC,
+      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+      year: 2022,
+    });
+    const req = mockRequest();
+    const res = await getResults(req, {
+      params: { inventory: emptyInventory.inventoryId },
+    });
+
+    await expectStatusCode(res, 200);
+    expect(await res.json()).toEqual({
+      data: {
+        topEmissions: {
+          bySubSector: [],
+        },
+        totalEmissions: {
+          bySector: [],
+          total: 0,
+        },
+      },
+    });
+  });
 });

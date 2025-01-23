@@ -14,10 +14,10 @@ export const GET = apiHandler(
     return NextResponse.json({
       data: {
         totalEmissions: {
-          bySector: totalEmissionsBySector,
-          total: totalEmissions,
+          bySector: totalEmissionsBySector || [],
+          total: totalEmissions || 0,
         },
-        topEmissions: { bySubSector: topEmissionsBySubSector },
+        topEmissions: { bySubSector: topEmissionsBySubSector || [] },
       },
     });
   },

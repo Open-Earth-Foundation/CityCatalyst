@@ -1,0 +1,13 @@
+Treatment,Name treatment,Type of treatment,VALUE,source
+Non-treated,None,"Sea, river and lake discharge",0.1,C40-CIRIS
+Non-treated,Sewer,Stagnant sewer,0.5,C40-CIRIS
+Treated,Septic System,Septic System,0.5,C40-CIRIS
+Treated,Latrine,Latrine - dry climate,0.1,C40-CIRIS
+Treated,Latrine,Latrine,0.5,C40-CIRIS
+Treated,Latrine,Latrine -  wet climate,0.7,C40-CIRIS
+Treated,Latrine,Latrine - sediment removal,0.1,C40-CIRIS
+Treated,Other,Aerobic treat-ment plant,0.3,C40-CIRIS
+Treated,Other,Anaerobic digester: sludge,0.8,C40-CIRIS
+Treated,Other,Anaerobic reactor,0.8,C40-CIRIS
+Treated,Other,Anaerobic shallow lagoon,0.2,C40-CIRIS
+Treated,Other,Anaerobic deep lagoon,0.8,C40-CIRIS

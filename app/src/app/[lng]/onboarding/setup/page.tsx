@@ -25,15 +25,6 @@ import ConfirmStep from "@/components/steps/confirm-city-data-step";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Toaster, toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
-import {
-  StepsCompletedContent,
-  StepsContent,
-  StepsItem,
-  StepsList,
-  StepsNextTrigger,
-  StepsPrevTrigger,
-  StepsRoot,
-} from "@/components/ui/steps";
 
 export type Inputs = {
   city: string;
@@ -370,6 +361,7 @@ export default function OnboardingSetup({
             </Box>
           </Box>
         </div>
+        <Toaster />
       </div>
     </>
   );

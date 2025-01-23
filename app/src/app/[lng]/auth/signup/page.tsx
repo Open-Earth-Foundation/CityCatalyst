@@ -79,6 +79,10 @@ export default function Signup({
       data.inventory = inventoryId;
     }
 
+    if (typeof data.acceptTerms !== "boolean") {
+      data.acceptTerms = data.acceptTerms === "on";
+    }
+
     try {
       const res = await fetch("/api/v0/auth/register", {
         method: "POST",
@@ -179,7 +183,7 @@ export default function Signup({
         <Field
           label={t("invite-code")}
           invalid={!!errors.inviteCode}
-          labelText={
+          errorText={
             <Box display="flex" gap="6px">
               <Icon as={MdWarning} />
               <Text
@@ -224,8 +228,8 @@ export default function Signup({
           </Box>
         </Field>
         <Field
-          isInvalid={!!errors.acceptTerms}
-          labelText={
+          invalid={!!errors.acceptTerms}
+          errorText={
             <Box display="flex" gap="6px">
               <Icon as={MdWarning} />
               <Text

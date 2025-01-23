@@ -24,8 +24,8 @@ def document_retriever_tool(search_query: str, metadata_filter: Optional[dict] =
         * For querying strategies related to the the climate action adapt the query to search specifically for that climate action.
     - metadata_filter (dict) - A dictionary (e.g., {"level": "national"}) specifying metadata filtering conditions. The filtering can be one of:
         1. "national",
-        2. "state",
-        3. "local"
+        2. "local"
+        3. None (no filtering).
 
     **Output**: A list of tuples in the form `[(document, relevance_score)]`.
     - Relevance scores range from `0` (lowest) to `1` (highest).

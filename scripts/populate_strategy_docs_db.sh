@@ -4,6 +4,9 @@
 set -e
 set -o pipefail
 
+# Set the collection name variable
+COLLECTION_NAME="strategy_docs_db"
+
 # OS-specific paths
 if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "darwin"* ]]; then
   VENV_PYTHON="../.plan-creator/bin/python"
@@ -30,10 +33,10 @@ else
 fi
 
 # Setup vector store
-python create_vectorstore.py --collection_name strategy_docs_db
-python add_document_to_vectorstore.py --collection_name strategy_docs_db --file_name Brazil_NDC_November_2024.pdf --metadata level=national
-python add_document_to_vectorstore.py --collection_name strategy_docs_db --file_name Brazil_NAP_2016.pdf --metadata level=national
-python add_document_to_vectorstore.py --collection_name strategy_docs_db --file_name Worldbank_Green_Cities_Brazil.pdf --metadata level=national
+python create_vectorstore.py --collection_name "$COLLECTION_NAME"
+python add_document_to_vectorstore.py --file_name Brazil_NDC_November_2024.pdf --collection_name "$COLLECTION_NAME" --metadata level=national
+python add_document_to_vectorstore.py --file_name Brazil_NAP_2016.pdf --collection_name "$COLLECTION_NAME" --metadata level=national
+python add_document_to_vectorstore.py --file_name Worldbank_Green_Cities_Brazil.pdf --collection_name "$COLLECTION_NAME" --metadata level=national
 
 # Ensure clean exit
-echo "Vector store setup completed successfully."
+echo "Vector store setup for "$COLLECTION_NAME" completed successfully."

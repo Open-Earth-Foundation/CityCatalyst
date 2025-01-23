@@ -4,6 +4,9 @@
 set -e
 set -o pipefail
 
+# Set the collection name variable
+COLLECTION_NAME="cap_docs_db"
+
 # OS-specific paths
 if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "darwin"* ]]; then
   VENV_PYTHON="../.plan-creator/bin/python"
@@ -30,10 +33,20 @@ else
 fi
 
 # Setup vector store
-python create_vectorstore.py --collection_name cap_docs_db
-python add_document_to_vectorstore.py --subfolder "cap" --file_name belo_horizonte_cap.pdf --collection_name cap_docs_db 
-python add_document_to_vectorstore.py --subfolder "cap" --file_name campinas_cap.pdf --collection_name cap_docs_db 
-python add_document_to_vectorstore.py --subfolder "cap" --file_name curitiba_cap.pdf --collection_name cap_docs_db 
+python create_vectorstore.py --collection_name "$COLLECTION_NAME"
+python add_document_to_vectorstore.py --subfolder "cap" --file_name belo_horizonte_cap.pdf --collection_name "$COLLECTION_NAME" 
+python add_document_to_vectorstore.py --subfolder "cap" --file_name campinas_cap.pdf --collection_name "$COLLECTION_NAME" 
+python add_document_to_vectorstore.py --subfolder "cap" --file_name curitiba_cap.pdf --collection_name "$COLLECTION_NAME" 
+python add_document_to_vectorstore.py --subfolder "cap" --file_name fortaleza_cap.pdf --collection_name "$COLLECTION_NAME"
+python add_document_to_vectorstore.py --subfolder "cap" --file_name guarullhos_cap.pdf --collection_name "$COLLECTION_NAME"
+python add_document_to_vectorstore.py --subfolder "cap" --file_name niteroi_cap.pdf --collection_name "$COLLECTION_NAME"
+python add_document_to_vectorstore.py --subfolder "cap" --file_name porto_alegre_cap.pdf --collection_name "$COLLECTION_NAME"
+python add_document_to_vectorstore.py --subfolder "cap" --file_name recife_cap.pdf --collection_name "$COLLECTION_NAME"
+python add_document_to_vectorstore.py --subfolder "cap" --file_name rio_branco_cap.pdf --collection_name "$COLLECTION_NAME"
+python add_document_to_vectorstore.py --subfolder "cap" --file_name rio_de_janeiro_cap.pdf --collection_name "$COLLECTION_NAME"
+python add_document_to_vectorstore.py --subfolder "cap" --file_name salvador_cap.pdf --collection_name "$COLLECTION_NAME"
+python add_document_to_vectorstore.py --subfolder "cap" --file_name sao_paulo_cap.pdf --collection_name "$COLLECTION_NAME"
+python add_document_to_vectorstore.py --subfolder "cap" --file_name teresina_cap.pdf --collection_name "$COLLECTION_NAME"
 
 # Ensure clean exit
-echo "Vector store setup completed successfully."
+echo "Vector store setup for "$COLLECTION_NAME" completed successfully."

@@ -12,6 +12,7 @@ file_folder_base_path = base_path / "data" / "files"
 
 
 def add_document_to_vectorstore(
+    subfolder: str,
     file_name: str,
     collection_name: str,
     embedding_model: str,
@@ -33,7 +34,13 @@ def add_document_to_vectorstore(
     chunk_overlap (int) -> default=400
     metadata (dict) -> Metadata to associate with the document chunks.
     """
-    full_file_path = file_folder_base_path / file_name
+    # full_file_path = file_folder_base_path / file_name
+
+    full_file_path = (
+        file_folder_base_path / subfolder / file_name
+        if subfolder
+        else file_folder_base_path / file_name
+    )
 
     vector_store_path = Path(__file__).parent.parent / "vector_stores" / collection_name
 
@@ -82,6 +89,12 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Add a document to the vector store.")
 
+    parser.add_argument(
+        "--subfolder",
+        type=str,
+        default="",
+        help="Subfolder within the data/files directory where the PDF file is located. Defaults to an empty string.",
+    )
     parser.add_argument(
         "--file_name",
         type=str,
@@ -133,6 +146,7 @@ if __name__ == "__main__":
                 print(f"Invalid metadata format '{kv_pair}', should be key=value")
 
     add_document_to_vectorstore(
+        subfolder=args.subfolder,
         file_name=args.file_name,
         collection_name=args.collection_name,
         embedding_model=args.embedding_model,

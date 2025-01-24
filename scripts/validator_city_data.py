@@ -8,7 +8,7 @@ from pathlib import Path
 
 from jsonschema import validate, ValidationError
 
-schema = json.load(open(Path("../schema/city.json")))
+schema = json.load(open(Path("../schema/city_schema.json")))
 output = json.load(open(Path("../data/cities/city_data.json")))
 
 all_valid = True

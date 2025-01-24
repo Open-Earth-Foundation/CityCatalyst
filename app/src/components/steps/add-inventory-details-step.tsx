@@ -10,7 +10,6 @@ import { useEffect } from "react";
 import {
   Box,
   createListCollection,
-  Field,
   Heading,
   HStack,
   Icon,
@@ -21,7 +20,7 @@ import {
 } from "@chakra-ui/react";
 import { MdCheck, MdWarning } from "react-icons/md";
 import { Trans } from "react-i18next";
-import { CustomRadioButtons } from "@/components/custom-radio-buttons";
+import { CustomRadio, RadioGroup } from "@/components/ui/custom-radio";
 import { InputGroup } from "@/components/ui/input-group";
 import {
   SelectContent,
@@ -31,6 +30,7 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "@/components/ui/select";
+import { Field } from "@/components/ui/field";
 
 export default function SetInventoryDetailsStep({
   t,
@@ -134,8 +134,8 @@ export default function SetInventoryDetailsStep({
           </Box>
           <Box>
             <Field
-              isInvalid={!!errors.year}
-              errorMessage={
+              invalid={!!errors.year}
+              errorText={
                 <Box gap="6px" m={0}>
                   <MdWarning height="16px" width="16px" />
                   <Text
@@ -248,45 +248,53 @@ export default function SetInventoryDetailsStep({
               rules={{
                 required: t("inventory-goal-required"),
               }}
+              errorText={
+                <FormErrorMessage
+                  display="flex"
+                  gap="6px"
+                  alignItems="center"
+                  py="16px"
+                >
+                  <MdWarning
+                    color="sentiment.negativeDefault"
+                    height="16px"
+                    width="16px"
+                  />
+                  <Text
+                    fontSize="body.md"
+                    color="content.tertiary"
+                    fontStyle="normal"
+                  >
+                    {errors.inventoryGoal && errors.inventoryGoal.message}
+                  </Text>
+                </FormErrorMessage>
+              }
               render={({ field }) => (
                 <>
-                  <HStack {...inventoryGoalGroup} gap="16px">
-                    {inventoryGoalOptions.map((value) => {
-                      const radioProps = getInventoryGoalRadioProps({ value });
-                      return (
-                        <CustomRadioButtons
-                          value={value}
-                          isChecked={field.value === value}
-                          key={value}
-                          {...radioProps}
-                        >
-                          {t(value)}
-                        </CustomRadioButtons>
-                      );
-                    })}
-                  </HStack>
+                  <RadioGroup
+                    value={field.value}
+                    onValueChange={(e) => (field.value = e.value)}
+                  >
+                    <HStack {...inventoryGoalGroup} gap="16px">
+                      {inventoryGoalOptions.map((value) => {
+                        const radioProps = getInventoryGoalRadioProps({
+                          value,
+                        });
+                        return (
+                          <CustomRadio
+                            value={value}
+                            key={value}
+                            {...radioProps}
+                          >
+                            {t(value)}
+                          </CustomRadio>
+                        );
+                      })}
+                    </HStack>
+                  </RadioGroup>
                 </>
               )}
             />
-            <FormErrorMessage
-              display="flex"
-              gap="6px"
-              alignItems="center"
-              py="16px"
-            >
-              <MdWarning
-                color="sentiment.negativeDefault"
-                height="16px"
-                width="16px"
-              />
-              <Text
-                fontSize="body.md"
-                color="content.tertiary"
-                fontStyle="normal"
-              >
-                {errors.inventoryGoal && errors.inventoryGoal.message}
-              </Text>
-            </FormErrorMessage>
           </Box>
         </Box>
       </Box>
@@ -348,14 +356,9 @@ export default function SetInventoryDetailsStep({
                     {globalWarmingPotential.map((value) => {
                       const radioProps = getGWPRadioProps({ value });
                       return (
-                        <CustomRadioButtons
-                          value={value}
-                          isChecked={field.value === value}
-                          key={value}
-                          {...radioProps}
-                        >
+                        <CustomRadio value={value} key={value} {...radioProps}>
                           {t(value)}
-                        </CustomRadioButtons>
+                        </CustomRadio>
                       );
                     })}
                   </HStack>

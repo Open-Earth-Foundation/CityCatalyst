@@ -2,44 +2,40 @@ import json
 from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from state.agent_state import AgentState
+from data.context import mitigation
 
 
-system_prompt_agent_6 = SystemMessage(
+system_prompt_agent_9 = SystemMessage(
     """
 <role>
 You are a project manager specialized in implementing climate actions and urban planning for a given city.
 You collaborate with a team of experts to create an implementation plan for a climate action.
 The team of experts have provided you with the following information for the climate action implementation plan: 
-- the relevant climate strategies,
-- the climate action (main action) description, 
-- sub-actions,
-- milestones,
-- timeline
+- the relevant climate strategies, 
+- the climate action (main action) description
 </role> 
 
 <task>
-You are tasked with creating 'cost and budget considerations' for implementing the climate action (main action) and sub-actions for the given city with the given milestones and timeline. 
+You are tasked with defining which mitigation sectors for the city are addressed by the climate action (main action). 
 
 Follow these guidelines carefully to complete the task:
 
 1. Understand the details of climate action that you are provided with.
 2. Understand the details of the city that you are provided with.
 3. Review the national and city-level climate strategies and the main action description you are provided with.
-4. Review the sub-actions for implementing the climate action that you are provided with.
-5. Review the milestones for the implementation of the climate action that you are provided with.
-6. Review the timeline for the implementation of the climate action that you are provided with.
-7. Based on the main action, sub-actions, the milestones and timeline for the implementation of the climate action for the given city, create cost and budget considerations for the implementation of the climate action.
+4. Inspect the provided additional context to climate mitigation sectors.
+5. Based on the provided information, list all mitigation sectors that are relevant and addressed by the climate action. Include a brief description of how they are addressed by the climate action.
+**Important**: It is possible, that a climate action does not address any of the listed mitigation sectors. This can happen for example, when the climate action primarily aims at reducing climate risks (hazards). In this case, state this fact briefly.
 </task>
 
 <output>
-The final output should be a headline and a bullet point list containing the 'cost and budget considerations'.
+The final output should be a headline and a bullet point list containing the climate risks (hazards).
 
 <example_output>
-## Cost and budget considerations:
+## Climate Risks (Hazards):
 
-* Cost and budget consideration 1
-* Cost and budget consideration 2
-* Cost and budget consideration 3
+* Climate risk 1
+* Climate risk 2
 * ...
 </example_output>
 </output>
@@ -56,13 +52,13 @@ Be concise, realistic, and specific. Focus on measurable impact and actionable s
 )
 
 
-def build_custom_agent_6(model, tools):
+def build_custom_agent_9(model, tools):
     """Wrap create_react_agent to store final output in AgentState."""
 
     # The chain returned by create_react_agent
-    react_chain = create_react_agent(model, tools, state_modifier=system_prompt_agent_6)
+    react_chain = create_react_agent(model, tools, state_modifier=system_prompt_agent_9)
 
-    def custom_agent_6(state: AgentState) -> AgentState:
+    def custom_agent_9(state: AgentState) -> AgentState:
 
         result_state = react_chain.invoke(
             {
@@ -74,21 +70,18 @@ def build_custom_agent_6(model, tools):
                     This is the city data: 
                     {json.dumps(state['city_data'], indent=4)}
 
-                    This is the response from Agent 1 containing the nation and city-level strategies as well as the climate action plan (main action) description:
+                    This is the response from Agent 1 containing the national and city-level strategies as well as the climate action plan (main action) description:
                     {json.dumps(state['response_agent_1'].content, indent=4)}
 
-                    This is the response from Agent 2 containing the proposed sub-actions for the climate action:
-                    {json.dumps(state['response_agent_2'].content, indent=4)}
-
-                    This is the response from Agent 4 containing the milestones for the climate action:
-                    {json.dumps(state['response_agent_4'].content, indent=4)}
+                    This is additional context to climate mitigation sectors:
+                    {mitigation}
                     """
                 )
             }
         )
 
         agent_output = result_state["messages"][-1].content
-        result_state["response_agent_6"] = AIMessage(agent_output)
+        result_state["response_agent_9"] = AIMessage(agent_output)
         return AgentState(**result_state)
 
-    return custom_agent_6
+    return custom_agent_9

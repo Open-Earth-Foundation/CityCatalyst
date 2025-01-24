@@ -5,13 +5,13 @@ from state.agent_state import AgentState
 from data.context import sgds
 
 
-system_prompt_agent_8 = SystemMessage(
+system_prompt_agent_10 = SystemMessage(
     """
 <role>
 You are a project manager specialized in implementing climate actions and urban planning for a given city.
 You collaborate with a team of experts to create an implementation plan for a climate action.
 The team of experts have provided you with the following information for the climate action implementation plan: 
-- the national climate strategy, 
+- the relevant climate strategies, 
 - the climate action (main action) description
 </role> 
 
@@ -53,13 +53,15 @@ Be concise, realistic, and specific. Focus on measurable impact and actionable s
 )
 
 
-def build_custom_agent_8(model, tools):
+def build_custom_agent_10(model, tools):
     """Wrap create_react_agent to store final output in AgentState."""
 
     # The chain returned by create_react_agent
-    react_chain = create_react_agent(model, tools, state_modifier=system_prompt_agent_8)
+    react_chain = create_react_agent(
+        model, tools, state_modifier=system_prompt_agent_10
+    )
 
-    def custom_agent_8(state: AgentState) -> AgentState:
+    def custom_agent_10(state: AgentState) -> AgentState:
 
         result_state = react_chain.invoke(
             {
@@ -75,14 +77,14 @@ def build_custom_agent_8(model, tools):
                     {json.dumps(state['response_agent_1'].content, indent=4)}
 
                     These are all the SGDs. Map the relevant ones to the climate action:
-                    {sgds}
+                    {json.dumps(sgds, indent=4)}
                     """
                 )
             }
         )
 
         agent_output = result_state["messages"][-1].content
-        result_state["response_agent_8"] = AIMessage(agent_output)
+        result_state["response_agent_10"] = AIMessage(agent_output)
         return AgentState(**result_state)
 
-    return custom_agent_8
+    return custom_agent_10

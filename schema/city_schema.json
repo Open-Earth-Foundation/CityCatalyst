@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.openearth.org/cap/city.json",
+  "$id": "https://schemas.openearth.org/cap/city_schema.json",
   "title": "City",
   "type": "object",
   "properties": {
@@ -39,25 +39,19 @@
       "description": "The elevation of the city in meters"
     },
     "biome": {
-      "type": "object",
-      "description": "The environmental classification of the city",
-      "properties": {
-        "type": {
-          "type": "string",
-          "enum": [
-            "Tropical Rainforest",
-            "Temperate Forest",
-            "Desert",
-            "Grassland/Savanna",
-            "Tundra",
-            "Wetlands",
-            "Mountains",
-            "Boreal Forest/Taiga",
-            "Coastal/Marine"
-          ],
-          "description": "The biome where the city is located"
-        }
-      }
+      "type": "string",
+      "enum": [
+        "tropical_rainforest",
+        "temperate_forest",
+        "desert",
+        "grassland_savanna",
+        "tundra",
+        "wetlands",
+        "mountains",
+        "boreal_forest_taiga",
+        "coastal_marine"
+      ],
+      "description": "The biome where the city is located"
     },
     "socioEconomicFactors": {
       "type": "object",

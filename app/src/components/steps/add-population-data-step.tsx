@@ -17,7 +17,6 @@ import {
   HStack,
   Icon,
   InputAddon,
-  Select,
   Text,
 } from "@chakra-ui/react";
 import FormattedThousandsNumberInput from "@/app/[lng]/onboarding/setup/FormattedThousandsNumberInput";
@@ -89,7 +88,7 @@ export default function SetPopulationDataStep({
       setValue("cityPopulationYear", population.year);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cityData, year, setValue]);
+  }, [cityData, year, numberOfYearsDisplayed, setValue]);
 
   useEffect(() => {
     if (regionData && year) {
@@ -105,7 +104,7 @@ export default function SetPopulationDataStep({
       setValue("regionPopulation", population.population);
       setValue("regionPopulationYear", population.year);
     }
-  }, [regionData, year, setValue]);
+  }, [regionData, year, numberOfYearsDisplayed, setValue]);
 
   useEffect(() => {
     if (countryData && year) {
@@ -137,7 +136,7 @@ export default function SetPopulationDataStep({
         setValue("totalCountryEmissions", emissions);
       }
     }
-  }, [countryData, year, setValue]);
+  }, [countryData, year, numberOfYearsDisplayed, setValue]);
 
   const cityPopulation = watch("cityPopulation");
   const cityPopulationYear = watch("cityPopulationYear");

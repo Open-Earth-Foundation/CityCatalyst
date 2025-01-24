@@ -44,6 +44,8 @@ def create_plan(climate_action_data: dict, city_data: dict):
         response_agent_6=AIMessage(""),
         response_agent_7=AIMessage(""),
         response_agent_8=AIMessage(""),
+        response_agent_9=AIMessage(""),
+        response_agent_10=AIMessage(""),
         response_agent_combine="",
         messages=[],
     )

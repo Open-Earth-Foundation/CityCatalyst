@@ -2,9 +2,9 @@ import {
   Box,
   Button,
   Card,
-  Divider,
   Heading,
   Icon,
+  Separator,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -36,7 +36,7 @@ function AddDataCard({
 }: AddDataCardProps) {
   const router = useRouter();
   return (
-    <Card
+    <Card.Root
       className="grow flex flex-col"
       boxShadow="none"
       data-testid={testId}
@@ -51,14 +51,13 @@ function AddDataCard({
             <Icon as={icon} height="32px" w="32px" color="brand.secondary" />
             <Heading fontSize="title.lg">{title}</Heading>
           </VStack>
-          <Divider borderColor="border.overlay" />
+          <Separator borderColor="border.overlay" />
           <Text color="content.tertiary">{description}</Text>
           <Text
-            size="label.md"
             fontWeight="medium"
             color="content.secondary"
             fontFamily="heading"
-            fontSize="12px"
+            fontSize="label.md"
             lineHeight="16px"
             letterSpacing="wide"
           >
@@ -69,17 +68,17 @@ function AddDataCard({
           data-testid="sector-card-button"
           width="100%"
           onClick={() => router.push(`/${inventory}/data/${number}`)}
-          leftIcon={<BsPlus size={32} />}
           variant="ghost"
           h="48px"
           bg="interactive.secondary"
           color="base.light"
           mt="auto"
         >
+          <Icon as={BsPlus} h={16} w={16} />
           {buttonText}
         </Button>
       </VStack>
-    </Card>
+    </Card.Root>
   );
 }
 

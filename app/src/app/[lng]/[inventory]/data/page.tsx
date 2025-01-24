@@ -1,13 +1,21 @@
 "use client";
 
 import { useTranslation } from "@/i18n/client";
-import { ArrowBackIcon } from "@chakra-ui/icons";
-import { Link } from "@chakra-ui/next-js";
-import { Box, Card, Grid, GridItem, Heading, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Card,
+  Grid,
+  GridItem,
+  Heading,
+  Icon,
+  Link,
+  Text,
+} from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import AddDataCard from "@/components/Cards/add-data-card";
 import { getSectorsForInventory, InventoryTypeEnum } from "@/util/constants";
 import { api } from "@/services/api";
+import { MdArrowBack } from "react-icons/md";
 
 export default function AddDataIntro({
   params: { lng, inventory },
@@ -22,7 +30,7 @@ export default function AddDataIntro({
     <Box className="pt-16 pb-16  w-[90%] max-w-full mx-auto px-4">
       <Link href="/" _hover={{ textDecoration: "none" }}>
         <Box display="flex" alignItems="center" gap="8px">
-          <ArrowBackIcon boxSize={6} />
+          <Icon as={MdArrowBack} boxSize={6} />
           <Text
             color="interactive.secondary"
             textTransform="uppercase"
@@ -67,7 +75,7 @@ export default function AddDataIntro({
           about GPC Protocol
         </Trans>
       </Text>
-      <Card mt={16} p={6} shadow="none">
+      <Card.Root mt={16} p={6} shadow="none">
         <Heading
           fontSize="24px"
           mb={1}
@@ -109,7 +117,7 @@ export default function AddDataIntro({
               },
             )}
         </Grid>
-      </Card>
+      </Card.Root>
     </Box>
   );
 }

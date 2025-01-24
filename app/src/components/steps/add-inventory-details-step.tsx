@@ -248,27 +248,6 @@ export default function SetInventoryDetailsStep({
               rules={{
                 required: t("inventory-goal-required"),
               }}
-              errorText={
-                <FormErrorMessage
-                  display="flex"
-                  gap="6px"
-                  alignItems="center"
-                  py="16px"
-                >
-                  <MdWarning
-                    color="sentiment.negativeDefault"
-                    height="16px"
-                    width="16px"
-                  />
-                  <Text
-                    fontSize="body.md"
-                    color="content.tertiary"
-                    fontStyle="normal"
-                  >
-                    {errors.inventoryGoal && errors.inventoryGoal.message}
-                  </Text>
-                </FormErrorMessage>
-              }
               render={({ field }) => (
                 <>
                   <RadioGroup
@@ -295,6 +274,20 @@ export default function SetInventoryDetailsStep({
                 </>
               )}
             />
+            <Box display="flex" gap="6px" alignItems="center" py="16px">
+              <MdWarning
+                color="sentiment.negativeDefault"
+                height="16px"
+                width="16px"
+              />
+              <Text
+                fontSize="body.md"
+                color="content.tertiary"
+                fontStyle="normal"
+              >
+                {errors.inventoryGoal && errors.inventoryGoal.message}
+              </Text>
+            </Box>
           </Box>
         </Box>
       </Box>

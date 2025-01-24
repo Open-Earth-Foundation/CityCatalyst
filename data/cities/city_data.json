@@ -8,7 +8,7 @@
         "populationDensity": 382.43,
         "area": 758.73,
         "elevation": 36,
-        "biome": null,
+        "biome": "tropical_rainforest",
         "socioEconomicFactors": {
             "lowIncome": "very_high"
         },
@@ -107,7 +107,7 @@
         "populationDensity": 1.49,
         "area": 64962.0,
         "elevation": 118,
-        "biome": null,
+        "biome": "grassland_savanna",
         "socioEconomicFactors": {
             "lowIncome": "very_high"
         },
@@ -206,7 +206,7 @@
         "populationDensity": 280.52,
         "area": 1643.0,
         "elevation": 817,
-        "biome": null,
+        "biome": "tropical_rainforest",
         "socioEconomicFactors": {
             "lowIncome": "very_high"
         },
@@ -305,7 +305,7 @@
         "populationDensity": 41.28,
         "area": 9222.6,
         "elevation": 153,
-        "biome": null,
+        "biome": "tropical_rainforest",
         "socioEconomicFactors": {
             "lowIncome": "very_high"
         },
@@ -404,7 +404,7 @@
         "populationDensity": 950.74,
         "area": 553.0,
         "elevation": 60,
-        "biome": null,
+        "biome": "tropical_rainforest",
         "socioEconomicFactors": {
             "lowIncome": "very_high"
         },
@@ -498,6 +498,104 @@
         "locode": "BRMGE",
         "name": "Maranguape",
         "region": null,
-        "regionName": null
+        "regionName": null,
+        "populationSize": 105093,
+        "populationDensity": 180.11,
+        "area": null,
+        "elevation": null,
+        "biome": "desert",
+        "socioEconomicFactors": {
+            "lowIncome": "very_high"
+        },
+        "accessToPublicServices": {
+            "inadequateWaterAccess": "low",
+            "inadequateSanitation": "moderate"
+        },
+        "totalEmissions": null,
+        "stationaryEnergyEmissions": null,
+        "transportationEmissions": null,
+        "wasteEmissions": null,
+        "industrialProcessEmissions": null,
+        "landUseEmissions": null,
+        "scope1Emissions": null,
+        "scope2Emissions": null,
+        "scope3Emissions": null,
+        "ccra": [
+            {
+                "keyimpact": "water resources",
+                "hazard": "drought",
+                "normalised_risk_score": 0.945370280491325
+            },
+            {
+                "keyimpact": "food security",
+                "hazard": "drought",
+                "normalised_risk_score": 0.99
+            },
+            {
+                "keyimpact": "energy security",
+                "hazard": "drought",
+                "normalised_risk_score": 0.99
+            },
+            {
+                "keyimpact": "biodiversity",
+                "hazard": "drought",
+                "normalised_risk_score": 0.337731350712087
+            },
+            {
+                "keyimpact": "public health",
+                "hazard": "heatwaves",
+                "normalised_risk_score": 0.978462900569089
+            },
+            {
+                "keyimpact": "infrastructure",
+                "hazard": "heatwaves",
+                "normalised_risk_score": 0.430657833254559
+            },
+            {
+                "keyimpact": "biodiversity",
+                "hazard": "heatwaves",
+                "normalised_risk_score": 0.218841383895179
+            },
+            {
+                "keyimpact": "energy security",
+                "hazard": "heatwaves",
+                "normalised_risk_score": 0.647984170054133
+            },
+            {
+                "keyimpact": "public health",
+                "hazard": "diseases",
+                "normalised_risk_score": 0.842826239867625
+            },
+            {
+                "keyimpact": "geo-hydrological disasters",
+                "hazard": "landslide",
+                "normalised_risk_score": 0.673942895527071
+            },
+            {
+                "keyimpact": "infrastructure",
+                "hazard": "landslide",
+                "normalised_risk_score": 0.455741766516033
+            },
+            {
+                "keyimpact": "geo-hydrological disasters",
+                "hazard": "flooding",
+                "normalised_risk_score": 0.72351343080345
+            },
+            {
+                "keyimpact": "food security",
+                "hazard": "flooding",
+                "normalised_risk_score": 0.736498005603542
+            },
+            {
+                "keyimpact": "infrastructure",
+                "hazard": "sea level rise",
+                "normalised_risk_score": 0
+            },
+            {
+                "keyimpact": "infrastructure",
+                "hazard": "erosion",
+                "normalised_risk_score": 0.352078499224422
+            }
+        ]
     }
 ]

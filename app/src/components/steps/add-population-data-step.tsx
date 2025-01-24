@@ -20,8 +20,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import FormattedThousandsNumberInput from "@/app/[lng]/onboarding/setup/FormattedThousandsNumberInput";
-import { MdErrorOutline, MdInfoOutline } from "react-icons/md";
-import Checkmark from "./chekmark";
+import { MdCheck, MdErrorOutline, MdInfoOutline } from "react-icons/md";
 import { Field } from "@/components/ui/field";
 import {
   SelectContent,
@@ -271,9 +270,9 @@ export default function SetPopulationDataStep({
                   </SelectContent>
                 </SelectRoot>
                 <InputAddon display="flex" alignItems="center" mt={5} mr={6}>
-                  <Checkmark
-                    condition={!!countryPopulationYear && !!countryPopulation}
-                  />
+                  {!!countryPopulationYear && !!countryPopulation && (
+                    <Icon as={MdCheck} color="semantic.success" boxSize={4} />
+                  )}
                 </InputAddon>
               </Group>
             </Field>
@@ -368,9 +367,9 @@ export default function SetPopulationDataStep({
                   </SelectContent>
                 </SelectRoot>
                 <InputAddon display="flex" alignItems="center" mt={5} mr={6}>
-                  <Checkmark
-                    condition={!!regionPopulationYear && !!regionPopulation}
-                  />
+                  {!!regionPopulationYear && !!regionPopulation && (
+                    <Icon as={MdCheck} color="semantic.success" boxSize={4} />
+                  )}
                 </InputAddon>
               </Group>
             </Field>
@@ -465,9 +464,9 @@ export default function SetPopulationDataStep({
                   </SelectContent>
                 </SelectRoot>
                 <InputAddon display="flex" alignItems="center" mt={5} mr={6}>
-                  <Checkmark
-                    condition={!!cityPopulationYear && !!cityPopulation}
-                  />
+                  {!!cityPopulationYear && !!cityPopulation && (
+                    <Icon as={MdCheck} color="semantic.success" boxSize={4} />
+                  )}
                 </InputAddon>
               </Group>
             </Field>

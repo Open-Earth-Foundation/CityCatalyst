@@ -1,9 +1,10 @@
-from typing import Optional
+from typing import Optional, Tuple, Union
 from langchain.tools import tool
 from utils.load_vectorstore import load_vectorstore
 from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
+from langchain.schema import Document
 
 
 # Define tools for each agent
@@ -11,9 +12,11 @@ from langchain_openai import ChatOpenAI
 # If further documents are added, these should be added to a seperate collection and a separate tool should be defined for each collection
 # so that the LLM can more accurately retrieve information from the correct collection.
 @tool
-def document_retriever_tool(search_query: str, metadata_filter: Optional[dict] = None):
+def retriever_main_action_tool(
+    search_query: str, metadata_filter: Optional[dict] = None
+) -> Union[list[Tuple[Document, float]], str]:
     """
-        Use this tool to retrieve chunks of text from a collection within a Chroma vector store.
+    Use this tool to retrieve chunks of text from a collection within a Chroma vector store.
 
     This Chroma vector store contains a collections with documents related to Brazil's overall climate strategy.
     Use this tool to retrieve relevant information.
@@ -46,7 +49,47 @@ def document_retriever_tool(search_query: str, metadata_filter: Optional[dict] =
     return docs_and_scores
 
 
-search = TavilySearchResults(
+@tool
+def retriever_sub_action_tool(
+    search_query: str,
+) -> Union[list[Tuple[Document, float]], str]:
+    """
+    This tool is specifically designed to help agents find and retrieve detailed, step-by-step implementation information for certain climate actions from a Chroma vector store.
+
+    **Input**:
+    - search_query (str): A detailed, full, and context-rich query
+        * Example: "What are the specific steps to implement [climate action] to reduce carbon emissions in the [sector]?"
+        * Example: "Describe the implementation process for [climate action] in [city]"
+
+    **Output**:
+    - A list of tuples: [(document_text, relevance_score)]
+        * Each tuple contains a relevant document excerpt and its relevance score
+        * Relevance scores range from 0 (least relevant) to 1 (most relevant)
+
+    **Query Strategies**:
+    - Start with broad queries and progressively narrow down
+    - If initial results are too general, add more specific context
+    """
+
+    vector_store = load_vectorstore(collection_name="strategy_docs_db")
+
+    if not vector_store:
+        return "Could not load vector store. Please ensure your vector DB is created."
+
+    # metadata_filter = {"section": "sub_actions"}
+    metadata_filter = {"level": "national"}
+
+    docs_and_scores = vector_store.similarity_search_with_relevance_scores(
+        query=search_query,
+        k=5,
+        score_threshold=0.50,
+        filter=metadata_filter,  # Dynamically apply metadata filter
+    )
+
+    return docs_and_scores
+
+
+search_municipalities_tool = TavilySearchResults(
     max_results=3,
     search_depth="advanced",  # change between 'basic' for testing and 'advanced' for production
     description="""

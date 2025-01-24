@@ -16,5 +16,7 @@ class AgentState(TypedDict):
     response_agent_6: Annotated[AIMessage, "The response from Agent 6"]
     response_agent_7: Annotated[AIMessage, "The response from Agent 7"]
     response_agent_8: Annotated[AIMessage, "The response from Agent 8"]
+    response_agent_9: Annotated[AIMessage, "The response from Agent 9"]
+    response_agent_10: Annotated[AIMessage, "The response from Agent 10"]
     response_agent_combine: Annotated[str, "The combined response from all agents"]
     messages: Annotated[list, "The list of messages exchanged between agents"]

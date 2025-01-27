@@ -8,6 +8,7 @@ export interface FormulaInputAttributes {
   parameterName: string;
   gpcRefno: string;
   year?: number;
+  source?: string;
   formulaInputValue: number;
   formulaInputUnits: string;
   formulaName: string;
@@ -43,6 +44,7 @@ export class FormulaInput
   parameterName!: string;
   gpcRefno!: string;
   year?: number;
+  source?: string;
   formulaInputValue!: number;
   formulaInputUnits!: string;
   formulaName!: string;
@@ -119,6 +121,11 @@ export class FormulaInput
           type: DataTypes.STRING,
           allowNull: false,
           field: "formula_input_units",
+        },
+        source: {
+          type: DataTypes.STRING,
+          allowNull: true,
+          field: "source",
         },
         formulaName: {
           type: DataTypes.STRING,

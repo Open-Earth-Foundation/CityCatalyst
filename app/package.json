@@ -126,7 +126,7 @@
     "@storybook/addon-interactions": "^8.2.5",
     "@storybook/addon-links": "^7.6.17",
     "@storybook/blocks": "^8.0.4",
-    "@storybook/nextjs": "^8.0.8",
+    "@storybook/nextjs": "^8.5.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^14.2.1",
     "@types/glob": "^8.1.0",

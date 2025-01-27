@@ -269,11 +269,14 @@ export default function AddDataSteps({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inventoryProgress]);
 
-  const { activeStep, goToNext, setActiveStep } = useSteps({
-    index: Number(step) - 1,
+  const { value: activeStep, goToNextStep: goToNext } = useSteps({
+    defaultStep: Number(step) - 1,
     count: steps.length,
   });
+
   const currentStep = steps[activeStep];
+  console.log("currentStep", currentStep);
+
   useEffect(() => {
     // change step param in URL without reloading
     const newPath = location.pathname.replace(
@@ -650,7 +653,7 @@ export default function AddDataSteps({
                 </BreadcrumbLink>
 
                 <BreadcrumbCurrentLink color="content.link">
-                  {t(kebab(currentStep.name))}
+                  {t(kebab(currentStep.name || ""))}
                 </BreadcrumbCurrentLink>
               </BreadcrumbRoot>
             </Box>

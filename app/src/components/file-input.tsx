@@ -1,4 +1,4 @@
-import { Box, FormLabel, Heading, Input, Text, VStack } from "@chakra-ui/react";
+import { Box, Heading, Input, Text, VStack } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, {
   useState,
@@ -8,6 +8,7 @@ import React, {
   SetStateAction,
 } from "react";
 import { FiUpload } from "react-icons/fi";
+import { Field } from "./ui/field";
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void; // Define a type for the onFileSelect prop
@@ -65,53 +66,60 @@ const FileInput: React.FC<FileUploadProps> = ({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <Input
-        type="file"
-        onChange={handleChange}
-        size="lg"
-        display="none"
-        id="file-upload"
-      />
-      <FormLabel cursor="pointer" htmlFor="file-upload">
-        <Box
-          display="flex"
-          justifyContent="center"
-          flexDirection="column"
-          alignItems="center"
-          gap=""
-        >
+      <Field
+        label={
           <Box
-            color="base.light"
-            h="48px"
-            w="48px"
-            bg="content.link"
-            borderRadius="50px"
             display="flex"
-            alignItems="center"
             justifyContent="center"
-            mb="12px"
+            flexDirection="column"
+            alignItems="center"
+            gap=""
           >
-            <FiUpload size="20px" />
-          </Box>
-          <Box display="flex">
-            <Text
-              size="title.md"
-              fontFamily="heading"
-              color="content.link"
-              textDecoration="underline"
-              fontWeight="semibold"
+            <Box
+              color="base.light"
+              h="48px"
+              w="48px"
+              bg="content.link"
+              borderRadius="50px"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              mb="12px"
             >
-              {t("click-to-upload")}
-            </Text>{" "}
-            <Text size="title.md" fontWeight="semibold" fontFamily="heading">
-              &nbsp;{t("drag-and-drop")}
+              <FiUpload size="20px" />
+            </Box>
+            <Box display="flex">
+              <Text
+                fontSize="title.md"
+                fontFamily="heading"
+                color="content.link"
+                textDecoration="underline"
+                fontWeight="semibold"
+              >
+                {t("click-to-upload")}
+              </Text>{" "}
+              <Text
+                fontSize="title.md"
+                fontWeight="semibold"
+                fontFamily="heading"
+              >
+                &nbsp;{t("drag-and-drop")}
+              </Text>
+            </Box>
+            <Text fontSize="body.sm" mt="4px">
+              {t("csv-or-json")}
             </Text>
           </Box>
-          <Text fontSize="body.sm" mt="4px">
-            {t("csv-or-json")}
-          </Text>
-        </Box>
-      </FormLabel>
+        }
+      >
+        <Input
+          type="file"
+          onChange={handleChange}
+          size="lg"
+          display="none"
+          id="file-upload"
+        />
+      </Field>
     </VStack>
   );
 };

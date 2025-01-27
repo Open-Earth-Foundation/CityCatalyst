@@ -83,7 +83,7 @@ if __name__ == "__main__":
         "Latrine": "treatment-type-latrine", 
         "Latrine -  wet climate": "treatment-type-latrine-wet-climate",
         "Latrine - sediment removal": "treatment-type-latrine-sediment-removal", 
-        "Aerobic treatment plant": "treatment-type-centralized-aerobic-treatment-plan-well-managed",
+        "Aerobic treat-ment plant": "treatment-type-centralized-aerobic-treatment-plan-well-managed",
         "Anaerobic digester: sludge": "treatment-type-anaerobic-digester-for-sludge", 
         "Anaerobic reactor": "treatment-type-anaerobic-reactor",
         "Anaerobic shallow lagoon": "treatment-type-anaerobic-shallow-lagoon", 

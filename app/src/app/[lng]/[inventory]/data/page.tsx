@@ -27,12 +27,16 @@ export default function AddDataIntro({
   const { data: inventoryData } = api.useGetInventoryQuery(inventory);
 
   return (
-    <Box className="pt-16 pb-16  w-[90%] max-w-full mx-auto px-4">
+    <Box className="pt-16 pb-16  w-[1090px] mx-auto px-4">
       <Link href="/" _hover={{ textDecoration: "none" }}>
-        <Box display="flex" alignItems="center" gap="8px">
+        <Box
+          display="flex"
+          alignItems="center"
+          gap="8px"
+          color="interactive.secondary"
+        >
           <Icon as={MdArrowBack} boxSize={6} />
           <Text
-            color="interactive.secondary"
             textTransform="uppercase"
             fontFamily="heading"
             fontSize="button.md"
@@ -69,6 +73,8 @@ export default function AddDataIntro({
             href="https://ghgprotocol.org/ghg-protocol-cities"
             target="_blank"
             rel="noopener noreferrer"
+            color="interactive.secondary"
+            fontWeight="bold"
           >
             Learn more
           </Link>

@@ -146,3 +146,51 @@ The following is a description of the different sectors:
     or settlements), and aggregate sources and non-CO2 emission sources on land (e.g., fertilizer
     application and rice cultivation).    
 """
+
+institutions_brser = [
+    {
+        "name": "The Special Municipal Secretariat of Agriculture, Agrotourism, Aquaculture and Fisheries (SEAP)",
+        "description": "Seap carries out plans for the rural development of the municipality, elaborates plans, programs, projects, among other actions, to leverage the rural and fisheries sector. It provides guidance to the population to collaborate with the development of producer associations, agribusiness, family farming, agritourism, and cooperatives. Thus, it is possible to improve productivity and market identification for the commercialization of the products of the municipality.",
+        "source": "https://www.serra.es.gov.br/secretaria/SEAP",
+    },
+    {
+        "name": "The Municipal Secretariat of Environment (SEMMA)",
+        "description": "Created through Municipal Law 2199 of June 16, 1999, SEMMA ensures sustainable development in the city of Serra, improving quality of life and stimulating economic development. It implements public policies of environmental control, develops conservation and awareness actions for sustainable resource use, and oversees the following departments: Environmental Control (DCA), Environmental Inspection (DFA), Natural Resources (NIRN), Environmental Education (DEA), and Environmental Sanitation (DSA).",
+        "source": "https://www.serra.es.gov.br/secretaria/SEMMA",
+    },
+    {
+        "name": "The Municipal Secretariat for Urban Development (SEDUR)",
+        "description": "SEDUR coordinates discussions for urban development, promotes the Municipal Master Plan, and organizes urban land use and ownership. It creates urban planning, coordinates metropolitan urban policies, and disseminates urban planning data indicators.",
+        "source": "https://www.serra.es.gov.br/secretaria/SEDUR",
+    },
+    {
+        "name": "The Department of Education (Sedu)",
+        "description": "Sedu educates and trains students through human values, beyond scientific teaching. It ensures proper functioning of teaching units, elaborates pedagogical projects, and mobilizes communities through expanded education plans. The Municipal Education Plan aims to improve education quality and ensure student access and retention.",
+        "source": "https://www.serra.es.gov.br/secretaria/SEDU",
+    },
+    {
+        "name": "The Serra Health Department (Sesa)",
+        "description": "Sesa formulates and implements public health policy, ensuring universal, equitable, and comprehensive health service access in line with the Unified Health System (SUS). It coordinates health services, promotes public health actions, and oversees disease control, environmental health, worker safety, and social mobilization for SUS.",
+        "source": "https://www.serra.es.gov.br/secretaria/SESA",
+    },
+    {
+        "name": "The Municipal Secretariat of Innovation, Science and Technology (SEICIT)",
+        "description": "SEICIT leads, prepares, and executes policies, projects, and actions for innovation and scientific and technological development in the municipality.",
+        "source": "https://www.serra.es.gov.br/secretaria/SEICIT",
+    },
+    {
+        "name": "The Municipal Secretariat of Works (SEOB)",
+        "description": "SEOB oversees the construction, conservation, and maintenance of roads, sanitation, monuments, and public buildings. Duties include planning and supervising public works projects, paving, urban area maintenance, and monitoring contracted public building projects.",
+        "source": "https://www.serra.es.gov.br/secretaria/SEOB",
+    },
+    {
+        "name": "The Municipal Housing Department (SEHAB)",
+        "description": "SEHAB manages housing policy, develops social housing projects, and handles land regularization. It selects families for housing programs, manages the Housing Grant Project, and targets low-income families. It also prepares annual housing reports to evaluate and improve housing policy.",
+        "source": "https://www.serra.es.gov.br/secretaria/SEHAB",
+    },
+    {
+        "name": "The Municipal Secretariat of Management and Planning (SEGEPLAN)",
+        "description": "SEGEPLAN manages administration systems, oversees municipal property, and handles human resources, including recruitment, training, and payroll. It executes strategic planning, monitors Secretariat programs, integrates municipal bodies, and promotes occupational health and safety measures.",
+        "source": "https://www.serra.es.gov.br/secretaria/SEGEPLAN",
+    },
+]

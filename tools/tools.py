@@ -13,7 +13,7 @@ from langchain.schema import Document
 # so that the LLM can more accurately retrieve information from the correct collection.
 @tool
 def retriever_main_action_tool(
-    search_query: str, metadata_filter: Optional[dict] = None
+    search_query: str,
 ) -> Union[list[Tuple[Document, float]], str]:
     """
     Use this tool to retrieve chunks of text from a collection within a Chroma vector store.
@@ -23,9 +23,6 @@ def retriever_main_action_tool(
     - search_query (str) - The search query to seach for relevant documents. Provide a full sentence including relevant context instead of just providing key words.
         * For querying the national climate strategy, always use this query: "Brazil's national climate strategy"
         * For querying strategies related to the the climate action adapt the query to search specifically for that climate action.
-    - metadata_filter (dict) - A dictionary (e.g., {"level": "national"}) specifying metadata filtering conditions. The filtering can be one of:
-        1. "national",
-        2. "local"
 
     **Output**: A list of tuples in the form `[(document, relevance_score)]`.
     - Relevance scores range from `0` (lowest) to `1` (highest).
@@ -34,10 +31,29 @@ def retriever_main_action_tool(
     - Start with broad queries and progressively narrow down the search query.
     """
 
-    vector_store = load_vectorstore(collection_name="strategy_docs_db")
+    vector_store = load_vectorstore(collection_name="all_docs_db")
 
     if not vector_store:
         return "Could not load vector store. Please ensure your vector DB is created."
+
+    # Meta data filering using chroma
+    #
+    # metadata_filter = {"key": {"$eq": value}}
+    # or
+    # metadata_filter = {
+    #     "$or": [{"key": {"$eq": value}}, {"key": {"$eq": value}}]
+    # }
+    # Chroma filter operators:
+    # $eq: Equal to
+    # $gt: Greater than
+    # $gte: Greater than or equal to
+    # $lt: Less than
+    # $lte: Less than or equal to
+    # $ne: Not equal to
+    # $in: In a list of values
+    # $nin: Not in a list of values
+
+    metadata_filter = {"main_action": {"$eq": True}}
 
     docs_and_scores = vector_store.similarity_search_with_relevance_scores(
         query=search_query,

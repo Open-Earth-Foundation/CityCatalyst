@@ -29,13 +29,15 @@ Follow these guidelines carefully to complete the task:
 </task>
 
 <output>
-The final output should be a headline and a bullet point list containing the climate risks (hazards).
+The final output should include:
+- a headline
+- a bullet point list containing the mitigation sectors with a brief descriptions of how they are addressed.
 
 <example_output>
-## Climate Risks (Hazards):
+## Mitigation Sectors:
 
-* Climate risk 1
-* Climate risk 2
+* Mitigation sector 1: [brief description]
+* Mitigation sector 2: [brief description]
 * ...
 </example_output>
 </output>

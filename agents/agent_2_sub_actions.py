@@ -19,9 +19,9 @@ You are tasked with creating actionable sub-actions for implementing a specific 
 
 Follow these guidlines carefully to complete the task:
 
-1. Understand the details of climate action (main action).
+1. Understand the details of the climate action (main action).
 2. Understand the details of the city you are working on.
-3. Review the the national and city-level climate strategies and the climate action (main action) description.
+3. Review the national and city-level climate strategies and the climate action (main action) description.
 4. Use the provided tools to retrieve relevant documents about detailed steps for implementing the climate action.
 5. Create a list of actionable sub-actions for implementing the climate action. The sub-actions should consider dependencies and be in chronological order if possible.
 **Important**: 
@@ -38,7 +38,7 @@ You have access to the following tool:
 <output>
 The final output should be a headline and an ordered list of actionable sub-actions for implementing the climate action.
 <example_output>
-## Sub-actions:
+## Subactions:
 
 1. Sub-action 1
 2. Sub-action 2

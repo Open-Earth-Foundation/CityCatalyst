@@ -129,19 +129,23 @@ if __name__ == "__main__":
         "--metadata",
         type=str,
         action="append",
-        help="Metadata as key=value pairs. You can pass multiple flags. Example: --metadata level=national --metadata foo=bar",
+        help="Metadata as key=value pairs. You can pass multiple flags. Example: --metadata main_action=true --metadata foo=bar",
     )
 
     args = parser.parse_args()
 
-    # Parse metadata key-value pairs
-    # e.g., ['level=national', 'foo=bar'] -> {'level': 'national', 'foo': 'bar'}
     metadata_dict = {}
     if args.metadata:
         for kv_pair in args.metadata:
             if "=" in kv_pair:
                 key, value = kv_pair.split("=", 1)
-                metadata_dict[key] = value
+                # Convert "true"/"false" strings to Python booleans
+                if value.lower() == "true":
+                    metadata_dict[key] = True
+                elif value.lower() == "false":
+                    metadata_dict[key] = False
+                else:
+                    metadata_dict[key] = value  # Keep as string if not true/false
             else:
                 print(f"Invalid metadata format '{kv_pair}', should be key=value")
 

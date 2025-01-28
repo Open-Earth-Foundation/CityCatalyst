@@ -1,12 +1,11 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Center, CircularProgress } from "@chakra-ui/react";
 import { useAcceptInviteMutation } from "@/services/api";
 import { logger } from "@/services/logger";
 import InviteErrorView from "./InviteErrorView";
-import { useRouter } from "next/navigation";
 import { emailPattern, tokenRegex, uuidRegex } from "@/util/validation";
 
 const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
@@ -59,6 +58,8 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
 
             if (!data?.success || !!error) {
               setError(true);
+            } else {
+              router.push(`/`);
             }
           } catch (error) {
             setError(true);
@@ -82,7 +83,7 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
 
   if (isError || error) return <InviteErrorView lng={lng} />;
 
-  router.push(`/`);
+  return null;
 };
 
 export default AcceptInvitePage;

@@ -511,13 +511,13 @@
       "inadequateWaterAccess": "low",
       "inadequateSanitation": "moderate"
     },
-    "totalEmissions": 109770000,
+    "totalEmissions": 129440000,
     "stationaryEnergyEmissions": 14440000,
     "transportationEmissions": 34790000,
-    "wasteEmissions": 0.0,
-    "industrialProcessEmissions": 1040000,
+    "wasteEmissions": 20200000,
+    "industrialProcessEmissions": 513480,
     "landUseEmissions": 59500000,
-    "scope1Emissions": 104515990,
+    "scope1Emissions": 124199470,
     "scope2Emissions": 5262860,
     "scope3Emissions": 0.0,
     "ccra": [

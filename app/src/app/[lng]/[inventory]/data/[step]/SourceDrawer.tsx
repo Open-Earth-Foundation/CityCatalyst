@@ -97,7 +97,7 @@ export function SourceDrawer({
       finalFocusRef={finalFocusRef}
     >
       <DrawerBackdrop />
-      <DrawerTrigger asChild>
+      {/* <DrawerTrigger asChild>
         <Button
           variant="ghost"
           alignSelf="flex-start"
@@ -109,7 +109,7 @@ export function SourceDrawer({
           <Icon as={MdArrowBack} boxSize={6} />
           {t("go-back")}
         </Button>
-      </DrawerTrigger>
+      </DrawerTrigger> */}
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>Drawer Title</DrawerTitle>

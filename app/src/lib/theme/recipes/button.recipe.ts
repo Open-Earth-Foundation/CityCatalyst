@@ -11,6 +11,7 @@ export const buttonRecipe = defineRecipe({
     letterSpacing: "1.25px",
     lineHeight: "16px",
     display: "flex",
+    fontWeight: "bold",
   },
 
   // variants for the button

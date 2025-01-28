@@ -103,7 +103,8 @@ export function SegmentedProgress({
         backgroundColor="background.neutral"
         w="full"
         className="flex flex-row"
-        borderRadius="full"
+        borderRightRadius="10px"
+        borderLeftRadius="10px"
       >
         {normalizedValues.map((value, i) => (
           <Box

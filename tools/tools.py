@@ -17,9 +17,7 @@ def retriever_main_action_tool(
 ) -> Union[list[Tuple[Document, float]], str]:
     """
     Use this tool to retrieve chunks of text from a collection within a Chroma vector store.
-
-    This Chroma vector store contains a collections with documents related to Brazil's overall climate strategy.
-    Use this tool to retrieve relevant information.
+    The vector store contains a collections with documents related to Brazil's overall climate strategy.
 
     **Input**:
     - search_query (str) - The search query to seach for relevant documents. Provide a full sentence including relevant context instead of just providing key words.
@@ -28,10 +26,12 @@ def retriever_main_action_tool(
     - metadata_filter (dict) - A dictionary (e.g., {"level": "national"}) specifying metadata filtering conditions. The filtering can be one of:
         1. "national",
         2. "local"
-        3. None (no filtering).
 
     **Output**: A list of tuples in the form `[(document, relevance_score)]`.
     - Relevance scores range from `0` (lowest) to `1` (highest).
+
+    **Query Strategies**:
+    - Start with broad queries and progressively narrow down the search query.
     """
 
     vector_store = load_vectorstore(collection_name="strategy_docs_db")
@@ -68,10 +68,9 @@ def retriever_sub_action_tool(
 
     **Query Strategies**:
     - Start with broad queries and progressively narrow down
-    - If initial results are too general, add more specific context
     """
 
-    vector_store = load_vectorstore(collection_name="strategy_docs_db")
+    vector_store = load_vectorstore(collection_name="_docs_db")
 
     if not vector_store:
         return "Could not load vector store. Please ensure your vector DB is created."
@@ -93,7 +92,7 @@ search_municipalities_tool = TavilySearchResults(
     max_results=3,
     search_depth="advanced",  # change between 'basic' for testing and 'advanced' for production
     description="""
-    Search for municipal institutions and partners and their contact information that might be relevant for the implementation of the specific climate action for the given city.
+    Search for municipal institutions and their contact information that might be relevant for the implementation of the specific climate action for the given city.
     
     Input: A search query in the national language.
     """,

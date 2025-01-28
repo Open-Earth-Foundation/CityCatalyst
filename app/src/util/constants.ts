@@ -3,7 +3,7 @@ import { PiPlant, PiTrashLight } from "react-icons/pi";
 import { TbBuildingCommunity } from "react-icons/tb";
 import { IconBaseProps } from "react-icons";
 import { LiaIndustrySolid } from "react-icons/lia";
-import { SectorColors } from "@/lib/app-theme"; // Import the appTheme
+import { SectorColors, SubSectorColors } from "@/lib/app-theme"; // Import the appTheme
 
 export const maxPopulationYearDifference = 5;
 
@@ -30,6 +30,13 @@ export interface ISector {
     };
   };
   color: string;
+  subSectors?: {
+    [referenceNumber: string]: {
+      name: string;
+      color: string;
+      referenceNumber: string;
+    };
+  };
 }
 
 export const getSectorsForInventory = (inventoryType?: InventoryType) => {
@@ -125,6 +132,23 @@ export const SECTORS: ISector[] = [
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [] },
       [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1] },
     },
+    subSectors: {
+      "V.1": {
+        referenceNumber: "V.1",
+        name: "afolu-livestock",
+        color: SubSectorColors["V.1"],
+      },
+      "V.2": {
+        referenceNumber: "V.2",
+        name: "afolu-land",
+        color: SubSectorColors["V.2"],
+      },
+      "V.3": {
+        referenceNumber: "V.3",
+        name: "afolu-other-agriculture",
+        color: SubSectorColors["V.3"],
+      },
+    },
   },
 ];
 
@@ -134,8 +158,30 @@ export const allSectorColors = SECTORS.map((sector) => {
 export const getSectorByName = (name: string) =>
   SECTORS.find((s) => s.name === name);
 
+export const getSubSectorByName = (name: string) => {
+  for (const sector of SECTORS) {
+    if (sector.subSectors) {
+      for (const subSector of Object.values(sector.subSectors)) {
+        if (subSector.name === name) {
+          return subSector;
+        }
+      }
+    }
+  }
+  return undefined;
+};
+
 export const getReferenceNumberByName = (name: keyof ISector) =>
   findBy("name", name)?.referenceNumber;
+
+export const getSectorByReferenceNumber = (referenceNumber: string) =>
+  findBy("referenceNumber", referenceNumber);
+
+export const getSubSectorByReferenceNumber = (referenceNumber: string) => {
+  const [sectorRefNum] = referenceNumber.split(".");
+  const sector = getSectorByReferenceNumber(sectorRefNum);
+  return sector?.subSectors?.[referenceNumber];
+};
 
 export const REGIONALLOCALES: Record<string, string> = {
   es: "es-ES", // Spanish (Spain)

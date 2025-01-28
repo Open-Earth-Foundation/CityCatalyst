@@ -54,21 +54,55 @@ if __name__ == "__main__":
     write_dic_to_csv('.', "DataSource", datasource_data)
 
     df = pd.read_csv(input_fl)
+
     #rename columns
-    df.rename(columns={'Treatment': 'treatment-status', 'Name treatment': 'treatment_name', 'Type of treatment': 'treatment_type', 'VALUE': 'formula_input_value', 'source': 'datasource'}, inplace=True)
+    df.rename(columns={'Treatment': 'treatment-status', 'Name treatment': 'treatment-name', 'Type of treatment': 'treatment-type', 'VALUE': 'formula_input_value', 'source': 'datasource'}, inplace=True)
+
+    df.fillna("None", inplace=True)
+
+    treatment_status = {
+        "Non-treated": "treatment-status-type-wastewater-untreated",
+        "Treated": "treatment-status-type-wastewater-treated"
+    }
+    df['treatment-status'] = df['treatment-status'].map(treatment_status)
+
+    treatment_name = {
+        "None": "treatment-name-none",
+        "Sewer": "treatment-name-sewer",
+        "Septic System": "treatment-name-septic-system",
+        "Latrine": "treatment-name-latrine",
+        "Other": "treatment-name-other"
+    }
+    df['treatment-name'] = df['treatment-name'].map(treatment_name)
+
+    treatment_type = {
+        "Sea, river and lake discharge": "treatment-type-sea-river-lake-discharge", 
+        "Stagnant sewer": "treatment-type-stagnant-sewer", 
+        "Septic System": "treatment-type-septic-system",
+        "Latrine - dry climate": "treatment-type-latrine-dry-climate",
+        "Latrine": "treatment-type-latrine", 
+        "Latrine -  wet climate": "treatment-type-latrine-wet-climate",
+        "Latrine - sediment removal": "treatment-type-latrine-sediment-removal", 
+        "Aerobic treat-ment plant": "treatment-type-centralized-aerobic-treatment-plan-well-managed",
+        "Anaerobic digester: sludge": "treatment-type-anaerobic-digester-for-sludge", 
+        "Anaerobic reactor": "treatment-type-anaerobic-reactor",
+        "Anaerobic shallow lagoon": "treatment-type-anaerobic-shallow-lagoon", 
+        "Anaerobic deep lagoon": "treatment-type-anaerobic-deep-lagoon"
+    }
+    df['treatment-type'] = df['treatment-type'].map(treatment_type)
 
     # create metadata column
     df["metadata"] = df.apply(
         lambda row: {
             "treatment-status": row["treatment-status"],
-            "treatment-name": row["treatment_name"],
-            "treatment-type": row["treatment_type"]
+            "treatment-name": row["treatment-name"],
+            "treatment-type": row["treatment-type"]
         },
         axis=1,
     )
 
     # drop columns
-    df.drop(columns=['treatment-status', 'treatment_name', 'treatment_type'], inplace=True)
+    df.drop(columns=['treatment-status', 'treatment-name', 'treatment-type'], inplace=True)
 
     # assign column names
     df['gas'] = 'CH4'

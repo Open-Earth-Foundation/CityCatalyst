@@ -168,5 +168,8 @@
   "invite-success-toast-text": "Tudo pronto! Seus convites foram enviados com sucesso",
   "invite-error-toast-title": "Algo deu errado",
   "invite-error-toast-description": "Houve um erro ao enviar seus convites",
-  "invite-error-toast-text": "Houve um erro ao enviar seus convites"
+  "invite-error-toast-text": "Houve um erro ao enviar seus convites",
+  "afolu-other-agriculture": "Outra agricultura",
+  "afolu-livestock": "Gado",
+  "afolu-land": "Terra"
 }

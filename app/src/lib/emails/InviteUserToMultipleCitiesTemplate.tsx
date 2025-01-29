@@ -65,24 +65,14 @@ export function InviteUserToMultipleCitiesTemplate({
                 <div style={cityBox} key={name}>
                   <div
                     style={{
-                      background: `url('https://flagsapi.com/${locode!.split(" ")[0]}/flat/64.png'), no-repeat`,
+                      background: `url('https://flagsapi.com/${locode!.split(" ")[0]}/flat/64.png') no-repeat center center`,
                       backgroundSize: "cover",
                       height: "32px",
                       width: "32px",
-                      backgroundOrigin: "content-box",
+                      flexShrink: 0,
                     }}
                   />
-                  <Text
-                    style={{
-                      fontSize: "14px",
-                      fontStyle: "normal",
-                      fontWeight: "500",
-                      lineHeight: "20px",
-                      letterSpacing: "0.5px",
-                    }}
-                  >
-                    {name}
-                  </Text>
+                  <div style={cityNameText}>{name}</div>
                 </div>
               ))}
             </div>
@@ -108,6 +98,7 @@ export function InviteUserToMultipleCitiesTemplate({
 }
 
 export default InviteUserToMultipleCitiesTemplate;
+
 const buttonSection = {
   marginTop: "36px",
   marginBottom: "36px",
@@ -153,16 +144,6 @@ const paragraph = {
   color: "#484848",
 };
 
-const cityBox = {
-  display: "flex",
-  padding: "16px",
-  alignItems: "center",
-  gap: "16px",
-  borderRadius: "8px",
-  border: "1px solid #E6E7FF",
-  margin: "32px",
-};
-
 const urlLink = {
   fontSize: "14px",
   padding: "16px",
@@ -178,4 +159,23 @@ const footerText = {
   lineHeight: "16px",
   fontWeight: "400",
   color: "#79797A",
+};
+
+const cityBox = {
+  display: "flex",
+  padding: "16px",
+  alignItems: "center",
+  gap: "16px",
+  borderRadius: "8px",
+  border: "1px solid #E6E7FF",
+  margin: "32px",
+};
+
+const cityNameText = {
+  fontSize: "14px",
+  fontStyle: "normal",
+  fontWeight: "500",
+  lineHeight: "32px", // Match this with the flag height
+  letterSpacing: "0.5px",
+  color: "#484848",
 };

@@ -7,10 +7,11 @@ import {
   TagLabel,
   Wrap,
   HStack,
+  Divider,
 } from "@chakra-ui/react";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import type { TFunction } from "i18next";
-import { BodyMedium } from "@/components/Texts/Body";
+import { BodyLarge, BodyMedium } from "@/components/Texts/Body";
 
 interface MultipleEmailInputProps {
   t: TFunction;
@@ -73,26 +74,30 @@ const MultipleEmailInput: React.FC<MultipleEmailInputProps> = ({
         }
       />
       {error ? (
-        <HStack>
+        <HStack my={"5px"}>
           <InfoOutlineIcon color="sentiment.negativeDefault" />
           <BodyMedium text={t(error)} />
         </HStack>
       ) : (
-        <HStack>
+        <HStack my={"5px"}>
           <InfoOutlineIcon color="interactive.secondary" />
           <BodyMedium text={t("press-enter-to-add")} />
         </HStack>
       )}
+      <Divider my="24px" />
       <Wrap mt={2}>
         {emails.map((email, index) => (
           <Tag
             key={index}
             borderRadius="full"
             variant="solid"
-            colorScheme="blue"
+            backgroundColor="background.neutral"
           >
-            <TagLabel>{email}</TagLabel>
-            <TagCloseButton onClick={() => handleRemoveEmail(email)} />
+            <BodyLarge text={email} color="content.alternative" />
+            <TagCloseButton
+              color="interactive.control"
+              onClick={() => handleRemoveEmail(email)}
+            />
           </Tag>
         ))}
       </Wrap>

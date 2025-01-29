@@ -77,9 +77,15 @@ if __name__ == "__main__":
     # Write data to CSV
     write_dic_to_csv(output_dir, "Methodology", methodology_data_list)
 
+    # =================================================================
+    # Formula Input Values
+    # =================================================================
+
     df = pd.read_csv(input_fl)
     #rename columns
     df.rename(columns={'Treatment': 'treatment-status', 'Name treatment': 'treatment-name', 'Type of treatment': 'treatment-type', 'VALUE': 'formula_input_value', 'source': 'datasource'}, inplace=True)
+
+    df.fillna("None", inplace=True)
 
     # create metadata column
     df["metadata"] = df.apply(

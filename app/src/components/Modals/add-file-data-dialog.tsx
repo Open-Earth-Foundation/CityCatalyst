@@ -36,7 +36,7 @@ import { Button } from "../ui/button";
 import { Field } from "../ui/field";
 import { Checkbox } from "../ui/checkbox";
 
-interface AddFileDataModalProps {
+interface AddFileDataDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   onClose: () => void;
@@ -65,7 +65,7 @@ const scopes = [
   },
 ];
 
-const AddFileDataModal: FC<AddFileDataModalProps> = ({
+const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
   onOpenChange,
   isOpen,
   onClose,
@@ -340,4 +340,4 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
   );
 };
 
-export default AddFileDataModal;
+export default AddFileDataDialog;

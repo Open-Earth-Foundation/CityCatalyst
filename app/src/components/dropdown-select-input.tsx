@@ -1,16 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Tag,
-  TagLabel,
-  TagCloseButton,
-  Checkbox,
-  List,
-  ListItem,
-  Text,
-  Input,
-  FormLabel,
-} from "@chakra-ui/react";
+import { Box, Checkbox, List, ListItem, Text, Input } from "@chakra-ui/react";
 import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md";
 import { SubSectorWithRelations } from "@/app/[lng]/[inventory]/data/[step]/types";
 import {
@@ -19,7 +8,7 @@ import {
   UseFormWatch,
   useForm,
 } from "react-hook-form";
-import { FileData } from "./Modals/add-file-data-modal";
+import { FileData } from "./Modals/add-file-data-dialog";
 import { TFunction } from "i18next";
 
 interface DropdownSelectProps {

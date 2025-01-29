@@ -72,7 +72,6 @@ import type {
   SubSectorWithRelations,
 } from "./types";
 
-import AddFileDataModal from "@/components/Modals/add-file-data-modal";
 import { InventoryValueAttributes } from "@/models/InventoryValue";
 import { motion } from "framer-motion";
 import { getTranslationFromDict } from "@/i18n";
@@ -90,6 +89,7 @@ import {
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
 import { TbWorldSearch } from "react-icons/tb";
+import AddFileDataDialog from "@/components/Modals/add-file-data-dialog";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -1188,7 +1188,7 @@ export default function AddDataSteps({
           </Box>
         </Card.Root>
         {/* Add fole data modal */}
-        <AddFileDataModal
+        <AddFileDataDialog
           isOpen={openFileUploadDialog}
           onClose={onfileDataModalClose}
           subsectors={currentStep.subSectors}

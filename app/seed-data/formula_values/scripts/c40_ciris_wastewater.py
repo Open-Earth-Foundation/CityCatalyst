@@ -87,6 +87,37 @@ if __name__ == "__main__":
 
     df.fillna("None", inplace=True)
 
+    treatment_status = {
+        "Non-treated": "treatment-status-type-wastewater-untreated",
+        "Treated": "treatment-status-type-wastewater-treated"
+    }
+    df['treatment-status'] = df['treatment-status'].map(treatment_status)
+
+    treatment_name = {
+        "None": "treatment-name-none",
+        "Sewer": "treatment-name-sewer",
+        "Septic System": "treatment-name-septic-system",
+        "Latrine": "treatment-name-latrine",
+        "Other": "treatment-name-other"
+    }
+    df['treatment-name'] = df['treatment-name'].map(treatment_name)
+
+    treatment_type = {
+        "Sea, river and lake discharge": "treatment-type-sea-river-lake-discharge", 
+        "Stagnant sewer": "treatment-type-stagnant-sewer", 
+        "Septic System": "treatment-type-septic-system",
+        "Latrine - dry climate": "treatment-type-latrine-dry-climate",
+        "Latrine": "treatment-type-latrine", 
+        "Latrine -  wet climate": "treatment-type-latrine-wet-climate",
+        "Latrine - sediment removal": "treatment-type-latrine-sediment-removal", 
+        "Aerobic treat-ment plant": "treatment-type-centralized-aerobic-treatment-plan-well-managed",
+        "Anaerobic digester: sludge": "treatment-type-anaerobic-digester-for-sludge", 
+        "Anaerobic reactor": "treatment-type-anaerobic-reactor",
+        "Anaerobic shallow lagoon": "treatment-type-anaerobic-shallow-lagoon", 
+        "Anaerobic deep lagoon": "treatment-type-anaerobic-deep-lagoon"
+    }
+    df['treatment-type'] = df['treatment-type'].map(treatment_type)
+
     # create metadata column
     df["metadata"] = df.apply(
         lambda row: {

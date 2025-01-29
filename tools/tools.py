@@ -20,7 +20,7 @@ def retriever_main_action_tool(
     The vector store contains a collections with documents related to Brazil's overall climate strategy.
 
     **Input**:
-    - search_query (str) - The search query to seach for relevant documents. Provide a full sentence including relevant context instead of just providing key words.
+    - search_query (str) - A detailed, full-sentence, and context-rich query.
         * For querying the national climate strategy, always use this query: "Brazil's national climate strategy"
         * For querying strategies related to the the climate action adapt the query to search specifically for that climate action.
 
@@ -70,12 +70,13 @@ def retriever_sub_action_tool(
     search_query: str,
 ) -> Union[list[Tuple[Document, float]], str]:
     """
-    This tool is specifically designed to help agents find and retrieve detailed, step-by-step implementation information for certain climate actions from a Chroma vector store.
+    Use this tool to retrieve chunks of text from a collection within a Chroma vector store.
+    The vector store contains a collection of documents related to specific climate actions, climate strategies and detailed implementation steps.
 
     **Input**:
-    - search_query (str): A detailed, full, and context-rich query
+    - search_query (str): A detailed, full-sentence, and context-rich query
         * Example: "What are the specific steps to implement [climate action] to reduce carbon emissions in the [sector]?"
-        * Example: "Describe the implementation process for [climate action] in [city]"
+        * Example: "What are the implementation steps for [climate action]."
 
     **Output**:
     - A list of tuples: [(document_text, relevance_score)]
@@ -86,13 +87,12 @@ def retriever_sub_action_tool(
     - Start with broad queries and progressively narrow down
     """
 
-    vector_store = load_vectorstore(collection_name="_docs_db")
+    vector_store = load_vectorstore(collection_name="all_docs_db")
 
     if not vector_store:
         return "Could not load vector store. Please ensure your vector DB is created."
 
-    # metadata_filter = {"section": "sub_actions"}
-    metadata_filter = {"level": "national"}
+    metadata_filter = {"sub_actions": {"$eq": True}}
 
     docs_and_scores = vector_store.similarity_search_with_relevance_scores(
         query=search_query,

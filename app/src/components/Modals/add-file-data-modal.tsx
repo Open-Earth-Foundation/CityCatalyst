@@ -38,6 +38,7 @@ import { Checkbox } from "../ui/checkbox";
 
 interface AddFileDataModalProps {
   isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
   onClose: () => void;
   subsectors: SubSectorWithRelations[] | null;
   t: TFunction;
@@ -65,6 +66,7 @@ const scopes = [
 ];
 
 const AddFileDataModal: FC<AddFileDataModalProps> = ({
+  onOpenChange,
   isOpen,
   onClose,
   subsectors,
@@ -178,7 +180,11 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
   };
 
   return (
-    <DialogRoot blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
+    <DialogRoot
+      blockScrollOnMount={false}
+      open={isOpen}
+      onOpenChange={(e) => onOpenChange(e.open)}
+    >
       <DialogBackdrop />
       <DialogContent minH="300px" minW="739px" marginTop="10%">
         <DialogHeader
@@ -242,7 +248,9 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
                   label={
                     <>
                       {" "}
-                      <Text>{t("select-subsector-label")}</Text>
+                      <Text fontWeight="500" fontFamily="heading">
+                        {t("select-subsector-label")}
+                      </Text>
                       <Icon as={MdInfoOutline} color="interactive.control" />
                     </>
                   }
@@ -306,7 +314,7 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
           justifyContent="space-around"
         >
           <Button
-            variant="ghost"
+            variant="outline"
             borderWidth="2px"
             borderColor="interactive.secondary"
             h="64px"

@@ -281,7 +281,6 @@ export default function AddDataSteps({
   });
 
   const currentStep = steps[activeStep];
-  console.log("currentStep", currentStep);
 
   useEffect(() => {
     // change step param in URL without reloading
@@ -469,8 +468,10 @@ export default function AddDataSteps({
 
   const [uploadedFile, setUploadedFile] = useState<File>();
 
+  const [openFileUploadDialog, setOpenFileUploadDialog] = useState(false);
+
   const handleFileSelect = async (file: File) => {
-    onFileDataModalOpen();
+    setOpenFileUploadDialog((v) => !v);
   };
 
   const sectorData = getInventoryData.sectors.filter(
@@ -1188,9 +1189,10 @@ export default function AddDataSteps({
         </Card.Root>
         {/* Add fole data modal */}
         <AddFileDataModal
-          isOpen={isfileDataModalOpen}
+          isOpen={openFileUploadDialog}
           onClose={onfileDataModalClose}
           subsectors={currentStep.subSectors}
+          onOpenChange={setOpenFileUploadDialog}
           t={t}
           uploadedFile={uploadedFile!}
           currentStep={currentStep}

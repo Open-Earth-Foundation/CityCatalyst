@@ -40,7 +40,7 @@ const FileInput: React.FC<FileUploadProps> = ({
     setDragging(false);
   };
 
-  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+  const handleDrop = (e: any) => {
     e.preventDefault();
     setDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
@@ -49,10 +49,12 @@ const FileInput: React.FC<FileUploadProps> = ({
     }
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      onFileSelect(e.target.files[0]);
-      setUploadedFile(e.target.files[0]);
+  const handleChange = (e: any) => {
+    console.log(e.acceptedFiles);
+    console.log(e.acceptedFiles[0]);
+    if (e.acceptedFiles && e.acceptedFiles[0]) {
+      onFileSelect(e.acceptedFiles[0]);
+      setUploadedFile(e.acceptedFiles[0]);
     }
   };
 
@@ -76,8 +78,10 @@ const FileInput: React.FC<FileUploadProps> = ({
         max="206px"
         w="full"
         alignItems="stretch"
-        onFileChange={handleChange}
+        onFileChange={(e: any) => handleChange(e)}
         border="none"
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
       >
         <FileUploadDropzone
           label={

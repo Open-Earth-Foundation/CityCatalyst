@@ -5,7 +5,7 @@ from state.agent_state import AgentState
 
 from agents.agent_1_main_action import build_custom_agent_1
 from agents.agent_2_sub_actions import build_custom_agent_2
-from agents.agent_3_involved_partners import build_custom_agent_3
+from agents.agent_3_involved_municipalities import build_custom_agent_3
 from agents.agent_4_goals_milestones import build_custom_agent_4
 from agents.agent_5_timeline import build_custom_agent_5
 
@@ -21,6 +21,7 @@ from tools.tools import (
     retriever_sub_action_tool,
     search_municipalities_tool,
     placeholder_tool,
+    inspect_retrieved_results,
 )
 
 
@@ -28,7 +29,9 @@ from tools.tools import (
 model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
 
 
-agent_1 = build_custom_agent_1(model, [retriever_main_action_tool])
+agent_1 = build_custom_agent_1(
+    model, [retriever_main_action_tool, inspect_retrieved_results]
+)
 agent_2 = build_custom_agent_2(model, [retriever_sub_action_tool])
 agent_3 = build_custom_agent_3(
     model, [search_municipalities_tool]
@@ -60,9 +63,9 @@ def create_graph():
 
     # Define the edges
     builder.add_edge(START, "agent_1")
-    # builder.add_edge("agent_1", END)
-    builder.add_edge("agent_1", "agent_2")
-    builder.add_edge("agent_2", END)
+    builder.add_edge("agent_1", END)
+    # builder.add_edge("agent_1", "agent_2")
+    # builder.add_edge("agent_2", END)
     # builder.add_edge("agent_2", "agent_3")
     # builder.add_edge("agent_3", "agent_4")
     # builder.add_edge("agent_4", "agent_5")

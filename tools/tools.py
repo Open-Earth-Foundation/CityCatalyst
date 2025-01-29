@@ -119,19 +119,55 @@ search_municipalities_tool = TavilySearchResults(
 # When using this tool, instruct the agent to use it in its system prompt e.g.:
 #     inside <task> c. Check the relevance of the retrieved information against the search query.
 #     inside <tools> - a reasoning tool that can be used to reason over the relevance of the retrieved information from the documents.
+# @tool
+# def reasoning_tool(search_query: str, chunk: str):
+#     """
+#     Use this tool to reason over the relevance of the retrieved information from the documents.
+#     Compare the original query with the retrieved information and provide a reasoning for each retrieved document.
+#     If the document is relevant, provide a short reasoning why it is relevant.
+#     If the document is not relevant, provide a short reasoning why it is not relevant.
+#     If no documents have been retreived from a search query, update the search query to be more broad and try again.
+#     Repeat until the retriever returns relevant documents.
+
+#     **Input**:
+#     - search_query (str) - A search query in the national language.
+
+#     **Output**:
+#     - reasoning (str) - Your reasoning about the relevance of the chunk to the search query.
+#     """
+
+#     prompt_str = f"""
+#     You are given a user query:
+#     "{search_query}"
+
+#     And you are given a chunk of text:
+#     "{chunk}"
+
+#     Determine if the chunk is relevant to the user query.
+#     Start your output with either "Relevant:" or "Irrelevant:", followed by
+#     1-2 sentences explaining your reasoning.
+#     """
+
+#     llm = ChatOpenAI(model="gpt-4o", temperature=0, seed=42)
+#     response = llm.invoke([HumanMessage(content=prompt_str)])
+
+#     return response.content
+
+
 @tool
-def reasoning_tool(search_query: str, chunk: str):
+def inspect_retrieved_results(search_query: str, chunk: str):
     """
-    Use this tool to reason over the relevance of the retrieved information from the documents.
-    Compare the original query with the retrieved information and provide a reasoning for each retrieved document.
-    If the document is relevant, provide a short reasoning why it is relevant.
-    If the document is not relevant, provide a short reasoning why it is not relevant.
+    Use this tool to check if all search queries have retrieved documents (chunks).
+    Compare the original query with the retrieved information.
+    If no documents have been retreived from a search query, update the search query to be more broad and try again.
+    Repeat until the retriever returns relevant documents.
 
     **Input**:
     - search_query (str) - A search query in the national language.
+    - retrieved_chunk (str) - A chunk of text retrieved from the document.
 
     **Output**:
-    - reasoning (str) - Your reasoning about the relevance of the chunk to the search query.
+    - result (str) - The result of the inspection of returned chunks.
     """
 
     prompt_str = f"""
@@ -141,12 +177,10 @@ def reasoning_tool(search_query: str, chunk: str):
     And you are given a chunk of text:
     "{chunk}"
 
-    Determine if the chunk is relevant to the user query. 
-    Start your output with either "Relevant:" or "Irrelevant:", followed by 
-    1-2 sentences explaining your reasoning.
+    If no documents have been retrieved from a search query, return a message to update the search query to be more broad and try again.
     """
 
-    llm = ChatOpenAI(temperature=0, seed=42)
+    llm = ChatOpenAI(model="gpt-4o", temperature=0, seed=42)
     response = llm.invoke([HumanMessage(content=prompt_str)])
 
     return response.content

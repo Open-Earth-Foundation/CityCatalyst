@@ -54,6 +54,28 @@ if __name__ == "__main__":
     write_dic_to_csv(output_dir, "DataSource", datasource_data)
 
     # =================================================================
+    # Methodology
+    # =================================================================
+    methodologies = [
+            "wastewater-inside-domestic-calculator-activity",
+            "wastewater-outside-domestic-calculator-activity"
+        ]
+
+    methodology_data_list = []
+
+    for methodology in methodologies:
+            methodology_data = {
+                "methodology_id": uuid_generate_v3(methodology),
+                "methodology": methodology,
+                "methodology_url": "",  # Add the URL if needed
+                "datasource_id": datasource_data.get("datasource_id")
+            }
+            methodology_data_list.append(methodology_data)
+
+    # Write data to CSV
+    write_dic_to_csv(output_dir, "Methodology", methodology_data_list)
+
+    # =================================================================
     # Formula Input Values
     # =================================================================
 
@@ -239,11 +261,10 @@ if __name__ == "__main__":
     df['year'] = ''
     df['formula_name'] = 'domestic-wastewater'
     df['metadata'] = '' 
-    df['datasource'] = 'FAO'
     df['rnk'] = 1
 
     # Rename columns
-    df.rename(columns={'Protein': 'formula_input_value', 'Country': 'region', 'units': 'formula_input_units'}, inplace=True)
+    df.rename(columns={'Protein': 'formula_input_value', 'Country': 'region', 'units': 'formula_input_units', 'source': 'datasource'}, inplace=True)
 
     # Applying to inside and outside domestic wastewater
     tmp = df.copy()

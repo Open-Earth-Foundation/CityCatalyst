@@ -1147,7 +1147,7 @@ export default function AddDataSteps({
                                 w="full"
                               >
                                 <Button
-                                  variant="ghost"
+                                  variant="ghostLight"
                                   color="sentiment.negativeDefault"
                                   onClick={() =>
                                     removeSectorFile(
@@ -1168,7 +1168,6 @@ export default function AddDataSteps({
                                   mt={2}
                                   mr={2}
                                   size="md"
-                                  borderRadius="full"
                                   variant="solid"
                                   color="content.alternative"
                                   bg="background.neutral"

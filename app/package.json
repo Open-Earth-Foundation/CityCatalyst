@@ -37,6 +37,7 @@
     "@ai-sdk/openai": "^1.0.8",
     "@chakra-ui/react": "^3.5.1",
     "@emotion/react": "^11.14.0",
+    "@hookform/resolvers": "^3.10.0",
     "@huggingface/inference": "^2.8.0",
     "@next/env": "^14.2.5",
     "@nivo/bar": "^0.88.0",

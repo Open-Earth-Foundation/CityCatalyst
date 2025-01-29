@@ -1,14 +1,11 @@
 import {
   Box,
-  FormControl,
-  FormLabel,
   Grid,
   Heading,
   HStack,
+  Icon,
   Input,
-  InputGroup,
-  ModalBody,
-  Select,
+  SelectValueText,
   Spinner,
   Text,
   Textarea,
@@ -16,7 +13,6 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import BuildingTypeSelectInput from "../../building-select-input";
-import { InfoOutlineIcon, WarningIcon } from "@chakra-ui/icons";
 import { TFunction } from "i18next";
 import {
   Control,
@@ -39,6 +35,15 @@ import PercentageBreakdownInput from "@/components/percentage-breakdown-input";
 import { RadioButton } from "@/components/radio-button";
 import { EmissionFactorTypes } from "@/hooks/activity-value-form/use-emission-factors";
 import DependentSelectInput from "@/components/dependent-select-input";
+import { DialogBody } from "@/components/ui/dialog";
+import { Field } from "@/components/ui/field";
+import {
+  SelectContent,
+  SelectItem,
+  SelectRoot,
+  SelectTrigger,
+} from "@/components/ui/select";
+import { MdInfoOutline, MdWarning } from "react-icons/md";
 
 interface AddActivityModalBodyProps {
   t: TFunction;
@@ -183,19 +188,20 @@ const ActivityModalBody = ({
   );
 
   return (
-    <ModalBody p={6} px={12}>
+    <DialogBody p={6} px={12}>
       <form onSubmit={submit}>
         {methodology.activitySelectionField && (
           <HStack
-            spacing={4}
+            gap={4}
             mb="24px"
             display="flex"
             flexDirection="column"
             className="items-start"
-            gap="24px"
           >
-            <FormControl className="w-full">
-              <FormLabel>{t(methodology.activitySelectionField.id)}</FormLabel>
+            <Field
+              className="w-full"
+              label={t(methodology.activitySelectionField.id)}
+            >
               <HStack
                 display="flex"
                 flexDirection="row"
@@ -210,11 +216,10 @@ const ActivityModalBody = ({
                   </RadioButton>
                 ))}
               </HStack>
-            </FormControl>
+            </Field>
           </HStack>
         )}
         <HStack
-          spacing={4}
           mb="24px"
           display="flex"
           flexDirection="column"
@@ -226,7 +231,7 @@ const ActivityModalBody = ({
             return (
               <>
                 {f.options && (
-                  <FormControl key={idx} className="w-full">
+                  <Field key={idx} className="w-full">
                     <BuildingTypeSelectInput
                       options={f.options as string[]}
                       required={f.required}
@@ -241,7 +246,7 @@ const ActivityModalBody = ({
                       selectedActivity={selectedActivity}
                       setValue={setValue}
                     />
-                  </FormControl>
+                  </Field>
                 )}
                 {f.type === "percentage-breakdown" && (
                   <PercentageBreakdownInput
@@ -259,38 +264,36 @@ const ActivityModalBody = ({
                   />
                 )}
                 {f.type === "text" && (
-                  <FormControl className="w-full">
-                    <FormLabel className="truncate">{t(f.id)}</FormLabel>
-                    <InputGroup>
-                      <Input
-                        type="text"
-                        borderRadius="4px"
-                        h="48px"
-                        shadow="1dp"
-                        borderWidth={errors?.activity?.[f.id] ? "1px" : 0}
-                        border="inputBox"
-                        borderColor={
-                          errors?.activity?.[f.id]
-                            ? "sentiment.negativeDefault"
-                            : ""
-                        }
-                        background={
-                          errors?.activity?.[f.id]
-                            ? "sentiment.negativeOverlay"
-                            : ""
-                        }
-                        bgColor="base.light"
-                        _focus={{
-                          borderWidth: "1px",
-                          shadow: "none",
-                          borderColor: "content.link",
-                        }}
-                        {...register(`activity.${f.id}` as any, {
-                          required:
-                            f.required === false ? false : t("value-required"),
-                        })}
-                      />
-                    </InputGroup>
+                  <Field className="w-full" label={t(f.id)}>
+                    <Input
+                      type="text"
+                      borderRadius="4px"
+                      h="48px"
+                      shadow="1dp"
+                      borderWidth={errors?.activity?.[f.id] ? "1px" : 0}
+                      border="inputBox"
+                      borderColor={
+                        errors?.activity?.[f.id]
+                          ? "sentiment.negativeDefault"
+                          : ""
+                      }
+                      background={
+                        errors?.activity?.[f.id]
+                          ? "sentiment.negativeOverlay"
+                          : ""
+                      }
+                      bgColor="base.light"
+                      _focus={{
+                        borderWidth: "1px",
+                        shadow: "none",
+                        borderColor: "content.link",
+                      }}
+                      {...register(`activity.${f.id}` as any, {
+                        required:
+                          f.required === false ? false : t("value-required"),
+                      })}
+                    />
+
                     {(errors?.activity?.[f.id] as any) ? (
                       <Box
                         display="flex"
@@ -298,7 +301,10 @@ const ActivityModalBody = ({
                         alignItems="center"
                         mt="6px"
                       >
-                        <WarningIcon color="sentiment.negativeDefault" />
+                        <Icon
+                          as={MdWarning}
+                          color="sentiment.negativeDefault"
+                        />
                         <Text fontSize="body.md">
                           {" "}
                           {errors?.activity?.[f.id]?.message}{" "}
@@ -308,12 +314,11 @@ const ActivityModalBody = ({
                     ) : (
                       ""
                     )}
-                  </FormControl>
+                  </Field>
                 )}
                 {f.type === "number" && (
                   <>
-                    <FormControl className="w-full">
-                      <FormLabel className="truncate">{t(f.id)}</FormLabel>
+                    <Field className="w-full" label={t(f.id)}>
                       <FormattedNumberInput
                         placeholder={t("activity-data-amount-placeholder")}
                         max={f.max}
@@ -327,8 +332,8 @@ const ActivityModalBody = ({
                         w="full"
                       >
                         {f.units && (
-                          <Select
-                            variant="unstyled"
+                          <SelectRoot
+                            variant="subtle"
                             placeholder={t("select-unit")}
                             {...register(`activity.${f.id}-unit` as any, {
                               required:
@@ -337,12 +342,17 @@ const ActivityModalBody = ({
                                   : t("value-required"),
                             })}
                           >
-                            {f.units?.map((item: string) => (
-                              <option key={item} value={item}>
-                                {t(item)}
-                              </option>
-                            ))}
-                          </Select>
+                            <SelectTrigger>
+                              <SelectValueText placeholder={t("select-unit")} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {f.units?.map((item: string) => (
+                                <SelectItem key={item} value={item}>
+                                  {t(item)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </SelectRoot>
                         )}
                       </FormattedNumberInput>
                       {(errors?.activity?.[f.id] as any) ? (
@@ -352,7 +362,10 @@ const ActivityModalBody = ({
                           alignItems="center"
                           mt="6px"
                         >
-                          <WarningIcon color="sentiment.negativeDefault" />
+                          <Icon
+                            as={MdWarning}
+                            color="sentiment.negativeDefault"
+                          />
                           <Text fontSize="body.md">
                             {errors?.activity?.[f.id]?.message}{" "}
                           </Text>
@@ -368,7 +381,10 @@ const ActivityModalBody = ({
                           alignItems="center"
                           mt="6px"
                         >
-                          <WarningIcon color="sentiment.negativeDefault" />
+                          <Icon
+                            as={MdWarning}
+                            color="sentiment.negativeDefault"
+                          />
                           <Text fontSize="body.md">
                             {errors?.activity?.[`${f.id}-unit`]?.message}{" "}
                           </Text>
@@ -376,12 +392,11 @@ const ActivityModalBody = ({
                       ) : (
                         ""
                       )}
-                    </FormControl>
+                    </Field>
                   </>
                 )}
                 {f.dependsOn && (
-                  <FormControl className="w-full">
-                    <FormLabel className="truncate">{t(f.id)}</FormLabel>
+                  <Field className="w-full" label={t(f.id)}>
                     <DependentSelectInput
                       field={f}
                       register={register}
@@ -392,7 +407,7 @@ const ActivityModalBody = ({
                       setError={setError}
                       t={t}
                     />
-                  </FormControl>
+                  </Field>
                 )}
               </>
             );
@@ -404,7 +419,7 @@ const ActivityModalBody = ({
               gap="16px"
               w="full"
             >
-              <FormControl
+              <Field
                 isInvalid={!!resolve(prefix + "activityDataAmount", errors)}
               >
                 <FormLabel className="truncate">{t(title)}</FormLabel>
@@ -463,11 +478,10 @@ const ActivityModalBody = ({
                 ) : (
                   ""
                 )}
-              </FormControl>
+              </Field>
               {!hideEmissionFactors && (
-                <FormControl>
-                  <FormLabel>{t("emission-factor-type")}</FormLabel>
-                  <Select
+                <Field label={t("emission-factor-type")}>
+                  <SelectRoot
                     borderRadius="4px"
                     borderWidth={
                       errors?.activity?.emissionFactorType ? "1px" : 0
@@ -496,18 +510,26 @@ const ActivityModalBody = ({
                     bgColor="base.light"
                     placeholder={t("emissions-factor-type-placeholder")}
                   >
-                    {emissionsFactorTypes.map(({ id, name }) => (
-                      <option key={id} value={id}>
-                        {t(name)}
-                      </option>
-                    ))}
-                    <option key="custom" value="custom">
-                      {t("add-custom")}
-                    </option>
-                  </Select>
+                    <SelectTrigger>
+                      <SelectValueText
+                        placeholder={t("emissions-factor-type")}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {emissionsFactorTypes.map(({ id, name }) => (
+                        <SelectItem key={id} value={id}>
+                          {t(name)}
+                        </SelectItem>
+                      ))}
+                      <SelectItem key="custom" value="custom">
+                        {t("add-custom")}
+                      </SelectItem>
+                    </SelectContent>
+                  </SelectRoot>
+
                   {errors.activity?.emissionFactorType ? (
                     <Box display="flex" gap="6px" alignItems="center" mt="6px">
-                      <WarningIcon color="sentiment.negativeDefault" />
+                      <Icon as={MdWarning} color="sentiment.negativeDefault" />
                       <Text fontSize="body.md">
                         {t("emission-factor-form-label")}
                       </Text>
@@ -520,17 +542,14 @@ const ActivityModalBody = ({
                       mt="6px"
                     ></Box>
                   )}
-                </FormControl>
+                </Field>
               )}
             </Box>
           ) : null}
         </HStack>
         {methodology?.id.includes("direct-measure") && (
           <Grid templateColumns="repeat(2, 1fr)" gap={4} mb={5}>
-            <FormControl w="full">
-              <FormLabel color="content.secondary">
-                {t("emissions-value-co2")}
-              </FormLabel>
+            <Field w="full" label={t("emissions-value-co2")}>
               <FormattedNumberInput
                 testId="co2-emission-factor"
                 t={t}
@@ -540,8 +559,8 @@ const ActivityModalBody = ({
                 defaultValue={0}
               >
                 <Text
-                  isTruncated // Truncate the text with an ellipsis
-                  noOfLines={1}
+                  truncate // Truncate the text with an ellipsis
+                  lineClamp={1}
                   w="full"
                   textAlign="center"
                 >
@@ -550,7 +569,7 @@ const ActivityModalBody = ({
               </FormattedNumberInput>
               {(errors?.activity?.["CO2EmissionFactor"] as any) ? (
                 <Box display="flex" gap="6px" alignItems="center" mt="6px">
-                  <WarningIcon color="sentiment.negativeDefault" />
+                  <Icon as={MdWarning} color="sentiment.negativeDefault" />
                   <Text fontSize="body.md">
                     {t("emission-amount-form-error")}
                   </Text>
@@ -558,11 +577,8 @@ const ActivityModalBody = ({
               ) : (
                 ""
               )}
-            </FormControl>
-            <FormControl w="full">
-              <FormLabel color="content.secondary">
-                {t("emissions-value-n2o")}
-              </FormLabel>
+            </Field>
+            <Field w="full" label={t("emissions-value-n2o")}>
               <FormattedNumberInput
                 testId="n2o-emission-factor"
                 t={t}
@@ -572,8 +588,8 @@ const ActivityModalBody = ({
                 defaultValue={0}
               >
                 <Text
-                  isTruncated // Truncate the text with an ellipsis
-                  noOfLines={1}
+                  truncate // Truncate the text with an ellipsis
+                  lineClamp={1}
                   w="full"
                   textAlign="center"
                 >
@@ -582,7 +598,7 @@ const ActivityModalBody = ({
               </FormattedNumberInput>
               {(errors?.activity?.["N2OEmissionFactor"] as any) ? (
                 <Box display="flex" gap="6px" alignItems="center" mt="6px">
-                  <WarningIcon color="sentiment.negativeDefault" />
+                  <Icon as={MdWarning} color="sentiment.negativeDefault" />
                   <Text fontSize="body.md">
                     {t("emission-amount-form-error")}
                   </Text>
@@ -590,11 +606,8 @@ const ActivityModalBody = ({
               ) : (
                 ""
               )}
-            </FormControl>
-            <FormControl w="full">
-              <FormLabel color="content.secondary">
-                {t("emissions-value-ch4")}
-              </FormLabel>
+            </Field>
+            <Field w="full" label={t("emissions-value-ch4")}>
               <FormattedNumberInput
                 testId="ch4-emission-factor"
                 t={t}
@@ -604,8 +617,8 @@ const ActivityModalBody = ({
                 defaultValue={0}
               >
                 <Text
-                  isTruncated // Truncate the text with an ellipsis
-                  noOfLines={1}
+                  truncate // Truncate the text with an ellipsis
+                  lineClamp={1}
                   w="full"
                   textAlign="center"
                 >
@@ -614,7 +627,7 @@ const ActivityModalBody = ({
               </FormattedNumberInput>
               {(errors?.activity?.["CH4EmissionFactor"] as any) ? (
                 <Box display="flex" gap="6px" alignItems="center" mt="6px">
-                  <WarningIcon color="sentiment.negativeDefault" />
+                  <Icon as={MdWarning} color="sentiment.negativeDefault" />
                   <Text fontSize="body.md">
                     {t("emission-amount-form-error")}
                   </Text>
@@ -622,7 +635,7 @@ const ActivityModalBody = ({
               ) : (
                 ""
               )}
-            </FormControl>
+            </Field>
           </Grid>
         )}
         {!methodology?.id.includes("direct-measure") &&
@@ -635,7 +648,7 @@ const ActivityModalBody = ({
                 display="flex"
                 alignItems="center"
               >
-                <FormLabel
+                <Text
                   variant="label"
                   fontSize="label.lg"
                   fontStyle="normal"
@@ -644,14 +657,11 @@ const ActivityModalBody = ({
                   fontFamily="heading"
                 >
                   {t("emissions-factor-values")}
-                </FormLabel>
+                </Text>
               </Heading>
               <HStack className="items-start" spacing={4} mb={5}>
-                <FormControl>
-                  <FormControl>
-                    <FormLabel color="content.tertiary">
-                      {t("co2-emission-factor")}
-                    </FormLabel>
+                <Box>
+                  <Field label={t("co2-emission-factor")}>
                     <FormattedNumberInput
                       miniAddon
                       t={t}
@@ -664,8 +674,8 @@ const ActivityModalBody = ({
                         <Spinner size="sm" color="border.neutral" />
                       ) : (
                         <Text
-                          isTruncated // Truncate the text with an ellipsis
-                          noOfLines={1}
+                          truncate // Truncate the text with an ellipsis
+                          lineClamp={1}
                           w="full"
                           textAlign="center"
                         >
@@ -677,10 +687,10 @@ const ActivityModalBody = ({
                         </Text>
                       )}
                     </FormattedNumberInput>
-                  </FormControl>
+                  </Field>
                   {(errors?.activity?.["CO2EmissionFactor"] as any) ? (
                     <Box display="flex" gap="6px" alignItems="center" mt="6px">
-                      <WarningIcon color="sentiment.negativeDefault" />
+                      <Icon as={MdWarning} color="sentiment.negativeDefault" />
                       <Text fontSize="body.md">
                         {t("emission-amount-form-error")}
                       </Text>
@@ -694,11 +704,8 @@ const ActivityModalBody = ({
                       h="16px"
                     ></Box>
                   )}
-                </FormControl>
-                <FormControl>
-                  <FormLabel color="content.tertiary">
-                    {t("n2o-emission-factor")}
-                  </FormLabel>
+                </Box>
+                <Field label={t("n2o-emission-factor")}>
                   <FormattedNumberInput
                     miniAddon
                     t={t}
@@ -711,8 +718,8 @@ const ActivityModalBody = ({
                       <Spinner size="sm" color="border.neutral" />
                     ) : (
                       <Text
-                        isTruncated // Truncate the text with an ellipsis
-                        noOfLines={1}
+                        truncate // Truncate the text with an ellipsis
+                        lineClamp={1}
                         w="full"
                         textAlign="center"
                       >
@@ -726,7 +733,7 @@ const ActivityModalBody = ({
                   </FormattedNumberInput>
                   {(errors?.activity?.["N2OEmissionFactor"] as any) ? (
                     <Box display="flex" gap="6px" alignItems="center" mt="6px">
-                      <WarningIcon color="sentiment.negativeDefault" />
+                      <Icon as={MdWarning} color="sentiment.negativeDefault" />
                       <Text fontSize="body.md">
                         {t("emission-amount-form-error")}
                       </Text>
@@ -740,11 +747,8 @@ const ActivityModalBody = ({
                       h="16px"
                     ></Box>
                   )}
-                </FormControl>
-                <FormControl>
-                  <FormLabel color="content.tertiary">
-                    {t("ch4-emission-factor")}
-                  </FormLabel>
+                </Field>
+                <Field label={t("ch4-emission-factor")}>
                   <FormattedNumberInput
                     control={control}
                     miniAddon
@@ -757,8 +761,8 @@ const ActivityModalBody = ({
                       <Spinner size="sm" color="border.neutral" />
                     ) : (
                       <Text
-                        isTruncated // Truncate the text with an ellipsis
-                        noOfLines={1}
+                        truncate // Truncate the text with an ellipsis
+                        lineClamp={1}
                         w="full"
                         textAlign="center"
                       >
@@ -772,7 +776,7 @@ const ActivityModalBody = ({
                   </FormattedNumberInput>
                   {(errors?.activity?.["CH4EmissionFactor"] as any) ? (
                     <Box display="flex" gap="6px" alignItems="center" mt="6px">
-                      <WarningIcon color="sentiment.negativeDefault" />
+                      <Icon as={MdWarning} color="sentiment.negativeDefault" />
                       <Text fontSize="body.md">
                         {t("emission-amount-form-error")}
                       </Text>
@@ -786,15 +790,17 @@ const ActivityModalBody = ({
                       h="16px"
                     ></Box>
                   )}
-                </FormControl>
+                </Field>
               </HStack>{" "}
             </>
           )}
 
         <HStack display="flex" flexDirection="column" spacing={4} mb={5}>
-          <FormControl isInvalid={!!resolve(prefix + "dataQuality", errors)}>
-            <FormLabel>{t("data-quality")}</FormLabel>
-            <Select
+          <Field
+            invalid={!!resolve(prefix + "dataQuality", errors)}
+            label={t("data-quality")}
+          >
+            <SelectRoot
               borderWidth={errors?.activity?.dataQuality ? "1px" : 0}
               border="inputBox"
               borderRadius="4px"
@@ -817,60 +823,67 @@ const ActivityModalBody = ({
               h="48px"
               shadow="1dp"
             >
-              <option value="high">{t("detailed-activity-data")}</option>
-              <option value="medium">{t("modeled-activity-data")}</option>
-              <option value="low">
-                {t("highly-modeled-uncertain-activity-data")}
-              </option>
-            </Select>
+              <SelectTrigger>
+                <SelectValueText placeholder={t("data-quality-placeholder")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="high">
+                  {t("detailed-activity-data")}
+                </SelectItem>
+                <SelectItem value="medium">
+                  {t("modeled-activity-data")}
+                </SelectItem>
+                <SelectItem value="low">
+                  {t("highly-modeled-uncertain-activity-data")}
+                </SelectItem>
+              </SelectContent>
+            </SelectRoot>
             {errors.activity?.dataQuality ? (
               <Box display="flex" gap="6px" alignItems="center" mt="6px">
-                <WarningIcon color="sentiment.negativeDefault" />
+                <Icon as={MdWarning} color="sentiment.negativeDefault" />
                 <Text fontSize="body.md">{t("data-quality-form-label")}</Text>
               </Box>
             ) : (
               ""
             )}
-          </FormControl>
+          </Field>
           {sourceField && (
-            <FormControl className="w-full">
-              <FormLabel className="truncate">{t("data-source")}</FormLabel>
-              <InputGroup>
-                <Input
-                  type="text"
-                  borderRadius="4px"
-                  placeholder={t("data-source-placeholder")}
-                  h="48px"
-                  shadow="1dp"
-                  borderWidth={errors?.activity?.[sourceField.id] ? "1px" : 0}
-                  border="inputBox"
-                  borderColor={
-                    errors?.activity?.[sourceField.id]
-                      ? "sentiment.negativeDefault"
-                      : ""
-                  }
-                  background={
-                    errors?.activity?.[sourceField.id]
-                      ? "sentiment.negativeOverlay"
-                      : ""
-                  }
-                  bgColor="base.light"
-                  _focus={{
-                    borderWidth: "1px",
-                    shadow: "none",
-                    borderColor: "content.link",
-                  }}
-                  {...register(`activity.${sourceField.id}` as any, {
-                    required:
-                      sourceField.required === false
-                        ? false
-                        : t("value-required"),
-                  })}
-                />
-              </InputGroup>
+            <Field className="w-full" label={t("data-source")}>
+              <Input
+                type="text"
+                borderRadius="4px"
+                placeholder={t("data-source-placeholder")}
+                h="48px"
+                shadow="1dp"
+                borderWidth={errors?.activity?.[sourceField.id] ? "1px" : 0}
+                border="inputBox"
+                borderColor={
+                  errors?.activity?.[sourceField.id]
+                    ? "sentiment.negativeDefault"
+                    : ""
+                }
+                background={
+                  errors?.activity?.[sourceField.id]
+                    ? "sentiment.negativeOverlay"
+                    : ""
+                }
+                bgColor="base.light"
+                _focus={{
+                  borderWidth: "1px",
+                  shadow: "none",
+                  borderColor: "content.link",
+                }}
+                {...register(`activity.${sourceField.id}` as any, {
+                  required:
+                    sourceField.required === false
+                      ? false
+                      : t("value-required"),
+                })}
+              />
+
               {(errors?.activity?.[sourceField.id] as any) ? (
                 <Box display="flex" gap="6px" alignItems="center" mt="6px">
-                  <WarningIcon color="sentiment.negativeDefault" />
+                  <Icon as={MdWarning} color="sentiment.negativeDefault" />
                   <Text fontSize="body.md">
                     {" "}
                     {errors?.activity?.[sourceField.id]?.message}{" "}
@@ -879,13 +892,13 @@ const ActivityModalBody = ({
               ) : (
                 ""
               )}
-            </FormControl>
+            </Field>
           )}
-          <FormControl
-            isInvalid={!!resolve(prefix + "dataComments", errors)}
+          <Field
+            invalid={!!resolve(prefix + "dataComments", errors)}
             mb={12}
+            label={t("data-comments")}
           >
-            <FormLabel>{t("data-comments")}</FormLabel>
             <Textarea
               data-testid="source-reference"
               borderWidth={errors?.activity?.dataComments ? "1px" : 0}
@@ -915,7 +928,7 @@ const ActivityModalBody = ({
             />
             {errors.activity?.dataComments ? (
               <Box display="flex" gap="6px" alignItems="center" mt="6px">
-                <WarningIcon color="sentiment.negativeDefault" />
+                <Icon as={MdWarning} color="sentiment.negativeDefault" />
                 <Text fontSize="body.md">
                   {" "}
                   {errors?.activity?.dataComments?.message}{" "}
@@ -924,11 +937,10 @@ const ActivityModalBody = ({
             ) : (
               ""
             )}
-          </FormControl>
+          </Field>
         </HStack>
-
         <HStack className="items-start" mb={13}>
-          <InfoOutlineIcon mt={1} color="content.link" />
+          <Icon as={MdInfoOutline} mt={1} color="content.link" />
           <Text color="content.tertiary">
             {t("gwp-info-prefix")}{" "}
             <Text as="span" fontWeight="bold">
@@ -937,7 +949,7 @@ const ActivityModalBody = ({
           </Text>
         </HStack>
       </form>
-    </ModalBody>
+    </DialogBody>
   );
 };
 

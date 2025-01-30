@@ -190,7 +190,7 @@ function SubSectorPage({
     isUserInfoLoading;
 
   return (
-    <Tabs.Root>
+    <Tabs.Root defaultValue={scopes[0]?.referenceNumber}>
       <MotionBox
         bg="background.backgroundLight"
         className="fixed z-10 top-0 w-full transition-all"
@@ -402,6 +402,7 @@ function SubSectorPage({
               <Tabs.Trigger
                 key={index}
                 className="[&[aria-selected='false']]:border-[transparent]"
+                value={scope.referenceNumber}
               >
                 <Text
                   fontFamily="heading"
@@ -417,28 +418,26 @@ function SubSectorPage({
       </MotionBox>
       <div className="pt-16 w-[1090px] max-w-full mx-auto px-4 pb-[100px] mt-[240px]">
         <Box mt="48px">
-          <Tabs.Content>
-            {loadingState ? (
-              <LoadingState />
-            ) : (
-              scopes?.map((scope) => {
-                return (
-                  <ActivityTab
-                    referenceNumber={scope.referenceNumber!}
-                    key={scope.referenceNumber}
-                    t={t}
-                    inventoryId={inventoryId}
-                    subsectorId={subsector}
-                    step={step}
-                    activityData={activityData}
-                    inventoryValues={getFilteredInventoryValues(
-                      scope.referenceNumber,
-                    )}
-                  />
-                );
-              })
-            )}
-          </Tabs.Content>
+          {loadingState ? (
+            <LoadingState />
+          ) : (
+            scopes?.map((scope) => {
+              return (
+                <ActivityTab
+                  referenceNumber={scope.referenceNumber!}
+                  key={scope.referenceNumber}
+                  t={t}
+                  inventoryId={inventoryId}
+                  subsectorId={subsector}
+                  step={step}
+                  activityData={activityData}
+                  inventoryValues={getFilteredInventoryValues(
+                    scope.referenceNumber,
+                  )}
+                />
+              );
+            })
+          )}
         </Box>
       </div>
     </Tabs.Root>

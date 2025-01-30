@@ -38,14 +38,8 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
   const {
     register,
     handleSubmit,
-    reset,
-    watch,
-    setError,
-    clearErrors,
-    setFocus,
     setValue,
     control,
-    getValues,
     formState: { errors },
   } = useForm<{
     reason: string;
@@ -74,7 +68,7 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
     setValue: setSelectedReason,
   } = useRadioGroup({
     defaultValue: reason || "",
-    onChange: (value) => setValue("reason", value), // Update reason in React Hook Form on selection
+    onChange: (value: string) => setValue("reason", value), // Update reason in React Hook Form on selection
   });
 
   useEffect(() => {

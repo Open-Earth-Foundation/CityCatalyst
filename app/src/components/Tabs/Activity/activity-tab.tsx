@@ -218,7 +218,12 @@ const ActivityTab: FC<ActivityTabProps> = ({
 
   return (
     <>
-      <Tabs.Content key={referenceNumber} p="0" pt="48px">
+      <Tabs.Content
+        key={referenceNumber}
+        value={referenceNumber}
+        p="0"
+        pt="48px"
+      >
         <Box
           display="flex"
           alignItems="center"

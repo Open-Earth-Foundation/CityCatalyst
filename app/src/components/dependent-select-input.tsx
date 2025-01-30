@@ -1,8 +1,9 @@
 import { ExtraField } from "@/util/form-schema";
-import { Box, Select, Text } from "@chakra-ui/react";
+import { Box, Icon, Text } from "@chakra-ui/react";
 import { useWatch } from "react-hook-form";
-import { WarningIcon } from "@chakra-ui/icons";
 import React from "react";
+import { SelectRoot, SelectTrigger, SelectValueText } from "./ui/select";
+import { MdWarning } from "react-icons/md";
 
 const DependentSelectInput = ({
   field,
@@ -30,7 +31,7 @@ const DependentSelectInput = ({
   const fieldId = field.id;
   return (
     <Box display="flex" flexDirection="column" gap="8px">
-      <Select
+      <SelectRoot
         borderRadius="4px"
         borderWidth={errors?.activity?.[fieldId] ? "1px" : 0}
         border="inputBox"
@@ -60,15 +61,26 @@ const DependentSelectInput = ({
             : t("option-required")
         }
       >
+        <SelectTrigger>
+          <SelectValueText
+            placeholder={
+              !dependentValue
+                ? t("dependent-extra-field-placeholder", {
+                    dependency: t(dependentFieldKey),
+                  })
+                : t("option-required")
+            }
+          />
+        </SelectTrigger>
         {field.dependentOptions?.[dependentValue]?.map((option) => (
           <option key={option} value={option}>
             {t(option)}
           </option>
         ))}
-      </Select>
+      </SelectRoot>
       {errors?.activity?.[fieldId] ? (
         <Box display="flex" gap="6px" alignItems="center">
-          <WarningIcon color="sentiment.negativeDefault" />
+          <Icon as={MdWarning} color="sentiment.negativeDefault" />
           <Text fontSize="body.md">{errors?.activity?.[fieldId]?.message}</Text>
         </Box>
       ) : (

@@ -1,4 +1,4 @@
-import { Box, Select, Text } from "@chakra-ui/react";
+import { Box, Icon, Text } from "@chakra-ui/react";
 import React, { FC, use, useEffect, useRef, useState } from "react";
 import {
   Control,
@@ -9,10 +9,11 @@ import {
   UseFormSetValue,
 } from "react-hook-form";
 import { Inputs } from "./Modals/activity-modal/activity-modal-body";
-import { WarningIcon } from "@chakra-ui/icons";
 import { TFunction } from "i18next";
 import type { SuggestedActivity } from "@/util/form-schema";
 import MultiSelectInput from "@/components/MultiSelectInput";
+import { SelectRoot, SelectTrigger, SelectValueText } from "./ui/select";
+import { MdWarning } from "react-icons/md";
 
 interface BuildingTypeSelectInputProps {
   title: string;
@@ -89,7 +90,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
         rules={{ required: required === false ? false : t("option-required") }}
         render={({ field }) => {
           return (
-            <Select
+            <SelectRoot
               {...field}
               shadow="1dp"
               borderRadius="4px"
@@ -111,18 +112,21 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
               }}
               value={field.value}
             >
+              <SelectTrigger>
+                <SelectValueText placeholder={placeholder} />
+              </SelectTrigger>
               {options?.map((item: string) => (
                 <option key={item} value={item}>
                   {t(item)}
                 </option>
               ))}
-            </Select>
+            </SelectRoot>
           );
         }}
       />
       {error ? (
         <Box display="flex" gap="6px" alignItems="center">
-          <WarningIcon color="sentiment.negativeDefault" />
+          <Icon as={MdWarning} color="sentiment.negativeDefault" />
           <Text fontSize="body.md">{error?.message}</Text>
         </Box>
       ) : (

@@ -5,16 +5,12 @@ import {
   Card,
   Icon,
   IconButton,
-  Popover,
   PopoverArrow,
   PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import { convertKgToTonnes, getInputMethodology } from "@/util/helpers";
-import { AddIcon } from "@chakra-ui/icons";
 import SuggestedActivityCard from "@/components/Cards/suggested-activities-card";
 import { DataConnectIcon } from "@/components/icons";
 import DirectMeasureTable from "@/components/Tabs/Activity/direct-measure-table";
@@ -32,9 +28,14 @@ import {
 import { ActivityValue } from "@/models/ActivityValue";
 import { InventoryValue } from "@/models/InventoryValue";
 import HeadingText from "@/components/heading-text";
-import { MdMoreVert } from "react-icons/md";
+import { MdAdd, MdMoreVert } from "react-icons/md";
 import { FaNetworkWired } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
+import {
+  AccordionItemContent,
+  AccordionItemTrigger,
+} from "@/components/ui/accordion";
+import { PopoverRoot } from "@/components/ui/popover";
 
 interface EmissionDataSectionProps {
   t: TFunction;
@@ -71,22 +72,22 @@ const EmissionDataSection = ({
   );
 
   const {
-    isOpen: isAddActivityModalOpen,
+    open: isAddActivityModalOpen,
     onOpen: onAddActivityModalOpen,
     onClose: onAddActivityModalClose,
   } = useDisclosure();
   const {
-    isOpen: isChangeMethodologyModalOpen,
+    open: isChangeMethodologyModalOpen,
     onOpen: onChangeMethodologyOpen,
     onClose: onChangeMethodologyClose,
   } = useDisclosure();
   const {
-    isOpen: isDeleteActivitiesModalOpen,
+    open: isDeleteActivitiesModalOpen,
     onOpen: onDeleteActivitiesModalOpen,
     onClose: onDeleteActivitiesModalClose,
   } = useDisclosure();
   const {
-    isOpen: isDeleteActivityModalOpen,
+    open: isDeleteActivityModalOpen,
     onOpen: onDeleteActivityModalOpen,
     onClose: onDeleteActivityModalClose,
   } = useDisclosure();
@@ -148,7 +149,7 @@ const EmissionDataSection = ({
           </Box>
         </>
       ) : (
-        <Card
+        <Card.Root
           w="full"
           bg="background.backgroundLight"
           shadow="none"
@@ -184,15 +185,15 @@ const EmissionDataSection = ({
             onClick={onAddActivityModalOpen}
             data-testid="add-emission-data-button"
             title={t("add-emission-data")}
-            leftIcon={<AddIcon h="16px" w="16px" />}
             h="48px"
             aria-label="activity-button"
             fontSize="button.md"
             gap="8px"
           >
+            <Icon as={MdAdd} h="16px" w="16px" />
             {t("add-emission-data-btn")}
           </Button>
-        </Card>
+        </Card.Root>
       )}
     </>
   );
@@ -229,25 +230,31 @@ const EmissionDataSection = ({
                 data-testid="add-emission-data-button"
                 onClick={onAddActivityModalOpen}
                 title="Add Activity"
-                leftIcon={<AddIcon h="16px" w="16px" />}
                 h="48px"
                 aria-label="activity-button"
                 fontSize="button.md"
                 gap="8px"
               >
+                <Icon as={MdAdd} h="16px" w="16px" />
                 {t("add-emission-data")}
               </Button>
             )}
-            <Popover>
-              <PopoverTrigger>
+            <PopoverRoot>
+              <AccordionItemTrigger>
                 <IconButton
-                  icon={<MdMoreVert size="24px" />}
                   aria-label="more-icon"
                   variant="ghost"
                   color="content.tertiary"
-                />
-              </PopoverTrigger>
-              <PopoverContent w="auto" borderRadius="8px" shadow="2dp" px="0">
+                >
+                  <MdMoreVert size="24px" />
+                </IconButton>
+              </AccordionItemTrigger>
+              <AccordionItemContent
+                w="auto"
+                borderRadius="8px"
+                shadow="2dp"
+                px="0"
+              >
                 <PopoverArrow />
                 <PopoverBody p="0px">
                   <Box
@@ -305,8 +312,8 @@ const EmissionDataSection = ({
                     </Box>
                   )}
                 </PopoverBody>
-              </PopoverContent>
-            </Popover>
+              </AccordionItemContent>
+            </PopoverRoot>
           </Box>
         </Box>
         <Box>

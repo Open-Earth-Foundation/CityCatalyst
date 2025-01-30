@@ -2,8 +2,7 @@ import HeadingText from "@/components/heading-text";
 import {
   Box,
   Button,
-  Radio,
-  RadioGroup,
+  Icon,
   Stack,
   Text,
   Textarea,
@@ -13,7 +12,8 @@ import { TFunction } from "i18next";
 import React, { FC, useEffect } from "react";
 import { useController, useForm } from "react-hook-form";
 import { api } from "@/services/api";
-import { WarningIcon } from "@chakra-ui/icons";
+import { Radio, RadioGroup } from "@/components/ui/radio";
+import { MdWarning } from "react-icons/md";
 
 interface ScopeUnavailableProps {
   t: TFunction;
@@ -162,7 +162,7 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
 
             {errors?.reason ? (
               <Box display="flex" gap="6px" alignItems="center" mt="6px">
-                <WarningIcon color="sentiment.negativeDefault" />
+                <Icon as={MdWarning} color="sentiment.negativeDefault" />
                 <Text fontSize="body.md">{errors?.reason.message} </Text>
               </Box>
             ) : null}
@@ -188,7 +188,7 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
         />
         {errors?.justification ? (
           <Box display="flex" gap="6px" alignItems="center" mt="6px">
-            <WarningIcon color="sentiment.negativeDefault" />
+            <Icon as={MdWarning} color="sentiment.negativeDefault" />
             <Text fontSize="body.md">{errors?.justification.message} </Text>
           </Box>
         ) : null}
@@ -197,7 +197,7 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
           p="16px"
           mt="24px"
           onClick={submit}
-          isLoading={isLoading}
+          loading={isLoading}
         >
           {t("save-changes")}
         </Button>

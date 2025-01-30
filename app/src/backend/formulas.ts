@@ -106,8 +106,6 @@ const TEXTILES_FACTOR = 0.24;
 const INDUSTRIAL_WASTE_FACTOR = 0.15;
 
 const DEFAULT_METHANE_PRODUCTION_CAPACITY = 0.25; // kg CH4/kg COD
-const DEFAULT_METHANE_CORRECTION_FACTOR = 1.0; // TODO get correct one from FormulaInputs/ FormulaValues once that is loaded
-const DEFAULT_BOD_PER_CAPITA = 40; // TODO this is a placeholder, get the actual value from IPCC!!!
 
 // TODO get actual values for each contry from IPCC
 const DEFAULT_INCOME_GROUP_FRACTIONS: Record<string, number> = {
@@ -733,23 +731,19 @@ export async function handleDomesticWasteWaterFormula(
   const collectionStatus = data[`${prefixKey}-collection-status`];
   const isCollectedWasteWater =
     collectionStatus === "collection-status-type-wastewater-collected";
-  const industrialBodFactor = isCollectedWasteWater ? 1.0 : 1.25;
+  const industrialBodFactor = isCollectedWasteWater ? 1.25 : 1.0;
   const treatmentStatus = data[`${prefixKey}-treatment-status`];
-  const treatmentType = data[`${prefixKey}-treatment-type-collected-treated`];
-  const dischargePathway = data[`${prefixKey}-discharge-pathway-untreated`];
+  const treatmentName = data[`${prefixKey}-treatment-name`] as string;
+  const treatmentType = data[`${prefixKey}-treatment-type`];
   const incomeGroup = data[`${prefixKey}-income-group`];
   const methaneProductionCapacity = 0.6; // Bo takes default value of 0.6 for domestic
-  const country = inventoryValue.inventory.city.country as string;
   const countryCode = inventoryValue.inventory.city.countryLocode;
-  const treatmentTypeMetaDataFilter =
-    treatmentStatus === "treatment-status-type-wastewater-untreated"
-      ? dischargePathway
-      : treatmentType;
+
   // where clause filter
 
   const formulaInputMCF = await db.models.FormulaInput.findOne({
     where: {
-      [`metadata.treatment-type`]: treatmentTypeMetaDataFilter as string,
+      [`metadata.treatment-type`]: treatmentType as string,
       [`metadata.treatment-status`]: treatmentStatus as string,
       gas: "CH4",
       parameterCode: "MCF",
@@ -769,11 +763,15 @@ export async function handleDomesticWasteWaterFormula(
       ],
     ],
   });
-  const MethaneCorrectionFactor = formulaInputMCF?.formulaInputValue || 0.3; // TODO confirm if a non zero default is okay
+  const MethaneCorrectionFactor = formulaInputMCF?.formulaInputValue || 0; // TODO confirm if a non zero default is okay
   const formulaInputDOU = await db.models.FormulaInput.findOne({
     where: {
       [`metadata.income-group`]: incomeGroup as string,
+      [`metadata.treatment-name`]: treatmentName.includes("latrine")
+        ? "latrine"
+        : treatmentName,
       gas: "CH4",
+      formulaInputValue: { [Op.ne]: 0 },
       parameterCode: "U*T",
       methodologyName: `${prefixKey}-activity`,
       [Op.or]: [
@@ -821,8 +819,7 @@ export async function handleDomesticWasteWaterFormula(
     ],
   });
 
-  const bodPerCapita =
-    formulaInputBOD?.formulaInputValue ?? DEFAULT_BOD_PER_CAPITA; // TODO what is the best default value
+  const bodPerCapita = (formulaInputBOD?.formulaInputValue as number) / 1000; // default unit is in g/person/day divide by 1000 to get kg/person/day
 
   const formulaInputUI = await db.models.FormulaInput.findOne({
     where: {
@@ -860,8 +857,56 @@ export async function handleDomesticWasteWaterFormula(
     .mul(EFj)
     .sub(methaneRecovered);
 
-  const amount = totalMethaneProduction.round(); // TODO round right or is ceil/ floor more correct?
-  return [{ gas: "CH4", amount }];
+  const ch4amount = totalMethaneProduction.round();
+
+  // calculate the total n20 emissions
+  const garbageDisposalType = data[`${prefixKey}-garbage-disposal`];
+  const f_non_con =
+    garbageDisposalType === "garbage-disposal-type-garbage-disposals"
+      ? 1.4
+      : 1.1;
+
+  const f_ind_com = 1.25;
+
+  const formulaInputProtein = await db.models.FormulaInput.findOne({
+    where: {
+      parameterCode: "protein",
+      gas: "N2O",
+      methodologyName: `${prefixKey}-activity`,
+      [Op.or]: [
+        { actorId: { [Op.iLike]: `%${countryCode}%` } },
+        { actorId: { [Op.iLike]: "%world%" } },
+      ],
+    },
+    order: [
+      // Prioritize specific country matches first
+      [
+        literal(
+          `CASE WHEN actor_id ILIKE '%${countryCode}%' THEN 1 ELSE 2 END`,
+        ),
+        "ASC",
+      ],
+    ],
+  });
+
+  const proteinValue = formulaInputProtein?.formulaInputValue || 0;
+
+  const n2oValueFirstTerm =
+    cityPopulationByIncomegroup * proteinValue * 0.16 * f_non_con * f_ind_com;
+  const ef_fluent = 0.005;
+
+  const n20Emission = new Decimal(n2oValueFirstTerm)
+    .sub(removedSludge)
+    .mul(ef_fluent)
+    .mul(44 / 28);
+
+  return [
+    { gas: "CH4", amount: ch4amount },
+    {
+      gas: "N2O",
+      amount: n20Emission.round(),
+    },
+  ];
 
   // TODO include N20 calculations
 }

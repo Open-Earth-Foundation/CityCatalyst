@@ -598,15 +598,9 @@ export async function handleIndustrialWasteWaterFormula(
 
   const totalIndustrialProduction = data["total-industry-production"];
   const industryType = data[`${prefixKey}-industry-type`];
-  const treatmentType = data[`${prefixKey}-treatment-type-collected-treated`];
+  const treatmentType = data[`${prefixKey}-treatment-type`];
   const treatmentStatus = data[`${prefixKey}-treatment-status`];
-  const dischargePathway = data[`${prefixKey}-discharge-pathway-untreated`];
-  const treatmentTypeMetaDataFilter =
-    treatmentStatus === "treatment-status-type-wastewater-untreated"
-      ? dischargePathway
-      : treatmentType;
   let wastewaterGenerated = data[`${prefixKey}-wastewater-generated`]; // should this be gotten from UI or
-  const country = inventoryValue.inventory.city.country as string;
   const countryCode = inventoryValue.inventory.city.countryLocode;
   const formulaInputsDOC = await db.models.FormulaInput.findOne({
     where: {
@@ -657,7 +651,7 @@ export async function handleIndustrialWasteWaterFormula(
 
   const formulaInputMCF = await db.models.FormulaInput.findOne({
     where: {
-      [`metadata.treatment-type`]: treatmentTypeMetaDataFilter as string,
+      [`metadata.treatment-type`]: treatmentType as string,
       [`metadata.treatment-status`]: treatmentStatus as string,
       gas: "CH4",
       parameterCode: "MCF",

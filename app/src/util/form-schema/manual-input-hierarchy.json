@@ -4544,6 +4544,7 @@
             "extra-fields": [
               {
                 "id": "wastewater-inside-industrial-calculator-industry-type",
+                "required": true,
                 "options": [
                   "industry-type-alcohol-refining",
                   "industry-type-coffee",
@@ -4623,8 +4624,8 @@
                 }
               },
               {
-                "id": "wastewater-inside-industrial-calculator-treatment-name",
-                "dependsOn": "wastewater-inside-industrial-calculator-treatment-type",
+                "id": "wastewater-inside-industrial-calculator-treatment-type",
+                "dependsOn": "wastewater-inside-industrial-calculator-treatment-name",
                 "dependentOptions": {
                   "treatment-name-septic-system": [
                     "treatment-type-septic-system"

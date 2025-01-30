@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  AccordionRoot,
   Box,
   Button,
   Card,
@@ -32,6 +33,7 @@ import { MdAdd, MdMoreVert } from "react-icons/md";
 import { FaNetworkWired } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
 import {
+  AccordionItem,
   AccordionItemContent,
   AccordionItemTrigger,
 } from "@/components/ui/accordion";
@@ -240,79 +242,83 @@ const EmissionDataSection = ({
               </Button>
             )}
             <PopoverRoot>
-              <AccordionItemTrigger>
-                <IconButton
-                  aria-label="more-icon"
-                  variant="ghost"
-                  color="content.tertiary"
-                >
-                  <MdMoreVert size="24px" />
-                </IconButton>
-              </AccordionItemTrigger>
-              <AccordionItemContent
-                w="auto"
-                borderRadius="8px"
-                shadow="2dp"
-                px="0"
-              >
-                <PopoverArrow />
-                <PopoverBody p="0px">
-                  <Box
-                    p="16px"
-                    display="flex"
-                    alignItems="center"
-                    gap="16px"
-                    _hover={{
-                      bg: "content.link",
-                      cursor: "pointer",
-                    }}
-                    className="group"
-                    onClick={onChangeMethodologyOpen}
+              <AccordionRoot>
+                <AccordionItem>
+                  <AccordionItemTrigger>
+                    <IconButton
+                      aria-label="more-icon"
+                      variant="ghost"
+                      color="content.tertiary"
+                    >
+                      <MdMoreVert size="24px" />
+                    </IconButton>
+                  </AccordionItemTrigger>
+                  <AccordionItemContent
+                    w="auto"
+                    borderRadius="8px"
+                    shadow="2dp"
+                    px="0"
                   >
-                    <Icon
-                      className="group-hover:text-white"
-                      color="interactive.control"
-                      as={FaNetworkWired}
-                      h="24px"
-                      w="24px"
-                    />
-                    <Text
-                      className="group-hover:text-white"
-                      color="content.primary"
-                    >
-                      {t("change-methodology")}
-                    </Text>
-                  </Box>
-                  {activityValues.length > 0 && (
-                    <Box
-                      p="16px"
-                      display="flex"
-                      alignItems="center"
-                      gap="16px"
-                      _hover={{
-                        bg: "content.link",
-                        cursor: "pointer",
-                      }}
-                      className="group"
-                      onClick={onDeleteActivitiesModalOpen}
-                    >
-                      <Icon
-                        className="group-hover:text-white"
-                        color="sentiment.negativeDefault"
-                        as={FiTrash2}
-                        h="24px"
-                        w="24px"
-                      />
-                      <Text
-                        className="group-hover:text-white"
-                        color="content.primary"
+                    <PopoverArrow />
+                    <PopoverBody p="0px">
+                      <Box
+                        p="16px"
+                        display="flex"
+                        alignItems="center"
+                        gap="16px"
+                        _hover={{
+                          bg: "content.link",
+                          cursor: "pointer",
+                        }}
+                        className="group"
+                        onClick={onChangeMethodologyOpen}
                       >
-                        {t("delete-all-activities")}
-                      </Text>
-                    </Box>
-                  )}
-                </PopoverBody>
-              </AccordionItemContent>
+                        <Icon
+                          className="group-hover:text-white"
+                          color="interactive.control"
+                          as={FaNetworkWired}
+                          h="24px"
+                          w="24px"
+                        />
+                        <Text
+                          className="group-hover:text-white"
+                          color="content.primary"
+                        >
+                          {t("change-methodology")}
+                        </Text>
+                      </Box>
+                      {activityValues.length > 0 && (
+                        <Box
+                          p="16px"
+                          display="flex"
+                          alignItems="center"
+                          gap="16px"
+                          _hover={{
+                            bg: "content.link",
+                            cursor: "pointer",
+                          }}
+                          className="group"
+                          onClick={onDeleteActivitiesModalOpen}
+                        >
+                          <Icon
+                            className="group-hover:text-white"
+                            color="sentiment.negativeDefault"
+                            as={FiTrash2}
+                            h="24px"
+                            w="24px"
+                          />
+                          <Text
+                            className="group-hover:text-white"
+                            color="content.primary"
+                          >
+                            {t("delete-all-activities")}
+                          </Text>
+                        </Box>
+                      )}
+                    </PopoverBody>
+                  </AccordionItemContent>
+                </AccordionItem>
+              </AccordionRoot>
             </PopoverRoot>
           </Box>
         </Box>

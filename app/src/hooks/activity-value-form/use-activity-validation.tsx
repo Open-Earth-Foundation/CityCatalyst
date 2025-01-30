@@ -8,7 +8,6 @@ import { TFunction } from "i18next";
 import { UseFormSetError, UseFormSetFocus } from "react-hook-form";
 import { Inputs } from "@/components/Modals/activity-modal/activity-modal-body";
 import { toaster } from "@/components/ui/toaster";
-import { CloseButton } from "@/components/ui/close-button";
 
 const useActivityValueValidation = ({
   t,

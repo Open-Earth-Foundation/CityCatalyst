@@ -91,7 +91,7 @@ if __name__ == "__main__":
         "--locode",
         type=str,
         required=True,
-        help="The locode of the city to get the ccras for and to add to that city.",
+        help="The locode of the city to get the ccras for and to add to that city e.g. BRMGE.",
     )
 
     args = parser.parse_args()

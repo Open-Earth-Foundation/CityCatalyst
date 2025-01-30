@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.openearth.org/cap/city_schema.json",
+  "title": "City",
+  "type": "object",
+  "properties": {
+    "locode": {
+      "type": "string",
+      "description": "The UN/LOCODE of the city",
+      "pattern": "^[A-Z]{2}[A-Z0-9]{3}$"
+    },
+    "name": {
+      "type": "string",
+      "description": "The name of the city"
+    },
+    "region": {
+      "type": "string",
+      "description": "ISO 3166-2 region code where the city is located",
+      "pattern": "^[A-Z]{2}-[A-Z0-9]{1,3}$"
+    },
+    "regionName": {
+      "type": "string",
+      "description": "The name of the region where the city is located"
+    },
+    "populationSize": {
+      "type": "number",
+      "description": "The population size of the city"
+    },
+    "populationDensity": {
+      "type": "number",
+      "description": "The inhabitants per square kilometer in the city"
+    },
+    "area": {
+      "type": "number",
+      "description": "The area of the city in square kilometers"
+    },
+    "elevation": {
+      "type": "number",
+      "description": "The elevation of the city in meters"
+    },
+    "biome": {
+      "type": "string",
+      "enum": [
+        "tropical_rainforest",
+        "temperate_forest",
+        "desert",
+        "grassland_savanna",
+        "tundra",
+        "wetlands",
+        "mountains",
+        "boreal_forest_taiga",
+        "coastal_marine"
+      ],
+      "description": "The biome where the city is located"
+    },
+    "socioEconomicFactors": {
+      "type": "object",
+      "properties": {
+        "lowIncome": {
+          "type": "string",
+          "enum": [
+            "very_low",
+            "low",
+            "moderate",
+            "high",
+            "very_high"
+          ],
+          "description": "The proportion of the population with a nominal monthly per capita income of less than 1/2 the minimum wage. This classification reflects levels of economic vulnerability. Categories: Very Low (0-4.23%), Low (4.24-7.08%), Medium (7.09-11.87%), High (11.88-18.17%), Very High(18.18-100%)."
+        }
+      }
+    },
+    "accessToPublicServices": {
+      "type": "object",
+      "properties": {
+        "inadequateWaterAccess": {
+          "type": "string",
+          "enum": [
+            "very_low",
+            "low",
+            "moderate",
+            "high",
+            "very_high"
+          ],
+          "description": "The percentage of the population lacking adequate access to clean water. Categories: Very Low (0-7.32%), Low (7.33-14.35%), Moderate (14.36-23.11%), High (23.12-35.88%), Very High(35.89-100%)."
+        },
+        "inadequateSanitation": {
+          "type": "string",
+          "enum": [
+            "very_low",
+            "low",
+            "moderate",
+            "high",
+            "very_high"
+          ],
+          "description": "The percentage of the population lacking adequate access to sanitation services. Categories: Very Low (0-7.53%), Low (7.54-22.10%), Moderate (22.11-44.04%), High (44.05-70.86%), Very High(70.87-100%)."
+        }
+      }
+    }
+  },
+  "required": [
+    "locode",
+    "name",
+    "region",
+    "regionName"
+  ]
+}

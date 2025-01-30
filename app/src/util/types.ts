@@ -186,6 +186,12 @@ export interface UserInviteResponse {
   lastUpdated: string;
 }
 
+export enum Roles {
+  User = "user",
+  Admin = "admin",
+}
+
+
 export interface AcceptInviteResponse {
   success: boolean;
   error?: string;

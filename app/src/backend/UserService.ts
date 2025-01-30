@@ -1,7 +1,8 @@
 import { db } from "@/models";
 import createHttpError from "http-errors";
 
-import { Roles, type AppSession } from "@/lib/auth";
+import { Roles } from "@/util/types";
+import { type AppSession } from "@/lib/auth";
 import type { City } from "@/models/City";
 import type { Inventory } from "@/models/Inventory";
 import type { User } from "@/models/User";

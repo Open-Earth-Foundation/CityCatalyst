@@ -1,10 +1,10 @@
-import { Roles } from "@/lib/auth";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { signupRequest } from "@/util/validation";
 import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
+import { Roles } from "@/util/types";
 
 export const POST = apiHandler(async (req: Request) => {
   const body = signupRequest.parse(await req.json());

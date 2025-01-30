@@ -22,6 +22,7 @@ import {
   InventoryTypeEnum,
 } from "@/util/enums";
 import { AppSession, Auth } from "@/lib/auth";
+import { Roles } from "@/util/types";
 
 const locode = "XX_DATASOURCE_CITY";
 const sectorName = "XX_DATASOURCE_TEST_1";
@@ -43,7 +44,7 @@ const sourceLocations = [
 ];
 
 const mockSession: AppSession = {
-  user: { id: testUserID, role: "user" },
+  user: { id: testUserID, role: Roles.User },
   expires: "1h",
 };
 

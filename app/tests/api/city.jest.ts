@@ -1,11 +1,10 @@
 import {
-  jest,
-  expect,
-  describe,
+  afterAll,
   beforeAll,
   beforeEach,
-  afterAll,
+  describe,
   it,
+  jest,
 } from "@jest/globals";
 import {
   DELETE as deleteCity,
@@ -21,6 +20,7 @@ import { City } from "@/models/City";
 import { randomUUID } from "node:crypto";
 import { AppSession, Auth } from "@/lib/auth";
 import { User } from "@/models/User";
+import { Roles } from "@/util/types";
 
 const cityData: CreateCityRequest = {
   locode: "XX_CITY",
@@ -47,7 +47,7 @@ const invalidCity = {
 };
 
 const mockSession: AppSession = {
-  user: { id: testUserID, role: "user" },
+  user: { id: testUserID, role: Roles.User },
   expires: "1h",
 };
 

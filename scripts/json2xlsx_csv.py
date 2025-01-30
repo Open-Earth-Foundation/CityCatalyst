@@ -4,7 +4,7 @@ from pathlib import Path
 import argparse
 
 
-def json_to_csv(json_file: Path, output_file: Path):
+def json2xlsx_csv(json_file: Path, output_file: Path):
 
     output_folder = Path("./script_outputs")
 
@@ -43,4 +43,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    json_to_csv(args.json_file, args.output_file)
+    json2xlsx_csv(args.json_file, args.output_file)

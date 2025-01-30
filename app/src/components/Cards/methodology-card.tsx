@@ -4,7 +4,7 @@ import React, { FC, useState } from "react";
 import type { Methodology } from "@/util/form-schema";
 import { toaster } from "../ui/toaster";
 import { MdInfo } from "react-icons/md";
-import { Radio } from "../ui/radio";
+import { Radio, RadioGroup } from "../ui/radio";
 
 interface MethodologyCardProps {
   id: string;
@@ -87,11 +87,14 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
       backgroundColor={isSelected ? "gray.200" : "white"}
     >
       <Box w="full" display="flex" justifyContent="space-between">
-        <Radio
-          disabled={isMethodologyDisabled}
-          isChecked={isSelected}
-          onChange={handleRadioChange}
-        />{" "}
+        <RadioGroup>
+          {" "}
+          <Radio
+            disabled={isMethodologyDisabled}
+            isChecked={isSelected}
+            onChange={handleRadioChange}
+          />{" "}
+        </RadioGroup>
         {isMethodologyDisabled ? (
           <Badge
             borderWidth="1px"

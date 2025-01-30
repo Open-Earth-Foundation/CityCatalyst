@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Icon,
+  RadioGroupRoot,
   Stack,
   Text,
   Textarea,
@@ -126,48 +127,50 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
         >
           {t("select-reason")}
         </Text>
-        <RadioGroup
-          value={selectedReason as string}
-          onChange={setSelectedReason}
-        >
-          <Stack direction="column">
-            <Radio
-              {...getRadioProps({ value: "reason-NO" })}
-              key={"reason-NO"}
-              color="interactive.secondary"
-            >
-              {t("reason-NO")}
-            </Radio>
-            <Radio
-              {...getRadioProps({ value: "reason-NE" })}
-              key={"reason-NE"}
-              color="interactive.secondary"
-            >
-              {t("reason-NE")}
-            </Radio>
-            <Radio
-              {...getRadioProps({ value: "reason-C" })}
-              key={"reason-C"}
-              color="interactive.secondary"
-            >
-              {t("reason-C")}
-            </Radio>
-            <Radio
-              {...getRadioProps({ value: "reason-IE" })}
-              key={"reason-IE"}
-              color="interactive.secondary"
-            >
-              {t("reason-IE")}
-            </Radio>
+        <RadioGroupRoot>
+          <RadioGroup
+            value={selectedReason as string}
+            onChange={setSelectedReason}
+          >
+            <Stack direction="column">
+              <Radio
+                {...getRadioProps({ value: "reason-NO" })}
+                key={"reason-NO"}
+                color="interactive.secondary"
+              >
+                {t("reason-NO")}
+              </Radio>
+              <Radio
+                {...getRadioProps({ value: "reason-NE" })}
+                key={"reason-NE"}
+                color="interactive.secondary"
+              >
+                {t("reason-NE")}
+              </Radio>
+              <Radio
+                {...getRadioProps({ value: "reason-C" })}
+                key={"reason-C"}
+                color="interactive.secondary"
+              >
+                {t("reason-C")}
+              </Radio>
+              <Radio
+                {...getRadioProps({ value: "reason-IE" })}
+                key={"reason-IE"}
+                color="interactive.secondary"
+              >
+                {t("reason-IE")}
+              </Radio>
 
-            {errors?.reason ? (
-              <Box display="flex" gap="6px" alignItems="center" mt="6px">
-                <Icon as={MdWarning} color="sentiment.negativeDefault" />
-                <Text fontSize="body.md">{errors?.reason.message} </Text>
-              </Box>
-            ) : null}
-          </Stack>
-        </RadioGroup>
+              {errors?.reason ? (
+                <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                  <Icon as={MdWarning} color="sentiment.negativeDefault" />
+                  <Text fontSize="body.md">{errors?.reason.message} </Text>
+                </Box>
+              ) : null}
+            </Stack>
+          </RadioGroup>
+        </RadioGroupRoot>
         <Text
           fontWeight="medium"
           fontSize="title.md"

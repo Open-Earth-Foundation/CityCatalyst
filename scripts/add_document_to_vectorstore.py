@@ -116,14 +116,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "--chunk_size",
         type=int,
-        default=2000,
+        default=1000,
         help="Size of the chunks to split the document into. Defaults to 2000.",
     )
     parser.add_argument(
         "--chunk_overlap",
         type=int,
-        default=400,
-        help="Size of the overlap between chunks. Defaults to 400.",
+        default=200,
+        help="Size of the overlap between chunks. Defaults to 200.",
     )
     parser.add_argument(
         "--metadata",

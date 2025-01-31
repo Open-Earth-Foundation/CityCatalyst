@@ -1,12 +1,12 @@
 {
-  "locode": "BRCXL",
-  "name": "Caxias do Sul",
-  "region": "BR-RS",
-  "regionName": "Rio Grande do Sul",
-  "populationSize": 463501,
-  "populationDensity": 280.52,
-  "area": 1643.0,
-  "elevation": 817,
+  "locode": "BRSER",
+  "name": "Serra",
+  "region": "BR-ES",
+  "regionName": "Espírito Santo",
+  "populationSize": 520653,
+  "populationDensity": 950.74,
+  "area": 553.0,
+  "elevation": 60,
   "biome": "tropical_rainforest",
   "socioEconomicFactors": {
     "lowIncome": "very_high"
@@ -15,60 +15,60 @@
     "inadequateWaterAccess": "very_low",
     "inadequateSanitation": "very_low"
   },
-  "totalEmissions": 4527548810.0,
-  "stationaryEnergyEmissions": 151964298.0,
-  "transportationEmissions": 554225715.0,
-  "wasteEmissions": 3564978296.0,
-  "industrialProcessEmissions": 1037560,
-  "landUseEmissions": 255342941.0,
-  "scope1Emissions": 4276317120.0,
-  "scope2Emissions": 180996493.0,
-  "scope3Emissions": 70235197.0,
+  "totalEmissions": 14833157058.0,
+  "stationaryEnergyEmissions": 199992647.0,
+  "transportationEmissions": 738428743.0,
+  "wasteEmissions": 3122542631.0,
+  "industrialProcessEmissions": 10676849598,
+  "landUseEmissions": 95343439.0,
+  "scope1Emissions": 14692790785.0,
+  "scope2Emissions": 131730706.0,
+  "scope3Emissions": 8635567.0,
   "ccra": [
     {
       "keyimpact": "water resources",
       "hazard": "drought",
-      "normalised_risk_score": 0.203045947027008
+      "normalised_risk_score": 0.393364562837403
     },
     {
       "keyimpact": "food security",
       "hazard": "drought",
-      "normalised_risk_score": 0.453526485315886
+      "normalised_risk_score": 0.216454282106855
     },
     {
       "keyimpact": "energy security",
       "hazard": "drought",
-      "normalised_risk_score": 0.0662342079187813
+      "normalised_risk_score": 0.263081023808263
     },
     {
       "keyimpact": "biodiversity",
       "hazard": "drought",
-      "normalised_risk_score": 0.0469388716803196
+      "normalised_risk_score": 0.0470174593732926
     },
     {
       "keyimpact": "public health",
       "hazard": "heatwaves",
-      "normalised_risk_score": 0.406778982160821
+      "normalised_risk_score": 0.807349999122291
     },
     {
       "keyimpact": "infrastructure",
       "hazard": "heatwaves",
-      "normalised_risk_score": 0.312655736560568
+      "normalised_risk_score": 0.99
     },
     {
       "keyimpact": "biodiversity",
       "hazard": "heatwaves",
-      "normalised_risk_score": 0.0305742561949638
+      "normalised_risk_score": 0.109633048287441
     },
     {
       "keyimpact": "energy security",
       "hazard": "heatwaves",
-      "normalised_risk_score": 0.0482628918101221
+      "normalised_risk_score": 0.61515032910354
     },
     {
       "keyimpact": "public health",
       "hazard": "diseases",
-      "normalised_risk_score": 0.570844253980551
+      "normalised_risk_score": 0.725108056025108
     },
     {
       "keyimpact": "geo-hydrological disasters",
@@ -88,7 +88,7 @@
     {
       "keyimpact": "food security",
       "hazard": "flooding",
-      "normalised_risk_score": 0.159784101161151
+      "normalised_risk_score": 0.807131991419737
     },
     {
       "keyimpact": "infrastructure",

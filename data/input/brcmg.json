@@ -1,6 +1,99 @@
 {
-    "locode": "BRCMG",
-    "name": "Corumbá",
-    "region": "BR-MS",
-    "regionName": "Mato Grosso do Sul"
+  "locode": "BRCMG",
+  "name": "Corumbá",
+  "region": "BR-MS",
+  "regionName": "Mato Grosso do Sul",
+  "populationSize": 96268,
+  "populationDensity": 1.49,
+  "area": 64962.0,
+  "elevation": 118,
+  "biome": "grassland_savanna",
+  "socioEconomicFactors": {
+    "lowIncome": "very_high"
+  },
+  "accessToPublicServices": {
+    "inadequateWaterAccess": "very_low",
+    "inadequateSanitation": "low"
+  },
+  "totalEmissions": 9118053991.9,
+  "stationaryEnergyEmissions": 22358041.0,
+  "transportationEmissions": 62605669.0,
+  "wasteEmissions": 424544630.9,
+  "industrialProcessEmissions": 303800000,
+  "landUseEmissions": 8304745651.0,
+  "scope1Emissions": 4290411784.9,
+  "scope2Emissions": 4249033923.0,
+  "scope3Emissions": 578608284.0,
+  "ccra": [
+    {
+      "keyimpact": "water resources",
+      "hazard": "drought",
+      "normalised_risk_score": 0.130592519044881
+    },
+    {
+      "keyimpact": "food security",
+      "hazard": "drought",
+      "normalised_risk_score": 0.26014790334445
+    },
+    {
+      "keyimpact": "energy security",
+      "hazard": "drought",
+      "normalised_risk_score": 0.404744908132571
+    },
+    {
+      "keyimpact": "biodiversity",
+      "hazard": "drought",
+      "normalised_risk_score": 0.709574869214129
+    },
+    {
+      "keyimpact": "public health",
+      "hazard": "heatwaves",
+      "normalised_risk_score": 0.01
+    },
+    {
+      "keyimpact": "infrastructure",
+      "hazard": "heatwaves",
+      "normalised_risk_score": 0.99
+    },
+    {
+      "keyimpact": "biodiversity",
+      "hazard": "heatwaves",
+      "normalised_risk_score": 0.574941108928747
+    },
+    {
+      "keyimpact": "energy security",
+      "hazard": "heatwaves",
+      "normalised_risk_score": 0.332856442675346
+    },
+    {
+      "keyimpact": "public health",
+      "hazard": "diseases",
+      "normalised_risk_score": 0.01
+    },
+    {
+      "keyimpact": "geo-hydrological disasters",
+      "hazard": "landslide",
+      "normalised_risk_score": 0.328172670047703
+    },
+    {
+      "keyimpact": "infrastructure",
+      "hazard": "landslide",
+      "normalised_risk_score": 0.99
+    },
+    {
+      "keyimpact": "geo-hydrological disasters",
+      "hazard": "flooding",
+      "normalised_risk_score": 0.0188833448585691
+    },
+    {
+      "keyimpact": "food security",
+      "hazard": "flooding",
+      "normalised_risk_score": 0.361631466951212
+    },
+    {
+      "keyimpact": "infrastructure",
+      "hazard": "sea level rise",
+      "normalised_risk_score": null
+    }
+  ]
 }

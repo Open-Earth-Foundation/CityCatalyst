@@ -1,11 +1,14 @@
 from state.agent_state import AgentState
 from pathlib import Path
 from datetime import datetime
+from styles.styles import styles_block
 
 OUTPUT_PATH = Path(__file__).parent.parent / "data" / "output"
 
 
 def custom_agent_combine(state: AgentState) -> AgentState:
+
+    print("Finalizing outputs...")
 
     # Get meta data
     climate_action_id = state["climate_action_data"]["ActionID"]
@@ -28,6 +31,7 @@ def custom_agent_combine(state: AgentState) -> AgentState:
 
     # Concatenate the responses (all in Markdown) into one big Markdown string
     combined_markdown = (
+        f"{styles_block}\n\n"
         f"{response_agent_1}\n\n"
         f"{response_agent_2}\n\n"
         f"{response_agent_3}\n\n"
@@ -56,6 +60,8 @@ def custom_agent_combine(state: AgentState) -> AgentState:
     # Write the combined Markdown text to a local file (e.g. "combined_responses.md")
     with open(OUTPUT_PATH / file_name, "w", encoding="utf-8") as md_file:
         md_file.write(combined_markdown)
+
+    print("Outputs finalized\n")
 
     # Return an AgentState with the updated responses
     return AgentState(**result_state)

@@ -8,11 +8,10 @@ from data.context import sgds
 system_prompt_agent_10 = SystemMessage(
     """
 <role>
-You are a project manager specialized in implementing climate actions and urban planning for a given city.
-You collaborate with a team of experts to create an implementation plan for a climate action.
+You are a project manager specializing in climate action implementation and urban planning. 
+You work with a team of experts to develop an implementation plan for a city's climate action.
 The team of experts have provided you with the following information for the climate action implementation plan: 
-- the relevant climate strategies, 
-- the climate action (main action) description
+- introduction for the climate action implementation plan
 </role> 
 
 <task>
@@ -21,10 +20,10 @@ You need to identify, which SGDs are addressed by the climate action and how the
 
 Follow these guidlines carefully to complete the task:
 
-1. Understand the details of climate action.
+1. Understand the details of climate action (main action).
 2. Understand the details of the city you are working on.
-3. Analyse the the national and city-level climate strategies and the main action description.
-4. Based on the overall action and description, list all SGDs that are relevant and addressed. Include a brief description of how they are addressed by the climate action.
+3. Review the introduction for the climate action implementation plan.
+4. Based on the description of the climate action, the city context, and the introduction for the climate action implementation plan, list all SGDs that are relevant and addressed.
 </task>
 
 <output>
@@ -34,8 +33,8 @@ Order the list ascendingly by the number of the SGDs.
 <example_output>
 ## Relationship with SGDs:
 
-* SGD X - [short description]
-* SGD Y - [short description]
+* SGD [number]: [name]
+* SGD [number]: [name]
 * ...
 </example_output>
 </output>
@@ -63,6 +62,8 @@ def build_custom_agent_10(model, tools):
 
     def custom_agent_10(state: AgentState) -> AgentState:
 
+        print("Agent 10 start...")
+
         result_state = react_chain.invoke(
             {
                 "messages": HumanMessage(
@@ -73,10 +74,10 @@ def build_custom_agent_10(model, tools):
                     This is the city data: 
                     {json.dumps(state['city_data'], indent=4)}
 
-                    This is the response from Agent 1 containing the nation and city-level strategies as well as the climate action plan (main action) description:
+                    This is the response from Agent 1 containing the introduction for the climate action implementation plan:
                     {json.dumps(state['response_agent_1'].content, indent=4)}
 
-                    These are all the SGDs. Map the relevant ones to the climate action:
+                    The following is the context for all the SGDs:
                     {json.dumps(sgds, indent=4)}
                     """
                 )
@@ -85,6 +86,8 @@ def build_custom_agent_10(model, tools):
 
         agent_output = result_state["messages"][-1].content
         result_state["response_agent_10"] = AIMessage(agent_output)
+
+        print("Agent 10 done\n")
         return AgentState(**result_state)
 
     return custom_agent_10

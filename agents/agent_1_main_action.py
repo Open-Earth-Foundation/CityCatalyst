@@ -81,6 +81,8 @@ def build_custom_agent_1(model, tools):
 
     def custom_agent_1(state: AgentState) -> AgentState:
 
+        print("Agent 1 start...")
+
         result_state = react_chain.invoke(
             {
                 "messages": HumanMessage(
@@ -97,6 +99,8 @@ def build_custom_agent_1(model, tools):
 
         agent_output = result_state["messages"][-1].content
         result_state["response_agent_1"] = AIMessage(agent_output)
+
+        print("Agent 1 done\n")
         return AgentState(**result_state)
 
     return custom_agent_1

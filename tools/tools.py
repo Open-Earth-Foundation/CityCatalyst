@@ -1,6 +1,6 @@
 from typing import Optional, Tuple, Union
 from langchain.tools import tool
-from utils.load_vectorstore import load_vectorstore
+from utils.get_vectorstore import get_vectorstore
 from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
@@ -21,8 +21,8 @@ def retriever_main_action_tool(
 
     **Input**:
     - search_query (str) - A detailed, full-sentence, and context-rich query.
-        * For querying the national climate strategy, always use this query: "Brazil's national climate strategy"
-        * For querying strategies related to the the climate action adapt the query to search specifically for that climate action.
+        * Example: "What is Brazil's national climate strategy?"
+        * Example: "What are [climate action] implementation strategies?"
 
     **Output**: A list of tuples in the form `[(document, relevance_score)]`.
     - Relevance scores range from `0` (lowest) to `1` (highest).
@@ -31,7 +31,7 @@ def retriever_main_action_tool(
     - Start with broad queries and progressively narrow down the search query.
     """
 
-    vector_store = load_vectorstore(collection_name="all_docs_db")
+    vector_store = get_vectorstore(collection_name="all_docs_db_small_chunks")
 
     if not vector_store:
         return "Could not load vector store. Please ensure your vector DB is created."
@@ -87,7 +87,7 @@ def retriever_sub_action_tool(
     - Start with broad queries and progressively narrow down
     """
 
-    vector_store = load_vectorstore(collection_name="all_docs_db")
+    vector_store = get_vectorstore(collection_name="all_docs_db_small_chunks")
 
     if not vector_store:
         return "Could not load vector store. Please ensure your vector DB is created."

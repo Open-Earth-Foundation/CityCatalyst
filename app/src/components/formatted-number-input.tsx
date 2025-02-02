@@ -100,7 +100,6 @@ function FormattedNumberInput({
             isDisabled={isDisabled}
             value={format(field.value)}
             placeholder={placeholder}
-            h="full"
             shadow="1dp"
             w="full"
             borderRightRadius={children ? 0 : "md"} // Adjust border radius
@@ -131,7 +130,7 @@ function FormattedNumberInput({
             <InputAddon
               bgColor={isDisabled ? "background.neutral" : "base.light"}
               color="content.tertiary"
-              h="48px"
+              h="full"
               fontSize="14px"
               shadow="1dp"
               pos="relative"

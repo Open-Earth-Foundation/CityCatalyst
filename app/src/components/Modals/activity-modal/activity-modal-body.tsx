@@ -38,12 +38,7 @@ import { EmissionFactorTypes } from "@/hooks/activity-value-form/use-emission-fa
 import DependentSelectInput from "@/components/dependent-select-input";
 import { DialogBody } from "@/components/ui/dialog";
 import { Field } from "@/components/ui/field";
-import {
-  SelectContent,
-  SelectItem,
-  SelectRoot,
-  SelectTrigger,
-} from "@/components/ui/select";
+
 import { MdInfoOutline, MdWarning } from "react-icons/md";
 import {
   NativeSelectField,

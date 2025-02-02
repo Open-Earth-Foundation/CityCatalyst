@@ -123,9 +123,9 @@ const EmissionDataSection = ({
     onDeleteActivityModalClose();
   };
 
-  const handleActivityAdded = (suggestedActivity: SuggestedActivity) => {
+  const handleActivityAdded = (suggestedActivity?: SuggestedActivity) => {
     setSelectedActivity(suggestedActivity);
-    onAddActivityModalOpen();
+    setAddActivityDataDialogOpen(true);
   };
 
   const onDeleteActivity = (activity: ActivityValue) => {
@@ -201,7 +201,7 @@ const EmissionDataSection = ({
             </Box>
           </Box>
           <Button
-            onClick={onAddActivityModalOpen}
+            onClick={() => handleActivityAdded}
             data-testid="add-emission-data-button"
             title={t("add-emission-data")}
             h="48px"
